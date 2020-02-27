@@ -53,10 +53,9 @@
 
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Library/LocalLibraryContainer.h"
-#include "Gui/Directories/DirectoryWidgetContainer.h"
+#include "Gui/Library/EmptyLibraryContainer.h"
 #include "Gui/Soundcloud/SoundcloudLibraryContainer.h"
 #include "Gui/SomaFM/SomaFMLibraryContainer.h"
-#include "Gui/Utils/Library/EmptyLibraryContainer.h"
 
 #include "Gui/History/HistoryContainer.h"
 
@@ -390,16 +389,16 @@ void Application::initLibraries()
 	auto* local_library_watcher = new Library::LocalLibraryWatcher(this);
 	auto* library_plugin_loader = Library::PluginHandler::instance();
 
-	QList<Library::Container*> library_containers = local_library_watcher->getLocalLibraryContainers();
-	auto* directory_container = new Library::DirectoryContainer(this);
+	QList<Library::AbstractContainer*> library_containers = local_library_watcher->getLocalLibraryContainers();
+	//auto* directory_container = new Library::DirectoryContainer(this);
 	auto* soundcloud_container = new SC::LibraryContainer(this);
 	auto* somafm_container = new SomaFM::LibraryContainer(this);
 	auto* history_container = new HistoryContainer(this);
 
-	library_containers << static_cast<Library::Container*>(directory_container);
-	library_containers << static_cast<Library::Container*>(somafm_container);
-	library_containers << static_cast<Library::Container*>(soundcloud_container);
-	library_containers << static_cast<Library::Container*>(history_container);
+	//library_containers << static_cast<Library::Container*>(directory_container);
+	library_containers << static_cast<Library::AbstractContainer*>(somafm_container);
+	library_containers << static_cast<Library::AbstractContainer*>(soundcloud_container);
+	library_containers << static_cast<Library::AbstractContainer*>(history_container);
 
 	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
 }

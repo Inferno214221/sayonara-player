@@ -19,6 +19,8 @@
  */
 
 #include <iostream>
+
+#include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingRegistry.h"
 #include "Utils/typedefs.h"
@@ -125,6 +127,19 @@ void Settings::applyFixes()
 		this->set<Set::Settings_Revision>(2);
 	}
 
+	if(settings_revision < 3)
+	{
+		bool b = this->get<Set::Lib_ShowAlbumCovers>();
+		if(b) {
+			this->set<Set::Lib_ViewType>(::Library::ViewType::CoverView);
+		}
+
+		else {
+			this->set<Set::Lib_ViewType>(::Library::ViewType::Standard);
+		}
+
+		this->set<Set::Settings_Revision>(3);
+	}
 
 	if(get<Set::Player_PrivId>().isEmpty())
 	{

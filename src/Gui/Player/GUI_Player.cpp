@@ -29,7 +29,7 @@
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
 #include "Gui/Covers/CoverButton.h"
 #include "Gui/Player/ui_GUI_Player.h"
@@ -383,12 +383,12 @@ void GUI_Player::currentLibraryChanged()
 
 void GUI_Player::initLibrary()
 {
-	bool is_visible = GetSetting(Set::Lib_Show);
-	ui->library_widget->setVisible(is_visible);
+	bool isVisible = GetSetting(Set::Lib_Show);
+	ui->library_widget->setVisible(isVisible);
 
-	m->menubar->showLibraryMenu(is_visible);
+	m->menubar->showLibraryMenu(isVisible);
 
-	if(is_visible)
+	if(isVisible)
 	{
 		addCurrentLibrary();
 		QWidget* w = Library::PluginHandler::instance()->currentLibraryWidget();
@@ -464,7 +464,8 @@ void GUI_Player::addCurrentLibrary()
 	removeCurrentLibrary();
 
 	QWidget* w = Library::PluginHandler::instance()->currentLibraryWidget();
-	if(w) {
+	if(w)
+	{
 		layout->addWidget(w);
 	}
 }

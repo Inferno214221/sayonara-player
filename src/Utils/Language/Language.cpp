@@ -126,6 +126,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Cannot find Lame MP3 encoder");
 		case Clear:
 			return l.tr("Clear");
+		case ClearSelection:
+			return l.tr("Clear selection");
 		case Close:
 			return l.tr("Close");
 		case CloseOthers:
@@ -178,6 +180,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Empty input");
 		case EnterName:
 			return l.tr("Enter name");
+		case EnterNewName:
+			return l.tr("Please enter new name");
 		case EnterUrl:
 			return l.tr("Enter URL");
 		case Entry:
@@ -255,6 +259,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Library");
 		case LibraryPath:
 			return l.tr("Library path");
+		case LibraryView:
+			return l.tr("Library view type");
 		case Listen:
 			return l.tr("Listen");
 		case LiveSearch:
@@ -371,6 +377,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Reset");
 		case Retry:
 			return l.tr("Retry");
+		case ReverseOrder:
+			return l.tr("Reverse order");
 		case Sampler:
 			return l.tr("Sampler");
 		case Shuffle:

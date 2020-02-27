@@ -31,22 +31,23 @@ namespace PipelineExtensions
 		public:
 			virtual void setRawData(const QByteArray& data)=0;
 	};
+
+	/**
+	 * @brief The Broadcaster class
+	 * @ingroup EngineInterfaces
+	 */
+	class BroadcastBin
+	{
+		PIMPL(BroadcastBin)
+
+		public:
+			BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
+			virtual ~BroadcastBin();
+
+			bool init();
+			bool setEnabled(bool b);
+	};
 }
 
-/**
- * @brief The Broadcaster class
- * @ingroup EngineInterfaces
- */
-class BroadcastBin
-{
-	PIMPL(BroadcastBin)
-
-	public:
-		BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
-		virtual ~BroadcastBin();
-
-		bool init();
-		bool setEnabled(bool b);
-};
 
 #endif // BROADCASTER_H

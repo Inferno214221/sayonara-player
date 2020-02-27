@@ -48,6 +48,24 @@ namespace SettingConverter
 	QString toString(const int& val);
 	bool fromString(const QString& val, int& i);
 
+	template<typename T, typename = typename std::enable_if< std::is_enum<T>::value, T >::type>
+	QString toString(const T& val)
+	{
+		int i = static_cast<int>(val);
+		return toString(i);
+	}
+
+	template <typename T, typename = typename std::enable_if< std::is_enum<T>::value, T >::type>
+	bool fromString(const QString& val, T& e)
+	{
+		int i;
+		bool b = fromString(val, i);
+
+		e = static_cast<T>(i);
+		return b;
+	}
+
+
 	QString toString(const float& val);
 	bool fromString(const QString& val, float& i);
 

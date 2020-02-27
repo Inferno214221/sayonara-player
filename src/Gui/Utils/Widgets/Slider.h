@@ -64,7 +64,7 @@ namespace Gui
 			virtual QColor additionalValueColor() const;
 
 			virtual bool event(QEvent* e) override;
-			void paintEvent(QPaintEvent *e) override;
+			void paintEvent(QPaintEvent* e) override;
 	};
 
 }

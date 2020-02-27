@@ -34,7 +34,7 @@ namespace PipelineExtensions
 	class PositionAccessible
 	{
 		public:
-			PositionAccessible() = default;
+			PositionAccessible();
 			virtual ~PositionAccessible();
 
 			NanoSeconds seekRelative(double percent, NanoSeconds ns);

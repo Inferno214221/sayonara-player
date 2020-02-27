@@ -293,11 +293,16 @@ void Util::placeInScreenCenter(QWidget* widget, float relativeSizeX, float relat
 	widget->setGeometry(xAbs, yAbs, wAbs, hAbs);
 }
 
-int Util::textWidget(const QFontMetrics& fm, const QString& text)
+int Util::textWidth(const QFontMetrics& fm, const QString& text)
 {
 #if QT_VERSION_MAJOR >= 5 && QT_VERSION_MINOR >= 11
 	return fm.horizontalAdvance(text);
 #else
 	return fm.width(text);
 #endif
+}
+
+int Util::textWidth(QWidget* widget, const QString& text)
+{
+	return textWidth(widget->fontMetrics(), text);
 }

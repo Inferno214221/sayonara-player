@@ -63,6 +63,7 @@ namespace Seek
 	}
 }
 
+PositionAccessible::PositionAccessible() = default;
 PositionAccessible::~PositionAccessible() = default;
 
 NanoSeconds PositionAccessible::seekRelative(double percent, NanoSeconds refNs)

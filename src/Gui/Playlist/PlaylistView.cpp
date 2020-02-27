@@ -103,6 +103,7 @@ View::View(PlaylistPtr pl, QWidget* parent) :
 	this->setObjectName("playlist_view" + QString::number(pl->index()));
 	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Pl::Delegate(this));
+	this->setTabKeyNavigation(false);
 	this->horizontalHeader()->setMinimumSectionSize(10);
 
 	initView();
@@ -680,7 +681,7 @@ void View::refresh()
 
 	QHeaderView* hh = this->horizontalHeader();
 	int viewport_width = viewport()->width();
-	int w_time = Gui::Util::textWidget(fm, "1888:88");
+	int w_time = Gui::Util::textWidth(fm, "1888:88");
 
 	if(GetSetting(Set::PL_ShowCovers))
 	{
@@ -694,7 +695,7 @@ void View::refresh()
 
 	if(GetSetting(Set::PL_ShowNumbers))
 	{
-		int w_tn = Gui::Util::textWidget(fm, QString::number(rowCount() * 100));
+		int w_tn = Gui::Util::textWidth(fm, QString::number(rowCount() * 100));
 		viewport_width -= w_tn;
 
 		if(hh->sectionSize(CN::TrackNumber) != w_tn) {

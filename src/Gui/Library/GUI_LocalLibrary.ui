@@ -10,9 +10,6 @@
     <height>569</height>
    </rect>
   </property>
-  <property name="focusPolicy">
-   <enum>Qt::ClickFocus</enum>
-  </property>
   <property name="acceptDrops">
    <bool>true</bool>
   </property>
@@ -35,7 +32,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="sw_reload">
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -66,9 +63,9 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QStackedWidget" name="sw_albumCovers">
+          <widget class="QStackedWidget" name="sw_viewType">
            <property name="currentIndex">
-            <number>0</number>
+            <number>1</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -90,9 +87,6 @@
                 <enum>Qt::Horizontal</enum>
                </property>
                <widget class="Library::ArtistView" name="tv_artists">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -158,9 +152,6 @@
                 </attribute>
                </widget>
                <widget class="Library::AlbumView" name="tv_albums">
-                <property name="focusPolicy">
-                 <enum>Qt::StrongFocus</enum>
-                </property>
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -230,14 +221,12 @@
             </layout>
            </widget>
            <widget class="Library::GUI_CoverView" name="cover_view"/>
+           <widget class="GUI_DirectoryView" name="directory_view"/>
           </widget>
           <widget class="QWidget" name="verticalLayoutWidget_2">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
              <widget class="Library::TrackView" name="tv_tracks">
-              <property name="focusPolicy">
-               <enum>Qt::StrongFocus</enum>
-              </property>
               <property name="acceptDrops">
                <bool>true</bool>
               </property>
@@ -339,9 +328,6 @@
                <weight>75</weight>
                <bold>true</bold>
               </font>
-             </property>
-             <property name="focusPolicy">
-              <enum>Qt::StrongFocus</enum>
              </property>
              <property name="dragDropMode">
               <enum>QAbstractItemView::DropOnly</enum>
@@ -461,6 +447,9 @@
              <verstretch>0</verstretch>
             </sizepolicy>
            </property>
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string notr="true">Scan for files</string>
            </property>
@@ -468,6 +457,9 @@
          </item>
          <item>
           <widget class="QPushButton" name="btn_importDirectories">
+           <property name="focusPolicy">
+            <enum>Qt::NoFocus</enum>
+           </property>
            <property name="text">
             <string notr="true">Import directory</string>
            </property>
@@ -483,6 +475,12 @@
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QFrame" name="header_frame">
+       <property name="minimumSize">
+        <size>
+         <width>10</width>
+         <height>0</height>
+        </size>
+       </property>
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -505,7 +503,27 @@
       </spacer>
      </item>
      <item>
-      <widget class="Library::SearchBar" name="le_search"/>
+      <widget class="Library::MenuButtonViews" name="btn_view">
+       <property name="focusPolicy">
+        <enum>Qt::NoFocus</enum>
+       </property>
+       <property name="text">
+        <string notr="true"/>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>22</width>
+         <height>22</height>
+        </size>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="Library::SearchBar" name="le_search">
+       <property name="focusPolicy">
+        <enum>Qt::StrongFocus</enum>
+       </property>
+      </widget>
      </item>
     </layout>
    </item>
@@ -571,7 +589,7 @@
   <customwidget>
    <class>Library::TrackView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/TrackView.h</header>
+   <header>Gui/Library/TableView/TrackView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::GenreView</class>
@@ -581,31 +599,49 @@
   <customwidget>
    <class>Library::AlbumView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/AlbumView.h</header>
+   <header>Gui/Library/TableView/AlbumView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::ArtistView</class>
    <extends>QTableView</extends>
-   <header>Gui/Library/ArtistView.h</header>
+   <header>Gui/Library/TableView/ArtistView.h</header>
   </customwidget>
   <customwidget>
    <class>Library::GUI_CoverView</class>
    <extends>QWidget</extends>
-   <header>Gui/Library/GUI_CoverView.h</header>
+   <header>Gui/Library/CoverView/GUI_CoverView.h</header>
    <container>1</container>
   </customwidget>
   <customwidget>
    <class>Library::SearchBar</class>
    <extends>QLineEdit</extends>
-   <header>Gui/Library/Utils/LibrarySearchBar.h</header>
+   <header>Gui/Library/Utils/Searchbar.h</header>
   </customwidget>
   <customwidget>
    <class>Library::FileExtensionBar</class>
    <extends>QWidget</extends>
-   <header>Gui/Library/LibraryFileExtensionBar.h</header>
+   <header>Gui/Library/FileExtensionBar.h</header>
    <container>1</container>
   </customwidget>
+  <customwidget>
+   <class>GUI_DirectoryView</class>
+   <extends>QWidget</extends>
+   <header>Gui/Library/DirectoryView/GUI_DirectoryView.h</header>
+   <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>Library::MenuButtonViews</class>
+   <extends>QPushButton</extends>
+   <header>Gui/Library/Utils/MenuButtonViews.h</header>
+  </customwidget>
  </customwidgets>
+ <tabstops>
+  <tabstop>le_search</tabstop>
+  <tabstop>tv_artists</tabstop>
+  <tabstop>tv_albums</tabstop>
+  <tabstop>tv_tracks</tabstop>
+  <tabstop>lv_genres</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

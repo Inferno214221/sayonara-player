@@ -26,45 +26,43 @@
 
 using namespace Library;
 
-using HeaderType=ColumnHeader::HeaderType;
-
 struct ColumnHeader::Private
 {
-	QAction*		action=nullptr;
 	int 			preferredSize;
 	int				defaultSize;
 
-	SortOrder		sortorderAscending;
-	SortOrder		sortorderDescending;
-	HeaderType		type;
+	QMap<Qt::SortOrder, SortOrder> sortorder;
+
+	ColumnIndex::IntegerType columnIndex;
 
 	bool 			switchable;
 	bool			stretchable;
 
-	Private(ColumnHeader* parent, HeaderType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int sz) :
+	Private(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int sz, bool stretchable) :
 		preferredSize(sz),
 		defaultSize(sz),
-		sortorderAscending(sortorderAscending),
-		sortorderDescending(sortorderDescending),
-		type(type),
+		columnIndex(columnIndex),
 		switchable(switchable),
-		stretchable(false)
+		stretchable(stretchable)
 	{
-		action = new QAction(parent);
-		action->setChecked(true);
-		action->setCheckable(switchable);
+		sortorder[Qt::SortOrder::AscendingOrder] = sortorderAscending;
+		sortorder[Qt::SortOrder::DescendingOrder] = sortorderDescending;
 	}
 };
 
 ColumnHeader::~ColumnHeader() = default;
 
-ColumnHeader::ColumnHeader(HeaderType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int preferredSize, bool stretchable)
+ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int preferredSize, bool stretchable)
 {
-	m = Pimpl::make<Private>(this, type, switchable, sortorderAscending, sortorderDescending, preferredSize);
-	m->stretchable = stretchable;
+	m = Pimpl::make<Private>(type, switchable, sortorderAscending, sortorderDescending, preferredSize, stretchable);
 }
 
-bool ColumnHeader::stretchable() const
+bool ColumnHeader::isSwitchable() const
+{
+	return m->switchable;
+}
+
+bool ColumnHeader::isStretchable() const
 {
 	return m->stretchable;
 }
@@ -84,67 +82,98 @@ void ColumnHeader::setPreferredSize(int size)
 	m->preferredSize = size;
 }
 
-SortOrder ColumnHeader::sortorderAscending() const
+SortOrder ColumnHeader::sortorder(Qt::SortOrder qtSortorder) const
 {
-	return	m->sortorderAscending;
+	return m->sortorder[qtSortorder];
 }
 
-SortOrder ColumnHeader::sortorderDescending() const
+ColumnIndex::IntegerType ColumnHeader::columnIndex() const
 {
-	return m->sortorderDescending;
+	return m->columnIndex;
 }
 
-QAction* ColumnHeader::action()
-{
-	m->action->setText( this->title() );
-	return m->action;
-}
+ColumnHeaderTrack::ColumnHeaderTrack(ColumnIndex::Track type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
+{}
 
-bool ColumnHeader::isActionChecked() const
+QString ColumnHeaderTrack::title() const
 {
-	if(!m->switchable){
-		return true;
-	}
-
-	return m->action->isChecked();
-}
-
-void ColumnHeader::retranslate()
-{
-	m->action->setText(this->title());
-}
-
-QString ColumnHeader::title() const
-{
-	switch(m->type)
+	ColumnIndex::Track type = ColumnIndex::Track(ColumnHeader::columnIndex());
+	switch(type)
 	{
-		case ColumnHeader::Sharp:
+		case ColumnIndex::Track::TrackNumber:
 			return "#";
-		case ColumnHeader::Artist:
-			return Lang::get(Lang::Artist).toFirstUpper();
-		case ColumnHeader::Album:
-			return Lang::get(Lang::Album).toFirstUpper();
-		case ColumnHeader::Title:
+		case ColumnIndex::Track::Title:
 			return Lang::get(Lang::Title).toFirstUpper();
-		case ColumnHeader::NumTracks:
-			return Lang::get(Lang::NumTracks).toFirstUpper();
-		case ColumnHeader::Duration:
-			return Lang::get(Lang::Duration).toFirstUpper();
-		case ColumnHeader::DurationShort:
-			return Lang::get(Lang::DurationShort).toFirstUpper();
-		case ColumnHeader::Year:
-			return Lang::get(Lang::Year).toFirstUpper();
-		case ColumnHeader::Rating:
-			return Lang::get(Lang::Rating).toFirstUpper();
-		case ColumnHeader::Bitrate:
-			return Lang::get(Lang::Bitrate).toFirstUpper();
-		case ColumnHeader::Filesize:
-			return Lang::get(Lang::Filesize).toFirstUpper();
-		case ColumnHeader::Filetype:
-			return Lang::get(Lang::Filetype).toFirstUpper();
-		case ColumnHeader::Discnumber:
+		case ColumnIndex::Track::Artist:
+			return Lang::get(Lang::Artist).toFirstUpper();
+		case ColumnIndex::Track::Album:
+			return Lang::get(Lang::Album).toFirstUpper();
+		case ColumnIndex::Track::Discnumber:
 			return Lang::get(Lang::Disc);
+		case ColumnIndex::Track::Year:
+			return Lang::get(Lang::Year).toFirstUpper();
+		case ColumnIndex::Track::Length:
+			return Lang::get(Lang::DurationShort).toFirstUpper();
+		case ColumnIndex::Track::Bitrate:
+			return Lang::get(Lang::Bitrate).toFirstUpper();
+		case ColumnIndex::Track::Filesize:
+			return Lang::get(Lang::Filesize).toFirstUpper();
+		case ColumnIndex::Track::Filetype:
+			return Lang::get(Lang::Filetype).toFirstUpper();
+		case ColumnIndex::Track::AddedDate:
+			return Lang::get(Lang::Created).toFirstUpper();
+		case ColumnIndex::Track::ModifiedDate:
+			return Lang::get(Lang::Modified).toFirstUpper();
+		case ColumnIndex::Track::Rating:
+			return Lang::get(Lang::Rating).toFirstUpper();
 		default:
 			return QString();
 	}
 }
+
+
+ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
+{}
+
+QString ColumnHeaderAlbum::title() const
+{
+	ColumnIndex::Album type = ColumnIndex::Album(ColumnHeader::columnIndex());
+	switch(type)
+	{
+		case ColumnIndex::Album::MultiDisc:
+			return "#";
+		case ColumnIndex::Album::Name:
+			return Lang::get(Lang::Name).toFirstUpper();
+		case ColumnIndex::Album::Duration:
+			return Lang::get(Lang::DurationShort).toFirstUpper();
+		case ColumnIndex::Album::NumSongs:
+			return Lang::get(Lang::NumTracks).toFirstUpper();
+		case ColumnIndex::Album::Year:
+			return Lang::get(Lang::Year).toFirstUpper();
+		case ColumnIndex::Album::Rating:
+			return Lang::get(Lang::Rating).toFirstUpper();
+		default:
+			return QString();
+	}
+}
+
+ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
+{}
+
+QString ColumnHeaderArtist::title() const
+{
+	ColumnIndex::Artist type = ColumnIndex::Artist(ColumnHeader::columnIndex());
+	switch(type)
+	{
+		case ColumnIndex::Artist::Name:
+			return Lang::get(Lang::Name).toFirstUpper();
+		case ColumnIndex::Artist::Tracks:
+			return Lang::get(Lang::NumTracks).toFirstUpper();
+		default:
+			return QString();
+	}
+}
+

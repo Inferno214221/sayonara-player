@@ -162,6 +162,9 @@
         <file>MintYIcons/window-close-22.svg</file>
         <file>MintYIcons/edit-clear-32.svg</file>
         <file>MintYIcons/edit-clear-24.svg</file>
+        <file>MintYIcons/view-grid-24.svg</file>
+        <file>MintYIcons/view-grid-22.svg</file>
+        <file>MintYIcons/view-grid-16.svg</file>
     </qresource>
     <qresource prefix="/Style">
         <file>standard.css</file>

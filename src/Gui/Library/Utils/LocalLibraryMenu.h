@@ -62,7 +62,6 @@ namespace Library
 			void refreshName(const QString& name);
 			void refreshPath(const QString& path);
 
-			void setShowAlbumCoversChecked(bool checked);
 			void setLibraryBusy(bool b);
 			void setLibraryEmpty(bool b);
 
@@ -73,15 +72,6 @@ namespace Library
 			void shortcutChanged(ShortcutIdentifier identifier);
 
 		private slots:
-			void showAlbumCoversChanged();
-			void showAlbumCoversTriggered(bool b);
-
-			void showAlbumArtistsChanged();
-			void showAlbumArtistsTriggered(bool b);
-
-			void livesearchTriggered();
-			void setLiveSearchEnabled(bool b);
-
 			void editClicked();
 			void editAccepted();
 

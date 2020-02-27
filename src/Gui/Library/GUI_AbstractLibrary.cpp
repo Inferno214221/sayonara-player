@@ -19,10 +19,10 @@
  */
 
 #include "GUI_AbstractLibrary.h"
-#include "TableView.h"
+#include "Gui/Library/TableView/TableView.h"
+#include "Gui/Library/Utils/Searchbar.h"
 
 #include "Components/Library/AbstractLibrary.h"
-#include "Gui/Library/Utils/LibrarySearchBar.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
@@ -96,16 +96,14 @@ void GUI_AbstractLibrary::initSearchBar()
 	connect(m->leSearch, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::searchTriggered);
 }
 
-
 void GUI_AbstractLibrary::languageChanged() {}
 
 void GUI_AbstractLibrary::initShortcuts()
 {
-	auto* kp_filter_lib = new Gui::KeyPressFilter(this);
-	this->installEventFilter(kp_filter_lib);
-	connect(kp_filter_lib, &Gui::KeyPressFilter::setKeyPressed, this, &GUI_AbstractLibrary::keyPressed);
+	auto* keyPressFilter = new Gui::KeyPressFilter(this);
+	this->installEventFilter(keyPressFilter);
+	connect(keyPressFilter, &Gui::KeyPressFilter::setKeyPressed, this, &GUI_AbstractLibrary::keyPressed);
 }
-
 
 void GUI_AbstractLibrary::queryLibrary()
 {
@@ -146,7 +144,6 @@ bool GUI_AbstractLibrary::hasSelections() const
 	return (m->library->selectedAlbums().count() > 0) ||
 	(m->library->selectedArtists().count() > 0);
 }
-
 
 void GUI_AbstractLibrary::keyPressed(int key)
 {
@@ -219,4 +216,3 @@ void GUI_AbstractLibrary::liveSearchChanged()
 		disconnect(m->leSearch, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::searchEdited);
 	}
 }
-

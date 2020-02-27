@@ -24,6 +24,7 @@
 
 using namespace PipelineExtensions;
 
+Pitchable::Pitchable() = default;
 Pitchable::~Pitchable() = default;
 
 void Pitchable::setSpeed(float speed, double pitch, bool preservePitch)

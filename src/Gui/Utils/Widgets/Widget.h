@@ -75,7 +75,7 @@ namespace Gui
 		void raise();
 
 	protected:
-		virtual void showEvent(QShowEvent *e) override;
+		virtual void showEvent(QShowEvent* e) override;
 	};
 }
 

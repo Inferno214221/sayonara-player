@@ -267,7 +267,7 @@ void BottomBar::skinChanged()
 	Gui::Widget::skinChanged();
 
 	QFontMetrics fm = this->fontMetrics();
-	int w = (Gui::Util::textWidget(fm, "m") * 250) / 100;
+	int w = (Gui::Util::textWidth(fm, "m") * 250) / 100;
 	w = std::max(29, w);
 
 	const QList<BottomBarButton*> buttons = m->buttons();

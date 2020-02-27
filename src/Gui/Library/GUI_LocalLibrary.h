@@ -37,6 +37,7 @@ UI_FWD(GUI_LocalLibrary)
 
 namespace Library
 {
+	enum class ViewType : quint8;
 	/**
 	 * @brief The GUI_LocalLibrary class
 	 * @ingroup GuiLibrary
@@ -66,6 +67,8 @@ namespace Library
 		SearchBar* leSearch() const override;
 		QList<Filter::Mode> searchOptions() const override;
 
+		void queryLibrary() override;
+
 		void languageChanged() override;
 		void skinChanged() override;
 
@@ -76,7 +79,8 @@ namespace Library
 
 	private slots:
 		void tracksLoaded();
-		void switchAlbumView();
+		void switchViewType();
+		void selectNextViewType();
 
 		void progressChanged(const QString& type, int progress);
 

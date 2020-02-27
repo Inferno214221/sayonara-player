@@ -44,26 +44,26 @@
 
 struct AbstractLibrary::Private
 {
-	Util::Set<ArtistId>	selected_artists;
-	Util::Set<AlbumId>	selected_albums;
-	Util::Set<TrackID>	selected_tracks;
+	Util::Set<ArtistId>	selectedArtists;
+	Util::Set<AlbumId>	selectedAlbums;
+	Util::Set<TrackID>	selectedTracks;
 
 	ArtistList			artists;
 	AlbumList			albums;
 	MetaDataList		tracks;
-	MetaDataList		current_tracks;
-	MetaDataList		filtered_tracks;			// a subset of tracks with the desired filename extension
+	MetaDataList		currentTracks;
+	MetaDataList		filteredTracks;			// a subset of tracks with the desired filename extension
 
 	Gui::ExtensionSet	extensions;
 
-	int					num_tracks;
+	int					trackCount;
 
 	Library::Sortings	sortorder;
 	Library::Filter		filter;
 	bool				loaded;
 
 	Private() :
-		num_tracks(0),
+		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
 	{
@@ -95,7 +95,7 @@ void AbstractLibrary::load()
 	m->filter.clear();
 
 	refetch();
-	m->num_tracks = getTrackCount();
+	m->trackCount = getTrackCount();
 
 	m->loaded = true;
 }
@@ -118,9 +118,9 @@ void AbstractLibrary::emitAll()
 
 void AbstractLibrary::refetch()
 {
-	m->selected_artists.clear();
-	m->selected_albums.clear();
-	m->selected_tracks.clear();
+	m->selectedArtists.clear();
+	m->selectedAlbums.clear();
+	m->selectedTracks.clear();
 	m->filter.clear();
 
 	m->artists.clear();
@@ -141,9 +141,9 @@ void AbstractLibrary::refreshCurrentView()
 	/* Do not call emit_stuff() in order to avoid double sorting */
 	IndexSet sel_artists_idx, sel_albums_idx, sel_tracks_idx;
 
-	IdSet sel_artists = m->selected_artists;
-	IdSet sel_albums = m->selected_albums;
-	IdSet sel_tracks = m->selected_tracks;
+	IdSet sel_artists = m->selectedArtists;
+	IdSet sel_albums = m->selectedAlbums;
+	IdSet sel_tracks = m->selectedTracks;
 
 	fetchByFilter(m->filter, true);
 
@@ -285,11 +285,11 @@ void AbstractLibrary::findTrack(TrackID id)
 	}
 
 	{ // clear old selections/filters
-		if(!m->selected_artists.isEmpty()) {
+		if(!m->selectedArtists.isEmpty()) {
 			selectedArtistsChanged(IndexSet());
 		}
 
-		if(!m->selected_albums.isEmpty()){
+		if(!m->selectedAlbums.isEmpty()){
 			selectedAlbumsChanged(IndexSet());
 		}
 
@@ -303,10 +303,10 @@ void AbstractLibrary::findTrack(TrackID id)
 		m->artists.clear();
 		m->albums.clear();
 
-		m->selected_tracks.clear();
-		m->filtered_tracks.clear();
-		m->selected_artists.clear();
-		m->selected_albums.clear();
+		m->selectedTracks.clear();
+		m->filteredTracks.clear();
+		m->selectedArtists.clear();
+		m->selectedAlbums.clear();
 	}
 
 	m->tracks << md;
@@ -324,7 +324,7 @@ void AbstractLibrary::findTrack(TrackID id)
 	}
 
 	getAllTracksByAlbum({md.albumId()}, m->tracks, Library::Filter());
-	m->selected_tracks << md.id();
+	m->selectedTracks << md.id();
 
 	emitAll();
 }
@@ -453,7 +453,7 @@ void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 		selected_artists.insert(artist.id());
 	}
 
-	if(selected_artists == m->selected_artists)
+	if(selected_artists == m->selectedArtists)
 	{
 		return;
 	}
@@ -461,11 +461,11 @@ void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 	m->albums.clear();
 	m->tracks.clear();
 
-	m->selected_artists = selected_artists;
+	m->selectedArtists = selected_artists;
 
-	if(m->selected_artists.size() > 0) {
-		getAllTracksByArtist(m->selected_artists.toList(), m->tracks, m->filter);
-		getAllAlbumsByArtist(m->selected_artists.toList(), m->albums, m->filter);
+	if(m->selectedArtists.size() > 0) {
+		getAllTracksByArtist(m->selectedArtists.toList(), m->tracks, m->filter);
+		getAllAlbumsByArtist(m->selectedArtists.toList(), m->albums, m->filter);
 	}
 
 	else if(!m->filter.cleared()) {
@@ -487,12 +487,12 @@ void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 
 const MetaDataList& AbstractLibrary::tracks() const
 {
-	if(m->filtered_tracks.isEmpty())
+	if(m->filteredTracks.isEmpty())
 	{
 		return m->tracks;
 	}
 
-	return m->filtered_tracks;
+	return m->filteredTracks;
 }
 
 const AlbumList& AbstractLibrary::albums() const
@@ -507,21 +507,21 @@ const ArtistList& AbstractLibrary::artists() const
 
 const MetaDataList& AbstractLibrary::currentTracks() const
 {
-	if(m->selected_tracks.isEmpty()){
+	if(m->selectedTracks.isEmpty()){
 		return tracks();
 	}
 
-	return m->current_tracks;
+	return m->currentTracks;
 }
 
 void AbstractLibrary::changeCurrentDisc(Disc disc)
 {
-	if( m->selected_albums.size() != 1 )
+	if( m->selectedAlbums.size() != 1 )
 	{
 		return;
 	}
 
-	getAllTracksByAlbum(m->selected_albums.toList(), m->tracks, m->filter);
+	getAllTracksByAlbum(m->selectedAlbums.toList(), m->tracks, m->filter);
 
 	if(disc != std::numeric_limits<Disc>::max())
 	{
@@ -537,17 +537,17 @@ void AbstractLibrary::changeCurrentDisc(Disc disc)
 
 const IdSet& AbstractLibrary::selectedTracks() const
 {
-	return m->selected_tracks;
+	return m->selectedTracks;
 }
 
 const IdSet& AbstractLibrary::selectedAlbums() const
 {
-	return m->selected_albums;
+	return m->selectedAlbums;
 }
 
 const IdSet& AbstractLibrary::selectedArtists() const
 {
-	return m->selected_artists;
+	return m->selectedArtists;
 }
 
 
@@ -607,16 +607,16 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignore_
 	}
 
 	m->tracks.clear();
-	m->selected_albums = selected_albums;
+	m->selectedAlbums = selected_albums;
 
 	// only show tracks of selected album / artist
-	if(m->selected_artists.size() > 0 && !ignore_artists)
+	if(m->selectedArtists.size() > 0 && !ignore_artists)
 	{
-		if(m->selected_albums.size() > 0)
+		if(m->selectedAlbums.size() > 0)
 		{
 			MetaDataList v_md;
 
-			getAllTracksByAlbum(m->selected_albums.toList(), v_md, m->filter);
+			getAllTracksByAlbum(m->selectedAlbums.toList(), v_md, m->filter);
 
 			// filter by artist
 
@@ -630,20 +630,20 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignore_
 					artistId = md.artistId();
 				}
 
-				if(m->selected_artists.contains(artistId)){
+				if(m->selectedArtists.contains(artistId)){
 					m->tracks << std::move(md);
 				}
 			}
 		}
 
 		else{
-			getAllTracksByArtist(m->selected_artists.toList(), m->tracks, m->filter);
+			getAllTracksByArtist(m->selectedArtists.toList(), m->tracks, m->filter);
 		}
 	}
 
 	// only album is selected
-	else if(m->selected_albums.size() > 0) {
-		getAllTracksByAlbum(m->selected_albums.toList(), m->tracks, m->filter);
+	else if(m->selectedAlbums.size() > 0) {
+		getAllTracksByAlbum(m->selectedAlbums.toList(), m->tracks, m->filter);
 	}
 
 	// neither album nor artist, but searchstring
@@ -668,8 +668,8 @@ void AbstractLibrary::selectedAlbumsChanged(const IndexSet& indexes, bool ignore
 
 void AbstractLibrary::changeTrackSelection(const IndexSet& indexes)
 {
-	m->selected_tracks.clear();
-	m->current_tracks.clear();
+	m->selectedTracks.clear();
+	m->currentTracks.clear();
 
 	for(int idx : indexes)
 	{
@@ -679,8 +679,8 @@ void AbstractLibrary::changeTrackSelection(const IndexSet& indexes)
 
 		const MetaData& md = tracks()[idx];
 
-		m->current_tracks << md;
-		m->selected_tracks.insert(md.id());
+		m->currentTracks << md;
+		m->selectedTracks.insert(md.id());
 	}
 }
 
@@ -693,8 +693,8 @@ void AbstractLibrary::selectedTracksChanged(const IndexSet& indexes)
 void AbstractLibrary::fetchByFilter(Library::Filter filter, bool force)
 {
 	if( (m->filter == filter) &&
-		(m->selected_artists.empty()) &&
-		(m->selected_albums.empty()) &&
+		(m->selectedArtists.empty()) &&
+		(m->selectedAlbums.empty()) &&
 		!force)
 	{
 		return;
@@ -706,8 +706,8 @@ void AbstractLibrary::fetchByFilter(Library::Filter filter, bool force)
 	m->albums.clear();
 	m->tracks.clear();
 
-	m->selected_artists.clear();
-	m->selected_albums.clear();
+	m->selectedArtists.clear();
+	m->selectedAlbums.clear();
 
 	if(m->filter.cleared())
 	{
@@ -882,7 +882,7 @@ void AbstractLibrary::deleteTracksByIndex(const IndexSet& indexes, Library::Trac
 void AbstractLibrary::prepareTracks()
 {
 	m->extensions.clear();
-	m->filtered_tracks.clear();
+	m->filteredTracks.clear();
 
 	for(const MetaData& md : tracks())
 	{
@@ -919,18 +919,13 @@ bool AbstractLibrary::isEmpty() const
 		return false;
 	}
 
-	if(m->filter.cleared())
-	{
-		return true;
-	}
-
-	return (m->num_tracks == 0);
+	return (m->trackCount == 0);
 }
 
 void AbstractLibrary::setExtensions(const Gui::ExtensionSet& extensions)
 {
 	m->extensions = extensions;
-	m->filtered_tracks.clear();
+	m->filteredTracks.clear();
 
 	if(m->extensions.hasEnabledExtensions())
 	{
@@ -938,7 +933,7 @@ void AbstractLibrary::setExtensions(const Gui::ExtensionSet& extensions)
 		{
 			QString ext = ::Util::File::getFileExtension(md.filepath());
 			if(m->extensions.isEnabled(ext)){
-				m->filtered_tracks << md;
+				m->filteredTracks << md;
 			}
 		}
 	}

@@ -75,7 +75,7 @@ void Base::translationAction()
 	action()->setText(new_name + "...");
 }
 
-void Base::showEvent(QShowEvent *e)
+void Base::showEvent(QShowEvent* e)
 {
 	if(!isUiInitialized()){
 		initUi();

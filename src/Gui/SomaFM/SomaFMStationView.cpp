@@ -37,7 +37,7 @@ ModelIndexRange SomaFMStationView::mapIndexToModelIndexes(int idx) const
 	return ModelIndexRange(midx, midx);
 }
 
-void SomaFMStationView::keyPressEvent(QKeyEvent *e)
+void SomaFMStationView::keyPressEvent(QKeyEvent* e)
 {
 	e->setAccepted(false);
 

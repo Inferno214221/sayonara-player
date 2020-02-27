@@ -49,7 +49,7 @@ Slider::Slider(QWidget* parent) :
 
 Slider::~Slider() = default;
 
-bool Slider::event(QEvent *e){
+bool Slider::event(QEvent* e){
 	/** We need this for activate an item as soon it is hovered.
 	Otherwise, the curve functionality with the mouse wheel event does not work **/
 	switch(e->type())
@@ -154,7 +154,7 @@ static QRect calc_rect(QSlider* slider, int value, bool is_horizontal)
 {
 	int long_side = slider->width();
 	int short_side = slider->height();	
-	int rect_thickness = Gui::Util::textWidget(slider->fontMetrics(), "m") / 4;
+	int rect_thickness = Gui::Util::textWidth(slider->fontMetrics(), "m") / 4;
 
 	if(!is_horizontal){
 		long_side = slider->height();

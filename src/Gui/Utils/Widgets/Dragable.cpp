@@ -178,7 +178,7 @@ QDrag* Dragable::moveDrag(const QPoint& p)
 
 	for(const QString& str : Algorithm::AsConst(strings))
 	{
-		pm_width = std::max( pm_width, Gui::Util::textWidget(fm, str) );
+		pm_width = std::max( pm_width, Gui::Util::textWidth(fm, str) );
 	}
 
 	pm_width += logo_width + 22;

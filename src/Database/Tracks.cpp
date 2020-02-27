@@ -754,7 +754,17 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, Albu
 		albumArtistId = artistId;
 	}
 
-	auto current_time = Util::currentDateToInt();
+	uint64_t currentTime = Util::currentDateToInt();
+	uint64_t modifiedTime = md.modifiedDate();
+	uint64_t createdTime = md.createdDate();
+
+	if(!md.createdDateTime().isValid()){
+		createdTime = currentTime;
+	}
+
+	if(!md.modifiedDateTime().isValid()){
+		modifiedTime = currentTime;
+	}
 
 	QString cissearch = ::Library::Utils::convertSearchstring(md.title(), searchMode());
 	QString fileCissearch = ::Library::Utils::convertSearchstring(md.filepath(), searchMode());
@@ -777,8 +787,8 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, Albu
 		{"comment",			Util::convertNotNull(md.comment())},
 		{"cissearch",		Util::convertNotNull(cissearch)},
 		{"filecissearch",	Util::convertNotNull(fileCissearch)},
-		{"createdate",		QVariant::fromValue(current_time)},
-		{"modifydate",		QVariant::fromValue(current_time)},
+		{"createdate",		QVariant::fromValue(createdTime)},
+		{"modifydate",		QVariant::fromValue(modifiedTime)},
 		{"libraryID",		md.libraryId()}
 	};
 

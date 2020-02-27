@@ -61,7 +61,7 @@ namespace SC
 
 			::Library::SearchBar* leSearch() const override;
 
-			void showEvent(QShowEvent *e) override;
+			void showEvent(QShowEvent* e) override;
 	};
 }
 #endif // GUI_SOUNDCLOUDLIBRARY_H

@@ -8,7 +8,7 @@ struct HistoryContainer::Private
 };
 
 HistoryContainer::HistoryContainer(QObject* parent) :
-	Library::ContainerImpl(parent)
+	Library::Container(parent)
 {
 	m = Pimpl::make<Private>();
 }

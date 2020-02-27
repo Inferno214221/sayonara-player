@@ -93,7 +93,7 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, bool sil
 {
 	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, silent, this);
 
-	connect(m->alternativeLookup, &AlternativeLookup::sig_coverfetchers_changed, this, &GUI_AlternativeCovers::reloadCombobox);
+	connect(m->alternativeLookup, &AlternativeLookup::sigCoverfetchersChanged, this, &GUI_AlternativeCovers::reloadCombobox);
 }
 
 
@@ -123,14 +123,14 @@ void GUI_AlternativeCovers::initUi()
 
 		{ // add preference button
 			auto* cpa = new Gui::CoverPreferenceAction(this);
-			QPushButton* pref_button = cpa->createButton(this);
-			pref_button->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
-			ui->layout_server->addWidget(pref_button);
+			QPushButton* prefButton = cpa->createButton(this);
+			prefButton->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
+			ui->layout_server->addWidget(prefButton);
 		}
 
 		ui->cb_autostart->setChecked(GetSetting(Set::Cover_StartSearch));
 
-		bool is_silent = m->alternativeLookup->is_silent();
+		bool is_silent = m->alternativeLookup->isSilent();
 		ui->cb_save_to_library->setChecked(GetSetting(Set::Cover_SaveToLibrary) && !is_silent);
 		ui->cb_save_to_library->setEnabled(!is_silent);
 
@@ -146,7 +146,7 @@ void GUI_AlternativeCovers::initUi()
 		connect(ui->rb_auto_search, &QRadioButton::toggled, this, &GUI_AlternativeCovers::rbAutosearchToggled);
 		connect(ui->rb_text_search, &QRadioButton::toggled, this, &GUI_AlternativeCovers::rbTextsearchToggled);
 
-		connect(m->alternativeLookup, &AlternativeLookup::sig_cover_changed, this, &GUI_AlternativeCovers::sigCoverChanged);
+		connect(m->alternativeLookup, &AlternativeLookup::sigCoverChanged, this, &GUI_AlternativeCovers::sigCoverChanged);
 		connect(m->alternativeLookup, &AlternativeLookup::sigCoverFound, this, &GUI_AlternativeCovers::coverFound);
 		connect(m->alternativeLookup, &AlternativeLookup::sigFinished, this, &GUI_AlternativeCovers::coverLookupFinished);
 		connect(m->alternativeLookup, &AlternativeLookup::sigStarted, this, &GUI_AlternativeCovers::coverLookupStarted);
@@ -179,15 +179,15 @@ void GUI_AlternativeCovers::start()
 
 	if(ui->rb_text_search->isChecked())
 	{
-		QString search_term = ui->le_search->text();
+		QString searchTerm = ui->le_search->text();
 		if(ui->combo_search_fetchers->currentIndex() > 0)
 		{
-			QString cover_fetcher_identifier = ui->combo_search_fetchers->currentText();
-			m->alternativeLookup->start_text_search(search_term, cover_fetcher_identifier);
+			QString coverFetcherIdentifier = ui->combo_search_fetchers->currentText();
+			m->alternativeLookup->startTextSearch(searchTerm, coverFetcherIdentifier);
 		}
 
 		else {
-			m->alternativeLookup->start_text_search(search_term);
+			m->alternativeLookup->startTextSearch(searchTerm);
 		}
 	}
 
@@ -230,7 +230,7 @@ void GUI_AlternativeCovers::applyClicked()
 
 void GUI_AlternativeCovers::searchClicked()
 {
-	if( m->alternativeLookup->is_running() ) {
+	if( m->alternativeLookup->isRunning() ) {
 		m->alternativeLookup->stop();
 		return;
 	}
@@ -252,8 +252,11 @@ void GUI_AlternativeCovers::coverLookupStarted()
 
 void GUI_AlternativeCovers::readyForProgressbar()
 {
-	m->loadingBar->show();
-	m->loadingBar->refresh();
+	if(m->alternativeLookup->isRunning())
+	{
+		m->loadingBar->show();
+		m->loadingBar->refresh();
+	}
 }
 
 void GUI_AlternativeCovers::coverLookupFinished(bool success)
@@ -399,7 +402,7 @@ void GUI_AlternativeCovers::reloadCombobox()
 	ui->combo_search_fetchers->clear();
 	ui->combo_search_fetchers->addItem(Lang::get(Lang::All));
 
-	const QStringList coverfetchers = m->alternativeLookup->active_coverfetchers(search_mode);
+	const QStringList coverfetchers = m->alternativeLookup->activeCoverfetchers(search_mode);
 	for(const QString& coverfetcher : coverfetchers)
 	{
 		ui->combo_search_fetchers->addItem(coverfetcher);
@@ -437,8 +440,8 @@ void GUI_AlternativeCovers::languageChanged()
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 	ui->btn_stop_search->setText(Lang::get(Lang::Stop));
 
-	ui->btn_search->setVisible(!m->alternativeLookup->is_running());
-	ui->btn_stop_search->setVisible(m->alternativeLookup->is_running());
+	ui->btn_search->setVisible(!m->alternativeLookup->isRunning());
+	ui->btn_stop_search->setVisible(m->alternativeLookup->isRunning());
 
 	Cover::Location cl = m->alternativeLookup->coverLocation();
 	QString text = tr("Also save cover to %1").arg(cl.localPathDir());
@@ -457,7 +460,7 @@ void GUI_AlternativeCovers::showEvent(QShowEvent* e)
 }
 
 
-void GUI_AlternativeCovers::resizeEvent(QResizeEvent *e)
+void GUI_AlternativeCovers::resizeEvent(QResizeEvent* e)
 {
 	Gui::Dialog::resizeEvent(e);
 

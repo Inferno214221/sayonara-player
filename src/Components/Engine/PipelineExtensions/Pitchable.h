@@ -33,7 +33,7 @@ namespace PipelineExtensions
 	class Pitchable
 	{
 		public:
-			Pitchable() = default;
+			Pitchable();
 			virtual ~Pitchable();
 
 			void setSpeed(float speed, double pitch, bool preservePitch);

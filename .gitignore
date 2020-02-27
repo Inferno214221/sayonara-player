@@ -9,4 +9,5 @@ CMakeLists.txt.*
 doxygen/html*
 *.swp
 *.orig
+*.autosave
 

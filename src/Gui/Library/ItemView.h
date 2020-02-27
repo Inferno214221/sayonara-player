@@ -84,6 +84,12 @@ namespace Library
 
 			void setItemModel(ItemModel* model);
 
+			void showClearButton(bool visible);
+			void useClearButton(bool yesno);
+
+			void resizeRowsToContents();
+			void resizeRowsToContents(int first_row, int count);
+
 			virtual Library::ContextMenu::Entries contextMenuEntries() const;
 
 			/** Dragable **/
@@ -92,23 +98,16 @@ namespace Library
 
 			bool isValidDragPosition(const QPoint &p) const override;
 
-			void showClearButton(bool visible);
-			void useClearButton(bool yesno);
-
-			void resizeRowsToContents();
-			void resizeRowsToContents(int first_row, int count);
-
 		protected:
 			// Events implemented in LibraryViewEvents.cpp
 			virtual void mousePressEvent(QMouseEvent* event) override;
 			virtual void contextMenuEvent(QContextMenuEvent* event) override;
 
-			virtual void dragEnterEvent(QDragEnterEvent *event) override;
-			virtual void dragMoveEvent(QDragMoveEvent *event) override;
+			virtual void dragEnterEvent(QDragEnterEvent* event) override;
+			virtual void dragMoveEvent(QDragMoveEvent* event) override;
 			virtual void dropEvent(QDropEvent* event) override;
 			virtual void changeEvent(QEvent* event) override;
-			virtual void keyPressEvent(QKeyEvent* event) override;
-			virtual void resizeEvent(QResizeEvent *event) override;
+			virtual void resizeEvent(QResizeEvent* event) override;
 
 			virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
@@ -147,7 +146,6 @@ namespace Library
 			virtual void appendClicked();
 			virtual void refreshClicked();
 			virtual void reloadClicked();
-			virtual void coverViewToggled();
 			virtual void albumArtistsToggled();
 			virtual void filterExtensionsTriggered(const QString& extension, bool b);
 			virtual void fill();

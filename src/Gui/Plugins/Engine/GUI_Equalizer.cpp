@@ -46,7 +46,6 @@
 namespace Algorithm=Util::Algorithm;
 
 using Gui::ContextMenu;
-using Gui::MenuButton;
 using Gui::MenuToolButton;
 using Gui::EqualizerSlider;
 

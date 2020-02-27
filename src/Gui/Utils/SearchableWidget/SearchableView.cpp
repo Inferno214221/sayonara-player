@@ -21,6 +21,7 @@
 #include "SearchableView.h"
 #include "SearchableModel.h"
 #include "MiniSearcher.h"
+
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Set.h"
@@ -53,11 +54,11 @@ MiniSearcherViewConnector::~MiniSearcherViewConnector() = default;
 void MiniSearcherViewConnector::init()
 {
 	m->miniSearcher = new Gui::MiniSearcher(m->svi);
-	m->miniSearcher->set_extra_triggers(m->triggerMap);
+	m->miniSearcher->setExtraTriggers(m->triggerMap);
 
-	connect(m->miniSearcher, &Gui::MiniSearcher::sig_text_changed, this, &MiniSearcherViewConnector::lineEditChanged);
-	connect(m->miniSearcher, &Gui::MiniSearcher::sig_find_next_row, this, &MiniSearcherViewConnector::selectNext);
-	connect(m->miniSearcher, &Gui::MiniSearcher::sig_find_prev_row, this, &MiniSearcherViewConnector::selectPrevious);
+	connect(m->miniSearcher, &Gui::MiniSearcher::sigTextChanged, this, &MiniSearcherViewConnector::lineEditChanged);
+	connect(m->miniSearcher, &Gui::MiniSearcher::sigFindNextRow, this, &MiniSearcherViewConnector::selectNext);
+	connect(m->miniSearcher, &Gui::MiniSearcher::sigFindPrevRow, this, &MiniSearcherViewConnector::selectPrevious);
 }
 
 bool MiniSearcherViewConnector::isActive() const
@@ -70,15 +71,14 @@ void MiniSearcherViewConnector::setExtraTriggers(const QMap<QChar, QString>& map
 	m->triggerMap = map;
 
 	if(m->miniSearcher){
-		m->miniSearcher->set_extra_triggers(map);
+		m->miniSearcher->setExtraTriggers(map);
 	}
 }
 
-void MiniSearcherViewConnector::handleKeyPress(QKeyEvent* e)
+bool MiniSearcherViewConnector::handleKeyPress(QKeyEvent* e)
 {
-	m->miniSearcher->handle_key_press(e);
+	return m->miniSearcher->handleKeyPress(e);
 }
-
 
 void MiniSearcherViewConnector::lineEditChanged(const QString& str)
 {
@@ -86,7 +86,7 @@ void MiniSearcherViewConnector::lineEditChanged(const QString& str)
 	m->currentSearchstring = Library::Utils::convertSearchstring(str, search_mode, m->triggerMap.keys());
 
 	int results = m->svi->setSearchstring(m->currentSearchstring);
-	m->miniSearcher->set_number_results(results);
+	m->miniSearcher->setNumberResults(results);
 }
 
 void MiniSearcherViewConnector::selectNext()
@@ -273,17 +273,17 @@ void SearchableViewInterface::selectMatch(const QString& str, SearchDirection di
 	}
 }
 
-void SearchableViewInterface::handleKeyPress(QKeyEvent* e)
+bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)
 {
-	SelectionViewInterface::handleKeyPress(e);
-	if(e->isAccepted()) {
-		return;
+	bool b = SelectionViewInterface::handleKeyPress(e);
+	if(b) {
+		return true;
 	}
 
-	if(!m->searchModel){
-		return;
+	if(!m->searchModel) {
+		return false;
 	}
 
 	m->minisearcher->init();
-	m->minisearcher->handleKeyPress(e);
+	return m->minisearcher->handleKeyPress(e);
 }

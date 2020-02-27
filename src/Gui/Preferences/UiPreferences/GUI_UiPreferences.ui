@@ -61,7 +61,7 @@
        <item row="3" column="0">
         <widget class="QPushButton" name="btn_editCss">
          <property name="text">
-          <string>Edit css</string>
+          <string>Edit style sheet</string>
          </property>
         </widget>
        </item>

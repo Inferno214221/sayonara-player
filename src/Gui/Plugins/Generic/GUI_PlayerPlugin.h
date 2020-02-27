@@ -54,7 +54,7 @@ private:
 
 protected:
 	void languageChanged() override;
-	void closeEvent(QCloseEvent *e) override;
+	void closeEvent(QCloseEvent* e) override;
 };
 
 #endif // GUI_PLAYERPLUGIN_H

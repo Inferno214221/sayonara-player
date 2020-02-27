@@ -27,19 +27,22 @@
  */
 
 #include "GUI_LocalLibrary.h"
+#include "GUI_ImportDialog.h"
+
+#include "Gui/Library/Utils/GUI_DeleteDialog.h"
 #include "Gui/Library/ui_GUI_LocalLibrary.h"
 
-#include "Gui/Library/GUI_CoverView.h"
+#include "Gui/Library/CoverView/GUI_CoverView.h"
 #include "Gui/Library/Utils/DirChooserDialog.h"
 #include "Gui/Library/Utils/GUI_ReloadLibraryDialog.h"
 #include "Gui/Library/Utils/GUI_LibraryInfoBox.h"
 #include "Gui/Library/Utils/LocalLibraryMenu.h"
 
-#include "Gui/ImportDialog/GUI_ImportDialog.h"
-#include "Gui/Utils/Library/GUI_DeleteDialog.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -70,12 +73,13 @@ enum GenreWidgetIndex
 enum AlbumViewIndex
 {
 	ArtistAlbumTableView=0,
-	AlbumCoverView=1
+	AlbumCoverView=1,
+	DirectoryView=2
 };
 
 enum ReloadWidgetIndex
 {
-	StandardView=0,
+	TableView=0,
 	ReloadView=1
 };
 
@@ -84,12 +88,12 @@ using namespace Library;
 struct GUI_LocalLibrary::Private
 {
 	LocalLibrary*			library = nullptr;
-	LocalLibraryMenu*		library_menu = nullptr;
+	LocalLibraryMenu*		libraryMenu = nullptr;
 
 	Private(LibraryId id, GUI_LocalLibrary* parent)
 	{
 		library = Manager::instance()->libraryInstance(id);
-		library_menu = new LocalLibraryMenu(library->name(), library->path(), parent);
+		libraryMenu = new LocalLibraryMenu(library->name(), library->path(), parent);
 	}
 };
 
@@ -100,7 +104,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	m = Pimpl::make<Private>(id, this);
 
 	setupParent(this, &ui);
-
 	this->setFocusProxy(ui->le_search);
 
 	connect(m->library, &LocalLibrary::sigReloadingLibrary, this, &GUI_LocalLibrary::progressChanged);
@@ -118,12 +121,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(ui->lv_genres, &GenreView::sigInvalidGenreSelected, this, &GUI_LocalLibrary::invalidGenreSelected);
 	connect(ui->lv_genres, &GenreView::sigProgress, this, &GUI_LocalLibrary::progressChanged);
 
-	connect(m->library_menu, &LocalLibraryMenu::sigPathChanged, m->library, &LocalLibrary::setLibraryPath);
-	connect(m->library_menu, &LocalLibraryMenu::sigNameChanged, m->library, &LocalLibrary::setLibraryName);
-	connect(m->library_menu, &LocalLibraryMenu::sigImportFile, this, &GUI_LocalLibrary::importFilesRequested);
-	connect(m->library_menu, &LocalLibraryMenu::sigImportFolder, this, &GUI_LocalLibrary::importDirsRequested);
-	connect(m->library_menu, &LocalLibraryMenu::sigInfo, this, &GUI_LocalLibrary::showInfoBox);
-	connect(m->library_menu, &LocalLibraryMenu::sigReloadLibrary, this, &GUI_LocalLibrary::reloadLibraryRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigPathChanged, m->library, &LocalLibrary::setLibraryPath);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigNameChanged, m->library, &LocalLibrary::setLibraryName);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigImportFile, this, &GUI_LocalLibrary::importFilesRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigImportFolder, this, &GUI_LocalLibrary::importDirsRequested);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigInfo, this, &GUI_LocalLibrary::showInfoBox);
+	connect(m->libraryMenu, &LocalLibraryMenu::sigReloadLibrary, this, &GUI_LocalLibrary::reloadLibraryRequested);
 
 	connect(ui->btn_scanForFiles, &QPushButton::clicked, this, &GUI_LocalLibrary::reloadLibraryDeepRequested);
 	connect(ui->btn_importDirectories, &QPushButton::clicked, this, &GUI_LocalLibrary::importDirsRequested);
@@ -138,33 +141,23 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 
 	ui->extension_bar->init(m->library);
 	ui->lv_genres->init(m->library);
+	ui->directory_view->setCurrentLibrary(m->library->id());
 
-	ListenSetting(Set::Lib_ShowAlbumCovers, GUI_LocalLibrary::switchAlbumView);
+	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
 
 	m->library->load();	
+
+	auto* sch = ShortcutHandler::instance();
+	Shortcut sc = sch->shortcut(ShortcutIdentifier::CoverView);
+	sc.connect(this, [this]() {
+		this->selectNextViewType();
+	});
 }
 
 GUI_LocalLibrary::~GUI_LocalLibrary()
 {
 	delete ui; ui = nullptr;
-}
-
-void GUI_LocalLibrary::languageChanged()
-{
-	ui->retranslateUi(this);
-	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
-	ui->btn_scanForFiles->setText(Lang::get(Lang::ScanForFiles));
-	ui->btn_importDirectories->setText(Lang::get(Lang::ImportDir));
-
-	GUI_AbstractLibrary::languageChanged();
-}
-
-void GUI_LocalLibrary::skinChanged()
-{
-	GUI_AbstractLibrary::skinChanged();
-
-	checkViewState();
 }
 
 void GUI_LocalLibrary::checkViewState()
@@ -185,8 +178,8 @@ void GUI_LocalLibrary::checkReloadStatus()
 	bool isReloading = m->library->isReloading();
 	bool isLibraryEmpty = m->library->isEmpty();
 
-	ReloadWidgetIndex index = (isLibraryEmpty == false) ? ReloadWidgetIndex::StandardView : ReloadWidgetIndex::ReloadView;
-	bool inLibraryState = (index == ReloadWidgetIndex::StandardView);
+	ReloadWidgetIndex index = (isLibraryEmpty == false) ? ReloadWidgetIndex::TableView : ReloadWidgetIndex::ReloadView;
+	bool inLibraryState = (index == ReloadWidgetIndex::TableView);
 
 	ui->sw_reload->setCurrentIndex( int(index) );
 
@@ -198,7 +191,7 @@ void GUI_LocalLibrary::checkReloadStatus()
 	ui->btn_scanForFiles->setVisible(!inLibraryState);
 	ui->btn_importDirectories->setVisible(!inLibraryState);
 
-	m->library_menu->setLibraryEmpty(isLibraryEmpty);
+	m->libraryMenu->setLibraryEmpty(isLibraryEmpty);
 }
 
 void GUI_LocalLibrary::checkFileExtensionBar()
@@ -210,7 +203,6 @@ void GUI_LocalLibrary::checkFileExtensionBar()
 		ui->extension_bar->hasExtensions()
 	);
 }
-
 
 void GUI_LocalLibrary::tracksLoaded()
 {
@@ -321,14 +313,14 @@ void GUI_LocalLibrary::reloadLibraryAccepted(ReloadQuality quality)
 
 void GUI_LocalLibrary::reloadLibrary(ReloadQuality quality)
 {
-	m->library_menu->setLibraryBusy(true);
+	m->libraryMenu->setLibraryBusy(true);
 	m->library->reloadLibrary(false, quality);
 }
 
 
 void GUI_LocalLibrary::reloadFinished()
 {
-	m->library_menu->setLibraryBusy(false);
+	m->libraryMenu->setLibraryBusy(false);
 
 	checkViewState();
 }
@@ -373,7 +365,7 @@ void GUI_LocalLibrary::nameChanged(LibraryId id)
 	Info info = Manager::instance()->libraryInfo(id);
 	if(info.valid())
 	{
-		m->library_menu->refreshName(info.name());
+		m->libraryMenu->refreshName(info.name());
 		ui->lab_libraryName->setText(info.name());
 	}
 }
@@ -388,7 +380,7 @@ void GUI_LocalLibrary::pathChanged(LibraryId id)
 	Info info = Manager::instance()->libraryInfo(id);
 	if(info.valid())
 	{
-		m->library_menu->refreshPath(info.path());
+		m->libraryMenu->refreshPath(info.path());
 
 		if(this->isVisible())
 		{
@@ -435,31 +427,48 @@ void GUI_LocalLibrary::splitterGenreMoved(int pos, int idx)
 	SetSetting(Set::Lib_SplitterStateGenre, arr);
 }
 
-
-void GUI_LocalLibrary::switchAlbumView()
+void GUI_LocalLibrary::switchViewType()
 {
-	bool show_covers = GetSetting(Set::Lib_ShowAlbumCovers);
-	if(!show_covers)
+	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+	switch(viewType)
 	{
-		ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
+		case Library::ViewType::CoverView:
+			if(!ui->cover_view->isInitialized())
+			{
+				ui->cover_view->init(m->library);
+				connect(ui->cover_view, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
+				connect(ui->cover_view, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+			}
+
+			if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
+			{
+				m->library->selectedArtistsChanged(IndexSet());
+			}
+
+			//ui->sw_viewType->setFocusProxy(ui->cover_view);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
+			break;
+
+		case Library::ViewType::FileView:
+			//ui->sw_viewType->setFocusProxy(ui->directory_view);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::DirectoryView);
+			break;
+
+		case Library::ViewType::Standard:
+		default:
+			//ui->sw_viewType->setFocusProxy(ui->tv_artists);
+			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
+			break;
 	}
 
-	else
-	{
-		if(!ui->cover_view->isInitialized())
-		{
-			ui->cover_view->init(m->library);
-			connect(ui->cover_view, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
-			connect(ui->cover_view, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
-		}
+	ui->sw_viewType->setFocus();
+}
 
-		if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
-		{
-			m->library->selectedArtistsChanged(IndexSet());
-		}
-
-		ui->sw_albumCovers->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
-	}
+void GUI_LocalLibrary::selectNextViewType()
+{
+	int vt = int(GetSetting(Set::Lib_ViewType));
+	vt = (vt + 1) % 3;
+	SetSetting(Set::Lib_ViewType, ViewType(vt));
 }
 
 bool GUI_LocalLibrary::hasSelections() const
@@ -472,6 +481,12 @@ bool GUI_LocalLibrary::hasSelections() const
 QList<Filter::Mode> GUI_LocalLibrary::searchOptions() const
 {
 	return { Filter::Fulltext, Filter::Filename, Filter::Genre };
+}
+
+void GUI_LocalLibrary::queryLibrary()
+{
+	GUI_AbstractLibrary::queryLibrary();
+	ui->directory_view->setFilterTerm(m->library->filter().filtertext(false).join(""));
 }
 
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
@@ -499,12 +514,29 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 	checkViewState();
 }
 
+void GUI_LocalLibrary::languageChanged()
+{
+	ui->retranslateUi(this);
+	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
+	ui->btn_scanForFiles->setText(Lang::get(Lang::ScanForFiles));
+	ui->btn_importDirectories->setText(Lang::get(Lang::ImportDir));
+
+	GUI_AbstractLibrary::languageChanged();
+}
+
+void GUI_LocalLibrary::skinChanged()
+{
+	GUI_AbstractLibrary::skinChanged();
+
+	checkViewState();
+}
+
 // GUI_AbstractLibrary
-TableView* GUI_LocalLibrary::lvArtist() const { return ui->tv_artists; }
-TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tv_albums; }
-TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
-SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
+Library::TableView* GUI_LocalLibrary::lvArtist() const { return ui->tv_artists; }
+Library::TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tv_albums; }
+Library::TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
+Library::SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
 
 // LocalLibraryContainer
-QMenu* GUI_LocalLibrary::menu() const {	return m->library_menu; }
+QMenu* GUI_LocalLibrary::menu() const {	return m->libraryMenu; }
 QFrame* GUI_LocalLibrary::headerFrame() const { return ui->header_frame; }

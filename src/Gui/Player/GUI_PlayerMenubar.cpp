@@ -28,7 +28,7 @@
 #include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
-#include "Interfaces/Library/LibraryContainer.h"
+#include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
@@ -56,9 +56,11 @@ struct Menubar::Private
 {
 	QMenu*			menuFile=nullptr;
 	QMenu*			menuView=nullptr;
+	QMenu*			menuPlugins=nullptr;
 	QMenu*			menuHelp=nullptr;
 
 	QAction*		menuFileAction=nullptr;
+	QAction*		menuPluginsAction=nullptr;
 	QAction*		menuViewAction=nullptr;
 	QAction*		menuHelpAction=nullptr;
 
@@ -73,23 +75,23 @@ struct Menubar::Private
 
 	// view
 	QAction*		actionViewLibrary=nullptr;
-	QAction*		sepAfterViewLibrary=nullptr;
-	QList<QAction*> actionsPlugins;
-	QAction*		sepAfterPlugins=nullptr;
-	QAction*		actionLogger=nullptr;
 	QAction*		actionDark=nullptr;
 	QAction*		actionBigCover=nullptr;
 	QAction*		actionFullscreen=nullptr;
 
+	//plugins
+	QList<QAction*> actionsPlugins;
+
 	// help
 	QAction*		actionHelp=nullptr;
 	QAction*		actionAbout=nullptr;
+	QAction*		actionLogger=nullptr;
 
 	QMenu*			currentLibraryMenu=nullptr;
 	QAction*		currentLibraryMenuAction=nullptr;
 
 	QMessageBox*	aboutBox=nullptr;
-	Library::Container* currentLibrary=nullptr;
+	Library::AbstractContainer* currentLibrary=nullptr;
 
 	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
 
@@ -97,9 +99,11 @@ struct Menubar::Private
 	{
 		menuFile = new QMenu(menubar);
 		menuView = new QMenu(menubar);
+		menuPlugins = new QMenu(menubar);
 		menuHelp = new QMenu(menubar);
 
 		menuFileAction = menubar->insertMenu(nullptr, menuFile);
+		menuPluginsAction = menubar->insertMenu(nullptr, menuPlugins);
 		menuViewAction = menubar->insertMenu(nullptr, menuView);
 		menuHelpAction = menubar->insertMenu(nullptr, menuHelp);
 
@@ -119,9 +123,7 @@ struct Menubar::Private
 		// view
 		actionViewLibrary = new QAction(menuView);
 		actionViewLibrary->setCheckable(true);
-		sepAfterViewLibrary = menuView->addSeparator();
-		sepAfterPlugins = menuView->addSeparator();
-		actionLogger = new QAction(menuView);
+
 		actionDark = new QAction(menuView);
 		actionDark->setCheckable(true);
 		actionBigCover = new QAction(menuView);
@@ -132,9 +134,6 @@ struct Menubar::Private
 		menuView->insertActions(nullptr,
 		{
 			actionViewLibrary,
-			sepAfterViewLibrary,
-			sepAfterPlugins,
-			actionLogger,
 			actionBigCover,
 			actionDark,
 			actionFullscreen
@@ -143,10 +142,11 @@ struct Menubar::Private
 		//help
 		actionHelp = new QAction(menuHelp);
 		actionAbout = new QAction(menuHelp);
+		actionLogger = new QAction(menuHelp);
 
 		menuHelp->insertActions(nullptr,
 		{
-			actionHelp, actionAbout
+			actionLogger, actionHelp, menuHelp->addSeparator(), actionAbout
 		});
 	}
 };
@@ -188,7 +188,7 @@ void Menubar::insertPreferenceAction(QAction* action)
 	m->menuFile->insertAction(m->sepAfterPreferences, action);
 }
 
-QAction* Menubar::changeCurrentLibrary(Library::Container* library)
+QAction* Menubar::changeCurrentLibrary(Library::AbstractContainer* library)
 {
 	showLibraryAction(false);
 	m->currentLibrary = library;
@@ -204,21 +204,21 @@ QAction* Menubar::changeCurrentLibrary(Library::Container* library)
 		return nullptr;
 	}
 
-	QMenu* new_library_menu = library->menu();
+	QMenu* newLibraryMenu = library->menu();
 
 	if(m->currentLibraryMenuAction) {
 		this->removeAction(m->currentLibraryMenuAction);
 	}
 
-	m->currentLibraryMenu = new_library_menu;
+	m->currentLibraryMenu = newLibraryMenu;
 	m->currentLibraryMenuAction = nullptr;
 
-	if(!new_library_menu) {
+	if(!newLibraryMenu) {
 		showLibraryAction(false);
 		return nullptr;
 	}
 
-	m->currentLibraryMenuAction = this->insertMenu(m->menuHelpAction, new_library_menu);
+	m->currentLibraryMenuAction = this->insertMenu(m->menuHelpAction, newLibraryMenu);
 
 	if(library->isLocal())
 	{
@@ -265,11 +265,12 @@ void Menubar::pluginAdded(PlayerPlugin::Base* plugin)
 	QList<PlayerPlugin::Base*> lst = pph->allPlugins();
 
 	QAction* action = plugin->pluginAction();
+
 	QKeySequence ks("Shift+F" + QString::number(lst.size()));
 	action->setShortcut(ks);
 	action->setData(plugin->name());
 
-	m->menuView->insertAction(m->sepAfterPlugins, action);
+	m->menuPlugins->addAction(action);
 }
 
 void Menubar::initConnections()
@@ -286,6 +287,10 @@ void Menubar::initConnections()
 	connect(m->actionBigCover, &QAction::toggled, this, &Menubar::bigCoverToggled);
 	connect(m->actionFullscreen, &QAction::toggled, this, &Menubar::showFullscreenToggled);
 	connect(m->actionLogger, &QAction::triggered, this, &Menubar::sigLoggerClicked);
+
+//	connect(m->actionStandardView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
+//	connect(m->actionCoverView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
+//	connect(m->actionDirectoryView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
 
 	// about
 	connect(m->actionAbout, &QAction::triggered, this, &Menubar::aboutClicked);
@@ -308,6 +313,8 @@ void Menubar::initConnections()
 
 	auto* pph = PlayerPlugin::Handler::instance();
 	connect(pph, &PlayerPlugin::Handler::sigPluginAdded, this, &Menubar::pluginAdded);
+
+	ListenSetting(Set::Lib_ViewType, Menubar::libraryViewTypeChanged);
 }
 
 void Menubar::languageChanged()
@@ -315,6 +322,7 @@ void Menubar::languageChanged()
 	m->menuFile->setTitle(Lang::get(Lang::File));
 	m->menuView->setTitle(tr("View"));
 	m->menuHelp->setTitle(tr("Help"));
+	m->menuPlugins->setTitle(tr("Plugins"));
 
 	m->actionOpenFile->setText(Lang::get(Lang::OpenFile).triplePt());
 	m->actionOpenDir->setText(Lang::get(Lang::OpenDir).triplePt());
@@ -323,6 +331,9 @@ void Menubar::languageChanged()
 	m->actionClose->setText(Lang::get(Lang::Quit));
 
 	m->actionViewLibrary->setText(Lang::get(Lang::ShowLibrary));
+//	m->actionStandardView->setText(tr("Standard view"));
+//	m->actionCoverView->setText(tr("Cover view"));
+//	m->actionDirectoryView->setText(tr("Directory view"));
 	m->actionLogger->setText(Lang::get(Lang::Logger));
 	m->actionDark->setText(Lang::get(Lang::DarkMode));
 	m->actionBigCover->setText(tr("Show large cover"));
@@ -432,6 +443,11 @@ void Menubar::bigCoverToggled(bool b)
 void Menubar::showLibraryToggled(bool b)
 {
 	m->actionViewLibrary->setChecked(b);
+
+//	m->actionStandardView->setEnabled(b);
+//	m->actionCoverView->setEnabled(b);
+//	m->actionDirectoryView->setEnabled(b);
+
 	SetSetting(Set::Lib_Show, b);
 }
 
@@ -482,7 +498,7 @@ void Menubar::aboutClicked()
 
 		m->aboutBox->setInformativeText( QStringList
 		({
-			tr("Written by Michael Lugmair (Lucio Carreras)"),
+			tr("Written by %1").arg("Michael Lugmair (Lucio Carreras)"),
 			"",
 			tr("License") + ": GPLv3",
 			"Copyright 2011-" + QString::number(QDateTime::currentDateTime().date().year()),
@@ -505,4 +521,29 @@ void Menubar::shortcutChanged(ShortcutIdentifier identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	Shortcut sc = sch->shortcut(ShortcutIdentifier::ViewLibrary);
 	m->actionViewLibrary->setShortcut(sc.sequence());
+}
+
+void Menubar::libraryViewTypeToggled(bool b)
+{
+	Q_UNUSED(b)
+
+//	Library::ViewType viewType = Library::ViewType::Standard;
+//	if(m->actionCoverView->isChecked()) {
+//		viewType = Library::ViewType::CoverView;
+//	}
+
+//	else if(m->actionDirectoryView->isChecked()) {
+//		viewType = Library::ViewType::FileView;
+//	}
+
+//	SetSetting(Set::Lib_ViewType, viewType);
+}
+
+void Menubar::libraryViewTypeChanged()
+{
+//	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+
+//	m->actionStandardView->setChecked(viewType == Library::ViewType::Standard);
+//	m->actionCoverView->setChecked(viewType == Library::ViewType::CoverView);
+//	m->actionDirectoryView->setChecked(viewType == Library::ViewType::FileView);
 }

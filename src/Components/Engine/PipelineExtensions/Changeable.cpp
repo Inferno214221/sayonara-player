@@ -67,6 +67,7 @@ struct ProbeData
 	}
 };
 
+Changeable::Changeable() = default;
 Changeable::~Changeable() = default;
 
 static GstPadProbeReturn

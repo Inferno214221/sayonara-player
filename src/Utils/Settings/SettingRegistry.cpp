@@ -27,6 +27,7 @@
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/LibraryInfo.h"
+#include "Utils/Library/LibraryNamespaces.h"
 
 #include "Utils/RawShortcutMap.h"
 
@@ -116,6 +117,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_AutoUpdate>( "lib_auto_update", false);
 	registerSetting<Set::Lib_ShowAlbumArtists>( "lib_show_album_artists", true);
 	registerSetting<Set::Lib_ShowAlbumCovers>( "lib_show_album_covers", false);
+	registerSetting<Set::Lib_ViewType>("lib_view_style", ::Library::ViewType::Standard);
 	registerSetting<Set::Lib_CoverZoom>( "lib_cover_zoom", 100);
 	registerSetting<Set::Lib_CoverShowUtils>( "lib_cover_show_utils", false);
 	registerSetting<Set::Lib_CoverShowArtist>("lib_cover_show_artist", true);

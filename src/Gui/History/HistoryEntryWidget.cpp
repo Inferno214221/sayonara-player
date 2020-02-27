@@ -70,10 +70,10 @@ HistoryEntryWidget::~HistoryEntryWidget() = default;
 void HistoryEntryWidget::languageChanged()
 {
 	m->dateLabel->setText(Util::intToDate(m->timecode).date().toString());
-	m->trackLabel->setText(tr("%n track(s)", "", m->tableview->rows()));
+	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
 }
 
 void HistoryEntryWidget::rowcount_changed()
 {
-	m->trackLabel->setText(tr("%n track(s)", "", m->tableview->rows()));
+	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
 }

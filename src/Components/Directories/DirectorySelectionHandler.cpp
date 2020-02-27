@@ -23,15 +23,15 @@
 struct DirectorySelectionHandler::Private
 {
 public:
-	LocalLibrary*			generic_library=nullptr;
+	LocalLibrary*			genericLibrary=nullptr;
 
-	int						current_library_index;
+	int						currentLibraryIndex;
 	QList<Library::Info>	libraries;
 
 	Private()
 	{
 		libraries = Library::Manager::instance()->allLibraries();
-		current_library_index = (libraries.count() > 0) ? 0 : -1;
+		currentLibraryIndex = (libraries.count() > 0) ? 0 : -1;
 	}
 };
 
@@ -40,20 +40,20 @@ DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	auto* library_manager = Library::Manager::instance();
-	connect(library_manager, &Library::Manager::sigAdded, this, [this](auto ignore)
+	auto* libraryManager = Library::Manager::instance();
+	connect(libraryManager, &Library::Manager::sigAdded, this, [this](auto ignore)
 	{
 		Q_UNUSED(ignore)
 		librariesChanged();
 	});
 
-	connect(library_manager, &Library::Manager::sigRemoved, this, [this](auto ignore)
+	connect(libraryManager, &Library::Manager::sigRemoved, this, [this](auto ignore)
 	{
 		Q_UNUSED(ignore)
 		librariesChanged();
 	});
 
-	connect(library_manager, &Library::Manager::sigMoved, this, [this](auto i1, auto i2, auto i3)
+	connect(libraryManager, &Library::Manager::sigMoved, this, [this](auto i1, auto i2, auto i3)
 	{
 		Q_UNUSED(i1)
 		Q_UNUSED(i2)
@@ -61,7 +61,7 @@ DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
 		librariesChanged();
 	});
 
-	connect(library_manager, &Library::Manager::sigRenamed, this, [this](auto ignore)
+	connect(libraryManager, &Library::Manager::sigRenamed, this, [this](auto ignore)
 	{
 		Q_UNUSED(ignore)
 		librariesChanged();
@@ -70,11 +70,11 @@ DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
 
 DirectorySelectionHandler::~DirectorySelectionHandler() = default;
 
-void DirectorySelectionHandler::createPlaylist(const QStringList& paths, bool create_new_playlist)
+void DirectorySelectionHandler::createPlaylist(const QStringList& paths, bool createNewPlaylist)
 {
 	auto* plh = Playlist::Handler::instance();
 
-	if(create_new_playlist) {
+	if(createNewPlaylist) {
 		plh->createPlaylist(paths, plh->requestNewPlaylistName());
 	}
 
@@ -95,9 +95,9 @@ void DirectorySelectionHandler::appendTracks(const QStringList& paths)
 	plh->appendTracks(paths, plh->current_index());
 }
 
-void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool create_new_playlist)
+void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)
 {
-	this->libraryInstance()->prepareTracksForPlaylist(paths, create_new_playlist);
+	this->libraryInstance()->prepareTracksForPlaylist(paths, createNewPlaylist);
 }
 
 void DirectorySelectionHandler::requestImport(LibraryId libraryId, const QStringList& paths, const QString& targetDirectory)
@@ -159,14 +159,14 @@ void DirectorySelectionHandler::librariesChanged()
 		return (info.id() == id);
 	});
 
-	m->current_library_index = index;
+	m->currentLibraryIndex = index;
 
 	emit sigLibrariesChanged();
 }
 
 void DirectorySelectionHandler::setLibraryId(LibraryId lib_id)
 {
-	m->current_library_index = Util::Algorithm::indexOf(m->libraries, [&lib_id](const Library::Info& info){
+	m->currentLibraryIndex = Util::Algorithm::indexOf(m->libraries, [&lib_id](const Library::Info& info){
 		return (info.id() == lib_id);
 	});
 }
@@ -183,12 +183,12 @@ void DirectorySelectionHandler::createNewLibrary(const QString& name, const QStr
 
 Library::Info DirectorySelectionHandler::libraryInfo() const
 {
-	if(!Util::between(m->current_library_index, m->libraries))
+	if(!Util::between(m->currentLibraryIndex, m->libraries))
 	{
 		return Library::Info();
 	}
 
-	return m->libraries[m->current_library_index];
+	return m->libraries[m->currentLibraryIndex];
 }
 
 LocalLibrary* DirectorySelectionHandler::libraryInstance() const
@@ -199,12 +199,12 @@ LocalLibrary* DirectorySelectionHandler::libraryInstance() const
 
 	if(library == nullptr)
 	{
-		if(!m->generic_library){
-			m->generic_library = Library::Manager::instance()->libraryInstance(-1);
+		if(!m->genericLibrary){
+			m->genericLibrary = Library::Manager::instance()->libraryInstance(-1);
 		}
 
 		spLog(Log::Warning, this) << "Invalid library index";
-		return m->generic_library;
+		return m->genericLibrary;
 	}
 
 	return library;

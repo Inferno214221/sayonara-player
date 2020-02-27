@@ -27,6 +27,7 @@
 #ifndef MYCOLUMNHEADER_H_
 #define MYCOLUMNHEADER_H_
 
+#include "ColumnIndex.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
 
@@ -44,46 +45,56 @@ namespace Library
 		Q_OBJECT
 		PIMPL(ColumnHeader)
 
-		public:
-			enum HeaderType
-			{
-				Sharp,
-				Artist,
-				Album,
-				Discnumber,
-				Title,
-				NumTracks,
-				Duration,
-				DurationShort,
-				Year,
-				Rating,
-				Bitrate,
-				Filetype,
-				Filesize
-			};
+		protected:
+			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 
 		public:
-			ColumnHeader(HeaderType type, bool switchable, SortOrder sort_asc, SortOrder sort_desc, int preferred_width, bool stretchable=false);
 			virtual ~ColumnHeader();
 
-			bool stretchable() const;
+			virtual QString title() const=0;
+
+			bool isStretchable() const;
+			bool isSwitchable() const;
 			int defaultSize() const;
 
 			int preferredSize() const;
 			void setPreferredSize(int size);
 
-			SortOrder sortorderAscending() const;
-			SortOrder sortorderDescending() const;
+			SortOrder sortorder(Qt::SortOrder sortOrder) const;
 
-			void retranslate();
+			ColumnIndex::IntegerType columnIndex() const;
+	};
 
-			QString	 title() const;
-			QAction* action();
-			bool isActionChecked() const;
+
+	class ColumnHeaderTrack : public ColumnHeader
+	{
+		Q_OBJECT
+
+		public:
+			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			QString title() const override;
+	};
+
+	class ColumnHeaderAlbum : public ColumnHeader
+	{
+		Q_OBJECT
+
+		public:
+			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			QString title() const override;
+	};
+
+	class ColumnHeaderArtist : public ColumnHeader
+	{
+		Q_OBJECT
+
+		public:
+			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			QString title() const override;
 	};
 
 	using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;
-	using ColumnHeaderList=QList<ColumnHeaderPtr>;
+	using ColumnHeaderList = QList<ColumnHeaderPtr>;
 }
 
 #endif /* MYCOLUMNHEADER_H_ */

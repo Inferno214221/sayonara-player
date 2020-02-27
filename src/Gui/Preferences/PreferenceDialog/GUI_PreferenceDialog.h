@@ -67,7 +67,7 @@ class GUI_PreferenceDialog :
 	protected:
 		void initUi();
 		void languageChanged() override;
-		void showEvent(QShowEvent *e) override;
+		void showEvent(QShowEvent* e) override;
 
 		void hideAll();
 

@@ -52,7 +52,7 @@ class MiniSearcherViewConnector : public QObject
 		void init();
 		bool isActive() const;
 		void setExtraTriggers(const QMap<QChar, QString>& map);
-		void handleKeyPress(QKeyEvent* e);
+		bool handleKeyPress(QKeyEvent* e);
 
 	private slots:
 		void lineEditChanged(const QString& str);
@@ -95,7 +95,7 @@ protected:
 		virtual void setSearchModel(SearchableModelInterface* model);
 		virtual QModelIndex matchIndex(const QString& str, SearchDirection direction) const;
 		virtual void selectMatch(const QString& str, SearchDirection direction);
-		void handleKeyPress(QKeyEvent* e) override;
+		bool handleKeyPress(QKeyEvent* e) override;
 };
 
 
@@ -130,12 +130,9 @@ class SearchableView :
 	protected:
 		void keyPressEvent(QKeyEvent* e) override
 		{
-			if(!e->isAccepted())
-			{
-				handleKeyPress(e);
-				if(e->isAccepted()){
-					return;
-				}
+			bool processed = handleKeyPress(e);
+			if(processed){
+				return;
 			}
 
 			View::keyPressEvent(e);

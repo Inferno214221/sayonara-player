@@ -140,11 +140,6 @@ QVariant Model::data(const QModelIndex& index, int role) const
 			return QString("%1.").arg(row + 1);
 		}
 
-		else if(col == ColumnName::Description)
-		{
-			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->pl->track(row));
-		}
-
 		else if(col == ColumnName::Time) {
 			auto l = m->pl->track(row).durationMs();
 			return Util::msToString(l, "$M:$S");
@@ -227,6 +222,14 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		{
 			int h = m->rowHeight - 4;
 			return QSize(h, h);
+		}
+	}
+
+	else if(role == Model::EntryLookRole)
+	{
+		if(col == ColumnName::Description)
+		{
+			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->pl->track(row));
 		}
 	}
 
@@ -589,4 +592,3 @@ void Model::playlistChanged(int pl_idx)
 	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
 	emit sigDataReady();
 }
-

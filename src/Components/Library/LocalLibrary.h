@@ -65,9 +65,7 @@ class LocalLibrary :
 		void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
 		void reloadLibrary(bool clear_first, Library::ReloadQuality quality) override;
 
-		void refreshArtists() override;
-		void refreshAlbums() override;
-		void refreshTracks() override;
+
 
 		void importFiles(const QStringList& files) override;
 		void importFilesTo(const QStringList& files, const QString& targetDirectory);
@@ -94,6 +92,11 @@ class LocalLibrary :
 		void getTrackById(TrackID trackId, MetaData& md) const override;
 		void getAlbumById(AlbumId albumId, Album& album) const override;
 		void getArtistById(ArtistId artistId, Artist& artist) const override;
+
+		// not needed
+		void refreshArtists() override;
+		void refreshAlbums() override;
+		void refreshTracks() override;
 
 	private slots:
 		void reloadThreadNewBlock();

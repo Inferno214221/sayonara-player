@@ -68,7 +68,7 @@ build-language:
   stage: build
   script:
     - mkdir -p tx
-    - lupdate -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
+    - lupdate -no-obsolete -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
   artifacts:
     paths:
       - tx/sayonara_lang_en.ts

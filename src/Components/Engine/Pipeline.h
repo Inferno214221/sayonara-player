@@ -94,13 +94,9 @@ namespace Engine
 			void sinkChanged();
 
 		private:
-			bool			createElements();
-			GstElement*		createSink(const QString& name);
-
-			bool			addAndLinkElements();
-			void			configureElements();
-
-			MilliSeconds	getAboutToFinishTime() const;
+			bool createElements();
+			bool addAndLinkElements();
+			void configureElements();
 
 			void postProcessFadeIn() override;	// Crossfader
 			void postProcessFadeOut() override;	// Crossfader

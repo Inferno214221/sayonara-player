@@ -115,7 +115,7 @@ Library::SearchBar* GUI_Library::leSearch() const
 }
 
 
-void GUI_Library::showEvent(QShowEvent *e)
+void GUI_Library::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);
 

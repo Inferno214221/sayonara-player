@@ -57,9 +57,9 @@ LocalLibraryWatcher::LocalLibraryWatcher(QObject* parent) :
 
 LocalLibraryWatcher::~LocalLibraryWatcher() = default;
 
-QList<Container*> LocalLibraryWatcher::getLocalLibraryContainers() const
+QList<AbstractContainer*> LocalLibraryWatcher::getLocalLibraryContainers() const
 {
-	QList<Container*> containers;
+	QList<AbstractContainer*> containers;
 
 	for(const Info& info : m->infos)
 	{
@@ -76,7 +76,7 @@ void LocalLibraryWatcher::libraryAdded(LibraryId id)
 	Info info = manager->libraryInfo(id);
 	m->infos = manager->allLibraries();
 
-	Container* c = new LocalLibraryContainer(info);
+	AbstractContainer* c = new LocalLibraryContainer(info);
 	PluginHandler* lph = PluginHandler::instance();
 	lph->addLocalLibrary(c);
 }

@@ -34,7 +34,7 @@
 
 static void setIcon(QPushButton* btn, QIcon icon)
 {
-	int width = Gui::Util::textWidget(btn->fontMetrics(), "MMn");
+	int width = Gui::Util::textWidth(btn->fontMetrics(), "MMn");
 
 	QSize sz(width, width);
 	btn->setFixedSize(sz);
@@ -70,7 +70,7 @@ void GUI_ControlsBase::init()
 
 	labSayonara()->setText(tr("Sayonara Player"));
 	labVersion()->setText(version);
-	labWrittenBy()->setText(tr("Written by %1").arg(" Michael Lugmair (Lucio Carreras)"));
+	labWrittenBy()->setText(tr("Written by %1").arg("Michael Lugmair (Lucio Carreras)"));
 	labCopyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
 	btnRecord()->setVisible(false);
 

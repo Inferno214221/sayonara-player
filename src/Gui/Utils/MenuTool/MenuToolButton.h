@@ -21,10 +21,12 @@
 #ifndef MENUTOOL_H
 #define MENUTOOL_H
 
-#include "MenuButton.h"
 #include "Utils/Pimpl.h"
 
+#include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Gui/Utils/ContextMenu/ContextMenu.h"
+
+#include <QPushButton>
 
 namespace Gui
 {
@@ -36,7 +38,7 @@ namespace Gui
 	 * @ingroup Gui
 	 */
 	class MenuToolButton :
-			public MenuButton
+			public WidgetTemplate<QPushButton>
 	{
 		Q_OBJECT
 		PIMPL(MenuToolButton)
@@ -76,19 +78,6 @@ namespace Gui
 			 */
 			Gui::ContextMenuEntries entries() const;
 
-		private:
-			/**
-			 * @brief show the menu when triggered
-			 * @param pos mouse cursor position
-			 */
-			void showMenu(QPoint pos) override;
-
-			/**
-			 * @brief check if the menu button should be enabled or disabled
-			 * @return true if there are any entries in menu, false else
-			 */
-			bool proveEnabled() override;
-
 
 		public slots:
 			/**
@@ -110,6 +99,20 @@ namespace Gui
 			 * @brief show all actions
 			 */
 			void showAll();
+
+		private slots:
+			void mouseReleaseEvent(QMouseEvent* e) override;
+
+		private:
+			/**
+			 * @brief show the menu when triggered
+			 * @param pos mouse cursor position
+			 */
+			/**
+			 * @brief check if the menu button should be enabled or disabled
+			 * @return true if there are any entries in menu, false else
+			 */
+			bool proveEnabled();
 	};
 }
 

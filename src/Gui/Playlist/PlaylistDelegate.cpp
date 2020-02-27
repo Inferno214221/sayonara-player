@@ -101,8 +101,7 @@ Delegate::Delegate(QTableView* parent) :
 {
 	m = Pimpl::make<Private>();
 
-//	m->spectrum = new SpectrumLabel(nullptr);
-//	m->spectrum->show();
+	//m->spectrum = new SpectrumLabel(nullptr);
 
 	ListenSettingNoCall(Set::PL_ShowRating, Delegate::playlistShowRatingChanged);
 }
@@ -118,9 +117,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 	QPalette palette = option.palette;
 	QRect rect(option.rect);
 
-	if(index.column() != Model::ColumnName::Description) {
-		StyledItemDelegate::paint(painter, option, index);
-	}
+	StyledItemDelegate::paint(painter, option, index);
 
 	// drag and drop active
 	if(index.data(Model::DragIndexRole).toBool() == true)
@@ -151,8 +148,6 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 		}
 	}
 
-	//painter->translate(-4, 0);
-
 	QFont font = option.font;
 	{ // set the font
 		if(GetSetting(Set::PL_FontSize) > 0) {
@@ -165,8 +160,6 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 
 		painter->setFont(font);
 	}
-
-	//painter->translate(4, 0);
 
 	int alignment = int(Qt::AlignLeft);
 	{ // set alignment
@@ -183,7 +176,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 	int xOffset = 4;
 	int standardWeight = font.weight();
 
-	const QString entryLook = index.data().toString();
+	const QString entryLook = index.data(Model::EntryLookRole).toString();
 	QList<PlaylistStyleItem> styleItems = parseEntryLookString(entryLook);
 	for(const PlaylistStyleItem& item : styleItems)
 	{
@@ -195,7 +188,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 		painter->translate(xOffset, 0);
 		painter->drawText(rect, alignment, fm.elidedText(item.text, Qt::ElideRight, rect.width()));
 
-		xOffset = Gui::Util::textWidget(fm, item.text);
+		xOffset = Gui::Util::textWidth(fm, item.text);
 		rect.setWidth(rect.width() - xOffset);
 	}
 

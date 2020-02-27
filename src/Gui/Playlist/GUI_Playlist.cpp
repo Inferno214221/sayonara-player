@@ -23,14 +23,15 @@
  */
 
 #include "GUI_Playlist.h"
-#include "Gui/Playlist/ui_GUI_Playlist.h"
-
 #include "PlaylistTabWidget.h"
 #include "PlaylistView.h"
 #include "PlaylistActionMenu.h"
 
+#include "Gui/Playlist/ui_GUI_Playlist.h"
+
+#include "Gui/Library/Utils/GUI_DeleteDialog.h"
+
 #include "Gui/Utils/Icons.h"
-#include "Gui/Utils/Library/GUI_DeleteDialog.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Set.h"

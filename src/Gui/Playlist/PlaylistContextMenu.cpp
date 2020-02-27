@@ -170,7 +170,7 @@ void ContextMenu::languageChanged()
 	m->entryActionMap[EntryBookmarks]-> setText(Lang::get(Lang::Bookmarks));
 	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track"));
 	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library"));
-	m->entryActionMap[EntryReverse]->setText(tr("Reverse"));
+	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
 
 	m->playlistModeAction->setText(tr("Playlist mode"));
 }

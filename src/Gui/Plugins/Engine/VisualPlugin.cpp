@@ -84,7 +84,7 @@ void VisualPlugin::set_button_sizes()
 	QFont font = m->btn_config->font();
 
 	QFontMetrics fm = this->fontMetrics();
-	int char_width = Gui::Util::textWidget(fm, "W");
+	int char_width = Gui::Util::textWidth(fm, "W");
 
 	int x = 10;
 	int y = 5;
@@ -228,7 +228,7 @@ void VisualPlugin::stopped()
 }
 
 
-void VisualPlugin::closeEvent(QCloseEvent *e)
+void VisualPlugin::closeEvent(QCloseEvent* e)
 {
 	PlayerPlugin::Base::closeEvent(e);
 	update();
@@ -248,7 +248,7 @@ void VisualPlugin::resizeEvent(QResizeEvent* e)
 }
 
 
-void VisualPlugin::mousePressEvent(QMouseEvent *e)
+void VisualPlugin::mousePressEvent(QMouseEvent* e)
 {
 	switch(e->button())
 	{

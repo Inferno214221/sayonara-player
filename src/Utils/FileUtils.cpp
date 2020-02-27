@@ -818,8 +818,15 @@ bool Util::File::isSubdir(const QString& dir, const QString& parentDir)
 	const QFileInfo info(cleanedDir);
 
 	QDir d1(cleanedDir);
-	if(info.exists() && info.isFile()){
-		d1 = QDir(Util::File::getParentDirectory(cleanedDir));
+	if(info.exists() && info.isFile())
+	{
+		QString d1String = Util::File::getParentDirectory(cleanedDir);
+		if(isSamePath(d1String, parentDir)){
+			return true;
+		}
+
+		d1 = QDir(d1String);
+
 	}
 
 	const QDir d2(cleanedParentDir);

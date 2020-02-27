@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef SHORTCUTIDENTIFIER_H
 #define SHORTCUTIDENTIFIER_H
-
 
 enum ShortcutIdentifier
 {

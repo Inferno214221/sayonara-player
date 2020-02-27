@@ -661,7 +661,7 @@ void GUI_TagEdit::loadEntireAlbum()
 	m->tagEditor->loadEntireAlbum();
 }
 
-void GUI_TagEdit::showEvent(QShowEvent *e)
+void GUI_TagEdit::showEvent(QShowEvent* e)
 {
 	Widget::showEvent(e);
 	refreshCurrentTrack();

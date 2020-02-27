@@ -25,6 +25,7 @@
 
 #include "ItemView.h"
 #include "ItemModel.h"
+#include "Gui/Library/Utils/MergeMenu.h"
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Covers/CoverLocation.h"
@@ -35,6 +36,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/ExtensionSet.h"
 
@@ -44,7 +46,6 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/CustomMimeData.h"
-#include "Gui/Utils/Library/MergeMenu.h"
 #include "Gui/Utils/Icons.h"
 
 #include <QKeySequence>
@@ -99,13 +100,14 @@ ItemView::ItemView(QWidget* parent) :
 	sch->shortcut(ShortcutIdentifier::PlayNewTab).connect(this, this, SLOT(playNewTabClicked()), ctx);
 	sch->shortcut(ShortcutIdentifier::PlayNext).connect(this, this, SLOT(playNextClicked()), ctx);
 	sch->shortcut(ShortcutIdentifier::Append).connect(this, this, SLOT(appendClicked()), ctx);
-	sch->shortcut(ShortcutIdentifier::CoverView).connect(this, this, SLOT(coverViewToggled()), ctx);
 	sch->shortcut(ShortcutIdentifier::AlbumArtists).connect(this, this, SLOT(albumArtistsToggled()), ctx);
 	sch->shortcut(ShortcutIdentifier::ReloadLibrary).connect(this, this, SLOT(reloadClicked()), ctx);
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Backspace), this, SLOT(clearSelection()), nullptr, Qt::WidgetShortcut);
+
+	connect(this, &QAbstractItemView::doubleClicked, this, &ItemView::playClicked);
 }
 
 ItemView::~ItemView() = default;
@@ -135,8 +137,6 @@ ContextMenu::Entries ItemView::contextMenuEntries() const
 		ContextMenu::EntryDelete |
 		ContextMenu::EntryPlayNext |
 		ContextMenu::EntryAppend |
-		ContextMenu::EntryCoverView |
-		ContextMenu::EntryFilterExtension |
 		ContextMenu::EntryReload
 	);
 
@@ -182,11 +182,11 @@ void ItemView::initCustomContextMenu(ContextMenu* menu)
 		connect(m->mergeMenu, &Gui::MergeMenu::sigMergeTriggered, this, &ItemView::mergeActionTriggered);
 	}
 
-	QAction* after_edit_action = m->contextMenu->actionAfter(ContextMenu::EntryEdit);
+	QAction* afterEditAction = m->contextMenu->actionAfter(ContextMenu::EntryEdit);
 
-	if(after_edit_action)
+	if(afterEditAction)
 	{
-		m->contextMenu->insertAction(after_edit_action, m->mergeMenu->action());
+		m->contextMenu->insertAction(afterEditAction, m->mergeMenu->action());
 	}
 
 	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=](){ showEdit(); });
@@ -252,7 +252,7 @@ void ItemView::showClearButton(bool visible)
 		});
 	}
 
-	m->buttonClearSelection->setText(tr("Clear selection"));
+	m->buttonClearSelection->setText(Lang::get(Lang::ClearSelection));
 	m->buttonClearSelection->setIcon(Gui::Icons::icon(Gui::Icons::Delete));
 
 	{ // little hack to use vieport_height() and ..width() method
@@ -310,12 +310,6 @@ void ItemView::deleteClicked() { emit sigDeleteClicked(); }
 void ItemView::appendClicked() { emit sigAppendClicked(); }
 void ItemView::refreshClicked() { emit sigRefreshClicked(); }
 void ItemView::reloadClicked() { emit sigReloadClicked(); }
-
-void ItemView::coverViewToggled()
-{
-	bool b = GetSetting(Set::Lib_ShowAlbumCovers);
-	SetSetting(Set::Lib_ShowAlbumCovers, !b);
-}
 
 void ItemView::albumArtistsToggled()
 {
@@ -450,9 +444,9 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	QTableView::contextMenuEvent(event);
 }
 
-void ItemView::dragEnterEvent(QDragEnterEvent *event) {	event->accept(); }
-void ItemView::dragMoveEvent(QDragMoveEvent *event) { event->accept(); }
-void ItemView::dropEvent(QDropEvent *event)
+void ItemView::dragEnterEvent(QDragEnterEvent* event) {	event->accept(); }
+void ItemView::dragMoveEvent(QDragMoveEvent* event) { event->accept(); }
+void ItemView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
@@ -486,7 +480,6 @@ void ItemView::dropEvent(QDropEvent *event)
 	importRequested(filelist);
 }
 
-
 void ItemView::changeEvent(QEvent* event)
 {
 	SearchableTableView::changeEvent(event);
@@ -497,23 +490,14 @@ void ItemView::changeEvent(QEvent* event)
 	}
 }
 
-
-void ItemView::keyPressEvent(QKeyEvent* event)
-{
-	event->setAccepted(false);
-	SearchableTableView::keyPressEvent(event);
-}
-
-
-void ItemView::resizeEvent(QResizeEvent *event)
+void ItemView::resizeEvent(QResizeEvent* event)
 {
 	SearchableTableView::resizeEvent(event);
 
-	if(m->buttonClearSelection){
+	if(m->buttonClearSelection) {
 		showClearButton(m->buttonClearSelection->isVisible());
 	}
 }
-
 
 int ItemView::viewportHeight() const
 {

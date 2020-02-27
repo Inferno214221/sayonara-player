@@ -19,20 +19,23 @@
 
 #include "HeaderView.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
 #include <QFontMetrics>
+#include <QPair>
 
+using Library::ColumnHeaderPtr;
 using Library::HeaderView;
 using Parent=Gui::WidgetTemplate<QHeaderView>;
-namespace Algorithm=Util::Algorithm;
+
+using ColumnActionPair = QPair<ColumnHeaderPtr, QAction*>;
+using ColumnActionPairList = QList<ColumnActionPair>;
 
 struct HeaderView::Private
 {
-	ColumnHeaderList	columns;
-	QAction*			actionResize=nullptr;
+	ColumnActionPairList columns;
+	QAction* actionResize=nullptr;
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
@@ -40,14 +43,12 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	m->actionResize = new QAction(resizeText(), this);
-
-	addAction(m->actionResize);
+	m->actionResize = new QAction(this);
 	connect(m->actionResize, &QAction::triggered, this, &HeaderView::actionResizeTriggered);
 
 	this->setSectionsClickable(true);
 	this->setSectionsMovable(true);
-	this->setHighlightSections(false);
+	this->setHighlightSections(true);
 	this->setContextMenuPolicy(Qt::ActionsContextMenu);
 	this->setTextElideMode(Qt::TextElideMode::ElideRight);
 	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
@@ -55,149 +56,110 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 
 HeaderView::~HeaderView() = default;
 
-QString HeaderView::resizeText() const
-{
-	return tr("Resize columns");
-}
-
 void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting)
 {
-	m->columns = columns;
-
-	if(!state.isEmpty()) {
-		this->restoreState(state);
-	}
-
-	else {
+	if(state.isEmpty()) {
 		this->actionResizeTriggered();
 	}
 
-	for(int i=0; i<m->columns.size(); i++)
+	else {
+		this->restoreState(state);
+	}
+
+	for(int i=0; i<columns.size(); i++)
 	{
-		ColumnHeaderPtr section = m->columns[i];
+		ColumnHeaderPtr section = columns[i];
 
-		{ // sorting
-			if(sorting == section->sortorderAscending()) {
-				this->setSortIndicator(i, Qt::AscendingOrder);
-			}
+		// action
+		auto* action = new QAction(section->title());
+		action->setCheckable(section->isSwitchable());
+		action->setChecked(isSectionHidden(i) == false);
 
-			else if(sorting == section->sortorderDescending()) {
-				this->setSortIndicator(i, Qt::DescendingOrder);
-			}
+		connect(action, &QAction::toggled, this, &HeaderView::actionTriggered);
+		this->addAction(action);
+
+		// sorting
+		if(sorting == section->sortorder(Qt::AscendingOrder)) {
+			this->setSortIndicator(i, Qt::AscendingOrder);
 		}
 
-		QAction* action = section->action();
-		action->setChecked( !isSectionHidden(i) );
-		connect(action, &QAction::toggled, this, &HeaderView::actionTriggered);
-		insertAction(this->actions().last(), action);
+		else if(sorting == section->sortorder(Qt::DescendingOrder)) {
+			this->setSortIndicator(i, Qt::DescendingOrder);
+		}
+
+		m->columns << ColumnActionPair(section, action);
 	}
+
+	auto* sep = new QAction();
+	sep->setSeparator(true);
+
+	this->addAction(sep);
+	this->addAction(m->actionResize);
 }
 
-Library::SortOrder HeaderView::switchSortorder(int column_index)
+Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortorder)
 {
-	if(Util::between(column_index, m->columns))
+	if(Util::between(index, m->columns))
 	{
-		Qt::SortOrder asc_desc = this->sortIndicatorOrder();
-
-		ColumnHeaderPtr section = m->columns[column_index];
-		if(asc_desc == Qt::AscendingOrder) {
-			return section->sortorderAscending();
-		}
-
-		else {
-			return section->sortorderDescending();
-		}
+		ColumnHeaderPtr section = m->columns[index].first;
+		return section->sortorder(sortorder);
 	}
 
 	return Library::SortOrder::NoSorting;
 }
 
-
-Library::ColumnHeaderPtr HeaderView::column(int column_index)
+QString HeaderView::columnText(int index) const
 {
-	if(!Util::between(column_index, m->columns)){
-		return nullptr;
+	if(!Util::between(index, m->columns)){
+		return QString();
 	}
 
-	return m->columns[column_index];
-}
-
-
-void HeaderView::languageChanged()
-{
-	const QFontMetrics fm = this->fontMetrics();
-
-	int i=0;
-	for(auto it=m->columns.begin(); it != m->columns.end(); it++, i++)
-	{
-		ColumnHeaderPtr header = *it;
-
-		header->retranslate();
-
-		int header_text_width = Gui::Util::textWidget(fm, header->title() + "MMM");
-		if(this->sectionSize(i) < header_text_width)
-		{
-			this->resizeSection(i, header_text_width);
-		}
-	}
-
-	if(m->actionResize) {
-		m->actionResize->setText(resizeText());
-	}
+	return m->columns[index].first->title();
 }
 
 void HeaderView::actionTriggered(bool b)
 {
-	Q_UNUSED(b)
-
-	for(int i=0; i<m->columns.count(); i++)
-	{
-		ColumnHeaderPtr section = m->columns[i];
-
-		bool is_visible = section->isActionChecked();
-		this->setSectionHidden(i, !is_visible);
+	auto* action = static_cast<QAction*>(sender());
+	int index = this->actions().indexOf(action);
+	if(index >= 0) {
+		this->setSectionHidden(index, !b);
 	}
 
 	actionResizeTriggered();
-
-	emit sigColumnsChanged();
 }
 
-static int columnWidth(Library::ColumnHeaderPtr ch, const QFontMetrics& fm)
+static int columnWidth(Library::ColumnHeaderPtr section, QWidget* widget)
 {
 	return std::max
 	(
-		ch->defaultSize(),
-		Gui::Util::textWidget(fm, ch->title() + "MMM")
+		section->defaultSize(),
+		Gui::Util::textWidth(widget, section->title() + "MMM")
 	);
 }
 
 void HeaderView::actionResizeTriggered()
 {
-	const QFontMetrics fm = this->fontMetrics();
-
 	double scaleFactor;
 	{	// calculate scale factor of stretchable columns
 		int spaceNeeded = 0;
 		int freeSpace = this->width();
 
-		for(int i=0; i<m->columns.count(); i++)
+		for(int i=0; i<m->columns.size(); i++)
 		{
-			ColumnHeaderPtr ch = m->columns[i];
+			if(this->isSectionHidden(i)) {
+				continue;
+			}
 
-			if( !this->isSectionHidden(i) )
-			{
-				const int size = columnWidth(ch, fm);
+			ColumnHeaderPtr section = m->columns[i].first;
+			int size = columnWidth(section, this);
 
-				if(!ch->stretchable())
-				{
-					this->resizeSection(i, size);
-					freeSpace -= size;
-				}
+			if(!section->isStretchable()) {
+				this->resizeSection(i, size);
+				freeSpace -= size;
+			}
 
-				else {
-					spaceNeeded += size;
-				}
+			else {
+				spaceNeeded += size;
 			}
 		}
 
@@ -205,42 +167,38 @@ void HeaderView::actionResizeTriggered()
 	}
 
 	{ // resize stretchable sections
-		for(int i=0; i<m->columns.count(); i++)
-		{
-			ColumnHeaderPtr ch = m->columns[i];
-
-			if(ch->stretchable() && !this->isSectionHidden(i))
+		for(int i=0; i<m->columns.size(); i++)
+		{			
+			ColumnHeaderPtr section = m->columns[i].first;
+			if(section->isStretchable() && !this->isSectionHidden(i))
 			{
-				const int size = columnWidth(ch, fm);
+				int size = columnWidth(section, this);
 				this->resizeSection(i, int(size * scaleFactor));
 			}
 		}
 	}
 }
 
-int HeaderView::calcHeaderWidth() const
+void HeaderView::languageChanged()
 {
-	int header_width = 0;
-	for(int i=0; i< m->columns.count(); i++)
+	for(int i=0; i<m->columns.size(); i++)
 	{
-		header_width += this->sectionSize(i);
+		ColumnHeaderPtr section = m->columns[i].first;
+		QAction* action = m->columns[i].second;
+
+		action->setText(section->title());
+
+		int headerTextWidth = Gui::Util::textWidth(this, section->title() + "M");
+		if(this->sectionSize(i) < headerTextWidth)
+		{
+			this->resizeSection(i, headerTextWidth);
+		}
 	}
 
-	return header_width;
-}
-
-void HeaderView::resizeEvent(QResizeEvent* e)
-{
-	Parent::resizeEvent(e);
-	actionResizeTriggered();
+	m->actionResize->setText(tr("Resize columns"));
 }
 
 QSize HeaderView::sizeHint() const
 {
-	int height = std::max(this->fontMetrics().height() + 10, 20);
-
-	QSize size = QHeaderView::sizeHint();
-	size.setHeight(height);
-
-	return size;
+	return QSize(0, (fontMetrics().height() * 3) / 2);
 }

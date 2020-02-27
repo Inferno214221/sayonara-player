@@ -39,27 +39,27 @@ namespace Cover
 		PIMPL(AlternativeLookup)
 
 	signals:
-		void sig_cover_changed(Cover::Location& cl);
-		void sig_coverfetchers_changed();
+		void sigCoverChanged(Cover::Location& cl);
+		void sigCoverfetchersChanged();
 
 	private:
 		void go(const Cover::Location& cl);
 
 	public:
 		AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent);
-		~AlternativeLookup();
+		~AlternativeLookup() override;
 
 		void start();
 		void start(const QString& cover_fetcher_identifier);
 
-		void start_text_search(const QString& search_term);
-		void start_text_search(const QString& search_term, const QString& cover_fetcher_identifier);
+		void startTextSearch(const QString& search_term);
+		void startTextSearch(const QString& search_term, const QString& cover_fetcher_identifier);
 
 		void stop() override;
 		void reset();
 
 		bool save(const QPixmap& pm, bool save_to_library);
-		bool is_running() const;
+		bool isRunning() const;
 
 		/**
 		 * @brief silent results that the cover is not stored
@@ -67,7 +67,7 @@ namespace Cover
 		 * save the cover to a temporary path which can be re-
 		 * trieved by Cover::Location::alternative_path()
 		 */
-		bool is_silent() const;
+		bool isSilent() const;
 
 		enum SearchMode
 		{
@@ -75,13 +75,13 @@ namespace Cover
 			Default
 		};
 
-		QStringList active_coverfetchers(SearchMode mode) const;
+		QStringList activeCoverfetchers(SearchMode mode) const;
 
 		private slots:
 			void started();
 			void finished(bool success);
-			void cover_found(const QPixmap& pm);
-			void coverfetchers_changed();
+			void coverFound(const QPixmap& pm);
+			void coverfetchersChanged();
 	};
 }
 

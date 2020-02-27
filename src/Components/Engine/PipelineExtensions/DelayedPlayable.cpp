@@ -59,7 +59,7 @@ DelayedPlayableLogic::DelayedPlayableLogic(DelayedPlayable* dph)
 	});
 }
 
-DelayedPlayableLogic::~DelayedPlayableLogic() = default;
+DelayedPlayableLogic::~DelayedPlayableLogic() {}
 
 void DelayedPlayableLogic::startTimer(MilliSeconds ms)
 {
@@ -91,7 +91,7 @@ DelayedPlayable::DelayedPlayable()
 	m = Pimpl::make<Private>(this);
 }
 
-DelayedPlayable::~DelayedPlayable() = default;
+DelayedPlayable::~DelayedPlayable() {}
 
 void DelayedPlayable::playIn(MilliSeconds ms)
 {

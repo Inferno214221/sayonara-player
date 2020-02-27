@@ -20,12 +20,10 @@
 
 #include "Pipeline.h"
 
-#include "Components/Engine/Engine.h"
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
 
 #include "PipelineExtensions/Probing.h"
-
 #include "PipelineExtensions/VisualizerBin.h"
 #include "PipelineExtensions/BroadcastBin.h"
 #include "StreamRecorder/StreamRecorderBin.h"
@@ -45,10 +43,9 @@
 #include <cmath>
 
 using Engine::Pipeline;
-namespace EngineUtils=::Engine::Utils;
-
-namespace Callbacks=::Engine::Callbacks;
 using namespace PipelineExtensions;
+namespace EngineUtils=::Engine::Utils;
+namespace Callbacks=::Engine::Callbacks;
 
 struct Pipeline::Private
 {
@@ -68,26 +65,62 @@ struct Pipeline::Private
 	GstElement*			playbackVolume=nullptr;
 	GstElement*			playbackSink=nullptr;
 
-	StreamRecorderBin* streamRecorder=nullptr;
+	StreamRecorderBin*	streamRecorder=nullptr;
 	BroadcastBin*		broadcaster=nullptr;
-	VisualizerBin*			visualizer=nullptr;
+	VisualizerBin*		visualizer=nullptr;
 
 	QTimer*				progressTimer=nullptr;
 
 	Private(const QString& name) :
 		name(name)
 	{}
+
+	GstElement* createSink(const QString& sinkName)
+	{
+		static int Number=1;
+
+		GstElement* ret=nullptr;
+
+		QString name = sinkName + QString::number(Number);
+
+		if(sinkName == "pulse")
+		{
+			spLog(Log::Debug, this) << "Create pulseaudio sink";
+			EngineUtils::createElement(&ret, "pulsesink", name.toLocal8Bit().data());
+		}
+
+		else if(sinkName == "alsa")
+		{
+			spLog(Log::Debug, this) << "Create alsa sink";
+			QString device = GetSetting(Set::Engine_AlsaDevice);
+			EngineUtils::createElement(&ret, "alsasink", name.toLocal8Bit().data());
+
+			if(device.isEmpty()) {
+				device = "default";
+			}
+
+			spLog(Log::Info, this) << "Created alsa sink with " << device << " as output";
+		}
+
+		if(ret == nullptr)
+		{
+			spLog(Log::Debug, this) << "Will create auto audio sink";
+			EngineUtils::createElement(&ret, "autoaudiosink", name.toLocal8Bit().data());
+		}
+
+		return ret;
+	}
 };
 
 Pipeline::Pipeline(const QString& name, QObject* parent) :
 	QObject(parent),
-	Fadeable(),
-	Changeable(),
-	DelayedPlayable(),
-	BroadcastDataReceiver(),
-	PositionAccessible(),
-	Pitchable(),
-	EqualizerAccessible()
+	PipelineExtensions::Fadeable(),
+	PipelineExtensions::Changeable(),
+	PipelineExtensions::DelayedPlayable(),
+	PipelineExtensions::BroadcastDataReceiver(),
+	PipelineExtensions::PositionAccessible(),
+	PipelineExtensions::Pitchable(),
+	PipelineExtensions::EqualizerAccessible()
 {
 	m = Pimpl::make<Private>(name);
 }
@@ -179,52 +212,12 @@ bool Pipeline::createElements()
 	EngineUtils::createElement(&m->equalizer, "equalizer-10bands");
 	EqualizerAccessible::initEqualizer();
 
-	m->playbackSink = createSink(GetSetting(Set::Engine_Sink));
+	m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
 
 	m->visualizer = new VisualizerBin(m->pipeline, m->tee);
 	m->broadcaster = new BroadcastBin(this, m->pipeline, m->tee);
 
 	return (m->playbackSink != nullptr);
-}
-
-GstElement* Pipeline::createSink(const QString& sinkName)
-{
-	static int Number=1;
-
-	GstElement* ret=nullptr;
-
-	QString name = sinkName + QString::number(Number);
-
-	if(sinkName == "pulse")
-	{
-		spLog(Log::Debug, this) << "Create pulseaudio sink";
-
-		EngineUtils::createElement(&ret, "pulsesink", name.toLocal8Bit().data());
-	}
-
-	else if(sinkName == "alsa")
-	{
-		spLog(Log::Debug, this) << "Create alsa sink";
-		QString device = GetSetting(Set::Engine_AlsaDevice);
-		EngineUtils::createElement(&ret, "alsasink", name.toLocal8Bit().data());
-
-		if(device.isEmpty())
-		{
-			device = "default";
-		}
-
-		//EngineUtils::set_value(ret, "device", device.toLocal8Bit().data());
-
-		spLog(Log::Info, this) << "Created alsa sink with " << device << " as output";
-	}
-
-	if(ret == nullptr)
-	{
-		spLog(Log::Debug, this) << "Will create auto audio sink";
-		EngineUtils::createElement(&ret, "autoaudiosink", name.toLocal8Bit().data());
-	}
-
-	return ret;
 }
 
 
@@ -385,14 +378,11 @@ double Pipeline::internalVolume() const
 
 void Pipeline::speedActiveChanged()
 {
-	bool active = GetSetting(Set::Engine_SpeedActive);
-
-	if(!m->pitch){
+	if(!m->pitch) {
 		return;
 	}
 
-	MilliSeconds positionMs = this->positionMs();
-	if(active)
+	if(GetSetting(Set::Engine_SpeedActive))
 	{
 		Changeable::addElement(m->pitch, m->audioConvert, m->equalizer);
 		sppedChanged();
@@ -405,7 +395,7 @@ void Pipeline::speedActiveChanged()
 
 	if(EngineUtils::getState(m->pipeline) == GST_STATE_PLAYING)
 	{
-		positionMs = std::max<MilliSeconds>(positionMs, 0);
+		MilliSeconds positionMs = std::max<MilliSeconds>(this->positionMs(), 0);
 		this->seekNearestMs(positionMs);
 	}
 
@@ -424,13 +414,13 @@ void Pipeline::sppedChanged()
 
 void Pipeline::sinkChanged()
 {
-	GstElement* new_sink = createSink(GetSetting(Set::Engine_Sink));
-	if(!new_sink){
+	GstElement* newSink = m->createSink(GetSetting(Set::Engine_Sink));
+	if(!newSink){
 		return;
 	}
 
-	replaceSink(m->playbackSink, new_sink, m->playbackVolume, m->pipeline, m->playbackBin);
-	m->playbackSink = new_sink;
+	replaceSink(m->playbackSink, newSink, m->playbackVolume, m->pipeline, m->playbackBin);
+	m->playbackSink = newSink;
 }
 
 void Pipeline::checkPosition()
@@ -447,7 +437,7 @@ void Pipeline::checkAboutToFinish()
 {
 	MilliSeconds positionMs = this->positionMs();
 	MilliSeconds durationMs = this->durationMs();
-	MilliSeconds aboutToFinishMs = getAboutToFinishTime();
+	MilliSeconds aboutToFinishMs = std::max<MilliSeconds>(fadingTimeMs(), 300);
 
 	static bool aboutToFinish = false;
 
@@ -466,12 +456,6 @@ void Pipeline::checkAboutToFinish()
 		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << durationMs << ", Pos: " << positionMs;
 		emit sigAboutToFinishMs(difference);
 	}
-}
-
-MilliSeconds Pipeline::getAboutToFinishTime() const
-{
-	MilliSeconds AboutToFinishTime=300;
-	return std::max(fadingTimeMs(), AboutToFinishTime);
 }
 
 bool Pipeline::hasElement(GstElement* e) const
