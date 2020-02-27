@@ -61,6 +61,7 @@ namespace DB
 			virtual const Module* module() const=0;
 
 			virtual void updateArtistCissearch();
+			virtual void deleteAllArtists();
 
 		private:
 			virtual QString fetchQueryArtists(bool also_empty) const;

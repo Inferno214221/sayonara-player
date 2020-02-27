@@ -4,6 +4,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
 
 using Test::Base;
 
@@ -15,19 +16,19 @@ static void init_resources()
 	Q_INIT_RESOURCE(Resources);
 }
 
-Test::Base::Base(const QString& test_name) :
+Test::Base::Base(const QString& testName) :
 	QObject(),
-	mTmpPath(Util::tempPath(test_name))
+	mTmpPath(Util::tempPath(testName))
 {
 	Util::File::createDirectories(mTmpPath);
 
 	init_resources();
-
 	DB::Connector::instance_custom("", mTmpPath, "");
 	Settings* s = Settings::instance();
 	s->checkSettings();
+	s->set<Set::Logger_Level>( int(Log::Develop) );
 
-	this->setObjectName(test_name);
+	this->setObjectName(testName);
 }
 
 Test::Base::~Base()
@@ -35,13 +36,13 @@ Test::Base::~Base()
 	Util::File::deleteFiles({mTmpPath});
 }
 
-QString Test::Base::temp_path() const
+QString Test::Base::tempPath() const
 {
 	return mTmpPath;
 }
 
-QString Test::Base::temp_path(const QString& append) const
+QString Test::Base::tempPath(const QString& append) const
 {
-	QDir d(temp_path());
+	QDir d(tempPath());
 	return d.absoluteFilePath(append);
 }

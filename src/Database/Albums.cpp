@@ -101,7 +101,7 @@ bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
 		album.setPathHint(q.value(9).toString().split("#"));
 
 		result.push_back(std::move(album));
-	};
+	}
 
 	return true;
 }
@@ -312,23 +312,18 @@ void Albums::updateAlbumCissearch()
 	module()->db().commit();
 }
 
-AlbumId Albums::insertAlbumIntoDatabase(const QString& album_name)
+AlbumId Albums::insertAlbumIntoDatabase(const QString& name)
 {
-	AlbumId id = getAlbumID(album_name);
-	if(id >= 0){
-		return id;
-	}
-
-	QString cissearch = Library::Utils::convertSearchstring(album_name, searchMode());
+	QString cissearch = Library::Utils::convertSearchstring(name, searchMode());
 
 	QMap<QString, QVariant> bindings
 	{
-		{"name",		Util::convertNotNull(album_name)},
+		{"name",		Util::convertNotNull(name)},
 		{"cissearch",	Util::convertNotNull(cissearch)},
 		{"rating",		QVariant::fromValue(int(Rating::Zero))}
 	};
 
-	Query q = module()->insert("albums", bindings, QString("2. Cannot insert album %1").arg(album_name));
+	Query q = module()->insert("albums", bindings, QString("2. Cannot insert album %1").arg(name));
 	if (q.hasError()) {
 		return -1;
 	}
@@ -342,6 +337,10 @@ AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
 	return insertAlbumIntoDatabase(album.name());
 }
 
+void Albums::deleteAllAlbums()
+{
+	module()->runQuery("DELETE FROM albums;", "Could not delete all albums");
+}
 
 static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
 {

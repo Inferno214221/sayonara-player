@@ -18,8 +18,8 @@ namespace Test
 		Base(const QString& test_name);
 		virtual ~Base() override;
 
-		QString temp_path() const;
-		QString temp_path(const QString& append) const;
+		QString tempPath() const;
+		QString tempPath(const QString& append) const;
 	};
 }
 

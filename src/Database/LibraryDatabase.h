@@ -62,6 +62,12 @@ namespace DB
 			::Library::SearchModeMask searchMode() const override;
 			void updateSearchMode(::Library::SearchModeMask smm) override;
 
+			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
+			bool fixEmptyAlbums();
+
+
+
+		protected:
 			Module* module() override;
 			const Module* module() const override;
 	};

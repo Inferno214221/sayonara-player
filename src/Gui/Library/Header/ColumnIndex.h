@@ -36,7 +36,7 @@ namespace ColumnIndex
 		MultiDisc=0,
 		Name,
 		Duration,
-		AlbumArtist,
+		//AlbumArtist,
 		NumSongs,
 		Year,
 		Rating

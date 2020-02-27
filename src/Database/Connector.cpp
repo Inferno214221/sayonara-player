@@ -267,35 +267,13 @@ bool Connector::updateLostArtists()
 
 bool Connector::updateLostAlbums()
 {
-	LibraryDatabase* lib_db = libraryDatabase(-1, 0);
-	if(!lib_db){
-		spLog(Log::Error, this) << "Cannot find Library";
+	LibraryDatabase* libraryDatabase = this->libraryDatabase(-1, 0);
+	if(!libraryDatabase) {
+		spLog(Log::Error, this) << "Cannot find Library database";
 		return false;
 	}
 
-	AlbumId id = lib_db->insertAlbumIntoDatabase(QString(""));
-
-	const QStringList queries {
-		QString("UPDATE tracks SET albumID=:albumID WHERE albumID IN (SELECT albumID FROM albums WHERE name IS NULL);"),
-		QString("UPDATE tracks SET albumID=:albumID WHERE albumID NOT IN (SELECT albumID FROM albums);"),
-		QString("DELETE FROM artists WHERE name IS NULL;")
-	};
-
-	this->transaction();
-	for(const QString& query : queries)
-	{
-		DB::Query q(this);
-		q.prepare(query);
-		q.bindValue(":albumID", id);
-		bool success = q.exec();
-		if(!success){
-			this->rollback();
-			return false;
-		}
-	}
-
-	this->commit();
-	return true;
+	return libraryDatabase->fixEmptyAlbums();
 }
 
 int Connector::oldDatabaseVersion() const

@@ -261,3 +261,8 @@ void Artists::updateArtistCissearch()
 	module()->db().commit();
 }
 
+void Artists::deleteAllArtists()
+{
+	module()->runQuery("DELETE FROM artists;", "Could not delete all artists");
+}
+

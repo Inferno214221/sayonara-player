@@ -47,12 +47,15 @@ namespace DB
 
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result) const;
 
-			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
-			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
-
 			virtual AlbumId updateAlbumRating(AlbumId id, Rating rating);
 
 		protected:
+			// too dangerous to call it directly because multiple insertions
+			// may occur
+			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
+			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
+			virtual void deleteAllAlbums();
+
 			virtual QString artistIdField() const=0;
 			virtual QString trackView() const=0;
 			virtual QString trackSearchView() const=0;

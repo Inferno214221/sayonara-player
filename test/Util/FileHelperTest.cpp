@@ -56,9 +56,9 @@ void FileHelperTest::createAndDelete()
 	QStringList to_be_deleted;
 
 	/** Absolute **/
-	newDir = temp_path("some/absolute/filepath");
+	newDir = tempPath("some/absolute/filepath");
 	newFile = newDir + "/file.out";
-	to_be_deleted << temp_path("some");
+	to_be_deleted << tempPath("some");
 
 	QVERIFY(isAbsolute(newFile));
 
@@ -69,13 +69,13 @@ void FileHelperTest::createAndDelete()
 	writeFile("Some data", newFile);
 	QVERIFY(checkFile(newFile));
 	deleteFiles(to_be_deleted);
-	QVERIFY( !checkFile(temp_path("some")) );
+	QVERIFY( !checkFile(tempPath("some")) );
 
 	/** Relative **/
 	to_be_deleted.clear();
-	newDir = "." + temp_path("some/relative/filepath");
+	newDir = "." + tempPath("some/relative/filepath");
 	newFile = newDir + "/file.out";
-	to_be_deleted << "." + temp_path("some");
+	to_be_deleted << "." + tempPath("some");
 
 	QVERIFY(!isAbsolute(newFile));
 
@@ -86,7 +86,7 @@ void FileHelperTest::createAndDelete()
 	writeFile("Some data", newFile);
 	QVERIFY(checkFile(newFile));
 	deleteFiles(to_be_deleted);
-	QVERIFY( !checkFile("." +  temp_path("some")) );
+	QVERIFY( !checkFile("." +  tempPath("some")) );
 }
 
 void FileHelperTest::commonPathTest()
@@ -94,16 +94,16 @@ void FileHelperTest::commonPathTest()
 	QString ret;
 	QStringList files;
 
-	files << temp_path("path/to/some/directory/bla.txt");
-	files << temp_path("path/to/some/directory/bla2.txt");
+	files << tempPath("path/to/some/directory/bla.txt");
+	files << tempPath("path/to/some/directory/bla2.txt");
 
-	Util::File::createDirectories(temp_path("path/to/some/directory"));
-	Util::File::createDirectories(temp_path("other/path/to/somewhere"));
-	Util::File::createDirectories(temp_path("path/to/some/really/long/directory"));
+	Util::File::createDirectories(tempPath("path/to/some/directory"));
+	Util::File::createDirectories(tempPath("other/path/to/somewhere"));
+	Util::File::createDirectories(tempPath("path/to/some/really/long/directory"));
 
-	QFile f1(temp_path("path/to/some/directory/bla.txt"));
-	QFile f2(temp_path("path/to/some/directory/bla2.txt"));
-	QFile f3(temp_path("path/to/some/file.txt"));
+	QFile f1(tempPath("path/to/some/directory/bla.txt"));
+	QFile f2(tempPath("path/to/some/directory/bla2.txt"));
+	QFile f3(tempPath("path/to/some/file.txt"));
 
 	f1.open(QFile::WriteOnly);
 	f1.write("bla");
@@ -118,21 +118,21 @@ void FileHelperTest::commonPathTest()
 	f3.close();
 
 	ret = Util::File::getCommonDirectory(files);
-	QVERIFY(ret.compare(temp_path("path/to/some/directory")) == 0);
+	QVERIFY(ret.compare(tempPath("path/to/some/directory")) == 0);
 
-	files << temp_path("path/to/some/file.txt");
+	files << tempPath("path/to/some/file.txt");
 	ret = Util::File::getCommonDirectory(files);
-	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
+	QVERIFY(ret.compare(tempPath("path/to/some")) == 0);
 
-	files << temp_path("path/to/some/really/long/directory");
+	files << tempPath("path/to/some/really/long/directory");
 	ret = Util::File::getCommonDirectory(files);
-	QVERIFY(ret.compare(temp_path("path/to/some")) == 0);
+	QVERIFY(ret.compare(tempPath("path/to/some")) == 0);
 
-	files << temp_path("other/path/to/somewhere");
+	files << tempPath("other/path/to/somewhere");
 	ret = Util::File::getCommonDirectory(files);
-	QVERIFY(ret.compare(temp_path()) == 0);
+	QVERIFY(ret.compare(tempPath()) == 0);
 
-	Util::File::deleteFiles({temp_path()});
+	Util::File::deleteFiles({tempPath()});
 }
 
 void FileHelperTest::systemPathsTest()

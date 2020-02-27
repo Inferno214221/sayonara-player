@@ -13,7 +13,7 @@ AbstractTaggingTest::AbstractTaggingTest(const QString& testname) :
 
 void AbstractTaggingTest::id3_test()
 {
-	mFilename = temp_path("sayonara-test.mp3");
+	mFilename = tempPath("sayonara-test.mp3");
 	mResourceFilename = ":/test/mp3test.mp3";
 
 	run();
@@ -21,7 +21,7 @@ void AbstractTaggingTest::id3_test()
 
 void AbstractTaggingTest::xiph_test()
 {
-	mFilename = temp_path("sayonara-test.ogg");
+	mFilename = tempPath("sayonara-test.ogg");
 	mResourceFilename = ":/test/oggtest.ogg";
 
 	run();

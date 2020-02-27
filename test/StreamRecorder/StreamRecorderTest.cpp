@@ -35,7 +35,7 @@ private slots:
 StreamRecorderTest::StreamRecorderTest() :
 	Test::Base("StreamRecorderTest")
 {
-	SetSetting(Set::Engine_SR_Path, temp_path());
+	SetSetting(Set::Engine_SR_Path, tempPath());
 	SetSetting(SetNoDB::MP3enc_found, true);
 	SetSetting(Set::Engine_SR_Active, true);
 	SetSetting(Set::Engine_SR_SessionPath, true);
@@ -75,7 +75,7 @@ void StreamRecorderTest::www_test()
 		QString filename = sr->changeTrack(md);
 
 		QString should_filename =
-				temp_path() + "/" +
+				tempPath() + "/" +
 				QString("%1%2%3")
 					.arg(d.year())
 					.arg(d.month(), 2, 10, QChar('0'))
@@ -105,7 +105,7 @@ void StreamRecorderTest::www_test()
 		QVERIFY(sr->isRecording());
 	}
 
-	Util::File::deleteFiles({temp_path()});
+	Util::File::deleteFiles({tempPath()});
 }
 
 
@@ -115,7 +115,7 @@ void StreamRecorderTest::file_test()
 
 	for(int i=1; i<100; i++)
 	{
-		QString filepath = temp_path
+		QString filepath = tempPath
 		(
 			QString("path%1.mp3").arg(i)
 		);

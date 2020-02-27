@@ -291,107 +291,27 @@ void Editor::loadEntireAlbumFinished()
 	emit sigFinished();
 }
 
-void Editor::applyArtistsAndAlbumToMetadata()
+void Editor::insertMissingArtistsAndAlbums()
 {
-	QHash<QString, ArtistId> artist_map;
-	QHash<QString, AlbumId>	album_map;
-
 	auto* db = DB::Connector::instance();
 	auto* ldb = db->libraryDatabase(-1, 0);
 
-	{ // load_all_albums
-		AlbumList albums;
-		ldb->getAllAlbums(albums, true);
-		for(auto it=albums.begin(); it != albums.end(); it++)
-		{
-			if(album_map.contains(it->name()))
-			{
-				spLog(Log::Warning, this) << "Album " << it->name() << " already exists";
-				continue;
-			}
+	MetaDataList tracksToBeModified;
+	Util::Algorithm::transform(m->changeInfo, tracksToBeModified, [](const ChangeInformation& ci){
+		return ci.currentMetadata();
+	});
 
-			album_map[it->name()] = it->id();
-		}
-	}
+	MetaDataList modifiedTracks = ldb->insertMissingArtistsAndAlbums(tracksToBeModified);
 
-	{ // load all artists
-		ArtistList artists;
-		ldb->getAllArtists(artists, true);
-		for(auto it=artists.begin(); it != artists.end(); it++)
-		{
-			if(artist_map.contains(it->name()))
-			{
-				spLog(Log::Warning, this) << "Artist " << it->name() << " already exists";
-				continue;
-			}
-
-			artist_map[it->name()] = it->id();
-		}
-	}
-
-	Util::Set<QString> insert_artists, insert_albums;
-	{ // scan for unknown artists/albums
-		for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
-		{
-			const MetaData& md = it->currentMetadata();
-			if(!artist_map.contains(md.artist())) {
-				insert_artists << md.artist();
-			}
-
-			if(!artist_map.contains(md.albumArtist())){
-				insert_artists << md.albumArtist();
-			}
-
-			if(!album_map.contains(md.album())){
-				insert_albums << md.album();
-			}
-		}
-	}
-
-	db->transaction();
-
-	{ // insert unknown artists
-		if(!insert_artists.isEmpty())
-		{
-			for(const QString& artist : insert_artists)
-			{
-				ArtistId id = ldb->insertArtistIntoDatabase(artist);
-				if(id >= 0)	{
-					artist_map.insert(artist, id);
-				} else {
-					spLog(Log::Warning, this) << "Invalid artist id";
-				}
-			}
-		}
-	}
-
-	{ // insert unknown albums
-
-		if(!insert_albums.isEmpty())
-		{
-			for(const QString& album : insert_albums)
-			{
-				AlbumId id = ldb->insertAlbumIntoDatabase(album);
-				if(id >= 0){
-					album_map.insert(album, id);
-				} else {
-					spLog(Log::Warning, this) << "Invalid album id";
-				}
-			}
-		}
-	}
-
-	db->commit();
-
-	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
+	int i=0;
+	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++, i++)
 	{
-		MetaData md = it->currentMetadata();
+		if(!Util::between(i, modifiedTracks)) {
+			spLog(Log::Warning, this) << "Index out of bounds when updating tracks!";
+			break;
+		}
 
-		md.setAlbumId( album_map[md.album()] );
-		md.setArtistId( artist_map[md.artist()] );
-		md.setAlbumArtistId( artist_map[md.albumArtist()] );
-
-		it->update(md);
+		it->update(modifiedTracks[i]);
 	}
 }
 
@@ -419,32 +339,32 @@ void Editor::commit()
 	m->unchangedTracks.clear();
 	m->changedTracks.clear();
 
-	const auto changed_tracks = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
+	const auto changedTrackCount = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
 		return (info.hasChanges());
 	});
 
-	const auto changed_covers = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
+	const auto changedCoverCount = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
 		return (info.hasNewCover());
 	});
 
-	if((changed_tracks + changed_covers) == 0)
+	if((changedTrackCount + changedCoverCount) == 0)
 	{
 		emit sigFinished();
 		return;
 	}
 
-	spLog(Log::Debug, this) << "Changing " << changed_tracks << " tracks and " << changed_covers << " covers";
+	spLog(Log::Debug, this) << "Changing " << changedTrackCount << " tracks and " << changedCoverCount << " covers";
 
-	applyArtistsAndAlbumToMetadata();
+	insertMissingArtistsAndAlbums();
 
 	db->transaction();
 
 	int progress = 0;
 	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
 	{
-		bool has_new_cover = it->hasNewCover();
+		bool hasNewCover = it->hasNewCover();
 
-		emit sigProgress(((progress + 1) * 100) / (changed_tracks + changed_covers));
+		emit sigProgress(((progress + 1) * 100) / (changedTrackCount + changedCoverCount));
 
 		/* Normal tags changed */
 		if(it->hasChanges())
@@ -478,14 +398,14 @@ void Editor::commit()
 
 			if(success)
 			{ // write changed to db
-				const MetaData& org_md = it->originalMetadata();
-				const MetaData& cur_md = it->currentMetadata();
-				if( !cur_md.isExtern() && cur_md.id() >= 0 )
+				const MetaData& originalMetadata = it->originalMetadata();
+				const MetaData& modifiedMetadata = it->currentMetadata();
+				if( !modifiedMetadata.isExtern() && modifiedMetadata.id() >= 0 )
 				{
-					if(ldb->updateTrack(cur_md))
+					if(ldb->updateTrack(modifiedMetadata))
 					{
-						m->unchangedTracks << org_md;
-						m->changedTracks << cur_md;
+						m->unchangedTracks << originalMetadata;
+						m->changedTracks << modifiedMetadata;
 
 						// update track
 						it->apply();
@@ -494,8 +414,8 @@ void Editor::commit()
 
 				else
 				{
-					m->unchangedTracks << org_md;
-					m->changedTracks << cur_md;
+					m->unchangedTracks << originalMetadata;
+					m->changedTracks << modifiedMetadata;
 				}
 			}
 
@@ -503,7 +423,7 @@ void Editor::commit()
 		}
 
 		/* Covers changed */
-		if(has_new_cover)
+		if(hasNewCover)
 		{
 			QPixmap pm = it->cover();
 			if(pm.size().width() > 1000 || pm.size().height() > 1000)

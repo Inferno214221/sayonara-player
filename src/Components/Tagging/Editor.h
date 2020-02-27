@@ -169,7 +169,7 @@ namespace Tagging
 			/**
 			 * @brief applies the new artists and albums to the original metadata
 			 */
-			void applyArtistsAndAlbumToMetadata();
+			void insertMissingArtistsAndAlbums();
 
 		private slots:
 			void loadEntireAlbumFinished();

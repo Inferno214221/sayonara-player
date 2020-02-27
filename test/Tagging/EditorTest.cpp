@@ -86,7 +86,7 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 				md.setYear(Year(year));
 				md.setLibraryid(0);
 				QString dir = QString("%1/%2/%3 by %4")
-						.arg(temp_path())
+						.arg(tempPath())
 						.arg(md.year())
 						.arg(md.album())
 						.arg(md.artist());
