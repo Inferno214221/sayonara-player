@@ -220,6 +220,10 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 	MetaDataList ret(tracks);
 	for(MetaData& md : ret)
 	{
+		if(md.libraryId() < 0) {
+			md.setLibraryid(m->libraryId);
+		}
+
 		{ // check album id
 			AlbumHash hash = calcAlbumHash(md.album(), {md.albumArtist()});
 			Album album = albumMap[hash];
@@ -261,13 +265,8 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 		}
 
 		{ // check track id
-			if(md.id() < 0)
-			{
-				TrackID id = trackMap[md.filepath()].id();
-				if(id >= 0){
-					md.setId(id);
-				}
-			}
+			TrackID id = trackMap[md.filepath()].id();
+			md.setId(id);
 		}
 	}
 

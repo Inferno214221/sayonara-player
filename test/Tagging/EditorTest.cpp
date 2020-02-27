@@ -20,21 +20,22 @@ class EditorTest :
 	public Test::Base
 {
 	Q_OBJECT
+	DB::LibraryDatabase* mLibraryDatabase=nullptr;
 
 public:
 	EditorTest();
 	~EditorTest()=default;
 
-	MetaDataList create_metadata(int artists, int albums, int tracks);
+	MetaDataList createMetadata(int artists, int albums, int tracks);
 
 private slots:
-	void test_init();
-	void test_rating();
-	void test_one_album();
-	void test_changed_metadata();
-	void test_edit();
-	void test_cover();
-	void test_commit();
+	void testInit();
+	void testRating();
+	void testOneAlbum();
+	void testChangedMetadata();
+	void testEdit();
+	void testCover();
+	void testCommit();
 };
 
 EditorTest::EditorTest() :
@@ -43,13 +44,11 @@ EditorTest::EditorTest() :
 	auto* db = DB::Connector::instance();
 	db->registerLibraryDatabase(0);
 
-	auto* lib_db = db->libraryDatabase(0, DbId(0));
-	lib_db->storeMetadata(create_metadata(2, 2, 10));
-
-	db->closeDatabase();
+	mLibraryDatabase = db->libraryDatabase(0, 0);
+	mLibraryDatabase->storeMetadata(createMetadata(2, 2, 10));
 }
 
-MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
+MetaDataList EditorTest::createMetadata(int artists, int albums, int trackCount)
 {
 	QStringList genres[]
 	{
@@ -58,26 +57,26 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 		{""}
 	};
 
-	TrackID track_id = 1;
+	TrackID trackId = 1;
 
-	MetaDataList v_md;
+	MetaDataList tracks;
 	for(int ar=0; ar<artists; ar++)
 	{
 		QString artist = QString("artist %1").arg(ar);
 
 		for(int al=0; al<albums; al++)
 		{
-			AlbumId album_id = AlbumId((ar*albums) + al);
+			AlbumId albumId = AlbumId((ar*albums) + al);
 			QString album = QString("album %1").arg(al);
 			int year = 2000 + ar;
 
-			for(int t=0; t<tracks; t++)
+			for(int t=0; t<trackCount; t++)
 			{
 				MetaData md;
-				md.setId(TrackID(track_id++));
+				md.setId(TrackID(trackId++));
 				md.setTitle(QString("title %1").arg(t));
 				md.setAlbum(album);
-				md.setAlbumId(album_id);
+				md.setAlbumId(albumId);
 				md.setArtist(artist);
 				md.setArtistId(ArtistId(ar));
 				md.setGenres(genres[al]);
@@ -121,17 +120,17 @@ MetaDataList EditorTest::create_metadata(int artists, int albums, int tracks)
 					Tagging::Utils::setMetaDataOfFile(md);
 				}
 
-				v_md << md;
+				tracks << md;
 			}
 		}
 	}
 
-	return v_md;
+	return tracks;
 }
 
-void EditorTest::test_init()
+void EditorTest::testInit()
 {
-	MetaDataList tracks = create_metadata(5, 3, 10);
+	MetaDataList tracks = createMetadata(5, 3, 10);
 	Editor* editor = new Editor(tracks);
 
 	QVERIFY(editor->count() == (5*3*10));
@@ -158,9 +157,9 @@ void EditorTest::test_init()
 	editor->deleteLater();
 }
 
-void EditorTest::test_rating()
+void EditorTest::testRating()
 {
-	MetaDataList tracks = create_metadata(1, 1, 6);
+	MetaDataList tracks = createMetadata(1, 1, 6);
 	Editor* editor = new Editor(tracks);
 
 	QVERIFY(editor->count() == (1*1*6));
@@ -181,7 +180,7 @@ void EditorTest::test_rating()
 
 	QVERIFY(editor->hasChanges() == true);
 
-	const MetaDataList updated_tracks = editor->metadata();
+	const MetaDataList updatedTracks = editor->metadata();
 	for(int r=0; r<6; r++)
 	{
 		MetaData md = editor->metadata(r);
@@ -189,9 +188,9 @@ void EditorTest::test_rating()
 	}
 }
 
-void EditorTest::test_one_album()
+void EditorTest::testOneAlbum()
 {
-	MetaDataList tracks = create_metadata(1, 1, 10);
+	MetaDataList tracks = createMetadata(1, 1, 10);
 	Editor* editor = new Editor();
 	editor->setMetadata(tracks);
 
@@ -203,9 +202,9 @@ void EditorTest::test_one_album()
 }
 
 
-void EditorTest::test_changed_metadata()
+void EditorTest::testChangedMetadata()
 {
-	MetaDataList tracks = create_metadata(1, 1, 2);
+	MetaDataList tracks = createMetadata(1, 1, 2);
 	Editor* editor = new Editor();
 	editor->setMetadata(tracks);
 
@@ -213,7 +212,7 @@ void EditorTest::test_changed_metadata()
 	QVERIFY(editor->hasChanges() == false);
 	QVERIFY(editor->canLoadEntireAlbum() == true);
 
-	tracks = create_metadata(2, 2, 5);
+	tracks = createMetadata(2, 2, 5);
 	editor->setMetadata(tracks);
 
 	QVERIFY(editor->count() == 2*2*5);
@@ -223,9 +222,9 @@ void EditorTest::test_changed_metadata()
 	editor->deleteLater();
 }
 
-void EditorTest::test_edit()
+void EditorTest::testEdit()
 {
-	MetaDataList tracks = create_metadata(1, 1, 10);
+	MetaDataList tracks = createMetadata(1, 1, 10);
 	Editor* editor = new Editor();
 	editor->setMetadata(tracks);
 
@@ -268,13 +267,11 @@ void EditorTest::test_edit()
 	editor->deleteLater();
 }
 
-void EditorTest::test_cover()
+void EditorTest::testCover()
 {
 	MetaDataList tracks;
 
-	auto* db = DB::Connector::instance();
-	db->libraryDatabase(0,0)->getAllTracks(tracks);
-	db->closeDatabase();
+	mLibraryDatabase->getAllTracks(tracks);
 
 	QVERIFY(tracks.size() == 2*2*10);
 
@@ -308,13 +305,11 @@ void EditorTest::test_cover()
 }
 
 
-void EditorTest::test_commit()
+void EditorTest::testCommit()
 {
 	MetaDataList tracks;
 
-	auto* db = DB::Connector::instance();
-	db->libraryDatabase(0,0)->getAllTracks(tracks);
-	db->closeDatabase();
+	mLibraryDatabase->getAllTracks(tracks);
 
 	QVERIFY(tracks.size() == 2*2*10);
 

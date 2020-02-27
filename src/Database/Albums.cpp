@@ -156,10 +156,10 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
 	return (!albums.empty());
 }
 
-bool Albums::getAllAlbums(AlbumList& result, bool also_empty) const
+bool Albums::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 {
 	Query q(module());
-	QString query = fetchQueryAlbums(also_empty);
+	QString query = fetchQueryAlbums(alsoEmpty);
 
 	query += " GROUP BY albums.albumID, albums.name, albums.rating; ";
 

@@ -17,8 +17,8 @@ class LibraryDatabaseTest :
 	Q_OBJECT
 
 private:
-	QStringList m_album_names;
-	DB::LibraryDatabase* m_lib_db=nullptr;
+	QStringList mAlbumNames;
+	DB::LibraryDatabase* mLibraryDatabase=nullptr;
 
 public:
 	LibraryDatabaseTest() :
@@ -28,13 +28,13 @@ public:
 	~LibraryDatabaseTest() override = default;
 
 private:
-	DB::LibraryDatabase* init_db();
+	DB::LibraryDatabase* initDatabase();
 
 private slots:
-	void test_store();
+	void testStore();
 };
 
-static MetaDataList create_tracks()
+static MetaDataList createTracks()
 {
 	MetaDataList tracks;
 	for(int i=0; i<100; i++)
@@ -52,41 +52,57 @@ static MetaDataList create_tracks()
 		tracks << md;
 	}
 
+	// track[00-09]: artist0, album0
+	// track[10-19]: artist0, album1
+	// track[20-29]: artist1, album2
+	// track[30-39]: artist1, album3
+	// track[40-49]: artist2, album4
+	// track[50-59]: artist2, album5
+	// track[60-69]: artist3, album6
+	// track[70-79]: artist3, album7
+	// track[80-89]: artist4, album8
+	// track[90-99]: artist4, album9
+
 	tracks.sort(Library::SortOrder::TrackTitleAsc);
 	return tracks;
 }
 
-void LibraryDatabaseTest::test_store()
+#include "Utils/Logger/Logger.h"
+void LibraryDatabaseTest::testStore()
 {
-	const MetaDataList tracks = create_tracks();
+	const MetaDataList tracks = createTracks();
 	QVERIFY(tracks.count() == 100);
 
-	auto* lib_db = init_db();
-	bool success = lib_db->storeMetadata(tracks);
+	auto* libraryDb = initDatabase();
+	bool success = libraryDb->storeMetadata(tracks);
 
 	QVERIFY(success == true);
 
-	int trackcount = lib_db->getNumTracks();
+	int trackcount = libraryDb->getNumTracks();
 	qDebug() << "trackcount " << trackcount;
 	QVERIFY(trackcount == 100);
 
-	MetaDataList tracks_tmp;
-	success = lib_db->getAllTracks(tracks_tmp);
+	MetaDataList tempTracks;
+	success = libraryDb->getAllTracks(tempTracks);
 	QVERIFY(success == true);
-	QVERIFY(tracks_tmp.count() == tracks.count());
+	QVERIFY(tempTracks.count() == tracks.count());
 
-	tracks_tmp.sort(Library::SortOrder::TrackTitleAsc);
+	tempTracks.sort(Library::SortOrder::TrackTitleAsc);
 	for(int i=0; i<tracks.count(); i++)
 	{
-		QVERIFY(tracks[i] == tracks_tmp[i]);
+		QVERIFY(tracks[i] == tempTracks[i]);
 	}
 
 	AlbumList albums;
-	lib_db->getAllAlbums(albums, true);
+	libraryDb->getAllAlbums(albums, true);
+	for(const Album& album : albums)
+	{
+		spLog(Log::Info, this) << album.name() << "," << album.albumArtists().join(",");
+	}
 	QVERIFY(albums.count() == 10);
 
 	ArtistList artists;
-	lib_db->getAllArtists(artists, true);
+	libraryDb->getAllArtists(artists, true);
 	QVERIFY(artists.count() == 5);
 
 	MetaData md1 = tracks.first();
@@ -97,62 +113,62 @@ void LibraryDatabaseTest::test_store()
 	md2.setAlbum("");
 	md2.setFilepath("/a/completely/different/path.mp3");
 
-	tracks_tmp.clear();
-	tracks_tmp << md1 << md2;
+	tempTracks.clear();
+	tempTracks << md1 << md2;
 
-	QVERIFY(tracks_tmp.count() == 2);
-	success = lib_db->storeMetadata(tracks_tmp);
+	QVERIFY(tempTracks.count() == 2);
+	success = libraryDb->storeMetadata(tempTracks);
 	QVERIFY(success == true);
 
-	trackcount = lib_db->getNumTracks();
+	trackcount = libraryDb->getNumTracks();
 	QVERIFY(trackcount == tracks.count() + 1);
 
-	success = lib_db->getAllArtists(artists, true);
+	success = libraryDb->getAllArtists(artists, true);
 	QVERIFY(success);
 	QVERIFY(artists.count() == 7);
 
-	success = lib_db->getAllAlbums(albums, true);
+	success = libraryDb->getAllAlbums(albums, true);
 	QVERIFY(success);
-	QVERIFY(albums.count() == 11);
+	QVERIFY(albums.count() == 12);
 
-	success = lib_db->getAllTracks(tracks_tmp);
-	qDebug() << "New trackcount " << tracks_tmp.count();
+	success = libraryDb->getAllTracks(tempTracks);
+	qDebug() << "New trackcount " << tempTracks.count();
 	QVERIFY(success);
-	QVERIFY(tracks_tmp.count() == trackcount);
+	QVERIFY(tempTracks.count() == trackcount);
 
-	lib_db->storeMetadata(tracks);
-	trackcount = lib_db->getNumTracks();
+	libraryDb->storeMetadata(tracks);
+	trackcount = libraryDb->getNumTracks();
 	QVERIFY(trackcount == tracks.count() + 1);
 
-	lib_db->getAllArtists(artists, true);
+	libraryDb->getAllArtists(artists, true);
 	QVERIFY(artists.count() == 7);
 
-	lib_db->getAllAlbums(albums, true);
-	QVERIFY(albums.count() == 11);
+	libraryDb->getAllAlbums(albums, true);
+	QVERIFY(albums.count() == 12);
 
 	// md1 is overwritten again -> artist of md1 has no tracks anymore
 	// md2 stays as the filepath differs -> artist of md2 stays
-	lib_db->getAllArtists(artists, false);
+	libraryDb->getAllArtists(artists, false);
 	QVERIFY(artists.count() == 6);
 
 	// album of md2 stays
-	lib_db->getAllAlbums(albums, false);
+	libraryDb->getAllAlbums(albums, false);
 	QVERIFY(albums.count() == 11);
 }
 
 
-DB::LibraryDatabase* LibraryDatabaseTest::init_db()
+DB::LibraryDatabase* LibraryDatabaseTest::initDatabase()
 {
-	if(m_lib_db)
+	if(mLibraryDatabase)
 	{
-		return m_lib_db;
+		return mLibraryDatabase;
 	}
 
 	auto* db = DB::Connector::instance();
 	db->registerLibraryDatabase(0);
-	m_lib_db = db->libraryDatabase(0, 0);
+	mLibraryDatabase = db->libraryDatabase(0, 0);
 
-	return m_lib_db;
+	return mLibraryDatabase;
 }
 
 
