@@ -134,6 +134,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		switch(col)
 		{
 			case ColumnIndex::Album::Name:
+			case ColumnIndex::Album::AlbumArtist:
 				alignment |= Qt::AlignLeft;
 				break;
 			default:
@@ -181,6 +182,15 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 					return Lang::get(Lang::UnknownAlbum);
 				}
 				return album.name();
+
+			case ColumnIndex::Album::AlbumArtist:
+			{
+				QString albumArtist = album.albumArtists().join(", ");
+				if(albumArtist.isEmpty()){
+					return Lang::get(Lang::UnknownArtist);
+				}
+				return albumArtist;
+			}
 
 			case ColumnIndex::Album::Duration:
 				return ::Util::msToString(album.durationSec() * 1000, "$He $M:$S");

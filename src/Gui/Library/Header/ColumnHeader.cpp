@@ -146,6 +146,8 @@ QString ColumnHeaderAlbum::title() const
 			return "#";
 		case ColumnIndex::Album::Name:
 			return Lang::get(Lang::Name).toFirstUpper();
+		case ColumnIndex::Album::AlbumArtist:
+			return Lang::get(Lang::AlbumArtists).toFirstUpper();
 		case ColumnIndex::Album::Duration:
 			return Lang::get(Lang::DurationShort).toFirstUpper();
 		case ColumnIndex::Album::NumSongs:

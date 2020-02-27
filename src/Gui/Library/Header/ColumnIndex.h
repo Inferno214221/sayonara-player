@@ -34,11 +34,12 @@ namespace ColumnIndex
 	enum class Album : IntegerType
 	{
 		MultiDisc=0,
-		Name=1,
-		Duration=2,
-		NumSongs=3,
-		Year=4,
-		Rating=5
+		Name,
+		Duration,
+		AlbumArtist,
+		NumSongs,
+		Year,
+		Rating
 	};
 
 	enum class Artist : IntegerType

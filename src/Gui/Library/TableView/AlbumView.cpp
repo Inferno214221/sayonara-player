@@ -88,6 +88,7 @@ ColumnHeaderList AlbumView::columnHeaders() const
 	{
 		std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidth(fm, "MM")),
 		std::make_shared<ColumnHeaderAlbum>(Album::Name, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
+		std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
 		std::make_shared<ColumnHeaderAlbum>(Album::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidth(fm, "Duration")),
 		std::make_shared<ColumnHeaderAlbum>(Album::NumSongs, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidth(fm, "num tracks")),
 		std::make_shared<ColumnHeaderAlbum>(Album::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidth(fm, "M 8888")),
