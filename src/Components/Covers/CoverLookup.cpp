@@ -85,7 +85,8 @@ Lookup::Lookup(const Location& cl, int n_covers, QObject* parent) :
 
 Lookup::~Lookup()
 {
-	m->pixmaps.clear();
+	m->stopped = true;
+
 	if(m->cft)
 	{
 		m->cft->stop();
