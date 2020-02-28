@@ -46,6 +46,8 @@ using Library::Info;
 
 using OrderMap=QMap<LibraryId, int>;
 
+static void removeLibraryDirInSayonaraDir();
+
 struct Manager::Private
 {
 
@@ -53,16 +55,11 @@ public:
 	QMap<LibraryId, LocalLibrary*> libraryMap;
 	QList<Info> allLibraries;
 
-	Private() {}
+	Private() = default;
 
 	bool checkNewPath(const QString& path, LibraryId libraryId=-5) const
 	{
 		if(path.isEmpty()){
-			return false;
-		}
-
-		const QString sayonaraPath = ::Util::sayonaraPath("Libraries");
-		if(path.contains(sayonaraPath, Qt::CaseInsensitive)){
 			return false;
 		}
 
@@ -72,7 +69,11 @@ public:
 				continue;
 			}
 
-			if(Util::File::cleanFilename(info.path()) == Util::File::cleanFilename(path)){
+			if(Util::File::isSamePath(info.path(), path)) {
+				return false;
+			}
+
+			else if(Util::File::isSubdir(path, info.path())) {
 				return false;
 			}
 		}
@@ -147,6 +148,8 @@ Manager::Manager() :
 	QObject()
 {
 	m = Pimpl::make<Private>();
+
+	removeLibraryDirInSayonaraDir();
 
 	reset();
 }
@@ -413,4 +416,31 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 	}
 
 	return lib;
+}
+
+void removeLibraryDirInSayonaraDir()
+{
+	if(!Util::File::exists(Util::sayonaraPath("Libraries"))) {
+		return;
+	}
+
+	QDir d(Util::sayonaraPath("Libraries"));
+	QList<QFileInfo> infos = d.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs | QDir::Filter::Files);
+	for(const QFileInfo& info : infos) {
+		if(info.isSymLink())
+		{
+			QString filename = d.absoluteFilePath(info.fileName());
+			bool b = QFile::remove(filename);
+			spLog(Log::Info, "LibraryManager") << filename << " removed :" << b;
+		}
+	}
+
+	infos = d.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs | QDir::Filter::Files);
+	if(infos.isEmpty())
+	{
+		QString filename = Util::sayonaraPath("Libraries");
+		QDir l(filename);
+		bool b = l.removeRecursively();
+		spLog(Log::Info, "LibraryManager") << filename << " removed :" << b;
+	}
 }
