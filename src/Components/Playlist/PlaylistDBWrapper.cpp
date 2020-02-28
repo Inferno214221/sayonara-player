@@ -48,19 +48,19 @@ DBWrapper::DBWrapper()
 
 DBWrapper::~DBWrapper() = default;
 
-void DBWrapper::applyTags(MetaDataList& v_md)
+void DBWrapper::applyTags(MetaDataList& tracks)
 {
-	for(MetaData& md : v_md)
+	for(MetaData& md : tracks)
 	{
 		if(md.isExtern())
 		{
-			if(Util::File::isFile(md.filepath())){
+			if(Util::File::isFile(md.filepath()))
+			{
 				Tagging::Utils::getMetaDataOfFile(md);
 			}
 		}
 	}
 }
-
 
 bool DBWrapper::getSkeletons(CustomPlaylistSkeletons& skeletons, Playlist::StoreType type, Playlist::SortOrder so)
 {
@@ -91,7 +91,6 @@ bool DBWrapper:: getNonTemporarySkeletons(CustomPlaylistSkeletons& skeletons,
 						 so);
 }
 
-
 bool DBWrapper::getPlaylists(CustomPlaylists& playlists, Playlist::StoreType type, Playlist::SortOrder so)
 {
 	Q_UNUSED(type)
@@ -104,11 +103,11 @@ bool DBWrapper::getPlaylists(CustomPlaylists& playlists, Playlist::StoreType typ
 		return false;
 	}
 
-	bool load_temporary = (type == Playlist::StoreType::OnlyTemporary ||
-						   type == Playlist::StoreType::TemporaryAndPermanent);
+	bool loadTemporary = (type == Playlist::StoreType::OnlyTemporary ||
+	                      type == Playlist::StoreType::TemporaryAndPermanent);
 
-	bool load_permanent = (type == Playlist::StoreType::OnlyPermanent ||
-						   type == Playlist::StoreType::TemporaryAndPermanent);
+	bool loadPermanent = (type == Playlist::StoreType::OnlyPermanent ||
+	                      type == Playlist::StoreType::TemporaryAndPermanent);
 
 	for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
 	{
@@ -125,8 +124,8 @@ bool DBWrapper::getPlaylists(CustomPlaylists& playlists, Playlist::StoreType typ
 
 		applyTags(pl);
 
-		if( (pl.temporary() && load_temporary) ||
-			(!pl.temporary() && load_permanent) )
+		if( (pl.temporary() && loadTemporary) ||
+			(!pl.temporary() && loadPermanent) )
 		{
 			playlists.push_back(pl);
 		}
@@ -205,13 +204,13 @@ bool DBWrapper::savePlaylistAs(const MetaDataList& v_md, const QString& name)
 	return success;
 }
 
-bool DBWrapper::savePlaylistTemporary(const MetaDataList& v_md, const QString& name)
+bool DBWrapper::savePlaylistTemporary(const MetaDataList& tracks, const QString& name)
 {
 	auto* db = DB::Connector::instance();
 
 	db->transaction();
 
-	bool success = m->playlistDatabase->storePlaylist(v_md, name, true);
+	bool success = m->playlistDatabase->storePlaylist(tracks, name, true);
 
 	db->commit();
 

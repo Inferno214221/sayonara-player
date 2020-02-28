@@ -315,14 +315,12 @@ QByteArray AsyncWebAccess::data() const
 	return m->data;
 }
 
-
 QImage AsyncWebAccess::image() const
 {
 	QImage img;
 	img.loadFromData(m->data);
 	return img;
 }
-
 
 QString AsyncWebAccess::url() const
 {

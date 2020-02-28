@@ -61,26 +61,26 @@ struct Lookup::Private
 {
 	QList<QPixmap>	pixmaps;
 	FetchThread*	cft=nullptr;
-	void*			user_data=nullptr;
+	void*			userData=nullptr;
 
-	int				n_covers;
+	int				coverCount;
 	Source			source;
-	bool			thread_running;
+	bool			isThreadRunning;
 	bool			finished;
 	bool			stopped;
 
 	Private(int n_covers) :
-		n_covers(n_covers),
-		thread_running(false),
+		coverCount(n_covers),
+		isThreadRunning(false),
 		finished(false),
 		stopped(false)
 	{}
 };
 
-Lookup::Lookup(const Location& cl, int n_covers, QObject* parent) :
+Lookup::Lookup(const Location& cl, int coverCount, QObject* parent) :
 	LookupBase(cl, parent)
 {
-	m = Pimpl::make<Private>(n_covers);
+	m = Pimpl::make<Private>(coverCount);
 }
 
 Lookup::~Lookup()
@@ -94,20 +94,20 @@ Lookup::~Lookup()
 	}
 }
 
-bool Lookup::startNewThread(const Cover::Location& cl )
+bool Lookup::startNewThread(const Cover::Location& cl)
 {
-	bool has_search_urls = cl.hasSearchUrls();
-	if(!has_search_urls || !cl.isValid()){
+	bool hasSearchUrls = cl.hasSearchUrls();
+	if(!hasSearchUrls || !cl.isValid()){
 		return false;
 	}
 
 	spLog(Log::Develop, this) << "Start new cover fetch thread for " << cl.identifer();
 
-	m->thread_running = true;
+	m->isThreadRunning = true;
 
 	QThread* thread = new QThread(nullptr);
 
-	m->cft = new FetchThread(nullptr, cl, m->n_covers);
+	m->cft = new FetchThread(nullptr, cl, m->coverCount);
 	m->cft->moveToThread(thread);
 
 	connect(m->cft, &FetchThread::sigCoverFound, this, &Lookup::coverFound);
@@ -125,7 +125,7 @@ bool Lookup::startNewThread(const Cover::Location& cl )
 void Lookup::start()
 {
 	m->pixmaps.clear();
-	m->thread_running = false;
+	m->isThreadRunning = false;
 	m->stopped = false;
 	m->finished = false;
 
@@ -137,7 +137,7 @@ void Lookup::start()
 		return;
 	}
 
-	if(m->n_covers == 1)
+	if(m->coverCount == 1)
 	{
 		if(fetchFromDatabase()){
 			return;
@@ -189,8 +189,8 @@ bool Lookup::fetchFromWWW()
 {
 	Cover::Location cl = coverLocation();
 
-	bool fetch_from_www_allowed = GetSetting(Set::Cover_FetchFromWWW);
-	if(fetch_from_www_allowed)
+	bool fetchFromWwwAllowed = GetSetting(Set::Cover_FetchFromWWW);
+	if(fetchFromWwwAllowed)
 	{
 		spLog(Log::Debug, this) << "Start new thread for " << cl.identifer();
 		return startNewThread( cl );
@@ -212,8 +212,8 @@ void Lookup::threadFinished(bool success)
 
 bool Lookup::startExtractor(const Location& cl)
 {
-	Cover::Extractor* extractor = new Cover::Extractor(cl, nullptr);
-	QThread* thread = new QThread(nullptr);
+	auto* extractor = new Cover::Extractor(cl, nullptr);
+	auto* thread = new QThread(nullptr);
 	extractor->moveToThread(thread);
 
 	connect(extractor, &Cover::Extractor::sigFinished, this, &Cover::Lookup::extractorFinished);
@@ -262,9 +262,9 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 	emit sigCoverFound(pm);
 	m->pixmaps.push_back(pm);
 
-	if(!save || m->n_covers > 1)
+	if(!save || m->coverCount > 1)
 	{
-		if(m->pixmaps.size() == m->n_covers){
+		if(m->pixmaps.size() == m->coverCount){
 			emitFinished(true);
 		}
 
@@ -288,7 +288,7 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 		Cover::Utils::writeCoverToSayonaraDirectory(coverLocation(), pm);
 	}
 
-	if(m->pixmaps.size() == m->n_covers){
+	if(m->pixmaps.size() == m->coverCount){
 		emitFinished(true);
 	}
 
@@ -335,12 +335,12 @@ bool Lookup::isThreadRunning() const
 
 void Lookup::setUserData(void* data)
 {
-	m->user_data = data;
+	m->userData = data;
 }
 
 void* Lookup::userData()
 {
-	void* data = m->user_data;
+	void* data = m->userData;
 	return data;
 }
 

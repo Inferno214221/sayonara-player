@@ -91,8 +91,9 @@ private slots:
 	void coverServersChanged();
 	void autostartToggled(bool b);
 	void rbAutosearchToggled(bool b);
-	void rbTextsearchToggled(bool b);
 	void wwwActiveChanged();
+
+	void searchTextEdited(const QString& text);
 
 
 protected:

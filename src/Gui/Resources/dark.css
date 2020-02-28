@@ -511,6 +511,13 @@ QComboBox QAbstractItemView::item:selected
 	color: white;
 }
 
+QComboBox:disabled
+{
+	border: 1px solid #303030;
+	color: #7f7f7f;
+	background: #424242;
+}
+
 #ControlPlayButton,
 #ControlRecButton,
 #ControlFwdButton,
@@ -864,4 +871,16 @@ QBalloonTip
 {
 	background-color: #3c3c3c;
 	color: #e8841a;
+}
+
+#PreferenceButton
+{
+	border: none;
+	background: transparent;
+	color: #e8841a;
+}
+
+#PreferenceButton:hover
+{
+	text-decoration: underline;
 }

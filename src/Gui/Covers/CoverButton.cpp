@@ -374,17 +374,17 @@ void CoverButton::paintEvent(QPaintEvent* event)
 
 	if(!pmOld.isNull())
 	{
-		int x_old = (w - pmOld.width()) / 2;
-		int y_old = (h - pmOld.height()) / 2;
+		int xOld = (w - pmOld.width()) / 2;
+		int yOld = (h - pmOld.height()) / 2;
 
 		painter.setOpacity(1.0 - m->opacity);
 		painter.drawPixmap
 		(
-			x_old, y_old, pmOld.width(), pmOld.height(),
+			xOld, yOld, pmOld.width(), pmOld.height(),
 			pmOld
 		);
 
-		m->pixmapRect = QRect(x_old, y_old, pmOld.width(), pmOld.height());
+		m->pixmapRect = QRect(xOld, yOld, pmOld.width(), pmOld.height());
 
 		painter.setOpacity(m->opacity);
 	}

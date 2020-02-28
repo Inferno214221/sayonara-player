@@ -91,7 +91,7 @@ if( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
 endif()
 
 # in order to choose another qt installation set CMAKE_PREFIX_PATH
-find_package(Qt5 5.8 COMPONENTS Core Widgets Sql Network DBus Xml REQUIRED)
+find_package(Qt5 5.8 COMPONENTS Core Widgets Sql Network DBus Xml Svg REQUIRED)
 find_package(Qt5LinguistTools REQUIRED)
 
 include_directories(${Qt5Core_INCLUDE_DIRS})
@@ -100,6 +100,7 @@ include_directories(${Qt5Xml_INCLUDE_DIRS})
 include_directories(${Qt5Sql_INCLUDE_DIRS})
 include_directories(${Qt5DBus_INCLUDE_DIRS})
 include_directories(${Qt5Network_INCLUDE_DIRS})
+include_directories(${Qt5Svg_INCLUDE_DIRS})
 include_directories(${GLIB_INCLUDE_DIRS})
 include_directories(${GOBJECT_INCLUDE_DIRS})
 include_directories(${GSTREAMER_INCLUDE_DIRS})
