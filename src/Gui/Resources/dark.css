@@ -112,6 +112,11 @@ IconThemeScrollWidget
 	selection-background-color: #424e72;
 }
 
+Library--CoverView
+{
+	background: url(':/Icons/bg.png');
+}
+
 SearchableListView,
 Directory--TreeView,
 Directory--FileListView,
@@ -153,8 +158,7 @@ QTableView::item,
 QTreeView::item,
 QComboBox QAbstractItemView::item
 {
-	padding-top: 2px;
-	padding-bottom: 2px;
+	padding: 2px 0px;
 }
 
 QListView::item:selected,
@@ -755,7 +759,6 @@ QCheckBox:focus
 	color: #e8841a;
 }
 
-
 QRadioButton:disabled,
 QCheckbox:disabled 
 {
@@ -796,7 +799,6 @@ QCheckBox::indicator:disabled
 	image: url(:/Icons/tool_disabled.svg);
 }
 
-
 QProgressBar
 {
 	border: 2px solid #2B2B2B;
@@ -833,6 +835,20 @@ QProgressBar#sli_buffer::chunk
 	margin: 0;
 }
 
+QBalloonTip
+{
+	background-color: #3c3c3c;
+	color: #e8841a;
+}
+
+QToolTip
+{
+	padding: 2px;
+	background: #424e72;
+	color: white;
+	border: 1px solid #282828;
+}
+
 RatingLabel:focus
 {
 	border: 1px solid #e8841a;
@@ -865,12 +881,6 @@ CoverButton:hover,
 {
 	border: 1px solid #e8841a;
 	border-top: none;
-}
-
-QBalloonTip
-{
-	background-color: #3c3c3c;
-	color: #e8841a;
 }
 
 #PreferenceButton

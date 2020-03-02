@@ -177,11 +177,11 @@ void Manager::reset()
 
 	if(m->allLibraries.isEmpty())
 	{
-		QString old_path = GetSetting(Set::Lib_Path);
+		QString oldPath = GetSetting(Set::Lib_Path);
 
-		if(!old_path.isEmpty())
+		if(!oldPath.isEmpty())
 		{
-			Info info("Local Library", old_path, 0);
+			Info info("Local Library", oldPath, 0);
 			ldb->insertLibrary(0, info.name(), info.path(), 0);
 
 			m->allLibraries << info;
