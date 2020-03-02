@@ -57,7 +57,7 @@ GUI_CoverPreferences::~GUI_CoverPreferences()
 	}
 }
 
-static bool check_cover_template(const QString& coverTemplate)
+static bool checkCoverTemplate(const QString& coverTemplate)
 {
 	if(coverTemplate.trimmed().isEmpty()){
 		return false;
@@ -97,25 +97,25 @@ bool GUI_CoverPreferences::commit()
 	SetSetting(Set::Cover_SaveToLibrary, ui->cbSaveToLibrary->isChecked() && ui->cbSaveToLibrary->isEnabled());
 	SetSetting(Set::Cover_SaveToSayonaraDir, ui->cbSaveToSayonaraDir->isChecked() && ui->cbSaveToSayonaraDir->isEnabled());
 
-	QString cover_template = ui->leCoverTemplate->text().trimmed();
-	if(check_cover_template(cover_template))
+	QString coverTemplate = ui->leCoverTemplate->text().trimmed();
+	if(checkCoverTemplate(coverTemplate))
 	{
-		if(!Util::File::isImageFile(cover_template))
+		if(!Util::File::isImageFile(coverTemplate))
 		{
-			QString ext = Util::File::getFileExtension(cover_template);
+			QString ext = Util::File::getFileExtension(coverTemplate);
 			if(ext.isEmpty()){
-				cover_template.append(".jpg");
-				cover_template.replace("..jpg", ".jpg");
+				coverTemplate.append(".png");
+				coverTemplate.replace("..png", ".png");
 			}
 
 			else {
-				cover_template.replace("." + ext, ".jpg");
+				coverTemplate.replace("." + ext, ".png");
 			}
 
-			ui->leCoverTemplate->setText(cover_template);
+			ui->leCoverTemplate->setText(coverTemplate);
 		}
 
-		SetSetting(Set::Cover_TemplatePath, cover_template);
+		SetSetting(Set::Cover_TemplatePath, coverTemplate);
 	}
 
 	else
@@ -302,7 +302,7 @@ void GUI_CoverPreferences::saveCoverToLibraryToggled(bool b)
 
 void GUI_CoverPreferences::coverTemplateEdited(const QString& text)
 {
-	bool valid = check_cover_template(text);
+	bool valid = checkCoverTemplate(text);
 	ui->labTemplateError->setVisible(!valid);
 	ui->labTemplateError->setText(Lang::get(Lang::Error) + ": " + Lang::get(Lang::InvalidChars));
 }

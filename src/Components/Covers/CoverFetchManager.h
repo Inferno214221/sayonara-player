@@ -121,6 +121,8 @@ namespace Fetcher
 			 */
 			Url directFetcherUrl(const QString& url);
 
+			static bool isSearchstringWebsite(const QString& searchstring);
+
 
 		private slots:
 			void serversChanged();

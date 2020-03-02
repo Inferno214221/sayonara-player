@@ -29,8 +29,8 @@
 
 struct AbstractPlaylistParser::Private
 {
-	MetaDataList		v_md;
-	QString				file_content;
+	MetaDataList		tracks;
+	QString				fileContent;
 	QString				directory;
 	bool				parsed;
 
@@ -40,19 +40,18 @@ struct AbstractPlaylistParser::Private
 	}
 };
 
-
 AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
 {
 	m = Pimpl::make<AbstractPlaylistParser::Private>();
 
-	QString pure_file;
+	QString pureFile;
 
-	Util::File::splitFilename(filename, m->directory, pure_file);
-	Util::File::readFileIntoString(filename, m->file_content);
+	Util::File::splitFilename(filename, m->directory, pureFile);
+	Util::File::readFileIntoString(filename, m->fileContent);
 
 }
 
-AbstractPlaylistParser::~AbstractPlaylistParser() {}
+AbstractPlaylistParser::~AbstractPlaylistParser() = default;
 
 MetaDataList AbstractPlaylistParser::tracks(bool force_parse)
 {
@@ -61,29 +60,29 @@ MetaDataList AbstractPlaylistParser::tracks(bool force_parse)
 	}
 
 	if(!m->parsed){
-		m->v_md.clear();
+		m->tracks.clear();
 		parse();
 	}
 
 	m->parsed = true;
 
 
-	return m->v_md;
+	return m->tracks;
 }
 
 void AbstractPlaylistParser::addTrack(const MetaData& md)
 {
-	m->v_md << md;
+	m->tracks << md;
 }
 
-void AbstractPlaylistParser::addTracks(const MetaDataList& v_md)
+void AbstractPlaylistParser::addTracks(const MetaDataList& tracks)
 {
-	m->v_md << v_md;
+	m->tracks << tracks;
 }
 
 const QString& AbstractPlaylistParser::content() const
 {
-	return m->file_content;
+	return m->fileContent;
 }
 
 

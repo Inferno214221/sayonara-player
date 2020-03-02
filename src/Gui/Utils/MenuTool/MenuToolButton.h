@@ -78,6 +78,8 @@ namespace Gui
 			 */
 			Gui::ContextMenuEntries entries() const;
 
+			void setOverrideText(bool b);
+
 
 		public slots:
 			/**
@@ -113,6 +115,9 @@ namespace Gui
 			 * @return true if there are any entries in menu, false else
 			 */
 			bool proveEnabled();
+
+		protected:
+			void languageChanged() override;
 	};
 }
 

@@ -309,8 +309,8 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			gst_message_parse_buffering(msg, &percent);
 			gst_message_parse_buffering_stats(msg, &mode, &avg_in, &avg_out, &buffering_left );
 
-			spLog(Log::Develop, "Engine Callback") << "Buffering: " << percent;
-			spLog(Log::Develop, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out << " buffering_left: " << buffering_left;
+			spLog(Log::Crazy, "Engine Callback") << "Buffering: " << percent;
+			spLog(Log::Crazy, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out << " buffering_left: " << buffering_left;
 
 			engine->setBufferState(percent, src);
 			break;

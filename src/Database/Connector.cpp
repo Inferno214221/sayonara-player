@@ -52,6 +52,11 @@ using DB::LibraryDatabase;
 using LibDbIterator=DB::LibraryDatabases::Iterator;
 namespace Algorithm=Util::Algorithm;
 
+int Connector::highestDatabaseVersion()
+{
+	return 26;
+}
+
 struct Connector::Private
 {
 	QString					connection_name;
@@ -279,11 +284,6 @@ bool Connector::updateLostAlbums()
 int Connector::oldDatabaseVersion() const
 {
 	return m->old_db_version;
-}
-
-int Connector::highestDatabaseVersion()
-{
-	return 25;
 }
 
 bool Connector::applyFixes()
@@ -769,6 +769,15 @@ bool Connector::applyFixes()
 	{
 		checkAndInsertColumn("savedpodcasts", "reversed", "INTEGER", "0");
 		settingsConnector()->storeSetting("version", 25);
+	}
+
+	if(version < 26)
+	{
+		checkAndInsertColumn("playlistToTracks", "stationName", "VARCHAR(255)");
+		checkAndInsertColumn("playlistToTracks", "station", "VARCHAR(255)");
+		checkAndInsertColumn("playlistToTracks", "isRadio", "INTEGER", "0");
+
+		settingsConnector()->storeSetting("version", 26);
 	}
 
 	return true;

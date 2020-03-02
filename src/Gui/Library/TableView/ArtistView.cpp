@@ -93,6 +93,9 @@ void ArtistView::initContextMenu()
 
 	connect(m->albumArtistAction, &QAction::triggered, this, &ArtistView::albumArtistsTriggered);
 
+	auto* beforeAction = contextMenu()->action(ContextMenu::Entry::EntryReload);
+	contextMenu()->insertAction(beforeAction, m->albumArtistAction);
+
 	languageChanged();
 }
 
@@ -137,7 +140,7 @@ void ArtistView::languageChanged()
 
 	if(m->albumArtistAction)
 	{
-		ShortcutHandler* sch = ShortcutHandler::instance();
+		auto* sch = ShortcutHandler::instance();
 		m->albumArtistAction->setText(Lang::get(Lang::ShowAlbumArtists));
 		m->albumArtistAction->setShortcut(sch->shortcut(ShortcutIdentifier::AlbumArtists).sequence());
 	}

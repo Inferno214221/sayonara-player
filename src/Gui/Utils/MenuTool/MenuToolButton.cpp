@@ -29,12 +29,13 @@ using Gui::ContextMenu;
 struct MenuToolButton::Private
 {
 	ContextMenu* menu=nullptr;
+	bool overrideText;
 
 	Private(MenuToolButton* parent) :
-		menu(new ContextMenu(parent))
+		menu(new ContextMenu(parent)),
+		overrideText(false)
 	{}
 };
-
 
 MenuToolButton::MenuToolButton(QWidget* parent) :
 	WidgetTemplate<QPushButton>(parent)
@@ -53,7 +54,6 @@ MenuToolButton::MenuToolButton(QWidget* parent) :
 
 	proveEnabled();
 
-	this->setText(QString::fromUtf8("≡"));
 	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 	this->setIconSize(QSize(10, 10));
 	this->setToolTip(Lang::get(Lang::Menu));
@@ -118,5 +118,18 @@ void MenuToolButton::mouseReleaseEvent(QMouseEvent* e)
 
 		this->setEnabled(false);
 		this->setEnabled(true);
+	}
+}
+
+void MenuToolButton::setOverrideText(bool b)
+{
+	m->overrideText = b;
+}
+
+void MenuToolButton::languageChanged()
+{
+	if(!m->overrideText)
+	{
+		this->setText(QString::fromUtf8("≡"));
 	}
 }

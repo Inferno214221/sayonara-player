@@ -21,6 +21,7 @@
 #include "Slider.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QPainter>
 #include <QMouseEvent>
@@ -49,58 +50,6 @@ Slider::Slider(QWidget* parent) :
 
 Slider::~Slider() = default;
 
-bool Slider::event(QEvent* e){
-	/** We need this for activate an item as soon it is hovered.
-	Otherwise, the curve functionality with the mouse wheel event does not work **/
-	switch(e->type())
-	{
-		case QEvent::HoverEnter:
-			m->hovered = true;
-			emit sigSliderGotFocus();
-			break;
-
-		case QEvent::HoverLeave:
-			m->hovered = false;
-			if(!this->hasFocus()){
-				emit sigSliderLostFocus();
-			}
-
-			break;
-
-		default: 
-			break;
-	}
-
-	return QSlider::event(e);
-}
-
-
-void Slider::focusInEvent(QFocusEvent* e){
-	QSlider::focusInEvent(e);
-	emit sigSliderGotFocus();
-}
-
-void Slider::focusOutEvent(QFocusEvent* e){
-	QSlider::focusOutEvent(e);
-	emit sigSliderLostFocus();
-}
-
-void Slider::mousePressEvent(QMouseEvent* e)
-{
-	this->setSliderDown(true);
-
-	int new_val = valueFromPosition(e->pos());
-	setValue(new_val);
-}
-
-void Slider::mouseReleaseEvent(QMouseEvent* e)
-{
-	int new_val = valueFromPosition(e->pos());
-	setValue(new_val);
-
-	this->setSliderDown(false);
-}
-
 bool Slider::hasAdditionalValue() const
 {
 	return false;
@@ -114,6 +63,108 @@ int Slider::additionalValue() const
 QColor Slider::additionalValueColor() const
 {
 	return QColor(0, 0, 0);
+}
+
+void Slider::sliderChange(SliderChange change){
+	QSlider::sliderChange(change);
+}
+
+int Slider::valueFromPosition(const QPoint& pos) const
+{
+	int percent;
+	if(this->orientation() == Qt::Vertical) {
+		percent = 100 - (pos.y() * 100) / geometry().height();
+	}
+
+	else {
+		percent = (pos.x() * 100) / geometry().width();
+	}
+
+	int range = this->maximum() - this->minimum();
+	return (range * percent) / 100 + this->minimum();
+}
+
+static QRect calculateRectangle(QSlider* slider, int value, bool is_horizontal)
+{
+	int longSide = slider->width();
+	int shortSide = slider->height();
+	int rectThickness = Gui::Util::textWidth(slider->fontMetrics(), "m") / 4;
+
+	if(!is_horizontal){
+		longSide = slider->height();
+		shortSide = slider->width();
+	}
+
+	int h = rectThickness;
+	int w = longSide - 4;
+	int x = 2;
+	int y = (shortSide - h) / 2;
+
+	int rectHeight = h;
+	int percent = ((value - slider->minimum()) * 10000) / (slider->maximum() - slider->minimum());
+	int rectWidth = (w * percent) / 10000;
+	int rectX = x;
+	int rectY = y + (h - rectHeight) / 2;
+
+	QRect ret(rectX, rectY, rectWidth, rectHeight);
+	if(!is_horizontal)
+	{
+		ret = QRect(rectY, longSide - rectWidth, rectHeight, rectWidth);
+	}
+
+	return ret;
+}
+
+void Slider::paintEvent(QPaintEvent* e)
+{
+	if(!Style::isDark())
+	{
+		QSlider::paintEvent(e);
+		return;
+	}
+
+	bool isHorizontal = (this->orientation() == Qt::Horizontal);
+
+	using RectColorPair=QPair<QRect, QColor>;
+	QList<RectColorPair> rects;
+
+	QRect rectDark = calculateRectangle(this, this->maximum(), isHorizontal);
+	rects << RectColorPair(rectDark, QColor(42, 42, 42));
+
+	if(this->hasAdditionalValue())
+	{
+		int otherValue = this->additionalValue();
+
+		spLog(Log::Develop, this) << "value: " << this->value() << " buffer: " << this->additionalValue();
+		QRect rect = calculateRectangle(this, otherValue, isHorizontal);
+		rects << RectColorPair(rect, this->additionalValueColor());
+	}
+
+	QRect rectOrange = calculateRectangle(this, this->value(), isHorizontal);
+	rects << RectColorPair(rectOrange, QColor(243, 132, 26));
+	//rects << RectColorPair(rect_orange, QColor(66, 78, 114));
+
+	QPainter painter(this);
+
+	if(m->hovered)
+	{
+		QColor colorLight(72,72,72);
+		painter.setPen(colorLight);
+
+		QPainterPath path;
+		path.addRoundedRect(this->rect(), 3, 3);
+		painter.fillPath(path, colorLight);
+		painter.drawPath(path);
+	}
+
+	for(const RectColorPair& rcp : rects)
+	{
+		QRect rect = rcp.first;
+		QColor color = rcp.second;
+		painter.setPen(color);
+		painter.drawRect(rect);
+		painter.fillRect(rect, color);
+	}
 }
 
 void Slider::mouseMoveEvent(QMouseEvent* e)
@@ -131,106 +182,56 @@ void Slider::mouseMoveEvent(QMouseEvent* e)
 	}
 }
 
-void Slider::sliderChange(SliderChange change){
-	QSlider::sliderChange(change);
-}
-
-int Slider::valueFromPosition(const QPoint& pos) const
+void Slider::focusInEvent(QFocusEvent* e)
 {
-	int percent;
-	if(this->orientation() == Qt::Vertical){
-		percent = 100 - (pos.y() * 100) / geometry().height();
-	}
-
-	else{
-		percent = (pos.x() * 100) / geometry().width();
-	}
-
-	int range = this->maximum() - this->minimum();
-	return  ( range * percent) / 100 + this->minimum();
+	QSlider::focusInEvent(e);
+	emit sigSliderGotFocus();
 }
 
-static QRect calc_rect(QSlider* slider, int value, bool is_horizontal)
+void Slider::focusOutEvent(QFocusEvent* e)
 {
-	int long_side = slider->width();
-	int short_side = slider->height();	
-	int rect_thickness = Gui::Util::textWidth(slider->fontMetrics(), "m") / 4;
-
-	if(!is_horizontal){
-		long_side = slider->height();
-		short_side = slider->width();
-	}
-
-	int h = rect_thickness;
-	int w = long_side - 4;
-	int x = 2;
-	int y = (short_side - h) / 2;
-
-	int h_rect = h;
-	int percent = ((value - slider->minimum()) * 10000) / (slider->maximum() - slider->minimum());
-	int w_rect = (w * percent) / 10000;
-	int x_rect = x;
-	int y_rect = y + (h - h_rect) / 2;
-
-	QRect ret(x_rect, y_rect, w_rect, h_rect);
-	if(!is_horizontal)
-	{
-		ret = QRect(y_rect, long_side - w_rect, h_rect, w_rect);
-	}
-
-	return ret;
+	QSlider::focusOutEvent(e);
+	emit sigSliderLostFocus();
 }
 
-#include "Utils/Logger/Logger.h"
-void Slider::paintEvent(QPaintEvent* e)
+void Slider::mousePressEvent(QMouseEvent* e)
 {
-	if(!Style::isDark())
-	{
-		QSlider::paintEvent(e);
-		return;
-	}
+	this->setSliderDown(true);
 
-	bool is_horizontal = (this->orientation() == Qt::Horizontal);
-
-	using RectColorPair=QPair<QRect, QColor>;
-	QList<RectColorPair> rects;
-
-	QRect rect_dark = calc_rect(this, this->maximum(), is_horizontal);
-	rects << RectColorPair(rect_dark, QColor(42, 42, 42));
-
-	if(this->hasAdditionalValue())
-	{
-		int other_value = this->additionalValue();
-
-		spLog(Log::Info, this) << "value: " << this->value() << " buffer: " << this->additionalValue();
-		QRect rect = calc_rect(this, other_value, is_horizontal);
-		rects << RectColorPair(rect, this->additionalValueColor());
-	}
-
-	QRect rect_orange = calc_rect(this, this->value(), is_horizontal);
-	rects << RectColorPair(rect_orange, QColor(243, 132, 26));
-	//rects << RectColorPair(rect_orange, QColor(66, 78, 114));
-
-	QPainter painter(this);
-
-	if(m->hovered)
-	{
-		QColor color_light(72,72,72);
-		painter.setPen(color_light);
-
-		QPainterPath path;
-		path.addRoundedRect(this->rect(), 3, 3);
-		painter.fillPath(path, color_light);
-		painter.drawPath(path);
-	}
-
-	for(const RectColorPair& rcp : rects)
-	{
-		QRect rect = rcp.first;
-		QColor color = rcp.second;
-		painter.setPen(color);
-		painter.drawRect(rect);
-		painter.fillRect(rect, color);
-	}
+	int new_val = valueFromPosition(e->pos());
+	setValue(new_val);
 }
 
+void Slider::mouseReleaseEvent(QMouseEvent* e)
+{
+	int newValue = valueFromPosition(e->pos());
+	setValue(newValue);
+
+	this->setSliderDown(false);
+}
+
+bool Slider::event(QEvent* e)
+{
+	/** We need this for activate an item as soon it is hovered.
+	Otherwise, the curve functionality with the mouse wheel event does not work **/
+	switch(e->type())
+	{
+		case QEvent::HoverEnter:
+			m->hovered = true;
+			emit sigSliderGotFocus();
+			break;
+
+		case QEvent::HoverLeave:
+			m->hovered = false;
+			if(!this->hasFocus()){
+				emit sigSliderLostFocus();
+			}
+
+			break;
+
+		default:
+			break;
+	}
+
+	return QSlider::event(e);
+}

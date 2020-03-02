@@ -78,7 +78,6 @@ namespace Cover
 		 */
 		bool			isValid() const;
 
-
 		/**
 		 * @brief Returns the standard cover path in the .Sayonara
 		 * directory
