@@ -36,7 +36,6 @@ namespace Cover
 
 namespace Gui
 {
-
 	class ByteArrayConverter :
 		public QObject
 	{
@@ -88,7 +87,6 @@ namespace Gui
 			 */
 			void setCoverData(const QByteArray& data, const QString& mimetype);
 
-
 			/**
 			 * @brief silent results that the cover is not stored
 			 * productively. The AlternativeCoverFetcher will
@@ -108,17 +106,6 @@ namespace Gui
 		public slots:
 			void trigger();
 
-		private:
-			using QPushButton::setIcon;
-			using QPushButton::icon;
-
-
-		protected:
-			void mouseMoveEvent(QMouseEvent* e) override;
-			void mouseReleaseEvent(QMouseEvent* event) override;
-			void paintEvent(QPaintEvent* event) override;
-			void resizeEvent(QResizeEvent* e) override;
-
 		private slots:
 			void alternativeCoverFetched(const Cover::Location& cl);
 			void coverLookupFinished(bool success);
@@ -127,6 +114,16 @@ namespace Gui
 			void coversChanged();
 			void timerTimedOut();
 			void byteconverterFinished();
+
+		private:
+			using QPushButton::setIcon;
+			using QPushButton::icon;
+
+		protected:
+			void mouseMoveEvent(QMouseEvent* e) override;
+			void mouseReleaseEvent(QMouseEvent* event) override;
+			void paintEvent(QPaintEvent* event) override;
+			void resizeEvent(QResizeEvent* e) override;
 	};
 }
 

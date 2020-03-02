@@ -165,6 +165,7 @@
         <file>MintYIcons/view-grid-24.svg</file>
         <file>MintYIcons/view-grid-22.svg</file>
         <file>MintYIcons/view-grid-16.svg</file>
+        <file>Icons/bg.png</file>
     </qresource>
     <qresource prefix="/Style">
         <file>standard.css</file>

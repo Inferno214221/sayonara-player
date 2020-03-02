@@ -113,7 +113,6 @@ QSize GUI_ControlsBase::buttonSize() const
 	return btnCover()->size();
 }
 
-
 // new track
 void GUI_ControlsBase::currentTrackChanged(const MetaData& md)
 {
@@ -529,13 +528,11 @@ void GUI_ControlsBase::skinChanged()
 	setupVolumeButton(sliVolume()->value());
 }
 
-
 void GUI_ControlsBase::streamRecorderActiveChanged()
 {
 	checkRecordButtonVisible();
 	btnRecord()->setChecked(false);
 }
-
 
 void GUI_ControlsBase::checkRecordButtonVisible()
 {
@@ -557,16 +554,16 @@ void GUI_ControlsBase::checkRecordButtonVisible()
 	}
 }
 
-
 void GUI_ControlsBase::setCoverLocation(const MetaData& md)
 {
-	auto cl = Cover::Location::coverLocation(md, false);
+	Cover::Location cl = Cover::Location::coverLocation(md, false);
+
 	btnCover()->setCoverLocation(cl);
 }
 
 void GUI_ControlsBase::setStandardCover()
 {
-	auto cl = Cover::Location::invalidLocation();
+	Cover::Location cl = Cover::Location::invalidLocation();
 	btnCover()->setCoverLocation(cl);
 }
 
@@ -613,7 +610,6 @@ void GUI_ControlsBase::setupConnections()
 	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GUI_ControlsBase::metadataChanged);
 }
 
-
 void GUI_ControlsBase::setupShortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
@@ -644,7 +640,6 @@ void GUI_ControlsBase::setupShortcuts()
 	});
 }
 
-
 void GUI_ControlsBase::setRadioMode(RadioMode radio)
 {
 	checkRecordButtonVisible();
@@ -653,7 +648,6 @@ void GUI_ControlsBase::setRadioMode(RadioMode radio)
 		buffering(0);
 	}
 }
-
 
 MD::Interpretation GUI_ControlsBase::metadataInterpretation() const
 {

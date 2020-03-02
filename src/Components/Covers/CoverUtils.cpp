@@ -49,26 +49,25 @@ QString Cover::Utils::coverDirectory()
 	return coverDirectory(QString());
 }
 
-QString Cover::Utils::coverDirectory(const QString& append_filename)
+QString Cover::Utils::coverDirectory(const QString& appendFilename)
 {
-	QString cover_dir = Util::sayonaraPath("covers");
-	if(!FileUtils::exists(cover_dir))
+	QString coverDir = Util::sayonaraPath("covers");
+	if(!FileUtils::exists(coverDir))
 	{
-		QDir().mkdir(cover_dir);
+		QDir().mkdir(coverDir);
 	}
 
-	if(!append_filename.isEmpty()){
-		cover_dir += "/" + append_filename;
+	if(!appendFilename.isEmpty()){
+		coverDir += "/" + appendFilename;
 	}
 
-	return FileUtils::cleanFilename(cover_dir);
+	return FileUtils::cleanFilename(coverDir);
 }
 
 QString Cover::Utils::coverTempDirectory()
 {
-	return coverDirectory("tmp");
+	return ::Util::tempPath("covers");
 }
-
 
 void Cover::Utils::deleteTemporaryCovers()
 {
@@ -83,8 +82,8 @@ void Cover::Utils::deleteTemporaryCovers()
 
 bool Cover::Utils::addTemporaryCover(const QPixmap& pm, const QString& hash)
 {
-	QDir cover_temp_dir = QDir(coverTempDirectory());
-	QString path = cover_temp_dir.filePath("tmp_" + hash + ".jpg");
+	QDir coverTempDir(coverTempDirectory());
+	QString path = coverTempDir.filePath("tmp_" + hash + ".png");
 	return pm.save(path);
 }
 

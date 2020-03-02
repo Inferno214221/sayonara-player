@@ -48,7 +48,7 @@ bool MP4::CoverFrame::map_tag_to_model(Models::Cover& model)
 	}
 
 	TagLib::MP4::CoverArt art = arts[0];
-	model.image_data = QByteArray(art.data().data(), art.data().size());
+	model.imageData = QByteArray(art.data().data(), art.data().size());
 
 	return true;
 }
@@ -56,13 +56,13 @@ bool MP4::CoverFrame::map_tag_to_model(Models::Cover& model)
 bool MP4::CoverFrame::map_model_to_tag(const Models::Cover& model)
 {
 	TagLib::MP4::Tag* tag = this->tag();
-	const QByteArray& image_data = model.image_data;
+	const QByteArray& image_data = model.imageData;
 
 	TagLib::ByteVector taglib_data;
 	taglib_data.setData(image_data.data(), image_data.size());
 
 	TagLib::MP4::CoverArt::Format format;
-	switch(model.get_mime_type()){
+	switch(model.getMimeType()){
 		case Models::Cover::MimeType::PNG:
 			format = TagLib::MP4::CoverArt::PNG;
 			break;

@@ -83,8 +83,9 @@ public:
 	void setAlbumArtist(const QString& albumArtist, ArtistId id=-1);
 	void setAlbumArtistId(ArtistId id);
 
-	void setRadioStation(const QString& name);
+	void setRadioStation(const QString& url, const QString& name=QString());
 	QString radioStation() const;
+	QString radioStationName() const;
 
 	RadioMode radioMode() const;
 	void changeRadioMode(RadioMode mode);

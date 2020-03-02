@@ -248,23 +248,23 @@ void SomaFM::Library::sortStations(QList<SomaFM::Station>& stations)
 	Algorithm::sort(stations, lambda);
 }
 
-void SomaFM::Library::parseMetadataForPlaylist(MetaDataList& v_md, const SomaFM::Station& station)
+void SomaFM::Library::parseMetadataForPlaylist(MetaDataList& tracks, const SomaFM::Station& station)
 {
 	const Cover::Location cl = station.coverLocation();
-	const QList<Cover::Fetcher::Url> search_urls = cl.searchUrls();
+	const QList<Cover::Fetcher::Url> searchUrls = cl.searchUrls();
 
-	QStringList cover_urls;
-	for(auto url : search_urls)
+	QStringList coverUrls;
+	Util::Algorithm::transform(searchUrls, coverUrls, [](auto url)
 	{
-		cover_urls << url.url();
-	}
+		return url.url();
+	});
 
-	for(MetaData& md : v_md)
+	for(MetaData& md : tracks)
 	{
-		md.setCoverDownloadUrls(cover_urls);
+		md.setCoverDownloadUrls(coverUrls);
 
 		const QString filepath = md.filepath();
-		md.setRadioStation(filepath);
+		md.setRadioStation(filepath, station.name());
 
 		if(filepath.toLower().contains("mp3")){
 			md.setTitle(station.name() + " (mp3)");
@@ -275,5 +275,5 @@ void SomaFM::Library::parseMetadataForPlaylist(MetaDataList& v_md, const SomaFM:
 		}
 	}
 
-	v_md.sort(::Library::SortOrder::TrackTitleAsc);
+	tracks.sort(::Library::SortOrder::TrackTitleAsc);
 }

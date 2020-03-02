@@ -78,7 +78,6 @@ void M3UParser::parse()
 	}
 }
 
-
 bool M3UParser::parseFirstLine(const QString& line, MetaData& md)
 {
 	QRegExp re("^#EXTINF:\\s*([0-9]+)\\s*,\\s*(\\S)+\\s*-\\s*(\\S)+");
@@ -94,15 +93,14 @@ bool M3UParser::parseFirstLine(const QString& line, MetaData& md)
 	return true;
 }
 
-
 void M3UParser::parseLocalFile(const QString& line, MetaData& md)
 {
-	QString abs_filename = getAbsoluteFilename(line);
-	if(abs_filename.isEmpty()){
+	QString absoluteFilename = getAbsoluteFilename(line);
+	if(absoluteFilename.isEmpty()){
 		return;
 	}
 
-	md.setFilepath(abs_filename);
+	md.setFilepath(absoluteFilename);
 	Tagging::Utils::getMetaDataOfFile(md);
 }
 
@@ -111,4 +109,3 @@ void M3UParser::parseWWWFile(const QString& line, MetaData& md)
 	md.setRadioStation(line);
 	md.setFilepath(line);
 }
-

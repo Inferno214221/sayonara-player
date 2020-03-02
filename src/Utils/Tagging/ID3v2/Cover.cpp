@@ -28,10 +28,10 @@ void  ID3v2::CoverFrame::map_model_to_frame(const Models::Cover& model, TagLib::
 {
 	TagLib::String description("Cover by Sayonara Player");
 	TagLib::String::Type encoding = TagLib::String::Latin1;
-	TagLib::String mime_type(model.mime_type.toLatin1().constData());
+	TagLib::String mime_type(model.mimeType.toLatin1().constData());
 	TagLib::ID3v2::AttachedPictureFrame::Type type = TagLib::ID3v2::AttachedPictureFrame::FrontCover;
 
-	const QByteArray& image_data = model.image_data;
+	const QByteArray& image_data = model.imageData;
 
 	TagLib::ByteVector taglib_image_data;
 	taglib_image_data.setData(image_data.data(), quint32(image_data.size()));
@@ -57,8 +57,8 @@ void ID3v2::CoverFrame::map_frame_to_model(const TagLib::ID3v2::AttachedPictureF
 	TagLib::ByteVector taglib_image_data = frame->picture();
 	TagLib::String mime_type = frame->mimeType();
 
-	model.image_data = QByteArray(taglib_image_data.data(), qint32(taglib_image_data.size()));
-	model.mime_type = QString::fromLatin1(mime_type.toCString(), qint32(mime_type.length()));
+	model.imageData = QByteArray(taglib_image_data.data(), qint32(taglib_image_data.size()));
+	model.mimeType = QString::fromLatin1(mime_type.toCString(), qint32(mime_type.length()));
 }
 
 TagLib::ID3v2::Frame* ID3v2::CoverFrame::create_id3v2_frame()
