@@ -482,26 +482,41 @@ void MetaData::setAlbumArtistId(ArtistId id)
 	m->albumArtistId = id;
 }
 
-void MetaData::setRadioStation(const QString& name)
+void MetaData::setRadioStation(const QString& stationUrl, const QString& name)
 {
-	QString radio_station;
-	if(name.contains("://"))
+	if(stationUrl.contains("://"))
 	{
-		QUrl url(name);
-		QString radio_station = url.host();
-		if(url.port() > 0)
-		{
-			radio_station += QString(":%1").arg(url.port());
+		QUrl url(stationUrl);
+		QString host = url.host();
+
+		if(url.port() > 0) {
+			host += QString(":%1").arg(url.port());
 		}
 
-		setArtist(radio_station);
-		setTitle(url.host());
+		if(name.isEmpty()) {
+			setTitle(host);
+			setAlbum(host);
+		}
+
+		else {
+			setTitle(name);
+			setAlbum(name);
+		}
+
+		setArtist(host);
 	}
 
 	else
 	{
-		setArtist(name);
-		setTitle(name);
+		if(name.isEmpty()) {
+			setTitle(stationUrl);
+			setAlbum(stationUrl);
+		} else {
+			setTitle(name);
+			setAlbum(name);
+		}
+
+		setArtist(stationUrl);
 	}
 
 	m->albumId = -1;
@@ -510,6 +525,11 @@ void MetaData::setRadioStation(const QString& name)
 QString MetaData::radioStation() const
 {
 	return artist();
+}
+
+QString MetaData::radioStationName() const
+{
+	return album();
 }
 
 bool MetaData::hasAlbumArtist() const

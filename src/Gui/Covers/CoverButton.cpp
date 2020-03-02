@@ -75,35 +75,33 @@ void ByteArrayConverter::start()
 	emit sigFinished();
 }
 
-
 struct CoverButton::Private
 {
 	QString					hash;
 	Location				coverLocation;
-	QPixmap					invalid_cover;
-	QPixmap					current_cover, current_cover_scaled;
-	QPixmap					old_cover, old_cover_scaled;
-	QByteArray				current_hash;
-	QRect					pixmap_rect;
+	QPixmap					invalidCover;
+	QPixmap					currentCover, currentCoverScaled;
+	QPixmap					oldCover, oldCoverScaled;
+	QByteArray				currentHash;
+	QRect					pixmapRect;
 
 	QTimer*					timer=nullptr;
-	Lookup*					cover_lookup=nullptr;
+	Lookup*					coverLookup=nullptr;
 	double					opacity;
-	Cover::Source			cover_source;
+	Cover::Source			coverSource;
 	bool					silent;
-	bool					alternative_search_enabled;
+	bool					alternativeSearchEnabled;
 
 	Private() :
 		coverLocation(Location::invalidLocation()),
-		current_cover(Location::invalidPath()),
+		currentCover(Location::invalidPath()),
 		opacity(1.0),
 		silent(false),
-		alternative_search_enabled(true)
+		alternativeSearchEnabled(true)
 	{
-		invalid_cover = QPixmap(Cover::Location::invalidPath());
+		invalidCover = QPixmap(Cover::Location::invalidPath());
 	}
 };
-
 
 CoverButton::CoverButton(QWidget* parent) :
 	CoverButtonBase(parent)
@@ -126,23 +124,23 @@ CoverButton::CoverButton(QWidget* parent) :
 
 CoverButton::~CoverButton()
 {
-	if(m->cover_lookup)
+	if(m->coverLookup)
 	{
-		m->cover_lookup->stop();
-		m->cover_lookup->deleteLater();
+		m->coverLookup->stop();
+		m->coverLookup->deleteLater();
 	}
 }
 
 QPixmap CoverButton::pixmap() const
 {
-	return m->current_cover;
+	return m->currentCover;
 }
 
 int CoverButton::verticalPadding() const
 {
-	int p = (this->height() - m->current_cover_scaled.size().height()) - 2;
+	int p = (this->height() - m->currentCoverScaled.size().height()) - 2;
 	if(p <= 0){
-		p = -(this->width() - m->current_cover_scaled.size().width() - 2);
+		p = -(this->width() - m->currentCoverScaled.size().width() - 2);
 	}
 
 	return p;
@@ -150,23 +148,23 @@ int CoverButton::verticalPadding() const
 
 void CoverButton::setAlternativeSearchEnabled(bool b)
 {
-	m->alternative_search_enabled = b;
+	m->alternativeSearchEnabled = b;
 }
 
 bool CoverButton::isAlternativeSearchEnabled() const
 {
-	return m->alternative_search_enabled;
+	return m->alternativeSearchEnabled;
 }
 
 void CoverButton::trigger()
 {
-	if(m->cover_source == Cover::Source::AudioFile && !isSilent())
+	if(m->coverSource == Cover::Source::AudioFile && !isSilent())
 	{
 		emit sigRejected();
 		return;
 	}
 
-	if(m->alternative_search_enabled)
+	if(m->alternativeSearchEnabled)
 	{
 		auto* alt_cover = new GUI_AlternativeCovers(m->coverLocation, m->silent, this->parentWidget());
 
@@ -182,7 +180,6 @@ void CoverButton::trigger()
 	}
 }
 
-
 void CoverButton::setCoverImage(const QString& path)
 {
 	setCoverImagePixmap(QPixmap(path));
@@ -190,10 +187,10 @@ void CoverButton::setCoverImage(const QString& path)
 
 void CoverButton::setCoverImagePixmap(const QPixmap& pm)
 {
-	QPixmap pm_scaled = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
+	QPixmap pmScaled = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
 	{ // check if current cover is the same
-		auto h1 = Util::calcHash(Util::convertPixmapToByteArray(pm_scaled));
-		if(h1 == m->current_hash && !pm.isNull()){
+		auto h1 = Util::calcHash(Util::convertPixmapToByteArray(pmScaled));
+		if(h1 == m->currentHash && !pm.isNull()){
 			return;
 		}
 	}
@@ -201,20 +198,20 @@ void CoverButton::setCoverImagePixmap(const QPixmap& pm)
 	// don't change the currently fading out cover
 	if(!m->timer->isActive() && GetSetting(Set::Player_FadingCover))
 	{
-		m->old_cover = m->current_cover;
-		m->old_cover_scaled = m->current_cover_scaled;
+		m->oldCover = m->currentCover;
+		m->oldCoverScaled = m->currentCoverScaled;
 	}
 
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	m->current_cover = pm;
-	m->current_cover_scaled = m->current_cover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m->currentCover = pm;
+	m->currentCoverScaled = m->currentCover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
 	this->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
 
-	m->current_hash = Util::calcHash (
-		Util::convertPixmapToByteArray(m->current_cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
+	m->currentHash = Util::calcHash (
+		Util::convertPixmapToByteArray(m->currentCover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
 	);
 
 	emit sigCoverChanged();
@@ -226,7 +223,6 @@ void CoverButton::setCoverImagePixmap(const QPixmap& pm)
 		m->timer->start();
 	}
 }
-
 
 void CoverButton::setCoverData(const QByteArray& data, const QString& mimetype)
 {
@@ -241,7 +237,6 @@ void CoverButton::setCoverData(const QByteArray& data, const QString& mimetype)
 
 	thread->start();
 }
-
 
 void CoverButton::byteconverterFinished()
 {
@@ -261,7 +256,7 @@ void CoverButton::setCoverLocation(const Location& cl)
 
 	if(!cl.isValid())
 	{
-		setCoverImagePixmap(m->invalid_cover);
+		setCoverImagePixmap(m->invalidCover);
 	}
 
 	m->coverLocation = cl;
@@ -270,22 +265,20 @@ void CoverButton::setCoverLocation(const Location& cl)
 		return;
 	}
 
-	if(!m->cover_lookup)
+	if(!m->coverLookup)
 	{
-		m->cover_lookup = new Lookup(cl, 1, this);
+		m->coverLookup = new Lookup(cl, 1, this);
 
-		connect(m->cover_lookup, &Lookup::sigCoverFound, this, &CoverButton::setCoverImagePixmap);
-		connect(m->cover_lookup, &Lookup::sigFinished, this, &CoverButton::coverLookupFinished);
+		connect(m->coverLookup, &Lookup::sigCoverFound, this, &CoverButton::setCoverImagePixmap);
+		connect(m->coverLookup, &Lookup::sigFinished, this, &CoverButton::coverLookupFinished);
 	}
 
 	else {
-		m->cover_lookup->setCoverLocation(cl);
+		m->coverLookup->setCoverLocation(cl);
 	}
 
-	m->cover_lookup->start();
+	m->coverLookup->start();
 }
-
-
 
 void CoverButton::coverLookupFinished(bool success)
 {
@@ -296,9 +289,8 @@ void CoverButton::coverLookupFinished(bool success)
 	}
 
 	auto* lookup = static_cast<Cover::Lookup*>(sender());
-	m->cover_source = lookup->source();
+	m->coverSource = lookup->source();
 }
-
 
 void CoverButton::coversChanged()
 {
@@ -309,11 +301,10 @@ void CoverButton::coversChanged()
 	}
 }
 
-
 void CoverButton::alternativeCoverFetched(const Location& cl)
 {
 	m->hash = QString();
-	m->cover_source = Cover::Source::Unknown;
+	m->coverSource = Cover::Source::Unknown;
 
 	if(!isSilent())
 	{
@@ -330,8 +321,6 @@ void CoverButton::alternativeCoverFetched(const Location& cl)
 		setCoverImage(cl.alternativePath());
 	}
 }
-
-
 
 void CoverButton::setSilent(bool silent)
 {
@@ -354,18 +343,17 @@ void CoverButton::timerTimedOut()
 
 	else
 	{
-		m->old_cover = QPixmap();
-		m->old_cover_scaled = QPixmap();
+		m->oldCover = QPixmap();
+		m->oldCoverScaled = QPixmap();
 		m->timer->stop();
 	}
 }
-
 
 void CoverButton::paintEvent(QPaintEvent* event)
 {
 	Q_UNUSED(event)
 
-	if(m->current_cover_scaled.isNull()){
+	if(m->currentCoverScaled.isNull()){
 		return;
 	}
 
@@ -374,29 +362,29 @@ void CoverButton::paintEvent(QPaintEvent* event)
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	QPixmap pm = m->current_cover_scaled;
-	QPixmap pm_old;
-	if(!m->old_cover_scaled.isNull() && GetSetting(Set::Player_FadingCover))
+	QPixmap pm = m->currentCoverScaled;
+	QPixmap pmOld;
+	if(!m->oldCoverScaled.isNull() && GetSetting(Set::Player_FadingCover))
 	{
-		pm_old = m->old_cover_scaled;
+		pmOld = m->oldCoverScaled;
 	}
 
 	int x = (w - pm.width()) / 2;
 	int y = (h - pm.height()) / 2;
 
-	if(!pm_old.isNull())
+	if(!pmOld.isNull())
 	{
-		int x_old = (w - pm_old.width()) / 2;
-		int y_old = (h - pm_old.height()) / 2;
+		int xOld = (w - pmOld.width()) / 2;
+		int yOld = (h - pmOld.height()) / 2;
 
 		painter.setOpacity(1.0 - m->opacity);
 		painter.drawPixmap
 		(
-			x_old, y_old, pm_old.width(), pm_old.height(),
-			pm_old
+			xOld, yOld, pmOld.width(), pmOld.height(),
+			pmOld
 		);
 
-		m->pixmap_rect = QRect(x_old, y_old, pm_old.width(), pm_old.height());
+		m->pixmapRect = QRect(xOld, yOld, pmOld.width(), pmOld.height());
 
 		painter.setOpacity(m->opacity);
 	}
@@ -413,7 +401,7 @@ void CoverButton::paintEvent(QPaintEvent* event)
 			pm
 		);
 
-		m->pixmap_rect = QRect(x, y, pm.width(), pm.height());
+		m->pixmapRect = QRect(x, y, pm.width(), pm.height());
 	}
 }
 
@@ -424,12 +412,12 @@ void CoverButton::resizeEvent(QResizeEvent* e)
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
-	m->current_cover_scaled = m->current_cover.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m->currentCoverScaled = m->currentCover.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void CoverButton::mouseMoveEvent(QMouseEvent* event)
 {
-	bool within = m->pixmap_rect.contains(event->pos());
+	bool within = m->pixmapRect.contains(event->pos());
 	QCursor c;
 
 	if(within)
@@ -447,12 +435,11 @@ void CoverButton::mouseMoveEvent(QMouseEvent* event)
 	QPushButton::mouseMoveEvent(event);
 }
 
-
 void CoverButton::mouseReleaseEvent(QMouseEvent* event)
 {
 	if(event->button() | Qt::LeftButton)
 	{
-		bool within = m->pixmap_rect.contains(event->pos());
+		bool within = m->pixmapRect.contains(event->pos());
 		if(!within)
 		{
 			QPushButton::mouseReleaseEvent(event);
@@ -464,4 +451,3 @@ void CoverButton::mouseReleaseEvent(QMouseEvent* event)
 
 	QPushButton::mouseReleaseEvent(event);
 }
-

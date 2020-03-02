@@ -62,8 +62,18 @@ struct GUI_InfoDialog::Private
 		infoDialogContainer(container),
 		metadataInterpretation(MD::Interpretation::None)
 	{}
-};
 
+	MetaDataList localTracks() const
+	{
+		MetaDataList ret;
+
+		std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(ret), [](const MetaData& md){
+			return (!Util::File::isWWW(md.filepath()));
+		});
+
+		return ret;
+	}
+};
 
 GUI_InfoDialog::GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent) :
 	Dialog(parent)
@@ -93,7 +103,6 @@ void GUI_InfoDialog::languageChanged()
 	);
 }
 
-
 void GUI_InfoDialog::skinChanged()
 {
 	if(!ui){
@@ -108,8 +117,7 @@ void GUI_InfoDialog::skinChanged()
 	tab_bar->setTabIcon(2, Icons::icon(Icons::Edit));
 }
 
-
-static void prepare_info_table(QTableWidget* table, const QList<StringPair>& data)
+static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 {
 	table->clear();
 	table->setRowCount(data.count());
@@ -137,36 +145,34 @@ static void prepare_info_table(QTableWidget* table, const QList<StringPair>& dat
 	table->resizeColumnToContents(0);
 }
 
-
-static void prepare_paths(QListWidget* path_list_widget, const QStringList& paths)
+static void preparePaths(QListWidget* pathListWidget, const QStringList& paths)
 {
-	path_list_widget->clear();
-	path_list_widget->setAlternatingRowColors(true);
-	path_list_widget->setEditTriggers(QListView::NoEditTriggers);
+	pathListWidget->clear();
+	pathListWidget->setAlternatingRowColors(true);
+	pathListWidget->setEditTriggers(QListView::NoEditTriggers);
 
 	for(const QString& path : paths)
 	{
-		QLabel* label = new QLabel(path_list_widget);
+		QLabel* label = new QLabel(pathListWidget);
 		label->setText(path);
 		label->setOpenExternalLinks(true);
 		label->setTextFormat(Qt::RichText);
 
-		QListWidgetItem* item = new QListWidgetItem(path_list_widget);
-		path_list_widget->setItemWidget(item, label);
-		path_list_widget->addItem(item);
+		QListWidgetItem* item = new QListWidgetItem(pathListWidget);
+		pathListWidget->setItemWidget(item, label);
+		pathListWidget->addItem(item);
 	}
 }
 
-
-void GUI_InfoDialog::prepareInfo(MD::Interpretation md_interpretation)
+void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 {
 	if(!ui){
 		return;
 	}
 
-	MetaDataInfo* info;
+	MetaDataInfo* info=nullptr;
 
-	switch (md_interpretation)
+	switch (mdInterpretation)
 	{
 		case MD::Interpretation::Artists:
 			info = new ArtistInfo(m->tracks);
@@ -187,11 +193,11 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation md_interpretation)
 	ui->lab_title->setText(info->header());
 	ui->lab_subheader->setText(info->subheader());
 
-	const QList<StringPair> info_map = info->infostringMap();
-	prepare_info_table(ui->table_info, info_map);
+	const QList<StringPair> infoMap = info->infostringMap();
+	prepareInfoTable(ui->table_info, infoMap);
 
 	QStringList paths = info->paths();
-	prepare_paths(ui->list_paths, paths);
+	preparePaths(ui->list_paths, paths);
 
 	m->coverLocation = info->coverLocation();
 	prepareCover(m->coverLocation);
@@ -200,21 +206,18 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation md_interpretation)
 	delete info; info = nullptr;
 }
 
-
-void GUI_InfoDialog::setMetadata(const MetaDataList& v_md, MD::Interpretation md_interpretation)
+void GUI_InfoDialog::setMetadata(const MetaDataList& tracks, MD::Interpretation md_interpretation)
 {
 	m->metadataInterpretation = md_interpretation;
-	m->tracks = v_md;
+	m->tracks = tracks;
 
 	this->setBusy(m->tracks.isEmpty());
 }
-
 
 bool GUI_InfoDialog::hasMetadata() const
 {
 	return (m->tracks.size() > 0);
 }
-
 
 GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 {
@@ -230,42 +233,40 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		return Tab::Info;
 	}
 
-	QTabWidget* tab_widget = ui->tab_widget;
+	QTabWidget* tabWidget = ui->tab_widget;
 
 	bool lyric_enabled = (m->tracks.size() == 1);
 	bool tag_edit_enabled = Algorithm::contains(m->tracks, [](const MetaData& md){
 		return (!Util::File::isWWW(md.filepath()));
 	});
 
-	tab_widget->setTabEnabled(int(Tab::Edit), tag_edit_enabled);
-	tab_widget->setTabEnabled(int(Tab::Lyrics), lyric_enabled);
+	tabWidget->setTabEnabled(int(Tab::Edit), tag_edit_enabled);
+	tabWidget->setTabEnabled(int(Tab::Lyrics), lyric_enabled);
 
-	if( !tab_widget->isTabEnabled(iTab))
+	if( !tabWidget->isTabEnabled(iTab))
 	{
 		tab = Tab::Info;
 	}
 
-	if(tab_widget->currentIndex() == iTab)
+	if(tabWidget->currentIndex() == iTab)
 	{
 		tabIndexChanged(tab);
 	}
 
 	else
 	{
-		tab_widget->setCurrentIndex(iTab);
+		tabWidget->setCurrentIndex(iTab);
 	}
 
 	Dialog::show();
 
-	return Tab(tab_widget->currentIndex());
+	return Tab(tabWidget->currentIndex());
 }
-
 
 void GUI_InfoDialog::prepareCover(const Cover::Location& cl)
 {
 	ui->btn_image->setCoverLocation(cl);
 }
-
 
 void GUI_InfoDialog::init()
 {
@@ -276,10 +277,10 @@ void GUI_InfoDialog::init()
 	ui = new Ui::InfoDialog();
 	ui->setupUi(this);
 
-	QTabWidget* tab_widget = ui->tab_widget;
-	tab_widget->setFocusPolicy(Qt::NoFocus);
+	QTabWidget* tabWidget = ui->tab_widget;
+	tabWidget->setFocusPolicy(Qt::NoFocus);
 
-	connect(tab_widget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tabIndexChangedInt);
+	connect(tabWidget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tabIndexChangedInt);
 	connect(ui->btn_write_cover_to_tracks, &QPushButton::clicked, this, &GUI_InfoDialog::writeCoversToTracksClicked);
 	connect(ui->btn_image, &Gui::CoverButton::sigRejected, this, &GUI_InfoDialog::writeCoversToTracksClicked);
 	connect(ui->btn_image, &Gui::CoverButton::sigCoverChanged, this, &GUI_InfoDialog::coverChanged);
@@ -290,32 +291,29 @@ void GUI_InfoDialog::init()
 	this->setModal(false);
 }
 
-
 void GUI_InfoDialog::initTagEdit()
 {
 	if(!m->uiTagEditor)
 	{
-		QLayout* tab3_layout = ui->tab_3->layout();
+		QLayout* tab3Layout = ui->tab_3->layout();
 		m->uiTagEditor = new GUI_TagEdit(ui->tab_3);
-		tab3_layout->addWidget(m->uiTagEditor);
+		tab3Layout->addWidget(m->uiTagEditor);
 
 		connect(m->uiTagEditor, &GUI_TagEdit::sigCancelled, this, &GUI_InfoDialog::close);
 	}
 }
 
-
 void GUI_InfoDialog::initLyrics()
 {
 	if(!m->uiLyrics)
 	{
-		QLayout* tab2_layout = ui->tab_2->layout();
+		QLayout* tab2Layout = ui->tab_2->layout();
 		m->uiLyrics = new GUI_Lyrics(ui->tab_2);
-		tab2_layout->addWidget(m->uiLyrics);
+		tab2Layout->addWidget(m->uiLyrics);
 
 		connect(m->uiLyrics, &GUI_Lyrics::sigClosed, this, &GUI_InfoDialog::close);
 	}
 }
-
 
 void GUI_InfoDialog::tabIndexChangedInt(int idx)
 {
@@ -324,7 +322,6 @@ void GUI_InfoDialog::tabIndexChangedInt(int idx)
 
 	tabIndexChanged( (GUI_InfoDialog::Tab) idx );
 }
-
 
 void GUI_InfoDialog::tabIndexChanged(GUI_InfoDialog::Tab idx)
 {
@@ -348,19 +345,16 @@ void GUI_InfoDialog::tabIndexChanged(GUI_InfoDialog::Tab idx)
 	}
 }
 
-
 void GUI_InfoDialog::writeCoversToTracksClicked()
 {
 	showCoverEditTab();
 }
-
 
 void GUI_InfoDialog::coverChanged()
 {
 	int w = ui->btn_image->width();
 	ui->btn_image->resize(w, w);
 }
-
 
 void GUI_InfoDialog::shoInfoTab()
 {
@@ -371,34 +365,25 @@ void GUI_InfoDialog::shoInfoTab()
 	prepareCover(m->coverLocation);
 }
 
-
 void GUI_InfoDialog::showLyricsTab()
 {
-	initLyrics();
-
-	MetaData md;
-	if(m->tracks.count() > 0){
-		md = m->tracks.first();
+	if(m->tracks.isEmpty())
+	{
+		ui->tab_widget->setCurrentIndex(0);
+		return;
 	}
 
+	initLyrics();
 	ui->tab_widget->setCurrentWidget(m->uiLyrics);
 
-	m->uiLyrics->setTrack(md);
+	m->uiLyrics->setTrack(m->tracks.first());
 	m->uiLyrics->show();
 }
 
-
 void GUI_InfoDialog::showTagEditTab()
 {
-	MetaDataList local_md;
-	for(const MetaData& md : m->tracks)
-	{
-		if(!Util::File::isWWW(md.filepath())){
-			local_md << md;
-		}
-	}
-
-	if(local_md.isEmpty())
+	const MetaDataList localTracks = m->localTracks();
+	if(localTracks.isEmpty())
 	{
 		ui->tab_widget->setCurrentIndex(0);
 		return;
@@ -406,27 +391,12 @@ void GUI_InfoDialog::showTagEditTab()
 
 	initTagEdit();
 
-	m->uiTagEditor->setMetadata(local_md);
+	m->uiTagEditor->setMetadata(localTracks);
 	ui->tab_widget->setCurrentWidget(m->uiTagEditor);
-	if(m->uiTagEditor->count() == 0)
-	{
-		MetaDataList local_md;
-		for(const MetaData& md : m->tracks)
-		{
-			if(!Util::File::isWWW(md.filepath()))
-			{
-				local_md << md;
-			}
-		}
 
-		if(local_md.size() > 0) {
-			m->uiTagEditor->setMetadata(local_md);
-		}
-	}
-
+	m->uiTagEditor->setMetadata(localTracks);
 	m->uiTagEditor->show();
 }
-
 
 void GUI_InfoDialog::showCoverEditTab()
 {
@@ -444,7 +414,6 @@ void GUI_InfoDialog::setBusy(bool b)
 	}
 }
 
-
 void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 {
 	Dialog::closeEvent(e);
@@ -452,7 +421,6 @@ void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 	m->tracks.clear();
 	m->infoDialogContainer->infoDialogClosed();
 }
-
 
 void GUI_InfoDialog::showEvent(QShowEvent* e)
 {

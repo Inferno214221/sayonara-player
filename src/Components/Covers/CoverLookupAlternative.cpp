@@ -92,7 +92,7 @@ void AlternativeLookup::reset()
 	Cover::Utils::deleteTemporaryCovers();
 }
 
-bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
+bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 {
 	if(cover.isNull()){
 		spLog(Log::Warning, this) << "Cannot save invalid cover";
@@ -106,7 +106,7 @@ bool AlternativeLookup::save(const QPixmap& cover, bool save_to_library)
 		Cover::Utils::writeCoverIntoDatabase(cl, cover);
 		Cover::Utils::writeCoverToSayonaraDirectory(cl, cover);
 
-		if(save_to_library) {
+		if(saveToLibrary) {
 			Cover::Utils::writeCoverToLibrary(cl, cover);
 		}
 	}
@@ -136,33 +136,33 @@ QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode
 	using CoverFetcher=Cover::Fetcher::Base;
 
 	auto* cfm = Cover::Fetcher::Manager::instance();
-	const QList<CoverFetcher*> cover_fetchers = cfm->coverfetchers();
+	const QList<CoverFetcher*> coverFetchers = cfm->coverfetchers();
 
 	QStringList ret;
-	for(const CoverFetcher* cover_fetcher : cover_fetchers)
+	for(const CoverFetcher* coverFetcher : coverFetchers)
 	{
-		const QString identifier = cover_fetcher->identifier();
+		const QString identifier = coverFetcher->identifier();
 		if(!cfm->isActive(identifier)) {
 			continue;
 		}
 
-		bool valid_identifier = false;
+		bool validIdentifier = false;
 		if(mode == AlternativeLookup::SearchMode::Fulltext)
 		{
-			const QString address = cover_fetcher->fulltextSearchAddress("some dummy text");
-			valid_identifier = (!address.isEmpty());
+			const QString address = coverFetcher->fulltextSearchAddress("some dummy text");
+			validIdentifier = (!address.isEmpty());
 		}
 
 		else
 		{
-			const UrlList search_urls = coverLocation().searchUrls();
+			const UrlList searchUrls = coverLocation().searchUrls();
 
-			valid_identifier = Algorithm::contains(search_urls, [identifier](const Url& url) {
+			validIdentifier = Algorithm::contains(searchUrls, [identifier](const Url& url) {
 				return (url.identifier().compare(identifier, Qt::CaseInsensitive) == 0);
 			});
 		}
 
-		if(valid_identifier) {
+		if(validIdentifier) {
 			ret << identifier;
 		}
 	}
@@ -210,13 +210,13 @@ void AlternativeLookup::start()
 void AlternativeLookup::start(const QString& identifier)
 {
 	Location cl = coverLocation();
-	const UrlList search_urls = coverLocation().searchUrls();
+	const UrlList searchUrls = coverLocation().searchUrls();
 
-	auto it = Algorithm::find(search_urls, [&identifier](const Url& url) {
+	auto it = Algorithm::find(searchUrls, [&identifier](const Url& url) {
 		return (identifier == url.identifier());
 	});
 
-	if(it != search_urls.end())
+	if(it != searchUrls.end())
 	{
 		Url url = *it;
 		cl.setSearchUrls({url});
@@ -225,18 +225,18 @@ void AlternativeLookup::start(const QString& identifier)
 	go(cl);
 }
 
-void AlternativeLookup::startTextSearch(const QString& search_term)
+void AlternativeLookup::startTextSearch(const QString& searchTerm)
 {
 	Location cl = coverLocation();
-	cl.setSearchTerm(search_term);
+	cl.setSearchTerm(searchTerm);
 	cl.enableFreetextSearch(true);
 	go(cl);
 }
 
-void AlternativeLookup::startTextSearch(const QString& search_term, const QString& cover_fetcher_identifier)
+void AlternativeLookup::startTextSearch(const QString& searchTerm, const QString& coverFetcherIdentifier)
 {
 	Location cl = coverLocation();
-	cl.setSearchTerm(search_term, cover_fetcher_identifier);
+	cl.setSearchTerm(searchTerm, coverFetcherIdentifier);
 	cl.enableFreetextSearch(true);
 	go(cl);
 }

@@ -551,7 +551,7 @@ QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 	QByteArray arr;
 	QBuffer buffer(&arr);
 	buffer.open(QIODevice::WriteOnly);
-	pm.save(&buffer, "JPG");
+	pm.save(&buffer, "PNG");
 
 	return arr;
 }
@@ -559,7 +559,10 @@ QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 QPixmap Util::convertByteArrayToPixmap(const QByteArray& arr)
 {
 	QPixmap pm;
-	pm.loadFromData(arr, "JPG");
+	pm.loadFromData(arr, "PNG");
+	if(pm.isNull()) {
+		pm.loadFromData(arr, "JPG");
+	}
 	return pm;
 }
 

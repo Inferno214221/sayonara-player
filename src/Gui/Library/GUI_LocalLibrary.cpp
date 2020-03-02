@@ -142,6 +142,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	ui->extension_bar->init(m->library);
 	ui->lv_genres->init(m->library);
 	ui->directory_view->setCurrentLibrary(m->library->id());
+	ui->btn_view->setOverrideText(true);
 
 	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);

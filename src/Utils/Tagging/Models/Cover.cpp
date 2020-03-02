@@ -30,17 +30,17 @@ Models::Cover::Cover()
 Models::Cover::Cover(const QString& mime_type_, const QByteArray& image_data_) :
 	Models::Cover::Cover()
 {
-	mime_type = mime_type_;
-	image_data = image_data_;
+	mimeType = mime_type_;
+	imageData = image_data_;
 }
 
-Models::Cover::MimeType Models::Cover::get_mime_type() const
+Models::Cover::MimeType Models::Cover::getMimeType() const
 {
-	if(mime_type.contains("jpeg", Qt::CaseInsensitive)){
+	if(mimeType.contains("jpeg", Qt::CaseInsensitive)){
 		return Models::Cover::MimeType::JPEG;
 	}
 
-	else if(mime_type.contains("png", Qt::CaseInsensitive)){
+	else if(mimeType.contains("png", Qt::CaseInsensitive)){
 		return Models::Cover::MimeType::PNG;
 	}
 

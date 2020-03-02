@@ -362,26 +362,16 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& 
 	return QPair<MetaDataList, PlaylistFiles>(tracks, playlistFiles);
 }
 
-void StreamParser::setMetadataTag(MetaData& md, const QString& stream_url, const QString& cover_url) const
+void StreamParser::setMetadataTag(MetaData& md, const QString& streamUrl, const QString& coverUrl) const
 {
-	if(md.title().isEmpty()) {
-		md.setRadioStation(stream_url);
-	}
-
-	if(!m->stationName.isEmpty()) {
-		md.setAlbum(m->stationName);
-	}
-
-	if(md.artist().trimmed().isEmpty()) {
-		md.setArtist(stream_url);
-	}
+	md.setRadioStation(streamUrl, m->stationName);
 
 	if(md.filepath().trimmed().isEmpty()) {
-		md.setFilepath(stream_url);
+		md.setFilepath(streamUrl);
 	}
 
-	if(!cover_url.isEmpty()) {
-		md.setCoverDownloadUrls({cover_url});
+	if(!coverUrl.isEmpty()) {
+		md.setCoverDownloadUrls({coverUrl});
 	}
 }
 

@@ -330,29 +330,10 @@ QList<Url> Manager::albumAddresses(const QString& artist, const QString& album) 
 	return urls;
 }
 
-static bool is_searchstring_website(const QString& searchstring)
-{
-	if(Util::File::isWWW(searchstring)){
-		return true;
-	}
-
-	// this.is.my.searchstring -> false
-	// this.is.my.searchstring.urli -> true
-	// this.is.my.searchstring.url -> true
-	// this.is.my.searchstring.ur -> true
-	// this.is.my.searchstring.u -> false
-	int last_dot = searchstring.lastIndexOf(".");
-	if((last_dot < 0) || (last_dot < searchstring.size() - 4) || (last_dot > searchstring.size() - 2))
-	{
-		return false;
-	}
-
-	return true;
-}
 
 QList<Url> Manager::searchAddresses(const QString& searchstring) const
 {
-	if(is_searchstring_website(searchstring))
+	if(isSearchstringWebsite(searchstring))
 	{
 		m->websiteCoverfetcher->setWebsite(searchstring);
 		const QString identifier = m->websiteCoverfetcher->identifier();
@@ -377,7 +358,7 @@ QList<Url> Manager::searchAddresses(const QString& searchstring) const
 
 QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& cover_fetcher_identifier) const
 {
-	if(is_searchstring_website(searchstring))
+	if(isSearchstringWebsite(searchstring))
 	{
 		m->websiteCoverfetcher->setWebsite(searchstring);
 		const QString identifier = m->websiteCoverfetcher->identifier();
@@ -403,4 +384,31 @@ QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& 
 	}
 
 	return urls;
+}
+
+bool Manager::isSearchstringWebsite(const QString& searchstring)
+{
+	if(Util::File::isWWW(searchstring)){
+		return true;
+	}
+
+	// this.is.my.searchstring -> false
+	// this.is.my.searchstring.urli -> true
+	// this.is.my.searchstring.url -> true
+	// this.is.my.searchstring.ur -> true
+	// this.is.my.searchstring.u -> false
+	if(searchstring.contains(QRegExp("\\s"))){
+		return false;
+	}
+
+	int lastDot = searchstring.lastIndexOf(".");
+	if(
+		(lastDot < 0) ||
+		(lastDot < searchstring.size() - 4) ||
+		(lastDot >= searchstring.size() - 2))
+	{
+		return false;
+	}
+
+	return true;
 }

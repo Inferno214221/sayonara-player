@@ -61,8 +61,8 @@ bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
 	TL::List<TL::FLAC::Picture*> pictures = xiph->pictureList();
 	if(pictures.isEmpty())
 	{
-		model.mime_type = QString();
-		model.image_data.clear();
+		model.mimeType = QString();
+		model.imageData.clear();
 		return true;
 	}
 
@@ -95,8 +95,8 @@ bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
 
 	{
 		TL::ByteVector data = pic_of_interest->data();
-		model.image_data = QByteArray(data.data(), static_cast<int>(data.size()));
-		model.mime_type = convert_string(pic_of_interest->mimeType());
+		model.imageData = QByteArray(data.data(), static_cast<int>(data.size()));
+		model.mimeType = convert_string(pic_of_interest->mimeType());
 	}
 
 	return true;
@@ -113,16 +113,16 @@ bool Xiph::CoverFrame::map_model_to_tag(const Models::Cover& model)
 
 	this->tag()->removeAllPictures();
 
-	unsigned int length = static_cast<unsigned int>(model.image_data.size());
+	unsigned int length = static_cast<unsigned int>(model.imageData.size());
 
-	TL::ByteVector img_data(model.image_data.data(), length);
+	TL::ByteVector img_data(model.imageData.data(), length);
 
 	TL::Ogg::XiphComment* tag = this->tag();
 	TL::FLAC::Picture* pic = new TL::FLAC::Picture();
 	pic->setType(TL::FLAC::Picture::FrontCover);
-	pic->setMimeType(convert_string(model.mime_type));
+	pic->setMimeType(convert_string(model.mimeType));
 	pic->setDescription(TL::String("Front Cover By Sayonara"));
-	pic->setData(TL::ByteVector(model.image_data.data(), length) );
+	pic->setData(TL::ByteVector(model.imageData.data(), length) );
 	tag->addPicture(pic); // do not delete the picture, because tag will take ownership
 
 	return true;
