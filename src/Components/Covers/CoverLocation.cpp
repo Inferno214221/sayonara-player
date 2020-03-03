@@ -157,7 +157,7 @@ Location Location::coverLocation(const QString& albumName, const QString& artist
 
 Location Location::coverLocation(const QString& albumName, const QStringList& artists)
 {
-	const QString major_artist = ArtistList::get_major_artist(artists);
+	const QString major_artist = ArtistList::majorArtist(artists);
 	return coverLocation(albumName, major_artist);
 }
 
@@ -202,7 +202,7 @@ Location Location::xcoverLocation(const Album& album)
 		}
 	}
 
-	cl.setSearchTerm(album.name() + " " + ArtistList::get_major_artist(album.artists()));
+	cl.setSearchTerm(album.name() + " " + ArtistList::majorArtist(album.artists()));
 
 	return cl;
 }

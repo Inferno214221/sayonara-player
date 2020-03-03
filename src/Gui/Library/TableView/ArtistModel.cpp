@@ -69,7 +69,7 @@ QString ArtistModel::searchableString(int row) const
 	}
 
 	else {
-		return artists[row].name();
+		return artists[ArtistList::Size(row)].name();
 	}
 }
 

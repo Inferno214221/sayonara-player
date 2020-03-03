@@ -185,7 +185,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 
 		ArtistList tmp_list;
 		db_fetch_artists(q, tmp_list);
-		result.append_unique(tmp_list);
+		result.appendUnique(tmp_list);
 	}
 
 	return true;
