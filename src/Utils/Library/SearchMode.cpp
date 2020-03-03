@@ -103,63 +103,66 @@ static void init_diacritic_chars()
 	diacritic_chars->insert(QString::fromUtf8("ÿ"), "y");
 }
 
-
-QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode, const QList<QChar>& ignored_chars)
+QString Library::Utils::convertSearchstring(const QString& originalString, Library::SearchModeMask mode, const QList<QChar>& ignoredChars)
 {
 	if(diacritic_chars->isEmpty()){
 		init_diacritic_chars();
 	}
 
-	QString ret = str;
+	QString convertedString(originalString);
 	if(mode & Library::CaseInsensitve)
 	{
-		ret = str.toLower();
+		convertedString = originalString.toLower();
 	}
 
 	if(mode & Library::NoSpecialChars)
 	{
-		QString ret_tmp(ret);
-		for(QChar c : ret_tmp)
+		QString convertedStringWithoutSpecialChars(convertedString);
+
+		for(QChar c : convertedStringWithoutSpecialChars)
 		{
-			if(ignored_chars.contains(c)){
+			if(ignoredChars.contains(c)){
 				continue;
 			}
 
-			if(!c.isLetterOrNumber()){
-				ret.remove(c);
+			if(!c.isLetterOrNumber()) {
+				convertedStringWithoutSpecialChars.remove(c);
 			}
 		}
+
+		convertedString = convertedStringWithoutSpecialChars;
 	}
 
 	if(mode & Library::NoDiacriticChars)
 	{
-		QString cleaned_string;
+		QString cleanedString;
 
-		for (int i = 0; i < ret.length(); i++)
+		for (int i = 0; i < convertedString.length(); i++)
 		{
-			QString c = QString(ret[i]);
-			QString replacement;
+			const QString c = QString(convertedString[i]);
 
-			if(diacritic_chars->contains(c)){
-				replacement = diacritic_chars->value(c);
-			}
-
-			else{
-				replacement = c;
-			}
-
-			if(mode & Library::CaseInsensitve)
+			if(diacritic_chars->contains(c))
 			{
-				replacement = replacement.toLower();
+				QString replacement = diacritic_chars->value(c);
+				if(mode & Library::CaseInsensitve) {
+					cleanedString.append(replacement);
+				}
+
+				else {
+					cleanedString.append(replacement.toLower());
+				}
 			}
 
-			cleaned_string.append(replacement);
+			else
+			{
+				cleanedString.append(c);
+			}
 		}
 
-		ret = cleaned_string;
+		convertedString = cleanedString;
 	}
 
-	return ::Util::convertNotNull(ret);
+	return ::Util::convertNotNull(convertedString);
 }
 
 

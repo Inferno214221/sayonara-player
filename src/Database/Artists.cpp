@@ -32,7 +32,7 @@ using DB::Query;
 Artists::Artists() = default;
 Artists::~Artists() = default;
 
-QString Artists::fetchQueryArtists(bool also_empty) const
+QString Artists::fetchQueryArtists(bool alsoEmpty) const
 {
 	QStringList fields
 	{
@@ -44,7 +44,7 @@ QString Artists::fetchQueryArtists(bool also_empty) const
 	QString query = "SELECT " + fields.join(", ") + " FROM artists ";
 
 	QString join = " INNER JOIN ";
-	if(also_empty){
+	if(alsoEmpty){
 		join = " LEFT OUTER JOIN ";
 	}
 
@@ -55,7 +55,7 @@ QString Artists::fetchQueryArtists(bool also_empty) const
 }
 
 
-bool Artists::db_fetch_artists(Query& q, ArtistList& result) const
+bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 {
 	result.clear();
 
@@ -97,7 +97,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 	q.addBindValue(id);
 
 	ArtistList artists;
-	bool success = db_fetch_artists(q, artists);
+	bool success = dbFetchArtists(q, artists);
 	if(!success || artists.empty()){
 		return false;
 	}
@@ -135,7 +135,7 @@ bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 	Query q(module());
 	q.prepare(query);
 
-	return db_fetch_artists(q, result);
+	return dbFetchArtists(q, result);
 }
 
 bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result) const
@@ -184,7 +184,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 		q.bindValue(":cissearch",	Util::convertNotNull(search_filters[i]));
 
 		ArtistList tmp_list;
-		db_fetch_artists(q, tmp_list);
+		dbFetchArtists(q, tmp_list);
 		result.append_unique(tmp_list);
 	}
 

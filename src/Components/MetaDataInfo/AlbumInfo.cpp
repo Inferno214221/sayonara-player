@@ -138,17 +138,21 @@ void AlbumInfo::calcCoverLocation()
 {
 	if(albumIds().size() == 1)
 	{
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
+		DB::LibraryDatabase* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
 
 		Album album;
-		bool success = lib_db->getAlbumByID(albumIds().first(), album, true);
+		bool success = libraryDatabase->getAlbumByID(albumIds().first(), album, true);
 		if(!success)
 		{
 			album.setId(albumIds().first());
 			album.setName(albums().first());
 			album.setArtists(artists().toList());
-			album.setAlbumArtists(albumArtists().toList());
-			album.setDatabaseId(lib_db->databaseId());
+
+			if(albumArtists().size() > 0){
+				album.setAlbumArtist(albumArtists().first());
+			}
+
+			album.setDatabaseId(libraryDatabase->databaseId());
 		}
 
 		m->coverLocation = Cover::Location::xcoverLocation(album);

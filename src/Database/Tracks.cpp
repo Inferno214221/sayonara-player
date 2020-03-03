@@ -45,7 +45,7 @@ using SMM=::Library::SearchModeMask;
 namespace LibraryUtils=::Library::Utils;
 using ::Library::Filter;
 
-static QString getFilterClause(const Filter& filter, QString cisPlaceholder, QString searchtermPlaceholder);
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder);
 
 static void dropTrackView(DB::Module* module, LibraryId libraryId, const QString& trackView)
 {
@@ -311,7 +311,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 	}
 
 	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
+	QStringList searchFilters = filter.searchModeFiltertext(true);
 
 	for(int i=0; i<filters.size(); i++)
 	{
@@ -321,7 +321,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch", "searchterm") + " AND ";
+			query += getFilterClause(filter, "cissearch") + " AND ";
 		}
 
 		{ // album id clauses
@@ -343,23 +343,22 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 				q.bindValue(QString(":albumId_%1").arg(a), albumIds[a]);
 			}
 
-			q.bindValue(":searchterm", filters[i]);
-			q.bindValue(":cissearch", search_filters[i]);
+			q.bindValue(":cissearch", searchFilters[i]);
 
-			MetaDataList tmp_list;
-			dbFetchTracks(q, tmp_list);
+			MetaDataList tmpList;
+			dbFetchTracks(q, tmpList);
 
 			if(discnumber >= 0)
 			{
-				for(int i=tmp_list.count() - 1; i>=0; i--)
+				for(int i=tmpList.count() - 1; i>=0; i--)
 				{
-					if(tmp_list[i].discnumber() != discnumber){
-						tmp_list.removeTrack(i);
+					if(tmpList[i].discnumber() != discnumber){
+						tmpList.removeTrack(i);
 					}
 				}
 			}
 
-			result.appendUnique(tmp_list);
+			result.appendUnique(tmpList);
 		}
 	}
 
@@ -377,10 +376,8 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 		return false;
 	}
 
-	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
-
-	for(int i=0; i<filters.size(); i++)
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	for(int i=0; i<searchFilters.size(); i++)
 	{
 		Query q(module());
 
@@ -388,18 +385,18 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch", "searchterm") + " AND ";
+			query += getFilterClause(filter, "cissearch") + " AND ";
 		}
 
 		{ // artist conditions
 			QString aidf = trackSearchView() + "." + artistIdField();
 
-			QStringList or_clauses;
+			QStringList orClauses;
 			for(int a=0; a<artistIds.size(); a++) {
-				or_clauses << QString("%1 = :artistId_%2").arg(aidf).arg(a);
+				orClauses << QString("%1 = :artistId_%2").arg(aidf).arg(a);
 			}
 
-			query += " (" + or_clauses.join(" OR ") + ") ";
+			query += " (" + orClauses.join(" OR ") + ") ";
 		}
 
 		query += ";";
@@ -411,12 +408,11 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 				q.bindValue(QString(":artistId_%1").arg(a), artistIds[a]);
 			}
 
-			q.bindValue(":searchterm", filters[i]);
-			q.bindValue(":cissearch", search_filters[i]);
+			q.bindValue(":cissearch", searchFilters[i]);
 
-			MetaDataList tmp_list;
-			dbFetchTracks(q, tmp_list);
-			result.appendUnique(tmp_list);
+			MetaDataList tmpList;
+			dbFetchTracks(q, tmpList);
+			result.appendUnique(tmpList);
 		}
 	}
 
@@ -426,28 +422,23 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
-	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
-	for(int i=0; i<filters.size(); i++)
+
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	for(int i=0; i<searchFilters.size(); i++)
 	{
 		Query q(module());
 
 		QString query = fetchQueryTracks();
-		query += " WHERE " + getFilterClause(filter, "cissearch", "searchterm");
+		query += " WHERE " + getFilterClause(filter, "cissearch");
 		query += ";";
 
 		q.prepare(query);
-
-		q.bindValue(":searchterm", filters[i]);
-		q.bindValue(":cissearch", search_filters[i]);
+		q.bindValue(":cissearch", searchFilters[i]);
 
         {
             MetaDataList tracks;
-
             dbFetchTracks(q, tracks);
-            if(tracks.empty()) {
-                q.showQuery();
-            }
+
             result.appendUnique(tracks);
         }
 	}
@@ -798,10 +789,9 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, Albu
 }
 
 
-static QString getFilterClause(const Filter& filter, QString cisPlaceholder, QString searchtermPlaceholder)
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder)
 {
 	cisPlaceholder.remove(":");
-	searchtermPlaceholder.remove(":");
 
 	switch( filter.mode() )
 	{
@@ -811,7 +801,7 @@ static QString getFilterClause(const Filter& filter, QString cisPlaceholder, QSt
 				return "genre = ''";
 			}
 
-			return "genre LIKE :" + searchtermPlaceholder;
+			return "genre LIKE :" + cisPlaceholder;
 
 		case Filter::Filename:
 			return "filecissearch LIKE :" + cisPlaceholder;

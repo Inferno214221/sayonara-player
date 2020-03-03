@@ -87,17 +87,22 @@ QAction* MergeMenu::action() const
 
 bool MergeMenu::isDataValid() const
 {
-	return (m->data.size() > 1);
+	QList<QString> valueList = m->data.values();
+
+	QStringList strings(valueList);
+	strings.removeDuplicates();
+
+	return (strings.size() > 1);
 }
 
 Library::MergeData MergeMenu::mergedata() const
 {
-	Util::Set<Id> source_ids;
+	Util::Set<Id> sourceIds;
 	for(Id key : m->data.keys()){
-		source_ids << key;
+		sourceIds << key;
 	}
 
-	return Library::MergeData(source_ids, m->targetId, -1);
+	return Library::MergeData(sourceIds, m->targetId, -1);
 }
 
 void MergeMenu::languageChanged()

@@ -36,7 +36,7 @@ namespace DB
 			Artists();
 			virtual ~Artists();
 
-			virtual bool db_fetch_artists(Query& q, ArtistList& result) const;
+			virtual bool dbFetchArtists(Query& q, ArtistList& result) const;
 
 			virtual ArtistId getArtistID (const QString& artist) const;
             virtual bool getArtistByID(ArtistId id, Artist& artist) const;

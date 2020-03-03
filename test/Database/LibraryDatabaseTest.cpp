@@ -95,10 +95,6 @@ void LibraryDatabaseTest::testStore()
 
 	AlbumList albums;
 	libraryDb->getAllAlbums(albums, true);
-	for(const Album& album : albums)
-	{
-		spLog(Log::Info, this) << album.name() << "," << album.albumArtists().join(",");
-	}
 	QVERIFY(albums.count() == 10);
 
 	ArtistList artists;
