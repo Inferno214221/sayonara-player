@@ -138,6 +138,15 @@ QPixmap CoverButton::pixmap() const
 
 int CoverButton::verticalPadding() const
 {
+	if(m->currentCoverScaled.isNull()) 
+	{
+		// if this is not handled, the padding is always
+		// approx the button height. But that should never
+		// happen as the invalid cover should be set when 
+		// possible
+		return 0;
+	}
+
 	int p = (this->height() - m->currentCoverScaled.size().height()) - 2;
 	if(p <= 0){
 		p = -(this->width() - m->currentCoverScaled.size().width() - 2);
@@ -185,14 +194,21 @@ void CoverButton::setCoverImage(const QString& path)
 	setCoverImagePixmap(QPixmap(path));
 }
 
-void CoverButton::setCoverImagePixmap(const QPixmap& pm)
+void CoverButton::setCoverImagePixmap(const QPixmap& _pm)
 {
-	QPixmap pmScaled = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
-	{ // check if current cover is the same
-		auto h1 = Util::calcHash(Util::convertPixmapToByteArray(pmScaled));
-		if(h1 == m->currentHash && !pm.isNull()){
+	QPixmap pm(_pm);
+	if(pm.isNull()) {
+		pm = m->invalidCover;
+	}
+
+	{ // check if the image is already the same
+		QPixmap pmScaled50 = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
+		auto newHash = Util::calcHash(Util::convertPixmapToByteArray(pmScaled50));
+		if(newHash == m->currentHash) {
 			return;
 		}
+
+		m->currentHash = newHash;
 	}
 
 	// don't change the currently fading out cover
@@ -202,16 +218,19 @@ void CoverButton::setCoverImagePixmap(const QPixmap& pm)
 		m->oldCoverScaled = m->currentCoverScaled;
 	}
 
-	int h = this->height() - 2;
-	int w = this->width() - 2;
-
 	m->currentCover = pm;
-	m->currentCoverScaled = m->currentCover.scaled(QSize(w,h), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m->currentCoverScaled = m->currentCover.scaled
+	(
+		(this->size() - QSize(2, 2)),
+		Qt::KeepAspectRatio,
+		Qt::SmoothTransformation
+	);
 
-	this->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
-
-	m->currentHash = Util::calcHash (
-		Util::convertPixmapToByteArray(m->currentCover.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation))
+	this->setToolTip
+	(
+		QString("%1x%2")
+			.arg(pm.width())
+			.arg(pm.height())
 	);
 
 	emit sigCoverChanged();
@@ -241,7 +260,13 @@ void CoverButton::setCoverData(const QByteArray& data, const QString& mimetype)
 void CoverButton::byteconverterFinished()
 {
 	auto* worker = static_cast<ByteArrayConverter*>(sender());
-	this->setCoverImagePixmap(worker->pixmap());
+
+	QPixmap pm = worker->pixmap();
+	if(pm.isNull()){
+		pm = m->invalidCover;
+	}
+
+	this->setCoverImagePixmap(pm);
 
 	worker->deleteLater();
 }
