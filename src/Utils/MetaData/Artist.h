@@ -78,6 +78,8 @@ class ArtistList :
 	using Parent=std::deque<Artist>;
 
 public:
+	using Size=Parent::size_type;
+
 	ArtistList();
 	~ArtistList();
 
@@ -86,23 +88,21 @@ public:
 	 * @param artists artist list
 	 * @return the name that appears more than 2/3 of all available artists
 	 */
-	static QString get_major_artist(const QStringList& artists);
+	static QString majorArtist(const QStringList& artists);
 
 	/**
 	 * @brief extract the main artist out of the artist list
 	 * @param artists artist list
 	 * @return the name that appears more than 2/3 of all available artists
 	 */
-	QString get_major_artist() const;
+	QString majorArtist() const;
 
-
-	bool contains(ArtistId artistId) const;
-
-	int count() const;
-	ArtistList& operator <<(const Artist& artist);
 	Artist first() const;
+	bool contains(ArtistId artistId) const;
+	int count() const;
 
-	ArtistList& append_unique(const ArtistList& other);
+	ArtistList& operator <<(const Artist& artist);
+	ArtistList& appendUnique(const ArtistList& other);
 
 	void sort(Library::SortOrder so);
 };

@@ -123,28 +123,6 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 
 CoverModel::~CoverModel() = default;
 
-static QString getArtist(const Album& album)
-{
-	QStringList artists{album.albumArtist()};
-	artists.removeAll("");
-
-	if(artists.isEmpty())
-	{
-		artists = album.artists();
-		artists.removeAll("");
-	}
-
-	if(artists.isEmpty()){
-		return Lang::get(Lang::UnknownArtist);
-	}
-
-	if(artists.size() == 1){
-		return artists.first();
-	}
-
-	return Lang::get(Lang::VariousArtists);
-}
-
 QVariant CoverModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid()) {
@@ -207,14 +185,14 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		case CoverModel::ArtistRole:
 			if(GetSetting(Set::Lib_CoverShowArtist))
 			{
-				return getArtist(album);
+				return album.albumArtist();
 			}
 
 			return QString();
 
 		case Qt::ToolTipRole:
 			return QString("<b>%1</b><br>%2")
-					.arg(getArtist(album))
+					.arg(album.albumArtist())
 					.arg(album.name());
 
 		default:

@@ -20,6 +20,7 @@
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaDataSorting.h"
+#include "Utils/Language/Language.h"
 
 #include <QVariant>
 #include <QStringList>
@@ -236,7 +237,24 @@ void Album::setArtists(const QStringList& artists)
 
 QString Album::albumArtist() const
 {
-	return artistPool().value(m->albumArtistIndex);
+	QString artist = artistPool().value(m->albumArtistIndex);
+	if(artist.isEmpty())
+	{
+		QStringList artists = this->artists();
+		if(artists.isEmpty()) {
+			artist = Lang::get(Lang::UnknownArtist);
+		}
+
+		else if(artists.size() == 1) {
+			artist = artists[0];
+		}
+
+		else {
+			artist = Lang::get(Lang::VariousArtists);
+		}
+	}
+
+	return artist;
 }
 
 void Album::setAlbumArtist(const QString& albumArtist)

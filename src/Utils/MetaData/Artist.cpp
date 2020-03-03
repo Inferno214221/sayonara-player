@@ -188,7 +188,7 @@ ArtistList::ArtistList() :
 ArtistList::~ArtistList()
 {}
 
-QString ArtistList::get_major_artist(const QStringList& artists)
+QString ArtistList::majorArtist(const QStringList& artists)
 {
 	QHash<QString, int> map;
 	int n_artists = artists.size();
@@ -227,7 +227,7 @@ QString ArtistList::get_major_artist(const QStringList& artists)
 	return Lang::get(Lang::Various);
 }
 
-QString ArtistList::get_major_artist() const
+QString ArtistList::majorArtist() const
 {
 	QStringList lst;
 
@@ -235,7 +235,7 @@ QString ArtistList::get_major_artist() const
 		lst << it->name();
 	}
 
-	return get_major_artist(lst);
+	return majorArtist(lst);
 }
 
 bool ArtistList::contains(ArtistId artistId) const
@@ -269,7 +269,7 @@ Artist ArtistList::first() const
 	return this->at(0);
 }
 
-ArtistList& ArtistList::append_unique(const ArtistList& other)
+ArtistList& ArtistList::appendUnique(const ArtistList& other)
 {
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
