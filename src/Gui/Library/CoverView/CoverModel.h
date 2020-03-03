@@ -94,7 +94,6 @@ namespace Library
 			void clear();
 
 		private slots:
-			void coverReady(const QString& hash);
 			void nextHash();
 			void coverLookupFinished(bool success);
 			void showArtistsChanged();
