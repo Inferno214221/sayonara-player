@@ -40,6 +40,9 @@ namespace PipelineExtensions
 
 		bool init();
 		bool setEnabled(bool levelEnabled, bool spectrumEnabled);
+
+		bool isLevelEnabled() const;
+		bool isSpectrumEnabled() const;
 	};
 }
 

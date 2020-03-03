@@ -46,6 +46,7 @@ namespace PipelineExtensions
 
 			bool init();
 			bool setEnabled(bool b);
+			bool isEnabled() const;
 	};
 }
 

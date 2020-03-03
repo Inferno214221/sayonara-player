@@ -324,9 +324,24 @@ void Pipeline::setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled)
 	m->visualizer->setEnabled(levelEnabled, spectrumEnabled);
 }
 
+bool Pipeline::isLevelVisualizerEnabled() const
+{
+	return m->visualizer->isLevelEnabled();
+}
+
+bool Pipeline::isSpectrumVisualizerEnabled() const
+{
+	return m->visualizer->isSpectrumEnabled();
+}
+
 void Pipeline::setBroadcastingEnabled(bool b)
 {
 	m->broadcaster->setEnabled(b);
+}
+
+bool Pipeline::isBroadcastingEnabled() const
+{
+	return m->broadcaster->isEnabled();
 }
 
 GstState Pipeline::state() const
@@ -480,7 +495,4 @@ GstElement* Pipeline::equalizerElement() const
 
 void Pipeline::postProcessFadeIn() {}
 
-void Pipeline::postProcessFadeOut()
-{
-	setVisualizerEnabled(false, false);
-}
+void Pipeline::postProcessFadeOut() {}
