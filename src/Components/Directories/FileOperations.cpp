@@ -142,7 +142,7 @@ QStringList FileOperations::supportedReplacementTags()
 	};
 }
 
-static QString replace_tag(const QString& expression, const MetaData& md)
+static QString replaceTag(const QString& expression, const MetaData& md)
 {
 	QString ret(expression);
 	ret.replace("<title>", md.title());
@@ -197,7 +197,7 @@ bool FileOperations::renameByExpression(const QString& old_name, const QString& 
 		Tagging::Utils::getMetaDataOfFile(md);
 	}
 
-	const QString pureFilename = replace_tag(expression, md);
+	const QString pureFilename = replaceTag(expression, md);
 	if(pureFilename.isEmpty()) {
 		spLog(Log::Error, this) << "Target filename is empty";
 		return false;
