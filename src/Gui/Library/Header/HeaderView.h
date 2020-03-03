@@ -49,6 +49,7 @@ namespace Library
 
 			Library::SortOrder sortorder(int index, Qt::SortOrder sortorder);
 			QString columnText(int index) const;
+			void reloadColumnTexts();
 
 			QSize sizeHint() const override;
 

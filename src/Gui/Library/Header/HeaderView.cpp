@@ -117,6 +117,17 @@ QString HeaderView::columnText(int index) const
 	return m->columns[index].first->title();
 }
 
+void HeaderView::reloadColumnTexts()
+{
+	for(int i=0; i<m->columns.size(); i++)
+	{
+		QAction* action = m->columns[i].second;
+		action->setText(columnText(i));
+	}
+
+	m->actionResize->setText(tr("Resize columns"));
+}
+
 void HeaderView::actionTriggered(bool b)
 {
 	auto* action = static_cast<QAction*>(sender());
@@ -181,21 +192,7 @@ void HeaderView::actionResizeTriggered()
 
 void HeaderView::languageChanged()
 {
-	for(int i=0; i<m->columns.size(); i++)
-	{
-		ColumnHeaderPtr section = m->columns[i].first;
-		QAction* action = m->columns[i].second;
-
-		action->setText(section->title());
-
-		int headerTextWidth = Gui::Util::textWidth(this, section->title() + "M");
-		if(this->sectionSize(i) < headerTextWidth)
-		{
-			this->resizeSection(i, headerTextWidth);
-		}
-	}
-
-	m->actionResize->setText(tr("Resize columns"));
+	// not needed, as reloadColumnTexts() is triggered by the Library::TableView
 }
 
 QSize HeaderView::sizeHint() const

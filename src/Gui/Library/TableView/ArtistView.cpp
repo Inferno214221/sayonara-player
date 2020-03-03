@@ -216,4 +216,5 @@ void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 void ArtistView::showAlbumArtistsChanged()
 {
 	m->albumArtistAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
+	setupColumnNames();
 }

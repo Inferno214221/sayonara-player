@@ -91,6 +91,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Add tab");
 		case Album:
 			return l.tr("Album");
+		case AlbumArtist:
+			return l.tr("Album artist");
 		case AlbumArtists:
 			return l.tr("Album artists");
 		case Albums:
