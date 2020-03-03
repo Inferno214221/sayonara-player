@@ -72,7 +72,11 @@ namespace Engine
 			void checkAboutToFinish();
 
 			void setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled);
+			bool isLevelVisualizerEnabled() const;
+			bool isSpectrumVisualizerEnabled() const;
+
 			void setBroadcastingEnabled(bool b);
+			bool isBroadcastingEnabled() const;
 
 			void record(bool b);
 			void setRecordingPath(const QString& session_path);

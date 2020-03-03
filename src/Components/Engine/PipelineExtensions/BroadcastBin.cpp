@@ -115,8 +115,17 @@ bool BroadcastBin::setEnabled(bool b)
 		return false;
 	}
 
+	if(m->isRunning == b) {
+		return true;
+	}
+
 	m->isRunning = b;
 	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::lameProbed);
 
 	return true;
+}
+
+bool BroadcastBin::isEnabled() const
+{
+	return m->isRunning;
 }

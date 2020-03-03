@@ -42,12 +42,16 @@ struct VisualizerBin::Private
 
 	gulong				probe;
 	bool				isRunning;
+	bool				isSpectrumEnabled;
+	bool				isLevelEnabled;
 
 	Private(GstElement* pipeline, GstElement* tee) :
 		pipeline(pipeline),
 		tee(tee),
 		probe(0),
-		isRunning(false)
+		isRunning(false),
+		isSpectrumEnabled(false),
+		isLevelEnabled(false)
 	{}
 };
 
@@ -116,11 +120,33 @@ bool VisualizerBin::setEnabled(bool levelEnabled, bool spectrumEnabled)
 		return false;
 	}
 
-	m->isRunning = (levelEnabled || spectrumEnabled);
-	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::spectrumProbed);
+	m->isLevelEnabled = levelEnabled;
+	m->isSpectrumEnabled = spectrumEnabled;
 
+	bool isRunning = (levelEnabled || spectrumEnabled);
+	if(isRunning == m->isRunning)
+	{
+		Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", levelEnabled);
+		Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", spectrumEnabled);
+
+		return true;
+	}
+
+	m->isRunning = isRunning;
+
+	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::spectrumProbed);
 	Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", levelEnabled);
 	Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", spectrumEnabled);
 
 	return true;
+}
+
+bool VisualizerBin::isLevelEnabled() const
+{
+	return m->isLevelEnabled;
+}
+
+bool VisualizerBin::isSpectrumEnabled() const
+{
+	return m->isSpectrumEnabled;
 }
