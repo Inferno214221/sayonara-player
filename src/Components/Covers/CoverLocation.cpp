@@ -166,9 +166,9 @@ Location Location::xcoverLocation(const Album& album)
 	Location cl;
 
 	{ //setup basic CoverLocation
-		if( album.albumArtists().size() == 1)
+		if(!album.albumArtist().trimmed().isEmpty())
 		{
-			cl = Location::coverLocation(album.name(), album.albumArtists().at(0));
+			cl = Location::coverLocation(album.name(), album.albumArtist());
 		}
 
 		else if(album.artists().size() > 1)
@@ -303,7 +303,7 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 			album.setId(md.albumId());
 			album.setName(md.album());
 			album.setArtists({md.artist()});
-			album.setAlbumArtists({md.albumArtist()});
+			album.setAlbumArtist(md.albumArtist());
 			album.setDatabaseId(md.databaseId());
 			album.setPathHint({md.filepath()});
 		}

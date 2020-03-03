@@ -17,7 +17,7 @@ static QStringList getHashes(const AlbumList& albums)
 {
 	QStringList hashes;
 	Util::Algorithm::transform(albums, hashes, [](const Album& album){
-		return (album.name()) + album.albumArtists().join(",");
+		return album.name() + album.albumArtist();
 	});
 
 	hashes.sort();

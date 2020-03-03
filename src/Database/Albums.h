@@ -35,14 +35,16 @@ namespace DB
 			Albums();
 			virtual ~Albums();
 
+			virtual void initViews();
+
 			virtual bool dbFetchAlbums(Query& q, AlbumList& result) const;
 
 			virtual AlbumId getAlbumID (const QString& album) const;
 
             virtual bool getAlbumByID(AlbumId id, Album& album) const;
-			virtual bool getAlbumByID(AlbumId id, Album& album, bool also_empty) const;
+			virtual bool getAlbumByID(AlbumId id, Album& album, bool alsoEmpty) const;
 
-			virtual bool getAllAlbums(AlbumList& result, bool also_empty) const;
+			virtual bool getAllAlbums(AlbumList& result, bool alsoEmpty) const;
 			virtual bool getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter) const;
 
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result) const;
@@ -59,6 +61,7 @@ namespace DB
 			virtual QString artistIdField() const=0;
 			virtual QString trackView() const=0;
 			virtual QString trackSearchView() const=0;
+			virtual LibraryId libraryId() const=0;
 			virtual ::Library::SearchModeMask searchMode() const=0;
 
 			virtual Module* module()=0;
@@ -67,7 +70,7 @@ namespace DB
 			virtual void updateAlbumCissearch();
 
 		private:
-			virtual QString fetchQueryAlbums(bool also_empty) const;
+			virtual QString fetchQueryAlbums(bool alsoEmpty) const;
 	};
 }
 

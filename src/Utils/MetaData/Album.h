@@ -61,8 +61,8 @@ public:
 	QStringList artists() const;
 	void setArtists(const QStringList& artists);
 
-	QStringList albumArtists() const;
-	void setAlbumArtists(const QStringList& albumArtists);
+	QString albumArtist() const;
+	void setAlbumArtist(const QString& albumArtist);
 
 	QStringList pathHint() const;
 	void setPathHint(const QStringList& paths);

@@ -82,6 +82,7 @@ public:
 		zoom(100)
 	{
 		coverThread = new AlbumCoverFetchThread(parent);
+		cvpc = new CoverViewPixmapCache();
 	}
 
 	~Private()
@@ -99,9 +100,8 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	ItemModel(parent, library)
 {
 	m = Pimpl::make<Private>(this);
-	m->cvpc = new CoverViewPixmapCache();
 
-	Cover::ChangeNotfier* ccn = Cover::ChangeNotfier::instance();
+	auto* ccn = Cover::ChangeNotfier::instance();
 	connect(ccn, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
 
 	connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
@@ -125,7 +125,7 @@ CoverModel::~CoverModel() = default;
 
 static QString getArtist(const Album& album)
 {
-	QStringList artists = album.albumArtists();
+	QStringList artists{album.albumArtist()};
 	artists.removeAll("");
 
 	if(artists.isEmpty())

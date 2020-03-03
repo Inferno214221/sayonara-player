@@ -65,6 +65,7 @@ LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId databaseId
 	m = Pimpl::make<Private>(connection_name, databaseId, libraryId, init_search_mode());
 
 	DB::Tracks::initViews();
+	DB::Albums::initViews();
 
 	{ // set artistId field
 		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
@@ -164,13 +165,13 @@ void LibraryDatabase::updateSearchMode(::Library::SearchModeMask smm)
 }
 
 using AlbumHash=QString;
-static AlbumHash calcAlbumHash(const QString& albumName, const QStringList& albumArtists)
+static AlbumHash calcAlbumHash(const QString& albumName, const QString& albumArtist)
 {
-	return albumName.toLower() + albumArtists.join(",").toLower();
+	return albumName.toLower() + albumArtist.toLower();
 }
 static AlbumHash calcAlbumHash(const Album& album)
 {
-	return calcAlbumHash(album.name(), album.albumArtists());
+	return calcAlbumHash(album.name(), album.albumArtist());
 }
 
 MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& tracks)

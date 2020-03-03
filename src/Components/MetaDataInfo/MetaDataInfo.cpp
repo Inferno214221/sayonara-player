@@ -235,7 +235,12 @@ void MetaDataInfo::calcCoverLocation(const MetaDataList& lst)
 		album.setId(albumIds().first());
 		album.setName(m->albums.first());
 		album.setArtists(m->artists.toList());
-		album.setAlbumArtists(m->album_artists.toList());
+
+		if(m->album_artists.size() > 0)
+		{
+			album.setAlbumArtist(m->album_artists.first());
+		}
+
 		album.setDatabaseId(lst[0].databaseId());
 
 		QStringList path_hint;

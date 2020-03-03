@@ -83,55 +83,55 @@ bool Filter::operator ==(const Filter& other)
 }
 
 
-QStringList Filter::filtertext(bool with_percent) const
+QStringList Filter::filtertext(bool withPercent) const
 {
 	QStringList ret;
-	const QStringList tmp = m->filtertext.split(",");
+	const QStringList filterTexts = m->filtertext.split(",");
 
-	for(QString str : tmp)
+	for(QString filterText : filterTexts)
 	{
-		if(with_percent)
+		if(withPercent)
 		{
-			if(!str.startsWith('%')){
-				str.prepend('%');
+			if(!filterText.startsWith('%')){
+				filterText.prepend('%');
 			}
 
-			if(!str.endsWith('%')){
-				str.append('%');
+			if(!filterText.endsWith('%')){
+				filterText.append('%');
 			}
 		}
 
-		if(!str.isEmpty())
+		if(!filterText.isEmpty())
 		{
-			ret << str;
+			ret << filterText;
 		}
 	}
 
 	return ret;
 }
 
-QStringList Filter::searchModeFiltertext(bool with_percent) const
+QStringList Filter::searchModeFiltertext(bool withPercent) const
 {
 	QStringList ret;
-	const QStringList tmp = m->filtertext.split(",");
+	const QStringList filterTexts = m->filtertext.split(",");
 
-	for(const QString& tmp_str : tmp)
+	for(const QString& filterText : filterTexts)
 	{
-		QString str = ::Library::Utils::convertSearchstring(tmp_str, m->search_mode);
-		if(with_percent)
+		QString convertedFiltertext = ::Library::Utils::convertSearchstring(filterText, m->search_mode);
+		if(withPercent)
 		{
-			if(!str.startsWith('%')){
-				str.prepend('%');
+			if(!convertedFiltertext.startsWith('%')){
+				convertedFiltertext.prepend('%');
 			}
 
-			if(!str.endsWith('%')){
-				str.append('%');
+			if(!convertedFiltertext.endsWith('%')){
+				convertedFiltertext.append('%');
 			}
 		}
 
-		if(!str.isEmpty())
+		if(!convertedFiltertext.isEmpty())
 		{
-			ret << str;
+			ret << convertedFiltertext;
 		}
 	}
 

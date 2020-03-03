@@ -36,8 +36,8 @@ struct Album::Private
 	QList<Disc> discnumbers;
 
 	std::list<HashValue> artistIndexes;
-	std::list<HashValue> albumArtistIndexes;
-	QStringList			 pathHint;
+	HashValue albumArtistIndex;
+	QStringList	pathHint;
 	HashValue albumIdx;
 
 	Private() :
@@ -68,7 +68,7 @@ struct Album::Private
 			CMP(isSampler) &&
 			CMP(discnumbers) &&
 			CMP(artistIndexes) &&
-			CMP(albumArtistIndexes) &&
+			CMP(albumArtistIndex) &&
 			CMP(pathHint) &&
 			CMP(albumIdx)
 		);
@@ -234,33 +234,21 @@ void Album::setArtists(const QStringList& artists)
 	}
 }
 
-QStringList Album::albumArtists() const
+QString Album::albumArtist() const
 {
-	QStringList lst;
-
-	for(const HashValue& v : m->albumArtistIndexes)
-	{
-		lst << artistPool().value(v);
-	}
-
-	return lst;
+	return artistPool().value(m->albumArtistIndex);
 }
 
-void Album::setAlbumArtists(const QStringList &album_artists)
+void Album::setAlbumArtist(const QString& albumArtist)
 {
-	m->albumArtistIndexes.clear();
+	HashValue hashed = qHash(albumArtist);
 
-	for(const QString& artist : album_artists)
+	if(!artistPool().contains(hashed))
 	{
-		HashValue hashed = qHash(artist);
-
-		if(!artistPool().contains(hashed))
-		{
-			artistPool().insert(hashed, artist);
-		}
-
-		m->albumArtistIndexes.push_back(hashed);
+		artistPool().insert(hashed, albumArtist);
 	}
+
+	m->albumArtistIndex = hashed;
 }
 
 QStringList Album::pathHint() const

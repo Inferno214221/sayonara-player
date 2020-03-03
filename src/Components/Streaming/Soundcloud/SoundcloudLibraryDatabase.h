@@ -19,12 +19,13 @@ namespace SC
 
 		bool dbFetchTracks(::DB::Query& q, MetaDataList& result) const override;
 		bool dbFetchAlbums(::DB::Query& q, AlbumList& result) const override;
-		bool db_fetch_artists(::DB::Query& q, ArtistList& result) const override;
+		bool dbFetchArtists(::DB::Query& q, ArtistList& result) const override;
 
 		ArtistId updateArtist(const Artist& artist);
 		ArtistId insertArtistIntoDatabase (const Artist& artist) override;
 		ArtistId insertArtistIntoDatabase (const QString& artist) override;
 
+		bool getAllAlbums(AlbumList& result, bool alsoEmpty) const override;
 		AlbumId updateAlbum(const Album& album);
 		AlbumId insertAlbumIntoDatabase (const Album& album) override;
 		AlbumId insertAlbumIntoDatabase (const QString& album) override;

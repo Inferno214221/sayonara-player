@@ -13,30 +13,30 @@
 
 using ::DB::Query;
 
-SC::LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId databaseId, LibraryId libraryId) :
-	::DB::LibraryDatabase(connection_name, databaseId, libraryId)
+SC::LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
+	::DB::LibraryDatabase(connectionName, databaseId, libraryId)
 {}
 
 SC::LibraryDatabase::~LibraryDatabase() = default;
 
-QString SC::LibraryDatabase::fetchQueryArtists(bool also_empty) const
+QString SC::LibraryDatabase::fetchQueryArtists(bool alsoEmpty) const
 {
 	QString sql =
-			"SELECT "
-			"artists.artistid AS artistID, "
-			"artists.name AS artistName, "
-			"artists.permalink_url AS permalink_url, "
-			"artists.description AS description, "
-			"artists.followers_following AS followers_following, "
-			"artists.cover_url AS cover_url, "
-			"artists.name AS albumArtistName, "
-			"COUNT(DISTINCT tracks.trackid) AS trackCount, "
-			"GROUP_CONCAT(DISTINCT albums.albumid) AS artistAlbums "
-			"FROM artists ";
+		"SELECT "
+		"artists.artistid				AS artistID, "
+		"artists.name					AS artistName, "
+		"artists.permalink_url			AS permalink_url, "
+		"artists.description			AS description, "
+		"artists.followers_following	AS followers_following, "
+		"artists.cover_url				AS cover_url, "
+		"artists.name					AS albumArtistName, "
+		"COUNT(DISTINCT tracks.trackid)			AS trackCount, "
+		"GROUP_CONCAT(DISTINCT albums.albumid)	AS artistAlbums "
+		"FROM artists ";
 
-	QString join = "INNER JOIN";
-	if(also_empty){
-		join = "LEFT OUTER JOIN";
+	QString join = " INNER JOIN ";
+	if(alsoEmpty){
+		join = " LEFT OUTER JOIN ";
 	}
 
 	sql +=	join + " tracks ON artists.artistID = tracks.artistID " +
@@ -45,25 +45,25 @@ QString SC::LibraryDatabase::fetchQueryArtists(bool also_empty) const
 	return sql;
 }
 
-QString SC::LibraryDatabase::fetchQueryAlbums(bool also_empty) const
+QString SC::LibraryDatabase::fetchQueryAlbums(bool alsoEmpty) const
 {
 	QString sql =
-			"SELECT "
-			"albums.albumID AS albumID, "
-			"albums.name AS albumName, "
-			"SUM(tracks.length) / 1000 AS albumLength, "
-			"albums.rating AS albumRating, "
-			"albums.permalink_url AS permalink_url, "
-			"albums.purchase_url AS purchase_url, "
-			"albums.cover_url AS cover_url, "
-			"COUNT(DISTINCT tracks.trackid) AS trackCount, "
-			"MAX(tracks.year) AS albumYear, "
-			"GROUP_CONCAT(DISTINCT artists.name) AS albumArtists, "
-			"GROUP_CONCAT(DISTINCT tracks.discnumber) AS discnumbers "
-			"FROM albums ";
+		"SELECT "
+		"albums.albumID				AS albumID, "
+		"albums.name				AS albumName, "
+		"SUM(tracks.length) / 1000	AS albumLength, "
+		"albums.rating				AS albumRating, "
+		"albums.permalink_url		AS permalink_url, "
+		"albums.purchase_url		AS purchase_url, "
+		"albums.cover_url			AS cover_url, "
+		"COUNT(DISTINCT tracks.trackid)				AS trackCount, "
+		"MAX(tracks.year)							AS albumYear, "
+		"GROUP_CONCAT(DISTINCT artists.name)		AS albumArtists, "
+		"GROUP_CONCAT(DISTINCT tracks.discnumber)	AS discnumbers "
+		"FROM albums ";
 
 	QString join = "INNER JOIN";
-	if(also_empty){
+	if(alsoEmpty){
 		join = "LEFT OUTER JOIN";
 	}
 
@@ -76,23 +76,23 @@ QString SC::LibraryDatabase::fetchQueryAlbums(bool also_empty) const
 QString SC::LibraryDatabase::fetchQueryTracks() const
 {
 	return	"SELECT "
-			"tracks.trackID AS trackID, "
-			"tracks.title AS trackTitle, "
-			"tracks.length AS trackLength, "
-			"tracks.year AS trackYear, "
-			"tracks.bitrate AS trackBitrate, "
-			"tracks.filename AS trackFilename, "
-			"tracks.track AS trackNum, "
-			"albums.albumID AS albumID, "
-			"artists.artistID AS artistID, "
-			"albums.name AS albumName, "
-			"artists.name AS artistName, "
-			"tracks.genre AS genrename, "
-			"tracks.filesize AS filesize, "
-			"tracks.discnumber AS discnumber, "
-			"tracks.purchase_url AS purchase_url, "
-			"tracks.cover_url AS cover_url, "
-			"tracks.rating AS rating "
+			"tracks.trackID			AS trackID, "
+			"tracks.title			AS trackTitle, "
+			"tracks.length			AS trackLength, "
+			"tracks.year			AS trackYear, "
+			"tracks.bitrate			AS trackBitrate, "
+			"tracks.filename		AS trackFilename, "
+			"tracks.track			AS trackNum, "
+			"albums.albumID			AS albumID, "
+			"artists.artistID		AS artistID, "
+			"albums.name			AS albumName, "
+			"artists.name			AS artistName, "
+			"tracks.genre			AS genrename, "
+			"tracks.filesize		AS filesize, "
+			"tracks.discnumber		AS discnumber, "
+			"tracks.purchase_url	AS purchase_url, "
+			"tracks.cover_url		AS cover_url, "
+			"tracks.rating			AS rating "
 			"FROM tracks "
 			"INNER JOIN albums ON tracks.albumID = albums.albumID "
 			"INNER JOIN artists ON tracks.artistID = artists.artistID ";
@@ -107,31 +107,31 @@ bool SC::LibraryDatabase::dbFetchTracks(Query& q, MetaDataList& result) const
 		return false;
 	}
 
-	if(!q.last()){
+	if(!q.last()) {
 		return true;
 	}
 
-	for(bool is_element = q.first(); is_element; is_element = q.next())
+	for(bool isElement = q.first(); isElement; isElement = q.next())
 	{
 		MetaData data;
 
-		data.setId(			q.value(0).toInt());
-		data.setTitle(			q.value(1).toString());
-		data.setDurationMs(	q.value(2).toInt());
-		data.setYear(			q.value(3).value<Year>());
-		data.setBitrate(		q.value(4).value<Bitrate>());
-		data.setFilepath(		q.value(5).toString());
-		data.setTrackNumber(	q.value(6).value<TrackNum>());
-		data.setAlbumId(		q.value(7).toInt());
-		data.setArtistId(		q.value(8).toInt());
-		data.setAlbum(			q.value(9).toString().trimmed());
-		data.setArtist(		q.value(10).toString().trimmed());
-		data.setGenres(		q.value(11).toString().split(","));
-		data.setFilesize(		q.value(12).value<Filesize>());
-		data.setDiscnumber(	q.value(13).value<Disc>());
+		data.setId(q.value(0).toInt());
+		data.setTitle(q.value(1).toString());
+		data.setDurationMs(q.value(2).toInt());
+		data.setYear(q.value(3).value<Year>());
+		data.setBitrate(q.value(4).value<Bitrate>());
+		data.setFilepath(q.value(5).toString());
+		data.setTrackNumber(q.value(6).value<TrackNum>());
+		data.setAlbumId(q.value(7).toInt());
+		data.setArtistId(q.value(8).toInt());
+		data.setAlbum(q.value(9).toString().trimmed());
+		data.setArtist(q.value(10).toString().trimmed());
+		data.setGenres(q.value(11).toString().split(","));
+		data.setFilesize(q.value(12).value<Filesize>());
+		data.setDiscnumber(q.value(13).value<Disc>());
 		data.addCustomField("purchase_url", Lang::get(Lang::PurchaseUrl), q.value(14).toString());
 		data.setCoverDownloadUrls({q.value(15).toString()});
-		data.setRating(		q.value(16).value<Rating>());
+		data.setRating(q.value(16).value<Rating>());
 		data.setDatabaseId(module()->databaseId());
 
 		result << data;
@@ -163,14 +163,14 @@ bool SC::LibraryDatabase::dbFetchAlbums(Query& q, AlbumList& result) const
 		album.setSongcount(q.value(7).value<TrackNum>());
 		album.setYear(q.value(8).value<Year>());
 
-		QStringList lst_artists =	q.value(9).toString().split(',');
-		album.setArtists(lst_artists);
+		QStringList artistList = q.value(9).toString().split(',');
+		album.setArtists(artistList);
 
-		QStringList lst_discnumbers = q.value(10).toString().split(',');
+		QStringList discnumberList = q.value(10).toString().split(',');
 		auto discnumbers = album.discnumbers();
 		discnumbers.clear();
 
-		for(const QString& disc : lst_discnumbers)
+		for(const QString& disc : discnumberList)
 		{
 			auto d = Disc(disc.toInt());
 			if(discnumbers.contains(d)) {
@@ -188,12 +188,12 @@ bool SC::LibraryDatabase::dbFetchAlbums(Query& q, AlbumList& result) const
 		album.setDatabaseId(module()->databaseId());
 
 		result << album;
-	};
+	}
 
 	return true;
 }
 
-bool SC::LibraryDatabase::db_fetch_artists(Query& q, ArtistList& result) const
+bool SC::LibraryDatabase::dbFetchArtists(Query& q, ArtistList& result) const
 {
 	result.clear();
 
@@ -206,21 +206,21 @@ bool SC::LibraryDatabase::db_fetch_artists(Query& q, ArtistList& result) const
 		return true;
 	}
 
-	for(bool is_element=q.first(); is_element; is_element = q.next())
+	for(bool isElement = q.first(); isElement; isElement = q.next())
 	{
 		Artist artist;
 
-		artist.setId(			q.value(0).toInt());
-		artist.setName(		q.value(1).toString().trimmed());
+		artist.setId(q.value(0).toInt());
+		artist.setName(q.value(1).toString().trimmed());
 
 		artist.addCustomField("permalink_url", "Permalink Url", q.value(2).toString());
 		artist.addCustomField("description", "Description", q.value(3).toString());
 		artist.addCustomField("followers_following", "Followers/Following", q.value(4).toString());
 
 		artist.setCoverDownloadUrls({q.value(5).toString()});
-		artist.setSongcount(			q.value(7).value<uint16_t>());
-		QStringList list =				q.value(8).toString().split(',');
-		artist.setAlbumcount(			uint16_t(list.size()));
+		artist.setSongcount(q.value(7).value<uint16_t>());
+		QStringList list = q.value(8).toString().split(',');
+		artist.setAlbumcount(uint16_t(list.size()));
 		artist.setDatabaseId(module()->databaseId());
 
 		result << artist;
@@ -264,6 +264,20 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const QString& artist)
 	return -1;
 }
 
+bool SC::LibraryDatabase::getAllAlbums(AlbumList& result, bool alsoEmpty) const
+{
+	Query q(module());
+
+	QString query =
+		fetchQueryAlbums(alsoEmpty) +
+		" GROUP BY albums.albumID, albums.name, albums.rating "
+	;
+
+	q.prepare(query);
+
+	return dbFetchAlbums(q, result);
+}
+
 ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const Artist& artist)
 {
 	Artist tmp_artist;
@@ -301,7 +315,6 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase (const Artist& artist)
 	return getArtistID(artist.name());
 }
 
-
 AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 {
 	QString cover_url;
@@ -329,7 +342,6 @@ AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 
 	return getAlbumID(album.name());
 }
-
 
 AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase (const QString& album)
 {

@@ -191,12 +191,11 @@ void CoverView::changeSortorder(Library::SortOrder so)
 
 void CoverView::initContextMenu()
 {
-
 	if(contextMenu()){
 		return;
 	}
 
-	CoverViewContextMenu* cm = new CoverViewContextMenu(this);
+	auto* cm = new CoverViewContextMenu(this);
 	ItemView::initCustomContextMenu(cm);
 
 	connect(cm, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);

@@ -28,20 +28,26 @@ using DB::Albums;
 using DB::Query;
 using ::Library::Filter;
 
-static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder);
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder);
 
-Albums::Albums() = default;
-Albums::~Albums() = default;
-
-QString Albums::fetchQueryAlbums(bool also_empty) const
+static void dropAlbumView(DB::Module* module, const QString& albumView)
 {
-	QStringList fields
+	module->runQuery
+	(
+		"DROP VIEW IF EXISTS " + albumView + "; ",
+		"Cannot drop album view"
+	);
+}
+
+static void createAlbumView(DB::Module* module, const QString& trackView, const QString& albumView)
+{
+	const QStringList fields
 	{
 	    "albums.albumID								AS albumID",			// 0
 		"albums.name								AS albumName",			// 1
 		"albums.rating								AS albumRating",		// 2
 		"GROUP_CONCAT(DISTINCT artists.name)		AS artistNames",		// 3
-		"GROUP_CONCAT(DISTINCT albumArtists.name)	AS albumArtistNames",	// 4
+		"GROUP_CONCAT(DISTINCT albumArtists.name)	AS albumArtistName",	// 4
 		"SUM(%1.length) / 1000						AS albumLength",		// 5
 		"COUNT(DISTINCT %1.trackID)					AS trackCount",			// 6
 		"MAX(%1.year)								AS albumYear",			// 7
@@ -49,18 +55,65 @@ QString Albums::fetchQueryAlbums(bool also_empty) const
 		"GROUP_CONCAT(%1.filename, '#')				AS filenames"			// 9
 	};
 
-	QString query = "SELECT " + fields.join(", ") + " FROM albums ";
+	const QString query = QString
+	(
+		"CREATE VIEW " + albumView + " AS "
+		"SELECT " + fields.join(", ") + " FROM albums "
+		"LEFT OUTER JOIN %1 ON %1.albumID = albums.albumID "							// leave out empty albums
+		"LEFT OUTER JOIN artists ON %1.artistID = artists.artistID "
+		"LEFT OUTER JOIN artists albumArtists ON %1.albumArtistID = albumArtists.artistID "
+		"GROUP BY albums.albumID; "
+	).arg(trackView);
 
-	QString join = " INNER JOIN ";
-	if(also_empty){
-		join = " LEFT OUTER JOIN ";
+	module->runQuery(query, "Cannot create album view");
+}
+
+Albums::Albums() = default;
+Albums::~Albums() = default;
+
+static QString albumViewName(LibraryId libraryId)
+{
+	if(libraryId < 0){
+		return "album_view";
 	}
 
-	query += join + QString(" %1 ON %1.albumID = albums.albumID ");
-	query += join + QString(" artists ON %1.artistID = artists.artistID ");
-	query += join + QString(" artists albumArtists ON %1.albumArtistID = albumArtists.artistID ");
+	return QString("album_view_%1").arg(QString::number(libraryId));
+}
 
-	return query.arg(trackView());
+void Albums::initViews()
+{
+	const QString& viewName = albumViewName(libraryId());
+
+	dropAlbumView(module(), viewName);
+	createAlbumView(module(), trackView(), viewName);
+}
+
+QString Albums::fetchQueryAlbums(bool alsoEmpty) const
+{
+	const QStringList fields
+	{
+	    "albumID",			// 0
+		"albumName",		// 1
+		"albumRating",		// 2
+		"artistNames",		// 3
+		"albumArtistName",	// 4
+		"albumLength",		// 5
+		"trackCount",		// 6
+		"albumYear",		// 7
+		"discnumbers",		// 8
+		"filenames"			// 9
+	};
+
+	QString query = "SELECT " + fields.join(", ") + " FROM " + albumViewName(libraryId());
+
+	if(alsoEmpty) {
+		query += " WHERE 1 ";
+	}
+	else {
+		query += " WHERE trackCount > 0 ";
+	}
+
+	return query;
 }
 
 bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
@@ -76,14 +129,14 @@ bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
 	{
 		Album album;
 
-		album.setId(		q.value(0).value<AlbumId>());
-		album.setName(		q.value(1).toString());
-		album.setRating(	q.value(2).value<Rating>());
-		album.setArtists(	q.value(3).toString().split(','));
-		album.setAlbumArtists(q.value(4).toString().split(','));
+		album.setId(q.value(0).value<AlbumId>());
+		album.setName(q.value(1).toString());
+		album.setRating(q.value(2).value<Rating>());
+		album.setArtists(q.value(3).toString().split(','));
+		album.setAlbumArtist(q.value(4).toString());
 		album.setDurationSec(q.value(5).value<Seconds>());
 		album.setSongcount(q.value(6).value<TrackNum>());
-		album.setYear(		q.value(7).value<Year>());
+		album.setYear(q.value(7).value<Year>());
 
 		QStringList discs =	q.value(8).toString().split(',');
 		auto discnumbers = album.discnumbers();
@@ -132,16 +185,17 @@ bool Albums::getAlbumByID(AlbumId id, Album& album) const
     return getAlbumByID(id, album, false);
 }
 
-bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
+bool Albums::getAlbumByID(AlbumId id, Album& album, bool alsoEmpty) const
 {
 	if(id == -1) {
 		return false;
 	}
 
 	Query q(module());
-	QString query =	fetchQueryAlbums(also_empty) +
-						" WHERE albums.albumID = :id "
-						" GROUP BY albums.albumID, albums.name, albums.rating ";
+	QString query =	fetchQueryAlbums(alsoEmpty) +
+		" AND albumID = :id ";
+
+	query += " GROUP BY albumID, albumName, albumRating ";
 
 	q.prepare(query);
 	q.bindValue(":id", id);
@@ -159,9 +213,11 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool also_empty) const
 bool Albums::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 {
 	Query q(module());
-	QString query = fetchQueryAlbums(alsoEmpty);
 
-	query += " GROUP BY albums.albumID, albums.name, albums.rating; ";
+	QString query =
+		fetchQueryAlbums(alsoEmpty) +
+		" GROUP BY albumID, albumName, albumRating "
+	;
 
 	q.prepare(query);
 
@@ -169,47 +225,46 @@ bool Albums::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 }
 
 
-bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, const Library::Filter &filter) const
+bool Albums::getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const Library::Filter& filter) const
 {
 	if(artists.isEmpty()) {
 		return false;
 	}
 
-	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
-	for(int i=0; i<filters.size(); i++)
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	const QStringList fields
 	{
-		QStringList fields
-		{
-			 "albumID",
-			 "albumName",
-			 "albumRating",
-			 "GROUP_CONCAT(DISTINCT artistName)",
-			 "GROUP_CONCAT(DISTINCT albumArtistName)",
-			 "SUM(length) / 1000 AS albumLength",
-			 "COUNT(DISTINCT trackID) AS trackCount",
-			 "MAX(year) AS albumYear",
-			 "GROUP_CONCAT(DISTINCT discnumber)",
-			 "GROUP_CONCAT(DISTINCT filename)"
-		};
+		 "albumID",
+		 "albumName",
+		 "albumRating",
+		 "GROUP_CONCAT(DISTINCT artistName)",
+		 "GROUP_CONCAT(DISTINCT albumArtistName)",
+		 "SUM(length) / 1000 AS albumLength",
+		 "COUNT(DISTINCT trackID) AS trackCount",
+		 "MAX(year) AS albumYear",
+		 "GROUP_CONCAT(DISTINCT discnumber)",
+		 "GROUP_CONCAT(DISTINCT filename)"
+	};
 
-		const QString search_view = trackSearchView();
-		QString query = "SELECT " + fields.join(", ") + " FROM " + search_view + " WHERE ";
+	for(int i=0; i<searchFilters.size(); i++)
+	{
+		const QString searchView = trackSearchView();
+		QString query = "SELECT " + fields.join(", ") + " FROM " + searchView + " WHERE ";
 
 		if( !filter.cleared() )
 		{
-			query += get_filter_clause(filter, "cissearch", "searchterm") + " AND ";
+			query += getFilterClause(filter, "cissearch") + " AND ";
 		}
 
 		{ // artist conditions
-			QString aidf = search_view + "." + artistIdField();
+			QString aidf = searchView + "." + artistIdField();
 
-			QStringList or_clauses;
+			QStringList orClauses;
 			for(int a=0; a<artists.size(); a++) {
-				or_clauses << QString("%1 = :artistId_%2").arg(aidf).arg(a);
+				orClauses << QString("%1 = :artistId_%2").arg(aidf).arg(a);
 			}
 
-			query += " (" + or_clauses.join(" OR ") + ") ";
+			query += " (" + orClauses.join(" OR ") + ") ";
 		}
 
 		query += " GROUP BY albumID, albumName; ";
@@ -218,8 +273,7 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 			Query q(module());
 			q.prepare(query);
 
-			q.bindValue(":searchterm",	filters[i]);
-			q.bindValue(":cissearch",	search_filters[i]);
+			q.bindValue(":cissearch", searchFilters[i]);
 
 			for(int i=0; i<artists.size(); i++) {
 				q.bindValue(QString(":artistId_") + QString::number(i), artists[i]);
@@ -237,36 +291,34 @@ bool Albums::getAllAlbumsByArtist(const IdList &artists, AlbumList &result, cons
 
 bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList& result) const
 {
-	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
-	for(int i=0; i<filters.size(); i++)
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	const QStringList fields
 	{
-		QStringList fields
-		{
-			 "albumID",
-			 "albumName",
-			 "albumRating",
-			 "GROUP_CONCAT(DISTINCT artistName)",
-			 "GROUP_CONCAT(DISTINCT albumArtistName)",
-			 "SUM(length) / 1000 AS albumLength",
-			 "COUNT(DISTINCT trackID) AS trackCount",
-			 "MAX(year) AS albumYear",
-			 "GROUP_CONCAT(DISTINCT discnumber)",
-			 "GROUP_CONCAT(DISTINCT filename)"
-		};
+		 "albumID",
+		 "albumName",
+		 "albumRating",
+		 "GROUP_CONCAT(DISTINCT artistName)",
+		 "GROUP_CONCAT(DISTINCT albumArtistName)",
+		 "SUM(length) / 1000 AS albumLength",
+		 "COUNT(DISTINCT trackID) AS trackCount",
+		 "MAX(year) AS albumYear",
+		 "GROUP_CONCAT(DISTINCT discnumber)",
+		 "GROUP_CONCAT(DISTINCT filename)"
+	};
 
+	for(int i=0; i<searchFilters.size(); i++)
+	{
 		QString query = "SELECT " + fields.join(", ") + " FROM " + trackSearchView() + " WHERE ";
-		query += get_filter_clause(filter, "cissearch", "searchterm");
+		query += getFilterClause(filter, "cissearch");
 		query += " GROUP BY albumID, albumName;";
 
 		Query q(module());
 		q.prepare(query);
-		q.bindValue(":searchterm",	filters[i]);
-		q.bindValue(":cissearch",	search_filters[i]);
+		q.bindValue(":cissearch", searchFilters[i]);
 
-		AlbumList tmp_list;
-		dbFetchAlbums(q, tmp_list);
-		result.appendUnique(tmp_list);
+		AlbumList tmpList;
+		dbFetchAlbums(q, tmpList);
+		result.appendUnique(tmpList);
 	}
 
 	return true;
@@ -276,7 +328,7 @@ AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
 {
 	QMap<QString, QVariant> bindings
 	{
-		{"rating",		QVariant::fromValue(int(rating))}
+		{"rating", QVariant::fromValue(int(rating))}
 	};
 
 	Query q = module()->update("albums", bindings, {"albumID", id}, QString("Cannot set album rating for id %1").arg(id));
@@ -342,10 +394,9 @@ void Albums::deleteAllAlbums()
 	module()->runQuery("DELETE FROM albums;", "Could not delete all albums");
 }
 
-static QString get_filter_clause(const Filter& filter, QString cis_placeholder, QString searchterm_placeholder)
+static QString getFilterClause(const Filter& filter, QString cisPlaceholder)
 {
-	cis_placeholder.remove(":");
-	searchterm_placeholder.remove(":");
+	cisPlaceholder.remove(":");
 
 	switch(filter.mode())
 	{
@@ -354,14 +405,14 @@ static QString get_filter_clause(const Filter& filter, QString cis_placeholder, 
 				return " genre = '' ";
 			}
 			else {
-				return " genre LIKE :" + searchterm_placeholder + " ";
+				return " genre LIKE :" + cisPlaceholder + " ";
 			}
 
 		case Library::Filter::Filename:
-			return " filecissearch LIKE :" + cis_placeholder + " ";
+			return " filecissearch LIKE :" + cisPlaceholder + " ";
 
 		case Library::Filter::Fulltext:
 		default:
-			return " allCissearch LIKE :" + cis_placeholder + " ";
+			return " allCissearch LIKE :" + cisPlaceholder + " ";
 	}
 }
