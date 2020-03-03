@@ -46,8 +46,6 @@ namespace Library
 		TableView(const TableView& other)=delete;
 		TableView& operator=(const TableView& other)=delete;
 
-		void setupColumnNames();
-
 	public:
 		explicit TableView(QWidget* parent=nullptr);
 		virtual ~TableView() override;
@@ -55,6 +53,12 @@ namespace Library
 		virtual void init(AbstractLibrary* library);
 
 	protected:
+		/**
+		 * @brief the column names are reloaded and updated with
+		 * their corresponding texts
+		 */
+		void setupColumnNames();
+
 		/**
 		 * @brief here, the model and delegate should be instantiated as well as
 		 * connections and setting listeners

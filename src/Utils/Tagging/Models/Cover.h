@@ -48,13 +48,13 @@ namespace Models
 			};
 
 
-			QString mime_type;
-			QByteArray image_data;
+			QString mimeType;
+			QByteArray imageData;
 
 
 			Cover();
-			Cover(const QString& mime_type, const QByteArray& image_data);
-			MimeType get_mime_type() const;
+			Cover(const QString& mimeType, const QByteArray& imageData);
+			MimeType getMimeType() const;
     };
 }
 

@@ -32,15 +32,18 @@ using namespace Library;
 struct TableView::Private
 {
 	HeaderView*	header=nullptr;
+
+	Private(TableView* tableView)
+	{
+		this->header = new HeaderView(Qt::Horizontal, tableView);
+		tableView->setHorizontalHeader(this->header);
+	}
 };
 
 TableView::TableView(QWidget* parent) :
 	Library::ItemView(parent)
 {
-	m = Pimpl::make<Private>();
-
-	m->header = new HeaderView(Qt::Horizontal, this);
-	setHorizontalHeader(m->header);
+	m = Pimpl::make<Private>(this);
 }
 
 TableView::~TableView() = default;
@@ -104,6 +107,8 @@ void TableView::setupColumnNames()
 		QString text = m->header->columnText(i);
 		model()->setHeaderData(i, Qt::Horizontal, text, Qt::DisplayRole);
 	}
+
+	m->header->reloadColumnTexts();
 }
 
 void TableView::languageChanged()

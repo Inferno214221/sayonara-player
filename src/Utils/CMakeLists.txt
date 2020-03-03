@@ -5,7 +5,6 @@ set(CMAKE_AUTOMOC OFF)
 qt5_wrap_cpp(MOC_FILES
 	WebAccess/AsyncWebAccess.h
 	WebAccess/IcyWebAccess.h
-	WebAccess/Proxy.h
 	Language/Language.h
 	Parser/StreamParser.h
 	Settings/SettingNotifier.h

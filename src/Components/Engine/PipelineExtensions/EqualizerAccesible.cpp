@@ -48,9 +48,10 @@ void EqualizerAccessible::initEqualizer()
 	EqualizerSetting lastPreset = presets[previousIndex];
 	EqualizerSetting::ValueArray values = lastPreset.values();
 
-	for(int i=0; i<values.size(); i++)
+	int i=0;
+	for(auto it=values.begin(); it != values.end(); it++, i++)
 	{
-		setEqualizerBand(i, values[i]);
+		setEqualizerBand(i, *it);
 	}
 }
 

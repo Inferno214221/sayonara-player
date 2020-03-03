@@ -18,7 +18,9 @@
  */
 
 #include "ColumnHeader.h"
+
 #include "Utils/Language/Language.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QAction>
 
@@ -145,7 +147,7 @@ QString ColumnHeaderAlbum::title() const
 		case ColumnIndex::Album::MultiDisc:
 			return "#";
 		case ColumnIndex::Album::Name:
-			return Lang::get(Lang::Name).toFirstUpper();
+			return Lang::get(Lang::Album).toFirstUpper();
 		case ColumnIndex::Album::Duration:
 			return Lang::get(Lang::DurationShort).toFirstUpper();
 		case ColumnIndex::Album::NumSongs:
@@ -169,7 +171,14 @@ QString ColumnHeaderArtist::title() const
 	switch(type)
 	{
 		case ColumnIndex::Artist::Name:
-			return Lang::get(Lang::Name).toFirstUpper();
+			if(GetSetting(Set::Lib_ShowAlbumArtists)) {
+				return Lang::get(Lang::AlbumArtist);
+			}
+
+			else {
+				return Lang::get(Lang::Artist);
+			}
+
 		case ColumnIndex::Artist::Tracks:
 			return Lang::get(Lang::NumTracks).toFirstUpper();
 		default:

@@ -40,7 +40,7 @@ namespace Cover::Fetcher
 			 */
 			QString fulltextSearchAddress(const QString& address) const override;
 
-			void setWebsite(const QString& website);
+			virtual void setWebsite(const QString& website);
     };
 }
 

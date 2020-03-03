@@ -219,7 +219,6 @@ void FetchThread::stop()
 	emitFinished(false);
 }
 
-
 void FetchThread::emitFinished(bool success)
 {
 	if(!m->finished)
@@ -266,7 +265,8 @@ void FetchThread::singleImageFetched()
 	}
 }
 
-
+#include <QtSvg/QSvgRenderer>
+#include <QPainter>
 void FetchThread::multiImageFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
@@ -279,7 +279,21 @@ void FetchThread::multiImageFetched()
 
 	if(awa->status() == AsyncWebAccess::Status::GotData)
 	{
-		const QPixmap pm = QPixmap::fromImage(awa->image());
+		QPixmap pm;
+		if(awa->url().endsWith("svg", Qt::CaseInsensitive))
+		{
+			pm = QPixmap(1000, 1000);
+			pm.fill(Qt::transparent);
+			QPainter painter(&pm);
+			QSvgRenderer renderer(awa->data());
+			renderer.render(&painter);
+		}
+
+		if(pm.isNull())
+		{
+			pm = QPixmap::fromImage(awa->image());
+		}
+
 		if(!pm.isNull())
 		{
 			m->pixmaps << pm;

@@ -83,6 +83,7 @@ public:
 		Add,
 		AddTab,
 		Album,
+		AlbumArtist,
 		AlbumArtists,
 		Albums,
 		All,

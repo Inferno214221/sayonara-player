@@ -60,7 +60,8 @@ QString PreferenceAction::label() const
 
 QPushButton* PreferenceAction::createButton(QWidget* parent)
 {
-	QPushButton* btn = new QPushButton(parent);
+	auto* btn = new QPushButton(parent);
+	btn->setObjectName("PreferenceButton");
 	btn->setText(this->label());
 	btn->addAction(this);
 	connect(btn, &QPushButton::clicked, this, &QAction::triggered);

@@ -95,8 +95,8 @@ bool Settings::checkSettings()
 
 void Settings::applyFixes()
 {
-	int settings_revision = this->get<Set::Settings_Revision>();
-	if(settings_revision < 1)
+	int settingsRevision = this->get<Set::Settings_Revision>();
+	if(settingsRevision < 1)
 	{
 		// Create Crypt keys
 		QByteArray priv_key = ::Util::randomString(32).toLocal8Bit();
@@ -118,7 +118,7 @@ void Settings::applyFixes()
 		this->set<Set::Settings_Revision>(1);
 	}
 
-	if(settings_revision < 2)
+	if(settingsRevision < 2)
 	{
 		QString language = this->get<Set::Player_Language>();
 		QString fourLetter = Lang::convertOldLanguage(language);
@@ -127,7 +127,7 @@ void Settings::applyFixes()
 		this->set<Set::Settings_Revision>(2);
 	}
 
-	if(settings_revision < 3)
+	if(settingsRevision < 3)
 	{
 		bool b = this->get<Set::Lib_ShowAlbumCovers>();
 		if(b) {
@@ -139,6 +139,15 @@ void Settings::applyFixes()
 		}
 
 		this->set<Set::Settings_Revision>(3);
+	}
+
+	if(settingsRevision < 4)
+	{
+		QString path = this->get<Set::Cover_TemplatePath>();
+		path.replace("jpg", "png", Qt::CaseInsensitive);
+		this->set<Set::Cover_TemplatePath>(path);
+
+		this->set<Set::Settings_Revision>(4);
 	}
 
 	if(get<Set::Player_PrivId>().isEmpty())

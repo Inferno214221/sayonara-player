@@ -248,7 +248,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Cover_SaveToSayonaraDir>("cover_save_to_sayonara_dir", false);
 	registerSetting<Set::Cover_StartSearch>("cover_start_search_automatically", true);
 	registerSetting<Set::Cover_SaveToLibrary>("cover_save_to_library", false);
-	registerSetting<Set::Cover_TemplatePath>("cover_template_path", QString("Cover.jpg"));
+	registerSetting<Set::Cover_TemplatePath>("cover_template_path", QString("Cover.png"));
 
 	registerSetting<Set::Icon_Theme>( "icon_theme", QString());
 	registerSetting<Set::Icon_ForceInDarkTheme>( "icon_force_in_dark_theme", false);
