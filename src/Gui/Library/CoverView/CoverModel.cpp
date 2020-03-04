@@ -37,7 +37,6 @@
 #include "Gui/Utils/GuiUtils.h"
 
 #include <QFontMetrics>
-#include <QApplication>
 #include <QStringList>
 #include <QPixmap>
 #include <QThread>
@@ -59,7 +58,7 @@ struct CoverModel::Private
 private:
 
 public:
-	CoverViewPixmapCache*		cvpc=nullptr;
+	CoverViewPixmapCache*		coverCache=nullptr;
 	AlbumCoverFetchThread*		coverThread=nullptr;
 
 	QHash<Hash, QModelIndex>	hashIndexMap;
@@ -71,18 +70,16 @@ public:
 	int	oldRowCount;
 	int	oldColumnCount;
 	int columns;
-	int	clusRunning;
 	int	zoom;
 
 	Private(QObject* parent) :
 		oldRowCount(0),
 		oldColumnCount(0),
 		columns(10),
-		clusRunning(0),
 		zoom(100)
 	{
 		coverThread = new AlbumCoverFetchThread(parent);
-		cvpc = new CoverViewPixmapCache();
+		coverCache = new CoverViewPixmapCache();
 	}
 
 	~Private()
@@ -101,8 +98,8 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 {
 	m = Pimpl::make<Private>(this);
 
-	auto* ccn = Cover::ChangeNotfier::instance();
-	connect(ccn, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
+	auto* coverChangeNotifier = Cover::ChangeNotfier::instance();
+	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
 
 	connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
 
@@ -131,161 +128,140 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 	const AlbumList& albums = this->albums();
 
-	int lin_idx = (index.row() *  columnCount()) + index.column();
-	if(lin_idx >= albums.count()){
+	int linearIndex = (index.row() *  columnCount()) + index.column();
+	if(linearIndex < 0 || linearIndex >= albums.count()){
 		return QVariant();
 	}
 
-	const Album& album = albums[lin_idx];
-	switch(role)
+	const Album& album = albums[linearIndex];
+
+	if(role == CoverModel::AlbumRole)
 	{
-		case CoverModel::AlbumRole:
-		{
-			QString name = album.name();
-			if(name.trimmed().isEmpty()){
-				name = Lang::get(Lang::UnknownAlbum);
-			}
-			return name;
+		QString name = album.name();
+		if(name.trimmed().isEmpty()){
+			name = Lang::get(Lang::UnknownAlbum);
 		}
-		case Qt::DisplayRole:
-			return QVariant();
-
-		case Qt::TextAlignmentRole:
-			return int(Qt::AlignHCenter | Qt::AlignTop);
-
-		case CoverModel::CoverRole:
-			{
-				Hash hash = AlbumCoverFetchThread::getHash(album);
-				m->hashIndexMap[hash] = index;
-
-				if(m->cvpc->hasPixmap(hash))
-				{
-					QPixmap pm = m->cvpc->pixmap(hash);
-					if(m->cvpc->isOutdated(hash))
-					{
-						m->coverThread->addAlbum(album);
-					}
-
-					return pm;
-				}
-
-				if(m->invalidHashes.contains(hash)){
-					return m->cvpc->invalidPixmap();
-				}
-
-				spLog(Log::Develop, this) << "Need to fetch cover for " << hash;
-				m->coverThread->addAlbum(album);
-
-				return m->cvpc->invalidPixmap();
-			}
-
-		case Qt::SizeHintRole:
-			return m->itemSize;
-
-		case CoverModel::ArtistRole:
-			if(GetSetting(Set::Lib_CoverShowArtist))
-			{
-				return album.albumArtist();
-			}
-
-			return QString();
-
-		case Qt::ToolTipRole:
-			return QString("<b>%1</b><br>%2")
-					.arg(album.albumArtist())
-					.arg(album.name());
-
-		default:
-			return QVariant();
+		return name;
 	}
+
+	else if(role == CoverModel::ArtistRole)
+	{
+		if(GetSetting(Set::Lib_CoverShowArtist))
+		{
+			return album.albumArtist();
+		}
+
+		return QString();
+	}
+
+	else if(role == CoverModel::CoverRole)
+	{
+		Hash hash = AlbumCoverFetchThread::getHash(album);
+		m->hashIndexMap[hash] = index;
+
+		if(m->coverCache->hasPixmap(hash))
+		{
+			QPixmap pm = m->coverCache->pixmap(hash);
+			if(m->coverCache->isOutdated(hash))
+			{
+				m->coverThread->addAlbum(album);
+			}
+
+			return pm;
+		}
+
+		if(m->invalidHashes.contains(hash)) {
+			return m->coverCache->invalidPixmap();
+		}
+
+		spLog(Log::Develop, this) << "Need to fetch cover for " << hash;
+		m->coverThread->addAlbum(album);
+
+		return m->coverCache->invalidPixmap();
+	}
+
+	else if(role == Qt::DisplayRole)
+	{
+		return QVariant();
+	}
+
+	else if(role == Qt::TextAlignmentRole)
+	{
+		return int(Qt::AlignHCenter | Qt::AlignTop);
+	}
+
+	else if(role == Qt::SizeHintRole)
+	{
+		return m->itemSize;
+	}
+
+	else if(role == Qt::ToolTipRole)
+	{
+		return QString("<b>%1</b><br>%2")
+				.arg(album.getAlbumArtist())
+				.arg(album.name());
+	}
+
+	return QVariant();
 }
-
-
-struct CoverLookupUserData
-{
-	Hash hash;
-	Location coverLookup;
-	AlbumCoverFetchThread* acft=nullptr;
-};
 
 void CoverModel::nextHash()
 {
-	AlbumCoverFetchThread* acft = dynamic_cast<AlbumCoverFetchThread*>(sender());
-	if(!acft){
+	auto* fetchThread = dynamic_cast<AlbumCoverFetchThread*>(sender());
+	if(!fetchThread){
 		return;
 	}
 
-	AlbumCoverFetchThread::HashLocationPair hlp = acft->takeCurrentLookup();
+	AlbumCoverFetchThread::HashLocationPair hlp = fetchThread->takeCurrentLookup();
 	if(hlp.first.isEmpty() || !hlp.second.isValid()){
 		return;
 	}
 
 	spLog(Log::Crazy, this) << "Status cover fetch thread:";
-	spLog(Log::Crazy, this) << "  Lookups ready: " << acft->lookupsReady();
-	spLog(Log::Crazy, this) << "  Unprocessed hashes: " << acft->unprocessedHashes();
-	spLog(Log::Crazy, this) << "  Queued hashes: " << acft->queuedHashes();
-
+	spLog(Log::Crazy, this) << "  Lookups ready: " << fetchThread->lookupsReady();
+	spLog(Log::Crazy, this) << "  Unprocessed hashes: " << fetchThread->unprocessedHashes();
+	spLog(Log::Crazy, this) << "  Queued hashes: " << fetchThread->queuedHashes();
 
 	Hash hash = hlp.first;
 	Location cl = hlp.second;
 
-	Lookup* clu = new Lookup(cl, 1, nullptr);
+	auto* coverLookup = new Lookup(cl, 1, nullptr);
+	auto* data = new Hash(hash);
 
-	CoverLookupUserData* d = new CoverLookupUserData();
-	{
-		d->hash = hash;
-		d->coverLookup = clu->coverLocation();
-		d->acft = acft;
-	}
+	coverLookup->setUserData(data);
+	connect(coverLookup, &Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
 
-	clu->setUserData(d);
-
-	connect(clu, &Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
-
-
-	m->clusRunning++;
-	spLog(Log::Crazy, this) << "CLU started: " << m->clusRunning << ", " << d->hash;
-	clu->start();
+	coverLookup->start();
 }
 
 void CoverModel::coverLookupFinished(bool success)
 {
-	auto* clu = static_cast<Lookup*>(sender());
-	auto* data = static_cast<CoverLookupUserData*>(clu->userData());
-	Hash hash = data->hash;
+	auto* coverLookup = static_cast<Lookup*>(sender());
+	auto* data = static_cast<Hash*>(coverLookup->userData());
+
+	Hash hash = *data;
 
 	QList<QPixmap> pixmaps;
-	if(success)
-	{
-		pixmaps = clu->pixmaps();
+	if(success) {
+		pixmaps = coverLookup->pixmaps();
 	}
 
 	if(!pixmaps.isEmpty())
 	{
 		QPixmap pm(pixmaps.first());
-		m->cvpc->addPixmap(hash, pm);
+		m->coverCache->addPixmap(hash, pm);
 	}
 
-	else
-	{
+	else {
 		m->invalidHashes.insert(hash);
 	}
 
-	m->clusRunning--;
-	spLog(Log::Crazy, this) << "CLU finished: " << m->clusRunning << ", " << hash;
-	data->acft->done(hash);
+	m->coverThread->removeHash(hash);
 
-	clu->setUserData(nullptr);
+	const QModelIndex index = m->hashIndexMap.value(hash);
+	emit dataChanged(index, index, {Qt::DecorationRole});
 
-	delete clu; clu = nullptr;
-
-	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1), {Qt::DecorationRole});
-}
-
-void CoverModel::coverReady(const QString& hash)
-{
-	QModelIndex index = m->hashIndexMap.value(hash);
-	emit dataChanged(index, index);
+	delete coverLookup; coverLookup = nullptr;
 }
 
 QModelIndexList CoverModel::searchResults(const QString& substr)
@@ -309,9 +285,9 @@ QModelIndexList CoverModel::searchResults(const QString& substr)
 		const QStringList artists = it->artists();
 		for(const QString& artist : artists)
 		{
-			QString cvt_artist = Library::Utils::convertSearchstring(artist, searchMode());
+			QString convertedArtist = Library::Utils::convertSearchstring(artist, searchMode());
 
-			if(cvt_artist.contains(substr)){
+			if(convertedArtist.contains(substr)){
 				ret << this->index(i / columnCount(), i % columnCount());
 				break;
 			}
@@ -365,7 +341,6 @@ Location CoverModel::cover(const IndexSet& indexes) const
 	return Cover::Location::xcoverLocation(album);
 }
 
-
 Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 {
 	Qt::ItemFlags ret = ItemModel::flags(index);
@@ -373,13 +348,13 @@ Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 	int row = index.row();
 	int column = index.column();
 
-	int max_column = columnCount();
+	int maxColumn = columnCount();
 	if(row == rowCount() - 1)
 	{
-		max_column = albums().count() % columnCount();
+		maxColumn = albums().count() % columnCount();
 	}
 
-	if(column >= max_column || column < 0 || row < 0)
+	if(column >= maxColumn || column < 0 || row < 0)
 	{
 		ret &= ~Qt::ItemIsSelectable;
 		ret &= ~Qt::ItemIsEnabled;
@@ -409,37 +384,35 @@ int CoverModel::zoom() const
 	return m->zoom;
 }
 
-
 static QSize calcItemSize(int zoom, QFont font)
 {
-	int text_height = QFontMetrics(font).height();
-	bool show_artist = GetSetting(Set::Lib_CoverShowArtist);
-	if(show_artist)
+	int textHeight = QFontMetrics(font).height();
+	bool showArtist = GetSetting(Set::Lib_CoverShowArtist);
+	if(showArtist)
 	{
-		text_height = 2 * text_height;
+		textHeight = 2 * textHeight;
 	}
 
-	text_height = (text_height * 12) / 10;
+	textHeight = (textHeight * 12) / 10;
 
 	int width = std::max(((zoom * 115) / 100), zoom + 20);
-	int height = width + text_height;
+	int height = width + textHeight;
 
 	return QSize(width, height);
 }
 
-
-void CoverModel::setZoom(int zoom, const QSize& view_size)
+void CoverModel::setZoom(int zoom, const QSize& viewSize)
 {
 	m->zoom = zoom;
 	m->itemSize = calcItemSize(zoom, Gui::Util::mainWindow()->font());
 
-	int columns = (view_size.width() / m->itemSize.width());
+	int columns = (viewSize.width() / m->itemSize.width());
 	if(columns > 0)
 	{
 		m->columns = columns;
 
-		int visible_rows = (view_size.height() / m->itemSize.height()) + 1;
-		m->cvpc->setCacheSize(visible_rows * columns * 3);
+		int visible_rows = (viewSize.height() / m->itemSize.height()) + 1;
+		m->coverCache->setCacheSize(visible_rows * columns * 3);
 
 		refreshData();
 	}
@@ -452,7 +425,7 @@ void CoverModel::showArtistsChanged()
 
 void CoverModel::reload()
 {
-	m->cvpc->setAllOutdated();
+	m->coverCache->setAllOutdated();
 	clear();
 
 	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
@@ -464,7 +437,6 @@ void CoverModel::clear()
 	m->coverThread->clear();
 	m->hashIndexMap.clear();
 }
-
 
 int CoverModel::rowCount(const QModelIndex&) const
 {
@@ -479,7 +451,6 @@ int CoverModel::columnCount(const QModelIndex&) const
 {
 	return m->columns;
 }
-
 
 void CoverModel::refreshData()
 {

@@ -73,7 +73,7 @@ QString ArtistModel::searchableString(int row) const
 	}
 }
 
-QVariant ArtistModel::data(const QModelIndex&  index, int role) const
+QVariant ArtistModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid()) {
 		return QVariant();
@@ -158,7 +158,7 @@ int ArtistModel::searchableColumn() const
 	return int(ColumnIndex::Artist::Name);
 }
 
-const MetaDataList& Library::ArtistModel::selectedMetadata() const
+const MetaDataList &Library::ArtistModel::selectedMetadata() const
 {
 	return library()->tracks();
 }

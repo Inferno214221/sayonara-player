@@ -127,6 +127,7 @@ namespace Engine
 			PipelinePtr initPipeline(const QString& name);
 			bool changeMetadata(const MetaData& md);
 
+			void swapPipelines();
 			bool changeTrackCrossfading(const MetaData& md);
 			bool changeTrackGapless(const MetaData& md);
 			bool changeTrackImmediatly(const MetaData& md);
