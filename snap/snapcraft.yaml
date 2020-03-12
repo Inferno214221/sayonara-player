@@ -103,8 +103,9 @@ parts:
       - qt5-gtk-platformtheme
 
   sayonara:
-    source: /root/project
-    source-type: local
+    source: https://gitlab.com/luciocarreras/sayonara-player.git
+    source-type: git
+    source-commit: 323a641a
     plugin: cmake
     configflags:
       - -DCMAKE_BUILD_TYPE=Release
