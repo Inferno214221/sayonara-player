@@ -52,14 +52,17 @@ deploy-sayonara-appimage:
 
 ## Deploy Snap Package
 deploy-sayonara-snap:
+  image: yakshaveinc/snapcraft:core18
   stage: deploy
-  dependencies:
-    - build-sayonara
   script:
-    - snap/local/build_snap.sh
+    - apt-get update -qq
+    - apt-get install -y -qq git
+    - echo $(snapcraft --version)
+    - ./snap/local/Set-SnapVersion.sh
+    - snapcraft
   artifacts:
     paths:
-      - /*.snap
+      - ./*.snap
     expire_in: 1 week
   only:
     - 20-integrate-snap-building-into-gitlab-ci-file
