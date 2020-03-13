@@ -66,6 +66,8 @@ deploy-sayonara-snap:
     expire_in: 1 week
   only:
     - 20-integrate-snap-building-into-gitlab-ci-file
+    - master
+    - tags
 
 ## Fedora
 deploy-sayonara-fedora:
