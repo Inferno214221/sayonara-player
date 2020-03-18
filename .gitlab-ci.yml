@@ -60,6 +60,9 @@ deploy-sayonara-snap:
     - echo $(snapcraft --version)
     - ./snap/local/Set-SnapVersion.sh
     - snapcraft
+    - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
+    - snapcraft login --with snapcraft.login
+    - snapcraft push *.snap --release edge
   artifacts:
     paths:
       - ./*.snap
