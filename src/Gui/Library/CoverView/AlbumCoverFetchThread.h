@@ -61,7 +61,6 @@ namespace Library
 			using HashLocationPair = QPair<Hash, Cover::Location>;
 			using HashLocationList = QList<HashLocationPair>;
 
-
 		protected:
 			void run() override;
 
@@ -93,11 +92,9 @@ namespace Library
 			/**
 			 * @brief stop Stop the thread
 			 */
-			void pause();
 			void stop();
-			void resume();
 			void clear();
-			void done(const Hash& hash);
+			void removeHash(const Hash& hash);
 
 			static Hash getHash(const Album& album);
 	};

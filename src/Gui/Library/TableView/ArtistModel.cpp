@@ -73,7 +73,8 @@ QString ArtistModel::searchableString(int row) const
 	}
 }
 
-QVariant ArtistModel::data(const QModelIndex&  index, int role) const
+
+QVariant ArtistModel::data(const QModelIndex& index, int role) const
 {
 	if (!index.isValid()) {
 		return QVariant();
