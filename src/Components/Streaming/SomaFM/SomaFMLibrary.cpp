@@ -141,18 +141,18 @@ void SomaFM::Library::stationStreamsFetched(bool success)
 
 	if(success)
 	{
-		MetaDataList v_md  = parser->tracks();
+		MetaDataList tracks  = parser->tracks();
 
 		SomaFM::Station station = m->station_map[m->requested_station];
 
-		parseMetadataForPlaylist(v_md, station);
+		parseMetadataForPlaylist(tracks, station);
 
-		station.setMetadata(v_md);
+		station.setMetadata(tracks);
 
 		m->station_map[m->requested_station] = station;
 
 		auto* plh = Playlist::Handler::instance();
-		plh->createPlaylist(v_md,
+		plh->createPlaylist(tracks,
 							 station.name(),
 							 true,
 							 Playlist::Type::Stream);
@@ -262,6 +262,7 @@ void SomaFM::Library::parseMetadataForPlaylist(MetaDataList& tracks, const SomaF
 	for(MetaData& md : tracks)
 	{
 		md.setCoverDownloadUrls(coverUrls);
+		md.addCustomField("cover-hash", "", cl.hash());
 
 		const QString filepath = md.filepath();
 		md.setRadioStation(filepath, station.name());

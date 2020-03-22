@@ -42,7 +42,6 @@ namespace Cover
 	private:
 		void setValid(bool b);
 		void setIdentifier(const QString& identifier);
-		void setCoverPath(const QString& coverPath);
 		void setLocalPathHints(const QStringList& localPaths);
 
 		/**
@@ -58,7 +57,7 @@ namespace Cover
 		 * @param coverPath
 		 * @return true if everything is alright with audio_filesource oder coverPath (not empty)
 		 */
-		bool			setAudioFileSource(const QString& audio_filesource, const QString& coverPath);
+		bool			setAudioFileSource(const QString& audio_filesource, const QString& symlinkPath);
 
 
 	public:
@@ -83,7 +82,7 @@ namespace Cover
 		 * directory
 		 * @return
 		 */
-		QString			coverPath() const;
+		QString			symlinkPath() const;
 
 		/**
 		 * @brief This identifier may be used in order to check
@@ -284,8 +283,7 @@ namespace Cover
 		 * @param targetPath path where the found image has to be saved
 		 * @return CoverLocation object
 		 */
-		static Location coverLocation(const QUrl& url, const QString& targetPath);
-		static Location coverLocation(const QList<QUrl>& urls, const QString& targetPath);
+		static Location coverLocation(const QList<QUrl>& urls, const QString& token);
 
 
 		static QString invalidPath();

@@ -84,7 +84,7 @@ struct SomaFM::Station::Private
 		return *this;
 	}
 
-	QString complete_url(const QString& url)
+	QString completeUrl(const QString& url)
 	{
 		if(url.startsWith("/")){
 			return QString("https://somafm.com") + url;
@@ -93,7 +93,7 @@ struct SomaFM::Station::Private
 		return url;
 	}
 
-	void parse_station_name()
+	void parseStationName()
 	{
 		QString pattern("<h3>(.*).*</h3>");
 		QRegExp re(pattern);
@@ -105,7 +105,7 @@ struct SomaFM::Station::Private
 		}
 	}
 
-	void parse_urls()
+	void parseUrls()
 	{
 		QString mp3_pattern("<nobr>\\s*MP3:\\s*<a\\s+href=\"(.*)\"");
 		QString aac_pattern("<nobr>\\s*AAC:\\s*<a\\s+href=\"(.*)\"");
@@ -119,7 +119,7 @@ struct SomaFM::Station::Private
 		do{
 			idx = re_mp3.indexIn(content, idx+1);
 			if(idx > 0){
-				QString url = complete_url(re_mp3.cap(1));
+				QString url = completeUrl(re_mp3.cap(1));
 				urls[url] = SomaFM::Station::UrlType::MP3;
 			}
 		} while(idx > 0);
@@ -130,7 +130,7 @@ struct SomaFM::Station::Private
 			idx = re_aac.indexIn(content, idx+1);
 
 			if(idx > 0){
-				QString url = complete_url(re_aac.cap(1));
+				QString url = completeUrl(re_aac.cap(1));
 				urls[url] = SomaFM::Station::UrlType::AAC;
 			}
 
@@ -138,7 +138,7 @@ struct SomaFM::Station::Private
 	}
 
 
-	void parse_description()
+	void parseDescription()
 	{
 		QString pattern("<p\\s*class=\"descr\">(.*)</p>");
 		QRegExp re(pattern);
@@ -150,7 +150,7 @@ struct SomaFM::Station::Private
 		}
 	}
 
-	void parse_image()
+	void parseImage(const QString& token)
 	{
 		QList<QUrl> urls;
 		QString pattern("<img\\s*src=\\s*\"(.*)\"");
@@ -186,18 +186,13 @@ struct SomaFM::Station::Private
 				QString part_url1 = QString("/img3/%1.jpg").arg(mapping);
 				QString part_url2 = QString("/img3/%1.png").arg(mapping);
 
-				urls << QUrl(complete_url(part_url1));
-				urls << QUrl(complete_url(part_url2));
+				urls << QUrl(completeUrl(part_url1));
+				urls << QUrl(completeUrl(part_url2));
 			}
 
-			urls << QUrl(complete_url(cap));
+			urls << QUrl(completeUrl(cap));
 
-			QString cover_path = QString("%1/covers/%2.%3")
-				.arg(Util::sayonaraPath())
-				.arg(stationName)
-				.arg(Util::File::getFileExtension(cap));
-
-            cover = Cover::Location::coverLocation(urls, cover_path);
+			cover = Cover::Location::coverLocation(urls, token);
 		}
 	}
 };
@@ -214,9 +209,9 @@ SomaFM::Station::Station(const QString& content) :
 {
 	m->content = content;
 
-	m->parse_description();
-	m->parse_station_name();
-	m->parse_urls();
+	m->parseDescription();
+	m->parseStationName();
+	m->parseUrls();
 	//m->parse_image();
 }
 
@@ -260,7 +255,7 @@ Cover::Location SomaFM::Station::coverLocation() const
 {
 	if(!m->cover.isValid())
 	{
-		m->parse_image();
+		m->parseImage(this->name());
 	}
 
 	return m->cover;

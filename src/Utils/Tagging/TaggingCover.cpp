@@ -45,7 +45,7 @@ using Tagging::ParsedTag;
 
 bool Tagging::Covers::writeCover(const QString& filepath, const QPixmap& cover)
 {
-	QString tmp_filepath = ::Util::sayonaraPath("tmp.png");
+	QString tmp_filepath = ::Util::tempPath("cover/tmp.png");
 
 	bool success = cover.save(tmp_filepath);
 	if(!success){

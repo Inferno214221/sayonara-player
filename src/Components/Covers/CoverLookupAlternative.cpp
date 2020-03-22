@@ -104,7 +104,6 @@ bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 	if(!m->silent)
 	{
 		Cover::Utils::writeCoverIntoDatabase(cl, cover);
-		Cover::Utils::writeCoverToSayonaraDirectory(cl, cover);
 
 		if(saveToLibrary) {
 			Cover::Utils::writeCoverToLibrary(cl, cover);

@@ -548,10 +548,19 @@ QString Util::convertNotNull(const QString& str)
 
 QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 {
+	if(pm.hasAlpha()) {
+		return convertPixmapToByteArray(pm, "PNG");
+	}
+
+	return convertPixmapToByteArray(pm, "JPG");
+}
+
+QByteArray Util::convertPixmapToByteArray(const QPixmap& pm, const char* format)
+{
 	QByteArray arr;
 	QBuffer buffer(&arr);
 	buffer.open(QIODevice::WriteOnly);
-	pm.save(&buffer, "PNG");
+	pm.save(&buffer, format);
 
 	return arr;
 }
@@ -559,9 +568,9 @@ QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 QPixmap Util::convertByteArrayToPixmap(const QByteArray& arr)
 {
 	QPixmap pm;
-	pm.loadFromData(arr, "PNG");
+	pm.loadFromData(arr, "JPG");
 	if(pm.isNull()) {
-		pm.loadFromData(arr, "JPG");
+		pm.loadFromData(arr, "PNG");
 	}
 	return pm;
 }

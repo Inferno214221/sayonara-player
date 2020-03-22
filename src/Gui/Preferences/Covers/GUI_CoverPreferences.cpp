@@ -104,12 +104,12 @@ bool GUI_CoverPreferences::commit()
 		{
 			QString ext = Util::File::getFileExtension(coverTemplate);
 			if(ext.isEmpty()){
-				coverTemplate.append(".png");
-				coverTemplate.replace("..png", ".png");
+				coverTemplate.append(".jpg");
+				coverTemplate.replace("..jpg", ".jpg");
 			}
 
 			else {
-				coverTemplate.replace("." + ext, ".png");
+				coverTemplate.replace("." + ext, ".jpg");
 			}
 
 			ui->leCoverTemplate->setText(coverTemplate);

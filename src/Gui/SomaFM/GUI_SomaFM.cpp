@@ -23,7 +23,6 @@
 #include "GUI_SomaFM.h"
 #include "Gui/SomaFM/ui_GUI_SomaFM.h"
 #include "SomaFMStationModel.h"
-#include "SomaFMPlaylistModel.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 
@@ -73,10 +72,6 @@ GUI_SomaFM::GUI_SomaFM(QWidget* parent) :
 	ui->tv_stations->setEnabled(false);
 	ui->tv_stations->setColumnWidth(0, 20);
 
-	ui->lv_playlists->setModel(new SomaFM::PlaylistModel());
-	ui->lv_playlists->setItemDelegate(new Gui::StyledItemDelegate(ui->lv_playlists));
-	ui->lv_playlists->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
 	QPixmap logo = QPixmap(":/soma_icons/soma_logo.png")
 		.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
@@ -98,9 +93,6 @@ GUI_SomaFM::GUI_SomaFM(QWidget* parent) :
 	connect(ui->tv_stations, &QListView::activated, this, &GUI_SomaFM::stationIndexChanged);
 	connect(ui->tv_stations, &QListView::clicked, this, &GUI_SomaFM::stationClicked);
 	connect(ui->tv_stations, &QListView::doubleClicked, this, &GUI_SomaFM::stationDoubleClicked);
-
-	connect(ui->lv_playlists, &QListView::doubleClicked, this, &GUI_SomaFM::playlistDoubleClicked);
-	connect(ui->lv_playlists, &QListView::activated, this, &GUI_SomaFM::playlistDoubleClicked);
 
 	m->library->searchStations();
 }
@@ -199,14 +191,9 @@ void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 	}
 
 	SomaFM::Station station = getStation(idx.row());
-
-	auto pl_model = static_cast<SomaFM::PlaylistModel*>(ui->lv_playlists->model());
-	pl_model->setStation(station);
-
 	ui->lab_description->setText(station.description());
 
-	Cover::Lookup* cl = new Cover::Lookup(station.coverLocation(), 1, this);
-
+	auto* cl = new Cover::Lookup(station.coverLocation(), 1, this);
 	connect(cl, &Cover::LookupBase::sigCoverFound, this, &GUI_SomaFM::coverFound);
 
 	cl->start();

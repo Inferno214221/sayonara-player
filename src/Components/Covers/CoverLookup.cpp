@@ -193,7 +193,7 @@ bool Lookup::fetchFromWWW()
 	if(fetchFromWwwAllowed)
 	{
 		spLog(Log::Debug, this) << "Start new thread for " << cl.identifer();
-		return startNewThread( cl );
+		return startNewThread(cl);
 	}
 
 	return false;
@@ -282,12 +282,6 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 		Cover::Utils::writeCoverToLibrary(coverLocation(), pm);
 	}
 
-	if(GetSetting(Set::Cover_SaveToSayonaraDir) &&
-	  (m->source == Source::WWW))
-	{
-		Cover::Utils::writeCoverToSayonaraDirectory(coverLocation(), pm);
-	}
-
 	if(m->pixmaps.size() == m->coverCount){
 		emitFinished(true);
 	}
@@ -321,6 +315,13 @@ void Lookup::stop()
 
 void Lookup::emitFinished(bool success)
 {
+	if(!success)
+	{
+		m->source = Cover::Source::Unknown;
+		m->pixmaps.clear();
+		m->coverCount = 0;
+	}
+
 	if(!m->finished)
 	{
 		m->finished = true;

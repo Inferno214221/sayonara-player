@@ -150,6 +150,15 @@ void Settings::applyFixes()
 		this->set<Set::Settings_Revision>(4);
 	}
 
+	if(settingsRevision < 5)
+	{
+		QString path = this->get<Set::Cover_TemplatePath>();
+		path.replace(QRegExp("\\.[a-zA-Z]{3}$"), "");
+		this->set<Set::Cover_TemplatePath>(path);
+
+		this->set<Set::Settings_Revision>(5);
+	}
+
 	if(get<Set::Player_PrivId>().isEmpty())
 	{
 		QByteArray id = ::Util::randomString(32).toLocal8Bit();

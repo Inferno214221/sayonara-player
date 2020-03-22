@@ -641,6 +641,11 @@ void GUI_TagEdit::showCloseButton(bool show)
 	ui->btn_close->setVisible(show);
 }
 
+void GUI_TagEdit::showDefaultTab()
+{
+	ui->tab_widget->setCurrentIndex(0);
+}
+
 void GUI_TagEdit::showCoverTab()
 {
 	ui->tab_widget->setCurrentIndex(2);

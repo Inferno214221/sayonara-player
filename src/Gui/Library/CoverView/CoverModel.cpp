@@ -198,7 +198,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	else if(role == Qt::ToolTipRole)
 	{
 		return QString("<b>%1</b><br>%2")
-				.arg(album.getAlbumArtist())
+				.arg(album.albumArtist())
 				.arg(album.name());
 	}
 

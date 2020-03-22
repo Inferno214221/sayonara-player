@@ -337,8 +337,6 @@ void CoverButton::alternativeCoverFetched(const Location& cl)
 		{
 			ChangeNotfier::instance()->shout();
 		}
-
-		setCoverImage(cl.coverPath());
 	}
 
 	else

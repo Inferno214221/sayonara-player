@@ -219,11 +219,10 @@ void SomaFM::StationModel::setWaiting()
 	emit dataChanged( index(0,0), index(0, 1) );
 }
 
-
 QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 {
 	QList<QUrl> urls;
-	QString cover_url;
+	QString coverUrl, coverHash;
 
 	for(const QModelIndex& idx : indexes)
 	{
@@ -236,28 +235,33 @@ QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 			continue;
 		}
 
-		const QStringList playlist_urls = m->stations[row].playlists();
+		const SomaFM::Station station = m->stations[row];
+		const Cover::Location cl = station.coverLocation();
+		coverHash = cl.hash();
 
-		for(const QString& playlist_url : playlist_urls)
+		const QStringList playlistUrls = station.playlists();
+
+		for(const QString& playlistUrl : playlistUrls)
 		{
-			urls << QUrl(playlist_url);
+			urls << QUrl(playlistUrl);
 
-			const Cover::Location cl = m->stations[row].coverLocation();
-			auto search_urls = cl.searchUrls();
+			auto searchUrls = cl.searchUrls();
 
-			if(!search_urls.isEmpty())
+			if(!searchUrls.isEmpty())
 			{
-				cover_url = search_urls.first().url();
+				coverUrl = searchUrls.first().url();
 			}
 		}
+
+		break;
 	}
 
-	auto* mime_data = new Gui::CustomMimeData(this);
+	auto* mimeData = new Gui::CustomMimeData(this);
 
-	mime_data->setCoverUrl(cover_url);
-	mime_data->setUrls(urls);
+	mimeData->setCoverUrl(coverUrl);
+	mimeData->setUrls(urls);
 
-	return mime_data;
+	return mimeData;
 }
 
 

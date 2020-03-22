@@ -73,10 +73,12 @@ class GUI_TagEdit :
 		 */
 		void showCloseButton(bool show);
 
+		void showDefaultTab();
 		/**
 		 * @brief Directly go to the cover tab
 		 */
 		void showCoverTab();
+
 
 		void setMetadata(const MetaDataList& v_md);
 		int count() const;

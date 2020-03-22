@@ -213,6 +213,7 @@ namespace Util
 
 
 	QByteArray convertPixmapToByteArray(const QPixmap& pm);
+	QByteArray convertPixmapToByteArray(const QPixmap& pm, const char* format);
 	QPixmap convertByteArrayToPixmap(const QByteArray& arr);
 
 	/**

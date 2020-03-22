@@ -218,18 +218,18 @@ void View::handleDrop(QDropEvent* event)
 		return;
 	}
 
-	bool is_inner_drag_drop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
-	if(is_inner_drag_drop)
+	bool isInnerDragDrop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
+	if(isInnerDragDrop)
 	{
 		bool copy = (event->keyboardModifiers() & Qt::ControlModifier);
 		handleInnerDragDrop(row, copy);
 		return;
 	}
 
-	const MetaDataList v_md = MimeData::metadata(mimedata);
-	if(!v_md.isEmpty())
+	const MetaDataList tracks = MimeData::metadata(mimedata);
+	if(!tracks.isEmpty())
 	{
-		m->model->insertTracks(v_md, row + 1);
+		m->model->insertTracks(tracks, row + 1);
 	}
 
 	const QList<QUrl> urls = mimedata->urls();
@@ -256,7 +256,7 @@ void View::handleDrop(QDropEvent* event)
 			streamParser->parse(files);
 		}
 
-		else if(v_md.isEmpty())
+		else if(tracks.isEmpty())
 		{
 			for(const QUrl& url : urls)
 			{

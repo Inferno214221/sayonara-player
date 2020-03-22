@@ -79,24 +79,17 @@ void Cover::Utils::deleteTemporaryCovers()
 	}
 }
 
-
 bool Cover::Utils::addTemporaryCover(const QPixmap& pm, const QString& hash)
 {
 	QDir coverTempDir(coverTempDirectory());
-	QString path = coverTempDir.filePath("tmp_" + hash + ".png");
-	return pm.save(path);
-}
 
-
-void Cover::Utils::writeCoverToSayonaraDirectory(const Cover::Location& cl, const QPixmap& pm)
-{
-	QString path = cl.coverPath();
-	QFileInfo fi(path);
-	if(fi.isSymLink()){
-		QFile::remove(path);
+	QString extension = "jpg";
+	if(pm.hasAlphaChannel()) {
+		extension = "png";
 	}
 
-	pm.save(path);
+	QString path = coverTempDir.filePath(hash + "." + extension);
+	return pm.save(path);
 }
 
 void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm)
@@ -112,15 +105,20 @@ void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixm
 
 void Cover::Utils::writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm)
 {
-	QString local_dir = cl.localPathDir();
-	if(local_dir.isEmpty()){
+	QString localDir = cl.localPathDir();
+	if(localDir.isEmpty()){
 		return;
 	}
 
-	QString cover_template = GetSetting(Set::Cover_TemplatePath);
-	cover_template.replace("<h>", cl.hash());
+	QString coverTemplate = GetSetting(Set::Cover_TemplatePath);
+	coverTemplate.replace("<h>", cl.hash());
 
-	QString filepath = QDir(local_dir).absoluteFilePath(cover_template);
+	QString extension = "jpg";
+	if(pm.hasAlphaChannel()) {
+		extension = "png";
+	}
+
+	QString filepath = QDir(localDir).absoluteFilePath(coverTemplate) + "." + extension;
 	QFileInfo fi(filepath);
 
 	pm.save(filepath);

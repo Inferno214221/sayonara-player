@@ -381,13 +381,13 @@ void GUI_AlternativeCovers::openFileDialog()
 	auto* dialog = new Gui::ImageSelectionDialog(dir, this);
 	if(dialog->exec())
 	{
-		QStringList selected_files = dialog->selectedFiles();
+		QStringList selectedFiles = dialog->selectedFiles();
 
-		if(selected_files.count() > 0)
+		if(selectedFiles.count() > 0)
 		{
 			reset();
 
-			for(const QString& path : selected_files)
+			for(const QString& path : selectedFiles)
 			{
 
 				QListWidgetItem* item = new QListWidgetItem(ui->tv_images);
@@ -406,10 +406,10 @@ void GUI_AlternativeCovers::openFileDialog()
 
 void GUI_AlternativeCovers::reloadCombobox()
 {
-	bool fulltext_search = ui->rb_text_search->isChecked();
+	bool fulltextSearch = ui->rb_text_search->isChecked();
 
 	AlternativeLookup::SearchMode search_mode = AlternativeLookup::SearchMode::Default;
-	if(fulltext_search) {
+	if(fulltextSearch) {
 		search_mode = AlternativeLookup::SearchMode::Fulltext;
 	}
 
