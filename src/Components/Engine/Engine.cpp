@@ -143,9 +143,30 @@ PipelinePtr EngineClass::initPipeline(const QString& name)
 	return pipeline;
 }
 
+
+void Engine::Engine::swapPipelines()
+{
+	m->otherPipeline->setVisualizerEnabled
+	(
+		m->pipeline->isLevelVisualizerEnabled(),
+		m->pipeline->isSpectrumVisualizerEnabled()
+	);
+
+	m->otherPipeline->setBroadcastingEnabled
+	(
+		m->pipeline->isBroadcastingEnabled()
+	);
+
+	m->pipeline->setVisualizerEnabled(false, false);
+	m->pipeline->setBroadcastingEnabled(false);
+
+	std::swap(m->pipeline, m->otherPipeline);
+}
+
+
 bool EngineClass::changeTrackCrossfading(const MetaData& md)
 {
-	std::swap(m->pipeline, m->otherPipeline);
+	swapPipelines();
 
 	m->otherPipeline->fadeOut();
 
@@ -161,7 +182,7 @@ bool EngineClass::changeTrackCrossfading(const MetaData& md)
 
 bool EngineClass::changeTrackGapless(const MetaData& md)
 {
-	std::swap(m->pipeline, m->otherPipeline);
+	swapPipelines();
 
 	bool success = changeMetadata(md);
 	if (success)
@@ -245,7 +266,6 @@ bool EngineClass::changeMetadata(const MetaData& md)
 
 	return success;
 }
-
 
 void EngineClass::play()
 {
@@ -513,13 +533,13 @@ void EngineClass::updateDuration(GstElement* src)
 }
 
 template<typename T>
-T br_diff(T a, T b){ return std::max(a, b) - std::min(a, b); }
+T bitrateDiff(T a, T b){ return std::max(a, b) - std::min(a, b); }
 
 void EngineClass::updateBitrate(Bitrate bitrate, GstElement* src)
 {
 	if( (!m->pipeline->hasElement(src)) ||
 		(bitrate == 0) ||
-		(br_diff(bitrate, m->md.bitrate()) < 1000) )
+		(bitrateDiff(bitrate, m->md.bitrate()) < 1000) )
 	{
 		return;
 	}
