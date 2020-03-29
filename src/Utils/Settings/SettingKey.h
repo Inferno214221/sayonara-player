@@ -181,6 +181,8 @@ enum class SettingKey : unsigned short
 	Proxy_Port,
 	Proxy_SavePw,
 	Speed_LastTab,
+	InfoDialog_Size,
+	AlternativeCovers_Size,
 	Logger_Level,
 	Settings_Revision,
 	Num_Setting_Keys
@@ -400,6 +402,9 @@ class SettingIdentifier
 	INST(bool,				Proxy_SavePw)			/* Should password be saved */
 
 	INST(int,				Speed_LastTab)			/* Last tab selected int he speed/pitch plugin */
+
+	INST(QSize,				InfoDialog_Size)		/* Size of Info Dialog */
+	INST(QSize,				AlternativeCovers_Size) /* Size of Alternative Cover Dialog */
 
 	INST(int,				Settings_Revision)		/* Version number of settings */
 

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>606</width>
-    <height>508</height>
+    <width>875</width>
+    <height>626</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -46,9 +46,9 @@
         <number>5</number>
        </property>
        <item row="6" column="0" colspan="2">
-        <layout class="QHBoxLayout" name="layout_search">
+        <layout class="QHBoxLayout" name="layoutSearch">
          <item>
-          <widget class="QCheckBox" name="cb_autostart">
+          <widget class="QCheckBox" name="cbAutostart">
            <property name="focusPolicy">
             <enum>Qt::TabFocus</enum>
            </property>
@@ -71,7 +71,7 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="lab_websearch_disabled">
+          <widget class="QLabel" name="labWebsearchDisabled">
            <property name="font">
             <font>
              <weight>75</weight>
@@ -84,7 +84,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_search">
+          <widget class="QPushButton" name="btnSearch">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -97,7 +97,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_stop_search">
+          <widget class="QPushButton" name="btnStopSearch">
            <property name="text">
             <string notr="true">Stop</string>
            </property>
@@ -118,7 +118,7 @@
           <number>20</number>
          </property>
          <item row="1" column="1">
-          <widget class="QLineEdit" name="le_search">
+          <widget class="QLineEdit" name="leSearch">
            <property name="enabled">
             <bool>false</bool>
            </property>
@@ -134,7 +134,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QRadioButton" name="rb_text_search">
+          <widget class="QRadioButton" name="rbTextsearch">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
              <horstretch>0</horstretch>
@@ -160,17 +160,17 @@
           </widget>
          </item>
          <item row="3" column="1">
-          <widget class="Gui::ComboBox" name="combo_search_fetchers"/>
+          <widget class="Gui::ComboBox" name="comboSearchFetchers"/>
          </item>
          <item row="3" column="0">
-          <widget class="QLabel" name="lab_server">
+          <widget class="QLabel" name="labServer">
            <property name="text">
             <string>Server</string>
            </property>
           </widget>
          </item>
          <item row="0" column="0" colspan="2">
-          <widget class="QRadioButton" name="rb_auto_search">
+          <widget class="QRadioButton" name="rbAutosearch">
            <property name="text">
             <string>Automatic search</string>
            </property>
@@ -202,7 +202,7 @@
         </widget>
        </item>
        <item row="0" column="1">
-        <widget class="QPushButton" name="btn_file">
+        <widget class="QPushButton" name="btnFile">
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
@@ -229,14 +229,17 @@
     </widget>
    </item>
    <item row="4" column="0">
-    <widget class="QListWidget" name="tv_images">
+    <widget class="QListWidget" name="tvImages">
+     <property name="resizeMode">
+      <enum>QListView::Adjust</enum>
+     </property>
      <property name="viewMode">
       <enum>QListView::IconMode</enum>
      </property>
     </widget>
    </item>
    <item row="0" column="0">
-    <widget class="QLabel" name="lab_title">
+    <widget class="QLabel" name="labTitle">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -252,7 +255,7 @@
    <item row="5" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QCheckBox" name="cb_save_to_library">
+      <widget class="QCheckBox" name="cbSaveToLibrary">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -265,7 +268,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QLabel" name="lab_status">
+      <widget class="QLabel" name="labStatus">
        <property name="text">
         <string/>
        </property>
@@ -289,7 +292,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_close">
+      <widget class="QPushButton" name="btnClose">
        <property name="focusPolicy">
         <enum>Qt::StrongFocus</enum>
        </property>
@@ -299,14 +302,14 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_apply">
+      <widget class="QPushButton" name="btnApply">
        <property name="text">
         <string notr="true">Apply</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ok">
+      <widget class="QPushButton" name="btnOk">
        <property name="focusPolicy">
         <enum>Qt::StrongFocus</enum>
        </property>

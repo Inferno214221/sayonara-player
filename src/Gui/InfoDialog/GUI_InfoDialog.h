@@ -74,7 +74,7 @@ protected:
 
 private slots:
 	void tabIndexChangedInt(int idx);
-	void tabIndexChanged(GUI_InfoDialog::Tab idx);
+
 	void writeCoversToTracksClicked();
 	void coverChanged();
 
@@ -83,15 +83,18 @@ private:
 	void initTagEdit();
 	void initLyrics();
 
-	void shoInfoTab();
+	void showInfoTab();
 	void showLyricsTab();
 	void showTagEditTab();
 
 	void prepareCover(const Cover::Location& cover_path);
 	void prepareInfo(MD::Interpretation mode);
+	void prepareTab(GUI_InfoDialog::Tab idx);
 
+protected:
 	void closeEvent(QCloseEvent* e) override;
 	void showEvent(QShowEvent* e) override;
+	void resizeEvent(QResizeEvent* e) override;
 
 	using Gui::Dialog::show;
 };

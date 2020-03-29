@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>915</width>
-    <height>700</height>
+    <width>1119</width>
+    <height>1007</height>
    </rect>
   </property>
   <property name="minimumSize">
@@ -28,10 +28,10 @@
      <property name="currentIndex">
       <number>0</number>
      </property>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="pageWithMetadata">
       <layout class="QGridLayout" name="gridLayout_6">
        <item row="0" column="0">
-        <widget class="QTabWidget" name="tab_widget">
+        <widget class="QTabWidget" name="tabWidget">
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
@@ -44,7 +44,7 @@
          <property name="tabsClosable">
           <bool>false</bool>
          </property>
-         <widget class="QWidget" name="tab_1">
+         <widget class="QWidget" name="tabInfo">
           <attribute name="icon">
            <iconset>
             <normaloff>:/Icons/info.svg.png</normaloff>:/Icons/info.svg.png</iconset>
@@ -72,7 +72,7 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="btn_close1">
+              <widget class="QPushButton" name="btnClose">
                <property name="text">
                 <string notr="true">Close</string>
                </property>
@@ -81,33 +81,10 @@
             </layout>
            </item>
            <item row="4" column="1">
-            <widget class="QWidget" name="ui_info_widget" native="true">
+            <widget class="QWidget" name="uiInfoWidget" native="true">
              <layout class="QGridLayout" name="gridLayout_4">
-              <property name="horizontalSpacing">
-               <number>3</number>
-              </property>
-              <item row="1" column="0" colspan="5">
-               <widget class="Line" name="line">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item row="5" column="0">
-               <widget class="QTableWidget" name="table_info">
-                <attribute name="horizontalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-                <attribute name="horizontalHeaderStretchLastSection">
-                 <bool>true</bool>
-                </attribute>
-                <attribute name="verticalHeaderVisible">
-                 <bool>false</bool>
-                </attribute>
-               </widget>
-              </item>
-              <item row="0" column="0" colspan="4">
-               <widget class="QLabel" name="lab_title">
+              <item row="0" column="0">
+               <widget class="QLabel" name="labTitle">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -129,8 +106,15 @@
                 </property>
                </widget>
               </item>
-              <item row="4" column="0">
-               <widget class="QLabel" name="lab_subheader">
+              <item row="1" column="0" colspan="2">
+               <widget class="Line" name="line">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+               </widget>
+              </item>
+              <item row="2" column="0">
+               <widget class="QLabel" name="labSubheader">
                 <property name="sizePolicy">
                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Maximum">
                   <horstretch>0</horstretch>
@@ -142,41 +126,34 @@
                 </property>
                </widget>
               </item>
-              <item row="6" column="0" colspan="5">
-               <widget class="QListWidget" name="list_paths">
+              <item row="3" column="0">
+               <widget class="QTableWidget" name="tableInfo">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
+                 <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                   <horstretch>0</horstretch>
-                  <verstretch>1</verstretch>
+                  <verstretch>0</verstretch>
                  </sizepolicy>
                 </property>
+                <attribute name="horizontalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
+                <attribute name="horizontalHeaderStretchLastSection">
+                 <bool>true</bool>
+                </attribute>
+                <attribute name="verticalHeaderVisible">
+                 <bool>false</bool>
+                </attribute>
                </widget>
               </item>
-              <item row="5" column="1">
-               <spacer name="verticalSpacer">
-                <property name="orientation">
-                 <enum>Qt::Vertical</enum>
-                </property>
-                <property name="sizeType">
-                 <enum>QSizePolicy::MinimumExpanding</enum>
-                </property>
-                <property name="sizeHint" stdset="0">
-                 <size>
-                  <width>5</width>
-                  <height>350</height>
-                 </size>
-                </property>
-               </spacer>
-              </item>
-              <item row="5" column="2" colspan="2">
+              <item row="3" column="1">
                <layout class="QVBoxLayout" name="verticalLayout">
                 <property name="spacing">
                  <number>2</number>
                 </property>
                 <item>
-                 <widget class="Gui::CoverButton" name="btn_image">
+                 <widget class="Gui::CoverButton" name="btnImage">
                   <property name="sizePolicy">
-                   <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                   <sizepolicy hsizetype="Minimum" vsizetype="MinimumExpanding">
                     <horstretch>0</horstretch>
                     <verstretch>0</verstretch>
                    </sizepolicy>
@@ -216,7 +193,23 @@
                  </spacer>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="btn_write_cover_to_tracks">
+                 <spacer name="verticalSpacer_2">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                  <property name="sizeType">
+                   <enum>QSizePolicy::Maximum</enum>
+                  </property>
+                  <property name="sizeHint" stdset="0">
+                   <size>
+                    <width>20</width>
+                    <height>1</height>
+                   </size>
+                  </property>
+                 </spacer>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="btnWriteCoverToTracks">
                   <property name="text">
                    <string notr="true">Write cover into tracks...</string>
                   </property>
@@ -224,12 +217,15 @@
                 </item>
                </layout>
               </item>
+              <item row="4" column="0" colspan="2">
+               <widget class="QListWidget" name="listPaths"/>
+              </item>
              </layout>
             </widget>
            </item>
           </layout>
          </widget>
-         <widget class="QWidget" name="tab_2">
+         <widget class="QWidget" name="tabLyrics">
           <attribute name="icon">
            <iconset>
             <normaloff>:/Icons/lyrics.svg.png</normaloff>:/Icons/lyrics.svg.png</iconset>
@@ -239,7 +235,7 @@
           </attribute>
           <layout class="QGridLayout" name="gridLayout_3"/>
          </widget>
-         <widget class="QWidget" name="tab_3">
+         <widget class="QWidget" name="tabEditor">
           <attribute name="icon">
            <iconset>
             <normaloff>:/Icons/edit.svg.png</normaloff>:/Icons/edit.svg.png</iconset>
@@ -253,10 +249,10 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="page_2">
+     <widget class="QWidget" name="pageLoading">
       <layout class="QGridLayout" name="gridLayout_7">
        <item row="1" column="0">
-        <widget class="QLabel" name="label">
+        <widget class="QLabel" name="labLoading">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -325,7 +321,7 @@
  </resources>
  <connections>
   <connection>
-   <sender>btn_close1</sender>
+   <sender>btnClose</sender>
    <signal>clicked()</signal>
    <receiver>InfoDialog</receiver>
    <slot>close()</slot>
@@ -341,7 +337,7 @@
    </hints>
   </connection>
   <connection>
-   <sender>btn_close1</sender>
+   <sender>btnClose</sender>
    <signal>clicked()</signal>
    <receiver>InfoDialog</receiver>
    <slot>hide()</slot>
