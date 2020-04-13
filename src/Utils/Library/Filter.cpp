@@ -79,7 +79,12 @@ bool Filter::operator ==(const Filter& other)
 		same_filtertext &&
 		(m->mode == other.mode()) &&
 		(m->invalid_genre == other.isInvalidGenre())
-	);
+				);
+}
+
+int Filter::count() const
+{
+	return m->filtertext.size();
 }
 
 

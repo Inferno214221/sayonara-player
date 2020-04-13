@@ -158,26 +158,26 @@ bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.setId(	 	q.value(0).toInt());
-		data.setTitle(		q.value(1).toString());
-		data.setDurationMs(q.value(2).toInt());
-		data.setYear(		q.value(3).value<Year>());
-		data.setBitrate(	q.value(4).value<Bitrate>());
-		data.setFilepath(	q.value(5).toString());
-		data.setFilesize(  q.value(6).value<Filesize>());
-		data.setTrackNumber( q.value(7).value<TrackNum>());
-		data.setGenres(	q.value(8).toString().split(","));
-		data.setDiscnumber(q.value(9).value<Disc>());
-		data.setRating(    q.value(10).value<Rating>());
-		data.setAlbumId(  q.value(11).toInt());
-		data.setArtistId( q.value(12).toInt());
-		data.setComment(	q.value(14).toString());
-		data.setCreatedDate(q.value(15).value<uint64_t>());
-		data.setModifiedDate(q.value(16).value<uint64_t>());
-		data.setLibraryid(q.value(17).value<LibraryId>());
-		data.setAlbum(		q.value(18).toString().trimmed());
-		data.setArtist(	q.value(20).toString().trimmed());
-		data.setAlbumArtist(q.value(21).toString(), q.value(13).toInt());
+		data.setId(				q.value(0).toInt());
+		data.setTitle(			q.value(1).toString());
+		data.setDurationMs(		q.value(2).toInt());
+		data.setYear(			q.value(3).value<Year>());
+		data.setBitrate(		q.value(4).value<Bitrate>());
+		data.setFilepath(		q.value(5).toString());
+		data.setFilesize(		q.value(6).value<Filesize>());
+		data.setTrackNumber(	q.value(7).value<TrackNum>());
+		data.setGenres(			q.value(8).toString().split(","));
+		data.setDiscnumber(		q.value(9).value<Disc>());
+		data.setRating(			q.value(10).value<Rating>());
+		data.setAlbumId(		q.value(11).toInt());
+		data.setArtistId(		q.value(12).toInt());
+		data.setComment(		q.value(14).toString());
+		data.setCreatedDate(	q.value(15).value<uint64_t>());
+		data.setModifiedDate(	q.value(16).value<uint64_t>());
+		data.setLibraryid(		q.value(17).value<LibraryId>());
+		data.setAlbum(			q.value(18).toString().trimmed());
+		data.setArtist(			q.value(20).toString().trimmed());
+		data.setAlbumArtist(	q.value(21).toString(), q.value(13).toInt());
 
 		data.setDatabaseId(module()->databaseId());
 
@@ -422,7 +422,6 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
-
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
 	for(int i=0; i<searchFilters.size(); i++)
 	{

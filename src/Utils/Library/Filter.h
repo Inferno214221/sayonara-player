@@ -59,6 +59,8 @@ namespace Library
 
 			bool operator==(const Filter& other);
 
+			int count() const;
+
 			/**
 			 * @brief get splitted filtertext with or without percent. Needed for file search
 			 * for example where cissearch is not suitable
