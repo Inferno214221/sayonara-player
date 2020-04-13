@@ -27,9 +27,11 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 
-#include "Utils/MetaData/Album.h"
 #include "Utils/Mutex.h"
 #include "Utils/Set.h"
+#include "Utils/Algorithm.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
@@ -119,6 +121,27 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 }
 
 CoverModel::~CoverModel() = default;
+
+static QString getArtist(const Album& album)
+{
+	const QString albumArtist = album.albumArtist();
+	if(albumArtist.isEmpty())
+	{
+		const QStringList artists = album.artists();
+
+		if(artists.isEmpty()) {
+			return Lang::get(Lang::UnknownArtist);
+		}
+
+		else if(artists.size() == 1) {
+			return artists[0];
+		}
+
+		return Lang::get(Lang::VariousArtists);
+	}
+
+	return albumArtist;
+}
 
 QVariant CoverModel::data(const QModelIndex& index, int role) const
 {

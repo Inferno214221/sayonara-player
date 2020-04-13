@@ -110,6 +110,7 @@ namespace Library
 		void sortorderChanged(int index, Qt::SortOrder sortorder);
 		void sectionResized(int logicalIndex, int oldSize, int newSize);
 		void sectionMoved(int logicalIndex, int old_visualIndex, int newVisualIndex);
+
 	};
 }
 

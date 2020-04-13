@@ -129,6 +129,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 	registerSetting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
 	registerSetting<Set::Lib_SortIgnoreArtistArticle>("lib_ignore_artist_article", false);
+	registerSetting<Set::Lib_HeaderAutoResize>("lib_header_auto_resize", true);
 
 #ifdef Q_OS_WIN
 	registerSetting<Set::Lib_FontBold >("lib_font_bold", false);
@@ -261,6 +262,9 @@ bool SettingRegistry::init()
 	registerSetting<Set::Proxy_SavePw>( "proxy_save_pw", false);
 
 	registerSetting<Set::Speed_LastTab>("speed_last_tab", 0);
+
+	registerSetting<Set::InfoDialog_Size>("info_dialog_size", QSize());
+	registerSetting<Set::AlternativeCovers_Size>("alternative_covers_size", QSize());
 
 	registerSetting<Set::Settings_Revision>("settings_version", 0);
 	registerSetting<Set::Logger_Level>( "logger_level", 0);

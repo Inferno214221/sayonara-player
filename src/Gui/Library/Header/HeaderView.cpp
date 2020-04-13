@@ -19,6 +19,7 @@
 
 #include "HeaderView.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
@@ -36,6 +37,8 @@ struct HeaderView::Private
 {
 	ColumnActionPairList columns;
 	QAction* actionResize=nullptr;
+	QAction* actionAutoResize=nullptr;
+	QByteArray initialState;
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
@@ -44,7 +47,14 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	m->actionResize = new QAction(this);
+	m->actionAutoResize = new QAction(this);
+	m->actionAutoResize->setCheckable(true);
+
 	connect(m->actionResize, &QAction::triggered, this, &HeaderView::actionResizeTriggered);
+	connect(m->actionAutoResize, &QAction::triggered, this, &HeaderView::actionAutoResizeTriggered);
+	connect(this, &QHeaderView::sectionDoubleClicked, this, [this](int /*logicalIndex*/){
+		this->resizeColumnsAutomatically();
+	});
 
 	this->setSectionsClickable(true);
 	this->setSectionsMovable(true);
@@ -52,19 +62,14 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	this->setContextMenuPolicy(Qt::ActionsContextMenu);
 	this->setTextElideMode(Qt::TextElideMode::ElideRight);
 	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+	this->setStretchLastSection(true);
 }
 
 HeaderView::~HeaderView() = default;
 
 void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting)
 {
-	if(state.isEmpty()) {
-		this->actionResizeTriggered();
-	}
-
-	else {
-		this->restoreState(state);
-	}
+	m->initialState = state;
 
 	for(int i=0; i<columns.size(); i++)
 	{
@@ -95,6 +100,9 @@ void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, 
 
 	this->addAction(sep);
 	this->addAction(m->actionResize);
+	this->addAction(m->actionAutoResize);
+
+	ListenSetting(Set::Lib_HeaderAutoResize, HeaderView::autoResizeChanged);
 }
 
 Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortorder)
@@ -110,7 +118,7 @@ Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortorder)
 
 QString HeaderView::columnText(int index) const
 {
-	if(!Util::between(index, m->columns)){
+	if(!Util::between(index, m->columns)) {
 		return QString();
 	}
 
@@ -124,8 +132,6 @@ void HeaderView::reloadColumnTexts()
 		QAction* action = m->columns[i].second;
 		action->setText(columnText(i));
 	}
-
-	m->actionResize->setText(tr("Resize columns"));
 }
 
 void HeaderView::actionTriggered(bool b)
@@ -139,6 +145,17 @@ void HeaderView::actionTriggered(bool b)
 	actionResizeTriggered();
 }
 
+void HeaderView::actionResizeTriggered()
+{
+	resizeColumnsAutomatically();
+}
+
+void HeaderView::actionAutoResizeTriggered(bool b)
+{
+	SetSetting(Set::Lib_HeaderAutoResize, b);
+	this->resizeColumnsAutomatically();
+}
+
 static int columnWidth(Library::ColumnHeaderPtr section, QWidget* widget)
 {
 	return std::max
@@ -148,7 +165,7 @@ static int columnWidth(Library::ColumnHeaderPtr section, QWidget* widget)
 	);
 }
 
-void HeaderView::actionResizeTriggered()
+void HeaderView::resizeColumnsAutomatically()
 {
 	double scaleFactor;
 	{	// calculate scale factor of stretchable columns
@@ -164,7 +181,8 @@ void HeaderView::actionResizeTriggered()
 			ColumnHeaderPtr section = m->columns[i].first;
 			int size = columnWidth(section, this);
 
-			if(!section->isStretchable()) {
+			if(!section->isStretchable())
+			{
 				this->resizeSection(i, size);
 				freeSpace -= size;
 			}
@@ -179,7 +197,7 @@ void HeaderView::actionResizeTriggered()
 
 	{ // resize stretchable sections
 		for(int i=0; i<m->columns.size(); i++)
-		{			
+		{
 			ColumnHeaderPtr section = m->columns[i].first;
 			if(section->isStretchable() && !this->isSectionHidden(i))
 			{
@@ -190,12 +208,46 @@ void HeaderView::actionResizeTriggered()
 	}
 }
 
-void HeaderView::languageChanged()
+void HeaderView::autoResizeChanged()
 {
-	// not needed, as reloadColumnTexts() is triggered by the Library::TableView
+	bool b = GetSetting(Set::Lib_HeaderAutoResize);
+	m->actionAutoResize->setChecked(b);
 }
 
 QSize HeaderView::sizeHint() const
 {
 	return QSize(0, (fontMetrics().height() * 3) / 2);
+}
+
+void HeaderView::languageChanged()
+{
+	m->actionResize->setText(tr("Resize columns"));
+	m->actionAutoResize->setText(tr("Resize columns automatically"));
+}
+
+void HeaderView::showEvent(QShowEvent* e)
+{
+	Parent::showEvent(e);
+
+	if(m->initialState.isEmpty())
+	{
+		this->resizeColumnsAutomatically();
+	}
+
+	else
+	{
+		this->restoreState(m->initialState);
+		this->setMinimumSectionSize(25);
+		this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+	}
+}
+
+void HeaderView::resizeEvent(QResizeEvent* e)
+{
+	Parent::resizeEvent(e);
+
+	if(m && m->actionAutoResize->isChecked())
+	{
+		this->resizeColumnsAutomatically();
+	}
 }

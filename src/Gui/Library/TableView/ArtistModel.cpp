@@ -158,7 +158,7 @@ int ArtistModel::searchableColumn() const
 	return int(ColumnIndex::Artist::Name);
 }
 
-const MetaDataList &Library::ArtistModel::selectedMetadata() const
+const MetaDataList& Library::ArtistModel::selectedMetadata() const
 {
 	return library()->tracks();
 }

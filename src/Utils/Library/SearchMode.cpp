@@ -19,6 +19,7 @@
  */
 
 #include "SearchMode.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 
@@ -169,4 +170,9 @@ QString Library::Utils::convertSearchstring(const QString& originalString, Libra
 QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode)
 {
 	return convertSearchstring(str, mode, QList<QChar>());
+}
+
+QString Library::Utils::convertSearchstring(const QString& str)
+{
+	return convertSearchstring(str, GetSetting(Set::Lib_SearchMode));
 }

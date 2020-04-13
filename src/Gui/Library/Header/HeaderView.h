@@ -56,9 +56,16 @@ namespace Library
 		private slots:
 			void actionTriggered(bool b);
 			void actionResizeTriggered();
+			void actionAutoResizeTriggered(bool b);
 
 		protected:
 			void languageChanged() override;
+			void showEvent(QShowEvent* e) override;
+			void resizeEvent(QResizeEvent* e) override;
+
+		private:
+			void resizeColumnsAutomatically();
+			void autoResizeChanged();
 	};
 }
 

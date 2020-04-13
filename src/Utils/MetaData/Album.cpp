@@ -237,24 +237,7 @@ void Album::setArtists(const QStringList& artists)
 
 QString Album::albumArtist() const
 {
-	QString artist = artistPool().value(m->albumArtistIndex);
-	if(artist.isEmpty())
-	{
-		QStringList artists = this->artists();
-		if(artists.isEmpty()) {
-			artist = Lang::get(Lang::UnknownArtist);
-		}
-
-		else if(artists.size() == 1) {
-			artist = artists[0];
-		}
-
-		else {
-			artist = Lang::get(Lang::VariousArtists);
-		}
-	}
-
-	return artist;
+	return artistPool().value(m->albumArtistIndex);
 }
 
 void Album::setAlbumArtist(const QString& albumArtist)

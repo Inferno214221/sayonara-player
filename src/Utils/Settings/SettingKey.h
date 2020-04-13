@@ -74,6 +74,7 @@ enum class SettingKey : unsigned short
 	Lib_UseViewClearButton,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,
+	Lib_HeaderAutoResize,
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
 	Dir_SplitterTracks,
@@ -181,6 +182,8 @@ enum class SettingKey : unsigned short
 	Proxy_Port,
 	Proxy_SavePw,
 	Speed_LastTab,
+	InfoDialog_Size,
+	AlternativeCovers_Size,
 	Logger_Level,
 	Settings_Revision,
 	Num_Setting_Keys
@@ -282,6 +285,7 @@ class SettingIdentifier
 	INST(bool,				Lib_UseViewClearButton)	/* Show clear button in single view */
 	INST(bool,				Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
 	INST(bool,				Lib_SortIgnoreArtistArticle) /* ignore article for artist */
+	INST(bool,				Lib_HeaderAutoResize) /* ignore article for artist */
 
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */
@@ -400,6 +404,9 @@ class SettingIdentifier
 	INST(bool,				Proxy_SavePw)			/* Should password be saved */
 
 	INST(int,				Speed_LastTab)			/* Last tab selected int he speed/pitch plugin */
+
+	INST(QSize,				InfoDialog_Size)		/* Size of Info Dialog */
+	INST(QSize,				AlternativeCovers_Size) /* Size of Alternative Cover Dialog */
 
 	INST(int,				Settings_Revision)		/* Version number of settings */
 

@@ -158,26 +158,26 @@ bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 	{
 		MetaData data;
 
-		data.setId(	 	q.value(0).toInt());
-		data.setTitle(		q.value(1).toString());
-		data.setDurationMs(q.value(2).toInt());
-		data.setYear(		q.value(3).value<Year>());
-		data.setBitrate(	q.value(4).value<Bitrate>());
-		data.setFilepath(	q.value(5).toString());
-		data.setFilesize(  q.value(6).value<Filesize>());
-		data.setTrackNumber( q.value(7).value<TrackNum>());
-		data.setGenres(	q.value(8).toString().split(","));
-		data.setDiscnumber(q.value(9).value<Disc>());
-		data.setRating(    q.value(10).value<Rating>());
-		data.setAlbumId(  q.value(11).toInt());
-		data.setArtistId( q.value(12).toInt());
-		data.setComment(	q.value(14).toString());
-		data.setCreatedDate(q.value(15).value<uint64_t>());
-		data.setModifiedDate(q.value(16).value<uint64_t>());
-		data.setLibraryid(q.value(17).value<LibraryId>());
-		data.setAlbum(		q.value(18).toString().trimmed());
-		data.setArtist(	q.value(20).toString().trimmed());
-		data.setAlbumArtist(q.value(21).toString(), q.value(13).toInt());
+		data.setId(				q.value(0).toInt());
+		data.setTitle(			q.value(1).toString());
+		data.setDurationMs(		q.value(2).toInt());
+		data.setYear(			q.value(3).value<Year>());
+		data.setBitrate(		q.value(4).value<Bitrate>());
+		data.setFilepath(		q.value(5).toString());
+		data.setFilesize(		q.value(6).value<Filesize>());
+		data.setTrackNumber(	q.value(7).value<TrackNum>());
+		data.setGenres(			q.value(8).toString().split(","));
+		data.setDiscnumber(		q.value(9).value<Disc>());
+		data.setRating(			q.value(10).value<Rating>());
+		data.setAlbumId(		q.value(11).toInt());
+		data.setArtistId(		q.value(12).toInt());
+		data.setComment(		q.value(14).toString());
+		data.setCreatedDate(	q.value(15).value<uint64_t>());
+		data.setModifiedDate(	q.value(16).value<uint64_t>());
+		data.setLibraryid(		q.value(17).value<LibraryId>());
+		data.setAlbum(			q.value(18).toString().trimmed());
+		data.setArtist(			q.value(20).toString().trimmed());
+		data.setAlbumArtist(	q.value(21).toString(), q.value(13).toInt());
 
 		data.setDatabaseId(module()->databaseId());
 
@@ -310,28 +310,35 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 		return false;
 	}
 
-	QStringList filters = filter.filtertext(true);
-	QStringList searchFilters = filter.searchModeFiltertext(true);
+	const QStringList filters = filter.filtertext(true);
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
 
-	for(int i=0; i<filters.size(); i++)
+	for(int i=0; i<filter.count(); i++)
 	{
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		Query q(module());
 
 		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch") + " AND ";
+			query += getFilterClause(filter, searchPlaceholder) + " AND ";
 		}
 
 		{ // album id clauses
 			QString aidf = trackSearchView() + ".albumID ";
-			QStringList or_clauses;
-			for(int a=0; a<albumIds.size(); a++){
-				or_clauses << QString("%1 = :albumId_%2").arg(aidf).arg(a);
+			QStringList orClauses;
+			for(int a=0; a<albumIds.size(); a++)
+			{
+				orClauses << QString("%1 = :albumId_%2").arg(aidf).arg(a);
 			}
 
-			query += " (" + or_clauses.join(" OR ") + ") ";
+			query += " (" + orClauses.join(" OR ") + ") ";
 		}
 
 		query += ";";
@@ -343,6 +350,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 				q.bindValue(QString(":albumId_%1").arg(a), albumIds[a]);
 			}
 
+			q.bindValue(":standardsearch", filters[i]);
 			q.bindValue(":cissearch", searchFilters[i]);
 
 			MetaDataList tmpList;
@@ -376,16 +384,24 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 		return false;
 	}
 
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
-	for(int i=0; i<searchFilters.size(); i++)
+
+	for(int i=0; i<filter.count(); i++)
 	{
 		Query q(module());
+
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
 
 		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch") + " AND ";
+			query += getFilterClause(filter, searchPlaceholder) + " AND ";
 		}
 
 		{ // artist conditions
@@ -408,6 +424,7 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 				q.bindValue(QString(":artistId_%1").arg(a), artistIds[a]);
 			}
 
+			q.bindValue(":standardsearch", filters[i]);
 			q.bindValue(":cissearch", searchFilters[i]);
 
 			MetaDataList tmpList;
@@ -422,17 +439,26 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
-
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
-	for(int i=0; i<searchFilters.size(); i++)
+
+	for(int i=0; i<filter.count(); i++)
 	{
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		Query q(module());
 
 		QString query = fetchQueryTracks();
-		query += " WHERE " + getFilterClause(filter, "cissearch");
+		query += " WHERE " + getFilterClause(filter, searchPlaceholder);
 		query += ";";
 
 		q.prepare(query);
+
+		q.bindValue(":standardsearch", filters[i]);
 		q.bindValue(":cissearch", searchFilters[i]);
 
         {
