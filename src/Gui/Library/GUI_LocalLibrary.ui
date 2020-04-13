@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>765</width>
-    <height>569</height>
+    <width>1306</width>
+    <height>891</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -65,7 +65,7 @@
           </property>
           <widget class="QStackedWidget" name="sw_viewType">
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">

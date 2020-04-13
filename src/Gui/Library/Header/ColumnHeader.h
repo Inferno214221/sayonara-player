@@ -47,11 +47,14 @@ namespace Library
 
 		protected:
 			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			virtual QString hashPrefix() const=0;
 
 		public:
 			virtual ~ColumnHeader();
 
 			virtual QString title() const=0;
+
+			QString hash() const;
 
 			bool isStretchable() const;
 			bool isSwitchable() const;
@@ -73,6 +76,9 @@ namespace Library
 		public:
 			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
+
+		protected:
+			QString hashPrefix() const override;
 	};
 
 	class ColumnHeaderAlbum : public ColumnHeader
@@ -82,6 +88,9 @@ namespace Library
 		public:
 			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
+
+		protected:
+			QString hashPrefix() const override;
 	};
 
 	class ColumnHeaderArtist : public ColumnHeader
@@ -91,6 +100,9 @@ namespace Library
 		public:
 			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
 			QString title() const override;
+
+		protected:
+			QString hashPrefix() const override;
 	};
 
 	using ColumnHeaderPtr = std::shared_ptr<ColumnHeader>;

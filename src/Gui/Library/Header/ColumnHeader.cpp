@@ -58,6 +58,11 @@ ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortO
 	m = Pimpl::make<Private>(type, switchable, sortorderAscending, sortorderDescending, preferredSize, stretchable);
 }
 
+QString ColumnHeader::hash() const
+{
+	return hashPrefix() + QString::number( int(m->columnIndex) );
+}
+
 bool ColumnHeader::isSwitchable() const
 {
 	return m->switchable;
@@ -133,6 +138,10 @@ QString ColumnHeaderTrack::title() const
 	}
 }
 
+QString ColumnHeaderTrack::hashPrefix() const
+{
+	return "track";
+}
 
 ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
 	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
@@ -162,6 +171,11 @@ QString ColumnHeaderAlbum::title() const
 	}
 }
 
+QString ColumnHeaderAlbum::hashPrefix() const
+{
+	return "album";
+}
+
 ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
 	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
 {}
@@ -184,5 +198,10 @@ QString ColumnHeaderArtist::title() const
 		default:
 			return QString();
 	}
+}
+
+QString ColumnHeaderArtist::hashPrefix() const
+{
+	return "artist";
 }
 

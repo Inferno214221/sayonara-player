@@ -79,9 +79,9 @@ ColumnHeaderList TrackView::columnHeaders() const
 	return ColumnHeaderList
 	{
 		std::make_shared<ColumnHeaderTrack>(Track::TrackNumber, true, SortOrder::TrackNumAsc, SortOrder::TrackNumDesc, Gui::Util::textWidth(fm, "M888")),
-		std::make_shared<ColumnHeaderTrack>(Track::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, 200, true),
-		std::make_shared<ColumnHeaderTrack>(Track::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, 200, true),
-		std::make_shared<ColumnHeaderTrack>(Track::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, 200, true),
+		std::make_shared<ColumnHeaderTrack>(Track::Title, false, SortOrder::TrackTitleAsc, SortOrder::TrackTitleDesc, Gui::Util::textWidth(fm, "Some long song name"), true),
+		std::make_shared<ColumnHeaderTrack>(Track::Artist, true, SortOrder::TrackArtistAsc, SortOrder::TrackArtistDesc, Gui::Util::textWidth(fm, "Some long artist name"), true),
+		std::make_shared<ColumnHeaderTrack>(Track::Album, true, SortOrder::TrackAlbumAsc, SortOrder::TrackAlbumDesc, Gui::Util::textWidth(fm, "Some long album name"), true),
 		std::make_shared<ColumnHeaderTrack>(Track::Discnumber, true, SortOrder::TrackDiscnumberAsc, SortOrder::TrackDiscnumberDesc, Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888") ),
 		std::make_shared<ColumnHeaderTrack>(Track::Year, true, SortOrder::TrackYearAsc, SortOrder::TrackYearDesc, Gui::Util::textWidth(fm, "M8888")),
 		std::make_shared<ColumnHeaderTrack>(Track::Length, true, SortOrder::TrackLenghtAsc, SortOrder::TrackLengthDesc, Gui::Util::textWidth(fm, "8d 88h 88s")),
