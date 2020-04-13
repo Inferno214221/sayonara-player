@@ -231,7 +231,9 @@ bool Albums::getAllAlbumsByArtist(const IdList& artists, AlbumList& result, cons
 		return false;
 	}
 
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
+
 	const QStringList fields
 	{
 		 "albumID",
@@ -246,18 +248,25 @@ bool Albums::getAllAlbumsByArtist(const IdList& artists, AlbumList& result, cons
 		 "GROUP_CONCAT(DISTINCT filename)"
 	};
 
-	for(int i=0; i<searchFilters.size(); i++)
+	for(int i=0; i<filter.count(); i++)
 	{
 		const QString searchView = trackSearchView();
+
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		QString query = "SELECT " + fields.join(", ") + " FROM " + searchView + " WHERE ";
 
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch") + " AND ";
+			query += getFilterClause(filter, searchPlaceholder) + " AND ";
 		}
 
 		{ // artist conditions
-			QString aidf = searchView + "." + artistIdField();
+			const QString aidf = searchView + "." + artistIdField();
 
 			QStringList orClauses;
 			for(int a=0; a<artists.size(); a++) {
@@ -273,6 +282,7 @@ bool Albums::getAllAlbumsByArtist(const IdList& artists, AlbumList& result, cons
 			Query q(module());
 			q.prepare(query);
 
+			q.bindValue(":standardsearch", filters[i]);
 			q.bindValue(":cissearch", searchFilters[i]);
 
 			for(int i=0; i<artists.size(); i++) {
@@ -291,7 +301,9 @@ bool Albums::getAllAlbumsByArtist(const IdList& artists, AlbumList& result, cons
 
 bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList& result) const
 {
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
+
 	const QStringList fields
 	{
 		 "albumID",
@@ -308,12 +320,20 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 
 	for(int i=0; i<searchFilters.size(); i++)
 	{
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		QString query = "SELECT " + fields.join(", ") + " FROM " + trackSearchView() + " WHERE ";
-		query += getFilterClause(filter, "cissearch");
+		query += getFilterClause(filter, searchPlaceholder);
 		query += " GROUP BY albumID, albumName;";
 
 		Query q(module());
 		q.prepare(query);
+
+		q.bindValue(":standardsearch", filters[i]);
 		q.bindValue(":cissearch", searchFilters[i]);
 
 		AlbumList tmpList;
@@ -394,9 +414,9 @@ void Albums::deleteAllAlbums()
 	module()->runQuery("DELETE FROM albums;", "Could not delete all albums");
 }
 
-static QString getFilterClause(const Filter& filter, QString cisPlaceholder)
+static QString getFilterClause(const Filter& filter, QString placeholder)
 {
-	cisPlaceholder.remove(":");
+	placeholder.remove(":");
 
 	switch(filter.mode())
 	{
@@ -405,14 +425,14 @@ static QString getFilterClause(const Filter& filter, QString cisPlaceholder)
 				return " genre = '' ";
 			}
 			else {
-				return " genre LIKE :" + cisPlaceholder + " ";
+				return " genre LIKE :" + placeholder + " ";
 			}
 
 		case Library::Filter::Filename:
-			return " filecissearch LIKE :" + cisPlaceholder + " ";
+			return " filecissearch LIKE :" + placeholder + " ";
 
 		case Library::Filter::Fulltext:
 		default:
-			return " allCissearch LIKE :" + cisPlaceholder + " ";
+			return " allCissearch LIKE :" + placeholder + " ";
 	}
 }

@@ -29,8 +29,8 @@
 
 using DB::Module;
 
-DB::Session::Session(const QString& connection_name, DbId databaseId) :
-	Module(connection_name, databaseId)
+DB::Session::Session(const QString& connectionName, DbId databaseId) :
+	Module(connectionName, databaseId)
 {}
 
 DB::Session::~Session() = default;

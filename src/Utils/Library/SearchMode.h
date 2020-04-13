@@ -46,6 +46,8 @@ namespace Library
 	namespace Utils
 	{
 
+		QString convertSearchstring(const QString& str);
+
 		/**
 		 * @brief Converts a user entered string into a cis-representation.
 		 * For example, diacrytic chars are replaced by latin ones, spaces are removed

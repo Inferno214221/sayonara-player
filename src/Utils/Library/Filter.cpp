@@ -84,7 +84,7 @@ bool Filter::operator ==(const Filter& other)
 
 int Filter::count() const
 {
-	return m->filtertext.size();
+	return m->filtertext.split(",").size();
 }
 
 

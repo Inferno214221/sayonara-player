@@ -310,28 +310,35 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 		return false;
 	}
 
-	QStringList filters = filter.filtertext(true);
-	QStringList searchFilters = filter.searchModeFiltertext(true);
+	const QStringList filters = filter.filtertext(true);
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
 
-	for(int i=0; i<filters.size(); i++)
+	for(int i=0; i<filter.count(); i++)
 	{
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		Query q(module());
 
 		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch") + " AND ";
+			query += getFilterClause(filter, searchPlaceholder) + " AND ";
 		}
 
 		{ // album id clauses
 			QString aidf = trackSearchView() + ".albumID ";
-			QStringList or_clauses;
-			for(int a=0; a<albumIds.size(); a++){
-				or_clauses << QString("%1 = :albumId_%2").arg(aidf).arg(a);
+			QStringList orClauses;
+			for(int a=0; a<albumIds.size(); a++)
+			{
+				orClauses << QString("%1 = :albumId_%2").arg(aidf).arg(a);
 			}
 
-			query += " (" + or_clauses.join(" OR ") + ") ";
+			query += " (" + orClauses.join(" OR ") + ") ";
 		}
 
 		query += ";";
@@ -343,6 +350,7 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 				q.bindValue(QString(":albumId_%1").arg(a), albumIds[a]);
 			}
 
+			q.bindValue(":standardsearch", filters[i]);
 			q.bindValue(":cissearch", searchFilters[i]);
 
 			MetaDataList tmpList;
@@ -376,16 +384,24 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 		return false;
 	}
 
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
-	for(int i=0; i<searchFilters.size(); i++)
+
+	for(int i=0; i<filter.count(); i++)
 	{
 		Query q(module());
+
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
 
 		QString query = fetchQueryTracks();
 		query += " WHERE ";
 		if( !filter.cleared() )
 		{
-			query += getFilterClause(filter, "cissearch") + " AND ";
+			query += getFilterClause(filter, searchPlaceholder) + " AND ";
 		}
 
 		{ // artist conditions
@@ -408,6 +424,7 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 				q.bindValue(QString(":artistId_%1").arg(a), artistIds[a]);
 			}
 
+			q.bindValue(":standardsearch", filters[i]);
 			q.bindValue(":cissearch", searchFilters[i]);
 
 			MetaDataList tmpList;
@@ -422,16 +439,26 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
 
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
 {
+	const QStringList filters = filter.filtertext(true);
 	const QStringList searchFilters = filter.searchModeFiltertext(true);
-	for(int i=0; i<searchFilters.size(); i++)
+
+	for(int i=0; i<filter.count(); i++)
 	{
+		QString searchPlaceholder = ":cissearch";
+		if(filter.mode() == Filter::Mode::Genre)
+		{
+			searchPlaceholder = ":standardsearch";
+		}
+
 		Query q(module());
 
 		QString query = fetchQueryTracks();
-		query += " WHERE " + getFilterClause(filter, "cissearch");
+		query += " WHERE " + getFilterClause(filter, searchPlaceholder);
 		query += ";";
 
 		q.prepare(query);
+
+		q.bindValue(":standardsearch", filters[i]);
 		q.bindValue(":cissearch", searchFilters[i]);
 
         {
