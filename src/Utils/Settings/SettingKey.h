@@ -74,7 +74,9 @@ enum class SettingKey : unsigned short
 	Lib_UseViewClearButton,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,
-	Lib_HeaderAutoResize,
+	Lib_HeaderAutoResizeArtists,
+	Lib_HeaderAutoResizeAlbums,
+	Lib_HeaderAutoResizeTracks,
 	Dir_ShowTracks,
 	Dir_SplitterDirFile,
 	Dir_SplitterTracks,
@@ -285,7 +287,9 @@ class SettingIdentifier
 	INST(bool,				Lib_UseViewClearButton)	/* Show clear button in single view */
 	INST(bool,				Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
 	INST(bool,				Lib_SortIgnoreArtistArticle) /* ignore article for artist */
-	INST(bool,				Lib_HeaderAutoResize) /* ignore article for artist */
+	INST(bool,				Lib_HeaderAutoResizeArtists) /* resize columns automatically in artists */
+	INST(bool,				Lib_HeaderAutoResizeAlbums) /* resize columns automatically in albums */
+	INST(bool,				Lib_HeaderAutoResizeTracks) /* resize columns automatically in tracks */
 
 	INST(bool,				Dir_ShowTracks)			/* show tracks panel in directory view */
 	INST(QByteArray,		Dir_SplitterDirFile)		/* Splitter state between dirs and files */

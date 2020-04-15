@@ -57,12 +57,13 @@ void TableView::init(AbstractLibrary* library)
 		return (p1->columnIndex() < p2->columnIndex());
 	});
 
-	m->header->init(headers, columnHeaderState(), sortorder());
+	m->header->init(headers, columnHeaderState(), sortorder(), autoResizeState());
 
 	connect(m->header, &QHeaderView::sectionCountChanged, this, &TableView::headerColumnsChanged);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);
 	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::sectionMoved);
 	connect(m->header, &QHeaderView::sortIndicatorChanged, this, &TableView::sortorderChanged);
+	connect(m->header, &HeaderView::sigAutoResizeToggled, this, &TableView::autoResizeTriggered);
 
 	languageChanged();
 }
@@ -97,6 +98,15 @@ void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /
 {
 	setupColumnNames();
 	saveColumnHeaderState(m->header->saveState());
+}
+
+void TableView::autoResizeTriggered(bool b)
+{
+	saveAutoResizeState(b);
+	if(b)
+	{
+		m->header->resizeColumnsAutomatically();
+	}
 }
 
 void TableView::setupColumnNames()

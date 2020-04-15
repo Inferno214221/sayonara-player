@@ -132,6 +132,16 @@ void ArtistView::applySortorder(SortOrder s)
 	m->library->changeArtistSortorder(s);
 }
 
+bool ArtistView::autoResizeState() const
+{
+	return GetSetting(Set::Lib_HeaderAutoResizeArtists);
+}
+
+void ArtistView::saveAutoResizeState(bool b)
+{
+	SetSetting(Set::Lib_HeaderAutoResizeArtists, b);
+}
+
 void ArtistView::languageChanged()
 {
 	TableView::languageChanged();

@@ -99,6 +99,9 @@ namespace Library
 		 */
 		virtual void applySortorder(SortOrder s)=0;
 
+		virtual bool autoResizeState() const=0;
+		virtual void saveAutoResizeState(bool b)=0;
+
 		void languageChanged() override;
 
 		// SayonaraSelectionView.h
@@ -110,7 +113,7 @@ namespace Library
 		void sortorderChanged(int index, Qt::SortOrder sortorder);
 		void sectionResized(int logicalIndex, int oldSize, int newSize);
 		void sectionMoved(int logicalIndex, int old_visualIndex, int newVisualIndex);
-
+		void autoResizeTriggered(bool b);
 	};
 }
 

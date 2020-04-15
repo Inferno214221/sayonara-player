@@ -129,7 +129,9 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_UseViewClearButton>( "lib_view_clear_button", false);
 	registerSetting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
 	registerSetting<Set::Lib_SortIgnoreArtistArticle>("lib_ignore_artist_article", false);
-	registerSetting<Set::Lib_HeaderAutoResize>("lib_header_auto_resize", true);
+	registerSetting<Set::Lib_HeaderAutoResizeArtists>("lib_header_auto_resize_artists", true);
+	registerSetting<Set::Lib_HeaderAutoResizeAlbums>("lib_header_auto_resize_albums", true);
+	registerSetting<Set::Lib_HeaderAutoResizeTracks>("lib_header_auto_resize_tracks", true);
 
 #ifdef Q_OS_WIN
 	registerSetting<Set::Lib_FontBold >("lib_font_bold", false);

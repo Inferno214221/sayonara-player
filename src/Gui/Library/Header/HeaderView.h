@@ -41,11 +41,15 @@ namespace Library
 		Q_OBJECT
 		PIMPL(HeaderView)
 
+		signals:
+			void sigAutoResizeToggled(bool b);
+
 		public:
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
 			virtual ~HeaderView() override;
 
-			void init(const ColumnHeaderList& columnHeaders, const QByteArray& state, Library::SortOrder sorting);
+			void init(const ColumnHeaderList& columnHeaders, const QByteArray& state, Library::SortOrder sorting, bool autoResizeState);
+			void resizeColumnsAutomatically();
 
 			Library::SortOrder sortorder(int index, Qt::SortOrder sortorder);
 			QString columnText(int index) const;
@@ -62,10 +66,6 @@ namespace Library
 			void languageChanged() override;
 			void showEvent(QShowEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;
-
-		private:
-			void resizeColumnsAutomatically();
-			void autoResizeChanged();
 	};
 }
 

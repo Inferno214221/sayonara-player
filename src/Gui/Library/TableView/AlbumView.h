@@ -73,6 +73,9 @@ namespace Library
 		bool isMergeable() const override;
 		MD::Interpretation metadataInterpretation() const override;
 
+		bool autoResizeState() const override;
+		void saveAutoResizeState(bool b) override;
+
 		void calcDiscmenuPoint(QModelIndex idx);
 		void deleteDiscmenu();
 		void initDiscmenu(QModelIndex idx);

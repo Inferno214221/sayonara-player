@@ -51,6 +51,9 @@ namespace Library
 			QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
 
+			bool autoResizeState() const override;
+			void saveAutoResizeState(bool b) override;
+
 			SortOrder sortorder() const override;
 			void applySortorder(SortOrder s) override;
 

@@ -265,6 +265,16 @@ MD::Interpretation AlbumView::metadataInterpretation() const
 	return MD::Interpretation::Albums;
 }
 
+bool AlbumView::autoResizeState() const
+{
+	return GetSetting(Set::Lib_HeaderAutoResizeAlbums);
+}
+
+void AlbumView::saveAutoResizeState(bool b)
+{
+	SetSetting(Set::Lib_HeaderAutoResizeAlbums, b);
+}
+
 void AlbumView::useClearButtonChanged()
 {
 	bool b = GetSetting(Set::Lib_UseViewClearButton);

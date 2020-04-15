@@ -62,6 +62,9 @@ namespace Library
 			SortOrder sortorder() const override;
 			void applySortorder(SortOrder s) override;
 
+			bool autoResizeState() const override;
+			void saveAutoResizeState(bool b) override;
+
 			// ItemView
 			bool isMergeable() const override;
 			MD::Interpretation metadataInterpretation() const override;

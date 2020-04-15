@@ -19,7 +19,6 @@
 
 #include "HeaderView.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
@@ -67,7 +66,7 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 
 HeaderView::~HeaderView() = default;
 
-void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting)
+void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting, bool autoResizeState)
 {
 	m->initialState = state;
 
@@ -102,7 +101,7 @@ void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, 
 	this->addAction(m->actionResize);
 	this->addAction(m->actionAutoResize);
 
-	ListenSetting(Set::Lib_HeaderAutoResize, HeaderView::autoResizeChanged);
+	m->actionAutoResize->setChecked(autoResizeState);
 }
 
 Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortorder)
@@ -152,8 +151,7 @@ void HeaderView::actionResizeTriggered()
 
 void HeaderView::actionAutoResizeTriggered(bool b)
 {
-	SetSetting(Set::Lib_HeaderAutoResize, b);
-	this->resizeColumnsAutomatically();
+	emit sigAutoResizeToggled(b);
 }
 
 static int columnWidth(Library::ColumnHeaderPtr section, QWidget* widget)
@@ -206,12 +204,6 @@ void HeaderView::resizeColumnsAutomatically()
 			}
 		}
 	}
-}
-
-void HeaderView::autoResizeChanged()
-{
-	bool b = GetSetting(Set::Lib_HeaderAutoResize);
-	m->actionAutoResize->setChecked(b);
 }
 
 QSize HeaderView::sizeHint() const

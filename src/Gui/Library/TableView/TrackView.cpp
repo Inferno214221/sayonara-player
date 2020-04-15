@@ -104,6 +104,16 @@ void TrackView::saveColumnHeaderState(const QByteArray& state)
 	SetSetting(Set::Lib_ColStateTracks, state);
 }
 
+bool TrackView::autoResizeState() const
+{
+	return GetSetting(Set::Lib_HeaderAutoResizeTracks);
+}
+
+void TrackView::saveAutoResizeState(bool b)
+{
+	SetSetting(Set::Lib_HeaderAutoResizeTracks, b);
+}
+
 Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 {
 	return (ItemView::contextMenuEntries() |
