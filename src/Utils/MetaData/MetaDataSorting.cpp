@@ -23,6 +23,7 @@
 #include "MetaDataList.h"
 #include "Artist.h"
 #include "Album.h"
+#include <QDateTime>
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
@@ -393,7 +394,7 @@ bool MetaDataSorting::TracksByAddedDateAsc(const MetaData& md1, const MetaData& 
 		return true;
 	}
 
-	if(md1.rating() == md2.rating()){
+	if(md1.createdDate() == md2.createdDate()){
 		return TracksByArtistAsc(md1, md2);
 	}
 
@@ -433,7 +434,7 @@ bool MetaDataSorting::TracksByModifiedDateDesc(const MetaData& md1, const MetaDa
 	}
 
 	if(md1.modifiedDate() == md2.modifiedDate()){
-		return TracksByArtistAsc(md1, md2);
+		return TracksByArtistDesc(md1, md2);
 	}
 
 	return false;
@@ -685,82 +686,94 @@ bool MetaDataSorting::AlbumByRatingDesc(const Album& album1, const Album& album2
 	return false;
 }
 
-void MetaDataSorting::sortMetadata(MetaDataList& v_md, Library::SortOrder so)
+void MetaDataSorting::sortMetadata(MetaDataList& tracks, Library::SortOrder so)
 {
 	using So=Library::SortOrder;
 	switch(so)
 	{
 		case So::TrackNumAsc:
-			Algorithm::sort(v_md, TracksByTrackNumAsc);
+			Algorithm::sort(tracks, TracksByTrackNumAsc);
 			break;
 		case So::TrackNumDesc:
-			Algorithm::sort(v_md, TracksByTrackNumDesc);
+			Algorithm::sort(tracks, TracksByTrackNumDesc);
 			break;
 		case So::TrackTitleAsc:
-			Algorithm::sort(v_md, TracksByTitleAsc);
+			Algorithm::sort(tracks, TracksByTitleAsc);
 			break;
 		case So::TrackTitleDesc:
-			Algorithm::sort(v_md, TracksByTitleDesc);
+			Algorithm::sort(tracks, TracksByTitleDesc);
 			break;
 		case So::TrackAlbumAsc:
-			Algorithm::sort(v_md, TracksByAlbumAsc);
+			Algorithm::sort(tracks, TracksByAlbumAsc);
 			break;
 		case So::TrackAlbumDesc:
-			Algorithm::sort(v_md, TracksByAlbumDesc);
+			Algorithm::sort(tracks, TracksByAlbumDesc);
 			break;
 		case So::TrackArtistAsc:
-			Algorithm::sort(v_md, TracksByArtistAsc);
+			Algorithm::sort(tracks, TracksByArtistAsc);
 			break;
 		case So::TrackArtistDesc:
-			Algorithm::sort(v_md, TracksByArtistDesc);
+			Algorithm::sort(tracks, TracksByArtistDesc);
 			break;
 		case So::TrackAlbumArtistAsc:
-			Algorithm::sort(v_md, TracksByAlbumArtistAsc);
+			Algorithm::sort(tracks, TracksByAlbumArtistAsc);
 			break;
 		case So::TrackAlbumArtistDesc:
-			Algorithm::sort(v_md, TracksByAlbumArtistDesc);
+			Algorithm::sort(tracks, TracksByAlbumArtistDesc);
 			break;
 		case So::TrackYearAsc:
-			Algorithm::sort(v_md, TracksByYearAsc);
+			Algorithm::sort(tracks, TracksByYearAsc);
 			break;
 		case So::TrackYearDesc:
-			Algorithm::sort(v_md, TracksByYearDesc);
+			Algorithm::sort(tracks, TracksByYearDesc);
 			break;
 		case So::TrackLenghtAsc:
-			Algorithm::sort(v_md, TracksByLengthAsc);
+			Algorithm::sort(tracks, TracksByLengthAsc);
 			break;
 		case So::TrackLengthDesc:
-			Algorithm::sort(v_md, TracksByLengthDesc);
+			Algorithm::sort(tracks, TracksByLengthDesc);
 			break;
 		case So::TrackBitrateAsc:
-			Algorithm::sort(v_md, TracksByBitrateAsc);
+			Algorithm::sort(tracks, TracksByBitrateAsc);
 			break;
 		case So::TrackBitrateDesc:
-			Algorithm::sort(v_md, TracksByBitrateDesc);
+			Algorithm::sort(tracks, TracksByBitrateDesc);
 			break;
 		case So::TrackSizeAsc:
-			Algorithm::sort(v_md, TracksByFilesizeAsc);
+			Algorithm::sort(tracks, TracksByFilesizeAsc);
 			break;
 		case So::TrackSizeDesc:
-			Algorithm::sort(v_md, TracksByFilesizeDesc);
+			Algorithm::sort(tracks, TracksByFilesizeDesc);
 			break;
 		case So::TrackDiscnumberAsc:
-			Algorithm::sort(v_md, TracksByDiscnumberAsc);
+			Algorithm::sort(tracks, TracksByDiscnumberAsc);
 			break;
 		case So::TrackDiscnumberDesc:
-			Algorithm::sort(v_md, TracksByDiscnumberDesc);
+			Algorithm::sort(tracks, TracksByDiscnumberDesc);
 			break;
 		case So::TrackFiletypeAsc:
-			Algorithm::sort(v_md, TracksByFiletypeAsc);
+			Algorithm::sort(tracks, TracksByFiletypeAsc);
 			break;
 		case So::TrackFiletypeDesc:
-			Algorithm::sort(v_md, TracksByFiletypeDesc);
+			Algorithm::sort(tracks, TracksByFiletypeDesc);
 			break;
 		case So::TrackRatingAsc:
-			Algorithm::sort(v_md, TracksByRatingAsc);
+			Algorithm::sort(tracks, TracksByRatingAsc);
 			break;
 		case So::TrackRatingDesc:
-			Algorithm::sort(v_md, TracksByRatingDesc);
+			Algorithm::sort(tracks, TracksByRatingDesc);
+			break;
+		case So::TrackDateAddedAsc:
+			Algorithm::sort(tracks, TracksByAddedDateAsc);
+			break;
+		case So::TrackDateAddedDesc:
+			Algorithm::sort(tracks, TracksByAddedDateDesc);
+			break;
+		case So::TrackDateModifiedAsc:
+			Algorithm::sort(tracks, TracksByModifiedDateAsc);
+			break;
+		case So::TrackDateModifiedDesc:
+			Algorithm::sort(tracks, TracksByModifiedDateDesc);
 			break;
 		default:
 			break;

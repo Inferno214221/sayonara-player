@@ -76,29 +76,47 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 
 	QFileInfo fi(md.filepath());
 	md.setFilesize(Filesize(fi.size()));
-	md.setCreatedDate(::Util::dateToInt(fi.created()));
+
+	QDateTime createDate;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+	createDate = fi.birthTime();
+	if(!createDate.isValid()){
+		createDate = fi.metadataChangeTime();
+	}
+
+	spLog(Log::Info, "Tagging") << "Birth Date: " << createDate.toString() << ", " << fi.lastModified().toString();
+#else
+	createDate = fi.created();
+#endif
+
+	if(!createDate.isValid()) {
+		createDate = fi.lastModified();
+	}
+
+	md.setCreatedDate(::Util::dateToInt(createDate));
 	md.setModifiedDate(Util::dateToInt(fi.lastModified()));
 
 	if(fi.size() <= 0){
 		return false;
 	}
 
-	TagLib::AudioProperties::ReadStyle read_style = TagLib::AudioProperties::Fast;
+	TagLib::AudioProperties::ReadStyle readStyle = TagLib::AudioProperties::Fast;
 	bool readAudioProperties=true;
 
 	switch(quality)
 	{
 		case Quality::Quality:
-			read_style = TagLib::AudioProperties::Accurate;
+			readStyle = TagLib::AudioProperties::Accurate;
 			break;
 		case Quality::Standard:
-			read_style = TagLib::AudioProperties::Average;
+			readStyle = TagLib::AudioProperties::Average;
 			break;
 		case Quality::Fast:
-			read_style = TagLib::AudioProperties::Fast;
+			readStyle = TagLib::AudioProperties::Fast;
 			break;
 		case Quality::Dirty:
-			read_style = TagLib::AudioProperties::Fast;
+			readStyle = TagLib::AudioProperties::Fast;
 			readAudioProperties = false;
 			break;
 	};
@@ -106,7 +124,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	TagLib::FileRef f(
 			TagLib::FileName(md.filepath().toUtf8()),
 			readAudioProperties,
-			read_style
+			readStyle
 	);
 
 	if(!isValidFile(f)){

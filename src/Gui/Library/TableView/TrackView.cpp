@@ -89,7 +89,7 @@ ColumnHeaderList TrackView::columnHeaders() const
 		std::make_shared<ColumnHeaderTrack>(Track::Filesize, true, SortOrder::TrackSizeAsc, SortOrder::TrackSizeDesc, Gui::Util::textWidth(fm, "M888.88 MB")),
 		std::make_shared<ColumnHeaderTrack>(Track::Filetype, true, SortOrder::TrackFiletypeAsc, SortOrder::TrackFiletypeDesc, Gui::Util::textWidth(fm, "MFLAC")),
 		std::make_shared<ColumnHeaderTrack>(Track::AddedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
-		std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate, true, SortOrder::TrackDateAddedAsc, SortOrder::TrackDateAddedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate, true, SortOrder::TrackDateModifiedAsc, SortOrder::TrackDateModifiedDesc, Gui::Util::textWidth(fm, "234/323/23423")),
 		std::make_shared<ColumnHeaderTrack>(Track::Rating, true, SortOrder::TrackRatingAsc, SortOrder::TrackRatingDesc, 85),
 	};
 }

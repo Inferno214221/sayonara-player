@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.8)
 project("Sayonara Player")
 
 option(WITH_DOC "Building with doxygen support" OFF)
@@ -17,7 +17,7 @@ endif()
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}")
 
-set(SAYONARA_VERSION "1.6.0-beta1")
+set(SAYONARA_VERSION "1.6.0-beta2")
 set(SAYONARA_INSTALL_PATH "${CMAKE_INSTALL_PREFIX}")
 set(SAYONARA_INSTALL_PREFIX "${CMAKE_INSTALL_PREFIX}")
 set(SAYONARA_INSTALL_BIN_PATH "${CMAKE_INSTALL_PREFIX}/bin/")
