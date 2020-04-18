@@ -1,5 +1,5 @@
 name: sayonara
-version: 1.5.2-beta3-323a641a
+version: enter-version-here
 grade: stable
 summary: Small and lightweight music player.
 description: |
@@ -103,8 +103,9 @@ parts:
       - qt5-gtk-platformtheme
 
   sayonara:
-    source: /root/project
-    source-type: local
+    source: https://gitlab.com/luciocarreras/sayonara-player.git
+    source-type: git
+    source-commit: enter-source-commit-here
     plugin: cmake
     configflags:
       - -DCMAKE_BUILD_TYPE=Release

@@ -50,6 +50,27 @@ deploy-sayonara-appimage:
     expire_in: 1 week
   when: manual
 
+## Deploy Snap Package
+deploy-sayonara-snap:
+  image: yakshaveinc/snapcraft:core18
+  stage: deploy
+  script:
+    - apt-get update -qq
+    - apt-get install -y -qq git
+    - echo $(snapcraft --version)
+    - ./snap/local/Set-SnapVersion.sh
+    - snapcraft
+    - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
+    - snapcraft login --with snapcraft.login
+    - snapcraft push *.snap --release edge
+  artifacts:
+    paths:
+      - ./*.snap
+    expire_in: 1 week
+  only:
+    - master
+    - tags
+
 ## Fedora
 deploy-sayonara-fedora:
   image: "luciocarreras/sayonara-fedora:29"
@@ -95,4 +116,3 @@ deploy-language:
   only:
     - master
     - tags
-
