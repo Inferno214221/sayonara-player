@@ -48,6 +48,7 @@ class QPixmap;
  * <B>setvol <int></B>\t change volume \n
  * <B>pl</B> \t fetch the active playlist \n
  * <B>curSong</B> \t fetch the current song index \n
+ * <B>idAndName</B> \t send Sayonara's unique id and instance name \n
  * <B>seekrel <int></B> \t seek within song in percent \n
  * <B>seekrelms <int></B> \t seek within song in relative to current position in milliseconds \n
  * <B>seekabsms <int></B> \t seek within song in relative to current position in milliseconds \n
@@ -100,15 +101,15 @@ private:
 	void init();
 
 	void setVolume(int vol);
-	void seekRelative(int pos_percent);
-	void seekRelativeMs(int pos_ms);
-	void seekAbsoluteMs(int pos_ms);
+	void seekRelative(int posPercent);
+	void seekRelativeMs(int posMs);
+	void seekAbsoluteMs(int posMs);
 	void changeTrack(int idx);
 
 	void showApi();
 	void requestState();
 
-	int extractParameterInt(const QByteArray& arr, int cmd_len);
+	int extractParameterInt(const QByteArray& arr, int commandLength);
 
 	void insertJsonPlaystate(QJsonObject& o);
 	void writePlaystate();
@@ -127,6 +128,9 @@ private:
 
 	void insertJsonPlaylist(QJsonArray& o) const;
 	void writePlaylist();
+
+	void insertJsonSayonaraIdAndName(QJsonObject& obj) const;
+	void writeSayonaraIdAndName();
 
 	void searchCover();
 	void jsonCover(QJsonObject& o, const QPixmap& pm) const;

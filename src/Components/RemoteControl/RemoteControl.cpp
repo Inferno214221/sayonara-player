@@ -40,7 +40,7 @@
 #include <QTcpSocket>
 #include <QMap>
 #include <QByteArray>
-
+#include <QHostInfo>
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -52,6 +52,11 @@
 
 using RemoteFunction=std::function<void()>;
 using RemoteFunctionInt=std::function<void(int)>;
+
+static QString getInstanceName()
+{
+	return QHostInfo::localHostName();
+}
 
 struct RemoteControl::Private
 {
@@ -125,6 +130,7 @@ void RemoteControl::init()
 	m->functionCallMap["state"] =		std::bind(&RemoteControl::requestState, this);
 	m->functionCallMap["pl"] =			std::bind(&RemoteControl::writePlaylist, this);
 	m->functionCallMap["curSong"] =		std::bind(&RemoteControl::writeCurrentTrack, this);
+	m->functionCallMap["idAndName"] =	std::bind(&RemoteControl::writeSayonaraIdAndName, this);
 	m->functionCallMap["help"] =		std::bind(&RemoteControl::showApi, this);
 
 	m->functionIntCallMap["setvol"] =  std::bind(&RemoteControl::setVolume, this, std::placeholders::_1);
@@ -387,11 +393,11 @@ void RemoteControl::insertJsonCurrentTrack(QJsonObject& o)
 		return;
 	}
 
-	int cur_trackIdx = pl->currentTrackIndex();
+	int currentTrackIdx = pl->currentTrackIndex();
 
-	spLog(Log::Debug, this) << "Send cur track idx: " << cur_trackIdx;
+	spLog(Log::Debug, this) << "Send cur track idx: " << currentTrackIdx;
 
-	o.insert("playlist-current-index", cur_trackIdx);
+	o.insert("playlist-current-index", currentTrackIdx);
 	o.insert("track-title", md.title());
 	o.insert("track-artist", md.artist());
 	o.insert("track-album", md.album());
@@ -422,6 +428,20 @@ void RemoteControl::writeCurrentTrack()
 	searchCover();
 }
 
+void RemoteControl::insertJsonSayonaraIdAndName(QJsonObject &obj) const
+{
+	obj.insert("sayonara-id", QString(GetSetting(Set::Player_PublicId)));
+	obj.insert("sayonara-name", getInstanceName());
+}
+
+void RemoteControl::writeSayonaraIdAndName()
+{
+	QJsonDocument doc;
+	QJsonObject obj;
+	insertJsonSayonaraIdAndName(obj);
+	doc.setObject(obj);
+	write(doc.toBinaryData());
+}
 
 void RemoteControl::jsonCover(QJsonObject& o, const QPixmap& pm) const
 {
@@ -440,7 +460,6 @@ void RemoteControl::jsonCover(QJsonObject& o, const QPixmap& pm) const
 	spLog(Log::Debug, this) << "Send " << data.size() << " bytes cover info";
 	o.insert("cover-data", data);
 }
-
 
 void RemoteControl::playstateChanged(PlayState playstate)
 {
@@ -622,6 +641,7 @@ void RemoteControl::requestState()
 	insertJsonCurrentTrack(obj);
 	insertJsonPlaystate(obj);
 	insertJsonBroadcastInfo(obj);
+	insertJsonSayonaraIdAndName(obj);
 
 	doc.setObject(obj);
 	spLog(Log::Info, this) << QString::fromLocal8Bit(doc.toJson());
@@ -631,7 +651,6 @@ void RemoteControl::requestState()
 	writePlaylist();
 	searchCover();
 }
-
 
 void RemoteControl::showApi()
 {
