@@ -124,6 +124,7 @@ parts:
       - qtbase5-dev
       - qttools5-dev
       - qttools5-dev-tools
+      - libqt5svg5-dev
       - zlib1g-dev
     stage-packages:
       - gstreamer1.0-plugins-bad
