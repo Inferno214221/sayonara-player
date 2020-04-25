@@ -22,17 +22,18 @@ fi
 echo "Set-SnapVersion: Get Version from CMakeLists.txt finished. Version to build is $version"
 
 echo "Set-SnapVersion: Get CommitId from latest Commit"
-commitid=$(git rev-parse --short HEAD)
+commitid=$(git rev-parse HEAD)
 
 if [[ -z "$commitid" ]]; then
-   commitid=$CI_COMMIT_SHORT_SHA
+   echo "Set-SnapVersion: Get CommitId from latest Commit. Couldn't retreive commitid from git - using gitlab variable 'CI_COMMIT_SHA'"
+   commitid=$CI_COMMIT_SHA
 fi
 echo "Set-SnapVersion: Get CommitId from latest Commit. Commit id is ${commitid}"
 
 # replacing values in snapcraft.yaml
 echo "Set-SnapVersion: Replacing Version in snapcraft.yaml"
-sed -i "s/^version:.*$/version: ${version}-${commitid}/" snap/snapcraft.yaml
-sed -i "s/source-commit:.*$/source-commit: ${commitid}/" snap/snapcraft.yaml
+sed -i "s/^version:.*$/version: ${version}-${commitid:0:8}/" snap/snapcraft.yaml
+sed -i "s/source-commit:.*$/source-commit: '${commitid}'/" snap/snapcraft.yaml
 echo "Set-SnapVersion: Replacing Version in snapcraft.yaml finished"
 
 echo "Set-SnapVersion: Finished Set-SnapVersion"
