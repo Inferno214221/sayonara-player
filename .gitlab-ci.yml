@@ -64,8 +64,10 @@ deploy-sayonara-snap:
     - snapcraft login --with snapcraft.login
     - snapcraft push *.snap --release edge
   artifacts:
+    when: always
     paths:
       - ./*.snap
+      - /tmp/snapcraft*
     expire_in: 1 week
   only:
     - master
