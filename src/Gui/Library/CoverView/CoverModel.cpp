@@ -122,27 +122,6 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 
 CoverModel::~CoverModel() = default;
 
-static QString getArtist(const Album& album)
-{
-	const QString albumArtist = album.albumArtist();
-	if(albumArtist.isEmpty())
-	{
-		const QStringList artists = album.artists();
-
-		if(artists.isEmpty()) {
-			return Lang::get(Lang::UnknownArtist);
-		}
-
-		else if(artists.size() == 1) {
-			return artists[0];
-		}
-
-		return Lang::get(Lang::VariousArtists);
-	}
-
-	return albumArtist;
-}
-
 QVariant CoverModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid()) {

@@ -23,14 +23,15 @@
 #include "MetaDataList.h"
 #include "Artist.h"
 #include "Album.h"
-#include <QDateTime>
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 
+#include <QDateTime>
+
 namespace Algorithm=Util::Algorithm;
 
-static bool ignore_article=false;
+static bool ignoreArticle=false;
 
 enum Relation
 {
@@ -39,7 +40,7 @@ enum Relation
 	Equal
 };
 
-static Relation compare_string(const QString& s1, const QString& s2)
+static Relation compareString(const QString& s1, const QString& s2)
 {
 	if(s1 < s2){
 		return Lesser;
@@ -54,7 +55,7 @@ static Relation compare_string(const QString& s1, const QString& s2)
 
 bool MetaDataSorting::TracksByTitleAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md1.title(), md2.title())){
+	switch(compareString(md1.title(), md2.title())){
 		case Equal:
 			return (md1.filepath() < md2.filepath());
 		case Greater:
@@ -126,7 +127,7 @@ bool MetaDataSorting::TracksByDiscnumberDesc(const MetaData& md1, const MetaData
 
 bool MetaDataSorting::TracksByAlbumAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md1.album(), md2.album())){
+	switch(compareString(md1.album(), md2.album())){
 		case Equal:
 			return TracksByDiscnumberAsc(md1, md2);
 		case Greater:
@@ -139,7 +140,7 @@ bool MetaDataSorting::TracksByAlbumAsc(const MetaData& md1, const MetaData& md2)
 
 bool MetaDataSorting::TracksByAlbumDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md2.album(), md1.album())){
+	switch(compareString(md2.album(), md1.album())){
 		case Equal:
 			return TracksByDiscnumberDesc(md1, md2);
 		case Greater:
@@ -155,7 +156,7 @@ bool MetaDataSorting::TracksByArtistAsc(const MetaData& md1, const MetaData& md2
 	QString n1 = md1.artist();
 	QString n2 = md2.artist();
 
-	if(ignore_article)
+	if(ignoreArticle)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -166,7 +167,7 @@ bool MetaDataSorting::TracksByArtistAsc(const MetaData& md1, const MetaData& md2
 		}
 	}
 
-	switch(compare_string(n1, n2)){
+	switch(compareString(n1, n2)){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -182,7 +183,7 @@ bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md
 	QString n1 = md1.artist();
 	QString n2 = md2.artist();
 
-	if(ignore_article)
+	if(ignoreArticle)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -193,7 +194,7 @@ bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md
 		}
 	}
 
-	switch(compare_string(n2, n1)){
+	switch(compareString(n2, n1)){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -206,7 +207,7 @@ bool MetaDataSorting::TracksByArtistDesc(const MetaData& md1, const MetaData& md
 
 bool MetaDataSorting::TracksByAlbumArtistAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md1.albumArtist(), md2.albumArtist())){
+	switch(compareString(md1.albumArtist(), md2.albumArtist())){
 		case Equal:
 			return TracksByAlbumAsc(md1, md2);
 		case Greater:
@@ -219,7 +220,7 @@ bool MetaDataSorting::TracksByAlbumArtistAsc(const MetaData& md1, const MetaData
 
 bool MetaDataSorting::TracksByAlbumArtistDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(md2.albumArtist(), md1.albumArtist())){
+	switch(compareString(md2.albumArtist(), md1.albumArtist())){
 		case Equal:
 			return TracksByAlbumDesc(md1, md2);
 		case Greater:
@@ -336,7 +337,7 @@ bool MetaDataSorting::TracksByFilesizeDesc(const MetaData& md1, const MetaData& 
 
 bool MetaDataSorting::TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(Util::File::getFileExtension(md1.filepath()), Util::File::getFileExtension(md2.filepath()) ))
+	switch(compareString(Util::File::getFileExtension(md1.filepath()), Util::File::getFileExtension(md2.filepath()) ))
 	{
 		case Equal:
 			return TracksByArtistAsc(md1, md2);
@@ -350,7 +351,7 @@ bool MetaDataSorting::TracksByFiletypeAsc(const MetaData& md1, const MetaData& m
 
 bool MetaDataSorting::TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2)
 {
-	switch(compare_string(Util::File::getFileExtension(md2.filepath()), Util::File::getFileExtension(md1.filepath())))
+	switch(compareString(Util::File::getFileExtension(md2.filepath()), Util::File::getFileExtension(md1.filepath())))
 	{
 		case Equal:
 			return TracksByArtistDesc(md1, md2);
@@ -447,7 +448,7 @@ bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artis
 	QString n1 = artist1.name();
 	QString n2 = artist2.name();
 
-	if(ignore_article)
+	if(ignoreArticle)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -458,7 +459,7 @@ bool MetaDataSorting::ArtistByNameAsc(const Artist& artist1, const Artist& artis
 		}
 	}
 
-	switch(compare_string(n1, n2)){
+	switch(compareString(n1, n2)){
 		case Equal:
 			return (artist1.id() < artist2.id());
 		case Greater:
@@ -474,7 +475,7 @@ bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& arti
 	QString n1 = artist1.name();
 	QString n2 = artist2.name();
 
-	if(ignore_article)
+	if(ignoreArticle)
 	{
 		if(n1.startsWith("the ", Qt::CaseInsensitive)){
 			n1.remove(0, 4);
@@ -485,7 +486,7 @@ bool MetaDataSorting::ArtistByNameDesc(const Artist& artist1, const Artist& arti
 		}
 	}
 
-	switch(compare_string(n2, n1)){
+	switch(compareString(n2, n1)){
 		case Equal:
 			return (artist1.id() < artist2.id());
 		case Greater:
@@ -525,10 +526,10 @@ bool MetaDataSorting::ArtistByTrackCountDesc(const Artist& artist1, const Artist
 
 bool MetaDataSorting::AlbumByArtistNameAsc(const Album& album1, const Album& album2)
 {
-	Relation rel = compare_string(album1.albumArtist(), album2.albumArtist());
+	Relation rel = compareString(album1.albumArtist(), album2.albumArtist());
 	if(rel == Equal)
 	{
-		rel = compare_string(album1.artists().join(","), album2.artists().join(","));
+		rel = compareString(album1.artists().join(","), album2.artists().join(","));
 	}
 
 	switch(rel){
@@ -544,7 +545,7 @@ bool MetaDataSorting::AlbumByArtistNameAsc(const Album& album1, const Album& alb
 
 bool MetaDataSorting::AlbumByArtistNameDesc(const Album& album1, const Album& album2)
 {
-	switch(compare_string(album2.artists().join(","), album1.artists().join(","))){
+	switch(compareString(album2.artists().join(","), album1.artists().join(","))){
 		case Equal:
 			return AlbumByYearDesc(album1, album2);
 		case Greater:
@@ -558,7 +559,7 @@ bool MetaDataSorting::AlbumByArtistNameDesc(const Album& album1, const Album& al
 
 bool MetaDataSorting::AlbumByNameAsc(const Album& album1, const Album& album2)
 {
-	switch(compare_string(album1.name(), album2.name())){
+	switch(compareString(album1.name(), album2.name())){
 		case Equal:
 			return (album1.id() < album2.id());
 		case Greater:
@@ -571,7 +572,7 @@ bool MetaDataSorting::AlbumByNameAsc(const Album& album1, const Album& album2)
 
 bool MetaDataSorting::AlbumByNameDesc(const Album& album1, const Album& album2)
 {
-	switch(compare_string(album2.name(), album1.name())){
+	switch(compareString(album2.name(), album1.name())){
 		case Equal:
 			return (album1.id() < album2.id());
 		case Greater:
@@ -851,5 +852,5 @@ void MetaDataSorting::sortArtists(ArtistList& artists, Library::SortOrder so)
 
 void MetaDataSorting::setIgnoreArticle(bool b)
 {
-	ignore_article = b;
+	ignoreArticle = b;
 }

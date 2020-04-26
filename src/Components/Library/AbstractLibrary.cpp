@@ -92,6 +92,13 @@ AbstractLibrary::~AbstractLibrary() = default;
 
 void AbstractLibrary::load()
 {
+	{ // init artist sorting mode
+		ListenSettingNoCall(Set::Lib_SortIgnoreArtistArticle, AbstractLibrary::ignoreArtistArticleChanged);
+
+		bool b = GetSetting(Set::Lib_SortIgnoreArtistArticle);
+		MetaDataSorting::setIgnoreArticle(b);
+	}
+
 	m->filter.clear();
 
 	refetch();
@@ -139,45 +146,41 @@ void AbstractLibrary::refreshCurrentView()
 {
 	/* Waring! Sorting after each fetch is important here! */
 	/* Do not call emit_stuff() in order to avoid double sorting */
-	IndexSet sel_artists_idx, sel_albums_idx, sel_tracks_idx;
+	IndexSet selectedArtistIndexes, selectedAlbumIndexes, selectedTrackIndexes;
 
-	IdSet sel_artists = m->selectedArtists;
-	IdSet sel_albums = m->selectedAlbums;
-	IdSet sel_tracks = m->selectedTracks;
+	IdSet selectedArtists = m->selectedArtists;
+	IdSet selectedAlbums = m->selectedAlbums;
+	IdSet selectedTracks = m->selectedTracks;
 
 	fetchByFilter(m->filter, true);
 
 	prepareArtists();
-	int i=0;
-	for(const Artist& artist : m->artists)
+	for(int i=0; i<m->artists.count(); i++)
 	{
-		if(sel_artists.contains(artist.id()))
-		{
-			sel_artists_idx.insert(i);
+		if(selectedArtists.contains(m->artists[i].id())) {
+			selectedArtistIndexes.insert(i);
 		}
-
-		i++;
 	}
 
-	changeArtistSelection(sel_artists_idx);
-	prepareAlbums();
+	changeArtistSelection(selectedArtistIndexes);
 
+	prepareAlbums();
 	for(int i=0; i<m->albums.count(); i++)
 	{
-		if(sel_albums.contains(m->albums[i].id())) {
-			sel_albums_idx.insert(i);
+		if(selectedAlbums.contains(m->albums[i].id())) {
+			selectedAlbumIndexes.insert(i);
 		}
 	}
 
-	changeAlbumSelection(sel_albums_idx);
+	changeAlbumSelection(selectedAlbumIndexes);
 
 	prepareTracks();
 
-	const MetaDataList& v_md = this->tracks();
-	for(int i=0; i<v_md.count(); i++)
+	const MetaDataList& tracks = this->tracks();
+	for(int i=0; i<tracks.count(); i++)
 	{
-		if(sel_tracks.contains(v_md[i].id())) {
-			sel_tracks_idx.insert(i);
+		if(selectedTracks.contains(tracks[i].id())) {
+			selectedTrackIndexes.insert(i);
 		}
 	}
 
@@ -185,9 +188,9 @@ void AbstractLibrary::refreshCurrentView()
 	emit sigAllArtistsLoaded();
 	emit sigAllTracksLoaded();
 
-	if(sel_tracks_idx.size() > 0)
+	if(!selectedTrackIndexes.isEmpty())
 	{
-		changeTrackSelection(sel_tracks_idx);
+		changeTrackSelection(selectedTrackIndexes);
 	}
 }
 
@@ -590,7 +593,7 @@ void AbstractLibrary::selectedArtistsChanged(const IndexSet& indexes)
 }
 
 
-void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignore_artists)
+void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreArtists)
 {
 	Util::Set<AlbumId> selected_albums;
 	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
@@ -610,7 +613,7 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignore_
 	m->selectedAlbums = selected_albums;
 
 	// only show tracks of selected album / artist
-	if(m->selectedArtists.size() > 0 && !ignore_artists)
+	if(m->selectedArtists.size() > 0 && !ignoreArtists)
 	{
 		if(m->selectedAlbums.size() > 0)
 		{
@@ -659,9 +662,9 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignore_
 	prepareTracks();
 }
 
-void AbstractLibrary::selectedAlbumsChanged(const IndexSet& indexes, bool ignore_artists)
+void AbstractLibrary::selectedAlbumsChanged(const IndexSet& indexes, bool ignoreArtists)
 {
-	changeAlbumSelection(indexes, ignore_artists);
+	changeAlbumSelection(indexes, ignoreArtists);
 	emit sigAllTracksLoaded();
 }
 
@@ -900,6 +903,14 @@ void AbstractLibrary::prepareAlbums()
 void AbstractLibrary::prepareArtists()
 {
 	m->artists.sort(m->sortorder.so_artists);
+}
+
+void AbstractLibrary::ignoreArtistArticleChanged()
+{
+	bool b = GetSetting(Set::Lib_SortIgnoreArtistArticle);
+	MetaDataSorting::setIgnoreArticle(b);
+
+	refreshCurrentView();
 }
 
 Gui::ExtensionSet AbstractLibrary::extensions() const
