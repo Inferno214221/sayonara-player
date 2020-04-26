@@ -40,7 +40,7 @@ public:
 
 	~Genre();
 
-	static GenreID calc_id(const QString& name);
+	static GenreID calculateId(const QString& name);
 	GenreID id() const;
 
 	QString name() const;

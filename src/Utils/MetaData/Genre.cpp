@@ -29,43 +29,22 @@ struct Genre::Private
 	QString name;
 	GenreID id;
 
-	static GenreID calc_id(const QString& name)
+	static GenreID calcId(const QString& name)
 	{
 		if(name.trimmed().isEmpty()){
 			return 0;
 		}
 
-		QByteArray name_data = name.trimmed().toLower().toLocal8Bit();
-		return GenreID(qHash(name_data));
+		QByteArray nameData = name.trimmed().toLocal8Bit();
+		return GenreID(qHash(nameData));
 	}
 
 	Private()=default;
 
-	Private(const Private& other) :
-		CASSIGN(name),
-		CASSIGN(id)
-	{}
-
-	Private(Private&& other) noexcept :
-		CMOVE(name),
-		CMOVE(id)
-	{}
-
-	Private& operator=(const Private& other)
-	{
-		ASSIGN(name);
-		ASSIGN(id);
-
-		return *this;
-	}
-
-	Private& operator=(Private&& other) noexcept
-	{
-		MOVE(name);
-		MOVE(id);
-
-		return *this;
-	}
+	Private(const Private& other)=default;
+	Private(Private&& other) noexcept=default;
+	Private& operator=(const Private& other)=default;
+	Private& operator=(Private&& other) noexcept=default;
 };
 
 Genre::Genre()
@@ -77,8 +56,8 @@ Genre::Genre()
 Genre::Genre(const QString& name)
 {
 	m = Pimpl::make<Private>();
-	m->name = Util::stringToFirstUpper(name);
-	m->id = m->calc_id(name);
+	m->name = name;
+	m->id = m->calcId(name);
 }
 
 Genre::~Genre() = default;
@@ -90,7 +69,7 @@ Genre::Genre(const Genre& other)
 
 Genre::Genre(Genre&& other) noexcept
 {
-	m = Pimpl::make<Private>( std::move(*(other.m)) );
+	m = Pimpl::make<Private>(std::move(*(other.m)));
 }
 
 Genre& Genre::operator=(const Genre& other)
@@ -105,12 +84,10 @@ Genre& Genre::operator=(Genre&& other) noexcept
 	return *this;
 }
 
-
-GenreID Genre::calc_id(const QString& name)
+GenreID Genre::calculateId(const QString& name)
 {
-	return Genre::Private::calc_id(name);
+	return Genre::Private::calcId(name);
 }
-
 
 GenreID Genre::id() const
 {
@@ -124,8 +101,8 @@ QString Genre::name() const
 
 void Genre::setName(const QString& name)
 {
-	m->name = Util::stringToFirstUpper(name);
-	m->id = Genre::Private::calc_id(name);
+	m->name = name.trimmed();
+	m->id = Genre::Private::calcId(m->name);
 }
 
 bool Genre::isEqual(const Genre& other) const
