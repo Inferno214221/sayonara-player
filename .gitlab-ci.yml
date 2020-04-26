@@ -114,7 +114,7 @@ deploy-language:
     - tx push -s
   artifacts:
     paths:
-	  - tx/*.ts
+      - tx/*.ts
     expire_in: 2 days
   only:
     - master
