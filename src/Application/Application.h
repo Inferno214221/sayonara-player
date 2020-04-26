@@ -52,7 +52,6 @@ private:
 
 private slots:
 	void remoteControlActivated();
-	void ignoreArtistArticleChanged();
 	void sessionEndRequested(QSessionManager& manager);
 	void createPlaylist();
 	void skinChanged();

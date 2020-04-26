@@ -185,6 +185,8 @@ protected:
 	void				prepareAlbums();
 	void				prepareArtists();
 
+	void				ignoreArtistArticleChanged();
+
 
 private:
 	void tagEditCommit();

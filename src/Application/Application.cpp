@@ -311,7 +311,6 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
-	ListenSetting(Set::Lib_SortIgnoreArtistArticle, Application::ignoreArtistArticleChanged);
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
 
 	if(!GetSetting(Set::Player_StartInTray)) {
@@ -473,12 +472,6 @@ void Application::remoteControlActivated()
 		m->remoteControl = new RemoteControl(this);
 	}
 }
-
-void Application::ignoreArtistArticleChanged()
-{
-	MetaDataSorting::setIgnoreArticle(GetSetting(Set::Lib_SortIgnoreArtistArticle));
-}
-
 
 void Application::createPlaylist()
 {
