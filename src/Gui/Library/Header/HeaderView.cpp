@@ -19,6 +19,7 @@
 
 #include "HeaderView.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
@@ -37,31 +38,27 @@ struct HeaderView::Private
 	ColumnActionPairList columns;
 	QAction* actionResize=nullptr;
 	QAction* actionAutoResize=nullptr;
+
 	QByteArray initialState;
+
+	Private(HeaderView* parent)
+	{
+		actionResize = new QAction(parent);
+		actionAutoResize = new QAction(parent);
+		actionAutoResize->setCheckable(parent);
+	}
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 	Parent(orientation, parent)
 {
-	m = Pimpl::make<Private>();
-
-	m->actionResize = new QAction(this);
-	m->actionAutoResize = new QAction(this);
-	m->actionAutoResize->setCheckable(true);
+	m = Pimpl::make<Private>(this);
 
 	connect(m->actionResize, &QAction::triggered, this, &HeaderView::actionResizeTriggered);
 	connect(m->actionAutoResize, &QAction::triggered, this, &HeaderView::actionAutoResizeTriggered);
 	connect(this, &QHeaderView::sectionDoubleClicked, this, [this](int /*logicalIndex*/){
 		this->resizeColumnsAutomatically();
 	});
-
-	this->setSectionsClickable(true);
-	this->setSectionsMovable(true);
-	this->setHighlightSections(true);
-	this->setContextMenuPolicy(Qt::ActionsContextMenu);
-	this->setTextElideMode(Qt::TextElideMode::ElideRight);
-	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
-	this->setStretchLastSection(true);
 }
 
 HeaderView::~HeaderView() = default;
@@ -221,6 +218,11 @@ void HeaderView::showEvent(QShowEvent* e)
 {
 	Parent::showEvent(e);
 
+	static bool isInitialized = false;
+	if(isInitialized){
+		return;
+	}
+
 	if(m->initialState.isEmpty())
 	{
 		this->resizeColumnsAutomatically();
@@ -229,9 +231,20 @@ void HeaderView::showEvent(QShowEvent* e)
 	else
 	{
 		this->restoreState(m->initialState);
-		this->setMinimumSectionSize(25);
-		this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
 	}
+
+	this->setMinimumSectionSize(25);
+	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+	this->setCascadingSectionResizes(false);
+	this->setSectionsClickable(true);
+	this->setSectionsMovable(true);
+	this->setHighlightSections(true);
+	this->setContextMenuPolicy(Qt::ActionsContextMenu);
+	this->setTextElideMode(Qt::TextElideMode::ElideRight);
+	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
+	this->setStretchLastSection(true);
+
+	isInitialized = true;
 }
 
 void HeaderView::resizeEvent(QResizeEvent* e)

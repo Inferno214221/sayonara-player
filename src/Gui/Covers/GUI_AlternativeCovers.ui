@@ -23,7 +23,7 @@
       </sizepolicy>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -131,6 +131,9 @@
            <property name="focusPolicy">
             <enum>Qt::ClickFocus</enum>
            </property>
+           <property name="placeholderText">
+            <string>Text or url</string>
+           </property>
           </widget>
          </item>
          <item row="1" column="0">
@@ -145,7 +148,7 @@
             <enum>Qt::StrongFocus</enum>
            </property>
            <property name="text">
-            <string>Text search or website</string>
+            <string>Search for</string>
            </property>
            <attribute name="buttonGroup">
             <string notr="true">buttonGroup</string>
@@ -197,7 +200,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>Select and preview multiple covers</string>
+          <string>Find covers in directory</string>
          </property>
         </widget>
        </item>
