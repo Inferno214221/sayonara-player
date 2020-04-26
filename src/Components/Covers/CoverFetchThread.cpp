@@ -164,7 +164,7 @@ void FetchThread::contentFetched()
 
 	if(!fetchNextCover())
 	{
-		spLog(Log::Warning, this) << "No more adresses available";
+		spLog(Log::Warning, this) << "No more addresses available";
 	}
 }
 
