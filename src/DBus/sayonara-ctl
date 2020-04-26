@@ -2,6 +2,7 @@
 # install python3-pydbus
 
 import sys
+import argparse
 
 try:
     from pydbus import SessionBus
@@ -15,22 +16,22 @@ def sgn(num):
     else: 
         return str(num)
 
-def seek( pos ):
-    iPos = int(pos)
+def seek(pos):
+    iPos = int(pos[0])
     print("Pos: " + sgn(iPos) + "us = " + sgn(iPos / 1000000) + "s")
     gSayonaraInstance.Seek(iPos)
 
 
-def setVolume( vol ):
-    fVol = float(vol)
+def setVolume(vol):
+    fVol = float(vol[0])
     if fVol > 1.0: 
         fVol = fVol / 100.0
 
     print("Vol: " + fVol)
     gSayonaraInstance.SetVolume(fVol)
 
-def setShuffle( enabled ):
-    bEnabled = int(enabled)
+def setShuffle(enabled):
+    bEnabled = int(enabled[0])
     gSayonaraInstance.SetShuffle(bEnabled)
 
 def main():
@@ -61,21 +62,19 @@ def main():
         "quit":       gSayonaraInstance.Quit
     }
 
-    argn = len(sys.argv)
-    if argn < 2:
-        print("Call: " + sys.argv[0] + " <command> [parameter]")
-        for k in functionMap:
-            print("\t" + k)
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Sayonara Control")
+    parser.add_argument("command", help=str(list(functionMap.keys())))
+    parser.add_argument("arguments", nargs="?")
 
-    fnName = sys.argv[1]
-    params = sys.argv[2:]
+    try:
+        args = parser.parse_args()
+    except:
+        parser.print_help()
+        exit(1)
 
-    if argn == 2:
-        functionMap[fnName]()
-    elif argn == 3:
-        functionMap[fnName](params[0])
+    if not args.arguments:
+        functionMap[args.command]()
     else:
-        print("Cannot handle functions with more than one parameter")
+        functionMap[args.command](args.arguments)
 
 if __name__ == "__main__": main()

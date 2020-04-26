@@ -93,10 +93,16 @@ def main():
     )
 
     parser.add_argument('--format', type=str, required=False, 
-            help='a format string. Every %% is replaced by the value of an attribute'
+            help='a format string. Every %% is replaced by the value of an attribute. ' 
+                'e.g. ' 
+                '\'title,album,albumArtist --format \"%% on %% by %%\"\''
     )
 
-    parsedArgs = parser.parse_args()
+    try:
+        parsedArgs = parser.parse_args()
+    except:
+        print_help_and_exit()
+
     requestedAttributes = parsedArgs.attributes.split(',')
 
     resultList = []
