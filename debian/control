@@ -25,6 +25,8 @@ Depends: gstreamer1.0-plugins-bad,
 		 libqt5svg5,
          ${misc:Depends},
          ${shlibs:Depends}
+Suggests:
+         python3-pydbus
 Description: Small and lightweight music player.
  Sayonara is as a lightweight and fast library manager and music player.
  It holds a lot of features like
