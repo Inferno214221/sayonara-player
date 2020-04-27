@@ -40,8 +40,8 @@ class StreamParser : public QObject
 		StreamParser(QObject* parent=nullptr);
 		~StreamParser();
 
-		void parse(const QString& stationName, const QString& stationUrl);
-		void parse(const QStringList& urls);
+		void parse(const QString& stationName, const QString& stationUrl, int timeout=5000);
+		void parse(const QStringList& urls, int timeout=5000);
 
 		void setCoverUrl(const QString& coverUrl);
 

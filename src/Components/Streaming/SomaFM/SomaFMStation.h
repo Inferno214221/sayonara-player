@@ -59,6 +59,7 @@ namespace SomaFM
 			QStringList		playlists() const;
 			QString			description() const;
 			UrlType			urlType(const QString& url) const;
+			QString			urlTypeString(const QString& url) const;
 			Cover::Location coverLocation() const;
 			bool			isValid() const;
 

@@ -50,10 +50,12 @@ struct StreamParser::Private
 	QStringList 	urls;
 	AsyncWebAccess* activeAwa=nullptr;
 	IcyWebAccess*	activeIcy=nullptr;
-	const int		MaxSizeUrls=1000;
+	const int		MaxSizeUrls=5000;
+	int				timeout;
 	bool			stopped;
 
 	Private() :
+		timeout(5000),
 		stopped(false)
 	{}
 
@@ -61,13 +63,13 @@ struct StreamParser::Private
 	{
 		for(const QString& fu : forbiddenUrls)
 		{
-			const QUrl forbidden_url(fu);
-			const QString forbidden_host = forbidden_url.host();
+			const QUrl forbiddenUrl(fu);
+			const QString forbidden_host = forbiddenUrl.host();
 
 			if ((forbidden_host.compare(url.host(), Qt::CaseInsensitive) == 0) &&
-			    (forbidden_url.port(80) == url.port(80)) &&
-				(forbidden_url.path().compare(url.path()) == 0) &&
-				(forbidden_url.fileName().compare(url.path()) == 0))
+				(forbiddenUrl.port(80) == url.port(80)) &&
+				(forbiddenUrl.path().compare(url.path()) == 0) &&
+				(forbiddenUrl.fileName().compare(url.path()) == 0))
 			{
 				return true;
 			}
@@ -99,7 +101,7 @@ StreamParser::StreamParser(QObject* parent) :
 
 StreamParser::~StreamParser() = default;
 
-void StreamParser::parse(const QString& stationName, const QString& stationUrl)
+void StreamParser::parse(const QString& stationName, const QString& stationUrl, int timeout)
 {
 	m->stationName.clear();
 
@@ -107,12 +109,13 @@ void StreamParser::parse(const QString& stationName, const QString& stationUrl)
 	{
 		m->stationName = stationName;
 		QStringList urls{ stationUrl };
-		parse(urls);
+		parse(urls, timeout);
 	}
 }
 
-void StreamParser::parse(const QStringList& urls)
+void StreamParser::parse(const QStringList& urls, int timeout)
 {
+	m->timeout = timeout;
 	m->stopped = false;
 	m->tracks.clear();
 
@@ -152,7 +155,7 @@ bool StreamParser::parseNextUrl()
 	connect(m->activeAwa, &AsyncWebAccess::sigFinished, this, &StreamParser::awaFinished);
 
 	const QString url = m->urls.takeFirst();
-	m->activeAwa->run(url, 5000);
+	m->activeAwa->run(url, m->timeout);
 
 	return true;
 }

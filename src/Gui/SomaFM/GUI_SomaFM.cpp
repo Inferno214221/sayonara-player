@@ -30,6 +30,7 @@
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 
@@ -38,6 +39,7 @@
 
 #include <QPixmap>
 #include <QItemDelegate>
+#include <QPushButton>
 
 using SomaFM::GUI_SomaFM;
 
@@ -45,6 +47,8 @@ struct GUI_SomaFM::Private
 {
 	SomaFM::Library*	library=nullptr;
 	Gui::ProgressBar*	progressBar=nullptr;
+
+	QList<QPushButton*> stationButtons;
 
 	Private(GUI_SomaFM* parent)
 	{
@@ -149,7 +153,6 @@ void GUI_SomaFM::selectionChanged(const QModelIndexList& indexes)
 	stationIndexChanged(indexes.first());
 }
 
-
 SomaFM::Station GUI_SomaFM::getStation(int row) const
 {
 	auto* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
@@ -184,14 +187,46 @@ void GUI_SomaFM::stationClicked(const QModelIndex& idx)
 	stationIndexChanged(idx);
 }
 
+
 void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 {
 	if(!idx.isValid()){
 		return;
 	}
 
-	SomaFM::Station station = getStation(idx.row());
+	const QPixmap pixmap(":/soma_icons/soma_logo.png");
+	ui->lab_image->setPixmap(pixmap.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+	const SomaFM::Station station = getStation(idx.row());
 	ui->lab_description->setText(station.description());
+
+	for(QPushButton* btn : m->stationButtons)
+	{
+		ui->verticalLayout->removeWidget(btn);
+		btn->deleteLater();
+	}
+
+	m->stationButtons.clear();
+
+	const QStringList playlists = station.playlists();
+
+	int index=0;
+	for(const QString& playlist : playlists)
+	{
+		const QString text = station.urlTypeString(playlist);
+		const QIcon icon = Gui::Icons::icon(Gui::Icons::Play);
+
+		auto* button = new QPushButton(icon, text, this);
+
+		connect(button, &QPushButton::clicked, this, [this, index](){
+			m->library->createPlaylistFromStreamlist(index);
+		});
+
+		ui->verticalLayout->addWidget(button);
+		m->stationButtons << button;
+
+		index++;
+	}
 
 	auto* cl = new Cover::Lookup(station.coverLocation(), 1, this);
 	connect(cl, &Cover::LookupBase::sigCoverFound, this, &GUI_SomaFM::coverFound);
@@ -199,12 +234,10 @@ void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 	cl->start();
 }
 
-
 void GUI_SomaFM::playlistDoubleClicked(const QModelIndex& idx)
 {
 	m->library->createPlaylistFromStreamlist(idx.row());
 }
-
 
 void GUI_SomaFM::coverFound(const QPixmap& cover)
 {

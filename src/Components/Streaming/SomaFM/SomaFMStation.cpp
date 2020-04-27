@@ -246,6 +246,20 @@ SomaFM::Station::UrlType SomaFM::Station::urlType(const QString& url) const
 	return m->urls[url];
 }
 
+QString SomaFM::Station::urlTypeString(const QString& url) const
+{
+	SomaFM::Station::UrlType urlType = this->urlType(url);
+	if(urlType == SomaFM::Station::UrlType::MP3) {
+		return "mp3";
+	}
+
+	else if(urlType == SomaFM::Station::UrlType::AAC) {
+		return "aac";
+	}
+
+	return QString();
+}
+
 QString SomaFM::Station::description() const
 {
 	return m->description;

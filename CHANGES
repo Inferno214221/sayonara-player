@@ -2,21 +2,24 @@
 
  * Broadcasting: fixed broadcast segfault
  * Build system: Removed absolute file paths
+ * Covers: search directly in website
  * Database: Assure write permissions
- * Directory view: fixed delete issues
- * Directory view: fixed icon sizes
- * Directory view: made UI more responsive
- * Directory view: fixed middle click issues
+ * Directory view: Rename files by tags
+ * Directory view: Show covers
  * Engine: fixed switching between pulse and alsa
  * Engine: fixed adding/removing pitch issues
  * Languages: fixed some capital letter issues at word beginning
+ * Library: modified access to cover and directory view
  * Library: fixed album rating regression
  * Library: NEW: Made columns movable
+ * Library: Added 'created' and 'modified' column
  * Notifications: Override notifications if the appear to often
  * Playlist: Handling of large filesets in the background, no
    blocking user interface anymore
  * Playlist: fixed finding of tracks in library
+ * Playlist: Reverse playlist
  * Plugins: NEW: Spectrogram
+ * Podcast: Allow podcasts to be loaded reversed
  * Proxy: NEW: Automatic recognition of proxy settings
  * Remote control: created new protocol
  * Soma.fm: high resolution images available
@@ -27,6 +30,8 @@
  * User interface: Consistent time labels
  * User interface: Blurry icons fix in searchbar
  * User interface: Library fullscreen/maximized issues fixed
+ * User interface: new handling of column sizes in library
+ * User interface: Edit stylesheet within preferences
 
 == 1.5.1-stable5 ==
 
