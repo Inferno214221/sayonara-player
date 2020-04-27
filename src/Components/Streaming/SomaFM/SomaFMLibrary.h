@@ -55,9 +55,6 @@ namespace SomaFM
 		public:
 			static void parseMetadataForPlaylist(MetaDataList& tracks, const SomaFM::Station& station);
 
-		private:
-			void sortStations(QList<Station>& stations);
-
 		private slots:
 			void websiteFetched();
 			void playlistContentFetched(bool success);
