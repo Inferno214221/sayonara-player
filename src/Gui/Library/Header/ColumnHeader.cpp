@@ -32,7 +32,7 @@ struct ColumnHeader::Private
 	int 			preferredSize;
 	int				defaultSize;
 
-	QMap<Qt::SortOrder, SortOrder> sortorder;
+	QMap<Qt::SortOrder, SortOrder> sortorderMap;
 
 	ColumnIndex::IntegerType columnIndex;
 
@@ -46,8 +46,8 @@ struct ColumnHeader::Private
 		switchable(switchable),
 		stretchable(stretchable)
 	{
-		sortorder[Qt::SortOrder::AscendingOrder] = sortorderAscending;
-		sortorder[Qt::SortOrder::DescendingOrder] = sortorderDescending;
+		sortorderMap[Qt::SortOrder::AscendingOrder] = sortorderAscending;
+		sortorderMap[Qt::SortOrder::DescendingOrder] = sortorderDescending;
 	}
 };
 
@@ -90,7 +90,7 @@ void ColumnHeader::setPreferredSize(int size)
 
 SortOrder ColumnHeader::sortorder(Qt::SortOrder qtSortorder) const
 {
-	return m->sortorder[qtSortorder];
+	return m->sortorderMap[qtSortorder];
 }
 
 ColumnIndex::IntegerType ColumnHeader::columnIndex() const
