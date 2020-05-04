@@ -27,11 +27,11 @@ struct Filter::Private
 {
 	QString					filtertext;
 	Filter::Mode			mode;
-	Library::SearchModeMask search_mode;
-	bool					invalid_genre;
+	Library::SearchModeMask searchModeMask;
+	bool					invalidGenre;
 
 	Private() :
-		invalid_genre(false)
+		invalidGenre(false)
 	{}
 };
 
@@ -62,23 +62,23 @@ bool Filter::operator ==(const Filter& other)
 		return true;
 	}
 
-	bool same_filtertext = false;
+	bool sameFiltertext = false;
 
 	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3)
 	{
-		same_filtertext = true;
+		sameFiltertext = true;
 	}
 
-	else if(m->filtertext.compare(other.m->filtertext, Qt::CaseInsensitive) == 0)
+	else if(m->filtertext.compare(other.m->filtertext) == 0)
 	{
-		same_filtertext = true;
+		sameFiltertext = true;
 	}
 
 	return
 	(
-		same_filtertext &&
+		sameFiltertext &&
 		(m->mode == other.mode()) &&
-		(m->invalid_genre == other.isInvalidGenre())
+		(m->invalidGenre == other.isInvalidGenre())
 				);
 }
 
@@ -122,7 +122,7 @@ QStringList Filter::searchModeFiltertext(bool withPercent) const
 
 	for(const QString& filterText : filterTexts)
 	{
-		QString convertedFiltertext = ::Library::Utils::convertSearchstring(filterText, m->search_mode);
+		QString convertedFiltertext = ::Library::Utils::convertSearchstring(filterText, m->searchModeMask);
 		if(withPercent)
 		{
 			if(!convertedFiltertext.startsWith('%')){
@@ -146,7 +146,7 @@ QStringList Filter::searchModeFiltertext(bool withPercent) const
 void Filter::setFiltertext(const QString& str, ::Library::SearchModeMask search_mode)
 {
 	m->filtertext = str;
-	m->search_mode = search_mode;
+	m->searchModeMask = search_mode;
 }
 
 Filter::Mode Filter::mode() const
@@ -161,17 +161,17 @@ void Filter::setMode(Filter::Mode mode)
 
 bool Filter::cleared() const
 {
-	return (m->filtertext.isEmpty() && !m->invalid_genre);
+	return (m->filtertext.isEmpty() && !m->invalidGenre);
 }
 
 void Filter::setInvalidGenre(bool b)
 {
-	m->invalid_genre = b;
+	m->invalidGenre = b;
 }
 
 bool Filter::isInvalidGenre() const
 {
-	return m->invalid_genre;
+	return m->invalidGenre;
 }
 
 bool Filter::isUseable() const

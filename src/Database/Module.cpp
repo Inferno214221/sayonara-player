@@ -95,6 +95,8 @@ QSqlDatabase Module::db() const
 		spLog(Log::Error, this) << er.databaseText();
 	}
 
+	db.exec("PRAGMA case_sensitive_like = true;");
+
 	return db;
 }
 

@@ -1,4 +1,4 @@
-/* TagTextInput.h */
+/* LineEdit.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAGTEXTINPUT_H
-#define TAGTEXTINPUT_H
+#ifndef SAYONARA_LINEEDIT_H
+#define SAYONARA_LINEEDIT_H
 
 #include <QLineEdit>
 
@@ -30,30 +30,36 @@ class QAction;
 class QMenu;
 class QContextMenuEvent;
 
-/**
- * @brief GUI class for String fields meant to convert content to first upper case by a context menu
- * @ingroup GuiTagging
- **/
-class TagTextInput :
-    public Gui::WidgetTemplate<QLineEdit>
+namespace Gui
 {
-	Q_OBJECT
-	PIMPL(TagTextInput)
+	/**
+	 * @brief GUI class for String fields meant to convert content to first upper case by a context menu
+	 * @ingroup GuiTagging
+	 **/
+	class LineEdit :
+		public Gui::WidgetTemplate<QLineEdit>
+	{
+		Q_OBJECT
+		PIMPL(LineEdit)
 
-	public:
-		TagTextInput(QWidget* parent=nullptr);
-		~TagTextInput() override;
+		public:
+			LineEdit(QWidget* parent=nullptr);
+			~LineEdit() override;
 
-	private slots:
-		void convertToFirstUpper();
-		void convertToVeryFirstUpper();
+		private:
+			void initContextMenu();
 
-	protected:
-		void initContextMenu();
+		private slots:
+			void itemTextChanged(const QString& text);
+			void itemActionTriggered();
+			void removeSpecialCharsTriggered();
 
-		void contextMenuEvent(QContextMenuEvent* event) override;
-		void keyPressEvent(QKeyEvent* event) override;
-		void languageChanged() override;
-};
+		protected:
+			void languageChanged() override;
 
-#endif // TAGTEXTINPUT_H
+			void keyPressEvent(QKeyEvent* event) override;
+			void contextMenuEvent(QContextMenuEvent* event) override;
+	};
+}
+
+#endif // SAYONARA_LINEEDIT_H

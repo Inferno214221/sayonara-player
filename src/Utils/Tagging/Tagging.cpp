@@ -85,7 +85,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 		createDate = fi.metadataChangeTime();
 	}
 
-	spLog(Log::Info, "Tagging") << "Birth Date: " << createDate.toString() << ", " << fi.lastModified().toString();
+	spLog(Log::Develop, "Tagging") << "Birth Date: " << createDate.toString() << ", " << fi.lastModified().toString();
 #else
 	createDate = fi.created();
 #endif

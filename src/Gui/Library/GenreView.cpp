@@ -162,7 +162,6 @@ void GenreView::newPressed()
 	}
 }
 
-
 void GenreView::renamePressed()
 {
 	QList<QTreeWidgetItem*> selected_items = this->selectedItems();
@@ -170,37 +169,37 @@ void GenreView::renamePressed()
 		return;
 	}
 
-	QStringList genre_list;
+	QStringList genreList;
 	{ // prepare genres for completer
 		const Util::Set<Genre> genres = m->genreFetcher->genres();
 
 		for(Genre genre : genres)
 		{
-			genre_list << genre.name().trimmed();
+			genreList << genre.name().trimmed();
 		}
 
-		std::sort(genre_list.begin(), genre_list.end());
+		std::sort(genreList.begin(), genreList.end());
 	}
 
 	// run rename dialog for each genre to rename
 	for(const QTreeWidgetItem* item : selected_items)
 	{
-		QString item_text = item->text(0);
+		QString itemText = item->text(0);
 		Gui::LineInputDialog dialog
 		(
 			Lang::get(Lang::Genre),
-			Lang::get(Lang::Rename) + ": " + item_text,
-			item_text,
+			Lang::get(Lang::Rename) + ": " + itemText,
+			itemText,
 			this
 		);
 
-		dialog.setCompleterText(genre_list);
+		dialog.setCompleterText(genreList);
 		dialog.exec();
 
-		QString new_name = dialog.text();
-		if(dialog.wasAccepted() && !new_name.isEmpty())
+		QString newName = dialog.text();
+		if(dialog.wasAccepted() && !newName.isEmpty())
 		{
-			m->genreFetcher->renameGenre(Genre(item_text), Genre(new_name));
+			m->genreFetcher->renameGenre(Genre(itemText), Genre(newName));
 		}
 	}
 }
@@ -208,15 +207,15 @@ void GenreView::renamePressed()
 
 void GenreView::deletePressed()
 {
-	QList<QTreeWidgetItem*> selected_items = this->selectedItems();
-	if(selected_items.isEmpty()){
+	QList<QTreeWidgetItem*> selectedItems = this->selectedItems();
+	if(selectedItems.isEmpty()){
 		return;
 	}
 
 	Util::Set<Genre> genres;
 	QStringList genre_names;
 
-	for(QTreeWidgetItem* twi : selected_items)
+	for(QTreeWidgetItem* twi : selectedItems)
 	{
 		Genre g(twi->text(0));
 		genres.insert(g);
@@ -236,10 +235,10 @@ void GenreView::deletePressed()
 
 void GenreView::switchTreeList()
 {
-	bool show_tree = GetSetting(Set::Lib_GenreTree);
+	bool showTree = GetSetting(Set::Lib_GenreTree);
 	reloadGenres();
 
-	if(!show_tree) {
+	if(!showTree) {
 		this->setIndentation(0);
 	}
 
@@ -301,30 +300,30 @@ void GenreView::setGenres(const Util::Set<Genre>& genres)
 	this->populateWidget(nullptr, m->genres);
 }
 
-static void build_genre_node(GenreNode* node, const QMap<QString, StringSet>& parent_nodes)
+static void buildGenreNode(GenreNode* node, const QMap<QString, StringSet>& parentNodes)
 {
 	QString value = node->data;
-	if(!parent_nodes.contains(value)){
+	if(!parentNodes.contains(value)){
 		return;
 	}
 
-	const StringSet& children = parent_nodes[value];
+	const StringSet& children = parentNodes[value];
 	if(children.isEmpty()){
 		return;
 	}
 
 	for(const QString& str : children)
 	{
-		GenreNode* new_child = new GenreNode(str);
-		build_genre_node( new_child, parent_nodes );
-		node->addChild(new_child);
+		GenreNode* newChild = new GenreNode(str);
+		buildGenreNode(newChild, parentNodes);
+		node->addChild(newChild);
 	}
 }
 
 
 void GenreView::buildGenreDataTree(const Util::Set<Genre>& genres)
 {
-	bool show_tree = GetSetting(Set::Lib_GenreTree);
+	bool showTree = GetSetting(Set::Lib_GenreTree);
 
 	if(m->genres){
 		delete m->genres;
@@ -335,48 +334,46 @@ void GenreView::buildGenreDataTree(const Util::Set<Genre>& genres)
 
 	for(const Genre& genre : genres)
 	{
-		bool found_parent = false;
+		bool foundParent = false;
 
-		if(show_tree)
+		if(showTree)
 		{
-			for(const Genre& parent_genre : genres)
+			for(const Genre& parentGenre : genres)
 			{
-				QString parent_name = parent_genre.name();
-
-				if( parent_name.isEmpty() ||
-					parent_genre == genre)
+				const QString parentName = parentGenre.name();
+				if(parentName.isEmpty() || parentGenre == genre)
 				{
 					continue;
 				}
 
-				if( genre.name().contains(parent_name, Qt::CaseInsensitive)) {
-					StringSet& child_genres = children[parent_name];
-					child_genres.insert(genre.name());
-					found_parent = true;
+				if(genre.name().contains(parentName)) {
+					StringSet& childGenres = children[parentName];
+					childGenres.insert(genre.name());
+					foundParent = true;
 				}
 			}
 		}
 
-		if(!found_parent) {
+		if(!foundParent) {
 			m->genres->addChild(genre.name());
 		}
 	}
 
-	for(GenreNode* base_genre : Algorithm::AsConst(m->genres->children))
+	for(GenreNode* baseGenre : Algorithm::AsConst(m->genres->children))
 	{
-		build_genre_node(base_genre, children);
+		buildGenreNode(baseGenre, children);
 	}
 
 	m->genres->sort(true);
 }
 
 
-void GenreView::populateWidget(QTreeWidgetItem* parent_item, GenreNode* node)
+void GenreView::populateWidget(QTreeWidgetItem* parentItem, GenreNode* node)
 {
-	QStringList text = { ::Util::stringToFirstUpper(node->data) };
+	QStringList text = { node->data };
 
-	bool invalid_genre = (text.size() > 0 && text.first().isEmpty());
-	if(invalid_genre) {
+	bool invalidGenre = (!text.isEmpty() && text.first().isEmpty());
+	if(invalidGenre) {
 		text = QStringList{ invalidGenreName() };
 	}
 
@@ -386,10 +383,10 @@ void GenreView::populateWidget(QTreeWidgetItem* parent_item, GenreNode* node)
 	}
 
 	else {
-		item = new QTreeWidgetItem(parent_item, text);
+		item = new QTreeWidgetItem(parentItem, text);
 	}
 
-	if(invalid_genre)
+	if(invalidGenre)
 	{
 		item->setData(0, Qt::UserRole, 5000);
 		item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
@@ -400,7 +397,7 @@ void GenreView::populateWidget(QTreeWidgetItem* parent_item, GenreNode* node)
 		populateWidget(item, child);
 	}
 
-	if(m->expandedItems.contains(node->data, Qt::CaseInsensitive)){
+	if(m->expandedItems.contains(node->data)){
 		item->setExpanded(true);
 	}
 }
