@@ -117,26 +117,18 @@ QString Util::stringToFirstUpper(const QString& str)
 		return QString();
 	}
 
-	QString ret = str.toLower();
-	QString chars=" \n\t. (+?!<\"";
-	for(QChar c : chars)
+	QString ret(str);
+
+	for(int i=0; i<ret.size()-1; i++)
 	{
-		QStringList lst = ret.split(c);
-
-		for(QString& s : lst)
+		QChar currentChar = ret[i];
+		QChar nextChar = ret[i+1];
+		bool isSeparator = (!currentChar.isLetter() && !currentChar.isNumber() && currentChar != "'");
+		if(isSeparator && nextChar.isLetter())
 		{
-			if(s.trimmed().isEmpty())
-			{
-				continue;
-			}
-
-			if(s[0].isLetter())
-			{
-				s.replace(0, 1, s[0].toUpper());
-			}
+			ret[i+1] = nextChar.toUpper();
+			i++;
 		}
-
-		ret = lst.join(c);
 	}
 
 	return ret;
@@ -148,10 +140,10 @@ QString Util::stringToVeryFirstUpper(const QString& str)
 		return str;
 	}
 
-	QString ret_str = str.toLower();
-	ret_str.replace(0, 1, ret_str[0].toUpper());
+	QString ret = str.toLower();
+	ret.replace(0, 1, ret[0].toUpper());
 
-	return ret_str;
+	return ret;
 }
 
 
