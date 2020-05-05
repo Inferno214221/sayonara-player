@@ -68,9 +68,9 @@ bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 	{
 		Artist artist;
 
-		artist.setId(		q.value(0).value<ArtistId>());
-		artist.setName(	q.value(1).toString());
-		artist.setSongcount(q.value(2).value<uint16_t>());
+		artist.setId(			q.value(0).value<ArtistId>());
+		artist.setName(			q.value(1).toString());
+		artist.setSongcount(	q.value(2).value<uint16_t>());
 		artist.setDatabaseId(	module()->databaseId());
 
 		result << artist;
@@ -140,12 +140,9 @@ bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
 
 bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result) const
 {
-	QStringList filters = filter.filtertext(true);
-	QStringList search_filters = filter.searchModeFiltertext(true);
-	for(int i=0; i<filters.size(); i++)
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	for(const QString& searchFilter : searchFilters)
 	{
-		Query q(module());
-
 		QString query = "SELECT " +
 						 artistIdField() + ", " +
 						 artistNameField() + ", " +
@@ -161,12 +158,12 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 					query += "genre = ''";
 				}
 				else {
-					query += "genre LIKE :searchterm";
+					query += "genreCissearch LIKE :cissearch";
 				}
 				break;
 
 			case Library::Filter::Filename:
-				query += "filecissearch LIKE :cissearch";
+				query += "fileCissearch LIKE :cissearch";
 				break;
 
 			case Library::Filter::Fulltext:
@@ -179,13 +176,13 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 						.arg(artistIdField())
 						.arg(artistNameField());
 
+		Query q(module());
 		q.prepare(query);
-		q.bindValue(":searchterm",	Util::convertNotNull(filters[i]));
-		q.bindValue(":cissearch",	Util::convertNotNull(search_filters[i]));
+		q.bindValue(":cissearch", Util::convertNotNull(searchFilter));
 
-		ArtistList tmp_list;
-		dbFetchArtists(q, tmp_list);
-		result.appendUnique(tmp_list);
+		ArtistList tmpArtist;
+		dbFetchArtists(q, tmpArtist);
+		result.appendUnique(tmpArtist);
 	}
 
 	return true;
@@ -215,7 +212,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 		return id;
 	}
 
-	QString cis = Library::Utils::convertSearchstring(artist, searchMode());
+	const QString cis = Library::Utils::convertSearchstring(artist);
 
 	QMap<QString, QVariant> bindings
 	{
@@ -238,8 +235,6 @@ ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
 
 void Artists::updateArtistCissearch()
 {
-	Library::SearchModeMask sm = searchMode();
-
 	ArtistList artists;
 	getAllArtists(artists, true);
 
@@ -247,7 +242,7 @@ void Artists::updateArtistCissearch()
 
 	for(const Artist& artist : artists)
 	{
-		QString cis = Library::Utils::convertSearchstring(artist.name(), sm);
+		const QString cis = Library::Utils::convertSearchstring(artist.name());
 
 		module()->update
 		(

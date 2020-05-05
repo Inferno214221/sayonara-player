@@ -54,70 +54,70 @@ namespace Algorithm=Util::Algorithm;
 
 int Connector::highestDatabaseVersion()
 {
-	return 26;
+	return 27;
 }
 
 struct Connector::Private
 {
 	QString					connection_name;
-	QString					default_sourceDirectory;
-	QString					default_targetDirectory;
-	QString					default_databseFilename;
+	QString					defaultSourcedirectory;
+	QString					defaultTargetdirectory;
+	QString					defaultDatabsefilename;
 
-	DB::Bookmarks*			bookmark_connector=nullptr;
-	DB::Playlist*			playlist_connector=nullptr;
-	DB::Podcasts*			podcast_connector=nullptr;
-	DB::Streams*			stream_connector=nullptr;
-	DB::VisualStyles*		visual_style_connector=nullptr;
-	DB::Session*			session_connector=nullptr;
-	DB::Settings*			settings_connector=nullptr;
-	DB::Shortcuts*			shortcut_connector=nullptr;
-	DB::Covers*				cover_connector=nullptr;
-	DB::Library*			library_connector=nullptr;
+	DB::Bookmarks*			bookmarkConnector=nullptr;
+	DB::Playlist*			playlistConnector=nullptr;
+	DB::Podcasts*			podcastConnector=nullptr;
+	DB::Streams*			streamConnector=nullptr;
+	DB::VisualStyles*		visualStyleConnector=nullptr;
+	DB::Session*			sessionConnector=nullptr;
+	DB::Settings*			settingsConnector=nullptr;
+	DB::Shortcuts*			shortcutConnector=nullptr;
+	DB::Covers*				coverConnector=nullptr;
+	DB::Library*			libraryConnector=nullptr;
 
-	QList<LibraryDatabase*> library_dbs;
-	LibraryDatabase*		generic_library_database=nullptr;
+	QList<LibraryDatabase*> libraryDbs;
+	LibraryDatabase*		genericLibraryDatabase=nullptr;
 
-	int						old_db_version;
+	int						oldDbVersion;
 
 
-	Private() : old_db_version(0) {}
+	Private() : oldDbVersion(0) {}
 	~Private()
 	{
-		if(bookmark_connector){
-			delete bookmark_connector; bookmark_connector = nullptr;
+		if(bookmarkConnector){
+			delete bookmarkConnector; bookmarkConnector = nullptr;
 		}
 
-		if(podcast_connector){
-			delete podcast_connector; podcast_connector = nullptr;
+		if(podcastConnector){
+			delete podcastConnector; podcastConnector = nullptr;
 		}
 
-		if(stream_connector){
-			delete stream_connector; stream_connector = nullptr;
+		if(streamConnector){
+			delete streamConnector; streamConnector = nullptr;
 		}
 
-		if(visual_style_connector){
-			delete visual_style_connector; visual_style_connector = nullptr;
+		if(visualStyleConnector){
+			delete visualStyleConnector; visualStyleConnector = nullptr;
 		}
 
-		if(settings_connector){
-			delete settings_connector; settings_connector = nullptr;
+		if(settingsConnector){
+			delete settingsConnector; settingsConnector = nullptr;
 		}
 
-		if(shortcut_connector){
-			delete shortcut_connector; shortcut_connector = nullptr;
+		if(shortcutConnector){
+			delete shortcutConnector; shortcutConnector = nullptr;
 		}
 
-		if(cover_connector){
-			delete cover_connector; cover_connector = nullptr;
+		if(coverConnector){
+			delete coverConnector; coverConnector = nullptr;
 		}
 
-		if(library_connector){
-			delete library_connector; library_connector = nullptr;
+		if(libraryConnector){
+			delete libraryConnector; libraryConnector = nullptr;
 		}
 
-		if(session_connector){
-			delete session_connector; session_connector = nullptr;
+		if(sessionConnector){
+			delete sessionConnector; sessionConnector = nullptr;
 		}
 	}
 };
@@ -140,8 +140,8 @@ Connector::Connector(const QString& sourceDirectory, const QString& targetDirect
 
 	else
 	{
-		m->generic_library_database = new LibraryDatabase(connectionName(), databaseId(), -1);
-		m->library_dbs << m->generic_library_database;
+		m->genericLibraryDatabase = new LibraryDatabase(connectionName(), databaseId(), -1);
+		m->libraryDbs << m->genericLibraryDatabase;
 
 		applyFixes();
 	}
@@ -283,7 +283,7 @@ bool Connector::updateLostAlbums()
 
 int Connector::oldDatabaseVersion() const
 {
-	return m->old_db_version;
+	return m->oldDbVersion;
 }
 
 bool Connector::applyFixes()
@@ -295,7 +295,7 @@ bool Connector::applyFixes()
 
 	success = settingsConnector()->loadSetting("version", str_version);
 	version = str_version.toInt(&success);
-	m->old_db_version = version;
+	m->oldDbVersion = version;
 
 	spLog(Log::Info, this)
 			<< "Database Version:  " << version << ". "
@@ -774,10 +774,31 @@ bool Connector::applyFixes()
 	if(version < 26)
 	{
 		checkAndInsertColumn("playlistToTracks", "stationName", "VARCHAR(255)");
-		checkAndInsertColumn("playlistToTracks", "station", "VARCHAR(255)");
+		checkAndInsertColumn("playlistToTracks", "station", "VARCHAR(512)");
 		checkAndInsertColumn("playlistToTracks", "isRadio", "INTEGER", "0");
 
 		settingsConnector()->storeSetting("version", 26);
+	}
+
+	if(version < 27)
+	{
+		bool success = checkAndInsertColumn("tracks", "genreCissearch", "VARCHAR(512)");
+
+		if(success)
+		{
+			settingsConnector()->storeSetting("version", 27);
+
+			MetaDataList tracks;
+			LibraryDatabase* libraryDb = new DB::LibraryDatabase(connectionName(), databaseId(), -1);
+			libraryDb->getAllTracks(tracks);
+			this->transaction();
+			for(const MetaData& md : tracks) {
+				libraryDb->updateTrack(md);
+			}
+			this->commit();
+
+			delete libraryDb;
+		}
 	}
 
 	return true;
@@ -785,22 +806,22 @@ bool Connector::applyFixes()
 
 DB::LibraryDatabases Connector::libraryDatabases() const
 {
-	return m->library_dbs;
+	return m->libraryDbs;
 }
 
 DB::LibraryDatabase* Connector::libraryDatabase(LibraryId libraryId, DbId databaseId)
 {
-	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->libraryDbs, [=](DB::LibraryDatabase* db){
 		return (db->libraryId() == libraryId && db->databaseId() == databaseId);
 	});
 
-	if(it == m->library_dbs.end())
+	if(it == m->libraryDbs.end())
 	{
 		spLog(Log::Warning, this) << "Could not find Library:"
 								" DB ID = " << int(databaseId)
 							 << " LibraryID = " << int(libraryId);
 
-		return m->generic_library_database;
+		return m->genericLibraryDatabase;
 	}
 
 	return *it;
@@ -810,14 +831,14 @@ DB::LibraryDatabase* Connector::libraryDatabase(LibraryId libraryId, DbId databa
 DB::LibraryDatabase* Connector::registerLibraryDatabase(LibraryId libraryId)
 {
 	DB::LibraryDatabase* lib_db = nullptr;
-	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->libraryDbs, [=](DB::LibraryDatabase* db){
 		return (db->libraryId() == libraryId);
 	});
 
-	if(it == m->library_dbs.end())
+	if(it == m->libraryDbs.end())
 	{
 		lib_db = new DB::LibraryDatabase(this->connectionName(), this->databaseId(), libraryId);
-		m->library_dbs << lib_db;
+		m->libraryDbs << lib_db;
 	}
 
 	else
@@ -830,15 +851,15 @@ DB::LibraryDatabase* Connector::registerLibraryDatabase(LibraryId libraryId)
 
 void Connector::deleteLibraryDatabase(LibraryId libraryId)
 {
-	LibDbIterator it = Algorithm::find(m->library_dbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->libraryDbs, [=](DB::LibraryDatabase* db){
 		return (db->libraryId() == libraryId);
 	});
 
-	if(it != m->library_dbs.end())
+	if(it != m->libraryDbs.end())
 	{
 		LibraryDatabase* db = *it;
 		db->deleteAllTracks(true);
-		m->library_dbs.removeAll(db);
+		m->libraryDbs.removeAll(db);
 
 		delete db; db = nullptr;
 	}
@@ -847,96 +868,94 @@ void Connector::deleteLibraryDatabase(LibraryId libraryId)
 
 DB::Playlist* Connector::playlistConnector()
 {
-	if(!m->playlist_connector){
-		m->playlist_connector = new DB::Playlist(this->connectionName(), this->databaseId());
+	if(!m->playlistConnector){
+		m->playlistConnector = new DB::Playlist(this->connectionName(), this->databaseId());
 	}
 
-	return m->playlist_connector;
+	return m->playlistConnector;
 }
 
 
 DB::Bookmarks* Connector::bookmarkConnector()
 {
-	if(!m->bookmark_connector){
-		m->bookmark_connector = new DB::Bookmarks(this->connectionName(), this->databaseId());
+	if(!m->bookmarkConnector){
+		m->bookmarkConnector = new DB::Bookmarks(this->connectionName(), this->databaseId());
 	}
 
-	return m->bookmark_connector;
+	return m->bookmarkConnector;
 }
 
 DB::Streams* Connector::streamConnector()
 {
-	if(!m->stream_connector){
-		m->stream_connector = new DB::Streams(this->connectionName(), this->databaseId());
+	if(!m->streamConnector){
+		m->streamConnector = new DB::Streams(this->connectionName(), this->databaseId());
 	}
 
-	return m->stream_connector;
+	return m->streamConnector;
 }
 
 DB::Podcasts* Connector::podcastConnector()
 {
-	if(!m->podcast_connector){
-		m->podcast_connector = new DB::Podcasts(this->connectionName(), this->databaseId());
+	if(!m->podcastConnector){
+		m->podcastConnector = new DB::Podcasts(this->connectionName(), this->databaseId());
 	}
 
-	return m->podcast_connector;
+	return m->podcastConnector;
 }
 
 DB::VisualStyles* Connector::visualStyleConnector()
 {
-	if(!m->visual_style_connector){
-		m->visual_style_connector = new DB::VisualStyles(this->connectionName(), this->databaseId());
+	if(!m->visualStyleConnector){
+		m->visualStyleConnector = new DB::VisualStyles(this->connectionName(), this->databaseId());
 	}
 
-	return m->visual_style_connector;
+	return m->visualStyleConnector;
 }
 
 DB::Settings* Connector::settingsConnector()
 {
-	if(!m->settings_connector){
-		m->settings_connector = new DB::Settings(this->connectionName(), this->databaseId());
+	if(!m->settingsConnector){
+		m->settingsConnector = new DB::Settings(this->connectionName(), this->databaseId());
 	}
 
-	return m->settings_connector;
+	return m->settingsConnector;
 }
 
 DB::Shortcuts*Connector::shortcutConnector()
 {
-	if(!m->shortcut_connector){
-		m->shortcut_connector = new DB::Shortcuts(this->connectionName(), this->databaseId());
+	if(!m->shortcutConnector){
+		m->shortcutConnector = new DB::Shortcuts(this->connectionName(), this->databaseId());
 	}
 
-	return m->shortcut_connector;
+	return m->shortcutConnector;
 }
 
 DB::Library* Connector::libraryConnector()
 {
-	if(!m->library_connector){
-		m->library_connector = new DB::Library(this->connectionName(), this->databaseId());
+	if(!m->libraryConnector){
+		m->libraryConnector = new DB::Library(this->connectionName(), this->databaseId());
 	}
 
-	return m->library_connector;
+	return m->libraryConnector;
 }
 
 DB::Covers* Connector::coverConnector()
 {
-	if(!m->cover_connector){
-		m->cover_connector = new DB::Covers(this->connectionName(), this->databaseId());
+	if(!m->coverConnector){
+		m->coverConnector = new DB::Covers(this->connectionName(), this->databaseId());
 	}
 
-	return m->cover_connector;
+	return m->coverConnector;
 }
-
 
 DB::Session* DB::Connector::sessionConnector()
 {
-	if(!m->session_connector){
-		m->session_connector = new DB::Session(this->connectionName(), this->databaseId());
+	if(!m->sessionConnector){
+		m->sessionConnector = new DB::Session(this->connectionName(), this->databaseId());
 	}
 
-	return m->session_connector;
+	return m->sessionConnector;
 }
-
 
 const char* DatabaseNotCreatedException::what() const noexcept
 {

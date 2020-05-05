@@ -62,7 +62,6 @@ namespace DB
 			virtual QString trackView() const=0;
 			virtual QString trackSearchView() const=0;
 			virtual LibraryId libraryId() const=0;
-			virtual ::Library::SearchModeMask searchMode() const=0;
 
 			virtual Module* module()=0;
 			virtual const Module* module() const=0;
