@@ -40,10 +40,8 @@ struct HeaderView::Private
 	QAction* actionAutoResize=nullptr;
 
 	QByteArray initialState;
-	bool isInitialized;
 
-	Private(HeaderView* parent) :
-		isInitialized(false)
+	Private(HeaderView* parent)
 	{
 		actionResize = new QAction(parent);
 		actionAutoResize = new QAction(parent);
@@ -220,7 +218,8 @@ void HeaderView::showEvent(QShowEvent* e)
 {
 	Parent::showEvent(e);
 
-	if(m->isInitialized){
+	static bool isInitialized = false;
+	if(isInitialized){
 		return;
 	}
 
@@ -244,9 +243,8 @@ void HeaderView::showEvent(QShowEvent* e)
 	this->setTextElideMode(Qt::TextElideMode::ElideRight);
 	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
 	this->setStretchLastSection(true);
-	this->setSortIndicatorShown(true);
 
-	m->isInitialized = true;
+	isInitialized = true;
 }
 
 void HeaderView::resizeEvent(QResizeEvent* e)
