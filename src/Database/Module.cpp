@@ -31,18 +31,18 @@ using DB::Module;
 
 struct Module::Private
 {
-	QString connection_name;
+	QString connectionName;
 	DbId	databaseId;
 
-	Private(const QString& connection_name, DbId databaseId) :
-		connection_name(connection_name),
+	Private(const QString& connectionName, DbId databaseId) :
+		connectionName(connectionName),
 		databaseId(databaseId)
 	{}
 };
 
-Module::Module(const QString& connection_name, DbId databaseId)
+Module::Module(const QString& connectionName, DbId databaseId)
 {
-	m = Pimpl::make<Private>(connection_name, databaseId);
+	m = Pimpl::make<Private>(connectionName, databaseId);
 }
 
 Module::~Module() = default;
@@ -54,7 +54,13 @@ DbId Module::databaseId() const
 
 QString Module::connectionName() const
 {
-	return m->connection_name;
+	return m->connectionName;
+}
+
+static void execPragma(QSqlDatabase db, const QString& key, const QString& value)
+{
+	const QString q = QString("PRAGMA %1 = %2;").arg(key).arg(value);
+	db.exec(q);
 }
 
 QSqlDatabase Module::db() const
@@ -70,47 +76,47 @@ QSqlDatabase Module::db() const
 		id = 0;
 	}
 
-	QString thread_connection_name = QString("%1-%2")
-									.arg(m->connection_name)
+	QString threadConnectionName = QString("%1-%2")
+									.arg(m->connectionName)
 									.arg(id);
 
 	const QStringList connections = QSqlDatabase::connectionNames();
-	if(connections.contains(thread_connection_name))
+	if(connections.contains(threadConnectionName))
 	{
-		return QSqlDatabase::database(thread_connection_name);
+		return QSqlDatabase::database(threadConnectionName);
 	}
 
 	spLog(Log::Info, this) << "Create new connection to " << connectionName()
-							<< " (" << thread_connection_name << ")";
+							<< " (" << threadConnectionName << ")";
 
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", thread_connection_name);
-	db.setDatabaseName(m->connection_name);
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", threadConnectionName);
+	db.setDatabaseName(m->connectionName);
 
 	if(!db.open())
 	{
 		QSqlError er = db.lastError();
 
-		spLog(Log::Error, this) << "Database cannot be opened! " << m->connection_name;
+		spLog(Log::Error, this) << "Database cannot be opened! " << m->connectionName;
 		spLog(Log::Error, this) << er.driverText();
 		spLog(Log::Error, this) << er.databaseText();
 	}
 
-	db.exec("PRAGMA case_sensitive_like = true;");
+	execPragma(db, "case_sensitive_like", "true");
 
 	return db;
 }
 
-DB::Query Module::runQuery(const QString& query, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QString& errorText) const
 {
-	return runQuery(query, QMap<QString, QVariant>(), error_text);
+	return runQuery(query, QMap<QString, QVariant>(), errorText);
 }
 
-DB::Query Module::runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const
 {
-	return runQuery(query, {{bindings.first, bindings.second}}, error_text);
+	return runQuery(query, {{bindings.first, bindings.second}}, errorText);
 }
 
-DB::Query Module::runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const
+DB::Query Module::runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const
 {
 	DB::Query q(this);
 	q.prepare(query);
@@ -124,17 +130,17 @@ DB::Query Module::runQuery(const QString& query, const QMap<QString, QVariant>& 
 	if(!q.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.showError(error_text);
+		q.showError(errorText);
 	}
 
 	return q;
 }
 
-DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QString& error_message)
+DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings, const QString& errorMessage)
 {
-	QList<QString> field_names = field_bindings.keys();
-	QString fields = field_names.join(", ");
-	QString bindings = ":" + field_names.join(", :");
+	const QList<QString> fieldNames = fieldBindings.keys();
+	const QString fields = fieldNames.join(", ");
+	const QString bindings = ":" + fieldNames.join(", :");
 
 	QString query = "INSERT INTO " + tablename + " ";
 	query += "(" + fields + ") ";
@@ -143,52 +149,51 @@ DB::Query Module::insert(const QString& tablename, const QMap<QString, QVariant>
 	DB::Query q(this);
 	q.prepare(query);
 
-	for(const QString& field : field_names)
+	for(const QString& field : fieldNames)
 	{
-		q.bindValue(":" + field, field_bindings[field]);
+		q.bindValue(":" + field, fieldBindings[field]);
 	}
 
 	if(!q.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.showError(error_message);
+		q.showError(errorMessage);
 	}
 
 	return q;
 }
 
-
-DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QPair<QString, QVariant>& where_binding, const QString& error_message)
+DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings, const QPair<QString, QVariant>& whereBinding, const QString& errorMessage)
 {
-	const QList<QString> field_names = field_bindings.keys();
+	const QList<QString> fieldNames = fieldBindings.keys();
 
-	QStringList update_commands;
-	for(const QString& field : field_names)
+	QStringList updateCommands;
+	for(const QString& field : fieldNames)
 	{
-		update_commands << field + " = :" + field;
+		updateCommands << field + " = :" + field;
 	}
 
 	QString query = "UPDATE " + tablename + " SET ";
-	query += update_commands.join(", ");
+	query += updateCommands.join(", ");
 	query += " WHERE ";
-	query += where_binding.first + " = :W" + where_binding.first;
+	query += whereBinding.first + " = :W" + whereBinding.first;
 	query += ";";
 
 	DB::Query q(this);
 	q.prepare(query);
 
-	for(const QString& field : field_names)
+	for(const QString& field : fieldNames)
 	{
-		q.bindValue(":" + field, field_bindings[field]);
+		q.bindValue(":" + field, fieldBindings[field]);
 	}
 
-	q.bindValue(":W" + where_binding.first, where_binding.second);
+	q.bindValue(":W" + whereBinding.first, whereBinding.second);
 
 	if(!q.exec() || q.numRowsAffected() == 0)
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
 		q.setError(true);
-		q.showError(error_message);
+		q.showError(errorMessage);
 	}
 
 	return q;

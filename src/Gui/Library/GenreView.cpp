@@ -47,11 +47,7 @@
 namespace Algorithm=Util::Algorithm;
 using StringSet=Util::Set<QString>;
 using Library::GenreView;
-
-static bool is_invalid_genre(const QModelIndex& index)
-{
-	return (index.data(Qt::UserRole) == 5000);
-}
+using Library::GenreTreeItem;
 
 struct GenreView::Private
 {
@@ -164,8 +160,8 @@ void GenreView::newPressed()
 
 void GenreView::renamePressed()
 {
-	QList<QTreeWidgetItem*> selected_items = this->selectedItems();
-	if(selected_items.isEmpty()){
+	QList<QTreeWidgetItem*> selectedItems = this->selectedItems();
+	if(selectedItems.isEmpty()){
 		return;
 	}
 
@@ -182,7 +178,7 @@ void GenreView::renamePressed()
 	}
 
 	// run rename dialog for each genre to rename
-	for(const QTreeWidgetItem* item : selected_items)
+	for(const QTreeWidgetItem* item : selectedItems)
 	{
 		QString itemText = item->text(0);
 		Gui::LineInputDialog dialog
@@ -260,7 +256,7 @@ void GenreView::selectionChanged(const QItemSelection& selected, const QItemSele
 	for(const QModelIndex& index : indexes)
 	{
 		genres << index.data().toString();
-		if(is_invalid_genre(index))
+		if(GenreTreeItem::isInvalidGenre(index))
 		{
 			emit sigInvalidGenreSelected();
 			return;
@@ -314,7 +310,7 @@ static void buildGenreNode(GenreNode* node, const QMap<QString, StringSet>& pare
 
 	for(const QString& str : children)
 	{
-		GenreNode* newChild = new GenreNode(str);
+		auto* newChild = new GenreNode(str);
 		buildGenreNode(newChild, parentNodes);
 		node->addChild(newChild);
 	}
@@ -367,29 +363,25 @@ void GenreView::buildGenreDataTree(const Util::Set<Genre>& genres)
 	m->genres->sort(true);
 }
 
-
 void GenreView::populateWidget(QTreeWidgetItem* parentItem, GenreNode* node)
 {
-	QStringList text = { node->data };
+	QStringList text;
 
-	bool invalidGenre = (!text.isEmpty() && text.first().isEmpty());
-	if(invalidGenre) {
+	bool invalidGenre = node->data.isEmpty();
+	if(!invalidGenre) {
+		text = QStringList{ node->data };
+	}
+	else {
 		text = QStringList{ invalidGenreName() };
 	}
 
-	QTreeWidgetItem* item;
+	GenreTreeItem* item;
 	if(node->parent == m->genres) {
-		item = new QTreeWidgetItem(this, text);
+		item = new GenreTreeItem(this, text, invalidGenre);
 	}
 
 	else {
-		item = new QTreeWidgetItem(parentItem, text);
-	}
-
-	if(invalidGenre)
-	{
-		item->setData(0, Qt::UserRole, 5000);
-		item->setFlags(item->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
+		item = new GenreTreeItem(parentItem, text, invalidGenre);
 	}
 
 	for(GenreNode* child : Algorithm::AsConst(node->children))
@@ -436,9 +428,9 @@ void GenreView::initContextMenu()
 void GenreView::contextMenuEvent(QContextMenuEvent* e)
 {
 	QModelIndexList indexes = this->selectionModel()->selectedIndexes();
-	for(const QModelIndex& idx : indexes)
+	for(const QModelIndex& index : indexes)
 	{
-		if(is_invalid_genre(idx))
+		if(GenreTreeItem::isInvalidGenre(index))
 		{
 			e->ignore();
 			return;
@@ -457,20 +449,20 @@ void GenreView::dragEnterEvent(QDragEnterEvent* e)
 
 void GenreView::dragMoveEvent(QDragMoveEvent* e)
 {
-	QModelIndex idx = this->indexAt(e->pos());
-	if(is_invalid_genre(idx)){
+	QModelIndex index = this->indexAt(e->pos());
+	if(GenreTreeItem::isInvalidGenre(index)){
 		e->ignore();
 		return;
 	}
 
-	if(!idx.isValid()){
+	if(!index.isValid()){
 		return;
 	}
 
 	m->isDragging=true;
 
 	QItemSelectionModel* ism = this->selectionModel();
-	ism->select(idx, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
+	ism->select(index, QItemSelectionModel::ClearAndSelect | QItemSelectionModel::Rows);
 
 	e->accept();
 }
@@ -487,8 +479,8 @@ void GenreView::dropEvent(QDropEvent* e)
 {
 	m->isDragging = false;
 
-	QModelIndex idx = this->indexAt(e->pos());
-	if(is_invalid_genre(idx)){
+	const QModelIndex index = this->indexAt(e->pos());
+	if(GenreTreeItem::isInvalidGenre(index)){
 		e->ignore();
 		return;
 	}
@@ -503,19 +495,18 @@ void GenreView::dropEvent(QDropEvent* e)
 		return;
 	}
 
-	if(!idx.isValid()){
+	if(!index.isValid()){
 		spLog(Log::Debug, this) << "drop: Invalid index";
 		return;
 	}
 
 	this->setAcceptDrops(false);
 
-	Genre genre(idx.data().toString());
+	Genre genre(index.data().toString());
 	MetaDataList v_md(std::move(cmd->metadata()));
 
 	m->genreFetcher->applyGenreToMetadata(v_md, genre);
 }
-
 
 QString GenreView::invalidGenreName()
 {
@@ -535,11 +526,43 @@ void GenreView::languageChanged()
 	int rc = model->rowCount();
 	for(int i=0; i<rc; i++)
 	{
-		QModelIndex idx = model->index(i, 0);
-		if(is_invalid_genre(idx))
+		QModelIndex index = model->index(i, 0);
+		if(GenreTreeItem::isInvalidGenre(index))
 		{
-			model->setData(idx, invalidGenreName(), Qt::DisplayRole);
+			model->setData(index, invalidGenreName(), Qt::DisplayRole);
 			break;
 		}
 	}
+}
+
+GenreTreeItem::GenreTreeItem(QTreeWidgetItem* parent, const QStringList& text, bool invalidGenre) :
+	QTreeWidgetItem(parent, text)
+{
+	setInvalidGenre(invalidGenre);
+}
+
+GenreTreeItem::GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool invalidGenre) :
+	QTreeWidgetItem(parent, text)
+{
+	setInvalidGenre(invalidGenre);
+}
+
+void GenreTreeItem::setInvalidGenre(bool b)
+{
+	this->setData(0, GenreTreeItem::InvalidGenreRole, b);
+
+	if(b)
+	{
+		this->setFlags(this->flags() & ~Qt::ItemIsDragEnabled & ~Qt::ItemIsDropEnabled);
+	}
+}
+
+bool GenreTreeItem::isInvalidGenre(const QModelIndex& index)
+{
+	return index.data(GenreTreeItem::InvalidGenreRole).toBool();
+}
+
+bool GenreTreeItem::isInvalidGenre() const
+{
+	return this->data(0, GenreTreeItem::InvalidGenreRole).toBool();
 }
