@@ -249,7 +249,7 @@ void UserOperations::deleteGenre(const Genre& genre)
 	runEditor(editor);
 }
 
-void UserOperations::renameGenre(const Genre& genre, const Genre& new_genre)
+void UserOperations::renameGenre(const Genre& genre, const Genre& newGenre)
 {
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
@@ -263,8 +263,7 @@ void UserOperations::renameGenre(const Genre& genre, const Genre& new_genre)
 
 	for(int i=0; i<tracks.count(); i++)
 	{
-		editor->deleteGenre(i, genre);
-		editor->addGenre(i, new_genre);
+		editor->renameGenre(i, genre, newGenre);
 	}
 
 	runEditor(editor);

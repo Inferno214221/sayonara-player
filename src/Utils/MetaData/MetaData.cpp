@@ -655,13 +655,13 @@ QString MetaData::genresToString() const
 
 QStringList MetaData::genresToList() const
 {
-	QStringList new_genres;
+	QStringList newGenres;
 	for(const GenreID& id : m->genres)
 	{
-		new_genres << genrePool().value(id).name();
+		newGenres << genrePool().value(id).name();
 	}
 
-	return new_genres;
+	return newGenres;
 }
 
 QString MetaData::filepath() const
@@ -671,11 +671,11 @@ QString MetaData::filepath() const
 
 QString MetaData::setFilepath(QString filepath, RadioMode mode)
 {
-	bool is_local_path = false;
+	bool isLocalPath = false;
 
 #ifdef Q_OS_UNIX
 	if(filepath.startsWith("/")){
-		is_local_path = true;
+		isLocalPath = true;
 	}
 #else
 	if(filepath.contains(":\\") || filepath.contains("\\\\")){
@@ -683,7 +683,7 @@ QString MetaData::setFilepath(QString filepath, RadioMode mode)
 	}
 #endif
 
-	if(is_local_path)
+	if(isLocalPath)
 	{
 		QDir dir(filepath);
 		m->filepath = dir.absolutePath();

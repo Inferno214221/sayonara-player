@@ -158,7 +158,7 @@ bool Editor::hasChanges() const
 
 void Editor::addGenre(int idx, const Genre& genre)
 {
-	if(!Util::between(idx, m->changeInfo))
+	if(Util::between(idx, m->changeInfo))
 	{
 		MetaData& md = m->changeInfo[idx].currentMetadata();
 		if(md.addGenre(genre))
@@ -170,7 +170,7 @@ void Editor::addGenre(int idx, const Genre& genre)
 
 void Editor::deleteGenre(int idx, const Genre& genre)
 {
-	if(!Util::between(idx, m->changeInfo))
+	if(Util::between(idx, m->changeInfo))
 	{
 		MetaData& md = m->changeInfo[idx].currentMetadata();
 		if(md.removeGenre(genre))
@@ -180,12 +180,11 @@ void Editor::deleteGenre(int idx, const Genre& genre)
 	}
 }
 
-void Editor::renameGenre(int idx, const Genre& genre, const Genre& newGenre)
+void Editor::renameGenre(int index, const Genre& genre, const Genre& newGenre)
 {
-	deleteGenre(idx, genre);
-	addGenre(idx, newGenre);
+	deleteGenre(index, genre);
+	addGenre(index, newGenre);
 }
-
 
 void Editor::setMetadata(const MetaDataList& tracks)
 {

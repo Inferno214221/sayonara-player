@@ -141,6 +141,7 @@ void LineEdit::keyPressEvent(QKeyEvent* event)
 	if(event->key() == Qt::Key_Up)
 	{
 		m->currentIndex = (m->currentIndex + 1) % m->items.size();
+		this->setText(m->items[m->currentIndex]);
 	}
 
 	else if(event->key() == Qt::Key_Down)
@@ -149,9 +150,9 @@ void LineEdit::keyPressEvent(QKeyEvent* event)
 		if(m->currentIndex < 0){
 			m->currentIndex = m->items.size() - 1;
 		}
-	}
 
-	this->setText(m->items[m->currentIndex]);
+		this->setText(m->items[m->currentIndex]);
+	}
 }
 
 void LineEdit::contextMenuEvent(QContextMenuEvent* event)

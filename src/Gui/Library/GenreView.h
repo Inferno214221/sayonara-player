@@ -54,58 +54,75 @@ namespace Library
 		Q_OBJECT
 		PIMPL(GenreView)
 
-	signals:
-		void sigProgress(const QString& name, int progress);
-		void sigSelectedChanged(const QStringList& genres);
-		void sigInvalidGenreSelected();
+		signals:
+			void sigProgress(const QString& name, int progress);
+			void sigSelectedChanged(const QStringList& genres);
+			void sigInvalidGenreSelected();
 
-	private:
-		using Parent::activated;
-		using Parent::clicked;
-		using Parent::pressed;
+		private:
+			using Parent::activated;
+			using Parent::clicked;
+			using Parent::pressed;
 
-	public:
-		explicit GenreView(QWidget* parent=nullptr);
-		~GenreView() override;
+		public:
+			explicit GenreView(QWidget* parent=nullptr);
+			~GenreView() override;
 
-		void init(LocalLibrary* library);
-		void reloadGenres();
+			void init(LocalLibrary* library);
+			void reloadGenres();
 
-		static QString invalidGenreName();
+			static QString invalidGenreName();
 
-	private:
-	void initContextMenu();
+		private:
+			void initContextMenu();
 
-		void setGenres(const Util::Set<Genre>& genres);
-		void buildGenreDataTree(const Util::Set<Genre>& genres);
-		void populateWidget(QTreeWidgetItem* parent_item, GenreNode* node);
+			void setGenres(const Util::Set<Genre>& genres);
+			void buildGenreDataTree(const Util::Set<Genre>& genres);
+			void populateWidget(QTreeWidgetItem* parent_item, GenreNode* node);
 
-		QTreeWidgetItem* findGenre(const QString& genre);
+			QTreeWidgetItem* findGenre(const QString& genre);
 
-	private slots:
-		void itemExpanded(QTreeWidgetItem* item);
-		void itemCollapsed(QTreeWidgetItem* item);
-		void expandCurrentItem();
+		private slots:
+			void itemExpanded(QTreeWidgetItem* item);
+			void itemCollapsed(QTreeWidgetItem* item);
+			void expandCurrentItem();
 
-		void progressChanged(int progress);
-		void updateFinished();
+			void progressChanged(int progress);
+			void updateFinished();
 
-		void newPressed();
-		void renamePressed();
-		void deletePressed();
+			void newPressed();
+			void renamePressed();
+			void deletePressed();
 
-		void switchTreeList();
+			void switchTreeList();
 
-		void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
+			void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
-	protected:
-		void skinChanged() override;
-		void languageChanged() override;
-		void dragEnterEvent(QDragEnterEvent* e) override;
-		void dragMoveEvent(QDragMoveEvent* e) override;
-		void dragLeaveEvent(QDragLeaveEvent* e) override;
-		void dropEvent(QDropEvent* e) override;
-		void contextMenuEvent(QContextMenuEvent* e) override;
+		protected:
+			void skinChanged() override;
+			void languageChanged() override;
+			void dragEnterEvent(QDragEnterEvent* e) override;
+			void dragMoveEvent(QDragMoveEvent* e) override;
+			void dragLeaveEvent(QDragLeaveEvent* e) override;
+			void dropEvent(QDropEvent* e) override;
+			void contextMenuEvent(QContextMenuEvent* e) override;
+	};
+
+	class GenreTreeItem : public QTreeWidgetItem
+	{
+		public:
+			enum DataRole
+			{
+				InvalidGenreRole=Qt::UserRole
+			};
+
+			GenreTreeItem(QTreeWidgetItem* parent, const QStringList& text, bool isInvalidGenre);
+			GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool isInvalidGenre);
+
+			void setInvalidGenre(bool b);
+			bool isInvalidGenre() const;
+
+			static bool isInvalidGenre(const QModelIndex& index);
 	};
 }
 
