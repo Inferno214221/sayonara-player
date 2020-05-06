@@ -103,12 +103,13 @@ void GUI_EditLibrary::chooseDirClicked()
 		oldDir = QDir::homePath();
 	}
 
-	QString newDir =
-		QFileDialog::getExistingDirectory(this,
-			Lang::get(Lang::Directory),
-			oldDir,
-			QFileDialog::ShowDirsOnly
-		);
+	QString newDir = QFileDialog::getExistingDirectory
+	(
+		this,
+		Lang::get(Lang::OpenDir),
+		oldDir,
+		QFileDialog::ShowDirsOnly
+	);
 
 	if(newDir.isEmpty()) {
 		newDir = m->oldPath;
@@ -116,11 +117,10 @@ void GUI_EditLibrary::chooseDirClicked()
 
 	if(m->editMode == EditMode::New)
 	{
-		QString str = Util::File::getFilenameOfPath(newDir);
-
 		if(!m->nameEdited)
 		{
-			ui->leName->setText(str);
+			QString pureFilename = Util::File::getFilenameOfPath(newDir);
+			ui->leName->setText(pureFilename);
 		}
 	}
 

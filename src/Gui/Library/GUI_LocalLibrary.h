@@ -74,7 +74,7 @@ namespace Library
 
 	private:
 		void checkViewState();
-		void checkReloadStatus();
+		void checkMainSplitterStatus();
 		void checkFileExtensionBar();
 
 	private slots:

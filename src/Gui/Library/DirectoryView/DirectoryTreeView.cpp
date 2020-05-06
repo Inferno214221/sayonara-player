@@ -43,6 +43,7 @@
 #include <QDrag>
 #include <QTimer>
 #include <QAction>
+#include <QDesktopServices>
 
 #include <algorithm>
 #include <utility> // std::pair
@@ -116,6 +117,7 @@ void TreeView::initContextMenu()
 	connect(m->contextMenu, &ContextMenu::sigCreateDirectoryClicked, this, &TreeView::createDirectoryClicked);
 	connect(m->contextMenu, &ContextMenu::sigRenameClicked, this, &TreeView::renameDirectoryClicked);
 	connect(m->contextMenu, &ContextMenu::sigCollapseAllClicked, this, &TreeView::collapseAll);
+	connect(m->contextMenu, &ContextMenu::sigViewInFileManagerClicked, this, &TreeView::viewInFileManagerClicked);
 	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &TreeView::sigCopyToLibraryRequested);
 	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &TreeView::sigMoveToLibraryRequested);
 
@@ -178,6 +180,16 @@ void TreeView::renameDirectoryClicked()
 		{
 			emit sigRenameRequested(originalDir.absolutePath(), parentDir.absoluteFilePath(newName));
 		}
+	}
+}
+
+void TreeView::viewInFileManagerClicked()
+{
+	const QStringList paths = this->selectedPaths();
+	for(const QString& path : paths)
+	{
+		const QUrl url = QUrl::fromLocalFile(path);
+		QDesktopServices::openUrl(url);
 	}
 }
 
@@ -345,7 +357,7 @@ void TreeView::dropEvent(QDropEvent* event)
 void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString& targetDirectory)
 {
 	QList<QUrl> urls = cmd->urls();
-	QStringList sourceFiles, sourceDirectorys;
+	QStringList sourceFiles, sourceDirectories;
 
 	for(const QUrl& url : urls)
 	{
@@ -354,7 +366,7 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 		if(Util::File::isDir(source))
 		{
 			if(Util::File::canCopyDir(source, targetDirectory)){
-				sourceDirectorys << source;
+				sourceDirectories << source;
 			}
 		}
 
@@ -364,21 +376,21 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 		}
 	}
 
-	if(sourceDirectorys.isEmpty() && sourceFiles.isEmpty()){
+	if(sourceDirectories.isEmpty() && sourceFiles.isEmpty()){
 		return;
 	}
 
 	TreeView::DropAction drop_action = showDropMenu(QCursor::pos());
 
-	if(!sourceDirectorys.isEmpty())
+	if(!sourceDirectories.isEmpty())
 	{
 		switch(drop_action)
 		{
 			case TreeView::DropAction::Copy:
-				emit sigCopyRequested(sourceDirectorys, targetDirectory);
+				emit sigCopyRequested(sourceDirectories, targetDirectory);
 				break;
 			case TreeView::DropAction::Move:
-				emit sigMoveRequested(sourceDirectorys, targetDirectory);
+				emit sigMoveRequested(sourceDirectories, targetDirectory);
 				break;
 			default:
 				break;
@@ -447,7 +459,7 @@ void TreeView::selectionChanged(const QItemSelection& selected, const QItemSelec
 
 void TreeView::setLibraryInfo(const Library::Info& info)
 {
-	QModelIndex index = m->model->setDataSource(info.id());
+	const QModelIndex index = m->model->setDataSource(info.id());
 	if(index.isValid())
 	{
 		this->setRootIndex(index);

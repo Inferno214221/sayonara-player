@@ -29,6 +29,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Algorithm.h"
 
 #include <QShortcut>
 #include <QInputDialog>
@@ -42,19 +43,19 @@ using Playlist::TabMenu;
 
 struct TabBar::Private
 {
-	QString		last_dir;
+	QString		lastDir;
 	TabMenu*	menu=nullptr;
-	int			tab_before_dd;
-	int			drag_origin_tab;
-	bool		drag_from_playlist;
+	int			tabBeforeDragDrop;
+	int			dragOriginTab;
+	bool		dragFromPlaylist;
 
 	Private(QWidget* parent) :
 		menu(new TabMenu(parent)),
-		tab_before_dd(-1),
-		drag_origin_tab(-1),
-		drag_from_playlist(false)
+		tabBeforeDragDrop(-1),
+		dragOriginTab(-1),
+		dragFromPlaylist(false)
 	{
-		last_dir = QDir::homePath();
+		lastDir = QDir::homePath();
 	}
 };
 
@@ -91,36 +92,33 @@ void TabBar::savePressed()
 
 void TabBar::saveAsPressed()
 {
-	int cur_idx = currentIndex();
-	QString cur_text = tabText(cur_idx);
+	int currentIndex = this->currentIndex();
+	QString currentText = tabText(currentIndex);
 
-	QString name = QInputDialog::getText(
-				this,
-				Lang::get(Lang::SaveAs).triplePt(),
-				cur_text + ": " + Lang::get(Lang::SaveAs));
+	const QString name = QInputDialog::getText
+	(
+		this,
+		Lang::get(Lang::SaveAs).triplePt(),
+		currentText + ": " + Lang::get(Lang::SaveAs)
+	);
 
 	if(!name.isEmpty())
 	{
-		emit sigTabSaveAs(cur_idx, name);
+		emit sigTabSaveAs(currentIndex, name);
 	}
 }
 
 void TabBar::saveToFilePressed()
 {
-	int cur_idx = currentIndex();
+	const QString name = QFileDialog::getSaveFileName(this,
+		Lang::get(Lang::SaveAs), m->lastDir, "*.m3u"
+	);
 
-	QString name = QFileDialog::getSaveFileName(
-				this,
-				Lang::get(Lang::SaveAs).triplePt(),
-				m->last_dir,
-				"*.m3u");
-
-	if(name.isEmpty()){
-		return;
+	if(!name.isEmpty())
+	{
+		m->lastDir = Util::File::getParentDirectory(name);
+		emit sigTabSaveToFile(this->currentIndex(), name);
 	}
-
-	m->last_dir = Util::File::getParentDirectory(name);
-	emit sigTabSaveToFile(cur_idx, name);
 }
 
 void TabBar::openFilePressed()
@@ -158,7 +156,8 @@ void TabBar::renamePressed()
 	int currentIndex = this->currentIndex();
 	QString currentText = tabText(currentIndex);
 
-	Gui::LineInputDialog dialog(
+	Gui::LineInputDialog dialog
+	(
 		Lang::get(Lang::Rename),
 		Lang::get(Lang::Rename),
 		currentText,
@@ -181,7 +180,6 @@ void TabBar::renamePressed()
 
 	emit sigTabRename(this->currentIndex(), name);
 }
-
 
 void TabBar::closeOthersPressed()
 {
@@ -238,7 +236,7 @@ void TabBar::wheelEvent(QWheelEvent* e)
 	}
 }
 
-static QShortcut* init_shortcut(QWidget* parent, QKeySequence key)
+static QShortcut* initShortcut(QWidget* parent, QKeySequence key)
 {
 	QShortcut* sc;
 	sc = new QShortcut(parent);
@@ -247,27 +245,26 @@ static QShortcut* init_shortcut(QWidget* parent, QKeySequence key)
 	return sc;
 }
 
-
 void TabBar::initShortcuts()
 {
-	ShortcutHandler* sch = ShortcutHandler::instance();
+	auto* sch = ShortcutHandler::instance();
 	sch->shortcut(ShortcutIdentifier::AddTab).connect(this, this, SIGNAL(sigAddTabClicked()));
 	sch->shortcut(ShortcutIdentifier::CloseTab).connect(this, this, SLOT(closePressed()));
 
-	QShortcut* sc1 = init_shortcut(this->parentWidget(), QKeySequence::Save);
+	auto* sc1 = initShortcut(this->parentWidget(), QKeySequence::Save);
 	connect(sc1, &QShortcut::activated, this, &TabBar::savePressed);
 
-	QShortcut* sc2 = init_shortcut(this->parentWidget(), QKeySequence::SaveAs);
+	auto* sc2 = initShortcut(this->parentWidget(), QKeySequence::SaveAs);
 	connect(sc2, &QShortcut::activated, this, &TabBar::saveAsPressed);
 
-	QShortcut* sc3 = init_shortcut(this->parentWidget(), QKeySequence("F2"));
+	auto* sc3 = initShortcut(this->parentWidget(), QKeySequence("F2"));
 	connect(sc3, &QShortcut::activated, this, &TabBar::renamePressed);
 
-	QShortcut* sc4 = init_shortcut(this->parentWidget(), QKeySequence::Open);
+	auto* sc4 = initShortcut(this->parentWidget(), QKeySequence::Open);
 	connect(sc4, &QShortcut::activated, this, &TabBar::openFilePressed);
 
 	QKeySequence ks(QKeySequence::Open);
-	QShortcut* sc5 = init_shortcut(this->parentWidget(), QKeySequence("Shift+" + ks.toString()));
+	auto* sc5 = initShortcut(this->parentWidget(), QKeySequence("Shift+" + ks.toString()));
 	connect(sc5, &QShortcut::activated, this, &TabBar::openDirPressed);
 }
 
@@ -284,14 +281,13 @@ void TabBar::setTabsClosable(bool b)
 
 bool TabBar::wasDragFromPlaylist() const
 {
-	return m->drag_from_playlist;
+	return m->dragFromPlaylist;
 }
 
 int TabBar::getDragOriginTab() const
 {
-	return m->drag_origin_tab;
+	return m->dragOriginTab;
 }
-
 
 void TabBar::dragEnterEvent(QDragEnterEvent* e)
 {
@@ -300,15 +296,15 @@ void TabBar::dragEnterEvent(QDragEnterEvent* e)
 		object_name = e->source()->objectName();
 	}
 
-	m->drag_origin_tab = -1;
-	m->drag_from_playlist = object_name.contains("playlist_view");
+	m->dragOriginTab = -1;
+	m->dragFromPlaylist = object_name.contains("playlist_view");
 
-	if(!m->drag_from_playlist){
-		m->tab_before_dd = -1;
+	if(!m->dragFromPlaylist){
+		m->tabBeforeDragDrop = -1;
 	}
 
-	else if(m->tab_before_dd < 0){
-		m->tab_before_dd = currentIndex();
+	else if(m->tabBeforeDragDrop < 0){
+		m->tabBeforeDragDrop = currentIndex();
 	}
 
 	e->accept();
@@ -327,10 +323,10 @@ void TabBar::dragMoveEvent(QDragMoveEvent* e)
 
 void TabBar::dragLeaveEvent(QDragLeaveEvent* e)
 {
-	if((m->tab_before_dd >= 0) && (currentIndex() == count() - 1))
+	if((m->tabBeforeDragDrop >= 0) && (currentIndex() == count() - 1))
 	{
-		this->setCurrentIndex(m->tab_before_dd);
-		m->tab_before_dd = -1;
+		this->setCurrentIndex(m->tabBeforeDragDrop);
+		m->tabBeforeDragDrop = -1;
 	}
 
 	e->accept();
@@ -341,34 +337,34 @@ void TabBar::dropEvent(QDropEvent* e)
 	e->accept();
 	int tab = this->tabAt(e->pos());
 
-	m->drag_origin_tab = m->tab_before_dd;
+	m->dragOriginTab = m->tabBeforeDragDrop;
 
-	if(m->tab_before_dd >= 0 && currentIndex() == count() - 1)
+	if(m->tabBeforeDragDrop >= 0 && currentIndex() == count() - 1)
 	{
-		this->setCurrentIndex(m->tab_before_dd);
+		this->setCurrentIndex(m->tabBeforeDragDrop);
 	}
 
-	m->tab_before_dd = -1;
+	m->tabBeforeDragDrop = -1;
 
-	auto* mime_data = e->mimeData();
-	if(!mime_data){
+	auto* mimeData = e->mimeData();
+	if(!mimeData){
 		return;
 	}
 
-	MetaDataList v_md = Gui::MimeData::metadata(mime_data);
-	if(!v_md.isEmpty())
+	const MetaDataList tracks = Gui::MimeData::metadata(mimeData);
+	if(!tracks.isEmpty())
 	{
-		emit sigMetadataDropped(tab, v_md);
+		emit sigMetadataDropped(tab, tracks);
 	}
 
 	else
 	{
-		const QList<QUrl> urls = mime_data->urls();
+		const QList<QUrl> urls = mimeData->urls();
+
 		QStringList files;
-		for(const QUrl& url : urls)
-		{
-			files << url.toLocalFile();
-		}
+		Util::Algorithm::transform(urls, files, [](const QUrl& url){
+			return  url.toLocalFile();
+		});
 
 		if(!files.isEmpty())
 		{

@@ -47,33 +47,27 @@ void GUI_TargetPlaylistDialog::languageChanged()
 	ui->retranslateUi(this);
 }
 
-
 void GUI_TargetPlaylistDialog::searchButtonClicked()
 {
-	QString filename =
-		QFileDialog::getSaveFileName(this,
-									Lang::get(Lang::SaveAs),
-									QDir::homePath(),
-									"*.m3u");
+	QString filename = QFileDialog::getSaveFileName(this,
+		Lang::get(Lang::SaveAs), QDir::homePath(), "*.m3u"
+	);
 
-	if(!filename.endsWith("m3u", Qt::CaseInsensitive))
-	{
+	if(!filename.endsWith("m3u", Qt::CaseInsensitive)) {
 		filename.append(".m3u");
 	}
 
 	ui->lePath->setText(filename);
 }
 
-
 void GUI_TargetPlaylistDialog::okButtonClicked()
 {
-	QString target_filename = ui->lePath->text();
+	QString targetPath = ui->lePath->text();
 	bool checked = ui->cbRelative->isChecked();
 
-	if(target_filename.size() > 0)
+	if(!targetPath.isEmpty())
 	{
-        emit sigTargetChosen(target_filename, checked);
+		emit sigTargetChosen(targetPath, checked);
         close();
     }
-
 }

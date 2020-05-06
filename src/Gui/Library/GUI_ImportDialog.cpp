@@ -27,6 +27,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
+#include "Utils/FileUtils.h"
 
 #include <QPixmap>
 #include <QScrollBar>
@@ -210,35 +211,25 @@ void GUI_ImportDialog::reject()
 
 void GUI_ImportDialog::chooseDirectory()
 {
-	QString library_path = m->library->path();
-	QString dialog_title = tr("Choose target directory");
-	QString dir =
-	QFileDialog::getExistingDirectory(	this,
-										dialog_title,
-										library_path,
-										QFileDialog::ShowDirsOnly
+	const QString libraryPath = m->library->path();
+	QString dir = QFileDialog::getExistingDirectory(this,
+		tr("Choose target directory"),
+		libraryPath,
+		QFileDialog::ShowDirsOnly
 	);
-
 	if(dir.isEmpty()){
 		ui->le_directory->clear();
 		return;
 	}
 
-	if(!dir.contains(library_path)) {
+	if(!dir.contains(libraryPath)) {
 		Message::warning(tr("%1<br />is no library directory").arg(dir));
 		ui->le_directory->clear();
 		return;
 	}
 
-	dir.replace(library_path, "");
-	while(dir.startsWith(QDir::separator()))
-	{
-		dir.remove(0, 1);
-	}
-
-	while(dir.endsWith(QDir::separator())){
-		dir.remove( dir.size() - 1, 1);
-	}
+	dir.replace(libraryPath, "");
+	dir = Util::File::cleanFilename(dir);
 
 	ui->le_directory->setText(dir);
 }

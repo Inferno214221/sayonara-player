@@ -43,8 +43,8 @@ Model::~Model() = default;
 
 QModelIndex Model::setDataSource(LibraryId libraryId)
 {
-	Library::Info info = Library::Manager::instance()->libraryInfo(libraryId);
-	QModelIndex index = setDataSource(info.path());
+	const Library::Info info = Library::Manager::instance()->libraryInfo(libraryId);
+	const QModelIndex index = setDataSource(info.path());
 
 	m->libraryId = libraryId;
 
@@ -56,7 +56,11 @@ QModelIndex Model::setDataSource(const QString& path)
 	m->libraryId = -1;
 	m->model->setRootPath(path);
 
-	QModelIndex sourceIndex = m->model->index(path);
+	const QModelIndex sourceIndex = m->model->index(path);
+	if(!Util::File::exists(path)){
+		return QModelIndex();
+	}
+
 	return this->mapFromSource(sourceIndex);
 }
 

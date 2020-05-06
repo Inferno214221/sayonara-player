@@ -50,10 +50,10 @@ enum StackedWidgetPage
 
 struct GUI_AudioConverter::Private
 {
-	bool				lameAvailable;
+	bool isLameAvailable;
 
 	Private() :
-		lameAvailable(true)
+		isLameAvailable(true)
 	{}
 };
 
@@ -63,7 +63,6 @@ GUI_AudioConverter::GUI_AudioConverter(QWidget* parent) :
 	m = Pimpl::make<Private>();
 }
 
-
 GUI_AudioConverter::~GUI_AudioConverter()
 {
 	if(ui)
@@ -72,13 +71,12 @@ GUI_AudioConverter::~GUI_AudioConverter()
 	}
 }
 
-
 void GUI_AudioConverter::initUi()
 {
 	setupParent(this, &ui);
 
-	QString preferred_converter = GetSetting(Set::AudioConvert_PreferredConverter);
-	int idx = std::max(ui->combo_codecs->findText(preferred_converter), 0);
+	const QString preferredConverter = GetSetting(Set::AudioConvert_PreferredConverter);
+	int idx = std::max(ui->combo_codecs->findText(preferredConverter), 0);
 
 	ui->combo_codecs->setCurrentIndex(idx);
 	ui->sw_preferences->setCurrentIndex(idx);
@@ -115,14 +113,14 @@ QString GUI_AudioConverter::displayName() const
 
 void GUI_AudioConverter::retranslate()
 {
-	int idx_codecs = ui->combo_codecs->currentIndex();
-	int idx_cbr = ui->combo_cbr->currentIndex();
+	int idxCodec = ui->combo_codecs->currentIndex();
+	int idxCBR = ui->combo_cbr->currentIndex();
 
 	ui->retranslateUi(this);
 	ui->lab_threads->setText("#" + tr("Threads"));
 
-	ui->combo_codecs->setCurrentIndex(idx_codecs);
-	ui->combo_cbr->setCurrentIndex(idx_cbr);
+	ui->combo_codecs->setCurrentIndex(idxCodec);
+	ui->combo_cbr->setCurrentIndex(idxCBR);
 
 	checkStartButton();
 }
@@ -133,10 +131,10 @@ void GUI_AudioConverter::btnStartClicked()
 		return;
 	}
 
-	int n_threads = GetSetting(Set::AudioConvert_NumberThreads);
+	int threadCount = GetSetting(Set::AudioConvert_NumberThreads);
 
 	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
-	MetaDataList v_md = pl->tracks();
+	MetaDataList tracks = pl->tracks();
 
 	Converter* converter = createConverter();
 	{ // create and check converter
@@ -153,13 +151,12 @@ void GUI_AudioConverter::btnStartClicked()
 	}
 
 	{ // check input files
-		converter->addMetadata(v_md);
+		converter->addMetadata(tracks);
 		if(converter->fileCount() == 0)
 		{
-			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::error
 			(
-				error_text +
+				tr("Playlist does not contain tracks which are supported by the converter"),
 				QString(" (%1). ").arg(converter->supportedInputFormats().join(", ")) +
 				tr("No track will be converted.")
 			);
@@ -168,12 +165,11 @@ void GUI_AudioConverter::btnStartClicked()
 			return;
 		}
 
-		if(converter->fileCount() < v_md.count())
+		if(converter->fileCount() < tracks.count())
 		{
-			QString error_text = tr("Playlist does not contain tracks which are supported by the converter");
 			Message::warning
 			(
-				error_text +
+				tr("Playlist does not contain tracks which are supported by the converter"),
 				QString(" (%1). ").arg(converter->supportedInputFormats().join(", ")) +
 				tr("These tracks will be ignored")
 			);
@@ -182,8 +178,8 @@ void GUI_AudioConverter::btnStartClicked()
 
 	QString dir;
 	{ // set target dir
-		QString cvt_target_path = GetSetting(Set::Engine_CovertTargetPath);
-		dir = QFileDialog::getExistingDirectory(this, "Choose target directory", cvt_target_path);
+		QString convertTargetPath = GetSetting(Set::Engine_CovertTargetPath);
+		dir = QFileDialog::getExistingDirectory(this, tr("Choose target directory"), convertTargetPath);
 		if(dir.isEmpty()){
 			converter->deleteLater();
 			return;
@@ -199,7 +195,7 @@ void GUI_AudioConverter::btnStartClicked()
 	ui->pb_progress->setValue(0);
 	ui->sw_progress->setCurrentIndex(1);
 
-	converter->start(n_threads, dir);
+	converter->start(threadCount, dir);
 }
 
 void GUI_AudioConverter::convertFinished()
@@ -207,13 +203,13 @@ void GUI_AudioConverter::convertFinished()
 	auto* converter = static_cast<OggConverter*>(sender());
 	if(converter)
 	{
-		int num_errors = converter->errorCount();
+		int errorCount = converter->errorCount();
 
-		if(num_errors > 0)
+		if(errorCount > 0)
 		{
 			Message::error( QStringList
 			{
-				tr("Failed to convert %n track(s)", "", num_errors),
+				tr("Failed to convert %n track(s)", "", errorCount),
 				tr("Please check the log files") + ".",
 				Util::createLink(converter->logginDirectory(), Style::isDark(), true, "file://" + converter->logginDirectory())
 			}.join("<br>"));

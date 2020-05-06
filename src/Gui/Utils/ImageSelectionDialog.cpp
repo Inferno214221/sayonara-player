@@ -44,15 +44,13 @@ struct ImageSelectionDialog::Private
 	}
 };
 
-
 ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) :
 	Gui::WidgetTemplate<QFileDialog>(parent)
 {
 	m = Pimpl::make<Private>(this);
 	m->start_dir = dir;
 
-	;
-	QStringList filters
+	const QStringList filters
 	{
 		tr("Image files") + " (" + Util::imageExtensions().join(" ") + ")",
 		tr("Any files") + " (*)"

@@ -249,16 +249,16 @@ void GUI_Playlist::setTotalTimeLabel()
 	ui->lab_totalTime->setContentsMargins(0, 2, 0, 2);
 }
 
-void GUI_Playlist::openFileClicked(int tgt_idx)
+void GUI_Playlist::openFileClicked(int targetIndex)
 {
-	Q_UNUSED(tgt_idx)
+	Q_UNUSED(targetIndex)
 
-	QString filter = Util::getFileFilter(
+	const QString filter = Util::getFileFilter(
 		Util::Extensions(Util::Extension::Soundfile | Util::Extension::Playlist),
 		tr("Media files")
 	);
 
-	QStringList list = QFileDialog::getOpenFileNames
+	const QStringList list = QFileDialog::getOpenFileNames
 	(
 		this,
 		tr("Open Media files"),
@@ -266,29 +266,27 @@ void GUI_Playlist::openFileClicked(int tgt_idx)
 		filter
 	);
 
-	if(list.isEmpty()){
-		return;
+	if(!list.isEmpty()){
+		Handler::instance()->createPlaylist(list);
 	}
-
-	Handler::instance()->createPlaylist(list);
 }
 
-void GUI_Playlist::openDirClicked(int tgt_idx)
+void GUI_Playlist::openDirClicked(int targetIndex)
 {
-	Q_UNUSED(tgt_idx)
+	Q_UNUSED(targetIndex)
 
-	QString dir = QFileDialog::getExistingDirectory(this,
-			Lang::get(Lang::OpenDir),
-			QDir::homePath(),
-			QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	const QString dir = QFileDialog::getExistingDirectory
+	(
+		this,
+		Lang::get(Lang::OpenDir),
+		QDir::homePath(),
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+	);
 
-	if (dir.isEmpty()){
-		return;
+	if(!dir.isEmpty()){
+		Handler::instance()->createPlaylist(dir);
 	}
-
-	Handler::instance()->createPlaylist(dir);
 }
-
 
 void GUI_Playlist::deleteTracksClicked(const IndexSet& rows)
 {

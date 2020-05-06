@@ -89,14 +89,14 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 	}
 
 	QString mime;
-	QString full_mime(mimetype.data());
+	QString fullMime(mimetype.data());
 
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
-	if(re.indexIn(full_mime) >= 0){
+	if(re.indexIn(fullMime) >= 0){
 		mime = re.cap(1);
 	}
 
-	spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << full_mime;
+	spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << fullMime;
 
 	GstBuffer* buffer = gst_sample_get_buffer(sample);
 	if(!buffer){

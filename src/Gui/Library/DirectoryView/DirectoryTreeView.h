@@ -113,6 +113,7 @@ namespace Directory
 		private slots:
 			void createDirectoryClicked();
 			void renameDirectoryClicked();
+			void viewInFileManagerClicked();
 			void dragTimerTimeout();
 
 

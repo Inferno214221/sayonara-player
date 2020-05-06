@@ -340,7 +340,7 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 	}
 
 	else {
-		cl.setIdentifier("CL:By metadata: " + md.album() + " by " + md.artist());
+		cl.setIdentifier("CL:By metadata: " + md.album() + " by " + md.albumArtist());
 	}
 
 	cl.setLocalPathHints(QStringList{md.filepath()});

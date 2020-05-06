@@ -49,7 +49,6 @@
 #include <QStringList>
 #include <QMenu>
 #include <QAction>
-#include <QList>
 #include <QDateTime>
 
 struct Menubar::Private
@@ -288,10 +287,6 @@ void Menubar::initConnections()
 	connect(m->actionFullscreen, &QAction::toggled, this, &Menubar::showFullscreenToggled);
 	connect(m->actionLogger, &QAction::triggered, this, &Menubar::sigLoggerClicked);
 
-//	connect(m->actionStandardView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
-//	connect(m->actionCoverView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
-//	connect(m->actionDirectoryView, &QAction::triggered, this, &Menubar::libraryViewTypeToggled);
-
 	// about
 	connect(m->actionAbout, &QAction::triggered, this, &Menubar::aboutClicked);
 	connect(m->actionHelp, &QAction::triggered, this, &Menubar::helpClicked);
@@ -313,8 +308,6 @@ void Menubar::initConnections()
 
 	auto* pph = PlayerPlugin::Handler::instance();
 	connect(pph, &PlayerPlugin::Handler::sigPluginAdded, this, &Menubar::pluginAdded);
-
-	ListenSetting(Set::Lib_ViewType, Menubar::libraryViewTypeChanged);
 }
 
 void Menubar::languageChanged()
@@ -331,9 +324,6 @@ void Menubar::languageChanged()
 	m->actionClose->setText(Lang::get(Lang::Quit));
 
 	m->actionViewLibrary->setText(Lang::get(Lang::ShowLibrary));
-//	m->actionStandardView->setText(tr("Standard view"));
-//	m->actionCoverView->setText(tr("Cover view"));
-//	m->actionDirectoryView->setText(tr("Directory view"));
 	m->actionLogger->setText(Lang::get(Lang::Logger));
 	m->actionDark->setText(Lang::get(Lang::DarkMode));
 	m->actionBigCover->setText(tr("Show large cover"));
@@ -370,28 +360,26 @@ void Menubar::skinChanged()
 
 void Menubar::openDirClicked()
 {
-	QString dir = QFileDialog::getExistingDirectory(this,
-			Lang::get(Lang::OpenDir),
-			QDir::homePath(),
-			QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
+	const QString dir = QFileDialog::getExistingDirectory(this,
+		Lang::get(Lang::OpenDir),
+		QDir::homePath(),
+		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+	);
 
-	if (dir.isEmpty()){
-		return;
+	if(!dir.isEmpty()){
+		Playlist::Handler::instance()->createPlaylist(dir);
 	}
-
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->createPlaylist(dir);
 }
-
 
 void Menubar::openFilesClicked()
 {
-	QString filter = Util::getFileFilter(
+	const QString filter = Util::getFileFilter
+	(
 		Util::Extensions(Util::Extension::Soundfile | Util::Extension::Playlist),
 		tr("Media files")
 	);
 
-	QStringList list = QFileDialog::getOpenFileNames
+	const QStringList list = QFileDialog::getOpenFileNames
 	(
 		this,
 		tr("Open Media files"),
@@ -399,12 +387,9 @@ void Menubar::openFilesClicked()
 		filter
 	);
 
-	if(list.isEmpty()){
-		return;
+	if(!list.isEmpty()) {
+		Playlist::Handler::instance()->createPlaylist(list);;
 	}
-
-	Playlist::Handler* plh = Playlist::Handler::instance();
-	plh->createPlaylist(list);
 }
 
 void Menubar::shutdownClicked()
@@ -439,18 +424,11 @@ void Menubar::bigCoverToggled(bool b)
 	SetSetting(Set::Player_ControlStyle, (b==true) ? 1 : 0);
 }
 
-
 void Menubar::showLibraryToggled(bool b)
 {
 	m->actionViewLibrary->setChecked(b);
-
-//	m->actionStandardView->setEnabled(b);
-//	m->actionCoverView->setEnabled(b);
-//	m->actionDirectoryView->setEnabled(b);
-
 	SetSetting(Set::Lib_Show, b);
 }
-
 
 void Menubar::showFullscreenToggled(bool b)
 {
@@ -458,7 +436,6 @@ void Menubar::showFullscreenToggled(bool b)
 	m->actionFullscreen->setChecked(b);
 	SetSetting(Set::Player_Fullscreen, b);
 }
-
 
 void Menubar::helpClicked()
 {
@@ -521,29 +498,4 @@ void Menubar::shortcutChanged(ShortcutIdentifier identifier)
 	ShortcutHandler* sch = ShortcutHandler::instance();
 	Shortcut sc = sch->shortcut(ShortcutIdentifier::ViewLibrary);
 	m->actionViewLibrary->setShortcut(sc.sequence());
-}
-
-void Menubar::libraryViewTypeToggled(bool b)
-{
-	Q_UNUSED(b)
-
-//	Library::ViewType viewType = Library::ViewType::Standard;
-//	if(m->actionCoverView->isChecked()) {
-//		viewType = Library::ViewType::CoverView;
-//	}
-
-//	else if(m->actionDirectoryView->isChecked()) {
-//		viewType = Library::ViewType::FileView;
-//	}
-
-//	SetSetting(Set::Lib_ViewType, viewType);
-}
-
-void Menubar::libraryViewTypeChanged()
-{
-//	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
-
-//	m->actionStandardView->setChecked(viewType == Library::ViewType::Standard);
-//	m->actionCoverView->setChecked(viewType == Library::ViewType::CoverView);
-//	m->actionDirectoryView->setChecked(viewType == Library::ViewType::FileView);
 }

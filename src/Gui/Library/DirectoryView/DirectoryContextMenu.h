@@ -40,6 +40,7 @@ namespace Directory
 			void sigRenameClicked();
 			void sigRenameByTagClicked();
 			void sigCollapseAllClicked();
+			void sigViewInFileManagerClicked();
 			void sigMoveToLibrary(LibraryId id);
 			void sigCopyToLibrary(LibraryId id);
 
@@ -57,7 +58,8 @@ namespace Directory
 				EntryRenameByTag	= Library::ContextMenu::EntryLast << 2,
 				EntryCollapseAll	= Library::ContextMenu::EntryLast << 3,
 				EntryMoveToLib		= Library::ContextMenu::EntryLast << 4,
-				EntryCopyToLib		= Library::ContextMenu::EntryLast << 5
+				EntryCopyToLib		= Library::ContextMenu::EntryLast << 5,
+				EntryViewInFM		= Library::ContextMenu::EntryLast << 6
 			};
 
 			ContextMenu(Mode mode, QWidget* parent);

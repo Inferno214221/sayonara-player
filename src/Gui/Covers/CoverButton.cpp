@@ -261,12 +261,14 @@ void CoverButton::byteconverterFinished()
 {
 	auto* worker = static_cast<ByteArrayConverter*>(sender());
 
-	QPixmap pm = worker->pixmap();
-	if(pm.isNull()){
-		pm = m->invalidCover;
+	const QPixmap pm = worker->pixmap();
+	if(!pm.isNull()) {
+		this->setCoverImagePixmap(pm);
 	}
 
-	this->setCoverImagePixmap(pm);
+	else {
+		spLog(Log::Warning, this) << "Cover from track seems invalid or broken";
+	}
 
 	worker->deleteLater();
 }

@@ -41,6 +41,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 
@@ -48,6 +49,7 @@
 #include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
@@ -57,6 +59,7 @@
 #include <QDir>
 #include <QFileDialog>
 #include <QStringList>
+#include <QFileSystemWatcher>
 
 enum StatusWidgetIndex
 {
@@ -80,7 +83,8 @@ enum AlbumViewIndex
 enum ReloadWidgetIndex
 {
 	TableView=0,
-	ReloadView=1
+	ReloadView=1,
+	NoDirView=2
 };
 
 using namespace Library;
@@ -104,11 +108,11 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	m = Pimpl::make<Private>(id, this);
 
 	setupParent(this, &ui);
-	this->setFocusProxy(ui->le_search);
+	this->setFocusProxy(ui->leSearch);
 
 	connect(m->library, &LocalLibrary::sigReloadingLibrary, this, &GUI_LocalLibrary::progressChanged);
 	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, this, &GUI_LocalLibrary::reloadFinished);
-	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, ui->lv_genres, &GenreView::reloadGenres);
+	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, ui->lvGenres, &GenreView::reloadGenres);
 	connect(m->library, &LocalLibrary::sigAllTracksLoaded, this, &GUI_LocalLibrary::tracksLoaded);
 	connect(m->library, &LocalLibrary::sigImportDialogRequested, this, &GUI_LocalLibrary::importDialogRequested);
 
@@ -116,10 +120,10 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(manager, &Manager::sigPathChanged, this, &GUI_LocalLibrary::pathChanged);
 	connect(manager, &Manager::sigRenamed, this, &GUI_LocalLibrary::nameChanged);
 
-	connect(ui->tv_albums, &AlbumView::sigDiscPressed, m->library, &LocalLibrary::changeCurrentDisc);
-	connect(ui->lv_genres, &GenreView::sigSelectedChanged, this, &GUI_LocalLibrary::genreSelectionChanged);
-	connect(ui->lv_genres, &GenreView::sigInvalidGenreSelected, this, &GUI_LocalLibrary::invalidGenreSelected);
-	connect(ui->lv_genres, &GenreView::sigProgress, this, &GUI_LocalLibrary::progressChanged);
+	connect(ui->tvAlbums, &AlbumView::sigDiscPressed, m->library, &LocalLibrary::changeCurrentDisc);
+	connect(ui->lvGenres, &GenreView::sigSelectedChanged, this, &GUI_LocalLibrary::genreSelectionChanged);
+	connect(ui->lvGenres, &GenreView::sigInvalidGenreSelected, this, &GUI_LocalLibrary::invalidGenreSelected);
+	connect(ui->lvGenres, &GenreView::sigProgress, this, &GUI_LocalLibrary::progressChanged);
 
 	connect(m->libraryMenu, &LocalLibraryMenu::sigPathChanged, m->library, &LocalLibrary::setLibraryPath);
 	connect(m->libraryMenu, &LocalLibraryMenu::sigNameChanged, m->library, &LocalLibrary::setLibraryName);
@@ -128,21 +132,21 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->libraryMenu, &LocalLibraryMenu::sigInfo, this, &GUI_LocalLibrary::showInfoBox);
 	connect(m->libraryMenu, &LocalLibraryMenu::sigReloadLibrary, this, &GUI_LocalLibrary::reloadLibraryRequested);
 
-	connect(ui->btn_scanForFiles, &QPushButton::clicked, this, &GUI_LocalLibrary::reloadLibraryDeepRequested);
-	connect(ui->btn_importDirectories, &QPushButton::clicked, this, &GUI_LocalLibrary::importDirsRequested);
+	connect(ui->btnScanForFiles, &QPushButton::clicked, this, &GUI_LocalLibrary::reloadLibraryDeepRequested);
+	connect(ui->btnImportDirectories, &QPushButton::clicked, this, &GUI_LocalLibrary::importDirsRequested);
 
-	connect(ui->splitter_artistAlbum, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitterArtistMoved);
+	connect(ui->splitterArtistAlbum, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitterArtistMoved);
 	connect(ui->splitter_tracks, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitterTracksMoved);
 	connect(ui->splitter_genre, &QSplitter::splitterMoved, this, &GUI_LocalLibrary::splitterGenreMoved);
 
-	connect(ui->tv_albums, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
-	connect(ui->tv_artists, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
-	connect(ui->tv_tracks, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+	connect(ui->tvAlbums, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+	connect(ui->tvArtists, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+	connect(ui->tvTracks, &ItemView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
 
-	ui->extension_bar->init(m->library);
-	ui->lv_genres->init(m->library);
-	ui->directory_view->setCurrentLibrary(m->library->id());
-	ui->btn_view->setOverrideText(true);
+	ui->extensionBar->init(m->library);
+	ui->lvGenres->init(m->library);
+	ui->directoryView->setCurrentLibrary(m->library->id());
+	ui->btnView->setOverrideText(true);
 
 	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
@@ -153,6 +157,21 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	Shortcut sc = sch->shortcut(ShortcutIdentifier::CoverView);
 	sc.connect(this, [this]() {
 		this->selectNextViewType();
+	});
+
+	const QStringList paths
+	{
+		m->library->path(),
+		Util::File::getParentDirectory(m->library->path())
+	};
+
+	auto* action = new Gui::LibraryPreferenceAction(this);
+	connect(ui->btnLibraryPreferences, &QPushButton::clicked, action, &QAction::trigger);
+
+	auto* fileSystemWatcher = new QFileSystemWatcher(paths, this);
+	connect(fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, [this](const QString& path){
+		Q_UNUSED(path)
+		this->checkMainSplitterStatus();
 	});
 }
 
@@ -165,7 +184,7 @@ void GUI_LocalLibrary::checkViewState()
 {
 	if(this->isVisible())
 	{
-		checkReloadStatus();
+		checkMainSplitterStatus();
 
 		if(!m->library->isReloading())
 		{
@@ -174,34 +193,51 @@ void GUI_LocalLibrary::checkViewState()
 	}
 }
 
-void GUI_LocalLibrary::checkReloadStatus()
+void GUI_LocalLibrary::checkMainSplitterStatus()
 {
-	bool isReloading = m->library->isReloading();
+	bool pathExists = Util::File::exists(m->library->path());
 	bool isLibraryEmpty = m->library->isEmpty();
 
-	ReloadWidgetIndex index = (isLibraryEmpty == false) ? ReloadWidgetIndex::TableView : ReloadWidgetIndex::ReloadView;
+	ReloadWidgetIndex index = ReloadWidgetIndex::TableView;
+	if(!pathExists) {
+		index = ReloadWidgetIndex::NoDirView;
+	}
+
+	else if(isLibraryEmpty) {
+		index = ReloadWidgetIndex::ReloadView;
+	}
+
+	ui->swReload->setCurrentIndex( int(index) );
+
 	bool inLibraryState = (index == ReloadWidgetIndex::TableView);
 
-	ui->sw_reload->setCurrentIndex( int(index) );
+	ui->leSearch->setVisible(inLibraryState);
+	ui->btnScanForFiles->setVisible(!inLibraryState);
+	ui->btnImportDirectories->setVisible(!inLibraryState);
 
-	ui->pb_progress->setVisible(isReloading);
-	ui->lab_progress->setVisible(isReloading);
-	ui->widget_reload->setVisible(isReloading || isLibraryEmpty);
+	if(index == ReloadWidgetIndex::NoDirView)
+	{
+		ui->labDir->setText(m->library->path());
+	}
 
-	ui->le_search->setVisible(inLibraryState);
-	ui->btn_scanForFiles->setVisible(!inLibraryState);
-	ui->btn_importDirectories->setVisible(!inLibraryState);
+	else
+	{
+		bool isReloading = m->library->isReloading();
 
-	m->libraryMenu->setLibraryEmpty(isLibraryEmpty);
+		ui->pbProgress->setVisible(isReloading);
+		ui->labProgress->setVisible(isReloading);
+		ui->widgetReload->setVisible(isReloading || isLibraryEmpty);
+		m->libraryMenu->setLibraryEmpty(isLibraryEmpty);
+	}
 }
 
 void GUI_LocalLibrary::checkFileExtensionBar()
 {
-	ui->extension_bar->refresh();
-	ui->extension_bar->setVisible
+	ui->extensionBar->refresh();
+	ui->extensionBar->setVisible
 	(
 		GetSetting(Set::Lib_ShowFilterExtBar) &&
-		ui->extension_bar->hasExtensions()
+		ui->extensionBar->hasExtensions()
 	);
 }
 
@@ -209,33 +245,33 @@ void GUI_LocalLibrary::tracksLoaded()
 {
 	checkViewState();
 
-	ui->lab_libraryName->setText(m->library->name());
-	ui->lab_path->setText(Util::createLink(m->library->path(), Style::isDark()));
+	ui->labLibraryName->setText(m->library->name());
+	ui->labPath->setText(Util::createLink(m->library->path(), Style::isDark()));
 
-	ui->btn_scanForFiles->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
-	ui->btn_importDirectories->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
+	ui->btnScanForFiles->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
+	ui->btnImportDirectories->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
 }
 
 void GUI_LocalLibrary::clearSelections()
 {
 	GUI_AbstractLibrary::clearSelections();
 
-	if(ui->cover_view) {
-		ui->cover_view->clearSelections();
+	if(ui->coverView) {
+		ui->coverView->clearSelections();
 	}
 
-	ui->lv_genres->clearSelection();
+	ui->lvGenres->clearSelection();
 }
 
 void GUI_LocalLibrary::invalidGenreSelected()
 {
-	ui->le_search->setInvalidGenreMode(true);
-	ui->le_search->setCurrentMode(Filter::Genre);
-	ui->le_search->setText(GenreView::invalidGenreName());
+	ui->leSearch->setInvalidGenreMode(true);
+	ui->leSearch->setCurrentMode(Filter::Genre);
+	ui->leSearch->setText(GenreView::invalidGenreName());
 
 	searchTriggered();
 
-	ui->le_search->setInvalidGenreMode(false);
+	ui->leSearch->setInvalidGenreMode(false);
 }
 
 void GUI_LocalLibrary::genreSelectionChanged(const QStringList& genres)
@@ -244,9 +280,9 @@ void GUI_LocalLibrary::genreSelectionChanged(const QStringList& genres)
 		return;
 	}
 
-	ui->le_search->setInvalidGenreMode(false);
-	ui->le_search->setCurrentMode(Filter::Genre);
-	ui->le_search->setText(genres.join(","));
+	ui->leSearch->setInvalidGenreMode(false);
+	ui->leSearch->setCurrentMode(Filter::Genre);
+	ui->leSearch->setText(genres.join(","));
 
 	searchTriggered();
 }
@@ -267,11 +303,11 @@ void GUI_LocalLibrary::progressChanged(const QString& type, int progress)
 
 	QFontMetrics fm(this->font());
 
-	ui->pb_progress->setMaximum((progress > 0) ? 100 : 0);
-	ui->pb_progress->setValue(progress);
-	ui->lab_progress->setText
+	ui->pbProgress->setMaximum((progress > 0) ? 100 : 0);
+	ui->pbProgress->setValue(progress);
+	ui->labProgress->setText
 	(
-		fm.elidedText(type, Qt::ElideRight, ui->widget_reload->width() / 2)
+		fm.elidedText(type, Qt::ElideRight, ui->widgetReload->width() / 2)
 	);
 }
 
@@ -347,7 +383,7 @@ void GUI_LocalLibrary::importFilesRequested()
 {
 	QStringList files = QFileDialog::getOpenFileNames
 	(
-		this,
+		nullptr,
 		Lang::get(Lang::ImportFiles),
 		QDir::homePath(),
 		Util::getFileFilter(Util::Extensions(Util::Extension::Soundfile), tr("Audio files"))
@@ -367,7 +403,7 @@ void GUI_LocalLibrary::nameChanged(LibraryId id)
 	if(info.valid())
 	{
 		m->libraryMenu->refreshName(info.name());
-		ui->lab_libraryName->setText(info.name());
+		ui->labLibraryName->setText(info.name());
 	}
 }
 
@@ -386,7 +422,7 @@ void GUI_LocalLibrary::pathChanged(LibraryId id)
 		if(this->isVisible())
 		{
 			reloadLibraryRequestedWithQuality(ReloadQuality::Accurate);
-			ui->lab_path->setText(info.path());
+			ui->labPath->setText(info.path());
 		}
 	}
 }
@@ -408,7 +444,7 @@ void GUI_LocalLibrary::splitterArtistMoved(int pos, int idx)
 {
 	Q_UNUSED(pos) Q_UNUSED(idx)
 
-	QByteArray arr = ui->splitter_artistAlbum->saveState();
+	QByteArray arr = ui->splitterArtistAlbum->saveState();
 	SetSetting(Set::Lib_SplitterStateArtist, arr);
 }
 
@@ -434,11 +470,11 @@ void GUI_LocalLibrary::switchViewType()
 	switch(viewType)
 	{
 		case Library::ViewType::CoverView:
-			if(!ui->cover_view->isInitialized())
+			if(!ui->coverView->isInitialized())
 			{
-				ui->cover_view->init(m->library);
-				connect(ui->cover_view, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
-				connect(ui->cover_view, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
+				ui->coverView->init(m->library);
+				connect(ui->coverView, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
+				connect(ui->coverView, &GUI_CoverView::sigReloadClicked, this, &GUI_LocalLibrary::reloadLibraryRequested);
 			}
 
 			if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
@@ -446,23 +482,21 @@ void GUI_LocalLibrary::switchViewType()
 				m->library->selectedArtistsChanged(IndexSet());
 			}
 
-			//ui->sw_viewType->setFocusProxy(ui->cover_view);
-			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
+			ui->swViewType->setCurrentIndex(AlbumViewIndex::AlbumCoverView);
 			break;
 
 		case Library::ViewType::FileView:
-			//ui->sw_viewType->setFocusProxy(ui->directory_view);
-			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::DirectoryView);
+			ui->swViewType->setCurrentIndex(AlbumViewIndex::DirectoryView);
 			break;
 
 		case Library::ViewType::Standard:
 		default:
-			//ui->sw_viewType->setFocusProxy(ui->tv_artists);
-			ui->sw_viewType->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
+			//ui->swViewType->setFocusProxy(ui->tvArtists);
+			ui->swViewType->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
 			break;
 	}
 
-	ui->sw_viewType->setFocus();
+	ui->swViewType->setFocus();
 }
 
 void GUI_LocalLibrary::selectNextViewType()
@@ -475,8 +509,8 @@ void GUI_LocalLibrary::selectNextViewType()
 bool GUI_LocalLibrary::hasSelections() const
 {
 	return GUI_AbstractLibrary::hasSelections() ||
-			(!ui->lv_genres->selectedItems().isEmpty()) ||
-			(!ui->cover_view->selectedItems().isEmpty());
+			(!ui->lvGenres->selectedItems().isEmpty()) ||
+			(!ui->coverView->selectedItems().isEmpty());
 }
 
 QList<Filter::Mode> GUI_LocalLibrary::searchOptions() const
@@ -487,7 +521,7 @@ QList<Filter::Mode> GUI_LocalLibrary::searchOptions() const
 void GUI_LocalLibrary::queryLibrary()
 {
 	GUI_AbstractLibrary::queryLibrary();
-	ui->directory_view->setFilterTerm(m->library->filter().filtertext(false).join(""));
+	ui->directoryView->setFilterTerm(m->library->filter().filtertext(false).join(""));
 }
 
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
@@ -500,7 +534,7 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 
 	QMap<QSplitter*, QByteArray> splitters
 	{
-		{ui->splitter_artistAlbum, GetSetting(Set::Lib_SplitterStateArtist)},
+		{ui->splitterArtistAlbum, GetSetting(Set::Lib_SplitterStateArtist)},
 		{ui->splitter_tracks, GetSetting(Set::Lib_SplitterStateTrack)},
 		{ui->splitter_genre, GetSetting(Set::Lib_SplitterStateGenre)}
 	};
@@ -518,9 +552,11 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 void GUI_LocalLibrary::languageChanged()
 {
 	ui->retranslateUi(this);
-	ui->gb_genres->setTitle(Lang::get(Lang::Genres));
-	ui->btn_scanForFiles->setText(Lang::get(Lang::ScanForFiles));
-	ui->btn_importDirectories->setText(Lang::get(Lang::ImportDir));
+
+	ui->btnLibraryPreferences->setText(Lang::get(Lang::Preferences));
+	ui->gbGenres->setTitle(Lang::get(Lang::Genres));
+	ui->btnScanForFiles->setText(Lang::get(Lang::ScanForFiles));
+	ui->btnImportDirectories->setText(Lang::get(Lang::ImportDir));
 
 	GUI_AbstractLibrary::languageChanged();
 }
@@ -533,10 +569,10 @@ void GUI_LocalLibrary::skinChanged()
 }
 
 // GUI_AbstractLibrary
-Library::TableView* GUI_LocalLibrary::lvArtist() const { return ui->tv_artists; }
-Library::TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tv_albums; }
-Library::TableView* GUI_LocalLibrary::lvTracks() const { return ui->tv_tracks; }
-Library::SearchBar* GUI_LocalLibrary::leSearch() const { return ui->le_search; }
+Library::TableView* GUI_LocalLibrary::lvArtist() const { return ui->tvArtists; }
+Library::TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tvAlbums; }
+Library::TableView* GUI_LocalLibrary::lvTracks() const { return ui->tvTracks; }
+Library::SearchBar* GUI_LocalLibrary::leSearch() const { return ui->leSearch; }
 
 // LocalLibraryContainer
 QMenu* GUI_LocalLibrary::menu() const {	return m->libraryMenu; }

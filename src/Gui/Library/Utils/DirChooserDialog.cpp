@@ -37,7 +37,6 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 {
 	this->setDirectory(QDir::homePath());
 	this->setWindowTitle(Lang::get(Lang::ImportDir));
-	//this->setOption(QFileDialog::DontUseNativeDialog, true);
 	this->setOption(QFileDialog::ShowDirsOnly, true);
 	this->setFilter(QDir::Filter::Dirs);
 	this->setAcceptMode(QFileDialog::AcceptOpen);

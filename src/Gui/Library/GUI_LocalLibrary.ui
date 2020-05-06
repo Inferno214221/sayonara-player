@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1306</width>
-    <height>891</height>
+    <width>840</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="acceptDrops">
@@ -30,11 +30,11 @@
     <number>0</number>
    </property>
    <item row="1" column="0">
-    <widget class="QStackedWidget" name="sw_reload">
+    <widget class="QStackedWidget" name="swReload">
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
-     <widget class="QWidget" name="page">
+     <widget class="QWidget" name="pageLibrary">
       <layout class="QGridLayout" name="gridLayout_2">
        <property name="leftMargin">
         <number>0</number>
@@ -63,9 +63,9 @@
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-          <widget class="QStackedWidget" name="sw_viewType">
+          <widget class="QStackedWidget" name="swViewType">
            <property name="currentIndex">
-            <number>0</number>
+            <number>2</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -82,11 +82,11 @@
               <number>0</number>
              </property>
              <item row="0" column="0">
-              <widget class="QSplitter" name="splitter_artistAlbum">
+              <widget class="QSplitter" name="splitterArtistAlbum">
                <property name="orientation">
                 <enum>Qt::Horizontal</enum>
                </property>
-               <widget class="Library::ArtistView" name="tv_artists">
+               <widget class="Library::ArtistView" name="tvArtists">
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -151,7 +151,7 @@
                  <number>1</number>
                 </attribute>
                </widget>
-               <widget class="Library::AlbumView" name="tv_albums">
+               <widget class="Library::AlbumView" name="tvAlbums">
                 <property name="acceptDrops">
                  <bool>true</bool>
                 </property>
@@ -220,13 +220,13 @@
              </item>
             </layout>
            </widget>
-           <widget class="Library::GUI_CoverView" name="cover_view"/>
-           <widget class="GUI_DirectoryView" name="directory_view"/>
+           <widget class="Library::GUI_CoverView" name="coverView"/>
+           <widget class="GUI_DirectoryView" name="directoryView"/>
           </widget>
           <widget class="QWidget" name="verticalLayoutWidget_2">
            <layout class="QVBoxLayout" name="verticalLayout_4">
             <item>
-             <widget class="Library::TrackView" name="tv_tracks">
+             <widget class="Library::TrackView" name="tvTracks">
               <property name="acceptDrops">
                <bool>true</bool>
               </property>
@@ -293,12 +293,12 @@
              </widget>
             </item>
             <item>
-             <widget class="Library::FileExtensionBar" name="extension_bar" native="true"/>
+             <widget class="Library::FileExtensionBar" name="extensionBar" native="true"/>
             </item>
            </layout>
           </widget>
          </widget>
-         <widget class="QGroupBox" name="gb_genres">
+         <widget class="QGroupBox" name="gbGenres">
           <property name="font">
            <font>
             <weight>75</weight>
@@ -322,7 +322,7 @@
             <number>0</number>
            </property>
            <item row="0" column="0">
-            <widget class="Library::GenreView" name="lv_genres">
+            <widget class="Library::GenreView" name="lvGenres">
              <property name="font">
               <font>
                <weight>75</weight>
@@ -354,10 +354,10 @@
        </item>
       </layout>
      </widget>
-     <widget class="QWidget" name="StackedReloadLibraryWidget">
+     <widget class="QWidget" name="pageReload">
       <layout class="QGridLayout" name="gridLayout_3">
        <item row="4" column="3">
-        <widget class="QLabel" name="lab_path">
+        <widget class="QLabel" name="labPath">
          <property name="text">
           <string notr="true">TextLabel</string>
          </property>
@@ -422,7 +422,7 @@
         </spacer>
        </item>
        <item row="3" column="3">
-        <widget class="QLabel" name="lab_libraryName">
+        <widget class="QLabel" name="labLibraryName">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -440,7 +440,7 @@
        <item row="6" column="3">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QPushButton" name="btn_scanForFiles">
+          <widget class="QPushButton" name="btnScanForFiles">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
              <horstretch>0</horstretch>
@@ -456,7 +456,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_importDirectories">
+          <widget class="QPushButton" name="btnImportDirectories">
            <property name="focusPolicy">
             <enum>Qt::NoFocus</enum>
            </property>
@@ -466,6 +466,106 @@
           </widget>
          </item>
         </layout>
+       </item>
+      </layout>
+     </widget>
+     <widget class="QWidget" name="pageNoDir">
+      <layout class="QGridLayout" name="gridLayout_4">
+       <item row="1" column="0">
+        <widget class="QLabel" name="labNoDir">
+         <property name="font">
+          <font>
+           <weight>75</weight>
+           <bold>true</bold>
+          </font>
+         </property>
+         <property name="text">
+          <string>Directory does not exist</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <spacer name="horizontalSpacer_3">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="btnLibraryPreferences">
+           <property name="text">
+            <string notr="true">Preferences</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+       <item row="0" column="0">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="2" column="0">
+        <widget class="QLabel" name="labDir">
+         <property name="text">
+          <string notr="true">/path/to/dir</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="0">
+        <spacer name="verticalSpacer_4">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
@@ -503,7 +603,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="Library::MenuButtonViews" name="btn_view">
+      <widget class="Library::MenuButtonViews" name="btnView">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>
@@ -519,7 +619,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Library::SearchBar" name="le_search">
+      <widget class="Library::SearchBar" name="leSearch">
        <property name="focusPolicy">
         <enum>Qt::StrongFocus</enum>
        </property>
@@ -528,7 +628,7 @@
     </layout>
    </item>
    <item row="2" column="0">
-    <widget class="QWidget" name="widget_reload" native="true">
+    <widget class="QWidget" name="widgetReload" native="true">
      <layout class="QHBoxLayout" name="horizontalLayout_5">
       <property name="spacing">
        <number>10</number>
@@ -546,7 +646,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QLabel" name="lab_progress">
+       <widget class="QLabel" name="labProgress">
         <property name="sizePolicy">
          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
           <horstretch>0</horstretch>
@@ -562,7 +662,7 @@
        </widget>
       </item>
       <item>
-       <widget class="QProgressBar" name="pb_progress">
+       <widget class="QProgressBar" name="pbProgress">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -636,11 +736,11 @@
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>le_search</tabstop>
-  <tabstop>tv_artists</tabstop>
-  <tabstop>tv_albums</tabstop>
-  <tabstop>tv_tracks</tabstop>
-  <tabstop>lv_genres</tabstop>
+  <tabstop>leSearch</tabstop>
+  <tabstop>tvArtists</tabstop>
+  <tabstop>tvAlbums</tabstop>
+  <tabstop>tvTracks</tabstop>
+  <tabstop>lvGenres</tabstop>
  </tabstops>
  <resources/>
  <connections/>

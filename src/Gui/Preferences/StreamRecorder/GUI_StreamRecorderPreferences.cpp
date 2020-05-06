@@ -147,7 +147,6 @@ QString GUI_StreamRecorderPreferences::errorString() const
 	return m->errorString;
 }
 
-
 void GUI_StreamRecorderPreferences::activeToggled(bool b)
 {
 	ui->lePath->setEnabled(b);
@@ -161,7 +160,6 @@ void GUI_StreamRecorderPreferences::activeToggled(bool b)
 	ui->tabWidget->setTabEnabled(1, (b && create_session_path));
 }
 
-
 void GUI_StreamRecorderPreferences::pathButtonClicked()
 {
 	QString path = ui->lePath->text();
@@ -169,24 +167,30 @@ void GUI_StreamRecorderPreferences::pathButtonClicked()
 		path = QDir::homePath();
 	}
 
-	QString dir = QFileDialog::getExistingDirectory(this, tr("Choose target directory"), path, QFileDialog::ShowDirsOnly);
-	if(dir.size() > 0) {
+	const QString dir = QFileDialog::getExistingDirectory
+	(
+		this,
+		tr("Choose target directory"),
+		path,
+		QFileDialog::ShowDirsOnly
+	);
+
+	if(!dir.isEmpty()) {
 		ui->lePath->setText(dir);
 	}
 }
 
 void GUI_StreamRecorderPreferences::defaultButtonClicked()
 {
-	QString default_template = SR::Utils::targetPathTemplateDefault(true);
-
-	ui->leTemplate->setText(default_template);
+	const QString defaultTemplate = SR::Utils::targetPathTemplateDefault(true);
+	ui->leTemplate->setText(defaultTemplate);
 }
 
-void GUI_StreamRecorderPreferences::lineEditChanged(const QString& new_text)
+void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
 {
-	Q_UNUSED(new_text)
+	Q_UNUSED(newText)
 
-	QString template_text = ui->leTemplate->text();
+	QString templateText = ui->leTemplate->text();
 
 	MetaData md;
 	md.setTitle("Happy Song");
@@ -194,39 +198,43 @@ void GUI_StreamRecorderPreferences::lineEditChanged(const QString& new_text)
 	md.setAlbum("Rock Radio");
 	md.setTrackNumber(1);
 
-	int err_idx;
-	SR::Utils::ErrorCode err = SR::Utils::validateTemplate(template_text, &err_idx);
+	int errorIndex;
+	SR::Utils::ErrorCode err = SR::Utils::validateTemplate(templateText, &errorIndex);
 
 	if(err == SR::Utils::ErrorCode::OK)
 	{
-		SR::Utils::TargetPaths target_path =
-		SR::Utils::fullTargetPath(ui->lePath->text(),
-									template_text,
-									md,
-									QDate::currentDate(),
-									QTime::currentTime());
+		SR::Utils::TargetPaths targetPath = SR::Utils::fullTargetPath
+		(
+			ui->lePath->text(),
+			templateText,
+			md,
+			QDate::currentDate(),
+			QTime::currentTime()
+		);
 
-		ui->leResultPath->setText(target_path.first);
+		ui->leResultPath->setText(targetPath.first);
 	}
 
 	else
 	{
-		QString error_string = SR::Utils::parseErrorCode(err);
+		const QString errorString = SR::Utils::parseErrorCode(err);
 
-		int max_sel = std::min(err_idx + 5, template_text.size());
-		ui->leResultPath->setText(
-			error_string + ": '..." + template_text.mid(err_idx, max_sel - err_idx) + "...'"
+		int maxSelectedIndex = std::min(errorIndex + 5, templateText.size());
+		ui->leResultPath->setText
+		(
+			QString("%1: '...%2...'")
+				.arg(errorString)
+				.arg(templateText.mid(errorIndex, maxSelectedIndex - errorIndex))
 		);
-
 	}
 }
 
 bool GUI_StreamRecorderPreferences::commit()
 {
-	bool everything_ok = true;
+	bool everythingOk = true;
 
 	bool active = ui->cbActivate->isChecked();
-	QString path = ui->lePath->text();
+	const QString path = ui->lePath->text();
 
 	if(active)
 	{
@@ -235,29 +243,29 @@ bool GUI_StreamRecorderPreferences::commit()
 			if(path.isEmpty())
 			{
 				m->errorString = tr("Target directory is empty").arg(path) + "\n" + tr("Please choose another directory");
-				everything_ok = false;
+				everythingOk = false;
 			}
 
 			else if(!QDir::root().mkpath(path))
 			{
 				m->errorString = tr("Cannot create %1").arg(path) + "\n" + tr("Please choose another directory");
-				everything_ok = false;
+				everythingOk = false;
 			}
 		}
 
-		if(everything_ok)
+		if(everythingOk)
 		{
-			int invalid_idx;
-			SR::Utils::ErrorCode err = SR::Utils::validateTemplate(ui->leTemplate->text().trimmed(), &invalid_idx);
+			int invalidIndex;
+			SR::Utils::ErrorCode err = SR::Utils::validateTemplate(ui->leTemplate->text().trimmed(), &invalidIndex);
 			if(err != SR::Utils::ErrorCode::OK)
 			{
 				m->errorString += tr("Template path is not valid") + "\n" + SR::Utils::parseErrorCode(err);
-				everything_ok = false;
+				everythingOk = false;
 			}
 		}
 	}
 
-	if(everything_ok)
+	if(everythingOk)
 	{
 		SetSetting(Set::Engine_SR_Active, ui->cbActivate->isChecked());
 		SetSetting(Set::Engine_SR_Path, path);
@@ -266,40 +274,40 @@ bool GUI_StreamRecorderPreferences::commit()
 		SetSetting(Set::Engine_SR_SessionPathTemplate, ui->leTemplate->text().trimmed());
 	}
 
-	return everything_ok;
+	return everythingOk;
 }
 
 void GUI_StreamRecorderPreferences::revert()
 {
-	bool lame_available = GetSetting(SetNoDB::MP3enc_found);
+	bool isLameAvailable = GetSetting(SetNoDB::MP3enc_found);
 
 	QString path = GetSetting(Set::Engine_SR_Path);
-	QString template_path = GetSetting(Set::Engine_SR_SessionPathTemplate);
-	bool active = GetSetting(Set::Engine_SR_Active) && lame_available;
-	bool create_session_path = GetSetting(Set::Engine_SR_SessionPath);
-	bool auto_rec = GetSetting(Set::Engine_SR_AutoRecord);
+	QString templatePath = GetSetting(Set::Engine_SR_SessionPathTemplate);
+	bool active = GetSetting(Set::Engine_SR_Active) && isLameAvailable;
+	bool createSessionPath = GetSetting(Set::Engine_SR_SessionPath);
+	bool autoRecord = GetSetting(Set::Engine_SR_AutoRecord);
 
-	if(template_path.isEmpty()){
-		template_path = SR::Utils::targetPathTemplateDefault(true);
+	if(templatePath.isEmpty()){
+		templatePath = SR::Utils::targetPathTemplateDefault(true);
 	}
 
-	ui->cbActivate->setEnabled(lame_available);
+	ui->cbActivate->setEnabled(isLameAvailable);
 	ui->lePath->setText(path);
 	ui->cbActivate->setChecked(active);
-	ui->cbCreateSessionPath->setChecked(create_session_path);
-	ui->cbAutoRecord->setChecked(auto_rec);
+	ui->cbCreateSessionPath->setChecked(createSessionPath);
+	ui->cbAutoRecord->setChecked(autoRecord);
 
 	ui->cbCreateSessionPath->setEnabled(active);
 	ui->btnPath->setEnabled(active);
 	ui->lePath->setEnabled(active);
 	ui->cbAutoRecord->setEnabled(active);
 	ui->leTemplate->setEnabled(active);
-	ui->leTemplate->setText(template_path);
+	ui->leTemplate->setText(templatePath);
 
 	ui->tabWidget->setCurrentIndex(0);
-	ui->tabWidget->setTabEnabled(1, active && create_session_path);
+	ui->tabWidget->setTabEnabled(1, active && createSessionPath);
 
-	if(!lame_available){
+	if(!isLameAvailable){
 		ui->labWarning->setText(Lang::get(Lang::CannotFindLame));
 	}
 

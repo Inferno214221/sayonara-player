@@ -38,6 +38,7 @@ struct ContextMenu::Private
 	QAction*	actionRename=nullptr;
 	QAction*	actionRenameByTag=nullptr;
 	QAction*	actionCollapseAll=nullptr;
+	QAction*	actionViewInFileManager=nullptr;
 
 	QMap<ContextMenu::Entry, QAction*> entryActionMap;
 
@@ -58,6 +59,7 @@ struct ContextMenu::Private
 		actionRename = new QAction(parent);
 		actionRenameByTag =	new QAction(parent);
 		actionCollapseAll =	new QAction(parent);
+		actionViewInFileManager = new QAction(parent);
 
 		{ // init copy/move to library menus
 			auto* lm = Library::Manager::instance();
@@ -89,7 +91,8 @@ struct ContextMenu::Private
 			{EntryRenameByTag, actionRenameByTag},
 			{EntryCollapseAll, actionCollapseAll},
 			{EntryMoveToLib, actionMoveToLibrary},
-			{EntryCopyToLib, actionCopyToLibrary}
+			{EntryCopyToLib, actionCopyToLibrary},
+			{EntryViewInFM, actionViewInFileManager}
 		};
 	}
 };
@@ -128,6 +131,7 @@ ContextMenu::ContextMenu(ContextMenu::Mode mode, QWidget* parent) :
 	connect(m->actionRename, &QAction::triggered, this, &ContextMenu::sigRenameClicked);
 	connect(m->actionRenameByTag, &QAction::triggered, this, &ContextMenu::sigRenameByTagClicked);
 	connect(m->actionCollapseAll, &QAction::triggered, this, &ContextMenu::sigCollapseAllClicked);
+	connect(m->actionViewInFileManager, &QAction::triggered, this, &ContextMenu::sigViewInFileManagerClicked);
 
 	for(QAction* action : m->libraryMoveActions)
 	{
@@ -145,6 +149,7 @@ ContextMenu::ContextMenu(ContextMenu::Mode mode, QWidget* parent) :
 	(
 		action,
 		{
+			m->actionViewInFileManager,
 			m->actionCollapseAll,
 			this->addSeparator(),
 			m->actionMoveToLibrary,
@@ -180,6 +185,7 @@ void ContextMenu::refresh(int count)
 
 		m->actionCreateDirectory->setVisible(false);
 		m->actionCollapseAll->setVisible(false);
+		m->actionViewInFileManager->setVisible(false);
 		m->actionMoveToLibrary->setVisible(false);
 		m->actionCopyToLibrary->setVisible(false);
 		m->actionRenameByTag->setVisible(false);
@@ -205,6 +211,7 @@ void ContextMenu::refresh(int count)
 			case ContextMenu::Mode::Dir:
 				this->showAction(Library::ContextMenu::EntryLyrics, false);
 				m->actionCreateDirectory->setVisible(count == 1);
+				m->actionViewInFileManager->setVisible(count > 0);
 				m->actionCollapseAll->setVisible(true);
 				m->actionRenameByTag->setVisible(false);
 
@@ -214,6 +221,7 @@ void ContextMenu::refresh(int count)
 			case ContextMenu::Mode::File:
 				m->actionCreateDirectory->setVisible(false);
 				m->actionCollapseAll->setVisible(false);
+				m->actionViewInFileManager->setVisible(false);
 				m->actionRenameByTag->setVisible(true);
 
 				this->showAction(Library::ContextMenu::EntryLyrics, (count == 1));
@@ -297,6 +305,7 @@ void ContextMenu::languageChanged()
 		m->actionCollapseAll->setText(tr("Collapse all"));
 		m->actionMoveToLibrary->setText(tr("Move to another library"));
 		m->actionCopyToLibrary->setText(tr("Copy to another library"));
+		m->actionViewInFileManager->setText(tr("View in file manager"));
 	}
 }
 
@@ -307,9 +316,9 @@ void ContextMenu::skinChanged()
 	using namespace Gui;
 	if(m && m->actionRename)
 	{
+		m->actionViewInFileManager->setIcon(Icons::icon(Icons::FolderOpen));
 		m->actionRename->setIcon(Icons::icon(Icons::Rename));
 		m->actionRenameByTag->setIcon(Icons::icon(Icons::Rename));
 		m->actionCreateDirectory->setIcon(Icons::icon(Icons::New));
 	}
 }
-

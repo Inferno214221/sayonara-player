@@ -199,9 +199,19 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::ToolTipRole)
 	{
+		QString artistName = album.albumArtist();
+		if(artistName.trimmed().isEmpty()){
+			artistName = Lang::get(Lang::UnknownArtist);
+		}
+
+		QString albumName = album.name();
+		if(albumName.trimmed().isEmpty()){
+			albumName = Lang::get(Lang::UnknownAlbum);
+		}
+
 		return QString("<b>%1</b><br>%2")
-				.arg(album.albumArtist())
-				.arg(album.name());
+				.arg(artistName)
+				.arg(albumName);
 	}
 
 	return QVariant();

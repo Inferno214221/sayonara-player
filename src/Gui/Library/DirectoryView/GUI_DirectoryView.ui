@@ -6,23 +6,11 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>964</width>
-    <height>535</height>
+    <width>1091</width>
+    <height>844</height>
    </rect>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <property name="leftMargin">
-    <number>0</number>
-   </property>
-   <property name="topMargin">
-    <number>0</number>
-   </property>
-   <property name="rightMargin">
-    <number>0</number>
-   </property>
-   <property name="bottomMargin">
-    <number>0</number>
-   </property>
+  <layout class="QGridLayout" name="gridLayout_2">
    <item row="0" column="0">
     <widget class="QSplitter" name="splitter">
      <property name="orientation">
@@ -31,7 +19,7 @@
      <widget class="QWidget" name="verticalLayoutWidget">
       <layout class="QVBoxLayout" name="verticalLayout">
        <item>
-        <widget class="Directory::TreeView" name="tv_dirs">
+        <widget class="Directory::TreeView" name="tvDirs">
          <property name="alternatingRowColors">
           <bool>true</bool>
          </property>
@@ -49,14 +37,14 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout">
          <item>
-          <widget class="QPushButton" name="btn_clearSelection">
+          <widget class="QPushButton" name="btnClearSelection">
            <property name="text">
             <string notr="true">Clear Selection</string>
            </property>
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="btn_createDir">
+          <widget class="QPushButton" name="btnCreateDir">
            <property name="text">
             <string notr="true">Create directory</string>
            </property>
@@ -66,7 +54,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="Directory::FileListView" name="lv_files">
+     <widget class="Directory::FileListView" name="lvFiles">
       <property name="tabKeyNavigation">
        <bool>false</bool>
       </property>

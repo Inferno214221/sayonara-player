@@ -135,7 +135,6 @@ void GUI_ControlsBase::currentTrackChanged(const MetaData& md)
 	sliProgress()->setEnabled( (md.durationMs() / 1000) > 0 );
 }
 
-
 void GUI_ControlsBase::playstateChanged(PlayState state)
 {
 	switch(state)

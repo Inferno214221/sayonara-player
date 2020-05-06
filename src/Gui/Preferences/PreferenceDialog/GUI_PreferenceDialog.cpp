@@ -251,6 +251,7 @@ void GUI_PreferenceDialog::showEvent(QShowEvent* e)
 	initUi();
 	Gui::Dialog::showEvent(e);
 
+	this->setWindowTitle(Lang::get(Lang::Preferences));
 	ui->listPreferences->setFocus();
 }
 

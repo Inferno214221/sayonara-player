@@ -66,6 +66,12 @@ DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
 		Q_UNUSED(ignore)
 		librariesChanged();
 	});
+
+	connect(libraryManager, &Library::Manager::sigPathChanged, this, [this](auto ignore)
+	{
+		Q_UNUSED(ignore)
+		librariesChanged();
+	});
 }
 
 DirectorySelectionHandler::~DirectorySelectionHandler() = default;
@@ -194,8 +200,9 @@ Library::Info DirectorySelectionHandler::libraryInfo() const
 LocalLibrary* DirectorySelectionHandler::libraryInstance() const
 {
 	auto* manager = Library::Manager::instance();
-	LibraryId lib_id = libraryInfo().id();
-	auto* library = manager->libraryInstance(lib_id);
+
+	LibraryId libraryId = libraryInfo().id();
+	auto* library = manager->libraryInstance(libraryId);
 
 	if(library == nullptr)
 	{
