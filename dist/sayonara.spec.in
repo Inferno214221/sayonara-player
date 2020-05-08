@@ -77,5 +77,5 @@ fi
 %{_datadir}/%{name}/translations/icons/*.png
 
 %changelog
-* @SAYONARA_DATE_TODAY@ Lucio Carreras <sayonara-player@posteo.org> - @SAYONARA_VERSION@
+* @SAYONARA_DATE_TODAY@ Michael Lugmair <sayonara-player@posteo.org> - @SAYONARA_VERSION@
 - New Release @SAYONARA_VERSION@
