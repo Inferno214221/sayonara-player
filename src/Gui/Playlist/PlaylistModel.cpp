@@ -32,6 +32,9 @@
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
 
+#include "Database/Connector.h"
+#include "Database/CoverConnector.h"
+
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/GuiUtils.h"
 
@@ -40,11 +43,13 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
+
 #include "Utils/Language/Language.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/SearchMode.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TaggingCover.h"
 
 #include <QUrl>
 #include <QPalette>
@@ -70,7 +75,7 @@ enum class PlaylistSearchMode
 
 struct Model::Private
 {
-	QHash<AlbumId, QPixmap>	pms;
+	QHash<AlbumId, QPixmap>	coverLookupMap;
 	int						oldRowCount;
 	int						dragIndex;
 	int						rowHeight;
@@ -204,15 +209,27 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		{
 			MetaData md = m->pl->track(row);
 
-			if(!m->pms.contains(md.albumId()))
+			if(!m->coverLookupMap.contains(md.albumId()))
 			{
 				int height = m->rowHeight - 6;
 
 				Cover::Location cl = Cover::Location::coverLocation(md);
-				m->pms[md.albumId()] = QPixmap(cl.preferredPath()).scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				DB::Covers* coverDb = DB::Connector::instance()->coverConnector();
+
+				QPixmap cover;
+				const QString hash = cl.hash();
+				coverDb->getCover(hash, cover);
+
+				if(cover.isNull()) {
+					cover = QPixmap(cl.preferredPath());
+				}
+
+				if(!cover.isNull()) {
+					m->coverLookupMap[md.albumId()] = cover.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				}
 			}
 
-			return m->pms[md.albumId()];
+			return m->coverLookupMap[md.albumId()];
 		}
 	}
 
@@ -551,7 +568,7 @@ void Model::setRowHeight(int row_height)
 {
 	if(m->rowHeight != row_height)
 	{
-		m->pms.clear();
+		m->coverLookupMap.clear();
 		m->rowHeight = row_height;
 	}
 }

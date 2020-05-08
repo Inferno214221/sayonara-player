@@ -39,6 +39,7 @@
 #include "Database/CoverConnector.h"
 
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -234,12 +235,14 @@ void ReloadThread::storeMetadataBlock(const MetaDataList& v_md)
 				continue;
 			}
 
-			QString hash = cl.hash();
+			const QString hash = cl.hash();
 			if(!all_hashes.contains(hash))
 			{
-				QPixmap cover(cl.preferredPath());
-				coverDatabase->insertCover(hash, cover);
-				all_hashes.insert(hash);
+				const QPixmap cover(cl.preferredPath());
+				if(!cover.isNull()) {
+					coverDatabase->insertCover(hash, cover);
+					all_hashes.insert(hash);
+				}
 			}
 		}
 
