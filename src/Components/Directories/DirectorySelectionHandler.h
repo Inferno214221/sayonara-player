@@ -26,7 +26,7 @@ signals:
 	void sigFileOperationFinished();
 
 private:
-	FileOperations* create_file_operation();
+	FileOperations* createFileOperation();
 
 public:
 	DirectorySelectionHandler(QObject* parent=nullptr);
@@ -37,9 +37,9 @@ public:
 	void appendTracks(const QStringList& paths);
 	void prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist);
 
-	void requestImport(LibraryId lib_id, const QStringList& paths, const QString& targetDirectory);
+	void requestImport(LibraryId libId, const QStringList& paths, const QString& targetDirectory);
 
-	void setLibraryId(LibraryId lib_id);
+	void setLibraryId(LibraryId libId);
 	LibraryId libraryId() const;
 
 	void createNewLibrary(const QString& name, const QString& path);
@@ -51,7 +51,7 @@ public:
 
 	void copyPaths(const QStringList& paths, const QString& target);
 	void movePaths(const QStringList& paths, const QString& target);
-	void renamePath(const QString& path, const QString& new_name);
+	void renamePath(const QString& path, const QString& newName);
 	void renameByExpression(const QString& path, const QString& expression);
 	void deletePaths(const QStringList& paths);
 

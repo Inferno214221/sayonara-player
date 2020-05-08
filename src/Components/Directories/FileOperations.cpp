@@ -23,6 +23,7 @@
 
 #include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
+#include "Components/Tagging/ChangeNotifier.h"
 
 #include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"
@@ -169,35 +170,33 @@ static QString incrementFilename(const QString& filename)
 		return filename;
 	}
 
-	QString dir, pure_filename;
-	Util::File::splitFilename(filename, dir, pure_filename);
-
+	auto [dir, pureFilename] = Util::File::splitFilename(filename);
 	const QString ext = Util::File::getFileExtension(filename);
 
 	for(int i=1; i<1000; i++)
 	{
-		QString pure_new_name_nr = pure_filename + "-" + QString::number(i);
-		QString full_new_name_nr = dir + "/" + pure_new_name_nr + "." + ext;
-		if(!Util::File::exists(full_new_name_nr))
+		const QString pureNewNameNr = pureFilename + "-" + QString::number(i);
+		const QString fullNewNameNr = dir + "/" + pureNewNameNr + "." + ext;
+		if(!Util::File::exists(fullNewNameNr))
 		{
-			return full_new_name_nr;
+			return Util::File::cleanFilename(fullNewNameNr);
 		}
 	}
 
 	return QString();
 }
 
-bool FileOperations::renameByExpression(const QString& old_name, const QString& expression)
+bool FileOperations::renameByExpression(const QString& originalFilepath, const QString& expression)
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* library_db = db->libraryDatabase(-1, db->databaseId());
+	DB::LibraryDatabase* libraryDb = db->libraryDatabase(-1, db->databaseId());
 
-	MetaData md = library_db->getTrackByPath(Util::File::cleanFilename(old_name));
-	if(md.id() < 0) {
-		Tagging::Utils::getMetaDataOfFile(md);
+	MetaData originalTrack = libraryDb->getTrackByPath(originalFilepath);
+	if(originalTrack.id() < 0) {
+		Tagging::Utils::getMetaDataOfFile(originalTrack);
 	}
 
-	const QString pureFilename = replaceTag(expression, md);
+	const QString pureFilename = replaceTag(expression, originalTrack);
 	if(pureFilename.isEmpty()) {
 		spLog(Log::Error, this) << "Target filename is empty";
 		return false;
@@ -208,25 +207,36 @@ bool FileOperations::renameByExpression(const QString& old_name, const QString& 
 		return false;
 	}
 
-	const QString dir = Util::File::getParentDirectory(md.filepath());
-	const QString ext = Util::File::getFileExtension(md.filepath());
+	const QString dir = Util::File::getParentDirectory(originalTrack.filepath());
+	const QString ext = Util::File::getFileExtension(originalTrack.filepath());
 
-	QString fullNewName = dir + "/" + pureFilename + "." + ext;
+	QString fullNewName = QString("%1/%2.%3").arg(dir).arg(pureFilename).arg(ext);
 	fullNewName = incrementFilename(fullNewName);
 
-	if(md.id() < 0) {
-		return Util::File::renameFile(fullNewName, old_name);
+	if(originalTrack.id() < 0) {
+		return Util::File::renameFile(fullNewName, originalFilepath);
 	}
 
 	else
 	{
-		bool success = Util::File::renameFile(old_name, fullNewName);
+		bool success = Util::File::renameFile(originalFilepath, fullNewName);
 		if(success)
 		{
-			md.setFilepath(fullNewName);
-			success = library_db->updateTrack(md);
+			MetaData newTrack(originalTrack);
+			newTrack.setFilepath(fullNewName);
+
+			success = libraryDb->updateTrack(newTrack);
 			if(!success){
-				Util::File::renameFile(fullNewName, old_name);
+				Util::File::renameFile(fullNewName, originalFilepath);
+			}
+
+			else
+			{
+				auto* changeNotifier = Tagging::ChangeNotifier::instance();
+				changeNotifier->changeMetadata
+				(
+					QList<MetaDataPair>{MetaDataPair(originalTrack, newTrack)}
+				);
 			}
 		}
 

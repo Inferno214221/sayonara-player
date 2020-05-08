@@ -27,6 +27,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Set.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Library/SearchMode.h"
 
 using DB::LibraryDatabase;
 using DB::Query;
@@ -35,44 +36,45 @@ using SMM=::Library::SearchModeMask;
 
 struct LibraryDatabase::Private
 {
-	QString artistid_field;
-	QString artistname_field;
-	QString connection_name;
+	QString artistIdField;
+	QString artistNameField;
+	QString connectionName;
 
-	SMM		search_mode;
+	SMM		searchMode;
 	DbId	databaseId;
 
 	LibraryId libraryId;
 
-	Private(const QString& connection_name, DbId databaseId, LibraryId libraryId, SMM search_mode) :
-		connection_name(connection_name),
-		search_mode(search_mode),
+	Private(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
+		connectionName(connectionName),
 		databaseId(databaseId),
 		libraryId(libraryId)
 	{
-		artistid_field = "artistID";
-		artistname_field = "artistName";
+		searchMode = GetSetting(Set::Lib_SearchMode);
+
+		artistIdField = "artistID";
+		artistNameField = "artistName";
 	}
 };
 
 
-LibraryDatabase::LibraryDatabase(const QString& connection_name, DbId databaseId, LibraryId libraryId) :
+LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
 	DB::Albums(),
 	DB::Artists(),
 	DB::Tracks(),
-	DB::SearchableModule(connection_name, databaseId)
+	DB::Module(connectionName, databaseId)
 {
-	m = Pimpl::make<Private>(connection_name, databaseId, libraryId, init_search_mode());
+	m = Pimpl::make<Private>(connectionName, databaseId, libraryId);
 
 	DB::Tracks::initViews();
 	DB::Albums::initViews();
 
 	{ // set artistId field
 		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
-		QString db_key = s->dbKey();
+		QString dbKey = s->dbKey();
 
-		Query q(connection_name, databaseId);
-		QString querytext = "SELECT value FROM settings WHERE key = '" + db_key + "';";
+		Query q(connectionName, databaseId);
+		QString querytext = "SELECT value FROM settings WHERE key = '" + dbKey + "';";
 
 		bool show_album_artists = false;
 
@@ -102,25 +104,25 @@ void LibraryDatabase::changeArtistIdField(LibraryDatabase::ArtistIDField field)
 {
 	if(field == LibraryDatabase::ArtistIDField::AlbumArtistID)
 	{
-		m->artistid_field = "albumArtistID";
-		m->artistname_field = "albumArtistName";
+		m->artistIdField = "albumArtistID";
+		m->artistNameField = "albumArtistName";
 	}
 
 	else
 	{
-		m->artistid_field = "artistID";
-		m->artistname_field = "artistName";
+		m->artistIdField = "artistID";
+		m->artistNameField = "artistName";
 	}
 }
 
 QString LibraryDatabase::artistIdField() const
 {
-	return m->artistid_field;
+	return m->artistIdField;
 }
 
 QString LibraryDatabase::artistNameField() const
 {
-	return m->artistname_field;
+	return m->artistNameField;
 }
 
 QString LibraryDatabase::trackView() const
@@ -145,23 +147,18 @@ QString LibraryDatabase::trackSearchView() const
 	}
 }
 
-Library::SearchModeMask LibraryDatabase::searchMode() const
+void LibraryDatabase::updateSearchMode()
 {
-	return DB::SearchableModule::searchMode();
-}
+	auto currentSearchModeMask = GetSetting(Set::Lib_SearchMode);
 
-void LibraryDatabase::updateSearchMode(::Library::SearchModeMask smm)
-{
-	auto old_smm = DB::SearchableModule::searchMode();
-	if(old_smm == smm) {
-		return;
+	if(m->searchMode != currentSearchModeMask)
+	{
+		DB::Albums::updateAlbumCissearch();
+		DB::Artists::updateArtistCissearch();
+		DB::Tracks::updateTrackCissearch();
 	}
 
-	DB::SearchableModule::updateSearchMode(smm);
-
-	DB::Albums::updateAlbumCissearch();
-	DB::Artists::updateArtistCissearch();
-	DB::Tracks::updateTrackCissearch();
+	m->searchMode = currentSearchModeMask;
 }
 
 using AlbumHash=QString;
@@ -323,7 +320,6 @@ LibraryId LibraryDatabase::libraryId() const
 {
 	return m->libraryId;
 }
-
 
 bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 {

@@ -249,7 +249,7 @@ void CachingThread::run()
 void CachingThread::metadataChanged()
 {
 	auto* cn = Tagging::ChangeNotifier::instance();
-	m->cache->changeMetadata(cn->changedMetadata().second);
+	m->cache->changeMetadata(cn->changedMetadata());
 }
 
 QStringList CachingThread::temporaryFiles() const

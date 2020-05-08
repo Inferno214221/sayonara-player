@@ -32,21 +32,73 @@ private slots:
 using namespace Util::File;
 void FileHelperTest::test()
 {
-	QString somePath = "/path/./to//my/home/folder/bla.txt";
-	QString cleaned = cleanFilename(somePath);
-	QString extension = getFileExtension(somePath);
-	QString parent = getParentDirectory(somePath);
-	QString filename = getFilenameOfPath(somePath);
+	{
+		const QString somePath = "/path/./to//my/home/folder/bla.txt";
+		const QString cleaned = cleanFilename(somePath);
+		const QString extension = getFileExtension(somePath);
+		const QString parent = getParentDirectory(somePath);
+		const QString filename = getFilenameOfPath(somePath);
 
-	QString d, f;
-	splitFilename(somePath, d, f);
+		auto [d, f] = splitFilename(somePath);
 
-	QVERIFY( cleaned == "/path/to/my/home/folder/bla.txt" );
-	QVERIFY( extension == "txt" );
-	QVERIFY( parent == "/path/to/my/home/folder" );
-	QVERIFY( filename == "bla.txt" );
-	QVERIFY(d == parent);
-	QVERIFY(f == filename);
+		QVERIFY( cleaned == "/path/to/my/home/folder/bla.txt" );
+		QVERIFY( extension == "txt" );
+		QVERIFY( parent == "/path/to/my/home/folder" );
+		QVERIFY( filename == "bla.txt" );
+		QVERIFY(d == parent);
+		QVERIFY(f == filename);
+	}
+
+	{
+		const QString somePath = "/path/./to//my/home/folder/bla";
+		const QString cleaned = cleanFilename(somePath);
+		const QString extension = getFileExtension(somePath);
+		const QString parent = getParentDirectory(somePath);
+		const QString filename = getFilenameOfPath(somePath);
+
+		auto [d, f] = splitFilename(somePath);
+
+		QVERIFY( cleaned == "/path/to/my/home/folder/bla" );
+		QVERIFY( extension.isEmpty() );
+		QVERIFY( parent == "/path/to/my/home/folder" );
+		QVERIFY( filename == "bla" );
+		QVERIFY(d == parent);
+		QVERIFY(f == filename);
+	}
+
+	{
+		const QString somePath = "/path/./to//my/home/folder/bla/";
+		const QString cleaned = cleanFilename(somePath);
+		const QString extension = getFileExtension(somePath);
+		const QString parent = getParentDirectory(somePath);
+		const QString filename = getFilenameOfPath(somePath);
+
+		auto [d, f] = splitFilename(somePath);
+
+		QVERIFY( cleaned == "/path/to/my/home/folder/bla" );
+		QVERIFY( extension.isEmpty() );
+		QVERIFY( parent == "/path/to/my/home/folder" );
+		QVERIFY( filename == "bla" );
+		QVERIFY(d == parent);
+		QVERIFY(f == filename);
+	}
+
+	{
+		const QString somePath = "/path/./to//my/home/folder/bla.dir///";
+		const QString cleaned = cleanFilename(somePath);
+		const QString extension = getFileExtension(somePath);
+		const QString parent = getParentDirectory(somePath);
+		const QString filename = getFilenameOfPath(somePath);
+
+		auto [d, f] = splitFilename(somePath);
+
+		QVERIFY( cleaned == "/path/to/my/home/folder/bla.dir" );
+		QVERIFY( extension.isEmpty() );
+		QVERIFY( parent == "/path/to/my/home/folder" );
+		QVERIFY( filename == "bla.dir" );
+		QVERIFY(d == parent);
+		QVERIFY(f == filename);
+	}
 }
 
 void FileHelperTest::createAndDelete()
@@ -137,15 +189,10 @@ void FileHelperTest::commonPathTest()
 
 void FileHelperTest::systemPathsTest()
 {
-	QString lib_path = Util::libPath();
 	QString share_path = Util::sharePath();
-
-	QRegExp re_lib(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/lib(64|32)*/sayonara");
 	QRegExp re_share(SAYONARA_INSTALL_PATH "(/[A-Za-z]+)?/share/sayonara");
 
-	QVERIFY(re_lib.indexIn(lib_path) == 0);
 	QVERIFY(re_share.indexIn(share_path) == 0);
-	QVERIFY(re_lib.cap(1) == re_share.cap(1));
 }
 
 void FileHelperTest::resourcePathTest()
@@ -201,12 +248,12 @@ void FileHelperTest::splitDirectoriesTest()
 	expected << "a" << "very" << "strange" << "path";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::splitDirectories("///a//very/strange///path//\\//");
+	ret = Util::File::splitDirectories("///a//very/strange///path/////");
 	expected.clear();
 	expected << "a" << "very" << "strange" << "path";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::splitDirectories("///a//very/strange///path\\to/some\\file.mp3");
+	ret = Util::File::splitDirectories("///a//very/strange///path/to/some/file.mp3");
 	expected.clear();
 	expected << "a" << "very" << "strange" << "path" << "to" << "some" << "file.mp3";
 	QVERIFY(ret == expected);
@@ -216,7 +263,7 @@ void FileHelperTest::splitDirectoriesTest()
 	expected << "root";
 	QVERIFY(ret == expected);
 
-	ret = Util::File::splitDirectories("/\\/");
+	ret = Util::File::splitDirectories("///");
 	QVERIFY(ret.isEmpty());
 
 	ret = Util::File::splitDirectories("/");
@@ -233,8 +280,8 @@ void FileHelperTest::subDirAndSameFilenameTest()
 
 	QString d1 = "/path/to/some/non/existing/dir";
 	QString d2 = "/path/to/some/non/existing/dir/";
-	QString d3 = "/path/to/some/non\\existing/dir/";
-	QString d4 = "/path/to/./some/non\\existing/dir";
+	QString d3 = "/path/to/some/non/existing/dir/";
+	QString d4 = "/path/to/./some/non/existing/dir";
 
 	bool b;
 	b = Util::File::isSamePath(d1, d2);

@@ -21,7 +21,7 @@
 #ifndef DATABASEALBUMS_H
 #define DATABASEALBUMS_H
 
-#include "Database/SearchableModule.h"
+#include "Query.h"
 
 namespace Library {class Filter;}
 class Album;

@@ -19,6 +19,7 @@
 #include "Components/Engine/EngineHandler.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -401,21 +402,24 @@ void GUI_ControlsBase::muteChanged(bool muted)
 // id3 tags have changed
 void GUI_ControlsBase::metadataChanged()
 {
-	auto changed_metadata = Tagging::ChangeNotifier::instance()->changedMetadata();
+	QList<MetaDataPair> changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
 
-	IdxList idxs = changed_metadata.first.findTracks(currentTrack().filepath());
-	if(idxs.empty()) {
+	MetaData currentTrack = PlayManager::instance()->currentTrack();
+	auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const MetaDataPair& trackPair)
+	{
+		const MetaData& oldTrack = trackPair.first;
+		return (oldTrack.filepath() == currentTrack.filepath());
+	});
+
+	if(it == changedTracks.end()){
 		return;
 	}
 
-	MetaData md = changed_metadata.second[idxs.first()];
+	const MetaData& newTrack = it->second;
+	refreshLabels(newTrack);
+	setCoverLocation(newTrack);
 
-	refreshLabels(md);
-	setCoverLocation(md);
-
-	setWindowTitle(
-		QString("Sayonara - %1").arg(md.title())
-	);
+	setWindowTitle( QString("Sayonara - %1").arg(newTrack.title()) );
 }
 
 void GUI_ControlsBase::refreshCurrentTrack()

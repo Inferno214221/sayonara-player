@@ -1,6 +1,7 @@
 #include "SayonaraTest.h"
 #include "Playlist/PlaylistTestUtils.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Tagging/ChangeNotifier.h"
@@ -26,55 +27,78 @@ private slots:
 	void trackDeletedTest();
 };
 
-
 void PlaylistTrackModifyTest::trackModifiedTest()
 {
-	MetaDataList tracks = Test::Playlist::create_v_md(0, 100);
+	// create tracks and move them to a playlist
+	// change the original tracks
+	// fetch the tracks from the playlist again
+	// and see if the have been modified correctly
 
-	int i=0;
-	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
+	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
+
+	// give all tracks the same artist
+	for(auto it=tracks.begin(); it != tracks.end(); it++)
 	{
 		it->setArtist("artist0");
 	}
 
+	// create a playlist
 	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
 	pl->createPlaylist(tracks);
 
 	MetaDataList oldTracks, newTracks;
-	std::copy_n(tracks.begin(), 10, std::back_inserter(oldTracks));
-	newTracks = oldTracks;
+	{ // give all tracks a new artist, except the first one
+		std::copy_n(tracks.begin(), 10, std::back_inserter(oldTracks));
+		newTracks = oldTracks;
 
-	i = 0;
-	for(auto it=newTracks.begin(); it != newTracks.end(); it++, i++)
-	{
-		it->setArtist( QString("artist%1").arg(i) );
+		QVERIFY(newTracks.size() == oldTracks.size());
+
+		{
+			int i = 0;
+			for(auto it=newTracks.begin(); it != newTracks.end(); it++, i++)
+			{
+				it->setArtist( QString("artist%1").arg(i) );
+			}
+		}
 	}
 
-	auto* mdcn = Tagging::ChangeNotifier::instance();
-	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
+	{ // trigger the Tagging::ChangeNotifier
+		auto* mdcn = Tagging::ChangeNotifier::instance();
+		QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
 
-	mdcn->changeMetadata(oldTracks, newTracks);
-
-	QCOMPARE(spy.count(), 1);
-
-	tracks = pl->tracks();
-	i = 0;
-	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
-	{
-		if(i < 10){
-			QString artist = it->artist();
-			QVERIFY(artist == QString("artist%1").arg(i));
+		QList<MetaDataPair> changedTracks;
+		for(int i=0; i<newTracks.count(); i++)
+		{
+			changedTracks << QPair<MetaData, MetaData>(oldTracks[i], newTracks[i]);
 		}
 
-		else{
-			QVERIFY(it->artist() == QString("artist0"));
+		mdcn->changeMetadata(changedTracks);
+
+		// check if signal was fired
+		int c = spy.count();
+		QCOMPARE(c, 1);
+	}
+
+	{ // fetch the tracks from the playlist and see if they have been modified
+		tracks = pl->tracks();
+		int i = 0;
+		for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
+		{
+			if(i < 10) {
+				QString artist = it->artist();
+				QVERIFY(artist == QString("artist%1").arg(i));
+			}
+
+			else {
+				QVERIFY(it->artist() == QString("artist0"));
+			}
 		}
 	}
 }
 
 void PlaylistTrackModifyTest::trackDeletedTest()
 {
-	MetaDataList tracks = Test::Playlist::create_v_md(0, 100);
+	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
 
 	int i=0;
 	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)

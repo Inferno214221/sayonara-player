@@ -141,7 +141,6 @@ void AbstractLibrary::refetch()
 	emitAll();
 }
 
-
 void AbstractLibrary::refreshCurrentView()
 {
 	/* Waring! Sorting after each fetch is important here! */
@@ -194,88 +193,81 @@ void AbstractLibrary::refreshCurrentView()
 	}
 }
 
-
 void AbstractLibrary::metadataChanged()
 {
 	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
-	QPair<MetaDataList, MetaDataList> changed_tracks = mdcn->changedMetadata();
+	QList<MetaDataPair> changedTracks = mdcn->changedMetadata();
 
-	bool artists_changed = false;
-	bool albums_changed = false;
+	bool artistsChanged = false;
+	bool albumsChanged = false;
 
-	auto& old_tracks = changed_tracks.first;
-	auto& new_tracks = changed_tracks.second;
-
-	QHash<TrackID, int> id_row_map;
+	QHash<TrackID, int> idRowMap;
 	{ // build lookup tree
 		int i=0;
 		for(auto it=m->tracks.begin(); it != m->tracks.end(); it++, i++)
 		{
-			id_row_map[it->id()] = i;
+			idRowMap[it->id()] = i;
 		}
 	}
 
-	int changed_idx=0;
-	for(auto it=old_tracks.begin(); it!=old_tracks.end(); it++)
+	for(auto it=changedTracks.begin(); it != changedTracks.end(); it++)
 	{
-		MetaData& new_track = new_tracks[changed_idx];
-		if(it->artist() != new_track.artist()){
-			artists_changed = true;
+		MetaData& oldTrack = it->first;
+		MetaData& newTrack = it->second;
+
+		if(oldTrack.artist() != newTrack.artist()){
+			artistsChanged = true;
 		}
 
-		if(it->albumArtist() != new_track.albumArtist()){
-			artists_changed = true;
+		if(oldTrack.albumArtist() != newTrack.albumArtist()){
+			artistsChanged = true;
 		}
 
-		if(it->album() != new_track.album()){
-			albums_changed = true;
+		if(oldTrack.album() != newTrack.album()){
+			albumsChanged = true;
 		}
 
-		if(id_row_map.contains(it->id()))
+		if(idRowMap.contains(oldTrack.id()))
 		{
-			int row = id_row_map[it->id()];
-			std::swap(m->tracks[row], new_track);
+			int row = idRowMap[oldTrack.id()];
+			std::swap(m->tracks[row], newTrack);
 			emit sigCurrentTrackChanged(row);
 		}
-
-		changed_idx++;
 	}
 
-	if(artists_changed || albums_changed){
+	if(artistsChanged || albumsChanged){
 		refreshCurrentView();
 	}
 }
 
-
 void AbstractLibrary::albumsChanged()
 {
 	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
-	QPair<AlbumList, AlbumList> changed_albums = mdcn->changedAlbums();
 
-	auto& old_albums = changed_albums.first;
-	auto& new_albums = changed_albums.second;
-
-	QHash<AlbumId, int> id_row_map;
+	QHash<AlbumId, int> idRowMap;
 	{ // build lookup tree
 		int i=0;
-		for(auto it=m->albums.begin(); it != m->albums.end(); it++)
+		for(auto it=m->albums.begin(); it != m->albums.end(); it++, i++)
 		{
-			id_row_map[it->id()] = i; i++;
+			idRowMap[it->id()] = i;
 		}
 	}
 
-	int changed_idx=0;
-	for(auto it=old_albums.begin(); it != old_albums.end(); it++, changed_idx++)
+	const QList<AlbumPair> changedAlbums = mdcn->changedAlbums();
+	for(const AlbumPair& albumPair : changedAlbums)
 	{
-		if(id_row_map.contains(it->id()))
+		const Album& oldAlbum = albumPair.first;
+		const Album& newAlbum = albumPair.second;
+
+		if(idRowMap.contains(oldAlbum.id()))
 		{
-			int row = id_row_map[it->id()];
-			m->albums[row] = new_albums[changed_idx];
+			int row = idRowMap[oldAlbum.id()];
+			m->albums[row] = newAlbum;
+
 			emit sigCurrentAlbumChanged(row);
 		}
 	}
 }
-
 
 void AbstractLibrary::findTrack(TrackID id)
 {

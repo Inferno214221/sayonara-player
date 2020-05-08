@@ -95,13 +95,6 @@ namespace Util
 	QString sharePath(const QString& append_path);
 
 	/**
-	 * @brief get library path of sayonara
-	 * @return ./lib on windows, lib path of unix system
-	 */
-	QString libPath();
-	QString libPath(const QString& append_path);
-
-	/**
 	 * @brief get a temporary directory. usually /tmp/sayonara
 	 * @return
 	 */

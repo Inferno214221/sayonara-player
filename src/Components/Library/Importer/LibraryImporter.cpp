@@ -70,9 +70,8 @@ Importer::Importer(LocalLibrary* library) :
 {
 	m = Pimpl::make<Private>(library);
 
-	Tagging::ChangeNotifier* md_change_notifier = Tagging::ChangeNotifier::instance();
-	connect(md_change_notifier, &Tagging::ChangeNotifier::sigMetadataChanged,
-			this, &Importer::metadataChanged);
+	auto* cn = Tagging::ChangeNotifier::instance();
+	connect(cn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &Importer::metadataChanged);
 }
 
 Importer::~Importer() = default;
@@ -250,7 +249,7 @@ void Importer::copyThreadFinished()
 	emitStatus(ImportStatus::Imported);
 	Message::info(message);
 
-	Tagging::ChangeNotifier::instance()->changeMetadata(MetaDataList(), MetaDataList());
+	Tagging::ChangeNotifier::instance()->clearChangedMetadata();
 }
 
 
@@ -259,7 +258,7 @@ void Importer::metadataChanged()
 	auto* cn = Tagging::ChangeNotifier::instance();
 	if(m->importCache)
 	{
-		m->importCache->changeMetadata(cn->changedMetadata().second);
+		m->importCache->changeMetadata(cn->changedMetadata());
 	}
 }
 

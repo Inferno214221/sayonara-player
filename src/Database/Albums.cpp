@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/Query.h"
-#include "Database/Albums.h"
+#include "Albums.h"
+#include "Module.h"
+
 #include "Utils/MetaData/Album.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Utils.h"

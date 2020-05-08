@@ -3,7 +3,7 @@
 
 #include <QString>
 
-MetaDataList Test::Playlist::create_v_md(int min, int max)
+MetaDataList Test::Playlist::createTrackList(int min, int max)
 {
 	MetaDataList v_md;
 	for(int i=min; i<max; i++)

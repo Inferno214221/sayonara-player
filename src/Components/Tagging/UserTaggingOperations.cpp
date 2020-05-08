@@ -108,10 +108,7 @@ void UserOperations::setAlbumRating(const Album& album, Rating rating)
 	Album newAlbum(album);
 	newAlbum.setRating(rating);
 
-	AlbumList oldAlbums; oldAlbums << album;
-	AlbumList newAlbums; newAlbums << newAlbum;
-
-	Tagging::ChangeNotifier::instance()->updateAlbums(oldAlbums, newAlbums);
+	Tagging::ChangeNotifier::instance()->updateAlbums({AlbumPair(album, newAlbum)});
 }
 
 void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targetArtist)
@@ -125,7 +122,7 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 		return;
 	}
 
-	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
+	bool showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	Artist artist;
 	bool success = m->libraryDatabase->getArtistByID(targetArtist, artist);
@@ -145,7 +142,7 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 	for(int idx=0; idx<tracks.count(); idx++)
 	{
 		MetaData md(tracks[idx]);
-		if(show_album_artists){
+		if(showAlbumArtists){
 			md.setAlbumArtist(artist.name(), artist.id());
 		}
 

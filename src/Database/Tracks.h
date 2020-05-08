@@ -21,7 +21,7 @@
 #ifndef DATABASETRACKS_H
 #define DATABASETRACKS_H
 
-#include "Database/SearchableModule.h"
+#include "Query.h"
 #include "Utils/Pimpl.h"
 
 #include <QMap>

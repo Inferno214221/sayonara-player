@@ -27,6 +27,7 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/SearchMode.h"
@@ -40,7 +41,6 @@
 
 using DB::Tracks;
 using DB::Query;
-using DB::SearchableModule;
 using SMM=::Library::SearchModeMask;
 namespace LibraryUtils=::Library::Utils;
 using ::Library::Filter;
@@ -199,13 +199,14 @@ bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& tra
 
 MetaData Tracks::getTrackByPath(const QString& path) const
 {
+	const QString cleanedPath = Util::File::cleanFilename(path);
+	const QString query = fetchQueryTracks() + "WHERE filename = :filename;";
+
 	DB::Query q(module());
-
-	QString query = fetchQueryTracks() + "WHERE filename = :filename;";
 	q.prepare(query);
-	q.bindValue(":filename", Util::convertNotNull(path));
+	q.bindValue(":filename", Util::convertNotNull(cleanedPath));
 
-	MetaData md(path);
+	MetaData md(cleanedPath);
 	md.setDatabaseId(module()->databaseId());
 
 	MetaDataList tracks;
@@ -629,6 +630,8 @@ bool Tracks::updateTrack(const MetaData& md)
 	const QString fileCissearch = LibraryUtils::convertSearchstring(md.filepath());
 	const QString genreCissearch = LibraryUtils::convertSearchstring(md.genresToString());
 
+	const QString filepath = Util::File::cleanFilename(md.filepath());
+
 	QMap<QString, QVariant> bindings
 	{
 		{"albumArtistID",	md.albumArtistId()},
@@ -638,7 +641,7 @@ bool Tracks::updateTrack(const MetaData& md)
 		{"cissearch",		cissearch},
 		{"discnumber",		md.discnumber()},
 		{"filecissearch",	fileCissearch},
-		{"filename",		Util::convertNotNull(md.filepath())},
+		{"filename",		filepath},
 		{"filesize",		QVariant::fromValue(md.filesize())},
 		{"genre",			Util::convertNotNull(md.genresToString())},
 		{"genreCissearch",	genreCissearch},
@@ -712,7 +715,6 @@ bool Tracks::renameFilepath(const QString& oldPath, const QString& newPath, Libr
 	return (!q.hasError());
 }
 
-
 bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, AlbumId albumId)
 {
 	return insertTrackIntoDatabase(md, artistId, albumId, artistId);
@@ -740,10 +742,11 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& md, ArtistId artistId, Albu
 	const QString cissearch = ::Library::Utils::convertSearchstring(md.title());
 	const QString fileCissearch = ::Library::Utils::convertSearchstring(md.filepath());
 	const QString genreCissearch = ::Library::Utils::convertSearchstring(md.genresToString());
+	const QString filepath = Util::File::cleanFilename(md.filepath());
 
 	QMap<QString, QVariant> bindings =
 	{
-		{"filename",		Util::convertNotNull(md.filepath())},
+		{"filename",		filepath},
 		{"albumID",			albumId},
 		{"artistID",		artistId},
 		{"albumArtistID",	albumArtistId},

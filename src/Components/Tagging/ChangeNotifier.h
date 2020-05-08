@@ -27,8 +27,12 @@
 #include <QObject>
 #include <QPair>
 
+class MetaData;
 class MetaDataList;
-class AlbumList;
+class Album;
+
+using MetaDataPair=QPair<MetaData, MetaData>;
+using AlbumPair=QPair<Album, Album>;
 
 namespace Tagging
 {
@@ -58,13 +62,14 @@ namespace Tagging
 		 * @param v_md_old The original Metadata used for comparison
 		 * @param v_md_new The actualized Metadata
 		 */
-		void changeMetadata(const MetaDataList& oldTracks, const MetaDataList& newTracks);
+		void clearChangedMetadata();
+		void changeMetadata(const QList<MetaDataPair>& changedTracks);
         void deleteMetadata(const MetaDataList& deletedTracks);
-		void updateAlbums(const AlbumList& oldAlbums, const AlbumList& newAlbums);
+		void updateAlbums(const QList<AlbumPair>& changedAlbums);
 
-        QPair<MetaDataList, MetaDataList> changedMetadata() const;
+		QList<MetaDataPair> changedMetadata() const;
         MetaDataList deletedMetadata() const;
-		QPair<AlbumList, AlbumList> changedAlbums() const;
+		QList<AlbumPair> changedAlbums() const;
 
     };
 }

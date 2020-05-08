@@ -7,7 +7,7 @@ namespace Test
 {
 	namespace Playlist
 	{
-		MetaDataList create_v_md(int min, int max);
+		MetaDataList createTrackList(int min, int max);
 	}
 }
 

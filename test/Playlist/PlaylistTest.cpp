@@ -31,7 +31,7 @@ void PlaylistTest::jump_test()
 {
 	bool success;
 	MetaData md;
-	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
 	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
 	success = pl->currentTrack(md);
@@ -70,7 +70,7 @@ void PlaylistTest::jump_test()
 void PlaylistTest::shuffleTest()
 {
 	MetaData md;
-	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
 	QList<int> indexes;
 	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
@@ -110,7 +110,7 @@ void PlaylistTest::shuffleTest()
 
 void PlaylistTest::modifyTest()
 {
-	MetaDataList v_md = Test::Playlist::create_v_md(0, 100);
+	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 	int curIndex;
 
 	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
@@ -207,7 +207,7 @@ void PlaylistTest::insertTest()
 	pl->createPlaylist(MetaDataList());
 
 	{
-		MetaDataList tracks = Test::Playlist::create_v_md(0, 3);
+		MetaDataList tracks = Test::Playlist::createTrackList(0, 3);
 		pl->insertTracks(tracks, 20);
 
 		MetaDataList tracks_pl = pl->tracks();
@@ -225,7 +225,7 @@ void PlaylistTest::insertTest()
 
 
 	{
-		MetaDataList tracks = Test::Playlist::create_v_md(0, 3);
+		MetaDataList tracks = Test::Playlist::createTrackList(0, 3);
 		pl->insertTracks(tracks, -1);
 
 		MetaDataList tracks_pl = pl->tracks();
@@ -239,7 +239,7 @@ void PlaylistTest::insertTest()
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::create_v_md(3, 4);
+		MetaDataList tracks = Test::Playlist::createTrackList(3, 4);
 		pl->insertTracks(tracks, -1);
 
 		MetaDataList tracks_pl = pl->tracks();
@@ -250,7 +250,7 @@ void PlaylistTest::insertTest()
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::create_v_md(4, 5);
+		MetaDataList tracks = Test::Playlist::createTrackList(4, 5);
 		pl->insertTracks(tracks, 3);
 
 		MetaDataList tracks_pl = pl->tracks();
@@ -261,7 +261,7 @@ void PlaylistTest::insertTest()
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::create_v_md(5, 6);
+		MetaDataList tracks = Test::Playlist::createTrackList(5, 6);
 		pl->insertTracks(tracks, pl->count());
 
 		MetaDataList tracks_pl = pl->tracks();
