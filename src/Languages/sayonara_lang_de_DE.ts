@@ -2,52 +2,58 @@
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.ui" line="+27"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.ui" line="+14"/>
+        <location line="+240"/>
+        <source>Search cover</source>
+        <translation>Suche nach Cover</translation>
+    </message>
+    <message>
+        <location line="-224"/>
         <source>Online Search</source>
         <translation>Online Suche</translation>
     </message>
     <message>
-        <location line="+37"/>
-        <source>Automatic search</source>
-        <translation>Automatische Suche</translation>
+        <location line="+26"/>
+        <source>Start search automatically</source>
+        <translation>Suche automatisch starten</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>Text search</source>
-        <translation>Freie Suche</translation>
+        <location line="+79"/>
+        <source>Text or url</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+16"/>
+        <source>Search for</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>Server</source>
         <translation>Server</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+7"/>
+        <source>Automatic search</source>
+        <translation>Automatische Suche</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Local Search</source>
         <translation>Lokale Suche</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>Select and preview multiple covers</source>
-        <translation>Auswahl und Vorschau mehrerer Covers</translation>
-    </message>
-    <message>
-        <location line="+108"/>
-        <source>Alternative Cover</source>
-        <translation>Alternative Cover</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Start search automatically</source>
-        <translation>Suche automatisch starten</translation>
+        <source>Find covers in directory</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+283"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>%n Cover gefunden</numerusform><numerusform>%n Covers gefunden</numerusform></translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+140"/>
         <location line="+31"/>
         <source>Also save cover to %1</source>
         <translation>Speichere Cover auch in %1</translation>
@@ -84,7 +90,7 @@
         <translation>Info / Bearbeiten</translation>
     </message>
     <message>
-        <location line="+247"/>
+        <location line="+243"/>
         <source>Loading files...</source>
         <translation>Lade Dateien...</translation>
     </message>
@@ -150,7 +156,7 @@
         <translation>OK</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+126"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+127"/>
         <source>Loading tracks</source>
         <translation>Lade Titel</translation>
     </message>
@@ -180,12 +186,12 @@
         <translation>Abgebrochen</translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+57"/>
         <source>Choose target directory</source>
         <translation>Zielverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+10"/>
         <source>%1&lt;br /&gt;is no library directory</source>
         <translation>%1&lt;br /&gt;ist nicht in der Musiksammlung</translation>
     </message>
@@ -198,7 +204,12 @@
         <translation>Musiksammlung</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+352"/>
+        <location line="+466"/>
+        <source>Directory does not exist</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+389"/>
         <source>Audio files</source>
         <translation>Audiodateien</translation>
     </message>
@@ -223,7 +234,7 @@
     <name>GUI_AudioConverter</name>
     <message>
         <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+277"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+273"/>
         <source>Start</source>
         <translation>Start</translation>
     </message>
@@ -251,7 +262,7 @@
         <translation>Bitrate</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-164"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-162"/>
         <source>Audio Converter</source>
         <translation>Audio Konvertierung</translation>
     </message>
@@ -262,28 +273,33 @@
     </message>
     <message>
         <location line="+27"/>
-        <location line="+123"/>
+        <location line="+121"/>
         <source>Cannot find encoder</source>
         <translation>Kein Kodierungsprogramm verfügbar</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+14"/>
+        <location line="-109"/>
+        <location line="+13"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
         <translation>Wiedergabeliste enthält keine Titel, die vom Konvertierungsproramm unterstützt werden</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-11"/>
         <source>No track will be converted.</source>
         <translation>Keine Titel werden konvertiert</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
         <source>These tracks will be ignored</source>
         <translation>Diese Titel werden ignoriert</translation>
     </message>
+    <message>
+        <location line="+8"/>
+        <source>Choose target directory</source>
+        <translation>Zielverzeichnis auswählen</translation>
+    </message>
     <message numerus="yes">
-        <location line="+38"/>
+        <location line="+30"/>
         <source>Failed to convert %n track(s)</source>
         <translation><numerusform>%n Titel konnten nicht konvertiert werden</numerusform><numerusform>%n Titel konnten nicht konvertiert werden</numerusform></translation>
     </message>
@@ -1098,12 +1114,12 @@
         <translation>Beispiel</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+172"/>
+        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+173"/>
         <source>Choose target directory</source>
         <translation>Zielverzeichnis auswählen</translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+72"/>
         <source>Target directory is empty</source>
         <translation>Zielverzeichnis ist leer</translation>
     </message>
@@ -1280,14 +1296,9 @@
 <context>
     <name>GUI_SomaFM</name>
     <message>
-        <location filename="../src/Gui/SomaFM/GUI_SomaFM.ui" line="+42"/>
+        <location filename="../src/Gui/SomaFM/GUI_SomaFM.ui" line="+135"/>
         <source>Donate to Soma.fm</source>
         <translation>An Soma.fm spenden</translation>
-    </message>
-    <message>
-        <location line="+102"/>
-        <source>Streams</source>
-        <translation>Streams</translation>
     </message>
 </context>
 <context>
@@ -1432,7 +1443,7 @@
         <translation>Diese Titel ignorieren?</translation>
     </message>
     <message>
-        <location line="+394"/>
+        <location line="+399"/>
         <source>All changes will be lost</source>
         <translation>Alle Änderungen werden verworfen</translation>
     </message>
@@ -1476,7 +1487,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+849"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+844"/>
         <source>All %1 could be removed</source>
         <translation>Alle %1 konnten gelöscht werden</translation>
     </message>
@@ -1489,7 +1500,7 @@
 <context>
     <name>Library::Importer</name>
     <message>
-        <location filename="../src/Components/Library/Importer/LibraryImporter.cpp" line="+228"/>
+        <location filename="../src/Components/Library/Importer/LibraryImporter.cpp" line="+227"/>
         <source>Cannot import tracks</source>
         <translation>Titel können nicht importiert werden</translation>
     </message>
@@ -1507,12 +1518,12 @@
 <context>
     <name>Library::ReloadThread</name>
     <message>
-        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+219"/>
+        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
         <source>Looking for covers</source>
         <translation>Suche nach Covers</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+42"/>
         <source>Reading files</source>
         <translation>Lese Dateien</translation>
     </message>
@@ -1578,7 +1589,7 @@
 <context>
     <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+119"/>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+117"/>
         <source>Search an alternative cover</source>
         <translation>Suche nach alternativem Cover</translation>
     </message>
@@ -1594,7 +1605,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+92"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+104"/>
         <source>Write cover to tracks</source>
         <translation>Speichere Covers direkt in die Musikdatei</translation>
     </message>
@@ -1602,7 +1613,7 @@
 <context>
     <name>Library::CoverViewContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+217"/>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+216"/>
         <source>Toolbar</source>
         <translation>Werkzeugleiste</translation>
     </message>
@@ -1618,7 +1629,7 @@
 <context>
     <name>Directory::ContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+295"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+303"/>
         <source>Rename by metadata</source>
         <translation>Metadaten zu Dateiname</translation>
     </message>
@@ -1637,11 +1648,16 @@
         <source>Copy to another library</source>
         <translation>In andere Musiksammlung kopieren</translation>
     </message>
+    <message>
+        <location line="+1"/>
+        <source>View in file manager</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>Directory::TreeView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+410"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+422"/>
         <source>Copy here</source>
         <translation>Kopiere hierhin</translation>
     </message>
@@ -1654,7 +1670,7 @@
 <context>
     <name>GUI_DirectoryView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+183"/>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+187"/>
         <source>Could not create directory</source>
         <translation>Verzeichnis konnte nicht erstellt werden</translation>
     </message>
@@ -1662,12 +1678,12 @@
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="../src/Gui/Library/GenreView.cpp" line="+114"/>
+        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
         <source>Updating genres</source>
         <translation>Aktualisiere Genres</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+112"/>
         <source>Do you really want to remove %1 from all tracks?</source>
         <translation>Soll %1 wirklich aus allen Titeln gelöscht werden?</translation>
     </message>
@@ -1703,9 +1719,14 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/HeaderView.cpp" line="+198"/>
+        <location filename="../src/Gui/Library/Header/HeaderView.cpp" line="+215"/>
         <source>Resize columns</source>
         <translation>Spaltengröße anpassen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resize columns automatically</source>
+        <translation>Spaltengröße automatisch anpassen</translation>
     </message>
 </context>
 <context>
@@ -1769,7 +1790,7 @@
     <name>Gui::MergeMenu</name>
     <message>
         <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+52"/>
-        <location line="+53"/>
+        <location line="+58"/>
         <source>Merge</source>
         <translation>Zusammenführen</translation>
     </message>
@@ -1777,7 +1798,7 @@
 <context>
     <name>GUI_ControlsBase</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+71"/>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+72"/>
         <source>Sayonara Player</source>
         <translation>Sayonara Player</translation>
     </message>
@@ -1795,7 +1816,7 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+275"/>
+        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+271"/>
         <source>Cannot open file</source>
         <translation>Datei konnte nicht geöffnet werden</translation>
     </message>
@@ -1803,23 +1824,23 @@
 <context>
     <name>Menubar</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+323"/>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+316"/>
         <source>View</source>
         <translation>Ansicht</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+18"/>
+        <location line="+15"/>
         <source>Help</source>
         <translation>Hilfe</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-14"/>
         <source>Plugins</source>
         <translation>Plugins</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+11"/>
         <source>Show large cover</source>
         <translation>Großes Albumcover anzeigen</translation>
     </message>
@@ -1829,7 +1850,7 @@
         <translation>Vollbild</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+49"/>
         <source>Media files</source>
         <translation>Media files</translation>
     </message>
@@ -1839,7 +1860,7 @@
         <translation>Audiodateien und Wiedergabelisten öffnen</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+59"/>
         <source>Please visit the forum at</source>
         <translation>Bitte besuche das Forum unter</translation>
     </message>
@@ -1908,7 +1929,7 @@
         <translation>Audiodateien und Wiedergabelisten öffnen</translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+206"/>
         <source>Playlist name already exists</source>
         <translation>Name existiert bereits</translation>
     </message>
@@ -1955,7 +1976,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+474"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
         <source>Goto row</source>
         <translation>Springe zu Zeile</translation>
     </message>
@@ -2174,19 +2195,6 @@
     </message>
 </context>
 <context>
-    <name>TagTextInput</name>
-    <message>
-        <location filename="../src/Gui/Tagging/TagTextInput.cpp" line="+126"/>
-        <source>Very first letter to upper case</source>
-        <translation>Allerersten Buchstaben groß schreiben</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>First letters to upper case</source>
-        <translation>Erste Buchstaben groß schreiben</translation>
-    </message>
-</context>
-<context>
     <name>Library::ContextMenu</name>
     <message>
         <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+196"/>
@@ -2222,7 +2230,7 @@
 <context>
     <name>Gui::ImageSelectionDialog</name>
     <message>
-        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+57"/>
+        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation>Bilder</translation>
     </message>
@@ -2240,7 +2248,7 @@
 <context>
     <name>Gui::StreamRecorderPreferenceAction</name>
     <message>
-        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+163"/>
+        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
         <location line="+7"/>
         <source>Stream Recorder</source>
         <translation>Stream Recorder</translation>
@@ -2276,6 +2284,19 @@
         <location line="+0"/>
         <source>Next search result</source>
         <translation>Nächstes Suchergebnis</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::LineEdit</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
+        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove special characters (letters)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2319,6 +2340,11 @@
         <location line="+2"/>
         <source>Album</source>
         <translation>Album</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Album artist</source>
+        <translation>Albumkünstler</translation>
     </message>
     <message>
         <location line="+2"/>

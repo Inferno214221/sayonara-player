@@ -2,52 +2,58 @@
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.ui" line="+27"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.ui" line="+14"/>
+        <location line="+240"/>
+        <source>Search cover</source>
+        <translation>Поиск обложки</translation>
+    </message>
+    <message>
+        <location line="-224"/>
         <source>Online Search</source>
-        <translation>Поиск в Интернет</translation>
+        <translation>Поиск в Интернете</translation>
     </message>
     <message>
-        <location line="+37"/>
-        <source>Automatic search</source>
-        <translation>Автоматический поиск</translation>
+        <location line="+26"/>
+        <source>Start search automatically</source>
+        <translation>Начать поиск автоматически</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>Text search</source>
-        <translation>Искать текст</translation>
+        <location line="+79"/>
+        <source>Text or url</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+16"/>
+        <source>Search for</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>Server</source>
         <translation>Сервер</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+7"/>
+        <source>Automatic search</source>
+        <translation>Автоматический поиск</translation>
+    </message>
+    <message>
+        <location line="+13"/>
         <source>Local Search</source>
         <translation>Локальный поиск</translation>
     </message>
     <message>
         <location line="+12"/>
-        <source>Select and preview multiple covers</source>
-        <translation>Выбор и предварительный просмотр нескольких обложек</translation>
-    </message>
-    <message>
-        <location line="+108"/>
-        <source>Alternative Cover</source>
-        <translation>Альтернативная обложка</translation>
-    </message>
-    <message>
-        <location line="+16"/>
-        <source>Start search automatically</source>
-        <translation>Начать поиск автоматически</translation>
+        <source>Find covers in directory</source>
+        <translation type="unfinished"/>
     </message>
     <message numerus="yes">
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+283"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>%n обложка найдена</numerusform><numerusform>%n обложек найдены</numerusform><numerusform>%n обложек найдено</numerusform><numerusform>%n обложки найдены</numerusform></translation>
     </message>
     <message>
-        <location line="+133"/>
+        <location line="+140"/>
         <location line="+31"/>
         <source>Also save cover to %1</source>
         <translation>Сохранить обложку также в %1</translation>
@@ -84,7 +90,7 @@
         <translation>Информация / Изменение</translation>
     </message>
     <message>
-        <location line="+247"/>
+        <location line="+243"/>
         <source>Loading files...</source>
         <translation>Загружаю файлы .. </translation>
     </message>
@@ -109,7 +115,7 @@
     <message>
         <location filename="../src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+303"/>
         <source>Save lyrics not supported</source>
-        <translation>Сохранить текст не получается</translation>
+        <translation>Не получается сохранить текст</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -150,7 +156,7 @@
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+126"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+127"/>
         <source>Loading tracks</source>
         <translation>Загрузка треков</translation>
     </message>
@@ -180,14 +186,14 @@
         <translation>Отменено</translation>
     </message>
     <message>
-        <location line="+56"/>
+        <location line="+57"/>
         <source>Choose target directory</source>
-        <translation>Выбрать папку</translation>
+        <translation>Выбрать целевой каталог</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+10"/>
         <source>%1&lt;br /&gt;is no library directory</source>
-        <translation>%1&lt;br /&gt;не папка каталога</translation>
+        <translation>%1&lt;br /&gt;не библиотека каталога</translation>
     </message>
 </context>
 <context>
@@ -198,9 +204,14 @@
         <translation>Библиотека</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+352"/>
+        <location line="+466"/>
+        <source>Directory does not exist</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+389"/>
         <source>Audio files</source>
-        <translation>Аудио файлы</translation>
+        <translation>Аудиофайлы</translation>
     </message>
 </context>
 <context>
@@ -208,7 +219,7 @@
     <message>
         <location filename="../src/Gui/Player/GUI_Controls.ui" line="+318"/>
         <source>Written by Michael Lugmair (Lucio Carreras)</source>
-        <translation type="unfinished"/>
+        <translation>Автор Michael Lugmair (Lucio Carreras)</translation>
     </message>
 </context>
 <context>
@@ -223,9 +234,9 @@
     <name>GUI_AudioConverter</name>
     <message>
         <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+277"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+273"/>
         <source>Start</source>
-        <translation>Начать</translation>
+        <translation>Запуск</translation>
     </message>
     <message>
         <location line="+30"/>
@@ -251,7 +262,7 @@
         <translation>Битрейт</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-164"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-162"/>
         <source>Audio Converter</source>
         <translation>Аудио конвертер</translation>
     </message>
@@ -262,28 +273,33 @@
     </message>
     <message>
         <location line="+27"/>
-        <location line="+123"/>
+        <location line="+121"/>
         <source>Cannot find encoder</source>
         <translation>Не найден кодек</translation>
     </message>
     <message>
-        <location line="-113"/>
-        <location line="+14"/>
+        <location line="-109"/>
+        <location line="+13"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
         <translation>В плейлисте нет треков, которые поддерживаются конвертером</translation>
     </message>
     <message>
-        <location line="-9"/>
+        <location line="-11"/>
         <source>No track will be converted.</source>
-        <translation>Треки не были конвертированы</translation>
+        <translation>Треки не были конвертированы.</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
         <source>These tracks will be ignored</source>
         <translation>Эти треки будут пропущены</translation>
     </message>
+    <message>
+        <location line="+8"/>
+        <source>Choose target directory</source>
+        <translation>Выбрать целевой каталог</translation>
+    </message>
     <message numerus="yes">
-        <location line="+38"/>
+        <location line="+30"/>
         <source>Failed to convert %n track(s)</source>
         <translation><numerusform>%n названия трека невозможно конвертировать</numerusform><numerusform>%n названий треков невозможно конвертировать</numerusform><numerusform>%n названий треков невозможно конвертировать</numerusform><numerusform>%n названий треков невозможно конвертировать</numerusform></translation>
     </message>
@@ -319,7 +335,7 @@
     <message>
         <location line="+122"/>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
-        <translation>Закладки могут быть определенны только для треков из библиотеки.</translation>
+        <translation>Закладки могут быть созданы только для треков из библиотеки.</translation>
     </message>
 </context>
 <context>
@@ -327,7 +343,7 @@
     <message>
         <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.ui" line="+88"/>
         <source>Cannot Broadcast</source>
-        <translation>Поток невозможен</translation>
+        <translation>Трансляция невозможна</translation>
     </message>
     <message>
         <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+104"/>
@@ -347,12 +363,12 @@
     <message>
         <location line="+60"/>
         <source>Cannot broadcast on port %1</source>
-        <translation>Передача на порт %1 невозможна</translation>
+        <translation>Трансляция на порт %1 невозможна</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Maybe another application is using this port?</source>
-        <translation>Возможно, используется другое применение этого порта?</translation>
+        <translation>Возможно, используется другое применение для этого порта?</translation>
     </message>
 </context>
 <context>
@@ -366,13 +382,13 @@
     <message>
         <location line="+39"/>
         <source>Preserve pitch</source>
-        <translation>Не менять высоту</translation>
+        <translation>Сохранить высоту тона</translation>
     </message>
     <message>
         <location line="+30"/>
         <location filename="../src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+1"/>
         <source>Pitch</source>
-        <translation>Высота</translation>
+        <translation>Высота тона</translation>
     </message>
     <message>
         <location filename="../src/Gui/Plugins/Engine/GUI_Speed.cpp" line="+2"/>
@@ -561,7 +577,7 @@
     <message>
         <location line="+7"/>
         <source>Delete all covers from the Sayonara directory</source>
-        <translation>Удалить все обложки из папки Sayonara</translation>
+        <translation>Удалить все обложки из каталога Sayonara</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -571,7 +587,7 @@
     <message>
         <location line="+9"/>
         <source>Save found covers into the library directory where the audio files are located</source>
-        <translation>Сохранить найденные обложки в папке библиотеки, где размещены аудиофайлы</translation>
+        <translation>Сохранить найденные обложки в каталоге библиотеки, где размещены аудиофайлы</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -596,7 +612,7 @@
     <message>
         <location line="+7"/>
         <source>Save found covers into Sayonara directory</source>
-        <translation>Сохранить найденые обложки в папке Sayonara </translation>
+        <translation>Сохранить найденные обложки в каталоге Sayonara </translation>
     </message>
     <message>
         <location line="+22"/>
@@ -706,12 +722,12 @@
     <message>
         <location line="+86"/>
         <source>Library-Playlist Interaction</source>
-        <translation>Библиотека и плейлист</translation>
+        <translation>Взаимодействие библиотеки и плейлиста</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>When drag and drop into playlist </source>
-        <translation>Drag and Drop: Вставить название в плейлист и</translation>
+        <translation>Drag and Drop: Перетащить в плейлист</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -856,7 +872,7 @@
     <message>
         <location line="+6"/>
         <source>Load last track after pressing stop</source>
-        <translation>Загрузить последнее название, после нажатия Стоп</translation>
+        <translation>Загрузить последнее трек, после нажатия Стоп</translation>
     </message>
     <message>
         <location line="+11"/>
@@ -1018,7 +1034,7 @@
     <message>
         <location line="+7"/>
         <source>Case insensitive</source>
-        <translation>Игнорировать написание с больш и мал.букв</translation>
+        <translation>Игнорировать написание с больш. и мал.букв</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1065,7 +1081,7 @@
     <message>
         <location line="+9"/>
         <source>Target directory</source>
-        <translation>Целевая папка</translation>
+        <translation>Целевой каталог</translation>
     </message>
     <message>
         <location line="+40"/>
@@ -1075,12 +1091,12 @@
     <message>
         <location line="+45"/>
         <source>Create session directory</source>
-        <translation>Создать папку сессии</translation>
+        <translation>Создать каталог сессии</translation>
     </message>
     <message>
         <location line="+8"/>
         <source>Session Directory</source>
-        <translation>Папка сессии</translation>
+        <translation>Каталог сессии</translation>
     </message>
     <message>
         <location line="+22"/>
@@ -1098,20 +1114,20 @@
         <translation>Пример</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+172"/>
+        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+173"/>
         <source>Choose target directory</source>
-        <translation>Выбрать папку</translation>
+        <translation>Выбрать целевой каталог</translation>
     </message>
     <message>
-        <location line="+65"/>
+        <location line="+72"/>
         <source>Target directory is empty</source>
-        <translation>Целевая папка пустая</translation>
+        <translation>Целевой каталог пустой</translation>
     </message>
     <message>
         <location line="+0"/>
         <location line="+6"/>
         <source>Please choose another directory</source>
-        <translation>Пожалуйста, выберите другую папку</translation>
+        <translation>Пожалуйста, выберите другой каталог</translation>
     </message>
     <message>
         <location line="+0"/>
@@ -1162,7 +1178,7 @@
     <message>
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_CssEditor.ui" line="+97"/>
         <source>Edit style sheet</source>
-        <translation type="unfinished"/>
+        <translation>Редактировать таблицу стиля</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1225,7 +1241,7 @@
     <message>
         <location line="+7"/>
         <source>Edit style sheet</source>
-        <translation type="unfinished"/>
+        <translation>Редактировать таблицу стиля</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+48"/>
@@ -1280,14 +1296,9 @@
 <context>
     <name>GUI_SomaFM</name>
     <message>
-        <location filename="../src/Gui/SomaFM/GUI_SomaFM.ui" line="+42"/>
+        <location filename="../src/Gui/SomaFM/GUI_SomaFM.ui" line="+135"/>
         <source>Donate to Soma.fm</source>
         <translation>Пожертвовать Soma.fm</translation>
-    </message>
-    <message>
-        <location line="+102"/>
-        <source>Streams</source>
-        <translation>Веб-потоки</translation>
     </message>
 </context>
 <context>
@@ -1384,7 +1395,7 @@
     <message>
         <location line="+113"/>
         <source>Comment</source>
-        <translation>Закомментировать</translation>
+        <translation>Прокомментировать</translation>
     </message>
     <message>
         <location line="+150"/>
@@ -1432,7 +1443,7 @@
         <translation>Игнорировать эти треки?</translation>
     </message>
     <message>
-        <location line="+394"/>
+        <location line="+399"/>
         <source>All changes will be lost</source>
         <translation>Все изменения утеряны</translation>
     </message>
@@ -1476,7 +1487,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+849"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+844"/>
         <source>All %1 could be removed</source>
         <translation>Все %1 удалены</translation>
     </message>
@@ -1489,7 +1500,7 @@
 <context>
     <name>Library::Importer</name>
     <message>
-        <location filename="../src/Components/Library/Importer/LibraryImporter.cpp" line="+228"/>
+        <location filename="../src/Components/Library/Importer/LibraryImporter.cpp" line="+227"/>
         <source>Cannot import tracks</source>
         <translation>Невозможно импортировать треки</translation>
     </message>
@@ -1501,18 +1512,18 @@
     <message>
         <location line="+5"/>
         <source>%1 of %2 files could be imported</source>
-        <translation>%1 из %2 файлов импортированы</translation>
+        <translation>%1 из %2 файлов могут быть импортированы</translation>
     </message>
 </context>
 <context>
     <name>Library::ReloadThread</name>
     <message>
-        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+219"/>
+        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
         <source>Looking for covers</source>
         <translation>Поиск обложек</translation>
     </message>
     <message>
-        <location line="+40"/>
+        <location line="+42"/>
         <source>Reading files</source>
         <translation>Чтение файлов</translation>
     </message>
@@ -1528,7 +1539,7 @@
         <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+171"/>
         <location line="+35"/>
         <source>Cannot fetch lyrics from %1</source>
-        <translation>Невозможно скачать текст из %1</translation>
+        <translation>Невозможно получить текст из %1</translation>
     </message>
     <message>
         <location line="+10"/>
@@ -1555,7 +1566,7 @@
     <message>
         <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+123"/>
         <source>Website</source>
-        <translation>Веб страница</translation>
+        <translation>Веб-страница</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1578,7 +1589,7 @@
 <context>
     <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+119"/>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+117"/>
         <source>Search an alternative cover</source>
         <translation>Поиск альтернативной обложки</translation>
     </message>
@@ -1594,7 +1605,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+92"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+104"/>
         <source>Write cover to tracks</source>
         <translation>Сохранить обложку в файле трека</translation>
     </message>
@@ -1602,7 +1613,7 @@
 <context>
     <name>Library::CoverViewContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+217"/>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+216"/>
         <source>Toolbar</source>
         <translation>Панель инструментов</translation>
     </message>
@@ -1618,7 +1629,7 @@
 <context>
     <name>Directory::ContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+295"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+303"/>
         <source>Rename by metadata</source>
         <translation>Переименовать по метаданным</translation>
     </message>
@@ -1637,11 +1648,16 @@
         <source>Copy to another library</source>
         <translation>Копировать в другую библиотеку</translation>
     </message>
+    <message>
+        <location line="+1"/>
+        <source>View in file manager</source>
+        <translation type="unfinished"/>
+    </message>
 </context>
 <context>
     <name>Directory::TreeView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+410"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+422"/>
         <source>Copy here</source>
         <translation>Копировать сюда</translation>
     </message>
@@ -1654,20 +1670,20 @@
 <context>
     <name>GUI_DirectoryView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+183"/>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+187"/>
         <source>Could not create directory</source>
-        <translation>Невозможно создать новую папку</translation>
+        <translation>Невозможно создать новый каталог</translation>
     </message>
 </context>
 <context>
     <name>Library::GenreView</name>
     <message>
-        <location filename="../src/Gui/Library/GenreView.cpp" line="+114"/>
+        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
         <source>Updating genres</source>
         <translation>Обновить жанры</translation>
     </message>
     <message>
-        <location line="+113"/>
+        <location line="+112"/>
         <source>Do you really want to remove %1 from all tracks?</source>
         <translation>Вы действительно хотите удалить %1 из всех треков?</translation>
     </message>
@@ -1697,15 +1713,20 @@
     <message>
         <location line="+7"/>
         <source>A library which contains this file path already exists</source>
-        <translation type="unfinished"/>
+        <translation>Библиотека, которая содержит этот путь к файлу, уже существует</translation>
     </message>
 </context>
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/HeaderView.cpp" line="+198"/>
+        <location filename="../src/Gui/Library/Header/HeaderView.cpp" line="+215"/>
         <source>Resize columns</source>
         <translation>Изменить размер столбцов</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resize columns automatically</source>
+        <translation>Изменить размер столбцов автоматически</translation>
     </message>
 </context>
 <context>
@@ -1749,7 +1770,7 @@
     <message>
         <location line="+4"/>
         <source>Scan all files in your library directory</source>
-        <translation>Сканировать все файлы в папке библиотеки</translation>
+        <translation>Сканировать все файлы в каталог библиотеки</translation>
     </message>
 </context>
 <context>
@@ -1769,7 +1790,7 @@
     <name>Gui::MergeMenu</name>
     <message>
         <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+52"/>
-        <location line="+53"/>
+        <location line="+58"/>
         <source>Merge</source>
         <translation>Объединить</translation>
     </message>
@@ -1777,7 +1798,7 @@
 <context>
     <name>GUI_ControlsBase</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+71"/>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+72"/>
         <source>Sayonara Player</source>
         <translation>Sayonara Player</translation>
     </message>
@@ -1795,31 +1816,31 @@
 <context>
     <name>GUI_Logger</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+275"/>
+        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+271"/>
         <source>Cannot open file</source>
-        <translation>Создать профиль</translation>
+        <translation>Невозможно открыть файл</translation>
     </message>
 </context>
 <context>
     <name>Menubar</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+323"/>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+316"/>
         <source>View</source>
         <translation>Вид</translation>
     </message>
     <message>
         <location line="+1"/>
-        <location line="+18"/>
+        <location line="+15"/>
         <source>Help</source>
         <translation>Помощь</translation>
     </message>
     <message>
-        <location line="-17"/>
+        <location line="-14"/>
         <source>Plugins</source>
         <translation>Модули</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+11"/>
         <source>Show large cover</source>
         <translation>Показать большую обложку</translation>
     </message>
@@ -1829,7 +1850,7 @@
         <translation>Во весь экран</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+49"/>
         <source>Media files</source>
         <translation>Медиа файлы</translation>
     </message>
@@ -1839,7 +1860,7 @@
         <translation>Открыть медиа файлы</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+59"/>
         <source>Please visit the forum at</source>
         <translation>Пожалуйста, посетите форум</translation>
     </message>
@@ -1908,7 +1929,7 @@
         <translation>Открыть медиа файлы</translation>
     </message>
     <message>
-        <location line="+208"/>
+        <location line="+206"/>
         <source>Playlist name already exists</source>
         <translation>Имя плейлиста уже существует</translation>
     </message>
@@ -1955,7 +1976,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+474"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
         <source>Goto row</source>
         <translation>Перейти к строке</translation>
     </message>
@@ -2174,19 +2195,6 @@
     </message>
 </context>
 <context>
-    <name>TagTextInput</name>
-    <message>
-        <location filename="../src/Gui/Tagging/TagTextInput.cpp" line="+126"/>
-        <source>Very first letter to upper case</source>
-        <translation>Самая первая буква в верхнем регистре</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>First letters to upper case</source>
-        <translation>Первые буквы писать с большой</translation>
-    </message>
-</context>
-<context>
     <name>Library::ContextMenu</name>
     <message>
         <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+196"/>
@@ -2206,7 +2214,7 @@
     <message>
         <location line="+1"/>
         <source>Directory view</source>
-        <translation>Просмотр в режиме папки</translation>
+        <translation>Просмотр в режиме каталога</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2222,7 +2230,7 @@
 <context>
     <name>Gui::ImageSelectionDialog</name>
     <message>
-        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+57"/>
+        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
         <source>Image files</source>
         <translation>Медиа файлы </translation>
     </message>
@@ -2240,7 +2248,7 @@
 <context>
     <name>Gui::StreamRecorderPreferenceAction</name>
     <message>
-        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+163"/>
+        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
         <location line="+7"/>
         <source>Stream Recorder</source>
         <translation>Запись потока</translation>
@@ -2276,6 +2284,19 @@
         <location line="+0"/>
         <source>Next search result</source>
         <translation>Следующий результат поиска</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::LineEdit</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
+        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove special characters (letters)</source>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2319,6 +2340,11 @@
         <location line="+2"/>
         <source>Album</source>
         <translation>Альбом</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Album artist</source>
+        <translation>Исполнитель альбома</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2393,7 +2419,7 @@
     <message>
         <location line="+2"/>
         <source>Cancel</source>
-        <translation>Отмена</translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2448,7 +2474,7 @@
     <message>
         <location line="+2"/>
         <source>Create new directory</source>
-        <translation>Создать новую папку</translation>
+        <translation>Создать новый каталог</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2494,7 +2520,7 @@
     <message>
         <location line="+2"/>
         <source>Directory</source>
-        <translation>Папка</translation>
+        <translation>Каталог</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2549,7 +2575,7 @@
     <message>
         <location line="+2"/>
         <source>Entry</source>
-        <translation>Элемент</translation>
+        <translation>Запись</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2614,12 +2640,12 @@
     <message>
         <location line="+2"/>
         <source>Fulltext</source>
-        <translation>Текст полностью</translation>
+        <translation>Полный текст</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Gapless playback</source>
-        <translation>Безпрерывное воспроизведение</translation>
+        <translation>Беспрерывное воспроизведение</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2649,7 +2675,7 @@
     <message>
         <location line="+2"/>
         <source>Import directory</source>
-        <translation>Импорт папки</translation>
+        <translation>Импорт каталога</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2714,7 +2740,7 @@
     <message>
         <location line="+2"/>
         <source>Tab</source>
-        <translation>Tab</translation>
+        <translation>Вкладка</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2729,7 +2755,7 @@
     <message>
         <location line="+2"/>
         <source>Library view type</source>
-        <translation type="unfinished"/>
+        <translation>Тип просмотра библиотеки</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2739,7 +2765,7 @@
     <message>
         <location line="+2"/>
         <source>Live Search</source>
-        <translation>Живой поиск</translation>
+        <translation>Live поиск</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2784,7 +2810,7 @@
     <message>
         <location line="+2"/>
         <source>Months</source>
-        <translation>Месяцы</translation>
+        <translation>Месяцев</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2804,7 +2830,7 @@
     <message>
         <location line="+2"/>
         <source>New</source>
-        <translation>Добавить</translation>
+        <translation>Новое</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2830,7 +2856,7 @@
         <location line="+2"/>
         <location line="+144"/>
         <source>Tracks</source>
-        <translation>Дорожки</translation>
+        <translation>Треки</translation>
     </message>
     <message>
         <location line="-142"/>
@@ -2855,12 +2881,12 @@
     <message>
         <location line="+2"/>
         <source>Open</source>
-        <translation>Открытие файла</translation>
+        <translation>Открыть файла</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Open directory</source>
-        <translation>Открыть папку</translation>
+        <translation>Открыть каталог</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2875,12 +2901,12 @@
     <message>
         <location line="+2"/>
         <source>Overwrite</source>
-        <translation>Заменить</translation>
+        <translation>Перезаписать</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Pause</source>
-        <translation>Pause</translation>
+        <translation>Пауза</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2905,7 +2931,7 @@
     <message>
         <location line="+2"/>
         <source>Playlists</source>
-        <translation>Воспроизведение файлов</translation>
+        <translation>Плейлисты</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2950,7 +2976,7 @@
     <message>
         <location line="+2"/>
         <source>Quit</source>
-        <translation>Выход</translation>
+        <translation>Выйти</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2965,7 +2991,7 @@
     <message>
         <location line="+2"/>
         <source>Rating</source>
-        <translation>Оценка</translation>
+        <translation>Рейтинг</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2985,7 +3011,7 @@
     <message>
         <location line="+2"/>
         <source>Remove</source>
-        <translation>Удалить из списка</translation>
+        <translation>Удалить </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3010,7 +3036,7 @@
     <message>
         <location line="+2"/>
         <source>Reset</source>
-        <translation>Очистить</translation>
+        <translation>Сброс</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3020,7 +3046,7 @@
     <message>
         <location line="+2"/>
         <source>Reverse order</source>
-        <translation type="unfinished"/>
+        <translation>Обратный порядок</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3066,7 +3092,7 @@
     <message>
         <location line="+2"/>
         <source>Search next</source>
-        <translation>Искать дальше</translation>
+        <translation>Искать следующий</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3081,7 +3107,7 @@
     <message>
         <location line="+2"/>
         <source>Seconds</source>
-        <translation>С</translation>
+        <translation>Сек</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -3101,7 +3127,7 @@
     <message>
         <location line="+2"/>
         <source>Show</source>
-        <translation>Показ</translation>
+        <translation>Показать</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3166,12 +3192,12 @@
     <message>
         <location line="+2"/>
         <source>Track</source>
-        <translation>Дорожка</translation>
+        <translation>Трек</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Track number</source>
-        <translation>Номер дорожки</translation>
+        <translation>Номер трека</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3271,7 +3297,7 @@
     <message>
         <location line="+2"/>
         <source>Years</source>
-        <translation>Годы</translation>
+        <translation>Лет</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3291,7 +3317,7 @@
     <message numerus="yes">
         <location line="+3"/>
         <source>%n directory(s)</source>
-        <translation><numerusform>%n каталог</numerusform><numerusform>%n каталог(ов)</numerusform><numerusform>%n каталог(ов)</numerusform><numerusform>%n пап(ок)</numerusform></translation>
+        <translation><numerusform>%n каталог</numerusform><numerusform>%n каталог(ов)</numerusform><numerusform>%n каталог(ов)</numerusform><numerusform>%n каталог(ов)</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
