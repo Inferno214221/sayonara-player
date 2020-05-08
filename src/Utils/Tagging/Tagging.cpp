@@ -252,7 +252,9 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.setDiscCount(discnumber.disccount);
 	md.setRating(popularimeter.get_rating());
 	md.setComment(comment);
-	md.addCustomField("has_album_art", "", QString::number(Tagging::Covers::hasCover(parsed_tag)));
+
+	int hasCover = int(Tagging::Covers::hasCover(parsed_tag));
+	md.addCustomField("has_album_art", "", QString::number(hasCover));
 
 	if(md.title().length() == 0)
 	{

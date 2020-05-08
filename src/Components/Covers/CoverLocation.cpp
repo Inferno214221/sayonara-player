@@ -52,7 +52,7 @@ using UrlList=QList<Url>;
 
 namespace File=::Util::File;
 
-static QList<Url> extract_downloadUrls(const LibraryItem* item)
+static QList<Url> extractDownloadUrls(const LibraryItem* item)
 {
 	QList<Url> urls;
 	const QStringList cdu = item->coverDownloadUrls();
@@ -153,8 +153,8 @@ Location Location::coverLocation(const QString& albumName, const QString& artist
 
 Location Location::coverLocation(const QString& albumName, const QStringList& artists)
 {
-	const QString major_artist = ArtistList::majorArtist(artists);
-	return coverLocation(albumName, major_artist);
+	const QString majorArtist = ArtistList::majorArtist(artists);
+	return coverLocation(albumName, majorArtist);
 }
 
 Location Location::xcoverLocation(const Album& album)
@@ -182,7 +182,7 @@ Location Location::xcoverLocation(const Album& album)
 			cl = Location::coverLocation(album.name(), "");
 		}
 
-		const QList<Url> urls = extract_downloadUrls( &album );
+		const QList<Url> urls = extractDownloadUrls( &album );
 		if(!urls.isEmpty()) {
 			cl.setSearchUrls(urls);
 		}
@@ -190,11 +190,11 @@ Location Location::xcoverLocation(const Album& album)
 
 	// setup local paths. No audio file source. That may last too long
 	{
-		const QStringList path_hints = album.pathHint();
-		if(!path_hints.isEmpty())
+		const QStringList pathHints = album.pathHint();
+		if(!pathHints.isEmpty())
 		{
-			cl.setLocalPathHints(path_hints);
-			cl.setAudioFileSource(path_hints.first(), cl.symlinkPath());
+			cl.setLocalPathHints(pathHints);
+			cl.setAudioFileSource(pathHints.first(), cl.symlinkPath());
 		}
 	}
 
@@ -207,7 +207,7 @@ Location Location::coverLocation(const Artist& artist)
 {
 	Location cl = Location::coverLocation(artist.name());
 
-	const QList<Url> urls = extract_downloadUrls(&artist);
+	const QList<Url> urls = extractDownloadUrls(&artist);
 	if(!urls.isEmpty()) {
 		cl.setSearchUrls(urls);
 	}
@@ -259,7 +259,6 @@ Location Location::coverLocationRadio(const QString& radioStation)
 
 	return ret;
 }
-
 
 Location Location::coverLocation(const MetaData& md)
 {
@@ -329,7 +328,7 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 
 	if(cl.searchUrls().isEmpty())
 	{
-		const QList<Url> urls = extract_downloadUrls(&md);
+		const QList<Url> urls = extractDownloadUrls(&md);
 		cl.setSearchUrls(urls);
 		QString identifier = QString("CL:By metadata: %1 by %2 with %3 direct download urls")
 			.arg(md.album())
@@ -345,7 +344,7 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 
 	cl.setLocalPathHints(QStringList{md.filepath()});
 
-	QString customHash = md.customField("cover-hash");
+	const QString customHash = md.customField("cover-hash");
 	if(!customHash.isEmpty())
 	{
 		cl.setHash(customHash);
@@ -389,17 +388,17 @@ QString Location::preferredPath() const
 	// first search for cover in track
 	if(hasAudioFileSource())
 	{
-		bool target_exists = File::exists(this->audioFileTarget());
-		if(!target_exists)
+		bool targetExists = File::exists(this->audioFileTarget());
+		if(!targetExists)
 		{
 			const QPixmap pm = Tagging::Covers::extractCover(this->audioFileSource());
 			if(!pm.isNull())
 			{
-				target_exists = pm.save(this->audioFileTarget());
+				targetExists = pm.save(this->audioFileTarget());
 			}
 		}
 
-		if(target_exists)
+		if(targetExists)
 		{
 			return audioFileTarget();
 		}
@@ -415,13 +414,11 @@ QString Location::preferredPath() const
 
 QString Location::alternativePath() const
 {
-	QString dir, filename;
-	Util::File::splitFilename(symlinkPath(), dir, filename);
+	auto [dir, filename] = Util::File::splitFilename(symlinkPath());
 	filename.prepend("alt_");
 
 	return dir + QDir::separator() + filename;
 }
-
 
 void Location::setValid(bool b)
 {
@@ -472,13 +469,12 @@ void Location::setSearchTerm(const QString& searchTerm)
 	m->searchTermUrls = cfm->searchAddresses(searchTerm);
 }
 
-void Location::setSearchTerm(const QString& searchTerm,
-							   const QString& cover_fetcher_identifier)
+void Location::setSearchTerm(const QString& searchTerm, const QString& coverFetcherIdentifier)
 {
 	auto* cfm = Fetcher::Manager::instance();
 
 	m->searchTerm = searchTerm;
-	m->searchTermUrls = cfm->searchAddresses(searchTerm, cover_fetcher_identifier);
+	m->searchTermUrls = cfm->searchAddresses(searchTerm, coverFetcherIdentifier);
 }
 
 void Location::setSearchUrls(const UrlList& urls)
@@ -495,7 +491,6 @@ bool Location::isFreetextSearchEnabled() const
 {
 	return m->freetextSearch;
 }
-
 
 bool Location::hasAudioFileSource() const
 {
@@ -528,6 +523,11 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 	}
 
 	auto [dir, filename] = File::splitFilename(coverPath);
+
+	const QString extension = Util::File::getFileExtension(filename);
+	if(extension.isEmpty()){
+		filename += ".png";
+	}
 
 	m->audioFileSource = audioFilepath;
 	m->audioFileTarget = QString("%1/fromtag_%2").arg(dir).arg(filename);
@@ -584,7 +584,7 @@ QString Location::localPath() const
 
 QString Location::localPathDir() const
 {
-	Util::Set<QString> parent_dirs;
+	Util::Set<QString> parentDirectories;
 	const QStringList lph = localPathHints();
 
 	for(const QString& localPath : lph)
@@ -595,40 +595,38 @@ QString Location::localPathDir() const
 		}
 
 		if(fi.isFile()){
-			parent_dirs << Util::File::getParentDirectory(localPath);
+			parentDirectories << Util::File::getParentDirectory(localPath);
 		}
 
 		else if(fi.isDir()){
-			parent_dirs << localPath;
+			parentDirectories << localPath;
 		}
 
-		if(parent_dirs.size() > 1){
+		if(parentDirectories.size() > 1){
 			break;
 		}
 	}
 
-	if(parent_dirs.isEmpty() || parent_dirs.size() > 1){
+	if(parentDirectories.isEmpty() || parentDirectories.size() > 1){
 		return QString();
 	}
 
-	return parent_dirs.first();
+	return parentDirectories.first();
 }
-
 
 QStringList Location::localPathHints() const
 {
 	return m->localPathHints;
 }
 
-
-void Location::setLocalPathHints(const QStringList& path_hints)
+void Location::setLocalPathHints(const QStringList& pathHints)
 {
 	m->localPathHints.clear();
-	for(const QString& path_hint : path_hints)
+	for(const QString& pathHint : pathHints)
 	{
-		if(!Util::File::isWWW(path_hint))
+		if(!Util::File::isWWW(pathHint))
 		{
-			m->localPathHints << path_hint;
+			m->localPathHints << pathHint;
 		}
 	}
 }
@@ -651,4 +649,3 @@ QString Location::toString() const
 			"Search Term: " + searchTerm() + ", "
 											  "Identifier: " + identifer();
 }
-
