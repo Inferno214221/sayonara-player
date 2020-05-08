@@ -120,7 +120,7 @@ void DirectorySelectionHandler::requestImport(LibraryId libraryId, const QString
 	library->importFilesTo(paths, targetDirectory);
 }
 
-FileOperations* DirectorySelectionHandler::create_file_operation()
+FileOperations* DirectorySelectionHandler::createFileOperation()
 {
 	auto* fo = new FileOperations(this);
 
@@ -133,27 +133,27 @@ FileOperations* DirectorySelectionHandler::create_file_operation()
 
 void DirectorySelectionHandler::copyPaths(const QStringList& paths, const QString& targetDirectory)
 {
-	create_file_operation()->copyPaths(paths, targetDirectory);
+	createFileOperation()->copyPaths(paths, targetDirectory);
 }
 
 void DirectorySelectionHandler::movePaths(const QStringList& paths, const QString& targetDirectory)
 {
-	create_file_operation()->movePaths(paths, targetDirectory);
+	createFileOperation()->movePaths(paths, targetDirectory);
 }
 
-void DirectorySelectionHandler::renamePath(const QString& path, const QString& new_name)
+void DirectorySelectionHandler::renamePath(const QString& path, const QString& newName)
 {
-	create_file_operation()->renamePath(path, new_name);
+	createFileOperation()->renamePath(path, newName);
 }
 
 void DirectorySelectionHandler::renameByExpression(const QString& path, const QString& expression)
 {
-	create_file_operation()->renameByExpression(path, expression);
+	createFileOperation()->renameByExpression(path, expression);
 }
 
 void DirectorySelectionHandler::deletePaths(const QStringList& paths)
 {
-	create_file_operation()->deletePaths(paths);
+	createFileOperation()->deletePaths(paths);
 }
 
 void DirectorySelectionHandler::librariesChanged()
@@ -170,10 +170,10 @@ void DirectorySelectionHandler::librariesChanged()
 	emit sigLibrariesChanged();
 }
 
-void DirectorySelectionHandler::setLibraryId(LibraryId lib_id)
+void DirectorySelectionHandler::setLibraryId(LibraryId libId)
 {
-	m->currentLibraryIndex = Util::Algorithm::indexOf(m->libraries, [&lib_id](const Library::Info& info){
-		return (info.id() == lib_id);
+	m->currentLibraryIndex = Util::Algorithm::indexOf(m->libraries, [&libId](const Library::Info& info){
+		return (info.id() == libId);
 	});
 }
 

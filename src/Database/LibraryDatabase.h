@@ -34,7 +34,7 @@ namespace DB
 			public DB::Albums,
 			public DB::Artists,
 			public DB::Tracks,
-			public DB::SearchableModule
+			public DB::Module
 	{
 		PIMPL(LibraryDatabase)
 
@@ -59,17 +59,16 @@ namespace DB
 			QString trackView() const override;
 			QString trackSearchView() const override;
 
-			::Library::SearchModeMask searchMode() const override;
-			void updateSearchMode(::Library::SearchModeMask smm) override;
+			void updateSearchMode();
 
 			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
 			bool fixEmptyAlbums();
 
-
-
 		protected:
 			Module* module() override;
 			const Module* module() const override;
+
+			void initSearchMode();
 	};
 }
 

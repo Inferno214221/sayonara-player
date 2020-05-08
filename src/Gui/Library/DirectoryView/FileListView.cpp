@@ -91,86 +91,6 @@ FileListView::FileListView(QWidget* parent) :
 
 FileListView::~FileListView() = default;
 
-void FileListView::contextMenuEvent(QContextMenuEvent* event)
-{
-	if(!m->contextMenu){
-		initContextMenu();
-	}
-
-	const QModelIndexList indexes = selectedRows();
-	auto audioFileCount = Util::Algorithm::count(indexes, [](const QModelIndex& index)
-	{
-		QString filename = index.data(Qt::UserRole).toString();
-		return Util::File::isSoundFile(filename);
-	});
-
-	m->contextMenu->refresh(audioFileCount);
-
-	QPoint pos = QWidget::mapToGlobal(event->pos());
-	m->contextMenu->exec(pos);
-}
-
-void FileListView::dragEnterEvent(QDragEnterEvent* event)
-{
-	event->accept();
-}
-
-void FileListView::dragMoveEvent(QDragMoveEvent* event)
-{
-	const QMimeData* mimeData = event->mimeData();
-	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
-	if(cmd){
-		event->setAccepted(false);
-	}
-
-	else{
-		event->setAccepted(true);
-	}
-}
-
-void FileListView::dropEvent(QDropEvent* event)
-{
-	event->accept();
-
-	const QMimeData* mime_data = event->mimeData();
-	if(!mime_data){
-		spLog(Log::Debug, this) << "Drop: No Mimedata";
-		return;
-	}
-
-	if(Gui::MimeData::isPlayerDrag(mime_data)){
-		spLog(Log::Debug, this) << "Drop: Internal player drag";
-		return;
-	}
-
-	if(!mime_data->hasUrls())
-	{
-		spLog(Log::Debug, this) << "Drop: No Urls";
-		return;
-	}
-
-	const QList<QUrl> urls = mime_data->urls();
-
-	QStringList files;
-	for(const QUrl& url : urls)
-	{
-		QString local_file = url.toLocalFile();
-		if(!local_file.isEmpty())
-		{
-			files << local_file;
-		}
-	}
-
-	emit sigImportRequested(m->model->libraryId(), files, m->model->parentDirectory());
-}
-
-void FileListView::languageChanged() {}
-void FileListView::skinChanged()
-{
-	QFontMetrics fm = this->fontMetrics();
-	this->setIconSize(QSize(fm.height(), fm.height()));
-}
-
 void FileListView::initContextMenu()
 {
 	if(m->contextMenu){
@@ -368,4 +288,84 @@ bool FileListView::hasMetadata() const
 QStringList FileListView::pathlist() const
 {
 	return this->selectedPaths();
+}
+
+void FileListView::contextMenuEvent(QContextMenuEvent* event)
+{
+	if(!m->contextMenu){
+		initContextMenu();
+	}
+
+	const QModelIndexList indexes = selectedRows();
+	auto audioFileCount = Util::Algorithm::count(indexes, [](const QModelIndex& index)
+	{
+		QString filename = index.data(Qt::UserRole).toString();
+		return Util::File::isSoundFile(filename);
+	});
+
+	m->contextMenu->refresh(audioFileCount);
+
+	QPoint pos = QWidget::mapToGlobal(event->pos());
+	m->contextMenu->exec(pos);
+}
+
+void FileListView::dragEnterEvent(QDragEnterEvent* event)
+{
+	event->accept();
+}
+
+void FileListView::dragMoveEvent(QDragMoveEvent* event)
+{
+	const QMimeData* mimeData = event->mimeData();
+	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
+	if(cmd){
+		event->setAccepted(false);
+	}
+
+	else{
+		event->setAccepted(true);
+	}
+}
+
+void FileListView::dropEvent(QDropEvent* event)
+{
+	event->accept();
+
+	const QMimeData* mimeData = event->mimeData();
+	if(!mimeData){
+		spLog(Log::Debug, this) << "Drop: No Mimedata";
+		return;
+	}
+
+	if(Gui::MimeData::isPlayerDrag(mimeData)){
+		spLog(Log::Debug, this) << "Drop: Internal player drag";
+		return;
+	}
+
+	if(!mimeData->hasUrls())
+	{
+		spLog(Log::Debug, this) << "Drop: No Urls";
+		return;
+	}
+
+	const QList<QUrl> urls = mimeData->urls();
+
+	QStringList files;
+	for(const QUrl& url : urls)
+	{
+		const QString localFile = url.toLocalFile();
+		if(!localFile.isEmpty())
+		{
+			files << localFile;
+		}
+	}
+
+	emit sigImportRequested(m->model->libraryId(), files, m->model->parentDirectory());
+}
+
+void FileListView::languageChanged() {}
+void FileListView::skinChanged()
+{
+	const QFontMetrics fm = this->fontMetrics();
+	this->setIconSize(QSize(fm.height(), fm.height()));
 }

@@ -26,12 +26,9 @@ using namespace Tagging;
 
 struct ChangeNotifier::Private
 {
-	MetaDataList oldTracks;
-	MetaDataList newTracks;
+	QList<MetaDataPair> changedTracks;
 	MetaDataList deletedTracks;
-
-	AlbumList oldAlbums;
-	AlbumList newAlbums;
+	QList<AlbumPair> changedAlbums;
 };
 
 ChangeNotifier::ChangeNotifier(QObject* parent) :
@@ -42,38 +39,33 @@ ChangeNotifier::ChangeNotifier(QObject* parent) :
 
 ChangeNotifier::~ChangeNotifier() = default;
 
-void ChangeNotifier::changeMetadata(const MetaDataList& oldTracks, const MetaDataList& newTracks)
+void ChangeNotifier::clearChangedMetadata()
 {
-	m->oldTracks = oldTracks;
-	m->newTracks = newTracks;
+	m->changedTracks.clear();
+	emit sigMetadataChanged();
+}
 
+void ChangeNotifier::changeMetadata(const QList<MetaDataPair>& changedTracks)
+{
+	m->changedTracks = changedTracks;
 	emit sigMetadataChanged();
 }
 
 void ChangeNotifier::deleteMetadata(const MetaDataList& deletedTracks)
 {
 	m->deletedTracks = deletedTracks;
-
 	emit sigMetadataDeleted();
 }
 
-void ChangeNotifier::updateAlbums(const AlbumList& oldAlbums, const AlbumList& newAlbums)
+void ChangeNotifier::updateAlbums(const QList<AlbumPair>& changedAlbums)
 {
-	m->oldAlbums = oldAlbums;
-	m->newAlbums = newAlbums;
-
+	m->changedAlbums = changedAlbums;
 	emit sigAlbumsChanged();
 }
 
-QPair<MetaDataList, MetaDataList> ChangeNotifier::changedMetadata() const
+QList<MetaDataPair> ChangeNotifier::changedMetadata() const
 {
-	QPair<MetaDataList, MetaDataList> ret
-	{
-		m->oldTracks,
-		m->newTracks
-	};
-
-	return ret;
+	return m->changedTracks;
 }
 
 MetaDataList ChangeNotifier::deletedMetadata() const
@@ -81,13 +73,7 @@ MetaDataList ChangeNotifier::deletedMetadata() const
 	return m->deletedTracks;
 }
 
-QPair<AlbumList, AlbumList> ChangeNotifier::changedAlbums() const
+QList<AlbumPair> ChangeNotifier::changedAlbums() const
 {
-	QPair<AlbumList, AlbumList> ret
-	{
-		m->oldAlbums,
-		m->newAlbums
-	};
-
-	return ret;
+	return m->changedAlbums;
 }

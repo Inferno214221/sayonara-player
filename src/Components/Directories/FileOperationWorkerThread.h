@@ -31,7 +31,7 @@ class FileMoveThread : public FileOperationThread
 
 	public:
 		FileMoveThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
-		~FileMoveThread();
+		~FileMoveThread() override;
 
 	protected:
 		void run() override;
@@ -44,7 +44,7 @@ class FileCopyThread : public FileOperationThread
 
 	public:
 		FileCopyThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
-		~FileCopyThread();
+		~FileCopyThread() override;
 
 	protected:
 		void run() override;
@@ -58,7 +58,7 @@ class FileRenameThread : public FileOperationThread
 
 	public:
 		FileRenameThread(const QString& sourceFile, const QString& targetFile, QObject* parent);
-		~FileRenameThread();
+		~FileRenameThread() override;
 
 	protected:
 		void run() override;

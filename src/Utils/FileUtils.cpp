@@ -23,6 +23,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
+#include <QUrl>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -33,53 +34,34 @@ namespace Algorithm=::Util::Algorithm;
 
 QString Util::File::cleanFilename(const QString& path)
 {
-	const QChar sep = QDir::separator();
-	QString ret = path;
-
-	QStringList forbiddenStrings
-	{
-		"\\",
-		"/./",
-		"//" // this must be at last place
-	};
-
-	for(const QString& forbidden : forbiddenStrings)
-	{
-		while(ret.contains(forbidden))
-		{
-			ret.replace(forbidden, sep);
-		}
+	if(path.trimmed().isEmpty()){
+		return QString();
 	}
 
-	if(ret.endsWith(sep) && !QDir(ret).isRoot())
-	{
-		ret.remove(ret.size() - 1, 1);
-	}
-
-	return ret;
+	return QDir::cleanPath(path);
 }
 
-void Util::File::removeFilesInDirectory(const QString& dir_name)
+void Util::File::removeFilesInDirectory(const QString& dirName)
 {
-	removeFilesInDirectory(dir_name, QStringList());
+	removeFilesInDirectory(dirName, QStringList());
 }
 
-void Util::File::removeFilesInDirectory(const QString& dir_name, const QStringList& filters)
+void Util::File::removeFilesInDirectory(const QString& dirName, const QStringList& filters)
 {
-	if(dir_name.contains("..")){
+	if(dirName.contains("..")){
 		return;
 	}
 
 	bool success;
-	QDir dir(dir_name);
+	QDir dir(dirName);
 	dir.setNameFilters(filters);
 
-	QFileInfoList info_lst = dir.entryInfoList
+	QFileInfoList infoList = dir.entryInfoList
 	(
 		QDir::Filters(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
 	);
 
-	for(const QFileInfo& info : info_lst)
+	for(const QFileInfo& info : infoList)
 	{
 		QString path = info.absoluteFilePath();
 
@@ -101,15 +83,14 @@ void Util::File::removeFilesInDirectory(const QString& dir_name, const QStringLi
 	}
 
 	QDir d = QDir::root();
-	if(dir_name.contains(::Util::sayonaraPath()))
+	if(dirName.contains(::Util::sayonaraPath()))
 	{
-		success = d.rmdir(dir_name);
+		success = d.rmdir(dirName);
 		if(!success){
-			spLog(Log::Warning, "FileUtils") << "Could not remove dir " << dir_name;
+			spLog(Log::Warning, "FileUtils") << "Could not remove dir " << dirName;
 		}
 	}
 }
-
 
 void Util::File::deleteFiles(const QStringList& paths)
 {
@@ -118,12 +99,12 @@ void Util::File::deleteFiles(const QStringList& paths)
 	}
 
 	spLog(Log::Develop, "Util::File") << "I will delete " << paths;
-	QStringList sorted_paths = paths;
-	Algorithm::sort(sorted_paths, [](const QString& str1, const QString& str2){
+	QStringList sortedPaths = paths;
+	Algorithm::sort(sortedPaths, [](const QString& str1, const QString& str2){
 		return (str1.size() > str2.size());
 	});
 
-	for(const QString& path : Algorithm::AsConst(sorted_paths))
+	for(const QString& path : Algorithm::AsConst(sortedPaths))
 	{
 		if(path.contains("..")){
 			continue;
@@ -152,37 +133,22 @@ void Util::File::deleteFiles(const QStringList& paths)
 	}
 }
 
-
 QString Util::File::getParentDirectory(const QString& filename)
 {
-	QString ret = cleanFilename(filename);
-	int lastIndex = ret.lastIndexOf(QDir::separator());
-
-	if(lastIndex > 0){
-		return ret.left(lastIndex);
+	const QString cleaned = cleanFilename(filename);
+	int index = cleaned.lastIndexOf(QDir::separator());
+	if(index > 0) {
+		return cleanFilename(cleaned.left(index));
 	}
 
-	else if(lastIndex == 0)
-	{
-		return QDir::rootPath();
-	}
-
-	return ret;
+	return QDir::rootPath();
 }
-
 
 QString Util::File::getFilenameOfPath(const QString& path)
 {
-	QString ret = cleanFilename(path);
-	int last_idx = ret.lastIndexOf(QDir::separator());
-
-	if(last_idx >= 0){
-		return ret.mid(last_idx + 1);
-	}
-
-	return "";
+	const QDir dir( cleanFilename(path) );
+	return dir.dirName();
 }
-
 
 void Util::File::splitFilename(const QString& src, QString& path, QString& filename)
 {
@@ -198,7 +164,6 @@ std::pair<QString, QString> Util::File::splitFilename(const QString& src)
 	return ret;
 }
 
-
 QStringList Util::File::getParentDirectories(const QStringList& files)
 {
 	QStringList folders;
@@ -213,28 +178,16 @@ QStringList Util::File::getParentDirectories(const QStringList& files)
 	return folders;
 }
 
-
 QString Util::File::getAbsoluteFilename(const QString& filename)
 {
-	QString f, d;
-	QString re_str = QString("(.*)") + QDir::separator() + "(.+)";
-	QRegExp re(re_str);
-	if(re.indexIn(filename) >= 0){
-		d = re.cap(1);
-		f = re.cap(2);
-		QDir dir(d);
-		return dir.absoluteFilePath(f);
-	}
-
-	return cleanFilename(filename);
+	return QDir(filename).absolutePath();
 }
 
-
-QString Util::File::getFilesizeString(uint64_t filesize)
+QString Util::File::getFilesizeString(Filesize filesize)
 {
-	uint64_t kb = 1 << 10;  // 1024
-	uint64_t mb = kb << 10;
-	uint64_t gb = mb << 10;
+	Filesize kb = 1 << 10;  // 1024
+	Filesize mb = kb << 10;
+	Filesize gb = mb << 10;
 
 	QString size;
 	if(filesize > gb) {
@@ -246,68 +199,48 @@ QString Util::File::getFilesizeString(uint64_t filesize)
 	}
 
 	else {
-		size = QString::number( filesize / kb) + " KB";
+		size = QString::number(filesize / kb) + " KB";
 	}
 
 	return size;
 }
 
-
 bool Util::File::isUrl(const QString& str)
 {
-	QStringList urls = {"file", "smb"};
-	QString l = str.toLower().trimmed();
-
-	if(isWWW(str)){
-		return true;
-	}
-
-	return Algorithm::contains(urls, [&l](const QString& w){
-		return l.startsWith(w + "://");
-	});
+	return QUrl(str).isValid();
 }
-
 
 bool Util::File::isWWW(const QString& str)
 {
-	QStringList www = {"http", "https", "ftp", "itpc", "feed"};
-	QString l = str.toLower().trimmed();
+	const QStringList schemes = {"http", "https", "ftp", "itpc", "feed"};
+	const QUrl url(str);
+	const QString scheme = url.scheme().toLower();
 
-	return Algorithm::contains(www, [&l](const QString& w){
-		return l.startsWith(w + "://");
-	});
+	return (url.isValid() && schemes.contains(scheme));
 }
 
 bool Util::File::isDir(const QString& filename)
 {
-	if(!exists(filename)) return false;
-	QFileInfo fileinfo(filename);
-	return fileinfo.isDir();
+	return QFileInfo(filename).isDir();
 }
 
 bool Util::File::isFile(const QString& filename)
 {
-	if(!exists(filename)) return false;
-	QFileInfo fileinfo(filename);
-	return fileinfo.isFile();
+	return QFileInfo(filename).isFile();
 }
-
 
 bool Util::File::isSoundFile(const QString& filename)
 {
-	QStringList exts = Util::soundfileExtensions(true);
-
+	const QStringList exts = Util::soundfileExtensions(true);
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
 	});
 }
 
-
 bool Util::File::isPlaylistFile(const QString& filename)
 {
-	QStringList exts = Util::playlistExtensions(true);
-
+	const QStringList exts = Util::playlistExtensions(true);
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
@@ -316,59 +249,22 @@ bool Util::File::isPlaylistFile(const QString& filename)
 
 bool Util::File::isImageFile(const QString& filename)
 {
-	QStringList exts = Util::imageExtensions(true);
-
+	const QStringList exts = Util::imageExtensions(true);
 	return Algorithm::contains(exts, [&filename](const QString& ext)
 	{
 		return (filename.endsWith(ext.rightRef(4), Qt::CaseInsensitive));
 	});
 }
 
-
 bool Util::File::createDirectories(const QString& path)
 {
-	if(exists(path)){
-		return true;
-	}
-
-	QString cleaned_path = cleanFilename(path);
-	const QStringList paths = cleaned_path.split(QDir::separator());
-	QDir dir;
-	if( isAbsolute(cleaned_path) ){
-		dir = QDir::root();
-	}
-
-	else{
-		dir = QDir(".");
-	}
-
-	for(const QString& p : paths)
-	{
-		QString abs_path = dir.absoluteFilePath(p);
-
-		if(exists(abs_path)){
-			dir.cd(p);
-			continue;
-		}
-
-		bool success = dir.mkdir(p);
-		if(!success){
-			return false;
-		}
-
-		dir.cd(p);
-	}
-
-	return true;
+	return QDir().mkpath(path);
 }
-
 
 bool Util::File::isAbsolute(const QString& filename)
 {
-	QDir dir(filename);
-	return dir.isAbsolute();
+	return QDir::isAbsolutePath(filename);
 }
-
 
 bool Util::File::writeFile(const QByteArray& arr, const QString& filename)
 {
@@ -377,11 +273,11 @@ bool Util::File::writeFile(const QByteArray& arr, const QString& filename)
 		return false;
 	}
 
-	int64_t bytes_written = f.write(arr);
+	int64_t bytesWritten = f.write(arr);
 
 	f.close();
 
-	return(bytes_written >= arr.size());
+	return(bytesWritten >= arr.size());
 }
 
 
@@ -389,7 +285,6 @@ bool Util::File::readFileIntoByteArray(const QString& filename, QByteArray& cont
 {
 	QFile file(filename);
 	content.clear();
-
 
 	if(!file.open(QIODevice::ReadOnly)){
 		return false;
@@ -427,15 +322,23 @@ bool Util::File::readFileIntoString(const QString& filename, QString& content)
 	return false;
 }
 
-
+// hallo.txta
+// . = 5
 QString Util::File::getFileExtension(const QString& filename)
 {
-	int last_dot = filename.lastIndexOf(".");
-	if(last_dot < 0){
-		return QString("");
+	int lastDot = filename.lastIndexOf(".");
+	int lastSep = filename.lastIndexOf(QDir::separator());
+
+	if(lastDot < 0 && lastDot < lastSep){
+		return QString();
 	}
 
-	return filename.mid(last_dot + 1);
+	const QString ext = filename.mid(lastDot + 1);
+	if(ext.size() > 4){
+		return QString();
+	}
+
+	return ext;
 }
 
 
@@ -463,7 +366,7 @@ QString Util::File::getCommonDirectory(QString dir1, QString dir2)
 			QDir d1(dir1);
 			bool up = d1.cdUp();
 			if(!up){
-				return "";
+				return QDir::rootPath();
 			}
 			dir1 = d1.absolutePath();
 		}
@@ -473,7 +376,7 @@ QString Util::File::getCommonDirectory(QString dir1, QString dir2)
 			QDir d2(dir2);
 			bool up = d2.cdUp();
 			if(!up){
-				return "";
+				return QDir::rootPath();
 			}
 
 			dir2 = d2.absolutePath();
@@ -494,18 +397,14 @@ QString Util::File::getCommonDirectory(const QStringList& paths)
 	}
 
 	QString ret;
-	QStringList absolute_paths;
+	QStringList absolutePaths;
 	for(const QString& path : paths)
 	{
-		QString filename = getAbsoluteFilename(path);
-		QFileInfo info(filename);
-		if(info.isFile()){
-			QDir d(filename);
-			absolute_paths << d.absolutePath();
-		}
+		const QString filename = getAbsoluteFilename(path);
+		const QFileInfo info(filename);
 
-		else if(info.isDir()){
-			absolute_paths << getAbsoluteFilename(filename);
+		if(info.isFile() || info.isDir()) {
+			absolutePaths << QDir(filename).absolutePath();
 		}
 
 		else if(info.isRoot()){
@@ -513,19 +412,19 @@ QString Util::File::getCommonDirectory(const QStringList& paths)
 		}
 	}
 
-	if(absolute_paths.isEmpty()){
+	if(absolutePaths.isEmpty()){
 		return QDir::rootPath();
 	}
 
-	if(absolute_paths.size() == 1){
-		return absolute_paths[0];
+	if(absolutePaths.size() == 1){
+		return absolutePaths[0];
 	}
 
-	ret = absolute_paths[0];
+	ret = absolutePaths[0];
 
-	for(const QString& absolute_path : Algorithm::AsConst(absolute_paths))
+	for(const QString& absolutePath : Algorithm::AsConst(absolutePaths))
 	{
-		ret = getCommonDirectory(ret, absolute_path);
+		ret = getCommonDirectory(ret, absolutePath);
 	}
 
 	return ret;
@@ -533,54 +432,24 @@ QString Util::File::getCommonDirectory(const QStringList& paths)
 
 QStringList Util::File::splitDirectories(const QString& path)
 {
-	QStringList ret;
-
-	QString currentDirectory;
-	QFileInfo fi(path);
-
-	if(fi.isFile()) {
-		QString filename;
-		splitFilename(path, currentDirectory, filename);
-		ret << filename;
-	}
-
-	else {
-		currentDirectory = path;
-	}
-
-	while(!currentDirectory.isEmpty())
-	{
-		QString parent_dir, last_dir;
-		splitFilename(currentDirectory, parent_dir, last_dir);
-
-		if(!last_dir.isEmpty()) {
-			ret.push_front(last_dir);
-		}
-
-		currentDirectory = parent_dir;
-
-		if(QDir(currentDirectory).isRoot()){
-			break;
-		}
-	}
+	QStringList ret = path.split(QDir::separator());
+	ret.removeAll("");
 
 	return ret;
 }
 
-
-bool Util::File::createDir(const QString& dir_name)
+bool Util::File::createDir(const QString& dirName)
 {
-	if(QDir(dir_name).exists()){
+	if(QDir(dirName).exists()){
 		return true;
 	}
 
-	return QDir().mkdir(dir_name);
+	return QDir().mkdir(dirName);
 }
 
-
-bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDirectory, QString& new_filename)
+bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDirectory, QString& newFilename)
 {
-	new_filename.clear();
+	newFilename.clear();
 
 	if(!canCopyDir(sourceDirectory, targetDirectory)){
 		return false;
@@ -593,20 +462,20 @@ bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDi
 	}
 
 	const QDir src(sourceDirectory);
-	QString copy_to = targetDirectory + "/" + src.dirName();
+	QString copyTo = targetDirectory + "/" + src.dirName();
 
-	spLog(Log::Debug, "File") << "Create dir: " << copy_to;
-	if(!createDir(copy_to)) {
+	spLog(Log::Debug, "File") << "Create dir: " << copyTo;
+	if(!createDir(copyTo)) {
 		return false;
 	}
 
-	QFileInfoList src_infos	= src.entryInfoList(QStringList(), (QDir::Files | QDir::Dirs | QDir::Filter::NoDotAndDotDot));
-	for(const QFileInfo& info : src_infos)
+	const QFileInfoList srcInfos = src.entryInfoList(QStringList(), (QDir::Files | QDir::Dirs | QDir::Filter::NoDotAndDotDot));
+	for(const QFileInfo& info : srcInfos)
 	{
 		if(info.isDir())
 		{
 			QString nf;
-			bool success = copyDir(info.filePath(), copy_to, nf);
+			bool success = copyDir(info.filePath(), copyTo, nf);
 			if(!success){
 				return false;
 			}
@@ -614,26 +483,26 @@ bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDi
 
 		else
 		{
-			QString old_filename = info.filePath();
-			new_filename = old_filename;
+			QString oldFilename = info.filePath();
+			newFilename = oldFilename;
 
-			new_filename.remove(sourceDirectory);
-			new_filename.prepend(copy_to);
+			newFilename.remove(sourceDirectory);
+			newFilename.prepend(copyTo);
 
-			QFile f(old_filename);
-			spLog(Log::Debug, "File") << "Copy file " << old_filename << " to " << new_filename;
-			f.copy(new_filename);
+			QFile f(oldFilename);
+			spLog(Log::Debug, "File") << "Copy file " << oldFilename << " to " << newFilename;
+			f.copy(newFilename);
 		}
 	}
 
-	new_filename = QDir(targetDirectory).filePath(src.dirName());
+	newFilename = QDir(targetDirectory).filePath(src.dirName());
 
 	return true;
 }
 
-bool Util::File::moveDir(const QString& sourceDirectory, const QString& targetDirectory, QString& new_filename)
+bool Util::File::moveDir(const QString& sourceDirectory, const QString& targetDirectory, QString& newFilename)
 {
-	new_filename = QString();
+	newFilename = QString();
 
 	QDir s(sourceDirectory);
 	QDir t(targetDirectory);
@@ -641,15 +510,15 @@ bool Util::File::moveDir(const QString& sourceDirectory, const QString& targetDi
 	bool success = renameDir(sourceDirectory, t.filePath(s.dirName()));
 
 	if(success) {
-		new_filename = t.filePath(s.dirName());
+		newFilename = t.filePath(s.dirName());
 	}
 
 	return success;
 }
 
-bool Util::File::canCopyDir(const QString& src_dir, const QString& targetDirectory)
+bool Util::File::canCopyDir(const QString& srcDir, const QString& targetDirectory)
 {
-	if(src_dir.isEmpty()){
+	if(srcDir.isEmpty()){
 		return false;
 	}
 
@@ -657,20 +526,20 @@ bool Util::File::canCopyDir(const QString& src_dir, const QString& targetDirecto
 		return false;
 	}
 
-	if(QString(targetDirectory + "/").startsWith(src_dir + "/")){
+	if(QString(targetDirectory + "/").startsWith(srcDir + "/")){
 		return false;
 	}
 
-	if(!exists(src_dir)){
+	if(!exists(srcDir)){
 		return false;
 	}
 
 	return true;
 }
 
-bool Util::File::renameDir(const QString& src_dir, const QString& new_dir)
+bool Util::File::renameDir(const QString& srcDir, const QString& newDir)
 {
-	return QDir().rename(src_dir, new_dir);
+	return QDir().rename(srcDir, newDir);
 }
 
 QByteArray Util::File::getMD5Sum(const QString& filename)
@@ -687,54 +556,54 @@ QByteArray Util::File::getMD5Sum(const QString& filename)
 	return QByteArray();
 }
 
-bool Util::File::moveFiles(const QStringList& files, const QString& dir, QStringList& new_names)
+bool Util::File::moveFiles(const QStringList& files, const QString& dir, QStringList& newNames)
 {
 	bool success = true;
 	for(const QString& file : files)
 	{
-		QString new_name;
-		success = moveFile(file, dir, new_name);
+		QString newName;
+		success = moveFile(file, dir, newName);
 		if(!success){
 			continue;
 		}
 
-		new_names << new_name;
+		newNames << newName;
 	}
 
 	return success;
 }
 
-bool Util::File::renameFile(const QString& old_name, const QString& new_name)
+bool Util::File::renameFile(const QString& oldName, const QString& newName)
 {
-	QFileInfo info(old_name);
+	QFileInfo info(oldName);
 	if(!info.isFile()){
 		return false;
 	}
 
-	QFile f(old_name);
-	return f.rename(new_name);
+	QFile f(oldName);
+	return f.rename(newName);
 }
 
-bool Util::File::copyFiles(const QStringList& files, const QString& dir, QStringList& new_names)
+bool Util::File::copyFiles(const QStringList& files, const QString& dir, QStringList& newNames)
 {
 	bool success = true;
 	for(const QString& file : files)
 	{
-		QString new_name;
-		success = copyFile(file, dir, new_name);
+		QString newName;
+		success = copyFile(file, dir, newName);
 		if(!success){
 			continue;
 		}
 
-		new_names << new_name;
+		newNames << newName;
 	}
 
 	return success;
 }
 
-bool Util::File::moveFile(const QString& file, const QString& dir, QString& new_name)
+bool Util::File::moveFile(const QString& file, const QString& dir, QString& newName)
 {
-	bool success = copyFile(file, dir, new_name);
+	bool success = copyFile(file, dir, newName);
 	if(success)
 	{
 		QFile f(file);
@@ -744,9 +613,9 @@ bool Util::File::moveFile(const QString& file, const QString& dir, QString& new_
 	return false;
 }
 
-bool Util::File::copyFile(const QString& file, const QString& dir, QString& new_name)
+bool Util::File::copyFile(const QString& file, const QString& dir, QString& newName)
 {
-	new_name.clear();
+	newName.clear();
 
 	QFileInfo di(dir);
 	if(!di.isDir()){
@@ -761,10 +630,10 @@ bool Util::File::copyFile(const QString& file, const QString& dir, QString& new_
 	QDir d(dir);
 	QFile f(file);
 
-	QString pure_filename = getFilenameOfPath(file);
-	new_name = d.absoluteFilePath(pure_filename);
+	QString pureFilename = getFilenameOfPath(file);
+	newName = d.absoluteFilePath(pureFilename);
 
-	bool success = f.copy(new_name);
+	bool success = f.copy(newName);
 	return success;
 }
 
@@ -779,7 +648,7 @@ bool Util::File::exists(const QString& filename)
 
 bool Util::File::isInSayonaraDir(const QString& path)
 {
-	QDir sayonara_dir(sayonaraPath());
+	QDir sayonaraDir(sayonaraPath());
 	QDir p(path);
 
 	while(!p.isRoot())
@@ -789,7 +658,7 @@ bool Util::File::isInSayonaraDir(const QString& path)
 			return false;
 		}
 
-		if(p == sayonara_dir){
+		if(p == sayonaraDir){
 			return true;
 		}
 	}
@@ -799,7 +668,14 @@ bool Util::File::isInSayonaraDir(const QString& path)
 
 bool Util::File::isSamePath(const QString& filename1, const QString& filename2)
 {
-	return (cleanFilename(filename1) == cleanFilename(filename2));
+	const QString cleaned1 = cleanFilename(filename1);
+	const QString cleaned2 = cleanFilename(filename2);
+
+#ifdef Q_OS_UNIX
+	return (cleaned1.compare(cleaned2) == 0);
+#else
+	return (cleaned1.compare(cleaned2, Qt::CaseInsensitive) == 0);
+#endif
 }
 
 bool Util::File::isSubdir(const QString& dir, const QString& parentDir)

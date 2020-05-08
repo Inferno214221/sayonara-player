@@ -23,6 +23,12 @@
 
 #include "Utils/Pimpl.h"
 
+#include <QList>
+#include <QPair>
+
+class MetaData;
+class MetaDataList;
+
 namespace Library
 {
 	/**
@@ -52,7 +58,7 @@ namespace Library
 
 			QString			targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
 			MetaData		metadata(const QString& filename) const;
-			void			changeMetadata(const MetaDataList& updatedTracks);
+			void			changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks);
 
 		private:
 			void			addSoundfile(const QString& filename);

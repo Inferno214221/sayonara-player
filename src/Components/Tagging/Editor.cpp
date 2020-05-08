@@ -59,10 +59,6 @@ struct Editor::Private
 {
 	QList<ChangeInformation> changeInfo;
 
-	// used for retrieving a list of all changed metadata
-	MetaDataList			unchangedTracks;
-	MetaDataList			changedTracks;
-
 	QMap<QString, Editor::FailReason>	failedFiles;
 };
 
@@ -335,8 +331,7 @@ void Editor::commit()
 	auto* db_covers = db->coverConnector();
 	auto* ldb = db->libraryDatabase(-1, 0);
 
-	m->unchangedTracks.clear();
-	m->changedTracks.clear();
+	QList<MetaDataPair> changedTracks;
 
 	const auto changedTrackCount = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
 		return (info.hasChanges());
@@ -403,8 +398,7 @@ void Editor::commit()
 				{
 					if(ldb->updateTrack(modifiedMetadata))
 					{
-						m->unchangedTracks << originalMetadata;
-						m->changedTracks << modifiedMetadata;
+						changedTracks << MetaDataPair(originalMetadata, modifiedMetadata);
 
 						// update track
 						it->apply();
@@ -413,8 +407,7 @@ void Editor::commit()
 
 				else
 				{
-					m->unchangedTracks << originalMetadata;
-					m->changedTracks << modifiedMetadata;
+					changedTracks << MetaDataPair(originalMetadata, modifiedMetadata);
 				}
 			}
 
@@ -452,7 +445,7 @@ void Editor::commit()
 	db->closeDatabase();
 
 	Cover::ChangeNotfier::instance()->shout();
-	ChangeNotifier::instance()->changeMetadata(m->unchangedTracks, m->changedTracks);
+	ChangeNotifier::instance()->changeMetadata(changedTracks);
 
 	emit sigFinished();
 }

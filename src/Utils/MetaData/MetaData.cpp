@@ -24,6 +24,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 
 #include <QDir>
 #include <QUrl>
@@ -118,7 +119,7 @@ struct MetaData::Private
 		genres.clear();
 	}
 
-	bool is_equal(const Private& other) const
+	bool isEqual(const Private& other) const
 	{
 		return(
 			CMP(title) &&
@@ -349,23 +350,12 @@ bool MetaData::operator!=(const MetaData& md) const
 
 bool MetaData::isEqual(const MetaData& md) const
 {
-	QDir first_path(m->filepath);
-	QDir other_path(md.filepath());
-
-	QString s_first_path = first_path.absolutePath();
-	QString s_other_path = other_path.absolutePath();
-
-#ifdef Q_OS_UNIX
-	return (s_first_path.compare(s_other_path) == 0);
-#else
-	return (s_first_path.compare(s_other_path, Qt::CaseInsensitive) == 0);
-#endif
-
+	return Util::File::isSamePath(m->filepath, md.filepath());
 }
 
 bool MetaData::isEqualDeep(const MetaData& other) const
 {
-	return m->is_equal(*(other.m));
+	return m->isEqual(*(other.m));
 }
 
 QString MetaData::title() const
@@ -685,7 +675,7 @@ QString MetaData::setFilepath(QString filepath, RadioMode mode)
 
 	if(isLocalPath)
 	{
-		QDir dir(filepath);
+		const QDir dir(filepath);
 		m->filepath = dir.absolutePath();
 
 		if(mode == RadioMode::Undefined)

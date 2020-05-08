@@ -187,22 +187,6 @@ QString Util::sharePath(const QString& append_path)
 #endif
 }
 
-QString Util::libPath() { return libPath(QString()); }
-QString Util::libPath(const QString& append_path)
-{
-#ifdef Q_OS_WIN
-	return QCoreApplication::applicationDirPath() + "/lib/";
-#else
-
-	QString base_path(Util::File::cleanFilename(getEnvironment("SAYONARA_LIB_DIR")));
-	if(!Util::File::exists(base_path)){
-		base_path = SAYONARA_INSTALL_LIB_PATH;
-	}
-
-	return Util::File::cleanFilename(base_path + "/" + append_path);
-#endif
-}
-
 QString Util::tempPath()
 {
 	return tempPath(QString());

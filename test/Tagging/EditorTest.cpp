@@ -304,7 +304,6 @@ void EditorTest::testCover()
 	editor->deleteLater();
 }
 
-
 void EditorTest::testCommit()
 {
 	MetaDataList tracks;
@@ -347,24 +346,22 @@ void EditorTest::testCommit()
 
 	QCOMPARE(spy.count(), 1);
 
-	auto changedMetaData = mdcn->changedMetadata();
+	QList<MetaDataPair> changedMetaData = mdcn->changedMetadata();
 
-	const MetaDataList& old_md = changedMetaData.first;
-	const MetaDataList& new_md = changedMetaData.second;
+	QVERIFY(changedMetaData.size() == 4);
 
-	QVERIFY(old_md.size() == 4);
-	QVERIFY(new_md.size() == 4);
-
-	int cur_idx = 0;
+	int currentIndex = 0;
 	for(int i=0; i<int(tracks.size()); i++)
 	{
 		if(i % 10 == 0) // 0, 10, 20, 30
 		{
-			QVERIFY(old_md[cur_idx].isEqualDeep(tracks[i]));
-			QVERIFY(new_md[cur_idx].filepath() == tracks[i].filepath());
-			QVERIFY(new_md[cur_idx].title().startsWith("other"));
+			MetaDataPair trackPair = changedMetaData[currentIndex];
 
-			cur_idx++;
+			QVERIFY(trackPair.first.isEqualDeep(tracks[i]));
+			QVERIFY(trackPair.second.filepath() == tracks[i].filepath());
+			QVERIFY(trackPair.second.title().startsWith("other"));
+
+			currentIndex++;
 		}
 	}
 }

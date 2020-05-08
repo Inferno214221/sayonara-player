@@ -21,7 +21,7 @@
 #ifndef DATABASEARTISTS_H
 #define DATABASEARTISTS_H
 
-#include "Database/SearchableModule.h"
+#include "Query.h"
 
 namespace Library {class Filter;}
 

@@ -113,29 +113,29 @@ void LocalLibrary::searchModeChanged()
 {
 	spLog(Log::Debug, this) << "Updating cissearch... " << GetSetting(Set::Lib_SearchMode);
 
-	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
-	lib_db->updateSearchMode(GetSetting(Set::Lib_SearchMode));
+	auto* libDb = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
+	libDb->updateSearchMode();
 
 	spLog(Log::Debug, this) << "Updating cissearch finished" << GetSetting(Set::Lib_SearchMode);
 }
 
 void LocalLibrary::showAlbumArtistsChanged()
 {
-	bool show_album_artists = GetSetting(Set::Lib_ShowAlbumArtists);
+	bool showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	DB::LibraryDatabases dbs = DB::Connector::instance()->libraryDatabases();
-	for(DB::LibraryDatabase* lib_db : dbs)
+	for(DB::LibraryDatabase* libDb : dbs)
 	{
-		if(lib_db->databaseId() == 0)
+		if(libDb->databaseId() == 0)
 		{
-			if(show_album_artists)
+			if(showAlbumArtists)
 			{
-				lib_db->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
+				libDb->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
 			}
 
 			else
 			{
-				lib_db->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::ArtistID);
+				libDb->changeArtistIdField(DB::LibraryDatabase::ArtistIDField::ArtistID);
 			}
 		}
 	}

@@ -195,7 +195,6 @@ int main(int argc, char *argv[])
 
 	spLog(Log::Debug, "Sayonara") << "Sayonara home path: " << Util::sayonaraPath();
 	spLog(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::sharePath();
-	spLog(Log::Debug, "Sayonara") << "Sayonara lib path: " << Util::libPath();
 
 	DB::Connector::instance();
 

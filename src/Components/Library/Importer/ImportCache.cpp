@@ -197,16 +197,16 @@ MetaData ImportCache::metadata(const QString& filename) const
 	return m->tracks[index];
 }
 
-void ImportCache::changeMetadata(const MetaDataList& updated_tracks)
+void ImportCache::changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks)
 {
-	for(const MetaData& md : updated_tracks)
+	for(const auto& trackPair : changedTracks)
 	{
-		int index = Util::Algorithm::indexOf(m->tracks, [&md](const MetaData& saved_md) {
-			return Util::File::isSamePath(md.filepath(), saved_md.filepath());
+		int index = Util::Algorithm::indexOf(m->tracks, [&trackPair](const MetaData& cachedTrack) {
+			return Util::File::isSamePath(trackPair.first.filepath(), cachedTrack.filepath());
 		});
 
 		if(index >= 0) {
-			m->tracks[index] = md;
+			m->tracks[index] = trackPair.second;
 		}
 	}
 

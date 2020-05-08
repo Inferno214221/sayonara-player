@@ -123,70 +123,70 @@ void PluginHandler::initLibraries(const QList<Library::AbstractContainer*>& cont
 
 void PluginHandler::initDllLibraries()
 {
-	QDir plugin_dir = QDir(Util::libPath());
-	QStringList dll_filenames = plugin_dir.entryList(QDir::Files);
+//	QDir plugin_dir = QDir(Util::libPath());
+//	QStringList dll_filenames = plugin_dir.entryList(QDir::Files);
 
-	for(const QString& filename : dll_filenames)
-	{
-		QString absolute_path = plugin_dir.absoluteFilePath(filename);
-		QPluginLoader loader(absolute_path);
-		QJsonObject metadata = loader.metaData();
-		QVariantMap map = metadata.toVariantMap();
-		const auto keys = map.keys();
+//	for(const QString& filename : dll_filenames)
+//	{
+//		QString absolute_path = plugin_dir.absoluteFilePath(filename);
+//		QPluginLoader loader(absolute_path);
+//		QJsonObject metadata = loader.metaData();
+//		QVariantMap map = metadata.toVariantMap();
+//		const auto keys = map.keys();
 
-		bool has_correct_iid = false;
-		for(const QString& key : keys)
-		{
-			if(key.trimmed() != "IID"){
-				continue;
-			}
+//		bool has_correct_iid = false;
+//		for(const QString& key : keys)
+//		{
+//			if(key.trimmed() != "IID"){
+//				continue;
+//			}
 
-			QString value = map[key].toString();
+//			QString value = map[key].toString();
 
-			if(value.startsWith("com.sayonara-player.apiv2."))
-			{
-				spLog(Log::Debug, this) << "Have found valid plugin with iid = " << value;
-				has_correct_iid = true;
-			}
+//			if(value.startsWith("com.sayonara-player.apiv2."))
+//			{
+//				spLog(Log::Debug, this) << "Have found valid plugin with iid = " << value;
+//				has_correct_iid = true;
+//			}
 
-			else if(value.startsWith("com.sayonara-player."))
-			{
-				spLog(Log::Info, this) << "Ignoring *outdated* plugin with iid = " << value << " at " << absolute_path;
-				spLog(Log::Info, this) << "You can delete this file";
-			}
+//			else if(value.startsWith("com.sayonara-player."))
+//			{
+//				spLog(Log::Info, this) << "Ignoring *outdated* plugin with iid = " << value << " at " << absolute_path;
+//				spLog(Log::Info, this) << "You can delete this file";
+//			}
 
-			else
-			{
-				spLog(Log::Warning, this) << "Ignoring *invalid* plugin with iid = " << value << " at " << absolute_path;
-			}
+//			else
+//			{
+//				spLog(Log::Warning, this) << "Ignoring *invalid* plugin with iid = " << value << " at " << absolute_path;
+//			}
 
-			break;
-		}
+//			break;
+//		}
 
-		if(!has_correct_iid)
-		{
-			continue;
-		}
+//		if(!has_correct_iid)
+//		{
+//			continue;
+//		}
 
-		QObject* raw_plugin = loader.instance();
-		if(!raw_plugin)
-		{
-			spLog(Log::Warning, this) << "Cannot load plugin: " << filename << ": " << loader.errorString();
-			loader.unload();
-			continue;
-		}
+//		QObject* raw_plugin = loader.instance();
+//		if(!raw_plugin)
+//		{
+//			spLog(Log::Warning, this) << "Cannot load plugin: " << filename << ": " << loader.errorString();
+//			loader.unload();
+//			continue;
+//		}
 
-		AbstractContainer* container = dynamic_cast<AbstractContainer*>(raw_plugin);
-		if(!container)
-		{
-			loader.unload();
-			continue;
-		}
+//		AbstractContainer* container = dynamic_cast<AbstractContainer*>(raw_plugin);
+//		if(!container)
+//		{
+//			loader.unload();
+//			continue;
+//		}
 
-		spLog(Log::Info, this) << "Found library plugin " << container->displayName();
+//		spLog(Log::Info, this) << "Found library plugin " << container->displayName();
 
-		m->libraryContainers << container;
-	}
+//		m->libraryContainers << container;
+//	}
 }
 
 void PluginHandler::setCurrentLibrary(const QString& name)

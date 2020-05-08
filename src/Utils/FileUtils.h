@@ -22,8 +22,8 @@
 #define FileUtils_H
 
 #include <QList>
-#include <cstdint>
 #include <utility>
+#include "typedefs.h"
 
 class QStringList;
 class QString;
@@ -49,11 +49,11 @@ namespace Util
 
 		/**
 		 * @brief Remove all files from directory
-		 * @param dir_name directory name
+		 * @param dirName directory name
 		 * @param filters file name filters
 		 */
-		void			removeFilesInDirectory(const QString& dir_name, const QStringList& filters);
-		void			removeFilesInDirectory(const QString& dir_name);
+		void			removeFilesInDirectory(const QString& dirName, const QStringList& filters);
+		void			removeFilesInDirectory(const QString& dirName);
 
 		/**
 		 * @brief Remove all given files (also directories can be specified)
@@ -99,7 +99,7 @@ namespace Util
 		QString			getFileExtension(const QString& filename);
 
 		/**
-		 * @brief extract parent folder of a file list (see also get_parent_directory(const QString& path)
+		 * @brief extract parent folder of a file list (see also get_parentDirectory(const QString& path)
 		 * @param list file list
 		 * @return List of parent folders
 		 */
@@ -132,7 +132,7 @@ namespace Util
 		 * @param filesize in bytes
 		 * @return converted string
 		 */
-		QString			getFilesizeString(uint64_t filesize);
+		QString			getFilesizeString(Filesize filesize);
 
 
 		/**
@@ -178,21 +178,21 @@ namespace Util
 		bool checkFile(const QString& filepath);
 
 		/**
-		 * @brief is_in_sayonara_dir
+		 * @brief is_in_sayonaraDir
 		 * @param path
 		 * @return
 		 */
 		bool isInSayonaraDir(const QString& path);
 
 		/**
-		 * @brief get_common_directory
+		 * @brief get_commonDirectory
 		 * @param paths
 		 * @return
 		 */
 		QString getCommonDirectory(const QStringList& paths);
 
 		/**
-		 * @brief get_common_directory
+		 * @brief get_commonDirectory
 		 * @param dir1
 		 * @param dir2
 		 * @return
@@ -200,43 +200,43 @@ namespace Util
 		QString getCommonDirectory(QString dir1, QString dir2);
 
 		/**
-		 * @brief create_dir
-		 * @param dir_name
+		 * @brief createDir
+		 * @param dirName
 		 * @return
 		 */
-		bool createDir(const QString& dir_name);
+		bool createDir(const QString& dirName);
 
 		/**
-		 * @brief copy_dir
-		 * @param src_dir
+		 * @brief copyDir
+		 * @param srcDir
 		 * @param targetDirectory
 		 * @return
 		 */
-		bool copyDir(const QString& src_dir, const QString& targetDirectory, QString& new_filename);
+		bool copyDir(const QString& srcDir, const QString& targetDirectory, QString& new_filename);
 
 		/**
-		 * @brief move_dir
-		 * @param src_dir
+		 * @brief moveDir
+		 * @param srcDir
 		 * @param targetDirectory
 		 * @return
 		 */
-		bool moveDir(const QString& src_dir, const QString& targetDirectory, QString& new_filename);
+		bool moveDir(const QString& srcDir, const QString& targetDirectory, QString& new_filename);
 
 		/**
-		 * @brief rename_dir
-		 * @param src_dir
-		 * @param new_name
+		 * @brief renameDir
+		 * @param srcDir
+		 * @param newName
 		 * @return
 		 */
-		bool renameDir(const QString& src_dir, const QString& new_name);
+		bool renameDir(const QString& srcDir, const QString& newName);
 
 		/**
-		 * @brief can_copy_dir
-		 * @param src_dir
+		 * @brief can_copyDir
+		 * @param srcDir
 		 * @param targetDirectory
 		 * @return
 		 */
-		bool canCopyDir(const QString& src_dir, const QString& targetDirectory);
+		bool canCopyDir(const QString& srcDir, const QString& targetDirectory);
 
 		/**
 		 * @brief move_file
@@ -244,7 +244,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool moveFile(const QString& file, const QString& dir, QString& new_name);
+		bool moveFile(const QString& file, const QString& dir, QString& newName);
 
 		/**
 		 * @brief copy_file
@@ -252,7 +252,7 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool copyFile(const QString& file, const QString& dir, QString& new_name);
+		bool copyFile(const QString& file, const QString& dir, QString& newName);
 
 		/**
 		 * @brief move_files
@@ -260,15 +260,15 @@ namespace Util
 		 * @param dir
 		 * @return
 		 */
-		bool moveFiles(const QStringList& files, const QString& dir, QStringList& new_names);
+		bool moveFiles(const QStringList& files, const QString& dir, QStringList& newNames);
 
 		/**
 		 * @brief rename_file
-		 * @param old_name
-		 * @param new_name
+		 * @param oldName
+		 * @param newName
 		 * @return
 		 */
-		bool renameFile(const QString& old_name, const QString& new_name);
+		bool renameFile(const QString& oldName, const QString& newName);
 
 		/**
 		 * @brief copy_files
@@ -302,7 +302,7 @@ namespace Util
 		bool isFile(const QString& filename);
 
 		/**
-		 * @brief is_dir
+		 * @brief isDir
 		 * @param filename
 		 * @return
 		 */
@@ -345,12 +345,12 @@ namespace Util
 		bool isSamePath(const QString& filename1, const QString& filename2);
 
 		/**
-		 * @brief Checks if dir is a subdir of parent_dir
+		 * @brief Checks if dir is a subdir of parentDir
 		 * @param dir the dir of interest
-		 * @param other_dir the maybe-parentdir
+		 * @param otherDir the maybe-parentdir
 		 * @return
 		 */
-		bool isSubdir(const QString& dir, const QString& parent_dir);
+		bool isSubdir(const QString& dir, const QString& parentDir);
 	}
 }
 

@@ -32,7 +32,6 @@
  * @ingroup MetaDataHelper
  */
 
-
 class MetaDataList :
 		public std::deque<MetaData>
 {

@@ -52,16 +52,9 @@ QString Cover::Utils::coverDirectory()
 QString Cover::Utils::coverDirectory(const QString& appendFilename)
 {
 	QString coverDir = Util::sayonaraPath("covers");
-	if(!FileUtils::exists(coverDir))
-	{
-		QDir().mkdir(coverDir);
-	}
+	QDir(Util::sayonaraPath()).mkpath(coverDir);
 
-	if(!appendFilename.isEmpty()){
-		coverDir += "/" + appendFilename;
-	}
-
-	return FileUtils::cleanFilename(coverDir);
+	return QDir(coverDir).absoluteFilePath(appendFilename);
 }
 
 QString Cover::Utils::coverTempDirectory()
