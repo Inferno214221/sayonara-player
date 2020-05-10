@@ -62,7 +62,7 @@ struct GUI_Player::Private
 	Private(GUI_Player* parent) :
 		shutdownRequested(false)
 	{
-		logger = std::make_shared<GUI_Logger>();
+		logger = std::make_shared<GUI_Logger>(parent);
 		menubar = new Menubar(parent);
 	}
 };

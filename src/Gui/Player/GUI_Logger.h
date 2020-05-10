@@ -22,7 +22,7 @@
 #define GUI_LOGGER_H
 
 #include "Utils/Logger/LogListener.h"
-#include "Gui/Utils/Widgets/Widget.h"
+#include "Gui/Utils/Widgets/Dialog.h"
 #include "Utils/Pimpl.h"
 
 #include <QStringList>
@@ -50,7 +50,7 @@ class LogObject :
 
 struct LogLine;
 class GUI_Logger :
-		public Gui::Widget
+		public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Logger)

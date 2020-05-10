@@ -37,7 +37,7 @@
 
 namespace Algorithm=Util::Algorithm;
 
-Q_GLOBAL_STATIC(LogObject, log_object)
+Q_GLOBAL_STATIC(LogObject, logObject)
 
 struct LogLine
 {
@@ -53,7 +53,7 @@ struct LogLine
 		str(str)
 	{}
 
-	QString to_string() const
+	QString toString() const
 	{
 		int logLevel = GetSetting(Set::Logger_Level);
 		QString logLine = "<table style=\"font-family: Monospace;\">";
@@ -79,7 +79,6 @@ struct LogLine
 					return QString();
 				}
 				break;
-
 			case Log::Develop:
 				htmlColor = "#6A6A00";
 				typeStr = "Dev";
@@ -87,7 +86,6 @@ struct LogLine
 					return QString();
 				}
 				break;
-
 			case Log::Crazy:
 				htmlColor = "#5A5A00";
 				typeStr = "CrazyLog";
@@ -122,7 +120,7 @@ LogObject::LogObject(QObject* parent) :
 	LogListener()
 {}
 
-LogObject::~LogObject() {}
+LogObject::~LogObject() = default;
 
 void LogObject::addLogLine(const LogEntry& le)
 {
@@ -141,10 +139,10 @@ struct GUI_Logger::Private
 };
 
 GUI_Logger::GUI_Logger(QWidget* parent) :
-	Widget(parent)
+	Dialog(parent)
 {
 	m = Pimpl::make<Private>();
-	connect(log_object (), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
+	connect(logObject (), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
 
 	Logger::registerLogListener(this->logListener());
 }
@@ -167,18 +165,18 @@ void GUI_Logger::initUi()
 
 	for(const LogLine& line : Algorithm::AsConst(m->buffer))
 	{
-		ui->te_log->append(line.to_string());
+		ui->teLog->append(line.toString());
 	}
 
 	for(const QString& module : m->modules){
-		ui->combo_modules->addItem(module);
+		ui->comboModules->addItem(module);
 	}
 
 	languageChanged();
 
-	connect(ui->btn_close, &QPushButton::clicked, this, &QWidget::close);
-	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_Logger::saveClicked);
-	connect(ui->combo_modules, &QComboBox::currentTextChanged, this, &GUI_Logger::currentModuleChanged);
+	connect(ui->btnClose, &QPushButton::clicked, this, &QWidget::close);
+	connect(ui->btnSave, &QPushButton::clicked, this, &GUI_Logger::saveClicked);
+	connect(ui->comboModules, &QComboBox::currentTextChanged, this, &GUI_Logger::currentModuleChanged);
 }
 
 QString GUI_Logger::calcLogLine(const LogLine& logLine)
@@ -200,22 +198,22 @@ QString GUI_Logger::calcLogLine(const LogLine& logLine)
 
 		if(ui)
 		{
-			ui->combo_modules->insertItem(i, logLine.className);
+			ui->comboModules->insertItem(i, logLine.className);
 		}
 	}
 
-	return logLine.to_string();
+	return logLine.toString();
 }
 
 void GUI_Logger::currentModuleChanged(const QString& module)
 {
-	ui->te_log->clear();
+	ui->teLog->clear();
 
 	for(const LogLine& logLine : m->buffer)
 	{
 		if((logLine.className == module) || module.isEmpty())
 		{
-			ui->te_log->append(logLine.to_string());
+			ui->teLog->append(logLine.toString());
 		}
 	}
 }
@@ -225,31 +223,31 @@ void GUI_Logger::languageChanged()
 	if(ui)
 	{
 		ui->retranslateUi(this);
-		ui->btn_close->setText(Lang::get(Lang::Close));
-		ui->btn_save->setText(Lang::get(Lang::SaveAs).triplePt());
+		ui->btnClose->setText(Lang::get(Lang::Close));
+		ui->btnSave->setText(Lang::get(Lang::SaveAs).triplePt());
 		this->setWindowTitle(Lang::get(Lang::Logger));
 	}
 }
 
 LogListener* GUI_Logger::logListener()
 {
-	return log_object ();
+	return logObject ();
 }
 
 void GUI_Logger::logReady(const QDateTime& t, Log logType, const QString& className, const QString& message)
 {
-	LogLine log_line(t, logType, className, message);
-	QString str = calcLogLine(log_line);
+	const LogLine logLine(t, logType, className, message);
+	const QString str = calcLogLine(logLine);
 
 	if(ui)
 	{
-		ui->te_log->append(str);
+		ui->teLog->append(str);
 	}
 }
 
 void GUI_Logger::saveClicked()
 {
-	QString filename = QFileDialog::getSaveFileName
+	const QString filename = QFileDialog::getSaveFileName
 	(
 	   this,
 	   Lang::get(Lang::SaveAs),
@@ -261,9 +259,9 @@ void GUI_Logger::saveClicked()
 	}
 
 	QFile f(filename);
-	bool is_open = f.open(QFile::WriteOnly);
-	if(is_open){
-		f.write(ui->te_log->toPlainText().toUtf8());
+	bool isOpen = f.open(QFile::WriteOnly);
+	if(isOpen){
+		f.write(ui->teLog->toPlainText().toUtf8());
 		f.close();
 	}
 
@@ -275,6 +273,6 @@ void GUI_Logger::saveClicked()
 void GUI_Logger::showEvent(QShowEvent* e)
 {
 	initUi();
-	Widget::showEvent(e);
+	Dialog::showEvent(e);
 }
 

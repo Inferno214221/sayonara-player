@@ -439,10 +439,10 @@ void Menubar::showFullscreenToggled(bool b)
 
 void Menubar::helpClicked()
 {
-	QStringList text
+	const QStringList text
 	{
-		tr("Please visit the forum at"),
-		Util::createLink("https://sayonara-player.com/forum", Style::isDark()),
+		tr("For bug reports and feature requests please visit Sayonara's project page at GitLab"),
+		Util::createLink("https://gitlab.com/luciocarreras/sayonara-player", Style::isDark()),
 		"",
 		tr("FAQ") + ": ",
 		Util::createLink("http://sayonara-player.com/faq.php", Style::isDark()),
@@ -484,7 +484,9 @@ void Menubar::aboutClicked()
 			"<b>" + tr("Donate") + "</b>",
 			Util::createLink("http://sayonara-player.com/donations.php", Style::isDark()),
 			"",
-			tr("Special thanks to all the brave translators") + "!"
+			tr("Special thanks to all the brave translators, "
+			 "to everyone who helps packaging and maintaining Sayonara"
+			 "and to those people with local music collections") + "!"
 		}).join("<br/>"));
 	}
 
