@@ -484,9 +484,8 @@ void Menubar::aboutClicked()
 			"<b>" + tr("Donate") + "</b>",
 			Util::createLink("http://sayonara-player.com/donations.php", Style::isDark()),
 			"",
-			tr("Special thanks to all the brave translators, "
-			 "to everyone who helps packaging and maintaining Sayonara"
-			 "and to those people with local music collections") + "!"
+			tr("Thanks to all the brave translators and to everyone who helps building Sayonara packages") + ".<br>" +
+			tr("And special thanks to those people with local music collections") + "!"
 		}).join("<br/>"));
 	}
 

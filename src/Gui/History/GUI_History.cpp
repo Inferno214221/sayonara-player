@@ -93,9 +93,11 @@ void GUI_History::initShortcuts()
 	m->actionGoToBottom->setShortcut(QKeySequence(Qt::Key_End));
 	m->actionSelecteDataRange->setShortcut(QKeySequence("Ctrl+r"));
 
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
 	m->actionGoToTop->setShortcutVisibleInContextMenu(true);
 	m->actionGoToBottom->setShortcutVisibleInContextMenu(true);
 	m->actionSelecteDataRange->setShortcutVisibleInContextMenu(true);
+#endif
 
 	{
 		auto* sc = new QShortcut(this);
