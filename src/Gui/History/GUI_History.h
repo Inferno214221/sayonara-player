@@ -2,9 +2,11 @@
 #define GUI_HISTORY_H
 
 #include "Gui/Utils/Widgets/Dialog.h"
+#include "Utils/Session/SessionUtils.h"
 #include "Utils/Pimpl.h"
 
 class QFrame;
+class QDate;
 
 UI_FWD(GUI_History)
 
@@ -17,19 +19,27 @@ class GUI_History :
 
 public:
 	explicit GUI_History(QWidget* parent=nullptr);
-	~GUI_History();
+	~GUI_History() override;
 
 	QFrame* header() const;
 
-
 private:
-	QWidget* addNewPage();
-	bool changePage(int index);
+	void initShortcuts();
+	void requestData(int index);
+	void loadSelectedDateRange();
 
+	QWidget* createEntryListWidget(const Session::EntryListMap& sessionIds);
 
 private slots:
-	void olderClicked();
-	void newerClicked();
+	void scrollToTop();
+	void scrollToBottom();
+	void loadMore();
+	void dateRangeClicked();
+	void clearRangeClicked();
+	void calendarFinished();
+
+protected:
+	void languageChanged() override;
 };
 
 #endif // GUI_HISTORY_H

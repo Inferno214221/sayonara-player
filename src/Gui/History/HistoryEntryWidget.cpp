@@ -3,6 +3,7 @@
 #include "Components/Session/Session.h"
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 
 #include <QVBoxLayout>
 #include <QLabel>
@@ -20,6 +21,13 @@ struct HistoryEntryWidget::Private
 	{}
 };
 
+static QString dateToString(const QDateTime& date)
+{
+	QLocale locale = Util::Language::getCurrentLocale();
+	QString str = locale.toString(date.date());
+	return str;
+}
+
 HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* parent) :
 	Gui::Widget(parent)
 {
@@ -30,14 +38,14 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 
 	m->tableview = new HistoryTableView(timecode, this);
 
-	auto* label_layout = new QHBoxLayout();
+	auto* labelLayout = new QHBoxLayout();
 	{
 		m->dateLabel = new QLabel(this);
 		{
 			QFont font = m->dateLabel->font();
 			font.setBold(true);
 			m->dateLabel->setFont(font);
-			m->dateLabel->setText(Util::intToDate(timecode).date().toString());
+			m->dateLabel->setText( dateToString(Util::intToDate(timecode)) );
 		}
 
 		m->trackLabel = new QLabel(this);
@@ -48,13 +56,13 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 			m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
 		}
 
-		label_layout->addWidget(m->dateLabel);
-		label_layout->addItem(new QSpacerItem(100, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
-		label_layout->addWidget(m->trackLabel);
+		labelLayout->addWidget(m->dateLabel);
+		labelLayout->addItem(new QSpacerItem(100, 1, QSizePolicy::MinimumExpanding, QSizePolicy::Maximum));
+		labelLayout->addWidget(m->trackLabel);
 	}
 
 	layout->setSpacing(10);
-	layout->addLayout(label_layout);
+	layout->addLayout(labelLayout);
 	layout->addWidget(m->tableview);
 
 	connect(m->tableview, &HistoryTableView::sigRowcountChanged, this, &HistoryEntryWidget::rowcount_changed);
@@ -69,7 +77,7 @@ HistoryEntryWidget::~HistoryEntryWidget() = default;
 
 void HistoryEntryWidget::languageChanged()
 {
-	m->dateLabel->setText(Util::intToDate(m->timecode).date().toString());
+	m->dateLabel->setText( dateToString(Util::intToDate(m->timecode)) );
 	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
 }
 

@@ -24,6 +24,9 @@
 #include "Utils/Macros.h"
 
 class QString;
+class QStringList;
+class QLocale;
+
 template<typename A, typename B>
 class QMap;
 
@@ -149,6 +152,18 @@ namespace Util
 		 * empty string else
 		 */
 		QString getSimilarLanguage4(const QString& fourLetter);
+
+		/**
+		 * @brief get the current selected locale based on the current language file
+		 * @return
+		 */
+		QLocale getCurrentLocale();
+
+		/**
+		 * @brief get all qt paths which include translations
+		 * @return
+		 */
+		QStringList getCurrentQtTranslationPaths();
 
 		#ifdef SAYONARA_WITH_TESTS
 			void setTestMode();

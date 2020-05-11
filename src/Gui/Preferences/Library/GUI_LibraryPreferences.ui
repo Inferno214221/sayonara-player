@@ -20,7 +20,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -32,7 +32,7 @@
          <item>
           <widget class="QPushButton" name="btnUp">
            <property name="text">
-            <string notr="true">Up</string>
+            <string notr="true">↑</string>
            </property>
           </widget>
          </item>
@@ -86,7 +86,7 @@
          <item>
           <widget class="QPushButton" name="btnDown">
            <property name="text">
-            <string notr="true">Down</string>
+            <string notr="true">↓</string>
            </property>
           </widget>
          </item>

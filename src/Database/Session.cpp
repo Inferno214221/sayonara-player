@@ -151,7 +151,7 @@ Session::Id DB::Session::createNewSession() const
 	(
 		"SELECT %1 FROM Sessions sessions "
 		"LEFT OUTER JOIN track_search_view tracks ON tracks.trackID = sessions.trackID "
-		"WHERE Sessions.date > :minDate AND Sessions.date <= :maxDate; "
+		"WHERE Sessions.date >= :minDate AND Sessions.date <= :maxDate; "
 	).arg(fields.join(", "));
 
 	DB::Query q(this);
@@ -167,6 +167,7 @@ Session::Id DB::Session::createNewSession() const
 	}
 
 	::Session::EntryListMap ret;
+
 	while(q.next())
 	{
 		::Session::Entry entry;

@@ -43,12 +43,13 @@ namespace Session
 			void sigSessionChanged(Session::Id id);
 
 		public:
-			EntryListMap history(const QDateTime& dt_begin, const QDateTime& dt_end);
+			EntryListMap history(const QDateTime& begin, const QDateTime& end);
 			EntryListMap historyForDay(const QDateTime& dt);
 			EntryListMap historyEntries(int day_index, int count);
+			bool isEmpty() const;
 
 		private slots:
-			void position_changed(MilliSeconds ms);
+			void positionChanged(MilliSeconds ms);
 	};
 }
 

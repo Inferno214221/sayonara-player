@@ -371,9 +371,9 @@ void PlayManager::changeCurrentMetadata(const MetaData& md)
 			mdOld.setDurationMs((time.hour() * 60 + time.minute()) * 1000);
 
 			emit sigStreamFinished(mdOld);
-		}
 
-		m->trackPlaytimeMs = 0;
+			m->trackPlaytimeMs = 0;
+		}
 	}
 
 	emit sigCurrentMetadataChanged();

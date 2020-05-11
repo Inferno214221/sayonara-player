@@ -38,7 +38,7 @@ class Translator
 	PIMPL(Translator)
 
 	private:
-		bool switchTranslator(QObject* parent, const QString& fourLetter, const QString& dir);
+		bool switchTranslator(QObject* parent, const QString& fourLetter);
 
 	public:
 		/**
@@ -47,7 +47,7 @@ class Translator
 		 * @param parent
 		 * @param language
 		 */
-		void changeLanguage(QObject* parent, const QString& language);
+		void changeLanguage(QObject* parent, const QString& fourLetter);
 
 };
 

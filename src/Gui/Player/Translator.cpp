@@ -26,11 +26,12 @@
 
 #include <QTranslator>
 #include <QApplication>
+#include <QList>
+#include <QDir>
 
 struct Translator::Private
-{
-	QString current_language;
-	QTranslator* translator=nullptr;
+{	
+	QList<QTranslator*> translators;
 };
 
 Translator::Translator()
@@ -40,57 +41,60 @@ Translator::Translator()
 
 Translator::~Translator() = default;
 
-bool Translator::switchTranslator(QObject* parent, const QString& fourLetter, const QString& dir)
+bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 {
-	QString filename = Util::Language::getUsedLanguageFile(fourLetter);
-
-	if(m->translator)
+	if(!m->translators.isEmpty())
 	{
-		QApplication::removeTranslator(m->translator);
-		m->translator->deleteLater();
-		m->translator = nullptr;
+		for(QTranslator* t : m->translators)
+		{
+			QApplication::removeTranslator(t);
+			t->deleteLater();
+		}
+
+		m->translators.clear();
 	}
 
-	m->translator = new QTranslator(parent);
-	if(!m->translator) {
-		return false;
-	}
+	const QString languageFile = Util::Language::getUsedLanguageFile(fourLetter);
+	const QString languageDir = Util::sharePath("translations");
 
-	bool loaded = m->translator->load(filename, dir);
-	if(!loaded)
+	QStringList filenames;
+	filenames << QDir(languageDir).absoluteFilePath(languageFile)
+			  << Util::Language::getCurrentQtTranslationPaths()
+	;
+
+	for(const QString& filename : filenames)
 	{
-		m->translator->deleteLater();
-		m->translator = nullptr;
+		auto* translator = new QTranslator(parent);
+		bool loaded = translator->load(filename);
+		if(!loaded)
+		{
+			translator->deleteLater();
+			spLog(Log::Warning, this) << "Translator " << filename << " could not be loaded";
+			continue;
+		}
 
-		spLog(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be loaded";
-		return false;
+		if(translator->isEmpty())
+		{
+			translator->deleteLater();
+			spLog(Log::Warning, this) << "Translator is empty";
+			continue;
+		}
+
+		bool installed = QApplication::installTranslator(translator);
+		if(!installed)
+		{
+			translator->deleteLater();
+			spLog(Log::Warning, this) << "Translator " << filename << " could not be installed";
+			continue;
+		}
+
+		m->translators << translator;
 	}
 
-	if(m->translator->isEmpty())
-	{
-		m->translator->deleteLater();
-		m->translator = nullptr;
-
-		spLog(Log::Warning, this) << "Translator is empty";
-		return false;
-	}
-
-	bool installed = QApplication::installTranslator(m->translator);
-	if(!installed)
-	{
-		m->translator->deleteLater();
-		m->translator = nullptr;
-
-		spLog(Log::Warning, this) << "Translator " << dir << "/" << filename << " could not be installed";
-		return false;
-	}
-
-	return true;
+	return (m->translators.size() > 0);
 }
 
-void Translator::changeLanguage(QObject* parent, const QString& language)
+void Translator::changeLanguage(QObject* parent, const QString& fourLetter)
 {
-	m->current_language = language;
-
-	switchTranslator(parent, m->current_language, Util::sharePath("translations/"));
+	switchTranslator(parent, fourLetter);
 }

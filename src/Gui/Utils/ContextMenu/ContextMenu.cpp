@@ -266,7 +266,7 @@ void ContextMenu::showEvent(QShowEvent* e)
 		action->setDisabled(true);
 	}
 
-	QTimer::singleShot(300, this, &ContextMenu::timedOut);
+	QTimer::singleShot(200, this, &ContextMenu::timedOut);
 
 	WidgetTemplate<QMenu>::showEvent(e);
 }

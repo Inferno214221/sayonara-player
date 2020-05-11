@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>400</width>
+    <width>403</width>
     <height>300</height>
    </rect>
   </property>
@@ -60,14 +60,14 @@
       <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
      </property>
      <property name="text">
-      <string notr="true">é -&gt; e, ö -&gt; o</string>
+      <string notr="true">é → e, ö → o</string>
      </property>
     </widget>
    </item>
    <item row="1" column="1">
     <widget class="QLabel" name="label">
      <property name="text">
-      <string notr="true">A -&gt; a, a -&gt; a</string>
+      <string notr="true">A → a, a → a</string>
      </property>
     </widget>
    </item>
@@ -87,7 +87,7 @@
       <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
      </property>
      <property name="text">
-      <string notr="true">don't -&gt; dont, R&amp;B -&gt; RB</string>
+      <string notr="true">don't → dont, R&amp;B → RB</string>
      </property>
     </widget>
    </item>

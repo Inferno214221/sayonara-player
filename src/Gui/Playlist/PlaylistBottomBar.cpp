@@ -94,6 +94,8 @@ BottomBar::BottomBar(QWidget* parent) :
 	m->btnDynamic = new BottomBarButton(Icons::pixmap(Icons::Dynamic, Icons::ForceSayonaraIcon), this);
 	m->btnShuffle = new BottomBarButton(Icons::pixmap(Icons::Shuffle, Icons::ForceSayonaraIcon), this);
 	m->btnGapless = new BottomBarButton(Icons::pixmap(Icons::Gapless, Icons::ForceSayonaraIcon), this);
+
+
 	m->btnShutdown = new BottomBarButton(Icons::pixmap(Icons::Shutdown), this);
 
 	QLayout* layout = new QHBoxLayout(this);
