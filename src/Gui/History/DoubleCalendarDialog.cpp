@@ -37,7 +37,7 @@ DoubleCalendarDialog::DoubleCalendarDialog(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	this->setWindowTitle(tr("Selecte date range"));
+	this->setWindowTitle(tr("Select date range"));
 	this->setLayout( new QVBoxLayout() );
 	this->setStyleSheet(Style::currentStyle());
 
