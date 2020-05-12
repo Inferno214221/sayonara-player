@@ -172,12 +172,10 @@ void GUI_AlternativeCovers::initUi()
 	reloadCombobox();
 }
 
-
 void GUI_AlternativeCovers::setCoverLocation(const Cover::Location& cl)
 {
 	m->alternativeLookup->setCoverLocation(cl);
 }
-
 
 void GUI_AlternativeCovers::start()
 {
@@ -243,7 +241,6 @@ void GUI_AlternativeCovers::searchClicked()
 
 	start();
 }
-
 
 void GUI_AlternativeCovers::coverLookupStarted()
 {

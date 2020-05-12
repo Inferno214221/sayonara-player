@@ -40,6 +40,7 @@ public:
 
 protected:
 	void keyPressEvent(QKeyEvent* e) override;
+	void showEvent(QShowEvent* e) override;
 };
 
 #endif // SOMAFMSTATIONVIEW_H

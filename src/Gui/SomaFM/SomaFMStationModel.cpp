@@ -72,6 +72,9 @@ int SomaFM::StationModel::columnCount(const QModelIndex& parent) const
 	return 2;
 }
 
+#include <QFontMetrics>
+#include <QApplication>
+
 QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 {
 	int row = index.row();
@@ -104,14 +107,22 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		}
 
 		if(m->status == Status::Error){
-			return Gui::Icons::icon(Gui::Icons::Undo);
+			return Gui::Icons::pixmap(Gui::Icons::Undo);
 		}
 
 		if(m->stations[row].isLoved()){
-			return Gui::Icons::icon(Gui::Icons::Star, Gui::Icons::IconMode::ForceSayonaraIcon);
+			return Gui::Icons::pixmap(Gui::Icons::Star, Gui::Icons::IconMode::ForceSayonaraIcon);
 		}
 
-		return Gui::Icons::icon(Gui::Icons::StarDisabled);
+		return Gui::Icons::pixmap(Gui::Icons::StarDisabled);
+	}
+
+	else if(role == Qt::SizeHintRole)
+	{
+		if(col == 0){
+			int x = QApplication::fontMetrics().height();
+			return QSize(x*2, x*2);
+		}
 	}
 
 	else if(role == Qt::DisplayRole && col == 1)

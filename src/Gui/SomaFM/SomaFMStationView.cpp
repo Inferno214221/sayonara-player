@@ -19,12 +19,14 @@
  */
 
 #include "SomaFMStationView.h"
+#include "SomaFMStationDelegate.h"
+#include <QHeaderView>
 
 SomaFMStationView::SomaFMStationView(QWidget* parent) :
 	SearchableTableView(parent)
 {}
 
-SomaFMStationView::~SomaFMStationView() {}
+SomaFMStationView::~SomaFMStationView() = default;
 
 int SomaFMStationView::mapModelIndexToIndex(const QModelIndex& idx) const
 {
@@ -42,6 +44,15 @@ void SomaFMStationView::keyPressEvent(QKeyEvent* e)
 	e->setAccepted(false);
 
 	SearchableTableView::keyPressEvent(e);
+}
+
+void SomaFMStationView::showEvent(QShowEvent* e)
+{
+	SearchableTableView::showEvent(e);
+
+	int w = this->fontMetrics().height();
+	this->horizontalHeader()->setMinimumSectionSize(w*2);
+	this->resizeColumnToContents(0);
 }
 
 int SomaFMStationView::viewportHeight() const

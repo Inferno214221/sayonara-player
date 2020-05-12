@@ -63,14 +63,16 @@ struct Lookup::Private
 	FetchThread*	cft=nullptr;
 	void*			userData=nullptr;
 
+	const int		initialCoverCount;
 	int				coverCount;
 	Source			source;
 	bool			isThreadRunning;
 	bool			finished;
 	bool			stopped;
 
-	Private(int n_covers) :
-		coverCount(n_covers),
+	Private(int coverCount) :
+		initialCoverCount(coverCount),
+		coverCount(0),
 		isThreadRunning(false),
 		finished(false),
 		stopped(false)
@@ -124,6 +126,8 @@ bool Lookup::startNewThread(const Cover::Location& cl)
 
 void Lookup::start()
 {
+	m->coverCount = m->initialCoverCount;
+
 	m->pixmaps.clear();
 	m->isThreadRunning = false;
 	m->stopped = false;
