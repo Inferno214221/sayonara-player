@@ -48,24 +48,22 @@ struct PlaylistImpl::Private
 	UniqueId		playingUniqueId;
 	PlaylistMode	playlistMode;
 	int				playlistIndex;
-	PlaylistType	type;
 	bool			playlistChanged;
 	bool			busy;
 
-	Private(int playlist_idx, PlaylistMode playlist_mode, PlaylistType type) :
+	Private(int playlist_idx, PlaylistMode playlist_mode) :
 		playlistMode(playlist_mode),
 		playlistIndex(playlist_idx),
-		type(type),
 		playlistChanged(false),
 		busy(false)
 	{}
 };
 
 
-PlaylistImpl::Playlist(int idx, PlaylistType type, const QString& name) :
+PlaylistImpl::Playlist(int idx, const QString& name) :
 	Playlist::DBInterface(name)
 {
-	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode), type);
+	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode));
 
 	auto* changeNotifier = Tagging::ChangeNotifier::instance();
 	connect(changeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, &Playlist::metadataChanged);
@@ -579,11 +577,6 @@ void PlaylistImpl::setChanged(bool b)
 bool PlaylistImpl::wasChanged() const
 {
 	return m->playlistChanged;
-}
-
-bool PlaylistImpl::isStoreable() const
-{
-	return (m->type == PlaylistType::Std);
 }
 
 void PlaylistImpl::settingPlaylistModeChanged()

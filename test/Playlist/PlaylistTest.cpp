@@ -33,7 +33,7 @@ void PlaylistTest::jump_test()
 	MetaData md;
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
-	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
+	PL* pl = new PL(1, "Hallo");
 	success = pl->currentTrack(md);
 	QVERIFY(pl->changeTrack(0) == false);
 	QVERIFY(pl->index() == 1);
@@ -73,7 +73,7 @@ void PlaylistTest::shuffleTest()
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
 	QList<int> indexes;
-	PL* pl = new PL(1, PlaylistType::Std, "Hallo");
+	PL* pl = new PL(1, "Hallo");
 
 	Playlist::Mode mode;
 	mode.setShuffle(Playlist::Mode::State::On);
@@ -113,7 +113,7 @@ void PlaylistTest::modifyTest()
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 	int curIndex;
 
-	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo");
 	pl->createPlaylist(v_md);
 	const MetaDataList& plTracks = pl->tracks();
 
@@ -203,7 +203,7 @@ void PlaylistTest::modifyTest()
 
 void PlaylistTest::insertTest()
 {
-	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo");
 	pl->createPlaylist(MetaDataList());
 
 	{

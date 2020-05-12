@@ -147,6 +147,10 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 		else if(col == ColumnName::Time) {
 			auto l = m->pl->track(row).durationMs();
+			if(l / 1000 <= 0){
+				return QVariant();
+			}
+
 			return Util::msToString(l, "$M:$S");
 		}
 
@@ -385,6 +389,12 @@ void Model::insertTracks(const MetaDataList& v_md, int row)
 {
 	auto* plh = Handler::instance();
 	plh->insertTracks(v_md, row, m->pl->index());
+}
+
+void Model::insertTracks(const QStringList& files, int row)
+{
+	auto* plh = Handler::instance();
+	plh->insertTracks(files, row, m->pl->index());
 }
 
 int Model::currentTrack() const

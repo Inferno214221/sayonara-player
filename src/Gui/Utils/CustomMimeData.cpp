@@ -21,6 +21,7 @@
 #include "CustomMimeData.h"
 
 #include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -33,12 +34,13 @@ using namespace Gui;
 
 struct CustomMimeData::Private
 {
+
 	MetaDataList	tracks;
 	int				playlistSourceIndex;
 	QString			source;
 	QString			coverUrl;
+	Gui::AsyncDropHandler* asyncDropHandler=nullptr;
 	const void*		ptr;
-	//CustomMimeData::AsyncDropHandler* async_drop_handler=nullptr;
 
 	Private(const void* ptr) :
 		playlistSourceIndex(-1),
@@ -116,4 +118,14 @@ QString CustomMimeData::coverUrl() const
 void CustomMimeData::setCoverUrl(const QString& url)
 {
 	m->coverUrl = url;
+}
+
+void CustomMimeData::setAsyncDropHandler(AsyncDropHandler* handler)
+{
+	m->asyncDropHandler = handler;
+}
+
+AsyncDropHandler* CustomMimeData::asyncDropHandler() const
+{
+	return m->asyncDropHandler;
 }

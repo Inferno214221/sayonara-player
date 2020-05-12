@@ -38,49 +38,53 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 {
 	skeletons.clear();
 
-	QString sortorder_str;
+	QString sortorderString;
 	switch(sortorder){
 		case ::Playlist::SortOrder::IDAsc:
-			sortorder_str = " ORDER BY playlists.playlistID ASC ";
+			sortorderString = " ORDER BY playlists.playlistID ASC ";
 			break;
 		case ::Playlist::SortOrder::IDDesc:
-			sortorder_str = " ORDER BY playlists.playlistID DESC ";
+			sortorderString = " ORDER BY playlists.playlistID DESC ";
 			break;
 		case ::Playlist::SortOrder::NameAsc:
-			sortorder_str = " ORDER BY playlists.playlist ASC ";
+			sortorderString = " ORDER BY playlists.playlist ASC ";
 			break;
 		case ::Playlist::SortOrder::NameDesc:
-			sortorder_str = " ORDER BY playlists.playlist DESC ";
+			sortorderString = " ORDER BY playlists.playlist DESC ";
 			break;
 		default:
 			break;
 	}
 
-	QString type_clause;
+	QString typeClause;
 	switch(type)
 	{
 		case ::Playlist::StoreType::OnlyTemporary:
-			type_clause = " WHERE playlists.temporary = 1 ";
+			typeClause = " WHERE playlists.temporary = 1 ";
 			break;
 		case ::Playlist::StoreType::OnlyPermanent:
-			type_clause = " WHERE playlists.temporary = 0 ";
+			typeClause = " WHERE playlists.temporary = 0 ";
 			break;
 		default:
 			break;
 	}
 
+	const QStringList fields
+	{
+		"playlists.playlistID	AS playlistID",
+		"playlists.playlist		AS playlistName",
+		"playlists.temporary	AS temporary",
+		"COUNT(ptt.trackID)		AS trackCount"
+	};
+
 	Query q = runQuery
 	(
-		"SELECT "
-		"playlists.playlistID, "
-		"playlists.playlist, "
-		"playlists.temporary, "
-		"COUNT(playlistToTracks.trackID) "
-		"FROM playlists LEFT OUTER JOIN playlistToTracks "
-		"ON playlists.playlistID = playlistToTracks.playlistID "
-		+ type_clause +
+		"SELECT " + fields.join(", ") + " "
+		"FROM playlists LEFT OUTER JOIN playlistToTracks ptt "
+		"ON playlists.playlistID = ptt.playlistID "
+		+ typeClause +
 		"GROUP BY playlists.playlistID " +
-		sortorder_str + ";",
+		sortorderString + ";",
 
 		"Cannot fetch all playlists"
 	);
@@ -111,20 +115,24 @@ bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, :
 
 bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
 {
-	if(skeleton.id() < 0){
+	if(skeleton.id() < 0) {
 		spLog(Log::Warning, this) << "Cannot fetch playlist -1";
 		return false;
 	}
 
+	const QStringList fields
+	{
+		"playlists.playlistID		AS playlistID",
+		"playlists.playlist			AS playlistName",
+		"playlists.temporary		AS temporary",
+		"COUNT(ptt.trackID)			AS trackCount"
+	};
+
 	Query q = runQuery
 	(
-		"SELECT "
-		"playlists.playlistID, "
-		"playlists.playlist, "
-		"playlists.temporary, "
-		"COUNT(playlistToTracks.trackID) "
-		"FROM playlists LEFT OUTER JOIN playlistToTracks "
-		"ON playlists.playlistID = playlistToTracks.playlistID "
+		"SELECT " + fields.join(", ") + " "
+		"FROM playlists LEFT OUTER JOIN playlistToTracks ptt "
+		"ON playlists.playlistID = ptt.playlistID "
 		"WHERE playlists.playlistid = :playlist_id "
 		"GROUP BY playlists.playlistID;",
 
@@ -162,41 +170,42 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 	pl.clear();
 
-	QStringList fields
+	const QStringList fields
 	{
-		"tracks.trackID			AS trackID",		// 0
-		"tracks.title			AS title",			// 1
-		"tracks.length			AS length",			// 2
-		"tracks.year			AS year",			// 3
-		"tracks.bitrate			AS bitrate",		// 4
-		"tracks.filename		AS filename",		// 5
-		"tracks.track			AS trackNum",		// 6
-		"albums.albumID			AS albumID",		// 7
-		"artists.artistID		AS artistID",		// 8
-		"albums.name			AS albumName",		// 9
-		"artists.name			AS artistName",		// 10
-		"tracks.genre			AS genrename",		// 11
-		"tracks.filesize		AS filesize",		// 12
-		"tracks.discnumber		AS discnumber",		// 13
-		"tracks.rating			AS rating",			// 14
-		"playlistToTracks.filepath AS filepath",	// 15
-		"playlistToTracks.db_id AS databaseId",		// 16
-		"tracks.libraryID		AS libraryId",		// 17
-		"tracks.createdate		AS createdate",		// 18
-		"tracks.modifydate		AS modifydate"		// 19
+		"tracks.trackID						AS trackID",		// 0
+		"tracks.title						AS title",			// 1
+		"tracks.length						AS length",			// 2
+		"tracks.year						AS year",			// 3
+		"tracks.bitrate						AS bitrate",		// 4
+		"tracks.filename					AS filename",		// 5
+		"tracks.track						AS trackNum",		// 6
+		"albums.albumID						AS albumID",		// 7
+		"artists.artistID					AS artistID",		// 8
+		"albums.name						AS albumName",		// 9
+		"artists.name						AS artistName",		// 10
+		"tracks.genre						AS genrename",		// 11
+		"tracks.filesize					AS filesize",		// 12
+		"tracks.discnumber					AS discnumber",		// 13
+		"tracks.rating						AS rating",			// 14
+		"ptt.filepath						AS filepath",		// 15
+		"ptt.db_id							AS databaseId",		// 16
+		"tracks.libraryID					AS libraryId",		// 17
+		"tracks.createdate					AS createdate",		// 18
+		"tracks.modifydate					AS modifydate",		// 19
+		"ptt.coverDownloadUrl				AS coverDownloadUrl"// 20
 	};
 
 	Query q = runQuery
 	(
 		"SELECT "
 		+ fields.join(", ") + " " +
-		"FROM tracks, albums, artists, playlists, playlistToTracks "
+		"FROM tracks, albums, artists, playlists, playlistToTracks ptt "
 		"WHERE playlists.playlistID = :playlist_id "
-		"AND playlists.playlistID = playlistToTracks.playlistID "
-		"AND playlistToTracks.trackID = tracks.trackID "
+		"AND playlists.playlistID = ptt.playlistID "
+		"AND ptt.trackID = tracks.trackID "
 		"AND tracks.albumID = albums.albumID "
 		"AND tracks.artistID = artists.artistID "
-		"ORDER BY playlistToTracks.position ASC; ",
+		"ORDER BY ptt.position ASC; ",
 
 		{{":playlist_id", pl.id()}},
 		QString("Cannot get tracks for playlist %1").arg(pl.id())
@@ -224,15 +233,15 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 			data.setFilesize(q.value(12).value<Filesize>());
 			data.setDiscnumber(q.value(13).value<Disc>());
 			data.setRating(q.value(14).value<Rating>());
+			if(q.value(16).toInt() == 0 || q.value(16).isNull()) {
+				pl.push_back(data);
+			}
 			data.setLibraryid(q.value(17).value<LibraryId>());
 			data.setCreatedDate(q.value(18).value<uint64_t>());
 			data.setModifiedDate(q.value(19).value<uint64_t>());
+			data.setCoverDownloadUrls(q.value(20).toString().split(";"));
 			data.setExtern(false);
 			data.setDatabaseId(databaseId());
-
-			if(q.value(16).toInt() == 0 || q.value(16).isNull()){
-				pl.push_back(data);
-			}
 		}
 	}
 
@@ -240,11 +249,12 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 	Query q2 = runQuery
 	(
 		"SELECT "
-		"ptt.filepath		AS filepath, "
-		"ptt.position		AS position, "
-		"ptt.stationName	AS radioStationName, "
-		"ptt.station		AS radioStation, "
-		"ptt.isRadio		AS isRadio "
+		"ptt.filepath			AS filepath, "
+		"ptt.position			AS position, "
+		"ptt.stationName		AS radioStationName, "
+		"ptt.station			AS radioStation, "
+		"ptt.isRadio			AS isRadio, "
+		"ptt.coverDownloadUrl	AS coverDownloadUrl "
 		"FROM playlists pl, playlistToTracks ptt "
 		"WHERE pl.playlistID = :playlistID "
 		"AND pl.playlistID = ptt.playlistID "
@@ -261,31 +271,33 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 
 	while (q2.next())
 	{
-		QString filepath =			q2.value(0).toString();
-		int position =				q2.value(1).toInt();
-		QString radioStationName =	q2.value(2).toString();
-		QString radioStation =		q2.value(3).toString();
-		bool isRadio =				q2.value(4).toBool();
+		QString		filepath =			q2.value(0).toString();
+		int			position =			q2.value(1).toInt();
+		QString		radioStationName =	q2.value(2).toString();
+		QString		radioStation =		q2.value(3).toString();
+		bool		isRadio =			q2.value(4).toBool();
+		QStringList	coverUrls =			q2.value(5).toString().split(";");
 
-		MetaData data(filepath);
-		data.setId(-1);
-		data.setExtern(true);
+		MetaData md(filepath);
+		md.setId(-1);
+		md.setExtern(true);
 		if(isRadio) {
-			data.setRadioStation(radioStation, radioStationName);
+			md.setRadioStation(radioStation, radioStationName);
 		}
 
 		else {
-			data.setTitle(filepath);
-			data.setArtist(filepath);
+			md.setTitle(filepath);
+			md.setArtist(filepath);
 		}
 
-		data.setDatabaseId(databaseId());
+		md.setDatabaseId(databaseId());
+		md.setCoverDownloadUrls(coverUrls);
 
 		for(int row=0; row<=pl.count(); row++)
 		{
 			if( row >= position)
 			{
-				pl.insertTrack(data, row);
+				pl.insertTrack(md, row);
 				break;
 			}
 		}
@@ -321,7 +333,6 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 	}
 }
 
-
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, int pos)
 {
 	if(md.isDisabled()) {
@@ -330,11 +341,12 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, i
 
 	QMap<QString, QVariant> fieldBindings
 	{
-		{"playlistid",	playlistId},
-		{"filepath",	Util::convertNotNull(md.filepath())},
-		{"position",	pos},
-		{"trackid",		md.id()},
-		{"db_id",		md.databaseId()}
+		{"playlistid",			playlistId},
+		{"filepath",			Util::convertNotNull(md.filepath())},
+		{"position",			pos},
+		{"trackid",				md.id()},
+		{"db_id",				md.databaseId()},
+		{"coverDownloadUrl",	md.coverDownloadUrls().join(";")}
 	};
 
 	bool isRadio =

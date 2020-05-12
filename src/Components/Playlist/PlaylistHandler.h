@@ -270,7 +270,7 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const MetaDataList& tracks, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
+			int createPlaylist(const MetaDataList& tracks, const QString& name=QString(), bool temporary=true);
 
 			/**
 			 * @brief create a new playlist (overloaded)
@@ -280,7 +280,7 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const QStringList& path_list, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
+			int createPlaylist(const QStringList& path_list, const QString& name=QString(), bool temporary=true);
 
 			/**
 			 * @brief create a new playlist (overloaded)
@@ -291,7 +291,7 @@ namespace Playlist
 			 * @return new playlist index
 			 */
 
-			int createPlaylist(const QString& dir, const QString& name=QString(), bool temporary=true, PlaylistType type=PlaylistType::Std);
+			int createPlaylist(const QString& dir, const QString& name=QString(), bool temporary=true);
 
 
 			/**
@@ -374,7 +374,7 @@ namespace Playlist
 			 * @param type
 			 * @return index of new playlist
 			 */
-			int	addNewPlaylist(const QString& name, bool editable, PlaylistType type=PlaylistType::Std);
+			int	addNewPlaylist(const QString& name, bool editable);
 
 			/**
 			 * @brief Create new playlist and return it
@@ -383,7 +383,7 @@ namespace Playlist
 			 * @param name
 			 * @return
 			 */
-			PlaylistPtr newPlaylist(PlaylistType type, QString name);
+			PlaylistPtr newPlaylist(QString name);
 
 
 			/**

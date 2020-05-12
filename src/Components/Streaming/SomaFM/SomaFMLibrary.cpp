@@ -22,6 +22,7 @@
 
 #include "SomaFMLibrary.h"
 #include "SomaFMStation.h"
+#include "SomaFMUtils.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -167,20 +168,16 @@ void SomaFM::Library::stationStreamsFetched(bool success)
 	if(success)
 	{
 		MetaDataList tracks = parser->tracks();
-
 		SomaFM::Station station = m->stationMap[m->requestedStation];
 
-		parseMetadataForPlaylist(tracks, station);
+		SomaFM::Utils::mapStationToMetadata(station, tracks);
 
 		station.setMetadata(tracks);
 
 		m->stationMap[m->requestedStation] = station;
 
 		auto* plh = Playlist::Handler::instance();
-		plh->createPlaylist(tracks,
-							 station.name(),
-							 true,
-							 Playlist::Type::Stream);
+		plh->createPlaylist(tracks, station.name(), true);
 	}
 
 	sender()->deleteLater();
@@ -213,18 +210,14 @@ void SomaFM::Library::playlistContentFetched(bool success)
 	{
 		MetaDataList tracks = parser->tracks();
 		SomaFM::Station station = m->stationMap[m->requestedStation];
+		SomaFM::Utils::mapStationToMetadata(station, tracks);
 
-		parseMetadataForPlaylist(tracks, station);
-	
 		station.setMetadata(tracks);
 
 		m->stationMap[m->requestedStation] = station;
 
 		auto* plh = Playlist::Handler::instance();
-		plh->createPlaylist(tracks,
-							 station.name(),
-							 true,
-							 Playlist::Type::Stream);
+		plh->createPlaylist(tracks, station.name(), true);
 	}
 
 	sender()->deleteLater();
@@ -238,7 +231,6 @@ void SomaFM::Library::setStationLoved(const QString& stationName, bool loved)
 	m->qsettings->setValue(stationName, loved);
 
 	QList<SomaFM::Station> stations;
-
 	for(auto it=m->stationMap.cbegin(); it!=m->stationMap.cend(); it++)
 	{
 		if(it.key().isEmpty()){
@@ -250,35 +242,4 @@ void SomaFM::Library::setStationLoved(const QString& stationName, bool loved)
 
 	sortStations(stations);
 	emit sigStationsLoaded(stations);
-}
-
-void SomaFM::Library::parseMetadataForPlaylist(MetaDataList& tracks, const SomaFM::Station& station)
-{
-	const Cover::Location cl = station.coverLocation();
-	const QList<Cover::Fetcher::Url> searchUrls = cl.searchUrls();
-
-	QStringList coverUrls;
-	Util::Algorithm::transform(searchUrls, coverUrls, [](auto url)
-	{
-		return url.url();
-	});
-
-	for(MetaData& md : tracks)
-	{
-		md.setCoverDownloadUrls(coverUrls);
-		md.addCustomField("cover-hash", "", cl.hash());
-
-		const QString filepath = md.filepath();
-		md.setRadioStation(filepath, station.name());
-
-		if(filepath.toLower().contains("mp3")){
-			md.setTitle(station.name() + " (mp3)");
-		}
-
-		else if(filepath.toLower().contains("aac")){
-			md.setTitle(station.name() + " (aac)");
-		}
-	}
-
-	tracks.sort(::Library::SortOrder::TrackTitleAsc);
 }

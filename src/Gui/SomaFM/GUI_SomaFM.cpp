@@ -67,10 +67,10 @@ GUI_SomaFM::GUI_SomaFM(QWidget* parent) :
 	m->progressBar = new Gui::ProgressBar(ui->tv_stations);
 	m->progressBar->setPosition(Gui::ProgressBar::Position::Bottom);
 
-	SomaFM::StationModel* model_stations = new SomaFM::StationModel(this);
+	auto* modelStations = new SomaFM::StationModel(this);
 
 	this->setFocusProxy(ui->tv_stations);
-	ui->tv_stations->setSearchableModel(model_stations);
+	ui->tv_stations->setSearchableModel(modelStations);
 	ui->tv_stations->setItemDelegate(new QItemDelegate(ui->tv_stations));
 	ui->tv_stations->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tv_stations->setEnabled(false);

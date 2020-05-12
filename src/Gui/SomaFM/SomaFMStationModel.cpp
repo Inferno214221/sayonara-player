@@ -22,6 +22,7 @@
 /* SomaFMStationModel.cpp */
 
 #include "SomaFMStationModel.h"
+#include "SomaFMAsyncDropHandler.h"
 
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
@@ -70,7 +71,6 @@ int SomaFM::StationModel::columnCount(const QModelIndex& parent) const
 	Q_UNUSED(parent)
 	return 2;
 }
-
 
 QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 {
@@ -169,7 +169,6 @@ QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
 	return ret;
 }
 
-
 void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 {
 	int n_stations = stations.size();
@@ -221,49 +220,28 @@ void SomaFM::StationModel::setWaiting()
 
 QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 {
-	QList<QUrl> urls;
-	QString coverUrl, coverHash;
-
-	for(const QModelIndex& idx : indexes)
+	int row = -1;
+	for(const QModelIndex& index : indexes)
 	{
-		if(idx.column() == 0){
-			continue;
-		}
-
-		int row = idx.row();
-		if(!Util::between(row, m->stations)){
-			continue;
-		}
-
-		const SomaFM::Station station = m->stations[row];
-		const Cover::Location cl = station.coverLocation();
-		coverHash = cl.hash();
-
-		const QStringList playlistUrls = station.playlists();
-
-		for(const QString& playlistUrl : playlistUrls)
+		if(index.row() > 0 && index.row() < m->stations.count())
 		{
-			urls << QUrl(playlistUrl);
-
-			auto searchUrls = cl.searchUrls();
-
-			if(!searchUrls.isEmpty())
-			{
-				coverUrl = searchUrls.first().url();
-			}
+			row = index.row();
+			break;
 		}
-
-		break;
 	}
 
 	auto* mimeData = new Gui::CustomMimeData(this);
+	SomaFM::AsyncDropHandler* asyncDropHandler = nullptr;
 
-	mimeData->setCoverUrl(coverUrl);
-	mimeData->setUrls(urls);
+	if(row >= 0)
+	{
+		asyncDropHandler = new SomaFM::AsyncDropHandler(m->stations[row], nullptr);
+	}
+
+	mimeData->setAsyncDropHandler(asyncDropHandler);
 
 	return mimeData;
 }
-
 
 Qt::ItemFlags SomaFM::StationModel::flags(const QModelIndex& index) const
 {

@@ -30,6 +30,7 @@ class QString;
 namespace Gui
 {
 	class CustomMimeData;
+	class AsyncDropHandler;
 
 	namespace MimeData
 	{
@@ -105,6 +106,9 @@ namespace Gui
 		 * @return
 		 */
 		bool isDragFromPlaylist(const QMimeData* data);
+
+		bool hasAsyncDropHander(const QMimeData* data);
+		Gui::AsyncDropHandler* asyncDropHandler(const QMimeData* data);
 	}
 }
 

@@ -90,10 +90,6 @@ void DBInterface::setTemporary(bool b)
 
 SaveAsAnswer DBInterface::save()
 {
-	if(!isStoreable()){
-		return SaveAsAnswer::NotStorable;
-	}
-
 	if(m->id >= 0)
 	{
 		bool success = m->playlistDatabaseWrapper->savePlaylist(tracks(), m->id, m->isTemporary);
@@ -114,7 +110,7 @@ SaveAsAnswer DBInterface::save()
 
 bool DBInterface::insertTemporaryIntoDatabase()
 {
-	if(!m->isTemporary || !isStoreable()) {
+	if(!m->isTemporary) {
 		return false;
 	}
 
@@ -130,10 +126,6 @@ SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
 {
 	if(name.isEmpty()) {
 		return Util::SaveAsAnswer::InvalidName;
-	}
-
-	if(!isStoreable()){
-		return Util::InvalidObject;
 	}
 
 	CustomPlaylistSkeletons skeletons;
@@ -195,10 +187,6 @@ SaveAsAnswer DBInterface::rename(const QString& name)
 		return Util::SaveAsAnswer::InvalidName;
 	}
 
-	if(!isStoreable()){
-		return SaveAsAnswer::NotStorable;
-	}
-
 	CustomPlaylistSkeletons skeletons;
 	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
 
@@ -227,10 +215,6 @@ bool DBInterface::deletePlaylist()
 
 bool DBInterface::removeFromDatabase()
 {
-	if(!isStoreable()){
-		return false;
-	}
-
 	bool success;
 	if(m->id >= 0){
 		success = m->playlistDatabaseWrapper->deletePlaylist(m->id);

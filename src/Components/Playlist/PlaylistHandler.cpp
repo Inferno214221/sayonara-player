@@ -146,26 +146,21 @@ int Handler::loadOldPlaylists()
 }
 
 
-PlaylistPtr Handler::newPlaylist(PlaylistType type, QString name)
+PlaylistPtr Handler::newPlaylist(QString name)
 {
 	int index = m->playlists.count();
-	if(type == PlaylistType::Stream)
-	{
-		return PlaylistPtr(new ::Playlist::Playlist(index, PlaylistType::Stream, name));
-	}
-
-	return PlaylistPtr(new ::Playlist::Playlist(index, PlaylistType::Std, name));
+	return PlaylistPtr(new ::Playlist::Playlist(index, name));
 }
 
 
-int Handler::addNewPlaylist(const QString& name, bool temporary, PlaylistType type)
+int Handler::addNewPlaylist(const QString& name, bool temporary)
 {
 	int idx = exists(name);
 	if(idx >= 0) {
 		return idx;
 	}
 
-	PlaylistPtr pl = newPlaylist(type, name);
+	PlaylistPtr pl = newPlaylist(name);
 	pl->setTemporary(temporary);
 
 	if(m->playlists.isEmpty()){
@@ -187,12 +182,12 @@ int Handler::addNewPlaylist(const QString& name, bool temporary, PlaylistType ty
 }
 
 // create a playlist, where metadata is already available
-int Handler::createPlaylist(const MetaDataList& v_md, const QString& name, bool temporary, PlaylistType type)
+int Handler::createPlaylist(const MetaDataList& v_md, const QString& name, bool temporary)
 {
 	int idx = exists(name);
 	if(idx == -1)
 	{
-		idx = addNewPlaylist(name, temporary, type);
+		idx = addNewPlaylist(name, temporary);
 		PlaylistPtr tmp_pl = m->playlists[idx];
 		tmp_pl->insertTemporaryIntoDatabase();
 	}
@@ -212,16 +207,16 @@ int Handler::createPlaylist(const MetaDataList& v_md, const QString& name, bool 
 
 // create a new playlist, where only filepaths are given
 // Load Folder, Load File...
-int Handler::createPlaylist(const QStringList& paths, const QString& name, bool temporary, PlaylistType type)
+int Handler::createPlaylist(const QStringList& paths, const QString& name, bool temporary)
 {
-	int index = createPlaylist(MetaDataList(), name, temporary, type);
+	int index = createPlaylist(MetaDataList(), name, temporary);
 	createFilescanner(index, paths, -1);
 	return index;
 }
 
-int Handler::createPlaylist(const QString& dir, const QString& name, bool temporary, PlaylistType type)
+int Handler::createPlaylist(const QString& dir, const QString& name, bool temporary)
 {
-	return createPlaylist(QStringList{dir}, name, temporary, type);
+	return createPlaylist(QStringList{dir}, name, temporary);
 }
 
 int Handler::createPlaylist(const CustomPlaylist& cpl)
@@ -232,7 +227,7 @@ int Handler::createPlaylist(const CustomPlaylist& cpl)
 
 	int idx;
 	if(it == m->playlists.end()){
-		idx = addNewPlaylist(cpl.name(), cpl.temporary(), PlaylistType::Std);
+		idx = addNewPlaylist(cpl.name(), cpl.temporary());
 	}
 
 	else{
@@ -269,7 +264,7 @@ void Handler::shutdown()
 
 		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
 		{
-			if(pl->isTemporary() && pl->wasChanged() && pl->isStoreable())
+			if(pl->isTemporary() && pl->wasChanged())
 			{
 				pl->save();
 			}

@@ -43,7 +43,7 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 	}
 
 	// create a playlist
-	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo");
 	pl->createPlaylist(tracks);
 
 	MetaDataList oldTracks, newTracks;
@@ -106,7 +106,7 @@ void PlaylistTrackModifyTest::trackDeletedTest()
 		it->setArtist("artist0");
 	}
 
-	auto pl = std::make_shared<PL>(1, PlaylistType::Std, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo");
 	pl->createPlaylist(tracks);
 
 	MetaDataList tracksToDelete;

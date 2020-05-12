@@ -37,6 +37,7 @@
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -226,6 +227,17 @@ void View::handleDrop(QDropEvent* event)
 		return;
 	}
 
+	Gui::AsyncDropHandler* asyncDropHandler = MimeData::asyncDropHandler(mimedata);
+	if(asyncDropHandler)
+	{
+		m->playlist->setBusy(true);
+
+		asyncDropHandler->setTargetIndex(row + 1);
+		connect(asyncDropHandler, &Gui::AsyncDropHandler::sigFinished, this, &View::asyncDropFinished);
+		asyncDropHandler->start();
+		return;
+	}
+
 	const MetaDataList tracks = MimeData::metadata(mimedata);
 	if(!tracks.isEmpty())
 	{
@@ -233,58 +245,32 @@ void View::handleDrop(QDropEvent* event)
 	}
 
 	const QList<QUrl> urls = mimedata->urls();
-	if(!urls.isEmpty())
+	if(!urls.isEmpty() && tracks.isEmpty())
 	{
 		QStringList files;
-		bool www = FileUtils::isWWW(urls.first().toString());
-		if(www)
+		for(const QUrl& url : urls)
 		{
-			m->playlist->setBusy(true);
-
-			for(const QUrl& url : urls)
-			{
-				files << url.toString();
+			if(url.isLocalFile()){
+				files << url.toLocalFile();
 			}
-
-			auto* streamParser = new StreamParser();
-			streamParser->setCoverUrl(MimeData::coverUrl(mimedata));
-
-			connect(streamParser, &StreamParser::sigFinished, this, [=](bool success){
-				asyncDropFinished(success, row);
-			});
-
-			streamParser->parse(files);
 		}
 
-		else if(tracks.isEmpty())
-		{
-			for(const QUrl& url : urls)
-			{
-				if(url.isLocalFile()){
-					files << url.toLocalFile();
-				}
-			}
-
-			Handler::instance()->insertTracks(files, row + 1, m->playlist->index());
-		}
+		m->model->insertTracks(tracks, row + 1);
 	}
 }
 
-
-void View::asyncDropFinished(bool success, int async_drop_index)
+void View::asyncDropFinished()
 {
+	auto* asyncDropHandler = static_cast<Gui::AsyncDropHandler*>(sender());
+	const MetaDataList tracks = asyncDropHandler->tracks();
+
+	// busy playlists do not accept playlists modifications, so we have
+	// to disable busy status before inserting the tracks
 	m->playlist->setBusy(false);
 
-	auto* stream_parser = dynamic_cast<StreamParser*>(sender());
-	if(success)
-	{
-		MetaDataList v_md = stream_parser->tracks();
-		m->model->insertTracks(v_md, async_drop_index+1);
-	}
-
-	stream_parser->deleteLater();
+	m->model->insertTracks(tracks, asyncDropHandler->targetIndex());
+	asyncDropHandler->deleteLater();
 }
-
 
 void View::handleInnerDragDrop(int row, bool copy)
 {
@@ -307,7 +293,6 @@ void View::handleInnerDragDrop(int row, bool copy)
 	this->selectRows(newSelectedRows, 0);
 }
 
-
 void View::ratingChanged(Rating rating)
 {
 	IndexSet selections = selectedItems();
@@ -317,7 +302,6 @@ void View::ratingChanged(Rating rating)
 
 	m->model->changeRating(selectedItems(), rating);
 }
-
 
 void View::moveSelectedRowsUp()
 {

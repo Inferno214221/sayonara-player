@@ -28,6 +28,7 @@
 
 namespace Gui
 {
+	class AsyncDropHandler;
 	/**
 	 * @brief Mimedata class for drag and dropping metadata
 	 * @ingroup MimeData
@@ -89,6 +90,9 @@ namespace Gui
 
 			return (p == classInstance);
 		}
+
+		void setAsyncDropHandler(Gui::AsyncDropHandler* handler);
+		Gui::AsyncDropHandler* asyncDropHandler() const;
 	};
 }
 

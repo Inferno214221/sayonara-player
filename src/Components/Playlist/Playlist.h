@@ -54,7 +54,7 @@ namespace Playlist
 			void sigCurrentScannedFileChanged(const QString& currentFile);
 
 		public:
-			explicit Playlist(int idx, Type type, const QString& name);
+			explicit Playlist(int idx, const QString& name);
 			~Playlist() override;
 
 			int				createPlaylist(const MetaDataList& tracks);
@@ -100,7 +100,6 @@ namespace Playlist
 			bool changeTrack(int idx);
 
 			bool wasChanged() const override;
-			bool isStoreable() const override;
 
 		public slots:
 			void metadataDeleted();

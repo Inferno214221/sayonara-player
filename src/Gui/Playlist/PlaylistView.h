@@ -81,7 +81,7 @@ namespace Playlist
 		private slots:
 			void refresh();
 			void currentTrackChanged(int track_index, int playlistIndex);
-			void asyncDropFinished(bool success, int dropIndex);
+			void asyncDropFinished();
 			void ratingChanged(Rating rating);
 			void columnsChanged();
 			void showRatingChanged();

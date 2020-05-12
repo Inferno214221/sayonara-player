@@ -145,3 +145,19 @@ bool MimeData::isPlayerDrag(const QMimeData* data)
 {
 	return (customMimedata(data) != nullptr);
 }
+
+bool MimeData::hasAsyncDropHander(const QMimeData* data)
+{
+	const CustomMimeData* cmd = customMimedata(data);
+	return (cmd && cmd->asyncDropHandler() != nullptr);
+}
+
+AsyncDropHandler* MimeData::asyncDropHandler(const QMimeData* data)
+{
+	const CustomMimeData* cmd = customMimedata(data);
+	if(cmd){
+		return cmd->asyncDropHandler();
+	}
+
+	return nullptr;
+}

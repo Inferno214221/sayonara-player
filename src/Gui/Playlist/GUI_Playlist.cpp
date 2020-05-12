@@ -525,16 +525,15 @@ void GUI_Playlist::checkPlaylistMenu(PlaylistConstPtr pl)
 
 	bool temporary =		pl->isTemporary();
 	bool wasChanged =		pl->wasChanged();
-	bool storable =			pl->isStoreable();
 	bool isEmpty =			(pl->count() == 0);
 
-	bool saveEnabled =		(!temporary && storable);
-	bool saveAsEnabled =	(storable);
+	bool saveEnabled =		(!temporary);
+	bool saveAsEnabled =	true;
 	bool saveToFileEnabled = (!isEmpty);
-	bool deleteEnabled =	(!temporary && storable);
-	bool resetEnabled =		(!temporary && storable && wasChanged);
+	bool deleteEnabled =	(!temporary);
+	bool resetEnabled =		(!temporary && wasChanged);
 	bool closeEnabled =		(ui->tw_playlists->count() > 2);
-	bool renameEnabled =	(storable);
+	bool renameEnabled =	true;
 	bool clearEnabled =		(!isEmpty);
 
 	entries |= MenuEntry::OpenFile;
@@ -574,8 +573,7 @@ void GUI_Playlist::checkPlaylistName(PlaylistConstPtr pl)
 	QString name = pl->name();
 
 	if(!pl->isTemporary() &&
-		pl->wasChanged() &&
-		pl->isStoreable())
+		pl->wasChanged())
 	{
 		name.prepend("* ");
 	}

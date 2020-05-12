@@ -37,14 +37,7 @@ using PlaylistConstPtr = std::shared_ptr<const Playlist::Playlist>;
 namespace Playlist
 {
 	class Mode;
-	enum class Type : quint8
-	{
-		Std=0,
-		Stream
-	};
 }
-
-using PlaylistType=::Playlist::Type;
 
 #endif
 

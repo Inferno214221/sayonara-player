@@ -54,7 +54,7 @@ namespace Algorithm=Util::Algorithm;
 
 int Connector::highestDatabaseVersion()
 {
-	return 27;
+	return 28;
 }
 
 struct Connector::Private
@@ -798,6 +798,15 @@ bool Connector::applyFixes()
 			this->commit();
 
 			delete libraryDb;
+		}
+	}
+
+	if(version < 28)
+	{
+		bool success = checkAndInsertColumn("playlistToTracks", "coverDownloadUrl", "VARCHAR(512)");
+		if(success)
+		{
+			settingsConnector()->storeSetting("version", 28);
 		}
 	}
 

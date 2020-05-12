@@ -60,7 +60,6 @@ namespace Playlist
 			virtual const MetaDataList& tracks() const = 0;
 			virtual void setChanged(bool b) = 0;
 			virtual bool wasChanged() const = 0;
-			virtual bool isStoreable() const =0;
 
 			static QString requestNewDatabaseName(QString prefix);
 	};

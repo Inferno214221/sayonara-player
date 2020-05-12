@@ -27,7 +27,6 @@
 
 #include "Utils/Pimpl.h"
 
-
 namespace SomaFM
 {
 	class Station;
@@ -51,9 +50,6 @@ namespace SomaFM
 			bool createPlaylistFromStreamlist(int idx);
 			void searchStations();
 			void setStationLoved(const QString& stationName, bool loved);
-
-		public:
-			static void parseMetadataForPlaylist(MetaDataList& tracks, const SomaFM::Station& station);
 
 		private slots:
 			void websiteFetched();
