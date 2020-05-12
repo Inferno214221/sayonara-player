@@ -140,7 +140,12 @@ Session::EntryListMap Manager::historyEntries(int dayIndex, int count)
 	auto* db = DB::Connector::instance();
 	DB::Session* sessionConnector = db->sessionConnector();
 
-	return sessionConnector->getSessions(Util::intToDate(minKey), Util::intToDate(maxKey));
+	EntryListMap history = sessionConnector->getSessions(Util::intToDate(minKey), Util::intToDate(maxKey));
+	if(history.isEmpty() && dayIndex == 0){
+		history[Session::dayBegin(Session::now())] = EntryList();
+	}
+
+	return history;
 }
 
 bool Manager::isEmpty() const

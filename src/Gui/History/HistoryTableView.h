@@ -25,10 +25,8 @@ class HistoryTableView :
 
 		int rows() const;
 
-
 	private slots:
-		void rowcount_changed();
-
+		void rowcountChanged();
 
 	protected:
 		QMimeData* dragableMimedata() const override;

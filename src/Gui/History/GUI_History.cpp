@@ -22,6 +22,7 @@
 #include <QShortcut>
 
 using Session::Timecode;
+static QWidget* createEntryListWidget(const Session::EntryListMap& history);
 
 struct GUI_History::Private
 {
@@ -199,6 +200,8 @@ void GUI_History::clearRangeClicked()
 void GUI_History::requestData(int index)
 {
 	const Session::EntryListMap history = m->session->historyEntries(index, 10);
+	m->btnLoadMore->setDisabled(history.isEmpty());
+
 	QWidget* page = createEntryListWidget(history);
 
 	int oldHeight = ui->scrollArea->widget()->height();
@@ -249,7 +252,8 @@ void GUI_History::loadSelectedDateRange()
 	ui->stackedWidget->setCurrentIndex(1);
 }
 
-QWidget* GUI_History::createEntryListWidget(const Session::EntryListMap& history)
+
+QWidget* createEntryListWidget(const Session::EntryListMap& history)
 {
 	auto* page = new QWidget();
 	auto* pageLayout = new QVBoxLayout(page);

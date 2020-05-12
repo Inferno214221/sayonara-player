@@ -23,10 +23,10 @@ struct HistoryEntryModel::Private
 		session = Session::Manager::instance();
 		invalidEntry.timecode = 0;
 
-		calc_history();
+		calcHistory();
 	}
 
-	void calc_history()
+	void calcHistory()
 	{
 		history.clear();
 
@@ -44,16 +44,6 @@ struct HistoryEntryModel::Private
 	}
 };
 
-const Session::Entry& HistoryEntryModel::entry(int row) const
-{
-	int index = (m->history.size() - 1) - row;
-	if(index < 0 || index >= m->history.size()){
-		return m->invalidEntry;
-	}
-
-	return m->history[index];
-}
-
 HistoryEntryModel::HistoryEntryModel(Session::Timecode timecode, QObject* parent) :
 	QAbstractTableModel(parent)
 {
@@ -65,6 +55,16 @@ HistoryEntryModel::HistoryEntryModel(Session::Timecode timecode, QObject* parent
 }
 
 HistoryEntryModel::~HistoryEntryModel() = default;
+
+const Session::Entry& HistoryEntryModel::entry(int row) const
+{
+	int index = (m->history.size() - 1) - row;
+	if(index < 0 || index >= m->history.size()){
+		return m->invalidEntry;
+	}
+
+	return m->history[index];
+}
 
 int HistoryEntryModel::rowCount(const QModelIndex& parent) const
 {
@@ -122,7 +122,7 @@ void HistoryEntryModel::historyChanged(Session::Id id)
 	{
 		int old_rowcount = rowCount();
 
-		m->calc_history();
+		m->calcHistory();
 
 		if(rowCount() > old_rowcount)
 		{
@@ -180,7 +180,6 @@ Qt::ItemFlags HistoryEntryModel::flags(const QModelIndex& index) const
 
 	return f;
 }
-
 
 QMimeData* HistoryEntryModel::mimeData(const QModelIndexList& indexes) const
 {

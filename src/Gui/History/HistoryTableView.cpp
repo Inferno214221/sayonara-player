@@ -31,31 +31,24 @@ HistoryTableView::HistoryTableView(Session::Timecode timecode, QWidget* parent) 
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 	this->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 
+	this->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Interactive);
+	this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+	this->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+	this->horizontalHeader()->setSectionResizeMode(3, QHeaderView::Stretch);
+
 	skinChanged();
 
-	connect(m->model, &HistoryEntryModel::sigRowsAdded, this, &HistoryTableView::rowcount_changed);
+	connect(m->model, &HistoryEntryModel::sigRowsAdded, this, &HistoryTableView::rowcountChanged);
 }
+
+HistoryTableView::~HistoryTableView() = default;
 
 int HistoryTableView::rows() const
 {
 	return model()->rowCount();
 }
 
-HistoryTableView::~HistoryTableView() = default;
-
-void HistoryTableView::resizeEvent(QResizeEvent* e)
-{
-	QTableView::resizeEvent(e);
-
-	this->resizeColumnToContents(0);
-	int w = this->columnWidth(0);
-
-	this->setColumnWidth(1, (this->width() - w) / 3);
-	this->setColumnWidth(2, (this->width() - w) / 3);
-	this->setColumnWidth(3, (this->width() - w) / 3);
-}
-
-void HistoryTableView::rowcount_changed()
+void HistoryTableView::rowcountChanged()
 {
 	skinChanged();
 
@@ -66,14 +59,26 @@ void HistoryTableView::languageChanged() {}
 
 void HistoryTableView::skinChanged()
 {
-	int all_height = (m->model->rowCount() * (this->fontMetrics().height() + 2)) +
+	int allHeight = (m->model->rowCount() * (this->fontMetrics().height() + 2)) +
 		horizontalHeader()->height() * 2 +
 		horizontalScrollBar()->height();
 
-	this->setMinimumHeight(std::min(all_height, 400));
+	this->setMinimumHeight(std::min(allHeight, 400));
 }
 
 QMimeData* HistoryTableView::dragableMimedata() const
 {
 	return m->model->mimeData(this->selectionModel()->selectedIndexes());
+}
+
+void HistoryTableView::resizeEvent(QResizeEvent* e)
+{
+	QTableView::resizeEvent(e);
+
+	this->resizeColumnToContents(0);
+//	int w = this->columnWidth(0);
+
+//	this->setColumnWidth(1, (this->width() - w) / 3);
+//	this->setColumnWidth(2, (this->width() - w) / 3);
+//	this->setColumnWidth(3, (this->width() - w) / 3);
 }

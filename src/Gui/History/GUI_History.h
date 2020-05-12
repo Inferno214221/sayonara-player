@@ -28,8 +28,6 @@ private:
 	void requestData(int index);
 	void loadSelectedDateRange();
 
-	QWidget* createEntryListWidget(const Session::EntryListMap& sessionIds);
-
 private slots:
 	void scrollToTop();
 	void scrollToBottom();
