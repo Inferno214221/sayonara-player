@@ -578,6 +578,11 @@ void AbstractLibrary::changeFilter(Library::Filter filter, bool force)
 
 void AbstractLibrary::selectedArtistsChanged(const IndexSet& indexes)
 {
+	// happens, when the model is set at initialization of table views
+	if(m->selectedArtists.isEmpty() && indexes.isEmpty()){
+		return;
+	}
+
 	changeArtistSelection(indexes);
 
 	emit sigAllAlbumsLoaded();
@@ -656,10 +661,14 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreA
 
 void AbstractLibrary::selectedAlbumsChanged(const IndexSet& indexes, bool ignoreArtists)
 {
+	// happens, when the model is set at initialization of table views
+	if(m->selectedAlbums.isEmpty() && indexes.isEmpty()){
+		return;
+	}
+
 	changeAlbumSelection(indexes, ignoreArtists);
 	emit sigAllTracksLoaded();
 }
-
 
 void AbstractLibrary::changeTrackSelection(const IndexSet& indexes)
 {

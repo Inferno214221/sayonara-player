@@ -140,7 +140,7 @@ void AlbumView::indexClicked(const QModelIndex& idx)
 /* where to show the popup */
 void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 {
-	QHeaderView* v_header = this->verticalHeader();
+	QHeaderView* verticalHeader = this->verticalHeader();
 
 	m->discmenuPoint = QCursor::pos();
 
@@ -152,12 +152,10 @@ void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 		m->discmenuPoint.setX(box.x() + (box.width() * 2) / 3);
 		m->discmenuPoint.setY(box.y());
 
-		QPoint dmp_tmp = parentWidget()->pos();
-		dmp_tmp.setY(dmp_tmp.y() - v_header->sizeHint().height());
-
-		while(idx.row() != indexAt(dmp_tmp).row())
+		QPoint discMenuPoint = parentWidget()->pos() - QPoint(0, verticalHeader->sizeHint().height());
+		while(idx.row() != indexAt(discMenuPoint).row())
 		{
-			  dmp_tmp.setY(dmp_tmp.y() + 10);
+			  discMenuPoint.setY(discMenuPoint.y() + 10);
 			  m->discmenuPoint.setY(m->discmenuPoint.y() + 10);
 		}
 	}

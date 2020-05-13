@@ -87,9 +87,6 @@ namespace Library
 			void showClearButton(bool visible);
 			void useClearButton(bool yesno);
 
-			void resizeRowsToContents();
-			void resizeRowsToContents(int first_row, int count);
-
 			virtual Library::ContextMenu::Entries contextMenuEntries() const;
 
 			/** Dragable **/

@@ -402,53 +402,53 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 	QPoint pos = e->globalPos();
 	QModelIndex idx = indexAt(e->pos());
 
-	Pl::ContextMenu::Entries entry_mask = 0;
+	Pl::ContextMenu::Entries entryMask = 0;
 	if(rowCount() > 0)	{
-		entry_mask = (Pl::ContextMenu::EntryClear | Pl::ContextMenu::EntryRefresh | Pl::ContextMenu::EntryReverse);
+		entryMask = (Pl::ContextMenu::EntryClear | Pl::ContextMenu::EntryRefresh | Pl::ContextMenu::EntryReverse);
 	}
 
 	IndexSet selections = selectedItems();
 	if(selections.size() > 0)
 	{
-		entry_mask |= Pl::ContextMenu::EntryInfo;
-		entry_mask |= Pl::ContextMenu::EntryRemove;
+		entryMask |= Pl::ContextMenu::EntryInfo;
+		entryMask |= Pl::ContextMenu::EntryRemove;
 	}
 
 	if(selections.size() == 1)
 	{
-		entry_mask |= (Pl::ContextMenu::EntryLyrics);
+		entryMask |= (Pl::ContextMenu::EntryLyrics);
 	}
 
 	if(m->model->hasLocalMedia(selections) )
 	{
-		entry_mask |= Pl::ContextMenu::EntryEdit;
-		entry_mask |= Pl::ContextMenu::EntryRating;
-		entry_mask |= Pl::ContextMenu::EntryDelete;
+		entryMask |= Pl::ContextMenu::EntryEdit;
+		entryMask |= Pl::ContextMenu::EntryRating;
+		entryMask |= Pl::ContextMenu::EntryDelete;
 
 		if(selections.size() == 1)
 		{
-			MetaData md = m->model->metadata(selections.first());
+			const MetaData md = m->model->metadata(selections.first());
 			m->contextMenu->setRating( md.rating() );
 		}
 	}
 
 	if(idx.row() >= 0)
 	{
-		MetaData md = m->model->metadata(idx.row());
+		const MetaData md = m->model->metadata(idx.row());
 		m->contextMenu->setMetadata(md);
 
 		if(md.id() >= 0)
 		{
-			entry_mask |= Pl::ContextMenu::EntryBookmarks;
-			entry_mask |= Pl::ContextMenu::EntryFindInLibrary;
+			entryMask |= Pl::ContextMenu::EntryBookmarks;
+			entryMask |= Pl::ContextMenu::EntryFindInLibrary;
 		}
 	}
 
 	if(m->model->currentTrack() >= 0){
-		entry_mask |= Pl::ContextMenu::EntryCurrentTrack;
+		entryMask |= Pl::ContextMenu::EntryCurrentTrack;
 	}
 
-	m->contextMenu->showActions(entry_mask);
+	m->contextMenu->showActions(entryMask);
 	m->contextMenu->exec(pos);
 
 	SearchableTableView::contextMenuEvent(e);
@@ -555,21 +555,21 @@ void View::playlistBusyChanged(bool b)
 	}
 }
 
-void View::currentScannedFileChanged(const QString& current_file)
+void View::currentScannedFileChanged(const QString& currentFile)
 {
 	if(!m->currentFileLabel)
 	{
 		m->currentFileLabel = new QLabel(this);
 	}
 
-	int offset_bottom = 3;
-	offset_bottom += this->fontMetrics().height();
+	int offsetBottom = 3;
+	offsetBottom += this->fontMetrics().height();
 	if(m->progressbar) {
-		offset_bottom += m->progressbar->height() + 2;
+		offsetBottom += m->progressbar->height() + 2;
 	}
 
-	m->currentFileLabel->setText(current_file);
-	m->currentFileLabel->setGeometry(0, this->height() - offset_bottom, this->width(), this->fontMetrics().height() + 4);
+	m->currentFileLabel->setText(currentFile);
+	m->currentFileLabel->setGeometry(0, this->height() - offsetBottom, this->width(), this->fontMetrics().height() + 4);
 	m->currentFileLabel->show();
 }
 
@@ -583,7 +583,6 @@ void View::dropEvent(QDropEvent* event)
 	event->accept();
 	handleDrop(event);
 }
-
 
 int View::mapModelIndexToIndex(const QModelIndex& idx) const
 {
@@ -609,7 +608,6 @@ bool View::viewportEvent(QEvent* event)
 
 	return success;
 }
-
 
 void View::skinChanged()
 {
@@ -647,55 +645,45 @@ void View::refresh()
 {
 	using CN=Pl::Model::ColumnName;
 
-	QFontMetrics fm = this->fontMetrics();
-	int h = std::max(fm.height() + 4, 20);
+	const QFontMetrics fm = this->fontMetrics();
+	int h = this->verticalHeader()->defaultSectionSize();
 
-	bool show_rating = GetSetting(Set::PL_ShowRating);
-	if(show_rating){
+	bool showRating = GetSetting(Set::PL_ShowRating);
+	if(showRating){
 		h += fm.height();
 	}
 
-	for(int i=0; i<rowCount(); i++)
-	{
-		if(h != rowHeight(i))
-		{
-			verticalHeader()->resizeSection(i, h);
-		}
-	}
-
 	QHeaderView* hh = this->horizontalHeader();
-	int viewport_width = viewport()->width();
-	int w_time = Gui::Util::textWidth(fm, "1888:88");
+	int viewportWidth = viewport()->width();
+	int widthTime = Gui::Util::textWidth(fm, "1888:88");
 
 	if(GetSetting(Set::PL_ShowCovers))
 	{
-		int w_cov = h;
-		viewport_width -= w_cov;
+		int widthCover = h;
+		viewportWidth -= widthCover;
 
-		if(hh->sectionSize(CN::Cover != w_cov)) {
-			hh->resizeSection(CN::Cover, w_cov);
+		if(hh->sectionSize(CN::Cover != widthCover)) {
+			hh->resizeSection(CN::Cover, widthCover);
 		}
 	}
 
 	if(GetSetting(Set::PL_ShowNumbers))
 	{
-		int w_tn = Gui::Util::textWidth(fm, QString::number(rowCount() * 100));
-		viewport_width -= w_tn;
+		int widthTrackNumber = Gui::Util::textWidth(fm, QString::number(rowCount() * 100));
+		viewportWidth -= widthTrackNumber;
 
-		if(hh->sectionSize(CN::TrackNumber) != w_tn) {
-			hh->resizeSection(CN::TrackNumber, w_tn);
+		if(hh->sectionSize(CN::TrackNumber) != widthTrackNumber) {
+			hh->resizeSection(CN::TrackNumber, widthTrackNumber);
 		}
 	}
 
-	if(hh->sectionSize(CN::Time) != w_time) {
-		hh->resizeSection(CN::Time, w_time);
+	if(hh->sectionSize(CN::Time) != widthTime) {
+		hh->resizeSection(CN::Time, widthTime);
 	}
 
-	if(hh->sectionSize(CN::Description) != viewport_width - w_time) {
-		hh->resizeSection(CN::Description, viewport_width - w_time);
+	if(hh->sectionSize(CN::Description) != viewportWidth - widthTime) {
+		hh->resizeSection(CN::Description, viewportWidth - widthTime);
 	}
-
-	m->model->setRowHeight(h);
 }
 
 void View::currentTrackChanged(int track_index, int playlist_index)

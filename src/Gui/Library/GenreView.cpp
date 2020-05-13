@@ -40,7 +40,6 @@
 
 #include <QDropEvent>
 #include <QContextMenuEvent>
-#include <QStyledItemDelegate>
 #include <QTreeWidget>
 #include <QShortcut>
 
@@ -515,9 +514,9 @@ QString GenreView::invalidGenreName()
 
 void GenreView::skinChanged()
 {
-	QFontMetrics fm = this->fontMetrics();
+/*	QFontMetrics fm = this->fontMetrics();
 	this->setIconSize(QSize(fm.height(), fm.height()));
-	this->setIndentation(fm.height());
+	this->setIndentation(fm.height());*/
 }
 
 void GenreView::languageChanged()

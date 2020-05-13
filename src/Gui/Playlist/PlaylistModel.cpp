@@ -78,14 +78,12 @@ struct Model::Private
 	QHash<AlbumId, QPixmap>	coverLookupMap;
 	int						oldRowCount;
 	int						dragIndex;
-	int						rowHeight;
 	PlaylistPtr				pl=nullptr;
 	Tagging::UserOperations* uto=nullptr;
 
 	Private(PlaylistPtr pl) :
 		oldRowCount(0),
 		dragIndex(-1),
-		rowHeight(20),
 		pl(pl)
 	{}
 };
@@ -194,9 +192,9 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	else if(role == Qt::FontRole)
 	{
 		QFont f = Gui::Util::mainWindow()->font();
-		int point_size = GetSetting(Set::PL_FontSize);
-		if(point_size > 0){
-			f.setPointSize(point_size);
+		int pointSize = GetSetting(Set::PL_FontSize);
+		if(pointSize > 0){
+			f.setPointSize(pointSize);
 		}
 
 		if(col == ColumnName::TrackNumber)
@@ -215,8 +213,6 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 			if(!m->coverLookupMap.contains(md.albumId()))
 			{
-				int height = m->rowHeight - 6;
-
 				Cover::Location cl = Cover::Location::coverLocation(md);
 				DB::Covers* coverDb = DB::Connector::instance()->coverConnector();
 
@@ -229,20 +225,11 @@ QVariant Model::data(const QModelIndex& index, int role) const
 				}
 
 				if(!cover.isNull()) {
-					m->coverLookupMap[md.albumId()] = cover.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+					m->coverLookupMap[md.albumId()] = cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 				}
 			}
 
 			return m->coverLookupMap[md.albumId()];
-		}
-	}
-
-	else if(role == Qt::SizeHintRole)
-	{
-		if(col == ColumnName::Cover)
-		{
-			int h = m->rowHeight - 4;
-			return QSize(h, h);
 		}
 	}
 
@@ -356,15 +343,15 @@ IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
 
 void Model::changeRating(const IndexSet& indexes, Rating rating)
 {
-	MetaDataList v_md;
-	v_md.reserve(indexes.size());
+	MetaDataList tracks;
+	tracks.reserve(indexes.size());
 
 	for(auto idx : indexes)
 	{
 		MetaData md = m->pl->track(idx);
 		if(rating != md.rating())
 		{
-			v_md << md;
+			tracks << md;
 			md.setRating(rating);
 
 			m->pl->replaceTrack(idx, md);
@@ -373,7 +360,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
 	}
 
-	if(v_md.isEmpty()){
+	if(tracks.isEmpty()){
 		return;
 	}
 
@@ -382,7 +369,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 		m->uto = new Tagging::UserOperations(-1, this);
 	}
 
-	m->uto->setTrackRating(v_md, rating);
+	m->uto->setTrackRating(tracks, rating);
 }
 
 void Model::insertTracks(const MetaDataList& v_md, int row)
@@ -522,8 +509,8 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 		return (row1 < row2);
 	});
 
-	MetaDataList v_md;
-	v_md.reserve( size_t(rows.size()) );
+	MetaDataList tracks;
+	tracks.reserve( size_t(rows.size()) );
 
 	for(int row : Algorithm::AsConst(rows))
 	{
@@ -531,15 +518,15 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 			continue;
 		}
 
-		v_md << m->pl->track(row);
+		tracks << m->pl->track(row);
 	}
 
-	if(v_md.empty()){
+	if(tracks.empty()){
 		return nullptr;
 	}
 
 	auto* mimedata = new Gui::CustomMimeData(this);
-	mimedata->setMetadata(v_md);
+	mimedata->setMetadata(tracks);
 	mimedata->setPlaylistSourceIndex(m->pl->index());
 
 	return mimedata;
@@ -571,15 +558,6 @@ void Model::setDragIndex(int dragIndex)
 	if(Util::between(dragIndex, rowCount()))
 	{
 		emit dataChanged(index(dragIndex, 0), index(dragIndex, columnCount() - 1));
-	}
-}
-
-void Model::setRowHeight(int row_height)
-{
-	if(m->rowHeight != row_height)
-	{
-		m->coverLookupMap.clear();
-		m->rowHeight = row_height;
 	}
 }
 

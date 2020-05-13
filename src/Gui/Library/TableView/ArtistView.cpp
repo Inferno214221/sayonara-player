@@ -64,9 +64,9 @@ void ArtistView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
-	ArtistModel* artist_model = new ArtistModel(this, m->library);
+	auto* artistModel = new ArtistModel(this, m->library);
 
-	this->setItemModel(artist_model);
+	this->setItemModel(artistModel);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	connect(m->library, &AbstractLibrary::sigAllArtistsLoaded, this, &ArtistView::fill);
@@ -170,7 +170,6 @@ void ArtistView::selectedItemsChanged(const IndexSet& indexes)
 	m->library->selectedArtistsChanged(indexes);
 }
 
-
 void ArtistView::playClicked()
 {
 	TableView::playClicked();
@@ -221,7 +220,6 @@ void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 
 	uto->mergeArtists(mergedata.sourceIds(), mergedata.targetId());
 }
-
 
 void ArtistView::showAlbumArtistsChanged()
 {

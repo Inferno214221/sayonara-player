@@ -87,11 +87,6 @@ ItemView::ItemView(QWidget* parent) :
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
 	this->setAlternatingRowColors(true);
 
-	QHeaderView* vertical_header = this->verticalHeader();
-	if(vertical_header) {
-		vertical_header->setResizeContentsPrecision(2);
-	}
-
 	clearSelection();
 
 	Qt::ShortcutContext ctx = Qt::WidgetWithChildrenShortcut;
@@ -331,14 +326,15 @@ void ItemView::filterExtensionsTriggered(const QString& extension, bool b)
 
 void ItemView::fill()
 {
+//	if(this->verticalHeader()->minimumSectionSize() < this->verticalHeader()->defaultSectionSize())
+//	{
+//		this->verticalHeader()->setMinimumSectionSize(this->verticalHeader()->defaultSectionSize());
+//	}
+
 	this->clearSelection();
 
 	int oldSize, newSize;
 	m->model->refreshData(&oldSize, &newSize);
-
-	if(newSize > oldSize) {
-		resizeRowsToContents(oldSize, newSize - oldSize);
-	}
 }
 
 void ItemView::selectedItemsChanged(const IndexSet& indexes)
@@ -351,36 +347,6 @@ void ItemView::importRequested(const QStringList& files)
 	AbstractLibrary* lib = this->library();
 	if(lib){
 		lib->importFiles(files);
-	}
-}
-
-
-void ItemView::resizeRowsToContents()
-{
-	if(rowCount() == 0) {
-		return;
-	}
-
-	QHeaderView* header = this->verticalHeader();
-	if(header) {
-		header->resizeSections(QHeaderView::ResizeToContents);
-	}
-}
-
-
-void ItemView::resizeRowsToContents(int first_row, int count)
-{
-	if(rowCount() == 0) {
-		return;
-	}
-
-	QHeaderView* header = this->verticalHeader();
-	if(header)
-	{
-		for(int i=first_row; i<first_row + count; i++)
-		{
-			this->resizeRowToContents(i);
-		}
 	}
 }
 

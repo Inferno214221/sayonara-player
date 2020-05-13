@@ -151,8 +151,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
 	ListenSetting(Set::Lib_ShowFilterExtBar, GUI_LocalLibrary::tracksLoaded);
 
-	m->library->load();	
-
 	auto* sch = ShortcutHandler::instance();
 	Shortcut sc = sch->shortcut(ShortcutIdentifier::CoverView);
 	sc.connect(this, [this]() {
@@ -407,7 +405,6 @@ void GUI_LocalLibrary::nameChanged(LibraryId id)
 	}
 }
 
-
 void GUI_LocalLibrary::pathChanged(LibraryId id)
 {
 	if(m->library->id() != id) {
@@ -524,15 +521,12 @@ void GUI_LocalLibrary::queryLibrary()
 	ui->directoryView->setFilterTerm(m->library->filter().filtertext(false).join(""));
 }
 
+#include <QTimer>
 void GUI_LocalLibrary::showEvent(QShowEvent* e)
 {
 	GUI_AbstractLibrary::showEvent(e);
 
-	this->lvAlbum()->resizeRowsToContents();
-	this->lvArtist()->resizeRowsToContents();
-	this->lvTracks()->resizeRowsToContents();
-
-	QMap<QSplitter*, QByteArray> splitters
+	const QMap<QSplitter*, QByteArray> splitters
 	{
 		{ui->splitterArtistAlbum, GetSetting(Set::Lib_SplitterStateArtist)},
 		{ui->splitter_tracks, GetSetting(Set::Lib_SplitterStateTrack)},
@@ -547,6 +541,10 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 	}
 
 	checkViewState();
+
+	QTimer::singleShot(1000, this, [this](){
+		m->library->load();
+	});
 }
 
 void GUI_LocalLibrary::languageChanged()

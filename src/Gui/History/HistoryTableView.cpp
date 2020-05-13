@@ -64,6 +64,8 @@ void HistoryTableView::skinChanged()
 		horizontalScrollBar()->height();
 
 	this->setMinimumHeight(std::min(allHeight, 400));
+
+	this->verticalHeader()->resetDefaultSectionSize();
 }
 
 QMimeData* HistoryTableView::dragableMimedata() const
@@ -74,11 +76,5 @@ QMimeData* HistoryTableView::dragableMimedata() const
 void HistoryTableView::resizeEvent(QResizeEvent* e)
 {
 	QTableView::resizeEvent(e);
-
 	this->resizeColumnToContents(0);
-//	int w = this->columnWidth(0);
-
-//	this->setColumnWidth(1, (this->width() - w) / 3);
-//	this->setColumnWidth(2, (this->width() - w) / 3);
-//	this->setColumnWidth(3, (this->width() - w) / 3);
 }

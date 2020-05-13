@@ -32,7 +32,7 @@
    <item row="1" column="0">
     <widget class="QStackedWidget" name="swReload">
      <property name="currentIndex">
-      <number>2</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="pageLibrary">
       <layout class="QGridLayout" name="gridLayout_2">
@@ -65,7 +65,7 @@
           </property>
           <widget class="QStackedWidget" name="swViewType">
            <property name="currentIndex">
-            <number>2</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="page_7">
             <layout class="QGridLayout" name="gridLayout_8">
@@ -337,6 +337,9 @@
              </property>
              <property name="selectionMode">
               <enum>QAbstractItemView::ExtendedSelection</enum>
+             </property>
+             <property name="uniformRowHeights">
+              <bool>true</bool>
              </property>
              <attribute name="headerVisible">
               <bool>false</bool>

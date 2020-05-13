@@ -27,9 +27,11 @@
 
 #include "InfoDialogContainer.h"
 
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Tagging/GUI_TagEdit.h"
 #include "Gui/InfoDialog/GUI_Lyrics.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
@@ -128,23 +130,33 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 	table->setShowGrid(false);
 	table->setEditTriggers(QTableView::NoEditTriggers);
 	table->setSelectionBehavior(QTableView::SelectRows);
+	table->setItemDelegate(new Gui::StyledItemDelegate(table));
+
+	QFont font(table->font());
+	font.setBold(true);
+
+	const QFontMetrics fm(font);
 
 	int row	= 0;
 	for(const StringPair& p : data)
 	{
-		QTableWidgetItem* i1 = new QTableWidgetItem(p.first);
-		QFont f(i1->font());
-		f.setBold(true);
-		i1->setFont(f);
-		QTableWidgetItem* i2 = new QTableWidgetItem(p.second);
+		auto* item1 = new QTableWidgetItem(p.first);
+		item1->setFont(font);
+		int w1 = Gui::Util::textWidth(fm, p.first) * 2;
+		item1->setSizeHint(QSize(w1, 1));
 
-		table->setItem(row, 0, i1);
-		table->setItem(row, 1, i2);
+		auto* item2 = new QTableWidgetItem(p.second);
+		int w2 = Gui::Util::textWidth(fm, p.second);
+		item2->setSizeHint(QSize(w2, 1));
+
+		table->setItem(row, 0, item1);
+		table->setItem(row, 1, item2);
 
 		row++;
 	}
 
 	table->resizeColumnToContents(0);
+	table->resizeRowsToContents();
 }
 
 static void preparePaths(QListWidget* pathListWidget, const QStringList& paths)
@@ -276,6 +288,7 @@ void GUI_InfoDialog::init()
 	ui->setupUi(this);
 
 	ui->tabWidget->setFocusPolicy(Qt::NoFocus);
+	ui->tableInfo->setItemDelegate(new Gui::StyledItemDelegate(ui->tableInfo));
 
 	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tabIndexChangedInt);
 	connect(ui->btnWriteCoverToTracks, &QPushButton::clicked, this, &GUI_InfoDialog::writeCoversToTracksClicked);

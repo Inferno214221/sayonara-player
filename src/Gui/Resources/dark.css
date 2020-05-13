@@ -146,16 +146,16 @@ QTreeWidget:focus
 {
 	border: 1px solid #424e72;
 }
-
+/*
 QListView::item,
 QListWidget::item,
 QTableView::item,
 QTreeView::item,
 QComboBox QAbstractItemView::item
 {
-	padding: 2px 0px;
+	padding: 20px 0px;
 }
-
+*/
 QListView::item:selected,
 QTableView::item:selected,
 QTreeView::item:selected,

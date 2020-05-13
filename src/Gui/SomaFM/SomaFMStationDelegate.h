@@ -1,10 +1,10 @@
 #ifndef SOMAFMSTATIONDELEGATE_H
 #define SOMAFMSTATIONDELEGATE_H
 
-#include <QStyledItemDelegate>
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 
 class SomaFMStationDelegate :
-		public QStyledItemDelegate
+		public Gui::StyledItemDelegate
 {
 public:
 	SomaFMStationDelegate(QObject* parent=nullptr);

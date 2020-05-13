@@ -195,9 +195,6 @@ border: 2px solid #202020;
      <property name="showGrid">
       <bool>false</bool>
      </property>
-     <property name="gridStyle">
-      <enum>Qt::NoPen</enum>
-     </property>
      <attribute name="horizontalHeaderVisible">
       <bool>false</bool>
      </attribute>

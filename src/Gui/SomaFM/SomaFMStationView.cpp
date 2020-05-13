@@ -19,7 +19,6 @@
  */
 
 #include "SomaFMStationView.h"
-#include "SomaFMStationDelegate.h"
 #include <QHeaderView>
 
 SomaFMStationView::SomaFMStationView(QWidget* parent) :

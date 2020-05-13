@@ -96,7 +96,6 @@ namespace Playlist
 
 			bool hasLocalMedia(const IndexSet& rows) const;
 			void setDragIndex(int dragIndex);
-			void setRowHeight(int rowHeight);
 			void changeRating(const IndexSet& rows, Rating rating);
 
 			QModelIndex	getRowIndexOf(const QString& substr, int row, bool is_forward);

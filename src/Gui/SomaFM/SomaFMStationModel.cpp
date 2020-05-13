@@ -56,8 +56,7 @@ SomaFM::StationModel::StationModel(QObject* parent) :
 	m->status = Status::Waiting;
 }
 
-SomaFM::StationModel::~StationModel() {}
-
+SomaFM::StationModel::~StationModel() = default;
 
 int SomaFM::StationModel::rowCount(const QModelIndex& parent) const
 {
@@ -71,9 +70,6 @@ int SomaFM::StationModel::columnCount(const QModelIndex& parent) const
 	Q_UNUSED(parent)
 	return 2;
 }
-
-#include <QFontMetrics>
-#include <QApplication>
 
 QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 {
@@ -117,14 +113,6 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		return Gui::Icons::pixmap(Gui::Icons::StarDisabled);
 	}
 
-	else if(role == Qt::SizeHintRole)
-	{
-		if(col == 0){
-			int x = QApplication::fontMetrics().height();
-			return QSize(x*2, x*2);
-		}
-	}
-
 	else if(role == Qt::DisplayRole && col == 1)
 	{
 		if(m->stations.isEmpty())
@@ -140,7 +128,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 			return QVariant();
 		}
 
-		return m->stations[row].name();
+		return m->stations[row].name().trimmed();
 	}
 
 	else if(role == Qt::WhatsThisRole)
@@ -150,11 +138,6 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		}
 
 		return m->stations[row].name();
-	}
-
-	else if(role == Qt::SizeHintRole && col == 0)
-	{
-		return QSize(30, 30);
 	}
 
 	return QVariant();
@@ -167,10 +150,9 @@ QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
 	int i = 0;
 	for(const SomaFM::Station& station : m->stations)
 	{
-		QString name = station.name();
-		QString desc = station.description();
-
-		QString str = name + desc;
+		const QString name = station.name();
+		const QString desc = station.description();
+		const QString str = name + desc;
 
 		if(str.contains(substr, Qt::CaseInsensitive)){
 			ret << this->index(i, 0);
@@ -182,9 +164,9 @@ QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
 
 void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 {
-	int n_stations = stations.size();
+	int stationCount = stations.size();
 
-	if(n_stations == 0){
+	if(stationCount == 0){
 		m->status = Status::Error;
 		emit dataChanged( index(0,0), index(0, 1) );
 		return;
@@ -196,13 +178,13 @@ void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 	this->removeRows(0, this->rowCount());
 	endRemoveRows();
 
-	this->insertRows(0, n_stations);
+	this->insertRows(0, stationCount);
 
-	beginInsertRows(QModelIndex(), 0, n_stations - 1);
+	beginInsertRows(QModelIndex(), 0, stationCount - 1);
 	m->stations = stations;
 	endInsertRows();
 
-	emit dataChanged( index(0, 0), index(n_stations - 1, 1));
+	emit dataChanged(index(0, 0), index(stationCount - 1, 1));
 }
 
 void SomaFM::StationModel::replaceStation(const SomaFM::Station& station)

@@ -215,10 +215,6 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole){
-		return QSize(20, 20);
-	}
-
 	return QVariant();
 }
 

@@ -132,6 +132,7 @@ void GUI_SomaFM::stationsLoaded(const QList<SomaFM::Station>& stations)
 	ui->tv_stations->setDragEnabled(true);
 	ui->tv_stations->setDragDropMode(QAbstractItemView::DragDrop);
 	ui->tv_stations->resizeColumnToContents(0);
+	ui->tv_stations->resizeRowsToContents();
 }
 
 void GUI_SomaFM::stationChanged(const SomaFM::Station& station)
