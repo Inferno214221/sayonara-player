@@ -59,6 +59,7 @@ public:
 	void showLibraryMenu(bool b);
 
 private:
+	void initDonateLink();
 	void initConnections();
 	void styleChanged();
 

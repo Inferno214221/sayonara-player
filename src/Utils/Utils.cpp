@@ -225,7 +225,7 @@ QString Util::createLink(const QString& name, bool dark, bool underline, const Q
 	}
 
 	if(!underline) {
-		style = " style: \"text-decoration=none;\" ";
+		style = " style=\"text-decoration: none;\" ";
 	};
 
 	if(dark) {

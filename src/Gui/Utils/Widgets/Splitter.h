@@ -16,8 +16,8 @@ namespace Gui
 			explicit Splitter(QWidget* parent=nullptr);
 			~Splitter() override;
 
-			void set_handle_enabled(bool b);
-			bool is_handle_enabled() const;
+			void setHandleEnabled(bool b);
+			bool isHandleEnabled() const;
 
 		protected:
 			QSplitterHandle* createHandle() override;

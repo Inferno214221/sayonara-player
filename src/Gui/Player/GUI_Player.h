@@ -53,7 +53,7 @@ class GUI_Player :
 	UI_CLASS(GUI_Player)
 
 signals:
-	void sig_player_closed();
+	void sigClosed();
 
 public:
 	explicit GUI_Player(QWidget* parent=nullptr);

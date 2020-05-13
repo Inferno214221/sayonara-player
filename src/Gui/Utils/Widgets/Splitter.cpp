@@ -3,10 +3,10 @@
 
 struct Gui::Splitter::Private
 {
-	bool move_allowed;
+	bool moveAllowed;
 
 	Private() :
-		move_allowed(true)
+		moveAllowed(true)
 	{}
 };
 
@@ -18,14 +18,14 @@ Gui::Splitter::Splitter(QWidget* parent) :
 
 Gui::Splitter::~Splitter() = default;
 
-void Gui::Splitter::set_handle_enabled(bool b)
+void Gui::Splitter::setHandleEnabled(bool b)
 {
-	m->move_allowed = b;
+	m->moveAllowed = b;
 }
 
-bool Gui::Splitter::is_handle_enabled() const
+bool Gui::Splitter::isHandleEnabled() const
 {
-	return m->move_allowed;
+	return m->moveAllowed;
 }
 
 QSplitterHandle* Gui::Splitter::createHandle()
@@ -36,7 +36,7 @@ QSplitterHandle* Gui::Splitter::createHandle()
 void Gui::SplitterHandle::mouseMoveEvent(QMouseEvent* e)
 {
 	auto* splitter = dynamic_cast<Gui::Splitter*>(this->splitter());
-	if(splitter && !splitter->is_handle_enabled())
+	if(splitter && !splitter->isHandleEnabled())
 	{
 		return;
 	}

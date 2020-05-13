@@ -336,7 +336,7 @@ void Application::initPlayer(bool force_show)
 	m->player = new GUI_Player();
 	Gui::Util::setMainWindow(m->player);
 
-	connect(m->player, &GUI_Player::sig_player_closed, this, &QCoreApplication::quit);
+	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
 }
 
 

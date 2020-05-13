@@ -101,15 +101,15 @@ bool Base::isLoggedIn()
 
 void Base::login(const QString& username, const QString& password)
 {
-	auto* login_thread = new LoginThread(this);
+	auto* loginThread = new LoginThread(this);
 
-	connect(login_thread, &LoginThread::sigLoggedIn, this, &Base::loginThreadFinished);
-	connect(login_thread, &LoginThread::sigError, this, [=](const QString& error_message){
+	connect(loginThread, &LoginThread::sigLoggedIn, this, &Base::loginThreadFinished);
+	connect(loginThread, &LoginThread::sigError, this, [=](const QString& error_message){
 		spLog(Log::Warning, this) << error_message;
 		emit sigLoggedIn(false);
 	});
 
-	login_thread->login(username, password);
+	loginThread->login(username, password);
 }
 
 

@@ -50,6 +50,9 @@
 #include <QMenu>
 #include <QAction>
 #include <QDateTime>
+#include <QHBoxLayout>
+#include <QLayoutItem>
+#include <QLabel>
 
 struct Menubar::Private
 {
@@ -174,6 +177,7 @@ Menubar::Menubar(QWidget* parent) :
 	m->action_shutdown->setVisible(false);
 #endif
 
+	initDonateLink();
 	initConnections();
 	languageChanged();
 	skinChanged();
@@ -256,6 +260,22 @@ void Menubar::showLibraryMenu(bool b)
 	{
 		m->currentLibraryMenuAction->setVisible(b);
 	}
+}
+
+void Menubar::initDonateLink()
+{
+	auto* cornerWidget = new QWidget(this);
+	auto* label = new QLabel(this);
+	const QString text =
+			Util::createLink("❤ ", true, false, "https://sayonara-player.com/donations.php") +
+			Util::createLink("Sayonara", true, true, "https://sayonara-player.com/donations.php");
+	label->setText(text);
+	label->setOpenExternalLinks(true);
+	auto* layout = new QHBoxLayout();
+	layout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::MinimumExpanding));
+	layout->addWidget(label);
+	cornerWidget->setLayout(layout);
+	this->setCornerWidget(cornerWidget);
 }
 
 void Menubar::pluginAdded(PlayerPlugin::Base* plugin)
