@@ -115,6 +115,8 @@ namespace Gui
 
 		int textWidth(const QFontMetrics& fm, const QString& text);
 		int textWidth(QWidget* widget, const QString& text);
+
+		int viewRowHeight();
 	}
 }
 

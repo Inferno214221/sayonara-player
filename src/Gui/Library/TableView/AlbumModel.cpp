@@ -41,21 +41,21 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
-#include <QImage>
+#include <QPixmap>
 #include <QColor>
 
 using namespace Library;
 
 struct AlbumModel::Private
 {
-	QImage						pixmapSingle;
-	QImage						pixmapMulti;
+	QPixmap						pixmapSingle;
+	QPixmap						pixmapMulti;
 	QPair<int, Rating>			tempRating;
 	Tagging::UserOperations*	uto=nullptr;
 
 	Private() :
-		pixmapSingle(Gui::Util::image("cd.png", Gui::Util::NoTheme, QSize(14, 14))),
-		pixmapMulti(Gui::Util::image("cds.png", Gui::Util::NoTheme, QSize(16, 16)))
+		pixmapSingle(Gui::Util::pixmap("cd.png", Gui::Util::NoTheme)),
+		pixmapMulti(Gui::Util::pixmap("cds.png", Gui::Util::NoTheme))
 	{
 		tempRating.first = -1;
 	}
@@ -213,6 +213,10 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 			default:
 				return QVariant();
 		}
+	}
+
+	else if(role == Qt::SizeHintRole){
+		return QSize(1, Gui::Util::viewRowHeight());
 	}
 
 	return QVariant();

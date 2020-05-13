@@ -98,6 +98,12 @@ namespace Util
 		{
 			std::transform(inout.cbegin(), inout.cend(), inout.begin(), fn);
 		}
+
+		template<class ContainerIn, class ContainerOut, typename FN>
+		void copyIf(const ContainerIn& in, ContainerOut& out, FN fn)
+		{
+			std::copy_if(in.begin(), in.end(), std::back_inserter(out), fn);
+		}
 	}
 }
 

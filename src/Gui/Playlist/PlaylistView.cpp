@@ -645,12 +645,20 @@ void View::refresh()
 {
 	using CN=Pl::Model::ColumnName;
 
-	const QFontMetrics fm = this->fontMetrics();
-	int h = this->verticalHeader()->defaultSectionSize();
+	QFontMetrics fm = this->fontMetrics();
+	int h = std::max(fm.height() + 4, Gui::Util::viewRowHeight());
 
 	bool showRating = GetSetting(Set::PL_ShowRating);
 	if(showRating){
 		h += fm.height();
+	}
+
+	for(int i=0; i<rowCount(); i++)
+	{
+		if(h != rowHeight(i))
+		{
+			verticalHeader()->resizeSection(i, h);
+		}
 	}
 
 	QHeaderView* hh = this->horizontalHeader();
@@ -684,6 +692,8 @@ void View::refresh()
 	if(hh->sectionSize(CN::Description) != viewportWidth - widthTime) {
 		hh->resizeSection(CN::Description, viewportWidth - widthTime);
 	}
+
+	m->model->setRowHeight(h);
 }
 
 void View::currentTrackChanged(int track_index, int playlist_index)

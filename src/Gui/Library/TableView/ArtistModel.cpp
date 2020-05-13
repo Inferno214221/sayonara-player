@@ -119,6 +119,10 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
+	else if(role == Qt::SizeHintRole){
+		return QSize(1, Gui::Util::viewRowHeight());
+	}
+
 	return QVariant();
 }
 

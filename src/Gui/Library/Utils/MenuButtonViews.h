@@ -2,7 +2,7 @@
 #define MENUBUTTONVIEWS_H
 
 #include "Gui/Utils/MenuTool/MenuToolButton.h"
-
+#include "Gui/Utils/Shortcuts/ShortcutIdentifier.h"
 
 namespace Library
 {
@@ -18,6 +18,7 @@ namespace Library
 		private slots:
 			void actionTriggered(bool b);
 			void viewTypeChanged();
+			void shortcutChanged(ShortcutIdentifier identifier);
 
 		protected:
 			void languageChanged() override;

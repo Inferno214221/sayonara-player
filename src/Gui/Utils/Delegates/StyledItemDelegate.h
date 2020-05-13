@@ -22,6 +22,7 @@
 #define STYLEDITEMDELEGATE_H
 
 #include <QStyledItemDelegate>
+#include "Utils/Pimpl.h"
 
 namespace Gui
 {
@@ -32,11 +33,20 @@ namespace Gui
 	 */
 	class StyledItemDelegate : public QStyledItemDelegate
 	{
-	public:
-		using QStyledItemDelegate::QStyledItemDelegate;
+		Q_OBJECT
+		PIMPL(StyledItemDelegate)
 
-		QSize sizeHint(const QStyleOptionViewItem& option,
-					   const QModelIndex& index) const override;
+		public:
+			explicit StyledItemDelegate(int columnIndex, QObject* parent=nullptr);
+			explicit StyledItemDelegate(QObject* parent=nullptr);
+			~StyledItemDelegate() override;
+
+			QSize sizeHint(const QStyleOptionViewItem& option,
+						   const QModelIndex& index) const override;
+
+			virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+
+			void setDecorationColumn(int index);
 	};
 }
 

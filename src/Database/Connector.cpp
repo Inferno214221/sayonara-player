@@ -288,13 +288,13 @@ int Connector::oldDatabaseVersion() const
 
 bool Connector::applyFixes()
 {
-	QString str_version;
+	QString versionString;
 	int version;
 	bool success;
 	const int LatestVersion = highestDatabaseVersion();
 
-	success = settingsConnector()->loadSetting("version", str_version);
-	version = str_version.toInt(&success);
+	success = settingsConnector()->loadSetting("version", versionString);
+	version = versionString.toInt(&success);
 	m->oldDbVersion = version;
 
 	spLog(Log::Info, this)
@@ -309,6 +309,8 @@ bool Connector::applyFixes()
 	else if(!success){
 		 spLog(Log::Warning, this) << "Cannot get database version";
 	}
+
+	settingsConnector()->loadSettings();
 
 	spLog(Log::Info, this) << "Apply fixes";
 

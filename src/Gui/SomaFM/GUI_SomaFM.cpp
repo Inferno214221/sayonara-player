@@ -23,7 +23,6 @@
 #include "GUI_SomaFM.h"
 #include "Gui/SomaFM/ui_GUI_SomaFM.h"
 #include "SomaFMStationModel.h"
-#include "SomaFMStationDelegate.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 
@@ -72,7 +71,7 @@ GUI_SomaFM::GUI_SomaFM(QWidget* parent) :
 
 	this->setFocusProxy(ui->tv_stations);
 	ui->tv_stations->setSearchableModel(modelStations);
-	ui->tv_stations->setItemDelegate(new SomaFMStationDelegate(ui->tv_stations));
+	ui->tv_stations->setItemDelegate(new Gui::StyledItemDelegate(0, ui->tv_stations));
 	ui->tv_stations->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tv_stations->setEnabled(false);
 	ui->tv_stations->setColumnWidth(0, 20);

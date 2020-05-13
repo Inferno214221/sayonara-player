@@ -147,8 +147,6 @@ void FileListView::setParentDirectory(LibraryId libraryId, const QString& dir)
 {
 	this->selectionModel()->clear();
 	m->model->setParentDirectory(libraryId, dir);
-
-	this->resizeRowsToContents();
 }
 
 QString FileListView::parentDirectory() const

@@ -22,6 +22,7 @@
 
 #include "Components/Library/GenreFetcher.h"
 
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Library/Utils/GenreViewContextMenu.h"
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"

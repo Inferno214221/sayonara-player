@@ -59,6 +59,9 @@ void TableView::init(AbstractLibrary* library)
 
 	m->header->init(headers, columnHeaderState(), sortorder(), autoResizeState());
 
+	this->verticalHeader()->setResizeContentsPrecision(1);
+	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
 	connect(m->header, &QHeaderView::sectionCountChanged, this, &TableView::headerColumnsChanged);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);
 	connect(m->header, &QHeaderView::sectionMoved, this, &TableView::sectionMoved);

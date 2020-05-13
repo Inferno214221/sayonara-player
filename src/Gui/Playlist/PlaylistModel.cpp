@@ -78,12 +78,14 @@ struct Model::Private
 	QHash<AlbumId, QPixmap>	coverLookupMap;
 	int						oldRowCount;
 	int						dragIndex;
+	int						rowHeight;
 	PlaylistPtr				pl=nullptr;
 	Tagging::UserOperations* uto=nullptr;
 
 	Private(PlaylistPtr pl) :
 		oldRowCount(0),
 		dragIndex(-1),
+		rowHeight(20),
 		pl(pl)
 	{}
 };
@@ -213,6 +215,8 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 			if(!m->coverLookupMap.contains(md.albumId()))
 			{
+				int height = m->rowHeight - 6;
+
 				Cover::Location cl = Cover::Location::coverLocation(md);
 				DB::Covers* coverDb = DB::Connector::instance()->coverConnector();
 
@@ -225,11 +229,20 @@ QVariant Model::data(const QModelIndex& index, int role) const
 				}
 
 				if(!cover.isNull()) {
-					m->coverLookupMap[md.albumId()] = cover.scaled(50, 50, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+					m->coverLookupMap[md.albumId()] = cover.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 				}
 			}
 
 			return m->coverLookupMap[md.albumId()];
+		}
+	}
+
+	else if(role == Qt::SizeHintRole)
+	{
+		if(col == ColumnName::Cover)
+		{
+			int h = m->rowHeight - 4;
+			return QSize(h, h);
 		}
 	}
 
@@ -372,10 +385,10 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	m->uto->setTrackRating(tracks, rating);
 }
 
-void Model::insertTracks(const MetaDataList& v_md, int row)
+void Model::insertTracks(const MetaDataList& tracks, int row)
 {
 	auto* plh = Handler::instance();
-	plh->insertTracks(v_md, row, m->pl->index());
+	plh->insertTracks(tracks, row, m->pl->index());
 }
 
 void Model::insertTracks(const QStringList& files, int row)
@@ -401,45 +414,45 @@ MetaData Model::metadata(int row) const
 
 MetaDataList Model::metadata(const IndexSet &rows) const
 {
-	MetaDataList v_md;
-	v_md.reserve(rows.size());
+	MetaDataList tracks;
+	tracks.reserve(rows.size());
 
-	for(int row : rows)
+	Util::Algorithm::transform(rows, tracks, [this](int row)
 	{
-		v_md << m->pl->track(row);
-	}
+		return m->pl->track(row);
+	});
 
-	return v_md;
+	return tracks;
 }
 
 QModelIndexList Model::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
-	QString pure_search_string = substr;
+	QString pureSearchString = substr;
 	PlaylistSearchMode plsm = PlaylistSearchMode::Title;
 
-	if(pure_search_string.startsWith(ARTIST_SEARCH_PREFIX))
+	if(pureSearchString.startsWith(ARTIST_SEARCH_PREFIX))
 	{
 		plsm = PlaylistSearchMode::Artist;
-		pure_search_string.remove(ARTIST_SEARCH_PREFIX);
+		pureSearchString.remove(ARTIST_SEARCH_PREFIX);
 	}
-	else if(pure_search_string.startsWith(ALBUM_SEARCH_PREFIX))
+	else if(pureSearchString.startsWith(ALBUM_SEARCH_PREFIX))
 	{
 		plsm = PlaylistSearchMode::Album;
-		pure_search_string.remove(ALBUM_SEARCH_PREFIX);
+		pureSearchString.remove(ALBUM_SEARCH_PREFIX);
 	}
-	else if(pure_search_string.startsWith(JUMP_PREFIX))
+	else if(pureSearchString.startsWith(JUMP_PREFIX))
 	{
 		plsm = PlaylistSearchMode::Jump;
-		pure_search_string.remove(JUMP_PREFIX);
+		pureSearchString.remove(JUMP_PREFIX);
 	}
 
-	pure_search_string = pure_search_string.trimmed();
+	pureSearchString = pureSearchString.trimmed();
 
 	if(plsm == PlaylistSearchMode::Jump)
 	{
 		bool ok;
-		int line = pure_search_string.toInt(&ok);
+		int line = pureSearchString.toInt(&ok);
 		if(ok && line < rowCount()) {
 			ret << this->index(line, 0);
 		}
@@ -470,7 +483,7 @@ QModelIndexList Model::searchResults(const QString& substr)
 		}
 
 		str = Library::Utils::convertSearchstring(str, searchMode());
-		if(str.contains(pure_search_string))
+		if(str.contains(pureSearchString))
 		{
 			ret << this->index(i, 0);
 		}
@@ -496,15 +509,13 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	QList<int> rows;
+	Util::Set<int> rowSet;
 	for(const QModelIndex& index : indexes)
 	{
-		if(!rows.contains(index.row()))
-		{
-			rows << index.row();
-		}
+		rowSet << index.row();
 	}
 
+	QList<int> rows = rowSet.toList();
 	Algorithm::sort(rows, [](int row1, int row2){
 		return (row1 < row2);
 	});
@@ -536,14 +547,10 @@ bool Model::hasLocalMedia(const IndexSet& rows) const
 {
 	const  MetaDataList& tracks = m->pl->tracks();
 
-	for(int row : rows)
+	return Algorithm::contains(rows, [tracks](int row)
 	{
-		if(!Util::File::isWWW(tracks[row].filepath())){
-			return true;
-		}
-	}
-
-	return false;
+		return (!Util::File::isWWW(tracks[row].filepath()));
+	});
 }
 
 void Model::setDragIndex(int dragIndex)
@@ -558,6 +565,15 @@ void Model::setDragIndex(int dragIndex)
 	if(Util::between(dragIndex, rowCount()))
 	{
 		emit dataChanged(index(dragIndex, 0), index(dragIndex, columnCount() - 1));
+	}
+}
+
+void Model::setRowHeight(int rowHeight)
+{
+	if(m->rowHeight != rowHeight)
+	{
+		m->coverLookupMap.clear();
+		m->rowHeight = rowHeight;
 	}
 }
 

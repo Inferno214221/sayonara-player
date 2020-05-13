@@ -20,6 +20,7 @@ struct MenuButtonViews::Private
 	QAction* tableViewAction=nullptr;
 	QAction* coverViewAction=nullptr;
 	QAction* directoryViewAction=nullptr;
+	QAction* shortcutSection=nullptr;
 
 	Gui::PreferenceAction* preferenceAction=nullptr;
 
@@ -35,6 +36,11 @@ struct MenuButtonViews::Private
 
 		directoryViewAction = new QAction();
 		directoryViewAction->setCheckable(true);
+
+		auto* shortcutHandler = ShortcutHandler::instance();
+		QString shortcutString = shortcutHandler->shortcut(ShortcutIdentifier::CoverView).sequence().toString();
+		shortcutSection = new QAction(shortcutString);
+		shortcutSection->setEnabled(false);
 
 		preferenceAction = new Gui::ShortcutPreferenceAction(menu);
 
@@ -53,11 +59,14 @@ MenuButtonViews::MenuButtonViews(QWidget* parent) :
 	this->registerAction(m->tableViewAction);
 	this->registerAction(m->coverViewAction);
 	this->registerAction(m->directoryViewAction);
-	this->addAction(m->menu->addSeparator());
-
+	this->registerAction(m->menu->addSeparator());
+	this->registerAction(m->shortcutSection);
 	this->registerPreferenceAction(m->preferenceAction);
 
 	viewTypeChanged();
+
+	auto* shortcutHandler = ShortcutHandler::instance();
+	connect(shortcutHandler, &ShortcutHandler::sigShortcutChanged, this, &MenuButtonViews::shortcutChanged);
 
 	connect(m->tableViewAction, &QAction::triggered, this, &MenuButtonViews::actionTriggered);
 	connect(m->coverViewAction, &QAction::triggered, this, &MenuButtonViews::actionTriggered);
@@ -100,6 +109,16 @@ void MenuButtonViews::viewTypeChanged()
 	else if(viewType == Library::ViewType::FileView)
 	{
 		m->directoryViewAction->setChecked(true);
+	}
+}
+
+void MenuButtonViews::shortcutChanged(ShortcutIdentifier identifier)
+{
+	if(identifier == ShortcutIdentifier::CoverView)
+	{
+		auto* shortcutHandler = ShortcutHandler::instance();
+		QString shortcutString = shortcutHandler->shortcut(ShortcutIdentifier::CoverView).sequence().toString();
+		m->shortcutSection->setText(shortcutString);
 	}
 }
 

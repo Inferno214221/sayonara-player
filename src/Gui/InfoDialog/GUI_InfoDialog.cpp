@@ -137,17 +137,19 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 
 	const QFontMetrics fm(font);
 
+	int maxSize=0;
 	int row	= 0;
 	for(const StringPair& p : data)
 	{
 		auto* item1 = new QTableWidgetItem(p.first);
+
 		item1->setFont(font);
-		int w1 = Gui::Util::textWidth(fm, p.first) * 2;
-		item1->setSizeHint(QSize(w1, 1));
+		int w1 = Gui::Util::textWidth(fm, p.first) + 20;
+		if(w1 > maxSize){
+			maxSize = w1;
+		}
 
 		auto* item2 = new QTableWidgetItem(p.second);
-		int w2 = Gui::Util::textWidth(fm, p.second);
-		item2->setSizeHint(QSize(w2, 1));
 
 		table->setItem(row, 0, item1);
 		table->setItem(row, 1, item2);
@@ -155,7 +157,7 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 		row++;
 	}
 
-	table->resizeColumnToContents(0);
+	table->horizontalHeader()->resizeSection(0, maxSize);
 	table->resizeRowsToContents();
 }
 
@@ -289,6 +291,7 @@ void GUI_InfoDialog::init()
 
 	ui->tabWidget->setFocusPolicy(Qt::NoFocus);
 	ui->tableInfo->setItemDelegate(new Gui::StyledItemDelegate(ui->tableInfo));
+	ui->listPaths->setItemDelegate(new Gui::StyledItemDelegate(ui->listPaths));
 
 	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &GUI_InfoDialog::tabIndexChangedInt);
 	connect(ui->btnWriteCoverToTracks, &QPushButton::clicked, this, &GUI_InfoDialog::writeCoversToTracksClicked);

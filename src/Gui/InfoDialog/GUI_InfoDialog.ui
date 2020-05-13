@@ -218,7 +218,11 @@
                </layout>
               </item>
               <item row="4" column="0" colspan="2">
-               <widget class="QListWidget" name="listPaths"/>
+               <widget class="QListWidget" name="listPaths">
+                <property name="uniformItemSizes">
+                 <bool>true</bool>
+                </property>
+               </widget>
               </item>
              </layout>
             </widget>

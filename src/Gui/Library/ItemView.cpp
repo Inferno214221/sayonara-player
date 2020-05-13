@@ -335,6 +335,10 @@ void ItemView::fill()
 
 	int oldSize, newSize;
 	m->model->refreshData(&oldSize, &newSize);
+
+//	for(int i=oldSize; i<newSize; i++){
+//		this->resizeRowToContents(i);
+//	}
 }
 
 void ItemView::selectedItemsChanged(const IndexSet& indexes)
@@ -450,10 +454,10 @@ void ItemView::changeEvent(QEvent* event)
 {
 	SearchableTableView::changeEvent(event);
 
-	if(event->type() == QEvent::FontChange)
-	{
-		resizeRowsToContents();
-	}
+//	if(event->type() == QEvent::FontChange)
+//	{
+//		resizeRowsToContents();
+//	}
 }
 
 void ItemView::resizeEvent(QResizeEvent* event)

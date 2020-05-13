@@ -33,6 +33,7 @@
 #include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Gui/Library/Header/ColumnIndex.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
@@ -173,6 +174,10 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 			default:
 				return QVariant();
 		}
+	}
+
+	else if(role == Qt::SizeHintRole){
+		return QSize(1, Gui::Util::viewRowHeight());
 	}
 
 	return QVariant();

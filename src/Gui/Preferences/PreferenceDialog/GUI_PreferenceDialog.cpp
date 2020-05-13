@@ -25,6 +25,7 @@
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Gui/Preferences/PreferenceAction.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Message/Message.h"
@@ -48,7 +49,7 @@ struct GUI_PreferenceDialog::Private
 };
 
 GUI_PreferenceDialog::GUI_PreferenceDialog(QWidget* parent) :
-	Gui::Dialog(nullptr),
+	Gui::Dialog(parent),
 	PreferenceUi()
 {
 	m = Pimpl::make<Private>();
@@ -275,4 +276,8 @@ void GUI_PreferenceDialog::initUi()
 	connect(ui->btnApply, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
 	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_PreferenceDialog::commitAndClose);
 	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
+
+	QSize sz = Gui::Util::mainWindow()->size();
+	sz *= 0.66;
+	this->resize(sz);
 }

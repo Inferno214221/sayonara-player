@@ -542,9 +542,9 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 
 	checkViewState();
 
-	QTimer::singleShot(1000, this, [this](){
+	//QTimer::singleShot(1000, this, [this](){
 		m->library->load();
-	});
+	//});
 }
 
 void GUI_LocalLibrary::languageChanged()
