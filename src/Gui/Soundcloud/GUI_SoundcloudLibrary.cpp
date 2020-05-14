@@ -25,6 +25,7 @@
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
 
 #include "Utils/Settings/Settings.h"
+#include "Utils/Language/Language.h"
 
 #include <QShortcut>
 #include <QMenu>
@@ -36,6 +37,7 @@ struct SC::GUI_Library::Private
 {
 	GUI_ArtistSearch*	artistSearch=nullptr;
 	QMenu*              libraryMenu=nullptr;
+	QAction*			actionAddArtist=nullptr;
 };
 
 using SC::GUI_Library;
@@ -53,8 +55,11 @@ GUI_Library::GUI_Library(Library* library, QWidget* parent) :
 	m->artistSearch = new GUI_ArtistSearch(library, this);
 	m->libraryMenu = new QMenu(this);
 
-	QAction* action_add_artist = m->libraryMenu->addAction(tr("Add artist"));
-	connect(action_add_artist, &QAction::triggered, this, &GUI_Library::btnAddClicked);
+	m->actionAddArtist = new QAction();
+	m->libraryMenu->addAction(m->actionAddArtist);
+
+	connect(m->actionAddArtist, &QAction::triggered, this, &GUI_Library::btnAddClicked);
+	connect(ui->tv_artists, &SC::ArtistView::sigAddArtistTriggered, this, &GUI_Library::btnAddClicked);
 
 	library->load();
 }
@@ -66,7 +71,6 @@ GUI_Library::~GUI_Library()
 		delete ui; ui = nullptr;
 	}
 }
-
 
 QMenu* GUI_Library::getMenu() const
 {
@@ -83,15 +87,22 @@ QList<::Library::Filter::Mode> GUI_Library::searchOptions() const
 	return {::Library::Filter::Fulltext};
 }
 
-Library::TrackDeletionMode GUI_Library::showDeleteDialog(int n_tracks)
+Library::TrackDeletionMode GUI_Library::showDeleteDialog(int trackCount)
 {
-	Q_UNUSED(n_tracks)
+	Q_UNUSED(trackCount)
 	return ::Library::TrackDeletionMode::OnlyLibrary;
 }
 
 void GUI_Library::btnAddClicked()
 {
+	m->artistSearch->resize(0.6);
 	m->artistSearch->show();
+}
+
+void GUI_Library::languageChanged()
+{
+	GUI_AbstractLibrary::languageChanged();
+	m->actionAddArtist->setText(Lang::get(Lang::AddArtist));
 }
 
 Library::TableView* GUI_Library::lvArtist() const
@@ -113,7 +124,6 @@ Library::SearchBar* GUI_Library::leSearch() const
 {
 	return ui->le_search;
 }
-
 
 void GUI_Library::showEvent(QShowEvent* e)
 {

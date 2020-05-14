@@ -64,6 +64,7 @@ namespace SC
 
 		protected:
 			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 #endif // GUI_SOUNDCLOUDARTISTSEARCH_H

@@ -14,46 +14,50 @@
    <string>Search Soundcloud</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="2" column="0">
-    <widget class="QListWidget" name="list_artists"/>
-   </item>
    <item row="5" column="0" colspan="3">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QLabel" name="lab_status">
-       <property name="text">
-        <string/>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_cancel">
-       <property name="text">
-        <string>Cancel</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_add">
-       <property name="text">
-        <string>Add</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2">
+    <widget class="QListWidget" name="lwTracks">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::NoSelection</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <widget class="QLabel" name="labPlaylistCount">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="2">
+    <widget class="QLabel" name="labTrackCount">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QListWidget" name="lwArtists"/>
+   </item>
+   <item row="2" column="1">
+    <widget class="QListWidget" name="lwPlaylists">
+     <property name="selectionMode">
+      <enum>QAbstractItemView::NoSelection</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labArtistCount">
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
    </item>
    <item row="0" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -84,93 +88,72 @@
       </spacer>
      </item>
      <item>
-      <widget class="QLineEdit" name="le_search"/>
+      <widget class="QLineEdit" name="leSearch"/>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_search">
+      <widget class="QPushButton" name="btnSearch">
        <property name="text">
         <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>:/Icons/lupe.svg.png</normaloff>:/Icons/lupe.svg.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_clear">
+      <widget class="QPushButton" name="btnClear">
        <property name="text">
         <string/>
-       </property>
-       <property name="icon">
-        <iconset>
-         <normaloff>:/Icons/broom.png</normaloff>:/Icons/broom.png</iconset>
-       </property>
-       <property name="iconSize">
-        <size>
-         <width>16</width>
-         <height>16</height>
-        </size>
        </property>
       </widget>
      </item>
     </layout>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="lab_artistCount">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <widget class="QLabel" name="lab_playlistCount">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="lab_trackCount">
-     <property name="text">
-      <string/>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="1">
-    <widget class="QListWidget" name="list_playlists">
-     <property name="selectionMode">
-      <enum>QAbstractItemView::NoSelection</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
-    <widget class="QListWidget" name="list_tracks">
-     <property name="selectionMode">
-      <enum>QAbstractItemView::NoSelection</enum>
-     </property>
-    </widget>
+   <item row="7" column="0" colspan="3">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labStatus">
+       <property name="text">
+        <string notr="true">Status</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnCancel">
+       <property name="text">
+        <string notr="true">Cancel</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="btnAdd">
+       <property name="text">
+        <string notr="true">Add</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>
  <tabstops>
-  <tabstop>le_search</tabstop>
-  <tabstop>btn_search</tabstop>
-  <tabstop>btn_clear</tabstop>
-  <tabstop>list_artists</tabstop>
-  <tabstop>list_playlists</tabstop>
-  <tabstop>list_tracks</tabstop>
-  <tabstop>btn_cancel</tabstop>
-  <tabstop>btn_add</tabstop>
+  <tabstop>leSearch</tabstop>
+  <tabstop>btnSearch</tabstop>
+  <tabstop>btnClear</tabstop>
+  <tabstop>lwArtists</tabstop>
+  <tabstop>lwPlaylists</tabstop>
+  <tabstop>lwTracks</tabstop>
  </tabstops>
- <resources>
-  <include location="../../../Gui/Resources/Icons.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

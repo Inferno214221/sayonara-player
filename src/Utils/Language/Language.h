@@ -81,6 +81,7 @@ public:
 		Activate,
 		Active,
 		Add,
+		AddArtist,
 		AddTab,
 		Album,
 		AlbumArtist,

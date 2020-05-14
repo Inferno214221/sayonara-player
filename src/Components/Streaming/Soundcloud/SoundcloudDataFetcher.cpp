@@ -137,11 +137,11 @@ void SC::DataFetcher::tracksFetched()
 	QByteArray data = awa->data();
 	SC::JsonParser parser(data);
 
-	MetaDataList v_md;
+	MetaDataList tracks;
 	ArtistList artists;
-	parser.parseTracks(artists, v_md);
+	parser.parseTracks(artists, tracks);
 
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
 		if(!m->playlistTracks.contains(md.id())){
 			m->playlistTracks << md;

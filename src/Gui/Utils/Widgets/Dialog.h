@@ -48,6 +48,8 @@ namespace Gui
 		virtual ~Dialog() override;
 
 		bool isAccepted() const;
+		void resize(double percent);
+		using QDialog::resize;
 
 	protected:
 		virtual void closeEvent(QCloseEvent* e) override;

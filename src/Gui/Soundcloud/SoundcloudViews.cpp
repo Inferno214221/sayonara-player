@@ -18,34 +18,44 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SoundcloudViews.h"
+#include "Gui/Soundcloud/SoundcloudViews.h"
+#include "Gui/Soundcloud/ContextMenu.h"
 
-using Library::ContextMenu;
-
-static ContextMenu::Entries entry_mask()
+static Library::ContextMenu::Entries entryMask()
 {
-	ContextMenu::Entries entry_mask =
-			(ContextMenu::EntryPlayNext |
-			 ContextMenu::EntryInfo |
-			 ContextMenu::EntryDelete |
-			 ContextMenu::EntryAppend |
-			 ContextMenu::EntryRefresh);
+	Library::ContextMenu::Entries entryMask =
+			(Library::ContextMenu::EntryPlayNext |
+			 Library::ContextMenu::EntryInfo |
+			 Library::ContextMenu::EntryDelete |
+			 Library::ContextMenu::EntryAppend |
+			 Library::ContextMenu::EntryRefresh);
 
-	return entry_mask;
+	return entryMask;
 }
 
-
-ContextMenu::Entries SC::TrackView::contextMenuEntries() const
+Library::ContextMenu::Entries SC::TrackView::contextMenuEntries() const
 {
-	return entry_mask();
+	return entryMask();
 }
 
-ContextMenu::Entries SC::AlbumView::contextMenuEntries() const
+Library::ContextMenu::Entries SC::AlbumView::contextMenuEntries() const
 {
-	return entry_mask();
+	return entryMask();
 }
 
-ContextMenu::Entries SC::ArtistView::contextMenuEntries() const
+Library::ContextMenu::Entries SC::ArtistView::contextMenuEntries() const
 {
-	return entry_mask();
+	return entryMask();
+}
+
+void SC::ArtistView::initContextMenu()
+{
+	if(contextMenu()){
+		return;
+	}
+
+	auto* cm = new SC::ContextMenu(this);
+	ItemView::initCustomContextMenu(cm);
+
+	connect(cm, &SC::ContextMenu::sigAddArtistTriggered, this, &SC::ArtistView::sigAddArtistTriggered);
 }

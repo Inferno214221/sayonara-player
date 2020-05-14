@@ -53,6 +53,8 @@ namespace SC
 			void btnAddClicked();
 
 		protected:
+			void languageChanged() override;
+
 			::Library::TrackDeletionMode showDeleteDialog(int n_tracks) override;
 
 			::Library::TableView* lvArtist() const override;

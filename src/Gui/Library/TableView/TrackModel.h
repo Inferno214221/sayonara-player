@@ -62,6 +62,7 @@ namespace Library
 
 		protected:
 			const MetaDataList& selectedMetadata() const override;
+			void languageChanged();
 
 		private slots:
 			void trackChanged(int row);

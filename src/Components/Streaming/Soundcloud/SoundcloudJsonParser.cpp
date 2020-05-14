@@ -33,7 +33,7 @@
 
 #include <QJsonDocument>
 #include <QJsonParseError>
-
+#include <QDateTime>
 
 struct SC::JsonParser::Private
 {
@@ -154,8 +154,8 @@ bool SC::JsonParser::parseTracks(ArtistList& artists, MetaDataList &v_md)
 }
 
 
-bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList &v_md, QJsonArray arr){
-	v_md.clear();
+bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList& tracks, QJsonArray arr){
+	tracks.clear();
 
 	for(auto it = arr.begin(); it != arr.end(); it++)
 	{
@@ -166,15 +166,14 @@ bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList &v_md, QJs
 			Artist artist;
 			if(parseTrack(artist, md, ref.toObject()))
 			{
-				md.setTrackNumber(TrackNum(v_md.size() + 1));
+				md.setTrackNumber(TrackNum(tracks.size() + 1));
 
-				v_md << md;
+				tracks << md;
 
 				if(!artists.contains(artist.id()))
 				{
 					artists << artist;
 				}
-
 			}
 
 			else{
@@ -188,15 +187,15 @@ bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList &v_md, QJs
 
 bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object)
 {
-	QString cover_download_url;
+	QString coverDownloadUrl;
 
 	TrackID id;
 	if(getInt("id", object, id)){
 		md.setId(id);
 	}
 
-	getString("artwork_url", object, cover_download_url);
-	md.setCoverDownloadUrls({cover_download_url});
+	getString("artwork_url", object, coverDownloadUrl);
+	md.setCoverDownloadUrls({coverDownloadUrl});
 
 	int length;
 	if(getInt("duration", object, length)){
@@ -218,9 +217,9 @@ bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object
 		md.setTitle(title);
 	}
 
-	QString stream_url;
-	if(getString("stream_url", object, stream_url)){
-		md.setFilepath(stream_url + '?' + CLIENT_ID_STR);
+	QString streamUrl;
+	if(getString("stream_url", object, streamUrl)){
+		md.setFilepath(streamUrl + '?' + CLIENT_ID_STR);
 	}
 
 	QString genre;
@@ -228,15 +227,15 @@ bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object
 		md.addGenre(Genre(genre));
 	}
 
-	QString purchase_url;
-	if(getString("purchase_url", object, purchase_url)){
-		md.addCustomField("purchase_url", tr("Purchase Url"), createLink(purchase_url, purchase_url));
+	QString purchaseUrl;
+	if(getString("purchase_url", object, purchaseUrl)){
+		md.addCustomField("purchase_url", tr("Purchase Url"), createLink(purchaseUrl, purchaseUrl));
 	}
 
-	QJsonObject artist_object;
-	if(getObject("user", object, artist_object))
+	QJsonObject artistObject;
+	if(getObject("user", object, artistObject))
 	{
-		if( parseArtist(artist, artist_object) )
+		if( parseArtist(artist, artistObject) )
 		{
 			md.setArtist(artist.name());
 			md.setArtistId(artist.id());
@@ -247,6 +246,26 @@ bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object
 				md.setAlbum(Lang::get(Lang::UnknownAlbum));
 			}
 		}
+	}
+
+	QString lastModifiedString;
+	if(getString("last_modified", object, lastModifiedString))
+	{
+		QDateTime dt = QDateTime::fromString(lastModifiedString, Qt::DateFormat::ISODate);
+		md.setModifiedDate(Util::dateToInt(dt));
+	}
+
+	QString createdString;
+	if(getString("created_at", object, createdString))
+	{
+		QDateTime dt = QDateTime::fromString(createdString, Qt::DateFormat::ISODate);
+		md.setCreatedDate(Util::dateToInt(dt));
+	}
+
+	QString description;
+	if(getString("description", object, description))
+	{
+		md.setComment(description);
 	}
 
 	return (md.filepath().size() > 0 && md.id() > 0);

@@ -67,24 +67,22 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& v_md) :
 	}
 
 	MilliSeconds length = 0;
-	uint64_t filesize = 0;
-	uint16_t year_min = std::numeric_limits<uint16_t>::max();
-	uint16_t year_max = 0;
+	Filesize filesize = 0;
+	Year year_min = std::numeric_limits<uint16_t>::max();
+	Year year_max = 0;
 	Bitrate bitrate_min = std::numeric_limits<Bitrate>::max();
 	Bitrate bitrate_max = 0;
-	uint16_t tracknum = 0;
+	TrackNum tracknum = 0;
 	uint64_t createdate_min = std::numeric_limits<uint64_t>::max();
 	uint64_t createdate_max = 0;
 	uint64_t modifydate_min = createdate_min;
 	uint64_t modifydate_max = 0;
-
 
 	bool calc_track_num = (v_md.size() == 1);
 
 	Util::Set<QString> filetypes;
 	Util::Set<Genre> genres;
 	Util::Set<QString> comments;
-
 
 	for(const MetaData& md : v_md )
 	{

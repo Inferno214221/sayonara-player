@@ -29,6 +29,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Language/Language.h"
 
+#include "Gui/Utils/Icons.h"
+
 struct SC::GUI_ArtistSearch::Private
 {
 	SC::Library*		library=nullptr;
@@ -51,12 +53,12 @@ SC::GUI_ArtistSearch::GUI_ArtistSearch(SC::Library* library, QWidget* parent) :
 	m->library = library;
 	m->fetcher = new SC::DataFetcher(this);
 
-	connect(ui->btn_search, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::searchClicked);
-	connect(ui->btn_add, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::addClicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::close);
-	connect(ui->btn_clear, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::clearClicked);
+	connect(ui->btnSearch, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::searchClicked);
+	connect(ui->btnClear, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::clearClicked);
+	connect(ui->btnAdd, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::addClicked);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &SC::GUI_ArtistSearch::close);
 
-	connect(ui->list_artists, &QListWidget::currentRowChanged, this, &SC::GUI_ArtistSearch::artistSelected);
+	connect(ui->lwArtists, &QListWidget::currentRowChanged, this, &SC::GUI_ArtistSearch::artistSelected);
 
 	connect(m->fetcher, &SC::DataFetcher::sigArtistsFetched, this, &SC::GUI_ArtistSearch::artistsFetched);
 	connect(m->fetcher, &SC::DataFetcher::sigExtArtistsFetched, this, &SC::GUI_ArtistSearch::artistsExtFetched);
@@ -64,19 +66,22 @@ SC::GUI_ArtistSearch::GUI_ArtistSearch(SC::Library* library, QWidget* parent) :
 	connect(m->fetcher, &SC::DataFetcher::sigTracksFetched, this, &SC::GUI_ArtistSearch::tracksFetched);
 
 	clearClicked();
+
+	languageChanged();
+	skinChanged();
 }
 
-SC::GUI_ArtistSearch::~GUI_ArtistSearch() {}
+SC::GUI_ArtistSearch::~GUI_ArtistSearch() = default;
 
 void SC::GUI_ArtistSearch::searchClicked()
 {
-	QString text = ui->le_search->text();
+	QString text = ui->leSearch->text();
 	clearClicked();
 
-	ui->le_search->setText(text);
+	ui->leSearch->setText(text);
 
-	if(text.size() <= 3){
-		ui->lab_status->setText(tr("Query too short"));
+	if(text.size() <= 3) {
+		ui->labStatus->setText(tr("Query too short"));
 	}
 
 	setPlaylistCountLabel(-1);
@@ -87,13 +92,13 @@ void SC::GUI_ArtistSearch::searchClicked()
 
 void SC::GUI_ArtistSearch::clearClicked()
 {
-	ui->list_artists->clear();
-	ui->list_playlists->clear();
-	ui->list_tracks->clear();
-	ui->le_search->clear();
-	ui->lab_status->clear();
-	ui->lab_artistCount->clear();
-	ui->btn_add->setEnabled(false);
+	ui->lwArtists->clear();
+	ui->lwPlaylists->clear();
+	ui->lwTracks->clear();
+	ui->leSearch->clear();
+	ui->labStatus->clear();
+	ui->labArtistCount->clear();
+	ui->btnAdd->setEnabled(false);
 
 	setPlaylistCountLabel(-1);
 	setTrackCountLabel(-1);
@@ -119,11 +124,10 @@ void SC::GUI_ArtistSearch::closeClicked()
 	close();
 }
 
-
 void SC::GUI_ArtistSearch::artistSelected(int index)
 {
-	ui->list_playlists->clear();
-	ui->list_tracks->clear();
+	ui->lwPlaylists->clear();
+	ui->lwTracks->clear();
 
 	setPlaylistCountLabel(-1);
 	setTrackCountLabel(-1);
@@ -135,8 +139,7 @@ void SC::GUI_ArtistSearch::artistSelected(int index)
 		return;
 	}
 
-	m->currentArtistSoundcloudId = m->searchedArtists[index].id();
-
+	m->currentArtistSoundcloudId = m->searchedArtists[ ArtistList::Size(index) ].id();
 	m->chosenArtists.clear();
 
 	m->fetcher->getTracksByArtist(m->currentArtistSoundcloudId);
@@ -145,25 +148,33 @@ void SC::GUI_ArtistSearch::artistSelected(int index)
 void SC::GUI_ArtistSearch::languageChanged()
 {
 	ui->retranslateUi(this);
+
+	ui->btnAdd->setText(Lang::get(Lang::Add));
+	ui->btnCancel->setText(Lang::get(Lang::Cancel));
 }
 
+void SC::GUI_ArtistSearch::skinChanged()
+{
+	ui->btnClear->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
+	ui->btnSearch->setIcon(Gui::Icons::icon(Gui::Icons::Search));
+}
 
 void SC::GUI_ArtistSearch::artistsFetched(const ArtistList& artists)
 {
-	ui->list_artists->clear();
+	ui->lwArtists->clear();
 	m->searchedArtists.clear();
 
 	if(artists.size() == 0)
 	{
-		ui->lab_status->setText(tr("No artists found"));
+		ui->labStatus->setText(tr("No artists found"));
 		return;
 	}
 
 	else
 	{
-		ui->lab_artistCount->setText( tr("Found %n artist(s)", "", artists.count()) );
+		ui->labArtistCount->setText( tr("Found %n artist(s)", "", artists.count()) );
 		for(const Artist& artist: artists){
-			ui->list_artists->addItem(artist.name());
+			ui->lwArtists->addItem(artist.name());
 		}
 
 		m->searchedArtists = artists;
@@ -178,10 +189,10 @@ void SC::GUI_ArtistSearch::artistsExtFetched(const ArtistList &artists)
 
 void SC::GUI_ArtistSearch::albumsFetched(const AlbumList& albums)
 {
-	ui->list_playlists->clear();
+	ui->lwPlaylists->clear();
 
 	for(const Album& album : albums){
-		ui->list_playlists->addItem(album.name());
+		ui->lwPlaylists->addItem(album.name());
 	}
 
 	m->albums = albums;
@@ -190,36 +201,36 @@ void SC::GUI_ArtistSearch::albumsFetched(const AlbumList& albums)
 }
 
 
-void SC::GUI_ArtistSearch::tracksFetched(const MetaDataList& v_md)
+void SC::GUI_ArtistSearch::tracksFetched(const MetaDataList& tracks)
 {
-	ui->list_tracks->clear();
+	ui->lwTracks->clear();
 
-	for(const MetaData& md : v_md){
-		ui->list_tracks->addItem(md.title());
+	for(const MetaData& md : tracks){
+		ui->lwTracks->addItem(md.title());
 	}
 
-	m->tracks = v_md;
+	m->tracks = tracks;
 
-	ui->btn_add->setEnabled(v_md.size() > 0);
+	ui->btnAdd->setEnabled(tracks.size() > 0);
 
-	setTrackCountLabel(v_md.count());
+	setTrackCountLabel(tracks.count());
 }
 
 void SC::GUI_ArtistSearch::setTrackCountLabel(int trackCount)
 {
 	if(trackCount >= 0) {
-		ui->lab_trackCount->setText(Lang::getWithNumber(Lang::NrTracks, trackCount));
+		ui->labTrackCount->setText(Lang::getWithNumber(Lang::NrTracks, trackCount));
 	}
 
-	ui->lab_trackCount->setVisible(trackCount >= 0);
+	ui->labTrackCount->setVisible(trackCount >= 0);
 }
 
 void SC::GUI_ArtistSearch::setPlaylistCountLabel(int playlistCount)
 {
 	if(playlistCount >= 0){
-		ui->lab_playlistCount->setText( tr("%n playlist(s) found", "", playlistCount) );
+		ui->labPlaylistCount->setText( tr("%n playlist(s) found", "", playlistCount) );
 	}
 
-	ui->lab_playlistCount->setVisible(playlistCount >= 0);
+	ui->labPlaylistCount->setVisible(playlistCount >= 0);
 }
 

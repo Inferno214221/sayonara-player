@@ -40,11 +40,14 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QSize>
 #include <QPair>
 #include <QDateTime>
+#include <QLocale>
 
 using namespace Library;
 
@@ -52,6 +55,7 @@ struct TrackModel::Private
 {
 	QPair<int, Rating>			tmpRating;
 	Tagging::UserOperations*	uto=nullptr;
+	QLocale locale;
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
@@ -60,6 +64,7 @@ TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 	m = Pimpl::make<Private>();
 
 	connect(library, &AbstractLibrary::sigCurrentTrackChanged, this, &TrackModel::trackChanged);
+	ListenSetting(Set::Player_Language, TrackModel::languageChanged);
 }
 
 TrackModel::~TrackModel() = default;
@@ -142,19 +147,31 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 				return md.year();
 
 			case ColumnIndex::Track::Bitrate:
-				return QString::number(md.bitrate() / 1000) + " " + tr("kBit/s");
+			{
+				auto br = (md.bitrate() / 1000);
+				return (br == 0) ? "-" : QString::number(br) + " " + tr("kBit/s");
+			}
 
 			case ColumnIndex::Track::Filesize:
 				return ::Util::File::getFilesizeString(md.filesize());
 
 			case ColumnIndex::Track::Filetype:
-				return ::Util::File::getFileExtension(md.filepath());
+			{
+				QString ext = ::Util::File::getFileExtension(md.filepath());
+				return (ext.isEmpty()) ? "-" : ext;
+			}
 
 			case ColumnIndex::Track::AddedDate:
-				return md.createdDateTime().date().toString(Qt::DateFormat::SystemLocaleShortDate);
+			{
+				auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				return md.createdDateTime().date().toString(format);
+			}
 
 			case ColumnIndex::Track::ModifiedDate:
-				return md.modifiedDateTime().date().toString(Qt::DateFormat::DefaultLocaleShortDate);
+			{
+				auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				return md.modifiedDateTime().date().toString(format);
+			}
 
 			case ColumnIndex::Track::Rating:
 			{
@@ -317,4 +334,9 @@ int TrackModel::searchableColumn() const
 const MetaDataList& Library::TrackModel::selectedMetadata() const
 {
 	return library()->currentTracks();
+}
+
+void TrackModel::languageChanged()
+{
+	m->locale = Util::Language::getCurrentLocale();
 }

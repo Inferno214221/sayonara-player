@@ -76,23 +76,26 @@ QString SC::LibraryDatabase::fetchQueryAlbums(bool alsoEmpty) const
 QString SC::LibraryDatabase::fetchQueryTracks() const
 {
 	return	"SELECT "
-			"tracks.trackID			AS trackID, "
-			"tracks.title			AS trackTitle, "
-			"tracks.length			AS trackLength, "
-			"tracks.year			AS trackYear, "
-			"tracks.bitrate			AS trackBitrate, "
-			"tracks.filename		AS trackFilename, "
-			"tracks.track			AS trackNum, "
-			"albums.albumID			AS albumID, "
-			"artists.artistID		AS artistID, "
-			"albums.name			AS albumName, "
-			"artists.name			AS artistName, "
-			"tracks.genre			AS genrename, "
-			"tracks.filesize		AS filesize, "
-			"tracks.discnumber		AS discnumber, "
-			"tracks.purchase_url	AS purchase_url, "
-			"tracks.cover_url		AS cover_url, "
-			"tracks.rating			AS rating "
+			"tracks.trackID			AS trackID, "			// 0
+			"tracks.title			AS trackTitle, "		// 1
+			"tracks.length			AS trackLength, "		// 2
+			"tracks.year			AS trackYear, "			// 3
+			"tracks.bitrate			AS trackBitrate, "		// 4
+			"tracks.filename		AS trackFilename, "		// 5
+			"tracks.track			AS trackNum, "			// 6
+			"albums.albumID			AS albumID, "			// 7
+			"artists.artistID		AS artistID, "			// 8
+			"albums.name			AS albumName, "			// 9
+			"artists.name			AS artistName, "		// 10
+			"tracks.genre			AS genrename, "			// 11
+			"tracks.filesize		AS filesize, "			// 12
+			"tracks.discnumber		AS discnumber, "		// 13
+			"tracks.purchase_url	AS purchase_url, "		// 14
+			"tracks.cover_url		AS cover_url, "			// 15
+			"tracks.rating			AS rating, "			// 16
+			"tracks.createdate		AS createdate, "		// 17
+			"tracks.modifydate		AS modifydate, "		// 18
+			"tracks.comment			AS comment "			// 19
 			"FROM tracks "
 			"INNER JOIN albums ON tracks.albumID = albums.albumID "
 			"INNER JOIN artists ON tracks.artistID = artists.artistID ";
@@ -132,6 +135,9 @@ bool SC::LibraryDatabase::dbFetchTracks(Query& q, MetaDataList& result) const
 		data.addCustomField("purchase_url", Lang::get(Lang::PurchaseUrl), q.value(14).toString());
 		data.setCoverDownloadUrls({q.value(15).toString()});
 		data.setRating(q.value(16).value<Rating>());
+		data.setCreatedDate(q.value(17).value<uint64_t>());
+		data.setModifiedDate(q.value(18).value<uint64_t>());
+		data.setComment(q.value(19).toString());
 		data.setDatabaseId(module()->databaseId());
 
 		result << data;
@@ -402,6 +408,9 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& md)
 			{"cissearch",		md.title().toLower()},
 			{"purchase_url",	md.customField("purchase_url")},
 			{"cover_url",		cover_url},
+			{"createdate",		QVariant::fromValue(md.createdDate())},
+			{"modifydate",		QVariant::fromValue(md.modifiedDate())},
+			{"comment",			md.comment()}
 		},
 		{"trackID", md.id()},
 		QString("Soundcloud: Cannot update track %1").arg(md.filepath())
@@ -447,6 +456,9 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artist
 			{"cissearch",		md.title().toLower()},
 			{"purchase_url",	md.customField("purchase_url")},
 			{"cover_url",		cover_url},
+			{"createdate",		QVariant::fromValue(md.createdDate())},
+			{"modifydate",		QVariant::fromValue(md.modifiedDate())},
+			{"comment",			md.comment()}
 		},
 		QString("Soundcloud: Cannot insert track %1").arg(md.filepath())
 	);

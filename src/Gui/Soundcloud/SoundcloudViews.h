@@ -47,9 +47,16 @@ namespace SC
 	class ArtistView : public ::Library::ArtistView
 	{
 		Q_OBJECT
+		signals:
+			void sigAddArtistTriggered();
+
 		public:
 			using ::Library::ArtistView::ArtistView;
 			::Library::ContextMenu::Entries contextMenuEntries() const override;
+
+		// ItemView interface
+		protected:
+			void initContextMenu() override;
 	};
 }
 

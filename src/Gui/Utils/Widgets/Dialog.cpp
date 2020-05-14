@@ -19,9 +19,12 @@
  */
 
 #include "Dialog.h"
+#include "Gui/Utils/GuiUtils.h"
 
+#include <QScreen>
 #include <QDialog>
 #include <QCloseEvent>
+#include <QMainWindow>
 
 using Gui::Dialog;
 using Gui::WidgetTemplate;
@@ -37,6 +40,18 @@ Dialog::~Dialog() = default;
 bool Dialog::isAccepted() const
 {
 	return (result() == QDialog::Accepted);
+}
+
+void Dialog::resize(double percent)
+{
+	auto* mainWindow = Gui::Util::mainWindow();
+	QSize sz = mainWindow->size();
+	sz *= percent;
+
+	sz.setWidth(std::max(sz.width(), 800));
+	sz.setHeight(std::max(sz.height(), 600));
+
+	QDialog::resize(sz);
 }
 
 void Dialog::closeEvent(QCloseEvent* e)

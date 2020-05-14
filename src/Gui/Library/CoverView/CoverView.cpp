@@ -231,7 +231,6 @@ QStyleOptionViewItem CoverView::viewOptions() const
 	return option;
 }
 
-
 void CoverView::wheelEvent(QWheelEvent* e)
 {
 	if( (e->modifiers() & Qt::ControlModifier) && (e->delta() != 0) )

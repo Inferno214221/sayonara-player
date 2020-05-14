@@ -148,5 +148,12 @@ bool SC::Database::applyFixes()
 		}
 	}
 
+	if(version < 5) {
+		bool success = checkAndInsertColumn("tracks", "genreCissearch", "varchar(512)", "");
+		if(success){
+			saveSetting("version", "5");
+		}
+	}
+
 	return true;
 }
