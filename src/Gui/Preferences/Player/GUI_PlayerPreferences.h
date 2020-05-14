@@ -33,7 +33,7 @@ class GUI_PlayerPreferences :
 
 public:
 	explicit GUI_PlayerPreferences(const QString& identifier);
-	~GUI_PlayerPreferences();
+	~GUI_PlayerPreferences() override;
 
 	bool commit() override;
 	void revert() override;
@@ -43,6 +43,8 @@ public:
 protected:
 	void initUi() override;
 	void retranslate() override;
+
+	void logLevelChanged();
 
 private slots:
 	void showTrayIconToggled(bool b);

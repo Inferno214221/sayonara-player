@@ -62,17 +62,19 @@ class GUI_Logger :
 
 		LogListener* logListener();
 
-	protected:
-		void showEvent(QShowEvent* e) override;
-		void languageChanged() override;
-
+	private:
 		void initUi();
 		QString calcLogLine(const LogLine& log_line);
 
 	private slots:
 		void currentModuleChanged(const QString& module);
 		void logReady(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
+		void loglevelChanged(int index);
 		void saveClicked();
+
+	protected:
+		void showEvent(QShowEvent* e) override;
+		void languageChanged() override;
 };
 
 #endif // GUI_LOGGER_H

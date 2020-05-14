@@ -51,14 +51,14 @@ void GUI_PlayerPreferences::initUi()
 	connect(ui->cbShowTrayIcon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
 	connect(ui->cbStartInTray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
 	connect(ui->cbCloseToTray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
-}
 
+	ListenSetting(Set::Logger_Level, GUI_PlayerPreferences::logLevelChanged);
+}
 
 QString GUI_PlayerPreferences::actionName() const
 {
 	return Lang::get(Lang::Application);
 }
-
 
 bool GUI_PlayerPreferences::commit()
 {
@@ -101,7 +101,7 @@ void GUI_PlayerPreferences::retranslate()
 {
 	ui->retranslateUi(this);
 
-	ui->labLogger->setText(Lang::get(Lang::Logger));
+	ui->labLogger->setText(Lang::get(Lang::LogLevel));
 	ui->cbLogger->setItemText(0, Lang::get(Lang::Default));
 
 	QString text =
@@ -110,4 +110,15 @@ void GUI_PlayerPreferences::retranslate()
 
 	ui->labWarningHeader->setText(Lang::get(Lang::Warning));
 	ui->labWarning->setText(text);
+}
+
+void GUI_PlayerPreferences::logLevelChanged()
+{
+	if(ui)
+	{
+		int level = GetSetting(Set::Logger_Level);
+		if(level != ui->cbLogger->currentIndex()){
+			ui->cbLogger->setCurrentIndex(level);
+		}
+	}
 }

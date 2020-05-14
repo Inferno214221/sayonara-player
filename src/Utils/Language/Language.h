@@ -172,6 +172,7 @@ public:
 		Loading,
 		LoadingArg,
 		Logger,
+		LogLevel,
 		Lyrics,
 		MB,
 		Menu,

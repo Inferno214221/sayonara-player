@@ -11,22 +11,43 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <widget class="QComboBox" name="comboModules"/>
-     </item>
-    </layout>
-   </item>
-   <item row="1" column="0">
+   <item row="3" column="0">
     <widget class="QTextEdit" name="teLog"/>
    </item>
-   <item row="2" column="0">
+   <item row="5" column="0">
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Close|QDialogButtonBox::Save</set>
      </property>
     </widget>
+   </item>
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labModule">
+       <property name="text">
+        <string>Module</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboModules"/>
+     </item>
+    </layout>
+   </item>
+   <item row="4" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
+      <widget class="QLabel" name="labLogLevel">
+       <property name="text">
+        <string notr="true">Log Level</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QComboBox" name="comboLogLevel"/>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

@@ -163,6 +163,11 @@ void GUI_Logger::initUi()
 	ui = new Ui::GUI_Logger;
 	ui->setupUi(this);
 
+	ui->comboLogLevel->addItem(Lang::get(Lang::Default));
+	ui->comboLogLevel->addItem("Debug");
+	ui->comboLogLevel->addItem("Develop");
+	ui->comboLogLevel->addItem("Crazy");
+
 	for(const LogLine& line : Algorithm::AsConst(m->buffer))
 	{
 		ui->teLog->append(line.toString());
@@ -177,6 +182,7 @@ void GUI_Logger::initUi()
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QWidget::close);
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_Logger::saveClicked);
 	connect(ui->comboModules, &QComboBox::currentTextChanged, this, &GUI_Logger::currentModuleChanged);
+	connect(ui->comboLogLevel, combo_current_index_changed_int, this, &GUI_Logger::loglevelChanged);
 }
 
 QString GUI_Logger::calcLogLine(const LogLine& logLine)
@@ -218,18 +224,9 @@ void GUI_Logger::currentModuleChanged(const QString& module)
 	}
 }
 
-void GUI_Logger::languageChanged()
-{
-	if(ui)
-	{
-		ui->retranslateUi(this);
-		this->setWindowTitle(Lang::get(Lang::Logger));
-	}
-}
-
 LogListener* GUI_Logger::logListener()
 {
-	return logObject ();
+	return logObject();
 }
 
 void GUI_Logger::logReady(const QDateTime& t, Log logType, const QString& className, const QString& message)
@@ -241,6 +238,12 @@ void GUI_Logger::logReady(const QDateTime& t, Log logType, const QString& classN
 	{
 		ui->teLog->append(str);
 	}
+}
+
+void GUI_Logger::loglevelChanged(int index)
+{
+	SetSetting(Set::Logger_Level, index);
+	currentModuleChanged(ui->comboModules->currentText());
 }
 
 void GUI_Logger::saveClicked()
@@ -268,9 +271,21 @@ void GUI_Logger::saveClicked()
 	}
 }
 
+void GUI_Logger::languageChanged()
+{
+	if(ui)
+	{
+		ui->retranslateUi(this);
+		ui->labLogLevel->setText(Lang::get(Lang::LogLevel));
+		this->setWindowTitle(Lang::get(Lang::Logger));
+	}
+}
+
 void GUI_Logger::showEvent(QShowEvent* e)
 {
 	initUi();
 	Dialog::showEvent(e);
+
+	ui->comboLogLevel->setCurrentIndex(GetSetting(Set::Logger_Level));
 }
 

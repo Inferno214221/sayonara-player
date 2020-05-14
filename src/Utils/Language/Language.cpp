@@ -273,6 +273,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Live Search");
 		case Logger:
 			return l.tr("Logger");
+		case LogLevel:
+			return l.tr("Log level");
 		case Lyrics:
 			return l.tr("Lyrics");
 		case MB:
