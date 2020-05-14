@@ -185,6 +185,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_LastPlaylist>("last_playlist", -1);
 	registerSetting<Set::PL_Mode>("playlist_mode", Playlist::Mode());
 	registerSetting<Set::PL_ShowNumbers>("show_playlist_numbers", true);
+	registerSetting<Set::PL_ShowBottomBar>("show_bottom_bar", true);
 	registerSetting<Set::PL_EntryLook>("playlist_look", QString("*%title%* - %artist%"));
 	registerSetting<Set::PL_FontSize>("playlist_font_size", -1);
 	registerSetting<Set::PL_ShowClearButton>("playlist_show_clear_button", false);

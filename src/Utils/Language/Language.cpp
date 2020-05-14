@@ -216,6 +216,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Fulltext");
 		case GaplessPlayback:
 			return l.tr("Gapless playback");
+		case GB:
+			return l.tr("GB");
 		case Genre:
 			return l.tr("Genre");
 		case Genres:
@@ -241,6 +243,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Loading %1");
 		case InvalidChars:
 			return l.tr("Invalid characters");
+		case KB:
+			return l.tr("KB");
 		case Key_Find:
 			return l.tr("Ctrl+f");
 		case Key_Delete:
@@ -271,6 +275,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Logger");
 		case Lyrics:
 			return l.tr("Lyrics");
+		case MB:
+			return l.tr("MB");
 		case Menu:
 			return l.tr("Menu");
 		case Minimize:

@@ -44,7 +44,7 @@ namespace Playlist
 	class View;
 }
 
-UI_FWD(Playlist_Window)
+UI_FWD(PlaylistWindow)
 
 /**
  * @brief The GUI_Playlist class
@@ -54,7 +54,7 @@ class GUI_Playlist :
 		public Gui::Widget
 {
 	Q_OBJECT
-	UI_CLASS(Playlist_Window)
+	UI_CLASS(PlaylistWindow)
 	PIMPL(GUI_Playlist)
 
 public:
@@ -62,6 +62,8 @@ public:
 	~GUI_Playlist() override;
 
 private:
+	void initToolButton();
+
 	Playlist::View* viewByIndex(int idx);
 	Playlist::View* currentView();
 
@@ -105,6 +107,7 @@ private slots:
 	void playlistFinished();
 
 	void showClearButtonChanged();
+	void showBottomBarChanged();
 
 protected:
 	void languageChanged() override;

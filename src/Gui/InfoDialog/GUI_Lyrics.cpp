@@ -107,9 +107,9 @@ void GUI_Lyrics::init()
 
 	connect(ui->combo_servers, combo_activated_int, this, &GUI_Lyrics::lyricServerChanged);
 	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Lyrics::prepareLyrics);
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_Lyrics::sigClosed);
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_Lyrics::close);
 	connect(ui->btn_switch, &QPushButton::clicked, this, &GUI_Lyrics::switchPressed);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::sigClosed);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::close);
 	connect(ui->sb_zoom, spinbox_value_changed_int, this, [=](int percent){
 		zoom( (percent * m->initial_font_size) / 100.0 );
 	});
@@ -312,7 +312,6 @@ void GUI_Lyrics::setSaveButtonText()
 	}
 }
 
-
 void GUI_Lyrics::languageChanged()
 {
 	if(!ui){
@@ -323,7 +322,6 @@ void GUI_Lyrics::languageChanged()
 	ui->lab_tit->setText(Lang::get(Lang::Title));
 	ui->lab_zoom->setText(Lang::get(Lang::Zoom));
 	ui->lab_source->setText(tr("Source"));
-	ui->btn_close->setText(Lang::get(Lang::Close));
 	ui->btn_search->setText(Lang::get(Lang::SearchVerb));
 
 	setupSources();

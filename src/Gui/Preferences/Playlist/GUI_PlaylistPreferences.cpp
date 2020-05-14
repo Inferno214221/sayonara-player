@@ -124,6 +124,7 @@ bool GUI_PlaylistPreferences::commit()
 	SetSetting(Set::PL_ShowNumbers, ui->cbShowNumbers->isChecked());
 	SetSetting(Set::PL_ShowCovers, ui->cbShowCovers->isChecked());
 	SetSetting(Set::PL_ShowRating, ui->cbShowRating->isChecked());
+	SetSetting(Set::PL_ShowBottomBar, ui->cbShowBottomBar->isChecked());
 
 	SetSetting(Set::PL_ShowClearButton, ui->cbShowClearButton->isChecked());
 	SetSetting(Set::PL_RememberTrackAfterStop, ui->cbRememberAfterStop->isChecked());
@@ -138,19 +139,17 @@ bool GUI_PlaylistPreferences::commit()
 
 void GUI_PlaylistPreferences::revert()
 {
-	bool load_saved_playlists, load_temporary_playlists, load_last_track, remember_time, start_playing;
+	bool loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
+	bool loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
+	bool loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
+	bool rememberTime = GetSetting(Set::PL_RememberTime);
+	bool startPlaying = GetSetting(Set::PL_StartPlaying);
 
-	load_saved_playlists = GetSetting(Set::PL_LoadSavedPlaylists);
-	load_temporary_playlists = GetSetting(Set::PL_LoadTemporaryPlaylists);
-	load_last_track = GetSetting(Set::PL_LoadLastTrack);
-	remember_time = GetSetting(Set::PL_RememberTime);
-	start_playing = GetSetting(Set::PL_StartPlaying);
-
-	ui->cbLoadSavedPlaylists->setChecked(load_saved_playlists);
-	ui->cbLoadTemporaryPlaylists->setChecked(load_temporary_playlists);
-	ui->cbLoadLastTrack->setChecked(load_last_track);
-	ui->cbRememberTime->setChecked(remember_time);
-	ui->cbStartPlaying->setChecked(start_playing);
+	ui->cbLoadSavedPlaylists->setChecked(loadSavedPlaylists);
+	ui->cbLoadTemporaryPlaylists->setChecked(loadTemporaryPlaylists);
+	ui->cbLoadLastTrack->setChecked(loadLastTrack);
+	ui->cbRememberTime->setChecked(rememberTime);
+	ui->cbStartPlaying->setChecked(startPlaying);
 
 	ui->leExpression->setText(GetSetting(Set::PL_EntryLook));
 	ui->cbShowNumbers->setChecked(GetSetting(Set::PL_ShowNumbers));
@@ -158,6 +157,7 @@ void GUI_PlaylistPreferences::revert()
 	ui->cbShowRating->setChecked(GetSetting(Set::PL_ShowRating));
 	ui->cbShowClearButton->setChecked(GetSetting(Set::PL_ShowClearButton));
 	ui->cbRememberAfterStop->setChecked(GetSetting(Set::PL_RememberTrackAfterStop));
+	ui->cbShowBottomBar->setChecked(GetSetting(Set::PL_ShowBottomBar));
 }
 
 

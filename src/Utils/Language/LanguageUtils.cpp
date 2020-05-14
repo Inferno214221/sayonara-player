@@ -120,7 +120,7 @@ QString Language::getHttpPath(const QString& fourLetter)
 		return QString();
 	}
 
-	return QString("https://sayonara-player.com/sw/translation/sayonara_lang_%1.qm").arg(fourLetter);
+	return QString("https://sayonara-player.com/files/translation/sayonara_lang_%1.qm").arg(fourLetter);
 }
 
 QString Language::getChecksumFtpPath()
@@ -130,7 +130,7 @@ QString Language::getChecksumFtpPath()
 
 QString Language::getChecksumHttpPath()
 {
-	return "https://sayonara-player.com/sw/translation/checksum";
+	return "https://sayonara-player.com/files/translation/checksum";
 }
 
 

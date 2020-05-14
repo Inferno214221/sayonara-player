@@ -23,6 +23,7 @@
 #include "Gui/Utils/ui_GUI_DeleteDialog.h"
 #include "Gui/Utils/Icons.h"
 
+#include <QPushButton>
 
 struct GUI_DeleteDialog::Private
 {
@@ -44,9 +45,7 @@ GUI_DeleteDialog::GUI_DeleteDialog(int trackCount, QWidget* parent) :
 	ui = new Ui::GUI_DeleteDialog();
 	ui->setupUi(this);
 
-	connect(ui->btnYes, &QPushButton::clicked, this, &GUI_DeleteDialog::yesClicked);
-	connect(ui->btnNo, &QPushButton::clicked, this, &GUI_DeleteDialog::noClicked);
-	connect(ui->btnOnlyFromLibrary, &QPushButton::clicked, this, &GUI_DeleteDialog::onlyFromLibraryclicked);
+	connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &GUI_DeleteDialog::buttonClicked);
 }
 
 GUI_DeleteDialog::~GUI_DeleteDialog() = default;
@@ -57,21 +56,27 @@ Library::TrackDeletionMode GUI_DeleteDialog::answer() const
 	return m->answer;
 }
 
-void GUI_DeleteDialog::yesClicked()
+void GUI_DeleteDialog::buttonClicked(QAbstractButton* button)
 {
-	m->answer = Library::TrackDeletionMode::AlsoFiles;
-	close();
-}
+	QDialogButtonBox::ButtonRole role = ui->buttonBox->buttonRole(button);
+	if(role == QDialogButtonBox::YesRole)
+	{
+		if(ui->cbOnlyFromLibrary->isChecked())
+		{
+			m->answer = Library::TrackDeletionMode::OnlyLibrary;
+		}
 
-void GUI_DeleteDialog::onlyFromLibraryclicked()
-{
-	m->answer = Library::TrackDeletionMode::OnlyLibrary;
-	close();
-}
+		else
+		{
+			m->answer = Library::TrackDeletionMode::AlsoFiles;
+		}
+	}
 
-void GUI_DeleteDialog::noClicked()
-{
-	m->answer = Library::TrackDeletionMode::None;
+	else if(role == QDialogButtonBox::NoRole)
+	{
+		m->answer = Library::TrackDeletionMode::None;
+	}
+
 	close();
 }
 
@@ -82,14 +87,14 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 	this->setFocus();
 
 	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info));
-	ui->btnYes->setText(Lang::get(Lang::OK));
-	ui->btnNo->setText(Lang::get(Lang::Cancel));
-	ui->btnOnlyFromLibrary->setText(tr("Only from library"));
+	ui->cbOnlyFromLibrary->setText(tr("Only from library"));
 	ui->labWarning->setText(Lang::get(Lang::Warning) + "!");
-	ui->labInfo->setText(
-			tr("You are about to delete %n file(s)", "", m->trackCount) +
-				"\n" +
-				Lang::get(Lang::Continue).question());
+	ui->labInfo->setText
+	(
+		tr("You are about to delete %n file(s)", "", m->trackCount) +
+			"\n" +
+			Lang::get(Lang::Continue).question()
+	);
 }
 
 void GUI_DeleteDialog::setTrackCount(int trackCount)

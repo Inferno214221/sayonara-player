@@ -7,21 +7,17 @@
     <x>0</x>
     <y>0</y>
     <width>351</width>
-    <height>153</height>
+    <height>155</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0">
-    <widget class="QLabel" name="labPath">
-     <property name="text">
-      <string notr="true">Path</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="labName">
-     <property name="text">
-      <string notr="true">Name</string>
+   <item row="4" column="1" colspan="2">
+    <widget class="QLineEdit" name="leName">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
      </property>
     </widget>
    </item>
@@ -38,66 +34,12 @@
      </property>
     </widget>
    </item>
-   <item row="7" column="0" colspan="3">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+   <item row="3" column="0">
+    <widget class="QLabel" name="labPath">
+     <property name="text">
+      <string notr="true">Path</string>
      </property>
     </widget>
-   </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="Line" name="line_2">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1" colspan="2">
-    <widget class="QLineEdit" name="leName">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="3">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnCancel">
-       <property name="text">
-        <string notr="true">Cancel</string>
-       </property>
-       <property name="shortcut">
-        <string notr="true">Esc</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnOk">
-       <property name="text">
-        <string notr="true">OK</string>
-       </property>
-       <property name="shortcut">
-        <string notr="true">Return</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
    </item>
    <item row="3" column="1">
     <widget class="QLineEdit" name="lePath">
@@ -112,6 +54,27 @@
      </property>
      <property name="readOnly">
       <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labName">
+     <property name="text">
+      <string notr="true">Name</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="Line" name="line_2">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
@@ -131,14 +94,19 @@
      </property>
     </widget>
    </item>
+   <item row="8" column="0" colspan="3">
+    <widget class="QDialogButtonBox" name="buttonBox">
+     <property name="standardButtons">
+      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <tabstops>
   <tabstop>lePath</tabstop>
   <tabstop>btnChooseDir</tabstop>
   <tabstop>leName</tabstop>
-  <tabstop>btnCancel</tabstop>
-  <tabstop>btnOk</tabstop>
  </tabstops>
  <resources/>
  <connections/>

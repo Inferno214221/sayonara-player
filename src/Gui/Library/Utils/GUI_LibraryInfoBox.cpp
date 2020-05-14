@@ -70,7 +70,7 @@ GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent) :
 	);
 }
 
-GUI_LibraryInfoBox::~GUI_LibraryInfoBox() {}
+GUI_LibraryInfoBox::~GUI_LibraryInfoBox() = default;
 
 void GUI_LibraryInfoBox::languageChanged()
 {
@@ -81,7 +81,6 @@ void GUI_LibraryInfoBox::languageChanged()
 	ui->lab_albums->setText(Lang::get(Lang::Albums));
 	ui->lab_duration->setText(Lang::get(Lang::Duration));
 	ui->lab_filesize_descr->setText(Lang::get(Lang::Filesize));
-	ui->btn_close->setText(Lang::get(Lang::Close));
 
 	Library::Manager* manager = Library::Manager::instance();
 	Library::Info info = manager->libraryInfo(m->libraryId);

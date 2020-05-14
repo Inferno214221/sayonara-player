@@ -83,8 +83,8 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui = new Ui::GUI_StationSearcher();
 	ui->setupUi(this);
 
+	okButton()->setEnabled(false);
 	ui->pbProgress->setVisible(false);
-	ui->btnListen->setEnabled(false);
 	ui->btnSearch->setEnabled(ui->leSearch->text().size() > 0);
 	ui->btnSearchNext->setVisible(m->searcher->canSearchNext());
 	ui->btnSearchPrev->setVisible(m->searcher->canSearchPrevious());
@@ -96,8 +96,8 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 
 	connect(ui->leSearch, &QLineEdit::textChanged, this, &GUI_StationSearcher::searchTextChanged);
 	connect(ui->leSearch, &QLineEdit::returnPressed, this, &GUI_StationSearcher::searchClicked);
-	connect(ui->btnClose, &QPushButton::clicked, this, &GUI_StationSearcher::close);
-	connect(ui->btnListen, &QPushButton::clicked, this, &GUI_StationSearcher::listenClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::listenClicked);
 	connect(ui->btnSearch, &QPushButton::clicked, this, &GUI_StationSearcher::searchClicked);
 	connect(ui->btnSearchNext, &QPushButton::clicked, this, &GUI_StationSearcher::searchNextClicked);
 	connect(ui->btnSearchPrev, &QPushButton::clicked, this, &GUI_StationSearcher::searchPreviousClicked);
@@ -109,6 +109,11 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 }
 
 GUI_StationSearcher::~GUI_StationSearcher() {}
+
+QAbstractButton* GUI_StationSearcher::okButton()
+{
+	return ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok);
+}
 
 void GUI_StationSearcher::initLineEdit()
 {
@@ -137,7 +142,7 @@ void GUI_StationSearcher::initLineEdit()
 
 void GUI_StationSearcher::checkListenButton()
 {
-	ui->btnListen->setEnabled(false);
+	okButton()->setEnabled(false);
 
 	int cur_station = ui->twStations->currentRow();
 	if(cur_station < 0 || cur_station >= m->stations.size()){
@@ -150,7 +155,7 @@ void GUI_StationSearcher::checkListenButton()
 		return;
 	}
 
-	ui->btnListen->setEnabled(true);
+	okButton()->setEnabled(true);
 }
 
 void GUI_StationSearcher::clearStations()
@@ -323,7 +328,7 @@ void GUI_StationSearcher::searchTextChanged(const QString& text)
 
 void GUI_StationSearcher::stationsChanged()
 {
-	ui->btnListen->setEnabled(false);
+	okButton()->setEnabled(false);
 
 	int cur_row = ui->twStations->currentRow();
 	if(cur_row < 0 || cur_row >= m->stations.count()){
@@ -393,8 +398,6 @@ void GUI_StationSearcher::languageChanged()
 	ui->btnSearch->setText(Lang::get(Lang::SearchVerb));
 	ui->btnSearchNext->setText(Lang::get(Lang::NextPage));
 	ui->btnSearchPrev->setText(Lang::get(Lang::PreviousPage));
-	ui->btnListen->setText(Lang::get(Lang::Add));
-	ui->btnClose->setText(Lang::get(Lang::Close));
 
 	QString tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
 		.arg(Lang::get(Lang::SearchNoun))

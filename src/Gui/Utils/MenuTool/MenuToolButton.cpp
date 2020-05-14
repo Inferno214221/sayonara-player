@@ -133,3 +133,10 @@ void MenuToolButton::languageChanged()
 		this->setText(QString::fromUtf8("≡"));
 	}
 }
+
+void MenuToolButton::skinChanged()
+{
+	QFont font = this->font();
+	font.setPixelSize(26);
+	this->setFont(font);
+}

@@ -24,6 +24,8 @@
 #include "WidgetTemplate.h"
 #include <QDialog>
 
+class QAbstractButton;
+
 namespace Gui
 {
 	/**

@@ -28,12 +28,14 @@
 
 #include "GUI_LastFmPreferences.h"
 #include "Gui/Preferences/ui_GUI_LastFmPreferences.h"
-#include "Utils/Crypt.h"
+#include "Gui/Utils/Style.h"
 
 #include "Components/Streaming/LastFM/LastFM.h"
 
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+#include "Utils/Crypt.h"
 
 struct GUI_LastFmPreferences::Private
 {
@@ -63,7 +65,6 @@ GUI_LastFmPreferences::~GUI_LastFmPreferences()
 	}
 }
 
-
 void GUI_LastFmPreferences::initUi()
 {
 	setupParent(this, &ui);
@@ -76,7 +77,6 @@ void GUI_LastFmPreferences::initUi()
 	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::activeChanged);
 	connect(m->lfm, &LastFM::Base::sigLoggedIn, this, &GUI_LastFmPreferences::loginFinished);
 }
-
 
 QString GUI_LastFmPreferences::actionName() const
 {
@@ -106,12 +106,11 @@ bool GUI_LastFmPreferences::commit()
 	return true;
 }
 
-
 void GUI_LastFmPreferences::revert()
 {
 	bool active = GetSetting(Set::LFM_Active);
-	QString username = GetSetting(Set::LFM_Username);
-	QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
+	const QString username = GetSetting(Set::LFM_Username);
+	const QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 	activeChanged(active);
 	loginFinished(m->lfm->isLoggedIn());
@@ -120,8 +119,10 @@ void GUI_LastFmPreferences::revert()
 	ui->lePassword->setText(password);
 	ui->sbScrobbleTime->setValue( GetSetting(Set::LFM_ScrobbleTimeSec) );
 	ui->cbActivate->setChecked(active);
-}
 
+	const QString link = Util::createLink("https://last.fm", Style::isDark(), true);
+	ui->labWebsite->setText(link);
+}
 
 void GUI_LastFmPreferences::loginClicked()
 {
@@ -135,12 +136,11 @@ void GUI_LastFmPreferences::loginClicked()
 
 	ui->btnLogin->setEnabled(false);
 
-	QString username = ui->leUsername->text();
-	QString password = ui->lePassword->text();
+	const QString username = ui->leUsername->text();
+	const QString password = ui->lePassword->text();
 
 	m->lfm->login(username, password);
 }
-
 
 void GUI_LastFmPreferences::activeChanged(bool active)
 {
@@ -151,7 +151,6 @@ void GUI_LastFmPreferences::activeChanged(bool active)
 	ui->leUsername->setEnabled(active);
 	ui->lePassword->setEnabled(active);
 }
-
 
 void GUI_LastFmPreferences::loginFinished(bool success)
 {
@@ -169,4 +168,3 @@ void GUI_LastFmPreferences::loginFinished(bool success)
 
 	ui->btnLogin->setEnabled(true);
 }
-

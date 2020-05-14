@@ -29,11 +29,11 @@ struct Base::Private
 	QString				identifier;
 	Action*				action=nullptr;
 	QByteArray			geometry;
-	bool				is_initialized;
+	bool				isInitialized;
 
 	Private(const QString& identifier) :
 		identifier(identifier),
-		is_initialized(false)
+		isInitialized(false)
 	{}
 };
 
@@ -52,7 +52,7 @@ QString Base::identifier() const
 
 void Base::setInitialized()
 {
-	m->is_initialized = true;
+	m->isInitialized = true;
 }
 
 void Base::languageChanged()
@@ -63,16 +63,16 @@ void Base::languageChanged()
 		return;
 	}
 
-	QString new_name = actionName();
-	this->setWindowTitle(new_name);
+	QString newName = actionName();
+	this->setWindowTitle(newName);
 
 	retranslate();
 }
 
 void Base::translationAction()
 {
-	QString new_name = this->actionName();
-	action()->setText(new_name + "...");
+	QString newName = this->actionName();
+	action()->setText(newName + "...");
 }
 
 void Base::showEvent(QShowEvent* e)
@@ -96,7 +96,7 @@ void Base::closeEvent(QCloseEvent* e)
 
 bool Base::isUiInitialized() const
 {
-	return m->is_initialized;
+	return m->isInitialized;
 }
 
 QAction* Base::action()

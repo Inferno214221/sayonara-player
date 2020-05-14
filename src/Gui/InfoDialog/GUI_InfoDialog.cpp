@@ -100,7 +100,6 @@ void GUI_InfoDialog::languageChanged()
 	ui->tabWidget->setTabText(0, Lang::get(Lang::Info));
 	ui->tabWidget->setTabText(1, Lang::get(Lang::Lyrics));
 	ui->tabWidget->setTabText(2, Lang::get(Lang::Edit));
-	ui->btnClose->setText(Lang::get(Lang::Close));
 	ui->btnWriteCoverToTracks->setText
 	(
 		tr("Write cover to tracks") + "..."
@@ -297,6 +296,7 @@ void GUI_InfoDialog::init()
 	connect(ui->btnWriteCoverToTracks, &QPushButton::clicked, this, &GUI_InfoDialog::writeCoversToTracksClicked);
 	connect(ui->btnImage, &Gui::CoverButton::sigRejected, this, &GUI_InfoDialog::writeCoversToTracksClicked);
 	connect(ui->btnImage, &Gui::CoverButton::sigCoverChanged, this, &GUI_InfoDialog::coverChanged);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_InfoDialog::close);
 
 	ui->stackedWidget->setCurrentIndex(0);
 	ui->btnImage->setStyleSheet("QPushButton:hover {background-color: transparent;}");

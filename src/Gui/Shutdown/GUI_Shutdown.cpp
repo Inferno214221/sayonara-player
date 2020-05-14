@@ -34,8 +34,8 @@ GUI_Shutdown::GUI_Shutdown(QWidget* parent):
 	ui = new Ui::GUI_Shutdown();
 	ui->setupUi(this);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_Shutdown::okClicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_Shutdown::cancelClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_Shutdown::accepted);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Shutdown::rejected);
 	connect(ui->rb_after_finished, &QRadioButton::clicked, this, &GUI_Shutdown::afterPlaylistFinishedClicked);
 	connect(ui->rb_after_minutes, &QRadioButton::clicked, this, &GUI_Shutdown::afterTimespanClicked);
 }
@@ -51,7 +51,7 @@ void GUI_Shutdown::skinChanged()
 }
 
 
-void GUI_Shutdown::okClicked()
+void GUI_Shutdown::accepted()
 {
 	if(ui->sb_minutes->isEnabled())
 	{
@@ -66,7 +66,7 @@ void GUI_Shutdown::okClicked()
 	close();
 }
 
-void GUI_Shutdown::cancelClicked()
+void GUI_Shutdown::rejected()
 {
 	close();
 	emit sigClosed();

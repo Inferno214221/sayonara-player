@@ -94,12 +94,11 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(ui->cb_rating_all, &QCheckBox::toggled, ui->widget_rating, &QWidget::setDisabled);
 	connect(ui->cb_comment_all, &QCheckBox::toggled, ui->te_comment, &QWidget::setDisabled);
 
-	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_TagEdit::commit);
-	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_TagEdit::undoClicked);
-	connect(ui->btn_undo_all, &QPushButton::clicked, this, &GUI_TagEdit::undoAllClicked);
-	connect(ui->btn_close, &QPushButton::clicked, this, &GUI_TagEdit::sigCancelled);
-
-	connect(ui->btn_load_entire_album, &QPushButton::clicked, this, &GUI_TagEdit::loadEntireAlbum);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_TagEdit::commit);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_TagEdit::sigCancelled);
+	connect(ui->btnUndo, &QPushButton::clicked, this, &GUI_TagEdit::undoClicked);
+	connect(ui->btnUndoAll, &QPushButton::clicked, this, &GUI_TagEdit::undoAllClicked);
+	connect(ui->btnLoadCompleteAlbum, &QPushButton::clicked, this, &GUI_TagEdit::loadEntireAlbum);
 
 	connect(m->uiTagFromPath, &GUI_TagFromPath::sigApply, this, &GUI_TagEdit::applyTagFromPath);
 	connect(m->uiTagFromPath, &GUI_TagFromPath::sigApplyAll, this, &GUI_TagEdit::applyAllTagFromPath);
@@ -158,7 +157,7 @@ void GUI_TagEdit::languageChanged()
 	ui->lab_rating_descr->setText(Lang::get(Lang::Rating));
 	ui->lab_track_num->setText(Lang::get(Lang::TrackNo).toFirstUpper());
 	ui->lab_comment->setText(Lang::get(Lang::Comment));
-	ui->btn_load_entire_album->setText(tr("Load complete album"));
+	ui->btnLoadCompleteAlbum->setText(tr("Load complete album"));
 
 	set_all_text(ui->cb_album_all, m->tagEditor->count());
 	set_all_text(ui->cb_artist_all, m->tagEditor->count());
@@ -169,9 +168,7 @@ void GUI_TagEdit::languageChanged()
 	set_all_text(ui->cb_rating_all, m->tagEditor->count());
 	set_all_text(ui->cb_comment_all, m->tagEditor->count());
 
-	ui->btn_undo->setText(Lang::get(Lang::Undo));
-	ui->btn_close->setText(Lang::get(Lang::Close));
-	ui->btn_save->setText(Lang::get(Lang::Save));
+	ui->btnUndo->setText(Lang::get(Lang::Undo));
 
 	ui->tab_widget->setTabText(0, tr("Metadata"));
 	ui->tab_widget->setTabText(1, tr("Tags from path"));
@@ -187,6 +184,17 @@ Editor*GUI_TagEdit::editor() const
 {
 	return m->tagEditor;
 }
+
+QAbstractButton* GUI_TagEdit::saveButton()
+{
+	return ui->buttonBox->button(QDialogButtonBox::StandardButton::Save);
+}
+
+QAbstractButton* GUI_TagEdit::closeButton()
+{
+	return ui->buttonBox->button(QDialogButtonBox::StandardButton::Close);
+}
+
 
 void GUI_TagEdit::setMetadata(const MetaDataList& v_md)
 {
@@ -207,13 +215,12 @@ void GUI_TagEdit::metadataChanged(const MetaDataList& md)
 		filepaths << md.filepath();
 	}
 
-	ui->btn_load_entire_album->setVisible(m->tagEditor->canLoadEntireAlbum());
-	ui->btn_load_entire_album->setEnabled(true);
+	ui->btnLoadCompleteAlbum->setVisible(m->tagEditor->canLoadEntireAlbum());
+	ui->btnLoadCompleteAlbum->setEnabled(true);
 
-	ui->btn_save->setEnabled(true);
-	ui->btn_undo->setEnabled(true);
-	ui->btn_undo_all->setEnabled(true);
-
+	saveButton()->setEnabled(true);
+	ui->btnUndo->setEnabled(true);
+	ui->btnUndoAll->setEnabled(true);
 
 	setCurrentIndex(0);
 	refreshCurrentTrack();
@@ -429,7 +436,7 @@ void GUI_TagEdit::reset()
 	ui->lab_filepath->clear();
 	ui->pb_progress->setVisible(false);
 
-	ui->btn_load_entire_album->setVisible(false);
+	ui->btnLoadCompleteAlbum->setVisible(false);
 
 	initCompleter();
 }
@@ -506,7 +513,6 @@ void GUI_TagEdit::undoAllClicked()
 	refreshCurrentTrack();
 }
 
-
 void GUI_TagEdit::writeChanges(int idx)
 {
 	if( !checkIndex(idx) ) {
@@ -535,7 +541,7 @@ void GUI_TagEdit::writeChanges(int idx)
 
 void GUI_TagEdit::commit()
 {
-	if(!ui->btn_save->isEnabled()){
+	if(!saveButton()->isEnabled()){
 		return;
 	}
 
@@ -591,10 +597,10 @@ void GUI_TagEdit::commit()
 
 void GUI_TagEdit::commitStarted()
 {
-	ui->btn_save->setEnabled(false);
-	ui->btn_undo->setEnabled(false);
-	ui->btn_undo_all->setEnabled(false);
-	ui->btn_load_entire_album->setEnabled(false);
+	saveButton()->setEnabled(false);
+	ui->btnUndo->setEnabled(false);
+	ui->btnUndoAll->setEnabled(false);
+	ui->btnLoadCompleteAlbum->setEnabled(false);
 
 	ui->tab_widget->tabBar()->setEnabled(false);
 
@@ -617,8 +623,8 @@ void GUI_TagEdit::progressChanged(int val)
 
 void GUI_TagEdit::commitFinished()
 {
-	ui->btn_save->setEnabled(true);
-	ui->btn_load_entire_album->setEnabled(m->tagEditor->canLoadEntireAlbum());
+	saveButton()->setEnabled(true);
+	ui->btnLoadCompleteAlbum->setEnabled(m->tagEditor->canLoadEntireAlbum());
 	ui->tab_widget->tabBar()->setEnabled(true);
 	ui->pb_progress->setVisible(false);
 
@@ -638,7 +644,7 @@ void GUI_TagEdit::commitFinished()
 
 void GUI_TagEdit::showCloseButton(bool show)
 {
-	ui->btn_close->setVisible(show);
+	closeButton()->setVisible(show);
 }
 
 void GUI_TagEdit::showDefaultTab()

@@ -118,6 +118,7 @@ enum class SettingKey : unsigned short
 	PL_ShowClearButton,
 	PL_ShowCovers,
 	PL_ShowNumbers,
+	PL_ShowBottomBar,
 	PL_ShowRating,
 	PL_StartPlaying,
 	Notification_Show,
@@ -333,6 +334,7 @@ class SettingIdentifier
 	INST(bool,				PL_ShowClearButton)		/* show clear button in playlist */
 	INST(Playlist::Mode,	PL_Mode)					/* playlist mode: rep1, repAll, shuffle... */
 	INST(bool,				PL_ShowNumbers)			/* show numbers in playlist */
+	INST(bool,				PL_ShowBottomBar)			/* Show bottom bar in playlist */
 	INST(bool,				PL_RememberTrackAfterStop)	/* when stop button is pressed, remember last track index */
 	INST(bool,				PL_ShowCovers)				/* Show covers in Playlist */
 	INST(bool,				PL_ShowRating)				/* Show rating in playlist */

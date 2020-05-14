@@ -2,11 +2,13 @@
 
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Widgets/CalendarWidget.h"
+#include "Utils/Language/LanguageUtils.h"
 
 #include <QDialogButtonBox>
 #include <QVBoxLayout>
 #include <QLabel>
 #include <QDate>
+#include <QLocale>
 
 using Gui::DoubleCalendarDialog;
 
@@ -23,10 +25,12 @@ struct DoubleCalendarDialog::Private
 		calendar->setDateEditEnabled(false);
 		calendar->setGridVisible(true);
 		calendar->setFirstDayOfWeek(Qt::DayOfWeek::Monday);
+		calendar->setLocale(Util::Language::getCurrentLocale());
 		calendar->setHorizontalHeaderFormat(QCalendarWidget::HorizontalHeaderFormat::ShortDayNames);
 		calendar->setMaximumDate(QDate::currentDate());
 		calendar->showToday();
 		calendar->resize(800, 600);
+
 
 		return calendar;
 	}

@@ -59,8 +59,8 @@ LineInputDialog::LineInputDialog(const QString& windowTitle, const QString& info
 	m->completer = new Completer(QStringList(), ui->leInput);
 	ui->leInput->setCompleter(m->completer);
 
-	connect(ui->btnOk, &QPushButton::clicked, this, &LineInputDialog::okClicked);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &LineInputDialog::cancelClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &LineInputDialog::okClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &LineInputDialog::cancelClicked);
 	connect(ui->leInput, &QLineEdit::textEdited, this, &LineInputDialog::textEdited);
 }
 
@@ -189,11 +189,7 @@ void LineInputDialog::showEvent(QShowEvent* e)
 {
 	Gui::Dialog::showEvent(e);
 
-	ui->btnOk->setText(Lang::get(Lang::OK));
-	ui->btnCancel->setText(Lang::get(Lang::Cancel));
 	ui->leInput->setFocus();
-	ui->btnOk->setDefault(true);
-
 	ui->labInfo->setVisible(m->showPrefix);
 	ui->labInfo->setText(m->infoPrefix + ui->leInput->text());
 

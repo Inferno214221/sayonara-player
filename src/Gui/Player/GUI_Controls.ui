@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>438</width>
-    <height>168</height>
+    <width>601</width>
+    <height>170</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -55,7 +55,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/bwd.svg.png</normaloff>
          <disabledoff>:/Icons/bwd_disabled.svg</disabledoff>:/Icons/bwd.svg.png</iconset>
        </property>
@@ -85,7 +85,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/play.svg.png</normaloff>:/Icons/play.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -120,7 +120,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/rec.svg.png</normaloff>:/Icons/rec.svg.png</iconset>
        </property>
        <property name="iconSize">
@@ -155,7 +155,7 @@
         <string/>
        </property>
        <property name="icon">
-        <iconset resource="../Resources/Icons.qrc">
+        <iconset>
          <normaloff>:/Icons/fwd.svg.png</normaloff>
          <disabledoff>:/Icons/fwd_disabled.svg.png</disabledoff>:/Icons/fwd.svg.png</iconset>
        </property>
@@ -315,7 +315,7 @@
         </size>
        </property>
        <property name="text">
-        <string>Written by Michael Lugmair (Lucio Carreras)</string>
+        <string notr="true">Written by Michael Lugmair (Lucio Carreras)</string>
        </property>
        <property name="alignment">
         <set>Qt::AlignCenter</set>
@@ -619,7 +619,7 @@
       <string/>
      </property>
      <property name="icon">
-      <iconset resource="../Resources/Icons.qrc">
+      <iconset>
        <normaloff>:/Icons/stop.svg.png</normaloff>:/Icons/stop.svg.png</iconset>
      </property>
      <property name="iconSize">

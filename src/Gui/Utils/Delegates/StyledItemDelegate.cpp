@@ -26,10 +26,31 @@
 struct Gui::StyledItemDelegate::Private
 {
 	int decorationColumn;
+	QHash<int, QSize> minimumActualSizeMap;
 
 	Private() :
 		decorationColumn(-1)
 	{}
+
+	QSize calcPixmapSize(QSize size)
+	{
+		int minimum = std::min(size.width(), size.height());
+		if(this->minimumActualSizeMap.contains(minimum)){
+			return this->minimumActualSizeMap[minimum];
+		}
+
+		int scaledMinimum = ((minimum * 30) / 40);
+
+		const QList<int> rounds{16, 22, 24, 32, 36, 48};
+		auto it = std::min_element(rounds.begin(), rounds.end(), [scaledMinimum](int r1, int r2){
+			return (std::abs(scaledMinimum - r1) < std::abs(scaledMinimum - r2));
+		});
+
+		QSize ret(*it, *it);
+		this->minimumActualSizeMap[minimum] = ret;
+
+		return ret;
+	}
 };
 
 Gui::StyledItemDelegate::StyledItemDelegate(QObject* parent) :
@@ -58,7 +79,6 @@ QSize Gui::StyledItemDelegate::sizeHint(const QStyleOptionViewItem& option, cons
 	return QSize(width, height);
 }
 
-
 void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if(index.column() != m->decorationColumn)
@@ -69,27 +89,17 @@ void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 
 	painter->save();
 
-	QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
-
-	const QList<int> rounds{22, 24, 32, 36, 48};
+	const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
 
 	QRect r2 = option.rect;
-	r2.setWidth((option.rect.width() * 30) / 40);
-	r2.setHeight((option.rect.height() * 30) / 40);
-	int minimum = std::min(r2.width(), r2.height());
+	QSize actualSize = m->calcPixmapSize(option.rect.size());
 
-	auto it = std::min_element(rounds.begin(), rounds.end(), [minimum](int r1, int r2){
-		return (std::abs(minimum - r1) < std::abs(minimum - r2));
-	});
-
-	r2.setWidth(*it);
-	r2.setHeight(*it);
+	r2.setSize(actualSize);
 	r2.translate((option.rect.bottomRight() - r2.bottomRight()) / 2);
 
 	painter->drawPixmap(r2, pixmap);
 	painter->restore();
 }
-
 
 void Gui::StyledItemDelegate::setDecorationColumn(int index)
 {

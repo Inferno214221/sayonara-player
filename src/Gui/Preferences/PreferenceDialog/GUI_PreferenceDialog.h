@@ -50,7 +50,7 @@ class GUI_PreferenceDialog :
 
 	public:
 		explicit GUI_PreferenceDialog(QWidget* parent=nullptr);
-		~GUI_PreferenceDialog();
+		~GUI_PreferenceDialog() override;
 
 		QString actionName() const;
 		QAction* action();
@@ -59,6 +59,9 @@ class GUI_PreferenceDialog :
 
 		void registerPreferenceDialog(Preferences::Base* dialog);
 		void showPreference(const QString& identifier) override;
+
+	private slots:
+		void buttonBoxClicked(QAbstractButton* button);
 
 	protected slots:
 		void commitAndClose();

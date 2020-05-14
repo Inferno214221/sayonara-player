@@ -44,11 +44,10 @@ GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QW
 
 	this->setModal(true);
 
-	connect(ui->btn_ok, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::okClicked);
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &GUI_LibraryReloadDialog::cancelClicked);
-	connect(ui->combo_quality, combo_activated_int, this, &GUI_LibraryReloadDialog::comboChanged);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_LibraryReloadDialog::okClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_LibraryReloadDialog::cancelClicked);
+	connect(ui->comboQuality, combo_activated_int, this, &GUI_LibraryReloadDialog::comboChanged);
 }
-
 
 GUI_LibraryReloadDialog::~GUI_LibraryReloadDialog()
 {
@@ -60,38 +59,35 @@ void GUI_LibraryReloadDialog::setQuality(Library::ReloadQuality quality)
 	switch(quality)
 	{
 		case Library::ReloadQuality::Accurate:
-			ui->combo_quality->setCurrentIndex(1);
+			ui->comboQuality->setCurrentIndex(1);
 			break;
 		default:
-			ui->combo_quality->setCurrentIndex(0);
+			ui->comboQuality->setCurrentIndex(0);
 	}
 }
 
-
 void GUI_LibraryReloadDialog::languageChanged()
 {
-	ui->btn_ok->setText(Lang::get(Lang::OK));
-	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
-	ui->lab_title->setText(Lang::get(Lang::ReloadLibrary) + ": " + m->libraryName);
+	ui->labTitle->setText(Lang::get(Lang::ReloadLibrary) + ": " + m->libraryName);
 
-	ui->combo_quality->clear();
-	ui->combo_quality->addItem(tr("Fast scan"));
-	ui->combo_quality->addItem(tr("Deep scan"));
+	ui->comboQuality->clear();
+	ui->comboQuality->addItem(tr("Fast scan"));
+	ui->comboQuality->addItem(tr("Deep scan"));
 
-	comboChanged(ui->combo_quality->currentIndex());
+	comboChanged(ui->comboQuality->currentIndex());
 
 	this->setWindowTitle(Lang::get(Lang::ReloadLibrary) + ": " + m->libraryName);
 }
 
 void GUI_LibraryReloadDialog::okClicked()
 {
-	int cur_idx = ui->combo_quality->currentIndex();
-	if(cur_idx == 0)
+	int currentIndex = ui->comboQuality->currentIndex();
+	if(currentIndex == 0)
 	{
 		emit sigAccepted(Library::ReloadQuality::Fast);
 	}
 
-	else if(cur_idx == 1)
+	else if(currentIndex == 1)
 	{
 		emit sigAccepted(Library::ReloadQuality::Accurate);
 	}
@@ -101,7 +97,7 @@ void GUI_LibraryReloadDialog::okClicked()
 
 void GUI_LibraryReloadDialog::cancelClicked()
 {
-	ui->combo_quality->setCurrentIndex(0);
+	ui->comboQuality->setCurrentIndex(0);
 
 	close();
 }
@@ -109,10 +105,10 @@ void GUI_LibraryReloadDialog::cancelClicked()
 void GUI_LibraryReloadDialog::comboChanged(int i)
 {
 	if(i == 0){
-		ui->lab_description->setText(tr("Only scan for new and deleted files"));
+		ui->labDescription->setText(tr("Only scan for new and deleted files"));
 	}
 
 	else{
-		ui->lab_description->setText(tr("Scan all files in your library directory"));
+		ui->labDescription->setText(tr("Scan all files in your library directory"));
 	}
 }

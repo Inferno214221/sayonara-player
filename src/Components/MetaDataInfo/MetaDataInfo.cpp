@@ -26,6 +26,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Genre.h"
@@ -386,10 +387,11 @@ static QString get_date_text(uint64_t min_date, uint64_t max_date)
 	QDateTime dd_min_date = Util::intToDate(min_date);
 	QDateTime dd_max_date = Util::intToDate(max_date);
 
-	QString text = dd_min_date.toString(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
+	QLocale locale = Util::Language::getCurrentLocale();
+	QString text = dd_min_date.toString(locale.dateTimeFormat(QLocale::ShortFormat));
 	if(min_date != max_date)
 	{
-		text += " -\n" + dd_max_date.toString(QLocale::system().dateTimeFormat(QLocale::ShortFormat));
+		text += " -\n" + dd_max_date.toString(locale.dateTimeFormat(QLocale::ShortFormat));
 	}
 
 	return text;

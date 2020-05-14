@@ -309,5 +309,5 @@ int Util::textWidth(QWidget* widget, const QString& text)
 
 int Util::viewRowHeight()
 {
-	return 30;
+	return -1;
 }

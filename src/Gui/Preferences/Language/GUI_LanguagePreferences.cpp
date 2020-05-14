@@ -63,7 +63,6 @@ QString GUI_LanguagePreferences::actionName() const
 	return tr("Language") + QString(" (Language)");
 }
 
-
 void GUI_LanguagePreferences::retranslate()
 {
 	ui->retranslateUi(this);
@@ -84,8 +83,7 @@ void GUI_LanguagePreferences::skinChanged()
 
 bool GUI_LanguagePreferences::commit()
 {
-	QString fourLetter = getFourLetter(ui->comboLanguages);
-
+	const QString fourLetter = getFourLetter(ui->comboLanguages);
 	SetSetting(Set::Player_Language, fourLetter);
 
 	return true;
@@ -118,7 +116,7 @@ void GUI_LanguagePreferences::refreshCombobox()
 		QString iconPath = Language::getIconPath(fourLetter);
 
 		QLocale locale = it.value();
-		QString languageName = Util::stringToFirstUpper(locale.nativeLanguageName());
+		QString languageName = Util::stringToVeryFirstUpper(locale.nativeLanguageName().toCaseFolded());
 		if(fourLetter.startsWith("en", Qt::CaseInsensitive)){
 			languageName = "English";
 			englishIndex = i;

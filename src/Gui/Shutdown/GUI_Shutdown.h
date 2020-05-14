@@ -40,8 +40,8 @@ class GUI_Shutdown :
 		~GUI_Shutdown() override;
 
 	private slots:
-		void okClicked();
-		void cancelClicked();
+		void accepted();
+		void rejected();
 		void afterPlaylistFinishedClicked(bool b);
 		void afterTimespanClicked(bool b);
 

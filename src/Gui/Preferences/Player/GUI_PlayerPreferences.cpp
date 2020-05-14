@@ -39,6 +39,8 @@ void GUI_PlayerPreferences::initUi()
 {
 	setupParent(this, &ui);
 
+	ui->widgetWarning->setVisible(false);
+
 	ui->cbLogger->addItem(Lang::get(Lang::Default));
 	ui->cbLogger->addItem("Debug");
 	ui->cbLogger->addItem("Develop");
@@ -71,7 +73,7 @@ bool GUI_PlayerPreferences::commit()
 
 void GUI_PlayerPreferences::revert()
 {
-	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
+	bool showTrayIcon = GetSetting(Set::Player_ShowTrayIcon);
 
 	ui->cbStartInTray->setChecked(GetSetting(Set::Player_StartInTray));
 	ui->cbCloseToTray->setChecked(GetSetting(Set::Player_Min2Tray));
@@ -79,21 +81,20 @@ void GUI_PlayerPreferences::revert()
 	ui->cbShowTrayIcon->setChecked(GetSetting(Set::Player_ShowTrayIcon));
 	ui->cbLogger->setCurrentIndex(GetSetting(Set::Logger_Level));
 
-	showTrayIconToggled(show_tray_icon);
+	showTrayIconToggled(showTrayIcon);
 }
 
 void GUI_PlayerPreferences::showTrayIconToggled(bool b)
 {
 	Q_UNUSED(b)
 
-	bool show_warning =
+	bool showWarning =
 	(
 		(!ui->cbShowTrayIcon->isChecked()) &&
 		(ui->cbStartInTray->isChecked() || ui->cbCloseToTray->isChecked())
 	);
 
-	ui->labWarningHeader->setVisible(show_warning);
-	ui->labWarning->setVisible(show_warning);
+	ui->widgetWarning->setVisible(showWarning);
 }
 
 void GUI_PlayerPreferences::retranslate()

@@ -174,8 +174,8 @@ void GUI_Logger::initUi()
 
 	languageChanged();
 
-	connect(ui->btnClose, &QPushButton::clicked, this, &QWidget::close);
-	connect(ui->btnSave, &QPushButton::clicked, this, &GUI_Logger::saveClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &QWidget::close);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_Logger::saveClicked);
 	connect(ui->comboModules, &QComboBox::currentTextChanged, this, &GUI_Logger::currentModuleChanged);
 }
 
@@ -223,8 +223,6 @@ void GUI_Logger::languageChanged()
 	if(ui)
 	{
 		ui->retranslateUi(this);
-		ui->btnClose->setText(Lang::get(Lang::Close));
-		ui->btnSave->setText(Lang::get(Lang::SaveAs).triplePt());
 		this->setWindowTitle(Lang::get(Lang::Logger));
 	}
 }

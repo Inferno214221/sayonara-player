@@ -112,7 +112,6 @@ void Base::login(const QString& username, const QString& password)
 	loginThread->login(username, password);
 }
 
-
 void Base::activeChanged()
 {
 	m->loggedIn = false;
@@ -120,33 +119,39 @@ void Base::activeChanged()
 	bool active = GetSetting(Set::LFM_Active);
 	if(active)
 	{
-		QString username = GetSetting(Set::LFM_Username);
-		QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
+		const QString username = GetSetting(Set::LFM_Username);
+		const QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 		login(username, password);
 	}
 }
 
+#include "Interfaces/Notification/NotificationHandler.h"
 void Base::loginThreadFinished(bool success)
 {
+
+	auto* loginThread = static_cast<LoginThread*>(sender());
+
 	m->loggedIn = success;
 
-	if(!success){
+	const QString errorMessage = tr("Cannot login to Last.fm");
+	if(!success) {
+		NotificationHandler::instance()->notify("Sayonara", errorMessage);
 		emit sigLoggedIn(false);
 		return;
 	}
 
-	auto* login_thread = static_cast<LoginThread*>(sender());
-	LoginStuff login_info = login_thread->getLoginStuff();
-
-	m->loggedIn = login_info.loggedIn;
-	m->sessionKey = login_info.sessionKey;
+	const LoginStuff loginInfo = loginThread->getLoginStuff();
+	m->loggedIn = loginInfo.loggedIn;
+	m->sessionKey = loginInfo.sessionKey;
 
 	SetSetting(Set::LFM_SessionKey, m->sessionKey);
 
 	spLog(Log::Debug, this) << "Got session key";
 
-	if(!m->loggedIn){
+	if(!m->loggedIn)
+	{
+		NotificationHandler::instance()->notify("Sayonara", errorMessage);
 		spLog(Log::Warning, this) << "Cannot login";
 	}
 

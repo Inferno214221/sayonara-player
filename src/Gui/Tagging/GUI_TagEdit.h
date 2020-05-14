@@ -34,6 +34,7 @@ namespace Tagging
 	class Editor;
 }
 
+class QAbstractButton;
 class MetaDataList;
 class MetaData;
 
@@ -84,6 +85,9 @@ class GUI_TagEdit :
 		int count() const;
 
 		Tagging::Editor* editor() const;
+
+		QAbstractButton* saveButton();
+		QAbstractButton* closeButton();
 
 	private:
 		void setCurrentIndex(int index);

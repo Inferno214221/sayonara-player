@@ -22,6 +22,7 @@
 #include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
+#include "Gui/Utils/PreferenceAction.h"
 
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -46,13 +47,14 @@ struct ActionMenu::Private
 
 	QList<QAction*> actions()
 	{
-		return {
+		return
+		{
 			actionRep1,
 			actionAppend,
 			actionRepall,
 			actionDynamic,
 			actionShuffle,
-			actionGapless
+			actionGapless,
 		};
 	}
 };
@@ -158,7 +160,6 @@ void ActionMenu::playlistModeSettingChanged()
 
 	checkDynamicPlayButton();
 }
-
 
 // internal gui slot
 void ActionMenu::changePlaylistMode()

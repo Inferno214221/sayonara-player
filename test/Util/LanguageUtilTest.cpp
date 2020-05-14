@@ -46,7 +46,7 @@ void LanguageUtilTest::basic_path_tests()
 	QVERIFY(path == expected);
 
 	path = Language::getHttpPath("ab_CD");
-	expected = QString("https://sayonara-player.com/sw/translation/sayonara_lang_ab_CD.qm");
+	expected = QString("https://sayonara-player.com/files/translation/sayonara_lang_ab_CD.qm");
 	QVERIFY(path == expected);
 
 	path = Language::getHomeTargetPath("ab_CD");

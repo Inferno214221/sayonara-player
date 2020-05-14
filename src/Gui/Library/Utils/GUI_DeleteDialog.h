@@ -50,9 +50,7 @@ public:
 	Library::TrackDeletionMode answer() const;
 
 private slots:
-	void yesClicked();
-	void noClicked();
-	void onlyFromLibraryclicked();
+	void buttonClicked(QAbstractButton* button);
 
 protected:
 	void showEvent(QShowEvent* e) override;

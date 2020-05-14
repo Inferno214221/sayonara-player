@@ -22,6 +22,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Language/Language.h"
 
 #include <QUrl>
 #include <QDir>
@@ -191,15 +192,15 @@ QString Util::File::getFilesizeString(Filesize filesize)
 
 	QString size;
 	if(filesize > gb) {
-		size = QString::number(filesize / gb) + "." + QString::number((filesize / mb) % gb).left(2)  + " GB";
+		size = QString::number(filesize / gb) + "." + QString::number((filesize / mb) % gb).left(2) + " " + Lang::get(Lang::GB);
 	}
 
 	else if (filesize > mb) {
-		size = QString::number(filesize / mb) + "." + QString::number((filesize / kb) % mb).left(2)  + " MB";
+		size = QString::number(filesize / mb) + "." + QString::number((filesize / kb) % mb).left(2) + " " + Lang::get(Lang::MB);
 	}
 
 	else {
-		size = QString::number(filesize / kb) + " KB";
+		size = QString::number(filesize / kb) + " " + + " " + Lang::get(Lang::KB);
 	}
 
 	return size;

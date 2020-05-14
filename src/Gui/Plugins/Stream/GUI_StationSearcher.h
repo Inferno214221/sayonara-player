@@ -44,6 +44,7 @@ public:
 	~GUI_StationSearcher() override;
 
 private:
+	QAbstractButton* okButton();
 	void initLineEdit();
 	void checkListenButton();
 	void clearStations();

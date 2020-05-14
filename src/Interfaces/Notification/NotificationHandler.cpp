@@ -48,11 +48,16 @@ void NotificationHandler::notify(const MetaData& md)
 	get()->notify(md);
 }
 
-void NotificationHandler::notify(const QString& title, const QString& message, const QString& image_path)
+void NotificationHandler::notify(const QString& title, const QString& message, const QString& imagePath)
 {
-	get()->notify(title, message, image_path);
-}
+	if(imagePath.isEmpty()){
+		get()->notify(title, message, "://Icons/logo.png");
+	}
 
+	else {
+		get()->notify(title, message, imagePath);
+	}
+}
 
 void NotificationHandler::registerNotificator(NotificationInterface* notificator)
 {

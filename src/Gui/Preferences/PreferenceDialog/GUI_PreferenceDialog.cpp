@@ -37,6 +37,7 @@
 
 #include <QLayout>
 #include <QMenu>
+#include <QAbstractButton>
 
 using Preferences::Base;
 using Preferences::Action;
@@ -46,6 +47,11 @@ struct GUI_PreferenceDialog::Private
 {
 	QList<Base*>	preferenceWidgets;
 	Action*			action=nullptr;
+	int				currentRow;
+
+	Private() :
+		currentRow(-1)
+	{}
 };
 
 GUI_PreferenceDialog::GUI_PreferenceDialog(QWidget* parent) :
@@ -96,6 +102,25 @@ void GUI_PreferenceDialog::showPreference(const QString& identifier)
 	spLog(Log::Warning, this) << "Cannot find preference widget " << identifier;
 }
 
+void GUI_PreferenceDialog::buttonBoxClicked(QAbstractButton* button)
+{
+	QDialogButtonBox::ButtonRole role = ui->buttonBox->buttonRole(button);
+	switch(role)
+	{
+		case QDialogButtonBox::AcceptRole:
+			this->commitAndClose();
+			break;
+		case QDialogButtonBox::ApplyRole:
+			this->commit();
+			break;
+		case QDialogButtonBox::RejectRole:
+			this->revert();
+			close();
+			break;
+		default:
+			break;
+	}
+}
 
 void GUI_PreferenceDialog::languageChanged()
 {
@@ -125,6 +150,16 @@ void GUI_PreferenceDialog::languageChanged()
 	if(m->action){
 		m->action->setText(actionName() + "...");
 	}
+
+	if(Util::between(m->currentRow, m->preferenceWidgets.count()))
+	{
+		Base* dialog = m->preferenceWidgets[m->currentRow];
+		if(dialog){
+			ui->labPreferenceTitle->setText(dialog->actionName());
+		}
+	}
+
+	this->setWindowTitle(this->actionName());
 }
 
 QString GUI_PreferenceDialog::actionName() const
@@ -214,6 +249,8 @@ void GUI_PreferenceDialog::rowChanged(int row)
 		return;
 	}
 
+	m->currentRow = row;
+
 	hideAll();
 
 	Base* widget = m->preferenceWidgets[row];
@@ -272,10 +309,8 @@ void GUI_PreferenceDialog::initUi()
 		new Gui::StyledItemDelegate(ui->listPreferences)
 	);
 
+	connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &GUI_PreferenceDialog::buttonBoxClicked);
 	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
-	connect(ui->btnApply, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
-	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_PreferenceDialog::commitAndClose);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
 
 	QSize sz = Gui::Util::mainWindow()->size();
 	sz *= 0.66;

@@ -52,8 +52,8 @@ GUI_EditLibrary::GUI_EditLibrary(QWidget* parent) :
 	ui->btnChooseDir->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 	ui->lePath->setFocus();
 
-	connect(ui->btnOk, &QPushButton::clicked, this, &GUI_EditLibrary::okClicked);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_EditLibrary::cancelClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_EditLibrary::okClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_EditLibrary::cancelClicked);
 	connect(ui->btnChooseDir, &QPushButton::clicked, this, &GUI_EditLibrary::chooseDirClicked);
 	connect(ui->leName, &QLineEdit::textEdited, this, &GUI_EditLibrary::nameEdited);
 }
@@ -172,8 +172,6 @@ void GUI_EditLibrary::languageChanged()
 {
 	Dialog::languageChanged();
 
-	ui->btnOk->setText(Lang::get(Lang::OK));
-	ui->btnCancel->setText(Lang::get(Lang::Cancel));
 	ui->labPath->setText(Lang::get(Lang::Directory));
 	ui->labName->setText(Lang::get(Lang::Name));
 

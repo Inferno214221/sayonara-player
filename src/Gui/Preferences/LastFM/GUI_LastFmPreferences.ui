@@ -7,55 +7,45 @@
     <x>0</x>
     <y>0</y>
     <width>457</width>
-    <height>189</height>
+    <height>230</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="spacing">
     <number>10</number>
    </property>
-   <item row="1" column="0">
-    <widget class="QLabel" name="labActivate">
+   <item row="5" column="2">
+    <widget class="QLabel" name="labSeconds">
      <property name="text">
-      <string notr="true">Active</string>
+      <string notr="true">sec</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0">
-    <widget class="QLabel" name="label_2">
-     <property name="text">
-      <string>Username</string>
+   <item row="4" column="1" colspan="2">
+    <widget class="QLineEdit" name="lePassword">
+     <property name="echoMode">
+      <enum>QLineEdit::Password</enum>
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
+   <item row="3" column="1" colspan="2">
+    <widget class="QLineEdit" name="leUsername"/>
+   </item>
+   <item row="4" column="0">
     <widget class="QLabel" name="label_3">
      <property name="text">
       <string>Password</string>
      </property>
     </widget>
    </item>
-   <item row="1" column="1">
-    <widget class="QCheckBox" name="cbActivate">
-     <property name="focusPolicy">
-      <enum>Qt::StrongFocus</enum>
-     </property>
-     <property name="layoutDirection">
-      <enum>Qt::LeftToRight</enum>
-     </property>
+   <item row="2" column="0">
+    <widget class="QLabel" name="labActivate">
      <property name="text">
-      <string/>
+      <string notr="true">Active</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Scrobble time</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
+   <item row="5" column="1">
     <widget class="QSpinBox" name="sbScrobbleTime">
      <property name="minimum">
       <number>5</number>
@@ -65,14 +55,7 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="2">
-    <widget class="QLabel" name="labSeconds">
-     <property name="text">
-      <string notr="true">sec</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" colspan="3">
+   <item row="6" column="0" colspan="3">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QLabel" name="labStatus">
@@ -103,15 +86,49 @@
      </item>
     </layout>
    </item>
-   <item row="3" column="1" colspan="2">
-    <widget class="QLineEdit" name="lePassword">
-     <property name="echoMode">
-      <enum>QLineEdit::Password</enum>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Scrobble time</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="1" colspan="2">
-    <widget class="QLineEdit" name="leUsername"/>
+   <item row="2" column="1">
+    <widget class="QCheckBox" name="cbActivate">
+     <property name="focusPolicy">
+      <enum>Qt::StrongFocus</enum>
+     </property>
+     <property name="layoutDirection">
+      <enum>Qt::LeftToRight</enum>
+     </property>
+     <property name="text">
+      <string/>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Username</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0" colspan="3">
+    <widget class="QLabel" name="labWebsite">
+     <property name="text">
+      <string notr="true">https://last.fm</string>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

@@ -118,6 +118,7 @@ namespace Gui
 
 		protected:
 			void languageChanged() override;
+			void skinChanged() override;
 	};
 }
 
