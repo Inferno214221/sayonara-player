@@ -21,13 +21,8 @@
 #ifndef COVER_BUTTON_H
 #define COVER_BUTTON_H
 
-#include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
-
-#include <QPushButton>
-
-class QPixmap;
-class QResizeEvent;
+#include "Gui/Utils/Widgets/ImageButton.h"
 
 namespace Cover
 {
@@ -36,31 +31,12 @@ namespace Cover
 
 namespace Gui
 {
-	class ByteArrayConverter :
-		public QObject
-	{
-		Q_OBJECT
-		PIMPL(ByteArrayConverter)
-
-		signals:
-			void sigFinished();
-
-		public:
-			ByteArrayConverter(const QByteArray& data, const QString& mime);
-			~ByteArrayConverter();
-
-			QPixmap pixmap() const;
-
-		public slots:
-			void start();
-	};
-
 	/**
 	 * @brief The CoverButton class
 	 * @ingroup GuiCovers
 	 */
 	class CoverButton :
-			public Gui::WidgetTemplate<QPushButton>
+			public Gui::WidgetTemplate<Gui::ImageButton>
 	{
 		Q_OBJECT
 		PIMPL(CoverButton)
@@ -81,13 +57,6 @@ namespace Gui
 			void setCoverLocation(const Cover::Location& cl);
 
 			/**
-			 * @brief Sets the raw data parsed out of the audio file
-			 * @param data raw data
-			 * @param mimetype jpg, png or something similar
-			 */
-			void setCoverData(const QByteArray& data, const QString& mimetype);
-
-			/**
 			 * @brief silent results that the cover is not stored
 			 * productively. The AlternativeCoverFetcher will
 			 * save the cover to a temporary path which can be re-
@@ -97,11 +66,11 @@ namespace Gui
 			void setSilent(bool silent);
 			bool isSilent() const;
 
-			QPixmap pixmap() const;
-			int verticalPadding() const;
-
 			void setAlternativeSearchEnabled(bool b);
 			bool isAlternativeSearchEnabled() const;
+
+		private:
+			void coverFadingChanged();
 
 		public slots:
 			void trigger();
@@ -109,21 +78,7 @@ namespace Gui
 		private slots:
 			void alternativeCoverFetched(const Cover::Location& cl);
 			void coverLookupFinished(bool success);
-			void setCoverImage(const QString& path);
-			void setCoverImagePixmap(const QPixmap& pm);
 			void coversChanged();
-			void timerTimedOut();
-			void byteconverterFinished();
-
-		private:
-			using QPushButton::setIcon;
-			using QPushButton::icon;
-
-		protected:
-			void mouseMoveEvent(QMouseEvent* e) override;
-			void mouseReleaseEvent(QMouseEvent* event) override;
-			void paintEvent(QPaintEvent* event) override;
-			void resizeEvent(QResizeEvent* e) override;
 	};
 }
 
