@@ -116,12 +116,9 @@ namespace Directory
 			void viewInFileManagerClicked();
 			void dragTimerTimeout();
 
-
 		protected:
 			// Dragable
-			QMimeData*		dragableMimedata() const override;
-			bool hasDragLabel() const override;
-			QString dragLabel() const override;
+			QMimeData* dragableMimedata() const override;
 
 			void skinChanged() override;
 

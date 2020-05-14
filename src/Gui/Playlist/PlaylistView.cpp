@@ -466,7 +466,7 @@ void View::mousePressEvent(QMouseEvent* event)
 
 QMimeData* View::dragableMimedata() const
 {
-	QModelIndexList indexes = selectedIndexes();
+	const QModelIndexList indexes = selectedIndexes();
 	return m->model->mimeData(indexes);
 }
 

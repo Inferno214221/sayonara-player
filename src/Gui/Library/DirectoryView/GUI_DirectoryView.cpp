@@ -507,7 +507,6 @@ QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidg
 	return targetDirectory;
 }
 
-
 void showImageLabel(const QString& filename)
 {
 	QString f = Util::File::getFilenameOfPath(filename);

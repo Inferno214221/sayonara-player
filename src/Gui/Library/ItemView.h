@@ -91,8 +91,6 @@ namespace Library
 
 			/** Dragable **/
 			QMimeData* dragableMimedata() const override;
-			QPixmap dragPixmap() const override;
-
 			bool isValidDragPosition(const QPoint &p) const override;
 
 		protected:

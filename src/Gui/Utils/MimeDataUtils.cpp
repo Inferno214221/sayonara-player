@@ -59,16 +59,16 @@ QStringList MimeData::playlists(const QMimeData* data)
 	}
 
 	const QList<QUrl> urls = data->urls();
-	QStringList www_playlists;
+	QStringList wwwPlaylists;
 
 	for(const QUrl& url : urls)
 	{
 		if(::Util::File::isPlaylistFile(url.toString())){
-			www_playlists << url.toString();
+			wwwPlaylists << url.toString();
 		}
 	}
 
-	return www_playlists;
+	return wwwPlaylists;
 }
 
 QString MimeData::coverUrl(const QMimeData* data)
@@ -77,17 +77,17 @@ QString MimeData::coverUrl(const QMimeData* data)
 		return QString();
 	}
 
-	QString cover_url;
+	QString coverUrl;
 	const CustomMimeData* cmd = customMimedata(data);
 	if(cmd){
-		cover_url = cmd->coverUrl();
+		coverUrl = cmd->coverUrl();
 	}
 
-	if(cover_url.isEmpty()){
-		cover_url = data->property("cover_url").toString();
+	if(coverUrl.isEmpty()){
+		coverUrl = data->property("cover_url").toString();
 	}
 
-	return cover_url;
+	return coverUrl;
 }
 
 void MimeData::setCoverUrl(QMimeData* data, const QString& url)
@@ -115,19 +115,19 @@ const CustomMimeData* MimeData::customMimedata(const QMimeData* data)
 }
 
 
-bool MimeData::isInnerDragDrop(const QMimeData* data, int target_playlist_idx)
+bool MimeData::isInnerDragDrop(const QMimeData* data, int targetPlaylistIdx)
 {
 	const CustomMimeData* cmd = customMimedata(data);
 	if(!cmd){
 		return false;
 	}
 
-	int source_idx = cmd->playlistSourceIndex();
-	if(source_idx == -1){
+	int sourceIdx = cmd->playlistSourceIndex();
+	if(sourceIdx == -1){
 		return false;
 	}
 
-	return (source_idx == target_playlist_idx);
+	return (sourceIdx == targetPlaylistIdx);
 }
 
 bool MimeData::isDragFromPlaylist(const QMimeData* data)
@@ -137,8 +137,8 @@ bool MimeData::isDragFromPlaylist(const QMimeData* data)
 		return false;
 	}
 
-	int source_idx = cmd->playlistSourceIndex();
-	return (source_idx != -1);
+	int sourceIdx = cmd->playlistSourceIndex();
+	return (sourceIdx != -1);
 }
 
 bool MimeData::isPlayerDrag(const QMimeData* data)

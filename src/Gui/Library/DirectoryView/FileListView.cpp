@@ -23,6 +23,8 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
+#include "Components/Covers/LocalCoverSearcher.h" // for drag/drop
+
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
@@ -76,6 +78,8 @@ FileListView::FileListView(QWidget* parent) :
 	this->horizontalHeader()->resizeSection(0, this->fontMetrics().height());
 	this->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
 	this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+
+	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
 	{ // rename by pressing F2
 		auto* action = new QAction(this);
@@ -184,7 +188,16 @@ void FileListView::setSearchFilter(const QString& search_string)
 
 QMimeData* FileListView::dragableMimedata() const
 {
-	return m->model->mimeData(this->selectedIndexes());
+	QMimeData* mimeData = m->model->mimeData(this->selectedIndexes());
+
+	if(!this->selectedPaths().isEmpty()){
+		QStringList coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(this->selectedPaths().first());
+		if(!coverPaths.isEmpty()) {
+			Gui::MimeData::setCoverUrl(mimeData, coverPaths.first());
+		}
+	}
+
+	return mimeData;
 }
 
 int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const

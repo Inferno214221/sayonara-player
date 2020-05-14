@@ -39,6 +39,7 @@
 #include "Gui/Utils/CustomMimeData.h"
 #include "Gui/Utils/MimeDataUtils.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include <QVariant>
 #include <QModelIndex>
@@ -310,6 +311,11 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 		{
 			return QColor(214, 68, 45);
 		}
+	}
+
+	else if(role == Qt::SizeHintRole)
+	{
+		return QSize(0, Gui::Util::viewRowHeight());
 	}
 
 	else if(role == Qt::UserRole)

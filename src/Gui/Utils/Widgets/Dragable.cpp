@@ -21,6 +21,7 @@
 #include "Dragable.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/EventFilter.h"
+#include "Gui/Utils/MimeDataUtils.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -61,14 +62,18 @@ struct Dragable::Private
 	QStringList getStrings(const QMimeData* data)
 	{
 		QStringList ret;
-		int playlists, dirs, tracks, other_files;
-		playlists = dirs = tracks = other_files = 0;
+		int playlists, dirs, tracks, otherFiles;
+		playlists = dirs = tracks = otherFiles = 0;
 
 		QList<QUrl> urls = data->urls();
 
 		for(const QUrl& url : urls)
 		{
 			QString filename = url.toLocalFile();
+			if(filename.isEmpty()){
+				filename = url.toString(QUrl::PreferLocalFile);
+			}
+
 			if(FileUtils::isPlaylistFile(filename)){
 				playlists++;
 			}
@@ -82,7 +87,7 @@ struct Dragable::Private
 			}
 
 			else if(FileUtils::isFile(filename)){
-				other_files++;
+				otherFiles++;
 			}
 		}
 
@@ -98,8 +103,8 @@ struct Dragable::Private
 			ret << Lang::getWithNumber(Lang::NrDirectories, dirs);
 		}
 
-		if(other_files > 0){
-			ret << Lang::getWithNumber(Lang::NrFiles, other_files);
+		if(otherFiles > 0){
+			ret << Lang::getWithNumber(Lang::NrFiles, otherFiles);
 		}
 
 		return ret;
@@ -113,6 +118,73 @@ Dragable::Dragable(QAbstractItemView* widget)
 
 	widget->setDragEnabled(true);
 	new DragableConnector(widget, this);
+}
+
+#include <QBuffer>
+QDrag* Dragable::createDrag() const
+{
+	auto* drag = new QDrag(m->widget);
+
+	QMimeData* mimeData = dragableMimedata();
+	if(mimeData == nullptr) {
+		return drag;
+	}
+
+	QStringList strings;
+	if(!hasDragLabel()) {
+		strings = m->getStrings(mimeData);
+	}
+
+	else {
+		strings.clear();
+		strings << dragLabel();
+	}
+
+	const QFontMetrics fm = m->widget->fontMetrics();
+	const int	fontHeight = fm.height() + 8;
+	const int	logoHeight = fontHeight + 8;
+	const int	logoWidth = logoHeight;
+	const QSize logoSize(logoWidth, logoHeight);
+	const int	leftOffset = 4;
+	const int	textHeight = strings.size() * (fontHeight + 2);
+	const int	pmHeight = fontHeight * 2;
+	const int	fontPadding = (pmHeight - textHeight) / 2 + 1;
+
+	int pmWidth = logoHeight + 4;
+	for(const QString& str : Algorithm::AsConst(strings))
+	{
+		pmWidth = std::max( pmWidth, Gui::Util::textWidth(fm, str) );
+	}
+
+	pmWidth += logoWidth + 50;
+
+	const QString coverUrl = Gui::MimeData::coverUrl(mimeData);
+	QPixmap cover(coverUrl);
+	if(cover.isNull()){
+		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logoSize, true);
+	}
+
+	QPixmap pm(pmWidth, pmHeight);
+	QPainter painter(&pm);
+
+	painter.fillRect(pm.rect(), m->widget->palette().highlight().color());
+	painter.setPen(m->widget->palette().highlightedText().color());
+	painter.drawRect(0, 0, pmWidth - 1, pmHeight - 1);
+	painter.drawPixmap(leftOffset, (pmHeight - logoHeight) / 2, logoHeight, logoHeight, cover);
+	painter.translate(logoWidth + 15, fontPadding + fontHeight - 2);
+
+	for(const QString& str : Algorithm::AsConst(strings))
+	{
+		painter.drawText(0, 0, str);
+		painter.translate(0, fontHeight + 2);
+	}
+
+	mimeData->setImageData(pm);
+	drag->setMimeData(mimeData);
+	drag->setPixmap(pm);
+	drag->start();
+
+	return drag;
 }
 
 Dragable::~Dragable() = default;
@@ -131,105 +203,34 @@ QDrag* Dragable::moveDrag(const QPoint& p)
 	}
 
 	int distance = (p - m->startDraggingPosition).manhattanLength();
-
 	if(distance < QApplication::startDragDistance())
 	{
-		return m->drag;
+		return nullptr;
 	}
 
 	if(m->dragging) {
-		return m->drag;
+		return nullptr;
 	}
 
 	if(m->drag) {
 		delete m->drag;
 	}
 
+	m->drag = createDrag();
 	m->dragging = true;
 	m->startDraggingPosition = QPoint();
-	m->drag = new QDrag(m->widget);
-
-	QMimeData* data = dragableMimedata();
-	if(data == nullptr) {
-		return m->drag;
-	}
-
-	QStringList strings;
-	if(!hasDragLabel()) {
-		strings = m->getStrings(data);
-	}
-
-	else {
-		strings.clear();
-		strings << dragLabel();
-	}
-
-	QFontMetrics fm = m->widget->fontMetrics();
-	const int	logo_height = 24;
-	const int	logo_width = logo_height;
-	const QSize logo_size(logo_width, logo_height);
-	const int	left_offset = 4;
-	const int	font_height = fm.ascent();
-	const int	text_height = strings.size() * (font_height + 2);
-	const int	pm_height = std::max(30, 30 + (strings.size() - 1) * font_height + 4);
-	const int	font_padding = (pm_height - text_height) / 2 + 1;
-
-	int pm_width = logo_height + 4;
-
-	for(const QString& str : Algorithm::AsConst(strings))
-	{
-		pm_width = std::max( pm_width, Gui::Util::textWidth(fm, str) );
-	}
-
-	pm_width += logo_width + 22;
-
-
-	QPixmap cover = dragPixmap();
-	if(cover.isNull()){
-		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logo_size, true);
-	}
-
-	QPixmap pm(pm_width, pm_height);
-	QPainter painter(&pm);
-	painter.save();
-
-	painter.fillRect(pm.rect(), m->widget->palette().highlight().color());
-	painter.setPen(m->widget->palette().highlightedText().color());
-	//painter.drawRect(0, 0, pm_width - 1, pm_height - 1);
-	painter.drawPixmap(left_offset, (pm_height - logo_height) / 2, logo_height, logo_height, cover);
-	painter.translate(logo_width + 15, font_padding + font_height - 2);
-
-	for(const QString& str : Algorithm::AsConst(strings))
-	{
-		painter.drawText(0, 0, str);
-		painter.translate(0, font_height + 2);
-	}
-
-	painter.restore();
-
-	m->drag->setMimeData(data);
-	m->drag->setPixmap(pm);
-	m->drag->exec(Qt::IgnoreAction);
 
 	return m->drag;
 }
 
 
-void Dragable::releaseDrag(Dragable::ReleaseReason reason)
+void Dragable::releaseDrag()
 {
 	if(!m){
 		return;
 	}
 
-	if(reason == Dragable::ReleaseReason::Destroyed)
-	{
-		m->drag = nullptr;
-	}
-
-	else if(m->drag){
-		delete m->drag; m->drag = nullptr;
-	}
-
+	m->drag = nullptr;
 	m->dragging = false;
 	m->startDraggingPosition = QPoint();
 }
@@ -238,12 +239,6 @@ bool Dragable::isValidDragPosition(const QPoint &p) const
 {
 	Q_UNUSED(p)
 	return true;
-}
-
-
-QPixmap Dragable::dragPixmap() const
-{
-	return QPixmap();
 }
 
 bool Dragable::hasDragLabel() const
@@ -275,8 +270,8 @@ Gui::DragableConnector::DragableConnector(QAbstractItemView* widget, Gui::Dragab
 {
 	m = Pimpl::make<Private>(widget, dragable);
 
-	auto* mpef = new Gui::MousePressedFilter(widget->viewport());
-	auto* mmef = new Gui::MouseMoveFilter(widget->viewport());
+	auto* mpef = new Gui::MousePressedFilter(widget);
+	auto* mmef = new Gui::MouseMoveFilter(widget);
 
 	connect(mpef, &Gui::MousePressedFilter::sigMousePressed, this, &DragableConnector::mousePressed);
 	connect(mmef, &Gui::MouseMoveFilter::sigMouseMoved, this, &DragableConnector::mouseMoved);
@@ -298,13 +293,12 @@ void Gui::DragableConnector::mousePressed(QMouseEvent* e)
 void DragableConnector::mouseMoved(QMouseEvent* e)
 {
 	QDrag* drag = m->dragable->moveDrag(e->pos());
-	if(drag)
-	{
+	if(drag) {
 		connect(drag, &QDrag::destroyed, this, &DragableConnector::dragDestroyed);
 	}
 }
 
 void DragableConnector::dragDestroyed()
 {
-	m->dragable->releaseDrag(Dragable::ReleaseReason::Destroyed);
+	m->dragable->releaseDrag();
 }

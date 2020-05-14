@@ -219,15 +219,12 @@ void ItemView::showContextMenuActions(ContextMenu::Entries entries)
 
 QMimeData* ItemView::dragableMimedata() const
 {
-	return itemModel()->customMimedata();
-}
+	Gui::CustomMimeData* cmd = itemModel()->customMimedata();
 
-QPixmap ItemView::dragPixmap() const
-{
-	Cover::Location cl = itemModel()->cover(selectedItems());
+	const Cover::Location cl = itemModel()->cover(selectedItems());
+	cmd->setCoverUrl(cl.preferredPath());
 
-	QString cover_path = cl.preferredPath();
-	return QPixmap(cover_path);
+	return cmd;
 }
 
 void ItemView::showClearButton(bool visible)

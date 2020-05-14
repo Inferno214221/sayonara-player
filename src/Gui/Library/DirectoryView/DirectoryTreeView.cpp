@@ -22,6 +22,8 @@
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
+#include "Components/Covers/LocalCoverSearcher.h"
+
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/CustomMimeData.h"
@@ -39,6 +41,7 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QDir>
+#include <QUrl>
 #include <QMouseEvent>
 #include <QDrag>
 #include <QTimer>
@@ -227,26 +230,6 @@ void TreeView::dragTimerTimeout()
 	m->resetDrag();
 }
 
-bool TreeView::hasDragLabel() const
-{
-	return (!this->selectedPaths().isEmpty());
-}
-
-QString TreeView::dragLabel() const
-{
-	QStringList paths;
-
-	Util::Algorithm::transform(selectedPaths(), paths, [](const QString& path){
-		return Util::File::getFilenameOfPath(path);
-	});
-
-	if(paths.size() > 3){
-		return Lang::getWithNumber(Lang::NrDirectories, paths.size());
-	}
-
-	return paths.join(", ");
-}
-
 void TreeView::dragEnterEvent(QDragEnterEvent* event)
 {
 	m->resetDrag();
@@ -361,18 +344,21 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 
 	for(const QUrl& url : urls)
 	{
-		const QString source = url.toLocalFile();
+		QString localFile = url.toLocalFile();
+		if(localFile.isEmpty()){
+			localFile = url.toString(QUrl::PreferLocalFile);
+		}
 
-		if(Util::File::isDir(source))
+		if(Util::File::isDir(localFile))
 		{
-			if(Util::File::canCopyDir(source, targetDirectory)){
-				sourceDirectories << source;
+			if(Util::File::canCopyDir(localFile, targetDirectory)){
+				sourceDirectories << localFile;
 			}
 		}
 
-		else if(Util::File::isFile(source))
+		else if(Util::File::isFile(localFile))
 		{
-			sourceFiles << url.toLocalFile();
+			sourceFiles << localFile;
 		}
 	}
 
@@ -495,15 +481,26 @@ QMimeData* TreeView::dragableMimedata() const
 {
 	const QModelIndexList selectedItems = this->selctedRows();
 
+	QStringList paths;
 	QList<QUrl> urls;
 	for(const QModelIndex& index : selectedItems)
 	{
 		const QString path = m->model->filePath(index);
+		paths << path;
 		urls << QUrl::fromLocalFile(path);
 		spLog(Log::Debug, this) << "Dragging " << path;
 	}
 
 	auto* cmd = new Gui::CustomMimeData(this);
+
+	if(!paths.isEmpty())
+	{
+		const QStringList coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
+		if(!coverPaths.isEmpty()) {
+			cmd->setCoverUrl(coverPaths.first());
+		}
+	}
+
 	cmd->setUrls(urls);
 
 	return cmd;

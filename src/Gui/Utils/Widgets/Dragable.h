@@ -74,14 +74,14 @@ namespace Gui
 		private:
 			PIMPL(Dragable)
 
+			QDrag*	createDrag() const;
 			void	startDrag(const QPoint& p);
 			QDrag*	moveDrag(const QPoint& p);
-			void	releaseDrag(ReleaseReason reason);
+			void	releaseDrag();
 
 		protected:
 			virtual QMimeData*	dragableMimedata() const=0;
 			virtual bool		isValidDragPosition(const QPoint& p) const;
-			virtual QPixmap		dragPixmap() const;
 			virtual bool		hasDragLabel() const;
 			virtual QString		dragLabel() const;
 	};
