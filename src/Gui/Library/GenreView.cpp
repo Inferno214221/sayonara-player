@@ -24,7 +24,7 @@
 
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Library/Utils/GenreViewContextMenu.h"
-#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
 

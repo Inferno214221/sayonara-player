@@ -20,7 +20,7 @@
 
 #include "MimeDataUtils.h"
 
-#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"

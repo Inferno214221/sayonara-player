@@ -34,11 +34,11 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Algorithm.h"
 
+#include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
 #include "Gui/Utils/PreferenceAction.h"
-#include "Gui/Utils/CustomMimeData.h"
-#include "Gui/Utils/MimeDataUtils.h"
 #include "Gui/Utils/Icons.h"
 
 #include <QDir>

@@ -35,7 +35,7 @@
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
 
-#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Utils.h"

@@ -36,8 +36,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 
 #include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/MimeDataUtils.h"
-#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/Icons.h"
 
 #include <QUrl>

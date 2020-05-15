@@ -35,8 +35,8 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-#include "Gui/Utils/CustomMimeData.h"
-#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
 #include "Utils/Parser/StreamParser.h"

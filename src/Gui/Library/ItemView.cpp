@@ -45,7 +45,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
-#include "Gui/Utils/CustomMimeData.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/Icons.h"
 
 #include <QKeySequence>

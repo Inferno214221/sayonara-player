@@ -5,9 +5,10 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Algorithm.h"
-#include "Utils/CustomMimeData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
+
+#include "Utils/MimeData/CustomMimeData.h"
 
 struct HistoryEntryModel::Private
 {

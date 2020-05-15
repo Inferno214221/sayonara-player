@@ -24,7 +24,7 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
-#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"

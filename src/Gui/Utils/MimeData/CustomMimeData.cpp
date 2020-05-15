@@ -20,7 +20,7 @@
 
 #include "CustomMimeData.h"
 
-#include "Gui/Utils/MimeDataUtils.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
 #include "Utils/FileUtils.h"
