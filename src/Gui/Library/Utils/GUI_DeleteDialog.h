@@ -29,7 +29,6 @@
 
 UI_FWD(GUI_DeleteDialog)
 
-
 /**
  * @brief The GUI_DeleteDialog class
  * @ingroup Gui
@@ -50,7 +49,8 @@ public:
 	Library::TrackDeletionMode answer() const;
 
 private slots:
-	void buttonClicked(QAbstractButton* button);
+	void yesClicked();
+	void noClicked();
 
 protected:
 	void showEvent(QShowEvent* e) override;

@@ -135,7 +135,7 @@ void GUI_Stream::searchRadioTriggered()
 	if(!m->searcher)
 	{
 		m->searcher = new GUI_StationSearcher(this);
-		connect(m->searcher, &GUI_StationSearcher::sig_stream_selected, this, &GUI_Stream::streamSelected);
+		connect(m->searcher, &GUI_StationSearcher::sigStreamSelected, this, &GUI_Stream::streamSelected);
 	}
 
 	m->searcher->show();

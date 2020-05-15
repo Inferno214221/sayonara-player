@@ -60,10 +60,9 @@ class GUI_PreferenceDialog :
 		void registerPreferenceDialog(Preferences::Base* dialog);
 		void showPreference(const QString& identifier) override;
 
-	private slots:
-		void buttonBoxClicked(QAbstractButton* button);
-
 	protected slots:
+		bool commit();
+		void revert();
 		void commitAndClose();
 		void rowChanged(int row);
 
@@ -73,11 +72,6 @@ class GUI_PreferenceDialog :
 		void showEvent(QShowEvent* e) override;
 
 		void hideAll();
-
-	private:
-		bool commit();
-		void revert();
-
 };
 
 #endif // GUI_PreferenceDialog_H

@@ -37,7 +37,7 @@
 
 #include <QLayout>
 #include <QMenu>
-#include <QAbstractButton>
+#include <QPushButton>
 
 using Preferences::Base;
 using Preferences::Action;
@@ -100,26 +100,6 @@ void GUI_PreferenceDialog::showPreference(const QString& identifier)
 	}
 
 	spLog(Log::Warning, this) << "Cannot find preference widget " << identifier;
-}
-
-void GUI_PreferenceDialog::buttonBoxClicked(QAbstractButton* button)
-{
-	QDialogButtonBox::ButtonRole role = ui->buttonBox->buttonRole(button);
-	switch(role)
-	{
-		case QDialogButtonBox::AcceptRole:
-			this->commitAndClose();
-			break;
-		case QDialogButtonBox::ApplyRole:
-			this->commit();
-			break;
-		case QDialogButtonBox::RejectRole:
-			this->revert();
-			close();
-			break;
-		default:
-			break;
-	}
 }
 
 void GUI_PreferenceDialog::languageChanged()
@@ -309,7 +289,14 @@ void GUI_PreferenceDialog::initUi()
 		new Gui::StyledItemDelegate(ui->listPreferences)
 	);
 
-	connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &GUI_PreferenceDialog::buttonBoxClicked);
+	QPushButton* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
+	QPushButton* applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
+	QPushButton* closeButton = ui->buttonBox->button(QDialogButtonBox::Cancel);
+
+	connect(okButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::commitAndClose);
+	connect(applyButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
+	connect(closeButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
+
 	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
 
 	QSize sz = Gui::Util::mainWindow()->size();

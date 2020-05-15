@@ -18,32 +18,33 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_StationSearcher.h"
 #include "Gui/Plugins/ui_GUI_StationSearcher.h"
 #include "Components/Streaming/StationSearcher/StationSearcher.h"
+
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
+
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/EventFilter.h"
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
 
 #include <QMenu>
 
 struct GUI_StationSearcher::Private
 {
-	QList<RadioStation> stations;
-	StationSearcher*	searcher;
-	StationSearcher::Mode mode;
-	QMenu*				contextMenu=nullptr;
+	QList<RadioStation>		stations;
+	StationSearcher*		searcher;
+	StationSearcher::Mode	mode;
+	QMenu*					contextMenu=nullptr;
 
 	Private(GUI_StationSearcher* parent) :
 		mode(StationSearcher::NewSearch)
 	{
 		searcher = new StationSearcher(parent);
 	}
-
 
 	void setFromToLabel(QLabel* label)
 	{
@@ -94,21 +95,22 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui->splitter->setStretchFactor(0, 3);
 	ui->splitter->setStretchFactor(1, 1);
 
+	ui->twStations->setItemDelegate(new Gui::StyledItemDelegate(ui->twStations));
+	ui->twStreams->setItemDelegate(new Gui::StyledItemDelegate(ui->twStreams));
+
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::listenClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
 	connect(ui->leSearch, &QLineEdit::textChanged, this, &GUI_StationSearcher::searchTextChanged);
 	connect(ui->leSearch, &QLineEdit::returnPressed, this, &GUI_StationSearcher::searchClicked);
-	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::listenClicked);
 	connect(ui->btnSearch, &QPushButton::clicked, this, &GUI_StationSearcher::searchClicked);
 	connect(ui->btnSearchNext, &QPushButton::clicked, this, &GUI_StationSearcher::searchNextClicked);
 	connect(ui->btnSearchPrev, &QPushButton::clicked, this, &GUI_StationSearcher::searchPreviousClicked);
-
 	connect(ui->twStations, &QTableWidget::itemSelectionChanged, this, &GUI_StationSearcher::stationsChanged);
 	connect(ui->twStreams, &QTableWidget::itemSelectionChanged, this, &GUI_StationSearcher::streamChanged);
-
 	connect(m->searcher, &StationSearcher::sigStationsFound, this, &GUI_StationSearcher::stationsFetched);
 }
 
-GUI_StationSearcher::~GUI_StationSearcher() {}
+GUI_StationSearcher::~GUI_StationSearcher() = default;
 
 QAbstractButton* GUI_StationSearcher::okButton()
 {
@@ -144,14 +146,14 @@ void GUI_StationSearcher::checkListenButton()
 {
 	okButton()->setEnabled(false);
 
-	int cur_station = ui->twStations->currentRow();
-	if(cur_station < 0 || cur_station >= m->stations.size()){
+	int currentStationIndex = ui->twStations->currentRow();
+	if(currentStationIndex < 0 || currentStationIndex >= m->stations.size()){
 		return;
 	}
 
-	RadioStation station = m->stations[cur_station];
-	int cur_stream = ui->twStreams->currentRow();
-	if(cur_stream < 0 || cur_stream >= station.streams.size()){
+	RadioStation station = m->stations[currentStationIndex];
+	int currentStreamIndex = ui->twStreams->currentRow();
+	if(currentStreamIndex < 0 || currentStreamIndex >= station.streams.size()){
 		return;
 	}
 
@@ -186,7 +188,7 @@ void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
 
 void GUI_StationSearcher::searchClicked()
 {
-	QString text = ui->leSearch->text();
+	const QString text = ui->leSearch->text();
 	if(text.isEmpty()){
 		return;
 	}
@@ -219,7 +221,6 @@ void GUI_StationSearcher::searchPreviousClicked()
 	ui->twStreams->setEnabled(false);
 }
 
-
 void GUI_StationSearcher::searchNextClicked()
 {
 	m->searcher->searchNext();
@@ -229,10 +230,20 @@ void GUI_StationSearcher::searchNextClicked()
 	ui->twStreams->setEnabled(false);
 }
 
+static
+QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics& fm)
+{
+	auto* item = new QTableWidgetItem(text);
+	int width = std::min(Gui::Util::textWidth(fm, text + "bla"), 250);
+	item->setSizeHint(QSize(width, 0));
+	item->setToolTip(text);
+
+	return item;
+};
 
 void GUI_StationSearcher::stationsFetched()
 {
-	QList<RadioStation> stations = m->searcher->foundStations();
+	const QList<RadioStation> stations = m->searcher->foundStations();
 
 	ui->pbProgress->setVisible(false);
 	ui->twStations->setEnabled(true);
@@ -268,40 +279,40 @@ void GUI_StationSearcher::stationsFetched()
 	ui->twStations->setHorizontalHeaderItem(2, new QTableWidgetItem(Lang::get(Lang::Info)));
 	ui->twStations->setHorizontalHeaderItem(3, new QTableWidgetItem("Url"));
 
+	ui->twStations->horizontalHeader()->setResizeContentsPrecision(20);
+
+	const QFontMetrics fm = this->fontMetrics();
 	int row=0;
 	for(const RadioStation& station : m->stations)
 	{
-		QTableWidgetItem* item_name = new QTableWidgetItem(station.name);
-		QTableWidgetItem* item_location = new QTableWidgetItem(station.location);
-		QTableWidgetItem* item_desc = new QTableWidgetItem(station.description);
-		QTableWidgetItem* item_url = new QTableWidgetItem(station.home_url);
+		auto* itemName = createTableWidgetItem(station.name, fm);
+		auto* itemLocation = createTableWidgetItem(station.location, fm);
+		auto* itemDesc = createTableWidgetItem(station.description, fm );
+		auto* itemUrl = createTableWidgetItem(station.home_url, fm);
 
-		ui->twStations->setItem(row, 0, item_name);
-		ui->twStations->setItem(row, 1, item_location);
-		ui->twStations->setItem(row, 2, item_desc);
-		ui->twStations->setItem(row, 3, item_url);
+		ui->twStations->setItem(row, 0, itemName);
+		ui->twStations->setItem(row, 1, itemLocation);
+		ui->twStations->setItem(row, 2, itemDesc);
+		ui->twStations->setItem(row, 3, itemUrl);
 
-		item_name->setToolTip(station.description);
+		itemName->setToolTip(station.description);
 
 		row++;
 	}
 
 	ui->twStations->setEnabled(true);
-	ui->twStations->resizeColumnToContents(0);
-	ui->twStations->setColumnWidth(0,
-		std::max(ui->twStations->columnWidth(0), ui->twStations->width() / 3)
-	);
+	ui->twStations->resizeColumnsToContents();
 }
 
 void GUI_StationSearcher::listenClicked()
 {
-	int cur_station_index = ui->twStations->currentRow();
-	RadioStation station = m->stations.at(cur_station_index);
+	int currentStationIndex = ui->twStations->currentRow();
+	const RadioStation station = m->stations.at(currentStationIndex);
 
-	int cur_stream_index = ui->twStreams->currentRow();
-	RadioUrl radio_url = station.streams.at(cur_stream_index);
+	int currentStreamIndex = ui->twStreams->currentRow();
+	const RadioUrl radio_url = station.streams.at(currentStreamIndex);
 
-	emit sig_stream_selected(station.name, radio_url.url);
+	emit sigStreamSelected(station.name, radio_url.url);
 
 	this->close();
 }
@@ -325,17 +336,16 @@ void GUI_StationSearcher::searchTextChanged(const QString& text)
 	}
 }
 
-
 void GUI_StationSearcher::stationsChanged()
 {
 	okButton()->setEnabled(false);
 
-	int cur_row = ui->twStations->currentRow();
-	if(cur_row < 0 || cur_row >= m->stations.count()){
+	int currentRow = ui->twStations->currentRow();
+	if(currentRow < 0 || currentRow >= m->stations.count()){
 		return;
 	}
 
-	RadioStation station = m->stations[cur_row];
+	RadioStation station = m->stations[currentRow];
 
 	clearStreams();
 	checkListenButton();
@@ -347,20 +357,23 @@ void GUI_StationSearcher::stationsChanged()
 	ui->twStreams->setHorizontalHeaderItem(1, new QTableWidgetItem(Lang::get(Lang::Bitrate)));
 	ui->twStreams->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Url")));
 
-	int row = 0;
-	for(const RadioUrl& radio_url : station.streams)
-	{
-		QTableWidgetItem* item_type = new QTableWidgetItem(radio_url.type);
-		QTableWidgetItem* item_bitrate = new QTableWidgetItem(radio_url.bitrate);
-		QTableWidgetItem* item_url = new QTableWidgetItem(radio_url.url);
+	const QFontMetrics fm = this->fontMetrics();
 
-		ui->twStreams->setItem(row, 0, item_type);
-		ui->twStreams->setItem(row, 1, item_bitrate);
-		ui->twStreams->setItem(row, 2, item_url);
+	int row = 0;
+	for(const RadioUrl& radioUrl : station.streams)
+	{
+		auto* itemType = createTableWidgetItem(radioUrl.type, fm);
+		auto* itemBitrate = createTableWidgetItem(radioUrl.bitrate, fm);
+		auto* itemUrl = createTableWidgetItem(radioUrl.url, fm);
+
+		ui->twStreams->setItem(row, 0, itemType);
+		ui->twStreams->setItem(row, 1, itemBitrate);
+		ui->twStreams->setItem(row, 2, itemUrl);
 
 		row++;
 	}
 
+	ui->twStreams->resizeColumnsToContents();
 	ui->twStreams->setCurrentItem(ui->twStreams->item(0, 0));
 	streamChanged();
 }
@@ -369,7 +382,6 @@ void GUI_StationSearcher::streamChanged()
 {
 	checkListenButton();
 }
-
 
 void GUI_StationSearcher::showEvent(QShowEvent* e)
 {
@@ -399,7 +411,7 @@ void GUI_StationSearcher::languageChanged()
 	ui->btnSearchNext->setText(Lang::get(Lang::NextPage));
 	ui->btnSearchPrev->setText(Lang::get(Lang::PreviousPage));
 
-	QString tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
+	const QString tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
 		.arg(Lang::get(Lang::SearchNoun))
 		.arg(Lang::get(Lang::RadioStation))
 		.arg(Lang::get(Lang::Genre));
@@ -411,10 +423,9 @@ void GUI_StationSearcher::languageChanged()
 	ui->label->setText(Lang::get(Lang::SearchNoun) + ": " + Lang::get(Lang::RadioStation));
 }
 
-
 void GUI_StationSearcher::skinChanged()
 {
-	QFontMetrics fm = this->fontMetrics();
+	const QFontMetrics fm = this->fontMetrics();
 
 	ui->twStations->horizontalHeader()->setMinimumHeight(std::max(fm.height() + 10, 20));
 	ui->labLink->setText(Util::createLink("fmstream.org", Style::isDark(), true, "http://fmstream.org"));

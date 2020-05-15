@@ -45,7 +45,11 @@ GUI_DeleteDialog::GUI_DeleteDialog(int trackCount, QWidget* parent) :
 	ui = new Ui::GUI_DeleteDialog();
 	ui->setupUi(this);
 
-	connect(ui->buttonBox, &QDialogButtonBox::clicked, this, &GUI_DeleteDialog::buttonClicked);
+	QPushButton* btnYes = ui->buttonBox->button(QDialogButtonBox::Yes);
+	QPushButton* btnNo = ui->buttonBox->button(QDialogButtonBox::No);
+
+	connect(btnYes, &QPushButton::clicked, this, &GUI_DeleteDialog::yesClicked);
+	connect(btnNo, &QPushButton::clicked, this, &GUI_DeleteDialog::noClicked);
 }
 
 GUI_DeleteDialog::~GUI_DeleteDialog() = default;
@@ -56,27 +60,24 @@ Library::TrackDeletionMode GUI_DeleteDialog::answer() const
 	return m->answer;
 }
 
-void GUI_DeleteDialog::buttonClicked(QAbstractButton* button)
+void GUI_DeleteDialog::yesClicked()
 {
-	QDialogButtonBox::ButtonRole role = ui->buttonBox->buttonRole(button);
-	if(role == QDialogButtonBox::YesRole)
+	if(ui->cbOnlyFromLibrary->isChecked())
 	{
-		if(ui->cbOnlyFromLibrary->isChecked())
-		{
-			m->answer = Library::TrackDeletionMode::OnlyLibrary;
-		}
-
-		else
-		{
-			m->answer = Library::TrackDeletionMode::AlsoFiles;
-		}
+		m->answer = Library::TrackDeletionMode::OnlyLibrary;
 	}
 
-	else if(role == QDialogButtonBox::NoRole)
+	else
 	{
-		m->answer = Library::TrackDeletionMode::None;
+		m->answer = Library::TrackDeletionMode::AlsoFiles;
 	}
 
+	close();
+}
+
+void GUI_DeleteDialog::noClicked()
+{
+	m->answer = Library::TrackDeletionMode::None;
 	close();
 }
 
@@ -92,7 +93,7 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 	ui->labInfo->setText
 	(
 		tr("You are about to delete %n file(s)", "", m->trackCount) +
-			"\n" +
+			"!\n" +
 			Lang::get(Lang::Continue).question()
 	);
 }

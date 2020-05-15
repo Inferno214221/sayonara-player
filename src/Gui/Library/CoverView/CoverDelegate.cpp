@@ -45,12 +45,16 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 	painter->save();
 	painter->translate(option.rect.x(), option.rect.y());
 
-//	QPalette palette = option.palette;
-//	QBrush darkBackground = palette.alternateBase();
-//	painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, darkBackground);
+	QPalette palette = option.palette;
+	{
+		QColor backgroundColor = palette.alternateBase().color();
+		backgroundColor.setAlpha(0);
+		QBrush darkBackground(backgroundColor);
+		painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, darkBackground);
+	}
 
 	{
-		QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
+		const QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
 		if(pm.isNull()){
 			painter->restore();
 			return;
