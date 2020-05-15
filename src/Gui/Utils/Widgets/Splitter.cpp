@@ -1,12 +1,13 @@
 #include "Splitter.h"
+#include "Gui/Utils/EventFilter.h"
 #include <QMouseEvent>
 
 struct Gui::Splitter::Private
 {
-	bool moveAllowed;
+	bool handleEnabled;
 
 	Private() :
-		moveAllowed(true)
+		handleEnabled(true)
 	{}
 };
 
@@ -20,12 +21,12 @@ Gui::Splitter::~Splitter() = default;
 
 void Gui::Splitter::setHandleEnabled(bool b)
 {
-	m->moveAllowed = b;
+	m->handleEnabled = b;
 }
 
 bool Gui::Splitter::isHandleEnabled() const
 {
-	return m->moveAllowed;
+	return m->handleEnabled;
 }
 
 QSplitterHandle* Gui::Splitter::createHandle()

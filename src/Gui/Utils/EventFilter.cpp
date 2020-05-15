@@ -99,6 +99,22 @@ bool MousePressedFilter::eventFilter(QObject* o, QEvent* e)
 }
 
 
+MouseReleasedFilter::MouseReleasedFilter(QObject* parent) :
+	QObject(parent)
+{}
+
+bool MouseReleasedFilter::eventFilter(QObject* o, QEvent* e)
+{
+	if(e->type() == QEvent::MouseButtonRelease)
+	{
+		e->accept();
+		emit sigMouseReleased(static_cast<QMouseEvent*>(e));
+	}
+
+	return QObject::eventFilter(o, e);
+}
+
+
 MouseEnterFilter::MouseEnterFilter(QObject* parent) :
 	QObject(parent)
 {}

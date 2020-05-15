@@ -12,6 +12,9 @@ namespace Gui
 		Q_OBJECT
 		PIMPL(Splitter)
 
+		signals:
+			void sigResizeFinished();
+
 		public:
 			explicit Splitter(QWidget* parent=nullptr);
 			~Splitter() override;
@@ -28,8 +31,12 @@ namespace Gui
 	{
 		Q_OBJECT
 
+		signals:
+			void sigResizeFinished();
+
 		public:
 			using QSplitterHandle::QSplitterHandle;
+			void isPressed();
 
 		protected:
 			void mouseMoveEvent(QMouseEvent* e) override;

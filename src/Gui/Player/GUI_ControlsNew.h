@@ -63,7 +63,7 @@ class GUI_ControlsNew :
 		QPushButton* btnStop() const override;
 		Gui::CoverButton* btnCover() const override;
 
-		void rating_changed_here(bool save);
+		void ratingChangedHere(bool save);
 		bool isExternResizeAllowed() const override;
 
 	protected:

@@ -430,11 +430,11 @@ void GUI_LocalLibrary::importDialogRequested(const QString& targetDirectory)
 		return;
 	}
 
-	auto* ui_importer = new GUI_ImportDialog(m->library, true, this);
-	ui_importer->setTargetDirectory(targetDirectory);
+	auto* uiImporter = new GUI_ImportDialog(m->library, true, this);
+	uiImporter->setTargetDirectory(targetDirectory);
 
-	connect(ui_importer, &Gui::Dialog::sigClosed, ui_importer, &QObject::deleteLater);
-	ui_importer->show();
+	connect(uiImporter, &Gui::Dialog::sigClosed, uiImporter, &QObject::deleteLater);
+	uiImporter->show();
 }
 
 void GUI_LocalLibrary::splitterArtistMoved(int pos, int idx)

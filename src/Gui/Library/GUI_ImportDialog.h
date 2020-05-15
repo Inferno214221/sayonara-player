@@ -57,10 +57,12 @@ class GUI_ImportDialog :
 		void setProgress(int percent);
 		void cachedFilesChanged();
 
+	private:
+		QAbstractButton* btnOk();
+		QAbstractButton* btnCancel();
+
 	protected:
-		void closeEvent(QCloseEvent* e) override;
 		void showEvent(QShowEvent* e) override;
-		void languageChanged() override;
 };
 
 #endif /* GUIIMPORTFOLDER_H_ */

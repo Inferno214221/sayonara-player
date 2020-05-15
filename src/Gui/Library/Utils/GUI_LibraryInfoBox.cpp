@@ -82,7 +82,7 @@ void GUI_LibraryInfoBox::languageChanged()
 	ui->lab_duration->setText(Lang::get(Lang::Duration));
 	ui->lab_filesize_descr->setText(Lang::get(Lang::Filesize));
 
-	Library::Manager* manager = Library::Manager::instance();
+	auto* manager = Library::Manager::instance();
 	Library::Info info = manager->libraryInfo(m->libraryId);
 
 	ui->lab_name->setText(Lang::get(Lang::Library) + ": " + info.name());
@@ -92,7 +92,7 @@ void GUI_LibraryInfoBox::languageChanged()
 
 void GUI_LibraryInfoBox::skinChanged()
 {
-	Library::Manager* manager = Library::Manager::instance();
+	auto* manager = Library::Manager::instance();
 	Library::Info info = manager->libraryInfo(m->libraryId);
 	bool dark = Style::isDark();
 
@@ -111,33 +111,33 @@ void GUI_LibraryInfoBox::showEvent(QShowEvent* e)
 void GUI_LibraryInfoBox::refresh()
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->libraryDatabase(m->libraryId, 0);
+	DB::LibraryDatabase* libDb = db->libraryDatabase(m->libraryId, 0);
 
-	MetaDataList v_md;
-	AlbumList v_albums;
-	ArtistList v_artists;
+	MetaDataList tracks;
+	AlbumList albums;
+	ArtistList artists;
 
-	lib_db->getAllTracks(v_md);
-	lib_db->getAllAlbums(v_albums, false);
-	lib_db->getAllArtists(v_artists, false);
+	libDb->getAllTracks(tracks);
+	libDb->getAllAlbums(albums, false);
+	libDb->getAllArtists(artists, false);
 
-	auto n_tracks = v_md.size();
-	auto n_albums = v_albums.size();
-	auto n_artists = v_artists.size();
+	auto nTracks = tracks.size();
+	auto nAlbums = albums.size();
+	auto nArtists = artists.size();
 	MilliSeconds durationMs = 0;
 	Filesize filesize = 0;
 
-	for( const MetaData& md : v_md ) {
+	for( const MetaData& md : tracks ) {
 		durationMs += md.durationMs();
 		filesize += md.filesize();
 	}
 
-	QString duration_string = Util::msToString(durationMs, "$De $He $M:$S");
-	QString filesize_str = Util::File::getFilesizeString(filesize);
+	const QString durationString = Util::msToString(durationMs, "$De $He $M:$S");
+	const QString filesizeStr = Util::File::getFilesizeString(filesize);
 
-	ui->lab_album_count->setText(QString::number(n_albums));
-	ui->lab_track_count->setText(QString::number(n_tracks));
-	ui->lab_artist_count->setText(QString::number(n_artists));
-	ui->lab_duration_value->setText(duration_string);
-	ui->lab_filesize->setText(filesize_str);
+	ui->lab_album_count->setText(QString::number(nAlbums));
+	ui->lab_track_count->setText(QString::number(nTracks));
+	ui->lab_artist_count->setText(QString::number(nArtists));
+	ui->lab_duration_value->setText(durationString);
+	ui->lab_filesize->setText(filesizeStr);
 }

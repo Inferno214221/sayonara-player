@@ -189,15 +189,13 @@ void GUI_Player::initMainSplitter()
 
 void GUI_Player::initControlSplitter()
 {
-	QByteArray splitter_state = GetSetting(Set::Player_SplitterControls);
-	if(!splitter_state.isEmpty())
-	{
-		ui->splitterControls->restoreState(splitter_state);
+	const QByteArray splitterState = GetSetting(Set::Player_SplitterControls);
+	if(!splitterState.isEmpty()) {
+		ui->splitterControls->restoreState(splitterState);
 	}
 
-	else
-	{
-		this->checkControlSplitter(true);
+	else {
+		this->checkControlSplitter();
 	}
 }
 
@@ -242,7 +240,7 @@ void GUI_Player::initConnections()
 	auto* dbl_click_filter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
 	connect(dbl_click_filter, &Gui::GenericFilter::sigEvent, this, [=](QEvent::Type)
 	{
-		this->checkControlSplitter(true);
+		this->checkControlSplitter();
 	});
 
 	ui->splitterControls->handle(1)->installEventFilter(dbl_click_filter);
@@ -334,6 +332,8 @@ void GUI_Player::pluginActionTriggered(bool b)
 	else {
 		ui->pluginWidget->close();
 	}
+
+	checkControlSplitter();
 }
 
 void GUI_Player::initControls()
@@ -350,7 +350,6 @@ void GUI_Player::initControls()
 	ui->controls->layout()->addWidget(m->controls);
 	ui->splitterControls->setHandleEnabled(m->controls->isExternResizeAllowed());
 }
-
 
 void GUI_Player::controlstyleChanged()
 {
@@ -408,7 +407,7 @@ void GUI_Player::showLibraryChanged()
 
 	QSize playerSize = this->size();
 	QList<int> sizes = ui->splitter->sizes();
-	QByteArray splitter_controls_state = ui->splitterControls->saveState();
+	QByteArray splitterControlsState = ui->splitterControls->saveState();
 
 	if(GetSetting(Set::Lib_Show))
 	{
@@ -443,7 +442,7 @@ void GUI_Player::showLibraryChanged()
 		this->resize(playerSize);
 
 		ui->splitter->setSizes(sizes);
-		ui->splitterControls->restoreState(splitter_controls_state);
+		ui->splitterControls->restoreState(splitterControlsState);
 	}
 }
 
@@ -479,39 +478,30 @@ void GUI_Player::removeCurrentLibrary()
 
 void GUI_Player::splitterMainMoved(int /*pos*/, int /*idx*/)
 {
-	checkControlSplitter((QApplication::keyboardModifiers() & Qt::ControlModifier));
-
-	// we have to reset the minimum size otherwise the old minimum size stays active
-	// and we cannot enlarge that cover after the cover geometry has changed
-	ui->splitterControls->widget(1)->setMinimumHeight(200);
+	checkControlSplitter();
 }
 
 void GUI_Player::splitterControlsMoved(int /*pos*/, int /*idx*/)
 {
-	checkControlSplitter(false);
+	checkControlSplitter();
 }
 
-void GUI_Player::checkControlSplitter(bool force)
+void GUI_Player::checkControlSplitter()
 {
 	if(m->controls && m->controls->isExternResizeAllowed())
 	{
-		// remove empty space on top/bottom of cover
+		QList<int> sizes = ui->splitterControls->sizes();
+
+		 // remove empty space on top/bottom of cover
 		int difference = m->controls->btnCover()->verticalPadding();
-		if(difference > 0 || force)
-		{
-			auto sizes = ui->splitterControls->sizes();
-				sizes[0] -= difference;
-				sizes[1] += difference;
+		sizes[0] -= difference;
 
-			if(sizes[1] >= 200)
-			{
-				{ // avoid flickering
-					ui->splitterControls->widget(1)->setMinimumHeight(sizes[1]);
-				}
-
-				ui->splitterControls->setSizes(sizes);
-			}
+		if(sizes[0] > 0) {
+			ui->splitterControls->widget(0)->setMaximumHeight(sizes[0]);
 		}
+
+		int minimumHeight = ui->pluginWidget->isVisible() ? 350 : 200;
+		ui->splitterControls->widget(1)->setMinimumHeight(minimumHeight);
 	}
 }
 
@@ -562,7 +552,7 @@ void GUI_Player::requestShutdown()
 void GUI_Player::resizeEvent(QResizeEvent* e)
 {
 	Gui::MainWindow::resizeEvent(e);
-	checkControlSplitter(true);
+	checkControlSplitter();
 }
 
 void GUI_Player::closeEvent(QCloseEvent* e)

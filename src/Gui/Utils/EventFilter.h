@@ -131,6 +131,26 @@ namespace Gui
 	};
 
 	/**
+	 * @brief The MouseMoveFilter class
+	 * @ingroup EventFilter
+	 */
+	class MouseReleasedFilter :
+			public QObject
+	{
+		Q_OBJECT
+
+		public:
+			explicit MouseReleasedFilter(QObject* parent=nullptr);
+
+		signals:
+			void sigMouseReleased(QMouseEvent* e);
+
+		protected:
+			bool eventFilter(QObject* o , QEvent* e);
+	};
+
+
+	/**
 	 * @brief The MouseEnterFilter class
 	 * @ingroup EventFilter
 	 */

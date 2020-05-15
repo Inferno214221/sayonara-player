@@ -71,7 +71,7 @@ private:
 	void initFontChangeFix();
 	void initGeometry();
 
-	void checkControlSplitter(bool force);
+	void checkControlSplitter();
 
 	void fullscreenChanged();
 	void initControls();

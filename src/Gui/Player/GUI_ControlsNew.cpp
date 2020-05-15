@@ -34,7 +34,7 @@ GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
 	ui->setupUi(this);
 
 	ui->widget_rating->setMouseTrackable(false);
-	connect(ui->widget_rating, &RatingEditor::sigFinished, this, &GUI_ControlsNew::rating_changed_here);
+	connect(ui->widget_rating, &RatingEditor::sigFinished, this, &GUI_ControlsNew::ratingChangedHere);
 }
 
 GUI_ControlsNew::~GUI_ControlsNew()
@@ -65,7 +65,7 @@ QPushButton* GUI_ControlsNew::btnNext() const { return ui->btn_ctrl_fw; }
 QPushButton* GUI_ControlsNew::btnStop() const { return ui->btn_ctrl_stop; }
 Gui::CoverButton* GUI_ControlsNew::btnCover() const { return ui->btn_cover; }
 
-void GUI_ControlsNew::rating_changed_here(bool save)
+void GUI_ControlsNew::ratingChangedHere(bool save)
 {
 	MetaData md = PlayManager::instance()->currentTrack();
 
@@ -81,6 +81,7 @@ void GUI_ControlsNew::rating_changed_here(bool save)
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &QObject::deleteLater);
 	uto->setTrackRating(md, rating);
 }
+
 bool GUI_ControlsNew::isExternResizeAllowed() const
 {
 	return true;
