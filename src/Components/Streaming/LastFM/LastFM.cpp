@@ -31,6 +31,7 @@
 #include "LFMTrackChangedThread.h"
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
+#include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
@@ -126,10 +127,8 @@ void Base::activeChanged()
 	}
 }
 
-#include "Interfaces/Notification/NotificationHandler.h"
 void Base::loginThreadFinished(bool success)
 {
-
 	auto* loginThread = static_cast<LoginThread*>(sender());
 
 	m->loggedIn = success;
@@ -190,7 +189,7 @@ void Base::scrobble()
 		return;
 	}
 
-	MetaData md = PlayManager::instance()->currentTrack();
+	const MetaData md = PlayManager::instance()->currentTrack();
 	if(md.title().isEmpty() || md.artist().isEmpty()){
 		return;
 	}
@@ -205,19 +204,22 @@ void Base::scrobble()
 	struct tm* ptm = localtime(&rawtime);
 	time_t started = mktime(ptm);
 
-	UrlParams sig_data;
-	sig_data["api_key"] =		LFM_API_KEY;
-	sig_data["artist"] =		md.artist().toLocal8Bit();
-	sig_data["duration"] =		QString::number(md.durationMs() / 1000).toLocal8Bit();
-	sig_data["method"] =		"track.scrobble";
-	sig_data["sk"] =			m->sessionKey.toLocal8Bit();
-	sig_data["timestamp"] =		QString::number(started).toLocal8Bit();
-	sig_data["track"] =			md.title().toLocal8Bit();
+	UrlParams sigData;
+	if(!md.album().isEmpty()) {
+		sigData["album"] =		md.album().toLocal8Bit();
+	}
+	sigData["api_key"] =	LFM_API_KEY;
+	sigData["artist"] =		md.artist().toLocal8Bit();
+	sigData["duration"] =	QString::number(md.durationMs() / 1000).toLocal8Bit();
+	sigData["method"] =		"track.scrobble";
+	sigData["sk"] =			m->sessionKey.toLocal8Bit();
+	sigData["timestamp"] =	QString::number(started).toLocal8Bit();
+	sigData["track"] =		md.title().toLocal8Bit();
 
-	sig_data.appendSignature();
+	sigData.appendSignature();
 
 	QByteArray post_data;
-	QString url = lfm_wa->createPostUrl("http://ws.audioscrobbler.com/2.0/", sig_data, post_data);
+	QString url = lfm_wa->createPostUrl("http://ws.audioscrobbler.com/2.0/", sigData, post_data);
 
 	lfm_wa->callPostUrl(url, post_data);
 }
