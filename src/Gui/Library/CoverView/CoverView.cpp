@@ -111,13 +111,13 @@ QStringList CoverView::zoomActions()
 
 void CoverView::changeZoom(int zoom)
 {
-	bool force_reload = (zoom < 0);
+	bool forceReload = (zoom < 0);
 
 	if(itemModel()->rowCount() == 0){
 		return;
 	}
 
-	if(force_reload){
+	if(forceReload){
 		zoom = m->model->zoom();
 	}
 
@@ -131,7 +131,7 @@ void CoverView::changeZoom(int zoom)
 	zoom = std::min(zoom, 200);
 	zoom = std::max(zoom, 50);
 
-	if(!force_reload)
+	if(!forceReload)
 	{
 		if( zoom == m->model->zoom() )
 		{
@@ -231,40 +231,10 @@ QStyleOptionViewItem CoverView::viewOptions() const
 	return option;
 }
 
-void CoverView::wheelEvent(QWheelEvent* e)
-{
-	if( (e->modifiers() & Qt::ControlModifier) && (e->delta() != 0) )
-	{
-		int d = (e->delta() > 0) ? 10 : -10;
-
-		changeZoom(m->model->zoom() + d);
-	}
-
-	else
-	{
-		ItemView::wheelEvent(e);
-	}
-}
-
-void CoverView::resizeEvent(QResizeEvent* e)
-{
-	ItemView::resizeEvent(e);
-	changeZoom();
-}
-
 int CoverView::sizeHintForColumn(int c) const
 {
 	Q_UNUSED(c)
 	return m->model->item_size().width();
-}
-
-void CoverView::hideEvent(QHideEvent* e)
-{
-	if(m->model){
-		m->model->clear();
-	}
-
-	ItemView::hideEvent(e);
 }
 
 bool CoverView::isMergeable() const
@@ -324,10 +294,39 @@ void CoverView::refreshClicked() {}
 
 void CoverView::runMergeOperation(const Library::MergeData& mergedata)
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
+	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
 }
 
+void CoverView::wheelEvent(QWheelEvent* e)
+{
+	if( (e->modifiers() & Qt::ControlModifier) && (e->delta() != 0) )
+	{
+		int d = (e->delta() > 0) ? 10 : -10;
+
+		changeZoom(m->model->zoom() + d);
+	}
+
+	else
+	{
+		ItemView::wheelEvent(e);
+	}
+}
+
+void CoverView::resizeEvent(QResizeEvent* e)
+{
+	ItemView::resizeEvent(e);
+	changeZoom();
+}
+
+void CoverView::hideEvent(QHideEvent* e)
+{
+	if(m->model){
+		m->model->clear();
+	}
+
+	ItemView::hideEvent(e);
+}

@@ -74,8 +74,6 @@ void GUI_CoverView::init(LocalLibrary* library)
 	initZoomActions();
 
 	connect(ui->tb_view, &ItemView::sigDeleteClicked, this, &GUI_CoverView::sigDeleteClicked);
-
-	ui->tb_view->changeZoom(GetSetting(Set::Lib_CoverZoom));
 }
 
 bool GUI_CoverView::isInitialized() const
@@ -112,7 +110,6 @@ void GUI_CoverView::initSortingActions()
 	sortorderChanged();
 }
 
-
 void GUI_CoverView::comboSortingChanged(int idx)
 {
 	Q_UNUSED(idx)
@@ -122,7 +119,6 @@ void GUI_CoverView::comboSortingChanged(int idx)
 	auto so = Library::SortOrder(data);
 	ui->tb_view->changeSortorder(so);
 }
-
 
 void GUI_CoverView::sortorderChanged()
 {
@@ -139,13 +135,11 @@ void GUI_CoverView::sortorderChanged()
 	}
 }
 
-
 void GUI_CoverView::showArtistTriggered(bool b)
 {
 	SetSetting(Set::Lib_CoverShowArtist, b);
 	ui->tb_view->reload();
 }
-
 
 void GUI_CoverView::showArtistChanged()
 {
@@ -155,16 +149,14 @@ void GUI_CoverView::showArtistChanged()
 
 void GUI_CoverView::initZoomActions()
 {
-	const QStringList zoom_data = CoverView::zoomActions();
-
-	for(const QString& zoom : zoom_data)
+	const QStringList zoomData = CoverView::zoomActions();
+	for(const QString& zoom : zoomData)
 	{
 		ui->combo_zoom->addItem(zoom + "%", zoom);
 	}
 
 	zoomChanged();
 }
-
 
 void GUI_CoverView::comboZoomChanged(int idx)
 {
@@ -180,13 +172,12 @@ void GUI_CoverView::closeClicked()
 	SetSetting(Set::Lib_CoverShowUtils, false);
 }
 
-
 void GUI_CoverView::zoomChanged()
 {
-	QStringList zoom_actions = CoverView::zoomActions();
+	const QStringList zoomActions = CoverView::zoomActions();
 
 	int zoom = GetSetting(Set::Lib_CoverZoom);
-	int idx = Algorithm::indexOf(zoom_actions, [zoom](const QString& str){
+	int idx = Algorithm::indexOf(zoomActions, [zoom](const QString& str){
 		return (str == QString::number(zoom));
 	});
 
@@ -214,4 +205,10 @@ void GUI_CoverView::languageChanged()
 	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
 	ui->btn_close->setText(Lang::get(Lang::Hide));
 	ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
+}
+
+void GUI_CoverView::showEvent(QShowEvent* e)
+{
+	Gui::Widget::showEvent(e);
+	ui->tb_view->changeZoom(GetSetting(Set::Lib_CoverZoom));
 }

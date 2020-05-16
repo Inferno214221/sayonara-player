@@ -35,23 +35,13 @@ Library::CoverDelegate::~CoverDelegate() = default;
 
 void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	QStyledItemDelegate::paint(painter, option, index);
-
-	const int text_offset = 3;
+	const int textOffset = 3;
 
 	QFontMetrics fm = option.fontMetrics;
 	int zoom = GetSetting(Set::Lib_CoverZoom);
 
 	painter->save();
 	painter->translate(option.rect.x(), option.rect.y());
-
-	QPalette palette = option.palette;
-	{
-		QColor backgroundColor = palette.alternateBase().color();
-		backgroundColor.setAlpha(0);
-		QBrush darkBackground(backgroundColor);
-		painter->fillRect(2, 0, option.rect.width() - 4, option.rect.height() - 4, darkBackground);
-	}
 
 	{
 		const QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
@@ -86,14 +76,14 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
 	{
 		QString album = index.data(CoverModel::AlbumRole).toString();
-		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2*text_offset);
-		painter->drawText(text_offset, 0, option.rect.width() - 2*text_offset, fm.height(), int(option.displayAlignment), album);
+		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2*textOffset);
+		painter->drawText(textOffset, 0, option.rect.width() - 2*textOffset, fm.height(), int(option.displayAlignment), album);
 		painter->translate(0, fm.height());
 	}
 
 	{
 		QString artist = index.data(CoverModel::ArtistRole).toString();
-		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2*text_offset);
+		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2*textOffset);
 		if(!artist.isEmpty())
 		{
 			QPen pen = painter->pen();
@@ -101,7 +91,7 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 			color.setAlpha(172);
 			pen.setColor(color);
 			painter->setPen(pen);
-			painter->drawText(text_offset, 0, option.rect.width() - 2*text_offset, fm.height(), option.displayAlignment, artist);
+			painter->drawText(textOffset, 0, option.rect.width() - 2*textOffset, fm.height(), option.displayAlignment, artist);
 		}
 	}
 

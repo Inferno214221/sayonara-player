@@ -69,6 +69,8 @@ namespace Library
 
 		void languageChanged() override;
 
+		void showEvent(QShowEvent* e) override;
+
 	private:
 		void zoomChanged();
 		void sortorderChanged();

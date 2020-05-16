@@ -73,15 +73,16 @@ namespace Library
 		void initContextMenu() override;
 
 		void languageChanged() override;
-		void wheelEvent(QWheelEvent* e) override;
-		void resizeEvent(QResizeEvent* e) override;
-		void hideEvent(QHideEvent* e) override;
 
 		// ItemView
 		bool isMergeable() const override;
 		MD::Interpretation metadataInterpretation() const override;
 
 		int sizeHintForColumn(int) const override;
+
+		void wheelEvent(QWheelEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
+		void hideEvent(QHideEvent* e) override;
 
 	private:
 		void resizeSections();
