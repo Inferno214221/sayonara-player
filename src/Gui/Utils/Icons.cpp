@@ -35,8 +35,8 @@
 
 using namespace Gui;
 
-static char* s_standard_theme=nullptr;
-static bool s_force_standard_icons=false;
+static char* sSystemTheme=nullptr;
+static bool sForceStandardIcons=false;
 
 using P=QPair<QString, QString>;
 
@@ -156,7 +156,7 @@ QIcon Icons::icon(IconName spec)
 {
 	changeTheme();
 
-	if(s_force_standard_icons){
+	if(sForceStandardIcons){
 		return icon(spec, IconMode::ForceStdIcon);
 	}
 
@@ -168,13 +168,16 @@ QIcon Icons::icon(IconName spec)
 void Icons::changeTheme()
 {
 	QString theme = GetSetting(Set::Icon_Theme);
+	if(theme.isEmpty()){
+		theme = Icons::systemTheme();
+	}
 
 	QIcon::setThemeName(theme);
 }
 
 QPixmap Icons::pixmap(Icons::IconName spec)
 {
-	if(s_force_standard_icons){
+	if(sForceStandardIcons){
 		return pixmap(spec, IconMode::ForceStdIcon);
 	}
 
@@ -245,17 +248,17 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 	return Gui::Util::pixmap(dark_name, Gui::Util::NoTheme);
 }
 
-void Icons::setStandardTheme(const QString& name)
+void Icons::setSystemTheme(const QString& name)
 {
-	s_standard_theme = strdup(name.toLocal8Bit().data());
+	sSystemTheme = strdup(name.toLocal8Bit().data());
 }
 
-QString Icons::standardTheme()
+QString Icons::systemTheme()
 {
-	return QString(s_standard_theme);
+	return QString(sSystemTheme);
 }
 
 void Icons::forceStandardIcons(bool b)
 {
-	s_force_standard_icons = b;
+	sForceStandardIcons = b;
 }

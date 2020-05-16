@@ -125,16 +125,16 @@ namespace Gui
 		QPixmap pixmap(IconName name, IconMode mode);
 
 		/**
-		 * @brief set_standard_theme
+		 * @brief set system icon theme
 		 * @param name
 		 */
-		void setStandardTheme(const QString& name);
+		void setSystemTheme(const QString& name);
 
 		/**
-		 * @brief standard_theme
+		 * @brief returns the system icon theme
 		 * @return
 		 */
-		QString standardTheme();
+		QString systemTheme();
 
 		/**
 		 * @brief force_standard_icons

@@ -158,7 +158,7 @@ struct Application::Private
 
 		session = Session::Manager::instance();
 
-		Gui::Icons::setStandardTheme(QIcon::themeName());
+		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
 
 		if( !Settings::instance()->checkSettings() )
