@@ -48,7 +48,7 @@
         <translation>Hoezen zoeken in map</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+286"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>%n hoes gevonden</numerusform><numerusform>%n hoezen gevonden</numerusform></translation>
     </message>
@@ -72,14 +72,24 @@
         <translation>Dialoogvenster</translation>
     </message>
     <message>
-        <location line="+35"/>
-        <source>Newer</source>
-        <translation>Nieuwer</translation>
+        <location filename="../src/Gui/History/GUI_History.cpp" line="+50"/>
+        <source>Load more entries</source>
+        <translation>Meer items laden</translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Older</source>
-        <translation>Ouder</translation>
+        <location line="+140"/>
+        <source>Scroll to top</source>
+        <translation>Naar bovenkant scrollen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Scroll to bottom</source>
+        <translation>Naar onderkant scrollen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select date range</source>
+        <translation>Datumbereik kiezen</translation>
     </message>
 </context>
 <context>
@@ -90,7 +100,7 @@
         <translation>Info / Bewerken</translation>
     </message>
     <message>
-        <location line="+243"/>
+        <location line="+236"/>
         <source>Loading files...</source>
         <translation>Bezig met laden van bestanden...</translation>
     </message>
@@ -98,12 +108,7 @@
 <context>
     <name>GUI_Lyrics</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.ui" line="+28"/>
-        <source>Save Lyrics</source>
-        <translation>Opslaan liedteksten</translation>
-    </message>
-    <message>
-        <location line="+66"/>
+        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.ui" line="+38"/>
         <source>switch</source>
         <translation>Wisselen</translation>
     </message>
@@ -111,6 +116,11 @@
         <location line="+56"/>
         <source>Zoom</source>
         <translation>Zoomen</translation>
+    </message>
+    <message>
+        <location line="+85"/>
+        <source>Save Lyrics</source>
+        <translation>Opslaan liedteksten</translation>
     </message>
     <message>
         <location filename="../src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+303"/>
@@ -128,7 +138,7 @@
         <translation>Opslaan songteksten</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
         <source>Source</source>
         <translation>Bron</translation>
     </message>
@@ -204,22 +214,27 @@
         <translation>Bibliotheek</translation>
     </message>
     <message>
-        <location line="+466"/>
+        <location line="+469"/>
         <source>Directory does not exist</source>
         <translation>Map bestaat niet</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+389"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+387"/>
         <source>Audio files</source>
         <translation>Audiobestanden</translation>
     </message>
 </context>
 <context>
-    <name>GUI_Controls</name>
+    <name>GUI_Logger</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_Controls.ui" line="+318"/>
-        <source>Written by Michael Lugmair (Lucio Carreras)</source>
-        <translation>Gemaakt door Michael Lugmair (Lucio Carreras)</translation>
+        <location filename="../src/Gui/Player/GUI_Logger.ui" line="+29"/>
+        <source>Module</source>
+        <translation>Module</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+270"/>
+        <source>Cannot open file</source>
+        <translation>Kan bestand niet openen</translation>
     </message>
 </context>
 <context>
@@ -519,7 +534,7 @@
         <translation>Radiostations tonen van %1 tot %2</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+209"/>
         <source>Country</source>
         <translation>Land</translation>
     </message>
@@ -653,7 +668,7 @@
         <translation>Taal</translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+138"/>
         <source>Cannot check for language update</source>
         <translation>Kan niet controleren op taalupdates</translation>
     </message>
@@ -682,19 +697,9 @@
 <context>
     <name>GUI_LastFmPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.ui" line="+27"/>
-        <source>Username</source>
-        <translation>Gebruikersnaam</translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.ui" line="+37"/>
         <source>Password</source>
         <translation>Wachtwoord</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Scrobble time</source>
-        <translation>Scrobbeltijd</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -702,7 +707,17 @@
         <translation>Nu inloggen</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.cpp" line="+163"/>
+        <location line="+9"/>
+        <source>Scrobble time</source>
+        <translation>Scrobbeltijd</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Username</source>
+        <translation>Gebruikersnaam</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.cpp" line="+162"/>
         <source>Logged in</source>
         <translation>Aangemeld</translation>
     </message>
@@ -797,27 +812,27 @@
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+44"/>
-        <source>Show system tray icon</source>
-        <translation>Pictogram in systeemvak tonen</translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
         <source>Hide instead of close</source>
         <translation>Verbergen in plaats van sluiten</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+21"/>
         <source>Start hidden</source>
         <translation>Geminimaliseerd opstarten</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+52"/>
         <source>Update notifications</source>
         <translation>Update meldingen</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+107"/>
+        <location line="+7"/>
+        <source>Show system tray icon</source>
+        <translation>Pictogram in systeemvak tonen</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+108"/>
         <source>This might cause Sayonara not to show up again.</source>
         <translation>Hierdoor kan het venster van Sayonara mogelijk niet meer worden getoond.</translation>
     </message>
@@ -880,12 +895,27 @@
         <translation>Uiterlijk</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
+        <source>Show covers</source>
+        <translation>Toon omslagafbeeldingen</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Show numbers</source>
         <translation>Nummers tonen</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+27"/>
+        <source>Show rating</source>
+        <translation>Tonen waardering</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show clear button</source>
+        <translation>Toon opruimen knop</translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>&apos;italic text&apos;</source>
         <translation>&apos;cursieve tekst&apos;</translation>
     </message>
@@ -901,18 +931,8 @@
     </message>
     <message>
         <location line="+72"/>
-        <source>Show clear button</source>
-        <translation>Toon opruimen knop</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Show covers</source>
-        <translation>Toon omslagafbeeldingen</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Show rating</source>
-        <translation>Tonen waardering</translation>
+        <source>Show footer</source>
+        <translation>Voettekst tonen</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+216"/>
@@ -923,24 +943,9 @@
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
-        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+136"/>
+        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+150"/>
         <source>Preferences</source>
         <translation>Voorkeuren</translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <source>Cancel</source>
-        <translation>Annuleren</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Apply</source>
-        <translation>Toepassen</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1263,32 +1268,22 @@
     <name>GUI_Shutdown</name>
     <message>
         <location filename="../src/Gui/Shutdown/GUI_Shutdown.ui" line="+14"/>
-        <location line="+69"/>
+        <location line="+31"/>
         <source>Shutdown</source>
         <translation>Afsluiten</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <source>OK</source>
-        <translation>OK</translation>
+        <location line="+26"/>
+        <source>Shutdown after playlist finished</source>
+        <translation>Sluit af na einde van de afspeellijst</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+17"/>
         <source>minutes</source>
         <translation>minuten</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Cancel</source>
-        <translation>Annuleren</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Shutdown after playlist finished</source>
-        <translation>Sluit af na einde van de afspeellijst</translation>
-    </message>
-    <message>
-        <location line="+54"/>
         <source>Shutdown after</source>
         <translation>Sluit af na</translation>
     </message>
@@ -1309,17 +1304,7 @@
         <translation>Doorzoek Soundcloud</translation>
     </message>
     <message>
-        <location line="+31"/>
-        <source>Cancel</source>
-        <translation>Annuleren</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Add</source>
-        <translation>Toevoegen</translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+59"/>
         <source>Search artist</source>
         <translation>Zoek artiest</translation>
     </message>
@@ -1383,7 +1368,7 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+115"/>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+43"/>
         <source>Discnumber</source>
         <translation>Schijfnummer</translation>
     </message>
@@ -1408,22 +1393,22 @@
         <translation>Tag van pad</translation>
     </message>
     <message>
-        <location line="+54"/>
-        <source>Undo all</source>
-        <translation>Alles ongedaan maken</translation>
-    </message>
-    <message>
         <location line="+69"/>
         <source>Read only file</source>
         <translation>Alleen-lezenbestand</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+161"/>
+        <location line="+119"/>
+        <source>Undo all</source>
+        <translation>Alles ongedaan maken</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+160"/>
         <source>Load complete album</source>
         <translation>Laad volledige album</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+13"/>
         <source>Metadata</source>
         <translation>Metagegevens</translation>
     </message>
@@ -1433,7 +1418,7 @@
         <translation>Tags uit pad</translation>
     </message>
     <message numerus="yes">
-        <location line="+81"/>
+        <location line="+91"/>
         <source>Cannot apply expression to %n track(s)</source>
         <translation><numerusform>Kan expressie niet toepassen op %n nummer</numerusform><numerusform>Kan expressie niet toepassen op %n nummers</numerusform></translation>
     </message>
@@ -1443,7 +1428,7 @@
         <translation>Deze nummers negeren?</translation>
     </message>
     <message>
-        <location line="+399"/>
+        <location line="+398"/>
         <source>All changes will be lost</source>
         <translation>Alle wijzigingen gaan verloren</translation>
     </message>
@@ -1487,7 +1472,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+844"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+853"/>
         <source>All %1 could be removed</source>
         <translation>Alle %1 werden verwijderd</translation>
     </message>
@@ -1562,6 +1547,14 @@
     </message>
 </context>
 <context>
+    <name>LastFM::Base</name>
+    <message>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+137"/>
+        <source>Cannot login to Last.fm</source>
+        <translation>Kan niet inloggen op Last.fm</translation>
+    </message>
+</context>
+<context>
     <name>SC::JsonParser</name>
     <message>
         <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+123"/>
@@ -1570,18 +1563,18 @@
     </message>
     <message>
         <location line="+4"/>
-        <location line="+236"/>
+        <location line="+255"/>
         <source>Permalink Url</source>
         <translation>Vaste Url</translation>
     </message>
     <message>
-        <location line="-223"/>
+        <location line="-242"/>
         <source>Followers/Following</source>
         <translation>Volgers/Volgend</translation>
     </message>
     <message>
-        <location line="+93"/>
-        <location line="+134"/>
+        <location line="+92"/>
+        <location line="+154"/>
         <source>Purchase Url</source>
         <translation>Aankoop Url</translation>
     </message>
@@ -1589,9 +1582,27 @@
 <context>
     <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+117"/>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+67"/>
         <source>Search an alternative cover</source>
         <translation>Zoek een alternatieve omslag</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DoubleCalendarDialog</name>
+    <message>
+        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
+        <source>Select date range</source>
+        <translation>Datumbereik kiezen</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Start date</source>
+        <translation>Begindatum</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>End date</source>
+        <translation>Einddatum</translation>
     </message>
 </context>
 <context>
@@ -1605,7 +1616,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+104"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+105"/>
         <source>Write cover to tracks</source>
         <translation>Hoes insluiten in nummers</translation>
     </message>
@@ -1657,7 +1668,7 @@
 <context>
     <name>Directory::TreeView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+422"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+408"/>
         <source>Copy here</source>
         <translation>Kopiëren</translation>
     </message>
@@ -1732,7 +1743,7 @@
 <context>
     <name>Library::TrackModel</name>
     <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+144"/>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+152"/>
         <source>kBit/s</source>
         <translation>kBit/s</translation>
     </message>
@@ -1740,12 +1751,12 @@
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+87"/>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+90"/>
         <source>Only from library</source>
         <translation>Enkel van de bibliotheek</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>You are about to delete %n file(s)</source>
         <translation><numerusform>Je staat op het punt om %n bestand te verwijderen</numerusform><numerusform>Je staat op het punt om %n bestanden te verwijderen</numerusform></translation>
     </message>
@@ -1753,7 +1764,7 @@
 <context>
     <name>Library::GUI_LibraryReloadDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+78"/>
+        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+74"/>
         <source>Fast scan</source>
         <translation>Snel scannen</translation>
     </message>
@@ -1814,17 +1825,9 @@
     </message>
 </context>
 <context>
-    <name>GUI_Logger</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+271"/>
-        <source>Cannot open file</source>
-        <translation>Kan bestand niet openen</translation>
-    </message>
-</context>
-<context>
     <name>Menubar</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+316"/>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+336"/>
         <source>View</source>
         <translation>Beeld</translation>
     </message>
@@ -1861,8 +1864,8 @@
     </message>
     <message>
         <location line="+59"/>
-        <source>Please visit the forum at</source>
-        <translation>Bezoek het forum op</translation>
+        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
+        <translation>Meld bugs of deel ideeën op Sayonara&apos;s GitLab-projectpagina</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1891,8 +1894,13 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Special thanks to all the brave translators</source>
-        <translation>Mijn dank is groot aan alle vertalers</translation>
+        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
+        <translation>Met dank aan alle vertalers en pakketbouwers</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>And special thanks to those people with local music collections</source>
+        <translation>En grotere dank aan alle gebruikers met een lokale muziekverzameling :)</translation>
     </message>
 </context>
 <context>
@@ -1914,7 +1922,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+241"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+252"/>
         <source>Playlist empty</source>
         <translation>Afspeellijst is leeg</translation>
     </message>
@@ -1937,7 +1945,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+193"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+194"/>
         <source>Please set library path first</source>
         <translation>Stel aub eerst uw bibliotheekpad in</translation>
     </message>
@@ -1945,7 +1953,7 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+242"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+244"/>
         <source>Please set library path first</source>
         <translation>Stel aub eerst uw bibliotheekpad in</translation>
     </message>
@@ -1976,7 +1984,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+501"/>
         <source>Goto row</source>
         <translation>Ga naar rij</translation>
     </message>
@@ -2158,7 +2166,7 @@
 <context>
     <name>SomaFM::StationModel</name>
     <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+126"/>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+125"/>
         <source>Cannot fetch stations</source>
         <translation>Kan stations niet ophalen</translation>
     </message>
@@ -2166,12 +2174,12 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+79"/>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+84"/>
         <source>Query too short</source>
         <translation>Zoekopdracht te kort</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+85"/>
         <source>No artists found</source>
         <translation>Geen artiesten gevonden</translation>
     </message>
@@ -2184,14 +2192,6 @@
         <location line="+56"/>
         <source>%n playlist(s) found</source>
         <translation><numerusform>%n afspeellijst aangetroffen</numerusform><numerusform> %n afspeellijsten aangetroffen</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>SC::GUI_Library</name>
-    <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudLibrary.cpp" line="+56"/>
-        <source>Add artist</source>
-        <translation>Artist toevoegen</translation>
     </message>
 </context>
 <context>
@@ -2330,6 +2330,11 @@
         <location line="+2"/>
         <source>Add</source>
         <translation>Toevoegen</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Add artist</source>
+        <translation>Artist toevoegen</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2508,12 +2513,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+84"/>
+        <location line="+88"/>
         <source>Delete</source>
         <translation>Verwijderen</translation>
     </message>
     <message>
-        <location line="-82"/>
+        <location line="-86"/>
         <source>Descending</source>
         <translation>Aflopend</translation>
     </message>
@@ -2649,6 +2654,11 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>GB</source>
+        <translation>GB</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Genre</source>
         <translation>Genre</translation>
     </message>
@@ -2706,6 +2716,11 @@
         <location line="+2"/>
         <source>Invalid characters</source>
         <translation>Ongeldig tekens</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>KB</source>
+        <translation>KB</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2774,8 +2789,18 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>Log level</source>
+        <translation>Logniveau</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Lyrics</source>
         <translation>Liedtekst</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>MB</source>
+        <translation>MB</translation>
     </message>
     <message>
         <location line="+2"/>

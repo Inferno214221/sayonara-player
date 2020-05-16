@@ -48,7 +48,7 @@
         <translation>Najít obaly v adresáři</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+289"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+286"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>Nalezen %n obal</numerusform><numerusform>Nalezeny %n obaly</numerusform><numerusform>Nalezeno %n obalů</numerusform><numerusform>Nalezeno %n obalů</numerusform></translation>
     </message>
@@ -72,14 +72,24 @@
         <translation>Dialog</translation>
     </message>
     <message>
-        <location line="+35"/>
-        <source>Newer</source>
-        <translation>Novější</translation>
+        <location filename="../src/Gui/History/GUI_History.cpp" line="+50"/>
+        <source>Load more entries</source>
+        <translation>Nahrát více záznamů</translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Older</source>
-        <translation>Starší</translation>
+        <location line="+140"/>
+        <source>Scroll to top</source>
+        <translation>Posunout úplně nahoru</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Scroll to bottom</source>
+        <translation>Posunout úplně dolů</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Select date range</source>
+        <translation>Vybrat časový rozsah</translation>
     </message>
 </context>
 <context>
@@ -90,7 +100,7 @@
         <translation>Informace a úpravy</translation>
     </message>
     <message>
-        <location line="+243"/>
+        <location line="+236"/>
         <source>Loading files...</source>
         <translation>Nahrávají se soubory...</translation>
     </message>
@@ -98,12 +108,7 @@
 <context>
     <name>GUI_Lyrics</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.ui" line="+28"/>
-        <source>Save Lyrics</source>
-        <translation>Uložit text písně</translation>
-    </message>
-    <message>
-        <location line="+66"/>
+        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.ui" line="+38"/>
         <source>switch</source>
         <translation>Přepnout</translation>
     </message>
@@ -111,6 +116,11 @@
         <location line="+56"/>
         <source>Zoom</source>
         <translation>Přiblížení</translation>
+    </message>
+    <message>
+        <location line="+85"/>
+        <source>Save Lyrics</source>
+        <translation>Uložit text písně</translation>
     </message>
     <message>
         <location filename="../src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+303"/>
@@ -128,7 +138,7 @@
         <translation>Uložit text písně</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+13"/>
         <source>Source</source>
         <translation>Zdroj</translation>
     </message>
@@ -204,22 +214,27 @@
         <translation>Sbírka</translation>
     </message>
     <message>
-        <location line="+466"/>
+        <location line="+469"/>
         <source>Directory does not exist</source>
-        <translation type="unfinished"/>
+        <translation>Adresář neexistuje</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+389"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+387"/>
         <source>Audio files</source>
         <translation>Zvukové soubory</translation>
     </message>
 </context>
 <context>
-    <name>GUI_Controls</name>
+    <name>GUI_Logger</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_Controls.ui" line="+318"/>
-        <source>Written by Michael Lugmair (Lucio Carreras)</source>
-        <translation>Napsal Michael Lugmair (Lucio Carreras)</translation>
+        <location filename="../src/Gui/Player/GUI_Logger.ui" line="+29"/>
+        <source>Module</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+270"/>
+        <source>Cannot open file</source>
+        <translation>Nelze otevřít soubor</translation>
     </message>
 </context>
 <context>
@@ -519,7 +534,7 @@
         <translation>Ukázat rozhlasové stanice od %1 do %2</translation>
     </message>
     <message>
-        <location line="+204"/>
+        <location line="+209"/>
         <source>Country</source>
         <translation>Země</translation>
     </message>
@@ -653,7 +668,7 @@
         <translation>Jazyk</translation>
     </message>
     <message>
-        <location line="+140"/>
+        <location line="+138"/>
         <source>Cannot check for language update</source>
         <translation>Nelze zkontrolovat jazykovou aktualizaci</translation>
     </message>
@@ -682,19 +697,9 @@
 <context>
     <name>GUI_LastFmPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.ui" line="+27"/>
-        <source>Username</source>
-        <translation>Uživatelské jméno</translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.ui" line="+37"/>
         <source>Password</source>
         <translation>Heslo</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Scrobble time</source>
-        <translation>Čas pro odesílání údajů</translation>
     </message>
     <message>
         <location line="+46"/>
@@ -702,7 +707,17 @@
         <translation>Přihlásit nyní</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.cpp" line="+163"/>
+        <location line="+9"/>
+        <source>Scrobble time</source>
+        <translation>Čas pro odesílání údajů</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Username</source>
+        <translation>Uživatelské jméno</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/LastFM/GUI_LastFmPreferences.cpp" line="+162"/>
         <source>Logged in</source>
         <translation>Přihlášen</translation>
     </message>
@@ -797,27 +812,27 @@
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+44"/>
-        <source>Show system tray icon</source>
-        <translation>Ukázat ikonu v oznamovací oblasti panelu</translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
         <source>Hide instead of close</source>
         <translation>Skrýt namísto zavření</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+21"/>
         <source>Start hidden</source>
         <translation>Spustit skryto</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+52"/>
         <source>Update notifications</source>
         <translation>Oznamovatel aktualizací</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+107"/>
+        <location line="+7"/>
+        <source>Show system tray icon</source>
+        <translation>Ukázat ikonu v oznamovací oblasti panelu</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+108"/>
         <source>This might cause Sayonara not to show up again.</source>
         <translation>Toto může vést k tomu, že se Sayonara znovu už neukáže.</translation>
     </message>
@@ -880,12 +895,27 @@
         <translation>Vzhled</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+9"/>
+        <source>Show covers</source>
+        <translation>Ukázat obaly</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Show numbers</source>
         <translation>Ukázat čísla</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+27"/>
+        <source>Show rating</source>
+        <translation>Ukázat hodnocení</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show clear button</source>
+        <translation>Ukázat tlačítko pro vyprázdnění</translation>
+    </message>
+    <message>
+        <location line="+20"/>
         <source>&apos;italic text&apos;</source>
         <translation>&apos;kurzivní text&apos;</translation>
     </message>
@@ -901,18 +931,8 @@
     </message>
     <message>
         <location line="+72"/>
-        <source>Show clear button</source>
-        <translation>Ukázat tlačítko pro vyprázdnění</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Show covers</source>
-        <translation>Ukázat obaly</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Show rating</source>
-        <translation>Ukázat hodnocení</translation>
+        <source>Show footer</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+216"/>
@@ -923,24 +943,9 @@
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
-        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+136"/>
+        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+150"/>
         <source>Preferences</source>
         <translation>Nastavení</translation>
-    </message>
-    <message>
-        <location line="+42"/>
-        <source>Cancel</source>
-        <translation>Zrušit</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Apply</source>
-        <translation>Použít</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>OK</source>
-        <translation>OK</translation>
     </message>
 </context>
 <context>
@@ -1263,32 +1268,22 @@
     <name>GUI_Shutdown</name>
     <message>
         <location filename="../src/Gui/Shutdown/GUI_Shutdown.ui" line="+14"/>
-        <location line="+69"/>
+        <location line="+31"/>
         <source>Shutdown</source>
         <translation>Vypnutí</translation>
     </message>
     <message>
-        <location line="-56"/>
-        <source>OK</source>
-        <translation>OK</translation>
+        <location line="+26"/>
+        <source>Shutdown after playlist finished</source>
+        <translation>Vypnout po dokončení seznamu skladeb</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+17"/>
         <source>minutes</source>
         <translation>minutách</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Cancel</source>
-        <translation>Zrušit</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Shutdown after playlist finished</source>
-        <translation>Vypnout po dokončení seznamu skladeb</translation>
-    </message>
-    <message>
-        <location line="+54"/>
         <source>Shutdown after</source>
         <translation>Vypnout po</translation>
     </message>
@@ -1309,17 +1304,7 @@
         <translation>Hledat na Soundcloud</translation>
     </message>
     <message>
-        <location line="+31"/>
-        <source>Cancel</source>
-        <translation>Zrušit</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Add</source>
-        <translation>Přidat</translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+59"/>
         <source>Search artist</source>
         <translation>Hledat umělce</translation>
     </message>
@@ -1383,7 +1368,7 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+115"/>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+43"/>
         <source>Discnumber</source>
         <translation>Číslo disku</translation>
     </message>
@@ -1408,22 +1393,22 @@
         <translation>Značka z cesty</translation>
     </message>
     <message>
-        <location line="+54"/>
-        <source>Undo all</source>
-        <translation>Zpět vše</translation>
-    </message>
-    <message>
         <location line="+69"/>
         <source>Read only file</source>
         <translation>Číst jen soubor</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+161"/>
+        <location line="+119"/>
+        <source>Undo all</source>
+        <translation>Zpět vše</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+160"/>
         <source>Load complete album</source>
         <translation>Nahrát celé album</translation>
     </message>
     <message>
-        <location line="+15"/>
+        <location line="+13"/>
         <source>Metadata</source>
         <translation>Značky</translation>
     </message>
@@ -1433,7 +1418,7 @@
         <translation>Značky z cesty</translation>
     </message>
     <message numerus="yes">
-        <location line="+81"/>
+        <location line="+91"/>
         <source>Cannot apply expression to %n track(s)</source>
         <translation><numerusform>Výraz nelze použít na %n skladbu</numerusform><numerusform>Výraz nelze použít na %n skladby</numerusform><numerusform>Výraz nelze použít na %n skladeb</numerusform><numerusform>Výraz nelze použít na %n skladeb</numerusform></translation>
     </message>
@@ -1443,7 +1428,7 @@
         <translation>Přehlížet tyto skladby?</translation>
     </message>
     <message>
-        <location line="+399"/>
+        <location line="+398"/>
         <source>All changes will be lost</source>
         <translation>Všechny změny budou ztraceny</translation>
     </message>
@@ -1487,7 +1472,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+844"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+853"/>
         <source>All %1 could be removed</source>
         <translation>Všech %1 se podařilo smazat</translation>
     </message>
@@ -1562,6 +1547,14 @@
     </message>
 </context>
 <context>
+    <name>LastFM::Base</name>
+    <message>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+137"/>
+        <source>Cannot login to Last.fm</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>SC::JsonParser</name>
     <message>
         <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+123"/>
@@ -1570,18 +1563,18 @@
     </message>
     <message>
         <location line="+4"/>
-        <location line="+236"/>
+        <location line="+255"/>
         <source>Permalink Url</source>
         <translation>Neměnná adresa stránek</translation>
     </message>
     <message>
-        <location line="-223"/>
+        <location line="-242"/>
         <source>Followers/Following</source>
         <translation>Sledující/Sleduje</translation>
     </message>
     <message>
-        <location line="+93"/>
-        <location line="+134"/>
+        <location line="+92"/>
+        <location line="+154"/>
         <source>Purchase Url</source>
         <translation>Koupit u</translation>
     </message>
@@ -1589,9 +1582,27 @@
 <context>
     <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+117"/>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+67"/>
         <source>Search an alternative cover</source>
         <translation>Hledat náhradní obal</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DoubleCalendarDialog</name>
+    <message>
+        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
+        <source>Select date range</source>
+        <translation>Vybrat časový rozsah</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Start date</source>
+        <translation>Počáteční datum</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>End date</source>
+        <translation>Koncové datum</translation>
     </message>
 </context>
 <context>
@@ -1605,7 +1616,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+104"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+105"/>
         <source>Write cover to tracks</source>
         <translation>Zapsat obal do skladeb</translation>
     </message>
@@ -1651,13 +1662,13 @@
     <message>
         <location line="+1"/>
         <source>View in file manager</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazit ve správci souborů</translation>
     </message>
 </context>
 <context>
     <name>Directory::TreeView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+422"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+408"/>
         <source>Copy here</source>
         <translation>Kopírovat sem</translation>
     </message>
@@ -1732,7 +1743,7 @@
 <context>
     <name>Library::TrackModel</name>
     <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+144"/>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+152"/>
         <source>kBit/s</source>
         <translation>kBit/s</translation>
     </message>
@@ -1740,12 +1751,12 @@
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+87"/>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+90"/>
         <source>Only from library</source>
         <translation>Jen ze sbírky</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+4"/>
         <source>You are about to delete %n file(s)</source>
         <translation><numerusform>Chystáte se smazat %1 soubor</numerusform><numerusform>Chystáte se smazat %1 soubory</numerusform><numerusform>Chystáte se smazat %1 souborů</numerusform><numerusform>Chystáte se smazat %1 souborů</numerusform></translation>
     </message>
@@ -1753,7 +1764,7 @@
 <context>
     <name>Library::GUI_LibraryReloadDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+78"/>
+        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+74"/>
         <source>Fast scan</source>
         <translation>Rychlé prohledání</translation>
     </message>
@@ -1814,17 +1825,9 @@
     </message>
 </context>
 <context>
-    <name>GUI_Logger</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+271"/>
-        <source>Cannot open file</source>
-        <translation>Nelze otevřít soubor</translation>
-    </message>
-</context>
-<context>
     <name>Menubar</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+316"/>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+336"/>
         <source>View</source>
         <translation>Pohled</translation>
     </message>
@@ -1861,8 +1864,8 @@
     </message>
     <message>
         <location line="+59"/>
-        <source>Please visit the forum at</source>
-        <translation>Navštivte, prosím, fórum na adrese</translation>
+        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
+        <translation>Kvůli nahlášení chyb nebo požadavku na funkci navštivte stránky projektu Sayonara na GitLabu</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -1891,8 +1894,13 @@
     </message>
     <message>
         <location line="+3"/>
-        <source>Special thanks to all the brave translators</source>
-        <translation>Zvláštní poděkování všem odvážným a udatným překladatelům</translation>
+        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
+        <translation>Poděkování všem úžasným skvělým překladatelům a všem, kdož pomáhají sestavovat balíčky se Sayonarou</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>And special thanks to those people with local music collections</source>
+        <translation>A zvláštní poděkování lidem s hudebními sbírkami v počítačích</translation>
     </message>
 </context>
 <context>
@@ -1914,7 +1922,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+241"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+252"/>
         <source>Playlist empty</source>
         <translation>Seznam skladeb je prázdný</translation>
     </message>
@@ -1937,7 +1945,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+193"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+194"/>
         <source>Please set library path first</source>
         <translation>Nejprve, prosím, zadejte cestu k hudební sbírce</translation>
     </message>
@@ -1945,7 +1953,7 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+242"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+244"/>
         <source>Please set library path first</source>
         <translation>Nejprve, prosím, zadejte cestu k hudební sbírce</translation>
     </message>
@@ -1976,7 +1984,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+501"/>
         <source>Goto row</source>
         <translation>Jít na řádek</translation>
     </message>
@@ -2158,7 +2166,7 @@
 <context>
     <name>SomaFM::StationModel</name>
     <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+126"/>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+125"/>
         <source>Cannot fetch stations</source>
         <translation>Nelze natáhnout stanice</translation>
     </message>
@@ -2166,12 +2174,12 @@
 <context>
     <name>SC::GUI_ArtistSearch</name>
     <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+79"/>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+84"/>
         <source>Query too short</source>
         <translation>Dotaz příliš krátký</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+85"/>
         <source>No artists found</source>
         <translation>Nenalezeni žádní umělci</translation>
     </message>
@@ -2184,14 +2192,6 @@
         <location line="+56"/>
         <source>%n playlist(s) found</source>
         <translation><numerusform>Nalezen %1 seznam skladeb</numerusform><numerusform>Nalezeny %1 seznamy skladeb</numerusform><numerusform>Nalezeno %1 seznamů skladeb</numerusform><numerusform>Nalezeno %1 seznamů skladeb</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>SC::GUI_Library</name>
-    <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudLibrary.cpp" line="+56"/>
-        <source>Add artist</source>
-        <translation>Přidat umělce</translation>
     </message>
 </context>
 <context>
@@ -2291,12 +2291,12 @@
     <message>
         <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
         <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
-        <translation type="unfinished"/>
+        <translation>Rada: Použijte klávesy šipek nahoru a dolů k přepínání mezi velkými a malými písmeny</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Remove special characters (letters)</source>
-        <translation type="unfinished"/>
+        <translation>Odstranit zvláštní znaky</translation>
     </message>
 </context>
 <context>
@@ -2330,6 +2330,11 @@
         <location line="+2"/>
         <source>Add</source>
         <translation>Přidat</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Add artist</source>
+        <translation>Přidat umělce</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2508,12 +2513,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+84"/>
+        <location line="+88"/>
         <source>Delete</source>
         <translation>Smazat</translation>
     </message>
     <message>
-        <location line="-82"/>
+        <location line="-86"/>
         <source>Descending</source>
         <translation>Sestupně</translation>
     </message>
@@ -2649,6 +2654,11 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>GB</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Genre</source>
         <translation>Žánr</translation>
     </message>
@@ -2706,6 +2716,11 @@
         <location line="+2"/>
         <source>Invalid characters</source>
         <translation>Neplatné znaky</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>KB</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
@@ -2774,8 +2789,18 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>Log level</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Lyrics</source>
         <translation>Text písně</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>MB</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+2"/>
