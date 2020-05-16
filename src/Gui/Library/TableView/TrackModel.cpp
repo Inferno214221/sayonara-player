@@ -55,7 +55,7 @@ struct TrackModel::Private
 {
 	QPair<int, Rating>			tmpRating;
 	Tagging::UserOperations*	uto=nullptr;
-	QLocale locale;
+	QLocale						locale;
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
@@ -157,19 +157,19 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 
 			case ColumnIndex::Track::Filetype:
 			{
-				QString ext = ::Util::File::getFileExtension(md.filepath());
+				const QString ext = ::Util::File::getFileExtension(md.filepath());
 				return (ext.isEmpty()) ? "-" : ext;
 			}
 
 			case ColumnIndex::Track::AddedDate:
 			{
-				auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				const QString format = m->locale.dateFormat(QLocale::ShortFormat);
 				return md.createdDateTime().date().toString(format);
 			}
 
 			case ColumnIndex::Track::ModifiedDate:
 			{
-				auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				const QString format = m->locale.dateFormat(QLocale::ShortFormat);
 				return md.modifiedDateTime().date().toString(format);
 			}
 
@@ -200,7 +200,6 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 	return QVariant();
 }
 
-
 Qt::ItemFlags TrackModel::flags(const QModelIndex& index = QModelIndex()) const
 {
 	if (!index.isValid()) {
@@ -228,7 +227,7 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 	const MetaDataList& tracks = library()->tracks();
 	if(row >= 0 && row < tracks.count())
 	{
-		MetaData md = tracks[row];
+		const MetaData& md = tracks[row];
 		Rating rating = value.value<Rating>();
 
 		if(md.rating() != rating)
@@ -273,7 +272,6 @@ int TrackModel::rowCount(const QModelIndex&) const
 
 	return v_md.count();
 }
-
 
 Id TrackModel::mapIndexToId(int row) const
 {
@@ -324,7 +322,6 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 
 	return Cover::Location::coverLocation( tracks.first() );
 }
-
 
 int TrackModel::searchableColumn() const
 {

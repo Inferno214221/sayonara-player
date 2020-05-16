@@ -148,7 +148,8 @@ void AsyncWebAccess::run(const QString& url, int timeout)
 
 	request.setHeader(QNetworkRequest::UserAgentHeader, user_agent);
 
-	spLog(Log::Debug, this) << "Call " << request.url().toString();
+	const QString urlString = request.url().toString();
+	spLog(Log::Debug, this) << "Call " << urlString;
 
 	m->reply = m->nam->get(request);
 

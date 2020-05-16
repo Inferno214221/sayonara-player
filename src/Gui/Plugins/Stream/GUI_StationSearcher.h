@@ -37,7 +37,7 @@ class GUI_StationSearcher :
 	UI_CLASS(GUI_StationSearcher)
 
 signals:
-	void sigStreamSelected(const QString& name, const QString& url);
+	void sigStreamSelected(const QString& name, const QString& url, bool save);
 
 public:
 	GUI_StationSearcher(QWidget* parent=nullptr);
@@ -55,7 +55,7 @@ private slots:
 	void searchClicked();
 	void searchPreviousClicked();
 	void searchNextClicked();
-	void listenClicked();
+	void okClicked();
 
 	void searchTextChanged(const QString& text);
 	void stationsFetched();

@@ -118,7 +118,8 @@ void Gui::AbstractStationPlugin::initUi()
 	m->configDialog = createConfigDialog();
 	m->configDialog->init_ui();
 
-	connect(m->configDialog, &Gui::Dialog::finished, this, &AbstractStationPlugin::configFinished);
+	connect(m->configDialog, &Gui::Dialog::accepted, this, &AbstractStationPlugin::configFinished);
+	connect(m->configDialog, &Gui::Dialog::rejected, this, &AbstractStationPlugin::configFinished);
 
 	m->streamHandler = streamHandler();
 	connect(m->streamHandler, &AbstractStationHandler::sigUrlCountExceeded,
@@ -135,8 +136,8 @@ void Gui::AbstractStationPlugin::initUi()
 
 void Gui::AbstractStationPlugin::setupStations()
 {
-	const QString last_name = m->currentName();
-	const QString last_url = m->currentUrl();
+	const QString lastName = m->currentName();
+	const QString lastUrl = m->currentUrl();
 
 	QList<StationPtr> stations;
 
@@ -149,9 +150,9 @@ void Gui::AbstractStationPlugin::setupStations()
 		m->comboStream->addItem(station->name(), station->url());
 	}
 
-	int idx = Util::Algorithm::indexOf(stations, [last_name, last_url](StationPtr station)
+	int idx = Util::Algorithm::indexOf(stations, [lastName, lastUrl](StationPtr station)
 	{
-		return(last_name == station->name() || last_url == station->url());
+		return(lastName == station->name() || lastUrl == station->url());
 	});
 
 
@@ -169,10 +170,10 @@ void Gui::AbstractStationPlugin::setupStations()
 
 void Gui::AbstractStationPlugin::currentIndexChanged(int idx)
 {
-	const QString current_text = m->currentName();
+	const QString currentText = m->currentName();
 	const QString url = m->currentUrl();
 
-	bool isTemporary = m->temporaryStations.contains(current_text);
+	bool isTemporary = m->temporaryStations.contains(currentText);
 
 	m->btnTool->showAction(ContextMenu::EntrySave, isTemporary);
 	m->btnTool->showAction(ContextMenu::EntryEdit, (idx >= 0) && !isTemporary);
@@ -259,13 +260,15 @@ void Gui::AbstractStationPlugin::error()
 	}
 }
 
-void Gui::AbstractStationPlugin::addStream(const QString& name, const QString& url)
+int Gui::AbstractStationPlugin::addStream(const QString& name, const QString& url)
 {
 	m->temporaryStations << name;
 	m->comboStream->addItem(name, url);
 	m->comboStream->setCurrentText(name);
 
 	currentIndexChanged(m->comboStream->currentIndex());
+
+	return m->comboStream->findText(name);
 }
 
 void Gui::AbstractStationPlugin::newClicked()
@@ -279,7 +282,7 @@ void Gui::AbstractStationPlugin::saveClicked()
 {
 	StationPtr station = m->streamHandler->createStreamInstance(m->currentName(), m->currentUrl());
 
-	m->configDialog->setMode(m->currentName(), GUI_ConfigureStation::Mode::Edit);
+	m->configDialog->setMode(m->currentName(), GUI_ConfigureStation::Mode::Save);
 	m->configDialog->configureWidgets(station);
 	m->configDialog->open();
 }
@@ -322,7 +325,7 @@ void Gui::AbstractStationPlugin::configFinished()
 		}
 	}
 
-	else if(mode == GUI_ConfigureStation::Mode::Edit)
+	else if(mode == GUI_ConfigureStation::Mode::Edit || mode == GUI_ConfigureStation::Mode::Save)
 	{
 		bool success;
 		if(m->temporaryStations.contains(m->currentName()))

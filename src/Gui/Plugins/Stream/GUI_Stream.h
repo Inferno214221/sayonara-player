@@ -56,7 +56,7 @@ class GUI_Stream :
 
 	private slots:
 		void searchRadioTriggered();
-		void streamSelected(const QString& name, const QString& url);
+		void streamSelected(const QString& name, const QString& url, bool save);
 };
 
 #endif /* GUI_STREAM_H_ */

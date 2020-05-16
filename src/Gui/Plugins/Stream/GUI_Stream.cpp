@@ -141,9 +141,14 @@ void GUI_Stream::searchRadioTriggered()
 	m->searcher->show();
 }
 
-void GUI_Stream::streamSelected(const QString& name, const QString& url)
+void GUI_Stream::streamSelected(const QString& name, const QString& url, bool save)
 {
-	addStream(name, url);
+	int index = addStream(name, url);
+	if(save && index >= 0)
+	{
+		currentIndexChanged(index);
+		saveClicked();
+	}
 }
 
 

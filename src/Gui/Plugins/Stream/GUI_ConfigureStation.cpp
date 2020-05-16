@@ -47,10 +47,9 @@ GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
 
 	ui->setupUi(this);
 	ui->labError->setVisible(false);
-	ui->btnOk->setFocus();
 
-	connect(ui->btnOk, &QPushButton::clicked, this, &Gui::Dialog::accept);
-	connect(ui->btnCancel, &QPushButton::clicked, this, &Gui::Dialog::reject);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &Gui::Dialog::accept);
+	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &Gui::Dialog::reject);
 }
 
 GUI_ConfigureStation::~GUI_ConfigureStation() = default;
@@ -96,8 +95,12 @@ void GUI_ConfigureStation::setMode(const QString& stream_name, GUI_ConfigureStat
 		modeString = Lang::get(Lang::Edit);
 	}
 
-	else {
+	else if(mode == GUI_ConfigureStation::New) {
 		modeString = Lang::get(Lang::New);
+	}
+
+	else if(mode == GUI_ConfigureStation::Save) {
+		modeString = Lang::get(Lang::Save);
 	}
 
 	QString text = QString("%1: %2").arg(stream_name).arg(modeString);

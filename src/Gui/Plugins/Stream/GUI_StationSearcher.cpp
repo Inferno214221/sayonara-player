@@ -98,7 +98,7 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui->twStations->setItemDelegate(new Gui::StyledItemDelegate(ui->twStations));
 	ui->twStreams->setItemDelegate(new Gui::StyledItemDelegate(ui->twStreams));
 
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::listenClicked);
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::okClicked);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
 	connect(ui->leSearch, &QLineEdit::textChanged, this, &GUI_StationSearcher::searchTextChanged);
 	connect(ui->leSearch, &QLineEdit::returnPressed, this, &GUI_StationSearcher::searchClicked);
@@ -304,15 +304,15 @@ void GUI_StationSearcher::stationsFetched()
 	ui->twStations->resizeColumnsToContents();
 }
 
-void GUI_StationSearcher::listenClicked()
+void GUI_StationSearcher::okClicked()
 {
 	int currentStationIndex = ui->twStations->currentRow();
 	const RadioStation station = m->stations.at(currentStationIndex);
 
 	int currentStreamIndex = ui->twStreams->currentRow();
-	const RadioUrl radio_url = station.streams.at(currentStreamIndex);
+	const RadioUrl radioUrl = station.streams.at(currentStreamIndex);
 
-	emit sigStreamSelected(station.name, radio_url.url);
+	emit sigStreamSelected(station.name, radioUrl.url, ui->cbSave->isChecked());
 
 	this->close();
 }
@@ -417,6 +417,7 @@ void GUI_StationSearcher::languageChanged()
 		.arg(Lang::get(Lang::Genre));
 
 	ui->leSearch->setToolTip(tooltip);
+	ui->cbSave->setText(Lang::get(Lang::Save));
 
 	m->setPlaceholderText(ui->leSearch);
 	m->setFromToLabel(ui->labFromTo);

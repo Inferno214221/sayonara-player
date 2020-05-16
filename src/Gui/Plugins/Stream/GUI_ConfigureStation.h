@@ -39,7 +39,8 @@ public:
 	enum Mode
 	{
 		New,
-		Edit
+		Edit,
+		Save
 	};
 
 	GUI_ConfigureStation(QWidget* parent=nullptr);

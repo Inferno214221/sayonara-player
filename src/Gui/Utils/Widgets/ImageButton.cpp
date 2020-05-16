@@ -293,6 +293,10 @@ void ImageButton::resizeEvent(QResizeEvent* e)
 	int h = this->height() - 2;
 	int w = this->width() - 2;
 
+	if(m->currentPixmap.isNull()){
+		return;
+	}
+
 	m->currentPixmapScaled = m->currentPixmap.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 

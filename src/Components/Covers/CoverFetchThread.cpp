@@ -121,7 +121,9 @@ bool FetchThread::start()
 	if( m->acf->canFetchCoverDirectly() )
 	{
 		m->addresses.clear();
-		m->addresses << url.url();
+		if(!url.url().isEmpty()) {
+			m->addresses << url.url();
+		}
 
 		fetchNextCover();
 	}

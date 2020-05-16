@@ -104,7 +104,7 @@ namespace Gui
 			virtual QString	titleFallbackName() const=0;
 			virtual GUI_ConfigureStation* createConfigDialog()=0;
 
-			virtual void addStream(const QString& name, const QString& url);
+			virtual int addStream(const QString& name, const QString& url);
 
 			virtual void initUi() override;
 			virtual void assignUiVariables() override;

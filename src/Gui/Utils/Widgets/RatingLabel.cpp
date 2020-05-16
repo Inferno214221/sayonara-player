@@ -31,33 +31,35 @@
 
 using Gui::RatingLabel;
 
-static QPixmap* pixmap_provider(bool active)
+static QPixmap* pixmapProvider(bool active)
 {
 	if(active) {
-		static QPixmap pm_active = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(14, 14), true);
-		return &pm_active;
+		static QPixmap pmActive = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(14, 14), true);
+		return &pmActive;
 	}
 
 	else {
-		static QPixmap pm_inactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(14, 14), true);
-		return &pm_inactive;
+		static QPixmap pmInactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(14, 14), true);
+		return &pmInactive;
 	}
 }
 
 struct RatingLabel::Private
 {
-	int			offset_x;
-	int			offset_y;
+	int			offsetX;
+	int			offsetY;
 
 	Rating		rating;
-	uint8_t     icon_size;
+	uint8_t     iconSize;
 	bool		enabled;
 
+	QMap<Rating, QPixmap> pixmapCache;
+
 	Private(bool enabled) :
-		offset_x(3),
-		offset_y(0),
+		offsetX(3),
+		offsetY(0),
 		rating(Rating::Zero),
-		icon_size(14),
+		iconSize(14),
 		enabled(enabled)
 	{}
 
@@ -76,7 +78,7 @@ RatingLabel::~RatingLabel() = default;
 
 Rating RatingLabel::ratingAt(QPoint pos) const
 {
-	double drating = ((pos.x() * 1.0) / (m->icon_size + 2.0)) + 0.5;
+	double drating = ((pos.x() * 1.0) / (m->iconSize + 2.0)) + 0.5;
 	int iRating = int(drating);
 	Rating rating = Rating(iRating);
 
@@ -88,8 +90,8 @@ Rating RatingLabel::ratingAt(QPoint pos) const
 
 QSize RatingLabel::sizeHint() const
 {
-	int	h = m->icon_size + 2;
-	int w = (m->icon_size + 2) * 5;
+	int	h = m->iconSize + 2;
+	int w = (m->iconSize + 2) * 5;
 
 	return QSize(w, h);
 }
@@ -111,7 +113,7 @@ Rating RatingLabel::rating() const
 
 void RatingLabel::setVerticalOffset(int offset)
 {
-	m->offset_y = offset;
+	m->offsetY = offset;
 }
 
 void RatingLabel::paint(QPainter* painter, const QRect& rect)
@@ -119,29 +121,29 @@ void RatingLabel::paint(QPainter* painter, const QRect& rect)
 	this->setGeometry(rect);
 
 	painter->save();
-	int offset_y = m->offset_y;
-	if(m->offset_y == 0) {
-		offset_y = (this->height() - m->icon_size) / 2;
+	int offsetY = m->offsetY;
+	if(m->offsetY == 0) {
+		offsetY = (this->height() - m->iconSize) / 2;
 	}
 
-	painter->translate(rect.x() + m->offset_x, rect.y() + offset_y );
+	painter->translate(rect.x() + m->offsetX, rect.y() + offsetY );
 
 	for(uchar i=0; i<uchar(Rating::Five); i++)
 	{
 		Rating rating = Rating(i);
 		if(rating < m->rating)
 		{
-			QPixmap* pm = pixmap_provider(true);
-			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, *pm);
+			QPixmap* pm = pixmapProvider(true);
+			painter->drawPixmap(0, 0, m->iconSize, m->iconSize, *pm);
 		}
 
 		else
 		{
-			QPixmap* pm_inactive = pixmap_provider(false);
-			painter->drawPixmap(0, 0, m->icon_size, m->icon_size, *pm_inactive);
+			QPixmap* pmInactive = pixmapProvider(false);
+			painter->drawPixmap(0, 0, m->iconSize, m->iconSize, *pmInactive);
 		}
 
-		painter->translate(m->icon_size + 2, 0);
+		painter->translate(m->iconSize + 2, 0);
 	}
 
 	painter->restore();
