@@ -239,7 +239,7 @@ QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics&
 	item->setToolTip(text);
 
 	return item;
-};
+}
 
 void GUI_StationSearcher::stationsFetched()
 {
