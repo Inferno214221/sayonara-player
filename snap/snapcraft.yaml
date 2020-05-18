@@ -28,7 +28,7 @@ description: |
   Desktop integration (DBus Mpris2 compatible)
   2 skins
 confinement: strict
-base: core18
+base: core20
 
 apps:
   sayonara:
@@ -107,7 +107,7 @@ parts:
     source-type: git
     source-commit: enter-source-commit-here
     plugin: cmake
-    configflags:
+    cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
     override-build: |
