@@ -132,7 +132,7 @@ void GUI_FontPreferences::fillSizes(const QStringList& sizes)
 	for(const QString& sz : sizes)
 	{
 		int isz = sz.toInt();
-		if(isz < 7 || isz > 40){
+		if(isz < 7 || isz > 20){
 			continue;
 		}
 

@@ -96,7 +96,10 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui->splitter->setStretchFactor(1, 1);
 
 	ui->twStations->setItemDelegate(new Gui::StyledItemDelegate(ui->twStations));
+	ui->twStations->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	ui->twStreams->setItemDelegate(new Gui::StyledItemDelegate(ui->twStreams));
+	ui->twStreams->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
 
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::okClicked);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
@@ -235,7 +238,7 @@ QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics&
 {
 	auto* item = new QTableWidgetItem(text);
 	int width = std::min(Gui::Util::textWidth(fm, text + "bla"), 250);
-	item->setSizeHint(QSize(width, 0));
+	item->setSizeHint(QSize(width, Gui::Util::viewRowHeight()));
 	item->setToolTip(text);
 
 	return item;

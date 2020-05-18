@@ -20,8 +20,10 @@
 
 #include "StyledItemDelegate.h"
 #include "Gui/Utils/GuiUtils.h"
+
 #include <QSize>
 #include <QPainter>
+#include <QBrush>
 
 struct Gui::StyledItemDelegate::Private
 {
@@ -87,16 +89,20 @@ void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 		return;
 	}
 
-	painter->save();
+	bool isSelected = (option.state & QStyle::State_Selected);
+
+	const QPalette palette = option.palette;
+	const QBrush background = (isSelected) ? palette.background() : palette.highlight();
+
+	const QSize actualSize = m->calcPixmapSize(option.rect.size());
+	QRect r2(option.rect);
+		r2.setSize(actualSize);
+		r2.translate((option.rect.bottomRight() - r2.bottomRight()) / 2);
 
 	const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
 
-	QRect r2 = option.rect;
-	QSize actualSize = m->calcPixmapSize(option.rect.size());
-
-	r2.setSize(actualSize);
-	r2.translate((option.rect.bottomRight() - r2.bottomRight()) / 2);
-
+	painter->save();
+	painter->setBrush(background);
 	painter->drawPixmap(r2, pixmap);
 	painter->restore();
 }

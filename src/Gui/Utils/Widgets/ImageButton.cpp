@@ -64,7 +64,9 @@ struct ImageButton::Private
 		invalidPixmap(QPixmap("://Icons/logo.png")),
 		opacity(1.0),
 		isFadingEnabled(true)
-	{}
+	{
+		this->currentPixmap = this->invalidPixmap;
+	}
 };
 
 ImageButton::ImageButton(QWidget* parent) :

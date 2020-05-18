@@ -50,6 +50,7 @@
 #include <QAction>
 #include <QDataStream>
 #include <QKeySequence>
+#include <QTimer>
 
 struct GUI_Player::Private
 {
@@ -190,13 +191,13 @@ void GUI_Player::initMainSplitter()
 void GUI_Player::initControlSplitter()
 {
 	const QByteArray splitterState = GetSetting(Set::Player_SplitterControls);
-	if(!splitterState.isEmpty()) {
+	if(!splitterState.isEmpty())
+	{
 		ui->splitterControls->restoreState(splitterState);
 	}
 
-	else {
-		this->checkControlSplitter();
-	}
+	QApplication::processEvents();
+	this->checkControlSplitter();
 }
 
 void GUI_Player::initFontChangeFix()
@@ -218,8 +219,7 @@ void GUI_Player::initFontChangeFix()
 void GUI_Player::initConnections()
 {
 	auto* lph = Library::PluginHandler::instance();
-	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged,
-			this, &GUI_Player::currentLibraryChanged);
+	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged, this, &GUI_Player::currentLibraryChanged);
 
 	auto* playManager = PlayManager::instance();
 	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_Player::currentTrackChanged);
@@ -237,13 +237,13 @@ void GUI_Player::initConnections()
 	connect(pph, &PlayerPlugin::Handler::sigPluginAdded, this, &GUI_Player::pluginAdded);
 	connect(pph, &PlayerPlugin::Handler::sigPluginActionTriggered, this, &GUI_Player::pluginActionTriggered);
 
-	auto* dbl_click_filter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
-	connect(dbl_click_filter, &Gui::GenericFilter::sigEvent, this, [=](QEvent::Type)
+	auto* dblClickFilter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
+	connect(dblClickFilter, &Gui::GenericFilter::sigEvent, this, [=](QEvent::Type)
 	{
 		this->checkControlSplitter();
 	});
 
-	ui->splitterControls->handle(1)->installEventFilter(dbl_click_filter);
+	ui->splitterControls->handle(1)->installEventFilter(dblClickFilter);
 }
 
 void GUI_Player::registerPreferenceDialog(QAction* dialog_action)
@@ -407,7 +407,6 @@ void GUI_Player::showLibraryChanged()
 
 	QSize playerSize = this->size();
 	QList<int> sizes = ui->splitter->sizes();
-	QByteArray splitterControlsState = ui->splitterControls->saveState();
 
 	if(GetSetting(Set::Lib_Show))
 	{
@@ -427,7 +426,7 @@ void GUI_Player::showLibraryChanged()
 
 		if(wasVisible)
 		{
-			SetSetting(Set::Lib_OldWidth, oldLibraryWidth );
+			SetSetting(Set::Lib_OldWidth, oldLibraryWidth);
 		}
 	}
 
@@ -440,9 +439,7 @@ void GUI_Player::showLibraryChanged()
 		}
 
 		this->resize(playerSize);
-
 		ui->splitter->setSizes(sizes);
-		ui->splitterControls->restoreState(splitterControlsState);
 	}
 }
 
