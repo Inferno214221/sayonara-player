@@ -22,7 +22,6 @@
 #define GUI_LANGUAGE_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
-#include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LanguagePreferences)
 
@@ -31,11 +30,10 @@ class GUI_LanguagePreferences :
 {
 	Q_OBJECT
 	UI_CLASS(GUI_LanguagePreferences)
-	PIMPL(GUI_LanguagePreferences)
 
 public:
 	explicit GUI_LanguagePreferences(const QString& identifier);
-	virtual ~GUI_LanguagePreferences();
+	~GUI_LanguagePreferences() override;
 
 	bool commit() override;
 	void revert() override;
@@ -51,13 +49,12 @@ protected:
 
 private:
 	void refreshCombobox();
+	void downloadUpdate(const QString& languageCode);
 
 private slots:
-	void currentIndexChanged(int index);
 	void checkForUpdateClicked();
 	void updateCheckFinished();
-
-	void downloadClicked();
+	void importLanguageClicked();
 	void downloadFinished();
 };
 

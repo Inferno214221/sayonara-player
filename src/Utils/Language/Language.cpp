@@ -568,9 +568,9 @@ LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 	}
 }
 
-QString Lang::convertOldLanguage(const QString& old_lang)
+QString Lang::convertOldLanguage(const QString& oldLang)
 {
-	QString tl = twoLetter(old_lang);
+	const QString tl = twoLetter(oldLang);
 	if(tl.count() >= 2)
 	{
 		QMap<QString, QLocale> languages = availableLanguages();
@@ -582,10 +582,8 @@ QString Lang::convertOldLanguage(const QString& old_lang)
 		}
 	}
 
-	return "en_GB";
+	return "en";
 }
-
-
 
 QMap<QString, QLocale> Lang::availableLanguages()
 {
@@ -606,9 +604,16 @@ QMap<QString, QLocale> Lang::availableLanguages()
 		QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
 		for(const QString& entry : entries)
 		{
-			QString fl = fourLetter(entry);
-			if(!fl.isEmpty()){
+			const QString fl = fourLetter(entry);
+			if(!fl.isEmpty()) {
 				ret[fl] = QLocale(fl);
+			}
+
+			else {
+				const QString tl = twoLetter(entry);
+				if(!tl.isEmpty()) {
+					ret[tl] = QLocale(tl);
+				}
 			}
 		}
 	}

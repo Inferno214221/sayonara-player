@@ -52,7 +52,7 @@ IconRadioButton* addRadioButton(QWidget* widget, const QString& text, const QStr
 {
 	QIcon::setThemeName(themeName);
 	QIcon icon = QIcon::fromTheme("media-playback-start");
-	if(icon.isNull()){
+	if(icon.isNull() && !isSystemTheme){
 		return nullptr;
 	}
 

@@ -69,14 +69,14 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 		if(!loaded)
 		{
 			translator->deleteLater();
-			spLog(Log::Warning, this) << "Translator " << filename << " could not be loaded";
+			spLog(Log::Debug, this) << "Translator " << filename << " could not be loaded";
 			continue;
 		}
 
 		if(translator->isEmpty())
 		{
 			translator->deleteLater();
-			spLog(Log::Warning, this) << "Translator is empty";
+			spLog(Log::Debug, this) << "Translator is empty";
 			continue;
 		}
 
@@ -84,7 +84,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 		if(!installed)
 		{
 			translator->deleteLater();
-			spLog(Log::Warning, this) << "Translator " << filename << " could not be installed";
+			spLog(Log::Debug, this) << "Translator " << filename << " could not be installed";
 			continue;
 		}
 

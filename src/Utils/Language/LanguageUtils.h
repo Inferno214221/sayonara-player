@@ -105,9 +105,9 @@ namespace Util
 		 * @brief Extracts the language Code out of a sayonara_lang string
 		 * @ingroup Language
 		 * @param language_file filename containing sayonara_lang
-		 * @return
+		 * @return four or two letter code
 		 */
-		QString extractFourLetter(const QString& language_file);
+		QString extractLanguageCode(const QString& languageFile);
 
 		/**
 		 * @brief calculates the checksum for the currently used language
@@ -164,6 +164,15 @@ namespace Util
 		 * @return
 		 */
 		QStringList getCurrentQtTranslationPaths();
+
+		/**
+		 * @brief Imports a qm file. The filename must contain a valid four
+		 * or two letter code
+		 * @param filename
+		 * @return true, if the filename matches the pattern
+		 */
+		bool importLanguageFile(const QString& filename);
+
 
 		#ifdef SAYONARA_WITH_TESTS
 			void setTestMode();

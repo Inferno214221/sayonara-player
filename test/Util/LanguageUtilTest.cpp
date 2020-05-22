@@ -66,7 +66,7 @@ void LanguageUtilTest::basic_path_tests()
 	path = Language::getSharePath("en_GBS");
 	QVERIFY(path.isEmpty());
 
-	path = Language::getSharePath("EN_gb");
+	path = Language::getSharePath("EN");
 	QVERIFY(path.isEmpty());
 }
 
@@ -109,39 +109,39 @@ void LanguageUtilTest::four_letter_test()
 	QString expected;
 	QString four_letter;
 
-	four_letter = Language::extractFourLetter("blupp.ts");
+	four_letter = Language::extractLanguageCode("blupp.ts");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("sayonara_lang_de_DE.ts");
+	four_letter = Language::extractLanguageCode("sayonara_lang_de_DE.ts");
 	expected = "de_DE";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_de_DE.qm");
+	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_de_DE.qm");
 	expected = "de_DE";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("sayonara_lang_zh_CN.GB2312.ts");
+	four_letter = Language::extractLanguageCode("sayonara_lang_zh_CN.GB2312.ts");
 	expected = "zh_CN.GB2312";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("sayonara_lang_de_DE.ISO-8859-15.ts");
+	four_letter = Language::extractLanguageCode("sayonara_lang_de_DE.ISO-8859-15.ts");
 	expected = "de_DE.ISO-8859-15";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("sayonara_lang_zh_CN.GB2312.ts.qm");
+	four_letter = Language::extractLanguageCode("sayonara_lang_zh_CN.GB2312.ts.qm");
 	expected = "";
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_de_DE.xz");
+	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_de_DE.xz");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("asd;flkjasdsayonara_lang_DE_DE.qm");
+	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_DE_DE.qm");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 
-	four_letter = Language::extractFourLetter("blupp.ts");
+	four_letter = Language::extractLanguageCode("blupp.ts");
 	expected = QString();
 	QVERIFY(four_letter == expected);
 }
