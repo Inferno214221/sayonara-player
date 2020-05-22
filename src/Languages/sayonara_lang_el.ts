@@ -340,7 +340,7 @@
         <location filename="../src/Gui/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+77"/>
         <location line="+53"/>
         <source>No bookmarks found</source>
-        <translation type="unfinished"/>
+        <translation>Δε βρέθηκαν σελιδοδείκτες</translation>
     </message>
     <message>
         <location line="+122"/>
@@ -353,12 +353,12 @@
     <message>
         <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.ui" line="+88"/>
         <source>Cannot Broadcast</source>
-        <translation type="unfinished"/>
+        <translation>Η εκπομπή είναι αδύνατη</translation>
     </message>
     <message>
         <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+104"/>
         <source>Dismiss</source>
-        <translation type="unfinished"/>
+        <translation>Απόρριψη</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -378,7 +378,7 @@
     <message>
         <location line="+1"/>
         <source>Maybe another application is using this port?</source>
-        <translation type="unfinished"/>
+        <translation>Ίσως μια άλλη εφαρμογή χρησιμοποιεί την συγκεκριμένη θύρα</translation>
     </message>
 </context>
 <context>
@@ -549,7 +549,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.ui" line="+20"/>
         <source>Port</source>
-        <translation type="unfinished"/>
+        <translation>Θύρα</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -577,7 +577,7 @@
     <message>
         <location line="+60"/>
         <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
+        <translation>Διαγραφή όλων των εξώφυλλων από τη βάση δεδομένων</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -627,12 +627,12 @@
     <message>
         <location line="+22"/>
         <source>Cover name</source>
-        <translation type="unfinished"/>
+        <translation>Όνομα εξώφυλλου</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name of cover file</source>
-        <translation type="unfinished"/>
+        <translation>Όνομα αρχείου εξώφυλλου</translation>
     </message>
 </context>
 <context>
@@ -655,7 +655,7 @@
     <message>
         <location line="+28"/>
         <source>For new languages I am always looking for translators</source>
-        <translation type="unfinished"/>
+        <translation>Ζητούνται πάντα μεταφραστές για επιπλέον γλώσσες</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Language/GUI_LanguagePreferences.cpp" line="+63"/>
@@ -670,7 +670,7 @@
     <message>
         <location line="+26"/>
         <source>Language update available</source>
-        <translation type="unfinished"/>
+        <translation>Ενημέρωση γλώσσας διαθέσιμη</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -686,7 +686,7 @@
     <message>
         <location line="-10"/>
         <source>Language was updated successfully</source>
-        <translation type="unfinished"/>
+        <translation>Η γλώσσα ενημερώθηκε επιτυχώς</translation>
     </message>
 </context>
 <context>
@@ -814,12 +814,12 @@
     <message>
         <location line="+21"/>
         <source>Start hidden</source>
-        <translation type="unfinished"/>
+        <translation>Έναρξη σε απόκρυψη</translation>
     </message>
     <message>
         <location line="+52"/>
         <source>Update notifications</source>
-        <translation type="unfinished"/>
+        <translation>Ειδοποιήσεις ενημερώσεων</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -842,7 +842,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.ui" line="+36"/>
         <source>Behavior</source>
-        <translation type="unfinished"/>
+        <translation>Συμπεριφορά</translation>
     </message>
     <message>
         <location line="+26"/>
@@ -948,7 +948,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.ui" line="+33"/>
         <source>Port</source>
-        <translation type="unfinished"/>
+        <translation>Θύρα</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1001,7 +1001,7 @@
     <message>
         <location line="+7"/>
         <source>Port</source>
-        <translation type="unfinished"/>
+        <translation>Θύρα</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -1150,7 +1150,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
         <source> ms</source>
-        <translation type="unfinished"/>
+        <translation>ms</translation>
     </message>
     <message>
         <location line="+29"/>
@@ -1193,17 +1193,17 @@
         <location line="+7"/>
         <location line="+7"/>
         <source>Font size</source>
-        <translation type="unfinished"/>
+        <translation>Μέγεθος γραμματοσειράς</translation>
     </message>
     <message>
         <location line="+14"/>
         <source>Bold</source>
-        <translation type="unfinished"/>
+        <translation>Έντονα</translation>
     </message>
     <message>
         <location line="+10"/>
         <source>Font name</source>
-        <translation type="unfinished"/>
+        <translation>Όνομα γραμματοσειράς</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_FontPreferences.cpp" line="+129"/>
@@ -1256,7 +1256,7 @@
     <message>
         <location line="+1"/>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Εμφάνιση μεγάλου εξώφυλλου</translation>
     </message>
 </context>
 <context>
@@ -1301,7 +1301,7 @@
     <message>
         <location line="+59"/>
         <source>Search artist</source>
-        <translation type="unfinished"/>
+        <translation>Αναζήτηση καλλιτέχνη</translation>
     </message>
 </context>
 <context>
@@ -1328,13 +1328,13 @@
         <location line="+73"/>
         <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="+223"/>
         <source>Original</source>
-        <translation type="unfinished"/>
+        <translation>Πρωτότυπο</translation>
     </message>
     <message>
         <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-56"/>
         <location line="+9"/>
         <source>File has no cover</source>
-        <translation type="unfinished"/>
+        <translation>Το αρχείο δεν έχει εξώφυλλο</translation>
     </message>
 </context>
 <context>
@@ -1375,7 +1375,7 @@
     <message>
         <location line="+113"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Σχόλιο</translation>
     </message>
     <message>
         <location line="+150"/>
@@ -1438,7 +1438,7 @@
     <message>
         <location line="+84"/>
         <source>Disc Nr</source>
-        <translation type="unfinished"/>
+        <translation>Αριθμός δίσκου</translation>
     </message>
     <message>
         <location line="+57"/>
@@ -1500,7 +1500,7 @@
     <message>
         <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
         <source>Looking for covers</source>
-        <translation type="unfinished"/>
+        <translation>Αναζήτηση εξώφυλλων</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1554,7 +1554,7 @@
     <message>
         <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+123"/>
         <source>Website</source>
-        <translation type="unfinished"/>
+        <translation>Ιστότοπος</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -1605,7 +1605,7 @@
     <message>
         <location filename="../src/Gui/History/HistoryContainer.cpp" line="+25"/>
         <source>History</source>
-        <translation type="unfinished"/>
+        <translation>Ιστορικό</translation>
     </message>
 </context>
 <context>
@@ -1621,7 +1621,7 @@
     <message>
         <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+216"/>
         <source>Toolbar</source>
-        <translation type="unfinished"/>
+        <translation>Γραμμή εργαλειών</translation>
     </message>
 </context>
 <context>
@@ -1665,12 +1665,12 @@
     <message>
         <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+408"/>
         <source>Copy here</source>
-        <translation type="unfinished"/>
+        <translation>Αντιγραφή εδώ</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Move here</source>
-        <translation type="unfinished"/>
+        <translation>Μεταφορά εδώ</translation>
     </message>
 </context>
 <context>
@@ -1678,7 +1678,7 @@
     <message>
         <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+187"/>
         <source>Could not create directory</source>
-        <translation type="unfinished"/>
+        <translation>Αδύνατη η δημιουργία φακέλου</translation>
     </message>
 </context>
 <context>
@@ -1748,7 +1748,7 @@
     <message>
         <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+91"/>
         <source>Only from library</source>
-        <translation type="unfinished"/>
+        <translation>Μόνο από την βιβλιοθήκη</translation>
     </message>
     <message numerus="yes">
         <location line="+4"/>
@@ -1761,12 +1761,12 @@
     <message>
         <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+74"/>
         <source>Fast scan</source>
-        <translation type="unfinished"/>
+        <translation>Γρήγορη σάρωση</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Deep scan</source>
-        <translation type="unfinished"/>
+        <translation>Λεπτομερής σάρωση</translation>
     </message>
     <message>
         <location line="+33"/>
@@ -1784,12 +1784,12 @@
     <message>
         <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+154"/>
         <source>Statistics</source>
-        <translation type="unfinished"/>
+        <translation>Στατιστικά</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Edit library</source>
-        <translation type="unfinished"/>
+        <translation>Επεξεργασία βιβλιοθήκης</translation>
     </message>
 </context>
 <context>
@@ -1816,7 +1816,7 @@
     <message>
         <location line="+1"/>
         <source>Copyright</source>
-        <translation type="unfinished"/>
+        <translation>Πνευματικά δικαιώματα</translation>
     </message>
 </context>
 <context>
@@ -1830,7 +1830,7 @@
         <location line="+1"/>
         <location line="+15"/>
         <source>Help</source>
-        <translation type="unfinished"/>
+        <translation>Βοήθεια</translation>
     </message>
     <message>
         <location line="-14"/>
@@ -1840,7 +1840,7 @@
     <message>
         <location line="+11"/>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Εμφάνιση μεγάλου εξώφυλλου</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1865,7 +1865,7 @@
     <message>
         <location line="+3"/>
         <source>FAQ</source>
-        <translation type="unfinished"/>
+        <translation>Συχνές ερωτήσεις</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -1880,12 +1880,12 @@
     <message>
         <location line="+2"/>
         <source>License</source>
-        <translation type="unfinished"/>
+        <translation>Άδεια</translation>
     </message>
     <message>
         <location line="+4"/>
         <source>Donate</source>
-        <translation type="unfinished"/>
+        <translation>Δωρεά</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2155,7 +2155,7 @@
     <message>
         <location line="+59"/>
         <source>Test</source>
-        <translation type="unfinished"/>
+        <translation>Έλεγχος</translation>
     </message>
 </context>
 <context>
@@ -2176,7 +2176,7 @@
     <message>
         <location line="+85"/>
         <source>No artists found</source>
-        <translation type="unfinished"/>
+        <translation>Δε βρέθηκαν καλλιτέχνες</translation>
     </message>
     <message numerus="yes">
         <location line="+6"/>
@@ -2214,7 +2214,7 @@
     <message>
         <location line="+2"/>
         <source>Toolbar</source>
-        <translation type="unfinished"/>
+        <translation>Γραμμή εργαλειών</translation>
     </message>
     <message>
         <location line="+249"/>
@@ -2299,7 +2299,7 @@
     <message>
         <location filename="../src/Utils/Language/Language.cpp" line="+79"/>
         <source>About</source>
-        <translation type="unfinished"/>
+        <translation>Σχετικά</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2314,7 +2314,7 @@
     <message>
         <location line="+2"/>
         <source>Activate</source>
-        <translation type="unfinished"/>
+        <translation>Ενεργοποίηση</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2324,7 +2324,7 @@
     <message>
         <location line="+2"/>
         <source>Add</source>
-        <translation type="unfinished"/>
+        <translation>Πρόσθεση</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2354,12 +2354,12 @@
     <message>
         <location line="+2"/>
         <source>Albums</source>
-        <translation type="unfinished"/>
+        <translation>Άλμπουμ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>Όλα</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2374,7 +2374,7 @@
     <message>
         <location line="+2"/>
         <source>Apply</source>
-        <translation type="unfinished"/>
+        <translation>Εφαρμογή</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2419,7 +2419,7 @@
     <message>
         <location line="+2"/>
         <source>Cancel</source>
-        <translation type="unfinished"/>
+        <translation>Ακύρωση</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2454,7 +2454,7 @@
     <message>
         <location line="+2"/>
         <source>Comment</source>
-        <translation type="unfinished"/>
+        <translation>Σχόλιο</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2510,7 +2510,7 @@
         <location line="+2"/>
         <location line="+88"/>
         <source>Delete</source>
-        <translation type="unfinished"/>
+        <translation>Διαγραφή</translation>
     </message>
     <message>
         <location line="-86"/>
@@ -2530,12 +2530,12 @@
     <message>
         <location line="+2"/>
         <source>Disc</source>
-        <translation type="unfinished"/>
+        <translation>Δίσκος</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Duration</source>
-        <translation type="unfinished"/>
+        <translation>Διάρκεια</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2550,7 +2550,7 @@
     <message>
         <location line="+2"/>
         <source>Edit</source>
-        <translation type="unfinished"/>
+        <translation>Επεξεργασία</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2585,7 +2585,7 @@
     <message>
         <location line="+2"/>
         <source>Error</source>
-        <translation type="unfinished"/>
+        <translation>Σφάλμα</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2595,17 +2595,17 @@
     <message>
         <location line="+2"/>
         <source>File</source>
-        <translation type="unfinished"/>
+        <translation>Αρχείο</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Filename</source>
-        <translation type="unfinished"/>
+        <translation>Όνομα αρχείου</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Files</source>
-        <translation type="unfinished"/>
+        <translation>Αρχεία</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2620,7 +2620,7 @@
     <message>
         <location line="+2"/>
         <source>Filter</source>
-        <translation type="unfinished"/>
+        <translation>Φίλτρο</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2630,12 +2630,12 @@
     <message>
         <location line="+2"/>
         <source>Font</source>
-        <translation type="unfinished"/>
+        <translation>Γραμματοσειρά</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Fonts</source>
-        <translation type="unfinished"/>
+        <translation>Γραμματοσειρές</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2725,12 +2725,12 @@
     <message>
         <location line="+4"/>
         <source>Esc</source>
-        <translation type="unfinished"/>
+        <translation>Esc</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Ctrl</source>
-        <translation type="unfinished"/>
+        <translation>Ctrl</translation>
     </message>
     <message>
         <location line="+2"/>

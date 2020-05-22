@@ -156,27 +156,22 @@
         <translation>Importuj utwory do biblioteki</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+98"/>
         <source>Select target folder</source>
         <translation>Wybierz folder docelowy</translation>
     </message>
     <message>
-        <location line="+69"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+127"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+122"/>
         <source>Loading tracks</source>
         <translation>Ładowanie utworów</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>No tracks</source>
         <translation>Brak utworów</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>Importing</source>
         <translation>Importowanie</translation>
     </message>
@@ -186,7 +181,7 @@
         <translation>Ukończono</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Rollback</source>
         <translation>Cofnij zmiany</translation>
     </message>
@@ -196,12 +191,12 @@
         <translation>Anulowano</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+61"/>
         <source>Choose target directory</source>
         <translation>Wybierz katalog docelowy</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
         <source>%1&lt;br /&gt;is no library directory</source>
         <translation>%1 &lt;br /&gt; nie jest katalogiem biblioteki</translation>
     </message>
@@ -529,17 +524,17 @@
         <translation>Wyszukaj stację radiową</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+59"/>
         <source>Show radio stations from %1 to %2</source>
         <translation>Pokaż stacje radiowe od %1 do %2</translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+222"/>
         <source>Country</source>
         <translation>Kraj</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+78"/>
         <source>Type</source>
         <translation>Rodzaj</translation>
     </message>
@@ -951,32 +946,22 @@
 <context>
     <name>GUI_ProxyPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.ui" line="+20"/>
-        <source>Host</source>
-        <translation>Serwer</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Username</source>
-        <translation>Nazwa użytkownika</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Save username/password</source>
-        <translation>Zapisz nazwę użytkownika / hasło</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.ui" line="+33"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Password</source>
-        <translation>Hasło</translation>
+        <source>Save username/password</source>
+        <translation>Zapisz nazwę użytkownika / hasło</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+14"/>
+        <source>Host</source>
+        <translation>Serwer</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Active</source>
         <translation>Aktywne</translation>
     </message>
@@ -984,6 +969,16 @@
         <location line="+20"/>
         <source>Automatic search</source>
         <translation>Automatyczne wyszukiwanie</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Password</source>
+        <translation>Hasło</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Username</source>
+        <translation>Nazwa użytkownika</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.cpp" line="+57"/>
@@ -1084,27 +1079,27 @@
         <translation>Ogólne</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Target directory</source>
-        <translation>Katalog docelowy</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Automatic recording</source>
-        <translation>Automatyczne nagrywanie</translation>
-    </message>
-    <message>
-        <location line="+45"/>
+        <location line="+46"/>
         <source>Create session directory</source>
         <translation>Utwórz katalog sesji</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+14"/>
+        <source>Automatic recording</source>
+        <translation>Automatyczne nagrywanie</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Target directory</source>
+        <translation>Katalog docelowy</translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Session Directory</source>
         <translation>Katalog sesji</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+25"/>
         <source>Choose available placeholders</source>
         <translation>Proszę wybrać symbole zastępcze</translation>
     </message>
@@ -1225,15 +1220,15 @@
         <translation>Zastosuj także ten motyw ikon do ciemnego stylu</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+96"/>
-        <location line="+104"/>
-        <source>System theme</source>
-        <translation>Motyw systemu</translation>
-    </message>
-    <message>
-        <location line="-96"/>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+91"/>
         <source>Icons</source>
         <translation>Ikony</translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <location line="+63"/>
+        <source>System theme</source>
+        <translation>Motyw systemu</translation>
     </message>
 </context>
 <context>
@@ -1549,7 +1544,7 @@
 <context>
     <name>LastFM::Base</name>
     <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+137"/>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+136"/>
         <source>Cannot login to Last.fm</source>
         <translation>Nie można zalogować się do Last.fm</translation>
     </message>
@@ -1632,7 +1627,7 @@
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+214"/>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Użyj Ctrl + kółko myszy aby powiększyć</translation>
     </message>
@@ -1751,7 +1746,7 @@
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+90"/>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+91"/>
         <source>Only from library</source>
         <translation>Tylko z biblioteki</translation>
     </message>
@@ -1900,7 +1895,7 @@
     <message>
         <location line="+1"/>
         <source>And special thanks to those people with local music collections</source>
-        <translation type="unfinished"/>
+        <translation>Specjalne podziękowania dla osób z lokalnymi zbiorami muzycznymi</translation>
     </message>
 </context>
 <context>
@@ -2106,12 +2101,12 @@
 <context>
     <name>Gui::AbstractStationPlugin</name>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+243"/>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+244"/>
         <source>Cannot open stream</source>
         <translation>Nie mogę otworzyć strumienia</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+72"/>
         <source>Please choose another name</source>
         <translation>Wybierz inną nazwę</translation>
     </message>

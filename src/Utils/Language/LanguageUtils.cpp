@@ -249,11 +249,13 @@ QString Language::getIconPath(const QString& languageCode)
 	}
 
 	QString filename = Util::sharePath("translations/icons/%1.png").arg(languageCode);
-	if(!QFile(filename).exists()){
+	if(!QFile(filename).exists())
+	{
 		filename = Util::sharePath("translations/icons/%1.png").arg(languageCode.left(2));
+		if(!QFile(filename).exists()){
+			return QString();
+		}
 	}
-
-	getSimilarLanguage4(languageCode);
 
 	return filename;
 }

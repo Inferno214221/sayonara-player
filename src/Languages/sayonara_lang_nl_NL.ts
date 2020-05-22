@@ -156,27 +156,22 @@
         <translation>Importeer nummers naar bibliotheek</translation>
     </message>
     <message>
-        <location line="+7"/>
+        <location line="+98"/>
         <source>Select target folder</source>
         <translation>Kies doelmap</translation>
     </message>
     <message>
-        <location line="+69"/>
-        <source>OK</source>
-        <translation>OK</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+127"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+122"/>
         <source>Loading tracks</source>
         <translation>Tracks Laden</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>No tracks</source>
         <translation>Geen nummers</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>Importing</source>
         <translation>Importeren</translation>
     </message>
@@ -186,7 +181,7 @@
         <translation>Beëindigd</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Rollback</source>
         <translation>Terugdraaien</translation>
     </message>
@@ -196,12 +191,12 @@
         <translation>Geannuleerd</translation>
     </message>
     <message>
-        <location line="+57"/>
+        <location line="+61"/>
         <source>Choose target directory</source>
         <translation>Kies doel map</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+12"/>
         <source>%1&lt;br /&gt;is no library directory</source>
         <translation>%1&lt;br/&gt; is geen map in de bibliotheek</translation>
     </message>
@@ -529,17 +524,17 @@
         <translation>Radiostation zoeken</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+58"/>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+59"/>
         <source>Show radio stations from %1 to %2</source>
         <translation>Radiostations tonen van %1 tot %2</translation>
     </message>
     <message>
-        <location line="+209"/>
+        <location line="+222"/>
         <source>Country</source>
         <translation>Land</translation>
     </message>
     <message>
-        <location line="+79"/>
+        <location line="+78"/>
         <source>Type</source>
         <translation>Type</translation>
     </message>
@@ -951,32 +946,22 @@
 <context>
     <name>GUI_ProxyPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.ui" line="+20"/>
-        <source>Host</source>
-        <translation>Host</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>Username</source>
-        <translation>Gebruikersnaam</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Save username/password</source>
-        <translation>Opslaan Gebruikersnaam/Wachtwoord</translation>
-    </message>
-    <message>
-        <location line="+14"/>
+        <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.ui" line="+33"/>
         <source>Port</source>
         <translation>Poort</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Password</source>
-        <translation>Wachtwoord</translation>
+        <source>Save username/password</source>
+        <translation>Opslaan Gebruikersnaam/Wachtwoord</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+14"/>
+        <source>Host</source>
+        <translation>Host</translation>
+    </message>
+    <message>
+        <location line="+9"/>
         <source>Active</source>
         <translation>Actief</translation>
     </message>
@@ -984,6 +969,16 @@
         <location line="+20"/>
         <source>Automatic search</source>
         <translation>Automatisch zoeken</translation>
+    </message>
+    <message>
+        <location line="+28"/>
+        <source>Password</source>
+        <translation>Wachtwoord</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Username</source>
+        <translation>Gebruikersnaam</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Proxy/GUI_ProxyPreferences.cpp" line="+57"/>
@@ -1084,27 +1079,27 @@
         <translation>Algemeen</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Target directory</source>
-        <translation>Doelmap</translation>
-    </message>
-    <message>
-        <location line="+40"/>
-        <source>Automatic recording</source>
-        <translation>Automatisch opnemen</translation>
-    </message>
-    <message>
-        <location line="+45"/>
+        <location line="+46"/>
         <source>Create session directory</source>
         <translation>Sessiemap creëren</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+14"/>
+        <source>Automatic recording</source>
+        <translation>Automatisch opnemen</translation>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Target directory</source>
+        <translation>Doelmap</translation>
+    </message>
+    <message>
+        <location line="+18"/>
         <source>Session Directory</source>
         <translation>Sessie map</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+25"/>
         <source>Choose available placeholders</source>
         <translation>Kies beschikbare plaatshouders</translation>
     </message>
@@ -1225,15 +1220,15 @@
         <translation>Dit pictogramthema ook gebruiken in het donkere thema</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+96"/>
-        <location line="+104"/>
-        <source>System theme</source>
-        <translation>Systeemthema</translation>
-    </message>
-    <message>
-        <location line="-96"/>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+91"/>
         <source>Icons</source>
         <translation>Pictogrammen</translation>
+    </message>
+    <message>
+        <location line="+90"/>
+        <location line="+63"/>
+        <source>System theme</source>
+        <translation>Systeemthema</translation>
     </message>
 </context>
 <context>
@@ -1549,7 +1544,7 @@
 <context>
     <name>LastFM::Base</name>
     <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+137"/>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+136"/>
         <source>Cannot login to Last.fm</source>
         <translation>Kan niet inloggen op Last.fm</translation>
     </message>
@@ -1632,7 +1627,7 @@
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+214"/>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+205"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>Gebruik Ctrl + muiswiel om te zoomen</translation>
     </message>
@@ -1751,7 +1746,7 @@
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+90"/>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+91"/>
         <source>Only from library</source>
         <translation>Enkel van de bibliotheek</translation>
     </message>
@@ -2106,12 +2101,12 @@
 <context>
     <name>Gui::AbstractStationPlugin</name>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+243"/>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+244"/>
         <source>Cannot open stream</source>
         <translation>Kan de stroom niet openen</translation>
     </message>
     <message>
-        <location line="+70"/>
+        <location line="+72"/>
         <source>Please choose another name</source>
         <translation>Kies een andere naam</translation>
     </message>

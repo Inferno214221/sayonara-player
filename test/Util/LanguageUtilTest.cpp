@@ -54,7 +54,7 @@ void LanguageUtilTest::basic_path_tests()
 	QVERIFY(path == expected);
 
 	path = Language::getIconPath("ab_CD");
-	expected = File::cleanFilename(sp + "/icons/ab_CD.png");
+	expected = QString();
 	QVERIFY(path == expected);
 
 	path = Language::getSharePath("hallo");
@@ -115,6 +115,10 @@ void LanguageUtilTest::four_letter_test()
 
 	four_letter = Language::extractLanguageCode("sayonara_lang_de_DE.ts");
 	expected = "de_DE";
+	QVERIFY(four_letter == expected);
+
+	four_letter = Language::extractLanguageCode("sayonara_lang_de.ts");
+	expected = "de";
 	QVERIFY(four_letter == expected);
 
 	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_de_DE.qm");
