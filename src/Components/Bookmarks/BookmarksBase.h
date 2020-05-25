@@ -69,6 +69,7 @@ public:
 	void setMetadata(const MetaData& md);
 
 	const QList<Bookmark> bookmarks() const;
+
 	void setBookmarks(const QList<Bookmark> bookmarks);
 
 	int count();

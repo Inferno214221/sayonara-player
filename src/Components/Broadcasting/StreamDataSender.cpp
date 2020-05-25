@@ -34,18 +34,16 @@
 
 static char padding[256];
 
-using HttpHeaderPair=QPair<QString, QString>;
+using HttpHeaderPair = QPair<QString, QString>;
 
 struct StreamDataSender::Private
 {
-	QTcpSocket*		socket=nullptr;
-	qint64			bytesWritten;
-
-	QByteArray		header;
-	QByteArray		icyHeader;
-	QByteArray		rejectHeader;
-
-	QString			trackPath;
+	QTcpSocket* socket = nullptr;
+	qint64 bytesWritten;
+	QByteArray header;
+	QByteArray icyHeader;
+	QByteArray rejectHeader;
+	QString trackPath;
 
 	Private(QTcpSocket* outSocket)
 	{
@@ -53,35 +51,35 @@ struct StreamDataSender::Private
 		socket = outSocket;
 
 		header = QByteArray
-		(
-			"ICY 200 Ok\r\n"
-			"icy-notice1:Bliblablupp\r\n"
-			"icy-notice2:asdfasd\r\n"
-			"icy-name:Sayonara Player Radio\r\n"
-			"icy-genre:\r\n"
-			"icy-url:http://sayonara-player.com\r\n"
-			"icy-pub:1\r\n"
-			"icy-br:192\r\n"
-			"Accept-Ranges:none\r\n"
-			"content-type:audio/mpeg\r\n"
-			"connection:keep-alive\r\n"
-		);
+			(
+				"ICY 200 Ok\r\n"
+				"icy-notice1:Bliblablupp\r\n"
+				"icy-notice2:asdfasd\r\n"
+				"icy-name:Sayonara Player Radio\r\n"
+				"icy-genre:\r\n"
+				"icy-url:http://sayonara-player.com\r\n"
+				"icy-pub:1\r\n"
+				"icy-br:192\r\n"
+				"Accept-Ranges:none\r\n"
+				"content-type:audio/mpeg\r\n"
+				"connection:keep-alive\r\n"
+			);
 
 		icyHeader = QByteArray
-		(
-			"ICY 200 Ok\r\n"
-			"icy-notice1:Bliblablupp\r\n"
-			"icy-notice2:asdfasd\r\n"
-			"icy-name:Sayonara Player Radio\r\n"
-			"icy-genre:\r\n"
-			"icy-url:http://sayonara-player.com\r\n"
-			"icy-pub:1\r\n"
-			"icy-br:192\r\n"
-			"icy-metaint:8192\r\n"
-			"Accept-Ranges:none\r\n"
-			"content-type:audio/mpeg\r\n"
-			"connection:keep-alive\r\n"
-		);
+			(
+				"ICY 200 Ok\r\n"
+				"icy-notice1:Bliblablupp\r\n"
+				"icy-notice2:asdfasd\r\n"
+				"icy-name:Sayonara Player Radio\r\n"
+				"icy-genre:\r\n"
+				"icy-url:http://sayonara-player.com\r\n"
+				"icy-pub:1\r\n"
+				"icy-br:192\r\n"
+				"icy-metaint:8192\r\n"
+				"Accept-Ranges:none\r\n"
+				"content-type:audio/mpeg\r\n"
+				"connection:keep-alive\r\n"
+			);
 
 		rejectHeader = QByteArray("HTTP/1.1 501 Not Implemented\r\nConnection: close\r\n");
 
@@ -113,11 +111,11 @@ struct StreamDataSender::Private
 	qint64 sendAnswer(const QString& content_type, const QByteArray& content, const QString& connection_state)
 	{
 		QList<HttpHeaderPair> header_info
-		{
-			HttpHeaderPair("content-type", content_type),
-			HttpHeaderPair("content-length", QString::number(content.size())),
-			HttpHeaderPair("Connection", connection_state)
-		};
+			{
+				HttpHeaderPair("content-type", content_type),
+				HttpHeaderPair("content-length", QString::number(content.size())),
+				HttpHeaderPair("Connection", connection_state)
+			};
 
 		QByteArray data = createHttpHeader(header_info) + content;
 
@@ -141,15 +139,13 @@ StreamDataSender::~StreamDataSender() = default;
 
 bool StreamDataSender::sendTrash()
 {
-	char single_byte = 0x00;
-	int64_t n_bytes;
-
-	n_bytes = m->socket->write(&single_byte, 1);
+	char singleByte = 0x00;
+	auto bytes = m->socket->write(&singleByte, 1);
 
 	m->socket->disconnectFromHost();
 	m->socket->close();
 
-	return (n_bytes > 0);
+	return (bytes > 0);
 }
 
 bool StreamDataSender::sendData(const QByteArray& data)
@@ -157,7 +153,6 @@ bool StreamDataSender::sendData(const QByteArray& data)
 	m->bytesWritten = 0;
 
 	auto bytes = m->socket->write(data);
-
 	return (bytes > 0);
 }
 
@@ -166,7 +161,7 @@ bool StreamDataSender::sendData(const QByteArray& data)
 
 bool StreamDataSender::sendIcyData(const QByteArray& data, const QString& stream_title)
 {
-	qint64 bytes_written = 0;
+	qint64 bytesWritten = 0;
 	const int IcySize = 8192;
 
 	if(data.isEmpty())
@@ -176,17 +171,16 @@ bool StreamDataSender::sendIcyData(const QByteArray& data, const QString& stream
 
 	if(data.size() < (IcySize - m->bytesWritten))
 	{
-		bytes_written = m->socket->write(data);
-		if(bytes_written < 0)
+		bytesWritten = m->socket->write(data);
+		if(bytesWritten < 0)
 		{
 			spLog(Log::Debug, this) << "Something is wrong";
 			return false;
 		}
 
-		m->bytesWritten += bytes_written;
+		m->bytesWritten += bytesWritten;
 		return true;
 	}
-
 	else
 	{
 		qint64 bytes_before = IcySize - m->bytesWritten;
@@ -196,7 +190,7 @@ bool StreamDataSender::sendIcyData(const QByteArray& data, const QString& stream
 
 		if(!data_before.isEmpty())
 		{
-			bytes_written = m->socket->write(data_before);
+			bytesWritten = m->socket->write(data_before);
 		}
 
 		sendIcyMetadata(stream_title);
@@ -204,38 +198,36 @@ bool StreamDataSender::sendIcyData(const QByteArray& data, const QString& stream
 		// this happens if size > 8192
 		if(data_after.size() > IcySize)
 		{
-			bytes_written = m->socket->write(data_after, IcySize);
+			bytesWritten = m->socket->write(data_after, IcySize);
 			m->bytesWritten = 0;
 
 			return sendIcyData(data_after.mid(IcySize), stream_title);
 		}
 
-		// there's a some data
+			// there's a some data
 		else if(data_after.size() > 0)
 		{
-			bytes_written = m->socket->write(data_after);
+			bytesWritten = m->socket->write(data_after);
 		}
 
-		// zero bytes left, so we start at zero again
+			// zero bytes left, so we start at zero again
 		else
 		{
-			bytes_written = 0;
+			bytesWritten = 0;
 		}
 
-		m->bytesWritten = std::max<qint64>(0, bytes_written) % IcySize;
+		m->bytesWritten = std::max<qint64>(0, bytesWritten) % IcySize;
 
-		return (bytes_written >= 0);
+		return (bytesWritten >= 0);
 	}
 }
 
-
 bool StreamDataSender::sendIcyMetadata(const QString& stream_title)
 {
-	int64_t n_bytes=0;
 	QByteArray metadata;
 	{
 		metadata.append("StreamTitle='");
-		metadata.append( stream_title.toLocal8Bit() );
+		metadata.append(stream_title.toLocal8Bit());
 		metadata.append("';");
 		metadata.append("StreamUrl='http://sayonara-player.com';");
 	}
@@ -243,83 +235,83 @@ bool StreamDataSender::sendIcyMetadata(const QString& stream_title)
 	int sz = metadata.size(); // size of icy metadata
 
 	// number of padding bytes
-	int n_padding = 16 * ((sz + 15) / 16) - sz;
+	int paddingCount = 16 * ((sz + 15) / 16) - sz;
 
-	metadata.append(padding, n_padding);
+	metadata.append(padding, paddingCount);
 	metadata.prepend(char((sz + 15) / 16));
 
-	n_bytes = m->socket->write( metadata );
-
-	return (n_bytes > 0);
+	auto bytes = m->socket->write(metadata);
+	return (bytes > 0);
 }
-
 
 bool StreamDataSender::sendHeader(bool reject, bool icy)
 {
-	int64_t n_bytes=0;
+	int64_t bytes = 0;
 
-	if(reject){
-		n_bytes = m->socket->write( m->rejectHeader );
+	if(reject)
+	{
+		bytes = m->socket->write(m->rejectHeader);
 	}
-
 	else if(icy)
 	{
-		n_bytes = m->socket->write( m->icyHeader );
+		bytes = m->socket->write(m->icyHeader);
 	}
-
 	else
 	{
-		n_bytes = m->socket->write( m->header );
+		bytes = m->socket->write(m->header);
 	}
 
-	if(n_bytes <= 0){
+	if(bytes <= 0)
+	{
 		return false;
 	}
 
-	if(reject){
+	if(reject)
+	{
 		return false;
 	}
 
 	return true;
 }
 
-
 bool StreamDataSender::sendHtml5(const QString& stream_title)
 {
-	QString html_string;
+	QString htmlString;
 	bool success = false;
 
-	if(Util::File::exists(Util::sayonaraPath("broadcast.html"))) {
-		success = Util::File::readFileIntoString(Util::sayonaraPath("broadcast.html"), html_string);
+	if(Util::File::exists(Util::sayonaraPath("broadcast.html")))
+	{
+		success = Util::File::readFileIntoString(Util::sayonaraPath("broadcast.html"), htmlString);
 	}
 
-	if(!success) {
-		success = Util::File::readFileIntoString(":/Broadcasting/broadcast.html", html_string);
+	if(!success)
+	{
+		success = Util::File::readFileIntoString(":/Broadcasting/broadcast.html", htmlString);
 	}
 
-	if(!success) {
+	if(!success)
+	{
 		return false;
 	}
 
-	html_string.replace("$AUDIOSOURCE", m->trackPath.toLocal8Bit());
-	html_string.replace("$STREAMTITLE", stream_title.toLocal8Bit());
+	htmlString.replace("$AUDIOSOURCE", m->trackPath.toLocal8Bit());
+	htmlString.replace("$STREAMTITLE", stream_title.toLocal8Bit());
 
-	return (m->sendAnswer("text", html_string.toLocal8Bit(), "keep-alive") > 0);
+	return (m->sendAnswer("text", htmlString.toLocal8Bit(), "keep-alive") > 0);
 }
-
 
 bool StreamDataSender::sendBackground()
 {
 	QByteArray html;
 
 	bool success = Util::File::readFileIntoByteArray(":/Broadcasting/background.png", html);
-	if(!success) {
+	if(!success)
+	{
 		return false;
 	}
 
 	return (m->sendAnswer("image/png", html, "close") > 0);
 }
-
 
 bool StreamDataSender::sendMetadata(const QString& stream_title)
 {
@@ -328,10 +320,9 @@ bool StreamDataSender::sendMetadata(const QString& stream_title)
 	return (m->sendAnswer("text/plain", html, "close") > 0);
 }
 
-
 bool StreamDataSender::sendPlaylist(const QString& host, int port)
 {
-	QByteArray playlist =
+	const QByteArray playlist =
 		"#EXTM3U\n\n"
 		"#EXTINF:-1, Michael Lugmair (Lucio Carreras) - Sayonara Player Radio\n" +
 		QString("http://%1:%2/%3\n\n")
@@ -340,17 +331,17 @@ bool StreamDataSender::sendPlaylist(const QString& host, int port)
 			.arg(m->trackPath)
 			.toLocal8Bit();
 
-	auto n_bytes = m->sendAnswer("audio/x-mpegurl", playlist, "close");
-	return (n_bytes > 0);
+	auto bytes = m->sendAnswer("audio/x-mpegurl", playlist, "close");
+	return (bytes > 0);
 }
-
 
 bool StreamDataSender::sendFavicon()
 {
 	QByteArray arr;
 
 	bool success = Util::File::readFileIntoByteArray(":/Broadcasting/favicon.ico", arr);
-	if(!success) {
+	if(!success)
+	{
 		return false;
 	}
 

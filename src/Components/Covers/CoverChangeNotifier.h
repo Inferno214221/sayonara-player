@@ -26,16 +26,17 @@
 
 namespace Cover
 {
-	class ChangeNotfier : public QObject
+	class ChangeNotfier :
+		public QObject
 	{
 		Q_OBJECT
-		SINGLETON(ChangeNotfier)
+			SINGLETON(ChangeNotfier)
 
-	public:
-		void shout();
+		public:
+			void shout();
 
-	signals:
-		void sigCoversChanged();
+		signals:
+			void sigCoversChanged();
 	};
 }
 

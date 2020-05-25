@@ -28,13 +28,13 @@
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct BookmarksBase::Private
 {
 	QList<Bookmark> bookmarks;
-	DB::Bookmarks*	db=nullptr;
-	MetaData		md;
+	DB::Bookmarks* db = nullptr;
+	MetaData md;
 };
 
 BookmarksBase::BookmarksBase(QObject* parent) :
@@ -55,7 +55,7 @@ bool BookmarksBase::load()
 	}
 
 	this->clear();
-	for(auto it=bookmarks.cbegin(); it != bookmarks.cend(); it++)
+	for(auto it = bookmarks.cbegin(); it != bookmarks.cend(); it++)
 	{
 		m->bookmarks << Bookmark(it.key(), it.value(), true);
 	}
@@ -65,10 +65,9 @@ bool BookmarksBase::load()
 	return true;
 }
 
-
 void BookmarksBase::sort()
 {
-	Algorithm::sort(m->bookmarks, [](const Bookmark& bm1, const Bookmark& bm2){
+	Algorithm::sort(m->bookmarks, [](const Bookmark& bm1, const Bookmark& bm2) {
 		return (bm1.timestamp() < bm2.timestamp());
 	});
 }
@@ -80,21 +79,23 @@ BookmarksBase::CreationStatus BookmarksBase::create(Seconds timestamp)
 		return CreationStatus::NoDBTrack;
 	}
 
-	if(timestamp == 0) {
+	if(timestamp == 0)
+	{
 		return CreationStatus::OtherError;
 	}
 
-	bool already_there = Algorithm::contains(m->bookmarks, [&timestamp](const Bookmark& bm){
+	bool alreadyThere = Algorithm::contains(m->bookmarks, [&timestamp](const Bookmark& bm) {
 		return (bm.timestamp() == timestamp);
 	});
 
-	if(already_there){
+	if(alreadyThere)
+	{
 		return CreationStatus::AlreadyThere;
 	}
 
-	QString name = Util::msToString(timestamp * 1000, "$M:$S");
-	bool success = m->db->insertBookmark(m->md.id(), timestamp, name);
+	const QString name = Util::msToString(timestamp * 1000, "$M:$S");
 
+	bool success = m->db->insertBookmark(m->md.id(), timestamp, name);
 	if(success)
 	{
 		load();
@@ -117,23 +118,22 @@ void BookmarksBase::setMetadata(const MetaData& md)
 
 	if(!md.customField("Chapter1").isEmpty())
 	{
-		int chapter_idx = 1;
+		int chapterIndex = 1;
 		QString entry;
 
 		do
 		{
-			QString custom_field_name = QString("Chapter%1").arg(chapter_idx);
-
-			entry = md.customField(custom_field_name);
+			const QString customFieldName = QString("Chapter%1").arg(chapterIndex);
+			entry = md.customField(customFieldName);
 
 			QStringList lst = entry.split(":");
-			Seconds length = lst.takeFirst().toInt();
-			QString name = lst.join(":");
+			const Seconds length = lst.takeFirst().toInt();
+			const QString name = lst.join(":");
 
 			m->bookmarks << Bookmark(length, name, true);
-			chapter_idx++;
+			chapterIndex++;
 
-		} while( !entry.isEmpty() );
+		} while(!entry.isEmpty());
 	}
 
 	else if(md.id() >= 0)
@@ -143,7 +143,7 @@ void BookmarksBase::setMetadata(const MetaData& md)
 
 		this->clear();
 
-		for(auto it=bookmarks.cbegin(); it != bookmarks.cend(); it++)
+		for(auto it = bookmarks.cbegin(); it != bookmarks.cend(); it++)
 		{
 			m->bookmarks << Bookmark(it.key(), it.value(), true);
 		}
@@ -182,20 +182,22 @@ const Bookmark& BookmarksBase::bookmark(int idx) const
 	return m->bookmarks[idx];
 }
 
-Bookmark&BookmarksBase::bookmark(int idx)
+Bookmark& BookmarksBase::bookmark(int idx)
 {
 	return m->bookmarks[idx];
 }
 
 bool BookmarksBase::remove(int idx)
 {
-	if(!Util::between(idx, this->count())){
+	if(!Util::between(idx, this->count()))
+	{
 		return false;
 	}
 
 	bool success = m->db->removeBookmark(m->md.id(), m->bookmarks[idx].timestamp());
 
-	if(success){
+	if(success)
+	{
 		load();
 	}
 

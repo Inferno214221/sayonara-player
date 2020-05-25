@@ -25,9 +25,6 @@ namespace Directory
 			MetaDataList metadata() const;
 			QStringList files() const;
 
-			void setScanAudioFilesEnabled(bool b);
-			void setScanPlaylistFilesEnabled(bool b);
-
 			void setData(void* data);
 			void* data() const;
 

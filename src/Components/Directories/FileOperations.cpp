@@ -29,7 +29,6 @@
 #include "Database/Connector.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -37,8 +36,6 @@
 #include "Utils/Tagging/Tagging.h"
 
 #include <QStringList>
-
-namespace Algorithm=Util::Algorithm;
 
 FileOperations::FileOperations(QObject* parent) :
 	QObject(parent)
@@ -51,7 +48,8 @@ static void refreshLibraries(const QList<LibraryId>& libraries)
 	for(LibraryId id : libraries)
 	{
 		LocalLibrary* library = Library::Manager::instance()->libraryInstance(id);
-		if(library) {
+		if(library)
+		{
 			library->refetch();
 		}
 	}
@@ -83,7 +81,7 @@ bool FileOperations::movePaths(const QStringList& paths, const QString& targetDi
 
 void FileOperations::moveThreadFinished()
 {
-	auto* thread = static_cast<FileOperationThread*>(sender());
+	auto* thread = dynamic_cast<FileOperationThread*>(sender());
 
 	refreshLibraries(thread->sourceIds());
 	refreshLibraries(thread->targetIds());
@@ -106,7 +104,7 @@ bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDi
 
 void FileOperations::copyThreadFinished()
 {
-	auto* thread = static_cast<FileOperationThread*>(sender());
+	auto* thread = dynamic_cast<FileOperationThread*>(sender());
 	refreshLibraries(thread->targetIds());
 
 	thread->deleteLater();
@@ -128,7 +126,7 @@ bool FileOperations::deletePaths(const QStringList& paths)
 
 void FileOperations::deleteThreadFinished()
 {
-	auto* thread = static_cast<FileOperationThread*>(sender());
+	auto* thread = dynamic_cast<FileOperationThread*>(sender());
 	refreshLibraries(thread->sourceIds());
 
 	thread->deleteLater();
@@ -138,9 +136,9 @@ void FileOperations::deleteThreadFinished()
 QStringList FileOperations::supportedReplacementTags()
 {
 	return QStringList
-	{
-		"<title>", "<album>", "<artist>", "<year>", "<bitrate>", "<tracknum>", "<disc>"
-	};
+		{
+			"<title>", "<album>", "<artist>", "<year>", "<bitrate>", "<tracknum>", "<disc>"
+		};
 }
 
 static QString replaceTag(const QString& expression, const MetaData& md)
@@ -166,14 +164,15 @@ static QString replaceTag(const QString& expression, const MetaData& md)
 
 static QString incrementFilename(const QString& filename)
 {
-	if(!Util::File::exists(filename)){
+	if(!Util::File::exists(filename))
+	{
 		return filename;
 	}
 
-	auto [dir, pureFilename] = Util::File::splitFilename(filename);
+	auto[dir, pureFilename] = Util::File::splitFilename(filename);
 	const QString ext = Util::File::getFileExtension(filename);
 
-	for(int i=1; i<1000; i++)
+	for(int i = 1; i < 1000; i++)
 	{
 		const QString pureNewNameNr = pureFilename + "-" + QString::number(i);
 		const QString fullNewNameNr = dir + "/" + pureNewNameNr + "." + ext;
@@ -186,23 +185,26 @@ static QString incrementFilename(const QString& filename)
 	return QString();
 }
 
-bool FileOperations::renameByExpression(const QString& originalFilepath, const QString& expression)
+bool FileOperations::renameByExpression(const QString& originalFilepath, const QString& expression) const
 {
 	auto* db = DB::Connector::instance();
 	DB::LibraryDatabase* libraryDb = db->libraryDatabase(-1, db->databaseId());
 
 	MetaData originalTrack = libraryDb->getTrackByPath(originalFilepath);
-	if(originalTrack.id() < 0) {
+	if(originalTrack.id() < 0)
+	{
 		Tagging::Utils::getMetaDataOfFile(originalTrack);
 	}
 
 	const QString pureFilename = replaceTag(expression, originalTrack);
-	if(pureFilename.isEmpty()) {
+	if(pureFilename.isEmpty())
+	{
 		spLog(Log::Error, this) << "Target filename is empty";
 		return false;
 	}
 
-	if(pureFilename.contains("<") || pureFilename.contains(">")){
+	if(pureFilename.contains("<") || pureFilename.contains(">"))
+	{
 		spLog(Log::Error, this) << "<, > are not allowed. Maybe an invalid tag was specified?";
 		return false;
 	}
@@ -213,7 +215,8 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 	QString fullNewName = QString("%1/%2.%3").arg(dir).arg(pureFilename).arg(ext);
 	fullNewName = incrementFilename(fullNewName);
 
-	if(originalTrack.id() < 0) {
+	if(originalTrack.id() < 0)
+	{
 		return Util::File::renameFile(fullNewName, originalFilepath);
 	}
 
@@ -226,7 +229,8 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 			newTrack.setFilepath(fullNewName);
 
 			success = libraryDb->updateTrack(newTrack);
-			if(!success){
+			if(!success)
+			{
 				Util::File::renameFile(fullNewName, originalFilepath);
 			}
 
@@ -234,9 +238,9 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 			{
 				auto* changeNotifier = Tagging::ChangeNotifier::instance();
 				changeNotifier->changeMetadata
-				(
-					QList<MetaDataPair>{MetaDataPair(originalTrack, newTrack)}
-				);
+					(
+						QList<MetaDataPair> {MetaDataPair(originalTrack, newTrack)}
+					);
 			}
 		}
 

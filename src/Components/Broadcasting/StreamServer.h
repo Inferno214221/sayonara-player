@@ -32,7 +32,7 @@
  * @ingroup Broadcasting
  */
 class StreamServer :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(StreamServer)
@@ -43,11 +43,10 @@ class StreamServer :
 		void sigListening(bool);
 
 	public:
-		explicit StreamServer(QObject* parent=nullptr);
+		explicit StreamServer(QObject* parent = nullptr);
 		~StreamServer();
 
 		QStringList connectedClients() const;
-
 
 	public slots:
 		void dismiss(int idx);

@@ -34,24 +34,27 @@
 #include <cmath>
 
 using namespace Cover;
-static const char* ClassName="LocalSearcher";
+static const char* ClassName = "LocalSearcher";
 
 static double calc_name_factor(const QString& name)
 {
-	if( name.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
-		name.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
-		name.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
-		name.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
+	if(name.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
+	   name.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
+	   name.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
+	   name.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
 	{
-		if(name.contains(QStringLiteral("large"), Qt::CaseInsensitive)){
+		if(name.contains(QStringLiteral("large"), Qt::CaseInsensitive))
+		{
 			return 2.0;
 		}
 
-		else if(!name.contains(QStringLiteral("small"), Qt::CaseInsensitive)){
+		else if(!name.contains(QStringLiteral("small"), Qt::CaseInsensitive))
+		{
 			return 3.0;
 		}
 
-		else {
+		else
+		{
 			return 4.0;
 		}
 	}
@@ -61,61 +64,64 @@ static double calc_name_factor(const QString& name)
 
 static double calc_square_factor(int width, int height)
 {
+	double dWidth = double(width);
+	double dHeight = double(height);
 
-	double d_width = double(width);
-	double d_height = double(height);
-
-	double pixels = d_width * d_height;
+	double pixels = dWidth * dHeight;
 
 	// calc how 'square' the cover is
-	double r = (std::abs(d_height - d_width) / d_width) + 1.0;
-	return (r * r * std::max(d_height, d_width)) / pixels;
+	double r = (std::abs(dHeight - dWidth) / dWidth) + 1.0;
+	return (r * r * std::max(dHeight, dWidth)) / pixels;
 }
 
-static double calc_rating(const QPixmap& pixmap, const QString& name)
+static double calcRating(const QPixmap& pixmap, const QString& name)
 {
-	if(pixmap.width() == 0){
+	if(pixmap.width() == 0)
+	{
 		return -1.0;
 	}
 
-	double square_factor = calc_square_factor(pixmap.width(), pixmap.height());
-	double name_factor = calc_name_factor(name);
+	double squareFactor = calc_square_factor(pixmap.width(), pixmap.height());
+	double nameFactor = calc_name_factor(name);
 
-	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor " << QString::number(square_factor, 'g', 2);
-	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor " << QString::number(name_factor, 'g', 2);
+	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor "
+	                               << QString::number(squareFactor, 'g', 2);
+	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor "
+	                               << QString::number(nameFactor, 'g', 2);
 
-	return square_factor * name_factor;
+	return squareFactor * nameFactor;
 }
 
 QStringList LocalSearcher::coverPathsFromPathHint(const QString& filepath_hint)
 {
 	spLog(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
-	QString filepath = filepath_hint;
-	QFileInfo info(filepath);
-	if(!info.isDir())
+	QString filepath(filepath_hint);
+	if(!QFileInfo(filepath).isDir())
 	{
 		filepath = Util::File::getParentDirectory(filepath_hint);
 		spLog(Log::Develop, ClassName) << filepath_hint << " is not a directory. Try using " << filepath << " instead";
 
-		info = QFileInfo(filepath);
-		if(!info.isDir() || !info.exists())	{
+		QFileInfo info(filepath);
+		if(!info.isDir() || !info.exists())
+		{
 			return QStringList();
 		}
 	}
 
 	QStringList filters = Util::imageExtensions();
-	QStringList upper_filters;
 
-	Util::Algorithm::transform(filters, upper_filters, [](const QString& filter){
+	QStringList upperFilters;
+	Util::Algorithm::transform(filters, upperFilters, [](const QString& filter) {
 		return filter.toUpper();
 	});
 
-	filters << upper_filters;
+	filters << upperFilters;
 
 	const QDir dir(filepath);
 	const QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
-	if(entries.isEmpty()){
+	if(entries.isEmpty())
+	{
 		return QStringList();
 	}
 
@@ -123,19 +129,19 @@ QStringList LocalSearcher::coverPathsFromPathHint(const QString& filepath_hint)
 	QMap<QString, double> size_map;
 	for(const QString& entry : entries)
 	{
-		QString f = filepath + "/" + entry;
+		const QString f = filepath + "/" + entry;
+		const QPixmap pm(f + "/" + entry);
 
-		QPixmap pm(f + "/" + entry);
-		double rating = calc_rating(pm, entry);
+		double rating = calcRating(pm, entry);
 
-		spLog(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)  << " (Lower is better)";
+		spLog(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)
+		                               << " (Lower is better)";
 
 		size_map[f] = rating;
 		ret << f;
 	}
 
-	Util::Algorithm::sort(ret, [=](const QString& f1, const QString& f2)
-	{
+	Util::Algorithm::sort(ret, [=](const QString& f1, const QString& f2) {
 		return (size_map[f1] < size_map[f2]);
 	});
 

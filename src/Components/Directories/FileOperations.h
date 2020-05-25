@@ -40,7 +40,7 @@ class FileOperations :
 		~FileOperations() override;
 
 		bool renamePath(const QString& path, const QString& newName);
-		bool renameByExpression(const QString& oldName, const QString& expression);
+		bool renameByExpression(const QString& oldName, const QString& expression) const;
 		bool movePaths(const QStringList& paths, const QString& targetDir);
 		bool copyPaths(const QStringList& paths, const QString& targetDir);
 		bool deletePaths(const QStringList& paths);

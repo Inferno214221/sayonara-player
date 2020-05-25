@@ -1,6 +1,7 @@
 build/
 build_*/
 build-*/
+*[dD]ebug*
 debian/sayonara.*
 resources/sayonara
 debian/files
@@ -10,4 +11,5 @@ doxygen/html*
 *.swp
 *.orig
 *.autosave
+.idea
 

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "MetaTypeRegistry.h"
 #include <QObject>
 
@@ -72,6 +70,4 @@ MetaTypeRegistry::MetaTypeRegistry(QObject* parent) :
 	qRegisterMetaType<Seconds>("TimestampSec");
 }
 
-MetaTypeRegistry::~MetaTypeRegistry()
-{}
-
+MetaTypeRegistry::~MetaTypeRegistry() = default;

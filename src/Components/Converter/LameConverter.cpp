@@ -52,45 +52,44 @@ QString LameConverter::binary() const
 QStringList LameConverter::processEntry(const MetaData& md) const
 {
 	QStringList ret
-	{
-		"--id3v2-only",
-		"--verbose",
-		QString("--tt"), QString("%1").arg(md.title()).toUtf8().data(),
-		QString("--ta"), QString("%1").arg(md.artist().toUtf8().data()),
-		QString("--tl"), QString("%1").arg(md.album()).toUtf8().data(),
-		QString("--ty"), QString("%1").arg(md.year()).toUtf8().data(),
-		QString("--tc"), QString("%1").arg(md.comment()).toUtf8().data(),
-		QString("--tn"), QString("%1").arg(md.trackNumber()).toUtf8().data(),
-		QString("--tg"), QString("%1").arg(md.genresToList().join(",")).toUtf8().data(),
-	};
+		{
+			"--id3v2-only",
+			"--verbose",
+			QString("--tt"), QString("%1").arg(md.title()).toUtf8().data(),
+			QString("--ta"), QString("%1").arg(md.artist().toUtf8().data()),
+			QString("--tl"), QString("%1").arg(md.album()).toUtf8().data(),
+			QString("--ty"), QString("%1").arg(md.year()).toUtf8().data(),
+			QString("--tc"), QString("%1").arg(md.comment()).toUtf8().data(),
+			QString("--tn"), QString("%1").arg(md.trackNumber()).toUtf8().data(),
+			QString("--tg"), QString("%1").arg(md.genresToList().join(",")).toUtf8().data(),
+		};
 
 	if(m->cbr)
 	{
 		ret << QStringList
-		{
-			QString("--cbr"),
-			QString("-b"), QString("%1").arg(quality())
-		};
+			{
+				QString("--cbr"),
+				QString("-b"), QString("%1").arg(quality())
+			};
 	}
 
 	else
 	{
 		ret << QStringList
-		{
-			QString("--vbr"),
-			QString("-V"), QString("%1").arg(quality())
-		};
+			{
+				QString("--vbr"),
+				QString("-V"), QString("%1").arg(quality())
+			};
 	}
 
 	ret << QStringList
-	{
-		QString("%1").arg(md.filepath()),
-		QString("%1").arg(targetFile(md))
-	};
+		{
+			QString("%1").arg(md.filepath()),
+			QString("%1").arg(targetFile(md))
+		};
 
 	return ret;
 }
-
 
 QString LameConverter::extension() const
 {

@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Google.h"
 
 #include <QStringList>
@@ -39,11 +37,12 @@ QStringList Google::parseAddresses(const QByteArray& website) const
 	QString regex = "(https://encrypted-tbn.+)\"";
 	QStringList addresses;
 
-	if (website.isEmpty()) {
+	if(website.isEmpty())
+	{
 		return addresses;
 	}
 
-	int idx=500;
+	int idx = 500;
 
 	QString website_str = QString::fromLocal8Bit(website);
 
@@ -53,7 +52,8 @@ QStringList Google::parseAddresses(const QByteArray& website) const
 		re.setMinimal(true);
 		idx = re.indexIn(website_str, idx);
 
-		if(idx == -1) {
+		if(idx == -1)
+		{
 			break;
 		}
 
@@ -67,7 +67,6 @@ QStringList Google::parseAddresses(const QByteArray& website) const
 	return addresses;
 }
 
-
 QString Google::artistAddress(const QString& artist) const
 {
 	return fulltextSearchAddress(QUrl::toPercentEncoding(artist));
@@ -78,8 +77,8 @@ QString Google::albumAddress(const QString& artist, const QString& album) const
 	QString new_album, searchstring;
 	QRegExp regex;
 
-
-	if(searchstring.compare("various", Qt::CaseInsensitive) != 0){
+	if(searchstring.compare("various", Qt::CaseInsensitive) != 0)
+	{
 		searchstring = QUrl::toPercentEncoding(artist);
 	}
 
@@ -94,7 +93,8 @@ QString Google::albumAddress(const QString& artist, const QString& album) const
 	new_album = new_album.trimmed();
 	new_album = QUrl::toPercentEncoding(album);
 
-	if(searchstring.size() > 0) {
+	if(searchstring.size() > 0)
+	{
 		searchstring += "+";
 	}
 
@@ -123,7 +123,6 @@ int Google::estimatedSize() const
 {
 	return 150;
 }
-
 
 QString Google::privateIdentifier() const
 {

@@ -25,7 +25,7 @@ struct StreamServerHandler::Private
 {
 	StreamServer* streamServer=nullptr;
 
-	Private() {}
+	Private() = default;
 	~Private()
 	{
 		if(streamServer){
@@ -41,7 +41,7 @@ StreamServerHandler::StreamServerHandler()
 	m->streamServer = new StreamServer();
 }
 
-StreamServerHandler::~StreamServerHandler() {}
+StreamServerHandler::~StreamServerHandler() = default;
 
 void StreamServerHandler::activeChanged() {}
 

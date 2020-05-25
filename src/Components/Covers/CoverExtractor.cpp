@@ -21,18 +21,17 @@
 #include "CoverExtractor.h"
 #include "CoverLocation.h"
 
-#include <QString>
-#include <QPixmap>
-
 #include "Utils/FileUtils.h"
 #include "Utils/Mutex.h"
-
 #include "Utils/Logger/Logger.h"
 #include "Utils/Tagging/TaggingCover.h"
 
-static std::mutex mutex_io;
+#include <QString>
+#include <QPixmap>
 
-namespace FileUtils=::Util::File;
+static std::mutex mutexIo;
+
+namespace FileUtils = ::Util::File;
 
 struct Cover::Extractor::Private
 {
@@ -69,7 +68,7 @@ void Cover::Extractor::start()
 	m->pixmap = QPixmap();
 
 	{ // check for audio file target
-		LOCK_GUARD(mutex_io)
+		LOCK_GUARD(mutexIo)
 		QString audio_file_target = m->cl.audioFileTarget();
 		if(FileUtils::exists(audio_file_target))
 		{
@@ -81,7 +80,7 @@ void Cover::Extractor::start()
 	// check sayonara path
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutex_io)
+		LOCK_GUARD(mutexIo)
 		QString cover_path = m->cl.symlinkPath();
 		if(FileUtils::exists(cover_path))
 		{
@@ -93,7 +92,7 @@ void Cover::Extractor::start()
 	// check for audio file source
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutex_io)
+		LOCK_GUARD(mutexIo)
 		QString audio_file_source = m->cl.audioFileSource();
 		if(FileUtils::exists(audio_file_source))
 		{
@@ -105,7 +104,7 @@ void Cover::Extractor::start()
 	// check for path in library dir
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutex_io)
+		LOCK_GUARD(mutexIo)
 		QString local_path = m->cl.localPath();
 		if(FileUtils::exists(local_path))
 		{

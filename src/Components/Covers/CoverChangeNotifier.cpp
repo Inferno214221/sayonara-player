@@ -22,7 +22,9 @@
 
 using Cover::ChangeNotfier;
 
-ChangeNotfier::ChangeNotfier() : QObject(nullptr) {}
+ChangeNotfier::ChangeNotfier() :
+	QObject(nullptr)
+{}
 
 ChangeNotfier::~ChangeNotfier() = default;
 

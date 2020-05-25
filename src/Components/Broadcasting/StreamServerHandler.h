@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef STREAMSERVERHANDLER_H
 #define STREAMSERVERHANDLER_H
 
@@ -26,14 +25,14 @@
 
 class StreamServerHandler
 {
-    PIMPL(StreamServerHandler)
+	PIMPL(StreamServerHandler)
 
-public:
-    StreamServerHandler();
-    ~StreamServerHandler();
+	public:
+		StreamServerHandler();
+		~StreamServerHandler();
 
-	void activeChanged();
-	void portChanged();
+		void activeChanged();
+		void portChanged();
 };
 
 #endif // STREAMSERVERHANDLER_H

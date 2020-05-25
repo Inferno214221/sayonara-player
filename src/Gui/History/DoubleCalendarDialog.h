@@ -24,10 +24,7 @@ namespace Gui
 		explicit DoubleCalendarDialog(QWidget* parent=nullptr);
 		~DoubleCalendarDialog() override;
 
-		Gui::CalendarWidget* calendarFrom();
-		Gui::CalendarWidget* calendarTo();
-
-		QDate startDate() const;
+        QDate startDate() const;
 		QDate endDate() const;
 
 	private slots:

@@ -62,7 +62,7 @@ protected:
 	virtual QString extension() const=0;
 
 public slots:
-	void start(int num_threads, const QString& targetDir);
+	void start(int numThreads, const QString& targetDir);
 	void stop();
 
 private slots:

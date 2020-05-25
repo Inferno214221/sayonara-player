@@ -144,12 +144,11 @@ namespace Cover
 		 * @param b
 		 */
 		void			enableFreetextSearch(bool b);
-		bool			isFreetextSearchEnabled() const;
 
-		/**
-		 * @brief to_string
-		 * @return
-		 */
+			/**
+			 * @brief to_string
+			 * @return
+			 */
 		QString			toString() const;
 
 		/**

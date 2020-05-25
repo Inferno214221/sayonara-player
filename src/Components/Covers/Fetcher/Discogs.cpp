@@ -23,19 +23,17 @@
 #include <QRegExp>
 #include <QStringList>
 #include <QUrl>
-#include "Utils/Logger/Logger.h"
 
 using namespace Cover::Fetcher;
 
-static QString basic_url(const QString& str)
+static QString basicUrl(const QString& str)
 {
-	QString str2 = str;
+	QString str2(str);
 	str2 = str2.replace(" ", "+");
 
-	QString domain = "www.discogs.com";
-
-	return "https://" + domain + "/search/?q=" +
-			QUrl::toPercentEncoding(str2);
+	return QString("https://%1/search/?q=%2")
+		.arg("www.discogs.com")
+		.arg(QString(QUrl::toPercentEncoding(str2)));
 }
 
 bool Discogs::canFetchCoverDirectly() const
@@ -49,12 +47,14 @@ QStringList Discogs::parseAddresses(const QByteArray& website) const
 
 	QRegExp re("class=\"thumbnail_center\">\\s*<img\\s*data-src\\s*=\\s*\"(.+)\"");
 	re.setMinimal(true);
-	QString website_str = QString::fromLocal8Bit(website);
-	int idx = re.indexIn(website_str);
-	while(idx > 0){
+
+	QString websiteString = QString::fromLocal8Bit(website);
+	int idx = re.indexIn(websiteString);
+	while(idx > 0)
+	{
 		ret << re.cap(1);
-		website_str.remove(0, idx + 5);
-		idx = re.indexIn(website_str);
+		websiteString.remove(0, idx + 5);
+		idx = re.indexIn(websiteString);
 	}
 
 	return ret;
@@ -62,18 +62,17 @@ QStringList Discogs::parseAddresses(const QByteArray& website) const
 
 QString Discogs::artistAddress(const QString& artist) const
 {
-
-    return basic_url(artist) + "&type=artist";
+	return basicUrl(artist) + "&type=artist";
 }
 
 QString Discogs::albumAddress(const QString& artist, const QString& album) const
 {
-    return basic_url(artist + "+" + album) + "&type=all";
+	return basicUrl(artist + "+" + album) + "&type=all";
 }
 
 QString Discogs::fulltextSearchAddress(const QString& str) const
 {
-    return basic_url(str) + "&type=all";
+	return basicUrl(str) + "&type=all";
 }
 
 int Discogs::estimatedSize() const

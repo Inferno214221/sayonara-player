@@ -37,48 +37,49 @@ QStringList Amazon::parseAddresses(const QByteArray& website) const
 {
 	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
-	int idx = re.indexIn(website);
-	if(idx < 0){
+	int index = re.indexIn(website);
+	if(index < 0){
 		return QStringList();
 	}
 
 	spLog(Log::Info, this) << re.cap(1);
 
 	QStringList sources;
-	QMap<QString, double> item_sources;
+	QMap<QString, double> itemSources;
 
 	int offset = 0;
-	while(idx > 0)
+	while(index > 0)
 	{
-		QString caption = re.cap(1);
-		QRegExp item_re("(http[s]*://\\S+\\.jpg)\\s([0-9+](\\.[0-9]+)*)x");
-		int item_idx = item_re.indexIn(website, offset);
-		int item_offset = 0;
-		while(item_idx >= 0)
-		{
-			QString item_caption = item_re.cap(1);
-			QString val = item_re.cap(2);
+		const QString caption = re.cap(1);
+		const QRegExp itemRegExp("(http[s]*://\\S+\\.jpg)\\s([0-9+](\\.[0-9]+)*)x");
 
-			item_sources.insert(item_caption, val.toDouble());
-			item_idx = item_re.indexIn(caption, item_offset);
-			item_offset = item_idx + item_caption.size();
+		int itemIndex = itemRegExp.indexIn(website, offset);
+		int itemOffset = 0;
+		while(itemIndex >= 0)
+		{
+			QString item_caption = itemRegExp.cap(1);
+			QString val = itemRegExp.cap(2);
+
+			itemSources.insert(item_caption, val.toDouble());
+			itemIndex = itemRegExp.indexIn(caption, itemOffset);
+			itemOffset = itemIndex + item_caption.size();
 		}
 
-		double max_val=0;
-		QString max_str;
-		for(auto it=item_sources.begin(); it!=item_sources.end(); it++)
+		double maxVal=0;
+		QString maxStr;
+		for(auto it=itemSources.begin(); it != itemSources.end(); it++)
 		{
-			if(it.value() > max_val)
+			if(it.value() > maxVal)
 			{
-				max_str = it.key();
-				max_val = it.value();
+				maxStr = it.key();
+				maxVal = it.value();
 			}
 		}
 
-		sources << max_str;
+		sources << maxStr;
 
-		idx = re.indexIn(website, offset);
-		offset = idx + caption.size();
+		index = re.indexIn(website, offset);
+		offset = index + caption.size();
 	}
 
 	sources.removeDuplicates();

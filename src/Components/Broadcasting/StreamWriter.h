@@ -27,7 +27,6 @@
 
 #include <QObject>
 
-class StreamDataSender;
 class MetaData;
 class QTcpSocket;
 
@@ -37,9 +36,8 @@ class QTcpSocket;
  * @ingroup Broadcasting
  */
 class StreamWriter :
-		public QObject,
-		public Engine::RawSoundReceiverInterface
-
+	public QObject,
+	public Engine::RawSoundReceiverInterface
 {
 	Q_OBJECT
 	PIMPL(StreamWriter)
@@ -48,16 +46,14 @@ class StreamWriter :
 		void sigNewConnection(const QString& ip);
 		void sigDisconnected(StreamWriter* sw);
 
-
 	public:
 		enum class Type : uint8_t
 		{
-			Undefined,
-			Standard,
-			Invalid,
-			Streaming
+				Undefined,
+				Standard,
+				Invalid,
+				Streaming
 		};
-
 
 		/**
 		 * @brief StreamWriter
@@ -79,7 +75,6 @@ class StreamWriter :
 		 * @param md Track structure
 		 */
 		void changeTrack(const MetaData& md);
-
 
 		/**
 		 * @brief Send a m3u playlist (see StreamDataSender)
@@ -146,5 +141,5 @@ class StreamWriter :
 		void clearSocket();
 };
 
-using StreamWriterPtr=std::shared_ptr<StreamWriter>;
+using StreamWriterPtr = std::shared_ptr<StreamWriter>;
 #endif

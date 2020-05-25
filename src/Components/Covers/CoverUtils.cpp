@@ -21,7 +21,6 @@
 #include "CoverUtils.h"
 #include "CoverLocation.h"
 #include "Utils/Utils.h"
-#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -34,13 +33,11 @@
 #include <QDir>
 #include <QStringList>
 
-namespace Algorithm=Util::Algorithm;
-namespace FileUtils=Util::File;
+namespace FileUtils = Util::File;
 
 QString Cover::Utils::calcCoverToken(const QString& artist, const QString& album)
 {
-	QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
-
+	const QByteArray str = QString(artist.trimmed() + album.trimmed()).toLower().toUtf8();
 	return Util::calcHash(str);
 }
 
@@ -51,7 +48,7 @@ QString Cover::Utils::coverDirectory()
 
 QString Cover::Utils::coverDirectory(const QString& appendFilename)
 {
-	QString coverDir = Util::sayonaraPath("covers");
+	const QString coverDir = Util::sayonaraPath("covers");
 	QDir(Util::sayonaraPath()).mkpath(coverDir);
 
 	return QDir(coverDir).absoluteFilePath(appendFilename);
@@ -64,25 +61,11 @@ QString Cover::Utils::coverTempDirectory()
 
 void Cover::Utils::deleteTemporaryCovers()
 {
-	QString dir = coverTempDirectory();
-
+	const QString dir = coverTempDirectory();
 	if(QFile::exists(dir))
 	{
 		FileUtils::removeFilesInDirectory(dir);
 	}
-}
-
-bool Cover::Utils::addTemporaryCover(const QPixmap& pm, const QString& hash)
-{
-	QDir coverTempDir(coverTempDirectory());
-
-	QString extension = "jpg";
-	if(pm.hasAlphaChannel()) {
-		extension = "png";
-	}
-
-	QString path = coverTempDir.filePath(hash + "." + extension);
-	return pm.save(path);
 }
 
 void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm)
@@ -99,20 +82,16 @@ void Cover::Utils::writeCoverIntoDatabase(const Cover::Location& cl, const QPixm
 void Cover::Utils::writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm)
 {
 	QString localDir = cl.localPathDir();
-	if(localDir.isEmpty()){
+	if(localDir.isEmpty())
+	{
 		return;
 	}
 
 	QString coverTemplate = GetSetting(Set::Cover_TemplatePath);
 	coverTemplate.replace("<h>", cl.hash());
 
-	QString extension = "jpg";
-	if(pm.hasAlphaChannel()) {
-		extension = "png";
-	}
-
-	QString filepath = QDir(localDir).absoluteFilePath(coverTemplate) + "." + extension;
-	QFileInfo fi(filepath);
+	const QString extension = pm.hasAlphaChannel() ? "png" : "jpg";
+	const QString filepath = QDir(localDir).absoluteFilePath(coverTemplate) + "." + extension;
 
 	pm.save(filepath);
 }

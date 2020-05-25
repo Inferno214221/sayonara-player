@@ -25,26 +25,26 @@
 #include <QMainWindow>
 #include "Utils/Pimpl.h"
 
-
-class InstanceThread : public QThread
+class InstanceThread :
+	public QThread
 {
 	Q_OBJECT
 	PIMPL(InstanceThread)
 
-signals:
-	void sigPlayerRise();
-	void sigCreatePlaylist();
+	signals:
+		void sigPlayerRise();
+		void sigCreatePlaylist();
 
-public:
-	InstanceThread(QObject* parent=nullptr);
-	~InstanceThread() override;
+	public:
+		InstanceThread(QObject* parent = nullptr);
+		~InstanceThread() override;
 
-	void stop();
-	QStringList paths() const;
+		void stop();
+		QStringList paths() const;
 
-private:
-	void run() override;
-	void parseMemory();
+	private:
+		void run() override;
+		void parseMemory();
 };
 
 #endif // INSTANCETHREAD_H

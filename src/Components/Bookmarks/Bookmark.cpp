@@ -23,9 +23,14 @@
 
 struct Bookmark::Private
 {
-	Seconds	timestamp;
-	QString	name;
-	bool	valid;
+	Seconds timestamp;
+	QString name;
+	bool valid;
+
+	Private() :
+		timestamp(0),
+		valid(false)
+	{}
 };
 
 Bookmark::Bookmark(Seconds timestamp)
@@ -41,8 +46,7 @@ Bookmark::Bookmark(Seconds timestamp, const QString& name, bool valid) :
 	m->valid = valid;
 }
 
-Bookmark::~Bookmark(){}
-
+Bookmark::~Bookmark() = default;
 
 Bookmark::Bookmark(const Bookmark& other) :
 	Bookmark(other.m->timestamp, other.m->name, other.m->valid)

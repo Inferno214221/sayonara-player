@@ -83,4 +83,3 @@ int Yandex::estimatedSize() const
 {
 	return 300;
 }
-

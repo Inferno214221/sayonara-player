@@ -1,5 +1,4 @@
 #include "DirectorySelectionHandler.h"
-#include "MetaDataScanner.h"
 #include "FileOperations.h"
 
 #include "Components/Library/LocalLibrary.h"
@@ -7,15 +6,12 @@
 #include "Components/Playlist/PlaylistHandler.h"
 
 #include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Library/Filter.h"
-
-
 
 #include <QThread>
 #include <QList>

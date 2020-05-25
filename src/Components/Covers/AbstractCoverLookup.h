@@ -35,25 +35,25 @@ namespace Cover
 	 * @ingroup Covers
 	 */
 	class LookupBase :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(LookupBase)
 
-	signals:
-		void sigCoverFound(const QPixmap& pm);
-		void sigFinished(bool success);
-		void sigStarted();
+		signals:
+			void sigCoverFound(const QPixmap& pm);
+			void sigFinished(bool success);
+			void sigStarted();
 
-	public slots:
-		virtual void stop()=0;
+		public slots:
+			virtual void stop() = 0;
 
-	public:
-		explicit LookupBase(const Location& cl, QObject* parent=nullptr);
-		virtual ~LookupBase();
+		public:
+			explicit LookupBase(const Location& cl, QObject* parent = nullptr);
+			virtual ~LookupBase();
 
-		Location coverLocation() const;
-		void setCoverLocation(const Location& cl);
+			Location coverLocation() const;
+			void setCoverLocation(const Location& cl);
 	};
 }
 

@@ -40,7 +40,12 @@ struct Bookmarks::Private
 	Seconds			loopEnd;
 
 	Private() :
-		timeOffset(1)
+	    previousIndex(-1),
+	    nextIndex(-1),
+	    timeOffset(0),
+	    currentTime(0),
+	    loopStart(0),
+	    loopEnd(0)
 	{
 		playManager = PlayManager::instance();
 
@@ -49,11 +54,12 @@ struct Bookmarks::Private
 
 	void reset()
 	{
-		currentTime = 0;
 		previousIndex = -1;
 		nextIndex = -1;
+        timeOffset = 0;
 		loopStart = 0;
 		loopEnd = 0;
+        currentTime = 0;
 	}
 };
 
@@ -70,7 +76,7 @@ Bookmarks::Bookmarks(QObject* parent) :
 	setMetadata(m->playManager->currentTrack());
 }
 
-Bookmarks::~Bookmarks() {}
+Bookmarks::~Bookmarks() = default;
 
 bool Bookmarks::load()
 {
@@ -157,14 +163,16 @@ void Bookmarks::positionChangedMs(MilliSeconds pos_ms)
 {
 	m->currentTime = (Seconds) (pos_ms / 1000);
 
-	if( m->currentTime >= m->loopEnd &&
-		m->loopEnd != 0)
-	{
-		jumpPrevious();
-		return;
-	}
+    if (m->currentTime >= m->loopEnd)
+    {
+        if (m->loopEnd != 0)
+        {
+            jumpPrevious();
+            return;
+        }
+    }
 
-	if(this->count() == 0){
+    if(this->count() == 0){
 		return;
 	}
 

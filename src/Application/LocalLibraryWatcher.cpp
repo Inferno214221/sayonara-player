@@ -48,7 +48,7 @@ LocalLibraryWatcher::LocalLibraryWatcher(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	Manager* manager = Manager::instance();
+	auto* manager = Manager::instance();
 	connect(manager, &Manager::sigAdded, this, &LocalLibraryWatcher::libraryAdded);
 	connect(manager, &Manager::sigMoved, this, &LocalLibraryWatcher::libraryMoved);
 	connect(manager, &Manager::sigRenamed, this, &LocalLibraryWatcher::libraryRenamed);
@@ -60,25 +60,21 @@ LocalLibraryWatcher::~LocalLibraryWatcher() = default;
 QList<AbstractContainer*> LocalLibraryWatcher::getLocalLibraryContainers() const
 {
 	QList<AbstractContainer*> containers;
-
-	for(const Info& info : m->infos)
-	{
-		containers << new LocalLibraryContainer(info);
-	}
+	Util::Algorithm::transform(m->infos, containers, [](const Info& info){
+		return new LocalLibraryContainer(info);
+	});
 
 	return containers;
 }
 
-
 void LocalLibraryWatcher::libraryAdded(LibraryId id)
 {
-	Manager* manager = Manager::instance();
+	auto* manager = Manager::instance();
 	Info info = manager->libraryInfo(id);
 	m->infos = manager->allLibraries();
 
 	AbstractContainer* c = new LocalLibraryContainer(info);
-	PluginHandler* lph = PluginHandler::instance();
-	lph->addLocalLibrary(c);
+	PluginHandler::instance()->addLocalLibrary(c);
 }
 
 void LocalLibraryWatcher::libraryMoved(LibraryId id, int from, int to)
@@ -92,18 +88,18 @@ void LocalLibraryWatcher::libraryMoved(LibraryId id, int from, int to)
 
 void LocalLibraryWatcher::libraryRenamed(LibraryId id)
 {
-	Manager* manager = Manager::instance();
-	Info info = manager->libraryInfo(id);
-	int idx = Util::Algorithm::indexOf(m->infos, [id](const Info& info){
+	auto* manager = Manager::instance();
+	const Info info = manager->libraryInfo(id);
+	int idx = Util::Algorithm::indexOf(m->infos, [id](const Info& info) {
 		return (info.id() == id);
 	});
 
 	if(Util::between(idx, m->infos))
 	{
-		QString old_name = m->infos[idx].name();
-		QString new_name = info.name();
+		const QString oldName = m->infos[idx].name();
+		const QString newName = info.name();
 
-		PluginHandler::instance()->renameLocalLibrary(old_name, new_name);
+		PluginHandler::instance()->renameLocalLibrary(oldName, newName);
 	}
 
 	m->infos = manager->allLibraries();
@@ -111,8 +107,8 @@ void LocalLibraryWatcher::libraryRenamed(LibraryId id)
 
 void LocalLibraryWatcher::libraryRemoved(LibraryId id)
 {
-	PluginHandler* lph = PluginHandler::instance();
-	int idx = Util::Algorithm::indexOf(m->infos, [id](const Info& info){
+	auto* lph = PluginHandler::instance();
+	int idx = Util::Algorithm::indexOf(m->infos, [id](const Info& info) {
 		return (info.id() == id);
 	});
 

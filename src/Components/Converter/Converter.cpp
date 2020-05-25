@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Converter.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
@@ -31,14 +29,13 @@
 #include <QMap>
 #include <QVariant>
 
-
-using ProcessMap=QList<QStringList>;
+using ProcessMap = QList<QStringList>;
 
 struct Converter::Private
 {
-	QStringList log_files;
+	QStringList logFiles;
 	ProcessMap processes;
-	MetaDataList v_md;
+	MetaDataList tracks;
 	QString targetDirectory;
 	QMap<int, QProcess*> runningProcesses;
 
@@ -67,7 +64,7 @@ Converter::Converter(int quality, QObject* parent) :
 
 Converter::~Converter()
 {
-	Util::File::deleteFiles(m->log_files);
+	Util::File::deleteFiles(m->logFiles);
 }
 
 QString Converter::logginDirectory() const
@@ -80,27 +77,28 @@ QString Converter::targetDirectory() const
 	return m->targetDirectory;
 }
 
-void Converter::addMetadata(const MetaDataList& v_md)
+void Converter::addMetadata(const MetaDataList& tracks)
 {
-	m->v_md.clear();
+	m->tracks.clear();
 
 	QStringList formats = supportedInputFormats();
-	for(const MetaData& md : v_md)
+	for(const MetaData& md : tracks)
 	{
-		QString filepath = md.filepath();
+		const QString filepath(md.filepath());
 		for(const QString& format : formats)
 		{
-			if(filepath.endsWith(format, Qt::CaseInsensitive)){
-				m->v_md << md;
+			if(filepath.endsWith(format, Qt::CaseInsensitive))
+			{
+				m->tracks << md;
 				break;
 			}
 		}
 	}
 }
 
-void Converter::start(int num_threads, const QString& targetDirectoryectory)
+void Converter::start(int numThreads, const QString& targetDirectoryectory)
 {
-	m->processCount = num_threads;
+	m->processCount = numThreads;
 	m->targetDirectory = targetDirectoryectory;
 	m->runningProcesses.clear();
 	m->errorCount = 0;
@@ -108,14 +106,15 @@ void Converter::start(int num_threads, const QString& targetDirectoryectory)
 	m->currentIndex = 0;
 	m->stopped = false;
 
-	for(const MetaData& md : m->v_md)
+	for(const MetaData& md : m->tracks)
 	{
 		m->processes << processEntry(md);
 	}
 
-	m->commandCount = m->v_md.count();
+	m->commandCount = m->tracks.count();
 
-	for(int i=0; i<std::min(m->processes.size(), m->processCount); i++)
+	auto processCount = std::min(m->processes.size(), m->processCount);
+	for(int i = 0; i < processCount; i++)
 	{
 		QString process_name = binary();
 		QStringList arguments = m->processes.takeFirst();
@@ -128,14 +127,14 @@ void Converter::stop()
 {
 	m->stopped = true;
 
-	for(int key : m->runningProcesses.keys())
+	const auto processKeys = m->runningProcesses.keys();
+	for(int key : processKeys)
 	{
 		QProcess* p = m->runningProcesses.value(key);
-		if(!p){
-			continue;
+		if(p)
+		{
+			p->kill();
 		}
-
-		p->kill();
 	}
 }
 
@@ -151,7 +150,7 @@ int Converter::quality() const
 
 int Converter::fileCount() const
 {
-	return m->v_md.count();
+	return m->tracks.count();
 }
 
 bool Converter::isAvailable() const
@@ -159,11 +158,9 @@ bool Converter::isAvailable() const
 	return QProcess::startDetached(binary(), {"--version"});
 }
 
-
 QString Converter::targetFile(const MetaData& md) const
 {
-	QString filename, dirname;
-	Util::File::splitFilename(md.filepath(), dirname, filename);
+	const auto [dirname, filename] = Util::File::splitFilename(md.filepath());
 
 	QString target = Util::File::cleanFilename(m->targetDirectory + "/" + filename);
 	target = target.left(target.lastIndexOf(".")) + "." + extension();
@@ -176,21 +173,24 @@ bool Converter::startProcess(const QString& command, const QStringList& argument
 	m->currentIndex++;
 
 	Util::File::createDir(logginDirectory());
-	QString log_file = logginDirectory() + "/" + QString("encoder_%1_%2.out")
-															.arg(binary())
-															.arg(m->currentIndex);
+	const QString logFile = logginDirectory() + "/" + QString("encoder_%1_%2.out")
+		.arg(binary())
+		.arg(m->currentIndex);
 
-	m->log_files << log_file;
+	m->logFiles << logFile;
 
 	int id = Util::randomNumber(100, 1000000);
 
 	auto* process = new QProcess(this);
-	process->setStandardOutputFile(log_file);
-	process->setStandardErrorFile(log_file);
+	process->setStandardOutputFile(logFile);
+	process->setStandardErrorFile(logFile);
 	process->setProperty("id", id);
 	m->runningProcesses.insert(id, process);
 
-	connect(process, static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished), this, &Converter::processFinished);
+	connect(process,
+	        static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(&QProcess::finished),
+	        this,
+	        &Converter::processFinished);
 	connect(process, &QProcess::errorOccurred, this, &Converter::errorOccured);
 
 	spLog(Log::Debug, this) << "Starting: " << command << " " << arguments.join(" ");
@@ -206,7 +206,8 @@ void Converter::processFinished(int ret, QProcess::ExitStatus exit_status)
 	auto* process = static_cast<QProcess*>(sender());
 
 	spLog(Log::Debug, this) << "process finished";
-	if(ret != 0){
+	if(ret != 0)
+	{
 		m->errorCount++;
 		spLog(Log::Warning, this) << "Encoding process failed with code " << ret << process->program();
 	}
@@ -214,7 +215,7 @@ void Converter::processFinished(int ret, QProcess::ExitStatus exit_status)
 	int id = process->property("id").toInt();
 	m->runningProcesses.remove(id);
 
-	emit sigProgress( 100 - (m->processes.size() * 100) / m->commandCount );
+	emit sigProgress(100 - (m->processes.size() * 100) / m->commandCount);
 
 	if(!m->processes.isEmpty() && !m->stopped)
 	{
@@ -222,11 +223,13 @@ void Converter::processFinished(int ret, QProcess::ExitStatus exit_status)
 		startProcess(binary(), arguments);
 	}
 
-	else if(m->runningProcesses.isEmpty()){
+	else if(m->runningProcesses.isEmpty())
+	{
 		emit sigFinished();
 	}
 
-	else {
+	else
+	{
 		spLog(Log::Warning, this) << "Something strange happened";
 	}
 }

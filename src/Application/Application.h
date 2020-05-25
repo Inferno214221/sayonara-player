@@ -28,33 +28,33 @@ class QStringList;
 class QSessionManager;
 
 class Application :
-		public QApplication
+	public QApplication
 {
 	Q_OBJECT
 	PIMPL(Application)
 
-public:
-	Application(int& argc, char** argv);
-	~Application();
+	public:
+		Application(int& argc, char** argv);
+		~Application();
 
-	bool init(const QStringList& files_to_play, bool force_show);
+		bool init(const QStringList& files_to_play, bool force_show);
 
-private:
-	void initSingleInstanceThread();
-	void initPreferences();
-	void initLibraries();
-	void initEngine();
-	void initPlugins();
-	void initPlayer(bool force_show);
-	void initPlaylist(const QStringList& files_to_play);
+	private:
+		void initSingleInstanceThread();
+		void initPreferences();
+		void initLibraries();
+		void initEngine();
+		void initPlugins();
+		void initPlayer(bool force_show);
+		void initPlaylist(const QStringList& filesToPlay);
 
-	void shutdown();
+		void shutdown();
 
-private slots:
-	void remoteControlActivated();
-	void sessionEndRequested(QSessionManager& manager);
-	void createPlaylist();
-	void skinChanged();
+	private slots:
+		void remoteControlActivated();
+		void sessionEndRequested(QSessionManager& manager);
+		void createPlaylist();
+		void skinChanged();
 };
 
 #endif // APPLICATION_H

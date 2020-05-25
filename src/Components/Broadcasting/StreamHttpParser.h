@@ -31,33 +31,34 @@ class StreamHttpParser
 {
 	PIMPL(StreamHttpParser)
 
-public:
-	/**
-	 * @brief The HttpAnswer enum
-	 */
-	enum class HttpAnswer : unsigned char
-	{
-		Fail=0,
-		OK,
-		Reject,
-		Ignore,
-		Playlist,
-		HTML5,
-		MP3,
-		BG,
-		Favicon,
-		MetaData
-	};
+	public:
+		/**
+		 * @brief The HttpAnswer enum
+		 */
+		enum class HttpAnswer :
+			unsigned char
+		{
+				Fail = 0,
+				OK,
+				Reject,
+				Ignore,
+				Playlist,
+				HTML5,
+				MP3,
+				BG,
+				Favicon,
+				MetaData
+		};
 
-	StreamHttpParser();
-	~StreamHttpParser();
+		StreamHttpParser();
+		~StreamHttpParser();
 
-	HttpAnswer parse(const QByteArray& data);
+		HttpAnswer parse(const QByteArray& data);
 
-	QString		host() const;
-	bool		isIcyStream() const;
+		QString host() const;
+		bool isIcyStream() const;
 
-	static QString answerString(HttpAnswer answer);
+		static QString answerString(HttpAnswer answer);
 };
 
 #endif // STREAMHTTPPARSER_H

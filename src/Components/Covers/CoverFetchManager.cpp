@@ -34,34 +34,35 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
 
-#include <QStringList>
 #include <QList>
 #include <QMap>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 using namespace Cover;
 using Cover::Fetcher::Manager;
 using Cover::Fetcher::Base;
 using Cover::Fetcher::Url;
 
-using SortMap=QMap<QString, int>;
+using SortMap = QMap<QString, int>;
 
-static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cfOrder)
+static void sortCoverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cfOrder)
 {
-	Algorithm::sort(lst, [&cfOrder](Fetcher::Base* t1, Fetcher::Base* t2)
+	Algorithm::sort(lst, [&cfOrder](Fetcher::Base* t1, Fetcher::Base* t2) 
 	{
 		const int order1 = cfOrder[t1->identifier()];
 		const int order2 = cfOrder[t2->identifier()];
 
-		if(order1 != order2) {
-			if(order1 == -1){
+		if(order1 != order2)
+		{
+			if(order1 == -1)
+			{
 				return false; // order1 is worse
 			}
 
-			if(order2 == -1){
+			if(order2 == -1)
+			{
 				return true; // order1 is better
 			}
 
@@ -75,23 +76,21 @@ static void sort_coverfetchers(QList<Fetcher::Base*>& lst, const SortMap& cfOrde
 	});
 }
 
-static SortMap create_sortmap(const QStringList& lst)
+static SortMap createSortmap(const QStringList& lst)
 {
 	SortMap ret;
-
-	for(int i=0; i<lst.size(); i++)
+	for(int i = 0; i < lst.size(); i++)
 	{
-		const QString str = lst[i];
-		ret[str] = i;
+		ret.insert(lst[i], i);
 	}
 
 	return ret;
 }
 
-
 static Fetcher::Base* coverfetcherByIdentifier(const QString& identifier, const QList<Fetcher::Base*>& container)
 {
-	if(identifier.isEmpty()){
+	if(identifier.isEmpty())
+	{
 		return nullptr;
 	}
 
@@ -112,19 +111,17 @@ static Fetcher::Base* coverfetcherByIdentifier(const QString& identifier, const 
 
 struct Manager::Private
 {
-	QMap<QString, int>		coverfetcherOrder;
-	QMap<QString, bool>		active_map;
-	QList<Fetcher::Base*>	coverfetchers;
-	Fetcher::Website*		websiteCoverfetcher=nullptr;
-	Fetcher::DirectFetcher* directCoverfetcher=nullptr;
+	QMap<QString, bool> activeMap;
+	QList<Fetcher::Base*> coverfetchers;
+	Fetcher::Website* websiteCoverfetcher = nullptr;
+	Fetcher::DirectFetcher* directCoverfetcher = nullptr;
 
 	Private() = default;
 
 	~Private()
 	{
-		for(auto it=coverfetchers.begin(); it != coverfetchers.end(); it++)
+		for(Fetcher::Base* b : coverfetchers)
 		{
-			Fetcher::Base* b = *it;
 			delete b;
 		}
 
@@ -133,29 +130,31 @@ struct Manager::Private
 
 	void set_active(QString identifier, bool enabled)
 	{
-		active_map[identifier.toLower()] = enabled;
+		activeMap[identifier.toLower()] = enabled;
 	}
 
 	bool is_active(QString identifier) const
 	{
 		identifier = identifier.toLower();
 
-		if(identifier == directCoverfetcher->identifier()){
+		if(identifier == directCoverfetcher->identifier())
+		{
 			return true;
 		}
 
-		else if(identifier == websiteCoverfetcher->identifier()){
+		else if(identifier == websiteCoverfetcher->identifier())
+		{
 			return true;
 		}
 
-		if(!active_map.keys().contains(identifier)){
+		if(!activeMap.keys().contains(identifier))
+		{
 			return false;
 		}
 
-		return active_map[identifier];
+		return activeMap[identifier];
 	}
 };
-
 
 Manager::Manager() :
 	QObject()
@@ -182,14 +181,14 @@ Manager::~Manager() = default;
 void Manager::registerCoverFetcher(Base* t)
 {
 	Fetcher::Base* cfi = coverfetcherByIdentifier(t->identifier(), m->coverfetchers);
-	if(cfi){ // already there
+	if(cfi)
+	{ // already there
 		return;
 	}
 
 	m->set_active(t->identifier(), true);
 	m->coverfetchers << t;
 }
-
 
 Fetcher::Base* Manager::coverfetcher(const Url& url) const
 {
@@ -223,7 +222,6 @@ Fetcher::Url Manager::directFetcherUrl(const QString& url)
 	return Cover::Fetcher::Url(df.identifier(), url);
 }
 
-
 QList<Fetcher::Base*> Manager::coverfetchers() const
 {
 	return m->coverfetchers;
@@ -235,13 +233,14 @@ QList<Fetcher::Base*> Manager::activeCoverfetchers() const
 	for(Fetcher::Base* cfi : m->coverfetchers)
 	{
 		const QString identifier = cfi->identifier();
-		if( (identifier == m->directCoverfetcher->identifier()) ||
-			(identifier == m->websiteCoverfetcher->identifier()) )
+		if((identifier == m->directCoverfetcher->identifier()) ||
+		   (identifier == m->websiteCoverfetcher->identifier()))
 		{
 			continue;
 		}
 
-		if(isActive(cfi)){
+		if(isActive(cfi))
+		{
 			ret << cfi;
 		}
 	}
@@ -255,13 +254,14 @@ QList<Fetcher::Base*> Manager::inactiveCoverfetchers() const
 	for(Fetcher::Base* cfi : m->coverfetchers)
 	{
 		const QString identifier = cfi->identifier();
-		if( (identifier == m->directCoverfetcher->identifier()) ||
-			(identifier == m->websiteCoverfetcher->identifier()) )
+		if((identifier == m->directCoverfetcher->identifier()) ||
+		   (identifier == m->websiteCoverfetcher->identifier()))
 		{
 			continue;
 		}
 
-		if(!isActive(cfi)){
+		if(!isActive(cfi))
+		{
 			ret << cfi;
 		}
 	}
@@ -279,19 +279,17 @@ bool Manager::isActive(const QString& identifier) const
 	return m->is_active(identifier);
 }
 
-
 void Manager::serversChanged()
 {
-	QStringList servers = GetSetting(Set::Cover_Server);
-
-	for(const QString& key : m->active_map.keys()){
-		m->active_map[key] = servers.contains(key);
+	const QStringList servers = GetSetting(Set::Cover_Server);
+	for(const QString& key : m->activeMap.keys())
+	{
+		m->activeMap[key] = servers.contains(key);
 	}
 
-	SortMap sortmap = create_sortmap(servers);
-	sort_coverfetchers(m->coverfetchers, sortmap);
+	const SortMap sortmap = createSortmap(servers);
+	sortCoverfetchers(m->coverfetchers, sortmap);
 }
-
 
 QList<Url> Manager::artistAddresses(const QString& artist) const
 {
@@ -311,11 +309,9 @@ QList<Url> Manager::artistAddresses(const QString& artist) const
 	return urls;
 }
 
-
 QList<Url> Manager::albumAddresses(const QString& artist, const QString& album) const
 {
 	QList<Url> urls;
-
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		const QString identifier = cfi->identifier();
@@ -330,18 +326,16 @@ QList<Url> Manager::albumAddresses(const QString& artist, const QString& album) 
 	return urls;
 }
 
-
 QList<Url> Manager::searchAddresses(const QString& searchstring) const
 {
 	if(isSearchstringWebsite(searchstring))
 	{
 		m->websiteCoverfetcher->setWebsite(searchstring);
 		const QString identifier = m->websiteCoverfetcher->identifier();
-		return { Url(identifier, m->websiteCoverfetcher->fulltextSearchAddress("")) };
+		return {Url(identifier, m->websiteCoverfetcher->fulltextSearchAddress(""))};
 	}
 
 	QList<Url> urls;
-
 	for(const Fetcher::Base* cfi : Algorithm::AsConst(m->coverfetchers))
 	{
 		const QString identifier = cfi->identifier();
@@ -371,15 +365,16 @@ QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& 
 		const QString address = cfi->fulltextSearchAddress(searchstring);
 		const QString identifier = cfi->identifier();
 
-		if( (!address.isEmpty()) &&
-			(isActive(cfi)) &&
-			(cover_fetcher_identifier.compare(identifier, Qt::CaseInsensitive) == 0))
+		if((!address.isEmpty()) &&
+		   (isActive(cfi)) &&
+		   (cover_fetcher_identifier.compare(identifier, Qt::CaseInsensitive) == 0))
 		{
 			urls << Url(identifier, cfi->fulltextSearchAddress(searchstring));;
 		}
 	}
 
-	if(urls.isEmpty()){
+	if(urls.isEmpty())
+	{
 		return searchAddresses(searchstring);
 	}
 
@@ -388,7 +383,8 @@ QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& 
 
 bool Manager::isSearchstringWebsite(const QString& searchstring)
 {
-	if(Util::File::isWWW(searchstring)){
+	if(Util::File::isWWW(searchstring))
+	{
 		return true;
 	}
 
@@ -397,15 +393,15 @@ bool Manager::isSearchstringWebsite(const QString& searchstring)
 	// this.is.my.searchstring.url -> true
 	// this.is.my.searchstring.ur -> true
 	// this.is.my.searchstring.u -> false
-	if(searchstring.contains(QRegExp("\\s"))){
+	if(searchstring.contains(QRegExp("\\s")))
+	{
 		return false;
 	}
 
 	int lastDot = searchstring.lastIndexOf(".");
-	if(
-		(lastDot < 0) ||
-		(lastDot < searchstring.size() - 4) ||
-		(lastDot >= searchstring.size() - 2))
+	if((lastDot < 0) ||
+	   (lastDot < searchstring.size() - 4) ||
+	   (lastDot >= searchstring.size() - 2))
 	{
 		return false;
 	}

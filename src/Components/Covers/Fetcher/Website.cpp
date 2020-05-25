@@ -47,12 +47,13 @@ QStringList Website::parseAddresses(const QByteArray& website) const
 	while(index > 0)
 	{
 		QString image = regex.cap(1);
-		if(!image.contains("://")){
+		if(!image.contains("://"))
+		{
 			image.prepend(m->website + "/");
 		}
 
 		images << image;
-		index = regex.indexIn(website_str, index+5);
+		index = regex.indexIn(website_str, index + 5);
 	}
 
 	return images;
@@ -73,7 +74,8 @@ void Website::setWebsite(const QString& website)
 {
 	m->website = website;
 
-	if(!m->website.startsWith("http")) {
+	if(!m->website.startsWith("http"))
+	{
 		m->website.prepend("http://");
 	}
 }

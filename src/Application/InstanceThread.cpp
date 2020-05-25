@@ -26,16 +26,15 @@
 #include <QByteArray>
 #include <QDir>
 
-
 struct InstanceThread::Private
 {
-	QSharedMemory		memory;
-	QStringList			paths;
-	bool				may_run;
+	QSharedMemory memory;
+	QStringList paths;
+	bool mayRun;
 
 	Private() :
 		memory(QByteArray("SayonaraMemory") + QDir::homePath()),
-		may_run(true)
+		mayRun(true)
 	{}
 };
 
@@ -53,11 +52,12 @@ InstanceThread::~InstanceThread()
 void InstanceThread::run()
 {
 	m->memory.attach(QSharedMemory::ReadWrite);
-	if(!m->memory.data()){
+	if(!m->memory.data())
+	{
 		return;
 	}
 
-	while(m->may_run)
+	while(m->mayRun)
 	{
 		char* ptr = (char*) m->memory.data();
 
@@ -65,7 +65,8 @@ void InstanceThread::run()
 		{
 			spLog(Log::Info, this) << "Second instance saying hello";
 
-			if(*(ptr + 3) == 'D'){
+			if(*(ptr + 3) == 'D')
+			{
 				parseMemory();
 			}
 
@@ -76,7 +77,8 @@ void InstanceThread::run()
 			emit sigPlayerRise();
 		}
 
-		if(m->may_run){
+		if(m->mayRun)
+		{
 			Util::sleepMs(100);
 		}
 	}
@@ -84,18 +86,20 @@ void InstanceThread::run()
 
 void InstanceThread::stop()
 {
-	m->may_run = false;
+	m->mayRun = false;
 }
 
 void InstanceThread::parseMemory()
 {
 	spLog(Log::Debug, this) << "parse memory for new file...";
 
-	if(m->memory.isAttached()){
+	if(m->memory.isAttached())
+	{
 		spLog(Log::Debug, this) << "memory already attached";
 	}
 
-	else if(!m->memory.attach()){
+	else if(!m->memory.attach())
+	{
 		spLog(Log::Debug, this) << "Cannot attach shared memory " << m->memory.errorString();
 		return;
 	}

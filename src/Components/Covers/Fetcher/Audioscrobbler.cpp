@@ -19,18 +19,14 @@
  */
 
 #include "Audioscrobbler.h"
-#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Components/Streaming/LastFM/LFMGlobals.h"
 
 #include <QStringList>
 #include <QDomDocument>
-#include <QDomElement>
-#include <QDomNode>
 #include <QMap>
 #include <QUrl>
 
-namespace Algorithm=Util::Algorithm;
 using Cover::Fetcher::Audioscrobbler;
 
 bool Audioscrobbler::canFetchCoverDirectly() const
@@ -38,19 +34,23 @@ bool Audioscrobbler::canFetchCoverDirectly() const
 	return false;
 }
 
-QDomNode find_artist_node(const QDomNode& node, const QString& prefix)
+static
+QDomNode findArtistNode(const QDomNode& node, const QString& prefix)
 {
-	if(node.nodeName().compare("artist", Qt::CaseInsensitive) == 0 ||
-	   node.nodeName().compare("album", Qt::CaseInsensitive) == 0){
+	if((node.nodeName().compare("artist", Qt::CaseInsensitive) == 0) ||
+	   (node.nodeName().compare("album", Qt::CaseInsensitive) == 0))
+	{
 		return node;
 	}
 
-	if(node.hasChildNodes()){
-		return find_artist_node(node.firstChild(), prefix + "  ");
+	if(node.hasChildNodes())
+	{
+		return findArtistNode(node.firstChild(), prefix + "  ");
 	}
 
-	else if(!node.nextSibling().isNull()){
-		return find_artist_node(node.nextSibling(), prefix);
+	else if(!node.nextSibling().isNull())
+	{
+		return findArtistNode(node.nextSibling(), prefix);
 	}
 
 	else
@@ -64,67 +64,63 @@ QStringList Audioscrobbler::parseAddresses(const QByteArray& website) const
 	QDomDocument doc("LastFM Cover");
 	doc.setContent(website);
 
-	QDomNode root_node = doc.firstChild();
-	QDomNode artist_node = find_artist_node(root_node, "");
+	QDomNode rootNode = doc.firstChild();
+	QDomNode artistNode = findArtistNode(rootNode, "");
 
-	if(artist_node.isNull()){
+	if(artistNode.isNull())
+	{
 		return QStringList();
 	}
 
-	const QDomNodeList nodes = artist_node.childNodes();
-	if(nodes.isEmpty()){
+	const QDomNodeList nodes = artistNode.childNodes();
+	if(nodes.isEmpty())
+	{
 		return QStringList();
 	}
 
 	const QStringList attributes
-	{
-		"mega",
-		"extralarge",
-		"large",
-		""
-	};
+		{
+			"mega",
+			"extralarge",
+			"large",
+			""
+		};
 
-	QMap<QString, QString> lfm_covers;
+	QMap<QString, QString> lfmCovers;
 
-	for(int i=0; i<nodes.size(); i++)
+	for(int i = 0; i < nodes.size(); i++)
 	{
 		QDomNode node = nodes.item(i);
 		QString name = node.toElement().tagName();
 		if(name.compare("image", Qt::CaseInsensitive) == 0)
 		{
-			QDomNode attr_node = node.attributes().namedItem("size");
-			QString size_attr = attr_node.nodeValue();
+			QDomNode attrNode = node.attributes().namedItem("size");
+			QString sizeAttr = attrNode.nodeValue();
 
 			QString url = node.toElement().text();
 
-			lfm_covers[size_attr] = url;
+			lfmCovers[sizeAttr] = url;
 		}
 	}
 
-	QStringList ret;
-	for(const QString& attr : attributes)
-	{
-		QString url = lfm_covers[attr];
-		if(!url.isEmpty()){
-			ret << url;
-		}
-	}
+	QStringList ret(lfmCovers.values());
+	ret.removeAll("");
 
 	spLog(Log::Debug, this) << "Got " << ret.size() << " addresses";
+
 	return ret;
 }
 
 QString Audioscrobbler::albumAddress(const QString& artist, const QString& album) const
 {
-	QString str = QString("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" +
-						  QUrl::toPercentEncoding(artist) +
-						  "&album=" +
-						  QUrl::toPercentEncoding(album) +
-						  "&api_key=") + LFM_API_KEY;
+	const QString str = QString("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" +
+	                      QUrl::toPercentEncoding(artist) +
+	                      "&album=" +
+	                      QUrl::toPercentEncoding(album) +
+	                      "&api_key=") + LFM_API_KEY;
 
 	return str;
 }
-
 
 int Audioscrobbler::estimatedSize() const
 {

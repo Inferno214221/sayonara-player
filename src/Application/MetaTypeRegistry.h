@@ -18,21 +18,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef METATYPEREGISTRY_H
 #define METATYPEREGISTRY_H
 
 #include <QObject>
 
 class MetaTypeRegistry :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 
-public:
-	MetaTypeRegistry(QObject* parent=nullptr);
-	~MetaTypeRegistry();
+	public:
+		MetaTypeRegistry(QObject* parent = nullptr);
+		~MetaTypeRegistry();
 };
 
 #endif // METATYPEREGISTRY_H

@@ -33,24 +33,24 @@ class StreamDataSender
 {
 	PIMPL(StreamDataSender)
 
-private:
-	bool sendIcyMetadata(const QString& streamTitle);
+	private:
+		bool sendIcyMetadata(const QString& streamTitle);
 
-public:
-	explicit StreamDataSender(QTcpSocket* socket);
-	~StreamDataSender();
+	public:
+		explicit StreamDataSender(QTcpSocket* socket);
+		~StreamDataSender();
 
-	bool sendTrash();
-	bool sendData(const QByteArray& data);
-	bool sendIcyData(const QByteArray& data, const QString& streamTitle);
-	bool sendHeader(bool reject, bool icy);
-	bool sendHtml5(const QString& streamTitle);
-	bool sendBackground();
-	bool sendMetadata(const QString& streamTitle);
-	bool sendPlaylist(const QString& host, int port);
-	bool sendFavicon();
+		bool sendTrash();
+		bool sendData(const QByteArray& data);
+		bool sendIcyData(const QByteArray& data, const QString& streamTitle);
+		bool sendHeader(bool reject, bool icy);
+		bool sendHtml5(const QString& streamTitle);
+		bool sendBackground();
+		bool sendMetadata(const QString& streamTitle);
+		bool sendPlaylist(const QString& host, int port);
+		bool sendFavicon();
 
-	void flush();
+		void flush();
 
 };
 

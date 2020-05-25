@@ -22,6 +22,7 @@
 #include <QString>
 
 Cover::Fetcher::Base::Base() = default;
+
 Cover::Fetcher::Base::~Base() = default;
 
 QString Cover::Fetcher::Base::identifier() const

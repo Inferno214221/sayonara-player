@@ -16,7 +16,6 @@ namespace Cover::Fetcher
 	class Url
 	{
 		friend class Manager;
-
 		PIMPL(Url)
 
 		private:

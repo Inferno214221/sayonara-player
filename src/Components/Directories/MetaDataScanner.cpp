@@ -13,15 +13,15 @@ using Directory::MetaDataScanner;
 
 struct MetaDataScanner::Private
 {
-	QStringList		files;
-	QStringList		extensions;
-	MetaDataList	tracks;
+	QStringList files;
+	QStringList extensions;
+	MetaDataList tracks;
 
-	void*			data=nullptr;
+	void* data = nullptr;
 
-	bool			recursive;
-	bool			scanAudioFiles;
-	bool			scanPlaylistFiles;
+	bool recursive;
+	bool scanAudioFiles;
+	bool scanPlaylistFiles;
 
 	Private(const QStringList& files, bool recursive) :
 		files(files),
@@ -95,16 +95,6 @@ MetaDataList MetaDataScanner::metadata() const
 QStringList MetaDataScanner::files() const
 {
 	return m->files;
-}
-
-void MetaDataScanner::setScanAudioFilesEnabled(bool b)
-{
-	m->scanAudioFiles = b;
-}
-
-void MetaDataScanner::setScanPlaylistFilesEnabled(bool b)
-{
-	m->scanPlaylistFiles = b;
 }
 
 void MetaDataScanner::setData(void* data_object)

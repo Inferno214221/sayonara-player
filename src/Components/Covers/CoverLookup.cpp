@@ -39,11 +39,8 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
-
-#include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
-#include <QImage>
 #include <QImageWriter>
 #include <QStringList>
 #include <QThread>
@@ -55,20 +52,18 @@ using Cover::Lookup;
 using Cover::FetchThread;
 using Cover::Source;
 
-namespace FileUtils=::Util::File;
-
 struct Lookup::Private
 {
-	QList<QPixmap>	pixmaps;
-	FetchThread*	cft=nullptr;
-	void*			userData=nullptr;
+	QList<QPixmap> pixmaps;
+	FetchThread* cft = nullptr;
+	void* userData = nullptr;
 
-	const int		initialCoverCount;
-	int				coverCount;
-	Source			source;
-	bool			isThreadRunning;
-	bool			finished;
-	bool			stopped;
+	const int initialCoverCount;
+	int coverCount;
+	Source source;
+	bool isThreadRunning;
+	bool finished;
+	bool stopped;
 
 	Private(int coverCount) :
 		initialCoverCount(coverCount),
@@ -99,7 +94,8 @@ Lookup::~Lookup()
 bool Lookup::startNewThread(const Cover::Location& cl)
 {
 	bool hasSearchUrls = cl.hasSearchUrls();
-	if(!hasSearchUrls || !cl.isValid()){
+	if(!hasSearchUrls || !cl.isValid())
+	{
 		return false;
 	}
 
@@ -107,7 +103,7 @@ bool Lookup::startNewThread(const Cover::Location& cl)
 
 	m->isThreadRunning = true;
 
-	QThread* thread = new QThread(nullptr);
+	auto* thread = new QThread(nullptr);
 
 	m->cft = new FetchThread(nullptr, cl, m->coverCount);
 	m->cft->moveToThread(thread);
@@ -136,29 +132,32 @@ void Lookup::start()
 	QString id = coverLocation().identifer();
 	spLog(Log::Develop, this) << "Search cover for id " << id;
 
-	if(!coverLocation().isValid()){
+	if(!coverLocation().isValid())
+	{
 		emitFinished(false);
 		return;
 	}
 
 	if(m->coverCount == 1)
 	{
-		if(fetchFromDatabase()){
+		if(fetchFromDatabase())
+		{
 			return;
 		}
 
-		if(fetchFromExtractor()){
+		if(fetchFromExtractor())
+		{
 			return;
 		}
 	}
 
-	if(fetchFromWWW()){
+	if(fetchFromWWW())
+	{
 		return;
 	}
 
 	emitFinished(false);
 }
-
 
 bool Lookup::fetchFromDatabase()
 {
@@ -188,7 +187,6 @@ bool Lookup::fetchFromExtractor()
 	return startExtractor(cl);
 }
 
-
 bool Lookup::fetchFromWWW()
 {
 	Cover::Location cl = coverLocation();
@@ -208,11 +206,11 @@ void Lookup::threadFinished(bool success)
 	m->cft = nullptr;
 	sender()->deleteLater();
 
-	if(!success){
+	if(!success)
+	{
 		emitFinished(false);
 	}
 }
-
 
 bool Lookup::startExtractor(const Location& cl)
 {
@@ -231,10 +229,9 @@ bool Lookup::startExtractor(const Location& cl)
 	return true;
 }
 
-
 void Lookup::extractorFinished()
 {
-	auto* extractor = static_cast<Cover::Extractor*>(sender());
+	auto* extractor = dynamic_cast<Cover::Extractor*>(sender());
 	QPixmap pm = extractor->pixmap();
 	m->source = extractor->source();
 
@@ -250,16 +247,17 @@ void Lookup::extractorFinished()
 	else
 	{
 		bool success = fetchFromWWW();
-		if(!success){
+		if(!success)
+		{
 			emitFinished(false);
 		}
 	}
 }
 
-
 bool Lookup::addNewCover(const QPixmap& pm, bool save)
 {
-	if(m->stopped || pm.isNull()){
+	if(m->stopped || pm.isNull())
+	{
 		return false;
 	}
 
@@ -268,7 +266,8 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 
 	if(!save || m->coverCount > 1)
 	{
-		if(m->pixmaps.size() == m->coverCount){
+		if(m->pixmaps.size() == m->coverCount)
+		{
 			emitFinished(true);
 		}
 
@@ -280,24 +279,25 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 		Cover::Utils::writeCoverIntoDatabase(coverLocation(), pm);
 	}
 
-	if( GetSetting(Set::Cover_SaveToLibrary) &&
-		(m->source == Source::WWW))
+	if(GetSetting(Set::Cover_SaveToLibrary) &&
+	   (m->source == Source::WWW))
 	{
 		Cover::Utils::writeCoverToLibrary(coverLocation(), pm);
 	}
 
-	if(m->pixmaps.size() == m->coverCount){
+	if(m->pixmaps.size() == m->coverCount)
+	{
 		emitFinished(true);
 	}
 
 	return true;
 }
 
-
 void Lookup::coverFound(int idx)
 {
-	FetchThread* cft = static_cast<FetchThread*>(sender());
-	if(!cft){
+	auto* cft = dynamic_cast<FetchThread*>(sender());
+	if(!cft)
+	{
 		return;
 	}
 
@@ -331,11 +331,6 @@ void Lookup::emitFinished(bool success)
 		m->finished = true;
 		emit sigFinished(success);
 	}
-}
-
-bool Lookup::isThreadRunning() const
-{
-	return (m->cft != nullptr);
 }
 
 void Lookup::setUserData(void* data)

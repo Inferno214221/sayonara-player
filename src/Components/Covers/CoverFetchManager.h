@@ -29,105 +29,100 @@
 
 namespace Cover
 {
-namespace Fetcher
-{
-	class Base;
-	class Url;
-
-	/**
-	 * @brief Retrieve Download Urls for Cover Searcher.
-	 * CoverFetcherInterface can be registered, so for
-	 * example a last.fm cover fetcher via the register_cover_fetcher
-	 * method. A specific CoverFetcherInterface may be retrieved by using
-	 * the get_coverfetcher method.
-	 * @ingroup Covers
-	 */
-	class Manager :
-			public QObject
+	namespace Fetcher
 	{
-		Q_OBJECT
+		class Base;
+		class Url;
 
-		SINGLETON(Manager)
-		PIMPL(Manager)
+		/**
+		 * @brief Retrieve Download Urls for Cover Searcher.
+		 * CoverFetcherInterface can be registered, so for
+		 * example a last.fm cover fetcher via the register_cover_fetcher
+		 * method. A specific CoverFetcherInterface may be retrieved by using
+		 * the get_coverfetcher method.
+		 * @ingroup Covers
+		 */
+		class Manager :
+			public QObject
+		{
+			Q_OBJECT
+			SINGLETON(Manager)
+			PIMPL(Manager)
 
-		public:
-			/**
-			 * @brief Register a cover fetcher. Per default
-			 * there is one for Discogs, last.fm and Google
-			 * @param t an instance of a CoverFetcherInterface
-			 */
-			void registerCoverFetcher(Cover::Fetcher::Base* t);
+			public:
+				/**
+				 * @brief Register a cover fetcher. Per default
+				 * there is one for Discogs, last.fm and Google
+				 * @param t an instance of a CoverFetcherInterface
+				 */
+				void registerCoverFetcher(Cover::Fetcher::Base* t);
 
+				/**
+				 * @brief get urls for a artist search query
+				 * @param artist name
+				 * @return list of urls
+				 */
+				QList<Url> artistAddresses(const QString& artist) const;
 
-			/**
-			 * @brief get urls for a artist search query
-			 * @param artist name
-			 * @return list of urls
-			 */
-			QList<Url> artistAddresses(const QString& artist) const;
+				/**
+				 * @brief get urls for a album search query
+				 * @param artist artist name
+				 * @param album album name
+				 * @return list of urls
+				 */
+				QList<Url> albumAddresses(const QString& artist, const QString& album) const;
 
-			/**
-			 * @brief get urls for a album search query
-			 * @param artist artist name
-			 * @param album album name
-			 * @return list of urls
-			 */
-			QList<Url> albumAddresses(const QString& artist, const QString& album) const;
+				/**
+				 * @brief get urls for a fuzzy query
+				 * @param str query string
+				 * @return list of urls
+				 */
+				QList<Url> searchAddresses(const QString& str) const;
 
-			/**
-			 * @brief get urls for a fuzzy query
-			 * @param str query string
-			 * @return list of urls
-			 */
-			QList<Url> searchAddresses(const QString& str) const;
+				/**
+				 * @brief get urls for a fuzzy query
+				 * @param str query string
+				 * @return list of urls
+				 */
+				QList<Url> searchAddresses(const QString& str,
+				                           const QString& cover_fetcher_identifier) const;
 
+				/**
+				 * @brief get a CoverFetcherInterface by a specific url
+				 * @param url the url retrieved from artist_addresses(), album_addresses(),
+				 * search_addresses() or direct_fetch_url()
+				 * @return null, if there's no suitable CoverFetcherInterface registered
+				 */
+				Cover::Fetcher::Base* coverfetcher(const Url& url) const;
 
-			/**
-			 * @brief get urls for a fuzzy query
-			 * @param str query string
-			 * @return list of urls
-			 */
-			QList<Url> searchAddresses(const QString& str,
-										 const QString& cover_fetcher_identifier) const;
+				/**
+				 * @brief fetches all available cover fetcher
+				 * @return
+				 */
+				QList<Cover::Fetcher::Base*> coverfetchers() const;
 
-			/**
-			 * @brief get a CoverFetcherInterface by a specific url
-			 * @param url the url retrieved from artist_addresses(), album_addresses(),
-			 * search_addresses() or direct_fetch_url()
-			 * @return null, if there's no suitable CoverFetcherInterface registered
-			 */
-			Cover::Fetcher::Base* coverfetcher(const Url& url) const;
+				QList<Cover::Fetcher::Base*> activeCoverfetchers() const;
+				QList<Cover::Fetcher::Base*> inactiveCoverfetchers() const;
 
-			/**
-			 * @brief fetches all available cover fetcher
-			 * @return
-			 */
-			QList<Cover::Fetcher::Base*> coverfetchers() const;
+				bool isActive(const Cover::Fetcher::Base* cfi) const;
+				bool isActive(const QString& identifier) const;
 
-			QList<Cover::Fetcher::Base*> activeCoverfetchers() const;
-			QList<Cover::Fetcher::Base*> inactiveCoverfetchers() const;
+				/**
+				 * @brief If the LibraryItem has a reference to
+				 * a cover download url an appropriate Url object
+				 * can be retrieved here. The corresponding
+				 * Cover::Fetcher is Cover::Fetcher::DirectFetcher
+				 * @param url the direct download url
+				 * @return
+				 */
+				Url directFetcherUrl(const QString& url);
 
-			bool isActive(const Cover::Fetcher::Base* cfi) const;
-			bool isActive(const QString& identifier) const;
+				static bool isSearchstringWebsite(const QString& searchstring);
 
+			private slots:
+				void serversChanged();
+		};
 
-			/**
-			 * @brief If the LibraryItem has a reference to
-			 * a cover download url an appropriate Url object
-			 * can be retrieved here. The corresponding
-			 * Cover::Fetcher is Cover::Fetcher::DirectFetcher
-			 * @param url the direct download url
-			 * @return
-			 */
-			Url directFetcherUrl(const QString& url);
-
-			static bool isSearchstringWebsite(const QString& searchstring);
-
-
-		private slots:
-			void serversChanged();
-	};
-
-}
+	}
 }
 #endif // COVERFETCHMANAGER_H

@@ -33,49 +33,49 @@ namespace Cover
 	 * @ingroup Covers
 	 */
 	class AlternativeLookup :
-			public LookupBase
+		public LookupBase
 	{
 		Q_OBJECT
 		PIMPL(AlternativeLookup)
 
-	signals:
-		void sigCoverChanged(Cover::Location& cl);
-		void sigCoverfetchersChanged();
+		signals:
+			void sigCoverChanged(Cover::Location& cl);
+			void sigCoverfetchersChanged();
 
-	private:
-		void go(const Cover::Location& cl);
+		private:
+			void go(const Cover::Location& cl);
 
-	public:
-		AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent);
-		~AlternativeLookup() override;
+		public:
+			AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent);
+			~AlternativeLookup() override;
 
-		void start();
-		void start(const QString& cover_fetcher_identifier);
+			void start();
+			void start(const QString& cover_fetcher_identifier);
 
-		void startTextSearch(const QString& search_term);
-		void startTextSearch(const QString& search_term, const QString& cover_fetcher_identifier);
+			void startTextSearch(const QString& search_term);
+			void startTextSearch(const QString& search_term, const QString& cover_fetcher_identifier);
 
-		void stop() override;
-		void reset();
+			void stop() override;
+			void reset();
 
-		bool save(const QPixmap& pm, bool save_to_library);
-		bool isRunning() const;
+			bool save(const QPixmap& pm, bool save_to_library);
+			bool isRunning() const;
 
-		/**
-		 * @brief silent results that the cover is not stored
-		 * productively. The AlternativeCoverFetcher will
-		 * save the cover to a temporary path which can be re-
-		 * trieved by Cover::Location::alternative_path()
-		 */
-		bool isSilent() const;
+			/**
+			 * @brief silent results that the cover is not stored
+			 * productively. The AlternativeCoverFetcher will
+			 * save the cover to a temporary path which can be re-
+			 * trieved by Cover::Location::alternative_path()
+			 */
+			bool isSilent() const;
 
-		enum SearchMode
-		{
-			Fulltext,
-			Default
-		};
+			enum SearchMode
+			{
+				Fulltext,
+				Default
+			};
 
-		QStringList activeCoverfetchers(SearchMode mode) const;
+			QStringList activeCoverfetchers(SearchMode mode) const;
 
 		private slots:
 			void started();

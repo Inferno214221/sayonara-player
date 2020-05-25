@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef OGG_CONVERTER_H
 #define OGG_CONVERTER_H
 
@@ -29,20 +27,20 @@ class MetaDataList;
 class MetaData;
 
 class OggConverter :
-		public Converter
+	public Converter
 {
 	Q_OBJECT
 
-public:
-	OggConverter(int quality, QObject* parent=nullptr);
-	~OggConverter() override;
+	public:
+		OggConverter(int quality, QObject* parent = nullptr);
+		~OggConverter() override;
 
-	QStringList supportedInputFormats() const override;
+		QStringList supportedInputFormats() const override;
 
-protected:
-	QString binary() const override;
-	QStringList processEntry(const MetaData& md) const override;
-	QString extension() const override;
+	protected:
+		QString binary() const override;
+		QStringList processEntry(const MetaData& md) const override;
+		QString extension() const override;
 };
 
 #endif // OGGCONVERTER_H

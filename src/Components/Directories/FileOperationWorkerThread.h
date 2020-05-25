@@ -4,7 +4,8 @@
 #include <QThread>
 #include "Utils/Pimpl.h"
 
-class FileOperationThread : public QThread
+class FileOperationThread :
+	public QThread
 {
 	Q_OBJECT
 	PIMPL(FileOperationThread)
@@ -24,7 +25,8 @@ class FileOperationThread : public QThread
 		FileOperationThread(const QStringList& sourceFiles, const QStringList& targetFiles, QObject* parent);
 };
 
-class FileMoveThread : public FileOperationThread
+class FileMoveThread :
+	public FileOperationThread
 {
 	Q_OBJECT
 	PIMPL(FileMoveThread)
@@ -37,7 +39,8 @@ class FileMoveThread : public FileOperationThread
 		void run() override;
 };
 
-class FileCopyThread : public FileOperationThread
+class FileCopyThread :
+	public FileOperationThread
 {
 	Q_OBJECT
 	PIMPL(FileCopyThread)
@@ -50,8 +53,8 @@ class FileCopyThread : public FileOperationThread
 		void run() override;
 };
 
-
-class FileRenameThread : public FileOperationThread
+class FileRenameThread :
+	public FileOperationThread
 {
 	Q_OBJECT
 	PIMPL(FileRenameThread)
@@ -64,7 +67,8 @@ class FileRenameThread : public FileOperationThread
 		void run() override;
 };
 
-class FileDeleteThread : public FileOperationThread
+class FileDeleteThread :
+	public FileOperationThread
 {
 	Q_OBJECT
 	PIMPL(FileDeleteThread)

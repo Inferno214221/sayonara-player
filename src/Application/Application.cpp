@@ -27,7 +27,9 @@
 #include "Application/LocalLibraryWatcher.h"
 
 #ifdef SAYONARA_WITH_DBUS
+
 #include "DBus/DBusHandler.h"
+
 #endif
 
 #ifdef Q_OS_WIN
@@ -110,40 +112,41 @@
 
 class MeasureApp
 {
-	QTime*		m_t;
-	QString		m_component;
-	int			m_start;
+		QTime* m_t;
+		QString m_component;
+		int m_start;
 
-public:
-	MeasureApp(const QString& component, QTime* t) :
-		m_t(t),
-		m_component(component)
-	{
-		m_start = m_t->elapsed();
-		spLog(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
-	}
+	public:
+		MeasureApp(const QString& component, QTime* t) :
+			m_t(t),
+			m_component(component)
+		{
+			m_start = m_t->elapsed();
+			spLog(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
+		}
 
-	~MeasureApp()
-	{
-		int end = m_t->elapsed();
-		spLog(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start << "ms)";
-	}
+		~MeasureApp()
+		{
+			int end = m_t->elapsed();
+			spLog(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start
+			                        << "ms)";
+		}
 };
 
 #define measure(c) MeasureApp mt(c, m->timer); Q_UNUSED(mt);
 
 struct Application::Private
 {
-	QTime*				timer=nullptr;
-	GUI_Player*			player=nullptr;
+	QTime* timer = nullptr;
+	GUI_Player* player = nullptr;
 
-	RemoteControl*		remoteControl=nullptr;
-	DB::Connector*		db=nullptr;
-	InstanceThread*		instanceThread=nullptr;
-	MetaTypeRegistry*	metatypeRegistry=nullptr;
-	Session::Manager*	session=nullptr;
+	RemoteControl* remoteControl = nullptr;
+	DB::Connector* db = nullptr;
+	InstanceThread* instanceThread = nullptr;
+	MetaTypeRegistry* metatypeRegistry = nullptr;
+	Session::Manager* session = nullptr;
 
-	bool				shutdownTriggered;
+	bool shutdownTriggered;
 
 	Private(Application* app)
 	{
@@ -161,7 +164,7 @@ struct Application::Private
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
 
-		if( !Settings::instance()->checkSettings() )
+		if(!Settings::instance()->checkSettings())
 		{
 			spLog(Log::Error, this) << "Cannot initialize settings";
 			return;
@@ -177,23 +180,27 @@ struct Application::Private
 
 	~Private()
 	{
-		if(timer){
-			delete timer; timer = nullptr;
+		if(timer)
+		{
+			delete timer;
+			timer = nullptr;
 		}
 
 		if(instanceThread)
 		{
 			instanceThread->stop();
-			while(instanceThread->isRunning()){
+			while(instanceThread->isRunning())
+			{
 				Util::sleepMs(100);
 			}
 
 			instanceThread = nullptr;
 		}
 
-		if(player){
+		if(player)
+		{
 			delete player;
-			player=nullptr;
+			player = nullptr;
 		}
 
 		if(db)
@@ -205,7 +212,8 @@ struct Application::Private
 
 		if(metatypeRegistry)
 		{
-			delete metatypeRegistry; metatypeRegistry = nullptr;
+			delete metatypeRegistry;
+			metatypeRegistry = nullptr;
 		}
 	}
 
@@ -242,7 +250,7 @@ void global_key_handler()
 }
 #endif
 
-Application::Application(int & argc, char ** argv) :
+Application::Application(int& argc, char** argv) :
 	QApplication(argc, argv)
 {
 	m = Pimpl::make<Private>(this);
@@ -253,7 +261,8 @@ Application::Application(int & argc, char ** argv) :
 
 Application::~Application()
 {
-	if(!m->shutdownTriggered){
+	if(!m->shutdownTriggered)
+	{
 		shutdown();
 	}
 }
@@ -280,7 +289,6 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 	initEngine();
 	initPlayer(force_show);
 
-
 #ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
@@ -295,8 +303,8 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 	if(GetSetting(Set::Notification_Show))
 	{
 		NotificationHandler::instance()->notify("Sayonara Player",
-			Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
-			QString(":/Icons/logo.png")
+		                                        Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
+		                                        QString(":/Icons/logo.png")
 		);
 	}
 
@@ -307,17 +315,20 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 	initPlaylist(files_to_play);
 	initSingleInstanceThread();
 	spLog(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
-	delete m->timer; m->timer=nullptr;
+	delete m->timer;
+	m->timer = nullptr;
 
 	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
 
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
 
-	if(!GetSetting(Set::Player_StartInTray)) {
+	if(!GetSetting(Set::Player_StartInTray))
+	{
 		m->player->show();
 	}
 
-	else {
+	else
+	{
 		m->player->hide();
 	}
 
@@ -339,16 +350,15 @@ void Application::initPlayer(bool force_show)
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
 }
 
-
-void Application::initPlaylist(const QStringList& files_to_play)
+void Application::initPlaylist(const QStringList& filesToPlay)
 {
 	auto* plh = Playlist::Handler::instance();
 	plh->loadOldPlaylists();
 
-	if(!files_to_play.isEmpty())
+	if(!filesToPlay.isEmpty())
 	{
-		QString playlist_name = plh->requestNewPlaylistName();
-		plh->createPlaylist(files_to_play, playlist_name);
+		const QString playlistName = plh->requestNewPlaylistName();
+		plh->createPlaylist(filesToPlay, playlistName);
 	}
 }
 
@@ -445,12 +455,14 @@ void Application::sessionEndRequested(QSessionManager& manager)
 	Q_UNUSED(manager)
 	shutdown();
 
-	if(m->db){
+	if(m->db)
+	{
 		m->db->settingsConnector()->storeSettings();
 		m->db->closeDatabase();
 	}
 
-	if(m->player){
+	if(m->player)
+	{
 		m->player->requestShutdown();
 	}
 }
@@ -475,17 +487,20 @@ void Application::remoteControlActivated()
 
 void Application::createPlaylist()
 {
-	auto* instance_thread =	static_cast<InstanceThread*>(sender());
-	if(!instance_thread){
+	auto* instanceThread = dynamic_cast<InstanceThread*>(sender());
+	if(!instanceThread)
+	{
 		return;
 	}
 
-	QStringList paths = instance_thread->paths();
+	const QStringList paths = instanceThread->paths();
 
-	auto* eplg = ExternTracksPlaylistGenerator::instance();
-	eplg->addPaths(paths);
-	if(eplg->isPlayAllowed()) {
-		eplg->changeTrack();
+	auto* playlistGenerator = ExternTracksPlaylistGenerator::instance();
+	playlistGenerator->addPaths(paths);
+
+	if(playlistGenerator->isPlayAllowed())
+	{
+		playlistGenerator->changeTrack();
 	}
 }
 

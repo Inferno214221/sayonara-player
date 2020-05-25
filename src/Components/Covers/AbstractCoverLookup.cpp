@@ -25,11 +25,13 @@ struct Cover::LookupBase::Private
 {
 	Cover::Location cl;
 
-	Private(const Cover::Location& cl) : cl(cl) {}
+	Private(const Cover::Location& cl) :
+		cl(cl)
+	{}
 };
 
 Cover::LookupBase::LookupBase(const Cover::Location& cl, QObject* parent) :
-    QObject(parent)
+	QObject(parent)
 {
 	m = Pimpl::make<Private>(cl);
 }

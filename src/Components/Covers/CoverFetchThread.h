@@ -93,10 +93,8 @@ namespace Cover
 		 */
 		QString url(int idx) const;
 		QPixmap pixmap(int idx) const;
-		int foundImageCount() const;
 
-
-	private slots:
+		private slots:
 		/**
 		 * @brief A single image has been fetched (reached when _n_covers was set to 1),
 		 *   calls save_and_emit_image

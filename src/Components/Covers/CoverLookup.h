@@ -62,16 +62,10 @@ namespace Cover
 		 */
 		void stop() override;
 
-		/**
-		 * @brief indicates if the Cover::FetchThread is running
-		 * @return
-		 */
-		bool isThreadRunning() const;
-
-		/**
-		 * @brief Set some custom data you can retrieve later
-		 * @param data
-		 */
+			/**
+			 * @brief Set some custom data you can retrieve later
+			 * @param data
+			 */
 		void setUserData(void* data);
 
 		/**

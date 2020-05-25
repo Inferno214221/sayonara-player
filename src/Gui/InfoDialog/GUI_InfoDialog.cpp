@@ -168,12 +168,12 @@ static void preparePaths(QListWidget* pathListWidget, const QStringList& paths)
 
 	for(const QString& path : paths)
 	{
-		QLabel* label = new QLabel(pathListWidget);
+		auto* label = new QLabel(pathListWidget);
 		label->setText(path);
 		label->setOpenExternalLinks(true);
 		label->setTextFormat(Qt::RichText);
 
-		QListWidgetItem* item = new QListWidgetItem(pathListWidget);
+		auto* item = new QListWidgetItem(pathListWidget);
 		pathListWidget->setItemWidget(item, label);
 		pathListWidget->addItem(item);
 	}
@@ -218,7 +218,7 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 	prepareCover(m->coverLocation);
 	ui->btnImage->setEnabled(m->coverLocation.isValid());
 
-	delete info; info = nullptr;
+	delete info;
 }
 
 void GUI_InfoDialog::setMetadata(const MetaDataList& tracks, MD::Interpretation md_interpretation)
@@ -231,7 +231,7 @@ void GUI_InfoDialog::setMetadata(const MetaDataList& tracks, MD::Interpretation 
 
 bool GUI_InfoDialog::hasMetadata() const
 {
-	return (m->tracks.size() > 0);
+	return (!m->tracks.isEmpty());
 }
 
 GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)

@@ -24,11 +24,9 @@
 #include "CoverFetchManager.h"
 #include "CoverUtils.h"
 #include "Fetcher/CoverFetcherUrl.h"
-
 #include "Fetcher/CoverFetcher.h"
 
 #include "Database/Connector.h"
-#include "Database/CoverConnector.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
@@ -36,21 +34,21 @@
 
 #include <QStringList>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 using Cover::AlternativeLookup;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::LookupBase;
 using Cover::Fetcher::Manager;
 using Cover::Fetcher::Url;
-using UrlList=QList<Url>;
+using UrlList = QList<Url>;
 
 struct AlternativeLookup::Private
 {
-	Lookup*		lookup=nullptr;
-	int			coverCount;
-	bool		running;
-	bool		silent;
+	Lookup* lookup = nullptr;
+	int coverCount;
+	bool running;
+	bool silent;
 
 	Private(const Cover::Location& cl, int coverCount, bool silent, AlternativeLookup* parent) :
 		coverCount(coverCount),
@@ -94,7 +92,8 @@ void AlternativeLookup::reset()
 
 bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 {
-	if(cover.isNull()){
+	if(cover.isNull())
+	{
 		spLog(Log::Warning, this) << "Cannot save invalid cover";
 		return false;
 	}
@@ -105,7 +104,8 @@ bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 	{
 		Cover::Utils::writeCoverIntoDatabase(cl, cover);
 
-		if(saveToLibrary) {
+		if(saveToLibrary)
+		{
 			Cover::Utils::writeCoverToLibrary(cl, cover);
 		}
 	}
@@ -132,7 +132,7 @@ bool AlternativeLookup::isSilent() const
 
 QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode mode) const
 {
-	using CoverFetcher=Cover::Fetcher::Base;
+	using CoverFetcher = Cover::Fetcher::Base;
 
 	auto* cfm = Cover::Fetcher::Manager::instance();
 	const QList<CoverFetcher*> coverFetchers = cfm->coverfetchers();
@@ -141,7 +141,8 @@ QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode
 	for(const CoverFetcher* coverFetcher : coverFetchers)
 	{
 		const QString identifier = coverFetcher->identifier();
-		if(!cfm->isActive(identifier)) {
+		if(!cfm->isActive(identifier))
+		{
 			continue;
 		}
 
@@ -161,7 +162,8 @@ QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode
 			});
 		}
 
-		if(validIdentifier) {
+		if(validIdentifier)
+		{
 			ret << identifier;
 		}
 	}
@@ -199,12 +201,10 @@ void AlternativeLookup::go(const Cover::Location& cl)
 	emit sigStarted();
 }
 
-
 void AlternativeLookup::start()
 {
 	go(coverLocation());
 }
-
 
 void AlternativeLookup::start(const QString& identifier)
 {

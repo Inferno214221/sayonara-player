@@ -25,13 +25,13 @@
 
 namespace Cover::Fetcher
 {
-    /**
-     * @brief The GoogleCoverFetcher class. See CoverFetcherInterface
-     * @ingroup Covers
-     */
-    class Google :
-        public Cover::Fetcher::Base
-    {
+	/**
+	 * @brief The GoogleCoverFetcher class. See CoverFetcherInterface
+	 * @ingroup Covers
+	 */
+	class Google :
+		public Cover::Fetcher::Base
+	{
 		private:
 			QString privateIdentifier() const override;
 
@@ -44,7 +44,7 @@ namespace Cover::Fetcher
 			QString fulltextSearchAddress(const QString& str) const override;
 
 			int estimatedSize() const override;
-    };
+	};
 } // cover
 
 #endif // GOOGLECOVERFETCHER_H

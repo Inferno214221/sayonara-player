@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef LAMECONVERTER_H
 #define LAMECONVERTER_H
 
 #include "Converter.h"
 
 class LameConverter :
-		public Converter
+	public Converter
 {
 	Q_OBJECT
 	PIMPL(LameConverter)

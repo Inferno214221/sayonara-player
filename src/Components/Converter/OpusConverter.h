@@ -3,7 +3,8 @@
 
 #include "Converter.h"
 
-class OpusConverter : public Converter
+class OpusConverter :
+	public Converter
 {
 	Q_OBJECT
 	PIMPL(OpusConverter)

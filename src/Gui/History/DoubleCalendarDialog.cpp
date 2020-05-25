@@ -91,16 +91,6 @@ DoubleCalendarDialog::DoubleCalendarDialog(QWidget* parent) :
 
 DoubleCalendarDialog::~DoubleCalendarDialog() = default;
 
-Gui::CalendarWidget* DoubleCalendarDialog::calendarFrom()
-{
-	return m->calendarFrom;
-}
-
-Gui::CalendarWidget* DoubleCalendarDialog::calendarTo()
-{
-	return m->calendarTo;
-}
-
 QDate DoubleCalendarDialog::startDate() const
 {
 	return m->calendarFrom->selectedDate();

@@ -42,11 +42,11 @@ QString OggConverter::binary() const
 QStringList OggConverter::processEntry(const MetaData& md) const
 {
 	QStringList ret
-	{
-		QString("-q"), QString("%1").arg(quality()),
-		QString("-o"), QString("%1").arg(targetFile(md)),
-		QString("%1").arg(md.filepath())
-	};
+		{
+			QString("-q"), QString("%1").arg(quality()),
+			QString("-o"), QString("%1").arg(targetFile(md)),
+			QString("%1").arg(md.filepath())
+		};
 
 	return ret;
 }

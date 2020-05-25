@@ -55,7 +55,6 @@ namespace Cover
 		 */
 		QString calcCoverToken(const QString& artist, const QString& album);
 
-		bool addTemporaryCover(const QPixmap& pm, const QString& hash);
 		void deleteTemporaryCovers();
 
 		QString coverDirectory();

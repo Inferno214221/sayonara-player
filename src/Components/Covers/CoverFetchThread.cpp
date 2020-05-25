@@ -44,26 +44,26 @@ static const int Timeout = 5000;
 
 using namespace Cover;
 using Fetcher::Url;
-using UrlList=QList<Url>;
+using UrlList = QList<Url>;
 
 struct FetchThread::Private
 {
-	QList<AsyncWebAccess*>	activeConnections;
-	QList<QPixmap>			pixmaps;
+	QList<AsyncWebAccess*> activeConnections;
+	QList<QPixmap> pixmaps;
 
-	Fetcher::Base*		acf=nullptr;
+	Fetcher::Base* acf = nullptr;
 
-	QString				id;
-	QStringList			addresses;
-	UrlList				searchUrls;
-	QStringList			foundUrls;
-	int					coverCount;
-	bool				finished;
-	bool				mayRun;
+	QString id;
+	QStringList addresses;
+	UrlList searchUrls;
+	QStringList foundUrls;
+	int coverCount;
+	bool finished;
+	bool mayRun;
 
-	Private(const Location& cl, int n_covers) :
+	Private(const Location& cl, int nCovers) :
 		id(cl.identifer() + Util::randomString(8)),
-		coverCount(n_covers),
+		coverCount(nCovers),
 		finished(false),
 		mayRun(true)
 	{
@@ -80,11 +80,10 @@ struct FetchThread::Private
 	}
 };
 
-
-FetchThread::FetchThread(QObject* parent, const Location& cl, const int n_covers) :
+FetchThread::FetchThread(QObject* parent, const Location& cl, const int nCovers) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(cl, n_covers);
+	m = Pimpl::make<Private>(cl, nCovers);
 }
 
 FetchThread::~FetchThread()
@@ -104,7 +103,8 @@ bool FetchThread::start()
 {
 	m->mayRun = true;
 
-	if(m->searchUrls.isEmpty()){
+	if(m->searchUrls.isEmpty())
+	{
 		return false;
 	}
 
@@ -112,16 +112,18 @@ bool FetchThread::start()
 
 	auto* cfm = Fetcher::Manager::instance();
 	m->acf = cfm->coverfetcher(url);
-	if(!m->acf) {
+	if(!m->acf)
+	{
 		return false;
 	}
 
 	spLog(Log::Debug, this) << "Taking Cover::Fetcher " << m->acf->identifier() << " for " << url.url();
 
-	if( m->acf->canFetchCoverDirectly() )
+	if(m->acf->canFetchCoverDirectly())
 	{
 		m->addresses.clear();
-		if(!url.url().isEmpty()) {
+		if(!url.url().isEmpty())
+		{
 			m->addresses << url.url();
 		}
 
@@ -142,13 +144,13 @@ bool FetchThread::start()
 	return true;
 }
 
-
 void FetchThread::contentFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 	m->activeConnections.removeAll(awa);
 
-	if(!m->mayRun){
+	if(!m->mayRun)
+	{
 		awa->deleteLater();
 		return;
 	}
@@ -170,10 +172,10 @@ void FetchThread::contentFetched()
 	}
 }
 
-
 bool FetchThread::fetchNextCover()
 {
-	if(!m->mayRun){
+	if(!m->mayRun)
+	{
 		return false;
 	}
 
@@ -188,7 +190,8 @@ bool FetchThread::fetchNextCover()
 	if(m->addresses.isEmpty())
 	{
 		bool success = start();
-		if(!success) {
+		if(!success)
+		{
 			emitFinished(false);
 		}
 
@@ -199,11 +202,13 @@ bool FetchThread::fetchNextCover()
 	auto* awa = new AsyncWebAccess(this);
 	awa->setBehavior(AsyncWebAccess::Behavior::AsBrowser);
 
-	if(m->coverCount == 1) {
+	if(m->coverCount == 1)
+	{
 		connect(awa, &AsyncWebAccess::sigFinished, this, &FetchThread::singleImageFetched);
 	}
 
-	else {
+	else
+	{
 		connect(awa, &AsyncWebAccess::sigFinished, this, &FetchThread::multiImageFetched);
 	}
 
@@ -239,7 +244,8 @@ void FetchThread::singleImageFetched()
 	m->activeConnections.removeAll(awa);
 	awa->deleteLater();
 
-	if(!m->mayRun){
+	if(!m->mayRun)
+	{
 		return;
 	}
 
@@ -269,13 +275,15 @@ void FetchThread::singleImageFetched()
 
 #include <QtSvg/QSvgRenderer>
 #include <QPainter>
+
 void FetchThread::multiImageFetched()
 {
 	auto* awa = static_cast<AsyncWebAccess*>(sender());
 
 	m->activeConnections.removeAll(awa);
 
-	if(!m->mayRun){
+	if(!m->mayRun)
+	{
 		return;
 	}
 
@@ -314,8 +322,6 @@ void FetchThread::multiImageFetched()
 	fetchNextCover();
 }
 
-
-
 QString FetchThread::url(int idx) const
 {
 	if(idx >= 0 && idx < m->foundUrls.size())
@@ -335,9 +341,3 @@ QPixmap FetchThread::pixmap(int idx) const
 
 	return QPixmap();
 }
-
-int FetchThread::foundImageCount() const
-{
-	return m->pixmaps.size();
-}
-

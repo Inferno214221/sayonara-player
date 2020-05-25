@@ -6,18 +6,18 @@
 
 namespace Cover::Fetcher
 {
-    /**
+	/**
 	 * @brief Parses a website for all images. This cover fetcher behaves
 	 * different from the others because every Cover::Fetcher::Base has
 	 * a special website attached to it. This one does not have a special
 	 * website. The search address will return the input itself because
 	 * when searching for "https://kexp.org" this is exactly the search
 	 * address.
-     * @ingroup Covers
-     */
-    class Website :
-        public Cover::Fetcher::Base
-    {
+	 * @ingroup Covers
+	 */
+	class Website :
+		public Cover::Fetcher::Base
+	{
 		PIMPL(Website)
 
 		private:
@@ -41,7 +41,7 @@ namespace Cover::Fetcher
 			QString fulltextSearchAddress(const QString& address) const override;
 
 			virtual void setWebsite(const QString& website);
-    };
+	};
 }
 
 #endif // WEBSITE_H

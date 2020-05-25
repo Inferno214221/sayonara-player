@@ -26,19 +26,19 @@ class QString;
 
 namespace Cover
 {
-    /**
-     * @brief Helper Namespace for finding covers in a specific directory
-     * @ingroup Covers
-     */
-    namespace LocalSearcher
-    {
-        /**
-         * @brief Extracts dirname and calls get_local_cover_paths_sourceDirectoryname
-         * @param filename filename of a file within the same directory. E.g. a mp3 file
-         * @return Paths for all covers in that directory
-         */
-        QStringList coverPathsFromPathHint(const QString& filename);
-    }
+	/**
+	 * @brief Helper Namespace for finding covers in a specific directory
+	 * @ingroup Covers
+	 */
+	namespace LocalSearcher
+	{
+		/**
+		 * @brief Extracts dirname and calls get_local_cover_paths_sourceDirectoryname
+		 * @param filename filename of a file within the same directory. E.g. a mp3 file
+		 * @return Paths for all covers in that directory
+		 */
+		QStringList coverPathsFromPathHint(const QString& filename);
+	}
 }
 
 #endif // LOCALCOVERSEARCHER_H

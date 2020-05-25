@@ -28,7 +28,7 @@ bool DirectFetcher::canFetchCoverDirectly() const
 
 QStringList DirectFetcher::parseAddresses(const QByteArray& website) const
 {
-	Q_UNUSED(website);
+	Q_UNUSED(website)
 	return QStringList();
 }
 

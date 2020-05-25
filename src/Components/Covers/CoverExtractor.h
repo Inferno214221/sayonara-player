@@ -32,7 +32,8 @@ class QPixmap;
 namespace Cover
 {
 	class Location;
-	class Extractor : public QObject
+	class Extractor :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Extractor)

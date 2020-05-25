@@ -25,7 +25,8 @@
 
 namespace Cover::Fetcher
 {
-	class Yandex : public Cover::Fetcher::Base
+	class Yandex :
+		public Cover::Fetcher::Base
 	{
 		private:
 			QString privateIdentifier() const override;
@@ -41,6 +42,5 @@ namespace Cover::Fetcher
 			int estimatedSize() const override;
 	};
 }
-
 
 #endif // YANDEXCOVERFETCHER_H

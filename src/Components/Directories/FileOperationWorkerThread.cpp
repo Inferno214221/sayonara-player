@@ -14,7 +14,7 @@
 
 #include <QFileInfo>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct FileRenameThread::Private
 {
@@ -28,7 +28,7 @@ struct FileRenameThread::Private
 };
 
 FileRenameThread::FileRenameThread(const QString& sourceFile, const QString& targetFile, QObject* parent) :
-	FileOperationThread(QStringList{sourceFile}, QStringList{targetFile}, parent)
+	FileOperationThread(QStringList {sourceFile}, QStringList {targetFile}, parent)
 {
 	m = Pimpl::make<Private>(sourceFile, targetFile);
 }
@@ -40,11 +40,13 @@ void FileRenameThread::run()
 	bool success = false;
 
 	QFileInfo info(m->sourceFile);
-	if(info.isDir()) {
+	if(info.isDir())
+	{
 		success = Util::File::renameDir(m->sourceFile, m->targetFile);
 	}
 
-	else if(info.isFile()) {
+	else if(info.isFile())
+	{
 		success = Util::File::renameFile(m->sourceFile, m->targetFile);
 	}
 
@@ -54,7 +56,7 @@ void FileRenameThread::run()
 		DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(-1, db->databaseId());
 		Library::Info info = Library::Manager::instance()->libraryInfoByPath(m->targetFile);
 
-		QMap<QString, QString> resultPair{ {m->sourceFile, m->targetFile} };
+		QMap<QString, QString> resultPair {{m->sourceFile, m->targetFile}};
 		libraryDatabase->renameFilepaths(resultPair, info.id());
 	}
 }
@@ -71,7 +73,7 @@ struct FileMoveThread::Private
 };
 
 FileMoveThread::FileMoveThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent) :
-	FileOperationThread(sourceFiles, QStringList{targetDir}, parent)
+	FileOperationThread(sourceFiles, QStringList {targetDir}, parent)
 {
 	m = Pimpl::make<Private>(sourceFiles, targetDir);
 }
@@ -88,11 +90,13 @@ void FileMoveThread::run()
 		QString newName;
 
 		QFileInfo info(sourceFile);
-		if(info.isDir()) {
+		if(info.isDir())
+		{
 			success = Util::File::moveDir(sourceFile, m->targetDir, newName);
 		}
 
-		else if(info.isFile()) {
+		else if(info.isFile())
+		{
 			success = Util::File::moveFile(sourceFile, m->targetDir, newName);
 		}
 
@@ -121,7 +125,7 @@ struct FileCopyThread::Private
 };
 
 FileCopyThread::FileCopyThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent) :
-	FileOperationThread(sourceFiles, QStringList{targetDir}, parent)
+	FileOperationThread(sourceFiles, QStringList {targetDir}, parent)
 {
 	m = Pimpl::make<Private>(sourceFiles, targetDir);
 }
@@ -135,11 +139,13 @@ void FileCopyThread::run()
 		QString newName;
 
 		QFileInfo info(sourceFile);
-		if(info.isDir()) {
+		if(info.isDir())
+		{
 			Util::File::copyDir(sourceFile, m->targetDir, newName);
 		}
 
-		else if(info.isFile()) {
+		else if(info.isFile())
+		{
 			Util::File::copyFile(sourceFile, m->targetDir, newName);
 		}
 	}
@@ -167,7 +173,6 @@ FileDeleteThread::FileDeleteThread(const QStringList& paths, QObject* parent) :
 
 FileDeleteThread::~FileDeleteThread() = default;
 
-
 void FileDeleteThread::run()
 {
 	Util::File::deleteFiles(m->paths);
@@ -190,7 +195,8 @@ FileOperationThread::FileOperationThread(QObject* parent) :
 	QThread(parent)
 {}
 
-FileOperationThread::FileOperationThread(const QStringList& sourceFiles, const QStringList& targetFiles, QObject* parent) :
+FileOperationThread::FileOperationThread(const QStringList& sourceFiles, const QStringList& targetFiles,
+                                         QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<Private>();

@@ -38,30 +38,28 @@
 #include <QTcpSocket>
 #include <QNetworkProxy>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct StreamServer::Private
 {
-	QTcpServer*							server=nullptr;		// the server
+	QTcpServer* server = nullptr;        // the server
 
-	MetaData							currentTrack;				// cur played track
+	MetaData currentTrack;                // cur played track
 
-	QList<QPair<QTcpSocket*, QString>>	pending;				// pending requests queue
-	bool								asking;				// set if currently any requests are being processed
+	QList<QPair<QTcpSocket*, QString>> pending;                // pending requests queue
 
-	QList<StreamWriter*>				clients;				// all open streams
-	QStringList							allowedIpAddresses;			// IPs without prompt
-	QStringList							dismissedIpAddresses;		// dismissed IPs
+	QList<StreamWriter*> clients;                // all open streams
+	QStringList allowedIpAddresses;            // IPs without prompt
+	QStringList dismissedIpAddresses;        // dismissed IPs
 
-	int									currentPort;
+	int currentPort;
+	bool asking;                // set if currently any requests are being processed
 
-	Private()
-	{
-		asking = false;
-		currentPort = GetSetting(Set::Broadcast_Port);
-	}
+	Private() :
+		currentPort(GetSetting(Set::Broadcast_Port)),
+		asking(false)
+	{}
 };
-
 
 StreamServer::StreamServer(QObject* parent) :
 	QObject(parent)
@@ -69,7 +67,6 @@ StreamServer::StreamServer(QObject* parent) :
 	m = Pimpl::make<StreamServer::Private>();
 
 	auto* pm = PlayManager::instance();
-
 	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &StreamServer::trackChanged);
 
 	ListenSetting(Set::Broadcast_Active, StreamServer::activeChanged);
@@ -97,28 +94,26 @@ StreamServer::~StreamServer()
 QStringList StreamServer::connectedClients() const
 {
 	QStringList clients;
-
-	for(const StreamWriter* client : m->clients)
-	{
-		clients << client->ip();
-	}
+	Util::Algorithm::transform(m->clients, clients, [](StreamWriter* client) {
+		return client->ip();
+	});
 
 	return clients;
 }
 
 bool StreamServer::listen()
 {
-	bool mp3_available = GetSetting(SetNoDB::MP3enc_found);
+	bool mp3Available = GetSetting(SetNoDB::MP3enc_found);
 	bool active = GetSetting(Set::Broadcast_Active);
 
-	if(!mp3_available || !active)
+	if(!mp3Available || !active)
 	{
 		close();
 		return false;
 	}
 
-	bool already_there = (m->server != nullptr);
-	if(!already_there)
+	bool alreadyThere = (m->server != nullptr);
+	if(!alreadyThere)
 	{
 		m->server = new QTcpServer();
 		m->server->setProxy(QNetworkProxy());
@@ -133,7 +128,8 @@ bool StreamServer::listen()
 	if(!success)
 	{
 		success = m->server->listen(QHostAddress::AnyIPv4, quint16(port));
-		if(!success) {
+		if(!success)
+		{
 			success = m->server->listen(QHostAddress::LocalHost, quint16(port));
 		}
 
@@ -150,7 +146,8 @@ bool StreamServer::listen()
 		m->server->setMaxPendingConnections(10);
 	}
 
-	if(!already_there){
+	if(!alreadyThere)
+	{
 		spLog(Log::Info, this) << "Listening on port " << port;
 	}
 
@@ -175,7 +172,6 @@ void StreamServer::close()
 	emit sigListening(false);
 }
 
-
 // this happens when the user tries to look for the codec again
 void StreamServer::restart()
 {
@@ -184,33 +180,32 @@ void StreamServer::restart()
 	emit sigListening(success);
 }
 
-
 void StreamServer::serverDestroyed()
 {
 	spLog(Log::Info, this) << "Server destroyed.";
 }
 
-
 // either show a popup dialog or accept directly
 void StreamServer::newClientRequest()
 {
-	QTcpSocket* pending_socket = m->server->nextPendingConnection();
-	if(!pending_socket) {
-		return;
-	}
-
-	QString pending_ip = pending_socket->peerAddress().toString();
-
-	if(m->dismissedIpAddresses.contains(pending_ip))
+	QTcpSocket* pendingSocket = m->server->nextPendingConnection();
+	if(!pendingSocket)
 	{
-		rejectClient(pending_socket, pending_ip);
-		m->dismissedIpAddresses.removeOne(pending_ip);
 		return;
 	}
 
-	m->pending << QPair<QTcpSocket*, QString>(pending_socket, pending_ip);
+	QString pendingIp = pendingSocket->peerAddress().toString();
+	if(m->dismissedIpAddresses.contains(pendingIp))
+	{
+		rejectClient(pendingSocket, pendingIp);
+		m->dismissedIpAddresses.removeOne(pendingIp);
+		return;
+	}
 
-	if(m->asking){
+	m->pending << QPair<QTcpSocket*, QString>(pendingSocket, pendingIp);
+
+	if(m->asking)
+	{
 		return;
 	}
 
@@ -218,41 +213,41 @@ void StreamServer::newClientRequest()
 
 	do
 	{
-		pending_socket = m->pending[0].first;
-		pending_ip = m->pending[0].second;
+		pendingSocket = m->pending[0].first;
+		pendingIp = m->pending[0].second;
 
-		if( GetSetting(Set::Broadcast_Prompt) )
+		if(GetSetting(Set::Broadcast_Prompt))
 		{
-			if(!m->allowedIpAddresses.contains(pending_ip))
+			if(!m->allowedIpAddresses.contains(pendingIp))
 			{
 				QString question = tr("%1 wants to listen to your music.")
-										.arg(pending_ip);
+					.arg(pendingIp);
 
 				question += "\n" + Lang::get(Lang::OK) + "?";
 
 				Message::Answer answer = Message::question_yn(question, "Stream Server");
-				if(answer==Message::Answer::Yes)
+				if(answer == Message::Answer::Yes)
 				{
-					acceptClient(pending_socket, pending_ip);
+					acceptClient(pendingSocket, pendingIp);
 				}
 				else
 				{
-					rejectClient(pending_socket, pending_ip);
+					rejectClient(pendingSocket, pendingIp);
 				}
 			}
-
-			else{
-				acceptClient(pending_socket, pending_ip);
+			else
+			{
+				acceptClient(pendingSocket, pendingIp);
 			}
 		}
-
-		else{
-			acceptClient(pending_socket, pending_ip);
+		else
+		{
+			acceptClient(pendingSocket, pendingIp);
 		}
 
 		m->pending.pop_front();
 
-	} while(m->pending.size() > 0);
+	} while(!m->pending.empty());
 
 	m->asking = false;
 }
@@ -268,7 +263,8 @@ void StreamServer::newClientRequestError(QAbstractSocket::SocketError socket_err
 // to listen to music
 void StreamServer::acceptClient(QTcpSocket* socket, const QString& ip)
 {
-	if(!m->allowedIpAddresses.contains(ip)){
+	if(!m->allowedIpAddresses.contains(ip))
+	{
 		m->allowedIpAddresses << ip;
 	}
 
@@ -289,13 +285,11 @@ void StreamServer::rejectClient(QTcpSocket* socket, const QString& ip)
 	Q_UNUSED(ip);
 }
 
-
 // this finally is the new connection when asking for sound
 void StreamServer::newConnection(const QString& ip)
 {
 	Q_UNUSED(ip)
 }
-
 
 void StreamServer::trackChanged(const MetaData& md)
 {
@@ -309,7 +303,8 @@ void StreamServer::trackChanged(const MetaData& md)
 // when user forbids further streaming
 void StreamServer::dismiss(int idx)
 {
-	if( idx >= m->clients.size() ) {
+	if(idx >= m->clients.size())
+	{
 		return;
 	}
 
@@ -343,7 +338,8 @@ void StreamServer::disconnectAll()
 // the client disconnected itself
 void StreamServer::disconnected(StreamWriter* sw)
 {
-	if(!sw) {
+	if(!sw)
+	{
 		return;
 	}
 
@@ -351,7 +347,7 @@ void StreamServer::disconnected(StreamWriter* sw)
 	emit sigConnectionClosed(ip);
 
 	// remove the item, garbage collector deletes that item
-	for(auto it=m->clients.begin(); it != m->clients.end(); it++)
+	for(auto it = m->clients.begin(); it != m->clients.end(); it++)
 	{
 		if(sw == *it)
 		{
@@ -361,16 +357,15 @@ void StreamServer::disconnected(StreamWriter* sw)
 	}
 }
 
-
 void StreamServer::activeChanged()
 {
-	if( GetSetting(Set::Broadcast_Active) &&
-		GetSetting(SetNoDB::MP3enc_found))
+	if(GetSetting(Set::Broadcast_Active) &&
+	   GetSetting(SetNoDB::MP3enc_found))
 	{
 		listen();
 	}
-
-	else{
+	else
+	{
 		close();
 	}
 }
@@ -379,7 +374,8 @@ void StreamServer::portChanged()
 {
 	int port = GetSetting(Set::Broadcast_Port);
 
-	if(port != m->currentPort){
+	if(port != m->currentPort)
+	{
 		restart();
 	}
 
