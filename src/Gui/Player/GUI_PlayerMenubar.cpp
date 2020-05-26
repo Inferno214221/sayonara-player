@@ -49,6 +49,7 @@
 #include <QStringList>
 #include <QMenu>
 #include <QAction>
+#include <QPalette>
 #include <QDateTime>
 #include <QHBoxLayout>
 #include <QLayoutItem>
@@ -61,16 +62,12 @@ struct Menubar::Private
 	QMenu*			menuPlugins=nullptr;
 	QMenu*			menuHelp=nullptr;
 
-	QAction*		menuFileAction=nullptr;
-	QAction*		menuPluginsAction=nullptr;
-	QAction*		menuViewAction=nullptr;
 	QAction*		menuHelpAction=nullptr;
 
 	//file
 	QAction*		actionOpenFile=nullptr;
 	QAction*		actionOpenDir=nullptr;
 	QAction*		sepAfterOpen=nullptr; // after open file and open dir
-	QAction*		actionPreferences=nullptr;
 	QAction*		sepAfterPreferences=nullptr;
 	QAction*		actionShutdown=nullptr;
 	QAction*		actionClose=nullptr;
@@ -81,21 +78,18 @@ struct Menubar::Private
 	QAction*		actionBigCover=nullptr;
 	QAction*		actionFullscreen=nullptr;
 
-	//plugins
-	QList<QAction*> actionsPlugins;
-
 	// help
 	QAction*		actionHelp=nullptr;
 	QAction*		actionAbout=nullptr;
 	QAction*		actionLogger=nullptr;
 
-	QMenu*			currentLibraryMenu=nullptr;
 	QAction*		currentLibraryMenuAction=nullptr;
 
 	QMessageBox*	aboutBox=nullptr;
 	Library::AbstractContainer* currentLibrary=nullptr;
 
-	const QString SC_ID_VIEW_LIBRARY=QString("view_library");
+	QLabel*			heartLabel=nullptr;
+	QLabel*			donateLabel=nullptr;
 
 	Private(Menubar* menubar)
 	{
@@ -104,9 +98,9 @@ struct Menubar::Private
 		menuPlugins = new QMenu(menubar);
 		menuHelp = new QMenu(menubar);
 
-		menuFileAction = menubar->insertMenu(nullptr, menuFile);
-		menuPluginsAction = menubar->insertMenu(nullptr, menuPlugins);
-		menuViewAction = menubar->insertMenu(nullptr, menuView);
+		menubar->insertMenu(nullptr, menuFile);
+		menubar->insertMenu(nullptr, menuPlugins);
+		menubar->insertMenu(nullptr, menuView);
 		menuHelpAction = menubar->insertMenu(nullptr, menuHelp);
 
 		// file
@@ -213,7 +207,6 @@ QAction* Menubar::changeCurrentLibrary(Library::AbstractContainer* library)
 		this->removeAction(m->currentLibraryMenuAction);
 	}
 
-	m->currentLibraryMenu = newLibraryMenu;
 	m->currentLibraryMenuAction = nullptr;
 
 	if(!newLibraryMenu) {
@@ -262,18 +255,37 @@ void Menubar::showLibraryMenu(bool b)
 	}
 }
 
+[[maybe_unused]] QString getLinkColor(QWidget* parent)
+{
+	if(!Style::isDark())
+	{
+		const QPalette p = parent->palette();
+		const QColor color = p.windowText().color();
+		return color.name(QColor::NameFormat::HexRgb);
+	}
+
+	else {
+		return "f3841a";
+	}
+}
+
 void Menubar::initDonateLink()
 {
 	auto* cornerWidget = new QWidget(this);
-	auto* label = new QLabel(this);
-	const QString text =
-			Util::createLink("❤ ", true, false, "https://sayonara-player.com/donations.php") +
-			Util::createLink("Sayonara", true, true, "https://sayonara-player.com/donations.php");
-	label->setText(text);
-	label->setOpenExternalLinks(true);
+	m->heartLabel = new QLabel(this);
+	m->heartLabel->setCursor(Qt::PointingHandCursor);
+
+	m->donateLabel = new QLabel(this);
+	m->donateLabel->setOpenExternalLinks(true);
+	m->donateLabel->setStyleSheet(QString());
+	m->donateLabel->setCursor(Qt::PointingHandCursor);
+
 	auto* layout = new QHBoxLayout();
+	layout->setSpacing(0);
 	layout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::MinimumExpanding));
-	layout->addWidget(label);
+	layout->addWidget(m->heartLabel);
+	layout->addWidget(m->donateLabel);
+
 	cornerWidget->setLayout(layout);
 	this->setCornerWidget(cornerWidget);
 }
@@ -367,15 +379,30 @@ void Menubar::languageChanged()
 
 void Menubar::skinChanged()
 {
-	QString stylesheet = Style::currentStyle();
+	const QString stylesheet = Style::currentStyle();
 	this->setStyleSheet(stylesheet);
 
-	using namespace Gui;
-	m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
-	m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
-	m->actionClose->setIcon(Icons::icon(Icons::Exit));
-	m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
-	m->actionAbout->setIcon(Icons::icon(Icons::Info));
+	{
+		using namespace Gui;
+		m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
+		m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
+		m->actionClose->setIcon(Icons::icon(Icons::Exit));
+		m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
+		m->actionAbout->setIcon(Icons::icon(Icons::Info));
+	}
+
+	{
+		bool dark = Style::isDark();
+
+		const QColor heartColor(243,132,26);
+		const QColor textColor = (dark) ? heartColor : QColor();
+
+		const QString heartLink = Util::createLink("❤ ", heartColor, false, "https://sayonara-player.com/donations.php");
+		const QString sayonaraLink = Util::createLink("Sayonara", textColor, true, "https://sayonara-player.com/donations.php");
+
+		m->heartLabel->setText(heartLink);
+		m->donateLabel->setText(sayonaraLink);
+	}
 }
 
 void Menubar::openDirClicked()
@@ -408,13 +435,13 @@ void Menubar::openFilesClicked()
 	);
 
 	if(!list.isEmpty()) {
-		Playlist::Handler::instance()->createPlaylist(list);;
+		Playlist::Handler::instance()->createPlaylist(list);
 	}
 }
 
 void Menubar::shutdownClicked()
 {
-	GUI_Shutdown* gui = new GUI_Shutdown(this);
+	auto* gui = new GUI_Shutdown(this);
 	gui->exec();
 }
 
@@ -441,7 +468,7 @@ void Menubar::skinToggled(bool b)
 
 void Menubar::bigCoverToggled(bool b)
 {
-	SetSetting(Set::Player_ControlStyle, (b==true) ? 1 : 0);
+	SetSetting(Set::Player_ControlStyle, b ? 1 : 0);
 }
 
 void Menubar::showLibraryToggled(bool b)

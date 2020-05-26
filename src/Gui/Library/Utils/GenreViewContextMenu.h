@@ -41,7 +41,7 @@ namespace Library
 		PIMPL(GenreViewContextMenu)
 
 		public:
-			GenreViewContextMenu(QWidget* parent=nullptr);
+			explicit GenreViewContextMenu(QWidget* parent = nullptr);
 			~GenreViewContextMenu() override;
 
 		private slots:

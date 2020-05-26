@@ -31,6 +31,7 @@
 class QString;
 class QDateTime;
 class QPixmap;
+class QColor;
 
 #include "typedefs.h"
 #include "Utils/Macros.h"
@@ -117,6 +118,10 @@ namespace Util
 						bool underline,
 						const QString& target);
 
+	QString createLink(const QString& name,
+						const QColor& color,
+						bool underline,
+						const QString& target);
 
 	/**
 	 * @brief get all supported sound file extensions

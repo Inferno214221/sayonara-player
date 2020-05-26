@@ -55,7 +55,7 @@ namespace Library
 			void sigNext();
 
 		public:
-			using Hash=QString;
+			using Hash = QString;
 			using HashAlbumPair = QPair<Hash, Album>;
 			using HashAlbumList = QList<HashAlbumPair>;
 			using HashLocationPair = QPair<Hash, Cover::Location>;
@@ -65,7 +65,7 @@ namespace Library
 			void run() override;
 
 		public:
-			explicit AlbumCoverFetchThread(QObject* parent=nullptr);
+			explicit AlbumCoverFetchThread(QObject* parent = nullptr);
 			~AlbumCoverFetchThread() override;
 
 			/**

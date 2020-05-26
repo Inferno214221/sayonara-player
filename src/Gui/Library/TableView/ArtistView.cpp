@@ -43,8 +43,8 @@ using namespace Library;
 
 struct ArtistView::Private
 {
-	AbstractLibrary*	library=nullptr;
-	QAction*			albumArtistAction=nullptr;
+	AbstractLibrary* library = nullptr;
+	QAction* albumArtistAction = nullptr;
 };
 
 ArtistView::ArtistView(QWidget* parent) :
@@ -103,10 +103,19 @@ ColumnHeaderList ArtistView::columnHeaders() const
 	using ColumnIndex::Artist;
 
 	ColumnHeaderList columns
-	{
-		std::make_shared<ColumnHeaderArtist>(Artist::Name, false, SortOrder::ArtistNameAsc, SortOrder::ArtistNameDesc, 160, true),
-		std::make_shared<ColumnHeaderArtist>(Artist::Tracks, true, SortOrder::ArtistTrackcountAsc, SortOrder::ArtistTrackcountDesc, Gui::Util::textWidth(fm, "M 8888"))
-	};
+		{
+			std::make_shared<ColumnHeaderArtist>(Artist::Name,
+			                                     false,
+			                                     SortOrder::ArtistNameAsc,
+			                                     SortOrder::ArtistNameDesc,
+			                                     160,
+			                                     true),
+			std::make_shared<ColumnHeaderArtist>(Artist::Tracks,
+			                                     true,
+			                                     SortOrder::ArtistTrackcountAsc,
+			                                     SortOrder::ArtistTrackcountDesc,
+			                                     Gui::Util::textWidth(fm, "M 8888"))
+		};
 
 	return columns;
 }
@@ -214,8 +223,7 @@ void ArtistView::albumArtistsTriggered(bool b)
 
 void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
-
+	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->mergeArtists(mergedata.sourceIds(), mergedata.targetId());

@@ -31,7 +31,7 @@ class LocalLibrary;
 UI_FWD(GUI_ImportDialog)
 
 class GUI_ImportDialog :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ImportDialog)

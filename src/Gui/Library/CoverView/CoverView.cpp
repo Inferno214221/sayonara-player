@@ -234,7 +234,7 @@ QStyleOptionViewItem CoverView::viewOptions() const
 int CoverView::sizeHintForColumn(int c) const
 {
 	Q_UNUSED(c)
-	return m->model->item_size().width();
+	return m->model->itemSize().width();
 }
 
 bool CoverView::isMergeable() const

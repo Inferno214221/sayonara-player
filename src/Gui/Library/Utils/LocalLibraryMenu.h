@@ -41,7 +41,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class LocalLibraryMenu :
-			public Gui::WidgetTemplate<QMenu>
+		public Gui::WidgetTemplate<QMenu>
 	{
 		Q_OBJECT
 		PIMPL(LocalLibraryMenu)
@@ -56,7 +56,7 @@ namespace Library
 			void sigPathChanged(const QString& path);
 
 		public:
-			explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent=nullptr);
+			explicit LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent = nullptr);
 			~LocalLibraryMenu() override;
 
 			void refreshName(const QString& name);

@@ -36,7 +36,7 @@ class VersionChecker : public QObject
 
 	public:
 		explicit VersionChecker(QObject* parent);
-		~VersionChecker();
+		~VersionChecker() override;
 
 	private slots:
 		void versionCheckFinished();

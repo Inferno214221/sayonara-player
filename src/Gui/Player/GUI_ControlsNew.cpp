@@ -39,30 +39,52 @@ GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
 
 GUI_ControlsNew::~GUI_ControlsNew()
 {
-	delete ui; ui=nullptr;
+	delete ui;
+	ui = nullptr;
 }
 
-QLabel* GUI_ControlsNew::labSayonara() const {	return ui->lab_sayonara; }
+QLabel* GUI_ControlsNew::labSayonara() const { return ui->lab_sayonara; }
+
 QLabel* GUI_ControlsNew::labTitle() const { return ui->lab_title; }
+
 QLabel* GUI_ControlsNew::labVersion() const { return ui->lab_version; }
+
 QLabel* GUI_ControlsNew::labAlbum() const { return ui->lab_album; }
+
 QLabel* GUI_ControlsNew::labArtist() const { return ui->lab_artist; }
+
 QLabel* GUI_ControlsNew::labWrittenBy() const { return ui->lab_writtenby; }
+
 QLabel* GUI_ControlsNew::labBitrate() const { return ui->lab_bitrate; }
+
 QLabel* GUI_ControlsNew::labCopyright() const { return ui->lab_copyright; }
+
 QLabel* GUI_ControlsNew::labFilesize() const { return ui->lab_filesize; }
+
 QLabel* GUI_ControlsNew::labCurrentTime() const { return ui->lab_cur_time; }
+
 QLabel* GUI_ControlsNew::labMaxTime() const { return ui->lab_max_time; }
+
 QWidget* GUI_ControlsNew::widgetDetails() const { return ui->widget_details; }
+
 Gui::RatingEditor* GUI_ControlsNew::labRating() const { return ui->widget_rating; }
+
 Gui::SearchSlider* GUI_ControlsNew::sliProgress() const { return ui->sli_progress; }
+
 Gui::SearchSlider* GUI_ControlsNew::sliVolume() const { return ui->sli_volume; }
+
 QPushButton* GUI_ControlsNew::btnMute() const { return ui->btn_mute; }
+
 QPushButton* GUI_ControlsNew::btnPlay() const { return ui->btn_ctrl_play; }
+
 QPushButton* GUI_ControlsNew::btnRecord() const { return ui->btn_ctrl_rec; }
+
 QPushButton* GUI_ControlsNew::btnPrevious() const { return ui->btn_ctrl_bw; }
+
 QPushButton* GUI_ControlsNew::btnNext() const { return ui->btn_ctrl_fw; }
+
 QPushButton* GUI_ControlsNew::btnStop() const { return ui->btn_ctrl_stop; }
+
 Gui::CoverButton* GUI_ControlsNew::btnCover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::ratingChangedHere(bool save)
@@ -89,7 +111,8 @@ bool GUI_ControlsNew::isExternResizeAllowed() const
 
 void GUI_ControlsNew::languageChanged()
 {
-	if(ui){
+	if(ui)
+	{
 		ui->retranslateUi(this);
 	}
 }

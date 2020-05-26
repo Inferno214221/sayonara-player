@@ -35,11 +35,11 @@ struct LocalLibraryMenu::Private
 {
 	QString name, path;
 
-	QAction* reloadLibraryAction=nullptr;
-	QAction* importFileAction=nullptr;
-	QAction* importFolderAction=nullptr;
-	QAction* infoAction=nullptr;
-	QAction* editAction=nullptr;
+	QAction* reloadLibraryAction = nullptr;
+	QAction* importFileAction = nullptr;
+	QAction* importFolderAction = nullptr;
+	QAction* infoAction = nullptr;
+	QAction* editAction = nullptr;
 
 	bool hasPreferenceAction;
 	bool isInitialized;
@@ -50,8 +50,7 @@ struct LocalLibraryMenu::Private
 		path(path),
 		hasPreferenceAction(false),
 		isInitialized(false),
-		isLibraryEmpty(false)
-	{}
+		isLibraryEmpty(false) {}
 };
 
 LocalLibraryMenu::LocalLibraryMenu(const QString& name, const QString& path, QWidget* parent) :
@@ -76,7 +75,8 @@ void LocalLibraryMenu::refreshPath(const QString& path)
 
 void LocalLibraryMenu::setLibraryBusy(bool b)
 {
-	if(!m->isInitialized){
+	if(!m->isInitialized)
+	{
 		return;
 	}
 
@@ -96,7 +96,8 @@ void LocalLibraryMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->hasPreferenceAction){
+	if(!m->hasPreferenceAction)
+	{
 		actions << this->addSeparator();
 	}
 
@@ -105,7 +106,6 @@ void LocalLibraryMenu::addPreferenceAction(Gui::PreferenceAction* action)
 	this->addActions(actions);
 	m->hasPreferenceAction = true;
 }
-
 
 void LocalLibraryMenu::initMenu()
 {
@@ -126,14 +126,16 @@ void LocalLibraryMenu::initMenu()
 	connect(m->infoAction, &QAction::triggered, this, &LocalLibraryMenu::sigInfo);
 	connect(m->editAction, &QAction::triggered, this, &LocalLibraryMenu::editClicked);
 
-	QList<QAction*> actions;
-	actions <<
-		m->infoAction <<
-		m->editAction <<
-		this->addSeparator() <<
-		m->importFileAction <<
-		m->importFolderAction <<
-		m->reloadLibraryAction;
+	QAction* sep = this->addSeparator();
+	QList<QAction*> actions
+		{
+			m->infoAction,
+			m->editAction,
+			sep,
+			m->importFileAction,
+			m->importFolderAction,
+			m->reloadLibraryAction,
+		};
 
 	this->addActions(actions);
 	this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
@@ -147,7 +149,8 @@ void LocalLibraryMenu::initMenu()
 
 void LocalLibraryMenu::languageChanged()
 {
-	if(!m->isInitialized){
+	if(!m->isInitialized)
+	{
 		return;
 	}
 
@@ -157,18 +160,21 @@ void LocalLibraryMenu::languageChanged()
 	m->importFileAction->setText(Lang::get(Lang::ImportFiles));
 	m->importFolderAction->setText(Lang::get(Lang::ImportDir));
 
-	if(m->isLibraryEmpty) {
+	if(m->isLibraryEmpty)
+	{
 		m->reloadLibraryAction->setText(Lang::get(Lang::ScanForFiles));
 	}
 
-	else {
+	else
+	{
 		m->reloadLibraryAction->setText(Lang::get(Lang::ReloadLibrary));
 	}
 }
 
 void LocalLibraryMenu::skinChanged()
 {
-	if(!m->isInitialized){
+	if(!m->isInitialized)
+	{
 		return;
 	}
 
@@ -184,23 +190,24 @@ void LocalLibraryMenu::shortcutChanged(ShortcutIdentifier identifier)
 {
 	Q_UNUSED(identifier)
 
-	if(!m->isInitialized){
+	if(!m->isInitialized)
+	{
 		return;
 	}
 
-	ShortcutHandler* sch = ShortcutHandler::instance();
+	auto* sch = ShortcutHandler::instance();
 	m->reloadLibraryAction->setShortcutContext(Qt::WidgetShortcut);
 	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
 }
 
 void LocalLibraryMenu::editClicked()
 {
-	if(!m->isInitialized){
+	if(!m->isInitialized)
+	{
 		return;
 	}
 
 	auto* editDialog = new GUI_EditLibrary(m->name, m->path, this);
-
 	connect(editDialog, &GUI_EditLibrary::sigAccepted, this, &LocalLibraryMenu::editAccepted);
 
 	editDialog->show();
@@ -208,20 +215,22 @@ void LocalLibraryMenu::editClicked()
 
 void LocalLibraryMenu::editAccepted()
 {
-	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
-	QString name = edit_dialog->name();
-	QString path = edit_dialog->path();
+	auto* editDialog = dynamic_cast<GUI_EditLibrary*>(sender());
 
+	const QString name = editDialog->name();
+	const QString path = editDialog->path();
 	if(name.isEmpty() || path.isEmpty())
 	{
 		return;
 	}
 
-	if(edit_dialog->hasNameChanged()){
+	if(editDialog->hasNameChanged())
+	{
 		emit sigNameChanged(name);
 	}
 
-	if(edit_dialog->hasPathChanged()){
+	if(editDialog->hasPathChanged())
+	{
 		emit sigPathChanged(path);
 	}
 }

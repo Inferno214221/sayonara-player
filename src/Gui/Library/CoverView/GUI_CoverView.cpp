@@ -30,23 +30,25 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 using Library::GUI_CoverView;
 
 GUI_CoverView::GUI_CoverView(QWidget* parent) :
-	Gui::Widget(parent)
-{}
+	Gui::Widget(parent) {}
 
 GUI_CoverView::~GUI_CoverView()
 {
-	if(ui){
-		delete ui; ui=nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
 void GUI_CoverView::init(LocalLibrary* library)
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
@@ -83,7 +85,8 @@ bool GUI_CoverView::isInitialized() const
 
 IndexSet GUI_CoverView::selectedItems() const
 {
-	if(ui){
+	if(ui)
+	{
 		return ui->tb_view->selectedItems();
 	}
 
@@ -92,7 +95,8 @@ IndexSet GUI_CoverView::selectedItems() const
 
 void GUI_CoverView::clearSelections() const
 {
-	if(ui){
+	if(ui)
+	{
 		ui->tb_view->clearSelection();
 	}
 }
@@ -101,7 +105,7 @@ void GUI_CoverView::initSortingActions()
 {
 	ui->combo_sorting->clear();
 
-	const QList<ActionPair> action_pairs = CoverView::sortingActions();
+	const QList <ActionPair> action_pairs = CoverView::sortingActions();
 	for(const ActionPair& ap : action_pairs)
 	{
 		ui->combo_sorting->addItem(ap.name(), int(ap.sortorder()));
@@ -125,7 +129,7 @@ void GUI_CoverView::sortorderChanged()
 	Library::Sortings s = GetSetting(Set::Lib_Sorting);
 	Library::SortOrder so = s.so_albums;
 
-	for(int i=0; i<ui->combo_sorting->count(); i++)
+	for(int i = 0; i < ui->combo_sorting->count(); i++)
 	{
 		if(ui->combo_sorting->itemData(i).toInt() == int(so))
 		{
@@ -177,11 +181,12 @@ void GUI_CoverView::zoomChanged()
 	const QStringList zoomActions = CoverView::zoomActions();
 
 	int zoom = GetSetting(Set::Lib_CoverZoom);
-	int idx = Algorithm::indexOf(zoomActions, [zoom](const QString& str){
+	int idx = Algorithm::indexOf(zoomActions, [zoom](const QString& str) {
 		return (str == QString::number(zoom));
 	});
 
-	if(idx >= 0){
+	if(idx >= 0)
+	{
 		ui->combo_zoom->setCurrentIndex(idx);
 	}
 }
@@ -194,7 +199,8 @@ void GUI_CoverView::showUtilsChanged()
 
 void GUI_CoverView::languageChanged()
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 

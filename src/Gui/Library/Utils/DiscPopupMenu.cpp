@@ -27,7 +27,7 @@
 
 #include <QMouseEvent>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 using Library::DiscAction;
 using Library::DiscPopupMenu;
 
@@ -40,18 +40,19 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 		this->setIcon(Gui::Util::icon("cds.png", Gui::Util::NoTheme));
 	}
 
-	else {
+	else
+	{
 		this->setText(Lang::get(Lang::Disc) + " " + QString::number(disc));
 		this->setIcon(Gui::Util::icon("cd.png", Gui::Util::NoTheme));
 	}
 
 	this->setData(disc);
 
-	connect(this, &QAction::triggered, this, [=]()
-	{
+	connect(this, &QAction::triggered, this, [=]() {
 		bool ok = false;
 		int discnumber = data().toInt(&ok);
-		if(ok){
+		if(ok)
+		{
 			emit sigDiscPressed(discnumber);
 		}
 	});
@@ -59,20 +60,23 @@ DiscAction::DiscAction(QWidget* parent, Disc disc) :
 
 DiscAction::~DiscAction() = default;
 
-DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
+DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs) :
+	QMenu(parent)
 {
-	Algorithm::sort(discs, [](Disc disc1, Disc disc2){
+	Algorithm::sort(discs, [](Disc disc1, Disc disc2) {
 		return (disc1 < disc2);
 	});
 
-	for(int i=-1; i<discs.size(); i++)
+	for(int i = -1; i < discs.size(); i++)
 	{
 		DiscAction* action;
-		if(i == -1){
+		if(i == -1)
+		{
 			action = new DiscAction(this, std::numeric_limits<Disc>::max());
 		}
 
-		else {
+		else
+		{
 			action = new DiscAction(this, discs[i]);
 		}
 
@@ -82,4 +86,4 @@ DiscPopupMenu::DiscPopupMenu(QWidget* parent, QList<Disc> discs): QMenu(parent)
 	}
 }
 
-DiscPopupMenu::~DiscPopupMenu() {}
+DiscPopupMenu::~DiscPopupMenu() = default;

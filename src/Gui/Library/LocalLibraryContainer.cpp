@@ -29,10 +29,9 @@ using namespace Library;
 
 struct LocalLibraryContainer::Private
 {
-	GUI_LocalLibrary*   ui=nullptr;
-	Info				library;
-	QString				name;
-	QString				library_path;
+	GUI_LocalLibrary* ui = nullptr;
+	Info library;
+	QString name;
 
 	Private(const Info& library) :
 		library(library)
@@ -47,7 +46,7 @@ LocalLibraryContainer::LocalLibraryContainer(const Library::Info& library, QObje
 	m = Pimpl::make<Private>(library);
 }
 
-LocalLibraryContainer::~LocalLibraryContainer() {}
+LocalLibraryContainer::~LocalLibraryContainer() = default;
 
 QString LocalLibraryContainer::name() const
 {
@@ -67,9 +66,10 @@ QWidget* LocalLibraryContainer::widget() const
 	return static_cast<QWidget*>(m->ui);
 }
 
-QMenu*LocalLibraryContainer::menu()
+QMenu* LocalLibraryContainer::menu()
 {
-	if(m->ui){
+	if(m->ui)
+	{
 		return m->ui->menu();
 	}
 
@@ -78,7 +78,8 @@ QMenu*LocalLibraryContainer::menu()
 
 void LocalLibraryContainer::initUi()
 {
-	if(m->ui){
+	if(m->ui)
+	{
 		return;
 	}
 

@@ -26,7 +26,10 @@
 
 enum class OpenMode : uint8_t
 {
-	Info, Edit, Lyrics, Cover
+		Info,
+		Edit,
+		Lyrics,
+		Cover
 };
 
 class GUI_InfoDialog;
@@ -37,11 +40,11 @@ class InfoDialogContainerAsyncHandler : public QObject
 	Q_OBJECT
 	PIMPL(InfoDialogContainerAsyncHandler)
 
-	friend class InfoDialogContainer;
+		friend class InfoDialogContainer;
 
 	private:
 		InfoDialogContainerAsyncHandler(InfoDialogContainer* container, OpenMode mode);
-		~InfoDialogContainerAsyncHandler();
+		~InfoDialogContainerAsyncHandler() override;
 
 		bool start();
 		bool isRunning() const;
@@ -49,7 +52,6 @@ class InfoDialogContainerAsyncHandler : public QObject
 	private slots:
 		void scannerFinished();
 };
-
 
 /**
  * @brief An interface used to abstract the usage of the info dialog.
@@ -60,11 +62,11 @@ class InfoDialogContainerAsyncHandler : public QObject
  */
 class InfoDialogContainer
 {
-	friend class InfoDialogContainerAsyncHandler;
+		friend class InfoDialogContainerAsyncHandler;
 
 	PIMPL(InfoDialogContainer)
 
-	friend class GUI_InfoDialog;
+		friend class GUI_InfoDialog;
 
 	public:
 		InfoDialogContainer();
@@ -96,14 +98,14 @@ class InfoDialogContainer
 		 * considered as tracks
 		 * @return interpretation of metadata
 		 */
-		virtual MD::Interpretation metadataInterpretation() const=0;
+		virtual MD::Interpretation metadataInterpretation() const = 0;
 
 		/**
 		 * @brief get the metadata that should be used for the info dialog
 		 * So for lists, the selected tracks are used here
 		 * @return MetaDataList
 		 */
-		virtual MetaDataList infoDialogData() const=0;
+		virtual MetaDataList infoDialogData() const = 0;
 
 		/**
 		 * @brief returns, if the widget can provide metadata instantly

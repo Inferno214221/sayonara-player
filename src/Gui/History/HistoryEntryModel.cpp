@@ -111,30 +111,32 @@ QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
 
 void HistoryEntryModel::languageChanged()
 {
-	emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount());
+	int columnCount = this->columnCount(QModelIndex());
+	emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount);
 }
 
 void HistoryEntryModel::historyChanged(Session::Id id)
 {
-	Session::Timecode min_id = Session::dayBegin(id);
-	Session::Timecode max_id = Session::dayEnd(id);
+	const Session::Timecode dayBegin = Session::dayBegin(id);
+	const Session::Timecode dayEnd = Session::dayEnd(id);
 
-	if(id >= min_id && id <= max_id)
+	if(id >= dayBegin && id <= dayEnd)
 	{
-		int old_rowcount = rowCount();
-
+		const int oldRowCount = rowCount(QModelIndex());
 		m->calcHistory();
+		const int newRowCount = rowCount(QModelIndex());
 
-		if(rowCount() > old_rowcount)
+		if(newRowCount > oldRowCount)
 		{
-			beginInsertRows(QModelIndex(), old_rowcount, rowCount() - 1);
-			this->insertRows(old_rowcount, (rowCount() - old_rowcount));
+			beginInsertRows(QModelIndex(), oldRowCount, newRowCount - 1);
+			this->insertRows(oldRowCount, (newRowCount - oldRowCount));
 			endInsertRows();
 
 			emit sigRowsAdded();
 		}
 
-		emit dataChanged(index(old_rowcount, 0), index(rowCount(), columnCount()), {Qt::DisplayRole});
+		const int columnCount = this->columnCount(QModelIndex());
+		emit dataChanged(index(oldRowCount, 0), index(newRowCount, columnCount), {Qt::DisplayRole});
 	}
 }
 

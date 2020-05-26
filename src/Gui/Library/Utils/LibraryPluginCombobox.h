@@ -29,13 +29,13 @@ class QEvent;
 namespace Library
 {
 	class PluginCombobox :
-			public Gui::ComboBox
+		public Gui::ComboBox
 	{
 		Q_OBJECT
 		PIMPL(PluginCombobox)
 
 		public:
-			explicit PluginCombobox(const QString& text, QWidget* parent=nullptr);
+			explicit PluginCombobox(const QString& text, QWidget* parent = nullptr);
 			~PluginCombobox() override;
 
 		public slots:

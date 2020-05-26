@@ -24,10 +24,6 @@
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-#include "Utils/globals.h"
-#include "Utils/Set.h"
-#include "Utils/Logger/Logger.h"
-
 #include <algorithm>
 #include <QUrl>
 
@@ -35,14 +31,13 @@ using namespace Library;
 
 struct ItemModel::Private
 {
-	AbstractLibrary*	library=nullptr;
-	QStringList			headerNames;
-	int					oldRowCount;
+	AbstractLibrary* library = nullptr;
+	QStringList headerNames;
+	int oldRowCount;
 
 	Private(AbstractLibrary* library) :
 		library(library),
-		oldRowCount(0)
-	{}
+		oldRowCount(0) {}
 };
 
 ItemModel::ItemModel(QObject* parent, AbstractLibrary* library) :
@@ -55,11 +50,13 @@ ItemModel::~ItemModel() = default;
 
 QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if(role != Qt::DisplayRole) {
+	if(role != Qt::DisplayRole)
+	{
 		return SearchableTableModel::headerData(section, orientation, role);
 	}
 
-	if(section < 0 || section >= m->headerNames.size()){
+	if(section < 0 || section >= m->headerNames.size())
+	{
 		return QVariant();
 	}
 
@@ -68,11 +65,13 @@ QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int rol
 
 bool ItemModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role)
 {
-	if(role != Qt::DisplayRole) {
+	if(role != Qt::DisplayRole)
+	{
 		return SearchableTableModel::setHeaderData(section, orientation, value, role);
 	}
 
-	while(section >= m->headerNames.size()) {
+	while(section >= m->headerNames.size())
+	{
 		m->headerNames << QString();
 	}
 
@@ -113,25 +112,28 @@ void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 	int oldSize = m->oldRowCount;
 	int newSize = rowCount();
 
-	if(rowCountBefore != nullptr){
+	if(rowCountBefore != nullptr)
+	{
 		*rowCountBefore = oldSize;
 	}
 
-	if(rowCountNew != nullptr){
+	if(rowCountNew != nullptr)
+	{
 		*rowCountNew = newSize;
 	}
 
-	if(oldSize > newSize){
+	if(oldSize > newSize)
+	{
 		removeRows(newSize, oldSize - newSize);
 	}
 
-	else if(oldSize < newSize){
+	else if(oldSize < newSize)
+	{
 		insertRows(oldSize, newSize - oldSize);
 	}
 
-	emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
+	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }
-
 
 Gui::CustomMimeData* ItemModel::customMimedata() const
 {
@@ -148,16 +150,18 @@ QModelIndexList ItemModel::searchResults(const QString& substr)
 	QModelIndexList ret;
 
 	int len = rowCount();
-	if(len == 0) {
+	if(len == 0)
+	{
 		return QModelIndexList();
 	}
 
-	for(int i=0; i<len; i++)
+	for(int i = 0; i < len; i++)
 	{
 		QString title = searchableString(i);
 		title = Library::Utils::convertSearchstring(title, searchMode());
 
-		if(title.contains(substr)) {
+		if(title.contains(substr))
+		{
 			ret << this->index(i, searchableColumn());
 		}
 	}

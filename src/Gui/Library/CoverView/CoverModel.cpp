@@ -44,7 +44,6 @@
 #include <QThread>
 #include <QMainWindow>
 
-#include <atomic>
 #include <mutex>
 
 using Cover::Location;
@@ -248,7 +247,7 @@ void CoverModel::nextHash()
 
 void CoverModel::coverLookupFinished(bool success)
 {
-	auto* coverLookup = static_cast<Lookup*>(sender());
+	auto* coverLookup = dynamic_cast<Lookup*>(sender());
 	auto* data = static_cast<Hash*>(coverLookup->userData());
 
 	Hash hash = *data;
@@ -386,7 +385,7 @@ const AlbumList& CoverModel::albums() const
 	return library()->albums();
 }
 
-QSize CoverModel::item_size() const
+QSize CoverModel::itemSize() const
 {
 	return m->itemSize;
 }
@@ -396,7 +395,7 @@ int CoverModel::zoom() const
 	return m->zoom;
 }
 
-static QSize calcItemSize(int zoom, QFont font)
+static QSize calcItemSize(int zoom, const QFont& font)
 {
 	int textHeight = QFontMetrics(font).height();
 	bool showArtist = GetSetting(Set::Lib_CoverShowArtist);

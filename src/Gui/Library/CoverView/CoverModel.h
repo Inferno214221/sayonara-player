@@ -65,9 +65,8 @@ namespace Library
 			QVariant		data(const QModelIndex& index, int role) const override;
 			Qt::ItemFlags	flags(const QModelIndex& index) const override;
 
-			QSize			item_size() const;
+			QSize			itemSize() const;
 			int				zoom() const;
-
 
 		protected:
 			// ItemModel

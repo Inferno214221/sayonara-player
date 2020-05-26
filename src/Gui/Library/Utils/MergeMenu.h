@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef MERGABLE_H
 #define MERGABLE_H
 
@@ -49,7 +47,7 @@ namespace Gui
 			void sigMergeTriggered();
 
 		public:
-			MergeMenu(QMenu* parent=nullptr);
+			explicit MergeMenu(QMenu* parent = nullptr);
 			~MergeMenu() override;
 
 			void setData(const QMap<Id, QString>& data);

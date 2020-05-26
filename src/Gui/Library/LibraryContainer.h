@@ -41,22 +41,22 @@ namespace Library
 		Q_OBJECT
 		PIMPL(Container)
 
-		friend class PluginHandler;
+			friend class PluginHandler;
 
 		protected:
 			/**
 			 * @brief Should initialize the ui. The ui constructor should be called within this function
 			 */
-			virtual void				initUi()=0;
+			virtual void initUi() = 0;
 
 		public:
-			explicit Container(QObject* parent=nullptr);
+			explicit Container(QObject* parent = nullptr);
 			virtual ~Container() override;
 
 			void init() override;
 
 			virtual void rename(const QString& new_name) override;
-			virtual QString	displayName() const override;
+			virtual QString displayName() const override;
 			virtual QMenu* menu() override;
 			virtual bool isLocal() const override;
 	};

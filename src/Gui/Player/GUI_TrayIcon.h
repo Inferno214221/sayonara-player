@@ -90,7 +90,7 @@ class GUI_TrayIcon :
 		~GUI_TrayIcon() override;
 
 		bool event(QEvent* e) override;
-		void setForwardEnabled(bool b);
+		[[maybe_unused]] void setForwardEnabled(bool b);
 
 		void notify(const MetaData& md) override;
 		void notify(const QString& title, const QString& message, const QString& image_path) override;

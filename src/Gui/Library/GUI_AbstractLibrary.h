@@ -75,7 +75,7 @@ namespace Library
 		virtual void queryLibrary();
 
 		virtual void itemDeleteClicked();
-		virtual void showDeleteAnswer(QString);
+		virtual void showDeleteAnswer(const QString& text);
 
 		void tracksDeleteClicked();
 

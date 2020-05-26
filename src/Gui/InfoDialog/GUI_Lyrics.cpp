@@ -42,13 +42,16 @@ using Gui::Completer;
 
 struct GUI_Lyrics::Private
 {
-	Lyrics::Lyrics*	lyrics=nullptr;
-	ProgressBar*    loading_bar=nullptr;
-	qreal           font_size;
-	qreal           initial_font_size;
+	Lyrics::Lyrics* lyrics = nullptr;
+	ProgressBar* loadingBar = nullptr;
+	qreal fontSize;
+	qreal initialFontSize;
 
 	Private(QObject* parent)
 	{
+		initialFontSize = QApplication::font().pointSizeF();
+		fontSize = initialFontSize;
+
 		lyrics = new Lyrics::Lyrics(parent);
 	}
 };
@@ -61,17 +64,13 @@ GUI_Lyrics::GUI_Lyrics(QWidget* parent) :
 
 GUI_Lyrics::~GUI_Lyrics()
 {
-	if(ui){
-		delete ui;
-	}
-
-	ui = nullptr;
+	delete ui; ui = nullptr;
 }
-
 
 void GUI_Lyrics::init()
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
@@ -81,16 +80,17 @@ void GUI_Lyrics::init()
 	ui->te_lyrics->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui->te_lyrics->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-	m->loading_bar = new ProgressBar(ui->te_lyrics);
-	m->loading_bar->setPosition(ProgressBar::Position::Bottom);
-	m->loading_bar->setVisible(false);
+	m->loadingBar = new ProgressBar(ui->te_lyrics);
+	m->loadingBar->setPosition(ProgressBar::Position::Bottom);
+	m->loadingBar->setVisible(false);
 
-	QString server = GetSetting(Set::Lyrics_Server);
-	QStringList servers = m->lyrics->servers();
+	const QString server = GetSetting(Set::Lyrics_Server);
+	const QStringList servers = m->lyrics->servers();
 
 	ui->combo_servers->addItems(servers);
 	int idx = ui->combo_servers->findText(server);
-	if(idx < 0){
+	if(idx < 0)
+	{
 		idx = 0;
 	}
 
@@ -98,20 +98,21 @@ void GUI_Lyrics::init()
 	ui->le_artist->setText(m->lyrics->artist());
 	ui->le_title->setText(m->lyrics->title());
 
-	int zoom_factor = GetSetting(Set::Lyrics_Zoom);
-	m->font_size = QApplication::font().pointSizeF();
-	m->initial_font_size = QApplication::font().pointSizeF();
-	ui->sb_zoom->setValue(zoom_factor);
+	m->fontSize = QApplication::font().pointSizeF();
+	m->initialFontSize = QApplication::font().pointSizeF();
 
-	zoom( (zoom_factor * m->initial_font_size) / 100.0 );
+	int zoomFactor = GetSetting(Set::Lyrics_Zoom);
+	ui->sb_zoom->setValue(zoomFactor);
+
+	zoom((zoomFactor * m->initialFontSize) / 100.0);
 
 	connect(ui->combo_servers, combo_activated_int, this, &GUI_Lyrics::lyricServerChanged);
 	connect(ui->btn_search, &QPushButton::clicked, this, &GUI_Lyrics::prepareLyrics);
 	connect(ui->btn_switch, &QPushButton::clicked, this, &GUI_Lyrics::switchPressed);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::sigClosed);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::close);
-	connect(ui->sb_zoom, spinbox_value_changed_int, this, [=](int percent){
-		zoom( (percent * m->initial_font_size) / 100.0 );
+	connect(ui->sb_zoom, spinbox_value_changed_int, this, [=](int percent) {
+		zoom((percent * m->initialFontSize) / 100.0);
 	});
 
 	connect(ui->btn_save_lyrics, &QPushButton::clicked, this, &GUI_Lyrics::saveLyricsClicked);
@@ -124,12 +125,12 @@ void GUI_Lyrics::init()
 	new QShortcut(QKeySequence(QKeySequence::ZoomOut), this, SLOT(zoomOut()), nullptr, Qt::WidgetWithChildrenShortcut);
 }
 
-
 void GUI_Lyrics::lyricServerChanged(int idx)
 {
 	Q_UNUSED(idx)
 
-	if(ui->combo_servers->currentData().toInt() >= 0) {
+	if(ui->combo_servers->currentData().toInt() >= 0)
+	{
 		SetSetting(Set::Lyrics_Server, ui->combo_servers->currentText());
 	}
 
@@ -146,30 +147,32 @@ void GUI_Lyrics::saveLyricsClicked()
 
 void GUI_Lyrics::prepareLyrics()
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
 	ui->te_lyrics->clear();
 
 	int current_server_index = ui->combo_servers->currentData().toInt();
-	if(current_server_index < 0) {
+	if(current_server_index < 0)
+	{
 		showLocalLyrics();
 	}
 
 	else
 	{
 		bool running = m->lyrics->fetchLyrics
-		(
-					ui->le_artist->text(),
-					ui->le_title->text(),
-					current_server_index
-		);
+			(
+				ui->le_artist->text(),
+				ui->le_title->text(),
+				current_server_index
+			);
 
 		if(running)
 		{
-			m->loading_bar->show();
-			m->loading_bar->setVisible(true);
+			m->loadingBar->show();
+			m->loadingBar->setVisible(true);
 			ui->btn_search->setEnabled(false);
 			ui->combo_servers->setEnabled(false);
 			ui->btn_save_lyrics->setEnabled(false);
@@ -179,14 +182,17 @@ void GUI_Lyrics::prepareLyrics()
 
 void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool rich)
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
-	if(rich){
+	if(rich)
+	{
 		ui->te_lyrics->setHtml(lyrics);
 	}
-	else {
+	else
+	{
 		ui->te_lyrics->setPlainText(lyrics);
 	}
 
@@ -194,7 +200,7 @@ void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool r
 	ui->btn_search->setEnabled(true);
 	ui->combo_servers->setEnabled(true);
 	ui->btn_save_lyrics->setEnabled(m->lyrics->isLyricTagSupported());
-	m->loading_bar->setVisible(false);
+	m->loadingBar->setVisible(false);
 }
 
 void GUI_Lyrics::showLocalLyrics()
@@ -209,13 +215,15 @@ void GUI_Lyrics::lyricsFetched()
 
 void GUI_Lyrics::setTrack(const MetaData& md)
 {
-	if(md.filepath().isEmpty()){
+	if(md.filepath().isEmpty())
+	{
 		return;
 	}
 
 	m->lyrics->setMetadata(md);
 
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
@@ -226,11 +234,12 @@ void GUI_Lyrics::setTrack(const MetaData& md)
 	completer_entries << md.artist() << md.albumArtist();
 	completer_entries.removeDuplicates();
 
-	if(ui->le_artist->completer() != nullptr){
+	if(ui->le_artist->completer() != nullptr)
+	{
 		ui->le_artist->completer()->deleteLater();
 	}
 
-	ui->le_artist->setCompleter( new Gui::Completer(completer_entries, ui->le_artist) );
+	ui->le_artist->setCompleter(new Gui::Completer(completer_entries, ui->le_artist));
 
 	setupSources();
 	prepareLyrics();
@@ -248,10 +257,10 @@ void GUI_Lyrics::switchPressed()
 
 void GUI_Lyrics::zoom(qreal font_size)
 {
-	m->font_size = std::min(30.0, font_size);
-	m->font_size = std::max(5.0, font_size);
+	m->fontSize = std::min(30.0, font_size);
+	m->fontSize = std::max(5.0, font_size);
 
-	ui->te_lyrics->setStyleSheet("font-size: " + QString::number(m->font_size) + "pt;");
+	ui->te_lyrics->setStyleSheet("font-size: " + QString::number(m->fontSize) + "pt;");
 	SetSetting(Set::Lyrics_Zoom, ui->sb_zoom->value());
 }
 
@@ -259,13 +268,15 @@ void GUI_Lyrics::setupSources()
 {
 	ui->combo_servers->clear();
 
-	if(m->lyrics->isLyricTagAvailable()){
+	if(m->lyrics->isLyricTagAvailable())
+	{
 		ui->combo_servers->addItem(Lang::get(Lang::File), -1);
 	}
 
-	int i=0;
+	int i = 0;
 	const QStringList servers = m->lyrics->servers();
-	for(const QString& str : servers){
+	for(const QString& str : servers)
+	{
 		ui->combo_servers->addItem(str, i++);
 	}
 
@@ -287,12 +298,12 @@ void GUI_Lyrics::chooseSource()
 
 void GUI_Lyrics::zoomIn()
 {
-	zoom(m->font_size + 1.0);
+	zoom(m->fontSize + 1.0);
 }
 
 void GUI_Lyrics::zoomOut()
 {
-	zoom(m->font_size - 1.0);
+	zoom(m->fontSize - 1.0);
 }
 
 void GUI_Lyrics::setSaveButtonText()
@@ -303,18 +314,21 @@ void GUI_Lyrics::setSaveButtonText()
 		ui->btn_save_lyrics->setText(tr("Save lyrics not supported"));
 	}
 
-	else if(m->lyrics->isLyricTagAvailable()) {
+	else if(m->lyrics->isLyricTagAvailable())
+	{
 		ui->btn_save_lyrics->setText(tr("Overwrite lyrics"));
 	}
 
-	else {
+	else
+	{
 		ui->btn_save_lyrics->setText(tr("Save lyrics"));
 	}
 }
 
 void GUI_Lyrics::languageChanged()
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
@@ -339,14 +353,15 @@ void GUI_Lyrics::wheelEvent(QWheelEvent* e)
 {
 	e->accept();
 
-	if( (e->modifiers() & Qt::ShiftModifier) ||
-		(e->modifiers() & Qt::ControlModifier))
+	if((e->modifiers() & Qt::ShiftModifier) ||
+	   (e->modifiers() & Qt::ControlModifier))
 	{
 		int delta_zoom = 10;
-		if(e->delta() < 0){
+		if(e->delta() < 0)
+		{
 			delta_zoom = -10;
 		}
 
-		ui->sb_zoom->setValue( ui->sb_zoom->value() + delta_zoom);
+		ui->sb_zoom->setValue(ui->sb_zoom->value() + delta_zoom);
 	}
 }

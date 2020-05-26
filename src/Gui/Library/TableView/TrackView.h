@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TRACKVIEW_H
-#define TRACKVIEW_H
+#ifndef LIBRARYTRACKVIEW_H
+#define LIBRARYTRACKVIEW_H
 
 #include "TableView.h"
 #include "Utils/Pimpl.h"
@@ -39,7 +39,7 @@ namespace Library
 		PIMPL(TrackView)
 
 		public:
-			explicit TrackView(QWidget* parent=nullptr);
+			explicit TrackView(QWidget* parent = nullptr);
 			~TrackView() override;
 
 		private:
@@ -72,4 +72,4 @@ namespace Library
 	};
 }
 
-#endif // TRACKVIEW_H
+#endif // LIBRARYTRACKVIEW_H

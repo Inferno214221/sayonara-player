@@ -34,8 +34,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			explicit DirChooserDialog(QWidget* parent=nullptr);
-			~DirChooserDialog();
+			explicit DirChooserDialog(QWidget* parent = nullptr);
+			~DirChooserDialog() override;
 	};
 }
 

@@ -36,7 +36,6 @@ if(WIN32)
 	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
 endif()
 
-
 set(TAGLIB_FOUND 0)
 
 if(WITH_SYSTEM_TAGLIB)
@@ -189,8 +188,8 @@ target_link_libraries(${PROJECT_NAME}
 	${OS_LIBRARIES}
 )
 
-add_executable("create_db" CreateDB.cpp ${DATABASE_RCC})
-target_link_libraries("create_db"
+add_executable("create-database" CreateDB.cpp ${DATABASE_RCC})
+target_link_libraries("create-database"
 	sayonara_utils
 	sayonara_database
 	Qt5::Widgets

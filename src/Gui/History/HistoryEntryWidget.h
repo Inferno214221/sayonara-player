@@ -13,7 +13,7 @@ class HistoryEntryWidget :
 	PIMPL(HistoryEntryWidget)
 
 	public:
-		HistoryEntryWidget(Session::Timecode timecode, QWidget* parent=nullptr);
+		explicit HistoryEntryWidget(Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryEntryWidget() override;
 
 		Session::Id id() const;

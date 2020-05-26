@@ -26,8 +26,6 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverUtils.h"
 
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -52,7 +50,7 @@ struct CoverButton::Private
 	bool					alternativeSearchEnabled;
 
 	Private() :
-		coverLocation(Location::invalidLocation()),
+		coverSource(Cover::Source::Unknown),
 		silent(false),
 		alternativeSearchEnabled(true)
 	{}
@@ -164,7 +162,7 @@ void CoverButton::coverLookupFinished(bool success)
 		this->showDefaultPixmap();
 	}
 
-	auto* lookup = static_cast<Cover::Lookup*>(sender());
+	auto* lookup = dynamic_cast<Cover::Lookup*>(sender());
 	m->coverSource = lookup->source();
 }
 

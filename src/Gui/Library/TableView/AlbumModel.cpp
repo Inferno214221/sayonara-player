@@ -124,7 +124,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 
 	int row = index.row();
 	int column = index.column();
-	ColumnIndex::Album col = scast(ColumnIndex::Album, column);
+	auto col = ColumnIndex::Album(column);
 
 	const Album& album = albums[row];
 

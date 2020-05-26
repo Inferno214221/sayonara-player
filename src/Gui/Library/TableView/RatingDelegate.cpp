@@ -32,13 +32,12 @@ using namespace Library;
 
 struct RatingDelegate::Private
 {
-	int	ratingColumn;
+	int ratingColumn;
 	bool enabled;
 
 	Private(bool enabled, int ratingColumn) :
 		ratingColumn(ratingColumn),
-		enabled(enabled)
-	{}
+		enabled(enabled) {}
 };
 
 RatingDelegate::RatingDelegate(QObject* parent, int ratingColumn, bool enabled) :
@@ -51,13 +50,15 @@ RatingDelegate::~RatingDelegate() = default;
 
 void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	if(!index.isValid()) {
+	if(!index.isValid())
+	{
 		return;
 	}
 
 	Gui::StyledItemDelegate::paint(painter, option, index);
 
-	if(index.column() != m->ratingColumn) {
+	if(index.column() != m->ratingColumn)
+	{
 		return;
 	}
 
@@ -68,7 +69,8 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 	label.paint(painter, option.rect);
 }
 
-QWidget* RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+QWidget*
+RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	Q_UNUSED(option)
 
@@ -81,13 +83,13 @@ QWidget* RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewIte
 	return editor;
 }
 
-
 void RatingDelegate::deleteEditor(bool save)
 {
 	Q_UNUSED(save)
 
 	auto* editor = qobject_cast<RatingEditor*>(sender());
-	if(!editor) {
+	if(!editor)
+	{
 		return;
 	}
 
@@ -97,18 +99,17 @@ void RatingDelegate::deleteEditor(bool save)
 	emit closeEditor(editor);
 }
 
-
 void RatingDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(!rating_editor) {
+	if(!rating_editor)
+	{
 		return;
 	}
 
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
 	rating_editor->setRating(rating);
 }
-
 
 void RatingDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {

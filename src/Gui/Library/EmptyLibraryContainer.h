@@ -29,25 +29,24 @@
  * @ingroup Library
  */
 class EmptyLibraryContainer :
-		public Library::Container
+	public Library::Container
 {
 	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)
 
-	// LibraryContainerInterface interface
-public:
+		// LibraryContainerInterface interface
+	public:
+		explicit EmptyLibraryContainer(QObject* parent = nullptr);
+		~EmptyLibraryContainer() override;
 
-	EmptyLibraryContainer(QObject* parent=nullptr);
-	~EmptyLibraryContainer() override;
+		QString name() const override;
+		QString displayName() const override;
+		QWidget* widget() const override;
+		QMenu* menu() override;
+		QFrame* header() const override;
+		QPixmap icon() const override;
 
-	QString		name() const override;
-	QString		displayName() const override;
-	QWidget*	widget() const override;
-	QMenu*		menu() override;
-	QFrame*		header() const override;
-	QPixmap		icon() const override;
-
-	void		initUi() override;
+		void initUi() override;
 };
 
 #endif // EMPTYLIBRARYCONTAINER_H

@@ -34,15 +34,14 @@ using Library::FileExtensionBar;
 
 struct FileExtensionBar::Private
 {
-	QLayout*				btnLayout=nullptr;
-	QLabel*					labFilter=nullptr;
-	QPushButton*			btnClose=nullptr;
+	QLayout* btnLayout = nullptr;
+	QLabel* labFilter = nullptr;
+	QPushButton* btnClose = nullptr;
 
 	QMap<QString, QPushButton*> extensionButtonMap;
 
-	AbstractLibrary*		library=nullptr;
+	AbstractLibrary* library = nullptr;
 };
-
 
 FileExtensionBar::FileExtensionBar(QWidget* parent) :
 	Gui::Widget(parent)
@@ -60,7 +59,6 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 	font.setBold(true);
 	m->labFilter->setFont(font);
 	layout->addWidget(m->labFilter);
-
 
 	auto* btn_widget = new QWidget();
 
@@ -104,13 +102,14 @@ void FileExtensionBar::refresh()
 	clear();
 
 	bool hasMultipleExtensions = (extensionStrings.size() > 1);
-	if(!hasMultipleExtensions){
+	if(!hasMultipleExtensions)
+	{
 		return;
 	}
 
 	for(const QString& ext : extensionStrings)
 	{
-		QPushButton* btn = nullptr;
+		QPushButton* btn;
 		if(m->extensionButtonMap.contains(ext))
 		{
 			btn = m->extensionButtonMap[ext];
@@ -147,10 +146,9 @@ bool FileExtensionBar::hasExtensions() const
 	return (m->library->extensions().extensions().size() > 1);
 }
 
-
 void FileExtensionBar::buttonToggled(bool b)
 {
-	auto* btn = static_cast<QPushButton*>(sender());
+	auto* btn = dynamic_cast<QPushButton*>(sender());
 
 	Gui::ExtensionSet extensions = m->library->extensions();
 	extensions.setEnabled(btn->text(), b);

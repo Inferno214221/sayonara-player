@@ -38,9 +38,7 @@ namespace Cover
 	class Location;
 }
 
-
 UI_FWD(GUI_AlternativeCovers)
-
 
 /**
  * @brief The GUI_AlternativeCovers class
@@ -48,58 +46,55 @@ UI_FWD(GUI_AlternativeCovers)
  */
 
 class GUI_AlternativeCovers :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_AlternativeCovers)
 	UI_CLASS(GUI_AlternativeCovers)
 
-signals:
-	void sigCoverChanged(const Cover::Location& cl);
+	signals:
+		void sigCoverChanged(const Cover::Location& cl);
 
-public:
-	explicit GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent);
-	~GUI_AlternativeCovers() override;
+	public:
+		explicit GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent);
+		~GUI_AlternativeCovers() override;
 
-	void setCoverLocation(const Cover::Location& cl);
+		void setCoverLocation(const Cover::Location& cl);
 
+	public slots:
+		void start();
+		void stop();
 
-public slots:
-	void start();
-	void stop();
+	private:
+		void initUi();
+		void reset();
+		void reloadCombobox();
+		void initSaveToLibrary();
 
+	private slots:
+		void okClicked();
+		void applyClicked();
+		void searchClicked();
+		void openFileDialog();
 
-private:
-	void initUi();
-	void reset();
-	void reloadCombobox();
-	void initSaveToLibrary();
+		void coverPressed(const QModelIndex& idx);
+		void coverLookupStarted();
+		void coverLookupFinished(bool);
+		void coverFound(const QPixmap& cover);
 
-private slots:
-	void okClicked();
-	void applyClicked();
-	void searchClicked();
-	void openFileDialog();
+		void readyForProgressbar();
 
-	void coverPressed(const QModelIndex& idx);
-	void coverLookupStarted();
-	void coverLookupFinished(bool);
-	void coverFound(const QPixmap& cover);
+		void coverServersChanged();
+		void autostartToggled(bool b);
+		void rbAutosearchToggled(bool b);
+		void wwwActiveChanged();
 
-	void readyForProgressbar();
+		void searchTextEdited(const QString& text);
 
-	void coverServersChanged();
-	void autostartToggled(bool b);
-	void rbAutosearchToggled(bool b);
-	void wwwActiveChanged();
-
-	void searchTextEdited(const QString& text);
-
-
-protected:
-	void showEvent(QShowEvent* e) override;
-	void resizeEvent(QResizeEvent* e) override;
-	void languageChanged() override;
+	protected:
+		void showEvent(QShowEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
+		void languageChanged() override;
 };
 
 #endif /* GUI_ALTERNATE_COVERS_H_ */

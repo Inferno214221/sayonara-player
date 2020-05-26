@@ -29,16 +29,15 @@ struct GUI_LibraryReloadDialog::Private
 {
 	QString libraryName;
 
-	Private(const QString& library_name) :
-		libraryName(library_name)
-	{}
+	Private(const QString& libraryName) :
+		libraryName(libraryName) {}
 };
 
-GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& library_name, QWidget* parent) :
+GUI_LibraryReloadDialog::GUI_LibraryReloadDialog(const QString& libraryName, QWidget* parent) :
 	Gui::Dialog(parent),
 	ui(new Ui::GUI_LibraryReloadDialog)
 {
-	m = Pimpl::make<Private>(library_name);
+	m = Pimpl::make<Private>(libraryName);
 
 	ui->setupUi(this);
 
@@ -56,14 +55,8 @@ GUI_LibraryReloadDialog::~GUI_LibraryReloadDialog()
 
 void GUI_LibraryReloadDialog::setQuality(Library::ReloadQuality quality)
 {
-	switch(quality)
-	{
-		case Library::ReloadQuality::Accurate:
-			ui->comboQuality->setCurrentIndex(1);
-			break;
-		default:
-			ui->comboQuality->setCurrentIndex(0);
-	}
+	int index = (quality == Library::ReloadQuality::Accurate) ? 1 : 0;
+	ui->comboQuality->setCurrentIndex(index);
 }
 
 void GUI_LibraryReloadDialog::languageChanged()
@@ -104,11 +97,13 @@ void GUI_LibraryReloadDialog::cancelClicked()
 
 void GUI_LibraryReloadDialog::comboChanged(int i)
 {
-	if(i == 0){
+	if(i == 0)
+	{
 		ui->labDescription->setText(tr("Only scan for new and deleted files"));
 	}
 
-	else{
+	else
+	{
 		ui->labDescription->setText(tr("Scan all files in your library directory"));
 	}
 }

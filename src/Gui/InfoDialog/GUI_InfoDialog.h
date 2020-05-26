@@ -43,60 +43,60 @@ UI_FWD(InfoDialog)
  * @ingroup InfoDialog
  */
 class GUI_InfoDialog :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_InfoDialog)
 	UI_CLASS(InfoDialog)
 
-public:
-	enum class Tab : uint8_t
-	{
-		Info=0,
-		Lyrics=1,
-		Edit=2
-	};
+	public:
+		enum class Tab : uint8_t
+		{
+			Info = 0,
+			Lyrics = 1,
+			Edit = 2
+		};
 
-	explicit GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent=nullptr);
-	~GUI_InfoDialog() override;
+		explicit GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent = nullptr);
+		~GUI_InfoDialog() override;
 
-	void setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation);
-	bool hasMetadata() const;
+		void setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation);
+		bool hasMetadata() const;
 
-	GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
-	void showCoverEditTab();
+		GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
+		void showCoverEditTab();
 
-	void setBusy(bool b);
+		void setBusy(bool b);
 
-protected:
-	void skinChanged() override;
-	void languageChanged() override;
+	protected:
+		void skinChanged() override;
+		void languageChanged() override;
 
-private slots:
-	void tabIndexChangedInt(int idx);
+	private slots:
+		void tabIndexChangedInt(int idx);
 
-	void writeCoversToTracksClicked();
-	void coverChanged();
+		void writeCoversToTracksClicked();
+		void coverChanged();
 
-private:
-	void init();
-	void initTagEdit();
-	void initLyrics();
+	private:
+		void init();
+		void initTagEdit();
+		void initLyrics();
 
-	void showInfoTab();
-	void showLyricsTab();
-	void showTagEditTab();
+		void showInfoTab();
+		void showLyricsTab();
+		void showTagEditTab();
 
-	void prepareCover(const Cover::Location& cover_path);
-	void prepareInfo(MD::Interpretation mode);
-	void prepareTab(GUI_InfoDialog::Tab idx);
+		void prepareCover(const Cover::Location& cover_path);
+		void prepareInfo(MD::Interpretation mode);
+		void prepareTab(GUI_InfoDialog::Tab idx);
 
-protected:
-	void closeEvent(QCloseEvent* e) override;
-	void showEvent(QShowEvent* e) override;
-	void resizeEvent(QResizeEvent* e) override;
+	protected:
+		void closeEvent(QCloseEvent* e) override;
+		void showEvent(QShowEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
 
-	using Gui::Dialog::show;
+		using Gui::Dialog::show;
 };
 
 #endif /* GUI_INFODIALOG_H_ */

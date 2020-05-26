@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DirChooserDialog.h"
 #include <QDir>
 #include <QList>
@@ -42,13 +40,14 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 	this->setAcceptMode(QFileDialog::AcceptOpen);
 	this->setFileMode(QFileDialog::Directory);
 
-	const QList<QStandardPaths::StandardLocation> locations {
-		QStandardPaths::HomeLocation,
-		QStandardPaths::DesktopLocation,
-		QStandardPaths::DownloadLocation,
-		QStandardPaths::MusicLocation,
-		QStandardPaths::TempLocation
-	};
+	const QList<QStandardPaths::StandardLocation> locations
+		{
+			QStandardPaths::HomeLocation,
+			QStandardPaths::DesktopLocation,
+			QStandardPaths::DownloadLocation,
+			QStandardPaths::MusicLocation,
+			QStandardPaths::TempLocation
+		};
 
 	QList<QUrl> sidebarUrls = this->sidebarUrls();
 	for(const QStandardPaths::StandardLocation& location : locations)
@@ -57,7 +56,8 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 		for(const QString& standardLocation : standardLocations)
 		{
 			const QUrl url = QUrl::fromLocalFile(standardLocation);
-			if(sidebarUrls.contains(url)){
+			if(sidebarUrls.contains(url))
+			{
 				continue;
 			}
 
@@ -67,14 +67,15 @@ DirChooserDialog::DirChooserDialog(QWidget* parent) :
 
 	this->setSidebarUrls(sidebarUrls);
 
-	QListView* listView = this->findChild<QListView*>("listView");
-	if(listView != nullptr)
+	auto* listView = this->findChild<QListView*>("listView");
+	if(listView)
 	{
 		listView->setSelectionMode(QAbstractItemView::MultiSelection);
 
-		QTreeView* tree_view = this->findChild<QTreeView*>();
-		if(tree_view){
-			tree_view->setSelectionMode(QAbstractItemView::MultiSelection);
+		auto* treeView = this->findChild<QTreeView*>();
+		if(treeView)
+		{
+			treeView->setSelectionMode(QAbstractItemView::MultiSelection);
 		}
 	}
 }

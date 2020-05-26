@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GenreViewContextMenu.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
@@ -28,7 +26,7 @@ using Library::GenreViewContextMenu;
 
 struct GenreViewContextMenu::Private
 {
-	QAction* actionToggleTree=nullptr;
+	QAction* actionToggleTree = nullptr;
 };
 
 GenreViewContextMenu::GenreViewContextMenu(QWidget* parent) :
@@ -36,15 +34,15 @@ GenreViewContextMenu::GenreViewContextMenu(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	bool show_tree = GetSetting(Set::Lib_GenreTree);
+	bool showTree = GetSetting(Set::Lib_GenreTree);
 	m->actionToggleTree = new QAction(this);
 	m->actionToggleTree->setCheckable(true);
-	m->actionToggleTree->setChecked(show_tree);
+	m->actionToggleTree->setChecked(showTree);
 	m->actionToggleTree->setText(Lang::get(Lang::Tree));
 
 	this->registerAction(m->actionToggleTree);
 
-	connect( m->actionToggleTree, &QAction::triggered, this, &GenreViewContextMenu::toggleTreeTriggered);
+	connect(m->actionToggleTree, &QAction::triggered, this, &GenreViewContextMenu::toggleTreeTriggered);
 }
 
 GenreViewContextMenu::~GenreViewContextMenu() = default;

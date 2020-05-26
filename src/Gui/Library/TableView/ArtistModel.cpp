@@ -42,8 +42,7 @@
 using namespace Library;
 
 ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(parent, library)
-{}
+	ItemModel(parent, library) {}
 
 ArtistModel::~ArtistModel() = default;
 
@@ -51,11 +50,13 @@ Id ArtistModel::mapIndexToId(int row) const
 {
 	const ArtistList& artists = library()->artists();
 
-	if(row < 0 || row >= artists.count()){
+	if(row < 0 || row >= artists.count())
+	{
 		return -1;
 	}
 
-	else {
+	else
+	{
 		return artists[ArtistList::Size(row)].id();
 	}
 }
@@ -64,30 +65,34 @@ QString ArtistModel::searchableString(int row) const
 {
 	const ArtistList& artists = library()->artists();
 
-	if(row < 0 || row >= artists.count()){
+	if(row < 0 || row >= artists.count())
+	{
 		return QString();
 	}
 
-	else {
+	else
+	{
 		return artists[ArtistList::Size(row)].name();
 	}
 }
 
 QVariant ArtistModel::data(const QModelIndex& index, int role) const
 {
-	if (!index.isValid()) {
+	if(!index.isValid())
+	{
 		return QVariant();
 	}
 
 	const ArtistList& artists = library()->artists();
-	if (index.row() >= artists.count()) {
+	if(index.row() >= artists.count())
+	{
 		return QVariant();
 	}
 
 	int row = index.row();
 	int col = index.column();
+	auto columnIndex = ColumnIndex::Artist(col);
 
-	ColumnIndex::Artist columnIndex = ColumnIndex::Artist(col);
 	const Artist& artist = artists[ArtistList::Size(row)];
 
 	if(role == Qt::TextAlignmentRole)
@@ -106,7 +111,8 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		switch(columnIndex)
 		{
 			case ColumnIndex::Artist::Name:
-				if(artist.name().isEmpty()){
+				if(artist.name().isEmpty())
+				{
 					return Lang::get(Lang::UnknownArtist);
 				}
 				return artist.name();
@@ -119,7 +125,8 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole){
+	else if(role == Qt::SizeHintRole)
+	{
 		return QSize(1, Gui::Util::viewRowHeight());
 	}
 
@@ -133,7 +140,8 @@ int ArtistModel::rowCount(const QModelIndex&) const
 
 Qt::ItemFlags ArtistModel::flags(const QModelIndex& index) const
 {
-	if (!index.isValid()){
+	if(!index.isValid())
+	{
 		return Qt::ItemIsEnabled;
 	}
 
@@ -142,14 +150,16 @@ Qt::ItemFlags ArtistModel::flags(const QModelIndex& index) const
 
 Cover::Location ArtistModel::cover(const IndexSet& indexes) const
 {
-	if(indexes.isEmpty() || indexes.size() > 1){
+	if(indexes.isEmpty() || indexes.size() > 1)
+	{
 		return Cover::Location();
 	}
 
 	const ArtistList& artists = library()->artists();
 	int idx = indexes.first();
 
-	if(idx < 0 || idx > artists.count()){
+	if(idx < 0 || idx > artists.count())
+	{
 		return Cover::Location();
 	}
 

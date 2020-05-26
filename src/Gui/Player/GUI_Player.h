@@ -31,7 +31,6 @@
 
 class GUI_TrayIcon;
 class GUI_Logger;
-class PreferenceDialog;
 class QAction;
 class QMessageBox;
 class QTranslator;
@@ -45,74 +44,74 @@ namespace PlayerPlugin
 }
 
 class GUI_Player :
-		public Gui::MainWindow,
-		public MessageReceiverInterface
+	public Gui::MainWindow,
+	public MessageReceiverInterface
 {
 	Q_OBJECT
 	PIMPL(GUI_Player)
 	UI_CLASS(GUI_Player)
 
-signals:
-	void sigClosed();
+	signals:
+		void sigClosed();
 
-public:
-	explicit GUI_Player(QWidget* parent=nullptr);
-	~GUI_Player() override;
+	public:
+		explicit GUI_Player(QWidget* parent = nullptr);
+		~GUI_Player() override;
 
-	void registerPreferenceDialog(QAction* dialog_action);
-	void requestShutdown();
+		void registerPreferenceDialog(QAction* dialog_action);
+		void requestShutdown();
 
-private:
-	void initTrayActions();
-	void initConnections();
-	void initLibrary();
-	void initControlSplitter();
-	void initMainSplitter();
-	void initFontChangeFix();
-	void initGeometry();
+	private:
+		void initTrayActions();
+		void initConnections();
+		void initLibrary();
+		void initControlSplitter();
+		void initMainSplitter();
+		void initFontChangeFix();
+		void initGeometry();
 
-	void checkControlSplitter();
+		void checkControlSplitter();
 
-	void fullscreenChanged();
-	void initControls();
-	void controlstyleChanged();
+		void fullscreenChanged();
+		void initControls();
+		void controlstyleChanged();
 
-	void showLibraryChanged();
-	void addCurrentLibrary();
-	void removeCurrentLibrary();
+		void showLibraryChanged();
+		void addCurrentLibrary();
+		void removeCurrentLibrary();
 
+	private slots:
+		void playstateChanged(PlayState state);
+		void playError(const QString& message);
 
-private slots:
-	void playstateChanged(PlayState state);
-	void playError(const QString& message);
+		void splitterMainMoved(int pos, int idx);
+		void splitterControlsMoved(int pos, int idx);
 
-	void splitterMainMoved(int pos, int idx);
-	void splitterControlsMoved(int pos, int idx);
+		void currentLibraryChanged();
 
-	void currentLibraryChanged();
+		void minimize();
+		void reallyClose();
 
-	void minimize();
-	void reallyClose();
+		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+		void currentTrackChanged(const MetaData& md);
 
-	void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-	void currentTrackChanged(const MetaData& md);
+		/* Plugins */
+		void pluginAdded(PlayerPlugin::Base* plugin);
+		void pluginActionTriggered(bool b);
 
-	/* Plugins */
-	void pluginAdded(PlayerPlugin::Base* plugin);
-	void pluginActionTriggered(bool b);
+	protected:
+		void closeEvent(QCloseEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
+		bool event(QEvent* e) override;
 
-protected:
-	void closeEvent(QCloseEvent* e) override;
-	void resizeEvent(QResizeEvent* e) override;
-	bool event(QEvent* e) override;
+		// Methods for other mudules to display info/warning/error
+		Message::Answer errorReceived(const QString& error, const QString& senderName = QString()) override;
+		Message::Answer warningReceived(const QString& error, const QString& senderName = QString()) override;
+		Message::Answer infoReceived(const QString& error, const QString& senderName = QString()) override;
+		Message::Answer questionReceived(const QString& info, const QString& senderName = QString(),
+		                                 Message::QuestionType type = Message::QuestionType::YesNo) override;
 
-	// Methods for other mudules to display info/warning/error
-	Message::Answer errorReceived(const QString& error, const QString& senderName=QString()) override;
-	Message::Answer warningReceived(const QString& error, const QString& senderName=QString()) override;
-	Message::Answer infoReceived(const QString& error, const QString& senderName=QString()) override;
-	Message::Answer questionReceived(const QString& info, const QString& senderName=QString(), Message::QuestionType type=Message::QuestionType::YesNo) override;
-
-	void languageChanged() override;
+		void languageChanged() override;
 };
 
 #endif // GUI_SIMPLEPLAYER_H

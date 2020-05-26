@@ -78,16 +78,6 @@ int ColumnHeader::defaultSize() const
 	return m->defaultSize;
 }
 
-int ColumnHeader::preferredSize() const
-{
-	return m->preferredSize;
-}
-
-void ColumnHeader::setPreferredSize(int size)
-{
-	m->preferredSize = size;
-}
-
 SortOrder ColumnHeader::sortorder(Qt::SortOrder qtSortorder) const
 {
 	return m->sortorderMap[qtSortorder];
@@ -149,7 +139,7 @@ ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, S
 
 QString ColumnHeaderAlbum::title() const
 {
-	ColumnIndex::Album type = ColumnIndex::Album(ColumnHeader::columnIndex());
+	auto type = ColumnIndex::Album(ColumnHeader::columnIndex());
 	switch(type)
 	{
 		case ColumnIndex::Album::MultiDisc:
@@ -182,7 +172,7 @@ ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable
 
 QString ColumnHeaderArtist::title() const
 {
-	ColumnIndex::Artist type = ColumnIndex::Artist(ColumnHeader::columnIndex());
+	auto type = ColumnIndex::Artist(ColumnHeader::columnIndex());
 	switch(type)
 	{
 		case ColumnIndex::Artist::Name:

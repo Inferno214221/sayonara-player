@@ -12,7 +12,7 @@ struct HistoryEntryWidget::Private
 {
 	Session::Timecode timecode;
 
-	HistoryTableView*	tableview=nullptr;
+	HistoryTableView*	tableView=nullptr;
 	QLabel*				trackLabel=nullptr;
 	QLabel*				dateLabel=nullptr;
 
@@ -36,7 +36,7 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 	auto* layout = new QVBoxLayout();
 	this->setLayout(layout);
 
-	m->tableview = new HistoryTableView(timecode, this);
+	m->tableView = new HistoryTableView(timecode, this);
 
 	auto* labelLayout = new QHBoxLayout();
 	{
@@ -53,7 +53,7 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 			QFont font = m->trackLabel->font();
 			font.setBold(true);
 			m->trackLabel->setFont(font);
-			m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
+			m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableView->rows()));
 		}
 
 		labelLayout->addWidget(m->dateLabel);
@@ -63,9 +63,9 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 
 	layout->setSpacing(10);
 	layout->addLayout(labelLayout);
-	layout->addWidget(m->tableview);
+	layout->addWidget(m->tableView);
 
-	connect(m->tableview, &HistoryTableView::sigRowcountChanged, this, &HistoryEntryWidget::rowcount_changed);
+	connect(m->tableView, &HistoryTableView::sigRowcountChanged, this, &HistoryEntryWidget::rowcount_changed);
 }
 
 Session::Id HistoryEntryWidget::id() const
@@ -78,10 +78,10 @@ HistoryEntryWidget::~HistoryEntryWidget() = default;
 void HistoryEntryWidget::languageChanged()
 {
 	m->dateLabel->setText( dateToString(Util::intToDate(m->timecode)) );
-	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
+	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableView->rows()));
 }
 
 void HistoryEntryWidget::rowcount_changed()
 {
-	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableview->rows()));
+	m->trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, m->tableView->rows()));
 }

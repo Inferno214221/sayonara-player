@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CoverModel.h"					// Role names
+#include "CoverModel.h"                    // Role names
 #include "CoverDelegate.h"
 #include "Utils/Settings/Settings.h"
 
@@ -28,12 +28,12 @@
 #include <QFontMetrics>
 
 Library::CoverDelegate::CoverDelegate(QObject* parent) :
-	QStyledItemDelegate(parent)
-{}
+	QStyledItemDelegate(parent) {}
 
 Library::CoverDelegate::~CoverDelegate() = default;
 
-void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void
+Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	const int textOffset = 3;
 
@@ -45,7 +45,8 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
 	{
 		const QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
-		if(pm.isNull()){
+		if(pm.isNull())
+		{
 			painter->restore();
 			return;
 		}
@@ -76,14 +77,19 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 
 	{
 		QString album = index.data(CoverModel::AlbumRole).toString();
-		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2*textOffset);
-		painter->drawText(textOffset, 0, option.rect.width() - 2*textOffset, fm.height(), int(option.displayAlignment), album);
+		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2 * textOffset);
+		painter->drawText(textOffset,
+		                  0,
+		                  option.rect.width() - 2 * textOffset,
+		                  fm.height(),
+		                  int(option.displayAlignment),
+		                  album);
 		painter->translate(0, fm.height());
 	}
 
 	{
 		QString artist = index.data(CoverModel::ArtistRole).toString();
-		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2*textOffset);
+		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2 * textOffset);
 		if(!artist.isEmpty())
 		{
 			QPen pen = painter->pen();
@@ -91,7 +97,12 @@ void Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 			color.setAlpha(172);
 			pen.setColor(color);
 			painter->setPen(pen);
-			painter->drawText(textOffset, 0, option.rect.width() - 2*textOffset, fm.height(), option.displayAlignment, artist);
+			painter->drawText(textOffset,
+			                  0,
+			                  option.rect.width() - 2 * textOffset,
+			                  fm.height(),
+			                  option.displayAlignment,
+			                  artist);
 		}
 	}
 

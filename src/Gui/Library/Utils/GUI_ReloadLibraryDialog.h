@@ -46,7 +46,7 @@ namespace Library
 			void sigAccepted(ReloadQuality quality);
 
 		public:
-			explicit GUI_LibraryReloadDialog(const QString& library_name, QWidget* parent=nullptr);
+			explicit GUI_LibraryReloadDialog(const QString& libraryName, QWidget* parent = nullptr);
 			~GUI_LibraryReloadDialog() override;
 
 			void setQuality(ReloadQuality quality);

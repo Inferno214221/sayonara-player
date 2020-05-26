@@ -59,7 +59,7 @@ static QPixmap getPixmapFromListWidgetItem(QListWidgetItem* item)
 		QIcon icon = item->icon();
 		QList<QSize> sizes = icon.availableSizes();
 
-		Util::Algorithm::sort(sizes, [](auto s1, auto s2){
+		Util::Algorithm::sort(sizes, [](auto s1, auto s2) {
 			return (s1.width() * s1.height()) < (s2.width() * s2.height());
 		});
 
@@ -73,11 +73,10 @@ static QPixmap getPixmapFromListWidgetItem(QListWidgetItem* item)
 	return pm;
 }
 
-
 struct GUI_AlternativeCovers::Private
 {
-	AlternativeLookup* alternativeLookup=nullptr;
-	ProgressBar* loadingBar=nullptr;
+	AlternativeLookup* alternativeLookup = nullptr;
+	ProgressBar* loadingBar = nullptr;
 
 	Private(const Cover::Location& cl, bool silent, QObject* parent)
 	{
@@ -99,17 +98,19 @@ GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, bool sil
 {
 	m = Pimpl::make<GUI_AlternativeCovers::Private>(cl, silent, this);
 
-	connect(m->alternativeLookup, &AlternativeLookup::sigCoverfetchersChanged, this, &GUI_AlternativeCovers::reloadCombobox);
+	connect(m->alternativeLookup,
+	        &AlternativeLookup::sigCoverfetchersChanged,
+	        this,
+	        &GUI_AlternativeCovers::reloadCombobox);
 }
-
 
 GUI_AlternativeCovers::~GUI_AlternativeCovers()
 {
 	reset();
 
-	delete ui; ui=nullptr;
+	delete ui;
+	ui = nullptr;
 }
-
 
 void GUI_AlternativeCovers::initUi()
 {
@@ -152,9 +153,15 @@ void GUI_AlternativeCovers::initUi()
 		connect(ui->rbAutosearch, &QRadioButton::toggled, this, &GUI_AlternativeCovers::rbAutosearchToggled);
 		connect(ui->rbTextsearch, &QRadioButton::toggled, this, &GUI_AlternativeCovers::rbAutosearchToggled);
 
-		connect(m->alternativeLookup, &AlternativeLookup::sigCoverChanged, this, &GUI_AlternativeCovers::sigCoverChanged);
+		connect(m->alternativeLookup,
+		        &AlternativeLookup::sigCoverChanged,
+		        this,
+		        &GUI_AlternativeCovers::sigCoverChanged);
 		connect(m->alternativeLookup, &AlternativeLookup::sigCoverFound, this, &GUI_AlternativeCovers::coverFound);
-		connect(m->alternativeLookup, &AlternativeLookup::sigFinished, this, &GUI_AlternativeCovers::coverLookupFinished);
+		connect(m->alternativeLookup,
+		        &AlternativeLookup::sigFinished,
+		        this,
+		        &GUI_AlternativeCovers::coverLookupFinished);
 		connect(m->alternativeLookup, &AlternativeLookup::sigStarted, this, &GUI_AlternativeCovers::coverLookupStarted);
 
 		ListenSettingNoCall(Set::Cover_Server, GUI_AlternativeCovers::coverServersChanged);
@@ -190,7 +197,8 @@ void GUI_AlternativeCovers::start()
 			m->alternativeLookup->startTextSearch(searchTerm, identifier);
 		}
 
-		else {
+		else
+		{
 			m->alternativeLookup->startTextSearch(searchTerm);
 		}
 	}
@@ -203,7 +211,8 @@ void GUI_AlternativeCovers::start()
 			m->alternativeLookup->start(identifier);
 		}
 
-		else {
+		else
+		{
 			m->alternativeLookup->start();
 		}
 	}
@@ -225,7 +234,8 @@ void GUI_AlternativeCovers::okClicked()
 void GUI_AlternativeCovers::applyClicked()
 {
 	QPixmap cover = getPixmapFromListWidgetItem(ui->tvImages->currentItem());
-	if(cover.isNull()) {
+	if(cover.isNull())
+	{
 		return;
 	}
 
@@ -234,7 +244,8 @@ void GUI_AlternativeCovers::applyClicked()
 
 void GUI_AlternativeCovers::searchClicked()
 {
-	if( m->alternativeLookup->isRunning() ) {
+	if(m->alternativeLookup->isRunning())
+	{
 		m->alternativeLookup->stop();
 		return;
 	}
@@ -274,7 +285,7 @@ void GUI_AlternativeCovers::coverLookupFinished(bool success)
 
 void GUI_AlternativeCovers::coverFound(const QPixmap& pm)
 {
-	QListWidgetItem* item = new QListWidgetItem(ui->tvImages);
+	auto* item = new QListWidgetItem(ui->tvImages);
 	item->setIcon(QIcon(pm));
 	item->setText(QString("%1x%2").arg(pm.width()).arg(pm.height()));
 
@@ -283,8 +294,8 @@ void GUI_AlternativeCovers::coverFound(const QPixmap& pm)
 	ui->btnOk->setEnabled(true);
 	ui->btnApply->setEnabled(true);
 
-	QString text = tr("%n cover(s) found", "", ui->tvImages->count());
-	ui->labStatus->setText(text) ;
+	const QString text = tr("%n cover(s) found", "", ui->tvImages->count());
+	ui->labStatus->setText(text);
 }
 
 void GUI_AlternativeCovers::coverServersChanged()
@@ -305,11 +316,13 @@ void GUI_AlternativeCovers::rbAutosearchToggled(bool b)
 	ui->btnSearch->setEnabled(!isTextSearch);
 	ui->comboSearchFetchers->setEnabled(!isTextSearch);
 
-	if(isTextSearch){
+	if(isTextSearch)
+	{
 		searchTextEdited(ui->leSearch->text());
 	}
 
-	if(b) {
+	if(b)
+	{
 		reloadCombobox();
 	}
 }
@@ -328,7 +341,8 @@ void GUI_AlternativeCovers::wwwActiveChanged()
 
 void GUI_AlternativeCovers::searchTextEdited(const QString& text)
 {
-	if(!ui->rbTextsearch->isChecked()){
+	if(!ui->rbTextsearch->isChecked())
+	{
 		return;
 	}
 
@@ -364,13 +378,13 @@ void GUI_AlternativeCovers::reset()
 	m->alternativeLookup->reset();
 }
 
-
 void GUI_AlternativeCovers::openFileDialog()
 {
 	QString dir = QDir::homePath();
 
 	Cover::Location cl = m->alternativeLookup->coverLocation();
-	if(!cl.localPathDir().isEmpty()) {
+	if(!cl.localPathDir().isEmpty())
+	{
 		dir = cl.localPathDir();
 	}
 
@@ -385,8 +399,7 @@ void GUI_AlternativeCovers::openFileDialog()
 
 			for(const QString& path : selectedFiles)
 			{
-
-				QListWidgetItem* item = new QListWidgetItem(ui->tvImages);
+				auto* item = new QListWidgetItem(ui->tvImages);
 				QPixmap pm(path);
 
 				item->setIcon(QIcon(pm));
@@ -399,13 +412,13 @@ void GUI_AlternativeCovers::openFileDialog()
 	dialog->deleteLater();
 }
 
-
 void GUI_AlternativeCovers::reloadCombobox()
 {
 	bool fulltextSearch = ui->rbTextsearch->isChecked();
 
 	AlternativeLookup::SearchMode search_mode = AlternativeLookup::SearchMode::Default;
-	if(fulltextSearch) {
+	if(fulltextSearch)
+	{
 		search_mode = AlternativeLookup::SearchMode::Fulltext;
 	}
 
@@ -434,7 +447,6 @@ void GUI_AlternativeCovers::initSaveToLibrary()
 	ui->cbSaveToLibrary->setChecked(GetSetting(Set::Cover_SaveToLibrary));
 	ui->cbSaveToLibrary->setVisible(!cl.localPathDir().isEmpty());
 }
-
 
 void GUI_AlternativeCovers::languageChanged()
 {

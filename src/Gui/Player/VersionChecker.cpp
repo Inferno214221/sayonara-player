@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "VersionChecker.h"
 
 #include "Utils/Utils.h"
@@ -30,11 +28,10 @@
 
 #include "Gui/Utils/Style.h"
 
-
 VersionChecker::VersionChecker(QObject* parent) :
 	QObject(parent)
 {
-	AsyncWebAccess* awa = new AsyncWebAccess(this);
+	auto* awa = new AsyncWebAccess(this);
 	awa->run("http://sayonara-player.com/current_version");
 	connect(awa, &AsyncWebAccess::sigFinished, this, &VersionChecker::versionCheckFinished);
 }
@@ -43,38 +40,40 @@ VersionChecker::~VersionChecker() = default;
 
 void VersionChecker::versionCheckFinished()
 {
-	AsyncWebAccess::Status status = AsyncWebAccess::Status::Error;
-	QByteArray data;
-
+	auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
+	if(awa)
 	{
-		auto* awa = static_cast<AsyncWebAccess*>(sender());
-		if(awa){
-			return;
-		}
-
-		status = awa->status();
-		data = awa->data();
-
-		awa->deleteLater();
-	}
-
-	if(status != AsyncWebAccess::Status::GotData || data.isEmpty()) {
 		return;
 	}
 
-	QString new_version = QString(data).trimmed();
-	QString cur_version = GetSetting(Set::Player_Version);
+	const AsyncWebAccess::Status status = awa->status();
+	const QByteArray data = awa->data();
 
-	bool notify_new_version = GetSetting(Set::Player_NotifyNewVersion);
-	bool dark = Style::isDark();
+	awa->deleteLater();
 
-	spLog(Log::Info, this) << "Newest Version: " << new_version;
-	spLog(Log::Info, this) << "This Version:   " << cur_version;
+	if(status != AsyncWebAccess::Status::GotData || data.isEmpty())
+	{
+		return;
+	}
 
-	QString link = Util::createLink("http://sayonara-player.com", dark);
+	const QString newVersion = QString(data).trimmed();
+	const QString curVersion = GetSetting(Set::Player_Version);
 
-	if(new_version > cur_version && notify_new_version) {
-		Message::info(tr("A new version is available!") + "<br />" +  link);
+	spLog(Log::Info, this) << "Newest Version: " << newVersion;
+	spLog(Log::Info, this) << "This Version:   " << curVersion;
+
+	bool notifyNewVersion = GetSetting(Set::Player_NotifyNewVersion);
+	if(notifyNewVersion)
+	{
+		if(newVersion > curVersion)
+		{
+			Message::info
+				(
+					tr("A new version is available!") +
+					"<br />" +
+					Util::createLink("http://sayonara-player.com", Style::isDark())
+				);
+		}
 	}
 
 	emit sigFinished();

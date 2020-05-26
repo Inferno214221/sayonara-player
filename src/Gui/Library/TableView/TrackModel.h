@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*
  * TrackModel.h
  *
@@ -39,7 +38,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class TrackModel :
-			public ItemModel
+		public ItemModel
 	{
 		Q_OBJECT
 		PIMPL(TrackModel)
@@ -49,16 +48,16 @@ namespace Library
 			~TrackModel() override;
 
 			/** AbstractSearchTableModel **/
-			Qt::ItemFlags	flags(const QModelIndex& index) const override;
-			QVariant		data(const QModelIndex& index, int role) const override;
-			bool			setData(const QModelIndex& index, const QVariant &value, int role) override;
-			int				rowCount(const QModelIndex& parent) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
+			QVariant data(const QModelIndex& index, int role) const override;
+			bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+			int rowCount(const QModelIndex& parent) const override;
 
 			/** ItemModel.h **/
 			Cover::Location cover(const IndexSet& indexes) const override;
-			int				searchableColumn() const override;
-			Id				mapIndexToId(int row) const override;
-			QString			searchableString(int row) const override;
+			int searchableColumn() const override;
+			Id mapIndexToId(int row) const override;
+			QString searchableString(int row) const override;
 
 		protected:
 			const MetaDataList& selectedMetadata() const override;

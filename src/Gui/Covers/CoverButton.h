@@ -36,7 +36,7 @@ namespace Gui
 	 * @ingroup GuiCovers
 	 */
 	class CoverButton :
-			public Gui::WidgetTemplate<Gui::ImageButton>
+		public Gui::WidgetTemplate<Gui::ImageButton>
 	{
 		Q_OBJECT
 		PIMPL(CoverButton)
@@ -46,7 +46,7 @@ namespace Gui
 			void sigRejected();
 
 		public:
-			explicit CoverButton(QWidget* parent=nullptr);
+			explicit CoverButton(QWidget* parent = nullptr);
 			~CoverButton() override;
 
 			/**

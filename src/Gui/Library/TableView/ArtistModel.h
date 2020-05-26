@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*
  * LibraryItemModelArtistts.h
  *
@@ -38,7 +37,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class ArtistModel :
-			public ItemModel
+		public ItemModel
 	{
 		Q_OBJECT
 
@@ -47,15 +46,15 @@ namespace Library
 			~ArtistModel() override;
 
 			/** AbstractSearchTableModel **/
-			Qt::ItemFlags	flags(const QModelIndex& index) const override;
-			QVariant		data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
-			int				rowCount(const QModelIndex& parent) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
+			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			int rowCount(const QModelIndex& parent) const override;
 
 			/** LibraryItemModel **/
-			Cover::Location	cover(const IndexSet& indexes) const override;
-			int				searchableColumn() const override;
-			Id				mapIndexToId(int row) const override;
-			QString			searchableString(int row) const override;
+			Cover::Location cover(const IndexSet& indexes) const override;
+			int searchableColumn() const override;
+			Id mapIndexToId(int row) const override;
+			QString searchableString(int row) const override;
 
 		protected:
 			const MetaDataList& selectedMetadata() const override;

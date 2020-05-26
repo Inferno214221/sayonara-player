@@ -80,7 +80,7 @@ namespace Library
 			void buildGenreDataTree(const Util::Set<Genre>& genres);
 			void populateWidget(QTreeWidgetItem* parent_item, GenreNode* node);
 
-			QTreeWidgetItem* findGenre(const QString& genre);
+			[[maybe_unused]] QTreeWidgetItem* findGenre(const QString& genre);
 
 		private slots:
 			void itemExpanded(QTreeWidgetItem* item);
@@ -120,7 +120,7 @@ namespace Library
 			GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool isInvalidGenre);
 
 			void setInvalidGenre(bool b);
-			bool isInvalidGenre() const;
+			[[maybe_unused]] bool isInvalidGenre() const;
 
 			static bool isInvalidGenre(const QModelIndex& index);
 	};

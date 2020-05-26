@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef ALBUMCOVERVIEW_H
 #define ALBUMCOVERVIEW_H
 
@@ -43,46 +42,46 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class GUI_CoverView :
-			public Gui::Widget
+		public Gui::Widget
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_CoverView)
 
-	signals:
-		void sigSortorderChanged(SortOrder so);
-		void sigDeleteClicked();
-		void sigReloadClicked();
+		signals:
+			void sigSortorderChanged(SortOrder so);
+			void sigDeleteClicked();
+			void sigReloadClicked();
 
-	public:
-		explicit GUI_CoverView(QWidget* parent=nullptr);
-		virtual ~GUI_CoverView() override;
+		public:
+			explicit GUI_CoverView(QWidget* parent = nullptr);
+			virtual ~GUI_CoverView() override;
 
-		void init(LocalLibrary* library);
-		bool isInitialized() const;
+			void init(LocalLibrary* library);
+			bool isInitialized() const;
 
-		IndexSet selectedItems() const;
-		void clearSelections() const;
+			IndexSet selectedItems() const;
+			void clearSelections() const;
 
-	protected:
-		void initSortingActions();
-		void initZoomActions();
+		protected:
+			void initSortingActions();
+			void initZoomActions();
 
-		void languageChanged() override;
+			void languageChanged() override;
 
-		void showEvent(QShowEvent* e) override;
+			void showEvent(QShowEvent* e) override;
 
-	private:
-		void zoomChanged();
-		void sortorderChanged();
-		void showArtistChanged();
+		private:
+			void zoomChanged();
+			void sortorderChanged();
+			void showArtistChanged();
 
-	private slots:
-		void comboSortingChanged(int idx);
-		void comboZoomChanged(int idx);
-		void closeClicked();
-		void showArtistTriggered(bool b);
+		private slots:
+			void comboSortingChanged(int idx);
+			void comboZoomChanged(int idx);
+			void closeClicked();
+			void showArtistTriggered(bool b);
 
-		void showUtilsChanged();
+			void showUtilsChanged();
 	};
 }
 

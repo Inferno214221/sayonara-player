@@ -26,29 +26,25 @@
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Library/SearchMode.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
 #include "Gui/Utils/EventFilter.h"
 
 #include <QLineEdit>
-#include <QMenu>
 #include <QShortcut>
 
 using namespace Library;
 
 struct GUI_AbstractLibrary::Private
 {
-	AbstractLibrary*	library = nullptr;
-	SearchBar*			leSearch=nullptr;
+	AbstractLibrary* library = nullptr;
+	SearchBar* leSearch = nullptr;
 
 	Private(AbstractLibrary* library) :
-		library(library)
-	{}
+		library(library) {}
 };
 
 GUI_AbstractLibrary::GUI_AbstractLibrary(AbstractLibrary* library, QWidget* parent) :
@@ -86,7 +82,8 @@ void GUI_AbstractLibrary::init()
 
 void GUI_AbstractLibrary::initSearchBar()
 {
-	if(!m->leSearch){
+	if(!m->leSearch)
+	{
 		return;
 	}
 
@@ -142,7 +139,7 @@ void GUI_AbstractLibrary::searchEdited(const QString& search)
 bool GUI_AbstractLibrary::hasSelections() const
 {
 	return (m->library->selectedAlbums().count() > 0) ||
-	(m->library->selectedArtists().count() > 0);
+	       (m->library->selectedArtists().count() > 0);
 }
 
 void GUI_AbstractLibrary::keyPressed(int key)
@@ -186,7 +183,8 @@ void GUI_AbstractLibrary::itemDeleteClicked()
 	int n_tracks = m->library->tracks().count();
 
 	TrackDeletionMode answer = showDeleteDialog(n_tracks);
-	if(answer != TrackDeletionMode::None) {
+	if(answer != TrackDeletionMode::None)
+	{
 		m->library->deleteFetchedTracks(answer);
 	}
 }
@@ -196,23 +194,26 @@ void GUI_AbstractLibrary::tracksDeleteClicked()
 	int n_tracks = m->library->currentTracks().count();
 
 	TrackDeletionMode answer = showDeleteDialog(n_tracks);
-	if(answer != TrackDeletionMode::None) {
+	if(answer != TrackDeletionMode::None)
+	{
 		m->library->deleteCurrentTracks(answer);
 	}
 }
 
-void GUI_AbstractLibrary::showDeleteAnswer(QString answer)
+void GUI_AbstractLibrary::showDeleteAnswer(const QString& answer)
 {
 	Message::info(answer, Lang::get(Lang::Library));
 }
 
 void GUI_AbstractLibrary::liveSearchChanged()
 {
-	if(GetSetting(Set::Lib_LiveSearch)) {
+	if(GetSetting(Set::Lib_LiveSearch))
+	{
 		connect(m->leSearch, &QLineEdit::textChanged, this, &GUI_AbstractLibrary::searchEdited);
 	}
 
-	else {
+	else
+	{
 		disconnect(m->leSearch, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::searchEdited);
 	}
 }

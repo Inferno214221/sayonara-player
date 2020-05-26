@@ -66,17 +66,17 @@ void GUI_EmptyLibrary::okClicked()
 	Manager::instance()->addLibrary(name, path);
 }
 
-
 void GUI_EmptyLibrary::chooseDirClicked()
 {
 	static QString oldDir = QDir::homePath();
 
 	QString newDir = QFileDialog::getExistingDirectory(this,
-						Lang::get(Lang::Directory),
-						oldDir,
-						QFileDialog::ShowDirsOnly);
+	                                                   Lang::get(Lang::Directory),
+	                                                   oldDir,
+	                                                   QFileDialog::ShowDirsOnly);
 
-	if(newDir.isEmpty()){
+	if(newDir.isEmpty())
+	{
 		return;
 	}
 
@@ -96,7 +96,7 @@ bool GUI_EmptyLibrary::checkName()
 	}
 
 	const QList<Library::Info> infos = manager->allLibraries();
-	bool contains = Util::Algorithm::contains(infos, [&name](const Library::Info& info){
+	bool contains = Util::Algorithm::contains(infos, [&name](const Library::Info& info) {
 		return (name.toLower() == info.name().toLower());
 	});
 
@@ -139,28 +139,21 @@ bool GUI_EmptyLibrary::checkPath()
 	else if(Util::File::isSubdir(path, info.path()))
 	{
 		ui->labError->setText
-		(
-			tr("A library which contains this file path already exists") + ":<br>" +
-			"<b>" + info.name() + "</b> (" + info.path() + ")"
-		);
+			(
+				tr("A library which contains this file path already exists") + ":<br>" +
+				"<b>" + info.name() + "</b> (" + info.path() + ")"
+			);
 	}
 
-	if(manager->libraryInfoByPath(path).valid())
-	{
-
-		return false;
-	}
-
-	return true;
+	return (!manager->libraryInfoByPath(path).valid());
 }
 
-void GUI_EmptyLibrary::pathChanged(const QString& str)
+void GUI_EmptyLibrary::pathChanged(const QString& newPath)
 {
-	Q_UNUSED(str)
+	Q_UNUSED(newPath)
 
-	Manager* manager = Manager::instance();
-	QString path = ui->lePath->text();
-	QString name = manager->requestLibraryName(path);
+	const QString path = ui->lePath->text();
+	const QString name = Manager::requestLibraryName(path);
 	ui->leName->setText(name);
 
 	bool ok = checkPath() && checkName();
@@ -168,7 +161,6 @@ void GUI_EmptyLibrary::pathChanged(const QString& str)
 	ui->btnOk->setEnabled(ok);
 	ui->labError->setVisible(!ok);
 }
-
 
 void Library::GUI_EmptyLibrary::languageChanged()
 {

@@ -40,21 +40,20 @@ class GUI_DeleteDialog :
 	PIMPL(GUI_DeleteDialog)
 	UI_CLASS(GUI_DeleteDialog)
 
-public:
-	GUI_DeleteDialog(int n_tracks, QWidget* parent=nullptr);
-	~GUI_DeleteDialog() override;
+	public:
+		GUI_DeleteDialog(int n_tracks, QWidget* parent = nullptr);
+		~GUI_DeleteDialog() override;
 
-	void setTrackCount(int trackCount);
+		void setTrackCount(int trackCount);
 
-	Library::TrackDeletionMode answer() const;
+		Library::TrackDeletionMode answer() const;
 
-private slots:
-	void yesClicked();
-	void noClicked();
+	private slots:
+		void yesClicked();
+		void noClicked();
 
-protected:
-	void showEvent(QShowEvent* e) override;
+	protected:
+		void showEvent(QShowEvent* e) override;
 };
-
 
 #endif // LIBRARYDELETEDIALOG_H

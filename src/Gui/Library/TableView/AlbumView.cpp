@@ -39,14 +39,13 @@
 #include <QHeaderView>
 #include <QVBoxLayout>
 
-
 using namespace Library;
 
 struct AlbumView::Private
 {
-	AbstractLibrary*		library=nullptr;
-	DiscPopupMenu*			discmenu=nullptr;
-	QPoint					discmenuPoint;
+	AbstractLibrary* library = nullptr;
+	DiscPopupMenu* discmenu = nullptr;
+	QPoint discmenuPoint;
 };
 
 AlbumView::AlbumView(QWidget* parent) :
@@ -86,15 +85,40 @@ ColumnHeaderList AlbumView::columnHeaders() const
 	using ColumnIndex::Album;
 
 	return ColumnHeaderList
-	{
-		std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc, true, SortOrder::NoSorting, SortOrder::NoSorting, Gui::Util::textWidth(fm, "MM")),
-		std::make_shared<ColumnHeaderAlbum>(Album::Name, false, SortOrder::AlbumNameAsc, SortOrder::AlbumNameDesc, 160, true),
-	//	std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
-		std::make_shared<ColumnHeaderAlbum>(Album::Duration, true, SortOrder::AlbumDurationAsc, SortOrder::AlbumDurationDesc, Gui::Util::textWidth(fm, "888h 888h 888m")),
-		std::make_shared<ColumnHeaderAlbum>(Album::NumSongs, true, SortOrder::AlbumTracksAsc, SortOrder::AlbumTracksDesc, Gui::Util::textWidth(fm, "num tracks")),
-		std::make_shared<ColumnHeaderAlbum>(Album::Year, true, SortOrder::AlbumYearAsc, SortOrder::AlbumYearDesc, Gui::Util::textWidth(fm, "M 8888")),
-		std::make_shared<ColumnHeaderAlbum>(Album::Rating, true, SortOrder::AlbumRatingAsc, SortOrder::AlbumRatingDesc, 85)
-	};
+		{
+			std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc,
+			                                    true,
+			                                    SortOrder::NoSorting,
+			                                    SortOrder::NoSorting,
+			                                    Gui::Util::textWidth(fm, "MM")),
+			std::make_shared<ColumnHeaderAlbum>(Album::Name,
+			                                    false,
+			                                    SortOrder::AlbumNameAsc,
+			                                    SortOrder::AlbumNameDesc,
+			                                    160,
+			                                    true),
+			//	std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
+			std::make_shared<ColumnHeaderAlbum>(Album::Duration,
+			                                    true,
+			                                    SortOrder::AlbumDurationAsc,
+			                                    SortOrder::AlbumDurationDesc,
+			                                    Gui::Util::textWidth(fm, "888h 888h 888m")),
+			std::make_shared<ColumnHeaderAlbum>(Album::NumSongs,
+			                                    true,
+			                                    SortOrder::AlbumTracksAsc,
+			                                    SortOrder::AlbumTracksDesc,
+			                                    Gui::Util::textWidth(fm, "num tracks")),
+			std::make_shared<ColumnHeaderAlbum>(Album::Year,
+			                                    true,
+			                                    SortOrder::AlbumYearAsc,
+			                                    SortOrder::AlbumYearDesc,
+			                                    Gui::Util::textWidth(fm, "M 8888")),
+			std::make_shared<ColumnHeaderAlbum>(Album::Rating,
+			                                    true,
+			                                    SortOrder::AlbumRatingAsc,
+			                                    SortOrder::AlbumRatingDesc,
+			                                    85)
+		};
 }
 
 QByteArray AlbumView::columnHeaderState() const
@@ -124,19 +148,18 @@ void AlbumView::showContextMenu(const QPoint& p)
 	TableView::showContextMenu(p);
 }
 
-
 void AlbumView::indexClicked(const QModelIndex& idx)
 {
 	if(idx.column() == int(ColumnIndex::Album::MultiDisc))
 	{
 		QModelIndexList selections = this->selectionModel()->selectedRows();
-		if(selections.size() == 1){
+		if(selections.size() == 1)
+		{
 			initDiscmenu(idx);
 			showDiscmenu();
 		}
 	}
 }
-
 
 /* where to show the popup */
 void AlbumView::calcDiscmenuPoint(QModelIndex idx)
@@ -156,8 +179,8 @@ void AlbumView::calcDiscmenuPoint(QModelIndex idx)
 		QPoint discMenuPoint = parentWidget()->pos() - QPoint(0, verticalHeader->sizeHint().height());
 		while(idx.row() != indexAt(discMenuPoint).row())
 		{
-			  discMenuPoint.setY(discMenuPoint.y() + 10);
-			  m->discmenuPoint.setY(m->discmenuPoint.y() + 10);
+			discMenuPoint.setY(discMenuPoint.y() + 10);
+			m->discmenuPoint.setY(m->discmenuPoint.y() + 10);
 		}
 	}
 }
@@ -167,15 +190,16 @@ void AlbumView::initDiscmenu(QModelIndex idx)
 	int row = idx.row();
 	deleteDiscmenu();
 
-	if( !idx.isValid() ||
-		(row >= model()->rowCount()) ||
-		(row < 0) )
+	if(!idx.isValid() ||
+	   (row >= model()->rowCount()) ||
+	   (row < 0))
 	{
 		return;
 	}
 
 	const Album& album = m->library->albums().at(size_t(row));
-	if(album.discnumbers().size() < 2) {
+	if(album.discnumbers().size() < 2)
+	{
 		return;
 	}
 
@@ -186,10 +210,10 @@ void AlbumView::initDiscmenu(QModelIndex idx)
 	connect(m->discmenu, &DiscPopupMenu::sigDiscPressed, this, &AlbumView::sigDiscPressed);
 }
 
-
 void AlbumView::deleteDiscmenu()
 {
-	if(!m->discmenu) {
+	if(!m->discmenu)
+	{
 		return;
 	}
 
@@ -204,7 +228,7 @@ void AlbumView::deleteDiscmenu()
 
 void AlbumView::showDiscmenu()
 {
-	if(!m->discmenu) return;
+	if(!m->discmenu) { return; }
 
 	m->discmenu->popup(m->discmenuPoint);
 }
@@ -247,8 +271,7 @@ void AlbumView::refreshClicked()
 
 void AlbumView::runMergeOperation(const MergeData& mergedata)
 {
-	Tagging::UserOperations* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
-
+	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());

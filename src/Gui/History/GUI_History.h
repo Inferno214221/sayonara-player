@@ -21,7 +21,7 @@ public:
 	explicit GUI_History(QWidget* parent=nullptr);
 	~GUI_History() override;
 
-	QFrame* header() const;
+	[[nodiscard]] QFrame* header() const;
 
 private:
 	void initShortcuts();

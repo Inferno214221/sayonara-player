@@ -37,15 +37,16 @@ struct Pair
 	QPixmap pm;
 
 	Pair() = default;
-	Pair(Hash hash, QPixmap pm) : hash(hash), pm(pm)
-	{}
+
+	Pair(Hash hash, QPixmap pm) :
+		hash(hash), pm(pm) {}
 };
 
 struct CoverViewPixmapCache::Private
 {
-	QCache<Hash, Util::Image>	pixmaps;
-	Util::Set<Hash>				validHashes;
-	QPixmap						invalidCover;
+	QCache<Hash, Util::Image> pixmaps;
+	Util::Set<Hash> validHashes;
+	QPixmap invalidCover;
 
 	Private()
 	{
@@ -73,7 +74,8 @@ QPixmap CoverViewPixmapCache::invalidPixmap() const
 
 void CoverViewPixmapCache::addPixmap(const Hash& hash, const QPixmap& pm)
 {
-	if(pm.isNull()){
+	if(pm.isNull())
+	{
 		return;
 	}
 
@@ -86,21 +88,21 @@ int CoverViewPixmapCache::cacheSize() const
 	return m->pixmaps.keys().size();
 }
 
-
 QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 {
-	if(!m->pixmaps.contains(hash)){
+	if(!m->pixmaps.contains(hash))
+	{
 		return QPixmap();
 	}
 
 	auto* img = m->pixmaps.object(hash);
-	if(!img){
+	if(!img)
+	{
 		return QPixmap();
 	}
 
 	return img->pixmap();
 }
-
 
 bool CoverViewPixmapCache::isOutdated(const Hash& hash) const
 {
@@ -119,7 +121,8 @@ void CoverViewPixmapCache::setAllOutdated()
 
 void CoverViewPixmapCache::setCacheSize(int cache_size)
 {
-	if(m->pixmaps.maxCost() > cache_size){
+	if(m->pixmaps.maxCost() > cache_size)
+	{
 		return;
 	}
 

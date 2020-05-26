@@ -15,7 +15,7 @@ class GUI_CssEditor : public
 
 	public:
 		explicit GUI_CssEditor(QWidget* parent = nullptr);
-		~GUI_CssEditor();
+		~GUI_CssEditor() override;
 
 	private slots:
 		void saveClicked();
@@ -25,7 +25,7 @@ class GUI_CssEditor : public
 
 	protected:
 		void showEvent(QShowEvent* e) override;
-		void languageChanged() override;
+		void skinChanged() override;
 };
 
 #endif // GUI_CSSEDITOR_H

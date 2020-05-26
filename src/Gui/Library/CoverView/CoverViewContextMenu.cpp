@@ -32,26 +32,25 @@
 
 using Library::CoverViewContextMenu;
 using Library::ActionPair;
-using ActionPairList=QList<ActionPair>;
+using ActionPairList = QList<ActionPair>;
 
 struct CoverViewContextMenu::Private
 {
-	QMenu*		menuSorting=nullptr;
-	QAction*	actionSorting=nullptr;
+	QMenu* menuSorting = nullptr;
+	QAction* actionSorting = nullptr;
 
-	QMenu*		menuZoom=nullptr;
-	QAction*	actionZoom=nullptr;
+	QMenu* menuZoom = nullptr;
+	QAction* actionZoom = nullptr;
 
-	QAction*	actionShowUtils=nullptr;
-	QAction*	actionShowArtist=nullptr;
+	QAction* actionShowUtils = nullptr;
+	QAction* actionShowArtist = nullptr;
 
-	QStringList		zoomActions;
-	ActionPairList	sortingActions;
+	QStringList zoomActions;
+	ActionPairList sortingActions;
 
 	Private() :
 		zoomActions(Library::CoverView::zoomActions()),
-		sortingActions(Library::CoverView::sortingActions())
-	{}
+		sortingActions(Library::CoverView::sortingActions()) {}
 };
 
 CoverViewContextMenu::CoverViewContextMenu(QWidget* parent) :
@@ -63,7 +62,6 @@ CoverViewContextMenu::CoverViewContextMenu(QWidget* parent) :
 }
 
 CoverViewContextMenu::~CoverViewContextMenu() = default;
-
 
 void CoverViewContextMenu::init()
 {
@@ -79,7 +77,7 @@ void CoverViewContextMenu::init()
 	m->actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 	this->insertAction(sepBeforePrefs, m->actionShowArtist);
 
-	connect(m->actionShowArtist, &QAction::triggered, this, [=](){
+	connect(m->actionShowArtist, &QAction::triggered, this, [=]() {
 		SetSetting(Set::Lib_CoverShowArtist, m->actionShowArtist->isChecked());
 	});
 
@@ -88,7 +86,7 @@ void CoverViewContextMenu::init()
 	m->actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 	this->insertAction(sepBeforePrefs, m->actionShowUtils);
 
-	connect(m->actionShowUtils, &QAction::triggered, this, [=](){
+	connect(m->actionShowUtils, &QAction::triggered, this, [=]() {
 		SetSetting(Set::Lib_CoverShowUtils, m->actionShowUtils->isChecked());
 	});
 
@@ -96,7 +94,7 @@ void CoverViewContextMenu::init()
 	m->actionSorting = this->insertMenu(sepBeforePrefs, m->menuSorting);
 	initSortingActions();
 
-	m->menuZoom  = new QMenu(this);
+	m->menuZoom = new QMenu(this);
 	m->actionZoom = this->insertMenu(sepBeforePrefs, m->menuZoom);
 	initZoomActions();
 }
@@ -131,11 +129,10 @@ void CoverViewContextMenu::initZoomActions()
 	}
 }
 
-
 void CoverViewContextMenu::actionZoomTriggered(bool b)
 {
 	Q_UNUSED(b)
-	auto* action = static_cast<QAction*>(sender());
+	auto* action = dynamic_cast<QAction*>(sender());
 
 	int zoom = action->data().toInt();
 	emit sigZoomChanged(zoom);
@@ -144,12 +141,11 @@ void CoverViewContextMenu::actionZoomTriggered(bool b)
 void CoverViewContextMenu::actionSortingTriggered(bool b)
 {
 	Q_UNUSED(b)
-	auto* action = static_cast<QAction*>(sender());
+	auto* action = dynamic_cast<QAction*>(sender());
 
 	Library::SortOrder so = Library::SortOrder(action->data().toInt());
 	emit sigSortingChanged(so);
 }
-
 
 CoverViewContextMenu::Entries CoverViewContextMenu::entries() const
 {
@@ -174,12 +170,12 @@ void CoverViewContextMenu::showActions(CoverViewContextMenu::Entries entries)
 
 void CoverViewContextMenu::setZoom(int zoom)
 {
-	bool found=false;
+	bool found = false;
 
 	const QList<QAction*> actions = m->menuZoom->actions();
 	for(QAction* a : actions)
 	{
-		a->setChecked( (a->text().toInt() >= zoom) && !found );
+		a->setChecked((a->text().toInt() >= zoom) && !found);
 		if(a->text().toInt() >= zoom)
 		{
 			found = true;

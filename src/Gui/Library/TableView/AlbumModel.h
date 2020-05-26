@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*
  * AlbumModel.h
  *
@@ -39,7 +38,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class AlbumModel :
-			public ItemModel
+		public ItemModel
 	{
 		Q_OBJECT
 		PIMPL(AlbumModel)
@@ -48,15 +47,15 @@ namespace Library
 			AlbumModel(QObject* parent, AbstractLibrary* library);
 			~AlbumModel() override;
 
-			Qt::ItemFlags	flags(const QModelIndex& index) const override;
-			QVariant		data(const QModelIndex& index, int role) const override;
-			bool			setData(const QModelIndex& index, const QVariant& value, int role=Qt::DisplayRole) override;
-			int				rowCount(const QModelIndex& parent) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
+			QVariant data(const QModelIndex& index, int role) const override;
+			bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::DisplayRole) override;
+			int rowCount(const QModelIndex& parent) const override;
 
-			Cover::Location	cover(const IndexSet& indexes) const override;
-			int				searchableColumn() const override;
-			Id				mapIndexToId(int index) const override;
-			QString			searchableString(int row) const override;
+			Cover::Location cover(const IndexSet& indexes) const override;
+			int searchableColumn() const override;
+			Id mapIndexToId(int index) const override;
+			QString searchableString(int row) const override;
 
 		protected:
 			const MetaDataList& selectedMetadata() const override;

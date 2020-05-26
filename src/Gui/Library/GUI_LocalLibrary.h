@@ -43,74 +43,74 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class GUI_LocalLibrary :
-			public GUI_AbstractLibrary
+		public GUI_AbstractLibrary
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_LocalLibrary)
 		PIMPL(GUI_LocalLibrary)
 
-	public:
-		explicit GUI_LocalLibrary(LibraryId id, QWidget* parent=nullptr);
-		virtual ~GUI_LocalLibrary() override;
+		public:
+			explicit GUI_LocalLibrary(LibraryId id, QWidget* parent = nullptr);
+			~GUI_LocalLibrary() override;
 
-		QMenu*		menu() const;
-		QFrame*		headerFrame() const;
+			QMenu* menu() const;
+			QFrame* headerFrame() const;
 
-	protected:
-		bool hasSelections() const override;
-		void showEvent(QShowEvent* e) override;
+		protected:
+			bool hasSelections() const override;
+			void showEvent(QShowEvent* e) override;
 
-		TableView* lvArtist() const override;
-		TableView* lvAlbum() const override;
-		TableView* lvTracks() const override;
+			TableView* lvArtist() const override;
+			TableView* lvAlbum() const override;
+			TableView* lvTracks() const override;
 
-		SearchBar* leSearch() const override;
-		QList<Filter::Mode> searchOptions() const override;
+			SearchBar* leSearch() const override;
+			QList<Filter::Mode> searchOptions() const override;
 
-		void queryLibrary() override;
+			void queryLibrary() override;
 
-		void languageChanged() override;
-		void skinChanged() override;
+			void languageChanged() override;
+			void skinChanged() override;
 
-	private:
-		void checkViewState();
-		void checkMainSplitterStatus();
-		void checkFileExtensionBar();
+		private:
+			void checkViewState();
+			void checkMainSplitterStatus();
+			void checkFileExtensionBar();
 
-	private slots:
-		void tracksLoaded();
-		void switchViewType();
-		void selectNextViewType();
+		private slots:
+			void tracksLoaded();
+			void switchViewType();
+			void selectNextViewType();
 
-		void progressChanged(const QString& type, int progress);
+			void progressChanged(const QString& type, int progress);
 
-		void genreSelectionChanged(const QStringList& genres);
-		void invalidGenreSelected();
+			void genreSelectionChanged(const QStringList& genres);
+			void invalidGenreSelected();
 
-		void reloadLibraryDeepRequested();
-		void reloadLibraryRequested();
-		void reloadLibraryRequestedWithQuality(ReloadQuality quality);
-		void reloadLibraryAccepted(ReloadQuality quality);
-		void reloadLibrary(ReloadQuality quality);
-		void reloadFinished();
+			void reloadLibraryDeepRequested();
+			void reloadLibraryRequested();
+			void reloadLibraryRequestedWithQuality(ReloadQuality quality);
+			void reloadLibraryAccepted(ReloadQuality quality);
+			void reloadLibrary(ReloadQuality quality);
+			void reloadFinished();
 
-		void importDirsRequested();
-		void importFilesRequested();
-		void nameChanged(LibraryId id);
-		void pathChanged(LibraryId id);
+			void importDirsRequested();
+			void importFilesRequested();
+			void nameChanged(LibraryId id);
+			void pathChanged(LibraryId id);
 
-		// importer requests dialog
-		void importDialogRequested(const QString& targetDirectory);
+			// importer requests dialog
+			void importDialogRequested(const QString& targetDirectory);
 
-		void splitterArtistMoved(int pos, int idx);
-		void splitterTracksMoved(int pos, int idx);
-		void splitterGenreMoved(int pos, int idx);
+			void splitterArtistMoved(int pos, int idx);
+			void splitterTracksMoved(int pos, int idx);
+			void splitterGenreMoved(int pos, int idx);
 
-		// reimplemented from Abstract Library
-		TrackDeletionMode showDeleteDialog(int track_count) override;
-		void clearSelections() override;
+			// reimplemented from Abstract Library
+			TrackDeletionMode showDeleteDialog(int track_count) override;
+			void clearSelections() override;
 
-		void showInfoBox();
+			void showInfoBox();
 	};
 }
 

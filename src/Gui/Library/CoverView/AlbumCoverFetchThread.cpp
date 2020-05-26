@@ -19,6 +19,8 @@
  */
 
 #include "AlbumCoverFetchThread.h"
+
+#include <random>
 #include "Utils/MetaData/Album.h"
 #include "Components/Covers/CoverLocation.h"
 
@@ -30,13 +32,13 @@
 
 using Cover::Location;
 using Library::AlbumCoverFetchThread;
-using Hash=AlbumCoverFetchThread::Hash;
-using AtomicBool=std::atomic<bool>;
-using AtomicInt=std::atomic<int>;
+using Hash = AlbumCoverFetchThread::Hash;
+using AtomicBool = std::atomic<bool>;
+using AtomicInt = std::atomic<int>;
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
-static const int MaxThreads=20;
+static const int MaxThreads = 20;
 
 struct AlbumCoverFetchThread::Private
 {
@@ -49,10 +51,12 @@ struct AlbumCoverFetchThread::Private
 	std::mutex mutexQueuedHashes;
 	std::mutex mutexHashLocationPairs;
 
-	AtomicInt	timeToWait;
-	AtomicBool	stopped;
+	AtomicInt timeToWait;
+	AtomicBool stopped;
 
-	Private()
+	Private() :
+		timeToWait(0),
+		stopped(false)
 	{
 		init();
 	}
@@ -72,13 +76,14 @@ struct AlbumCoverFetchThread::Private
 	void wait()
 	{
 		auto ms = std::min<int>(20, timeToWait);
-		Util::sleepMs( uint64_t(ms) );
+		Util::sleepMs(uint64_t(ms));
 		timeToWait -= ms;
 	}
 
 	bool mayRun()
 	{
-		if(stopped) {
+		if(stopped)
+		{
 			return false;
 		}
 
@@ -87,7 +92,8 @@ struct AlbumCoverFetchThread::Private
 			wait();
 		}
 
-		if(timeToWait > 0) {
+		if(timeToWait > 0)
+		{
 			wait();
 			return false;
 		}
@@ -110,16 +116,17 @@ void AlbumCoverFetchThread::run()
 
 	while(!m->stopped)
 	{
-		if(!m->mayRun()){
+		if(!m->mayRun())
+		{
 			continue;
 		}
 
-		int count = 0;
+		int count;
 		{
 			LOCK_GUARD(m->mutexAlbumList)
 			count = m->hashAlbumList.count();
 		}
-		
+
 		if(count == 0)
 		{
 			m->pause();
@@ -132,7 +139,8 @@ void AlbumCoverFetchThread::run()
 			{
 				LOCK_GUARD(m->mutexAlbumList)
 				count = m->hashAlbumList.count();
-				if(count == 0) {
+				if(count == 0)
+				{
 					break;
 				}
 
@@ -173,20 +181,21 @@ void AlbumCoverFetchThread::addAlbum(const Album& album)
 
 	LOCK_GUARD(m->mutexAlbumList)
 	m->hashAlbumList.push_front(HashAlbumPair(hash, album));
-	std::random_shuffle(m->hashAlbumList.begin(), m->hashAlbumList.end());
+	std::shuffle(m->hashAlbumList.begin(), m->hashAlbumList.end(), std::mt19937(std::random_device()()));
 }
 
 bool AlbumCoverFetchThread::checkAlbum(const QString& hash)
 {
-	bool has_hash = false;
+	bool hasHash;
 	{
 		LOCK_GUARD(m->mutexHashLocationPairs)
-		has_hash = Algorithm::contains(m->hashLocationPairs, [hash](const HashLocationPair& p){
+		hasHash = Algorithm::contains(m->hashLocationPairs, [hash](const HashLocationPair& p) {
 			return (p.first == hash);
 		});
 	}
 
-	if(has_hash){
+	if(hasHash)
+	{
 		spLog(Log::Crazy, this) << "Cover " << hash << " already in lookups";
 		emit sigNext();
 		return true;
@@ -194,7 +203,8 @@ bool AlbumCoverFetchThread::checkAlbum(const QString& hash)
 
 	{
 		LOCK_GUARD(m->mutexQueuedHashes)
-		if(m->queuedHashes.contains(hash)){
+		if(m->queuedHashes.contains(hash))
+		{
 			spLog(Log::Crazy, this) << "Cover " << hash << " already in queued hashes";
 			return true;
 		}
@@ -202,16 +212,17 @@ bool AlbumCoverFetchThread::checkAlbum(const QString& hash)
 
 	{
 		LOCK_GUARD(m->mutexAlbumList)
-		has_hash = Algorithm::contains(m->hashAlbumList, [hash](const HashAlbumPair& p){
+		hasHash = Algorithm::contains(m->hashAlbumList, [hash](const HashAlbumPair& p) {
 			return (p.first == hash);
 		});
 	}
 
-	if(has_hash){
+	if(hasHash)
+	{
 		spLog(Log::Crazy, this) << "Cover " << hash << " already in hash_album_list";
 	}
 
-	return has_hash;
+	return hasHash;
 }
 
 int AlbumCoverFetchThread::lookupsReady() const
@@ -235,7 +246,8 @@ AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::takeCurrentLookup
 
 	{
 		LOCK_GUARD(m->mutexHashLocationPairs)
-		if(!m->hashLocationPairs.isEmpty()) {
+		if(!m->hashLocationPairs.isEmpty())
+		{
 			ret = m->hashLocationPairs.takeLast();
 		}
 	}
@@ -258,9 +270,10 @@ void AlbumCoverFetchThread::removeHash(const AlbumCoverFetchThread::Hash& hash)
 
 	{
 		LOCK_GUARD(m->mutexHashLocationPairs)
-		for(int i=m->hashLocationPairs.size() - 1; i>=0; i--)
+		for(int i = m->hashLocationPairs.size() - 1; i >= 0; i--)
 		{
-			if(m->hashLocationPairs[i].first == hash){
+			if(m->hashLocationPairs[i].first == hash)
+			{
 				m->hashLocationPairs.removeAt(i);
 			}
 		}

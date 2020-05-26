@@ -44,27 +44,28 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class ItemModel :
-			public SearchableTableModel
+		public SearchableTableModel
 	{
 		Q_OBJECT
 		PIMPL(ItemModel)
 
 		public:
 			ItemModel(QObject* parent, AbstractLibrary* library);
-			virtual ~ItemModel() override;
+			~ItemModel() override;
 
-			QVariant		headerData(int section, Qt::Orientation orientation, int role=Qt::DisplayRole) const override;
-			bool			setHeaderData(int section, Qt::Orientation orientation, const QVariant &value, int role = Qt::EditRole) override;
+			QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+			bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value,
+			                   int role = Qt::EditRole) override;
 
-			virtual int     columnCount(const QModelIndex& parent=QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-			QModelIndexList	searchResults(const QString& substr) override;
+			QModelIndexList searchResults(const QString& substr) override;
 
 			/**
 			 * @brief the index of the searchable column. This is the column
 			 * where the text is searched for a certain searchstring
 			 */
-			virtual int searchableColumn() const=0;
+			virtual int searchableColumn() const = 0;
 
 			/**
 			 * @brief here, the searchable string can even be refined. Maybe
@@ -72,14 +73,14 @@ namespace Library
 			 * @param row
 			 * @return
 			 */
-			virtual QString	searchableString(int row) const=0;
+			virtual QString searchableString(int row) const = 0;
 
 			/**
 			 * @brief return the current id for a given row
 			 * @param row
 			 * @return
 			 */
-			virtual Id mapIndexToId(int row) const=0;
+			virtual Id mapIndexToId(int row) const = 0;
 
 			/**
 			 * @brief return the cover for multiple rows. if rows.size() > 1,
@@ -87,25 +88,25 @@ namespace Library
 			 * @param rows
 			 * @return
 			 */
-			virtual Cover::Location	cover(const IndexSet& rows) const=0;
+			virtual Cover::Location cover(const IndexSet& rows) const = 0;
 
 			/**
 			 * @brief return the tracks which belong to the selections. If an
 			 * album is selected for example, all tracks of that album should be returned
 			 * @return
 			 */
-			virtual const MetaDataList&	selectedMetadata() const=0;
+			virtual const MetaDataList& selectedMetadata() const = 0;
 			Gui::CustomMimeData* customMimedata() const;
 
-			void refreshData(int* rowCountBefore=nullptr, int* rowCountAfter=nullptr); //returns the size difference
+			void refreshData(int* rowCountBefore = nullptr, int* rowCountAfter = nullptr); //returns the size difference
 
 		protected:
-			AbstractLibrary*		library();
-			const AbstractLibrary*	library() const;
+			AbstractLibrary* library();
+			const AbstractLibrary* library() const;
 
 		private:
-			bool removeRows(int position, int rows, const QModelIndex& index=QModelIndex()) override;
-			bool insertRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
+			bool removeRows(int position, int rows, const QModelIndex& index = QModelIndex()) override;
+			bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 	};
 }
 

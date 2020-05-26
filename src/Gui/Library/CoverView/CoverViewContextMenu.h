@@ -37,7 +37,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverViewContextMenu :
-			public Library::ContextMenu
+		public Library::ContextMenu
 	{
 		Q_OBJECT
 		PIMPL(CoverViewContextMenu)
@@ -49,10 +49,10 @@ namespace Library
 		public:
 			enum Entry
 			{
-				EntryShowUtils=(Library::ContextMenu::EntryLast << 1),
-				EntrySorting=(EntryShowUtils << 1),
-				EntryZoom=(EntrySorting << 1),
-				EntryShowArtist=(EntryZoom << 1)
+				EntryShowUtils = Library::ContextMenu::EntryLast << 1,
+				EntrySorting = EntryShowUtils << 1,
+				EntryZoom = EntrySorting << 1,
+				EntryShowArtist = EntryZoom << 1
 			};
 
 			explicit CoverViewContextMenu(QWidget* parent);

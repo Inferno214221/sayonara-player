@@ -31,13 +31,11 @@
 #include "Components/Covers/CoverLocation.h"
 
 #include "Utils/Library/MergeData.h"
-#include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/ExtensionSet.h"
 
 #include "Gui/Library/Header/HeaderView.h"

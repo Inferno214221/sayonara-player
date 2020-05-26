@@ -51,27 +51,26 @@
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct GUI_InfoDialog::Private
 {
-	InfoDialogContainer*	infoDialogContainer=nullptr;
-	GUI_TagEdit*			uiTagEditor=nullptr;
-	GUI_Lyrics*				uiLyrics=nullptr;
-	Cover::Location			coverLocation;
-	MetaDataList			tracks;
-	MD::Interpretation		metadataInterpretation;
+	InfoDialogContainer* infoDialogContainer = nullptr;
+	GUI_TagEdit* uiTagEditor = nullptr;
+	GUI_Lyrics* uiLyrics = nullptr;
+	Cover::Location coverLocation;
+	MetaDataList tracks;
+	MD::Interpretation metadataInterpretation;
 
-	Private(InfoDialogContainer* container) :
+	explicit Private(InfoDialogContainer* container) :
 		infoDialogContainer(container),
-		metadataInterpretation(MD::Interpretation::None)
-	{}
+		metadataInterpretation(MD::Interpretation::None) {}
 
 	MetaDataList localTracks() const
 	{
 		MetaDataList ret;
 
-		std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(ret), [](const MetaData& md){
+		std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(ret), [](const MetaData& md) {
 			return (!Util::File::isWWW(md.filepath()));
 		});
 
@@ -89,7 +88,8 @@ GUI_InfoDialog::~GUI_InfoDialog() = default;
 
 void GUI_InfoDialog::languageChanged()
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
@@ -101,14 +101,15 @@ void GUI_InfoDialog::languageChanged()
 	ui->tabWidget->setTabText(1, Lang::get(Lang::Lyrics));
 	ui->tabWidget->setTabText(2, Lang::get(Lang::Edit));
 	ui->btnWriteCoverToTracks->setText
-	(
-		tr("Write cover to tracks") + "..."
-	);
+		(
+			tr("Write cover to tracks") + "..."
+		);
 }
 
 void GUI_InfoDialog::skinChanged()
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
@@ -136,15 +137,16 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 
 	const QFontMetrics fm(font);
 
-	int maxSize=0;
-	int row	= 0;
+	int maxSize = 0;
+	int row = 0;
 	for(const StringPair& p : data)
 	{
 		auto* item1 = new QTableWidgetItem(p.first);
 
 		item1->setFont(font);
 		int w1 = Gui::Util::textWidth(fm, p.first) + 20;
-		if(w1 > maxSize){
+		if(w1 > maxSize)
+		{
 			maxSize = w1;
 		}
 
@@ -181,13 +183,13 @@ static void preparePaths(QListWidget* pathListWidget, const QStringList& paths)
 
 void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
-	MetaDataInfo* info=nullptr;
-
-	switch (mdInterpretation)
+	MetaDataInfo* info = nullptr;
+	switch(mdInterpretation)
 	{
 		case MD::Interpretation::Artists:
 			info = new ArtistInfo(m->tracks);
@@ -195,13 +197,11 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 		case MD::Interpretation::Albums:
 			info = new AlbumInfo(m->tracks);
 			break;
-
+		case MD::Interpretation::None:
 		case MD::Interpretation::Tracks:
+		default:
 			info = new MetaDataInfo(m->tracks);
 			break;
-
-		default:
-			return;
 	}
 
 	ui->btnWriteCoverToTracks->setVisible(info->albums().size() == 1);
@@ -238,12 +238,13 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 {
 	QSize size = GetSetting(Set::InfoDialog_Size);
 	int iTab = int(tab);
-	if(!ui){
+	if(!ui)
+	{
 		init();
 	}
 
 	bool lyricEnabled = (m->tracks.size() == 1);
-	bool tagEditEnabled = Algorithm::contains(m->tracks, [](const MetaData& md){
+	bool tagEditEnabled = Algorithm::contains(m->tracks, [](const MetaData& md) {
 		return (!Util::File::isWWW(md.filepath()));
 	});
 
@@ -259,14 +260,15 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	this->setBusy(m->tracks.isEmpty());
 	this->prepareTab(tab);
 
-	if(ui->tabWidget->currentIndex() != iTab) {
+	if(ui->tabWidget->currentIndex() != iTab)
+	{
 		ui->tabWidget->setCurrentIndex(iTab);
 	}
 
 	Dialog::show();
 	if(size.isValid())
 	{
-		QTimer::singleShot(100, this, [size, this](){
+		QTimer::singleShot(100, this, [size, this]() {
 			this->resize(size);
 		});
 	}
@@ -281,7 +283,8 @@ void GUI_InfoDialog::prepareCover(const Cover::Location& cl)
 
 void GUI_InfoDialog::init()
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
@@ -320,8 +323,9 @@ void GUI_InfoDialog::initLyrics()
 {
 	if(!m->uiLyrics)
 	{
-		QLayout* tab2Layout = ui->tabLyrics->layout();
 		m->uiLyrics = new GUI_Lyrics(ui->tabLyrics);
+
+		auto* tab2Layout = ui->tabLyrics->layout();
 		tab2Layout->addWidget(m->uiLyrics);
 
 		connect(m->uiLyrics, &GUI_Lyrics::sigClosed, this, &GUI_InfoDialog::close);
@@ -333,12 +337,13 @@ void GUI_InfoDialog::tabIndexChangedInt(int index)
 	index = std::min(int(GUI_InfoDialog::Tab::Edit), index);
 	index = std::max(int(GUI_InfoDialog::Tab::Info), index);
 
-	prepareTab( GUI_InfoDialog::Tab(index) );
+	prepareTab(GUI_InfoDialog::Tab(index));
 }
 
 void GUI_InfoDialog::prepareTab(GUI_InfoDialog::Tab index)
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
@@ -423,7 +428,8 @@ void GUI_InfoDialog::showCoverEditTab()
 
 void GUI_InfoDialog::setBusy(bool b)
 {
-	if(ui){
+	if(ui)
+	{
 		ui->stackedWidget->setCurrentIndex(b ? 1 : 0);
 	}
 }
@@ -438,7 +444,8 @@ void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 
 void GUI_InfoDialog::showEvent(QShowEvent* e)
 {
-	if(!ui){
+	if(!ui)
+	{
 		init();
 	}
 
@@ -447,7 +454,8 @@ void GUI_InfoDialog::showEvent(QShowEvent* e)
 
 void GUI_InfoDialog::resizeEvent(QResizeEvent* e)
 {
-	if(this->isVisible()) {
+	if(this->isVisible())
+	{
 		SetSetting(Set::InfoDialog_Size, e->size());
 	}
 

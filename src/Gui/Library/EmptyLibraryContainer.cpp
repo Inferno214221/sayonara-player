@@ -32,7 +32,7 @@ using namespace Library;
 
 struct EmptyLibraryContainer::Private
 {
-	GUI_EmptyLibrary* ui=nullptr;
+	GUI_EmptyLibrary* ui = nullptr;
 };
 
 EmptyLibraryContainer::EmptyLibraryContainer(QObject* parent) :
@@ -58,7 +58,7 @@ QWidget* EmptyLibraryContainer::widget() const
 	return static_cast<QWidget*>(m->ui);
 }
 
-QMenu*EmptyLibraryContainer::menu()
+QMenu* EmptyLibraryContainer::menu()
 {
 	return nullptr;
 }
@@ -67,7 +67,6 @@ void EmptyLibraryContainer::initUi()
 {
 	m->ui = new GUI_EmptyLibrary();
 }
-
 
 QFrame* EmptyLibraryContainer::header() const
 {

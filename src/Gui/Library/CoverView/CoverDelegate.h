@@ -31,16 +31,16 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverDelegate :
-			public QStyledItemDelegate
+		public QStyledItemDelegate
 	{
 		Q_OBJECT
 
-	public:
-		explicit CoverDelegate(QObject* parent=nullptr);
-		~CoverDelegate() override;
+		public:
+			explicit CoverDelegate(QObject* parent = nullptr);
+			~CoverDelegate() override;
 
-	public:
-		void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+		public:
+			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	};
 }
 

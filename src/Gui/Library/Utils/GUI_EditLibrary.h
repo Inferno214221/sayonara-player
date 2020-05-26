@@ -26,14 +26,13 @@
 
 UI_FWD(GUI_EditLibrary)
 
-
 /**
  * @brief The GUI_EditLibrary class
  * @ingroup Gui
  * @ingroup Library
  */
 class GUI_EditLibrary :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_EditLibrary)
@@ -44,8 +43,8 @@ class GUI_EditLibrary :
 		void sigRejected();
 
 	public:
-		explicit GUI_EditLibrary(const QString& name, const QString& path, QWidget* parent=nullptr);
-		explicit GUI_EditLibrary(QWidget* parent=nullptr);
+		explicit GUI_EditLibrary(const QString& name, const QString& path, QWidget* parent = nullptr);
+		explicit GUI_EditLibrary(QWidget* parent = nullptr);
 		~GUI_EditLibrary() override;
 
 		/**
@@ -55,8 +54,8 @@ class GUI_EditLibrary :
 
 		enum class EditMode
 		{
-			New=0,
-			Edit=1
+				New = 0,
+				Edit = 1
 		};
 
 		QString name() const;

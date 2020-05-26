@@ -17,7 +17,7 @@ struct DoubleCalendarDialog::Private
 	Gui::CalendarWidget* calendarFrom=nullptr;
 	Gui::CalendarWidget* calendarTo=nullptr;
 
-	Gui::CalendarWidget* createCalendar(QWidget* parent)
+	static Gui::CalendarWidget* createCalendar(QWidget* parent)
 	{
 		auto* calendar = new Gui::CalendarWidget(parent);
 
@@ -45,8 +45,8 @@ DoubleCalendarDialog::DoubleCalendarDialog(QWidget* parent) :
 	this->setLayout( new QVBoxLayout() );
 	this->setStyleSheet(Style::currentStyle());
 
-	m->calendarFrom = m->createCalendar(this);
-	m->calendarTo = m->createCalendar(this);
+	m->calendarFrom = Private::createCalendar(this);
+	m->calendarTo = Private::createCalendar(this);
 
 	m->calendarFrom->showToday();
 	m->calendarTo->setMinimumDate(QDate::currentDate());

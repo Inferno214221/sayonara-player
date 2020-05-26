@@ -29,7 +29,6 @@ class QFrame;
 
 namespace Library
 {
-
 	/**
 	 * @brief The GUI_EmptyLibrary class
 	 * @ingroup Gui
@@ -42,8 +41,8 @@ namespace Library
 		UI_CLASS(GUI_EmptyLibrary)
 
 		public:
-			explicit GUI_EmptyLibrary(QWidget* parent=nullptr);
-			GUI_EmptyLibrary(const GUI_EmptyLibrary& other)  = delete;
+			explicit GUI_EmptyLibrary(QWidget* parent = nullptr);
+			GUI_EmptyLibrary(const GUI_EmptyLibrary& other) = delete;
 			~GUI_EmptyLibrary() override;
 
 			QFrame* headerFrame() const;

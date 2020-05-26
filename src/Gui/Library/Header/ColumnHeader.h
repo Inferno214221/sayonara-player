@@ -46,13 +46,14 @@ namespace Library
 		PIMPL(ColumnHeader)
 
 		protected:
-			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
-			virtual QString hashPrefix() const=0;
+			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			             int preferredWidth, bool isStretchable = false);
+			virtual QString hashPrefix() const = 0;
 
 		public:
-			virtual ~ColumnHeader();
+			virtual ~ColumnHeader() override;
 
-			virtual QString title() const=0;
+			virtual QString title() const = 0;
 
 			QString hash() const;
 
@@ -60,21 +61,18 @@ namespace Library
 			bool isSwitchable() const;
 			int defaultSize() const;
 
-			int preferredSize() const;
-			void setPreferredSize(int size);
-
 			SortOrder sortorder(Qt::SortOrder sortOrder) const;
 
 			ColumnIndex::IntegerType columnIndex() const;
 	};
-
 
 	class ColumnHeaderTrack : public ColumnHeader
 	{
 		Q_OBJECT
 
 		public:
-			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			                  int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 
 		protected:
@@ -86,7 +84,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			                  int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 
 		protected:
@@ -98,7 +97,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool isStretchable=false);
+			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			                   int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 
 		protected:

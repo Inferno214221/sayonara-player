@@ -4,7 +4,7 @@
 
 struct HistoryContainer::Private
 {
-	GUI_History* widget=nullptr;
+	GUI_History* widget = nullptr;
 };
 
 HistoryContainer::HistoryContainer(QObject* parent) :
@@ -32,7 +32,7 @@ QWidget* HistoryContainer::widget() const
 
 QFrame* HistoryContainer::header() const
 {
-	return 	m->widget->header();
+	return m->widget->header();
 }
 
 QPixmap HistoryContainer::icon() const

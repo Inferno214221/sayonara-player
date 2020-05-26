@@ -34,14 +34,14 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class ArtistView :
-			public TableView
+		public TableView
 	{
 		PIMPL(ArtistView)
 		public:
-			explicit ArtistView(QWidget* parent=nullptr);
+			explicit ArtistView(QWidget* parent = nullptr);
 			~ArtistView() override;
 
-		// ItemView interface
+			// ItemView interface
 		protected:
 			AbstractLibrary* library() const override;
 			void selectedItemsChanged(const IndexSet& indexes) override;

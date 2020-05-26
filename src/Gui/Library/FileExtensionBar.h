@@ -46,7 +46,7 @@ namespace Library
 			void sigCloseClicked();
 
 		public:
-			explicit FileExtensionBar(QWidget* parent=nullptr);
+			explicit FileExtensionBar(QWidget* parent = nullptr);
 			~FileExtensionBar() override;
 
 			/**

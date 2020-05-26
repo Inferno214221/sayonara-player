@@ -32,8 +32,7 @@ struct Container::Private
 	bool initialized;
 
 	Private() :
-		initialized(false)
-	{}
+		initialized(false) {}
 };
 
 Container::Container(QObject* parent) :
@@ -67,7 +66,8 @@ bool Container::isLocal() const
 
 void Container::init()
 {
-	if(m->initialized){
+	if(m->initialized)
+	{
 		return;
 	}
 
@@ -75,21 +75,22 @@ void Container::init()
 
 	QWidget* ui = this->widget();
 	QLayout* layout = ui->layout();
-	if(layout) {
+	if(layout)
+	{
 		layout->setContentsMargins(5, 0, 8, 0);
 	}
 
 	QFrame* headerFrame = this->header();
 	if(headerFrame)
 	{
-		auto* layout = new QVBoxLayout(headerFrame);
-		layout->setContentsMargins(0, 0, 0, 0);
+		auto* vBoxLayout = new QVBoxLayout(headerFrame);
+		vBoxLayout->setContentsMargins(0, 0, 0, 0);
 
 		auto* comboBox = new Library::PluginCombobox(this->displayName(), headerFrame);
-		layout->addWidget(comboBox);
+		vBoxLayout->addWidget(comboBox);
 
 		headerFrame->setFrameShape(QFrame::NoFrame);
-		headerFrame->setLayout(layout);
+		headerFrame->setLayout(vBoxLayout);
 	}
 
 	m->initialized = true;

@@ -28,13 +28,12 @@ using Library::PluginComboBoxDelegate;
 
 PluginComboBoxDelegate::PluginComboBoxDelegate(QWidget* parent) :
 	Gui::ComboBoxDelegate(parent),
-	mParent(parent)
-{}
+	mParent(parent) {}
 
 PluginComboBoxDelegate::~PluginComboBoxDelegate() = default;
 
-
-void PluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void
+PluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if(index.data(Qt::AccessibleDescriptionRole).toString() == QLatin1String("separator") && index.row() == 1)
 	{
@@ -44,9 +43,9 @@ void PluginComboBoxDelegate::paint(QPainter* painter, const QStyleOptionViewItem
 		painter->setPen(pen);
 
 		painter->drawLine(option.rect.left() + 2,
-						  option.rect.center().y(),
-						  option.rect.right() - 2,
-						  option.rect.center().y());
+		                  option.rect.center().y(),
+		                  option.rect.right() - 2,
+		                  option.rect.center().y());
 	}
 
 	else
@@ -64,5 +63,5 @@ QSize PluginComboBoxDelegate::sizeHint(const QStyleOptionViewItem& option, const
 		return QSize(0, 5);
 	}
 
-	return Gui::ComboBoxDelegate::sizeHint( option, index );
+	return Gui::ComboBoxDelegate::sizeHint(option, index);
 }

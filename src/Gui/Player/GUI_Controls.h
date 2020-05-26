@@ -29,45 +29,43 @@ class MetaData;
 class MetaDataList;
 
 class GUI_Controls :
-		public GUI_ControlsBase
+	public GUI_ControlsBase
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Controls)
 
-public:
-	explicit GUI_Controls(QWidget* parent=nullptr);
-	~GUI_Controls() override;
+	public:
+		explicit GUI_Controls(QWidget* parent = nullptr);
+		~GUI_Controls() override;
 
-	// GUI_ControlsBase interface
-public:
-	QLabel* labSayonara() const override;
-	QLabel* labTitle() const override;
-	QLabel* labVersion() const override;
-	QLabel* labAlbum() const override;
-	QLabel* labArtist() const override;
-	QLabel* labWrittenBy() const override;
-	QLabel* labBitrate() const override;
-	QLabel* labFilesize() const override;
-	QLabel* labCopyright() const override;
-	QLabel* labCurrentTime() const override;
-	QLabel* labMaxTime() const override;
-	QWidget* widgetDetails() const override;
-	Gui::SearchSlider* sliProgress() const override;
-	Gui::SearchSlider* sliVolume() const override;
-	QPushButton* btnMute() const override;
-	QPushButton* btnPlay() const override;
-	QPushButton* btnRecord() const override;
-	QPushButton* btnPrevious() const override;
-	QPushButton* btnNext() const override;
-	QPushButton* btnStop() const override;
-	Gui::CoverButton* btnCover() const override;
+		// GUI_ControlsBase interface
+	public:
+		QLabel* labSayonara() const override;
+		QLabel* labTitle() const override;
+		QLabel* labVersion() const override;
+		QLabel* labAlbum() const override;
+		QLabel* labArtist() const override;
+		QLabel* labWrittenBy() const override;
+		QLabel* labBitrate() const override;
+		QLabel* labFilesize() const override;
+		QLabel* labCopyright() const override;
+		QLabel* labCurrentTime() const override;
+		QLabel* labMaxTime() const override;
+		QWidget* widgetDetails() const override;
+		Gui::SearchSlider* sliProgress() const override;
+		Gui::SearchSlider* sliVolume() const override;
+		QPushButton* btnMute() const override;
+		QPushButton* btnPlay() const override;
+		QPushButton* btnRecord() const override;
+		QPushButton* btnPrevious() const override;
+		QPushButton* btnNext() const override;
+		QPushButton* btnStop() const override;
+		Gui::CoverButton* btnCover() const override;
 
-	bool isExternResizeAllowed() const override;
+		bool isExternResizeAllowed() const override;
 
-protected:
-	void languageChanged() override;
+	protected:
+		void languageChanged() override;
 };
-
-
 
 #endif // GUI_CONTROLS_H

@@ -59,19 +59,19 @@ namespace Library
 			 */
 			void setInvalidGenreMode(bool b);
 
-			/**
+			[[maybe_unused]] /**
 			 * @brief if the current state is the invalid genre
 			 * mode
 			 */
 			bool hasInvalidGenreMode() const;
 
-			/**
+			[[maybe_unused]] /**
 			 * @brief Sets the supported modes.
 			 * See Library::Filter::Mode
 			 */
 			void setModes(const QList<Filter::Mode>& modes);
 
-			/**
+			[[maybe_unused]] /**
 			 * @brief returns supported modes.
 			 * See Library::Filter::Mode
 			 */

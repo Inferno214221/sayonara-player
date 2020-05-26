@@ -12,7 +12,7 @@ namespace Library
 		PIMPL(MenuButtonViews)
 
 		public:
-			MenuButtonViews(QWidget* parent=nullptr);
+			MenuButtonViews(QWidget* parent = nullptr);
 			~MenuButtonViews() override;
 
 		private slots:

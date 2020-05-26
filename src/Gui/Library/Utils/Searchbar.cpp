@@ -36,24 +36,23 @@
 
 using Library::SearchBar;
 using Library::Filter;
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct SearchBar::Private
 {
-	QAction*			actionLiveSearch=nullptr;
-	QAction*			preferenceAction=nullptr;
+	QAction* actionLiveSearch = nullptr;
+	QAction* preferenceAction = nullptr;
 
-	QMenu*				contextMenu=nullptr;
-	QList<Filter::Mode>	modes;
-	int					currentIndex;
-	bool				searchIconInitialized;
-	bool				invaldGenreMode;
+	QMenu* contextMenu = nullptr;
+	QList<Filter::Mode> modes;
+	int currentIndex;
+	bool searchIconInitialized;
+	bool invaldGenreMode;
 
 	Private() :
 		currentIndex(-1),
 		searchIconInitialized(false),
-		invaldGenreMode(false)
-	{}
+		invaldGenreMode(false) {}
 };
 
 SearchBar::SearchBar(QWidget* parent) :
@@ -70,8 +69,6 @@ SearchBar::SearchBar(QWidget* parent) :
 	new QShortcut(QKeySequence("F3"), this, SLOT(searchShortcutPressed()), nullptr, Qt::WindowShortcut);
 
 	connect(this, &QLineEdit::textChanged, this, &SearchBar::currentTextChanged);
-
-	skinChanged();
 }
 
 SearchBar::~SearchBar() = default;
@@ -81,7 +78,7 @@ void SearchBar::setInvalidGenreMode(bool b)
 	m->invaldGenreMode = b;
 }
 
-bool SearchBar::hasInvalidGenreMode() const
+[[maybe_unused]] bool SearchBar::hasInvalidGenreMode() const
 {
 	return m->invaldGenreMode;
 }
@@ -90,9 +87,9 @@ void SearchBar::currentTextChanged(const QString& text)
 {
 	if(!m->searchIconInitialized)
 	{
-		QAction* a = this->findChild<QAction*>("_q_qlineeditclearaction");
-
-		if(a){
+		auto* a = this->findChild<QAction*>("_q_qlineeditclearaction");
+		if(a)
+		{
 			a->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
 		}
 
@@ -120,31 +117,33 @@ void SearchBar::currentTextChanged(const QString& text)
 
 void SearchBar::searchShortcutPressed()
 {
-	if(!this->hasFocus()){
+	if(!this->hasFocus())
+	{
 		this->setFocus();
 	}
 
-	else {
+	else
+	{
 		this->setNextMode();
 	}
 }
 
-void SearchBar::setModes(const QList<Filter::Mode>& modes)
+[[maybe_unused]] void SearchBar::setModes(const QList<Filter::Mode>& modes)
 {
 	m->modes = modes;
-	m->currentIndex = (m->modes.size() > 0) ? 0 : -1;
+	m->currentIndex = m->modes.empty() ? -1 : 0;
 
 	initContextMenu();
 }
 
-QList<Filter::Mode> SearchBar::modes() const
+[[maybe_unused]] QList<Filter::Mode> SearchBar::modes() const
 {
 	return m->modes;
 }
 
 void SearchBar::setCurrentMode(Filter::Mode mode)
 {
-	m->currentIndex = Algorithm::indexOf(m->modes, [&mode](const Filter::Mode& f){
+	m->currentIndex = Algorithm::indexOf(m->modes, [&mode](const Filter::Mode& f) {
 		return (f == mode);
 	});
 
@@ -153,16 +152,17 @@ void SearchBar::setCurrentMode(Filter::Mode mode)
 
 void SearchBar::setPreviousMode()
 {
-	if(m->modes.isEmpty()){
+	if(m->modes.isEmpty())
+	{
 		return;
 	}
 
 	else
 	{
-		m->currentIndex --;
+		m->currentIndex--;
 		if(m->currentIndex < 0)
 		{
-			m->currentIndex = m->modes.size() -  1;
+			m->currentIndex = m->modes.size() - 1;
 		}
 	}
 
@@ -171,15 +171,18 @@ void SearchBar::setPreviousMode()
 
 void SearchBar::setNextMode()
 {
-	if(m->modes.isEmpty()){
+	if(m->modes.isEmpty())
+	{
 		return;
 	}
 
-	if(m->currentIndex < 0) {
+	if(m->currentIndex < 0)
+	{
 		m->currentIndex = 0;
 	}
 
-	else {
+	else
+	{
 		m->currentIndex = (m->currentIndex + 1) % m->modes.size();
 	}
 
@@ -188,7 +191,8 @@ void SearchBar::setNextMode()
 
 Filter::Mode SearchBar::currentMode() const
 {
-	if(m->currentIndex < 0 || m->currentIndex >= m->modes.count()){
+	if(m->currentIndex < 0 || m->currentIndex >= m->modes.count())
+	{
 		return Filter::Invalid;
 	}
 
@@ -201,10 +205,10 @@ void SearchBar::reset()
 	this->setCurrentMode(Filter::Mode::Fulltext);
 }
 
-
 void SearchBar::initContextMenu()
 {
-	if(m->contextMenu){
+	if(m->contextMenu)
+	{
 		return;
 	}
 
@@ -230,15 +234,15 @@ void SearchBar::initContextMenu()
 	QList<QAction*> actions;
 	for(const Filter::Mode mode : m->modes)
 	{
-		QVariant data = QVariant(int(mode));
-		QAction* action = new QAction(Filter::text(mode), this);
+		const QVariant data = QVariant(int(mode));
+		auto* action = new QAction(Filter::text(mode), this);
 
 		action->setCheckable(false);
 		action->setData(data);
 
 		actions << action;
 
-		connect(action, &QAction::triggered, this, [=](){
+		connect(action, &QAction::triggered, this, [=]() {
 			this->setCurrentMode(mode);
 			emit sigCurrentModeChanged();
 		});
@@ -290,7 +294,8 @@ void SearchBar::languageChanged()
 	QString text = Lang::get(Lang::SearchNoun) + ": " + Filter::text(currentMode());
 	this->setPlaceholderText(text);
 
-	if(!m->contextMenu) {
+	if(!m->contextMenu)
+	{
 		return;
 	}
 
@@ -298,7 +303,8 @@ void SearchBar::languageChanged()
 	for(QAction* action : actions)
 	{
 		QVariant data = action->data();
-		if(data.isNull()){
+		if(data.isNull())
+		{
 			continue;
 		}
 
@@ -311,9 +317,9 @@ void SearchBar::languageChanged()
 
 void SearchBar::skinChanged()
 {
-	QAction* a = this->findChild<QAction*>("_q_qlineeditclearaction");
-
-	if(a){
+	auto* a = this->findChild<QAction*>("_q_qlineeditclearaction");
+	if(a)
+	{
 		a->setIcon(Gui::Icons::icon(Gui::Icons::Clear));
 	}
 
@@ -324,7 +330,8 @@ void SearchBar::skinChanged()
 
 void SearchBar::livesearchChanged()
 {
-	if(m->actionLiveSearch){
+	if(m->actionLiveSearch)
+	{
 		m->actionLiveSearch->setChecked(GetSetting(Set::Lib_LiveSearch));
 	}
 }

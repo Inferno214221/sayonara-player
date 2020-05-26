@@ -31,44 +31,43 @@ UI_FWD(GUI_Lyrics)
  * @ingroup InfoDialog
  */
 class GUI_Lyrics :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Lyrics)
 	PIMPL(GUI_Lyrics)
 
-public:
-	explicit GUI_Lyrics(QWidget* parent = nullptr);
-	~GUI_Lyrics() override;
+	public:
+		explicit GUI_Lyrics(QWidget* parent = nullptr);
+		~GUI_Lyrics() override;
 
-	void setTrack(const MetaData& md);
+		void setTrack(const MetaData& md);
 
-private:
-	void init();
+	private:
+		void init();
 
-	void zoom(qreal font_size);
-	void setupSources();
-	void chooseSource();
-	void showLyrics(const QString& lyrics, const QString& header, bool rich);
-	void showLocalLyrics();
-	void setSaveButtonText();
+		void zoom(qreal font_size);
+		void setupSources();
+		void chooseSource();
+		void showLyrics(const QString& lyrics, const QString& header, bool rich);
+		void showLocalLyrics();
+		void setSaveButtonText();
 
-private slots:
-	void zoomIn();
-	void zoomOut();
+	private slots:
+		void zoomIn();
+		void zoomOut();
 
-	void lyricsFetched();
-	void lyricServerChanged(int idx);
+		void lyricsFetched();
+		void lyricServerChanged(int idx);
 
-	void switchPressed();
-	void prepareLyrics();
-	void saveLyricsClicked();
+		void switchPressed();
+		void prepareLyrics();
+		void saveLyricsClicked();
 
-protected:
-	void languageChanged() override;
-	void showEvent(QShowEvent* e) override;
-	void wheelEvent(QWheelEvent* e) override;
+	protected:
+		void languageChanged() override;
+		void showEvent(QShowEvent* e) override;
+		void wheelEvent(QWheelEvent* e) override;
 };
-
 
 #endif // GUI_LYRICS_H

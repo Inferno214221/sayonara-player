@@ -36,45 +36,44 @@ namespace Gui
 	 * which is displayed in a different color when using the
 	 * dark skin
 	 */
-	class SearchSlider:
-			public Gui::Slider
+	class SearchSlider :
+		public Gui::Slider
 	{
 		Q_OBJECT
 		PIMPL(SearchSlider)
 
-	signals:
-		void sig_slider_moved(int);
+		signals:
+			void sig_slider_moved(int);
 
-	public:
-		explicit SearchSlider(QWidget* parent=nullptr);
-		virtual ~SearchSlider();
+		public:
+			explicit SearchSlider(QWidget* parent = nullptr);
+			~SearchSlider() override;
 
-		/**
-		 * @brief Returns true if it's actually moved by the user
-		 * @return
-		 */
-		bool is_busy() const;
+			/**
+			 * @brief Returns true if it's actually moved by the user
+			 * @return
+			 */
+			bool is_busy() const;
 
-		/**
-		 * @brief Set a second value beside QSlider::setValue() which
-		 * is displayed in another color
-		 * @param progress
-		 */
-		void set_buffering(int progress);
+			/**
+			 * @brief Set a second value beside QSlider::setValue() which
+			 * is displayed in another color
+			 * @param progress
+			 */
+			void set_buffering(int progress);
 
-	protected:
-		void mousePressEvent(QMouseEvent* e) override;
-		void mouseReleaseEvent(QMouseEvent* e) override;
-		void mouseMoveEvent(QMouseEvent* e) override;
-		bool event(QEvent* event) override;
+		protected:
+			void mousePressEvent(QMouseEvent* e) override;
+			void mouseReleaseEvent(QMouseEvent* e) override;
+			void mouseMoveEvent(QMouseEvent* e) override;
+			bool event(QEvent* event) override;
 
-		bool hasAdditionalValue() const override;
-		int additionalValue() const override;
-		QColor additionalValueColor() const override;
+			bool hasAdditionalValue() const override;
+			int additionalValue() const override;
+			QColor additionalValueColor() const override;
 
-
-	private:
-		void emit_new_val(int value);
+		private:
+			void emitNewValue(int value);
 	};
 }
 

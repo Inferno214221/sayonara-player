@@ -37,12 +37,11 @@ struct GUI_EditLibrary::Private
 
 	Private() :
 		editMode(EditMode::New),
-		nameEdited(false)
-	{}
+		nameEdited(false) {}
 };
 
 GUI_EditLibrary::GUI_EditLibrary(QWidget* parent) :
-	Dialog (parent),
+	Dialog(parent),
 	ui(new Ui::GUI_EditLibrary)
 {
 	ui->setupUi(this);
@@ -75,10 +74,10 @@ GUI_EditLibrary::GUI_EditLibrary(const QString& name, const QString& path, QWidg
 	this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-
 GUI_EditLibrary::~GUI_EditLibrary()
 {
-	delete ui; ui = nullptr;
+	delete ui;
+	ui = nullptr;
 }
 
 void GUI_EditLibrary::okClicked()
@@ -99,19 +98,21 @@ void GUI_EditLibrary::cancelClicked()
 void GUI_EditLibrary::chooseDirClicked()
 {
 	QString oldDir = m->oldPath;
-	if(oldDir.isEmpty()){
+	if(oldDir.isEmpty())
+	{
 		oldDir = QDir::homePath();
 	}
 
 	QString newDir = QFileDialog::getExistingDirectory
-	(
-		this,
-		Lang::get(Lang::OpenDir),
-		oldDir,
-		QFileDialog::ShowDirsOnly
-	);
+		(
+			this,
+			Lang::get(Lang::OpenDir),
+			oldDir,
+			QFileDialog::ShowDirsOnly
+		);
 
-	if(newDir.isEmpty()) {
+	if(newDir.isEmpty())
+	{
 		newDir = m->oldPath;
 	}
 
@@ -175,9 +176,12 @@ void GUI_EditLibrary::languageChanged()
 	ui->labPath->setText(Lang::get(Lang::Directory));
 	ui->labName->setText(Lang::get(Lang::Name));
 
-	if(m->editMode == EditMode::New) {
+	if(m->editMode == EditMode::New)
+	{
 		ui->labTitle->setText(Lang::get(Lang::New));
-	} else {
+	}
+	else
+	{
 		ui->labTitle->setText(Lang::get(Lang::Edit));
 	}
 

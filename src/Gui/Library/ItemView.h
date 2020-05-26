@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 /*
  * MyListView.h
  *
@@ -52,9 +51,9 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class ItemView :
-			public SearchableTableView,
-			public InfoDialogContainer,
-			protected Gui::Dragable
+		public SearchableTableView,
+		public InfoDialogContainer,
+		protected Gui::Dragable
 	{
 		Q_OBJECT
 		PIMPL(ItemView)
@@ -71,15 +70,15 @@ namespace Library
 			void sigSelectionChanged(const IndexSet& indexes);
 
 		private:
-			ItemView(const ItemView& other)=delete;
-			ItemView& operator =(const ItemView& other)=delete;
+			ItemView(const ItemView& other) = delete;
+			ItemView& operator=(const ItemView& other) = delete;
 
 			void showContextMenuActions(Library::ContextMenu::Entries entries);
 
 			using SearchableTableView::setSearchableModel;
 
 		public:
-			explicit ItemView(QWidget* parent=nullptr);
+			explicit ItemView(QWidget* parent = nullptr);
 			virtual ~ItemView() override;
 
 			void setItemModel(ItemModel* model);
@@ -91,13 +90,12 @@ namespace Library
 
 			/** Dragable **/
 			QMimeData* dragableMimedata() const override;
-			bool isValidDragPosition(const QPoint &p) const override;
+			bool isValidDragPosition(const QPoint& p) const override;
 
 		protected:
 			// Events implemented in LibraryViewEvents.cpp
 			virtual void mousePressEvent(QMouseEvent* event) override;
 			virtual void contextMenuEvent(QContextMenuEvent* event) override;
-
 			virtual void dragEnterEvent(QDragEnterEvent* event) override;
 			virtual void dragMoveEvent(QDragMoveEvent* event) override;
 			virtual void dropEvent(QDropEvent* event) override;
@@ -119,7 +117,7 @@ namespace Library
 			 * other hand, for tracks that does not make sense
 			 * @return
 			 */
-			virtual bool isMergeable() const=0;
+			virtual bool isMergeable() const = 0;
 
 			MetaDataList infoDialogData() const override;
 
@@ -129,7 +127,6 @@ namespace Library
 			virtual void runMergeOperation(const Library::MergeData& md);
 
 			int viewportHeight() const override;
-
 
 		protected slots:
 			virtual void showContextMenu(const QPoint&);

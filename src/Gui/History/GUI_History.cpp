@@ -75,7 +75,6 @@ GUI_History::GUI_History(QWidget* parent) :
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_History::clearRangeClicked);
 
 	initShortcuts();
-	languageChanged();
 }
 
 GUI_History::~GUI_History()
@@ -175,7 +174,7 @@ void GUI_History::dateRangeClicked()
 
 void GUI_History::calendarFinished()
 {
-	auto* calendarWidget = static_cast<Gui::DoubleCalendarDialog*>(sender());
+	auto* calendarWidget = dynamic_cast<Gui::DoubleCalendarDialog*>(sender());
 
 	m->startDate = calendarWidget->startDate();
 	m->endDate = calendarWidget->endDate();

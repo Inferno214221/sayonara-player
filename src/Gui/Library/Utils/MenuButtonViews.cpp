@@ -16,13 +16,13 @@ using Library::MenuButtonViews;
 
 struct MenuButtonViews::Private
 {
-	QMenu* menu=nullptr;
-	QAction* tableViewAction=nullptr;
-	QAction* coverViewAction=nullptr;
-	QAction* directoryViewAction=nullptr;
-	QAction* shortcutSection=nullptr;
+	QMenu* menu = nullptr;
+	QAction* tableViewAction = nullptr;
+	QAction* coverViewAction = nullptr;
+	QAction* directoryViewAction = nullptr;
+	QAction* shortcutSection = nullptr;
 
-	Gui::PreferenceAction* preferenceAction=nullptr;
+	Gui::PreferenceAction* preferenceAction = nullptr;
 
 	Private(QWidget* parent)
 	{
@@ -79,15 +79,18 @@ void MenuButtonViews::actionTriggered(bool b)
 {
 	Q_UNUSED(b)
 
-	if(m->tableViewAction->isChecked()) {
+	if(m->tableViewAction->isChecked())
+	{
 		SetSetting(Set::Lib_ViewType, Library::ViewType::Standard);
 	}
 
-	else if(m->coverViewAction->isChecked()) {
+	else if(m->coverViewAction->isChecked())
+	{
 		SetSetting(Set::Lib_ViewType, Library::ViewType::CoverView);
 	}
 
-	else if(m->directoryViewAction->isChecked()) {
+	else if(m->directoryViewAction->isChecked())
+	{
 		SetSetting(Set::Lib_ViewType, Library::ViewType::FileView);
 	}
 }

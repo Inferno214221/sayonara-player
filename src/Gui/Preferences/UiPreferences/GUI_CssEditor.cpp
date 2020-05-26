@@ -7,6 +7,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
 
+#include <QPushButton>
+
 struct GUI_CssEditor::Private
 {
 	bool dark;
@@ -36,10 +38,11 @@ GUI_CssEditor::GUI_CssEditor(QWidget* parent) :
 
 	ui->setupUi(this);
 
-	connect(ui->btn_cancel, &QPushButton::clicked, this, &QWidget::close);
-	connect(ui->btn_apply, &QPushButton::clicked, this, &GUI_CssEditor::applyClicked);
-	connect(ui->btn_save, &QPushButton::clicked, this, &GUI_CssEditor::saveClicked);
-	connect(ui->btn_undo, &QPushButton::clicked, this, &GUI_CssEditor::undoClicked);
+	connect(ui->buttonBox->button(QDialogButtonBox::Cancel), &QPushButton::clicked, this, &QWidget::close);
+	connect(ui->buttonBox->button(QDialogButtonBox::Apply), &QPushButton::clicked, this, &GUI_CssEditor::applyClicked);
+	connect(ui->buttonBox->button(QDialogButtonBox::Ok), &QPushButton::clicked, this, &GUI_CssEditor::saveClicked);
+	connect(ui->buttonBox->button(QDialogButtonBox::Reset), &QPushButton::clicked, this, &GUI_CssEditor::undoClicked);
+
 	connect(ui->cb_darkMode, &QCheckBox::toggled, this, &GUI_CssEditor::darkModeToggled);
 }
 
@@ -73,7 +76,7 @@ void GUI_CssEditor::darkModeToggled(bool b)
 
 	Util::File::readFileIntoString(m->filename(), m->original);
 
-	ui->te_css->setFont( QFont("monospace") );
+	ui->te_css->setFont(QFont("monospace"));
 	ui->te_css->setPlainText(m->original);
 }
 
@@ -87,10 +90,8 @@ void GUI_CssEditor::showEvent(QShowEvent* e)
 	Gui::Dialog::showEvent(e);
 }
 
-void GUI_CssEditor::languageChanged()
+void GUI_CssEditor::skinChanged()
 {
-	ui->btn_save->setText(Lang::get(Lang::Save));
-	ui->btn_apply->setText(Lang::get(Lang::Apply));
-	ui->btn_undo->setText(Lang::get(Lang::Undo));
-	ui->btn_cancel->setText(Lang::get(Lang::Cancel));
+	Gui::Dialog::skinChanged();
+	ui->te_css->setFont(QFont("monospace"));
 }

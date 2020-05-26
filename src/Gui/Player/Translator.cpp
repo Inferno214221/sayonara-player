@@ -30,13 +30,13 @@
 #include <QDir>
 
 struct Translator::Private
-{	
+{
 	QList<QTranslator*> translators;
 };
 
 Translator::Translator()
 {
-	 m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>();
 }
 
 Translator::~Translator() = default;
@@ -59,8 +59,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 
 	QStringList filenames;
 	filenames << QDir(languageDir).absoluteFilePath(languageFile)
-			  << Util::Language::getCurrentQtTranslationPaths()
-	;
+	          << Util::Language::getCurrentQtTranslationPaths();
 
 	for(const QString& filename : filenames)
 	{
@@ -91,7 +90,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 		m->translators << translator;
 	}
 
-	return (m->translators.size() > 0);
+	return (!m->translators.isEmpty());
 }
 
 void Translator::changeLanguage(QObject* parent, const QString& fourLetter)

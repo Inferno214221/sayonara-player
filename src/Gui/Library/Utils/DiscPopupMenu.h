@@ -41,7 +41,7 @@ namespace Library
 
 		public:
 			DiscAction(QWidget* parent, Disc d);
-			~DiscAction();
+			~DiscAction() override;
 	};
 
 	/**
@@ -57,7 +57,7 @@ namespace Library
 
 		public:
 			DiscPopupMenu(QWidget* parent, QList<Disc> discs);
-			~DiscPopupMenu();
+			~DiscPopupMenu() override;
 	};
 }
 

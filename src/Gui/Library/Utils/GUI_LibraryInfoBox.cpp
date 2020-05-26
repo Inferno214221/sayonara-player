@@ -52,8 +52,7 @@ struct GUI_LibraryInfoBox::Private
 	LibraryId libraryId;
 
 	Private(LibraryId libraryId) :
-		libraryId(libraryId)
-	{}
+		libraryId(libraryId) {}
 };
 
 GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent) :
@@ -66,7 +65,7 @@ GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent) :
 
 	ui->lab_icon->setScaledContents(true);
 	ui->lab_icon->setPixmap(
-		Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(24,24), true)
+		Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(24, 24), true)
 	);
 }
 
@@ -100,13 +99,11 @@ void GUI_LibraryInfoBox::skinChanged()
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary));
 }
 
-
 void GUI_LibraryInfoBox::showEvent(QShowEvent* e)
 {
 	refresh();
 	Dialog::showEvent(e);
 }
-
 
 void GUI_LibraryInfoBox::refresh()
 {
@@ -127,7 +124,8 @@ void GUI_LibraryInfoBox::refresh()
 	MilliSeconds durationMs = 0;
 	Filesize filesize = 0;
 
-	for( const MetaData& md : tracks ) {
+	for(const MetaData& md : tracks)
+	{
 		durationMs += md.durationMs();
 		filesize += md.filesize();
 	}

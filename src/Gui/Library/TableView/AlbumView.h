@@ -35,58 +35,58 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class AlbumView :
-			public TableView
+		public TableView
 	{
 		Q_OBJECT
 		PIMPL(AlbumView)
 
-	signals:
-		void sigDiscPressed(Disc d);
+		signals:
+			void sigDiscPressed(Disc d);
 
-	protected slots:
-		void indexClicked(const QModelIndex& idx);
+		protected slots:
+			void indexClicked(const QModelIndex& idx);
 
-	public:
-		explicit AlbumView(QWidget* parent=nullptr);
-		virtual ~AlbumView() override;
+		public:
+			explicit AlbumView(QWidget* parent = nullptr);
+			virtual ~AlbumView() override;
 
-	protected:
-		ColumnHeaderList columnHeaders() const override;
-		QByteArray columnHeaderState() const override;
-		void saveColumnHeaderState(const QByteArray& state) override;
+		protected:
+			ColumnHeaderList columnHeaders() const override;
+			QByteArray columnHeaderState() const override;
+			void saveColumnHeaderState(const QByteArray& state) override;
 
-	private:
-		// Library::TableView
-		void initView(AbstractLibrary* library) override;
+		private:
+			// Library::TableView
+			void initView(AbstractLibrary* library) override;
 
-		SortOrder sortorder() const override;
-		void applySortorder(SortOrder s) override;
+			SortOrder sortorder() const override;
+			void applySortorder(SortOrder s) override;
 
-		// Library::ItemView
-		void playClicked() override;
-		void playNewTabClicked() override;
-		void playNextClicked() override;
-		void appendClicked() override;
-		void selectedItemsChanged(const IndexSet& indexes) override;
-		void refreshClicked() override;
-		void runMergeOperation(const MergeData& mergedata) override;
-		bool isMergeable() const override;
-		MD::Interpretation metadataInterpretation() const override;
+			// Library::ItemView
+			void playClicked() override;
+			void playNewTabClicked() override;
+			void playNextClicked() override;
+			void appendClicked() override;
+			void selectedItemsChanged(const IndexSet& indexes) override;
+			void refreshClicked() override;
+			void runMergeOperation(const MergeData& mergedata) override;
+			bool isMergeable() const override;
+			MD::Interpretation metadataInterpretation() const override;
 
-		bool autoResizeState() const override;
-		void saveAutoResizeState(bool b) override;
+			bool autoResizeState() const override;
+			void saveAutoResizeState(bool b) override;
 
-		void calcDiscmenuPoint(QModelIndex idx);
-		void deleteDiscmenu();
-		void initDiscmenu(QModelIndex idx);
+			void calcDiscmenuPoint(QModelIndex idx);
+			void deleteDiscmenu();
+			void initDiscmenu(QModelIndex idx);
 
-		void showDiscmenu();
-		void showContextMenu(const QPoint& p) override;
+			void showDiscmenu();
+			void showContextMenu(const QPoint& p) override;
 
-		AbstractLibrary* library() const override;
+			AbstractLibrary* library() const override;
 
-	private slots:
-		void useClearButtonChanged();
+		private slots:
+			void useClearButtonChanged();
 	};
 }
 

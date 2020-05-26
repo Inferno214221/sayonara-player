@@ -24,7 +24,7 @@
 #include "Utils/Pimpl.h"
 #include <QThread>
 
-using Hash=QString;
+using Hash = QString;
 class QPixmap;
 
 namespace Library
@@ -51,7 +51,7 @@ namespace Library
 			void setOutdated(const Hash& hash);
 			void setAllOutdated();
 
-			int	cacheSize() const;
+			int cacheSize() const;
 			void setCacheSize(int cacheSize);
 
 			void clear();

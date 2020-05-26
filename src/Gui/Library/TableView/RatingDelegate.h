@@ -31,7 +31,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class RatingDelegate :
-			public Gui::StyledItemDelegate
+		public Gui::StyledItemDelegate
 	{
 		Q_OBJECT
 		PIMPL(RatingDelegate)
@@ -41,9 +41,10 @@ namespace Library
 			~RatingDelegate() override;
 
 			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-			QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem &option, const QModelIndex& index) const override;
+			QWidget*
+			createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 			void setEditorData(QWidget* editor, const QModelIndex& index) const override;
-			void setModelData(QWidget* editor, QAbstractItemModel *model, const QModelIndex& index) const override;
+			void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 		private slots:
 			void deleteEditor(bool save);

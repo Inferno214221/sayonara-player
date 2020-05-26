@@ -25,7 +25,8 @@
 static Message::Answer convertAnswer(int answer)
 {
 	auto button = QMessageBox::StandardButton(answer);
-	switch(button){
+	switch(button)
+	{
 		case QMessageBox::Ok:
 			return Message::Answer::Ok;
 
@@ -47,8 +48,8 @@ static Message::Answer convertAnswer(int answer)
 Message::Answer GUI_Player::errorReceived(const QString& error, const QString& sender_name)
 {
 	QString title = sender_name.isEmpty()
-			? Lang::get(Lang::Error) + ":"
-			: sender_name + ": " + Lang::get(Lang::Error);
+	                ? Lang::get(Lang::Error) + ":"
+	                : sender_name + ": " + Lang::get(Lang::Error);
 
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle(title);
@@ -60,11 +61,11 @@ Message::Answer GUI_Player::errorReceived(const QString& error, const QString& s
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& sender_name)
+Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& senderName)
 {
-	QString title = sender_name.isEmpty()
-			? Lang::get(Lang::Warning)
-			: sender_name + ": " + Lang::get(Lang::Warning);
+	const QString title = senderName.isEmpty()
+	                ? Lang::get(Lang::Warning)
+	                : senderName + ": " + Lang::get(Lang::Warning);
 
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle(title);
@@ -76,11 +77,11 @@ Message::Answer GUI_Player::warningReceived(const QString& warning, const QStrin
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::infoReceived(const QString& info, const QString& sender_name)
+Message::Answer GUI_Player::infoReceived(const QString& info, const QString& senderName)
 {
-	QString title = sender_name.isEmpty()
-			? Lang::get(Lang::Info)
-			: sender_name + ": " + Lang::get(Lang::Info);
+	const QString title = senderName.isEmpty()
+	                ? Lang::get(Lang::Info)
+	                : senderName + ": " + Lang::get(Lang::Info);
 
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle(title);
@@ -92,11 +93,12 @@ Message::Answer GUI_Player::infoReceived(const QString& info, const QString& sen
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::questionReceived(const QString& question, const QString& sender_name, Message::QuestionType type)
+Message::Answer
+GUI_Player::questionReceived(const QString& question, const QString& senderName, Message::QuestionType type)
 {
-	QString title = sender_name.isEmpty()
-			? Lang::get(Lang::Info)
-			: sender_name + ": " + Lang::get(Lang::Info);
+	const QString title = senderName.isEmpty()
+	                ? Lang::get(Lang::Info)
+	                : senderName + ": " + Lang::get(Lang::Info);
 
 	QMessageBox msgBox(this);
 	msgBox.setWindowTitle(title);

@@ -37,21 +37,21 @@ namespace Library
 	 * @ingroup Gui::Library
 	 */
 	class GUI_LibraryInfoBox :
-			public Gui::Dialog
+		public Gui::Dialog
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_LibraryInfoBox)
 		PIMPL(GUI_LibraryInfoBox)
 
-	public:
-		explicit GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent=nullptr);
-		~GUI_LibraryInfoBox() override;
+		public:
+			explicit GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent = nullptr);
+			~GUI_LibraryInfoBox() override;
 
-	protected:
-		void languageChanged() override;
-		void skinChanged() override;
-		void showEvent(QShowEvent* e) override;
-		void refresh();
+		protected:
+			void languageChanged() override;
+			void skinChanged() override;
+			void showEvent(QShowEvent* e) override;
+			void refresh();
 	};
 }
 

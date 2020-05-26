@@ -211,42 +211,68 @@ QString Util::createLink(const QString& name, bool dark, bool underline)
 
 QString Util::createLink(const QString& name, bool dark, bool underline, const QString& target)
 {
-	QString new_target;
-	QString content;
-	QString style;
-	QString ret;
+	const QColor color = (dark == true) ?
+				QColor("#8888FF") :
+				QPalette().color(QPalette::Link);
 
-	if(target.size() == 0){
-		new_target = name;
+	return createLink(name, color, underline, target);
+}
+
+
+QString Util::createLink(const QString& name, const QColor& color, bool underline, const QString& target)
+{
+	QString newTarget;
+	QString style;
+
+	if(target.isEmpty()){
+		newTarget = name;
 	}
 
 	else {
-		new_target = target;
+		newTarget = target;
 	}
+
+	QMap<QString, QString> stylesheetMap;
 
 	if(!underline) {
-		style = " style=\"text-decoration: none;\" ";
-	};
-
-	if(dark) {
-		content = LIGHT_BLUE(name);
-	}
-	else {
-		QColor color = QPalette().color(QPalette::Link);
-		QString color_name = color.name(QColor::HexRgb);
-		content = QString("<font color=%1>%2</font>").arg(color_name).arg(name);
-	}
-
-	if(new_target.contains("://") || new_target.contains("mailto:")){
-		ret = QString("<a href=\"") + new_target + "\"" + style + ">" + content + "</a>";
+		stylesheetMap["text-decoration"] = "none";
 	}
 
 	else {
-		ret = QString("<a href=\"file://") + new_target + "\"" + style + ">" + content + "</a>";
+		stylesheetMap["text-decoration"] = "underline";
 	}
+
+	if(color.isValid())
+	{
+		stylesheetMap["color"] = color.name(QColor::HexRgb);
+	}
+
+	else
+	{
+		stylesheetMap["color"] = QPalette().color(QPalette::Text).name(QColor::HexRgb);
+	}
+
+	if(!newTarget.contains("://") && !newTarget.contains("mailto:")) {
+		newTarget.prepend("file://");
+	}
+
+	QStringList styleStringlist;
+	for(auto it=stylesheetMap.begin(); it != stylesheetMap.end(); it++)
+	{
+		styleStringlist << QString("%1: %2;")
+							.arg(it.key())
+							.arg(it.value());
+	}
+
+	const QString ret =
+		QString("<a href=\"%1\"><span style=\"%2\">%3</span></a>")
+			.arg(newTarget)
+			.arg(styleStringlist.join(" "))
+			.arg(name);
 
 	return ret;
 }
+
 
 QString Util::getFileFilter(Util::Extensions extensions, const QString& name)
 {

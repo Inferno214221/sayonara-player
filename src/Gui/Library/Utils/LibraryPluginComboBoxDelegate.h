@@ -31,7 +31,7 @@ namespace Library
 		Q_OBJECT
 
 		private:
-			QWidget* mParent=nullptr;
+			QWidget* mParent = nullptr;
 
 		public:
 			explicit PluginComboBoxDelegate(QWidget* parent);
@@ -42,6 +42,5 @@ namespace Library
 			QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	};
 }
-
 
 #endif // LIBRARYPLUGINCOMBOBOXDELEGATE_H

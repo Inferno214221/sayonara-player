@@ -38,63 +38,63 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverView :
-			public ItemView
+		public ItemView
 	{
 		Q_OBJECT
 		PIMPL(CoverView)
 
-	public:
-		explicit CoverView(QWidget* parent=nullptr);
-		~CoverView() override;
+		public:
+			explicit CoverView(QWidget* parent = nullptr);
+			~CoverView() override;
 
-		void init(LocalLibrary* library);
-		AbstractLibrary* library() const override;
+			void init(LocalLibrary* library);
+			AbstractLibrary* library() const override;
 
-		// QAbstractItemView
-		QStyleOptionViewItem viewOptions() const override;
+			// QAbstractItemView
+			QStyleOptionViewItem viewOptions() const override;
 
-		//SayonaraSelectionView
-		int mapModelIndexToIndex(const QModelIndex& idx) const override;
-		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
-		SelectionViewInterface::SelectionType selectionType() const override;
+			//SayonaraSelectionView
+			int mapModelIndexToIndex(const QModelIndex& idx) const override;
+			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+			SelectionViewInterface::SelectionType selectionType() const override;
 
-		void changeZoom(int zoom=-1);
-		void changeSortorder(SortOrder so);
+			void changeZoom(int zoom = -1);
+			void changeSortorder(SortOrder so);
 
-		static QList<ActionPair> sortingActions();
-		static QStringList zoomActions();
+			static QList<ActionPair> sortingActions();
+			static QStringList zoomActions();
 
-	public slots:
-		void reload();
-		void clearCache();
+		public slots:
+			void reload();
+			void clearCache();
 
-	protected:
-		void fill() override;
-		void initContextMenu() override;
+		protected:
+			void fill() override;
+			void initContextMenu() override;
 
-		void languageChanged() override;
+			void languageChanged() override;
 
-		// ItemView
-		bool isMergeable() const override;
-		MD::Interpretation metadataInterpretation() const override;
+			// ItemView
+			bool isMergeable() const override;
+			MD::Interpretation metadataInterpretation() const override;
 
-		int sizeHintForColumn(int) const override;
+			int sizeHintForColumn(int) const override;
 
-		void wheelEvent(QWheelEvent* e) override;
-		void resizeEvent(QResizeEvent* e) override;
-		void hideEvent(QHideEvent* e) override;
+			void wheelEvent(QWheelEvent* e) override;
+			void resizeEvent(QResizeEvent* e) override;
+			void hideEvent(QHideEvent* e) override;
 
-	private:
-		void resizeSections();
+		private:
+			void resizeSections();
 
-		// Library::ItemView
-		void playClicked() override;
-		void playNewTabClicked() override;
-		void playNextClicked() override;
-		void appendClicked() override;
-		void selectedItemsChanged(const IndexSet& indexes) override;
-		void refreshClicked() override;
-		void runMergeOperation(const Library::MergeData& mergedata) override;
+			// Library::ItemView
+			void playClicked() override;
+			void playNewTabClicked() override;
+			void playNextClicked() override;
+			void appendClicked() override;
+			void selectedItemsChanged(const IndexSet& indexes) override;
+			void refreshClicked() override;
+			void runMergeOperation(const Library::MergeData& mergedata) override;
 	};
 }
 

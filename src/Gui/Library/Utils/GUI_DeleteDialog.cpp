@@ -27,15 +27,13 @@
 
 struct GUI_DeleteDialog::Private
 {
-	int	trackCount;
+	int trackCount;
 	Library::TrackDeletionMode answer;
 
 	Private(int trackCount) :
 		trackCount(trackCount),
-		answer(Library::TrackDeletionMode::None)
-	{}
+		answer(Library::TrackDeletionMode::None) {}
 };
-
 
 GUI_DeleteDialog::GUI_DeleteDialog(int trackCount, QWidget* parent) :
 	Gui::Dialog(parent)
@@ -53,7 +51,6 @@ GUI_DeleteDialog::GUI_DeleteDialog(int trackCount, QWidget* parent) :
 }
 
 GUI_DeleteDialog::~GUI_DeleteDialog() = default;
-
 
 Library::TrackDeletionMode GUI_DeleteDialog::answer() const
 {
@@ -91,11 +88,11 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 	ui->cbOnlyFromLibrary->setText(tr("Only from library"));
 	ui->labWarning->setText(Lang::get(Lang::Warning) + "!");
 	ui->labInfo->setText
-	(
-		tr("You are about to delete %n file(s)", "", m->trackCount) +
+		(
+			tr("You are about to delete %n file(s)", "", m->trackCount) +
 			"!\n" +
 			Lang::get(Lang::Continue).question()
-	);
+		);
 }
 
 void GUI_DeleteDialog::setTrackCount(int trackCount)

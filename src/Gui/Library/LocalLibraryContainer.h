@@ -39,20 +39,20 @@ class LocalLibraryContainer :
 	Q_OBJECT
 	PIMPL(LocalLibraryContainer)
 
-public:
-	explicit LocalLibraryContainer(const Library::Info& library, QObject* parent=nullptr);
-	virtual ~LocalLibraryContainer() override;
+	public:
+		explicit LocalLibraryContainer(const Library::Info& library, QObject* parent = nullptr);
+		virtual ~LocalLibraryContainer() override;
 
-	// override from LibraryViewInterface
-	QString     name() const override;
-	QString     displayName() const override;
-	QWidget*    widget() const override;
-	QMenu*      menu() override;
-	QFrame*		header() const override;
-	QPixmap		icon() const override;
-	void        initUi() override;
-	bool		isLocal() const override;
-	void		rename(const QString& new_name) override;
+		// override from LibraryViewInterface
+		QString name() const override;
+		QString displayName() const override;
+		QWidget* widget() const override;
+		QMenu* menu() override;
+		QFrame* header() const override;
+		QPixmap icon() const override;
+		void initUi() override;
+		bool isLocal() const override;
+		void rename(const QString& new_name) override;
 };
 
 #endif // LOCALLIBRARYCONTAINER_H

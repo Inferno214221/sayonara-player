@@ -36,7 +36,8 @@ struct SearchSlider::Private
 {
 	int buffer_progress;
 
-	Private() : buffer_progress(-1) {}
+	Private() :
+		buffer_progress(-1) {}
 };
 
 SearchSlider::SearchSlider(QWidget* parent) :
@@ -46,43 +47,35 @@ SearchSlider::SearchSlider(QWidget* parent) :
 	this->setMouseTracking(true);
 }
 
-SearchSlider::~SearchSlider() {}
-
+SearchSlider::~SearchSlider() = default;
 
 bool SearchSlider::event(QEvent* e)
 {
-	QWheelEvent* we;
-	int delta_val = 5;
+	if(e->type() == QEvent::Wheel && this->isEnabled())
+	{
+		auto* we = dynamic_cast<QWheelEvent*>(e);
 
-	switch(e->type()){
-		case QEvent::Wheel:
+		int deltaVal = 5;
+		if(we->modifiers() & Qt::ShiftModifier)
+		{
+			deltaVal = 10;
+		}
 
-			if(!this->isEnabled()) {
-				break;
-			}
+		else if(we->modifiers() & Qt::AltModifier)
+		{
+			deltaVal = 50;
+		}
 
-			we = (QWheelEvent*) e;
-			if(we->modifiers() & Qt::ShiftModifier){
-				delta_val = 10;
-			}
+		if(we->delta() > 0)
+		{
+			setValue(value() + deltaVal);
+		}
+		else
+		{
+			setValue(value() - deltaVal);
+		}
 
-			else if(we->modifiers() & Qt::AltModifier){
-				delta_val = 50;
-			}
-
-
-			if(we->delta() > 0){
-				setValue(value() + delta_val);
-			}
-			else{
-				setValue(value() - delta_val);
-			}
-
-			emit_new_val(value());
-			break;
-
-		default:
-			break;
+		emitNewValue(value());
 	}
 
 	return Gui::Slider::event(e);
@@ -109,31 +102,28 @@ void SearchSlider::set_buffering(int progress)
 	this->repaint();
 }
 
-
-
 void SearchSlider::mousePressEvent(QMouseEvent* e)
 {
 	Gui::Slider::mousePressEvent(e);
-	emit_new_val(this->value());
+	emitNewValue(this->value());
 }
-
 
 void SearchSlider::mouseReleaseEvent(QMouseEvent* e)
 {
 	Gui::Slider::mouseReleaseEvent(e);
-	emit_new_val(this->value());
+	emitNewValue(this->value());
 }
-
 
 void SearchSlider::mouseMoveEvent(QMouseEvent* e)
 {
 	Gui::Slider::mouseMoveEvent(e);
-	if(this->isSliderDown()){
-		emit_new_val(this->value());
+	if(this->isSliderDown())
+	{
+		emitNewValue(this->value());
 	}
 }
 
-void SearchSlider::emit_new_val(int value)
+void SearchSlider::emitNewValue(int value)
 {
 	value = std::max(value, 0);
 	value = std::min(value, maximum());

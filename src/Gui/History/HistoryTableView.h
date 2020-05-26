@@ -20,7 +20,7 @@ class HistoryTableView :
 		void sigRowcountChanged();
 
 	public:
-		HistoryTableView(Session::Timecode timecode, QWidget* parent=nullptr);
+		explicit HistoryTableView(Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryTableView() override;
 
 		int rows() const;

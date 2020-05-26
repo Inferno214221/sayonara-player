@@ -43,46 +43,46 @@ class Menubar :
 	Q_OBJECT
 	PIMPL(Menubar)
 
-signals:
-	void sigCloseClicked();
-	void sigMinimizeClicked();
-	void sigLoggerClicked();
+	signals:
+		void sigCloseClicked();
+		void sigMinimizeClicked();
+		void sigLoggerClicked();
 
-public:
-	explicit Menubar(QWidget* parent=nullptr);
-	~Menubar() override;
+	public:
+		explicit Menubar(QWidget* parent = nullptr);
+		~Menubar() override;
 
-	void insertPreferenceAction(QAction* action);
+		void insertPreferenceAction(QAction* action);
 
-	void showLibraryAction(bool visible);
-	void setShowLibraryActionEnabled(bool b);
-	void showLibraryMenu(bool b);
+		void showLibraryAction(bool visible);
+		void setShowLibraryActionEnabled(bool b);
+		void showLibraryMenu(bool b);
 
-private:
-	void initDonateLink();
-	void initConnections();
-	void styleChanged();
+	private:
+		void initDonateLink();
+		void initConnections();
+		void styleChanged();
 
-	QAction* changeCurrentLibrary(Library::AbstractContainer* library);
+		QAction* changeCurrentLibrary(Library::AbstractContainer* library);
 
-private slots:
-	void openDirClicked();
-	void openFilesClicked();
-	void shutdownClicked();
-	void closeClicked();
-	void minimizeClicked();
-	void skinToggled(bool b);
-	void bigCoverToggled(bool b);
-	void showLibraryToggled(bool b);
-	void showFullscreenToggled(bool b);
-	void helpClicked();
-	void aboutClicked();
-	void shortcutChanged(ShortcutIdentifier identifier);
-	void pluginAdded(PlayerPlugin::Base* plugin);
+	private slots:
+		void openDirClicked();
+		void openFilesClicked();
+		void shutdownClicked();
+		void closeClicked();
+		void minimizeClicked();
+		void skinToggled(bool b);
+		void bigCoverToggled(bool b);
+		void showLibraryToggled(bool b);
+		void showFullscreenToggled(bool b);
+		void helpClicked();
+		void aboutClicked();
+		void shortcutChanged(ShortcutIdentifier identifier);
+		void pluginAdded(PlayerPlugin::Base* plugin);
 
-protected:
-	void languageChanged() override;
-	void skinChanged() override;
+	protected:
+		void languageChanged() override;
+		void skinChanged() override;
 };
 
 #endif // GUI_PLAYERMENUBAR_H

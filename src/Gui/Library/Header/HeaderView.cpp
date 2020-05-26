@@ -28,7 +28,7 @@
 
 using Library::ColumnHeaderPtr;
 using Library::HeaderView;
-using Parent=Gui::WidgetTemplate<QHeaderView>;
+using Parent = Gui::WidgetTemplate<QHeaderView>;
 
 using ColumnActionPair = QPair<ColumnHeaderPtr, QAction*>;
 using ColumnActionPairList = QList<ColumnActionPair>;
@@ -36,8 +36,8 @@ using ColumnActionPairList = QList<ColumnActionPair>;
 struct HeaderView::Private
 {
 	ColumnActionPairList columns;
-	QAction* actionResize=nullptr;
-	QAction* actionAutoResize=nullptr;
+	QAction* actionResize = nullptr;
+	QAction* actionAutoResize = nullptr;
 
 	QByteArray initialState;
 	bool isInitialized;
@@ -58,35 +58,38 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 
 	connect(m->actionResize, &QAction::triggered, this, &HeaderView::actionResizeTriggered);
 	connect(m->actionAutoResize, &QAction::triggered, this, &HeaderView::actionAutoResizeTriggered);
-	connect(this, &QHeaderView::sectionDoubleClicked, this, [this](int /*logicalIndex*/){
+	connect(this, &QHeaderView::sectionDoubleClicked, this, [this](int /*logicalIndex*/) {
 		this->resizeColumnsAutomatically();
 	});
 }
 
 HeaderView::~HeaderView() = default;
 
-void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting, bool autoResizeState)
+void HeaderView::init(const ColumnHeaderList& columns, const QByteArray& state, Library::SortOrder sorting,
+                      bool autoResizeState)
 {
 	m->initialState = state;
 
-	for(int i=0; i<columns.size(); i++)
+	for(int i = 0; i < columns.size(); i++)
 	{
 		ColumnHeaderPtr section = columns[i];
 
 		// action
 		auto* action = new QAction(section->title());
 		action->setCheckable(section->isSwitchable());
-		action->setChecked(isSectionHidden(i) == false);
+		action->setChecked(!isSectionHidden(i));
 
 		connect(action, &QAction::toggled, this, &HeaderView::actionTriggered);
 		this->addAction(action);
 
 		// sorting
-		if(sorting == section->sortorder(Qt::AscendingOrder)) {
+		if(sorting == section->sortorder(Qt::AscendingOrder))
+		{
 			this->setSortIndicator(i, Qt::AscendingOrder);
 		}
 
-		else if(sorting == section->sortorder(Qt::DescendingOrder)) {
+		else if(sorting == section->sortorder(Qt::DescendingOrder))
+		{
 			this->setSortIndicator(i, Qt::DescendingOrder);
 		}
 
@@ -116,7 +119,8 @@ Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortorder)
 
 QString HeaderView::columnText(int index) const
 {
-	if(!Util::between(index, m->columns)) {
+	if(!Util::between(index, m->columns))
+	{
 		return QString();
 	}
 
@@ -125,7 +129,7 @@ QString HeaderView::columnText(int index) const
 
 void HeaderView::reloadColumnTexts()
 {
-	for(int i=0; i<m->columns.size(); i++)
+	for(int i = 0; i < m->columns.size(); i++)
 	{
 		QAction* action = m->columns[i].second;
 		action->setText(columnText(i));
@@ -134,9 +138,10 @@ void HeaderView::reloadColumnTexts()
 
 void HeaderView::actionTriggered(bool b)
 {
-	auto* action = static_cast<QAction*>(sender());
+	auto* action = dynamic_cast<QAction*>(sender());
 	int index = this->actions().indexOf(action);
-	if(index >= 0) {
+	if(index >= 0)
+	{
 		this->setSectionHidden(index, !b);
 	}
 
@@ -156,22 +161,23 @@ void HeaderView::actionAutoResizeTriggered(bool b)
 static int columnWidth(Library::ColumnHeaderPtr section, QWidget* widget)
 {
 	return std::max
-	(
-		section->defaultSize(),
-		Gui::Util::textWidth(widget, section->title() + "MMM")
-	);
+		(
+			section->defaultSize(),
+			Gui::Util::textWidth(widget, section->title() + "MMM")
+		);
 }
 
 void HeaderView::resizeColumnsAutomatically()
 {
 	double scaleFactor;
-	{	// calculate scale factor of stretchable columns
+	{    // calculate scale factor of stretchable columns
 		int spaceNeeded = 0;
 		int freeSpace = this->width();
 
-		for(int i=0; i<m->columns.size(); i++)
+		for(int i = 0; i < m->columns.size(); i++)
 		{
-			if(this->isSectionHidden(i)) {
+			if(this->isSectionHidden(i))
+			{
 				continue;
 			}
 
@@ -184,7 +190,8 @@ void HeaderView::resizeColumnsAutomatically()
 				freeSpace -= size;
 			}
 
-			else {
+			else
+			{
 				spaceNeeded += size;
 			}
 		}
@@ -193,7 +200,7 @@ void HeaderView::resizeColumnsAutomatically()
 	}
 
 	{ // resize stretchable sections
-		for(int i=0; i<m->columns.size(); i++)
+		for(int i = 0; i < m->columns.size(); i++)
 		{
 			ColumnHeaderPtr section = m->columns[i].first;
 			if(section->isStretchable() && !this->isSectionHidden(i))
@@ -220,7 +227,8 @@ void HeaderView::showEvent(QShowEvent* e)
 {
 	Parent::showEvent(e);
 
-	if(m->isInitialized){
+	if(m->isInitialized)
+	{
 		return;
 	}
 

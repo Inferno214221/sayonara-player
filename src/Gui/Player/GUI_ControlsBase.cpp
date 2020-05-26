@@ -33,7 +33,7 @@
 #include <algorithm>
 #include <cmath>
 
-static void setIcon(QPushButton* btn, QIcon icon)
+static void setIcon(QPushButton* btn, const QIcon& icon)
 {
 	int width = Gui::Util::textWidth(btn->fontMetrics(), "MMn");
 
@@ -54,7 +54,7 @@ static MetaData currentTrack()
 
 struct GUI_ControlsBase::Private
 {
-	Library::ContextMenu* contextMenu=nullptr;
+	Library::ContextMenu* contextMenu = nullptr;
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -131,9 +131,9 @@ void GUI_ControlsBase::currentTrackChanged(const MetaData& md)
 	refreshLabels(md);
 
 	setCoverLocation(md);
-	setRadioMode( md.radioMode() );
+	setRadioMode(md.radioMode());
 
-	sliProgress()->setEnabled( (md.durationMs() / 1000) > 0 );
+	sliProgress()->setEnabled((md.durationMs() / 1000) > 0);
 }
 
 void GUI_ControlsBase::playstateChanged(PlayState state)
@@ -153,9 +153,8 @@ void GUI_ControlsBase::playstateChanged(PlayState state)
 			break;
 	}
 
-	checkRecordButtonVisible();	
+	checkRecordButtonVisible();
 }
-
 
 QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 {
@@ -164,7 +163,8 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 	Icons::changeTheme();
 	Icons::IconMode mode = Icons::Automatic;
 
-	if(Style::isDark()){
+	if(Style::isDark())
+	{
 		mode = Icons::ForceSayonaraIcon;
 	}
 
@@ -210,7 +210,8 @@ void GUI_ControlsBase::stopped()
 
 	setStandardCover();
 
-	if(labRating()){
+	if(labRating())
+	{
 		labRating()->hide();
 	}
 }
@@ -231,14 +232,14 @@ void GUI_ControlsBase::buffering(int progress)
 		labMaxTime()->setVisible(false);
 	}
 
-	//buffering stopped
+		//buffering stopped
 	else if(progress == 0)
 	{
 		sliProgress()->set_buffering(-1);
 		labMaxTime()->setVisible(false);
 	}
 
-	// no buffering
+		// no buffering
 	else
 	{
 		sliProgress()->set_buffering(-1);
@@ -256,25 +257,27 @@ void GUI_ControlsBase::progressMoved(int val)
 	PlayManager::instance()->seekRelative(percent);
 }
 
-
 void GUI_ControlsBase::currentPositionChanged(MilliSeconds pos_ms)
 {
 	spLog(Log::Crazy, this) << "Current position: " << pos_ms;
 
 	MilliSeconds duration = PlayManager::instance()->durationMs();
 	int max = sliProgress()->maximum();
-	int new_val=0;
+	int new_val = 0;
 	double percent = (pos_ms * 1.0) / duration;
 
-	if ( duration > 0 ) {
+	if(duration > 0)
+	{
 		new_val = int(max * percent);
 	}
 
-	else if(pos_ms > duration) {
+	else if(pos_ms > duration)
+	{
 		new_val = 0;
 	}
 
-	else{
+	else
+	{
 		return;
 	}
 
@@ -285,7 +288,6 @@ void GUI_ControlsBase::currentPositionChanged(MilliSeconds pos_ms)
 		sliProgress()->setValue(new_val);
 	}
 }
-
 
 void GUI_ControlsBase::refreshCurrentPosition(int val)
 {
@@ -306,7 +308,8 @@ void GUI_ControlsBase::refreshCurrentPosition(int val)
 void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds total_time)
 {
 	QString length_str;
-	if(total_time > 0){
+	if(total_time > 0)
+	{
 		length_str = Util::msToString(total_time, "$M:$S");
 		labMaxTime()->setText(length_str);
 	}
@@ -328,9 +331,8 @@ void GUI_ControlsBase::progressHovered(int val)
 	MilliSeconds cur_pos_ms = MilliSeconds(percent * duration);
 	QString cur_pos_string = Util::msToString(cur_pos_ms, "$M:$S");
 
-	QToolTip::showText( QCursor::pos(), cur_pos_string );
+	QToolTip::showText(QCursor::pos(), cur_pos_string);
 }
-
 
 void GUI_ControlsBase::volumeChanged(int val)
 {
@@ -344,19 +346,23 @@ void GUI_ControlsBase::setupVolumeButton(int percent)
 
 	QIcon icon;
 
-	if (percent <= 1 || PlayManager::instance()->isMuted()) {
+	if(percent <= 1 || PlayManager::instance()->isMuted())
+	{
 		icon = Icons::icon(Icons::VolMute);
 	}
 
-	else if (percent < 40) {
+	else if(percent < 40)
+	{
 		icon = Icons::icon(Icons::Vol1);
 	}
 
-	else if (percent < 80) {
+	else if(percent < 80)
+	{
 		icon = Icons::icon(Icons::Vol2);
 	}
 
-	else {
+	else
+	{
 		icon = Icons::icon(Icons::Vol3);
 	}
 
@@ -375,11 +381,13 @@ void GUI_ControlsBase::decreaseVolume()
 
 void GUI_ControlsBase::changeVolumeByDelta(int val)
 {
-	if(val > 0) {
+	if(val > 0)
+	{
 		increaseVolume();
 	}
 
-	else {
+	else
+	{
 		decreaseVolume();
 	}
 }
@@ -387,7 +395,8 @@ void GUI_ControlsBase::changeVolumeByDelta(int val)
 void GUI_ControlsBase::muteChanged(bool muted)
 {
 	int val = PlayManager::instance()->volume();
-	if(muted) {
+	if(muted)
+	{
 		val = 0;
 	}
 
@@ -397,7 +406,6 @@ void GUI_ControlsBase::muteChanged(bool muted)
 	sliVolume()->setDisabled(muted);
 }
 
-
 // public slot:
 // id3 tags have changed
 void GUI_ControlsBase::metadataChanged()
@@ -405,13 +413,13 @@ void GUI_ControlsBase::metadataChanged()
 	QList<MetaDataPair> changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
 
 	MetaData currentTrack = PlayManager::instance()->currentTrack();
-	auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const MetaDataPair& trackPair)
-	{
+	auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const MetaDataPair& trackPair) {
 		const MetaData& oldTrack = trackPair.first;
 		return (oldTrack.filepath() == currentTrack.filepath());
 	});
 
-	if(it == changedTracks.end()){
+	if(it == changedTracks.end())
+	{
 		return;
 	}
 
@@ -419,22 +427,24 @@ void GUI_ControlsBase::metadataChanged()
 	refreshLabels(newTrack);
 	setCoverLocation(newTrack);
 
-	setWindowTitle( QString("Sayonara - %1").arg(newTrack.title()) );
+	setWindowTitle(QString("Sayonara - %1").arg(newTrack.title()));
 }
 
 void GUI_ControlsBase::refreshCurrentTrack()
 {
-	refreshLabels( currentTrack() );
+	refreshLabels(currentTrack());
 }
 
 static void set_floating_text(QLabel* label, const QString& text)
 {
 	Gui::FloatingLabel* floating_label = dynamic_cast<Gui::FloatingLabel*>(label);
-	if(floating_label) {
+	if(floating_label)
+	{
 		floating_label->setFloatingText(text);
 	}
 
-	else {
+	else
+	{
 		label->setText(text);
 	}
 }
@@ -480,7 +490,7 @@ void GUI_ControlsBase::refreshLabels(const MetaData& md)
 		QString sFilesize;
 		if(md.filesize() > 0)
 		{
-			sFilesize = QString::number( static_cast<double>(md.filesize() / 1024) / 1024.0, 'f', 2) + " MB";
+			sFilesize = QString::number(static_cast<double>(md.filesize() / 1024) / 1024.0, 'f', 2) + " MB";
 			labFilesize()->setText(sFilesize);
 		}
 
@@ -497,7 +507,6 @@ void GUI_ControlsBase::refreshLabels(const MetaData& md)
 
 	setTotalTimeLabel(md.durationMs());
 }
-
 
 void GUI_ControlsBase::skinChanged()
 {
@@ -542,17 +551,18 @@ void GUI_ControlsBase::checkRecordButtonVisible()
 	PlayManager* pm = PlayManager::instance();
 
 	bool recording_enabled =
-	(
-		GetSetting(SetNoDB::MP3enc_found) &&	// Lame Available
-		GetSetting(Set::Engine_SR_Active) &&	// Streamrecorder active
-		(currentTrack().radioMode() != RadioMode::Off) &&		// Radio on
-		(pm->playstate() == PlayState::Playing)	// Is Playing
-	);
+		(
+			GetSetting(SetNoDB::MP3enc_found) &&    // Lame Available
+			GetSetting(Set::Engine_SR_Active) &&    // Streamrecorder active
+			(currentTrack().radioMode() != RadioMode::Off) &&        // Radio on
+			(pm->playstate() == PlayState::Playing)    // Is Playing
+		);
 
 	btnPlay()->setVisible(!recording_enabled);
 	btnRecord()->setVisible(recording_enabled);
 
-	if(!recording_enabled) {
+	if(!recording_enabled)
+	{
 		btnRecord()->setChecked(false);
 	}
 }
@@ -585,8 +595,8 @@ void GUI_ControlsBase::setupConnections()
 	PlayManager* pm = PlayManager::instance();
 
 	connect(btnPlay(), &QPushButton::clicked, pm, &PlayManager::playPause);
-	connect(btnNext(),	&QPushButton::clicked, pm, &PlayManager::next);
-	connect(btnPrevious(),	&QPushButton::clicked, pm, &PlayManager::previous);
+	connect(btnNext(), &QPushButton::clicked, pm, &PlayManager::next);
+	connect(btnPrevious(), &QPushButton::clicked, pm, &PlayManager::previous);
 	connect(btnStop(), &QPushButton::clicked, pm, &PlayManager::stop);
 	connect(btnMute(), &QPushButton::clicked, pm, &PlayManager::toggleMute);
 	connect(btnRecord(), &QPushButton::clicked, pm, &PlayManager::record);
@@ -599,8 +609,8 @@ void GUI_ControlsBase::setupConnections()
 	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &GUI_ControlsBase::currentTrackChanged);
 	connect(pm, &PlayManager::sigCurrentMetadataChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
 	connect(pm, &PlayManager::sigDurationChangedMs, this, &GUI_ControlsBase::refreshCurrentTrack);
-	connect(pm, &PlayManager::sigBitrateChanged,	this, &GUI_ControlsBase::refreshCurrentTrack);
-	connect(pm, &PlayManager::sigPositionChangedMs, this,	&GUI_ControlsBase::currentPositionChanged);
+	connect(pm, &PlayManager::sigBitrateChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(pm, &PlayManager::sigPositionChangedMs, this, &GUI_ControlsBase::currentPositionChanged);
 	connect(pm, &PlayManager::sigBuffering, this, &GUI_ControlsBase::buffering);
 	connect(pm, &PlayManager::sigVolumeChanged, this, &GUI_ControlsBase::volumeChanged);
 	connect(pm, &PlayManager::sigMuteChanged, this, &GUI_ControlsBase::muteChanged);
@@ -628,7 +638,7 @@ void GUI_ControlsBase::setupShortcuts()
 		playManager->seekRelativeMs(2000);
 	});
 
-	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=](){
+	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=]() {
 		playManager->seekRelativeMs(-2000);
 	});
 
@@ -647,7 +657,8 @@ void GUI_ControlsBase::setRadioMode(RadioMode radio)
 {
 	checkRecordButtonVisible();
 
-	if(radio != RadioMode::Off){
+	if(radio != RadioMode::Off)
+	{
 		buffering(0);
 	}
 }
@@ -660,7 +671,8 @@ MD::Interpretation GUI_ControlsBase::metadataInterpretation() const
 MetaDataList GUI_ControlsBase::infoDialogData() const
 {
 	PlayState ps = PlayManager::instance()->playstate();
-	if(ps == PlayState::Stopped){
+	if(ps == PlayState::Stopped)
+	{
 		return MetaDataList();
 	}
 
@@ -687,21 +699,21 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 	{
 		m->contextMenu = new ContextMenu(this);
 		m->contextMenu->showActions
-		(
-			(ContextMenu::EntryInfo |
-			ContextMenu::EntryLyrics |
-			ContextMenu::EntryEdit)
-		);
+			(
+				(ContextMenu::EntryInfo |
+				 ContextMenu::EntryLyrics |
+				 ContextMenu::EntryEdit)
+			);
 
-		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=](){
+		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=]() {
 			showEdit();
 		});
 
-		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=](){
+		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=]() {
 			showInfo();
 		});
 
-		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=](){
+		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=]() {
 			showLyrics();
 		});
 

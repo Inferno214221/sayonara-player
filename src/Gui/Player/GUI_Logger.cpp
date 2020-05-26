@@ -35,23 +35,22 @@
 #include <QDir>
 #include <QDateTime>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 Q_GLOBAL_STATIC(LogObject, logObject)
 
 struct LogLine
 {
-	QDateTime	dateTime;
-	Log			logType;
-	QString		className;
-	QString		str;
+	QDateTime dateTime;
+	Log logType;
+	QString className;
+	QString str;
 
 	LogLine(const QDateTime& dateTime, Log logType, const QString& className, const QString& str) :
 		dateTime(dateTime),
 		logType(logType),
 		className(className),
-		str(str)
-	{}
+		str(str) {}
 
 	QString toString() const
 	{
@@ -75,21 +74,24 @@ struct LogLine
 			case Log::Debug:
 				htmlColor = "#7A7A00";
 				typeStr = "Debug";
-				if(logLevel < 1) {
+				if(logLevel < 1)
+				{
 					return QString();
 				}
 				break;
 			case Log::Develop:
 				htmlColor = "#6A6A00";
 				typeStr = "Dev";
-				if(logLevel < 2){
+				if(logLevel < 2)
+				{
 					return QString();
 				}
 				break;
 			case Log::Crazy:
 				htmlColor = "#5A5A00";
 				typeStr = "CrazyLog";
-				if(logLevel < 3){
+				if(logLevel < 3)
+				{
 					return QString();
 				}
 				break;
@@ -117,8 +119,7 @@ struct LogLine
 
 LogObject::LogObject(QObject* parent) :
 	QObject(parent),
-	LogListener()
-{}
+	LogListener() {}
 
 LogObject::~LogObject() = default;
 
@@ -142,21 +143,24 @@ GUI_Logger::GUI_Logger(QWidget* parent) :
 	Dialog(parent)
 {
 	m = Pimpl::make<Private>();
-	connect(logObject (), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
+	connect(logObject(), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
 
 	Logger::registerLogListener(this->logListener());
 }
 
 GUI_Logger::~GUI_Logger()
 {
-	if(ui){
-		delete ui; ui=nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
 void GUI_Logger::initUi()
 {
-	if(ui) {
+	if(ui)
+	{
 		return;
 	}
 
@@ -173,7 +177,8 @@ void GUI_Logger::initUi()
 		ui->teLog->append(line.toString());
 	}
 
-	for(const QString& module : m->modules){
+	for(const QString& module : m->modules)
+	{
 		ui->comboModules->addItem(module);
 	}
 
@@ -191,10 +196,11 @@ QString GUI_Logger::calcLogLine(const LogLine& logLine)
 
 	if(!m->modules.contains(logLine.className))
 	{
-		int i=0;
-		for(; i<m->modules.size(); i++)
+		int i = 0;
+		for(; i < m->modules.size(); i++)
 		{
-			if(logLine.className < m->modules[i]){
+			if(logLine.className < m->modules[i])
+			{
 
 				break;
 			}
@@ -249,24 +255,27 @@ void GUI_Logger::loglevelChanged(int index)
 void GUI_Logger::saveClicked()
 {
 	const QString filename = QFileDialog::getSaveFileName
-	(
-	   this,
-	   Lang::get(Lang::SaveAs),
-	   QDir::homePath(), "*.log"
-	);
+		(
+			this,
+			Lang::get(Lang::SaveAs),
+			QDir::homePath(), "*.log"
+		);
 
-	if(filename.isEmpty()){
+	if(filename.isEmpty())
+	{
 		return;
 	}
 
 	QFile f(filename);
 	bool isOpen = f.open(QFile::WriteOnly);
-	if(isOpen){
+	if(isOpen)
+	{
 		f.write(ui->teLog->toPlainText().toUtf8());
 		f.close();
 	}
 
-	else {
+	else
+	{
 		Message::warning(tr("Cannot open file") + " " + filename);
 	}
 }

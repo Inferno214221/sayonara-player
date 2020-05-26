@@ -30,11 +30,10 @@
 #include <QMainWindow>
 #include <QThread>
 
-
 struct InfoDialogContainer::Private
 {
-	GUI_InfoDialog*	infoDialog=nullptr;
-	InfoDialogContainerAsyncHandler* asyncHelper=nullptr;
+	GUI_InfoDialog* infoDialog = nullptr;
+	InfoDialogContainerAsyncHandler* asyncHelper = nullptr;
 };
 
 InfoDialogContainer::InfoDialogContainer()
@@ -44,9 +43,7 @@ InfoDialogContainer::InfoDialogContainer()
 
 InfoDialogContainer::~InfoDialogContainer()
 {
-	if(m->asyncHelper){
-		delete m->asyncHelper;
-	}
+	delete m->asyncHelper;
 }
 
 void InfoDialogContainer::infoDialogClosed() {}
@@ -122,7 +119,8 @@ void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
 {
 	m->infoDialog->setBusy(false);
 
-	if(v_md.isEmpty()) {
+	if(v_md.isEmpty())
+	{
 		m->infoDialog->close();
 		return;
 	}
@@ -158,18 +156,16 @@ QStringList InfoDialogContainer::pathlist() const
 	return QStringList();
 }
 
-
 struct InfoDialogContainerAsyncHandler::Private
 {
-	InfoDialogContainer* container=nullptr;
+	InfoDialogContainer* container = nullptr;
 	OpenMode mode;
 	bool is_running;
 
 	Private(InfoDialogContainer* container, OpenMode mode) :
 		container(container),
 		mode(mode),
-		is_running(false)
-	{}
+		is_running(false) {}
 };
 
 InfoDialogContainerAsyncHandler::InfoDialogContainerAsyncHandler(InfoDialogContainer* container, OpenMode mode) :
@@ -185,7 +181,8 @@ bool InfoDialogContainerAsyncHandler::start()
 	using Directory::MetaDataScanner;
 
 	QStringList files = m->container->pathlist();
-	if(files.isEmpty()){
+	if(files.isEmpty())
+	{
 		return false;
 	}
 
@@ -212,7 +209,7 @@ bool InfoDialogContainerAsyncHandler::isRunning() const
 
 void InfoDialogContainerAsyncHandler::scannerFinished()
 {
-	auto* scanner = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* scanner = dynamic_cast<Directory::MetaDataScanner*>(sender());
 
 	m->is_running = false;
 	m->container->go(m->mode, scanner->metadata());

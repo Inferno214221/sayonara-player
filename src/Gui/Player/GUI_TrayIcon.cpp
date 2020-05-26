@@ -95,14 +95,8 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	connect(pm, &PlayManager::sigMuteChanged, this, &TrayIconContextMenu::muteChanged);
 	connect(pm, &PlayManager::sigPlaystateChanged, this, &TrayIconContextMenu::playstateChanged);
 
-	languageChanged();
-	skinChanged();
-
 	muteChanged(pm->isMuted());
 	playstateChanged(pm->playstate());
-
-	languageChanged();
-	skinChanged();
 }
 
 TrayIconContextMenu::~TrayIconContextMenu() = default;
@@ -119,8 +113,7 @@ void TrayIconContextMenu::muteClicked()
 
 void TrayIconContextMenu::currentSongClicked()
 {
-	NotificationHandler* nh = NotificationHandler::instance();
-
+	auto* nh = NotificationHandler::instance();
 	nh->notify(PlayManager::instance()->currentTrack());
 }
 
@@ -239,7 +232,7 @@ bool GUI_TrayIcon::event(QEvent* e)
 {
 	if (e->type() == QEvent::Wheel)
 	{
-		auto* wheel_event = static_cast<QWheelEvent*>(e);
+		auto* wheel_event = dynamic_cast<QWheelEvent*>(e);
 
 		if(wheel_event){
 			emit sigWheelChanged( wheel_event->delta() );
@@ -301,7 +294,7 @@ void GUI_TrayIcon::playstateChanged(PlayState state)
 	}
 }
 
-void GUI_TrayIcon::setForwardEnabled(bool b)
+[[maybe_unused]] void GUI_TrayIcon::setForwardEnabled(bool b)
 {
 	if(m->contextMenu){
 		m->contextMenu->setForwardEnabled(b);

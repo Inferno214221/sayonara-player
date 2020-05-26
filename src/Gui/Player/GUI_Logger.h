@@ -33,16 +33,16 @@ class QShowEvent;
 UI_FWD(GUI_Logger)
 
 class LogObject :
-		public QObject,
-		public LogListener
+	public QObject,
+	public LogListener
 {
-		Q_OBJECT
+	Q_OBJECT
 
 	signals:
 		void sigNewLog(const QDateTime& t, Log logType, const QString& className, const QString& str);
 
 	public:
-		explicit LogObject(QObject* parent=nullptr);
+		explicit LogObject(QObject* parent = nullptr);
 		~LogObject() override;
 
 		void addLogLine(const LogEntry& le) override;
@@ -50,14 +50,14 @@ class LogObject :
 
 struct LogLine;
 class GUI_Logger :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Logger)
 	PIMPL(GUI_Logger)
 
 	public:
-		explicit GUI_Logger(QWidget* parent=nullptr);
+		explicit GUI_Logger(QWidget* parent = nullptr);
 		~GUI_Logger() override;
 
 		LogListener* logListener();

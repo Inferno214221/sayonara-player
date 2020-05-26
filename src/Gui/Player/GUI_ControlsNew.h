@@ -29,13 +29,13 @@ class MetaData;
 class MetaDataList;
 
 class GUI_ControlsNew :
-		public GUI_ControlsBase
+	public GUI_ControlsBase
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ControlsNew)
 
 	public:
-		explicit GUI_ControlsNew(QWidget* parent=nullptr);
+		explicit GUI_ControlsNew(QWidget* parent = nullptr);
 		~GUI_ControlsNew() override;
 
 		// GUI_ControlsBase interface

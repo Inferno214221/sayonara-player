@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef TRANSLATOR_H
 #define TRANSLATOR_H
 

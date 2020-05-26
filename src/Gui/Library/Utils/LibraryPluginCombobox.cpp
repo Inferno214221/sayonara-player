@@ -37,13 +37,12 @@ using Library::PluginHandler;
 using Library::PluginCombobox;
 using Library::PluginComboBoxDelegate;
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct PluginCombobox::Private
 {
 	QList<QAction*> actions;
 };
-
 
 PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
 	ComboBox(parent)
@@ -80,9 +79,9 @@ void PluginCombobox::setupActions()
 	for(const AbstractContainer* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
-					this->iconSize(),
-					Qt::KeepAspectRatio,
-					Qt::SmoothTransformation
+			this->iconSize(),
+			Qt::KeepAspectRatio,
+			Qt::SmoothTransformation
 		);
 
 		QString display_name = fm.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
@@ -97,17 +96,19 @@ void PluginCombobox::setupActions()
 
 void PluginCombobox::actionTriggered(bool b)
 {
-	if(!b){
+	if(!b)
+	{
 		return;
 	}
 
-	auto* action = static_cast<QAction*>(sender());
+	auto* action = dynamic_cast<QAction*>(sender());
 	QString name = action->data().toString();
 
 	PluginHandler::instance()->setCurrentLibrary(name);
 	for(QAction* libraryAction : Algorithm::AsConst(m->actions))
 	{
-		if(libraryAction == action){
+		if(libraryAction == action)
+		{
 			continue;
 		}
 
@@ -118,12 +119,13 @@ void PluginCombobox::actionTriggered(bool b)
 void PluginCombobox::currentLibraryChanged()
 {
 	AbstractContainer* currentLibrary = PluginHandler::instance()->currentLibrary();
-	if(!currentLibrary) {
+	if(!currentLibrary)
+	{
 		return;
 	}
 
 	QString name = currentLibrary->name();
-	for(int i=0; i<this->count(); i++)
+	for(int i = 0; i < this->count(); i++)
 	{
 		if(this->itemData(i).toString().compare(name) == 0)
 		{
@@ -144,7 +146,8 @@ void PluginCombobox::currentIndexChanged(int index)
 
 void PluginCombobox::languageChanged()
 {
-	if(!m){
+	if(!m)
+	{
 		return;
 	}
 
@@ -153,19 +156,20 @@ void PluginCombobox::languageChanged()
 
 void PluginCombobox::skinChanged()
 {
-	if(!m){
+	if(!m)
+	{
 		return;
 	}
 
 	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
-	int i=0;
+	int i = 0;
 
 	for(const AbstractContainer* container : libraries)
 	{
 		QPixmap pm = container->icon().scaled(
-					this->iconSize(),
-					Qt::KeepAspectRatio,
-					Qt::SmoothTransformation
+			this->iconSize(),
+			Qt::KeepAspectRatio,
+			Qt::SmoothTransformation
 		);
 
 		if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())

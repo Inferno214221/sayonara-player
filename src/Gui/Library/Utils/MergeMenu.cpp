@@ -30,16 +30,15 @@ using Gui::MergeMenu;
 
 struct MergeMenu::Private
 {
-	QAction*			action=nullptr;
-	QMenu*				parent=nullptr;
+	QAction* action = nullptr;
+	QMenu* parent = nullptr;
 
-	QMap<Id, QString>	data;
-	Id					targetId;
+	QMap<Id, QString> data;
+	Id targetId;
 
 	explicit Private(QMenu* parent) :
 		parent(parent),
-		targetId(-1)
-	{}
+		targetId(-1) {}
 };
 
 MergeMenu::MergeMenu(QMenu* parent) :
@@ -59,21 +58,21 @@ void MergeMenu::setData(const QMap<Id, QString>& data)
 	this->clear();
 	m->data = data;
 
-	if(data.size() < 2){
+	if(data.size() < 2)
+	{
 		return;
 	}
 
 	for(Id key : data.keys())
 	{
-		QString val	= data[key];
+		QString val = data[key];
 
 		auto* action = new QAction(this);
 		action->setText(val);
 		action->setData(key);
 		this->addAction(action);
 
-		connect(action, &QAction::triggered, this, [=]()
-		{
+		connect(action, &QAction::triggered, this, [=]() {
 			m->targetId = key;
 			emit sigMergeTriggered();
 		});
@@ -98,7 +97,8 @@ bool MergeMenu::isDataValid() const
 Library::MergeData MergeMenu::mergedata() const
 {
 	Util::Set<Id> sourceIds;
-	for(Id key : m->data.keys()){
+	for(Id key : m->data.keys())
+	{
 		sourceIds << key;
 	}
 
