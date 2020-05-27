@@ -74,7 +74,6 @@ class GUI_AlternativeCovers :
 	private slots:
 		void okClicked();
 		void applyClicked();
-		void searchClicked();
 		void openFileDialog();
 
 		void coverPressed(const QModelIndex& idx);
