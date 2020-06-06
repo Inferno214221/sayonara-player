@@ -100,14 +100,8 @@ namespace Cover
 		 *   calls save_and_emit_image
 		 * @param success indicates if image could be fetched successfully
 		 */
-		void singleImageFetched();
+		void imageFetched();
 
-		/**
-		 * @brief multi_image_fetched (reached when _n_covers was set to > 1),
-		 *   calls save_and_emit_image for first image;
-		 * @param success indicates if images could be fetched successfully
-		 */
-		void multiImageFetched();
 
 		/**
 		 * @brief The website content has been fetched

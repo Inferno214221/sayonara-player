@@ -222,6 +222,14 @@ Fetcher::Url Manager::directFetcherUrl(const QString& url)
 	return Cover::Fetcher::Url(df.identifier(), url);
 }
 
+
+Url Fetcher::Manager::websiteFetcherUrl(const QString& url)
+{
+	static Cover::Fetcher::Website wf;
+	return Cover::Fetcher::Url(wf.identifier(), url);
+}
+
+
 QList<Fetcher::Base*> Manager::coverfetchers() const
 {
 	return m->coverfetchers;

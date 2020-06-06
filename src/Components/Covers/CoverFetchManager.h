@@ -117,6 +117,8 @@ namespace Cover
 				 */
 				Url directFetcherUrl(const QString& url);
 
+				Url websiteFetcherUrl(const QString& url);
+
 				static bool isSearchstringWebsite(const QString& searchstring);
 
 			private slots:

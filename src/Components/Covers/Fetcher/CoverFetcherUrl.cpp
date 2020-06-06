@@ -55,3 +55,8 @@ QString Url::url() const
 {
 	return m->url;
 }
+
+bool Cover::Fetcher::Url::operator==(const Url& rhs) const
+{
+	return (this->identifier() == rhs.identifier() && this->url() == rhs.url());
+}

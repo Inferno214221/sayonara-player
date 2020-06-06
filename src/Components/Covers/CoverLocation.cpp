@@ -47,7 +47,6 @@ using Cover::StringMap;
 
 using FetchManager = Cover::Fetcher::Manager;
 using Cover::Fetcher::Url;
-using UrlList = QList<Url>;
 
 namespace File = ::Util::File;
 
@@ -56,8 +55,17 @@ static QList<Url> extractDownloadUrls(const LibraryItem* item)
 	const QStringList downloadUrls = item->coverDownloadUrls();
 
 	QList<Url> urls;
-	Util::Algorithm::transform(downloadUrls, urls, [](const QString& downloadUrl){
-		return FetchManager::instance()->directFetcherUrl(downloadUrl);
+	Util::Algorithm::transform(downloadUrls, urls, [](const QString& downloadUrl)
+	{
+		if(Util::File::isImageFile(downloadUrl))
+		{
+			return FetchManager::instance()->directFetcherUrl(downloadUrl);
+		}
+
+		else
+		{
+			return FetchManager::instance()->websiteFetcherUrl(downloadUrl);
+		}
 	});
 
 	return urls;
@@ -66,8 +74,8 @@ static QList<Url> extractDownloadUrls(const LibraryItem* item)
 struct Location::Private
 {
 	QString searchTerm;        // Term provided to search engine
-	UrlList searchUrls;        // Search url where to fetch covers
-	UrlList searchTermUrls;    // Search urls where to fetch cover when using freetext search
+	QList<Url> searchUrls;        // Search url where to fetch covers
+	QList<Url> searchTermUrls;    // Search urls where to fetch cover when using freetext search
 	QStringList localPathHints;
 	QString identifier;            // Some human readable identifier with methods where invokded
 	QString audioFileSource;    // A saved cover from an audio file
@@ -120,7 +128,7 @@ Location Location::invalidLocation()
 	Location cl;
 
 	cl.setValid(false);
-	cl.setSearchUrls(UrlList());
+	cl.setSearchUrls(QList<Url>());
 	cl.setSearchTerm(QString());
 	cl.setIdentifier("Invalid location");
 	cl.setAudioFileSource(QString(), QString());
@@ -277,15 +285,17 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 	const QStringList cdu = md.coverDownloadUrls();
 	if(!cdu.isEmpty())
 	{
-		const QString extension = File::getFileExtension(cdu.first());
+		QString extension = File::getFileExtension(cdu.first());
+		if(extension.isEmpty()){
+			extension = "png";
+		}
 		const QString coverToken = Cover::Utils::calcCoverToken(md.artist(), md.album());
 		const QString coverPath = Cover::Utils::coverDirectory(coverToken + "." + extension);
 
 		QList<QUrl> urls;
-		for(const QString& url : cdu)
-		{
-			urls << QUrl(url);
-		}
+		Util::Algorithm::transform(cdu, urls, [](const QString& url){
+			return QUrl(url);
+		});
 
 		cl = coverLocation(urls, coverPath);
 	}
@@ -369,7 +379,15 @@ Location Location::coverLocation(const QList<QUrl>& urls, const QString& token)
 	for(const QUrl& url : urls)
 	{
 		merged += url.toString();
-		fetchUrls << FetchManager::instance()->directFetcherUrl(url.toString());
+		if(Util::File::isImageFile(url.toString()))
+		{
+			fetchUrls << FetchManager::instance()->directFetcherUrl(url.toString());
+		}
+
+		else
+		{
+			fetchUrls << FetchManager::instance()->websiteFetcherUrl(url.toString());
+		}
 	}
 
 	Location cl;
@@ -450,7 +468,7 @@ QString Location::identifer() const
 	return m->identifier;
 }
 
-UrlList Location::searchUrls() const
+QList<Url> Location::searchUrls() const
 {
 	if(m->freetextSearch)
 	{
@@ -489,8 +507,18 @@ void Location::setSearchTerm(const QString& searchTerm, const QString& coverFetc
 	m->searchTermUrls = cfm->searchAddresses(searchTerm, coverFetcherIdentifier);
 }
 
-void Location::setSearchUrls(const UrlList& urls)
+void Location::setSearchUrls(const QList<Url>& urls)
 {
+	QStringList lst
+		{
+		"hallo", "du"
+		};
+
+	QList<QString> lst2
+		{
+		"hallo", "helmut"
+		};
+	QList<Url> urls2 = urls;
 	m->searchUrls = urls;
 }
 

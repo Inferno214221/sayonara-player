@@ -29,7 +29,6 @@
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Parser/PodcastParser.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Language/Language.h"
 
 #include <QFile>
 #include <QDir>
@@ -163,7 +162,7 @@ bool StreamParser::parseNextUrl()
 
 void StreamParser::awaFinished()
 {
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
 
 	AsyncWebAccess::Status status = awa->status();
 	m->lastUrl = awa->url();
@@ -190,10 +189,6 @@ void StreamParser::awaFinished()
 
 			m->tracks.removeDuplicates();
 			m->urls.removeDuplicates();
-
-			for(MetaData& md : m->tracks) {
-				setMetadataTag(md, m->lastUrl, m->coverUrl);
-			}
 		} break;
 
 		case AsyncWebAccess::Status::NoHttp:
@@ -236,7 +231,7 @@ void StreamParser::awaFinished()
 
 void StreamParser::icyFinished()
 {
-	auto* iwa = static_cast<IcyWebAccess*>(sender());
+	auto* iwa = dynamic_cast<IcyWebAccess*>(sender());
 	IcyWebAccess::Status status = iwa->status();
 	m->activeIcy = nullptr;
 
@@ -278,13 +273,22 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& 
 	/** 2. try if playlist file **/
 	if(result.first.isEmpty())
 	{
-		QString filename = m->writePlaylistFile(data);
+		const QString filename = m->writePlaylistFile(data);
 		result.first = PlaylistParser::parsePlaylist(filename);
 		QFile::remove(filename);
 	}
 
-	if(result.first.isEmpty()) {
+	if(result.first.isEmpty())
+	{
 		result = parseWebsite(data);
+	}
+
+	else
+	{
+		for(MetaData& md : m->tracks)
+		{
+			setMetadataTag(md, m->lastUrl, m->coverUrl);
+		}
 	}
 
 	return result;
@@ -299,64 +303,65 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& 
 	validExtensions << Util::soundfileExtensions(false);
 	validExtensions << Util::playlistExtensions(false);
 
-	QStringList foundStrings;
-	QString rePrefix = "(http[s]*://|\"/|'/)";
-	QString rePath = "\\S+\\.(" + validExtensions.join("|") + ")";
-	QString reString = "(" + rePrefix + rePath + ")";
+	const QString rePrefix = "(http[s]*://|\"/|'/)";
+	const QString rePath = "\\S+\\.(" + validExtensions.join("|") + ")";
+	const QString reString = "(" + rePrefix + rePath + ")";
 
 	QRegExp regExp(reString);
-	QUrl parentUrl(m->lastUrl);
+	const QUrl parentUrl(m->lastUrl);
 
-	QString website = QString::fromUtf8(arr);
+	const QString website = QString::fromUtf8(arr);
 	int idx = regExp.indexIn(website);
+
+	QStringList foundUrls;
 	while(idx >= 0)
 	{
-		QStringList foundUrls = regExp.capturedTexts();
-		for(QString str : foundUrls)
+		const QStringList foundStrings = regExp.capturedTexts();
+		for(QString str : foundStrings)
 		{
-			QUrl foundUrl(str);
-			if( (str.size() > 7) &&
-				(!m->isUrlForbidden(QUrl(foundUrl))) )
+			if((str.size() > 7) && !m->isUrlForbidden(QUrl(str)))
 			{
 				if(str.startsWith("\"") || str.startsWith("'"))
 				{
 					str.remove(0, 1);
 				}
 
-				foundStrings << str;
+				foundUrls << str;
 			}
 		}
 
 		idx = regExp.indexIn(website, idx + 1);
 	}
 
-	foundStrings.removeDuplicates();
+	foundUrls.removeDuplicates();
 
-	for(const QString& foundStr : Algorithm::AsConst(foundStrings))
+	for(const QString& foundUrl : Algorithm::AsConst(foundUrls))
 	{
-		QString childUrl;
-
-		if(!foundStr.startsWith("http"))
+		QUrl url(foundUrl);
+		if(url.isRelative())
 		{
-			childUrl =	parentUrl.scheme() + "://" + parentUrl.host();
-			if(!foundStr.startsWith("/"))
-			{
-				childUrl += "/";
-			}
+			url.setScheme(parentUrl.scheme());
+			url.setHost(parentUrl.host());
 		}
 
-		childUrl += foundStr;
+		if(Util::File::isPlaylistFile(foundUrl))
+		{
+			playlistFiles << foundUrl;
+		}
 
-		if(Util::File::isSoundFile(foundStr))
+		else if(Util::File::isSoundFile(foundUrl))
 		{
 			MetaData md;
-			setMetadataTag(md, childUrl);
-			tracks << md;
-		}
+			setMetadataTag(md, url.toString());
 
-		else if(Util::File::isPlaylistFile(foundStr))
-		{
-			playlistFiles << childUrl;
+			auto [dir, filename] = Util::File::splitFilename(url.path());
+			if(!filename.trimmed().isEmpty())
+			{
+				md.setTitle(filename);
+			}
+
+			md.setCoverDownloadUrls({m->lastUrl});
+			tracks << md;
 		}
 	}
 
