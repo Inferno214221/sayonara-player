@@ -35,7 +35,7 @@ class Application :
 
 	public:
 		Application(int& argc, char** argv);
-		~Application();
+		~Application() override;
 
 		bool init(const QStringList& files_to_play, bool force_show);
 

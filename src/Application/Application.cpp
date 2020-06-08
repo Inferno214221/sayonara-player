@@ -96,39 +96,36 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/Proxy.h"
-
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/MetaData/MetaDataSorting.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
 #include <QIcon>
 #include <QTime>
-#include <QDateTime>
 #include <QSessionManager>
 
 class MeasureApp
 {
-		QTime* m_t;
-		QString m_component;
-		int m_start;
+		QTime* mTime;
+		QString mComponent;
+		int mStart;
 
 	public:
 		MeasureApp(const QString& component, QTime* t) :
-			m_t(t),
-			m_component(component)
+			mTime(t),
+			mComponent(component)
 		{
-			m_start = m_t->elapsed();
-			spLog(Log::Debug, this) << "Init " << m_component << ": " << m_start << "ms";
+			mStart = mTime->elapsed();
+			spLog(Log::Debug, this) << "Init " << mComponent << ": " << mStart << "ms";
 		}
 
 		~MeasureApp()
 		{
-			int end = m_t->elapsed();
-			spLog(Log::Debug, this) << "Init " << m_component << " finished: " << end << "ms (" << end - m_start
+			int end = mTime->elapsed();
+			spLog(Log::Debug, this) << "Init " << mComponent << " finished: " << end << "ms (" << end - mStart
 			                        << "ms)";
 		}
 };
@@ -172,7 +169,7 @@ struct Application::Private
 
 		Settings::instance()->applyFixes();
 
-		init_resources();
+		Private::initResources();
 
 		timer = new QTime();
 		shutdownTriggered = false;
@@ -217,7 +214,7 @@ struct Application::Private
 		}
 	}
 
-	void init_resources()
+	static void initResources()
 	{
 		Q_INIT_RESOURCE(Broadcasting);
 		Q_INIT_RESOURCE(Database);
@@ -256,7 +253,7 @@ Application::Application(int& argc, char** argv) :
 	m = Pimpl::make<Private>(this);
 	m->timer->start();
 
-	this->setQuitOnLastWindowClosed(false);
+	QApplication::setQuitOnLastWindowClosed(false);
 }
 
 Application::~Application()
@@ -395,21 +392,19 @@ void Application::initLibraries()
 {
 	measure("Libraries")
 
-	auto* local_library_watcher = new Library::LocalLibraryWatcher(this);
-	auto* library_plugin_loader = Library::PluginHandler::instance();
+	auto* localLibraryWatcher = new Library::LocalLibraryWatcher(this);
 
-	QList<Library::AbstractContainer*> library_containers = local_library_watcher->getLocalLibraryContainers();
-	//auto* directory_container = new Library::DirectoryContainer(this);
-	auto* soundcloud_container = new SC::LibraryContainer(this);
-	auto* somafm_container = new SomaFM::LibraryContainer(this);
-	auto* history_container = new HistoryContainer(this);
+	QList<Library::AbstractContainer*> libraryContainers = localLibraryWatcher->getLocalLibraryContainers();
 
-	//library_containers << static_cast<Library::Container*>(directory_container);
-	library_containers << static_cast<Library::AbstractContainer*>(somafm_container);
-	library_containers << static_cast<Library::AbstractContainer*>(soundcloud_container);
-	library_containers << static_cast<Library::AbstractContainer*>(history_container);
+	auto* soundcloudContainer = new SC::LibraryContainer(this);
+	auto* somafmContainer = new SomaFM::LibraryContainer(this);
+	auto* historyContainer = new HistoryContainer(this);
 
-	library_plugin_loader->init(library_containers, new EmptyLibraryContainer());
+	libraryContainers << static_cast<Library::AbstractContainer*>(somafmContainer);
+	libraryContainers << static_cast<Library::AbstractContainer*>(soundcloudContainer);
+	libraryContainers << static_cast<Library::AbstractContainer*>(historyContainer);
+
+	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer());
 }
 
 void Application::initEngine()

@@ -444,11 +444,7 @@ void GUI_InfoDialog::closeEvent(QCloseEvent* e)
 
 void GUI_InfoDialog::showEvent(QShowEvent* e)
 {
-	if(!ui)
-	{
-		init();
-	}
-
+	init();
 	Dialog::showEvent(e);
 }
 

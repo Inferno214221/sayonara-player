@@ -74,7 +74,6 @@ class GUI_InfoDialog :
 
 	private slots:
 		void tabIndexChangedInt(int idx);
-
 		void writeCoversToTracksClicked();
 		void coverChanged();
 
