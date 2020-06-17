@@ -43,7 +43,6 @@ apps:
       - desktop-legacy
       - home
       - mount-observe
-      - netlink-audit	
       - network
       - network-bind
       - network-manager-observe
