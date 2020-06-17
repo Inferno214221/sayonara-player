@@ -57,7 +57,7 @@ apps:
       - mpris
     environment:
       # Use GTK3 cursor theme, icon theme and open/save file dialogs.
-      QT_QPA_PLATFORMTHEME: gtk3
+      QT_QPA_PLATFORMTHEME: xdgdesktopportal
       # Disable Wayland
       DISABLE_WAYLAND: 1
 
