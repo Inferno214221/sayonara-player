@@ -24,6 +24,7 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QPainter>
+#include <QPainterPath>
 #include <QMouseEvent>
 
 using Gui::Slider;
