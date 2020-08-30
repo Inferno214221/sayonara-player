@@ -51,6 +51,7 @@ class TrayIconContextMenu :
 		~TrayIconContextMenu() override;
 
 		void setForwardEnabled(bool b);
+		void setDisplayNames();
 
 	private slots:
 		void playstateChanged(PlayState state);
