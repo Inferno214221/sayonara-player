@@ -106,6 +106,28 @@ void TrayIconContextMenu::setForwardEnabled(bool b)
 	m->fwdAction->setEnabled(b);
 }
 
+void TrayIconContextMenu::setDisplayNames()
+{
+	auto* pm = PlayManager::instance();
+
+	m->playAction->setText(Lang::get(Lang::PlayPause));
+	m->fwdAction->setText(Lang::get(Lang::NextTrack));
+	m->bwdAction->setText(Lang::get(Lang::PreviousTrack));
+	m->stopAction->setText(Lang::get(Lang::Stop));
+
+	if(pm->isMuted()){
+		m->muteAction->setText(Lang::get(Lang::MuteOff));
+	}
+
+	else {
+		m->muteAction->setText(Lang::get(Lang::MuteOn));
+	}
+
+	m->closeAction->setText(Lang::get(Lang::Quit));
+	m->showAction->setText(Lang::get(Lang::Show));
+	m->currentSongAction->setText(tr("Current song"));
+}
+
 void TrayIconContextMenu::muteClicked()
 {
 	PlayManager::instance()->toggleMute();
@@ -149,24 +171,7 @@ void TrayIconContextMenu::playstateChanged(PlayState state)
 
 void TrayIconContextMenu::languageChanged()
 {
-	auto* pm = PlayManager::instance();
-
-	m->playAction->setText(Lang::get(Lang::PlayPause));
-	m->fwdAction->setText(Lang::get(Lang::NextTrack));
-	m->bwdAction->setText(Lang::get(Lang::PreviousTrack));
-	m->stopAction->setText(Lang::get(Lang::Stop));
-
-	if(pm->isMuted()){
-		m->muteAction->setText(Lang::get(Lang::MuteOff));
-	}
-
-	else {
-		m->muteAction->setText(Lang::get(Lang::MuteOn));
-	}
-
-	m->closeAction->setText(Lang::get(Lang::Quit));
-	m->showAction->setText(Lang::get(Lang::Show));
-	m->currentSongAction->setText(tr("Current song"));
+	setDisplayNames();
 }
 
 void TrayIconContextMenu::skinChanged()
@@ -225,6 +230,7 @@ void GUI_TrayIcon::initContextMenu()
 	connect(m->contextMenu, &TrayIconContextMenu::sigShowClicked, this, &GUI_TrayIcon::sigShowClicked);
 
 	setContextMenu(m->contextMenu);
+	m->contextMenu->setDisplayNames();
 }
 
 
