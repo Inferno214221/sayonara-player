@@ -52,7 +52,7 @@ deploy-sayonara-appimage:
 
 ## Deploy Snap Package
 deploy-sayonara-snap:
-  image: tschlaeppi/sayonara-snapcraft:core20
+  image: tschlaeppi/sayonara-snapcraft:core18
   stage: deploy
   script:
     - apt-get update -qq
