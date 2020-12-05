@@ -33,5 +33,5 @@ else()
 endif()
 
 install(FILES "sayonara.desktop" DESTINATION share/applications)
-install(FILES "sayonara.appdata.xml" DESTINATION share/appdata)
+install(FILES "sayonara.appdata.xml" DESTINATION share/metainfo)
 install(DIRECTORY "logos/" DESTINATION share/icons/hicolor)
