@@ -153,7 +153,7 @@ SSSSS  AA    AA  Y    OOO  N   N AA    AA R   R AA    AA
           searchstring
 
         * You can search by fulltext (searches in artists/albums/title), filesystem path or genre.
-          HINT: if you dont want to click on the drop down every time just type "f:", "p:" or "g:" at 
+          HINT: if you don't want to click on the drop down every time just type "f:", "p:" or "g:" at 
           the beginning of your search term. So search mode will change as indicated in the drop down 
           menu.
 

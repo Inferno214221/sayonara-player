@@ -1010,7 +1010,7 @@
     </message>
     <message>
         <location filename="../src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.cpp" line="+59"/>
-        <source>If activated, Sayonara will answer an UDP request that it is remote controlable</source>
+        <source>If activated, Sayonara will answer an UDP request that it is remote controllable</source>
         <translation>Если этот параметр активирован, Sayonara ответит на запрос UDP о том, что он является дистанционно управляемым.</translation>
     </message>
     <message>

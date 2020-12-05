@@ -56,7 +56,7 @@ void GUI_RemoteControlPreferences::retranslate()
 	ui->retranslateUi(this);
 	ui->labActive->setText(Lang::get(Lang::Active));
 
-	const QString tooltip = tr("If activated, Sayonara will answer an UDP request that it is remote controlable");
+	const QString tooltip = tr("If activated, Sayonara will answer an UDP request that it is remote controllable");
 	ui->cbDiscover->setToolTip(tooltip);
 	ui->labDiscover->setToolTip(tooltip);
 }
