@@ -223,7 +223,7 @@ bool DBWrapper::savePlaylist(const CustomPlaylist& pl)
 	auto* db = DB::Connector::instance();
 
 	db->transaction();
-	// TODO! we dont need the two other parameters
+	// TODO! we don't need the two other parameters
 	bool success = m->playlistDatabase->storePlaylist(pl, pl.id(), pl.temporary());
 	db->commit();
 
