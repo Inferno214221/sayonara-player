@@ -56,6 +56,7 @@ new_test(Library/ImportCacheTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp)
 new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp)
+new_test(Playlist/PlaylistFileTest.cpp)
 
 new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)

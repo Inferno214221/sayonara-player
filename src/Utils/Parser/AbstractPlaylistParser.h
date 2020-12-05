@@ -37,11 +37,11 @@ public:
 
 	/**
 	 * @brief parse playlist and return found metadata
-	 * @param force_parse once if parsed, this function won't parse again and just return the metadata. \n
+	 * @param forceParse once if parsed, this function won't parse again and just return the metadata. \n
 	 * Set to true if you want to force parsing again
 	 * @return list of MetaData
 	 */
-	virtual MetaDataList tracks(bool force_parse=false) final;
+	virtual MetaDataList tracks(bool forceParse=false) final;
 
 
 protected:

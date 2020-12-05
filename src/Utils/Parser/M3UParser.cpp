@@ -32,11 +32,11 @@
 M3UParser::M3UParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
 
-M3UParser::~M3UParser() {}
+M3UParser::~M3UParser() = default;
 
 void M3UParser::parse()
 {
-	QStringList list = content().split('\n');
+	const QStringList list = content().split('\n');
 
 	MetaData md;
 
@@ -80,15 +80,30 @@ void M3UParser::parse()
 
 bool M3UParser::parseFirstLine(const QString& line, MetaData& md)
 {
-	QRegExp re("^#EXTINF:\\s*([0-9]+)\\s*,\\s*(\\S)+\\s*-\\s*(\\S)+");
-	int idx = re.indexIn(line);
-	if(idx < 0){
+	if(line.indexOf("#EXTINF:") != 0)
+	{
 		return false;
 	}
 
-	md.setDurationMs(re.cap(1).toInt() * 1000);
-	md.setArtist(re.cap(2));
-	md.setTitle(re.cap(3));
+	QString substring;
+	int currentIndex = 8;
+	int newIndex = line.indexOf(',', 8);
+	substring = line.mid(currentIndex, newIndex - currentIndex);
+
+	md.setDurationMs(substring.toInt() * 1000);
+
+	currentIndex = newIndex + 1;
+	newIndex = line.indexOf(" - ", currentIndex);
+	substring = line.mid(currentIndex, newIndex - currentIndex);
+
+	if(newIndex > 0)
+	{
+		md.setArtist(substring);
+		currentIndex = newIndex + 3;
+		substring = line.mid(currentIndex);
+	}
+
+	md.setTitle(substring);
 
 	return true;
 }
