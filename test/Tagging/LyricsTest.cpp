@@ -25,20 +25,21 @@ private slots:
 	void xiph_test();
 };
 
-
 void LyricsTest::run_test(const QString& filename)
 {
-	QString read_lyrics;
-	QString lyrics = QString::fromUtf8("Those are söme lyrics фыва");
+
+	const QString lyrics = QString::fromUtf8("Those are söme lyrics фыва");
 	MetaData md(filename);
 	Tagging::Utils::getMetaDataOfFile(md);
 
-	bool wrote_lyrics = Tagging::Lyrics::writeLyrics(md, lyrics);
-	bool extracted_lyrics = Tagging::Lyrics::extractLyrics(md, read_lyrics);
+	bool wroteLyrics = Tagging::Lyrics::writeLyrics(md, lyrics);
+	QVERIFY(wroteLyrics == true);
 
-	QVERIFY(wrote_lyrics == true);
-	QVERIFY(extracted_lyrics == true);
-	QVERIFY(lyrics.compare(read_lyrics) == 0);
+	QString readLyrics;
+	bool success = Tagging::Lyrics::extractLyrics(md, readLyrics);
+
+	QVERIFY(success == true);
+	QVERIFY(lyrics.compare(readLyrics) == 0);
 }
 
 void LyricsTest::id3_test()
