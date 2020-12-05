@@ -70,7 +70,7 @@ fi
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/icons/hicolor/*/apps/%{name}.xpm
-%{_datadir}/appdata/%{name}.appdata.xml
+%{_datadir}/metainfo/%{name}.appdata.xml
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/translations
 %dir %{_datadir}/%{name}/translations/icons
