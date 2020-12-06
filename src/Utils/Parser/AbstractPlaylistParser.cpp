@@ -34,10 +34,9 @@ struct AbstractPlaylistParser::Private
 	QString				directory;
 	bool				parsed;
 
-	Private()
-	{
-		parsed = false;
-	}
+	Private() :
+		parsed(false)
+	{}
 };
 
 AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
@@ -48,14 +47,13 @@ AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
 
 	Util::File::splitFilename(filename, m->directory, pureFile);
 	Util::File::readFileIntoString(filename, m->fileContent);
-
 }
 
 AbstractPlaylistParser::~AbstractPlaylistParser() = default;
 
-MetaDataList AbstractPlaylistParser::tracks(bool force_parse)
+MetaDataList AbstractPlaylistParser::tracks(bool forceParse)
 {
-	if(force_parse){
+	if(forceParse){
 		m->parsed = false;
 	}
 
@@ -65,7 +63,6 @@ MetaDataList AbstractPlaylistParser::tracks(bool force_parse)
 	}
 
 	m->parsed = true;
-
 
 	return m->tracks;
 }
@@ -84,7 +81,6 @@ const QString& AbstractPlaylistParser::content() const
 {
 	return m->fileContent;
 }
-
 
 QString AbstractPlaylistParser::getAbsoluteFilename(const QString& filename) const
 {

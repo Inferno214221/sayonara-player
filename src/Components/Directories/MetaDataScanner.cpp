@@ -44,7 +44,6 @@ MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObje
 
 void MetaDataScanner::start()
 {
-	DirectoryReader reader;
 	QStringList extensions;
 	if(m->scanAudioFiles)
 	{
@@ -62,6 +61,7 @@ void MetaDataScanner::start()
 		return;
 	}
 
+	DirectoryReader reader;
 	reader.setFilter(extensions);
 
 	if(!m->recursive)
@@ -81,8 +81,6 @@ void MetaDataScanner::start()
 	{
 		m->tracks = reader.scanMetadata(m->files);
 	}
-
-	m->tracks.sort(Library::SortOrder::TrackAlbumArtistAsc);
 
 	emit sigFinished();
 }
