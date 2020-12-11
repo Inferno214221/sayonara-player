@@ -35,6 +35,7 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstrawparse
 	gstsmoothstreaming
 	gstsoundtouch
+	gstsoup
 	gstspectrum
 	gsttaglib
 	gsttypefindfunctions
