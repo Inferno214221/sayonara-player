@@ -153,8 +153,14 @@ bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* me
 
 int main(int argc, char *argv[])
 {
+	//Util::setEnvironment("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
+	//Util::setEnvironment("QT_SCALE_FACTOR", "1.5");
+
 	Application app(argc, argv);
+	QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, false);
 	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
+
+
 
 	CommandLineData cmd_data = CommandLineParser::parse(argc, argv);
 	if(cmd_data.abort){

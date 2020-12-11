@@ -20,6 +20,7 @@
 
 #include "EqualizerAccesible.h"
 #include "Components/Engine/EngineUtils.h"
+#include "Components/Equalizer/Equalizer.h"
 
 #include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"
@@ -30,49 +31,34 @@
 
 using namespace PipelineExtensions;
 
-EqualizerAccessible::EqualizerAccessible() {}
-
-EqualizerAccessible::~EqualizerAccessible() {}
+EqualizerAccessible::EqualizerAccessible() = default;
+EqualizerAccessible::~EqualizerAccessible() = default;
 
 void EqualizerAccessible::initEqualizer()
 {
-	int previousIndex = GetSetting(Set::Eq_Last);
+	Equalizer equalizer;
+	EqualizerSetting lastPreset = equalizer.currentSetting();
 
-	QList<EqualizerSetting> presets = GetSetting(Set::Eq_List);
-	presets.push_front(EqualizerSetting());
-
-	if( !Util::between(previousIndex, presets)){
-		previousIndex = 0;
-	}
-
-	EqualizerSetting lastPreset = presets[previousIndex];
-	EqualizerSetting::ValueArray values = lastPreset.values();
-
-	int i=0;
-	for(auto it=values.begin(); it != values.end(); it++, i++)
+	int band=0;
+	for(const auto value : lastPreset)
 	{
-		setEqualizerBand(i, *it);
+		setEqualizerBand(band++, value);
 	}
 }
 
 void EqualizerAccessible::setEqualizerBand(int bandIndex, int value)
 {
-	QString bandName = QString("band%1").arg(bandIndex);
+	auto bandName = QString("band%1").arg(bandIndex);
 
 	GstElement* element = this->equalizerElement();
 	if(!element){
 		return;
 	}
 
-	double newValue;
-	if (value > 0) {
-		newValue = value * 0.25;
-	}
+	double newValue = (value > 0)
+		? (value * 0.25)
+		: (value * 0.75);
 
-	else{
-		newValue = value * 0.75;
-	}
-
-	Engine::Utils::setValue(element, bandName.toUtf8().data(),	newValue);
+	Engine::Utils::setValue(element, bandName.toUtf8().data(), newValue);
 }
 

@@ -8,6 +8,7 @@ set(COMPONENTS
 	Converter
 	Covers
 	Directories
+	Equalizer
 	Engine
 	Library
 	LibraryManagement
@@ -34,7 +35,7 @@ qt5_add_resources(COMPONENT_RESOURCES_RCC
 	${CMAKE_CURRENT_SOURCE_DIR}/Lyrics/Lyrics.qrc
 )
 
-add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${COMPONENT_RESOURCES_RCC})
+add_library(${PROJECT_NAME} STATIC ${HEADERS} ${SOURCES} ${COMPONENT_RESOURCES_RCC} Equalizer/Equalizer.cpp Equalizer/Equalizer.h)
 
 target_link_libraries(${PROJECT_NAME}
 	sayonara_database

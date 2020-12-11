@@ -25,14 +25,20 @@
 
 using Gui::EqualizerSlider;
 
+static QString calculateLabel(int val)
+{
+	return QString("%1").arg(val);
+}
+
 struct EqualizerSlider::Private
 {
-	QLabel* label=nullptr;
-	int		index;
+	QLabel* label = nullptr;
+	int index;
+	bool silent;
 
 	Private() :
-		index(-1)
-	{}
+		index(-1),
+		silent(false) {}
 };
 
 EqualizerSlider::EqualizerSlider(QWidget* parent) :
@@ -69,33 +75,49 @@ void EqualizerSlider::sliderChange(SliderChange change)
 {
 	Gui::Slider::sliderChange(change);
 
-	if(change == QAbstractSlider::SliderValueChange)
+	if(change == QAbstractSlider::SliderValueChange && !m->silent)
 	{
 		emit sigValueChanged(m->index, equalizerValue());
 	}
-}
 
+	if(this->label())
+	{
+		this->label()->setText(calculateLabel(equalizerValue()));
+	}
+}
 
 double EqualizerSlider::equalizerValue() const
 {
 	int val = this->value();
-	if( val > 0 ){
-		return (val) / 1.0;
-	}
+	return (val > 0) ? (val * 1.0) : (val / 2.0);
+}
 
-	else {
-		return (val / 2.0);
-	}
+void Gui::EqualizerSlider::setEqualizerValue(double value)
+{
+	this->setValue
+	(
+		(value > 0) ? int(value) : int(value * 2)
+	);
 }
 
 void EqualizerSlider::setZero()
 {
 	this->setValue(0);
-	emit sigValueChanged(m->index, equalizerValue());
+
+	if(!m->silent)
+	{
+		emit sigValueChanged(m->index, equalizerValue());
+	}
 }
 
 QSize EqualizerSlider::minimumSizeHint() const
 {
 	return QSize(10, 50);
 }
+
+void Gui::EqualizerSlider::setSilent(bool b)
+{
+	m->silent = b;
+}
+
 

@@ -22,7 +22,6 @@
 #define EQUALIZER_SETTING_H_
 
 #include "Utils/Pimpl.h"
-#include "Utils/Settings/SettingConvertible.h"
 
 #include <QString>
 #include <array>
@@ -32,8 +31,7 @@
  * @ingroup Equalizer
  */
 
-class EqualizerSetting :
-	public SettingConvertible
+class EqualizerSetting
 {
 	PIMPL(EqualizerSetting)
 
@@ -41,19 +39,14 @@ public:
 
 	using ValueArray=std::array<int, 10>;
 
-	EqualizerSetting(const QString& name=QString());
-	EqualizerSetting(const QString& name, const ValueArray& values);
+	EqualizerSetting(int id=-1, const QString& name=QString());
+	EqualizerSetting(int id, const QString& name, const ValueArray& values);
+	EqualizerSetting(int id, const QString& name, const ValueArray& values, const ValueArray& defaultValues);
+
 	EqualizerSetting(const EqualizerSetting& other);
-	~EqualizerSetting() override;
+	~EqualizerSetting();
 
 	EqualizerSetting& operator=(const EqualizerSetting& s);
-
-	/**
-	 * @brief Compares the case insensitive string representation of two settings
-	 * @param s other preset
-	 * @return
-	 */
-	bool operator==(const EqualizerSetting& s) const;
 
 	/**
 	 * @brief get name of setting
@@ -67,11 +60,16 @@ public:
 	 */
 	void setName(const QString& name);
 
+	int id() const;
+	void setId(int id);
+
 	/**
 	 * @brief get database values for setting
 	 * @return
 	 */
-	ValueArray values() const;
+	const ValueArray& values() const;
+
+	const ValueArray& defaultValues() const;
 
 	/**
 	 * @brief get specific value for a band idx. if idx is not valid, 0 is returned
@@ -95,12 +93,7 @@ public:
 	 */
 	void setValues(const ValueArray& values);
 
-	/**
-	 * @brief append a value.
-	 * If there are already more than 10 values, nothing happens
-	 * @param val
-	 */
-//	void append_value(int val);
+	void setDefaultValues(const ValueArray& values);
 
 	/**
 	 * @brief checks, if preset is default preset
@@ -108,46 +101,9 @@ public:
 	 */
 	bool isDefault() const;
 
-	/**
-	 * @brief checks, if the preset name belongs to a default preset
-	 * @return true if preset is default preset, false else
-	 */
-	bool isDefaultName() const;
 
-	/**
-	 * @brief get default settings
-	 * @return list of default settings
-	 */
-	static QList<EqualizerSetting> getDefaults();
-
-	/**
-	 * @brief get default values for a specific preset.
-	 * If the preset does not have default values, an empty list is returned
-	 * @param name preset name
-	 * @return value list if name belongs to a default preset. Empty list else
-	 */
-	static ValueArray getDefaultValues(const QString& name);
-
-	/**
-	 * @brief static convenience function for is_default_name()
-	 * @param name preset name
-	 * @return
-	 */
-	static bool isDefaultName(const QString& name);
-
-	/**
-	 * @brief converts a string to a EQ_Setting.
-	 * If not possible a default constructed EQ_Setting is returned
-	 * @param str
-	 * @return
-	 */
-	bool loadFromString(const QString& str) override;
-
-	/**
-	 * @brief converts EQ_Setting to string
-	 * @return
-	 */
-	QString toString() const override;
+	ValueArray::const_iterator begin() const;
+	ValueArray::const_iterator end() const;
 };
 
 #endif

@@ -32,6 +32,7 @@ namespace DB
 {
 	class LibraryDatabase;
 	class Bookmarks;
+	class Equalizer;
 	class Playlist;
 	class LibraryDatabase;
 	class Podcasts;
@@ -72,6 +73,7 @@ namespace DB
 			void					deleteLibraryDatabase(LibraryId libraryId);
 
 			DB::Bookmarks*			bookmarkConnector();
+			DB::Equalizer*          equalizerConnector();
 			DB::Playlist*			playlistConnector();
 			DB::Podcasts*			podcastConnector();
 			DB::Streams*			streamConnector();

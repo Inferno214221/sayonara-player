@@ -77,7 +77,6 @@ bool SettingRegistry::init()
 	registerSetting<Set::LFM_SessionKey>("lfm_session_key", QString());
 
 	registerSetting<Set::Eq_Last>("eq_last", 0);
-	registerSetting<Set::Eq_List>("EQ_list", EqualizerSetting::getDefaults());
 	registerSetting<Set::Eq_Gauss>("EQ_Gauss", true);
 
 	{

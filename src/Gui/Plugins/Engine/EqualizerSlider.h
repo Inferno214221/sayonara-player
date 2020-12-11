@@ -69,15 +69,19 @@ namespace Gui
 			 * @return
 			 */
 			double equalizerValue() const;
+			void setEqualizerValue(double value);
 
 			QSize minimumSizeHint() const override;
+
+			void setSilent(bool b);
 
 		private slots:
 			void setZero();
 
-
 		protected:
 			void sliderChange(SliderChange change) override;
+			using Gui::Slider::value;
+			using Gui::Slider::setValue;
 	};
 }
 

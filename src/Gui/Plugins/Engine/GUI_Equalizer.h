@@ -39,42 +39,43 @@ UI_FWD(GUI_Equalizer)
  * @ingroup Equalizer
  */
 class GUI_Equalizer :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Equalizer)
 	PIMPL(GUI_Equalizer)
 
-public:
-	explicit GUI_Equalizer(QWidget* parent=nullptr);
-	~GUI_Equalizer() override;
+	public:
+		explicit GUI_Equalizer(QWidget* parent=nullptr);
+		~GUI_Equalizer() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
-public slots:
-	void fillEqualizerPresets();
+	public slots:
+		void fillEqualizerPresets();
 
-private:
-	void initUi() override;
-	void retranslate() override;
-	void saveCurrentPreset(const QString& name);
+	private:
+		void initUi() override;
+		void retranslate() override;
 
-private slots:
-	void sliderValueChanged(int idx, int value);
-	void sliderPressed();
-	void sliderReleased();
+	private slots:
+		void sliderValueChanged(int band, int value);
+		void sliderPressed();
+		void sliderReleased();
 
-	void presetChanged(int);
-	void checkboxGaussToggled(bool);
+		void valueChanged(int band, int value);
 
-	void btnDefaultClicked();
-	void btnSaveClicked();
-	void btnSaveAsClicked();
-	void btnDeleteClicked();
-	void btnUndoClicked();
+		void currentEqualizerChanged(int index);
+		void checkboxGaussToggled(bool);
 
-	void saveAsOkClicked();
+		void btnDefaultClicked();
+		void btnSaveAsClicked();
+		void btnDeleteClicked();
+		void btnRenameClicked();
+
+		void saveAsOkClicked();
+		void renameOkClicked();
 };
 
 #endif /* GUI_EQUALIZER_H_ */

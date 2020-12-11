@@ -52,6 +52,8 @@ new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
 new_test(Database/LibraryDatabaseTest.cpp)
 
+new_test(Equalizer/EqualizerTest.cpp)
+
 new_test(Library/ImportCacheTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp)
@@ -77,3 +79,5 @@ new_test(Util/MetaDataListTest.cpp)
 new_test(Util/SettingsTest.cpp)
 new_test(Util/SetTest.cpp)
 new_test(Util/CissearchTest.cpp)
+
+

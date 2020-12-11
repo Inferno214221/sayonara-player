@@ -24,138 +24,63 @@
 
 #include <QStringList>
 
-static const int EqualizerSettingSize=10;
-
 struct EqualizerSetting::Private
 {
-	QString			name;
-	ValueArray		values;
+	QString name;
+	ValueArray values;
+	ValueArray defaultValues;
+	int id;
 
-	Private(const QString& name) :
-		name(name)
-	{
-		values.fill(0);
-	}
-
-	Private(const QString& name, const ValueArray& values) :
+	Private(int id, const QString& name, const ValueArray& values,
+	        const ValueArray& defaultValues) :
 		name(name),
-		values(values)
-	{}
+		values(values),
+		defaultValues(defaultValues),
+		id(id) {}
 };
 
-EqualizerSetting::EqualizerSetting(const QString& name)
+EqualizerSetting::EqualizerSetting(int id, const QString& name)
 {
-	m = Pimpl::make<Private>(name);
+	ValueArray values;
+	values.fill(0);
+
+	m = Pimpl::make<Private>(id, name, values, values);
 }
 
-EqualizerSetting::EqualizerSetting(const QString& name, const ValueArray& values) :
-	EqualizerSetting(name)
+EqualizerSetting::EqualizerSetting(int id, const QString& name,
+                                   const EqualizerSetting::ValueArray& values)
 {
-	m->values = values;
+	ValueArray defaultValues;
+	defaultValues.fill(0);
+	m = Pimpl::make<Private>(id, name, values, values);
+}
+
+EqualizerSetting::EqualizerSetting(int id, const QString& name,
+                                   const ValueArray& values,
+                                   const ValueArray& defaultValues)
+{
+	m = Pimpl::make<Private>(id, name, values, defaultValues);
 }
 
 EqualizerSetting::EqualizerSetting(const EqualizerSetting& other)
 {
-	m = Pimpl::make<Private>(other.name(), other.values());
+	m = Pimpl::make<Private>(other.id(),
+	                         other.name(),
+	                         other.values(),
+	                         other.defaultValues());
 }
 
-EqualizerSetting::~EqualizerSetting() {}
+EqualizerSetting::~EqualizerSetting() = default;
 
 EqualizerSetting& EqualizerSetting::operator=(const EqualizerSetting& s)
 {
+	m->id = s.id();
 	m->name = s.name();
 	m->values = s.values();
+	m->defaultValues = s.defaultValues();
+
 	return *this;
 }
-
-
-bool EqualizerSetting::loadFromString(const QString& str)
-{
-	QStringList lst = str.split(':');
-	m->name = lst.takeFirst();
-
-	if(lst.size() < EqualizerSettingSize)
-	{
-		spLog(Log::Warning, "EQ_Setting") << "EQ Setting " << str << " has too few parameters " << lst.size();
-		return false;
-	}
-
-	for(int i=0; i<EqualizerSettingSize; i++)
-	{
-		this->setValue(i, lst[i].toInt());
-	}
-
-	return true;
-}
-
-
-QString EqualizerSetting::toString() const
-{
-	QString str(m->name);
-
-	for(int val : m->values)
-	{
-		str += QString(":%1").arg(val);
-	}
-
-	return str;
-}
-
-
-bool EqualizerSetting::operator==(const EqualizerSetting& s) const
-{
-	QString str = toString();
-	QString other = s.toString();
-	return ( str.compare(other, Qt::CaseInsensitive) == 0 );
-}
-
-
-QList<EqualizerSetting> EqualizerSetting::getDefaults()
-{
-	QList<EqualizerSetting> defaults;
-
-	defaults << EqualizerSetting(QString(),		ValueArray{{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0}});
-	defaults << EqualizerSetting("Flat",		ValueArray{{ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0}});
-	defaults << EqualizerSetting("Rock",		ValueArray{{ 2,  4,  8,  3,  1,  3,  7, 10, 14, 14}});
-	defaults << EqualizerSetting("Light Rock",	ValueArray{{ 1,  1,  2,  1, -2, -3, -1,  3,  5,  8}});
-	defaults << EqualizerSetting("Treble",		ValueArray{{ 0,  0, -3, -5, -3,  2,  8, 15, 17, 13}});
-	defaults << EqualizerSetting("Bass",		ValueArray{{13, 17, 15,  8,  2, -3, -5, -3,  0,  0}});
-	defaults << EqualizerSetting("Mid",			ValueArray{{ 0,  0,  5,  9, 15, 15, 12,  7,  2,  0}});
-
-	return defaults;
-}
-
-EqualizerSetting::ValueArray EqualizerSetting::getDefaultValues(const QString& name)
-{
-	ValueArray ret; ret.fill(0);
-
-	QList<EqualizerSetting> defaults = EqualizerSetting::getDefaults();
-
-	for(const EqualizerSetting& def : defaults)
-	{
-		if(def.name().compare(name, Qt::CaseInsensitive) == 0){
-			ret = def.values();
-		}
-	}
-
-	return ret;
-}
-
-
-bool EqualizerSetting::isDefaultName(const QString& name)
-{
-	QList<EqualizerSetting> defaults = EqualizerSetting::getDefaults();
-
-	for(const EqualizerSetting& def : defaults)
-	{
-		if(def.name().compare(name, Qt::CaseInsensitive) == 0){
-			return true;
-		}
-	}
-
-	return false;
-}
-
 
 QString EqualizerSetting::name() const
 {
@@ -167,14 +92,29 @@ void EqualizerSetting::setName(const QString& name)
 	m->name = name;
 }
 
-
 void EqualizerSetting::setValue(int idx, int val)
 {
-	if(!Util::between(idx, m->values)){
+	if(!Util::between(idx, m->values))
+	{
 		return;
 	}
 
 	m->values[idx] = val;
+}
+
+int EqualizerSetting::value(int idx) const
+{
+	if(!Util::between(idx, m->values))
+	{
+		return 0;
+	}
+
+	return m->values[idx];
+}
+
+const EqualizerSetting::ValueArray& EqualizerSetting::values() const
+{
+	return m->values;
 }
 
 void EqualizerSetting::setValues(const EqualizerSetting::ValueArray& values)
@@ -182,45 +122,42 @@ void EqualizerSetting::setValues(const EqualizerSetting::ValueArray& values)
 	m->values = values;
 }
 
-
-EqualizerSetting::ValueArray EqualizerSetting::values() const
+const EqualizerSetting::ValueArray& EqualizerSetting::defaultValues() const
 {
-	return m->values;
+	return m->defaultValues;
 }
 
-int EqualizerSetting::value(int idx) const
+void
+EqualizerSetting::setDefaultValues(const EqualizerSetting::ValueArray& values)
 {
-	if(!Util::between(idx, m->values)){
-		return 0;
-	}
-
-	return m->values[idx];
+	m->defaultValues = values;
 }
 
-bool EqualizerSetting::isDefaultName() const
+EqualizerSetting::ValueArray::const_iterator EqualizerSetting::begin() const
 {
-	QList<EqualizerSetting> defaults = EqualizerSetting::getDefaults();
-	for(const EqualizerSetting& def : defaults)
-	{
-		if(def.name().compare(m->name, Qt::CaseInsensitive) == 0){
-			return true;
-		}
-	}
+	return m->values.begin();
+}
 
-	return false;
+EqualizerSetting::ValueArray::const_iterator EqualizerSetting::end() const
+{
+	return m->values.end();
+}
+
+int EqualizerSetting::id() const
+{
+	return m->id;
+}
+
+void EqualizerSetting::setId(int id)
+{
+	m->id = id;
 }
 
 bool EqualizerSetting::isDefault() const
 {
-	QList<EqualizerSetting> defaults = EqualizerSetting::getDefaults();
-
-	for(const EqualizerSetting& def : defaults)
-	{
-		if(def.name().compare(m->name, Qt::CaseInsensitive) == 0){
-			return( def == *this );
-		}
-	}
-
-	return true;
+	return std::equal(m->values.begin(),
+	                  m->values.end(),
+	                  m->defaultValues.begin(),
+	                  m->defaultValues.end());
 }
 

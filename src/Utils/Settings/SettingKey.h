@@ -36,7 +36,6 @@ enum class SettingKey : unsigned short
 	LFM_ShowErrors,
 	LFM_SessionKey,
 	Eq_Last,
-	Eq_List,
 	Eq_Gauss,
 	Lib_Show,
 	Lib_Path,
@@ -249,7 +248,6 @@ class SettingIdentifier
 	INST(QString,			LFM_SessionKey)			/* lfm session key */
 
 	INST(int,				Eq_Last)				/* last equalizer index */
-	INST(QList<EqualizerSetting>,		Eq_List)			/* All equalizers */
 	INST(bool,				Eq_Gauss)				/* do curve, when changing eq setting */
 
 	INST(bool,				Lib_Show)				/* show library */

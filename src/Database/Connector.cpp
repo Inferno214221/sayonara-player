@@ -22,6 +22,7 @@
 #include "Database/Query.h"
 #include "Database/LibraryDatabase.h"
 #include "Database/Bookmarks.h"
+#include "Database/Equalizer.h"
 #include "Database/Playlist.h"
 #include "Database/Podcasts.h"
 #include "Database/Streams.h"
@@ -54,7 +55,7 @@ namespace Algorithm=Util::Algorithm;
 
 int Connector::highestDatabaseVersion()
 {
-	return 28;
+	return 29;
 }
 
 struct Connector::Private
@@ -65,6 +66,7 @@ struct Connector::Private
 	QString					defaultDatabsefilename;
 
 	DB::Bookmarks*			bookmarkConnector=nullptr;
+	DB::Equalizer*          equalizerConnector=nullptr;
 	DB::Playlist*			playlistConnector=nullptr;
 	DB::Podcasts*			podcastConnector=nullptr;
 	DB::Streams*			streamConnector=nullptr;
@@ -86,6 +88,10 @@ struct Connector::Private
 	{
 		if(bookmarkConnector){
 			delete bookmarkConnector; bookmarkConnector = nullptr;
+		}
+
+		if(equalizerConnector){
+			delete equalizerConnector; equalizerConnector = nullptr;
 		}
 
 		if(podcastConnector){
@@ -812,6 +818,26 @@ bool Connector::applyFixes()
 		}
 	}
 
+	if(version < 29)
+	{
+		const auto createStatement = R"create(
+			CREATE TABLE Equalizer
+            (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              name VARCHAR(32),
+              equalizerValues VARCHAR(32),
+              defaultValues VARCHAR(32)
+            );
+			)create";
+
+		bool success = checkAndCreateTable("Equalizer", createStatement);
+		success &= equalizerConnector()->restoreFactoryDefaults();
+
+		if(success) {
+			settingsConnector()->storeSetting("version", 29);
+		}
+	}
+
 	return true;
 }
 
@@ -966,6 +992,15 @@ DB::Session* DB::Connector::sessionConnector()
 	}
 
 	return m->sessionConnector;
+}
+
+DB::Equalizer* DB::Connector::equalizerConnector()
+{
+	if(!m->equalizerConnector){
+		m->equalizerConnector = new DB::Equalizer(this->connectionName(), this->databaseId());
+	}
+
+	return m->equalizerConnector;
 }
 
 const char* DatabaseNotCreatedException::what() const noexcept
