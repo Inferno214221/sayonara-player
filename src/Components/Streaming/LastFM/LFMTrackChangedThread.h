@@ -25,7 +25,7 @@
 #ifndef LFMTRACKCHANGEDTHREAD_H_
 #define LFMTRACKCHANGEDTHREAD_H_
 
-#include "ArtistMatch.h"
+#include "DynamicPlayback/ArtistMatch.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -40,24 +40,13 @@ namespace LastFM
 		Q_OBJECT
 		PIMPL(TrackChangedThread)
 
-	signals:
-		void sigSimilarArtistsAvailable(const IdList& artistIds);
-
 	public:
 		explicit TrackChangedThread(QObject* parent=nullptr);
 		~TrackChangedThread();
 
-		void searchSimilarArtists(const MetaData& md);
 		void updateNowPlaying(const QString& sessionKey, const MetaData& md);
 
-	private:
-		void evaluateArtistMatch(const ArtistMatch& artistMatch);
-		QMap<QString, int> filterAvailableArtists(const ArtistMatch& artistMatch, ArtistMatch::Quality quality);
-
 	private slots:
-		void similarArtistResponseReceived(const QByteArray& data);
-		void similarArtistsErrorReceived(const QString& error);
-
 		void updateResponseReceived(const QByteArray& response);
 		void updateErrorReceived(const QString& error);
 	};

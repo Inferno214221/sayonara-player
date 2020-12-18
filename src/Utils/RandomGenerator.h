@@ -54,6 +54,7 @@ class RandomGenerator
 		int getNumber(int min, int max);
 
 		static int getRandomNumber(int min, int max);
+		static std::mt19937 getGenerator();
 };
 
 namespace Util
@@ -63,7 +64,7 @@ namespace Util
 		template<class Container>
 		void shuffle(Container& container)
 		{
-			std::shuffle(container.begin(), container.end(), std::default_random_engine());
+			std::shuffle(container.begin(), container.end(), RandomGenerator::getGenerator());
 		}
 	}
 }

@@ -38,6 +38,7 @@
 #include "3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.h"
 #endif
 
+#include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/RemoteControl/RemoteControl.h"
@@ -304,6 +305,8 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		                                        QString(":/Icons/logo.png")
 		);
 	}
+
+	new DynamicPlayback::Handler(this);
 
 	initLibraries();
 	initPlugins();

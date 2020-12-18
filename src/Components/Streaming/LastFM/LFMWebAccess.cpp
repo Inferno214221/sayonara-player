@@ -71,6 +71,8 @@ void WebAccess::awaFinished()
 	{
 		emit sigResponse(data);
 	}
+
+	emit sigFinished();
 }
 
 QString WebAccess::WebAccess::createStandardUrl(const QString& base_url, const UrlParams& data)

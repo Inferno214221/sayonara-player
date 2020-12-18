@@ -34,6 +34,7 @@
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -54,17 +55,17 @@
 
 #include <ctime>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 using namespace LastFM;
 
 struct Base::Private
 {
-	QString						sessionKey;
-	QTimer*						scrobbleTimer=nullptr;
-	QTimer*						trackChangedTimer=nullptr;
-	TrackChangedThread*			trackChangeThread=nullptr;
-	bool						loggedIn;
+	QString sessionKey;
+	QTimer* scrobbleTimer = nullptr;
+	QTimer* trackChangedTimer = nullptr;
+	TrackChangedThread* trackChangeThread = nullptr;
+	bool loggedIn;
 
 	Private(QObject* parent) :
 		trackChangeThread(new TrackChangedThread(parent)),
@@ -84,11 +85,19 @@ Base::Base() :
 	m = Pimpl::make<Private>(this);
 
 	connect(m->scrobbleTimer, &QTimer::timeout, this, &Base::scrobble);
-	connect(m->trackChangedTimer, &QTimer::timeout, this, &Base::trackChangedTimerTimedOut);
+	connect(m->trackChangedTimer,
+	        &QTimer::timeout,
+	        this,
+	        &Base::trackChangedTimerTimedOut);
 
-	connect(PlayManager::instance(), &PlayManager::sigCurrentTrackChanged,	this, &Base::currentTrackChanged);
-	connect(m->trackChangeThread, &TrackChangedThread::sigSimilarArtistsAvailable,
-			this, &Base::similarArtistsFetched);
+	connect(PlayManager::instance(),
+	        &PlayManager::sigCurrentTrackChanged,
+	        this,
+	        &Base::currentTrackChanged);
+	/*connect(m->trackChangeThread,
+	        &TrackChangedThread::sigSimilarArtistsAvailable,
+	        this,
+	        &Base::similarArtistsFetched);*/
 
 	ListenSetting(Set::LFM_Active, Base::activeChanged);
 }
@@ -104,11 +113,17 @@ void Base::login(const QString& username, const QString& password)
 {
 	auto* loginThread = new LoginThread(this);
 
-	connect(loginThread, &LoginThread::sigLoggedIn, this, &Base::loginThreadFinished);
-	connect(loginThread, &LoginThread::sigError, this, [=](const QString& error_message){
-		spLog(Log::Warning, this) << error_message;
-		emit sigLoggedIn(false);
-	});
+	connect(loginThread,
+	        &LoginThread::sigLoggedIn,
+	        this,
+	        &Base::loginThreadFinished);
+	connect(loginThread,
+	        &LoginThread::sigError,
+	        this,
+	        [=](const QString& error_message) {
+		        spLog(Log::Warning, this) << error_message;
+		        emit sigLoggedIn(false);
+	        });
 
 	loginThread->login(username, password);
 }
@@ -134,7 +149,8 @@ void Base::loginThreadFinished(bool success)
 	m->loggedIn = success;
 
 	const QString errorMessage = tr("Cannot login to Last.fm");
-	if(!success) {
+	if(!success)
+	{
 		NotificationHandler::instance()->notify("Sayonara", errorMessage);
 		emit sigLoggedIn(false);
 		return;
@@ -164,7 +180,7 @@ void Base::currentTrackChanged(const MetaData& md)
 	Q_UNUSED(md)
 
 	Playlist::Mode pl_mode = GetSetting(Set::PL_Mode);
-	if( Playlist::Mode::isActiveAndEnabled(pl_mode.dynamic()))
+	if(Playlist::Mode::isActiveAndEnabled(pl_mode.dynamic()))
 	{
 		m->trackChangedTimer->stop();
 		m->trackChangedTimer->start(1000);
@@ -182,22 +198,27 @@ void Base::currentTrackChanged(const MetaData& md)
 	}
 }
 
-
 void Base::scrobble()
 {
-	if(!GetSetting(Set::LFM_Active) || !m->loggedIn) {
+	if(!GetSetting(Set::LFM_Active) || !m->loggedIn)
+	{
 		return;
 	}
 
 	const MetaData md = PlayManager::instance()->currentTrack();
-	if(md.title().isEmpty() || md.artist().isEmpty()){
+	if(md.title().isEmpty() || md.artist().isEmpty())
+	{
 		return;
 	}
 
-	spLog(Log::Debug, this) << "Scrobble " << md.title() << " by " << md.artist();
+	spLog(Log::Debug, this) << "Scrobble " << md.title() << " by "
+	                        << md.artist();
 
 	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sigResponse, this, &Base::scrobbleResponseReceived);
+	connect(lfm_wa,
+	        &WebAccess::sigResponse,
+	        this,
+	        &Base::scrobbleResponseReceived);
 	connect(lfm_wa, &WebAccess::sigError, this, &Base::scrobbleErrorReceived);
 
 	time_t rawtime = time(nullptr);
@@ -205,26 +226,29 @@ void Base::scrobble()
 	time_t started = mktime(ptm);
 
 	UrlParams sigData;
-	if(!md.album().isEmpty()) {
-		sigData["album"] =		md.album().toLocal8Bit();
+	if(!md.album().isEmpty())
+	{
+		sigData["album"] = md.album().toLocal8Bit();
 	}
-	sigData["api_key"] =	LFM_API_KEY;
-	sigData["artist"] =		md.artist().toLocal8Bit();
-	sigData["duration"] =	QString::number(md.durationMs() / 1000).toLocal8Bit();
-	sigData["method"] =		"track.scrobble";
-	sigData["sk"] =			m->sessionKey.toLocal8Bit();
-	sigData["timestamp"] =	QString::number(started).toLocal8Bit();
-	sigData["track"] =		md.title().toLocal8Bit();
+	sigData["api_key"] = LFM_API_KEY;
+	sigData["artist"] = md.artist().toLocal8Bit();
+	sigData["duration"] = QString::number(md.durationMs() / 1000).toLocal8Bit();
+	sigData["method"] = "track.scrobble";
+	sigData["sk"] = m->sessionKey.toLocal8Bit();
+	sigData["timestamp"] = QString::number(started).toLocal8Bit();
+	sigData["track"] = md.title().toLocal8Bit();
 
 	sigData.appendSignature();
 
 	QByteArray post_data;
-	QString url = lfm_wa->createPostUrl("http://ws.audioscrobbler.com/2.0/", sigData, post_data);
+	QString url = lfm_wa->createPostUrl("http://ws.audioscrobbler.com/2.0/",
+	                                    sigData,
+	                                    post_data);
 
 	lfm_wa->callPostUrl(url, post_data);
 }
 
-void Base::scrobbleResponseReceived(const QByteArray& data) {	Q_UNUSED(data) }
+void Base::scrobbleResponseReceived(const QByteArray& data) { Q_UNUSED(data) }
 
 void Base::scrobbleErrorReceived(const QString& error)
 {
@@ -233,70 +257,75 @@ void Base::scrobbleErrorReceived(const QString& error)
 
 void Base::trackChangedTimerTimedOut()
 {
-	MetaData md = PlayManager::instance()->currentTrack();
-
+	const auto& md = PlayManager::instance()->currentTrack();
+/*
 	if(md.radioMode() == RadioMode::Off)
 	{
 		m->trackChangeThread->searchSimilarArtists(md);
 	}
-
+*/
 	if(GetSetting(Set::LFM_Active) && m->loggedIn)
 	{
 		m->trackChangeThread->updateNowPlaying(m->sessionKey, md);
 	}
 }
-
+/*
 // private slot
-void Base::similarArtistsFetched(IdList artistIds)
+void Base::similarArtistsFetched(const IdList& artistIds)
 {
-	if(artistIds.isEmpty()){
+	if(artistIds.isEmpty())
+	{
 		return;
 	}
 
+	auto libraryId = PlayManager::instance()->currentTrack().libraryId();
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
+	const auto* libraryDatabase = db->libraryDatabase(libraryId, 0);
 
 	auto* plh = Playlist::Handler::instance();
 
-	int active_idx = plh->activeIndex();
-	PlaylistConstPtr active_playlist = plh->playlist(active_idx);
-
-	if(!active_playlist){
+	const auto activeIndex = plh->activeIndex();
+	const auto activePlaylist = plh->playlist(activeIndex);
+	if(!activePlaylist)
+	{
 		return;
 	}
 
-	const MetaDataList& v_md = active_playlist->tracks();
+	const auto& tracks = activePlaylist->tracks();
+	const auto& shuffledArtistIds = Util::Algorithm::shuffle(artistIds);
 
-	Util::Algorithm::shuffle(artistIds);
-
-	for( auto it=artistIds.begin(); it != artistIds.end(); it++ )
+	for(const auto artistId : shuffledArtistIds)
 	{
-		MetaDataList artist_tracks;
-		{
-			lib_db->getAllTracksByArtist(IdList{*it}, artist_tracks);
-			Util::Algorithm::shuffle(artist_tracks);
-		}
+		MetaDataList artistTracks;
+		libraryDatabase->getAllTracksByArtist(IdList {artistId}, artistTracks);
+		Util::Algorithm::shuffle(artistTracks);
 
 		// try all songs of artist
-		for(int rounds=0; rounds < artist_tracks.count(); rounds++)
+		for(int rounds = 0; rounds < std::min(10, artistTracks.count()); rounds++)
 		{
-			int index = RandomGenerator::getRandomNumber(0, int(artist_tracks.size()) - 1);
+			const auto index =
+				RandomGenerator::getRandomNumber(0, artistTracks.count() - 1);
 
-			MetaData md = artist_tracks.takeAt(index);
+			const auto track = artistTracks.takeAt(index);
+			if(!Util::File::exists(track.filepath())){
+				continue;
+			}
 
 			// two times the same track is not allowed
-			bool track_exists = Algorithm::contains(v_md, [md](const MetaData& it_md) {
-				return (md.id() == it_md.id());
-			});
+			const auto exists =
+				Algorithm::contains(tracks,
+				                    [&](
+					                    const auto& playlistTrack) {
+					                    return (track.id() ==
+					                            playlistTrack.id());
+				                    });
 
-			if(!track_exists)
+			if(!exists)
 			{
-				MetaDataList v_md; v_md << md;
-
-				plh->appendTracks(v_md, active_idx);
+				plh->appendTracks(MetaDataList {track}, activeIndex);
 				return;
 			}
 		}
 	}
 }
-
+*/

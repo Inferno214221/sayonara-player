@@ -357,6 +357,62 @@ bool Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, c
 	return true;
 }
 
+
+bool Tracks::getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result) const
+{
+	return getAllTracksByAlbumArtist(artistIds, result, Filter());
+}
+
+bool Tracks::getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter) const
+{
+	if(artistIds.empty()){
+		return false;
+	}
+
+	const QStringList searchFilters = filter.searchModeFiltertext(true);
+	for(const QString& searchFilter : searchFilters)
+	{
+		QString query = fetchQueryTracks();
+		query += " WHERE ";
+
+		if( !filter.cleared() )
+		{
+			query += getFilterClause(filter, ":cissearch") + " AND ";
+		}
+
+		{ // artist conditions
+			const QString aidf = trackSearchView() + "." + artistIdField();
+
+			QStringList orClauses;
+			Util::Algorithm::transform(artistIds, orClauses, [aidf](ArtistId artistId){
+				return QString("%1 = :artistId%2").arg(aidf).arg(artistId);
+			});
+
+			query += " (" + orClauses.join(" OR ") + ") ";
+		}
+
+		query += ";";
+
+		{ // prepare & run
+			Query q(module());
+			q.prepare(query);
+
+			for(ArtistId artistId : artistIds) {
+				q.bindValue(QString(":artistId%1").arg(artistId), artistId);
+			}
+
+			q.bindValue(":cissearch", searchFilter);
+
+			MetaDataList tmpList;
+			dbFetchTracks(q, tmpList);
+			result.appendUnique(tmpList);
+		}
+	}
+
+	return true;
+}
+
+
 bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result) const
 {
 	return getAllTracksByArtist(artistIds, result, Filter());

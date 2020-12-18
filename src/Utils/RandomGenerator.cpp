@@ -59,3 +59,9 @@ int RandomGenerator::getRandomNumber(int min, int max)
 	RandomGenerator generator;
 	return generator.getNumber(min, max);
 }
+
+std::mt19937 RandomGenerator::getGenerator()
+{
+	auto seed = std::chrono::system_clock::now().time_since_epoch().count();
+	return std::mt19937(seed);
+}

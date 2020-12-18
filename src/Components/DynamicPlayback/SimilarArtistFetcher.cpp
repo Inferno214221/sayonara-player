@@ -1,6 +1,6 @@
-/* LFMSimArtistsParser.h */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* SimilarArtistFetcher.cpp */
+/*
+ * Copyright (C) 2011-2020 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,29 +17,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#include "SimilarArtistFetcher.h"
 
-#ifndef LFMSIMARTISTSPARSER_H
-#define LFMSIMARTISTSPARSER_H
-
-#include "Utils/Pimpl.h"
-
-namespace LastFM
+using DynamicPlayback::SimilarArtistFetcher;
+struct SimilarArtistFetcher::Private
 {
-	class ArtistMatch;
-	class SimArtistsParser
-	{
-		PIMPL(SimArtistsParser)
+	QString artist;
 
-	public:
-		SimArtistsParser(const QString& artist_name, const QByteArray& arr);
-		SimArtistsParser(const QString& artist_name, const QString& filename);
-		~SimArtistsParser();
+	Private(const QString& artist) :
+		artist(artist)
+	{}
+};
 
-		LastFM::ArtistMatch artistMatch() const;
-
-	private:
-		void parseDocument();
-	};
+SimilarArtistFetcher::SimilarArtistFetcher(const QString& artist, QObject* parent) :
+	QObject(parent)
+{
+	m = Pimpl::make<Private>(artist);
 }
 
-#endif // LFMSIMARTISTSPARSER_H
+SimilarArtistFetcher::~SimilarArtistFetcher() = default;
+
+void SimilarArtistFetcher::start()
+{
+	fetchSimilarArtists(m->artist);
+}

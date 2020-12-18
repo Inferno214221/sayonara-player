@@ -8,6 +8,7 @@ set(COMPONENTS
 	Converter
 	Covers
 	Directories
+	DynamicPlayback
 	Equalizer
 	Engine
 	Library

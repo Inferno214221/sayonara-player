@@ -61,7 +61,7 @@ namespace LastFM
 		private slots:
 			void activeChanged();
 			void loginThreadFinished(bool success);
-			void similarArtistsFetched(IdList artistIds);
+			//void similarArtistsFetched(const IdList& playlistTrack);
 			void currentTrackChanged(const MetaData& md);
 
 			void scrobble();

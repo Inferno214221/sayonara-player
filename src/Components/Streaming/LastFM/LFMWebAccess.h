@@ -48,6 +48,7 @@ namespace LastFM
         Q_OBJECT
 
     signals:
+    	void sigFinished();
         void sigResponse(const QByteArray& response);
         void sigError(const QString& error);
 

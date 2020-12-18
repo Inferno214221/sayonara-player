@@ -51,6 +51,9 @@ namespace DB
             virtual bool getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result) const;
 			virtual bool getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result,
                                              const ::Library::Filter& filter, int discnumber) const;
+			virtual bool getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result) const;
+			virtual bool getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result,
+			                                  const ::Library::Filter& filter) const;
 			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result) const;
 			virtual bool getAllTracksByArtist(const IdList& artistIds, MetaDataList& result,
                                               const ::Library::Filter& filter) const;
