@@ -53,9 +53,8 @@ using namespace Library;
 
 struct TrackModel::Private
 {
-	QPair<int, Rating> tmpRating;
-	Tagging::UserOperations* uto = nullptr;
-	QLocale locale;
+	Tagging::UserOperations* uto {nullptr};
+	QLocale locale {};
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
@@ -63,7 +62,10 @@ TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
 {
 	m = Pimpl::make<Private>();
 
-	connect(library, &AbstractLibrary::sigCurrentTrackChanged, this, &TrackModel::trackChanged);
+	connect(library,
+	        &AbstractLibrary::sigCurrentTrackChanged,
+	        this,
+	        &TrackModel::trackMetaDataChanged);
 	ListenSetting(Set::Player_Language, TrackModel::languageChanged);
 }
 
@@ -71,109 +73,95 @@ TrackModel::~TrackModel() = default;
 
 QVariant TrackModel::data(const QModelIndex& index, int role) const
 {
-	int row = index.row();
-	int col = index.column();
-
 	if(!index.isValid())
 	{
 		return QVariant();
 	}
 
-	const MetaDataList& tracks = library()->tracks();
-
-	if(row >= tracks.count())
+	if(index.row() >= library()->tracks().count())
 	{
 		return QVariant();
 	}
 
-	auto indexColumn = ColumnIndex::Track(col);
+	const auto indexColumn = ColumnIndex::Track(index.column());
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		int alignment = Qt::AlignVCenter;
+		const QMap<ColumnIndex::Track, Qt::AlignmentFlag> alignMap {
+			{ColumnIndex::Track::TrackNumber,  Qt::AlignRight},
+			{ColumnIndex::Track::Bitrate,      Qt::AlignRight},
+			{ColumnIndex::Track::Length,       Qt::AlignRight},
+			{ColumnIndex::Track::Filesize,     Qt::AlignRight},
+			{ColumnIndex::Track::Discnumber,   Qt::AlignRight},
+			{ColumnIndex::Track::Filetype,     Qt::AlignCenter},
+			{ColumnIndex::Track::Year,         Qt::AlignCenter},
+			{ColumnIndex::Track::ModifiedDate, Qt::AlignCenter},
+			{ColumnIndex::Track::AddedDate,    Qt::AlignCenter}
+		};
 
-		if(indexColumn == ColumnIndex::Track::TrackNumber ||
-		   indexColumn == ColumnIndex::Track::Bitrate ||
-		   indexColumn == ColumnIndex::Track::Length ||
-		   indexColumn == ColumnIndex::Track::Filesize ||
-		   indexColumn == ColumnIndex::Track::Discnumber)
-		{
-			alignment |= Qt::AlignRight;
-		}
+		auto alignment = alignMap.contains(indexColumn) ? alignMap[indexColumn]
+		                                                : Qt::AlignLeft;
 
-		else if(indexColumn == ColumnIndex::Track::Filetype ||
-		        indexColumn == ColumnIndex::Track::Year ||
-		        indexColumn == ColumnIndex::Track::ModifiedDate ||
-		        indexColumn == ColumnIndex::Track::AddedDate)
-		{
-			alignment |= Qt::AlignCenter;
-		}
-
-		else
-		{
-			alignment |= Qt::AlignLeft;
-		}
-
-		return alignment;
+		return QVariant::fromValue(Qt::AlignVCenter | alignment);
 	}
 
 	else if(role == Qt::DisplayRole || role == Qt::EditRole)
 	{
-		const MetaData& md = tracks[row];
+		const auto& track = library()->tracks().at(index.row());
 
 		switch(indexColumn)
 		{
 			case ColumnIndex::Track::TrackNumber:
-				return QVariant(md.trackNumber());
+				return QVariant(track.trackNumber());
 
 			case ColumnIndex::Track::Title:
-				return QVariant(md.title());
+				return QVariant(track.title());
 
 			case ColumnIndex::Track::Artist:
-				return QVariant(md.artist());
+				return QVariant(track.artist());
 
 			case ColumnIndex::Track::Length:
-				return QVariant(::Util::msToString(md.durationMs(), "$He $M:$S"));
+				return QVariant(::Util::msToString(track.durationMs(),
+				                                   "$He $M:$S"));
 
 			case ColumnIndex::Track::Album:
-				return QVariant(md.album());
+				return QVariant(track.album());
 
 			case ColumnIndex::Track::Discnumber:
-				return QVariant(QString::number(md.discnumber()));
+				return QVariant(QString::number(track.discnumber()));
 
 			case ColumnIndex::Track::Year:
-				if(md.year() == 0)
-				{
-					return Lang::get(Lang::UnknownYear);
-				}
-
-				return md.year();
+				return (track.year() == 0) ?
+				       QVariant(Lang::get(Lang::UnknownYear)) :
+				       QVariant(track.year());
 
 			case ColumnIndex::Track::Bitrate:
 			{
-				auto br = (md.bitrate() / 1000);
-				return (br == 0) ? "-" : QString::number(br) + " " + tr("kBit/s");
+				const auto bitrate = (track.bitrate() / 1000);
+				return (bitrate == 0) ?
+				       "-" :
+				       QString("%1 %2").arg(bitrate).arg(tr("kBit/s"));
 			}
 
 			case ColumnIndex::Track::Filesize:
-				return ::Util::File::getFilesizeString(md.filesize());
+				return ::Util::File::getFilesizeString(track.filesize());
 
 			case ColumnIndex::Track::Filetype:
 			{
-				const QString ext = ::Util::File::getFileExtension(md.filepath());
-				return (ext.isEmpty()) ? "-" : ext;
+				const auto extension = ::Util::File::getFileExtension(track.filepath());
+				return (extension.isEmpty()) ? "-" : extension;
 			}
 
 			case ColumnIndex::Track::AddedDate:
 			{
-				const QString format = m->locale.dateFormat(QLocale::ShortFormat);
-				return md.createdDateTime().date().toString(format);
+				const auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				return track.createdDateTime().date().toString(format);
 			}
 
 			case ColumnIndex::Track::ModifiedDate:
 			{
-				const QString format = m->locale.dateFormat(QLocale::ShortFormat);
-				return md.modifiedDateTime().date().toString(format);
+				const auto format = m->locale.dateFormat(QLocale::ShortFormat);
+				return track.modifiedDateTime().date().toString(format);
 			}
 
 			case ColumnIndex::Track::Rating:
@@ -183,13 +171,12 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 					return QVariant();
 				}
 
-				Rating rating = md.rating();
-				if(row == m->tmpRating.first)
+				if(m->uto && m->uto->newRating(track.id()) != Rating::Last)
 				{
-					rating = m->tmpRating.second;
+					return QVariant::fromValue(m->uto->newRating(track.id()));
 				}
 
-				return QVariant::fromValue(rating);
+				return QVariant::fromValue(track.rating());
 			}
 
 			default:
@@ -212,7 +199,7 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const
 		return Qt::ItemIsEnabled;
 	}
 
-	auto columnIndex = ColumnIndex::Track(index.column());
+	const auto columnIndex = ColumnIndex::Track(index.column());
 	if(columnIndex == ColumnIndex::Track::Rating)
 	{
 		return (QAbstractTableModel::flags(index) | Qt::ItemIsEditable);
@@ -221,39 +208,36 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const
 	return QAbstractTableModel::flags(index);
 }
 
-bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
+bool
+TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
-	if((index.column() != int(ColumnIndex::Track::Rating) ||
-	    (role != Qt::EditRole)))
+	if((index.column() != +ColumnIndex::Track::Rating) ||
+	   (role != Qt::EditRole))
 	{
 		return false;
 	}
 
-	int row = index.row();
+	const auto row = index.row();
+	const auto& tracks = library()->tracks();
 
-	const MetaDataList& tracks = library()->tracks();
-	if(row >= 0 && row < tracks.count())
+	if(Util::between(row, tracks))
 	{
-		const MetaData& md = tracks[row];
-		Rating rating = value.value<Rating>();
+		const auto& track = tracks[row];
+		const auto rating = value.value<Rating>();
 
-		if(md.rating() != rating)
+		if(track.rating() != rating)
 		{
-			m->tmpRating.first = row;
-			m->tmpRating.second = rating;
-
 			if(!m->uto)
 			{
 				m->uto = new Tagging::UserOperations(-1, this);
 			}
 
-			emit dataChanged
-				(
-					this->index(row, int(ColumnIndex::Track::Rating)),
-					this->index(row, int(ColumnIndex::Track::Rating))
-				);
+			m->uto->setTrackRating(track, rating);
 
-			m->uto->setTrackRating(md, rating);
+			emit dataChanged(
+				this->index(row, +ColumnIndex::Track::Rating),
+				this->index(row, +ColumnIndex::Track::Rating)
+			);
 
 			return true;
 		}
@@ -262,52 +246,26 @@ bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int ro
 	return false;
 }
 
-void TrackModel::trackChanged(int row)
+void TrackModel::trackMetaDataChanged(int row)
 {
-	m->tmpRating.first = -1;
-
-	emit dataChanged
-		(
-			this->index(row, 0), this->index(row, columnCount())
-		);
+	emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
 }
 
 int TrackModel::rowCount(const QModelIndex&) const
 {
-	const AbstractLibrary* l = library();
-	const MetaDataList& v_md = l->tracks();
-
-	return v_md.count();
+	return library()->tracks().count();
 }
 
 Id TrackModel::mapIndexToId(int row) const
 {
-	const MetaDataList& tracks = library()->tracks();
-
-	if(!Util::between(row, tracks))
-	{
-		return -1;
-	}
-
-	else
-	{
-		return tracks[row].id();
-	}
+	const auto& tracks = library()->tracks();
+	return Util::between(row, tracks) ? tracks[row].id() : -1;
 }
 
 QString TrackModel::searchableString(int row) const
 {
-	const MetaDataList& tracks = library()->tracks();
-
-	if(!Util::between(row, tracks))
-	{
-		return QString();
-	}
-
-	else
-	{
-		return tracks[row].title();
-	}
+	const auto& tracks = library()->tracks();
+	return Util::between(row, tracks) ? tracks[row].title() : QString();
 }
 
 Cover::Location TrackModel::cover(const IndexSet& indexes) const
@@ -317,20 +275,18 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 		return Cover::Location();
 	}
 
-	const MetaDataList& tracks = library()->tracks();
+	const auto& tracks = library()->tracks();
+
 	Util::Set<AlbumId> albumIds;
-
-	for(int idx : indexes)
+	for(const auto index : indexes)
 	{
-		if(!Util::between(idx, tracks))
+		if(Util::between(index, tracks))
 		{
-			continue;
-		}
-
-		albumIds.insert(tracks[idx].albumId());
-		if(albumIds.size() > 1)
-		{
-			return Cover::Location();
+			albumIds.insert(tracks[index].albumId());
+			if(albumIds.size() > 1)
+			{
+				return Cover::Location();
+			}
 		}
 	}
 
@@ -339,7 +295,7 @@ Cover::Location TrackModel::cover(const IndexSet& indexes) const
 
 int TrackModel::searchableColumn() const
 {
-	return int(ColumnIndex::Track::Title);
+	return +ColumnIndex::Track::Title;
 }
 
 const MetaDataList& Library::TrackModel::selectedMetadata() const

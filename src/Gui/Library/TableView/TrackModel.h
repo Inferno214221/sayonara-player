@@ -64,7 +64,7 @@ namespace Library
 			void languageChanged();
 
 		private slots:
-			void trackChanged(int row);
+			void trackMetaDataChanged(int row);
 	};
 }
 

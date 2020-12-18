@@ -33,12 +33,23 @@
 #include "Utils/Set.h"
 #include "Utils/Logger/Logger.h"
 
+#include <tuple>
+
 using Tagging::UserOperations;
 using Tagging::Editor;
 
+struct RatingPair
+{
+	Rating oldRating{Rating::Last};
+	Rating newRating{Rating::Last};
+};
+
+using TrackRatingHistory = QMap<TrackID, RatingPair>;
+
 struct UserOperations::Private
 {
-	DB::LibraryDatabase*	libraryDatabase=nullptr;
+	DB::LibraryDatabase* libraryDatabase=nullptr;
+	TrackRatingHistory trackRatingHistory;
 
 	Private(LibraryId libraryId)
 	{
@@ -59,6 +70,9 @@ Editor* UserOperations::createEditor()
 {
 	auto* editor = new Tagging::Editor();
 
+	connect(editor, &Tagging::Editor::sigFinished, this, [=](){
+		m->trackRatingHistory.clear();
+	});
 	connect(editor, &Tagging::Editor::sigFinished, this, &UserOperations::sigFinished);
 	connect(editor, &Tagging::Editor::sigProgress, this, &UserOperations::sigProgress);
 	connect(editor, &Tagging::Editor::sigProgress, this, &UserOperations::sigProgress);
@@ -83,6 +97,8 @@ void UserOperations::runEditor(Editor* editor)
 
 void UserOperations::setTrackRating(const MetaData& md, Rating rating)
 {
+	m->trackRatingHistory[md.id()] = {md.rating(), rating};
+
 	setTrackRating(MetaDataList(md), rating);
 }
 
@@ -93,9 +109,11 @@ void UserOperations::setTrackRating(const MetaDataList& tracks, Rating rating)
 
 	for(int i=0; i<tracks.count(); i++)
 	{
-		MetaData md(tracks[i]);
-		md.setRating(rating);
-		editor->updateTrack(i, md);
+		auto track = (tracks[i]);
+		m->trackRatingHistory[track.id()] = {track.rating(), rating};
+
+		track.setRating(rating);
+		editor->updateTrack(i, track);
 	}
 
 	runEditor(editor);
@@ -277,4 +295,14 @@ void UserOperations::applyGenreToMetadata(const MetaDataList& tracks, const Genr
 	}
 
 	runEditor(editor);
+}
+
+Rating Tagging::UserOperations::oldRating(TrackID trackId) const
+{
+	return m->trackRatingHistory[trackId].oldRating;
+}
+
+Rating Tagging::UserOperations::newRating(TrackID trackId) const
+{
+	return m->trackRatingHistory[trackId].newRating;
 }

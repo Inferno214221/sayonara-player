@@ -63,17 +63,17 @@ void ChangeNotifier::updateAlbums(const QList<AlbumPair>& changedAlbums)
 	emit sigAlbumsChanged();
 }
 
-QList<MetaDataPair> ChangeNotifier::changedMetadata() const
+const QList<MetaDataPair>& ChangeNotifier::changedMetadata() const
 {
 	return m->changedTracks;
 }
 
-MetaDataList ChangeNotifier::deletedMetadata() const
+const MetaDataList& ChangeNotifier::deletedMetadata() const
 {
 	return m->deletedTracks;
 }
 
-QList<AlbumPair> ChangeNotifier::changedAlbums() const
+const QList<AlbumPair>& ChangeNotifier::changedAlbums() const
 {
 	return m->changedAlbums;
 }

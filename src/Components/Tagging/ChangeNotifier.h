@@ -67,9 +67,9 @@ namespace Tagging
         void deleteMetadata(const MetaDataList& deletedTracks);
 		void updateAlbums(const QList<AlbumPair>& changedAlbums);
 
-		QList<MetaDataPair> changedMetadata() const;
-        MetaDataList deletedMetadata() const;
-		QList<AlbumPair> changedAlbums() const;
+		const QList<MetaDataPair>& changedMetadata() const;
+        const MetaDataList& deletedMetadata() const;
+		const QList<AlbumPair>& changedAlbums() const;
 
     };
 }

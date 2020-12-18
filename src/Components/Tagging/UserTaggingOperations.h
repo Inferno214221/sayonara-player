@@ -45,6 +45,8 @@ namespace Tagging
 
 		void setTrackRating(const MetaData& md, Rating rating);
 		void setTrackRating(const MetaDataList& tracks, Rating rating);
+		Rating oldRating(TrackID trackId) const;
+		Rating newRating(TrackID trackId) const;
 
 		void setAlbumRating(const Album& album, Rating rating);
 

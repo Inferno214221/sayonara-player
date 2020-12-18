@@ -76,4 +76,11 @@ namespace Util
 	};
 }
 
+template<typename T>
+typename std::enable_if<std::is_enum<T>::value, typename std::underlying_type<T>::type>::type
+operator+(T enumValue)
+{
+	return static_cast<typename std::underlying_type<T>::type>(enumValue);
+}
+
 #endif /* GLOBALS_H_ */
