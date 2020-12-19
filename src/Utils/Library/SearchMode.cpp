@@ -20,97 +20,123 @@
 
 #include "SearchMode.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 
-#include <QRegExp>
+#include <QCache>
 #include <QMap>
 #include <QList>
 #include <QString>
 
-using DiacMap=QMap<QString, QString>;
+#include <array>
 
-Q_GLOBAL_STATIC(DiacMap, diacritic_chars)
+using DiacMap = QMap<QString, QString>;
 
-static void init_diacritic_chars()
+using ConvertCacheEntry = QCache<QString, QString>;
+using ConvertCache = std::array<ConvertCacheEntry, +Library::SearchModeMaskSize>;
+
+Q_GLOBAL_STATIC(DiacMap, diacriticChars)
+Q_GLOBAL_STATIC(ConvertCache, convertCache)
+
+namespace
 {
-	diacritic_chars->insert(QString::fromUtf8("Š"), "S");
-	diacritic_chars->insert(QString::fromUtf8("Œ"), "OE");
-	diacritic_chars->insert(QString::fromUtf8("Ž"), "Z");
-	diacritic_chars->insert(QString::fromUtf8("š"), "s");
-	diacritic_chars->insert(QString::fromUtf8("œ"), "oe");
-	diacritic_chars->insert(QString::fromUtf8("ž"), "z");
-	diacritic_chars->insert(QString::fromUtf8("Ÿ"), "Y");
-	diacritic_chars->insert(QString::fromUtf8("¥"), "Y");
-	diacritic_chars->insert(QString::fromUtf8("µ"), "u");
-	diacritic_chars->insert(QString::fromUtf8("À"), "A");
-	diacritic_chars->insert(QString::fromUtf8("Á"), "A");
-	diacritic_chars->insert(QString::fromUtf8("Â"), "A");
-	diacritic_chars->insert(QString::fromUtf8("Ä"), "A");
-	diacritic_chars->insert(QString::fromUtf8("Å"), "A");
-	diacritic_chars->insert(QString::fromUtf8("Æ"), "AE");
-	diacritic_chars->insert(QString::fromUtf8("Ç"), "C");
-	diacritic_chars->insert(QString::fromUtf8("È"), "E");
-	diacritic_chars->insert(QString::fromUtf8("É"), "E");
-	diacritic_chars->insert(QString::fromUtf8("Ê"), "E ");
-	diacritic_chars->insert(QString::fromUtf8("Ë"), "E");
-	diacritic_chars->insert(QString::fromUtf8("Ì"), "I");
-	diacritic_chars->insert(QString::fromUtf8("Í"), "I");
-	diacritic_chars->insert(QString::fromUtf8("Î"), "I");
-	diacritic_chars->insert(QString::fromUtf8("Ï"), "I");
-	diacritic_chars->insert(QString::fromUtf8("Ð"), "D");
-	diacritic_chars->insert(QString::fromUtf8("Ñ"), "N");
-	diacritic_chars->insert(QString::fromUtf8("Ò"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Ó"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Ô"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Õ"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Ö"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Ø"), "O");
-	diacritic_chars->insert(QString::fromUtf8("Ù"), "U");
-	diacritic_chars->insert(QString::fromUtf8("Ú"), "U");
-	diacritic_chars->insert(QString::fromUtf8("Û"), "U");
-	diacritic_chars->insert(QString::fromUtf8("Ü"), "U");
-	diacritic_chars->insert(QString::fromUtf8("Ý"), "Y");
-	diacritic_chars->insert(QString::fromUtf8("ß"), "ss");
-	diacritic_chars->insert(QString::fromUtf8("à"), "a");
-	diacritic_chars->insert(QString::fromUtf8("á"), "a");
-	diacritic_chars->insert(QString::fromUtf8("â"), "a");
-	diacritic_chars->insert(QString::fromUtf8("ã"), "a");
-	diacritic_chars->insert(QString::fromUtf8("ä"), "a");
-	diacritic_chars->insert(QString::fromUtf8("å"), "a");
-	diacritic_chars->insert(QString::fromUtf8("æ"), "ae");
-	diacritic_chars->insert(QString::fromUtf8("ç"), "c");
-	diacritic_chars->insert(QString::fromUtf8("è"), "e");
-	diacritic_chars->insert(QString::fromUtf8("é"), "e");
-	diacritic_chars->insert(QString::fromUtf8("ê"), "e");
-	diacritic_chars->insert(QString::fromUtf8("ë"), "e");
-	diacritic_chars->insert(QString::fromUtf8("ì"), "i");
-	diacritic_chars->insert(QString::fromUtf8("í"), "i");
-	diacritic_chars->insert(QString::fromUtf8("î"), "i");
-	diacritic_chars->insert(QString::fromUtf8("ï"), "i");
-	diacritic_chars->insert(QString::fromUtf8("ð"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ñ"), "n");
-	diacritic_chars->insert(QString::fromUtf8("ò"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ó"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ô"), "o");
-	diacritic_chars->insert(QString::fromUtf8("õ"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ö"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ø"), "o");
-	diacritic_chars->insert(QString::fromUtf8("ù"), "u");
-	diacritic_chars->insert(QString::fromUtf8("ú"), "u");
-	diacritic_chars->insert(QString::fromUtf8("û"), "u");
-	diacritic_chars->insert(QString::fromUtf8("ü"), "u");
-	diacritic_chars->insert(QString::fromUtf8("ý"), "y");
-	diacritic_chars->insert(QString::fromUtf8("ÿ"), "y");
+	void initDiacriticChars()
+	{
+		diacriticChars->insert(QString::fromUtf8("Š"), "S");
+		diacriticChars->insert(QString::fromUtf8("Œ"), "OE");
+		diacriticChars->insert(QString::fromUtf8("Ž"), "Z");
+		diacriticChars->insert(QString::fromUtf8("š"), "s");
+		diacriticChars->insert(QString::fromUtf8("œ"), "oe");
+		diacriticChars->insert(QString::fromUtf8("ž"), "z");
+		diacriticChars->insert(QString::fromUtf8("Ÿ"), "Y");
+		diacriticChars->insert(QString::fromUtf8("¥"), "Y");
+		diacriticChars->insert(QString::fromUtf8("µ"), "u");
+		diacriticChars->insert(QString::fromUtf8("À"), "A");
+		diacriticChars->insert(QString::fromUtf8("Á"), "A");
+		diacriticChars->insert(QString::fromUtf8("Â"), "A");
+		diacriticChars->insert(QString::fromUtf8("Ä"), "A");
+		diacriticChars->insert(QString::fromUtf8("Å"), "A");
+		diacriticChars->insert(QString::fromUtf8("Æ"), "AE");
+		diacriticChars->insert(QString::fromUtf8("Ç"), "C");
+		diacriticChars->insert(QString::fromUtf8("È"), "E");
+		diacriticChars->insert(QString::fromUtf8("É"), "E");
+		diacriticChars->insert(QString::fromUtf8("Ê"), "E");
+		diacriticChars->insert(QString::fromUtf8("Ë"), "E");
+		diacriticChars->insert(QString::fromUtf8("Ì"), "I");
+		diacriticChars->insert(QString::fromUtf8("Í"), "I");
+		diacriticChars->insert(QString::fromUtf8("Î"), "I");
+		diacriticChars->insert(QString::fromUtf8("Ï"), "I");
+		diacriticChars->insert(QString::fromUtf8("Ð"), "D");
+		diacriticChars->insert(QString::fromUtf8("Ñ"), "N");
+		diacriticChars->insert(QString::fromUtf8("Ò"), "O");
+		diacriticChars->insert(QString::fromUtf8("Ó"), "O");
+		diacriticChars->insert(QString::fromUtf8("Ô"), "O");
+		diacriticChars->insert(QString::fromUtf8("Õ"), "O");
+		diacriticChars->insert(QString::fromUtf8("Ö"), "O");
+		diacriticChars->insert(QString::fromUtf8("Ø"), "O");
+		diacriticChars->insert(QString::fromUtf8("Ù"), "U");
+		diacriticChars->insert(QString::fromUtf8("Ú"), "U");
+		diacriticChars->insert(QString::fromUtf8("Û"), "U");
+		diacriticChars->insert(QString::fromUtf8("Ü"), "U");
+		diacriticChars->insert(QString::fromUtf8("Ý"), "Y");
+		diacriticChars->insert(QString::fromUtf8("ß"), "ss");
+		diacriticChars->insert(QString::fromUtf8("à"), "a");
+		diacriticChars->insert(QString::fromUtf8("á"), "a");
+		diacriticChars->insert(QString::fromUtf8("â"), "a");
+		diacriticChars->insert(QString::fromUtf8("ã"), "a");
+		diacriticChars->insert(QString::fromUtf8("ä"), "a");
+		diacriticChars->insert(QString::fromUtf8("å"), "a");
+		diacriticChars->insert(QString::fromUtf8("æ"), "ae");
+		diacriticChars->insert(QString::fromUtf8("ç"), "c");
+		diacriticChars->insert(QString::fromUtf8("è"), "e");
+		diacriticChars->insert(QString::fromUtf8("é"), "e");
+		diacriticChars->insert(QString::fromUtf8("ê"), "e");
+		diacriticChars->insert(QString::fromUtf8("ë"), "e");
+		diacriticChars->insert(QString::fromUtf8("ì"), "i");
+		diacriticChars->insert(QString::fromUtf8("í"), "i");
+		diacriticChars->insert(QString::fromUtf8("î"), "i");
+		diacriticChars->insert(QString::fromUtf8("ï"), "i");
+		diacriticChars->insert(QString::fromUtf8("ð"), "o");
+		diacriticChars->insert(QString::fromUtf8("ñ"), "n");
+		diacriticChars->insert(QString::fromUtf8("ò"), "o");
+		diacriticChars->insert(QString::fromUtf8("ó"), "o");
+		diacriticChars->insert(QString::fromUtf8("ô"), "o");
+		diacriticChars->insert(QString::fromUtf8("õ"), "o");
+		diacriticChars->insert(QString::fromUtf8("ö"), "o");
+		diacriticChars->insert(QString::fromUtf8("ø"), "o");
+		diacriticChars->insert(QString::fromUtf8("ù"), "u");
+		diacriticChars->insert(QString::fromUtf8("ú"), "u");
+		diacriticChars->insert(QString::fromUtf8("û"), "u");
+		diacriticChars->insert(QString::fromUtf8("ü"), "u");
+		diacriticChars->insert(QString::fromUtf8("ý"), "y");
+		diacriticChars->insert(QString::fromUtf8("ÿ"), "y");
+	}
 }
 
-QString Library::Utils::convertSearchstring(const QString& originalString, Library::SearchModeMask mode, const QList<QChar>& ignoredChars)
+QString Library::Utils::convertSearchstring(const QString& originalString, Library::SearchModeMask mode,
+                                            const QList<QChar>& ignoredChars)
 {
-	if(diacritic_chars->isEmpty()){
-		init_diacritic_chars();
+	if(mode == Library::SearchMode::None)
+	{
+		return originalString;
 	}
 
-	QString convertedString(originalString);
+	if(originalString.isEmpty())
+	{
+		return ::Util::convertNotNull(originalString);
+	}
+
+	auto& qCache = convertCache->at(+mode);
+	if(qCache.contains(originalString))
+	{
+		return *(qCache[originalString]);
+	}
+
+	if(diacriticChars->isEmpty())
+	{
+		initDiacriticChars();
+	}
+
+	auto convertedString = originalString;
 	if(mode & Library::CaseInsensitve)
 	{
 		convertedString = originalString.toLower();
@@ -118,54 +144,58 @@ QString Library::Utils::convertSearchstring(const QString& originalString, Libra
 
 	if(mode & Library::NoSpecialChars)
 	{
-		QString convertedStringWithoutSpecialChars(convertedString);
-
-		for(QChar c : convertedStringWithoutSpecialChars)
+		auto withoutSpecialChars = QString {};
+		for(const auto& c : convertedString)
 		{
-			if(ignoredChars.contains(c)){
-				continue;
-			}
-
-			if(!c.isLetterOrNumber()) {
-				convertedStringWithoutSpecialChars.remove(c);
+			if(ignoredChars.contains(c) || c.isLetterOrNumber())
+			{
+				withoutSpecialChars.append(c);
 			}
 		}
 
-		convertedString = convertedStringWithoutSpecialChars;
+		convertedString = withoutSpecialChars;
 	}
 
 	if(mode & Library::NoDiacriticChars)
 	{
-		QString cleanedString;
+		auto withoutDiacriticChars = QString {};
 
-		for (int i = 0; i < convertedString.length(); i++)
+		for(const auto& c : convertedString)
 		{
-			const QString c = QString(convertedString[i]);
-
-			if(diacritic_chars->contains(c))
+			const auto seq = QString(c);
+			if(diacriticChars->contains(seq))
 			{
-				QString replacement = diacritic_chars->value(c);
-				if(mode & Library::CaseInsensitve) {
-					cleanedString.append(replacement);
+				const auto& replacement = diacriticChars->value(seq);
+				if(mode & Library::CaseInsensitve)
+				{
+					withoutDiacriticChars.append(replacement.toLower());
 				}
 
-				else {
-					cleanedString.append(replacement.toLower());
+				else
+				{
+					withoutDiacriticChars.append(replacement);
 				}
 			}
 
 			else
 			{
-				cleanedString.append(c);
+				withoutDiacriticChars.append(c);
 			}
 		}
 
-		convertedString = cleanedString;
+		convertedString = withoutDiacriticChars;
 	}
 
-	return ::Util::convertNotNull(convertedString);
-}
+	const auto result = ::Util::convertNotNull(convertedString).trimmed();
 
+	if(qCache.isEmpty()){
+		qCache.setMaxCost(10000);
+	}
+
+	qCache.insert(originalString, new QString(result));
+
+	return result;
+}
 
 QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode)
 {
