@@ -26,14 +26,14 @@
 
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverChangeNotifier.h"
-#include "Components/Covers/CoverUtils.h"
 #include "Components/Covers/Fetcher/CoverFetcher.h"
 
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
+#include "Utils/CoverUtils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Utils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
@@ -48,7 +48,6 @@ using namespace Cover;
 
 GUI_CoverPreferences::GUI_CoverPreferences(const QString& identifier) :
 	Base (identifier) {}
-
 
 GUI_CoverPreferences::~GUI_CoverPreferences()
 {
@@ -197,7 +196,7 @@ void GUI_CoverPreferences::initUi()
 	connect(ui->cbSaveToLibrary, &QCheckBox::toggled, this, &GUI_CoverPreferences::saveCoverToLibraryToggled);
 	connect(ui->leCoverTemplate, &QLineEdit::textEdited, this, &GUI_CoverPreferences::coverTemplateEdited);
 
-	ui->cbSaveToSayonaraDir->setToolTip(Cover::Utils::coverDirectory());
+	ui->cbSaveToSayonaraDir->setToolTip(Util::Covers::coverDirectory());
 
 	revert();
 }
@@ -274,7 +273,7 @@ void GUI_CoverPreferences::deleteCoversFromDb()
 
 void GUI_CoverPreferences::deleteCoverFiles()
 {
-	::Util::File::removeFilesInDirectory(Cover::Utils::coverDirectory());
+	::Util::File::removeFilesInDirectory(Util::Covers::coverDirectory());
 }
 
 void GUI_CoverPreferences::fetchCoversFromWWWTriggered(bool b)

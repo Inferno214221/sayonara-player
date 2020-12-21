@@ -31,22 +31,21 @@ class QPixmap;
 /**
  * @ingroup Covers
  */
-namespace Cover
+
+namespace Util
 {
-	enum Source
+	namespace Covers
 	{
-		Database,
-		SayonaraDir,
-		Library,
-		AudioFile,
-		WWW,
-		Unknown
-	};
+		enum Source
+		{
+			Database,
+			SayonaraDir,
+			Library,
+			AudioFile,
+			WWW,
+			Unknown
+		};
 
-
-	class Location;
-	namespace Utils
-	{
 		/**
 		 * @brief calc_cover_token calculate the hash for a cover
 		 * @param artist artist name
@@ -58,12 +57,9 @@ namespace Cover
 		void deleteTemporaryCovers();
 
 		QString coverDirectory();
-		QString coverDirectory(const QString& append_filename);
+		QString coverDirectory(const QString& appendFilename);
 		QString coverTempDirectory();
-
-		void writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm);
-		void writeCoverIntoDatabase(const Cover::Location& cl, const QPixmap& pm, DB::Connector* db);
-		void writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm);
+		QString coverTempDirectory(const QString& appendFilename);
 	}
 }
 

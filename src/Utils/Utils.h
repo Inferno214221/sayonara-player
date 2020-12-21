@@ -100,7 +100,7 @@ namespace Util
 	 * @return
 	 */
 	QString tempPath();
-	QString tempPath(const QString& append_path);
+	QString tempPath(const QString& appendPath);
 
 	/**
 	 * @brief create a link string

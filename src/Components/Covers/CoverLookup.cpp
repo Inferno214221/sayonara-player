@@ -27,10 +27,10 @@
  */
 
 #include "CoverLookup.h"
+#include "CoverExtractor.h"
 #include "CoverFetchThread.h"
 #include "CoverLocation.h"
-#include "CoverUtils.h"
-#include "CoverExtractor.h"
+#include "CoverPersistence.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -40,6 +40,7 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/Utils.h"
+#include "Utils/CoverUtils.h"
 
 #include <QImageWriter>
 #include <QStringList>
@@ -50,7 +51,7 @@
 using Cover::Location;
 using Cover::Lookup;
 using Cover::FetchThread;
-using Cover::Source;
+using Util::Covers::Source;
 
 struct Lookup::Private
 {
@@ -276,13 +277,13 @@ bool Lookup::addNewCover(const QPixmap& pm, bool save)
 
 	if(GetSetting(Set::Cover_SaveToDB))
 	{
-		Cover::Utils::writeCoverIntoDatabase(coverLocation(), pm);
+		Cover::writeCoverIntoDatabase(coverLocation(), pm);
 	}
 
 	if(GetSetting(Set::Cover_SaveToLibrary) &&
 	   (m->source == Source::WWW))
 	{
-		Cover::Utils::writeCoverToLibrary(coverLocation(), pm);
+		Cover::writeCoverToLibrary(coverLocation(), pm);
 	}
 
 	if(m->pixmaps.size() == m->coverCount)
@@ -321,7 +322,7 @@ void Lookup::emitFinished(bool success)
 {
 	if(!success)
 	{
-		m->source = Cover::Source::Unknown;
+		m->source = Source::Unknown;
 		m->pixmaps.clear();
 		m->coverCount = 0;
 	}

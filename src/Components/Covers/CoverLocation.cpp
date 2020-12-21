@@ -19,20 +19,20 @@
  */
 
 #include "CoverLocation.h"
-#include "CoverUtils.h"
 #include "CoverFetchManager.h"
 #include "LocalCoverSearcher.h"
 #include "Fetcher/CoverFetcherUrl.h"
 
+#include "Utils/Algorithm.h"
+#include "Utils/CoverUtils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
-#include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Tagging/TaggingCover.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QDir>
 #include <QUrl>
@@ -55,8 +55,7 @@ static QList<Url> extractDownloadUrls(const LibraryItem* item)
 	const QStringList downloadUrls = item->coverDownloadUrls();
 
 	QList<Url> urls;
-	Util::Algorithm::transform(downloadUrls, urls, [](const QString& downloadUrl)
-	{
+	Util::Algorithm::transform(downloadUrls, urls, [](const QString& downloadUrl) {
 		if(Util::File::isImageFile(downloadUrl))
 		{
 			return FetchManager::instance()->directFetcherUrl(downloadUrl);
@@ -88,8 +87,7 @@ struct Location::Private
 
 	Private() :
 		freetextSearch(false),
-		valid(false)
-	{}
+		valid(false) {}
 
 	~Private() = default;
 
@@ -145,7 +143,7 @@ Location Location::coverLocation(const QString& albumName, const QString& artist
 		return invalidLocation();
 	}
 
-	const QString coverToken = Cover::Utils::calcCoverToken(artistName, albumName);
+	const auto coverToken = Util::Covers::calcCoverToken(artistName, albumName);
 	auto* cfm = Fetcher::Manager::instance();
 
 	Location ret;
@@ -236,7 +234,7 @@ Location Location::coverLocation(const QString& artist)
 		return invalidLocation();
 	}
 
-	const QString coverToken = QString("artist_") + Cover::Utils::calcCoverToken(artist, "");
+	const auto coverToken = QString("artist_%1").arg(Util::Covers::calcCoverToken(artist, ""));
 	auto* cfm = Fetcher::Manager::instance();
 
 	Location ret;
@@ -258,7 +256,7 @@ Location Location::coverLocationRadio(const QString& radioStation)
 		return invalidLocation();
 	}
 
-	const QString coverToken = QString("radio_") + Cover::Utils::calcCoverToken(radioStation, "");
+	const auto coverToken = QString("radio_%1").arg(Util::Covers::calcCoverToken(radioStation, ""));
 	auto* cfm = Fetcher::Manager::instance();
 
 	Location ret;
@@ -286,14 +284,15 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 	if(!cdu.isEmpty())
 	{
 		QString extension = File::getFileExtension(cdu.first());
-		if(extension.isEmpty()){
+		if(extension.isEmpty())
+		{
 			extension = "png";
 		}
-		const QString coverToken = Cover::Utils::calcCoverToken(md.artist(), md.album());
-		const QString coverPath = Cover::Utils::coverDirectory(coverToken + "." + extension);
+		const QString coverToken = Util::Covers::calcCoverToken(md.artist(), md.album());
+		const QString coverPath = Util::Covers::coverDirectory(coverToken + "." + extension);
 
 		QList<QUrl> urls;
-		Util::Algorithm::transform(cdu, urls, [](const QString& url){
+		Util::Algorithm::transform(cdu, urls, [](const QString& url) {
 			return QUrl(url);
 		});
 
@@ -442,10 +441,11 @@ QString Location::preferredPath() const
 
 QString Location::alternativePath() const
 {
-	auto[dir, filename] = Util::File::splitFilename(symlinkPath());
-	filename.prepend("alt_");
+	const auto alternativePath = QString("%1/alt_%2.png")
+		.arg(Util::Covers::coverDirectory())
+		.arg(m->hash);
 
-	return dir + QDir::separator() + filename;
+	return alternativePath;
 }
 
 void Location::setValid(bool b)
@@ -460,7 +460,7 @@ void Location::setIdentifier(const QString& identifier)
 
 QString Location::symlinkPath() const
 {
-	return Cover::Utils::coverDirectory(m->hash);
+	return Util::Covers::coverDirectory(m->hash);
 }
 
 QString Location::identifer() const
@@ -511,12 +511,12 @@ void Location::setSearchUrls(const QList<Url>& urls)
 {
 	QStringList lst
 		{
-		"hallo", "du"
+			"hallo", "du"
 		};
 
 	QList<QString> lst2
 		{
-		"hallo", "helmut"
+			"hallo", "helmut"
 		};
 	QList<Url> urls2 = urls;
 	m->searchUrls = urls;

@@ -22,13 +22,14 @@
 #include "CoverLookupAlternative.h"
 #include "CoverLocation.h"
 #include "CoverFetchManager.h"
-#include "CoverUtils.h"
+#include "CoverPersistence.h"
 #include "Fetcher/CoverFetcherUrl.h"
 #include "Fetcher/CoverFetcher.h"
 
 #include "Database/Connector.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/CoverUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 
@@ -87,7 +88,7 @@ void AlternativeLookup::stop()
 void AlternativeLookup::reset()
 {
 	stop();
-	Cover::Utils::deleteTemporaryCovers();
+	Util::Covers::deleteTemporaryCovers();
 }
 
 bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
@@ -102,17 +103,17 @@ bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 
 	if(!m->silent)
 	{
-		Cover::Utils::writeCoverIntoDatabase(cl, cover);
+		Cover::writeCoverIntoDatabase(cl, cover);
 
 		if(saveToLibrary)
 		{
-			Cover::Utils::writeCoverToLibrary(cl, cover);
+			Cover::writeCoverToLibrary(cl, cover);
 		}
 	}
 
-	else
+	else if(!cover.save(cl.alternativePath()))
 	{
-		cover.save(cl.alternativePath());
+		spLog(Log::Warning, this) << "Cannot save cover to " << cl.alternativePath();
 	}
 
 	emit sigCoverChanged(cl);

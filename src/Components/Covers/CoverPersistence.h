@@ -1,6 +1,6 @@
-/* CoverExtractor.h */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* DatabaseAccess.h */
+/*
+ * Copyright (C) 2011-2020 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,39 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-#ifndef COVEREXTRACTOR_H
-#define COVEREXTRACTOR_H
-
-#include "Utils/CoverUtils.h"
-#include "Utils/Pimpl.h"
-
-#include <QObject>
+#ifndef SAYONARA_PLAYER_DATABASEACCESS_H
+#define SAYONARA_PLAYER_DATABASEACCESS_H
 
 class QPixmap;
+
+namespace DB
+{
+	class Connector;
+}
 
 namespace Cover
 {
 	class Location;
-	class Extractor :
-		public QObject
-	{
-		Q_OBJECT
-		PIMPL(Extractor)
 
-		signals:
-			void sigFinished();
-
-		public:
-			Extractor(const Cover::Location& cl, QObject* parent);
-			~Extractor();
-
-			QPixmap pixmap() const;
-			Util::Covers::Source source() const;
-
-		public slots:
-			void start();
-	};
+	void writeCoverIntoDatabase(const ::Cover::Location& cl, const QPixmap& pm);
+	void writeCoverIntoDatabase(const ::Cover::Location& cl, const QPixmap& pm, DB::Connector* db);
+	void writeCoverToLibrary(const ::Cover::Location& cl, const QPixmap& pm);
 }
 
-#endif // COVEREXTRACTOR_H
+#endif //SAYONARA_PLAYER_DATABASEACCESS_H

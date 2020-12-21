@@ -1,7 +1,7 @@
 #include "SayonaraTest.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
-
+#include "Utils/FileUtils.h"
 #include <QMap>
 
 using Cover::Location;
@@ -19,10 +19,10 @@ public:
 	~CoverLocationTest() override = default;
 
 private slots:
-	void test_copy();
+	void testCopy();
 };
 
-void CoverLocationTest::test_copy()
+void CoverLocationTest::testCopy()
 {
 	Location cl1 = Location::coverLocation("AnAlbum", "AnArtist");
 	cl1.setSearchTerm("some search term");
@@ -33,6 +33,8 @@ void CoverLocationTest::test_copy()
 	QVERIFY(!cl1.toString().isEmpty());
 	QVERIFY(!cl1.searchTerm().isEmpty());
 	QVERIFY(!cl1.searchUrls().isEmpty());
+	
+	QVERIFY(Util::File::isImageFile(cl1.alternativePath()));
 
 	Location cl2 = cl1;
 	QVERIFY(cl2.isValid() == cl1.isValid());

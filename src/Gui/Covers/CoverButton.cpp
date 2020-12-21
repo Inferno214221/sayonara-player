@@ -24,10 +24,10 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverChangeNotifier.h"
-#include "Components/Covers/CoverUtils.h"
 
-#include "Utils/Settings/Settings.h"
+#include "Utils/CoverUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QMenu>
 #include <QThread>
@@ -37,23 +37,23 @@ using Gui::CoverButton;
 using Cover::Location;
 using Cover::Lookup;
 using Cover::ChangeNotfier;
-using CoverButtonBase=Gui::WidgetTemplate<QPushButton>;
+using Util::Covers::Source;
+using CoverButtonBase = Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
-	QString					coverHash;
-	Location				coverLocation;
+	QString coverHash;
+	Location coverLocation;
 
-	Lookup*					coverLookup=nullptr;
-	Cover::Source			coverSource;
-	bool					silent;
-	bool					alternativeSearchEnabled;
+	Lookup* coverLookup = nullptr;
+	Source coverSource;
+	bool silent;
+	bool alternativeSearchEnabled;
 
 	Private() :
-		coverSource(Cover::Source::Unknown),
+		coverSource(Source::Unknown),
 		silent(false),
-		alternativeSearchEnabled(true)
-	{}
+		alternativeSearchEnabled(true) {}
 };
 
 CoverButton::CoverButton(QWidget* parent) :
@@ -93,12 +93,12 @@ bool CoverButton::isAlternativeSearchEnabled() const
 
 void CoverButton::coverFadingChanged()
 {
-	this->setFadingEnabled( GetSetting(Set::Player_FadingCover));
+	this->setFadingEnabled(GetSetting(Set::Player_FadingCover));
 }
 
 void CoverButton::trigger()
 {
-	if(m->coverSource == Cover::Source::AudioFile && !isSilent())
+	if(m->coverSource == Source::AudioFile && !isSilent())
 	{
 		emit sigRejected();
 		return;
@@ -106,10 +106,18 @@ void CoverButton::trigger()
 
 	if(m->alternativeSearchEnabled)
 	{
-		auto* alternativeCover = new GUI_AlternativeCovers(m->coverLocation, m->silent, this->parentWidget());
+		auto* alternativeCover = new GUI_AlternativeCovers(m->coverLocation,
+		                                                   m->silent,
+		                                                   this->parentWidget());
 
-		connect(alternativeCover, &GUI_AlternativeCovers::sigCoverChanged, this, &CoverButton::alternativeCoverFetched);
-		connect(alternativeCover, &GUI_AlternativeCovers::sigClosed, alternativeCover, &GUI_AlternativeCovers::deleteLater);
+		connect(alternativeCover,
+		        &GUI_AlternativeCovers::sigCoverChanged,
+		        this,
+		        &CoverButton::alternativeCoverFetched);
+		connect(alternativeCover,
+		        &GUI_AlternativeCovers::sigClosed,
+		        alternativeCover,
+		        &GUI_AlternativeCovers::deleteLater);
 
 		alternativeCover->show();
 	}
@@ -122,7 +130,8 @@ void CoverButton::trigger()
 
 void CoverButton::setCoverLocation(const Location& cl)
 {
-	if(m->coverHash.size() > 0 && cl.hash() == m->coverHash){
+	if(!m->coverHash.isEmpty() && cl.hash() == m->coverHash)
+	{
 		return;
 	}
 
@@ -135,7 +144,8 @@ void CoverButton::setCoverLocation(const Location& cl)
 
 	m->coverLocation = cl;
 
-	if(cl.hash().isEmpty() || !cl.isValid()) {
+	if(cl.hash().isEmpty() || !cl.isValid())
+	{
 		return;
 	}
 
@@ -147,7 +157,8 @@ void CoverButton::setCoverLocation(const Location& cl)
 		connect(m->coverLookup, &Lookup::sigFinished, this, &CoverButton::coverLookupFinished);
 	}
 
-	else {
+	else
+	{
 		m->coverLookup->setCoverLocation(cl);
 	}
 
@@ -170,15 +181,15 @@ void CoverButton::coversChanged()
 {
 	if(!isSilent())
 	{
-		m->coverHash = QString();
+		m->coverHash.clear();
 		this->setCoverLocation(m->coverLocation);
 	}
 }
 
 void CoverButton::alternativeCoverFetched(const Location& cl)
 {
-	m->coverHash = QString();
-	m->coverSource = Cover::Source::Unknown;
+	m->coverHash.clear();
+	m->coverSource = Source::Unknown;
 
 	if(!isSilent())
 	{

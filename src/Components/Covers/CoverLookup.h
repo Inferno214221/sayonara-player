@@ -31,7 +31,7 @@
 
 #include "AbstractCoverLookup.h"
 #include "Utils/Pimpl.h"
-#include "CoverUtils.h"
+#include "Utils/CoverUtils.h"
 
 #include <QPixmap>
 #include <QList>
@@ -80,7 +80,7 @@ namespace Cover
 		 */
 		QList<QPixmap> pixmaps() const;
 
-		Cover::Source source() const;
+		Util::Covers::Source source() const;
 
 	private:
 

@@ -192,16 +192,18 @@ QString Util::tempPath()
 	return tempPath(QString());
 }
 
-QString Util::tempPath(const QString& append_path)
+QString Util::tempPath(const QString& appendPath)
 {
-	QString simple_temp_path = QDir::temp().absoluteFilePath("sayonara");
-	QString path = simple_temp_path + "/" + append_path;
-
-	if(!QFile::exists(simple_temp_path)) {
-		Util::File::createDir(simple_temp_path);
+	auto path = QDir::temp().absoluteFilePath("sayonara");
+	if(!QFile::exists(path)){
+		Util::File::createDir(path);
 	}
 
-	return path;
+	if(!appendPath.isEmpty()){
+		path += '/' + appendPath;
+	}
+
+	return Util::File::cleanFilename(path);
 }
 
 QString Util::createLink(const QString& name, bool dark, bool underline)

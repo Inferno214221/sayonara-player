@@ -21,6 +21,7 @@
 #include "CoverExtractor.h"
 #include "CoverLocation.h"
 
+#include "Utils/CoverUtils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Mutex.h"
 #include "Utils/Logger/Logger.h"
@@ -32,16 +33,17 @@
 static std::mutex mutexIo;
 
 namespace FileUtils = ::Util::File;
+using Util::Covers::Source;
 
 struct Cover::Extractor::Private
 {
 	QPixmap pixmap;
-	Cover::Source source;
 	Cover::Location cl;
+	Source source;
 
 	Private(const Cover::Location& cl) :
-		source(Cover::Source::Unknown),
-		cl(cl)
+		cl(cl),
+		source(Source::Unknown)
 	{}
 };
 
@@ -58,7 +60,7 @@ QPixmap Cover::Extractor::pixmap() const
 	return m->pixmap;
 }
 
-Cover::Source Cover::Extractor::source() const
+Util::Covers::Source Cover::Extractor::source() const
 {
 	return m->source;
 }
@@ -73,7 +75,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(audio_file_target))
 		{
 			m->pixmap = QPixmap(m->cl.audioFileTarget());
-			m->source = Cover::Source::AudioFile;
+			m->source = Source::AudioFile;
 		}
 	}
 
@@ -85,7 +87,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(cover_path))
 		{
 			m->pixmap = QPixmap(cover_path);
-			m->source = Cover::Source::SayonaraDir;
+			m->source = Source::SayonaraDir;
 		}
 	}
 
@@ -97,7 +99,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(audio_file_source))
 		{
 			m->pixmap = Tagging::Covers::extractCover(audio_file_source);
-			m->source = Cover::Source::AudioFile;
+			m->source = Source::AudioFile;
 		}
 	}
 
@@ -109,7 +111,7 @@ void Cover::Extractor::start()
 		if(FileUtils::exists(local_path))
 		{
 			m->pixmap = QPixmap(local_path);
-			m->source = Cover::Source::Library;
+			m->source = Source::Library;
 		}
 	}
 

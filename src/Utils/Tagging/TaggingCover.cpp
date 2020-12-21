@@ -30,6 +30,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
+#include "Utils/CoverUtils.h"
 
 #include <QByteArray>
 #include <QString>
@@ -45,17 +46,17 @@ using Tagging::ParsedTag;
 
 bool Tagging::Covers::writeCover(const QString& filepath, const QPixmap& cover)
 {
-	QString tmp_filepath = ::Util::tempPath("cover/tmp.png");
+	const auto tmpFilepath = ::Util::Covers::coverTempDirectory("tmp.png");
 
-	bool success = cover.save(tmp_filepath);
+	auto success = cover.save(tmpFilepath);
 	if(!success){
-		spLog(Log::Warning, "Tagging") << "Can not save temporary cover: " << tmp_filepath;
+		spLog(Log::Warning, "Tagging") << "Can not save temporary cover: " << tmpFilepath;
 		spLog(Log::Warning, "Tagging") << "Is image valid? " << !cover.isNull();
 		return false;
 	}
 
-	success = writeCover(filepath, tmp_filepath);
-	QFile::remove(tmp_filepath);
+	success = writeCover(filepath, tmpFilepath);
+	QFile::remove(tmpFilepath);
 
 	return success;
 }
