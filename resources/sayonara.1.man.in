@@ -9,8 +9,6 @@ Sayonara is a small, clear and fast audio player for Linux written in C++, suppo
 .IP --multi-instances
 Allows starting more than one instance of sayonara
 .SH ENVIRONMENT
-.IP SAYONARA_HOME_DIR
-Specify a different Sayonara home directory. Default is ~/.Sayonara
 .IP SAYONARA_LIB_DIR
 Specify a different directory where to search for library plugins. Default is INSTALL_PREFIX/lib(32|64)?/sayonara, e.g. /usr/lib/sayonara or /usr/local/lib64/sayonara
 .IP SAYONARA_SHARE_DIR
@@ -18,4 +16,4 @@ Specify a different directory where to search for the translations directory. De
 .SH BUGS
 Please file in new bug reports at https://gitlab.com/luciocarreras/sayonara-player
 .SH AUTHOR
-Lucio Carreras (sayonara-player@posteo.org)
+Michael Lugmair (sayonara-player@posteo.org)
