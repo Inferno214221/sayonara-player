@@ -203,7 +203,7 @@ Location Location::xcoverLocation(const Album& album)
 		if(!pathHints.isEmpty())
 		{
 			cl.setLocalPathHints(pathHints);
-			cl.setAudioFileSource(pathHints.first(), cl.symlinkPath());
+			cl.setAudioFileSource(pathHints.first(), cl.hashPath());
 		}
 	}
 
@@ -336,12 +336,12 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 
 	else
 	{
-		hasCoverArt = bool(md.customField("has_album_art").toInt());
+		hasCoverArt = (md.customField("has_album_art").toInt() != 0);
 	}
 
 	if(cl.audioFileSource().isEmpty() && !md.filepath().isEmpty() && hasCoverArt)
 	{
-		cl.setAudioFileSource(md.filepath(), cl.symlinkPath());
+		cl.setAudioFileSource(md.filepath(), cl.hashPath());
 	}
 
 	if(cl.searchUrls().isEmpty())
@@ -459,7 +459,7 @@ void Location::setIdentifier(const QString& identifier)
 	m->identifier = identifier;
 }
 
-QString Location::symlinkPath() const
+QString Location::hashPath() const
 {
 	return Util::coverDirectory(m->hash);
 }
@@ -580,17 +580,17 @@ QString Location::localPath() const
 		return QString();
 	}
 
-	const QString linkPath = symlinkPath();
-	if(linkPath.isEmpty())
+	if(hashPath().isEmpty())
 	{
 		return QString();
 	}
 
-	const QFileInfo info(linkPath);
+	const QFileInfo info(hashPath());
 	if(info.exists())
 	{
 		if(info.isSymLink())
 		{
+			const auto linkPath = hashPath();
 			// delete broken link
 			if(!Util::File::exists(info.symLinkTarget()))
 			{
@@ -605,7 +605,7 @@ QString Location::localPath() const
 
 		else if(info.isFile())
 		{
-			return linkPath;
+			return hashPath();
 		}
 
 		else
@@ -621,8 +621,8 @@ QString Location::localPath() const
 		return QString();
 	}
 
-	Util::File::createSymlink(localPaths.first(), linkPath);
-	return linkPath;
+	Util::File::createSymlink(localPaths.first(), hashPath());
+	return hashPath();
 }
 
 QString Location::localPathDir() const

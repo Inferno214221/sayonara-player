@@ -82,7 +82,7 @@ namespace Cover
 		 * directory
 		 * @return
 		 */
-		QString			symlinkPath() const;
+		QString			hashPath() const;
 
 		/**
 		 * @brief This identifier may be used in order to check

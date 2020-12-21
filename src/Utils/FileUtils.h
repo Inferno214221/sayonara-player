@@ -303,24 +303,24 @@ namespace Util
 
 		/**
 		 * @brief is_soundfile
-		 * @param filename
+		 * @param extension
 		 * @return
 		 */
-		bool isSoundFile(const QString& filename);
+		bool isSoundFile(const QString& extension);
 
 		/**
 		 * @brief is_playlistfile
-		 * @param filename
+		 * @param extension
 		 * @return
 		 */
-		bool isPlaylistFile(const QString& filename);
+		bool isPlaylistFile(const QString& extension);
 
 		/**
 		 * @brief is_imagefile
-		 * @param filename
+		 * @param extension
 		 * @return
 		 */
-		bool isImageFile(const QString& filename);
+		bool isImageFile(const QString& extension);
 
 		/**
 		 * @brief exists

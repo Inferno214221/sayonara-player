@@ -21,6 +21,7 @@ public:
 
 private slots:
 	void test();
+	void parentDirectoryTest();
 	void createAndDelete();
 	void commonPathTest();
 	void systemPathsTest();
@@ -100,6 +101,15 @@ void FileHelperTest::test()
 		QVERIFY(d == parent);
 		QVERIFY(f == filename);
 	}
+}
+
+void FileHelperTest::parentDirectoryTest()
+{
+	QVERIFY(getParentDirectory("") == QDir::rootPath());
+	QVERIFY(getParentDirectory("/") == QDir::rootPath());
+	QVERIFY(getParentDirectory("/hallo") == QDir::rootPath());
+	QVERIFY(getParentDirectory("/hallo/du") == "/hallo");
+	QVERIFY(getParentDirectory("/hallo/du/") == "/hallo");
 }
 
 void FileHelperTest::createAndDelete()

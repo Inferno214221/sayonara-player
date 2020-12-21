@@ -83,7 +83,7 @@ void Cover::Extractor::start()
 	if(m->pixmap.isNull())
 	{
 		LOCK_GUARD(mutexIo)
-		QString cover_path = m->cl.symlinkPath();
+		QString cover_path = m->cl.hashPath();
 		if(FileUtils::exists(cover_path))
 		{
 			m->pixmap = QPixmap(cover_path);

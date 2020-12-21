@@ -23,28 +23,29 @@
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
 
 #include <QDir>
 #include <QProcess>
 
 using Library::CachingThread;
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct CachingThread::Private
 {
-	QStringList		archiveDirectories;
-	QStringList		sourceFiles;
+	QStringList archiveDirectories;
+	QStringList sourceFiles;
 
-	ImportCachePtr	cache=nullptr;
+	ImportCachePtr cache = nullptr;
 
-	int				progress;
-	bool			cancelled;
+	int progress;
+	bool cancelled;
 
 	Private(const QStringList& sourceFiles, const QString& libraryPath) :
 		sourceFiles(sourceFiles),
@@ -55,16 +56,22 @@ struct CachingThread::Private
 	}
 };
 
-CachingThread::CachingThread(const QStringList& sourceFiles, const QString& libraryPath, QObject* parent) :
+CachingThread::CachingThread(const QStringList& sourceFiles, const QString& libraryPath,
+                             QObject* parent) :
 	QThread(parent)
 {
 	m = Pimpl::make<CachingThread::Private>(sourceFiles, libraryPath);
-	connect(Tagging::ChangeNotifier::instance(), &Tagging::ChangeNotifier::sigMetadataChanged, this, &CachingThread::metadataChanged);
+	connect(Tagging::ChangeNotifier::instance(),
+	        &Tagging::ChangeNotifier::sigMetadataChanged,
+	        this,
+	        &CachingThread::metadataChanged);
 }
 
 CachingThread::~CachingThread() = default;
 
-bool CachingThread::scanArchive(const QString& tempDir, const QString& binary, const QStringList& args, const QList<int>& successCodes)
+bool
+CachingThread::scanArchive(const QString& tempDir, const QString& binary, const QStringList& args,
+                           const QList<int>& successCodes)
 {
 #ifndef Q_OS_UNIX
 	return false;
@@ -88,10 +95,10 @@ bool CachingThread::scanArchive(const QString& tempDir, const QString& binary, c
 		spLog(Log::Warning, this) << binary << " exited with warning " << ret;
 	}
 
-	QStringList entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-	for(const QString& e : entries)
+	const auto entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
+	for(const auto& entry : entries)
 	{
-		QString filename = dir.absoluteFilePath(e);
+		const auto filename = dir.absoluteFilePath(entry);
 		if(Util::File::isDir(filename))
 		{
 			scanDirectory(filename);
@@ -106,43 +113,45 @@ bool CachingThread::scanArchive(const QString& tempDir, const QString& binary, c
 	return true;
 }
 
-
 QString CachingThread::createTempDirectory()
 {
-	QDir dir(QDir::tempPath() + "/sayonara/import/" +  Util::randomString(16));
-	QString abs_dir = dir.absolutePath();
+	const auto tempDirectory = QString("%1/%2")
+		.arg(Util::tempPath("import"))
+		.arg(Util::randomString(16));
 
-	bool b = Util::File::createDirectories(abs_dir);
-	if(!b)
+	const auto success = Util::File::createDirectories(tempDirectory);
+	if(!success)
 	{
-		spLog(Log::Warning, this) << "Cannot create temp directory " << abs_dir;
+		spLog(Log::Warning, this) << "Cannot create temp directory " << tempDirectory;
 		return QString();
 	}
 
-	m->archiveDirectories << abs_dir;
+	m->archiveDirectories << tempDirectory;
 
-	return abs_dir;
+	return tempDirectory;
 }
 
-
-bool CachingThread::scanRarArchive(const QString& rar_file)
+bool CachingThread::scanRarArchive(const QString& rarFile)
 {
 #ifndef Q_OS_UNIX
 	return false;
 #endif
 
-	QString tempDirectory = createTempDirectory();
-	return scanArchive(tempDirectory, "rar", {"x", rar_file, tempDirectory});
+	const auto tempDirectory = createTempDirectory();
+	return scanArchive(tempDirectory, "rar", {"x", rarFile, tempDirectory});
 }
 
-bool CachingThread::scanZipArchive(const QString& zip_file)
+bool CachingThread::scanZipArchive(const QString& zipFile)
 {
 #ifndef Q_OS_UNIX
 	return false;
 #endif
 
-	QString tempDirectory = createTempDirectory();
-	return scanArchive(tempDirectory, "unzip", {zip_file, "-d", tempDirectory}, QList<int>{0, 1, 2});
+	const auto tempDirectory = createTempDirectory();
+	return scanArchive(tempDirectory,
+	                   "unzip",
+	                   {zipFile, "-d", tempDirectory},
+	                   QList<int> {0, 1, 2});
 }
 
 bool CachingThread::scanTgzArchive(const QString& tgz)
@@ -151,7 +160,7 @@ bool CachingThread::scanTgzArchive(const QString& tgz)
 	return false;
 #endif
 
-	QString tempDirectory = createTempDirectory();
+	const auto tempDirectory = createTempDirectory();
 	return scanArchive(tempDirectory, "tar", {"xzf", tgz, "-C", tempDirectory});
 }
 
@@ -177,7 +186,7 @@ void CachingThread::scanDirectory(const QString& dir)
 		upperDir.cdUp();
 	}
 
-	for(const QString& dirFile : Algorithm::AsConst(files))
+	for(const auto& dirFile : Algorithm::AsConst(files))
 	{
 		addFile(dirFile, upperDir.absolutePath());
 	}
@@ -198,7 +207,7 @@ void CachingThread::run()
 
 	spLog(Log::Develop, this) << "Read files";
 
-	for(const QString& filename : Algorithm::AsConst(m->sourceFiles))
+	for(const auto& filename : Algorithm::AsConst(m->sourceFiles))
 	{
 		if(m->cancelled)
 		{
@@ -216,24 +225,28 @@ void CachingThread::run()
 			const QString extension = Util::File::getFileExtension(filename);
 			if(extension.compare("rar", Qt::CaseInsensitive) == 0)
 			{
-				bool success = scanRarArchive(filename);
-				if(!success) {
+				const auto success = scanRarArchive(filename);
+				if(!success)
+				{
 					spLog(Log::Warning, this) << "Cannot scan rar";
 				}
 			}
 
 			else if(extension.compare("zip", Qt::CaseInsensitive) == 0)
 			{
-				bool success = scanZipArchive(filename);
-				if(!success) {
+				const auto success = scanZipArchive(filename);
+				if(!success)
+				{
 					spLog(Log::Warning, this) << "Cannot scan zip";
 				}
 			}
 
-			else if((extension.compare("tar.gz", Qt::CaseInsensitive) == 0) || (extension.compare("tgz", Qt::CaseInsensitive) == 0))
+			else if((extension.compare("tar.gz", Qt::CaseInsensitive) == 0) ||
+			        (extension.compare("tgz", Qt::CaseInsensitive) == 0))
 			{
 				bool success = scanTgzArchive(filename);
-				if(!success) {
+				if(!success)
+				{
 					spLog(Log::Warning, this) << "Cannot scan zip";
 				}
 			}

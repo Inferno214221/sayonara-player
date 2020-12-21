@@ -58,8 +58,8 @@ namespace Library
 			void run() override;
 
 			void scanDirectory(const QString& dir);
-			bool scanRarArchive(const QString& rar);
-			bool scanZipArchive(const QString& zip);
+			bool scanRarArchive(const QString& rarFile);
+			bool scanZipArchive(const QString& zipFile);
 			bool scanTgzArchive(const QString& tgz);
 			void addFile(const QString& filename, const QString& relativeDir=QString());
 
