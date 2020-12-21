@@ -6,6 +6,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Language/LanguageUtils.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/StandardPaths.h"
+
 #include <QStringList>
 
 using namespace Util;
@@ -31,8 +33,8 @@ private slots:
 
 void LanguageUtilTest::basic_path_tests()
 {
-	QString sp = Util::sharePath("translations");
-	QString hp = Util::sayonaraPath("translations");
+	QString sp = Util::translationsSharePath();
+	QString hp = Util::translationsPath();
 
 	QString path;
 	QString expected;

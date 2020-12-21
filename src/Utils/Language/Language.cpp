@@ -20,6 +20,7 @@
 
 #include "Language.h"
 #include "Utils.h"
+#include "StandardPaths.h"
 
 #include <QDir>
 #include <QRegExp>
@@ -589,28 +590,28 @@ QMap<QString, QLocale> Lang::availableLanguages()
 {
 	QMap<QString, QLocale> ret;
 
-	const QList<QDir> directories
+	const auto directories = QList<QDir>
 	{
-		QDir(Util::sharePath("translations")),
-		QDir(Util::sayonaraPath("translations"))
+		QDir(Util::translationsSharePath()),
+		QDir(Util::translationsPath())
 	};
 
-	for(const QDir& d : directories)
+	for(const auto& directory : directories)
 	{
-		if(!d.exists()) {
+		if(!directory.exists()) {
 			continue;
 		}
 
-		QStringList entries = d.entryList(QStringList{"*.qm"}, QDir::Files);
-		for(const QString& entry : entries)
+		const auto entries = directory.entryList(QStringList{"*.qm"}, QDir::Files);
+		for(const auto& entry : entries)
 		{
-			const QString fl = fourLetter(entry);
+			const auto fl = fourLetter(entry);
 			if(!fl.isEmpty()) {
 				ret[fl] = QLocale(fl);
 			}
 
 			else {
-				const QString tl = twoLetter(entry);
+				const auto tl = twoLetter(entry);
 				if(!tl.isEmpty()) {
 					ret[tl] = QLocale(tl);
 				}

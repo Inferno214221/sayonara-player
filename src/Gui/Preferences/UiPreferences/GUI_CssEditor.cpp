@@ -5,7 +5,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Style.h"
 #include "Utils/Utils.h"
-#include "Utils/Language/Language.h"
+#include "Utils/StandardPaths.h"
 
 #include <QPushButton>
 
@@ -21,11 +21,11 @@ struct GUI_CssEditor::Private
 	QString filename() const
 	{
 		if(this->dark) {
-			return Util::sayonaraPath("dark.css");
+			return Util::xdgConfigPath("dark.css");
 		}
 
 		else {
-			return Util::sayonaraPath("standard.css");
+			return Util::xdgConfigPath("standard.css");
 		}
 	}
 };

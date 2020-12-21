@@ -31,6 +31,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/FileUtils.h"
+#include "Utils/StandardPaths.h"
 
 #include <QApplication>
 #include <QColor>
@@ -68,26 +69,26 @@ QString Style::style(bool dark)
 		font_size_pl = font_size;
 	}
 
-	QString style, additional_style;
-	QString path, additional_path;
+	QString style, additionalStyle;
+	QString path, additionalPath;
 
 	if(!dark)
 	{
 		path = ":/Style/standard.css";
-		additional_path = Util::sayonaraPath("standard.css");
+		additionalPath = Util::xdgConfigPath("standard.css");
 	}
 
 	else
 	{
 		path = ":/Style/dark.css";
-		additional_path = Util::sayonaraPath("dark.css");
+		additionalPath = Util::xdgConfigPath("dark.css");
 	}
 
 	Util::File::readFileIntoString(path, style );
-	if(Util::File::exists(additional_path))
+	if(Util::File::exists(additionalPath))
 	{
 		QString additional_style;
-		Util::File::readFileIntoString(additional_path, additional_style);
+		Util::File::readFileIntoString(additionalPath, additional_style);
 		style += "\n" + additional_style.trimmed();
 	}
 

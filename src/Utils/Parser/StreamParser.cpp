@@ -29,6 +29,7 @@
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Parser/PodcastParser.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include <QFile>
 #include <QDir>

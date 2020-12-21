@@ -292,13 +292,6 @@ namespace Cover
 		 * @return  CoverLocation object
 		 */
 		static Location invalidLocation();
-
-
-		/**
-		 * @brief returns the standard cover directory
-		 * @return usually ~/.Sayonara/covers
-		 */
-		static QString getCoverDirectory(const QString& appendPath);
 	};
 }
 

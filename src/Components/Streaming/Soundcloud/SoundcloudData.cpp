@@ -24,6 +24,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/globals.h"
+#include "Utils/StandardPaths.h"
 
 #include "Database/Query.h"
 #include "Database/Connector.h"
@@ -33,7 +34,7 @@
 using DB::Query;
 
 SC::Database::Database() :
-	::DB::Base(25, ":/Database", Util::sayonaraPath(), "soundcloud.db")
+	::DB::Base(25, ":/Database", Util::xdgConfigPath(), "soundcloud.db")
 {
 	this->applyFixes();
 }

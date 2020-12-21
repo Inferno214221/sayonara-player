@@ -31,6 +31,7 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/CoverUtils.h"
+#include "Utils/StandardPaths.h"
 
 #include <QByteArray>
 #include <QString>
@@ -46,7 +47,7 @@ using Tagging::ParsedTag;
 
 bool Tagging::Covers::writeCover(const QString& filepath, const QPixmap& cover)
 {
-	const auto tmpFilepath = ::Util::Covers::coverTempDirectory("tmp.png");
+	const auto tmpFilepath = Util::coverTempDirectory("tmp.png");
 
 	auto success = cover.save(tmpFilepath);
 	if(!success){

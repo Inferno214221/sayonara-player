@@ -34,7 +34,6 @@
 #include <QCoreApplication>
 #include <QCryptographicHash>
 #include <QDateTime>
-#include <QDir>
 #include <QHostAddress>
 #include <QNetworkInterface>
 #include <QPalette>
@@ -144,66 +143,6 @@ QString Util::stringToVeryFirstUpper(const QString& str)
 	ret.replace(0, 1, ret[0].toUpper());
 
 	return ret;
-}
-
-
-QString Util::sayonaraPath() { return sayonaraPath(QString()); }
-QString Util::sayonaraPath(const QString& append_path)
-{
-	QString basepath = Util::File::cleanFilename(getEnvironment("SAYONARA_HOME_DIR"));
-	if(basepath.isEmpty())
-	{
-		basepath = QDir::homePath() + "/.Sayonara/";
-	}
-
-	basepath.replace("~", QDir::homePath());
-
-	static bool checked = false;
-	if(!checked && !Util::File::exists(basepath))
-	{
-		bool b = Util::File::createDir(basepath);
-		if(!b) {
-			return QString();
-		}
-	}
-
-	checked = true;
-
-	return Util::File::cleanFilename(basepath + "/" + append_path);
-}
-
-QString Util::sharePath() { return sharePath(QString()); }
-QString Util::sharePath(const QString& append_path)
-{
-#ifdef Q_OS_WIN
-	return QCoreApplication::applicationDirPath() + "/share/";
-#else
-	QString base_path(Util::File::cleanFilename(getEnvironment("SAYONARA_SHARE_DIR")));
-	if(!Util::File::exists(base_path)){
-		base_path = SAYONARA_INSTALL_SHARE_PATH;
-	}
-
-	return Util::File::cleanFilename(base_path + "/" + append_path);
-#endif
-}
-
-QString Util::tempPath()
-{
-	return tempPath(QString());
-}
-
-QString Util::tempPath(const QString& appendPath)
-{
-	auto path = QDir::temp().absoluteFilePath("sayonara");
-	if(!QFile::exists(path)){
-		Util::File::createDir(path);
-	}
-
-	if(!appendPath.isEmpty()){
-		path += '/' + appendPath;
-	}
-
-	return Util::File::cleanFilename(path);
 }
 
 QString Util::createLink(const QString& name, bool dark, bool underline)

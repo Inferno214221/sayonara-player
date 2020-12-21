@@ -100,6 +100,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/StandardPaths.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
@@ -149,6 +150,9 @@ struct Application::Private
 	Private(Application* app)
 	{
 		Q_UNUSED(app)
+
+		QApplication::setApplicationName("sayonara");
+		Util::copyFromLegacyLocations();
 
 		metatypeRegistry = new MetaTypeRegistry();
 		qRegisterMetaType<uint64_t>("uint64_t");
@@ -255,6 +259,7 @@ Application::Application(int& argc, char** argv) :
 	m->timer->start();
 
 	QApplication::setQuitOnLastWindowClosed(false);
+	QApplication::setApplicationName("sayonara");
 }
 
 Application::~Application()

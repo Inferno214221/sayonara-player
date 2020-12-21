@@ -32,6 +32,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
+#include "Utils/StandardPaths.h"
 #include "Utils/Tagging/TaggingCover.h"
 
 #include <QDir>
@@ -289,7 +290,7 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 			extension = "png";
 		}
 		const QString coverToken = Util::Covers::calcCoverToken(md.artist(), md.album());
-		const QString coverPath = Util::Covers::coverDirectory(coverToken + "." + extension);
+		const QString coverPath = Util::coverDirectory(coverToken + "." + extension);
 
 		QList<QUrl> urls;
 		Util::Algorithm::transform(cdu, urls, [](const QString& url) {
@@ -442,7 +443,7 @@ QString Location::preferredPath() const
 QString Location::alternativePath() const
 {
 	const auto alternativePath = QString("%1/alt_%2.png")
-		.arg(Util::Covers::coverDirectory())
+		.arg(Util::coverDirectory())
 		.arg(m->hash);
 
 	return alternativePath;
@@ -460,7 +461,7 @@ void Location::setIdentifier(const QString& identifier)
 
 QString Location::symlinkPath() const
 {
-	return Util::Covers::coverDirectory(m->hash);
+	return Util::coverDirectory(m->hash);
 }
 
 QString Location::identifer() const

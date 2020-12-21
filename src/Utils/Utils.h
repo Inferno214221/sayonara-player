@@ -81,28 +81,6 @@ namespace Util
 
 
 	/**
-	 * @brief get sayonara path in home directory
-	 * @return
-	 */
-	QString sayonaraPath();
-	QString sayonaraPath(const QString& append_path);
-
-
-	/**
-	 * @brief get share path of sayonara
-	 * @return ./share on windows, share path of unix system
-	 */
-	QString sharePath();
-	QString sharePath(const QString& append_path);
-
-	/**
-	 * @brief get a temporary directory. usually /tmp/sayonara
-	 * @return
-	 */
-	QString tempPath();
-	QString tempPath(const QString& appendPath);
-
-	/**
 	 * @brief create a link string
 	 * @param name appearing name in link
 	 * @param target target url (if not given, name is taken)

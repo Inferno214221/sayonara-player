@@ -23,78 +23,84 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Compressor/Compressor.h"
+#include "Utils/StandardPaths.h"
 
 #include <QDir>
 #include <QMap>
 #include <QStringList>
 
-static QString get_filename(const QString& artist)
+namespace
 {
-    QString sayonara_path = Util::sayonaraPath() + "/" + "similar_artists/";
-    sayonara_path = Util::File::cleanFilename(sayonara_path);
-    QDir dir(sayonara_path);
+	QString getFilename(const QString& artist)
+	{
+		const auto similarArtistPath = Util::similarArtistsPath();
 
-    QStringList name_filters;
-        name_filters << "*.comp";
+		const auto dir = QDir(similarArtistPath);
+		const auto files = dir.entryList(
+			QStringList {"*.comp"},
+			static_cast<QDir::Filters>(QDir::Files)
+		);
 
-	QDir::Filters filters = static_cast<QDir::Filters>(QDir::Files);
+		if(files.isEmpty())
+		{
+			return QString();
+		}
 
-    QStringList files = dir.entryList(name_filters, filters);
-    if(files.isEmpty()){
-        return QString();
-    }
+		const auto targetName = artist + ".comp";
+		for(const auto& filename : files)
+		{
+			if(filename.compare(targetName, Qt::CaseInsensitive) == 0)
+			{
+				return dir.filePath(targetName);
+			}
+		}
 
-	QString target_name = artist + ".comp";
-    QString result_filename;
-    for(const QString& str : files)
-    {
-        if(str.compare(target_name, Qt::CaseInsensitive) == 0)
-        {
-            result_filename = dir.filePath(target_name);
-            break;
-        }
-    }
-
-    return result_filename;
+		return QString();
+	}
 }
 
 QMap<QString, double>
 SimilarArtists::getSimilarArtists(const QString& artist)
 {
-    QMap<QString, double> sim_artist_map;
-	QString filename = get_filename(artist);
-    if(filename.isEmpty()){
-        return sim_artist_map;
-    }
-
-    QByteArray content, decomp;
-    bool success = Util::File::readFileIntoByteArray(filename, content);
-    if(!success){
-        return sim_artist_map;
-    }
-
-    decomp = Compressor::decompress(content);
-	if(decomp.isEmpty()){
-		return sim_artist_map;
+	QMap<QString, double> similarArtistsMap;
+	const auto filename = getFilename(artist);
+	if(filename.isEmpty())
+	{
+		return similarArtistsMap;
 	}
 
-	QStringList sim_artists  = QString::fromLocal8Bit(decomp).split("\n");
-    for(const QString& sim_artist : sim_artists){
-        QStringList lst = sim_artist.split('\t');
-        if(lst.size() < 3){
+	QByteArray content;
+	const auto success = Util::File::readFileIntoByteArray(filename, content);
+	if(!success)
+	{
+		return similarArtistsMap;
+	}
+
+	const auto decomp = Compressor::decompress(content);
+	if(decomp.isEmpty())
+	{
+		return similarArtistsMap;
+	}
+
+	const auto similarArtists = QString::fromLocal8Bit(decomp).split("\n");
+	for(const auto& similarArtist : similarArtists)
+	{
+		const auto lst = similarArtist.split('\t');
+		if(lst.size() < 3)
+		{
 			continue;
 		}
 
-		QString match = lst[0];
-		QString artist_name = lst[2];
+		const auto& match = lst[0];
+		const auto& artistName = lst[2];
 
-        sim_artist_map[artist_name] = match.toDouble();
-    }
+		similarArtistsMap[artistName] = match.toDouble();
+	}
 
-    return sim_artist_map;
+	return similarArtistsMap;
 }
 
 QStringList SimilarArtists::getSimilarArtistNames(const QString& artist)
 {
-    return QStringList( getSimilarArtists(artist).keys() );
+	return QStringList(getSimilarArtists(artist).keys());
 }

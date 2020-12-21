@@ -53,42 +53,32 @@ void Util::File::removeFilesInDirectory(const QString& dirName, const QStringLis
 		return;
 	}
 
-	bool success;
-	QDir dir(dirName);
+	auto dir = QDir(dirName);
 	dir.setNameFilters(filters);
 
-	QFileInfoList infoList = dir.entryInfoList
+	const auto fileInfoList = dir.entryInfoList
 	(
 		QDir::Filters(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
 	);
 
-	for(const QFileInfo& info : infoList)
+	for(const auto& fileInfo : fileInfoList)
 	{
-		QString path = info.absoluteFilePath();
+		const auto path = fileInfo.absoluteFilePath();
 
-		if(info.isSymLink())
+		if(fileInfo.isSymLink())
 		{
 			QFile::remove(path);
 		}
 
-		else if(info.isDir())
+		else if(fileInfo.isDir())
 		{
 			removeFilesInDirectory(path);
 			QDir().rmdir(path);
 		}
 
-		else if(info.isFile())
+		else if(fileInfo.isFile())
 		{
 			QFile::remove(path);
-		}
-	}
-
-	QDir d = QDir::root();
-	if(dirName.contains(::Util::sayonaraPath()))
-	{
-		success = d.rmdir(dirName);
-		if(!success){
-			spLog(Log::Warning, "FileUtils") << "Could not remove dir " << dirName;
 		}
 	}
 }
@@ -645,26 +635,6 @@ bool Util::File::exists(const QString& filename)
 	}
 
 	return QFile::exists(filename);
-}
-
-bool Util::File::isInSayonaraDir(const QString& path)
-{
-	QDir sayonaraDir(sayonaraPath());
-	QDir p(path);
-
-	while(!p.isRoot())
-	{
-		bool b = p.cdUp();
-		if(!b){
-			return false;
-		}
-
-		if(p == sayonaraDir){
-			return true;
-		}
-	}
-
-	return false;
 }
 
 bool Util::File::isSamePath(const QString& filename1, const QString& filename2)

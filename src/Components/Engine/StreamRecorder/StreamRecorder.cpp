@@ -27,6 +27,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/StandardPaths.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 
 #include "Components/PlayManager/PlayManager.h"
@@ -63,20 +64,6 @@ SR::StreamRecorder::StreamRecorder(QObject* parent) :
 	m = Pimpl::make<StreamRecorder::Private>();
 
 	clear();
-
-	QDir d(Util::sayonaraPath());
-
-	// delete old stream ripper files
-	QStringList lst = d.entryList(Util::soundfileExtensions(), (QDir::Files | QDir::NoDotAndDotDot));
-
-	for( const QString& str : lst)
-	{
-		QString path = d.absoluteFilePath(str);
-		QFile f(path);
-		f.remove();
-
-		spLog(Log::Info, this) << "Remove " << path;
-	}
 
 	auto* playManager = PlayManager::instance();
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);

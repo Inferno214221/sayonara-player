@@ -31,6 +31,7 @@
 #include "Utils/Parser/CommandLineParser.h"
 #include "Utils/Logger/Logger.h"
 #include "Database/Connector.h"
+#include "Utils/StandardPaths.h"
 
 #include <QSharedMemory>
 #include <QTranslator>
@@ -157,10 +158,6 @@ int main(int argc, char *argv[])
 	//Util::setEnvironment("QT_SCALE_FACTOR", "1.5");
 
 	Application app(argc, argv);
-	QApplication::setAttribute(Qt::AA_DisableHighDpiScaling, false);
-	QApplication::setAttribute(Qt::AA_EnableHighDpiScaling, true);
-
-
 
 	CommandLineData cmd_data = CommandLineParser::parse(argc, argv);
 	if(cmd_data.abort){
@@ -192,15 +189,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	QString sayonara_path = Util::sayonaraPath();
-	if(!QFile::exists(sayonara_path))
-	{
-		spLog(Log::Error, "Sayonara") << "Cannot find and create Sayonara path '" << Util::sayonaraPath() << "'. Leaving now.";
-		return 1;
-	}
-
-	spLog(Log::Debug, "Sayonara") << "Sayonara home path: " << Util::sayonaraPath();
-	spLog(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::sharePath();
+	spLog(Log::Debug, "Sayonara") << "Sayonara config path: " << Util::xdgConfigPath();
+	spLog(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::xdgSharePath();
 
 	DB::Connector::instance();
 
@@ -211,10 +201,6 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_UNIX
 	signal(SIGSEGV, segfault_handler);
 #endif
-
-	if(!FileUtils::exists( Util::sayonaraPath() )) {
-		QDir().mkdir( Util::sayonaraPath() );
-	}
 
 	if(!app.init(cmd_data.filesToPlay, cmd_data.forceShow)) {
 		return 1;

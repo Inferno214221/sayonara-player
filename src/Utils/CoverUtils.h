@@ -56,10 +56,7 @@ namespace Util
 
 		void deleteTemporaryCovers();
 
-		QString coverDirectory();
-		QString coverDirectory(const QString& appendFilename);
-		QString coverTempDirectory();
-		QString coverTempDirectory(const QString& appendFilename);
+
 	}
 }
 

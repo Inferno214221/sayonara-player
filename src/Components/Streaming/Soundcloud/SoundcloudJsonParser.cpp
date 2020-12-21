@@ -30,6 +30,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/StandardPaths.h"
 
 #include <QJsonDocument>
 #include <QJsonParseError>
@@ -52,7 +53,7 @@ SC::JsonParser::JsonParser(const QByteArray& content) :
 	QObject()
 {
 	m = Pimpl::make<Private>(content);
-	QString targetFile = Util::sayonaraPath() + "/tmp.json";
+	QString targetFile = Util::tempPath("soundcloud.json");
 
 	Util::File::writeFile(
 		m->jsonDocument.toJson(QJsonDocument::Indented), targetFile

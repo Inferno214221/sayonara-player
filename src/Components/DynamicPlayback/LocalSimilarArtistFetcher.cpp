@@ -18,10 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "LocalSimilarArtistFetcher.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
-#include "Utils/Compressor/Compressor.h"
 #include "ArtistMatch.h"
+
+#include "Utils/Compressor/Compressor.h"
+#include "Utils/FileUtils.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
 
 #include <QStringList>
 
@@ -48,7 +50,7 @@ const ArtistMatch& LocalSimilarArtistFetcher::similarArtists() const
 
 void LocalSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 {
-	const auto similarArtistDir = Util::sayonaraPath("similar_artists");
+	const auto similarArtistDir = Util::similarArtistsPath();
 	const auto filename = QString("%1/%2.comp")
 		.arg(similarArtistDir)
 		.arg(artistName);

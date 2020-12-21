@@ -211,7 +211,8 @@ void GUI_AudioConverter::convertFinished()
 			{
 				tr("Failed to convert %n track(s)", "", errorCount),
 				tr("Please check the log files") + ".",
-				Util::createLink(converter->logginDirectory(), Style::isDark(), true, "file://" + converter->logginDirectory())
+				Util::createLink(converter->loggingDirectory(), Style::isDark(), true, "file://" +
+				                                                                       converter->loggingDirectory())
 			}.join("<br>"));
 		}
 

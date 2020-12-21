@@ -24,6 +24,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/StandardPaths.h"
 
 #include <QFile>
 #include <QRegExp>
@@ -37,58 +38,58 @@ static bool s_test_mode = false;
 
 class LanguageVersionHelper
 {
-	QSettings* mSettings=nullptr;
+		QSettings* mSettings = nullptr;
 
-	LanguageVersionHelper()
-	{
-		QString filepath = Util::sayonaraPath("translations/versions");
-		if(s_test_mode){
-			filepath = "/tmp/versions";
-		}
-
-		mSettings = new QSettings(filepath, QSettings::NativeFormat);
-	}
-
-public:
-	~LanguageVersionHelper()
-	{
-		delete mSettings;
-	}
-
-	static LanguageVersionHelper* instance()
-	{
-		static LanguageVersionHelper hlp;
-		return &hlp;
-	}
-
-	void setLanguageVersion(const QString& languageCode, const QString& version)
-	{
-		// never allow to downgrade a downloaded version
-		if(isOutdated(languageCode))
+		LanguageVersionHelper()
 		{
-			mSettings->setValue(languageCode, version);
-		}
-	}
+			const auto filepath = (s_test_mode == false)
+			                ? QDir(Util::translationsPath()).absoluteFilePath("versions")
+			                : Util::tempPath("versions");
 
-	QString getLanguageVersion(const QString& languageCode)
-	{
-		return mSettings->value(languageCode).toString();
-	}
-
-	bool isOutdated(const QString& languageCode)
-	{
-		QString lv = getLanguageVersion(languageCode);
-		QString pv = GetSetting(::Set::Player_Version);
-
-		if(lv.isEmpty()){
-			return true;
+			mSettings = new QSettings(filepath, QSettings::NativeFormat);
 		}
 
-		return (lv < pv);
-	}
+	public:
+		~LanguageVersionHelper()
+		{
+			delete mSettings;
+		}
+
+		static LanguageVersionHelper* instance()
+		{
+			static LanguageVersionHelper hlp;
+			return &hlp;
+		}
+
+		void setLanguageVersion(const QString& languageCode, const QString& version)
+		{
+			// never allow to downgrade a downloaded version
+			if(isOutdated(languageCode))
+			{
+				mSettings->setValue(languageCode, version);
+			}
+		}
+
+		QString getLanguageVersion(const QString& languageCode)
+		{
+			return mSettings->value(languageCode).toString();
+		}
+
+		bool isOutdated(const QString& languageCode)
+		{
+			QString lv = getLanguageVersion(languageCode);
+			QString pv = GetSetting(::Set::Player_Version);
+
+			if(lv.isEmpty())
+			{
+				return true;
+			}
+
+			return (lv < pv);
+		}
 };
 
-namespace Language=Util::Language;
+namespace Language = Util::Language;
 
 static bool checkLanguageCode(const QString& languageCode)
 {
@@ -100,7 +101,8 @@ static bool checkLanguageCode(const QString& languageCode)
 
 QString Language::getSharePath(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 	return Util::sharePath("translations") + "/" + QString("sayonara_lang_%1.qm").arg(languageCode);
@@ -108,7 +110,8 @@ QString Language::getSharePath(const QString& languageCode)
 
 QString Language::getFtpPath(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 	return QString("ftp://sayonara-player.com/translation/sayonara_lang_%1.qm").arg(languageCode);
@@ -116,11 +119,13 @@ QString Language::getFtpPath(const QString& languageCode)
 
 QString Language::getHttpPath(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
-	return QString("https://sayonara-player.com/files/translation/sayonara_lang_%1.qm").arg(languageCode);
+	return QString("https://sayonara-player.com/files/translation/sayonara_lang_%1.qm").arg(
+		languageCode);
 }
 
 QString Language::getChecksumFtpPath()
@@ -133,19 +138,19 @@ QString Language::getChecksumHttpPath()
 	return "https://sayonara-player.com/files/translation/checksum";
 }
 
-
 QString Language::getHomeTargetPath(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
-	const QString translationDir = Util::sayonaraPath("translations");
-	if(!Util::File::exists(translationDir)){
-		Util::File::createDir(Util::sayonaraPath("translations"));
-	}
+	const auto translationDir = Util::translationsPath();
+	const auto languagePath = QString("%1/sayonara_lang_%2.qm")
+		.arg(translationDir)
+		.arg(languageCode);
 
-	return translationDir + "/" + QString("sayonara_lang_%1.qm").arg(languageCode);
+	return languagePath;
 }
 
 bool Language::isOutdated(const QString& languageCode)
@@ -155,36 +160,39 @@ bool Language::isOutdated(const QString& languageCode)
 
 QString Language::getSimilarLanguage4(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
-	QString twoLetter = languageCode.left(2);
-	QStringList translationsPaths
-	{
-		Util::sayonaraPath("translations"),
-		Util::sharePath("translations")
-	};
+	const auto twoLetter = languageCode.left(2);
+	const auto translationsPaths = QStringList
+		{
+			Util::translationsPath(),
+			Util::sharePath("translations")
+		};
 
-	for(const QString& translationPath : translationsPaths)
+	for(const auto& translationPath : translationsPaths)
 	{
 		if(!Util::File::exists(translationPath))
 		{
 			continue;
 		}
 
-		const QDir dir(translationPath);
-		const QStringList entries = dir.entryList(QDir::Files);
-		const QRegExp re("sayonara_lang_([a-z]{2})_.+qm");
+		const auto dir = QDir(translationPath);
+		const auto entries = dir.entryList(QDir::Files);
+		const auto re = QRegExp("sayonara_lang_([a-z]{2})_.+qm");
 
-		for(const QString& entry : entries)
+		for(const auto& entry : entries)
 		{
-			if(re.indexIn(entry) < 0){
+			if(re.indexIn(entry) < 0)
+			{
 				continue;
 			}
 
-			const QString entryTwoLetter = re.cap(1);
-			if(entryTwoLetter == twoLetter){
+			const auto entryTwoLetter = re.cap(1);
+			if(entryTwoLetter == twoLetter)
+			{
 				return translationPath + "/" + entry;
 			}
 		}
@@ -193,17 +201,17 @@ QString Language::getSimilarLanguage4(const QString& languageCode)
 	return QString();
 }
 
-
 QString Language::getUsedLanguageFile(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
 	{ // check if home path or share path version is better or exists
 		if(isOutdated(languageCode)) // not available or older than in share path
 		{
-			const QString languageInSharePath = getSharePath(languageCode);
+			const auto languageInSharePath = getSharePath(languageCode);
 			if(Util::File::exists(languageInSharePath))
 			{
 				return languageInSharePath;
@@ -223,19 +231,21 @@ QString Language::getUsedLanguageFile(const QString& languageCode)
 
 QString Language::extractLanguageCode(const QString& languageFile)
 {
-	const QRegExp re
-	(
-		".*sayonara_lang_"
-		"([a-z]{2}(_[A-Z]{2})?(\\.[A-Z0-9\\-]+[0-9])?)\\.(ts|qm)$"
-	);
+	const auto re = QRegExp
+		(
+			".*sayonara_lang_"
+			"([a-z]{2}(_[A-Z]{2})?(\\.[A-Z0-9\\-]+[0-9])?)\\.(ts|qm)$"
+		);
 
-	int idx = re.indexIn(languageFile);
-	if(idx < 0){
+	const auto idx = re.indexIn(languageFile);
+	if(idx < 0)
+	{
 		return QString();
 	}
 
-	QString languageCode = re.cap(1);
-	if(!checkLanguageCode(languageCode)){
+	const auto languageCode = re.cap(1);
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
@@ -244,15 +254,17 @@ QString Language::extractLanguageCode(const QString& languageFile)
 
 QString Language::getIconPath(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
-	QString filename = Util::sharePath("translations/icons/%1.png").arg(languageCode);
+	auto filename = Util::sharePath("translations/icons/%1.png").arg(languageCode);
 	if(!QFile(filename).exists())
 	{
 		filename = Util::sharePath("translations/icons/%1.png").arg(languageCode.left(2));
-		if(!QFile(filename).exists()){
+		if(!QFile(filename).exists())
+		{
 			return QString();
 		}
 	}
@@ -262,25 +274,28 @@ QString Language::getIconPath(const QString& languageCode)
 
 QString Language::getChecksum(const QString& languageCode)
 {
-	if(!checkLanguageCode(languageCode)){
+	if(!checkLanguageCode(languageCode))
+	{
 		return QString();
 	}
 
-	QString path = getUsedLanguageFile(languageCode);
+	const auto path = getUsedLanguageFile(languageCode);
 	return QString::fromUtf8(Util::File::getMD5Sum(path));
 }
 
 bool Language::importLanguageFile(const QString& filename)
 {
-	const QString languageCode = extractLanguageCode(filename);
-	if(languageCode.isEmpty()){
+	const auto languageCode = extractLanguageCode(filename);
+	if(languageCode.isEmpty())
+	{
 		return false;
 	}
 
-	const QString targetPath = Language::getHomeTargetPath(languageCode);
-	QFile file(filename);
+	const auto targetPath = Language::getHomeTargetPath(languageCode);
+	auto file = QFile(filename);
 	bool success = file.copy(targetPath);
-	if(success){
+	if(success)
+	{
 		updateLanguageVersion(languageCode);
 	}
 
@@ -300,63 +315,61 @@ QString Language::getLanguageVersion(const QString& languageCode)
 
 void Language::updateLanguageVersion(const QString& languageCode)
 {
-	QString version = GetSetting(::Set::Player_Version);
-	if(!Util::File::exists(getHomeTargetPath(languageCode)))
-	{
-		version = QString();
-	}
+	const auto version = Util::File::exists(getHomeTargetPath(languageCode))
+	                     ? GetSetting(::Set::Player_Version)
+	                     : QString();
 
 	LanguageVersionHelper::instance()->setLanguageVersion(languageCode, version);
 }
 
 #ifdef SAYONARA_WITH_TESTS
-	void Language::setTestMode()
-	{
-		s_test_mode = true;
-	}
 
-	void Language::setLanguageVersion(const QString& languageCode, const QString& version)
-	{
-		LanguageVersionHelper::instance()->setLanguageVersion(languageCode, version);
-	}
+void Language::setTestMode()
+{
+	s_test_mode = true;
+}
+
+void Language::setLanguageVersion(const QString& languageCode, const QString& version)
+{
+	LanguageVersionHelper::instance()->setLanguageVersion(languageCode, version);
+}
+
 #endif
 
-	QLocale Language::getCurrentLocale()
+QLocale Language::getCurrentLocale()
+{
+	const auto languageCode = GetSetting(::Set::Player_Language);
+	return QLocale(languageCode);
+}
+
+QStringList Language::getCurrentQtTranslationPaths()
+{
+	const auto languageCode = GetSetting(::Set::Player_Language);
+	if(languageCode.size() < 2)
 	{
-		QString languageCode = GetSetting(::Set::Player_Language);
-		return QLocale(languageCode);
+		return QStringList();
 	}
 
-	QStringList Language::getCurrentQtTranslationPaths()
-	{
-		const QString languageCode = GetSetting(::Set::Player_Language);
-		if(languageCode.size() < 2){
-			return QStringList();
-		}
-
-		const QString twoLetter = languageCode.left(2);
-		const QStringList filePrefixes
+	const auto twoLetter = languageCode.left(2);
+	const auto filePrefixes = QStringList
 		{
 			"qt",
 			"qtbase",
 			"qtlocation"
 		};
 
-		QStringList paths;
-		Util::Algorithm::transform(filePrefixes, paths, [twoLetter](const QString& prefix){
-			return QString("%1/%2_%3.qm")
-						.arg(QLibraryInfo::location(QLibraryInfo::TranslationsPath))
-						.arg(prefix)
-						.arg(twoLetter);
-		});
+	QStringList paths;
+	Util::Algorithm::transform(filePrefixes, paths, [twoLetter](const QString& prefix) {
+		return QString("%1/%2_%3.qm")
+			.arg(QLibraryInfo::location(QLibraryInfo::TranslationsPath))
+			.arg(prefix)
+			.arg(twoLetter);
+	});
 
-		QStringList ret;
-		for(const QString& path : paths)
-		{
-			if(Util::File::exists(path)){
-				ret << path;
-			}
-		}
+	QStringList ret;
+	std::copy_if(paths.begin(), paths.end(), std::back_inserter(ret), [](const auto& path) {
+		return (Util::File::exists(path));
+	});
 
-		return ret;
-	}
+	return ret;
+}

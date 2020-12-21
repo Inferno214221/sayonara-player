@@ -1,4 +1,5 @@
 #include "Filepath.h"
+#include "StandardPaths.h"
 #include "Utils.h"
 #include "FileUtils.h"
 #include <QString>
@@ -59,12 +60,12 @@ QString Filepath::fileystemPath() const
 		QString dir, filename;
 		Util::File::splitFilename(m->path, dir, filename);
 
-		QString local_path = Util::tempPath(filename);
+		const auto localPath = Util::tempPath(filename);
 
-		QString new_name;
-		Util::File::copyFile(m->path, Util::tempPath(), new_name);
+		QString newName;
+		Util::File::copyFile(m->path, Util::tempPath(), newName);
 
-		return local_path;
+		return localPath;
 	}
 
 	return path();

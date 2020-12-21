@@ -178,13 +178,6 @@ namespace Util
 		bool checkFile(const QString& filepath);
 
 		/**
-		 * @brief is_in_sayonaraDir
-		 * @param path
-		 * @return
-		 */
-		bool isInSayonaraDir(const QString& path);
-
-		/**
 		 * @brief get_commonDirectory
 		 * @param paths
 		 * @return

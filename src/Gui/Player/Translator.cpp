@@ -23,6 +23,7 @@
 #include "Utils/Utils.h"
 #include "Utils/Language/LanguageUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include <QTranslator>
 #include <QApplication>
@@ -55,7 +56,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 	}
 
 	const QString languageFile = Util::Language::getUsedLanguageFile(fourLetter);
-	const QString languageDir = Util::sharePath("translations");
+	const QString languageDir = Util::translationsSharePath();
 
 	QStringList filenames;
 	filenames << QDir(languageDir).absoluteFilePath(languageFile)

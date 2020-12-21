@@ -4,6 +4,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Filepath.h"
 #include "Utils/Macros.h"
+#include "Utils/StandardPaths.h"
 
 #include <QRegExp>
 

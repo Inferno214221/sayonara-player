@@ -26,6 +26,8 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/StandardPaths.h"
+
 #include <QString>
 
 using StreamRecorder::Data;
@@ -92,8 +94,9 @@ bool StreamRecorderBin::init()
 		Engine::Utils::configureQueue(m->queue);
 		Engine::Utils::configureSink(m->sink);
 
+		// this is just to avoid endless warning messages
 		Engine::Utils::setValues(G_OBJECT(m->sink),
-								"location", Util::sayonaraPath("bla.mp3").toLocal8Bit().data());
+								"location", Util::tempPath(".stream-recorder.mp3").toLocal8Bit().data());
 		Engine::Utils::setUintValue(G_OBJECT(m->sink), "buffer-size", 8192);
 	}
 

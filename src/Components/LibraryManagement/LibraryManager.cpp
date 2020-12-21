@@ -31,6 +31,7 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include <QDir>
 #include <QFile>
@@ -45,8 +46,6 @@ using Library::Manager;
 using Library::Info;
 
 using OrderMap=QMap<LibraryId, int>;
-
-static void removeLibraryDirInSayonaraDir();
 
 struct Manager::Private
 {
@@ -148,9 +147,6 @@ Manager::Manager() :
 	QObject()
 {
 	m = Pimpl::make<Private>();
-
-	removeLibraryDirInSayonaraDir();
-
 	reset();
 }
 
@@ -416,31 +412,4 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 	}
 
 	return lib;
-}
-
-void removeLibraryDirInSayonaraDir()
-{
-	if(!Util::File::exists(Util::sayonaraPath("Libraries"))) {
-		return;
-	}
-
-	QDir d(Util::sayonaraPath("Libraries"));
-	QList<QFileInfo> infos = d.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs | QDir::Filter::Files);
-	for(const QFileInfo& info : infos) {
-		if(info.isSymLink())
-		{
-			QString filename = d.absoluteFilePath(info.fileName());
-			bool b = QFile::remove(filename);
-			spLog(Log::Info, "LibraryManager") << filename << " removed :" << b;
-		}
-	}
-
-	infos = d.entryInfoList(QDir::Filter::NoDotAndDotDot | QDir::Filter::Dirs | QDir::Filter::Files);
-	if(infos.isEmpty())
-	{
-		QString filename = Util::sayonaraPath("Libraries");
-		QDir l(filename);
-		bool b = l.removeRecursively();
-		spLog(Log::Info, "LibraryManager") << filename << " removed :" << b;
-	}
 }

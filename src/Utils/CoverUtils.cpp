@@ -19,8 +19,9 @@
  */
 
 #include "CoverUtils.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
+#include "FileUtils.h"
+#include "StandardPaths.h"
+#include "Utils.h"
 
 #include <QPixmap>
 #include <QDir>
@@ -32,46 +33,8 @@ QString Util::Covers::calcCoverToken(const QString& artist, const QString& album
 	return Util::calcHash(data);
 }
 
-QString Util::Covers::coverDirectory()
-{
-	return coverDirectory(QString());
-}
-
-QString Util::Covers::coverDirectory(const QString& appendFilename)
-{
-	auto path = Util::sayonaraPath("covers");
-	if(!Util::File::exists(path)){
-		Util::File::createDir(path);
-	}
-
-	if(!appendFilename.isEmpty()){
-		path += '/' + appendFilename;
-	}
-
-	return Util::File::cleanFilename(path);
-}
-
-QString Util::Covers::coverTempDirectory()
-{
-	return coverTempDirectory(QString());
-}
-
-QString Util::Covers::coverTempDirectory(const QString& appendFilename)
-{
-	auto path = Util::tempPath("covers");
-	if(!Util::File::exists(path)){
-		Util::File::createDir(path);
-	}
-
-	if(!appendFilename.isEmpty()){
-		path += '/' + appendFilename;
-	}
-
-	return Util::File::cleanFilename(path);
-}
-
 void Util::Covers::deleteTemporaryCovers()
 {
-	const auto dir = coverTempDirectory();
+	const auto dir = Util::coverTempDirectory();
 	Util::File::removeFilesInDirectory(dir);
 }

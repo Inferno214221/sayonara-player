@@ -25,6 +25,7 @@
 
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
+#include "Utils/StandardPaths.h"
 
 using namespace PipelineExtensions;
 
@@ -182,7 +183,7 @@ Probing::streamRecorderProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_
 			Engine::Utils::setState(data->sink, GST_STATE_NULL);
 			Engine::Utils::setValue(data->sink,
 									 "location",
-									 (Util::sayonaraPath() + "bla.mp3").toLocal8Bit().data());
+									 Util::tempPath("probing.mp3").toLocal8Bit().data());
 
 			data->isFilenameEmpty = true;
 		}

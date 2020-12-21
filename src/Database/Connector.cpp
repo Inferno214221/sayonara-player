@@ -37,6 +37,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
+#include "Utils/StandardPaths.h"
 #include "Utils/Algorithm.h"
 #include "Utils/RawShortcutMap.h"
 
@@ -167,7 +168,7 @@ DB::Connector* Connector::instance_custom(QString sourceDirectory, QString targe
 	}
 
 	if(targetDirectory.isEmpty()) {
-		targetDirectory = Util::sayonaraPath();
+		targetDirectory = Util::xdgConfigPath();
 	}
 
 	if(databseFilename.isEmpty()) {

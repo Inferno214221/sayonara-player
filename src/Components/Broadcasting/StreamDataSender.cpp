@@ -27,6 +27,7 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include <QByteArray>
 #include <QTcpSocket>
@@ -279,9 +280,10 @@ bool StreamDataSender::sendHtml5(const QString& stream_title)
 	QString htmlString;
 	bool success = false;
 
-	if(Util::File::exists(Util::sayonaraPath("broadcast.html")))
+	const auto broadcastHtml = Util::xdgCachePath("broadcast.html");
+	if(Util::File::exists(broadcastHtml))
 	{
-		success = Util::File::readFileIntoString(Util::sayonaraPath("broadcast.html"), htmlString);
+		success = Util::File::readFileIntoString(broadcastHtml, htmlString);
 	}
 
 	if(!success)

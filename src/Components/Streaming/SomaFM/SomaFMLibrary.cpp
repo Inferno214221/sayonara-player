@@ -26,11 +26,11 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Covers/CoverLocation.h"
@@ -77,7 +77,7 @@ SomaFM::Library::Library(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
-	QString path = Util::sayonaraPath("somafm.ini");
+	QString path = Util::xdgConfigPath("somafm.ini");
 
 	m->qsettings = new QSettings(path, QSettings::IniFormat, this);
 }

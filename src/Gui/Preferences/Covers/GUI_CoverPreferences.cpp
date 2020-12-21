@@ -34,6 +34,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/StandardPaths.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
@@ -196,7 +197,7 @@ void GUI_CoverPreferences::initUi()
 	connect(ui->cbSaveToLibrary, &QCheckBox::toggled, this, &GUI_CoverPreferences::saveCoverToLibraryToggled);
 	connect(ui->leCoverTemplate, &QLineEdit::textEdited, this, &GUI_CoverPreferences::coverTemplateEdited);
 
-	ui->cbSaveToSayonaraDir->setToolTip(Util::Covers::coverDirectory());
+	ui->cbSaveToSayonaraDir->setToolTip(Util::coverDirectory());
 
 	revert();
 }
@@ -273,7 +274,7 @@ void GUI_CoverPreferences::deleteCoversFromDb()
 
 void GUI_CoverPreferences::deleteCoverFiles()
 {
-	::Util::File::removeFilesInDirectory(Util::Covers::coverDirectory());
+	::Util::File::removeFilesInDirectory(Util::coverDirectory());
 }
 
 void GUI_CoverPreferences::fetchCoversFromWWWTriggered(bool b)

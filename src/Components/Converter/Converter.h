@@ -45,7 +45,7 @@ public:
 	virtual QStringList supportedInputFormats() const=0;
 	virtual QString binary() const=0;
 
-	QString		logginDirectory() const;
+	QString		loggingDirectory() const;
 	QString		targetDirectory() const;
 	QString		targetFile(const MetaData& md) const;
 	void 		addMetadata(const MetaDataList& tracks);

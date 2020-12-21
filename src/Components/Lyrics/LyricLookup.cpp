@@ -35,6 +35,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
 
 #include <QStringList>
 #include <QRegExp>
@@ -266,15 +267,15 @@ void LookupThread::initServerList()
 
 void LookupThread::initCustomServers()
 {
-	const QString lyrics_path = Util::sayonaraPath("lyrics");
-	const QDir dir(lyrics_path);
-	const QStringList json_files = dir.entryList(QStringList{"*.json"}, QDir::Files);
+	const auto lyricsPath = Util::lyricsPath();
+	const auto dir = QDir(lyricsPath);
+	const auto jsonFiles = dir.entryList(QStringList{"*.json"}, QDir::Files);
 
-	for(QString json_file : json_files)
+	for(QString jsonFile : jsonFiles)
 	{
-		json_file.prepend(lyrics_path + "/");
-		QList<Server*> servers = Lyrics::ServerJsonReader::parseJsonFile(json_file);
-		for(Server* server : servers)
+		jsonFile.prepend(lyricsPath + "/");
+		auto servers = Lyrics::ServerJsonReader::parseJsonFile(jsonFile);
+		for(auto* server : servers)
 		{
 			addServer(server);
 		}

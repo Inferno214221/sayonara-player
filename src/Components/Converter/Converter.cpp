@@ -19,10 +19,12 @@
  */
 
 #include "Converter.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
+
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
 
 #include <QStringList>
 #include <QProcess>
@@ -67,9 +69,9 @@ Converter::~Converter()
 	Util::File::deleteFiles(m->logFiles);
 }
 
-QString Converter::logginDirectory() const
+QString Converter::loggingDirectory() const
 {
-	return Util::File::cleanFilename(Util::sayonaraPath("encoder-logs"));
+	return Util::tempPath("encoder-logs");
 }
 
 QString Converter::targetDirectory() const
@@ -172,8 +174,9 @@ bool Converter::startProcess(const QString& command, const QStringList& argument
 {
 	m->currentIndex++;
 
-	Util::File::createDir(logginDirectory());
-	const QString logFile = logginDirectory() + "/" + QString("encoder_%1_%2.out")
+	Util::File::createDir(loggingDirectory());
+	const auto logFile = QString("%1/encoder_%2_%3.out")
+		.arg(loggingDirectory())
 		.arg(binary())
 		.arg(m->currentIndex);
 

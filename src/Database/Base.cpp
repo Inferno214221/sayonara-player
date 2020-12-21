@@ -22,9 +22,10 @@
 #include "Database/Module.h"
 #include "Database/Query.h"
 
-#include "Utils/Utils.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
 
 #include <QFile>
 #include <QDir>
@@ -114,19 +115,16 @@ bool Base::closeDatabase()
 	return true;
 }
 
-
 bool Base::createDatabase()
 {
-	QDir dir = QDir::homePath();
-	bool success = dir.cd(Util::sayonaraPath());
-
 	//if ret is still not true we are not able to create the directory
+	bool success = QDir().cd(Util::xdgConfigPath());
 	if(!success) {
 		spLog(Log::Error, this) << "Could not change to .Sayonara dir";
 		return false;
 	}
 
-	QString source_db_file = QDir(m->sourceDirectory).absoluteFilePath(m->filename);
+	const auto sourceDatabasefile = QDir(m->sourceDirectory).absoluteFilePath(m->filename);
 
 	success = FileUtils::exists(m->connectionName);
 	if(success) {
@@ -136,9 +134,9 @@ bool Base::createDatabase()
 	if(!success)
 	{
 		spLog(Log::Info, this) << "Database " << m->connectionName << " not existent yet";
-		spLog(Log::Info, this) << "Copy " <<  source_db_file << " to " << m->connectionName;
+		spLog(Log::Info, this) << "Copy " << sourceDatabasefile << " to " << m->connectionName;
 
-		success = QFile::copy(source_db_file, m->connectionName);
+		success = QFile::copy(sourceDatabasefile, m->connectionName);
 
 		if(success)
 		{
