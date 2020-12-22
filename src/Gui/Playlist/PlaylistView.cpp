@@ -255,7 +255,7 @@ void View::handleDrop(QDropEvent* event)
 			}
 		}
 
-		m->model->insertTracks(tracks, row + 1);
+		m->model->insertTracks(files, row + 1);
 	}
 }
 
