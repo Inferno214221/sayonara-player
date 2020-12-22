@@ -29,10 +29,8 @@ using Gui::ComboBox;
 using Gui::WidgetTemplate;
 
 ComboBox::ComboBox(QWidget* parent) :
-	WidgetTemplate<QComboBox>(nullptr)
+	WidgetTemplate<QComboBox>(parent)
 {
-	Q_UNUSED(parent)
-
 	this->setItemDelegate(new Gui::ComboBoxDelegate(this));
 }
 

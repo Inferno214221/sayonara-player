@@ -99,10 +99,10 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 			{ColumnIndex::Track::AddedDate,    Qt::AlignCenter}
 		};
 
-		auto alignment = alignMap.contains(indexColumn) ? alignMap[indexColumn]
-		                                                : Qt::AlignLeft;
+		const auto alignment = alignMap.contains(indexColumn) ? alignMap[indexColumn]
+		                                                      : Qt::AlignLeft;
 
-		return QVariant::fromValue(Qt::AlignVCenter | alignment);
+		return QVariant::fromValue(static_cast<int>(Qt::AlignVCenter | alignment));
 	}
 
 	else if(role == Qt::DisplayRole || role == Qt::EditRole)
