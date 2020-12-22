@@ -41,6 +41,7 @@ namespace Gui
 		 * @return
 		 */
 		MetaDataList metadata(const QMimeData* data);
+		bool hasMetadata(const QMimeData* data);
 
 		/**
 		 * @brief playlists
@@ -107,7 +108,6 @@ namespace Gui
 		 */
 		bool isDragFromPlaylist(const QMimeData* data);
 
-		bool hasAsyncDropHander(const QMimeData* data);
 		Gui::AsyncDropHandler* asyncDropHandler(const QMimeData* data);
 	}
 }

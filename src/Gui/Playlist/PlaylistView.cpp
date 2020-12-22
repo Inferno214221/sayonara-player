@@ -210,24 +210,23 @@ int View::calcDragDropLine(QPoint pos)
 
 void View::handleDrop(QDropEvent* event)
 {
-	int row = calcDragDropLine(event->pos());
-
 	m->model->setDragIndex(-1);
 
-	const QMimeData* mimedata = event->mimeData();
+	const auto* mimedata = event->mimeData();
 	if(!mimedata) {
 		return;
 	}
 
-	bool isInnerDragDrop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
+	const auto row = calcDragDropLine(event->pos());
+	const auto isInnerDragDrop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
 	if(isInnerDragDrop)
 	{
-		bool copy = (event->keyboardModifiers() & Qt::ControlModifier);
+		const auto copy = static_cast<bool>(event->keyboardModifiers() & Qt::ControlModifier);
 		handleInnerDragDrop(row, copy);
 		return;
 	}
 
-	Gui::AsyncDropHandler* asyncDropHandler = MimeData::asyncDropHandler(mimedata);
+	auto* asyncDropHandler = MimeData::asyncDropHandler(mimedata);
 	if(asyncDropHandler)
 	{
 		m->playlist->setBusy(true);
@@ -235,34 +234,13 @@ void View::handleDrop(QDropEvent* event)
 		asyncDropHandler->setTargetIndex(row + 1);
 		connect(asyncDropHandler, &Gui::AsyncDropHandler::sigFinished, this, &View::asyncDropFinished);
 		asyncDropHandler->start();
-		return;
-	}
-
-	const MetaDataList tracks = MimeData::metadata(mimedata);
-	if(!tracks.isEmpty())
-	{
-		m->model->insertTracks(tracks, row + 1);
-	}
-
-	const QList<QUrl> urls = mimedata->urls();
-	if(!urls.isEmpty() && tracks.isEmpty())
-	{
-		QStringList files;
-		for(const QUrl& url : urls)
-		{
-			if(url.isLocalFile()){
-				files << url.toLocalFile();
-			}
-		}
-
-		m->model->insertTracks(files, row + 1);
 	}
 }
 
 void View::asyncDropFinished()
 {
 	auto* asyncDropHandler = static_cast<Gui::AsyncDropHandler*>(sender());
-	const MetaDataList tracks = asyncDropHandler->tracks();
+	const auto tracks = asyncDropHandler->tracks();
 
 	// busy playlists do not accept playlists modifications, so we have
 	// to disable busy status before inserting the tracks
@@ -274,21 +252,14 @@ void View::asyncDropFinished()
 
 void View::handleInnerDragDrop(int row, bool copy)
 {
-	IndexSet newSelectedRows;
-	IndexSet curSelectedRows = selectedItems();
-	if( curSelectedRows.contains(row) ) {
+	const auto curSelectedRows = selectedItems();
+	if(curSelectedRows.contains(row)) {
 		return;
 	}
 
-	if(copy)
-	{
-		newSelectedRows = m->model->copyTracks(curSelectedRows, row + 1);
-	}
-
-	else
-	{
-		newSelectedRows = m->model->moveTracks(curSelectedRows, row + 1);
-	}
+	const auto newSelectedRows = (copy)
+		? m->model->copyTracks(curSelectedRows, row + 1)
+		: m->model->moveTracks(curSelectedRows, row + 1);
 
 	this->selectRows(newSelectedRows, 0);
 }

@@ -9,8 +9,7 @@ struct Gui::AsyncDropHandler::Private
 	int targetIndex;
 
 	Private() :
-		targetIndex(-1)
-	{}
+		targetIndex(-1) {}
 };
 
 AsyncDropHandler::AsyncDropHandler(QObject* parent) :

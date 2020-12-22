@@ -21,6 +21,7 @@
 #include "MimeDataUtils.h"
 
 #include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Gui/Utils/MimeData/ExternUrlsDragDropHandler.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
@@ -35,17 +36,14 @@ using namespace Gui;
 
 MetaDataList MimeData::metadata(const QMimeData* data)
 {
-	if(!data){
-		return MetaDataList();
-	}
+	const auto* cmd = dynamic_cast<const CustomMimeData*>(data);
+	return (cmd != nullptr) ? cmd->metadata() : MetaDataList();
+}
 
-	const CustomMimeData* cmd = dynamic_cast<const CustomMimeData*>(data);
-	if(cmd)
-	{
-		return cmd->metadata();
-	}
-
-	return MetaDataList();
+bool MimeData::hasMetadata(const QMimeData* data)
+{
+	const auto* cmd = dynamic_cast<const CustomMimeData*>(data);
+	return (cmd && cmd->hasMetadata());
 }
 
 QStringList MimeData::playlists(const QMimeData* data)
@@ -114,7 +112,6 @@ const CustomMimeData* MimeData::customMimedata(const QMimeData* data)
 	return dynamic_cast<const CustomMimeData*>(data);
 }
 
-
 bool MimeData::isInnerDragDrop(const QMimeData* data, int targetPlaylistIdx)
 {
 	const CustomMimeData* cmd = customMimedata(data);
@@ -146,17 +143,15 @@ bool MimeData::isPlayerDrag(const QMimeData* data)
 	return (customMimedata(data) != nullptr);
 }
 
-bool MimeData::hasAsyncDropHander(const QMimeData* data)
-{
-	const CustomMimeData* cmd = customMimedata(data);
-	return (cmd && cmd->asyncDropHandler() != nullptr);
-}
-
 AsyncDropHandler* MimeData::asyncDropHandler(const QMimeData* data)
 {
-	const CustomMimeData* cmd = customMimedata(data);
-	if(cmd){
+	const auto* cmd = customMimedata(data);
+	if(cmd) {
 		return cmd->asyncDropHandler();
+	}
+
+	if(data->hasUrls()) {
+		return new ExternUrlsDragDropHandler(data->urls());
 	}
 
 	return nullptr;
