@@ -61,7 +61,7 @@ namespace Playlist
 			void sigBookmarkPressed(int trackIdx, Seconds timestamp);
 
 		public:
-			explicit View(PlaylistPtr pl, QWidget* parent=nullptr);
+			explicit View(PlaylistPtr playlist, QWidget* parent=nullptr);
 			~View() override;
 
 			void gotoRow(int row);
@@ -80,15 +80,13 @@ namespace Playlist
 
 		private slots:
 			void refresh();
-			void currentTrackChanged(int track_index, int playlistIndex);
+			void currentTrackChanged(int trackIndex, int playlistIndex);
 			void asyncDropFinished();
 			void ratingChanged(Rating rating);
 			void columnsChanged();
 			void showRatingChanged();
 			void findTrackTriggered();
-			void reverseTriggered();
 			void bookmarkTriggered(Seconds timestamp);
-
 			void moveSelectedRowsUp();
 			void moveSelectedRowsDown();
 			void playSelectedTrack();
@@ -97,13 +95,10 @@ namespace Playlist
 			void currentScannedFileChanged(const QString& currentFile);
 
 		private:
-			void initView();
 			void initContextMenu();
 
 			// d & d
-			int calcDragDropLine(QPoint pos);
 			void handleDrop(QDropEvent* event);
-			void handleInnerDragDrop(int row, bool copy);
 
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
