@@ -21,61 +21,57 @@
 #include "Crypt.h"
 #include "Utils/Settings/Settings.h"
 
-static QByteArray _encrypt(const QByteArray& src, QByteArray key)
+namespace
 {
-	if(src.isEmpty()){
-		return QByteArray();
-	}
-
-	if(key.isEmpty()){
-		key = GetSetting(Set::Player_PrivId);
-	}
-
-	QByteArray result;
-
-	const char* data = src.data();
-	int len = src.length();
-
-	for(int i=0; i<len; i++)
+	QByteArray encryptData(const QByteArray& src, QByteArray key)
 	{
-		char c = *data;
+		if(src.isEmpty())
+		{
+			return QByteArray();
+		}
 
-		int pos = i % key.size();
-		char mask_c = *(key.data() + pos);
+		if(key.isEmpty())
+		{
+			key = GetSetting(Set::Player_PrivId);
+		}
 
-		char result_c = c ^ mask_c;
-		result.push_back(result_c);
+		QByteArray result;
+		for(auto i = 0; i < src.length(); i++)
+		{
+			const auto currentByte = *(src.data() + i);
+			const auto pos = i % key.size();
+			const auto maskChar = *(key.data() + pos);
+			const auto resultChar = currentByte ^maskChar;
 
-		data++;
+			result.push_back(resultChar);
+		}
+
+		return result;
 	}
-
-	return result;
 }
-
 
 QString Util::Crypt::encrypt(const QString& src, const QByteArray& key)
 {
-	QByteArray enc = _encrypt(src.toUtf8(), key);
-	return SettingConverter::toString(enc);
+	const auto encryptedData = encryptData(src.toUtf8(), key);
+	return SettingConverter::toString(encryptedData);
 }
 
 QString Util::Crypt::encrypt(const QByteArray& src, const QByteArray& key)
 {
-	QByteArray enc = _encrypt(src, key);
-	return SettingConverter::toString(enc);
+	const auto encryptedData = encryptData(src, key);
+	return SettingConverter::toString(encryptedData);
 }
-
 
 QString Util::Crypt::decrypt(const QString& src, const QByteArray& key)
 {
-	QByteArray srcba;
-	SettingConverter::fromString(src, srcba);
+	QByteArray sourceData;
+	SettingConverter::fromString(src, sourceData);
 
-	QByteArray dec = _encrypt(srcba, key);
-	return QString::fromUtf8(dec);
+	const auto decryptedData = encryptData(sourceData, key);
+	return QString::fromUtf8(decryptedData);
 }
 
 QString Util::Crypt::decrypt(const QByteArray& src, const QByteArray& key)
 {
-	return _encrypt(src, key);
+	return encryptData(src, key);
 }

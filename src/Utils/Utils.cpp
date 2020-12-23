@@ -38,14 +38,15 @@
 #include <QNetworkInterface>
 #include <QPalette>
 #include <QPixmap>
-#include <QRegExp>
 #include <QString>
+#include <QXmlStreamReader>
 
 #include <thread>
 #include <chrono>
+#include <cstdlib>
 
 #ifdef Q_OS_WIN
-	#include <windows.h>
+#include <windows.h>
 #endif
 
 #include "Utils/Utils.h"
@@ -56,39 +57,63 @@
 #include "Utils/Language/Language.h"
 
 #ifdef Q_OS_UNIX
-	#ifndef SAYONARA_INSTALL_LIB_PATH
-		#define SAYONARA_INSTALL_LIB_PATH "/usr/lib/sayonara"
-	#endif
+#ifndef SAYONARA_INSTALL_LIB_PATH
+#define SAYONARA_INSTALL_LIB_PATH "/usr/lib/sayonara"
+#endif
 #endif
 
+namespace Algorithm = Util::Algorithm;
 
-namespace Algorithm=Util::Algorithm;
+namespace
+{
+	QStringList createFileExtensionList(const QStringList& extensions, bool withAsterisk)
+	{
+		QStringList result;
+		for(const auto& extension : extensions)
+		{
+			if(withAsterisk)
+			{
+				result.push_back("*." + extension);
+				result.push_back("*." + extension.toUpper());
+			}
+			else
+			{
+				result.push_back(extension);
+				result.push_back(extension.toUpper());
+			}
+		}
+
+		return result;
+	}
+}
 
 template<typename T>
-QString cvtNum2String(T num, int digits) {
-	QString str = QString::number(num);
-	while(str.size() < digits) {
+QString cvtNum2String(T num, int digits)
+{
+	auto str = QString::number(num);
+	while(str.size() < digits)
+	{
 		str.prepend("0");
 	}
 
 	return str;
 }
 
-uint64_t Util::dateToInt(const QDateTime& date_time)
+uint64_t Util::dateToInt(const QDateTime& dateTime)
 {
-	QString str = date_time.toUTC().toString("yyyyMMddHHmmss");
+	const auto str = dateTime.toUTC().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 
 QDateTime Util::intToDate(uint64_t date)
 {
-	QString str = QString::number(qulonglong(date));
+	const auto str = QString::number(qulonglong(date));
 	QDateTime dt;
 
 	if(str.size() == 12)
 	{
 		dt = QDateTime::fromString(str, "yyMMddHHmmss");
-		QDate date = dt.date();
+		auto date = dt.date();
 		date.setDate(date.year() + 100, date.month(), date.day());
 		dt.setDate(date);
 	}
@@ -103,46 +128,50 @@ QDateTime Util::intToDate(uint64_t date)
 	return dt;
 }
 
-
 uint64_t Util::currentDateToInt()
 {
-	QString str = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
+	const auto str = QDateTime::currentDateTimeUtc().toString("yyyyMMddHHmmss");
 	return str.toULongLong();
 }
 
 QString Util::stringToFirstUpper(const QString& str)
 {
-	if(str.isEmpty()){
+	if(str.isEmpty())
+	{
 		return QString();
 	}
 
-	QString ret(str);
+	auto result = str.toLower();
 
-	for(int i=0; i<ret.size()-1; i++)
+	result[0] = result[0].toUpper();
+
+	for(int i = 1; i < result.size() - 1; i++)
 	{
-		QChar currentChar = ret[i];
-		QChar nextChar = ret[i+1];
-		bool isSeparator = (!currentChar.isLetter() && !currentChar.isNumber() && currentChar != "'");
+		const auto currentChar = result[i];
+		const auto nextChar = result[i + 1];
+		const auto isSeparator = (!currentChar.isLetter() && !currentChar.isNumber() &&
+		                          currentChar != "'");
 		if(isSeparator && nextChar.isLetter())
 		{
-			ret[i+1] = nextChar.toUpper();
+			result[i + 1] = nextChar.toUpper();
 			i++;
 		}
 	}
 
-	return ret;
+	return result;
 }
 
 QString Util::stringToVeryFirstUpper(const QString& str)
 {
-	if(str.isEmpty()){
+	if(str.isEmpty())
+	{
 		return str;
 	}
 
-	QString ret = str.toLower();
-	ret.replace(0, 1, ret[0].toUpper());
+	auto result = str.toLower();
+	result.replace(0, 1, result[0].toUpper());
 
-	return ret;
+	return result;
 }
 
 QString Util::createLink(const QString& name, bool dark, bool underline)
@@ -152,61 +181,43 @@ QString Util::createLink(const QString& name, bool dark, bool underline)
 
 QString Util::createLink(const QString& name, bool dark, bool underline, const QString& target)
 {
-	const QColor color = (dark == true) ?
-				QColor("#8888FF") :
-				QPalette().color(QPalette::Link);
+	const auto color = (dark == true) ?
+	                   QColor("#8888FF") :
+	                   QPalette().color(QPalette::Link);
 
 	return createLink(name, color, underline, target);
 }
 
-
-QString Util::createLink(const QString& name, const QColor& color, bool underline, const QString& target)
+QString
+Util::createLink(const QString& name, const QColor& color, bool underline, const QString& target)
 {
-	QString newTarget;
-	QString style;
+	const auto underlineText = (underline) ? QString("underline") : QString("none");
+	const auto colorName = (color.isValid()) ? color.name(QColor::HexRgb) : QPalette().color(
+		QPalette::Text).name(QColor::HexRgb);
 
-	if(target.isEmpty()){
-		newTarget = name;
-	}
+	QMap<QString, QString> stylesheetMap
+		{
+			{"text-decoration", underlineText},
+			{"color",           colorName}
+		};
 
-	else {
-		newTarget = target;
-	}
-
-	QMap<QString, QString> stylesheetMap;
-
-	if(!underline) {
-		stylesheetMap["text-decoration"] = "none";
-	}
-
-	else {
-		stylesheetMap["text-decoration"] = "underline";
-	}
-
-	if(color.isValid())
+	auto newTarget = (target.isEmpty()) ? name : target;
+	if(!newTarget.contains("://") && !newTarget.contains("mailto:"))
 	{
-		stylesheetMap["color"] = color.name(QColor::HexRgb);
-	}
-
-	else
-	{
-		stylesheetMap["color"] = QPalette().color(QPalette::Text).name(QColor::HexRgb);
-	}
-
-	if(!newTarget.contains("://") && !newTarget.contains("mailto:")) {
 		newTarget.prepend("file://");
 	}
 
 	QStringList styleStringlist;
-	for(auto it=stylesheetMap.begin(); it != stylesheetMap.end(); it++)
+	for(auto it = stylesheetMap.begin(); it != stylesheetMap.end(); it++)
 	{
 		styleStringlist << QString("%1: %2;")
-							.arg(it.key())
-							.arg(it.value());
+			.arg(it.key())
+			.arg(it.value());
 	}
 
-	const QString ret =
-		QString("<a href=\"%1\"><span style=\"%2\">%3</span></a>")
+	const char* html = R"(<a href="%1"><span style="%2">%3</span></a>)";
+	const auto ret =
+		QString(html)
 			.arg(newTarget)
 			.arg(styleStringlist.join(" "))
 			.arg(name);
@@ -214,182 +225,112 @@ QString Util::createLink(const QString& name, const QColor& color, bool underlin
 	return ret;
 }
 
-
 QString Util::getFileFilter(Util::Extensions extensions, const QString& name)
 {
 	QStringList ret;
-	if(extensions | Extension::Soundfile){
+	if(extensions & +Extension::Soundfile)
+	{
 		ret << soundfileExtensions();
 	}
 
-	if(extensions | Extension::Playlist){
+	if(extensions & +Extension::Playlist)
+	{
 		ret << playlistExtensions();
 	}
 
-	if(extensions | Extension::Podcast){
+	if(extensions & +Extension::Podcast)
+	{
 		ret << podcastExtensions();
 	}
 
-	if(extensions | Extension::Haltdeimaul){
+	if(extensions & +Extension::Images)
+	{
 		ret << imageExtensions();
 	}
 
-	return QString("%1 (%2)").arg(name).arg(ret.join(" "));
+	return QString("%1 (%2)")
+		.arg(name)
+		.arg(ret.join(" "));
 }
 
-
-QStringList Util::soundfileExtensions(bool with_asterisk)
+QStringList Util::soundfileExtensions(bool withAsterisk)
 {
-	QStringList filters;
-	filters << "mp3"
-			<< "ogg"
-			<< "opus"
-			<< "oga"
-			<< "m4a"
-			<< "wav"
-			<< "flac"
-			<< "aac"
-			<< "wma"
-			<< "mpc"
-			<< "aiff"
-			<< "ape"
-			<< "webm";
+	const auto filters = QStringList {
+		"mp3", "ogg", "opus", "oga", "m4a", "wav", "flac", "aac", "wma", "mpc", "aiff", "ape",
+		"webm"
+	};
 
-	QStringList upper_filters;
-	for(QString& filter : filters) {
-		if(with_asterisk) {
-			filter.prepend("*.");
-		}
-
-		upper_filters << filter.toUpper();
-	}
-
-	filters.append(upper_filters);
-
-
-	return filters;
+	return createFileExtensionList(filters, withAsterisk);
 }
-
 
 QString Util::soundfileFilter()
 {
-	QStringList extensions = soundfileExtensions();
+	const auto extensions = soundfileExtensions();
 	return QString("Soundfiles (") + extensions.join(" ") + ")";
 }
 
-QStringList Util::playlistExtensions(bool with_asterisk)
+QStringList Util::playlistExtensions(bool withAsterisk)
 {
-	QStringList filters;
+	const auto filters = QStringList {"pls", "m3u", "ram", "asx"};
+	return createFileExtensionList(filters, withAsterisk);
+}
 
-	filters << "pls"
-			<< "m3u"
-			<< "ram"
-			<< "asx";
+QStringList Util::podcastExtensions(bool withAsterisk)
+{
+	const auto filters = QStringList {"xml", "rss"};
+	return createFileExtensionList(filters, withAsterisk);
+}
 
-	QStringList upper_filters;
-	for(QString& filter : filters) {
-		if(with_asterisk) {
-			filter.prepend("*.");
+QStringList Util::imageExtensions(bool withAsterisk)
+{
+	const auto filters = QStringList {"jpg", "jpeg", "png", "bmp", "tiff", "tif", "svg"};
+	return createFileExtensionList(filters, withAsterisk);
+}
+
+QString Util::easyTagFinder(const QString& tag, const QString& xmlDocument)
+{
+	if(tag.isEmpty()){
+		return QString();
+	}
+
+	if(xmlDocument.isEmpty()){
+		return QString();
+	}
+
+	const auto tags = tag.split('.');
+	auto reader = QXmlStreamReader(xmlDocument);
+
+	auto it = tags.begin();
+
+	while(reader.readNextStartElement())
+	{
+		if(reader.name() == *it)
+		{
+			it++;
+			if(it == tags.end())
+			{
+				return reader.readElementText();
+			}
 		}
-		upper_filters << filter.toUpper();
-	}
 
-	filters.append(upper_filters);
-
-	return filters;
-}
-
-
-QStringList Util::podcastExtensions(bool with_asterisk)
-{
-	QStringList filters;
-
-	filters << "xml"
-			<< "rss";
-
-	QStringList upper_filters;
-	for(QString& filter : filters) {
-		if(with_asterisk) {
-			filter.prepend("*.");
+		else
+		{
+			reader.skipCurrentElement();
 		}
-		upper_filters << filter.toUpper();
 	}
 
-	filters.append(upper_filters);
-
-	return filters;
+	return QString();
 }
-
-QStringList Util::imageExtensions(bool with_asterisk)
-{
-	QStringList filters;
-
-	filters << "jpg"
-			<< "jpeg"
-			<< "png"
-			<< "bmp"
-			<< "tiff"
-			<< "tif"
-			<< "svg";
-
-	QStringList upper_filters;
-	for(QString& filter : filters) {
-		if(with_asterisk) {
-			filter.prepend("*.");
-		}
-		upper_filters << filter.toUpper();
-	}
-
-	filters.append(upper_filters);
-
-	return filters;
-}
-
-
-QString Util::easyTagFinder(const QString& tag, const QString& xml_doc)
-{
-	int p = tag.indexOf('.');
-	QString ret = tag;
-	QString new_tag = tag;
-	QString t_rev;
-	QString new_xml_doc = xml_doc;
-
-	while(p > 0) {
-		ret = new_tag.left(p);
-		t_rev = tag.right(new_tag.length() - p -1);
-
-		new_xml_doc = easyTagFinder(ret, new_xml_doc);
-		p = t_rev.indexOf('.');
-		new_tag = t_rev;
-	}
-
-	ret = new_tag;
-
-	QString str2search_start = QString("<%1.*>").arg(ret);
-	QString str2search_end = QString("</%1>").arg(ret);
-	QString str2search = str2search_start + "(.+)" + str2search_end;
-	QRegExp rx(str2search);
-	rx.setMinimal(true);
-
-
-	int pos = 0;
-	if(rx.indexIn(new_xml_doc, pos) != -1) {
-		return rx.cap(1);
-	}
-
-	return "";
-}
-
 
 QByteArray Util::calcHash(const QByteArray& data)
 {
-	if(data.isEmpty()){
+	if(data.isEmpty())
+	{
 		return QByteArray();
 	}
 
 	return QCryptographicHash::hash(data, QCryptographicHash::Md5).toHex();
 }
-
 
 void Util::sleepMs(uint64_t ms)
 {
@@ -415,7 +356,7 @@ QStringList Util::ipAddresses()
 	{
 		QString address = host.toString();
 		if(!address.startsWith("127") &&
-			host.protocol() == QAbstractSocket::IPv4Protocol)
+		   host.protocol() == QAbstractSocket::IPv4Protocol)
 		{
 			ret << host.toString();
 		}
@@ -424,9 +365,6 @@ QStringList Util::ipAddresses()
 	return ret;
 }
 
-#include <cstdlib>
-
-
 QString Util::getEnvironment(const char* key)
 {
 #ifdef Q_OS_WIN
@@ -434,14 +372,14 @@ QString Util::getEnvironment(const char* key)
 	sp_log(Log::Info) << "Windows: Get environment variable " << key;
 #else
 	const char* c = getenv(key);
-	if(c == nullptr){
+	if(c == nullptr)
+	{
 		return QString();
 	}
 
 	return QString(c);
 #endif
 }
-
 
 void Util::setEnvironment(const QString& key, const QString& value)
 {
@@ -465,12 +403,10 @@ void Util::unsetEnvironment(const QString& key)
 #endif
 }
 
-
-
 QString Util::randomString(int max_chars)
 {
 	QString ret;
-	for(int i=0; i<max_chars; i++)
+	for(int i = 0; i < max_chars; i++)
 	{
 		char c = static_cast<char>(randomNumber(97, 122));
 		ret.append(QChar(c));
@@ -479,10 +415,10 @@ QString Util::randomString(int max_chars)
 	return ret;
 }
 
-
 QString Util::convertNotNull(const QString& str)
 {
-	if(str.isNull()){
+	if(str.isNull())
+	{
 		return QString("");
 	}
 
@@ -491,7 +427,8 @@ QString Util::convertNotNull(const QString& str)
 
 QByteArray Util::convertPixmapToByteArray(const QPixmap& pm)
 {
-	if(pm.hasAlpha()) {
+	if(pm.hasAlpha())
+	{
 		return convertPixmapToByteArray(pm, "PNG");
 	}
 
@@ -512,18 +449,16 @@ QPixmap Util::convertByteArrayToPixmap(const QByteArray& arr)
 {
 	QPixmap pm;
 	pm.loadFromData(arr, "JPG");
-	if(pm.isNull()) {
+	if(pm.isNull())
+	{
 		pm.loadFromData(arr, "PNG");
 	}
 	return pm;
 }
 
-
 QString Util::msToString(MilliSeconds msec, const QString& format)
 {
 	uint64_t secs = uint64_t(msec / 1000);
-
-	uint64_t sec = secs % 60;
 	uint64_t min = secs / 60;
 	uint64_t hours = min / 60;
 	uint64_t days = hours / 24;
@@ -541,7 +476,7 @@ QString Util::msToString(MilliSeconds msec, const QString& format)
 
 	if(format.contains("$M"))
 	{
-		sec = sec % 60;
+		secs = secs % 60;
 	}
 
 	if(days == 0)
@@ -550,18 +485,18 @@ QString Util::msToString(MilliSeconds msec, const QString& format)
 		ret.replace("$D", QString());
 	}
 
-	if(hours == 0)
+	if(days == 0 && hours == 0)
 	{
 		ret.replace("$He", QString());
 		ret.replace("$H", QString());
 	}
 
-	ret.replace("$Se", QString("%1%2").arg(sec).arg(Lang::get(Lang::SecondsShort)));
+	ret.replace("$Se", QString("%1%2").arg(secs).arg(Lang::get(Lang::SecondsShort)));
 	ret.replace("$Me", QString("%1%2").arg(min).arg(Lang::get(Lang::MinutesShort)));
 	ret.replace("$He", QString("%1%2").arg(hours).arg(Lang::get(Lang::HoursShort)));
 	ret.replace("$De", QString("%1%2").arg(days).arg(Lang::get(Lang::DaysShort)));
 
-	ret.replace("$S", cvtNum2String(sec, 2));
+	ret.replace("$S", cvtNum2String(secs, 2));
 	ret.replace("$M", cvtNum2String(min, 2));
 	ret.replace("$H", QString::number(hours));
 	ret.replace("$D", QString::number(days));

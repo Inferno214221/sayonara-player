@@ -55,8 +55,6 @@ namespace Util
 		QString calcCoverToken(const QString& artist, const QString& album);
 
 		void deleteTemporaryCovers();
-
-
 	}
 }
 

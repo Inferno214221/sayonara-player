@@ -276,8 +276,8 @@ void GenreView::reloadGenres()
 {
 	for(GenreNode* n : Algorithm::AsConst(m->genres->children))
 	{
-		m->genres->removeChild(n);
-		delete n;
+		auto* node = m->genres->removeChild(n);
+		delete node;
 	}
 
 	this->clear();

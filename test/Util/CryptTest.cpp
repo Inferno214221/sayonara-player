@@ -1,40 +1,55 @@
-#include <QObject>
-#include <QTest>
-#include <QDebug>
-#include <QString>
-
-#include <QStringList>
+#include "SayonaraTest.h"
 #include "Utils/Crypt.h"
-#include "Utils/Utils.h"
+// access working directory with Test::Base::tempPath("somefile.txt");
 
-#include <algorithm>
-
-class CryptTest : public QObject
+class CryptTest :
+	public Test::Base
 {
 	Q_OBJECT
 
-private slots:
-	void crypttest();
+	public:
+		CryptTest() :
+			Test::Base("CryptTest")
+		{}
+
+	private slots:
+		void test();
 };
 
-
-void CryptTest::crypttest()
+void CryptTest::test()
 {
-	QByteArray key = Util::randomString(32).toLocal8Bit();
+	const QStringList sources
+		{
+			"Das hier ist ein ganz langer string ohne irgendwelchen speziellen Dinge",
+			QString::fromLocal8Bit("Hier ein päär ßönderzeichen"),
+			QString::fromLocal8Bit("Выбор и предварительный просмотр нескольких обложек")
+		};
 
-	QStringList sources
+	for(const auto& data : sources)
 	{
-		"Das hier ist ein ganz langer string ohne irgendwelchen speziellen Dinge",
-		QString::fromLocal8Bit("Hier ein päär ßönderzeichen"),
-		QString::fromLocal8Bit("Выбор и предварительный просмотр нескольких обложек")
-	};
+		{
+			const auto key = "small key";
+			const auto encrypted = Util::Crypt::encrypt(data, key);
+			QVERIFY(encrypted != data);
 
-	for(const QString& source : sources)
-	{
-		QString enc = Util::Crypt::encrypt(source, key);
-		QString dec = Util::Crypt::decrypt(enc, key);
+			const auto decrypted = Util::Crypt::decrypt(encrypted, key);
+			QVERIFY(decrypted == data);
 
-		QVERIFY(source == dec);
+			const auto decrypted2 = Util::Crypt::decrypt(encrypted, "key");
+			QVERIFY(decrypted2 != data);
+		}
+
+		{
+			const auto key = "This is a really long key. Even bigger than the input data. ";
+			const auto encrypted = Util::Crypt::encrypt(data, key);
+			QVERIFY(encrypted != data);
+
+			const auto decrypted = Util::Crypt::decrypt(encrypted, key);
+			QVERIFY(decrypted == data);
+
+			const auto decrypted2 = Util::Crypt::decrypt(encrypted, "key");
+			QVERIFY(decrypted2 != data);
+		}
 	}
 }
 

@@ -33,131 +33,95 @@ namespace Util
 	class Tree
 	{
 		public:
+			Tree* parent = nullptr;
+			T data;
+			QList<Tree*> children;
 
-		Tree* parent=nullptr;
-		T data;
-		QList<Tree*> children;
+			Tree() :
+				Tree(T {}) {}
 
-		Tree()
-		{
-			parent = nullptr;
-		}
+			explicit Tree(const T& data) :
+				parent(nullptr),
+				data(data) {}
 
-		/**
-		 * @brief Tree constructor
-		 * @param data_ set the root element
-		 */
-		Tree(const T& data_) : Tree()
-		{
-			data = data_;
-		}
+			~Tree()
+			{
+				for(auto* child : children)
+				{
+					delete child;
+					child = nullptr;
+				}
 
-		~Tree()
-		{
-			for(Tree* child : children){
-				delete child; child = nullptr;
+				children.clear();
+				data = T();
 			}
 
-			children.clear();
-			data = T();
-		}
+			/**
+			 * @brief adds a child to the given node
+			 * @param node the parent node
+			 * @return pointer to inserted node
+			 */
+			Tree* addChild(Tree* node)
+			{
+				node->parent = this;
 
-		/**
-		 * copy the entire tree. Has to be deleted afterwards
-		 */
-		Tree* copy()
-		{
-			Tree* node = new Tree(this->data);
+				this->children << node;
+				this->sort(false);
 
-			for(Tree* child : children){
-				node->children << child->copy();
+				return node;
 			}
 
-			return node;
-		}
+			Tree* addChild(const T& data)
+			{
+				auto* node = new Tree(data);
+				return addChild(node);
+			}
 
+			/**
+			 * @brief remove a node from the current node
+			 * @param deletedNode node to remove
+			 * @return pointer to deletedNode
+			 */
+			Tree* removeChild(Tree* deletedNode)
+			{
+				auto it = std::find_if(children.begin(), children.end(), [&](const auto* node){
+					return (node == deletedNode);
+				});
 
-		/**
-		 * @brief adds a child to the given node
-		 * @param node the parent node
-		 * @return pointer to inserted node
-		 */
-		Tree* addChild(Tree* node)
-		{
-			node->parent = this;
+				if(it != children.end()) {
+					auto* node = *it;
+					children.erase(it);
+					node->parent = nullptr;
+					return node;
+				}
 
-			this->children << node;
-			this->sort(false);
+				return nullptr;
+			}
 
-			return node;
-		}
+			/**
+			 * @brief sort children of all nodes in ascending way according to their data
+			 * @param recursive if set to true, do it for all subnodes, too
+			 */
+			void sort(bool recursive)
+			{
+				if(children.isEmpty()) {
+					return;
+				}
 
-		Tree* addChild(const T& data)
-		{
-			Tree* node = new Tree(data);
-			return addChild(node);
-		}
+				auto lambda = [](auto* tree1, auto* tree2) {
+					return (tree1->data < tree2->data);
+				};
 
+				std::sort(children.begin(), children.end(), lambda);
 
-		/**
-		 * @brief remove a node from the current node
-		 * @param deleted_node node to remove
-		 * @return pointer to deleted_node
-		 */
-		Tree* removeChild(Tree* deleted_node)
-		{
-			deleted_node->parent = nullptr;
-
-			for(int i=0; i < children.size(); i++){
-				Tree* node = children[i];
-
-				if(node == deleted_node){
-					deleted_node = children.takeAt(i);
-					i--;
+				if(recursive)
+				{
+					for(auto* child : children)
+					{
+						child->sort(recursive);
+					}
 				}
 			}
-
-			return deleted_node;
-		}
-
-
-		/**
-		 * @brief move current node to a new parent
-		 * @param new_parent new parent of node
-		 */
-		void move(Tree* new_parent)
-		{
-			parent->removeChild(data);
-			new_parent->addChild(this);
-		}
-
-		/**
-		 * @brief sort children of all nodes in ascending way according to their data
-		 * @param recursive if set to true, do it for all subnodes, too
-		 */
-		void sort(bool recursive)
-		{
-			int i;
-
-			if(children.isEmpty()){
-				return;
-			}
-
-			auto lambda = [](Tree* a, Tree* b){
-				return (a->data < b->data);
-			};
-
-			std::sort(children.begin(), children.end(), lambda);
-
-
-			i=0;
-			for(Tree* child : children){
-				if(recursive){
-					child->sort(recursive);
-				}
-				i++;
-			}
-		}
 	};
 }
 

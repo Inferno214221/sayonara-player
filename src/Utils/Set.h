@@ -36,18 +36,16 @@ namespace Util
 			public std::set<T>
 	{
 	public:
-
 		Set() : std::set<T>() {}
 		/**
 		 * @brief Constructs a set with a single element
-		 * @param one_element the first element
+		 * @param singleElement the first element
 		 */
-		Set(const T& one_element) :
+		Set(const T& singleElement) :
 			Set()
 		{
-			this->insert(one_element);
+			this->insert(singleElement);
 		}
-
 
 		/**
 		 * @brief converts the set to a list. The order is random
@@ -123,7 +121,7 @@ namespace Util
 
 		int count() const
 		{
-			return int(this->size());
+			return static_cast<int>(this->size());
 		}
 	};
 }

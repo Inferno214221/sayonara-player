@@ -27,8 +27,8 @@ using Gui::ExtensionSet;
 
 struct ExtensionSet::Private
 {
-	Util::Set<QString> enabled_extensions;
-	Util::Set<QString> disabled_extensions;
+	Util::Set<QString> enabledExtensions;
+	Util::Set<QString> disabledExtensions;
 };
 
 ExtensionSet::ExtensionSet()
@@ -53,30 +53,30 @@ ExtensionSet& ExtensionSet::operator=(const ExtensionSet& other)
 void ExtensionSet::addExtension(const QString& ext, bool enabled)
 {
 	if(enabled){
-		m->enabled_extensions.insert(ext.toLower());
+		m->enabledExtensions.insert(ext.toLower());
 	}
 
 	else {
-		m->disabled_extensions.insert(ext.toLower());
+		m->disabledExtensions.insert(ext.toLower());
 	}
 }
 
 void ExtensionSet::removeExtension(const QString& ext)
 {
-	m->enabled_extensions.remove(ext.toLower());
-	m->disabled_extensions.remove(ext.toLower());
+	m->enabledExtensions.remove(ext.toLower());
+	m->disabledExtensions.remove(ext.toLower());
 }
 
 void ExtensionSet::clear()
 {
-	m->enabled_extensions.clear();
-	m->disabled_extensions.clear();
+	m->enabledExtensions.clear();
+	m->disabledExtensions.clear();
 }
 
 bool ExtensionSet::containsExtension(const QString& ext)
 {
-	return (m->enabled_extensions.contains(ext.toLower())) ||
-			(m->disabled_extensions.contains(ext.toLower()));
+	return (m->enabledExtensions.contains(ext.toLower())) ||
+	       (m->disabledExtensions.contains(ext.toLower()));
 }
 
 ExtensionSet& ExtensionSet::operator<<(const QString& ext)
@@ -98,41 +98,41 @@ void ExtensionSet::setEnabled(const QString& ext, bool b)
 
 void ExtensionSet::disable(const QString& ext)
 {
-	m->disabled_extensions.insert(ext.toLower());
-	m->enabled_extensions.remove(ext.toLower());
+	m->disabledExtensions.insert(ext.toLower());
+	m->enabledExtensions.remove(ext.toLower());
 }
 
 void ExtensionSet::enable(const QString& ext)
 {
-	m->disabled_extensions.remove(ext.toLower());
-	m->enabled_extensions.insert(ext.toLower());
+	m->disabledExtensions.remove(ext.toLower());
+	m->enabledExtensions.insert(ext.toLower());
 }
 
 bool ExtensionSet::hasEnabledExtensions() const
 {
-	return (m->enabled_extensions.count() > 0);
+	return (m->enabledExtensions.count() > 0);
 }
 
 bool ExtensionSet::hasDisabledExtensions() const
 {
-	return (m->disabled_extensions.count() > 0);
+	return (m->disabledExtensions.count() > 0);
 }
 
 bool ExtensionSet::isEnabled(const QString& ext) const
 {
-	return (m->enabled_extensions.contains(ext.toLower()));
+	return (m->enabledExtensions.contains(ext.toLower()));
 }
 
 QStringList ExtensionSet::enabledExtensions() const
 {
-	QStringList lst(m->enabled_extensions.toList());
+	QStringList lst(m->enabledExtensions.toList());
 	std::sort(lst.begin(), lst.end());
 	return lst;
 }
 
 QStringList ExtensionSet::disabledExtensions() const
 {
-	QStringList lst(m->disabled_extensions.toList());
+	QStringList lst(m->disabledExtensions.toList());
 	std::sort(lst.begin(), lst.end());
 	return lst;
 }

@@ -50,7 +50,7 @@ class QColor;
 namespace Util
 {
 	uint64_t currentDateToInt();
-	uint64_t dateToInt(const QDateTime& date);
+	uint64_t dateToInt(const QDateTime& dateTime);
 	QDateTime intToDate(uint64_t date);
 
 	/**
@@ -105,7 +105,7 @@ namespace Util
 	 * @brief get all supported sound file extensions
 	 * @return
 	 */
-	QStringList soundfileExtensions(bool with_asterisk=true);
+	QStringList soundfileExtensions(bool withAsterisk=true);
 
 	/**
 	 * @brief get filter for file reader or file chooser
@@ -117,15 +117,15 @@ namespace Util
 	 * @brief get all supported playlist file extensions
 	 * @return
 	 */
-	QStringList playlistExtensions(bool with_asterisk=true);
+	QStringList playlistExtensions(bool withAsterisk=true);
 
 	/**
 	 * @brief get all supported podcast file extensions
 	 * @return
 	 */
-	QStringList podcastExtensions(bool with_asterisk=true);
+	QStringList podcastExtensions(bool withAsterisk=true);
 
-	QStringList imageExtensions(bool with_asterisk=true);
+	QStringList imageExtensions(bool withAsterisk=true);
 
 
 	enum Extension
@@ -133,7 +133,7 @@ namespace Util
 		Soundfile=1<<0,
 		Playlist=1<<1,
 		Podcast=1<<2,
-		Haltdeimaul=1<<3
+		Images=1<<3
 	};
 
 	using Extensions=uint16_t;
@@ -161,10 +161,10 @@ namespace Util
 	/**
 	 * @brief gets value out of tag
 	 * @param tag form: grandparent.parent.child
-	 * @param xml_doc content of the xml document
+	 * @param xmlDocument content of the xml document
 	 * @return extracted string
 	 */
-	QString easyTagFinder(const QString&  tag, const QString& xml_doc);
+	QString easyTagFinder(const QString&  tag, const QString& xmlDocument);
 
 	/**
 	 * @brief calculate a md5 hashsum
