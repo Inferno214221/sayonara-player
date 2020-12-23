@@ -24,13 +24,10 @@
 #include "Gui/Utils/MimeData/ExternUrlsDragDropHandler.h"
 
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
 #include <QStringList>
 #include <QUrl>
-
-#include <algorithm>
 
 using namespace Gui;
 
@@ -48,20 +45,18 @@ bool MimeData::hasMetadata(const QMimeData* data)
 
 QStringList MimeData::playlists(const QMimeData* data)
 {
-	if(!data){
+	if(!data)
+	{
 		return QStringList();
 	}
 
-	if(!data->hasUrls()){
-		return QStringList();
-	}
-
-	const QList<QUrl> urls = data->urls();
 	QStringList wwwPlaylists;
 
-	for(const QUrl& url : urls)
+	const auto urls = data->urls();
+	for(const auto& url : urls)
 	{
-		if(::Util::File::isPlaylistFile(url.toString())){
+		if(::Util::File::isPlaylistFile(url.toString()))
+		{
 			wwwPlaylists << url.toString();
 		}
 	}
@@ -71,17 +66,20 @@ QStringList MimeData::playlists(const QMimeData* data)
 
 QString MimeData::coverUrl(const QMimeData* data)
 {
-	if(!data){
+	if(!data)
+	{
 		return QString();
 	}
 
 	QString coverUrl;
-	const CustomMimeData* cmd = customMimedata(data);
-	if(cmd){
+	const auto* cmd = customMimedata(data);
+	if(cmd)
+	{
 		coverUrl = cmd->coverUrl();
 	}
 
-	if(coverUrl.isEmpty()){
+	if(coverUrl.isEmpty())
+	{
 		coverUrl = data->property("cover_url").toString();
 	}
 
@@ -90,12 +88,14 @@ QString MimeData::coverUrl(const QMimeData* data)
 
 void MimeData::setCoverUrl(QMimeData* data, const QString& url)
 {
-	if(!data){
+	if(!data)
+	{
 		return;
 	}
 
-	CustomMimeData* cmd = customMimedata(data);
-	if(cmd){
+	auto* cmd = customMimedata(data);
+	if(cmd)
+	{
 		cmd->setCoverUrl(url);
 	}
 
@@ -114,28 +114,19 @@ const CustomMimeData* MimeData::customMimedata(const QMimeData* data)
 
 bool MimeData::isInnerDragDrop(const QMimeData* data, int targetPlaylistIdx)
 {
-	const CustomMimeData* cmd = customMimedata(data);
-	if(!cmd){
+	const auto* cmd = customMimedata(data);
+	if(!cmd)
+	{
 		return false;
 	}
 
 	int sourceIdx = cmd->playlistSourceIndex();
-	if(sourceIdx == -1){
+	if(sourceIdx == -1)
+	{
 		return false;
 	}
 
 	return (sourceIdx == targetPlaylistIdx);
-}
-
-bool MimeData::isDragFromPlaylist(const QMimeData* data)
-{
-	const CustomMimeData* cmd = customMimedata(data);
-	if(!cmd){
-		return false;
-	}
-
-	int sourceIdx = cmd->playlistSourceIndex();
-	return (sourceIdx != -1);
 }
 
 bool MimeData::isPlayerDrag(const QMimeData* data)
@@ -146,11 +137,13 @@ bool MimeData::isPlayerDrag(const QMimeData* data)
 AsyncDropHandler* MimeData::asyncDropHandler(const QMimeData* data)
 {
 	const auto* cmd = customMimedata(data);
-	if(cmd) {
+	if(cmd)
+	{
 		return cmd->asyncDropHandler();
 	}
 
-	if(data->hasUrls()) {
+	if(data->hasUrls())
+	{
 		return new ExternUrlsDragDropHandler(data->urls());
 	}
 

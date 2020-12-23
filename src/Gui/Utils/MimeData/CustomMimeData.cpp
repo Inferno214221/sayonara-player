@@ -20,43 +20,40 @@
 
 #include "CustomMimeData.h"
 
-#include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QUrl>
 
-#include <algorithm>
-
 using namespace Gui;
 
 struct CustomMimeData::Private
 {
+	MetaDataList tracks;
+	QString source;
+	QString coverUrl;
 
-	MetaDataList	tracks;
-	int				playlistSourceIndex;
-	QString			source;
-	QString			coverUrl;
-	Gui::AsyncDropHandler* asyncDropHandler=nullptr;
-	const void*		ptr;
+	AsyncDropHandler* asyncDropHandler = nullptr;
+	int playlistSourceIndex;
+	const void* data;
 
-	Private(const void* ptr) :
+	Private(const void* data) :
 		playlistSourceIndex(-1),
-		ptr(ptr)
-	{}
+		data(data) {}
 };
 
-CustomMimeData::CustomMimeData(const void* ptr) :
+CustomMimeData::CustomMimeData(const void* data) :
 	QMimeData()
 {
-	m = Pimpl::make<Private>(ptr);
+	m = Pimpl::make<Private>(data);
 }
 
 const void* CustomMimeData::ptr() const
 {
-	return m->ptr;
+	return m->data;
 }
 
 CustomMimeData::~CustomMimeData() = default;
@@ -66,28 +63,19 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 	m->tracks = tracks;
 
 	QList<QUrl> urls;
-	for(const MetaData& md : tracks)
-	{
-		QString filepath = md.filepath();
-		if(Util::File::isUrl(filepath))
-		{
-			urls << QUrl(filepath);
-		}
-
-		else {
-			urls << QUrl(QString("file://") + md.filepath());
-		}
-	}
+	Util::Algorithm::transform(tracks, urls, [](const auto& track) {
+		return Util::File::isUrl(track.filepath())
+		       ? QUrl(track.filepath())
+		       : QUrl(QString("file://%1").arg(track.filepath()));
+	});
 
 	this->setUrls(urls);
 
-	if(tracks.isEmpty()){
-		this->setText("No tracks");
-	}
+	const auto text = (tracks.isEmpty())
+	                  ? "No tracks"
+	                  : "tracks";
 
-	else{
-		this->setText("tracks");
-	}
+	this->setText(text);
 }
 
 const MetaDataList& CustomMimeData::metadata() const
@@ -97,7 +85,7 @@ const MetaDataList& CustomMimeData::metadata() const
 
 bool CustomMimeData::hasMetadata() const
 {
-	return (m->tracks.size() > 0);
+	return (!m->tracks.isEmpty());
 }
 
 void CustomMimeData::setPlaylistSourceIndex(int idx)

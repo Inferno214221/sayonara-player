@@ -39,7 +39,7 @@ namespace Gui
 	private:
 		PIMPL(CustomMimeData)
 
-		CustomMimeData(const void* p);
+		CustomMimeData(const void* data);
 		const void* ptr() const;
 
 	public:

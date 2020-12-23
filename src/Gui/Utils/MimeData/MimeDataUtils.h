@@ -100,14 +100,6 @@ namespace Gui
 		 */
 		bool isInnerDragDrop(const QMimeData* data, int targetPlaylistIndex);
 
-		/**
-		 * @brief is_drag_from_playlist
-		 * @ingroup MimeData
-		 * @param data
-		 * @return
-		 */
-		bool isDragFromPlaylist(const QMimeData* data);
-
 		Gui::AsyncDropHandler* asyncDropHandler(const QMimeData* data);
 	}
 }
