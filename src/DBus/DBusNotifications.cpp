@@ -74,7 +74,7 @@ DBusNotifications::~DBusNotifications() = default;
 
 void DBusNotifications::notify(const QString& title, const QString& text, const QString& image_path)
 {
-	Util::Filepath desktop_file(":/Desktop/sayonara.desktop");
+	Util::Filepath desktop_file(":/Desktop/com.sayonara-player.Sayonara.desktop");
 
 	QVariantMap map;
 	map.insert("action-icons", false);

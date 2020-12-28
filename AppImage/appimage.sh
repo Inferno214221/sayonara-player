@@ -29,7 +29,7 @@ case "$1" in
 		export PKG_CONFIG_PATH=$QT_BASE_DIR/lib/pkgconfig:$PKG_CONFIG_PATH
 		export EXTRA_QT_PLUGINS="iconengines,sqldrivers/libqsqlite.so,platforms/libqxcb.so" 
 
-		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/sayonara.desktop --plugin=qt --custom-apprun=../AppImage/AppRun
+		linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/applications/com.sayonara-player.Sayonara.desktop --plugin=qt --custom-apprun=../AppImage/AppRun
 
 		appimagetool-x86_64.AppImage AppDir
 		;;

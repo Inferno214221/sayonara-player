@@ -32,6 +32,6 @@ else()
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara.1.gz" DESTINATION share/man/man1)
 endif()
 
-install(FILES "sayonara.desktop" DESTINATION share/applications)
+install(FILES "com.sayonara-player.Sayonara.desktop" DESTINATION share/applications)
 install(FILES "sayonara.appdata.xml" DESTINATION share/metainfo)
 install(DIRECTORY "logos/" DESTINATION share/icons/hicolor)

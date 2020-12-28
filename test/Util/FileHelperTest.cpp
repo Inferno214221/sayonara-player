@@ -208,7 +208,7 @@ void FileHelperTest::systemPathsTest()
 
 void FileHelperTest::resourcePathTest()
 {
-	Util::Filepath fp(":/Desktop/sayonara.desktop");
+	Util::Filepath fp(":/Desktop/com.sayonara-player.Sayonara.desktop");
 
 	qint64 filesize=0;
 
