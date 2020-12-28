@@ -1,0 +1,55 @@
+.TH SAYONARA-QUERY 1 "@SAYONARA_MANPAGE_DATE@" "@SAYONARA_VERSION@" "Sayonara Query Tool"
+.SH NAME
+sayonara-query \- obtain information about track and player state
+.SH SYNOPSIS
+sayonara-query attribute
+.SH DESCRIPTION
+sayonara-query is intended to obtain track information such as title or artist. Another functionality of this tool is obtaining the current player state such as current volume or the current position
+.SH OPTIONS
+.IP "\fBalbum\fP"
+Album of current track
+.IP "\fBalbumArtist\fP"
+Album artist of current track
+.IP "\fBartist\fP"
+Artist of current track
+.IP "\fBdiscnumber\fP"
+Discnumber of current track
+.IP "\fBgenre\fP"
+Genre of current track
+.IP "\fBrating\fP"
+Track rating number
+.IP "\fBrating-stars\fP"
+Track rating with asterisk characters
+.IP "\fBtitle\fP"
+Track title
+.IP "\fBtrackNumber\fP"
+Track number
+.IP "\fBartUrl\fP"
+Url of current cover art
+.IP "\fBlength\fP"
+Track length
+.IP "\fBbitrate\fP"
+Track bitrate
+.IP "\fBfilesize\fP"
+Track filesize
+.IP "\fByear\fP"
+Track year
+.IP "\fBlength-sec\fP"
+Track length in seconds
+.IP "\fBlength-str\fP"
+Track length
+.SS
+.IP "\fBpos\fP"
+Current position
+.IP "\fBpos-sec\fP"
+Current position in seconds
+.IP "\fBprogress\fP"
+Current progress [0-1]
+.IP "\fBstatus\fP"
+Current playback status
+.IP "\fBvolume\fP"
+Current volume
+.SH BUGS
+Please file in new bug reports at https://gitlab.com/luciocarreras/sayonara-player
+.SH AUTHOR
+Michael Lugmair (sayonara-player@posteo.org)

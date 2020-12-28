@@ -1,12 +1,5 @@
 project(say_resources)
 
-# create sayonara menu file
-# menu file not needed anymore since .desktop file exists
-# configure_file(sayonara.menu.in
-#	${CMAKE_CURRENT_BINARY_DIR}/sayonara
-#	@ONLY
-# )
-
 configure_file(version.in ${CMAKE_BINARY_DIR}/version @ONLY)
 
 # manpage
@@ -21,15 +14,27 @@ else()
     execute_process(COMMAND env LC_TIME="en_US.utf8" date "+%d %B %Y" OUTPUT_VARIABLE SAYONARA_MANPAGE_DATE)
     string(REGEX REPLACE "\n$" "" SAYONARA_MANPAGE_DATE "${SAYONARA_MANPAGE_DATE}")
     
-    ## create manpage
+    ## create manpages
     configure_file(sayonara.1.man.in 
     	${CMAKE_CURRENT_BINARY_DIR}/sayonara.1 
+    	@ONLY
+    )
+    configure_file(sayonara-ctl.1.man.in 
+    	${CMAKE_CURRENT_BINARY_DIR}/sayonara-ctl.1 
+    	@ONLY
+    )
+    configure_file(sayonara-query.1.man.in 
+    	${CMAKE_CURRENT_BINARY_DIR}/sayonara-query.1 
     	@ONLY
     )
 
     ## create zipped manpage
     execute_process(COMMAND gzip -kf ${CMAKE_CURRENT_BINARY_DIR}/sayonara.1)
+    execute_process(COMMAND gzip -kf ${CMAKE_CURRENT_BINARY_DIR}/sayonara-ctl.1)
+    execute_process(COMMAND gzip -kf ${CMAKE_CURRENT_BINARY_DIR}/sayonara-query.1)
     install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara.1.gz" DESTINATION share/man/man1)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara-ctl.1.gz" DESTINATION share/man/man1)
+    install(FILES "${CMAKE_CURRENT_BINARY_DIR}/sayonara-query.1.gz" DESTINATION share/man/man1)
 endif()
 
 install(FILES "com.sayonara-player.Sayonara.desktop" DESTINATION share/applications)

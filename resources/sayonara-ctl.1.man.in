@@ -1,0 +1,47 @@
+.TH sayonara-ctl 1 "@SAYONARA_MANPAGE_DATE@" "@SAYONARA_VERSION@" "Sayonara Control Tool"
+.SH NAME
+sayonara-ctl \- control sayonara via dbus
+.SH SYNOPSIS
+sayonara-ctl command [parameter]
+.SH DESCRIPTION
+sayonara-ctl is intended to control sayonara via its dbus interface. This is espcially useful for desktop environments which allow the user to map keyboard shortcuts to commands.
+.SH OPTIONS
+.IP "\fBplay\fP"
+Start playback
+.IP "\fBplay-pause\fP"
+Toggle between playing and pause state
+.IP "\fBpause\fP"
+Pause playback
+.IP "\fBstop\fP"
+Stop playback
+.IP "\fBseek-us microseconds\fP"
+Jump to position in microseconds
+.IP "\fBset-shuffle 1\fP"
+Enable shuffling playback
+.IP "\fBset-shuffle 0\fP"
+Disable shuffling playback
+.IP "\fBnext\fP"
+Jump to next track
+.IP "\fBprevious\fP"
+Jump to previous track
+.IP "\fBset-volume <volume>\fP"
+Adjust volume. If volume is greater 1 it is devided by 100. See examples
+.IP "\fBinc-volume\fP"
+Increase volume
+.IP "\fBdec-volume\fP"
+Decrease volume
+.IP "\fBraise\fP"
+Show Sayonara if hidden
+.IP "\fBquit\fP"
+Quit Sayonara
+.SH EXAMPLES
+.IP "\fBStart playback\fP"
+sayonara-ctl play
+.IP "\fBJump to 1min 30sec\fP"
+sayonara-ctl seek-us 90000000
+.IP "\fBSet volume to 75%\fP"
+sayonara-ctl set-volume 75
+.SH BUGS
+Please file in new bug reports at https://gitlab.com/luciocarreras/sayonara-player
+.SH AUTHOR
+Michael Lugmair (sayonara-player@posteo.org)
