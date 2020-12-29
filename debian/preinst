@@ -1,0 +1,8 @@
+#!/bin/sh
+
+set -e
+
+dpkg-maintscript-helper rm_conffile /usr/share/applications/sayonara.desktop 1.7.0~ sayonara -- "$@"
+dpkg-maintscript-helper rm_conffile /usr/share/appdata/sayonara.appdata.xml 1.7.0~ sayonara -- "$@"
+
+
