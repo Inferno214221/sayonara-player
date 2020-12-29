@@ -75,18 +75,21 @@ deploy-sayonara-snap:
     - tags
 
 ## Fedora
-deploy-sayonara-fedora:
+build-sayonara-fedora:
   image: "fedora:latest"
   variables:
     RPM_BUILD_NCPUS: 8
   stage: build
   script:
     - dnf --refresh --assumeyes makecache
-    - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg-devel gstreamer1-plugins-base-devel zlib-devel hicolor-icon-theme auto-buildrequires
-    - dist/fedora-rpm.sh
+    - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib libnotify-devel qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg-devel gstreamer1-plugins-base-devel taglib-devel zlib-devel hicolor-icon-theme auto-buildrequires
+    - mkdir build && cd build
+    - cmake ..
+    - cd ..
+    - dist/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
   artifacts:
     paths:
-      - rpms/*.rpm
+      - /root/rpmbuild/RPMS/*.rpm
     expire_in: 1 week
   when: manual
 

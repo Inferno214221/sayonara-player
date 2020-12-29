@@ -15,7 +15,6 @@ BuildRequires:  qt5-qtsvg-devel
 BuildRequires:  gstreamer1-plugins-base-devel
 BuildRequires:  libnotify-devel
 BuildRequires:  taglib-devel
-BuildRequires:  libmtp-devel
 Requires:		qt5-qtsvg
 Requires:		hicolor-icon-theme
 Requires:		gstreamer1-plugins-bad-free
@@ -44,16 +43,9 @@ rm -rf src/3rdParty/Taglib
 
 %build
 %cmake . -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-         -DWITH_DOC=ON                       \
          -DWITH_SYSTEM_TAGLIB=ON             \
          -DCMAKE_INSTALL_PREFIX=%{_prefix}
 %cmake_build
-
-# build docs
-# update Doxyfile
-doxygen -u docs/doxygen.cfg
-# build docs
-doxygen docs/doxygen.cfg
 
 %install
 %cmake_install
@@ -65,7 +57,7 @@ rm -rf %{buildroot}/%{_datadir}/menu
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
 %files -f %{name}.lang
 %license LICENSE
@@ -81,6 +73,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.appdata.
 %dir %{_datadir}/%{name}/translations
 %dir %{_datadir}/%{name}/translations/icons
 %{_datadir}/%{name}/translations/icons/*.png
+%{_mandir}/man1/%{name}.1.gz
 
 %changelog
 * @SAYONARA_DATE_TODAY@ Michael Lugmair <sayonara-player@posteo.org> - @SAYONARA_VERSION@
