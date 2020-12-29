@@ -52,10 +52,11 @@ endif()
 set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 
 # doxygen
-message ("Looking for doxygen")
-find_package(Doxygen)
 
 if (WITH_DOC)
+	message ("Looking for doxygen")
+	find_package(Doxygen)
+
 	if (DOXYGEN_FOUND)
 		message ("Doxygen found")
 		set(DOXYFILE_IN "${CMAKE_SOURCE_DIR}/docs/doxygen.in")

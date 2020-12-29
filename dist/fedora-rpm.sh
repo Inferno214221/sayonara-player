@@ -17,7 +17,7 @@ mkdir -p ${SPEC_DIR}
 mkdir -p ${RPM_DIR}
 
 cd ${SOURCES_DIR}
-git clone https://gitlab.com/luciocarreras/sayonara-player.git sayonara-player
+git clone https://gitlab.com/luciocarreras/sayonara-player.git -b fedora-rpm-check sayonara-player
 cd sayonara-player
 
 # create spec file
