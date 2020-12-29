@@ -44,7 +44,7 @@ s:.*/\([a-zA-Z]\{2\}\).qm:%lang(\1) \0:' > %{name}.lang
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/appdata/*.appdata.xml
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata.xml
 
 %post
 /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
@@ -67,7 +67,7 @@ fi
 %{_bindir}/%{name}
 %{_bindir}/%{name}-query
 %{_bindir}/%{name}-ctl
-%{_datadir}/applications/%{name}.desktop
+%{_datadir}/applications/com.sayonara-player.Sayonara.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
 %{_datadir}/icons/hicolor/*/apps/%{name}.xpm
 %{_datadir}/metainfo/%{name}.appdata.xml

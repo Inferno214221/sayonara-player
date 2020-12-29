@@ -76,10 +76,14 @@ deploy-sayonara-snap:
 
 ## Fedora
 deploy-sayonara-fedora:
-  image: "luciocarreras/sayonara-fedora:29"
+  image: "fedora:latest"
+  variables:
+    RPM_BUILD_NCPUS: 8
   stage: build
   script:
-    - dist/fedora-rpm.sh build-and-deploy
+    - dnf --refresh --assumeyes makecache
+    - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg gstreamer1-plugins-base-devel zlib-devel hicolor-icon-theme auto-buildrequires
+    - dist/fedora-rpm.sh
   artifacts:
     paths:
       - rpms/*.rpm
