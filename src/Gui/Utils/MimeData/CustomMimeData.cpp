@@ -64,9 +64,12 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 
 	QList<QUrl> urls;
 	Util::Algorithm::transform(tracks, urls, [](const auto& track) {
-		return Util::File::isUrl(track.filepath())
-		       ? QUrl(track.filepath())
-		       : QUrl(QString("file://%1").arg(track.filepath()));
+		auto url = QUrl(track.filepath());
+		if(url.scheme().isEmpty())
+		{
+			url.setScheme("file");
+		}
+		return url;
 	});
 
 	this->setUrls(urls);

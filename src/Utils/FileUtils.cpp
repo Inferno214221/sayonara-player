@@ -204,7 +204,8 @@ QString Util::File::getFilesizeString(Filesize filesize)
 
 bool Util::File::isUrl(const QString& str)
 {
-	return QUrl(str).isValid();
+	const auto url = QUrl(str);
+	return (url.isValid() && !url.scheme().isEmpty());
 }
 
 bool Util::File::isWWW(const QString& str)
