@@ -28,6 +28,7 @@ private slots:
 	void resourcePathTest();
 	void splitDirectoriesTest();
 	void subDirAndSameFilenameTest();
+	void isUrlTest();
 };
 
 
@@ -339,6 +340,14 @@ void FileHelperTest::subDirAndSameFilenameTest()
 
 	b = Util::File::isSubdir(d1, "");
 	QVERIFY(b == false);
+}
+
+void FileHelperTest::isUrlTest()
+{
+	QVERIFY(Util::File::isUrl("file:///path/to/bla") == true);
+	QVERIFY(Util::File::isUrl("/path/to/bla") == false);
+	QVERIFY(Util::File::isUrl("http://www.domain.org/path/to/bla") == true);
+	QVERIFY(Util::File::isUrl("www.domain.org/path/to/bla") == false);
 }
 
 QTEST_GUILESS_MAIN(FileHelperTest)
