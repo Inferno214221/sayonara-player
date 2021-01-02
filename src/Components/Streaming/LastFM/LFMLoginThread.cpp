@@ -42,26 +42,28 @@ LoginThread::~LoginThread() = default;
 
 void LoginThread::login(const QString& username, const QString& password)
 {
-	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
-	connect(lfm_wa, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
+	auto* webAccess = new WebAccess();
+	connect(webAccess, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
+	connect(webAccess, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
 
 	m->loginInfo.loggedIn = false;
 	m->loginInfo.sessionKey = "";
 	m->loginInfo.subscriber = false;
 
-	UrlParams signature_data;
-		signature_data["api_key"] = LFM_API_KEY;
-		signature_data["method"] = "auth.getMobileSession";
-		signature_data["password"] = password.toLocal8Bit();
-		signature_data["username"] = username.toLocal8Bit();
+	UrlParams signatureData;
+	signatureData["api_key"] = LFM_API_KEY;
+	signatureData["method"] = "auth.getMobileSession";
+	signatureData["password"] = password;
+	signatureData["username"] = username;
 
-	signature_data.appendSignature();
+	signatureData.appendSignature();
 
-	QByteArray post_data;
-	QString url = lfm_wa->createPostUrl("https://ws.audioscrobbler.com/2.0/", signature_data, post_data);
+	QByteArray postData;
+	QString url = webAccess->createPostUrl("https://ws.audioscrobbler.com/2.0/",
+	                                       signatureData,
+	                                       postData);
 
-	lfm_wa->callPostUrl(url, post_data);
+	webAccess->callPostUrl(url, postData);
 }
 
 void LoginThread::webaccessResponseReceived(const QByteArray& data)
@@ -73,15 +75,18 @@ void LoginThread::webaccessResponseReceived(const QByteArray& data)
 	m->loginInfo.subscriber = (Util::easyTagFinder("lfm.session.subscriber", str).toInt() == 1);
 	m->loginInfo.error = str;
 
-	if(m->loginInfo.sessionKey.size() >= 32){
+	if(m->loginInfo.sessionKey.size() >= 32)
+	{
 		emit sigLoggedIn(true);
 	}
 
-	else {
+	else
+	{
 		emit sigLoggedIn(false);
 	}
 
-	if(sender()){
+	if(sender())
+	{
 		sender()->deleteLater();
 	}
 }
@@ -93,7 +98,8 @@ void LoginThread::webaccessErrorReceived(const QString& error)
 
 	emit sigError(error);
 
-	if(sender()){
+	if(sender())
+	{
 		sender()->deleteLater();
 	}
 }

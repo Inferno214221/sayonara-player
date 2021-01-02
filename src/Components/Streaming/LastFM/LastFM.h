@@ -62,7 +62,7 @@ namespace LastFM
 			void activeChanged();
 			void loginThreadFinished(bool success);
 			//void similarArtistsFetched(const IdList& playlistTrack);
-			void currentTrackChanged(const MetaData& md);
+			void currentTrackChanged(const MetaData& track);
 
 			void scrobble();
 			void scrobbleResponseReceived(const QByteArray& data);

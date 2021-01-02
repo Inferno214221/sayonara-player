@@ -44,7 +44,7 @@ namespace LastFM
 		explicit TrackChangedThread(QObject* parent=nullptr);
 		~TrackChangedThread();
 
-		void updateNowPlaying(const QString& sessionKey, const MetaData& md);
+		void updateNowPlaying(const QString& sessionKey, const MetaData& track);
 
 	private slots:
 		void updateResponseReceived(const QByteArray& response);

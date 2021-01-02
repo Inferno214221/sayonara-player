@@ -60,11 +60,11 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 {
 	m = Pimpl::make<TrackChangedThread::Private>();
 
-	ArtistList artists;
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->libraryDatabase(-1, 0);
+	auto* libraryDatabase = db->libraryDatabase(-1, 0);
 
-	lib_db->getAllArtists(artists, false);
+	ArtistList artists;
+	libraryDatabase->getAllArtists(artists, false);
 
 #ifdef SMART_COMPARE
 	_smart_comparison = new SmartCompare(artists);
@@ -74,48 +74,40 @@ TrackChangedThread::TrackChangedThread(QObject* parent) :
 
 TrackChangedThread::~TrackChangedThread() = default;
 
-void TrackChangedThread::updateNowPlaying(const QString& session_key,
-                                          const MetaData& md)
+void TrackChangedThread::updateNowPlaying(const QString& sessionKey, const MetaData& track)
 {
-	if(md.title().trimmed().isEmpty() || md.artist().trimmed().isEmpty())
+	if(track.title().trimmed().isEmpty() || track.artist().trimmed().isEmpty())
 	{
 		return;
 	}
 
-	spLog(Log::Debug, this) << "Update current_track " << md.title() + " by "
-	                        << md.artist();
+	spLog(Log::Debug, this) << "Update current_track " << track.title() + " by "
+	                        << track.artist();
 
-	auto* lfm_wa = new WebAccess();
-	connect(lfm_wa,
-	        &WebAccess::sigResponse,
-	        this,
-	        &TrackChangedThread::updateResponseReceived);
-	connect(lfm_wa,
-	        &WebAccess::sigError,
-	        this,
-	        &TrackChangedThread::updateErrorReceived);
+	auto* webAccess = new WebAccess();
+	connect(webAccess, &WebAccess::sigResponse, this, &TrackChangedThread::updateResponseReceived);
+	connect(webAccess, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
 
-	QString artist = md.artist();
+	auto artist = track.artist();
 	artist.replace("&", "&amp;");
 
-	UrlParams sig_data;
-	sig_data["api_key"] = LFM_API_KEY;
-	sig_data["artist"] = artist.toLocal8Bit();
-	sig_data["duration"] = QString::number(
-		md.durationMs() / 1000).toLocal8Bit();
-	sig_data["method"] = QString("track.updatenowplaying").toLocal8Bit();
-	sig_data["sk"] = session_key.toLocal8Bit();
-	sig_data["track"] = md.title().toLocal8Bit();
+	UrlParams signatureData;
+	signatureData["api_key"] = LFM_API_KEY;
+	signatureData["artist"] = artist;
+	signatureData["duration"] = QString::number(track.durationMs() / 1000);
+	signatureData["method"] = QString("track.updatenowplaying");
+	signatureData["sk"] = sessionKey;
+	signatureData["track"] = track.title();
 
-	sig_data.appendSignature();
+	signatureData.appendSignature();
 
-	QByteArray post_data;
-	QString url = lfm_wa->createPostUrl(
+	QByteArray postData;
+	const auto url = webAccess->createPostUrl(
 		QString("http://ws.audioscrobbler.com/2.0/"),
-		sig_data,
-		post_data);
+		signatureData,
+		postData);
 
-	lfm_wa->callPostUrl(url, post_data);
+	webAccess->callPostUrl(url, postData);
 }
 
 void TrackChangedThread::updateResponseReceived(const QByteArray& data)

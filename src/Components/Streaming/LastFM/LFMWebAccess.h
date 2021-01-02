@@ -36,41 +36,35 @@ class QByteArray;
 
 namespace LastFM
 {
-    class UrlParams :  public QMap<QByteArray, QByteArray>
-    {
+	class UrlParams : public QMap<QString, QString>
+	{
 		public:
 			UrlParams();
 			void appendSignature();
-    };
+	};
 
-    class WebAccess : public QObject
-    {
-        Q_OBJECT
+	class WebAccess : public QObject
+	{
+		Q_OBJECT
 
-    signals:
-    	void sigFinished();
-        void sigResponse(const QByteArray& response);
-        void sigError(const QString& error);
+		signals:
+			void sigFinished();
+			void sigResponse(const QByteArray& response);
+			void sigError(const QString& error);
 
-    public:
-        void callUrl(const QString& url);
-        void callPostUrl(const QString& url, const QByteArray& data);
+		public:
+			void callUrl(const QString& url);
+			void callPostUrl(const QString& url, const QByteArray& data);
 
-    public:
-        static QString parseTokenAnswer(const QString& content);
-        static QString createStandardUrl(const QString& base_url, const UrlParams& data);
-        static QString createPostUrl(const QString& base_url, const UrlParams& data, QByteArray& postData);
+			static QString createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
+			                             QByteArray& postData);
 
-    private:
-        QString parseErrorMessage(const QString& response);
-        bool checkError(const QByteArray& data);
+		private:
+			QString parseErrorMessage(const QString& response);
+			bool checkError(const QByteArray& data);
 
-	private slots:
-        void awaFinished();
-
-
-
-
-    };
+		private slots:
+			void awaFinished();
+	};
 }
 #endif /* WebAccess_H_ */
