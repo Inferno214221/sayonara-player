@@ -174,6 +174,21 @@ namespace Util
 		bool importLanguageFile(const QString& filename);
 
 
+		/**
+		 * @brief Converts two letter into four letter
+		 * @param two letter language filename
+		 * @return four letter key if available, en_GB per default
+		 */
+		QString convertOldLanguage(const QString& languageCode);
+
+
+		/**
+		 * @brief Returns all languages located in user path and all
+		 * languages in sayonara path
+		 * @return map with four letter key as key and the locale as value
+		 */
+		QMap<QString, QLocale> availableLanguages();
+
 		#ifdef SAYONARA_WITH_TESTS
 			void setTestMode();
 			void setLanguageVersion(const QString& fourLetter, const QString& version);

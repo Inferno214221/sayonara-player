@@ -33,29 +33,31 @@
 class LanguageString : public QString
 {
 public:
-	LanguageString(const QString& str);
+	LanguageString(const QString& other);
+	LanguageString(const LanguageString& other) = default;
+
+	LanguageString& operator=(const QString& other);
+	LanguageString& operator=(const LanguageString& other) = default;
 
 	/**
 	 * @brief Convert first character to upper case and rest to lower case
 	 */
-	LanguageString toFirstUpper() const;
+	LanguageString& toFirstUpper();
 
 	/**
 	 * @brief appends a space
 	 */
-	LanguageString space() const;
+	LanguageString& space();
 
 	/**
 	 * @brief appends question mark
 	 */
-	LanguageString question() const;
+	LanguageString& question();
 
 	/**
 	 * @brief Appends triple points
 	 */
-	LanguageString triplePt() const;
-
-	LanguageString& operator=(const LanguageString& other);
+	LanguageString& triplePt();
 };
 
 /**
@@ -297,7 +299,6 @@ public:
 		NUMBER_OF_LANGUAGE_PARAM_KEYS
 	};
 
-
 public:
 	Lang();
 	~Lang();
@@ -311,35 +312,6 @@ public:
 	static LanguageString get(Lang::Term term, bool* ok=nullptr);
 
 	static LanguageString getWithNumber(Lang::TermNr term, int param, bool* ok=nullptr);
-
-	/**
-	 * @brief Converts two letter into four letter
-	 * @param two letter language filename
-	 * @return four letter key if available, en_GB per default
-	 */
-	static QString convertOldLanguage(const QString& oldLang);
-
-
-	/**
-	 * @brief Returns all languages located in user path and all
-	 * languages in sayonara path
-	 * @return map with four letter key as key and the locale as value
-	 */
-	static QMap<QString, QLocale> availableLanguages();
-
-	/**
-	 * @brief Returns the two letter representation of a language
-	 * @param language_name e.g. ...lang_DE_de.qm.
-	 * @return DE for the example above
-	 */
-	static QString twoLetter(const QString& languageName);
-
-	/**
-	 * @brief Returns the four letter representation of a language
-	 * @param language_name e.g. ...lang_DE_de.qm.
-	 * @return DE for the example above
-	 */
-	static QString fourLetter(const QString& languageName);
 };
 
 #endif // LANGUAGE_H

@@ -367,9 +367,55 @@ QStringList Language::getCurrentQtTranslationPaths()
 	});
 
 	QStringList ret;
-	std::copy_if(paths.begin(), paths.end(), std::back_inserter(ret), [](const auto& path) {
+	Util::Algorithm::copyIf(paths, ret, [](const auto& path) {
 		return (Util::File::exists(path));
 	});
+
+	return ret;
+}
+
+
+QString Language::convertOldLanguage(const QString& oldLanguageName)
+{
+	const auto languages = availableLanguages().keys();
+	const auto languageCode = extractLanguageCode(oldLanguageName);
+	if(languageCode.size() != 2){
+		return "en";
+	}
+
+	const auto it = Util::Algorithm::find(languages, [&](const auto& language){
+		return (language.startsWith(languageCode) && (languages.size() > 4));
+	});
+
+	return (it != languages.end()) ? *it : "en";
+}
+
+QMap<QString, QLocale> Language::availableLanguages()
+{
+	const auto directories = QList<QDir>
+		{
+			QDir(Util::translationsSharePath()),
+			QDir(Util::translationsPath())
+		};
+
+	QMap<QString, QLocale> ret;
+	for(const auto& directory : directories)
+	{
+		if(!directory.exists()) {
+			continue;
+		}
+
+		const auto entries = directory.entryList(QStringList{"*.qm"}, QDir::Files);
+		for(const auto& entry : entries)
+		{
+			const auto key = extractLanguageCode(entry);
+			if(!key.isEmpty()) {
+				ret[key] = QLocale(key);
+			}
+		}
+	}
+
+	ret.remove("en_US");
 
 	return ret;
 }

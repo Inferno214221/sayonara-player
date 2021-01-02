@@ -28,6 +28,7 @@
 #include "Utils/Crypt.h"
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Language/LanguageUtils.h"
 
 #include <array>
 #include <iterator>
@@ -121,7 +122,7 @@ void Settings::applyFixes()
 	if(settingsRevision < 2)
 	{
 		QString language = this->get<Set::Player_Language>();
-		QString fourLetter = Lang::convertOldLanguage(language);
+		QString fourLetter = Util::Language::convertOldLanguage(language);
 		this->set<Set::Player_Language>(fourLetter);
 
 		this->set<Set::Settings_Revision>(2);

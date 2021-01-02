@@ -102,7 +102,7 @@ void GUI_LanguagePreferences::refreshCombobox()
 	ui->comboLanguages->clear();
 
 	const QString playerLanguage = GetSetting(Set::Player_Language);
-	const QMap<QString, QLocale> locales = Lang::availableLanguages();
+	const QMap<QString, QLocale> locales = Util::Language::availableLanguages();
 
 	int englishIndex = -1;
 	int currentIndex = -1;

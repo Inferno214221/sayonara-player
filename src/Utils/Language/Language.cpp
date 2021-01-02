@@ -19,53 +19,51 @@
  */
 
 #include "Language.h"
-#include "Utils.h"
+#include "Algorithm.h"
 #include "StandardPaths.h"
+#include "Utils.h"
 
 #include <QDir>
 #include <QRegExp>
 #include <QStringList>
 #include <QLocale>
 
-LanguageString::LanguageString(const QString& str) :
-	QString(str) {}
+LanguageString::LanguageString(const QString& other) :
+	QString(other)
+{}
 
-LanguageString LanguageString::toFirstUpper() const
+LanguageString& LanguageString::operator=(const QString& other)
 {
-	QString str(*this);
-	str.replace(0, 1, this->at(0).toUpper());
-
-	return str;
+	QString::operator=(other);
+	return *this;
 }
-
-LanguageString LanguageString::space() const
+LanguageString& LanguageString::toFirstUpper()
 {
-	LanguageString str = *this;
-	return str + " ";
-}
-
-LanguageString LanguageString::question() const
-{
-	LanguageString str = *this;
-	return str + "?";
-}
-
-LanguageString LanguageString::triplePt() const
-{
-	LanguageString str = *this;
-	return str + "...";
-}
-
-LanguageString& LanguageString::operator=(const LanguageString& other)
-{
-	this->clear();
-	this->append(other);
+	this->replace(0, 1, this->at(0).toUpper());
 	return *this;
 }
 
-Lang::Lang() {}
+LanguageString& LanguageString::space()
+{
+	this->append(' ');
+	return *this;
+}
 
-Lang::~Lang() {}
+LanguageString& LanguageString::question()
+{
+	this->append('?');
+	return *this;
+}
+
+LanguageString& LanguageString::triplePt()
+{
+	this->append("...");
+	return *this;
+}
+
+Lang::Lang() = default;
+
+Lang::~Lang() = default;
 
 LanguageString Lang::get(Lang::Term term, bool* ok)
 {
@@ -567,90 +565,4 @@ LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 
 			return QString();
 	}
-}
-
-QString Lang::convertOldLanguage(const QString& oldLang)
-{
-	const QString tl = twoLetter(oldLang);
-	if(tl.count() >= 2)
-	{
-		QMap<QString, QLocale> languages = availableLanguages();
-		for(const QString& fourLetter : languages.keys())
-		{
-			if(fourLetter.startsWith(tl)){
-				return fourLetter;
-			}
-		}
-	}
-
-	return "en";
-}
-
-QMap<QString, QLocale> Lang::availableLanguages()
-{
-	QMap<QString, QLocale> ret;
-
-	const auto directories = QList<QDir>
-	{
-		QDir(Util::translationsSharePath()),
-		QDir(Util::translationsPath())
-	};
-
-	for(const auto& directory : directories)
-	{
-		if(!directory.exists()) {
-			continue;
-		}
-
-		const auto entries = directory.entryList(QStringList{"*.qm"}, QDir::Files);
-		for(const auto& entry : entries)
-		{
-			const auto fl = fourLetter(entry);
-			if(!fl.isEmpty()) {
-				ret[fl] = QLocale(fl);
-			}
-
-			else {
-				const auto tl = twoLetter(entry);
-				if(!tl.isEmpty()) {
-					ret[tl] = QLocale(tl);
-				}
-			}
-		}
-	}
-
-	ret.remove("en_US");
-
-	return ret;
-}
-
-
-QString Lang::twoLetter(const QString& language_name)
-{
-	QRegExp re(".*lang_(.+)(_.*)?.qm");
-	int idx = re.indexIn(language_name);
-	if(idx < 0)
-	{
-		return QString();
-	}
-
-	return re.cap(1);
-}
-
-QString Lang::fourLetter(const QString& language_name)
-{
-	QRegExp re(".*lang_(.+).qm");
-	int idx = re.indexIn(language_name);
-	if(idx < 0)
-	{
-		return QString();
-	}
-
-	QString ret = re.cap(1);
-	if(ret.count() == 5)
-	{
-		return ret;
-	}
-
-	return QString();
 }
