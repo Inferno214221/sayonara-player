@@ -100,6 +100,7 @@ namespace
 			case ArtistMatch::Quality::Good:
 				return ArtistMatch::Quality::Poor;
 			case ArtistMatch::Quality::Poor:
+			default:
 				return ArtistMatch::Quality::Excellent;
 		}
 	}
