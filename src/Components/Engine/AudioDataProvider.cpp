@@ -11,11 +11,11 @@
 namespace EngineUtils=::Engine::Utils;
 
 static
-bool runThroughSpectrumStructure(GQuark field_id, const GValue* value, gpointer data)
+gboolean runThroughSpectrumStructure(GQuark fieldId, const GValue* value, gpointer data)
 {
 	if(G_VALUE_HOLDS_INT(value))
 	{
-		QString name(g_quark_to_string(field_id));
+		const auto name = QString(g_quark_to_string(fieldId));
 		if(name == "rate" && G_VALUE_HOLDS_INT(value))
 		{
 			auto* adp = static_cast<AudioDataProvider*>(data);
@@ -34,27 +34,26 @@ void adpDecodebinReady(GstElement* source, GstPad* new_src_pad, gpointer data)
 	auto* adp = static_cast<AudioDataProvider*>(data);
 	GstElement* audioconvert = adp->getAudioconverter();
 
-	GstPad*	sink_pad = gst_element_get_static_pad(audioconvert, "sink");
-	if(!sink_pad){
+	auto* sinkPad = gst_element_get_static_pad(audioconvert, "sink");
+	if(!sinkPad){
 		return;
 	}
 
-	if(gst_pad_is_linked(sink_pad))
+	if(gst_pad_is_linked(sinkPad))
 	{
-		gst_object_unref(sink_pad);
+		gst_object_unref(sinkPad);
 		return;
 	}
 
-	GstPadLinkReturn gplr = gst_pad_link(new_src_pad, sink_pad);
-	GstCaps* caps = gst_pad_get_current_caps(new_src_pad);
+	const auto gstPadLinkReturn = gst_pad_link(new_src_pad, sinkPad);
+	const auto* caps = gst_pad_get_current_caps(new_src_pad);
 	for(guint i=0; i<gst_caps_get_size(caps); i++)
 	{
-		GstStructure* s = gst_caps_get_structure(caps, i);
-		gst_structure_foreach(s, GstStructureForeachFunc(runThroughSpectrumStructure), data);
-
+		auto* s = gst_caps_get_structure(caps, i);
+		gst_structure_foreach(s, runThroughSpectrumStructure, data);
 	}
 
-	if(gplr != GST_PAD_LINK_OK){
+	if(gstPadLinkReturn != GST_PAD_LINK_OK){
 		spLog(Log::Warning, "AudioDataProvider") << "Cannot link pads";
 	}
 
