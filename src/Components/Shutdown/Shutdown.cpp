@@ -45,37 +45,35 @@
 
 struct Shutdown::Private
 {
-	QString			logo_path;
-	DB::Settings*	db=nullptr;
-	QTimer*			timer=nullptr;
-	QTimer*			timer_countdown=nullptr;
-	PlayManager*	playManager=nullptr;
+	QString logoPath;
+	DB::Settings* db = nullptr;
+	QTimer* timer = nullptr;
+	QTimer* timerCountdown = nullptr;
+	PlayManager* playManager = nullptr;
 
-	MilliSeconds	msecs2go;
-	bool			is_running;
+	MilliSeconds msecs2go;
+	bool isRunning;
 
 	Private(Shutdown* parent) :
-		logo_path(":/Icons/logo.png"),
+		logoPath(":/Icons/logo.png"),
+		timer(new QTimer(parent)),
+		timerCountdown(new QTimer(parent)),
+		playManager(PlayManager::instance()),
 		msecs2go(0),
-		is_running(false)
+		isRunning(false)
 	{
-
 		db = DB::Connector::instance()->settingsConnector();
-		playManager = PlayManager::instance();
-
-		timer = new QTimer(parent);
-		timer_countdown = new QTimer(parent);
 
 		timer->setInterval(100);
-		timer_countdown->setInterval(50);
+		timerCountdown->setInterval(50);
 	}
 
 	~Private()
 	{
 		timer->stop();
 		timer->deleteLater();
-		timer_countdown->stop();
-		timer_countdown->deleteLater();
+		timerCountdown->stop();
+		timerCountdown->deleteLater();
 	}
 };
 
@@ -85,7 +83,7 @@ Shutdown::Shutdown(QObject* parent) :
 	m = Pimpl::make<Private>(this);
 
 	connect(m->timer, &QTimer::timeout, this, &Shutdown::timeout);
-	connect(m->timer_countdown, &QTimer::timeout, this, &Shutdown::countdownTimeout);
+	connect(m->timerCountdown, &QTimer::timeout, this, &Shutdown::countdownTimeout);
 	connect(m->playManager, &PlayManager::sigPlaylistFinished, this, &Shutdown::playlistFinished);
 }
 
@@ -93,84 +91,78 @@ Shutdown::~Shutdown() = default;
 
 void Shutdown::shutdownAfterSessionEnd()
 {
-	m->is_running = true;
+	m->isRunning = true;
 
 	NotificationHandler::instance()->notify(
 		Lang::get(Lang::Shutdown),
 		tr("Computer will shutdown after playlist has finished"),
-		m->logo_path
+		m->logoPath
 	);
 }
 
-
 bool Shutdown::is_running() const
 {
-	return m->is_running;
+	return m->isRunning;
 }
-
 
 void Shutdown::shutdown(MilliSeconds ms)
 {
-	if(ms == 0){
+	if(ms == 0)
+	{
 		timeout();
 		return;
 	}
 
-	m->is_running = true;
+	m->isRunning = true;
 	m->msecs2go = ms;
-	m->timer->start((int) ms);
-	m->timer_countdown->start(1000);
+	m->timer->start(static_cast<int>(ms));
+	m->timerCountdown->start(1000);
+
 	emit sigStarted(ms);
 
-	int minutes = ms / 60000;
+	const auto minutes = static_cast<int>(ms / 60000);
 
 	NotificationHandler::instance()->notify(
 		Lang::get(Lang::Shutdown),
 		tr("Computer will shutdown in %n minute(s)", "", minutes),
-		m->logo_path
+		m->logoPath
 	);
 }
-
 
 void Shutdown::stop()
 {
 	spLog(Log::Info, this) << "Shutdown cancelled";
-	m->is_running = false;
+
+	m->isRunning = false;
 	m->timer->stop();
-	m->timer_countdown->stop();
+	m->timerCountdown->stop();
 	m->msecs2go = 0;
 
 	emit sigStopped();
 }
 
-
 void Shutdown::countdownTimeout()
 {
-	if(m->msecs2go >= 1000){
-		m->msecs2go -= 1000;
-	}
-
-	m->timer_countdown->start(1000);
+	m->msecs2go = std::max<MilliSeconds>(m->msecs2go - 1000, 0);
+	m->timerCountdown->start(1000);
 
 	emit sigTimeToGoChanged(m->msecs2go);
 	spLog(Log::Debug, this) << "Time to go: " << m->msecs2go;
 
-
 	if(m->msecs2go % 60000 == 0)
 	{
-		int minutes = m->msecs2go / 60000;
+		const auto minutes = static_cast<int>(m->msecs2go / 60000);
 		NotificationHandler::instance()->notify(
 			Lang::get(Lang::Shutdown),
 			tr("Computer will shutdown in %n minute(s)", "", minutes),
-			m->logo_path
+			m->logoPath
 		);
 	}
 }
 
-
 void Shutdown::timeout()
 {
-	m->is_running = false;
+	m->isRunning = false;
 	m->db->storeSettings();
 
 #ifdef Q_OS_WIN
@@ -179,101 +171,111 @@ void Shutdown::timeout()
 #else
 
 	QDBusMessage response;
-
-	QDBusInterface free_desktop_login(
-				"org.freedesktop.login1",
-				"/org/freedesktop/login1",
-				"org.freedesktop.login1.Manager",
-				 QDBusConnection::systemBus()
+	QDBusInterface freeDesktopLogin(
+		"org.freedesktop.login1",
+		"/org/freedesktop/login1",
+		"org.freedesktop.login1.Manager",
+		QDBusConnection::systemBus()
 	);
 
-	QDBusInterface free_desktop_console_kit(
-				"org.freedesktop.ConsoleKit",
-				"/org/freedesktop/ConsoleKit/Manager",
-				"org.freedesktop.ConsoleKit.Manager",
-				QDBusConnection::systemBus()
+	QDBusInterface freeDesktopConsoleKit(
+		"org.freedesktop.ConsoleKit",
+		"/org/freedesktop/ConsoleKit/Manager",
+		"org.freedesktop.ConsoleKit.Manager",
+		QDBusConnection::systemBus()
 	);
 
-	QDBusInterface gnome_session_manager(
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				QDBusConnection::sessionBus()
+	QDBusInterface gnomeSessionManager(
+		"org.gnome.SessionManager",
+		"/org/gnome/SessionManager",
+		"org.gnome.SessionManager",
+		QDBusConnection::sessionBus()
 	);
 
-	QDBusInterface mate_session_manager(
-				"org.mate.SessionManager",
-				"/org/mate/SessionManager",
-				"org.mate.SessionManager",
-				QDBusConnection::sessionBus()
+	QDBusInterface mateSessionManager(
+		"org.mate.SessionManager",
+		"/org/mate/SessionManager",
+		"org.mate.SessionManager",
+		QDBusConnection::sessionBus()
 	);
 
-
-	QDBusInterface kde_session_manager(
-				"org.kde.ksmserver",
-				"/KSMServer",
-				"org.kde.KSMServerInterface",
-				QDBusConnection::sessionBus()
+	QDBusInterface kdeSessionManager(
+		"org.kde.ksmserver",
+		"/KSMServer",
+		"org.kde.KSMServerInterface",
+		QDBusConnection::sessionBus()
 	);
 
-
-	if(QProcess::startDetached("systemctl poweroff")){
+	if(QProcess::startDetached("systemctl", QStringList {"poweroff"}))
+	{
 		return;
 	}
 
-	bool g_pwr1 = QProcess::startDetached("gnome-power-cmd.sh shutdown");
-	bool g_pwr2 = QProcess::startDetached("gnome-power-cmd shutdown");
+	const auto gnomePowerCmd1 = QProcess::startDetached("gnome-power-cmd.sh",
+	                                                    QStringList {"shutdown"});
+	const auto gnomePowerCmd2 = QProcess::startDetached("gnome-power-cmd",
+	                                                    QStringList {"shutdown"});
 
-	if(g_pwr1 || g_pwr2){
+	if(gnomePowerCmd1 || gnomePowerCmd2)
+	{
 		return;
 	}
 
-	response = free_desktop_login.call("PowerOff", true);
-
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = freeDesktopLogin.call("PowerOff", true);
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = gnome_session_manager.call("RequestShutdown");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = gnomeSessionManager.call("RequestShutdown");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = gnome_session_manager.call("Shutdown");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = gnomeSessionManager.call("Shutdown");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = kde_session_manager.call("logout", 0, 2, 2);
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = kdeSessionManager.call("logout", 0, 2, 2);
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = kde_session_manager.call("Shutdown");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = kdeSessionManager.call("Shutdown");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = mate_session_manager.call("RequestShutdown");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = mateSessionManager.call("RequestShutdown");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = mate_session_manager.call("Shutdown");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = mateSessionManager.call("Shutdown");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	response = free_desktop_console_kit.call("Stop");
-	if(response.type() != QDBusMessage::ErrorMessage){
+	response = freeDesktopConsoleKit.call("Stop");
+	if(response.type() != QDBusMessage::ErrorMessage)
+	{
 		return;
 	}
 
-	if(QProcess::startDetached("sudo shutdown -P now")){
+	if(QProcess::startDetached("sudo shutdown", QStringList {"-P", "now"}))
+	{
 		return;
 	}
 
-	if(QProcess::startDetached("sudo shutdown -h -P now")){
+	if(QProcess::startDetached("sudo shutdown", QStringList {"-h", "-P", "now"}))
+	{
 		return;
 	}
 
@@ -282,10 +284,10 @@ void Shutdown::timeout()
 #endif
 }
 
-
 void Shutdown::playlistFinished()
 {
-	if( m->is_running ){
+	if(m->isRunning)
+	{
 		timeout();
 	}
 }
