@@ -255,6 +255,22 @@ void SearchBar::initContextMenu()
 	m->contextMenu->addActions(actions);
 }
 
+bool SearchBar::event(QEvent* e)
+{
+	// Do not intercept "Space" key unless this edit box contains at least
+	// one character. Otherwise the default Play/Pause shortcut wouldn't
+	// work while this edit box has focus.
+	if(e->type() == QEvent::ShortcutOverride)
+	{
+		const auto* ke = static_cast<QKeyEvent*>(e);
+		if((ke->modifiers() == Qt::NoModifier) && (ke->key() == Qt::Key_Space) && text().isEmpty())
+		{
+			return true;
+		}
+	}
+	return Parent::event(e);
+}
+
 void SearchBar::keyPressEvent(QKeyEvent* e)
 {
 	if(e->key() == Qt::Key_Escape)

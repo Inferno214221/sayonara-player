@@ -116,6 +116,7 @@ namespace Library
 			void livesearchTriggered(bool b);
 
 		protected:
+			bool event(QEvent* e) override;
 			void keyPressEvent(QKeyEvent* e) override;
 			void languageChanged() override;
 			void skinChanged() override;
