@@ -29,6 +29,11 @@
 #include "Utils/Pimpl.h"
 
 class QPixmap;
+class PlayManager;
+namespace Playlist
+{
+	class Handler;
+}
 
 /**
  * @brief Remote control allows to control Sayonara from an external application via network.
@@ -86,81 +91,57 @@ class QPixmap;
  * <B>pl-track-total-time<int></B> \t length of track in seconds \n
  */
 class RemoteControl :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(RemoteControl)
 
-public:
-	explicit RemoteControl(QObject* parent=nullptr);
-	~RemoteControl() override;
+	public:
+		RemoteControl(Playlist::Handler* playlistHandler, PlayManager* playManager, QObject* parent = nullptr);
+		~RemoteControl() override;
 
-	bool isConnected() const;
+		bool isConnected() const;
 
-private:
-	void init();
+	private:
+		void init();
 
-	void setVolume(int vol);
-	void seekRelative(int posPercent);
-	void seekRelativeMs(int posMs);
-	void seekAbsoluteMs(int posMs);
-	void changeTrack(int idx);
+		void setVolume(int volume);
+		void seekRelative(int posPercent);
+		void seekRelativeMs(int positionMs);
+		void seekAbsoluteMs(int positionMs);
+		void changeTrack(int trackIndex);
 
-	void showApi();
-	void requestState();
+		void showApi();
+		void requestState();
 
-	int extractParameterInt(const QByteArray& arr, int commandLength);
+		void writePlaystate();
+		void writeBroadcastInfo();
+		void writeCurrentTrack();
+		void writeVolume();
+		void writeCurrentPosition();
+		void writePlaylist();
+		void writeSayonaraIdAndName();
 
-	void insertJsonPlaystate(QJsonObject& o);
-	void writePlaystate();
+		void searchCover();
+		void activeChanged();
 
-	void insertJsonBroadcastInfo(QJsonObject& o);
-	void writeBroadcastInfo();
+	private slots:
+		void newConnection();
+		void socketDisconnected();
+		void newRequest();
 
-	void insertJsonCurrentTrack(QJsonObject& o);
-	void writeCurrentTrack();
+		void currentPositionChangedMs(MilliSeconds positionMs);
+		void currentTrackChanged(const MetaData& track);
+		void volumeChanged(int volume);
+		void playstateChanged(PlayState playstate);
+		void activePlaylistChanged(int index);
+		void activePlaylistContentChanged(int index);
 
-	void insertJsonVolume(QJsonObject& o) const;
-	void writeVolume();
+		void coverFound(const QPixmap& pixmap);
 
-	void insertJsonCurrentPosition(QJsonObject& o) const;
-	void writeCurrentPosition();
-
-	void insertJsonPlaylist(QJsonArray& o) const;
-	void writePlaylist();
-
-	void insertJsonSayonaraIdAndName(QJsonObject& obj) const;
-	void writeSayonaraIdAndName();
-
-	void searchCover();
-	void jsonCover(QJsonObject& o, const QPixmap& pm) const;
-
-	void write(const QByteArray& arr);
-
-	void activeChanged();
-
-
-private slots:
-	void newConnection();
-	void socketDisconnected();
-	void newRequest();
-
-	void currentPositionChangedMs(MilliSeconds pos);
-	void currentTrackChanged(const MetaData& md);
-	void volumeChanged(int vol);
-	void volumeTimerTimeout();
-	void playstateChanged(PlayState playstate);
-	void activePlaylistChanged(int index);
-	void activePlaylistContentChanged(int index);
-
-	void coverFound(const QPixmap& pm);
-
-	void remoteActiveChanged();
-	void remotePortChanged();
-	void broadcastChanged();
-
+		void remoteActiveChanged();
+		void remotePortChanged();
+		void broadcastChanged();
 };
-
-
 
 #endif // REMOTECONTROL_H

@@ -144,6 +144,8 @@ struct Application::Private
 	InstanceThread* instanceThread = nullptr;
 	MetaTypeRegistry* metatypeRegistry = nullptr;
 	Session::Manager* session = nullptr;
+	PlayManager* playManager = nullptr;
+	Playlist::Handler* playlistHandler = nullptr;
 
 	bool shutdownTriggered;
 
@@ -162,6 +164,9 @@ struct Application::Private
 		db->settingsConnector()->loadSettings();
 
 		session = Session::Manager::instance();
+
+		playManager = PlayManager::instance();
+		playlistHandler = Playlist::Handler::instance();
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
@@ -357,13 +362,12 @@ void Application::initPlayer(bool force_show)
 
 void Application::initPlaylist(const QStringList& filesToPlay)
 {
-	auto* plh = Playlist::Handler::instance();
-	plh->loadOldPlaylists();
+	m->playlistHandler->loadOldPlaylists();
 
 	if(!filesToPlay.isEmpty())
 	{
-		const QString playlistName = plh->requestNewPlaylistName();
-		plh->createPlaylist(filesToPlay, playlistName);
+		const QString playlistName = m->playlistHandler->requestNewPlaylistName();
+		m->playlistHandler->createPlaylist(filesToPlay, playlistName);
 	}
 }
 
@@ -474,8 +478,8 @@ void Application::shutdown()
 {
 	PlayerPlugin::Handler::instance()->shutdown();
 	Engine::Handler::instance()->shutdown();
-	Playlist::Handler::instance()->shutdown();
-	PlayManager::instance()->shutdown();
+	m->playlistHandler->shutdown();
+	m->playManager->shutdown();
 
 	m->shutdownTriggered = true;
 }
@@ -484,7 +488,7 @@ void Application::remoteControlActivated()
 {
 	if(GetSetting(Set::Remote_Active) && !m->remoteControl)
 	{
-		m->remoteControl = new RemoteControl(this);
+		m->remoteControl = new RemoteControl(m->playlistHandler, m->playManager, this);
 	}
 }
 
