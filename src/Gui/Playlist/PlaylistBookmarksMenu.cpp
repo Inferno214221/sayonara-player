@@ -99,10 +99,10 @@ void BookmarksMenu::bookmarksChanged()
 		pph->showPlugin("Bookmarks");
 	});
 
-	auto* pm = PlayManager::instance();
+	auto* playManager = PlayManagerProvider::instance()->playManager();
 	edit_action->setEnabled
 	(
-		(metadata().id() == pm->currentTrack().id())
+		(metadata().id() == playManager->currentTrack().id())
 	);
 }
 

@@ -39,12 +39,14 @@ using Session::Manager;
 
 struct Manager::Private
 {
+	PlayManager* playManager;
 	Session::Id sessionId;
 	QList<Session::Id> sessionIds;
 	QList<Session::Timecode> sessionDays;
 	bool playtimeResetted;
 
 	Private() :
+		playManager(PlayManagerProvider::instance()->playManager()),
 		playtimeResetted(true)
 	{
 		auto* db = DB::Connector::instance();
@@ -77,8 +79,7 @@ struct Manager::Private
 Manager::Manager()
 {
 	m = Pimpl::make<Private>();
-
-	connect(PlayManager::instance(), &PlayManager::sigPositionChangedMs, this, &Manager::positionChanged);
+	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &Manager::positionChanged);
 }
 
 Manager::~Manager() = default;
@@ -88,8 +89,7 @@ void Manager::positionChanged(MilliSeconds ms)
 	Q_UNUSED(ms)
 	static const MilliSeconds MinTime=5000;
 
-	auto* pm = PlayManager::instance();
-	MilliSeconds playtime = pm->currentTrackPlaytimeMs();
+	MilliSeconds playtime = m->playManager->currentTrackPlaytimeMs();
 
 	if(playtime > MinTime && m->playtimeResetted)
 	{
@@ -97,7 +97,7 @@ void Manager::positionChanged(MilliSeconds ms)
 		auto* db = DB::Connector::instance();
 		DB::Session* sessionConnector = db->sessionConnector();
 
-		sessionConnector->addTrack(m->sessionId, pm->currentTrack());
+		sessionConnector->addTrack(m->sessionId, m->playManager->currentTrack());
 
 		emit sigSessionChanged(m->sessionId);
 	}

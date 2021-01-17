@@ -163,9 +163,11 @@ struct Application::Private
 		db = DB::Connector::instance();
 		db->settingsConnector()->loadSettings();
 
-		session = Session::Manager::instance();
+		auto* playManagerProvider = PlayManagerProvider::instance();
+		playManagerProvider->init(new PlayManager());
+		playManager = playManagerProvider->playManager();
 
-		playManager = PlayManager::instance();
+		session = Session::Manager::instance();
 		playlistHandler = Playlist::Handler::instance();
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
@@ -479,7 +481,7 @@ void Application::shutdown()
 	PlayerPlugin::Handler::instance()->shutdown();
 	Engine::Handler::instance()->shutdown();
 	m->playlistHandler->shutdown();
-	m->playManager->shutdown();
+	PlayManagerProvider::instance()->shutdown();
 
 	m->shutdownTriggered = true;
 }

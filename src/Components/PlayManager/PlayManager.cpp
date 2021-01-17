@@ -109,8 +109,7 @@ struct PlayManager::Private
 	}
 };
 
-PlayManager::PlayManager(QObject* parent) :
-	QObject(parent)
+PlayManager::PlayManager()
 {
 	m = Pimpl::make<Private>();
 
@@ -496,4 +495,42 @@ void PlayManager::tracksDeleted()
 	if(deletedTracks.contains(m->md)) {
 		stop();
 	}
+}
+
+
+struct PlayManagerProvider::Private
+{
+	PlayManager* playManager=nullptr;
+
+	Private() = default;
+	~Private()
+	{
+		if(playManager)
+		{
+			delete playManager;
+			playManager = nullptr;
+		}
+	}
+};
+
+PlayManagerProvider::PlayManagerProvider()
+{
+	m = Pimpl::make<Private>();
+}
+
+PlayManagerProvider::~PlayManagerProvider() = default;
+
+void PlayManagerProvider::init(PlayManager* playManager)
+{
+	m->playManager = playManager;
+}
+
+void PlayManagerProvider::shutdown()
+{
+	m->playManager->shutdown();
+}
+
+PlayManager* PlayManagerProvider::playManager()
+{
+	return m->playManager;
 }

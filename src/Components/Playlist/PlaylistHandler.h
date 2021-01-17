@@ -110,7 +110,6 @@ namespace Playlist
 
 
 		public:
-
 			/**
 			 * @brief Call this before the program stops.
 			 * Singletons and Destructors don't work out so well
@@ -312,6 +311,8 @@ namespace Playlist
 
 
 			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletion_mode);
+
+			void applyPlaylistActionAfterDoubleClick();
 
 		public slots:
 			/**

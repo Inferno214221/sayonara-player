@@ -61,11 +61,11 @@ struct DBusMPRIS::MediaPlayer2::Private
 		playback_status("Stopped"),
 		pos(0),
 		player(player),
+		playManager(PlayManagerProvider::instance()->playManager()),
 		volume(1.0),
 		initialized(false)
 	{
 		cover_path = Util::Filepath(Cover::Location::invalidPath()).fileystemPath();
-		playManager = PlayManager::instance();
 		volume = GetSetting(Set::Engine_Vol) / 100.0;
 
 		pos = (playManager->currentPositionMs() * 1000);

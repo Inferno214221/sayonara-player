@@ -89,7 +89,7 @@ Gui::CoverButton* GUI_ControlsNew::btnCover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::ratingChangedHere(bool save)
 {
-	MetaData md = PlayManager::instance()->currentTrack();
+	const auto& md = PlayManagerProvider::instance()->playManager()->currentTrack();
 
 	if(!save)
 	{

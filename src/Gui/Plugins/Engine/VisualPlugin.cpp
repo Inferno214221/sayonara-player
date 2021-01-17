@@ -57,7 +57,8 @@ VisualPlugin::~VisualPlugin()
 
 void VisualPlugin::initUi()
 {
-	connect(PlayManager::instance(), &PlayManager::sigPlaystateChanged, this, &VisualPlugin::playstate_changed);
+	auto* playManager = PlayManagerProvider::instance()->playManager();
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, &VisualPlugin::playstate_changed);
 
 	m_ecsc = new VisualColorStyleChooser(minimumWidth(), minimumHeight());
 	m->style_settings = new GUI_StyleSettings(this);

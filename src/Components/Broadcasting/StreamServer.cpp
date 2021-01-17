@@ -20,6 +20,8 @@
 
 #include "StreamServer.h"
 
+#include "Components/PlayManager/PlayManager.h"
+
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
@@ -29,9 +31,6 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
-
-#include "Components/Engine/EngineHandler.h"
-#include "Components/PlayManager/PlayManager.h"
 
 #include <QHostAddress>
 #include <QTcpServer>
@@ -43,8 +42,6 @@ namespace Algorithm = Util::Algorithm;
 struct StreamServer::Private
 {
 	QTcpServer* server = nullptr;        // the server
-
-	MetaData currentTrack;                // cur played track
 
 	QList<QPair<QTcpSocket*, QString>> pending;                // pending requests queue
 
@@ -65,9 +62,6 @@ StreamServer::StreamServer(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<StreamServer::Private>();
-
-	auto* pm = PlayManager::instance();
-	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &StreamServer::trackChanged);
 
 	ListenSetting(Set::Broadcast_Active, StreamServer::activeChanged);
 	ListenSetting(SetNoDB::MP3enc_found, StreamServer::activeChanged);
@@ -270,7 +264,7 @@ void StreamServer::acceptClient(QTcpSocket* socket, const QString& ip)
 
 	spLog(Log::Info, this) << "New client request from " << ip << " (" << m->clients.size() << ")";
 
-	auto* sw = new StreamWriter(socket, ip, m->currentTrack);
+	auto* sw = new StreamWriter(socket, ip);
 	connect(sw, &StreamWriter::sigDisconnected, this, &StreamServer::disconnected);
 	connect(sw, &StreamWriter::sigNewConnection, this, &StreamServer::newConnection);
 
@@ -289,15 +283,6 @@ void StreamServer::rejectClient(QTcpSocket* socket, const QString& ip)
 void StreamServer::newConnection(const QString& ip)
 {
 	Q_UNUSED(ip)
-}
-
-void StreamServer::trackChanged(const MetaData& md)
-{
-	m->currentTrack = md;
-	for(StreamWriter* sw : Algorithm::AsConst(m->clients))
-	{
-		sw->changeTrack(md);
-	}
 }
 
 // when user forbids further streaming

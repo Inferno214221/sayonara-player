@@ -21,20 +21,16 @@
 #include "AbstractLibrary.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/PlayManager/PlayManager.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
-#include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
-#include "Utils/Playlist/PlaylistMode.h"
-#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
@@ -334,7 +330,7 @@ void AbstractLibrary::prepareFetchedTracksForPlaylist(bool new_playlist)
 		);
 	}
 
-	setPlaylistActionAfterDoubleClick();
+	plh->applyPlaylistActionAfterDoubleClick();
 }
 
 void AbstractLibrary::prepareCurrentTracksForPlaylist(bool new_playlist)
@@ -355,7 +351,7 @@ void AbstractLibrary::prepareCurrentTracksForPlaylist(bool new_playlist)
 		);
 	}
 
-	setPlaylistActionAfterDoubleClick();
+	plh->applyPlaylistActionAfterDoubleClick();
 }
 
 void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool new_playlist)
@@ -376,36 +372,8 @@ void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool ne
 		);
 	}
 
-	setPlaylistActionAfterDoubleClick();
+	plh->applyPlaylistActionAfterDoubleClick();
 }
-
-void AbstractLibrary::setPlaylistActionAfterDoubleClick()
-{
-	auto* plh = Playlist::Handler::instance();
-	auto* playManager = PlayManager::instance();
-	Playlist::Mode plm = GetSetting(Set::PL_Mode);
-
-	bool append = (plm.append() == Playlist::Mode::State::On);
-
-	if(GetSetting(Set::Lib_DC_DoNothing))
-	{
-		return;
-	}
-
-	else if(GetSetting(Set::Lib_DC_PlayIfStopped))
-	{
-		if(playManager->playstate() != PlayState::Playing)
-		{
-			plh->changeTrack(0, plh->current_index());
-		}
-	}
-
-	else if(GetSetting(Set::Lib_DC_PlayImmediately) && !append)
-	{
-		plh->changeTrack(0, plh->current_index());
-	}
-}
-
 
 void AbstractLibrary::playNextFetchedTracks()
 {

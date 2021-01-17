@@ -58,7 +58,7 @@ struct Shutdown::Private
 		logoPath(":/Icons/logo.png"),
 		timer(new QTimer(parent)),
 		timerCountdown(new QTimer(parent)),
-		playManager(PlayManager::instance()),
+		playManager(PlayManagerProvider::instance()->playManager()),
 		msecs2go(0),
 		isRunning(false)
 	{

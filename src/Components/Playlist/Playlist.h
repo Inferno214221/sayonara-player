@@ -29,6 +29,8 @@
 
 #include <QObject>
 
+class PlayManager;
+
 namespace Playlist
 {
 	/**
@@ -54,7 +56,7 @@ namespace Playlist
 			void sigCurrentScannedFileChanged(const QString& currentFile);
 
 		public:
-			explicit Playlist(int idx, const QString& name);
+			explicit Playlist(int idx, const QString& name, PlayManager* playManager);
 			~Playlist() override;
 
 			int				createPlaylist(const MetaDataList& tracks);

@@ -40,6 +40,7 @@ struct Bookmarks::Private
 	Seconds			loopEnd;
 
 	Private() :
+		playManager(PlayManagerProvider::instance()->playManager()),
 	    previousIndex(-1),
 	    nextIndex(-1),
 	    timeOffset(0),
@@ -47,8 +48,6 @@ struct Bookmarks::Private
 	    loopStart(0),
 	    loopEnd(0)
 	{
-		playManager = PlayManager::instance();
-
 		reset();
 	}
 

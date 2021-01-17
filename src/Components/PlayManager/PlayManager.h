@@ -34,8 +34,6 @@ class PlayManager :
 		public QObject
 {
 	Q_OBJECT
-
-	SINGLETON_QOBJECT(PlayManager)
 	PIMPL(PlayManager)
 
 signals:
@@ -293,6 +291,9 @@ public slots:
 	void error(const QString& message);
 
 public:
+	PlayManager();
+	virtual ~PlayManager();
+
 	/**
 	 * @brief get current play state
 	 * @return PlayState enum
@@ -351,6 +352,18 @@ private slots:
 	void		trackMetadataChanged();
 	void		tracksDeleted();
 };
+
+class PlayManagerProvider
+{
+	PIMPL(PlayManagerProvider)
+		SINGLETON(PlayManagerProvider)
+
+	public:
+		void init(PlayManager* playManager);
+		void shutdown();
+		PlayManager* playManager();
+};
+
 
 #endif
 

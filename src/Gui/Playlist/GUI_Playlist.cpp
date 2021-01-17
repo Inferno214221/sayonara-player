@@ -77,7 +77,14 @@ static Message::Answer showSaveMessageBox(QWidget* parent, Util::SaveAsAnswer an
 }
 
 
-struct GUI_Playlist::Private {};
+struct GUI_Playlist::Private
+{
+	PlayManager* playManager;
+
+	Private() :
+		playManager(PlayManagerProvider::instance()->playManager())
+	{}
+};
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	Widget(parent)
@@ -95,9 +102,8 @@ GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	connect(handler, &Handler::sigNewPlaylistAdded, this, &GUI_Playlist::playlistAdded);
 	connect(handler, &Handler::sigCurrentPlaylistChanged, this, &GUI_Playlist::playlistIdxChanged);
 
-	auto* playManager = PlayManager::instance();
-	connect(playManager, &PlayManager::sigPlaylistFinished,	this, &GUI_Playlist::playlistFinished);
-	connect(playManager, &PlayManager::sigPlaystateChanged,	this, &GUI_Playlist::playstateChanged);
+	connect(m->playManager, &PlayManager::sigPlaylistFinished,	this, &GUI_Playlist::playlistFinished);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged,	this, &GUI_Playlist::playstateChanged);
 
 	connect(ui->twPlaylists, &TabWidget::sigAddTabClicked, this, &GUI_Playlist::addPlaylistButtonPressed);
 	connect(ui->twPlaylists, &TabWidget::tabCloseRequested, this, &GUI_Playlist::tabClosePlaylistClicked);
@@ -160,7 +166,7 @@ void GUI_Playlist::bookmarkSelected(int idx, Seconds timestamp)
 {
 	Playlist::Handler* plh = Playlist::Handler::instance();
 	plh->changeTrack(idx, plh->current_index());
-	PlayManager::instance()->seekAbsoluteMs(timestamp * 1000);
+	m->playManager->seekAbsoluteMs(timestamp * 1000);
 }
 
 void GUI_Playlist::addPlaylistButtonPressed()
@@ -513,7 +519,7 @@ void GUI_Playlist::checkTabIcon()
 		return;
 	}
 
-	PlayState state = PlayManager::instance()->playstate();
+	PlayState state = m->playManager->playstate();
 	if(state == PlayState::Stopped){
 		return;
 	}

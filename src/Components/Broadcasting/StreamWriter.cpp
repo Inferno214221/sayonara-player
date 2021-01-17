@@ -31,26 +31,32 @@
 
 #include <QTcpSocket>
 
+namespace
+{
+	QString getCurrentTitle()
+	{
+		auto* playManager = PlayManagerProvider::instance()->playManager();
+		return QString("%1 - %2")
+			.arg(playManager->currentTrack().albumArtist())
+			.arg(playManager->currentTrack().title());
+	}
+}
+
 struct StreamWriter::Private
 {
+	PlayManager* playManager = nullptr;
 	Engine::Handler* engine = nullptr;
-
 	StreamHttpParser* parser = nullptr;
-
 	StreamDataSender* sender = nullptr;
-
 	QTcpSocket* socket = nullptr;
-
-	QString streamTitle;
-
 	QString ip;
-
 	StreamWriter::Type type;
 
 	bool dismissed; // after that, only trash will be sent
 	bool sendData; // after that, no data at all will be sent
 
 	Private(QTcpSocket* socket, const QString& ip) :
+		playManager(PlayManagerProvider::instance()->playManager()),
 		socket(socket),
 		ip(ip),
 		type(StreamWriter::Type::Undefined),
@@ -64,11 +70,10 @@ struct StreamWriter::Private
 };
 
 // socket is the client socket
-StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData& md) :
+StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip) :
 	Engine::RawSoundReceiverInterface()
 {
 	m = Pimpl::make<Private>(socket, ip);
-	m->streamTitle = md.artist() + " - " + md.title();
 
 	if(m->socket->bytesAvailable())
 	{
@@ -81,19 +86,19 @@ StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData
 		m->engine = nullptr;
 	});
 
-	connect(PlayManager::instance(), &PlayManager::sigCurrentTrackChanged, this, [=](const MetaData&) {
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [=](const MetaData&) {
 		this->clearSocket();
 	});
 
-	connect(PlayManager::instance(), &PlayManager::sigSeekedRelative, this, [=](double) {
+	connect(m->playManager, &PlayManager::sigSeekedRelative, this, [=](double) {
 		this->clearSocket();
 	});
 
-	connect(PlayManager::instance(), &PlayManager::sigSeekedAbsoluteMs, this, [=](MilliSeconds) {
+	connect(m->playManager, &PlayManager::sigSeekedAbsoluteMs, this, [=](MilliSeconds) {
 		this->clearSocket();
 	});
 
-	connect(PlayManager::instance(), &PlayManager::sigSeekedRelativeMs, this, [=](MilliSeconds) {
+	connect(m->playManager, &PlayManager::sigSeekedRelativeMs, this, [=](MilliSeconds) {
 		this->clearSocket();
 	});
 
@@ -150,7 +155,7 @@ void StreamWriter::writeAudioData(const QByteArray& data)
 
 	if(m->parser->isIcyStream())
 	{
-		m->sender->sendIcyData(data, m->streamTitle);
+		m->sender->sendIcyData(data, getCurrentTitle());
 	} 
 
 	else
@@ -171,7 +176,7 @@ bool StreamWriter::sendFavicon()
 
 bool StreamWriter::sendMetadata()
 {
-	return m->sender->sendMetadata(m->streamTitle);
+	return m->sender->sendMetadata(getCurrentTitle());
 }
 
 bool StreamWriter::sendBackground()
@@ -181,17 +186,12 @@ bool StreamWriter::sendBackground()
 
 bool StreamWriter::sendHtml5()
 {
-	return m->sender->sendHtml5(m->streamTitle);
+	return m->sender->sendHtml5(getCurrentTitle());
 }
 
 bool StreamWriter::sendHeader(bool reject)
 {
 	return m->sender->sendHeader(reject, m->parser->isIcyStream());
-}
-
-void StreamWriter::changeTrack(const MetaData& md)
-{
-	m->streamTitle = md.artist() + " - " + md.title();
 }
 
 void StreamWriter::dismiss()

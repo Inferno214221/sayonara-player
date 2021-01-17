@@ -10,7 +10,6 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Widgets/FloatingLabel.h"
 
@@ -47,14 +46,14 @@ static void setIcon(QPushButton* btn, const QIcon& icon)
 	btn->setIcon(icon);
 }
 
-static MetaData currentTrack()
-{
-	return PlayManager::instance()->currentTrack();
-}
-
 struct GUI_ControlsBase::Private
 {
-	Library::ContextMenu* contextMenu = nullptr;
+	Library::ContextMenu* contextMenu=nullptr;
+	PlayManager* playManager=nullptr;
+
+	Private() :
+		playManager(PlayManagerProvider::instance()->playManager())
+	{}
 };
 
 GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
@@ -75,22 +74,21 @@ void GUI_ControlsBase::init()
 	labCopyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
 	btnRecord()->setVisible(false);
 
-	PlayManager* pm = PlayManager::instance();
-
-	volumeChanged(pm->volume());
-	muteChanged(pm->isMuted());
+	volumeChanged(m->playManager->volume());
+	muteChanged(m->playManager->isMuted());
 
 	setupConnections();
 	setupShortcuts();
 
-	if(pm->playstate() != PlayState::FirstStartup)
+	const auto playState = m->playManager->playstate();
+	if(playState != PlayState::FirstStartup)
 	{
-		playstateChanged(pm->playstate());
+		playstateChanged(playState);
 
-		if(pm->playstate() != PlayState::Stopped)
+		if(playState != PlayState::Stopped)
 		{
-			currentTrackChanged(pm->currentTrack());
-			currentPositionChanged(pm->initialPositionMs());
+			currentTrackChanged(m->playManager->currentTrack());
+			currentPositionChanged(m->playManager->initialPositionMs());
 		}
 	}
 
@@ -243,7 +241,7 @@ void GUI_ControlsBase::buffering(int progress)
 	else
 	{
 		sliProgress()->set_buffering(-1);
-		labMaxTime()->setVisible(currentTrack().durationMs() > 0);
+		labMaxTime()->setVisible(m->playManager->currentTrack().durationMs() > 0);
 	}
 }
 
@@ -254,14 +252,14 @@ void GUI_ControlsBase::progressMoved(int val)
 	refreshCurrentPosition(val);
 
 	double percent = (val * 1.0) / sliProgress()->maximum();
-	PlayManager::instance()->seekRelative(percent);
+	m->playManager->seekRelative(percent);
 }
 
 void GUI_ControlsBase::currentPositionChanged(MilliSeconds pos_ms)
 {
 	spLog(Log::Crazy, this) << "Current position: " << pos_ms;
 
-	MilliSeconds duration = PlayManager::instance()->durationMs();
+	MilliSeconds duration = m->playManager->durationMs();
 	int max = sliProgress()->maximum();
 	int new_val = 0;
 	double percent = (pos_ms * 1.0) / duration;
@@ -291,7 +289,7 @@ void GUI_ControlsBase::currentPositionChanged(MilliSeconds pos_ms)
 
 void GUI_ControlsBase::refreshCurrentPosition(int val)
 {
-	MilliSeconds duration = PlayManager::instance()->durationMs();
+	MilliSeconds duration = m->playManager->durationMs();
 	int max = sliProgress()->maximum();
 
 	val = std::max(val, 0);
@@ -320,7 +318,7 @@ void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds total_time)
 
 void GUI_ControlsBase::progressHovered(int val)
 {
-	MilliSeconds duration = PlayManager::instance()->durationMs();
+	MilliSeconds duration = m->playManager->durationMs();
 	int max = sliProgress()->maximum();
 
 	val = std::max(val, 0);
@@ -346,7 +344,7 @@ void GUI_ControlsBase::setupVolumeButton(int percent)
 
 	QIcon icon;
 
-	if(percent <= 1 || PlayManager::instance()->isMuted())
+	if(percent <= 1 || m->playManager->isMuted())
 	{
 		icon = Icons::icon(Icons::VolMute);
 	}
@@ -371,12 +369,12 @@ void GUI_ControlsBase::setupVolumeButton(int percent)
 
 void GUI_ControlsBase::increaseVolume()
 {
-	PlayManager::instance()->volumeUp();
+	m->playManager->volumeUp();
 }
 
 void GUI_ControlsBase::decreaseVolume()
 {
-	PlayManager::instance()->volumeDown();
+	m->playManager->volumeDown();
 }
 
 void GUI_ControlsBase::changeVolumeByDelta(int val)
@@ -394,7 +392,7 @@ void GUI_ControlsBase::changeVolumeByDelta(int val)
 
 void GUI_ControlsBase::muteChanged(bool muted)
 {
-	int val = PlayManager::instance()->volume();
+	int val = m->playManager->volume();
 	if(muted)
 	{
 		val = 0;
@@ -412,7 +410,7 @@ void GUI_ControlsBase::metadataChanged()
 {
 	QList<MetaDataPair> changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
 
-	MetaData currentTrack = PlayManager::instance()->currentTrack();
+	const auto& currentTrack = m->playManager->currentTrack();
 	auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const MetaDataPair& trackPair) {
 		const MetaData& oldTrack = trackPair.first;
 		return (oldTrack.filepath() == currentTrack.filepath());
@@ -432,7 +430,7 @@ void GUI_ControlsBase::metadataChanged()
 
 void GUI_ControlsBase::refreshCurrentTrack()
 {
-	refreshLabels(currentTrack());
+	refreshLabels(m->playManager->currentTrack());
 }
 
 static void set_floating_text(QLabel* label, const QString& text)
@@ -524,7 +522,7 @@ void GUI_ControlsBase::skinChanged()
 	setIcon(btnNext(), icon(Icons::Forward));
 	setIcon(btnPrevious(), icon(Icons::Backward));
 
-	if(PlayManager::instance()->playstate() == PlayState::Playing)
+	if(m->playManager->playstate() == PlayState::Playing)
 	{
 		setIcon(btnPlay(), icon(Icons::Pause));
 	}
@@ -548,14 +546,12 @@ void GUI_ControlsBase::streamRecorderActiveChanged()
 
 void GUI_ControlsBase::checkRecordButtonVisible()
 {
-	PlayManager* pm = PlayManager::instance();
-
 	bool recording_enabled =
 		(
 			GetSetting(SetNoDB::MP3enc_found) &&    // Lame Available
 			GetSetting(Set::Engine_SR_Active) &&    // Streamrecorder active
-			(currentTrack().radioMode() != RadioMode::Off) &&        // Radio on
-			(pm->playstate() == PlayState::Playing)    // Is Playing
+			(m->playManager->currentTrack().radioMode() != RadioMode::Off) &&        // Radio on
+			(m->playManager->playstate() == PlayState::Playing)    // Is Playing
 		);
 
 	btnPlay()->setVisible(!recording_enabled);
@@ -592,29 +588,27 @@ void GUI_ControlsBase::coverClickRejected()
 
 void GUI_ControlsBase::setupConnections()
 {
-	PlayManager* pm = PlayManager::instance();
+	connect(btnPlay(), &QPushButton::clicked, m->playManager, &PlayManager::playPause);
+	connect(btnNext(), &QPushButton::clicked, m->playManager, &PlayManager::next);
+	connect(btnPrevious(), &QPushButton::clicked, m->playManager, &PlayManager::previous);
+	connect(btnStop(), &QPushButton::clicked, m->playManager, &PlayManager::stop);
+	connect(btnMute(), &QPushButton::clicked, m->playManager, &PlayManager::toggleMute);
+	connect(btnRecord(), &QPushButton::clicked, m->playManager, &PlayManager::record);
 
-	connect(btnPlay(), &QPushButton::clicked, pm, &PlayManager::playPause);
-	connect(btnNext(), &QPushButton::clicked, pm, &PlayManager::next);
-	connect(btnPrevious(), &QPushButton::clicked, pm, &PlayManager::previous);
-	connect(btnStop(), &QPushButton::clicked, pm, &PlayManager::stop);
-	connect(btnMute(), &QPushButton::clicked, pm, &PlayManager::toggleMute);
-	connect(btnRecord(), &QPushButton::clicked, pm, &PlayManager::record);
-
-	connect(sliVolume(), &Gui::SearchSlider::sig_slider_moved, pm, &PlayManager::setVolume);
+	connect(sliVolume(), &Gui::SearchSlider::sig_slider_moved, m->playManager, &PlayManager::setVolume);
 	connect(sliProgress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progressMoved);
 	connect(sliProgress(), &Gui::SearchSlider::sigSliderHovered, this, &GUI_ControlsBase::progressHovered);
 
-	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_ControlsBase::playstateChanged);
-	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &GUI_ControlsBase::currentTrackChanged);
-	connect(pm, &PlayManager::sigCurrentMetadataChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
-	connect(pm, &PlayManager::sigDurationChangedMs, this, &GUI_ControlsBase::refreshCurrentTrack);
-	connect(pm, &PlayManager::sigBitrateChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
-	connect(pm, &PlayManager::sigPositionChangedMs, this, &GUI_ControlsBase::currentPositionChanged);
-	connect(pm, &PlayManager::sigBuffering, this, &GUI_ControlsBase::buffering);
-	connect(pm, &PlayManager::sigVolumeChanged, this, &GUI_ControlsBase::volumeChanged);
-	connect(pm, &PlayManager::sigMuteChanged, this, &GUI_ControlsBase::muteChanged);
-	connect(pm, &PlayManager::sigRecording, this, &GUI_ControlsBase::recordChanged);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_ControlsBase::playstateChanged);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_ControlsBase::currentTrackChanged);
+	connect(m->playManager, &PlayManager::sigCurrentMetadataChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(m->playManager, &PlayManager::sigDurationChangedMs, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(m->playManager, &PlayManager::sigBitrateChanged, this, &GUI_ControlsBase::refreshCurrentTrack);
+	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &GUI_ControlsBase::currentPositionChanged);
+	connect(m->playManager, &PlayManager::sigBuffering, this, &GUI_ControlsBase::buffering);
+	connect(m->playManager, &PlayManager::sigVolumeChanged, this, &GUI_ControlsBase::volumeChanged);
+	connect(m->playManager, &PlayManager::sigMuteChanged, this, &GUI_ControlsBase::muteChanged);
+	connect(m->playManager, &PlayManager::sigRecording, this, &GUI_ControlsBase::recordChanged);
 
 	Engine::Handler* engine = Engine::Handler::instance();
 	connect(engine, &Engine::Handler::sigCoverDataAvailable, this, &GUI_ControlsBase::coverChanged);
@@ -626,30 +620,29 @@ void GUI_ControlsBase::setupConnections()
 void GUI_ControlsBase::setupShortcuts()
 {
 	ShortcutHandler* sch = ShortcutHandler::instance();
-	PlayManager* playManager = PlayManager::instance();
 
-	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, playManager, SLOT(playPause()));
-	sch->shortcut(ShortcutIdentifier::Stop).connect(this, playManager, SLOT(stop()));
-	sch->shortcut(ShortcutIdentifier::Next).connect(this, playManager, SLOT(next()));
-	sch->shortcut(ShortcutIdentifier::Prev).connect(this, playManager, SLOT(previous()));
-	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, playManager, SLOT(volumeDown()));
-	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, playManager, SLOT(volumeUp()));
+	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, m->playManager, SLOT(playPause()));
+	sch->shortcut(ShortcutIdentifier::Stop).connect(this, m->playManager, SLOT(stop()));
+	sch->shortcut(ShortcutIdentifier::Next).connect(this, m->playManager, SLOT(next()));
+	sch->shortcut(ShortcutIdentifier::Prev).connect(this, m->playManager, SLOT(previous()));
+	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, m->playManager, SLOT(volumeDown()));
+	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, m->playManager, SLOT(volumeUp()));
 	sch->shortcut(ShortcutIdentifier::SeekFwd).connect(this, [=]() {
-		playManager->seekRelativeMs(2000);
+		m->playManager->seekRelativeMs(2000);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=]() {
-		playManager->seekRelativeMs(-2000);
+		m->playManager->seekRelativeMs(-2000);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekFwdFast).connect(this, [=]() {
-		MilliSeconds ms = playManager->durationMs() / 20;
-		playManager->seekRelativeMs(ms);
+		MilliSeconds ms = m->playManager->durationMs() / 20;
+		m->playManager->seekRelativeMs(ms);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekBwdFast).connect(this, [=]() {
-		MilliSeconds ms = playManager->durationMs() / 20;
-		playManager->seekRelativeMs(-ms);
+		MilliSeconds ms = m->playManager->durationMs() / 20;
+		m->playManager->seekRelativeMs(-ms);
 	});
 }
 
@@ -670,13 +663,13 @@ MD::Interpretation GUI_ControlsBase::metadataInterpretation() const
 
 MetaDataList GUI_ControlsBase::infoDialogData() const
 {
-	PlayState ps = PlayManager::instance()->playstate();
+	PlayState ps = m->playManager->playstate();
 	if(ps == PlayState::Stopped)
 	{
 		return MetaDataList();
 	}
 
-	return MetaDataList(currentTrack());
+	return MetaDataList(m->playManager->currentTrack());
 }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)

@@ -190,7 +190,6 @@ protected:
 
 private:
 	void tagEditCommit();
-	void setPlaylistActionAfterDoubleClick();
 
 	void changeTrackSelection(const IndexSet& indexes);
 	void changeArtistSelection(const IndexSet& indexes);

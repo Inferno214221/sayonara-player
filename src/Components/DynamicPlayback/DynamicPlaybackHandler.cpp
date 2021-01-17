@@ -142,7 +142,7 @@ Handler::Handler(QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	auto* pm = PlayManager::instance();
+	auto* pm = PlayManagerProvider::instance()->playManager();
 
 	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
 	connect(pm, &PlayManager::sigPlaystateChanged, this, [=](auto playState) {

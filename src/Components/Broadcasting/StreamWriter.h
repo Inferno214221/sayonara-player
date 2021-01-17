@@ -61,7 +61,7 @@ class StreamWriter :
 		 * @param ip
 		 * @param md
 		 */
-		StreamWriter(QTcpSocket* socket, const QString& ip, const MetaData& md);
+		StreamWriter(QTcpSocket* socket, const QString& ip);
 		~StreamWriter() override;
 
 		/**
@@ -69,12 +69,6 @@ class StreamWriter :
 		 * @return
 		 */
 		QString ip() const;
-
-		/**
-		 * @brief send new icy data to clients, and send new metadata to remote controls.
-		 * @param md Track structure
-		 */
-		void changeTrack(const MetaData& md);
 
 		/**
 		 * @brief Send a m3u playlist (see StreamDataSender)

@@ -35,6 +35,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Playlist/CustomPlaylist.h"
+#include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -60,7 +61,7 @@ struct Handler::Private
 	int						currentPlaylistIndex;
 
 	Private() :
-		playManager(PlayManager::instance()),
+		playManager(PlayManagerProvider::instance()->playManager()),
 		pcn(PlaylistChangeNotifier::instance()),
 		activePlaylistIndex(-1),
 		currentPlaylistIndex(-1)
@@ -86,6 +87,26 @@ Handler::Handler(QObject* parent) :
 }
 
 Handler::~Handler()	= default;
+
+void Handler::shutdown()
+{
+	if(GetSetting(Set::PL_LoadTemporaryPlaylists))
+	{
+		DB::Connector::instance()->transaction();
+
+		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
+		{
+			if(pl->isTemporary() && pl->wasChanged())
+			{
+				pl->save();
+			}
+		}
+
+		DB::Connector::instance()->commit();
+	}
+
+	m->playlists.clear();
+}
 
 void Handler::currentTrackChanged(int track_index)
 {
@@ -149,7 +170,7 @@ int Handler::loadOldPlaylists()
 PlaylistPtr Handler::newPlaylist(QString name)
 {
 	int index = m->playlists.count();
-	return PlaylistPtr(new ::Playlist::Playlist(index, name));
+	return PlaylistPtr(new ::Playlist::Playlist(index, name, m->playManager));
 }
 
 
@@ -254,26 +275,6 @@ int Handler::createEmptyPlaylist(bool override_current)
 int Handler::createEmptyPlaylist(const QString& name)
 {
 	return createPlaylist(MetaDataList(), name, true);
-}
-
-void Handler::shutdown()
-{
-	if(GetSetting(Set::PL_LoadTemporaryPlaylists))
-	{
-		DB::Connector::instance()->transaction();
-
-		for(const PlaylistPtr& pl : Algorithm::AsConst(m->playlists))
-		{
-			if(pl->isTemporary() && pl->wasChanged())
-			{
-				pl->save();
-			}
-		}
-
-		DB::Connector::instance()->commit();
-	}
-
-	m->playlists.clear();
 }
 
 void Handler::clearPlaylist(int pl_idx)
@@ -845,5 +846,31 @@ void Handler::filescannerProgressChanged(const QString& current_file)
 		}
 
 		pl->setCurrentScannedFile(current_file);
+	}
+}
+
+void Playlist::Handler::applyPlaylistActionAfterDoubleClick()
+{
+	PlayState playState = m->playManager->playstate();
+	::Playlist::Mode plm = GetSetting(Set::PL_Mode);
+
+	bool append = (plm.append() == ::Playlist::Mode::State::On);
+
+	if(GetSetting(Set::Lib_DC_DoNothing))
+	{
+		return;
+	}
+
+	else if(GetSetting(Set::Lib_DC_PlayIfStopped))
+	{
+		if(playState != PlayState::Playing)
+		{
+			this->changeTrack(0, this->current_index());
+		}
+	}
+
+	else if(GetSetting(Set::Lib_DC_PlayImmediately) && !append)
+	{
+		this->changeTrack(0, this->current_index());
 	}
 }

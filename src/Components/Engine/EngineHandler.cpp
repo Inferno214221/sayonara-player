@@ -60,7 +60,7 @@ Handler::Handler(QObject* parent) :
 		return;
 	}
 
-	auto* playManager = PlayManager::instance();
+	auto* playManager = PlayManagerProvider::instance()->playManager();
 	connect(playManager, &PlayManager::sigPlaystateChanged,
 			this, &Handler::playstateChanged);
 
@@ -110,7 +110,7 @@ Handler::Handler(QObject* parent) :
 	connect(m->engine, &Engine::sigLevelChanged, this, &Handler::levelChanged);
 }
 
-Handler::~Handler() {}
+Handler::~Handler() = default;
 
 void Handler::shutdown()
 {

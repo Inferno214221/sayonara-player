@@ -79,31 +79,31 @@ void DBusMediaKeysInterface::mediaKeyPressed(const QString& program_name, const 
 	Q_UNUSED(program_name)
 
 	QKeyEvent* event = nullptr;
-	auto* pm = PlayManager::instance();
+	auto* playManager = PlayManagerProvider::instance()->playManager();
 
 	if(key.compare("play", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPlay, Qt::NoModifier);
-		pm->playPause();
+		playManager->playPause();
 	}
 
 	else if(key.compare("pause", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPause, Qt::NoModifier);
-		pm->pause();
+		playManager->pause();
 	}
 
 	else if(key.compare("next", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaNext, Qt::NoModifier);
-		pm->next();
+		playManager->next();
 	}
 
 	else if(key.compare("previous", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPrevious, Qt::NoModifier);
-		pm->previous();
+		playManager->previous();
 	}
 
 	else if(key.contains("stop", Qt::CaseInsensitive) == 0){
 		event = new QKeyEvent (QEvent::KeyPress, Qt::Key_MediaStop, Qt::NoModifier);
-		pm->stop();
+		playManager->stop();
 	}
 
 	if(event && m->parent){

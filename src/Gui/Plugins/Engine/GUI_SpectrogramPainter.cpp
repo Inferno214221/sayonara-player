@@ -20,17 +20,17 @@ using Line=QList<Dot>;
 
 struct GUI_SpectrogramPainter::Private
 {
+	PlayManager* playManager = nullptr;
+	AudioDataProvider* audioDataProvider=nullptr;
+	QString filename;
 	QPixmap pm;
-
 	Line currentLine;
 
 	int promilleValues;
 	int currentPromille;
 
-	AudioDataProvider* audioDataProvider=nullptr;
-	QString filename;
-
 	Private() :
+		playManager(PlayManagerProvider::instance()->playManager()),
 		promilleValues(0),
 		currentPromille(-1)
 	{
@@ -60,9 +60,9 @@ GUI_SpectrogramPainter::GUI_SpectrogramPainter(QWidget* parent) :
 	connect(m->audioDataProvider, &AudioDataProvider::sigSpectrumDataAvailable, this, &GUI_SpectrogramPainter::spectrumChanged);
 	connect(m->audioDataProvider, &AudioDataProvider::sigFinished, this, &GUI_SpectrogramPainter::finished);
 
-	auto* pm = PlayManager::instance();
-	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &GUI_SpectrogramPainter::trackChanged);
-	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_SpectrogramPainter::playstateChanged);
+	auto* playManager = PlayManagerProvider::instance()->playManager();
+	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_SpectrogramPainter::trackChanged);
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, &GUI_SpectrogramPainter::playstateChanged);
 }
 
 GUI_SpectrogramPainter::~GUI_SpectrogramPainter() = default;
@@ -84,7 +84,7 @@ bool GUI_SpectrogramPainter::isUiInitialized() const
 
 void GUI_SpectrogramPainter::spectrumChanged(const QList<float>& spectrum, MilliSeconds ms)
 {
-	double promille = (ms * 1000.0) / PlayManager::instance()->currentTrack().durationMs();
+	double promille = (ms * 1000.0) / m->playManager->currentTrack().durationMs();
 
 	if(m->currentPromille == int(promille))
 	{
@@ -232,7 +232,7 @@ void GUI_SpectrogramPainter::showFullsize()
 void GUI_SpectrogramPainter::positionClicked(QPoint position)
 {
 	double percent = (position.x() * 1.0) / this->width();
-	PlayManager::instance()->seekRelative(percent);
+	m->playManager->seekRelative(percent);
 }
 
 void GUI_SpectrogramPainter::startAudioDataProvider(const MetaData& md)
@@ -256,9 +256,9 @@ void GUI_SpectrogramPainter::showEvent(QShowEvent* e)
 {
 	PlayerPlugin::Base::showEvent(e);
 
-	if(PlayManager::instance()->playstate() != PlayState::Stopped)
+	if(m->playManager->playstate() != PlayState::Stopped)
 	{
-		startAudioDataProvider(PlayManager::instance()->currentTrack());
+		startAudioDataProvider(m->playManager->currentTrack());
 	}
 }
 

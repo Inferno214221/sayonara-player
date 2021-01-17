@@ -62,7 +62,6 @@ class StreamServer :
 		void acceptClient(QTcpSocket* socket, const QString& ip);
 		void rejectClient(QTcpSocket* socket, const QString& ip);
 
-		void trackChanged(const MetaData&);
 		void serverDestroyed();
 
 		void newClientRequest();

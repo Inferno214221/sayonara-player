@@ -48,8 +48,10 @@ struct TrayIconContextMenu::Private
 	QAction*	fwdAction=nullptr;
 	QAction*	bwdAction=nullptr;
 	QAction*	currentSongAction=nullptr;
+	PlayManager* playManager=nullptr;
 
-	Private(TrayIconContextMenu* parent)
+	Private(TrayIconContextMenu* parent) :
+		playManager(PlayManagerProvider::instance()->playManager())
 	{
 		playAction = new QAction(parent);
 		stopAction = new QAction(parent);
@@ -80,11 +82,10 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	this->addAction(m->showAction);
 	this->addAction(m->closeAction);
 
-	auto* pm = PlayManager::instance();
-	connect(m->playAction, &QAction::triggered, pm, &PlayManager::playPause);
-	connect(m->fwdAction, &QAction::triggered, pm, &PlayManager::next);
-	connect(m->bwdAction, &QAction::triggered, pm, &PlayManager::previous);
-	connect(m->stopAction, &QAction::triggered, pm, &PlayManager::stop);
+	connect(m->playAction, &QAction::triggered, m->playManager, &PlayManager::playPause);
+	connect(m->fwdAction, &QAction::triggered, m->playManager, &PlayManager::next);
+	connect(m->bwdAction, &QAction::triggered, m->playManager, &PlayManager::previous);
+	connect(m->stopAction, &QAction::triggered, m->playManager, &PlayManager::stop);
 
 	connect(m->muteAction, &QAction::triggered, this, &TrayIconContextMenu::muteClicked);
 	connect(m->currentSongAction, &QAction::triggered, this, &TrayIconContextMenu::currentSongClicked);
@@ -92,11 +93,11 @@ TrayIconContextMenu::TrayIconContextMenu(QWidget* parent) :
 	connect(m->showAction, &QAction::triggered, this, &TrayIconContextMenu::sigShowClicked);
 	connect(m->closeAction, &QAction::triggered, this, &TrayIconContextMenu::sigCloseClicked);
 
-	connect(pm, &PlayManager::sigMuteChanged, this, &TrayIconContextMenu::muteChanged);
-	connect(pm, &PlayManager::sigPlaystateChanged, this, &TrayIconContextMenu::playstateChanged);
+	connect(m->playManager, &PlayManager::sigMuteChanged, this, &TrayIconContextMenu::muteChanged);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &TrayIconContextMenu::playstateChanged);
 
-	muteChanged(pm->isMuted());
-	playstateChanged(pm->playstate());
+	muteChanged(m->playManager->isMuted());
+	playstateChanged(m->playManager->playstate());
 }
 
 TrayIconContextMenu::~TrayIconContextMenu() = default;
@@ -108,14 +109,12 @@ void TrayIconContextMenu::setForwardEnabled(bool b)
 
 void TrayIconContextMenu::setDisplayNames()
 {
-	auto* pm = PlayManager::instance();
-
 	m->playAction->setText(Lang::get(Lang::PlayPause));
 	m->fwdAction->setText(Lang::get(Lang::NextTrack));
 	m->bwdAction->setText(Lang::get(Lang::PreviousTrack));
 	m->stopAction->setText(Lang::get(Lang::Stop));
 
-	if(pm->isMuted()){
+	if(m->playManager->isMuted()){
 		m->muteAction->setText(Lang::get(Lang::MuteOff));
 	}
 
@@ -130,13 +129,13 @@ void TrayIconContextMenu::setDisplayNames()
 
 void TrayIconContextMenu::muteClicked()
 {
-	PlayManager::instance()->toggleMute();
+	m->playManager->toggleMute();
 }
 
 void TrayIconContextMenu::currentSongClicked()
 {
 	auto* nh = NotificationHandler::instance();
-	nh->notify(PlayManager::instance()->currentTrack());
+	nh->notify(m->playManager->currentTrack());
 }
 
 void TrayIconContextMenu::muteChanged(bool muted)
@@ -187,9 +186,8 @@ void TrayIconContextMenu::skinChanged()
 	m->currentSongAction->setIcon(Icons::icon(Icons::Info));
 	m->closeAction->setIcon(Icons::icon(Icons::Exit));
 
-	PlayManager* pm = PlayManager::instance();
-	muteChanged(pm->isMuted());
-	playstateChanged(pm->playstate());
+	muteChanged(m->playManager->isMuted());
+	playstateChanged(m->playManager->playstate());
 }
 
 struct GUI_TrayIcon::Private
@@ -204,14 +202,14 @@ GUI_TrayIcon::GUI_TrayIcon (QObject* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	auto* nh = NotificationHandler::instance();
-	nh->registerNotificator(this);
+	auto* notificationHandler = NotificationHandler::instance();
+	notificationHandler->registerNotificator(this);
 
-	auto* pm = PlayManager::instance();
-	connect(pm, &PlayManager::sigPlaystateChanged, this, &GUI_TrayIcon::playstateChanged);
+	auto* playManager = PlayManagerProvider::instance()->playManager();
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, &GUI_TrayIcon::playstateChanged);
 
 	initContextMenu();
-	playstateChanged(pm->playstate());
+	playstateChanged(playManager->playstate());
 
 	ListenSetting(Set::Player_ShowTrayIcon, GUI_TrayIcon::showTrayIconChanged);
 }

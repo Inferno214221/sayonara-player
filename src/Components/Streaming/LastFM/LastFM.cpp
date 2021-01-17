@@ -34,7 +34,6 @@
 #include "Interfaces/Notification/NotificationHandler.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -43,13 +42,9 @@
 #include "Utils/Crypt.h"
 
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistHandler.h"
 
 #include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
 
-#include <QDomDocument>
 #include <QUrl>
 #include <QTimer>
 
@@ -62,19 +57,20 @@ using namespace LastFM;
 struct Base::Private
 {
 	QString sessionKey;
+	PlayManager* playManager = nullptr;
 	QTimer* scrobbleTimer = nullptr;
 	QTimer* trackChangedTimer = nullptr;
 	TrackChangedThread* trackChangeThread = nullptr;
 	bool loggedIn;
 
 	Private(QObject* parent) :
+		playManager(PlayManagerProvider::instance()->playManager()),
+		scrobbleTimer(new QTimer()),
+		trackChangedTimer(new QTimer{}),
 		trackChangeThread(new TrackChangedThread(parent)),
 		loggedIn(false)
 	{
-		scrobbleTimer = new QTimer();
 		scrobbleTimer->setSingleShot(true);
-
-		trackChangedTimer = new QTimer();
 		trackChangedTimer->setSingleShot(true);
 	}
 };
@@ -86,7 +82,7 @@ Base::Base() :
 
 	connect(m->scrobbleTimer, &QTimer::timeout, this, &Base::scrobble);
 	connect(m->trackChangedTimer, &QTimer::timeout, this, &Base::trackChangedTimerTimedOut);
-	connect(PlayManager::instance(), &PlayManager::sigCurrentTrackChanged,
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged,
 	        this, &Base::currentTrackChanged);
 
 	ListenSetting(Set::LFM_Active, Base::activeChanged);
@@ -190,7 +186,7 @@ void Base::scrobble()
 		return;
 	}
 
-	const MetaData track = PlayManager::instance()->currentTrack();
+	const auto& track = m->playManager->currentTrack();
 	if(track.title().isEmpty() || track.artist().isEmpty())
 	{
 		return;
@@ -240,10 +236,9 @@ void Base::scrobbleErrorReceived(const QString& error)
 
 void Base::trackChangedTimerTimedOut()
 {
-	const auto& track = PlayManager::instance()->currentTrack();
-
 	if(GetSetting(Set::LFM_Active) && m->loggedIn)
 	{
+		const auto& track = m->playManager->currentTrack();
 		m->trackChangeThread->updateNowPlaying(m->sessionKey, track);
 	}
 }

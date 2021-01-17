@@ -58,9 +58,11 @@ struct GUI_Player::Private
 	std::shared_ptr<GUI_Logger> logger = nullptr;
 	GUI_TrayIcon* trayIcon = nullptr;
 	GUI_ControlsBase* controls = nullptr;
+	PlayManager* playManager = nullptr;
 	bool shutdownRequested;
 
 	Private(GUI_Player* parent) :
+		playManager(PlayManagerProvider::instance()->playManager()),
 		shutdownRequested(false)
 	{
 		logger = std::make_shared<GUI_Logger>(parent);
@@ -94,7 +96,7 @@ GUI_Player::GUI_Player(QWidget* parent) :
 	initConnections();
 	initTrayActions();
 
-	currentTrackChanged(PlayManager::instance()->currentTrack());
+	currentTrackChanged(m->playManager->currentTrack());
 
 	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
@@ -226,10 +228,9 @@ void GUI_Player::initConnections()
 	auto* lph = Library::PluginHandler::instance();
 	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged, this, &GUI_Player::currentLibraryChanged);
 
-	auto* playManager = PlayManager::instance();
-	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_Player::currentTrackChanged);
-	connect(playManager, &PlayManager::sigPlaystateChanged, this, &GUI_Player::playstateChanged);
-	connect(playManager, &PlayManager::sigError, this, &GUI_Player::playError);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_Player::currentTrackChanged);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_Player::playstateChanged);
+	connect(m->playManager, &PlayManager::sigError, this, &GUI_Player::playError);
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_Player::splitterMainMoved);
 	connect(ui->splitterControls, &QSplitter::splitterMoved, this, &GUI_Player::splitterControlsMoved);
@@ -318,7 +319,7 @@ void GUI_Player::playstateChanged(PlayState state)
 
 void GUI_Player::playError(const QString& message)
 {
-	const MetaData md = PlayManager::instance()->currentTrack();
+	const auto& md = m->playManager->currentTrack();
 	Message::warning
 		(
 			message + "\n\n" + md.filepath(),

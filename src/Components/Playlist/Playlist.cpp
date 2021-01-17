@@ -42,6 +42,7 @@ using PlaylistImpl=::Playlist::Playlist;
 
 struct PlaylistImpl::Private
 {
+	PlayManager* playManager;
 	MetaData		dummyTrack;
 	MetaDataList    tracks;
 	QList<UniqueId>	shuffleHistory;
@@ -51,7 +52,8 @@ struct PlaylistImpl::Private
 	bool			playlistChanged;
 	bool			busy;
 
-	Private(int playlist_idx, PlaylistMode playlist_mode) :
+	Private(int playlist_idx, PlaylistMode playlist_mode, PlayManager* playManager) :
+		playManager(playManager),
 		playlistMode(playlist_mode),
 		playlistIndex(playlist_idx),
 		playlistChanged(false),
@@ -60,18 +62,17 @@ struct PlaylistImpl::Private
 };
 
 
-PlaylistImpl::Playlist(int idx, const QString& name) :
+PlaylistImpl::Playlist(int idx, const QString& name, PlayManager* playManager) :
 	Playlist::DBInterface(name)
 {
-	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode));
+	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode), playManager);
 
 	auto* changeNotifier = Tagging::ChangeNotifier::instance();
 	connect(changeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, &Playlist::metadataChanged);
 	connect(changeNotifier, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &Playlist::metadataDeleted);
 
-	auto* playManager = PlayManager::instance();
-	connect(playManager, &PlayManager::sigCurrentMetadataChanged, this, &Playlist::currentMetadataChanged);
-	connect(playManager, &PlayManager::sigDurationChangedMs, this, &Playlist::durationChanged);
+	connect(m->playManager, &PlayManager::sigCurrentMetadataChanged, this, &Playlist::currentMetadataChanged);
+	connect(m->playManager, &PlayManager::sigDurationChangedMs, this, &Playlist::durationChanged);
 
 	ListenSetting(Set::PL_Mode, Playlist::settingPlaylistModeChanged);
 }
@@ -230,7 +231,7 @@ void PlaylistImpl::metadataChanged()
 
 void PlaylistImpl::currentMetadataChanged()
 {
-	const MetaData md = PlayManager::instance()->currentTrack();
+	const MetaData md = m->playManager->currentTrack();
 	const IdxList indexList = m->tracks.findTracks(md.filepath());
 
 	for(int i : indexList)
@@ -241,7 +242,7 @@ void PlaylistImpl::currentMetadataChanged()
 
 void PlaylistImpl::durationChanged()
 {
-	MetaData currentTrack = PlayManager::instance()->currentTrack();
+	MetaData currentTrack = m->playManager->currentTrack();
 	IdxList indexList = m->tracks.findTracks(currentTrack.filepath());
 
 	for(int i : indexList)

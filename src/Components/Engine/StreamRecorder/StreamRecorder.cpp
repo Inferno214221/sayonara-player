@@ -19,6 +19,7 @@
  */
 
 #include "StreamRecorder.h"
+#include "Components/PlayManager/PlayManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -29,8 +30,6 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/StandardPaths.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
-
-#include "Components/PlayManager/PlayManager.h"
 
 #include <QDir>
 #include <QFile>
@@ -65,7 +64,7 @@ SR::StreamRecorder::StreamRecorder(QObject* parent) :
 
 	clear();
 
-	auto* playManager = PlayManager::instance();
+	auto* playManager = PlayManagerProvider::instance()->playManager();
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 }
 
