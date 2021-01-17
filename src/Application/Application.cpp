@@ -43,7 +43,7 @@
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/PlayManager/PlayManagerImpl.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Session/Session.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
@@ -164,7 +164,7 @@ struct Application::Private
 		db->settingsConnector()->loadSettings();
 
 		auto* playManagerProvider = PlayManagerProvider::instance();
-		playManagerProvider->init(new PlayManager());
+		playManagerProvider->init(new PlayManagerImpl());
 		playManager = playManagerProvider->playManager();
 
 		session = Session::Manager::instance();
