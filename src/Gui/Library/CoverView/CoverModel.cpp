@@ -37,12 +37,14 @@
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
 
 #include <QFontMetrics>
 #include <QStringList>
 #include <QPixmap>
 #include <QThread>
 #include <QMainWindow>
+#include <QMimeData>
 
 #include <mutex>
 
@@ -335,21 +337,19 @@ int CoverModel::mapIndexToId(int idx) const
 	return albums[idx].id();
 }
 
-Location CoverModel::cover(const IndexSet& indexes) const
+Location CoverModel::cover(const QModelIndexList& indexes) const
 {
 	if(indexes.size() != 1){
 		return Location::invalidLocation();
 	}
 
-	const AlbumList& albums = this->albums();
+	const auto& albums = this->albums();
+	const auto firstIndex = indexes.first();
+	const auto linearIndex = (firstIndex.row() * columnCount() + firstIndex.column());
 
-	int idx = indexes.first();
-	if(idx < 0 || idx >= albums.count()){
-		return Location::invalidLocation();
-	}
-
-	Album album = albums[idx];
-	return Cover::Location::xcoverLocation(album);
+	return (Util::between(linearIndex, albums))
+		? Cover::Location::xcoverLocation(albums[linearIndex])
+		: Location::invalidLocation();
 }
 
 Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
@@ -538,4 +538,3 @@ bool CoverModel::removeColumns(int column, int count, const QModelIndex& parent)
 
 	return true;
 }
-

@@ -69,8 +69,6 @@ namespace Directory
 
 			void setSearchFilter(const QString& search_string);
 
-			QMimeData* dragableMimedata() const override;
-
 		private:
 			void initContextMenu();
 

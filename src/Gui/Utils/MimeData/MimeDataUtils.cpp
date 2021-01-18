@@ -137,12 +137,12 @@ bool MimeData::isPlayerDrag(const QMimeData* data)
 AsyncDropHandler* MimeData::asyncDropHandler(const QMimeData* data)
 {
 	const auto* cmd = customMimedata(data);
-	if(cmd)
+	if(cmd && cmd->asyncDropHandler())
 	{
 		return cmd->asyncDropHandler();
 	}
 
-	if(data->hasUrls())
+	if(data->hasUrls() && !MimeData::hasMetadata(data))
 	{
 		return new ExternUrlsDragDropHandler(data->urls());
 	}

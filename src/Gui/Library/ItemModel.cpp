@@ -19,12 +19,16 @@
  */
 
 #include "ItemModel.h"
+
 #include "Components/Library/AbstractLibrary.h"
+#include "Components/Covers/CoverLocation.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Utils/MimeData/CustomMimeData.h"
-#include "Utils/MetaData/MetaDataList.h"
 
-#include <algorithm>
+#include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+
 #include <QUrl>
 
 using namespace Library;
@@ -135,12 +139,21 @@ void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }
 
-Gui::CustomMimeData* ItemModel::customMimedata() const
+QMimeData* ItemModel::mimeData(const QModelIndexList& indexes) const
 {
 	auto* mimedata = new Gui::CustomMimeData(this);
 
-	MetaDataList tracks = selectedMetadata();
+	const auto tracks = selectedMetadata();
 	mimedata->setMetadata(tracks);
+
+	Util::Set<int> rows;
+	for(const auto& modelIndex : indexes)
+	{
+		rows.insert(modelIndex.row());
+	}
+
+	const auto coverLocation = this->cover(indexes);
+	mimedata->setCoverUrl(coverLocation.preferredPath());
 
 	return mimedata;
 }

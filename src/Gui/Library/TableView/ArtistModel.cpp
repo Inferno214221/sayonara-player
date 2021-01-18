@@ -36,6 +36,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
+#include "Utils/globals.h"
 
 #include <QPixmap>
 
@@ -148,23 +149,25 @@ Qt::ItemFlags ArtistModel::flags(const QModelIndex& index) const
 	return QAbstractTableModel::flags(index);
 }
 
-Cover::Location ArtistModel::cover(const IndexSet& indexes) const
+Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
 {
-	if(indexes.isEmpty() || indexes.size() > 1)
+	Util::Set<int> rows;
+	for(const auto& index : indexes)
 	{
-		return Cover::Location();
+		rows.insert(index.row());
+	}
+
+	if(rows.size() != 1)
+	{
+		return Cover::Location::invalidLocation();
 	}
 
 	const ArtistList& artists = library()->artists();
-	int idx = indexes.first();
+	const auto row = static_cast<ArtistList::Size>(rows.first());
 
-	if(idx < 0 || idx > artists.count())
-	{
-		return Cover::Location();
-	}
-
-	const Artist& artist = artists[ArtistList::Size(idx)];
-	return Cover::Location::coverLocation(artist);
+	return (Util::between(row, artists))
+		? Cover::Location::coverLocation(artists[row])
+		: Cover::Location::invalidLocation();
 }
 
 int ArtistModel::searchableColumn() const

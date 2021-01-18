@@ -20,6 +20,7 @@
 
 #include "FileListModel.h"
 
+#include "Components/Covers/LocalCoverSearcher.h"
 #include "Components/Directories/DirectoryReader.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
@@ -367,16 +368,19 @@ bool FileListModel::checkRowForSearchstring(int row, const QString& substr) cons
 QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 {
 	QList<QUrl> urls;
+	QStringList paths;
 
-	for(const QModelIndex& idx : indexes)
+	for(const auto& index : indexes)
 	{
-		int row = idx.row();
-		if(idx.column() != ColumnName) {
-			continue;
-		}
-
-		if(Util::between(row, m->files)) {
-			urls << QUrl::fromLocalFile(m->files[row]);
+		if(index.column() == ColumnName)
+		{
+			const auto row = index.row();
+			if(Util::between(row, m->files))
+			{
+				const auto& path = m->files[row];
+				paths << path;
+				urls << QUrl::fromLocalFile(path);
+			}
 		}
 	}
 
@@ -384,14 +388,19 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 		return nullptr;
 	}
 
-	auto* data = new Gui::CustomMimeData(this);
-	data->setUrls(urls);
+	auto* mimeData = new Gui::CustomMimeData(this);
+	mimeData->setUrls(urls);
 
-	LocalLibrary* localLibrary = Library::Manager::instance()->libraryInstance(m->libraryId);
-	MetaDataList tracks = localLibrary->currentTracks();
-	data->setMetadata(tracks);
+	auto* localLibrary = Library::Manager::instance()->libraryInstance(m->libraryId);
+	const auto tracks = localLibrary->currentTracks();
+	mimeData->setMetadata(tracks);
 
-	return data;
+	const auto coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
+	if(!coverPaths.isEmpty()) {
+		Gui::MimeData::setCoverUrl(mimeData, coverPaths.first());
+	}
+
+	return mimeData;
 }
 
 Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const

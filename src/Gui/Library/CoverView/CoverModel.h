@@ -43,7 +43,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class CoverModel :
-			public ItemModel
+		public ItemModel
 	{
 		Q_OBJECT
 		PIMPL(CoverModel)
@@ -51,22 +51,22 @@ namespace Library
 		public:
 			enum Role
 			{
-				AlbumRole=Qt::UserRole,
-				ArtistRole=Qt::UserRole + 1,
-				CoverRole=Qt::UserRole + 2
+				AlbumRole = Qt::UserRole,
+				ArtistRole = Qt::UserRole + 1,
+				CoverRole = Qt::UserRole + 2
 			};
 
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);
 			~CoverModel() override;
 
 		public:
-			int				rowCount(const QModelIndex& parent=QModelIndex()) const override;
-			int				columnCount(const QModelIndex& paren=QModelIndex()) const override;
-			QVariant		data(const QModelIndex& index, int role) const override;
-			Qt::ItemFlags	flags(const QModelIndex& index) const override;
+			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex& paren = QModelIndex()) const override;
+			QVariant data(const QModelIndex& index, int role) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-			QSize			itemSize() const;
-			int				zoom() const;
+			QSize itemSize() const;
+			int zoom() const;
 
 		protected:
 			// ItemModel
@@ -74,17 +74,17 @@ namespace Library
 
 			QModelIndexList searchResults(const QString& substr) override;
 
-			int				searchableColumn() const override;
-			QString			searchableString(int idx) const override;
-			int				mapIndexToId(int idx) const override;
-			Cover::Location	cover(const IndexSet& indexes) const override;
+			int searchableColumn() const override;
+			QString searchableString(int idx) const override;
+			int mapIndexToId(int idx) const override;
+			Cover::Location cover(const QModelIndexList& indexes) const override;
 
 		private:
 			const AlbumList& albums() const;
-			bool insertRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
-			bool removeRows(int row, int count, const QModelIndex& parent=QModelIndex()) override;
-			bool insertColumns(int column, int count, const QModelIndex& parent=QModelIndex()) override;
-			bool removeColumns(int column, int count, const QModelIndex& parent=QModelIndex()) override;
+			bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+			bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
+			bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex()) override;
+			bool removeColumns(int column, int count, const QModelIndex& parent = QModelIndex()) override;
 			void refreshData();
 
 		public slots:

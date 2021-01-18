@@ -52,7 +52,7 @@ namespace Library
 			bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::DisplayRole) override;
 			int rowCount(const QModelIndex& parent) const override;
 
-			Cover::Location cover(const IndexSet& indexes) const override;
+			Cover::Location cover(const QModelIndexList& indexes) const override;
 			int searchableColumn() const override;
 			Id mapIndexToId(int index) const override;
 			QString searchableString(int row) const override;

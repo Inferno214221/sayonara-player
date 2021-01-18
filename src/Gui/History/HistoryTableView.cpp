@@ -67,11 +67,6 @@ void HistoryTableView::skinChanged()
 	this->verticalHeader()->resetDefaultSectionSize();
 }
 
-QMimeData* HistoryTableView::dragableMimedata() const
-{
-	return m->model->mimeData(this->selectionModel()->selectedIndexes());
-}
-
 void HistoryTableView::resizeEvent(QResizeEvent* e)
 {
 	QTableView::resizeEvent(e);

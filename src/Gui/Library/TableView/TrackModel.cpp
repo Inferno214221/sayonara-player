@@ -268,29 +268,38 @@ QString TrackModel::searchableString(int row) const
 	return Util::between(row, tracks) ? tracks[row].title() : QString();
 }
 
-Cover::Location TrackModel::cover(const IndexSet& indexes) const
+Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
 {
-	if(indexes.isEmpty())
-	{
-		return Cover::Location();
-	}
-
 	const auto& tracks = library()->tracks();
 
-	Util::Set<AlbumId> albumIds;
-	for(const auto index : indexes)
+	Util::Set<int> rows;
+	for(const auto& index : indexes)
 	{
-		if(Util::between(index, tracks))
+		const auto row = index.row();
+		if(Util::between(row, tracks))
 		{
-			albumIds.insert(tracks[index].albumId());
-			if(albumIds.size() > 1)
+			rows.insert(row);
+		}
+	}
+
+	if(rows.isEmpty()){
+		return Cover::Location::invalidLocation();
+	}
+
+	const auto firstRow = rows.first();
+	const auto albumId = tracks[firstRow].albumId();
+	for(const auto& row : rows)
+	{
+		if(Util::between(row, tracks))
+		{
+			if(tracks[row].albumId() != albumId)
 			{
-				return Cover::Location();
+				return Cover::Location::invalidLocation();
 			}
 		}
 	}
 
-	return Cover::Location::coverLocation(tracks.first());
+	return Cover::Location::coverLocation(tracks[firstRow]);
 }
 
 int TrackModel::searchableColumn() const

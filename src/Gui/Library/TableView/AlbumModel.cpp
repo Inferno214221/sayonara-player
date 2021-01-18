@@ -36,6 +36,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 
+#include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/Language/Language.h"
@@ -43,6 +44,7 @@
 
 #include <QPixmap>
 #include <QColor>
+
 
 using namespace Library;
 
@@ -97,19 +99,25 @@ QString AlbumModel::searchableString(int row) const
 	}
 }
 
-Cover::Location AlbumModel::cover(const IndexSet& indexes) const
+Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 {
-	if(indexes.isEmpty() || indexes.size() > 1){
-		return Cover::Location();
+	Util::Set<int> rows;
+	for(const auto& index : indexes)
+	{
+		rows.insert(index.row());
 	}
 
-	int idx = indexes.first();
+	if(rows.size() != 1)
+	{
+		return Cover::Location::invalidLocation();
+	}
+
+	const auto row = static_cast<AlbumList::size_type>(rows.first());
 	const AlbumList& albums = library()->albums();
-	if(idx < 0 || idx > albums.count()){
-		return Cover::Location();
-	}
 
-	return Cover::Location::xcoverLocation(albums[idx]);
+	return (Util::between(row, albums))
+		? Cover::Location::xcoverLocation(albums[row])
+		: Cover::Location::invalidLocation();
 }
 
 QVariant AlbumModel::data(const QModelIndex& index, int role) const

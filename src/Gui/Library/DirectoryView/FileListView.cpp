@@ -23,8 +23,6 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
-#include "Components/Covers/LocalCoverSearcher.h" // for drag/drop
-
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
@@ -184,20 +182,6 @@ void FileListView::setSearchFilter(const QString& search_string)
 			this->selectionModel()->select(idx, (QItemSelectionModel::Select | QItemSelectionModel::Rows));
 		}
 	}
-}
-
-QMimeData* FileListView::dragableMimedata() const
-{
-	QMimeData* mimeData = m->model->mimeData(this->selectedIndexes());
-
-	if(!this->selectedPaths().isEmpty()){
-		QStringList coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(this->selectedPaths().first());
-		if(!coverPaths.isEmpty()) {
-			Gui::MimeData::setCoverUrl(mimeData, coverPaths.first());
-		}
-	}
-
-	return mimeData;
 }
 
 int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const

@@ -29,11 +29,6 @@ namespace Cover
 	class Location;
 }
 
-namespace Gui
-{
-	class CustomMimeData;
-}
-
 class AbstractLibrary;
 
 namespace Library
@@ -88,7 +83,7 @@ namespace Library
 			 * @param rows
 			 * @return
 			 */
-			virtual Cover::Location cover(const IndexSet& rows) const = 0;
+			virtual Cover::Location cover(const QModelIndexList& indexList) const = 0;
 
 			/**
 			 * @brief return the tracks which belong to the selections. If an
@@ -96,7 +91,7 @@ namespace Library
 			 * @return
 			 */
 			virtual const MetaDataList& selectedMetadata() const = 0;
-			Gui::CustomMimeData* customMimedata() const;
+			virtual QMimeData* mimeData(const QModelIndexList& indexList) const override;
 
 			void refreshData(int* rowCountBefore = nullptr, int* rowCountAfter = nullptr); //returns the size difference
 

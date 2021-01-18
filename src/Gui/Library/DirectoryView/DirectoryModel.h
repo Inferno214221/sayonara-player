@@ -55,12 +55,13 @@ namespace Directory
 			QModelIndex setDataSource(const QString& path);
 			LibraryId libraryDataSource() const;
 
-			QString filePath(const QModelIndex& index);
+			QString filePath(const QModelIndex& index) const;
 			QModelIndex indexOfPath(const QString& path) const;
 
 			void setFilter(const QString& filter);
 
 			int columnCount(const QModelIndex& parent) const override;
+			QMimeData* mimeData(const QModelIndexList& indexes) const override;
 
 		private slots:
 			void filterTimerTimeout();

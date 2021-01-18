@@ -416,11 +416,6 @@ void View::mousePressEvent(QMouseEvent* event)
 	}
 }
 
-QMimeData* View::dragableMimedata() const
-{
-	return m->model->mimeData(selectedIndexes());
-}
-
 void View::mouseDoubleClickEvent(QMouseEvent* event)
 {
 	SearchableTableView::mouseDoubleClickEvent(event);

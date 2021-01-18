@@ -117,9 +117,6 @@ namespace Directory
 			void dragTimerTimeout();
 
 		protected:
-			// Dragable
-			QMimeData* dragableMimedata() const override;
-
 			void skinChanged() override;
 
 			void keyPressEvent(QKeyEvent* event) override;

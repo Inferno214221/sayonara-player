@@ -89,7 +89,6 @@ namespace Library
 			virtual Library::ContextMenu::Entries contextMenuEntries() const;
 
 			/** Dragable **/
-			QMimeData* dragableMimedata() const override;
 			bool isValidDragPosition(const QPoint& p) const override;
 
 		protected:

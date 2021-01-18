@@ -1,6 +1,7 @@
 #include "DirectoryModel.h"
 #include "DirectoryIconProvider.h"
 
+#include "Components/Covers/LocalCoverSearcher.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 
@@ -9,8 +10,12 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 
+#include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
+
 #include <QFileSystemModel>
 #include <QTimer>
+#include <QUrl>
 
 using Directory::Model;
 
@@ -69,7 +74,7 @@ LibraryId Model::libraryDataSource() const
 	return m->libraryId;
 }
 
-QString Model::filePath(const QModelIndex& index)
+QString Model::filePath(const QModelIndex& index) const
 {
 	return m->model->filePath( mapToSource(index) );
 }
@@ -132,8 +137,31 @@ bool Model::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) con
 	return true;
 }
 
-
 int Model::columnCount(const QModelIndex& /*parent*/) const
 {
 	return 1;
+}
+
+QMimeData* Directory::Model::mimeData(const QModelIndexList& indexes) const
+{
+	QStringList paths;
+	QList<QUrl> urls;
+	for(const QModelIndex& index : indexes)
+	{
+		const auto path = this->filePath(index);
+		paths << path;
+		urls << QUrl::fromLocalFile(path);
+	}
+
+	auto* cmd = new Gui::CustomMimeData(this);
+	if(!paths.isEmpty())
+	{
+		const auto coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
+		if(!coverPaths.isEmpty()) {
+			cmd->setCoverUrl(coverPaths.first());
+		}
+	}
+
+	cmd->setUrls(urls);
+	return cmd;
 }

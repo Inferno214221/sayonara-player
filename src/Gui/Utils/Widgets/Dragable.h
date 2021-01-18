@@ -37,7 +37,7 @@ namespace Gui
 	class Dragable;
 	class DragableConnector : public QObject
 	{
-		friend class Dragable;
+			friend class Dragable;
 
 		Q_OBJECT
 		PIMPL(DragableConnector)
@@ -59,6 +59,7 @@ namespace Gui
 	 */
 	class Dragable
 	{
+		PIMPL(Dragable)
 		friend class DragableConnector;
 
 		public:
@@ -72,18 +73,15 @@ namespace Gui
 			};
 
 		private:
-			PIMPL(Dragable)
-
-			QDrag*	createDrag() const;
-			void	startDrag(const QPoint& p);
-			QDrag*	moveDrag(const QPoint& p);
-			void	releaseDrag();
+			QDrag* createDrag() const;
+			QDrag* moveDrag(const QPoint& p);
+			void startDrag(const QPoint& p);
+			void releaseDrag();
 
 		protected:
-			virtual QMimeData*	dragableMimedata() const=0;
-			virtual bool		isValidDragPosition(const QPoint& p) const;
-			virtual bool		hasDragLabel() const;
-			virtual QString		dragLabel() const;
+			virtual bool isValidDragPosition(const QPoint& p) const;
+			virtual bool hasDragLabel() const;
+			virtual QString dragLabel() const;
 	};
 }
 

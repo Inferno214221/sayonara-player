@@ -29,7 +29,6 @@ class HistoryTableView :
 		void rowcountChanged();
 
 	protected:
-		QMimeData* dragableMimedata() const override;
 		void languageChanged() override;
 		void skinChanged() override;
 

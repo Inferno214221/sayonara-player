@@ -54,7 +54,7 @@ namespace Library
 			int rowCount(const QModelIndex& parent) const override;
 
 			/** ItemModel.h **/
-			Cover::Location cover(const IndexSet& indexes) const override;
+			Cover::Location cover(const QModelIndexList & indexes) const override;
 			int searchableColumn() const override;
 			Id mapIndexToId(int row) const override;
 			QString searchableString(int row) const override;

@@ -22,7 +22,6 @@
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
-#include "Components/Covers/LocalCoverSearcher.h"
 
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/PreferenceAction.h"
@@ -475,35 +474,6 @@ bool TreeView::hasMetadata() const
 QStringList TreeView::pathlist() const
 {
 	return this->selectedPaths();
-}
-
-QMimeData* TreeView::dragableMimedata() const
-{
-	const QModelIndexList selectedItems = this->selctedRows();
-
-	QStringList paths;
-	QList<QUrl> urls;
-	for(const QModelIndex& index : selectedItems)
-	{
-		const QString path = m->model->filePath(index);
-		paths << path;
-		urls << QUrl::fromLocalFile(path);
-		spLog(Log::Debug, this) << "Dragging " << path;
-	}
-
-	auto* cmd = new Gui::CustomMimeData(this);
-
-	if(!paths.isEmpty())
-	{
-		const QStringList coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
-		if(!coverPaths.isEmpty()) {
-			cmd->setCoverUrl(coverPaths.first());
-		}
-	}
-
-	cmd->setUrls(urls);
-
-	return cmd;
 }
 
 void TreeView::keyPressEvent(QKeyEvent* event)

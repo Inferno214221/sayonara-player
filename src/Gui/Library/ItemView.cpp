@@ -215,16 +215,6 @@ void ItemView::showContextMenuActions(ContextMenu::Entries entries)
 	m->contextMenu->showActions(entries);
 }
 
-QMimeData* ItemView::dragableMimedata() const
-{
-	Gui::CustomMimeData* cmd = itemModel()->customMimedata();
-
-	const Cover::Location cl = itemModel()->cover(selectedItems());
-	cmd->setCoverUrl(cl.preferredPath());
-
-	return cmd;
-}
-
 void ItemView::showClearButton(bool visible)
 {
 	if(!m->useClearButton)
