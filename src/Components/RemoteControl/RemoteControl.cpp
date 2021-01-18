@@ -416,7 +416,13 @@ void RemoteControl::seekAbsoluteMs(int positionMs)
 
 void RemoteControl::changeTrack(int trackIndex)
 {
-	m->playlistHandler->changeTrack(trackIndex - 1, m->playlistHandler->activeIndex());
+	trackIndex--;
+
+	auto playlist = m->playlistHandler->activePlaylist();
+	if(trackIndex < playlist->count())
+	{
+		playlist->changeTrack(trackIndex);
+	}
 }
 
 void RemoteControl::currentPositionChangedMs(MilliSeconds positionMs)

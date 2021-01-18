@@ -39,8 +39,8 @@ namespace Playlist
 		PIMPL(TabWidget)
 
 		signals:
-			void sigOpenFile(int tabIndex);
-			void sigOpenDir(int tabIndex);
+			void sigOpenFile(int tabIndex, const QStringList& files);
+			void sigOpenDir(int tabIndex, const QString& dir);
 			void sigTabReset(int tabIndex);
 			void sigTabSave(int tabIndex);
 			void sigTabSaveAs(int tabIndex, const QString& name);

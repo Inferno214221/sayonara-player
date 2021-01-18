@@ -52,10 +52,11 @@ namespace Playlist
 
 			bool insertTemporaryIntoDatabase();
 			Util::SaveAsAnswer save();
-			Util::SaveAsAnswer saveAs(const QString& str, bool force_override);
-			Util::SaveAsAnswer rename(const QString& str);
+			Util::SaveAsAnswer saveAs(const QString& str, bool forceOverride);
+			Util::SaveAsAnswer rename(const QString& newName);
 			bool deletePlaylist();
-			bool removeFromDatabase();
+
+			MetaDataList fetchTracksFromDatabase() const;
 
 			virtual const MetaDataList& tracks() const = 0;
 			virtual void setChanged(bool b) = 0;

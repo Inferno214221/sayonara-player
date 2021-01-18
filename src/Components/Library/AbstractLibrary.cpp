@@ -21,6 +21,7 @@
 #include "AbstractLibrary.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/MetaData/MetaDataList.h"
@@ -378,25 +379,29 @@ void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool ne
 void AbstractLibrary::playNextFetchedTracks()
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->playNext(tracks());
+	auto pl = plh->activePlaylist();
+	pl->insertTracks(tracks(), pl->currentTrackIndex());
 }
 
 void AbstractLibrary::playNextCurrentTracks()
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->playNext( currentTracks() );
+	auto pl = plh->activePlaylist();
+	pl->insertTracks(currentTracks(), pl->currentTrackIndex());
 }
 
 void AbstractLibrary::appendFetchedTracks()
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->appendTracks(tracks(), plh->current_index());
+	auto pl = plh->activePlaylist();
+	pl->appendTracks(tracks());
 }
 
 void AbstractLibrary::appendCurrentTracks()
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->appendTracks(currentTracks(), plh->current_index());
+	auto pl = plh->activePlaylist();
+	pl->appendTracks(currentTracks());
 }
 
 void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)

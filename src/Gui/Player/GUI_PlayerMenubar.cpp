@@ -414,7 +414,7 @@ void Menubar::openDirClicked()
 	);
 
 	if(!dir.isEmpty()){
-		Playlist::Handler::instance()->createPlaylist(dir);
+		Playlist::Handler::instance()->createPlaylist(QStringList{dir});
 	}
 }
 

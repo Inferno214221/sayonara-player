@@ -80,7 +80,6 @@ namespace Playlist
 
 		private slots:
 			void refresh();
-			void currentTrackChanged(int trackIndex, int playlistIndex);
 			void asyncDropFinished();
 			void ratingChanged(Rating rating);
 			void columnsChanged();

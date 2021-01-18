@@ -29,6 +29,7 @@
 #include "PlaylistModel.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
 
@@ -387,14 +388,14 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 
 void Model::insertTracks(const MetaDataList& tracks, int row)
 {
-	auto* plh = Handler::instance();
-	plh->insertTracks(tracks, row, m->pl->index());
+	m->pl->insertTracks(tracks, row);
 }
 
 void Model::insertTracks(const QStringList& files, int row)
 {
-	auto* plh = Handler::instance();
-	plh->insertTracks(files, row, m->pl->index());
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->pl);
+	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
+	playlistGenerator->insertPaths(files, row);
 }
 
 int Model::currentTrack() const

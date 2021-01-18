@@ -38,18 +38,18 @@ namespace Playlist
 	 * @ingroup Playlists
 	 */
 	class Playlist :
-			public QObject,
-			public DBInterface,
-			protected StopBehavior
+		public QObject,
+		public DBInterface,
+		protected StopBehavior
 	{
 		Q_OBJECT
 		PIMPL(Playlist)
 
-		friend class Handler;
+			friend class Handler;
 
 		signals:
-			void sigItemsChanged(int idx);
-			void sigCurrentTrackChanged(int idx);
+			void sigItemsChanged(int index);
+			void sigTrackChanged();
 			void sigStopped();
 			void sigFindTrack(TrackID trackId);
 			void sigBusyChanged(bool b);
@@ -59,32 +59,34 @@ namespace Playlist
 			explicit Playlist(int idx, const QString& name, PlayManager* playManager);
 			~Playlist() override;
 
-			int				createPlaylist(const MetaDataList& tracks);
-			int				currentTrackIndex() const;
-			bool			currentTrack(MetaData& metadata) const;
-			int				index() const;
-			void			setIndex(int idx);
-			Mode			mode() const;
-			void			setMode(const Mode& mode);
-			MilliSeconds	runningTime() const;
-			int				count() const override;
+			int createPlaylist(const MetaDataList& tracks);
 
-			void			enableAll();
+			int currentTrackIndex() const;
+			bool currentTrack(MetaData& metadata) const;
 
-			void			play();
-			void			stop();
-			void			fwd();
-			void			bwd();
-			void			next();
-			bool			wakeUp();
+			int index() const;
+			void setIndex(int idx);
 
-			void			setBusy(bool b);
-			bool			isBusy() const;
+			Mode mode() const;
+			void setMode(const Mode& mode);
 
-			void			setCurrentScannedFile(const QString& file);
-			void			reverse();
+			MilliSeconds runningTime() const;
+			int count() const override;
 
-		public:
+			void enableAll();
+
+			void play();
+			void stop();
+			void fwd();
+			void bwd();
+			void next();
+			bool wakeUp();
+
+			void setBusy(bool b);
+			bool isBusy() const;
+
+			void reverse();
+
 			const MetaData& track(int idx) const override;
 			const MetaDataList& tracks() const override;
 
@@ -98,10 +100,10 @@ namespace Playlist
 			IndexSet copyTracks(const IndexSet& indexes, int tgt);
 
 			void findTrack(int idx);
-
-			bool changeTrack(int idx);
-
+			bool changeTrack(int index, MilliSeconds positionMs=0);
 			bool wasChanged() const override;
+
+			void reloadFromDatabase();
 
 		public slots:
 			void metadataDeleted();

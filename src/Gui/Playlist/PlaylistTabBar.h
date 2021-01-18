@@ -39,21 +39,21 @@ namespace Playlist
 		PIMPL(TabBar)
 
 		signals:
-			void sigOpenFile(int tab_idx);
-			void sigOpenDir(int tab_idx);
+			void sigOpenFile(int tabIndex, const QStringList& files);
+			void sigOpenDir(int tabIndex, const QString& directory);
 
-			void sigTabReset(int tab_idx);
-			void sigTabSave(int tab_idx);
-			void sigTabSaveAs(int tab_idx, const QString& name);
-			void sigTabSaveToFile(int tab_idx, const QString& filename);
-			void sigTabRename(int tab_idx, const QString& name);
-			void sigTabClear(int tab_idx);
+			void sigTabReset(int tabIndex);
+			void sigTabSave(int tabIndex);
+			void sigTabSaveAs(int tabIndex, const QString& name);
+			void sigTabSaveToFile(int tabIndex, const QString& filename);
+			void sigTabRename(int tabIndex, const QString& name);
+			void sigTabClear(int tabIndex);
 
-			void sigTabDelete(int tab_idx);
-			void sigCurrentIndexChanged(int tab_idx);
+			void sigTabDelete(int tabIndex);
+			void sigCurrentIndexChanged(int tabIndex);
 			void sigAddTabClicked();
-			void sigMetadataDropped(int tab_idx, const MetaDataList& v_md);
-			void sigFilesDropped(int tab_idx, const QStringList& files);
+			void sigMetadataDropped(int tabIndex, const MetaDataList& v_md);
+			void sigFilesDropped(int tabIndex, const QStringList& files);
 
 
 		public:

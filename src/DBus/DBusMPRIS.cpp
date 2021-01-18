@@ -333,7 +333,7 @@ double DBusMPRIS::MediaPlayer2::MaximumRate()
 bool DBusMPRIS::MediaPlayer2::CanGoNext()
 {
 	Playlist::Handler* handler = Playlist::Handler::instance();
-	PlaylistConstPtr pl = handler->playlist(handler->current_index());
+	PlaylistConstPtr pl = handler->playlist(handler->currentIndex());
 	if(!pl){
 		return false;
 	}
@@ -348,7 +348,7 @@ bool DBusMPRIS::MediaPlayer2::CanGoNext()
 bool DBusMPRIS::MediaPlayer2::CanGoPrevious()
 {
 	Playlist::Handler* handler = Playlist::Handler::instance();
-	PlaylistConstPtr pl = handler->playlist(handler->current_index());
+	PlaylistConstPtr pl = handler->playlist(handler->currentIndex());
 	if(!pl){
 		return false;
 	}

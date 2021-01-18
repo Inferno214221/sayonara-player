@@ -64,47 +64,34 @@ public:
 private:
 	void initToolButton();
 
-	Playlist::View* viewByIndex(int idx);
-	Playlist::View* currentView();
-
-	void setTotalTimeLabel();
-
 private slots:
 
 	// triggered from playlist
-	void playlistCreated(PlaylistPtr pl);
-	void playlistAdded(PlaylistPtr pl);
+	void playlistAdded(int playlistIndex);
 	void playlistNameChanged(int playlistIndex);
 	void playlistChanged(int playlistIndex);
-	void playlistIdxChanged(int pld_idx);
+	void playlistIdxChanged(int playlistIndex);
+	void playlistClosed(int playlistIndex);
 
 	// triggered by GUI
-	void tabClosePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
 	void tabSavePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
-	void tabSavePlaylistAsClicked(int playlistIndex, const QString& str); // GUI_PlaylistTabs.cpp
+	void tabSavePlaylistAsClicked(int playlistIndex, const QString& newName); // GUI_PlaylistTabs.cpp
 	void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename); // GUI_PlaylistTabs.cpp
-	void tabRenameClicked(int playlistIndex, const QString& str);
+	void tabRenameClicked(int playlistIndex, const QString& newName);
+	void tabResetClicked(int playlistIndex);
 	void tabDeletePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
 	void tabMetadataDropped(int playlistIndex, const MetaDataList& tracks);
 	void tabFilesDropped(int playlistIndex, const QStringList& paths);
-	void openFileClicked(int playlistIndex);
-	void openDirClicked(int playlistIndex);
+	void openFileClicked(int playlistIndex, const QStringList& files);
+	void openDirClicked(int playlistIndex, const QString& dir);
 	void deleteTracksClicked(const IndexSet& rows);
 
 	void checkTabIcon();
-	void checkPlaylistMenu(PlaylistConstPtr pl);
-	void checkPlaylistName(PlaylistConstPtr pl);
 
 	void doubleClicked(int row);
 
-	void addPlaylistButtonPressed();
-
 	void clearButtonPressed(int playlistIndex);
-	void bookmarkSelected(int idx, Seconds timestamp);
-
-	// called by playmanager
-	void playstateChanged(PlayState state);
-	void playlistFinished();
+	void bookmarkSelected(int trackIndex, Seconds timestamp);
 
 	void showClearButtonChanged();
 	void showBottomBarChanged();

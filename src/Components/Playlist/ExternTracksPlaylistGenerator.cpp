@@ -19,6 +19,7 @@
  */
 
 #include "ExternTracksPlaylistGenerator.h"
+#include "Components/Directories/MetaDataScanner.h"
 #include "PlaylistHandler.h"
 #include "Playlist.h"
 
@@ -27,107 +28,109 @@
 #include "Utils/Language/Language.h"
 
 #include <QStringList>
+#include <QThread>
 
 struct ExternTracksPlaylistGenerator::Private
 {
-	int playlistId;
-	int playlistIndex;
-	bool isPlayAllowed;
+	PlaylistPtr playlist;
+	int targetRowIndex;
 
-	Private() :
-		playlistId(-1),
-		playlistIndex(-1),
-		isPlayAllowed(true)
+	Private(PlaylistPtr playlist) :
+		playlist(playlist ? playlist : addNewPlaylist()),
+		targetRowIndex{-1}
 	{}
 
-	PlaylistConstPtr addNewPlaylist(const QStringList& paths)
+	PlaylistPtr addNewPlaylist()
 	{
 		auto* plh = Playlist::Handler::instance();
-
 		QString name = plh->requestNewPlaylistName();
 
-		this->playlistIndex = plh->createPlaylist(paths, name, true);
-		this->playlistId = plh->playlist(this->playlistIndex)->id();
-
-		return plh->playlist(this->playlistIndex);
+		auto index = plh->createPlaylist(MetaDataList(), name, true);
+		return plh->playlist(index);
 	}
 };
 
-ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator()
+ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistPtr playlist)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlist);
 }
 
 ExternTracksPlaylistGenerator::~ExternTracksPlaylistGenerator() = default;
 
+void ExternTracksPlaylistGenerator::insertPaths(const QStringList& paths, int targetRowIndex)
+{
+	if(!paths.isEmpty()) {
+		m->targetRowIndex = targetRowIndex;
+		scanFiles(paths);
+	}
+}
+
 void ExternTracksPlaylistGenerator::addPaths(const QStringList& paths)
 {
-	if(paths.isEmpty()){
-		m->isPlayAllowed = false;
-		return;
-	}
-
-	auto* plh = Playlist::Handler::instance();
-
-	PlaylistConstPtr pl;
-
-	int index = -1;
-	m->isPlayAllowed = true;
-
-	if(m->playlistId < 0)
+	const auto mode = m->playlist->mode();
+	if(Playlist::Mode::isActiveAndEnabled(mode.append()))
 	{
-		pl = m->addNewPlaylist(paths);
+		insertPaths(paths, m->playlist->count() - 1);
 	}
 
 	else
 	{
-		for(int i=0; i<plh->count(); i++)
-		{
-			auto tmp_pl = plh->playlist(i);
-			if(tmp_pl->id() == m->playlistId)
-			{
-				index = i;
-				break;
-			}
-		}
-
-		if(index < 0)
-		{ // the playlist was closed/deleted in the meanwhile
-			pl = m->addNewPlaylist(paths);
-		}
-
-		else
-		{
-			pl = plh->playlist(index);
-
-			Playlist::Mode mode = pl->mode();
-			if(Playlist::Mode::isActiveAndEnabled(mode.append()))
-			{ // append new tracks
-				plh->appendTracks(paths, index);
-				m->isPlayAllowed = false;
-			}
-
-			else
-			{ // clear everything and overwrite
-				plh->resetPlaylist(index);
-				plh->appendTracks(paths, index);
-			}
-		}
+		m->playlist->clear();
+		insertPaths(paths, m->playlist->count() - 1);
 	}
 }
 
-void ExternTracksPlaylistGenerator::changeTrack()
+void ExternTracksPlaylistGenerator::scanFiles(const QStringList& paths)
 {
-	auto* plh = Playlist::Handler::instance();
-	PlaylistConstPtr pl = plh->playlist(m->playlistIndex);
+	m->playlist->setBusy(true);
 
-	if(pl && pl->count() > 0)
+	using Directory::MetaDataScanner;
+
+	auto* t = new QThread();
+	auto* worker = new MetaDataScanner(paths, true, nullptr);
+
+	connect(t, &QThread::started, worker, &MetaDataScanner::start);
+	connect(t, &QThread::finished, t, &QObject::deleteLater);
+	connect(worker, &MetaDataScanner::sigFinished, this, &ExternTracksPlaylistGenerator::filesScanned);
+	connect(worker, &MetaDataScanner::sigFinished, t, &QThread::quit);
+
+	worker->moveToThread(t);
+	t->start();
+}
+
+void ExternTracksPlaylistGenerator::filesScanned()
+{
+	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+
+	auto playlist = Playlist::Handler::instance()->playlistById(m->playlist->id());
+	if(!playlist){
+		emit sigFinished();
+		return;
+	}
+
+	playlist->setBusy(false);
+
+	if(worker->metadata().isEmpty()){
+		emit sigFinished();
+		return;
+	}
+
+	if(m->targetRowIndex < 0)
 	{
-		plh->changeTrack(0, m->playlistIndex);
+		playlist->clear();
+		playlist->insertTracks(worker->metadata(), 0);
 	}
-}
 
-bool ExternTracksPlaylistGenerator::isPlayAllowed() const
-{
-	return m->isPlayAllowed;
+	else if(m->targetRowIndex >= playlist->count())
+	{
+		playlist->appendTracks(worker->metadata());
+	}
+
+	else
+	{
+		playlist->insertTracks(worker->metadata(), m->targetRowIndex);
+	}
+
+	worker->deleteLater();
+	emit sigFinished();
 }

@@ -35,37 +35,35 @@
 
 #include <QMultiHash>
 
-namespace File=Util::File;
-namespace Algorithm=Util::Algorithm;
+namespace File = Util::File;
+namespace Algorithm = Util::Algorithm;
 
-using PlaylistImpl=::Playlist::Playlist;
+using PlaylistImpl = ::Playlist::Playlist;
 
 struct PlaylistImpl::Private
 {
 	PlayManager* playManager;
-	MetaData		dummyTrack;
-	MetaDataList    tracks;
-	QList<UniqueId>	shuffleHistory;
-	UniqueId		playingUniqueId;
-	PlaylistMode	playlistMode;
-	int				playlistIndex;
-	bool			playlistChanged;
-	bool			busy;
+	MetaData dummyTrack;
+	MetaDataList tracks;
+	QList<UniqueId> shuffleHistory;
+	UniqueId playingUniqueId;
+	PlaylistMode playlistMode;
+	int playlistIndex;
+	bool playlistChanged;
+	bool busy;
 
 	Private(int playlist_idx, PlaylistMode playlist_mode, PlayManager* playManager) :
 		playManager(playManager),
 		playlistMode(playlist_mode),
 		playlistIndex(playlist_idx),
 		playlistChanged(false),
-		busy(false)
-	{}
+		busy(false) {}
 };
-
 
 PlaylistImpl::Playlist(int idx, const QString& name, PlayManager* playManager) :
 	Playlist::DBInterface(name)
 {
-	m = Pimpl::make<::Playlist::Playlist::Private>(idx,  GetSetting(Set::PL_Mode), playManager);
+	m = Pimpl::make<::Playlist::Playlist::Private>(idx, GetSetting(Set::PL_Mode), playManager);
 
 	auto* changeNotifier = Tagging::ChangeNotifier::instance();
 	connect(changeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, &Playlist::metadataChanged);
@@ -92,12 +90,13 @@ IndexSet PlaylistImpl::moveTracks(const IndexSet& indexes, int tgt_row)
 {
 	m->tracks.moveTracks(indexes, tgt_row);
 
-	int lineCountBeforeTarget = Algorithm::count(indexes, [&tgt_row](int sel){
+	int lineCountBeforeTarget = Algorithm::count(indexes, [&tgt_row](int sel) {
 		return (sel < tgt_row);
 	});
 
 	IndexSet newTrackPositions;
-	for(int i = tgt_row; i < tgt_row + indexes.count(); i++) {
+	for(int i = tgt_row; i < tgt_row + indexes.count(); i++)
+	{
 		newTrackPositions.insert(i - lineCountBeforeTarget);
 	}
 
@@ -113,7 +112,7 @@ IndexSet PlaylistImpl::copyTracks(const IndexSet& indexes, int tgt)
 	setChanged(true);
 
 	IndexSet newTrackPositions;
-	for(int i=0; i<indexes.count(); i++)
+	for(int i = 0; i < indexes.count(); i++)
 	{
 		newTrackPositions << tgt + i;
 	}
@@ -137,7 +136,6 @@ void PlaylistImpl::removeTracks(const IndexSet& indexes)
 	setChanged(true);
 }
 
-
 void PlaylistImpl::insertTracks(const MetaDataList& lst, int tgt)
 {
 	m->tracks.insertTracks(lst, tgt);
@@ -146,43 +144,55 @@ void PlaylistImpl::insertTracks(const MetaDataList& lst, int tgt)
 
 void PlaylistImpl::appendTracks(const MetaDataList& lst)
 {
+	if(isBusy())
+	{
+		return;
+	}
+
 	int old_size = m->tracks.count();
 
 	m->tracks.append(lst);
 
-	for(auto it=m->tracks.begin() + old_size; it != m->tracks.end(); it++)
+	for(auto it = m->tracks.begin() + old_size; it != m->tracks.end(); it++)
 	{
 		it->setDisabled
-		(
-			!(File::checkFile(it->filepath()))
-		);
+			(
+				!(File::checkFile(it->filepath()))
+			);
 	}
 
 	setChanged(true);
 }
 
-bool PlaylistImpl::changeTrack(int idx)
+bool PlaylistImpl::changeTrack(int index, MilliSeconds positionMs)
 {
 	setTrackIndexBeforeStop(-1);
-	setCurrentTrack(idx);
+	setCurrentTrack(index);
 
-	if( !Util::between(idx, m->tracks) )
+	if(!Util::between(index, m->tracks))
 	{
 		stop();
 		setTrackIndexBeforeStop(-1);
 		return false;
 	}
 
-	m->shuffleHistory << m->tracks[idx].uniqueId();
+	m->shuffleHistory << m->tracks[index].uniqueId();
 
-	if( !Util::File::checkFile(m->tracks[idx].filepath()) )
+	if(!Util::File::checkFile(m->tracks[index].filepath()))
 	{
-		spLog(Log::Warning, this) << QString("Track %1 not available on file system: ").arg(m->tracks[idx].filepath());
-		m->tracks[idx].setDisabled(true);
+		spLog(Log::Warning, this) << QString("Track %1 not available on file system: ").arg(m->tracks[index].filepath());
+		m->tracks[index].setDisabled(true);
 
-		return changeTrack(idx + 1);
+		return changeTrack(index + 1);
 	}
 
+	m->playManager->play();
+	if(positionMs > 0)
+	{
+		m->playManager->seekAbsoluteMs(positionMs);
+	}
+
+	emit sigTrackChanged();
 	return true;
 }
 
@@ -192,15 +202,14 @@ void PlaylistImpl::metadataDeleted()
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	MetaDataList deletedTracks = mdcn->deletedMetadata();
 
-	auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [deletedTracks](const MetaData& md)
-	{
-		return Algorithm::contains(deletedTracks, [&md](const MetaData& md_tmp){
+	auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [deletedTracks](const MetaData& md) {
+		return Algorithm::contains(deletedTracks, [&md](const MetaData& md_tmp) {
 			return (md.isEqual(md_tmp));
 		});
 	});
 
 	m->tracks.erase(it, m->tracks.end());
-	emit sigItemsChanged( index() );
+	emit sigItemsChanged(index());
 }
 
 void PlaylistImpl::metadataChanged()
@@ -210,8 +219,8 @@ void PlaylistImpl::metadataChanged()
 
 	QMultiHash<QString, int> filepathIndexMap;
 
-	int i=0;
-	for(auto it=m->tracks.begin(); it != m->tracks.end(); it++, i++)
+	int i = 0;
+	for(auto it = m->tracks.begin(); it != m->tracks.end(); it++, i++)
 	{
 		filepathIndexMap.insert(it->filepath(), i);
 	}
@@ -255,7 +264,8 @@ void PlaylistImpl::durationChanged()
 
 void PlaylistImpl::replaceTrack(int index, const MetaData& md)
 {
-	if( !Util::between(index, m->tracks) ) {
+	if(!Util::between(index, m->tracks))
+	{
 		return;
 	}
 
@@ -264,15 +274,16 @@ void PlaylistImpl::replaceTrack(int index, const MetaData& md)
 
 	m->tracks[index] = md;
 	m->tracks[index].setDisabled
-	(
-		!(File::checkFile(md.filepath()))
-	);
+		(
+			!(File::checkFile(md.filepath()))
+		);
 
-	if(isCurrent){
+	if(isCurrent)
+	{
 		m->playingUniqueId = m->tracks[index].uniqueId();
 	}
 
-	for(int i=0; i<m->shuffleHistory.count(); i++)
+	for(int i = 0; i < m->shuffleHistory.count(); i++)
 	{
 		if(m->shuffleHistory[i] == oldUniqueId)
 		{
@@ -285,7 +296,8 @@ void PlaylistImpl::replaceTrack(int index, const MetaData& md)
 
 void PlaylistImpl::play()
 {
-	if(currentTrackIndex() < 0){
+	if(currentTrackIndex() < 0)
+	{
 		changeTrack(0);
 	}
 }
@@ -319,13 +331,19 @@ void PlaylistImpl::fwd()
 
 void PlaylistImpl::bwd()
 {
+	if(m->playManager->currentPositionMs() > 2000)
+	{
+		m->playManager->seekAbsoluteMs(0);
+		return;
+	}
+
 	if(PlaylistMode::isActiveAndEnabled(m->playlistMode.shuffle()))
 	{
 		for(int history_index = m->shuffleHistory.size() - 2; history_index >= 0; history_index--)
 		{
 			UniqueId uid = m->shuffleHistory[history_index];
 
-			int idx = Util::Algorithm::indexOf(m->tracks, [uid](const MetaData& md){
+			int idx = Util::Algorithm::indexOf(m->tracks, [uid](const MetaData& md) {
 				return (uid == md.uniqueId());
 			});
 
@@ -340,7 +358,7 @@ void PlaylistImpl::bwd()
 	}
 
 	m->shuffleHistory.clear();
-	changeTrack( currentTrackIndex() - 1 );
+	changeTrack(currentTrackIndex() - 1);
 }
 
 void PlaylistImpl::next()
@@ -357,21 +375,24 @@ void PlaylistImpl::next()
 	int currentTrack = currentTrackIndex();
 	int trackIndex = -1;
 
-	if(currentTrack == -1){
+	if(currentTrack == -1)
+	{
 		trackIndex = 0;
 	}
 
-	// play it again
-	else if(PlaylistMode::isActiveAndEnabled(m->playlistMode.rep1())) {
+		// play it again
+	else if(PlaylistMode::isActiveAndEnabled(m->playlistMode.rep1()))
+	{
 		trackIndex = currentTrack;
 	}
 
-	// shuffle mode
-	else if(PlaylistMode::isActiveAndEnabled(m->playlistMode.shuffle())) {
+		// shuffle mode
+	else if(PlaylistMode::isActiveAndEnabled(m->playlistMode.shuffle()))
+	{
 		trackIndex = calcShuffleTrack();
 	}
 
-	// normal track
+		// normal track
 	else
 	{
 		// last track
@@ -379,12 +400,14 @@ void PlaylistImpl::next()
 		{
 			trackIndex = -1;
 
-			if(PlaylistMode::isActiveAndEnabled(m->playlistMode.repAll())) {
+			if(PlaylistMode::isActiveAndEnabled(m->playlistMode.repAll()))
+			{
 				trackIndex = 0;
 			}
 		}
 
-		else {
+		else
+		{
 			trackIndex = currentTrack + 1;
 		}
 	}
@@ -392,20 +415,21 @@ void PlaylistImpl::next()
 	changeTrack(trackIndex);
 }
 
-
 int PlaylistImpl::calcShuffleTrack()
 {
-	if(m->tracks.size() <= 1){
+	if(m->tracks.size() <= 1)
+	{
 		return -1;
 	}
 
 	// check all tracks played
-	int i=0;
+	int i = 0;
 	QList<int> unplayedTracks;
 	for(MetaData& md : m->tracks)
 	{
 		UniqueId uniqueId = md.uniqueId();
-		if(!m->shuffleHistory.contains(uniqueId)) {
+		if(!m->shuffleHistory.contains(uniqueId))
+		{
 			unplayedTracks << i;
 		}
 
@@ -455,11 +479,6 @@ bool Playlist::Playlist::isBusy() const
 	return m->busy;
 }
 
-void Playlist::Playlist::setCurrentScannedFile(const QString& current_scanned_file)
-{
-	emit sigCurrentScannedFileChanged(current_scanned_file);
-}
-
 void Playlist::Playlist::reverse()
 {
 	std::reverse(m->tracks.begin(), m->tracks.end());
@@ -476,7 +495,7 @@ void PlaylistImpl::enableAll()
 	setChanged(true);
 }
 
-int PlaylistImpl::createPlaylist(const MetaDataList& v_md)
+int PlaylistImpl::createPlaylist(const MetaDataList& tracks)
 {
 	if(PlaylistMode::isActiveAndEnabled(m->playlistMode.append()) == false)
 	{
@@ -484,7 +503,7 @@ int PlaylistImpl::createPlaylist(const MetaDataList& v_md)
 		m->shuffleHistory.clear();
 	}
 
-	m->tracks << v_md;
+	m->tracks << tracks;
 
 	setChanged(true);
 
@@ -503,7 +522,7 @@ void PlaylistImpl::setIndex(int idx)
 
 void PlaylistImpl::setMode(const PlaylistMode& mode)
 {
-	if( m->playlistMode.shuffle() != mode.shuffle())
+	if(m->playlistMode.shuffle() != mode.shuffle())
 	{
 		m->shuffleHistory.clear();
 	}
@@ -518,21 +537,24 @@ PlaylistMode PlaylistImpl::mode() const
 
 MilliSeconds PlaylistImpl::runningTime() const
 {
-	MilliSeconds dur_ms  = std::accumulate(m->tracks.begin(), m->tracks.end(), 0, [](MilliSeconds time, const MetaData& md){
-		return time + md.durationMs();
-	});
+	MilliSeconds dur_ms = std::accumulate(m->tracks.begin(),
+	                                      m->tracks.end(),
+	                                      0,
+	                                      [](MilliSeconds time, const MetaData& md) {
+		                                      return time + md.durationMs();
+	                                      });
 
 	return dur_ms;
 }
 
 int PlaylistImpl::currentTrackIndex() const
 {
-	if(m->playingUniqueId == 0){
+	if(m->playingUniqueId == 0)
+	{
 		return -1;
 	}
 
-	return Util::Algorithm::indexOf(m->tracks, [this](const MetaData& md)
-	{
+	return Util::Algorithm::indexOf(m->tracks, [this](const MetaData& md) {
 		return (md.uniqueId() == m->playingUniqueId);
 	});
 }
@@ -540,7 +562,8 @@ int PlaylistImpl::currentTrackIndex() const
 bool PlaylistImpl::currentTrack(MetaData& md) const
 {
 	int idx = currentTrackIndex();
-	if(!Util::between(idx, m->tracks)) {
+	if(!Util::between(idx, m->tracks))
+	{
 		return false;
 	}
 
@@ -550,15 +573,19 @@ bool PlaylistImpl::currentTrack(MetaData& md) const
 
 void Playlist::Playlist::setCurrentTrack(int idx)
 {
-	if(!Util::between(idx, m->tracks)) {
+	if(!Util::between(idx, m->tracks))
+	{
 		m->playingUniqueId = 0;
+		stop();
 	}
 
-	else {
-		m->playingUniqueId = m->tracks[idx].uniqueId();
+	else
+	{
+		const auto& track = m->tracks[idx];
+		m->playingUniqueId = track.uniqueId();
+		m->playManager->changeCurrentTrack(track, idx);
+		SetSetting(Set::PL_LastPlaylist, this->id());
 	}
-
-	emit sigCurrentTrackChanged(idx);
 }
 
 int PlaylistImpl::count() const
@@ -582,7 +609,7 @@ bool PlaylistImpl::wasChanged() const
 
 void PlaylistImpl::settingPlaylistModeChanged()
 {
-	setMode( GetSetting(Set::PL_Mode) );
+	setMode(GetSetting(Set::PL_Mode));
 }
 
 const MetaDataList& PlaylistImpl::tracks() const
@@ -598,4 +625,14 @@ const MetaData& PlaylistImpl::track(int idx) const
 	}
 
 	return m->dummyTrack;
+}
+
+void PlaylistImpl::reloadFromDatabase()
+{
+	if(!this->isBusy())
+	{
+		const auto customPlaylist = this->fetchTracksFromDatabase();
+		this->clear();
+		this->createPlaylist(customPlaylist);
+	}
 }

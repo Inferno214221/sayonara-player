@@ -4,6 +4,8 @@
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -88,13 +90,19 @@ void DirectorySelectionHandler::createPlaylist(const QStringList& paths, bool cr
 void DirectorySelectionHandler::playNext(const QStringList& paths)
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->playNext(paths);
+	auto playlist = plh->activePlaylist();
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(playlist);
+	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
+	playlistGenerator->insertPaths(paths, playlist->currentTrackIndex());
 }
 
 void DirectorySelectionHandler::appendTracks(const QStringList& paths)
 {
 	auto* plh = Playlist::Handler::instance();
-	plh->appendTracks(paths, plh->current_index());
+	auto playlist = plh->activePlaylist();
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(playlist);
+	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
+	playlistGenerator->addPaths(paths);
 }
 
 void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)

@@ -55,49 +55,26 @@ namespace Playlist
 		PIMPL(Handler)
 		SINGLETON_QOBJECT(Handler)
 
-		public:
-
-			/**
-			 * @brief The PlaylistIndex enum
-			 */
-			enum class PlaylistIndex : uint8_t
-			{
-				Current=0,
-				Active
-			};
-
 		signals:
 			/**
-			 * @brief emitted when new playlist has been created
-			 * @param pl Playlist, usually current one
-			 */
-			void sigPlaylistCreated(PlaylistPtr pl);
-
-			/**
-			 * @brief emitted when current track index has changed
-			 * @param trackIndex index in playlist
-			 * @param playlist_idx index of playlist
-			 */
-			void sigCurrentTrackChanged(int trackIndex, int playlist_idx);
-
-			/**
 			 * @brief emitted when new playlist has been added
-			 * @param pl reference to new playlist
+			 * @param playlistIndex reference to new playlist
 			 */
-			void sigNewPlaylistAdded(PlaylistPtr pl);
+			void sigNewPlaylistAdded(int playlistIndex);
 
 			/**
 			 * @brief emitted when playlist name has changed
-			 * @param idx index of playlist
+			 * @param playlistIndex index of playlist
 			 */
-			void sigPlaylistNameChanged(int idx);
+			void sigPlaylistNameChanged(int playlistIndex);
 
 			/**
 			 * @brief emitted when tracks were added/removed or have changed
-			 * @param idx playlist index
+			 * @param playlistIndex playlist index
 			 */
-			void sigCurrentPlaylistChanged(int idx);
-			void sigActivePlaylistChanged(int idx);
+			void sigCurrentPlaylistChanged(int playlistIndex);
+			void sigActivePlaylistChanged(int playlistIndex);
+			void sigInitialPlaylistCreated(int playlistIndex);
 
 			/**
 			 * @brief emitted when a track deletion was triggered over the Ui
@@ -106,6 +83,7 @@ namespace Playlist
 			 */
 			void sigTrackDeletionRequested(const MetaDataList& tracks, Library::TrackDeletionMode deletion_mode);
 
+			void sigPlaylistClosed(int playlistIndex);
 			void sigFindTrackRequested(TrackID trackId);
 
 
@@ -116,60 +94,6 @@ namespace Playlist
 			 */
 			void shutdown();
 
-			/**
-			 * @brief clears the current visible playlist
-			 * @param playlistIndex playlist index
-			 */
-			void clearPlaylist(int playlistIndex);
-
-			/**
-			 * @brief insert tracks to active playlist after current playback position
-			 * @param tracks list of tracks
-			 */
-			void playNext(const MetaDataList& tracks);
-			void playNext(const QStringList& paths);
-
-			/**
-			 * @brief insert tracks into a playlist at a given index
-			 * @param tracks track list
-			 * @param idx track index within playlist
-			 * @param playlistIndex playlist index
-			 */
-			void insertTracks(const MetaDataList& tracks, int idx, int playlistIndex);
-			void insertTracks(const QStringList& paths, int idx, int playlistIndex);
-
-
-			/**
-			 * @brief append tracks at a given playlist index
-			 * @param tracks track list
-			 * @param playlistIndex playlist index
-			 */
-			void appendTracks(const MetaDataList& tracks, int playlistIndex);
-			void appendTracks(const QStringList& paths, int playlistIndex);
-
-			/**
-			 * @brief move rows within playlist
-			 * @param idx_list list of row indices to be moved
-			 * @param tgt_idx target index where rows should be moved
-			 * @param playlistIndex playlist index
-			 */
-			void moveRows(const IndexSet& indexes, int tgt_idx, int playlistIndex);
-
-
-			/**
-			 * @brief remove rows from playlist
-			 * @param indexes list of row indices to be removed
-			 * @param playlistIndex playlist index
-			 */
-			void removeRows(const IndexSet& indexes, int playlistIndex);
-
-
-			/**
-			 * @brief change the track in a given playlist
-			 * @param idx track index
-			 * @param playlistIndex playlist index
-			 */
-			void changeTrack(int trackIndex, int playlistIndex);
 
 
 			/**
@@ -177,11 +101,16 @@ namespace Playlist
 			 * @return
 			 */
 			int	activeIndex() const;
-			PlaylistConstPtr activePlaylist() const;
 
+			/**
+			 * @brief get active playlist. If no playlists are available, create one.
+			 * If there's no active index, the current index is used
+			 * @return
+			 */
+			PlaylistPtr activePlaylist();
 
-			int current_index() const;
-			void set_current_index(int playlistIndex);
+			int currentIndex() const;
+			void setCurrentIndex(int playlistIndex);
 
 			/**
 			 * @brief Returns number of playlists
@@ -195,27 +124,12 @@ namespace Playlist
 			 * @param playlistIndex playlist index
 			 * @return read only pointer object to a playlist, may be nullptr
 			 */
-			PlaylistConstPtr playlist(int playlistIndex) const;
+			PlaylistPtr playlist(int playlistIndex);
+			PlaylistPtr playlistById(int playlistId);
 
 
-			/**
-			 * @brief delete the given playlist from database
-			 * @param playlistIndex playlist index
-			 */
-			void deletePlaylist(int playlistIndex);
-
-			/**
-			 * @brief close playlist
-			 * @param playlistIndex playlist index
-			 */
-			int closePlaylist(int playlistIndex);
 
 
-			/**
-			 * @brief reload playlist from db
-			 * @param playlistIndex playlist index
-			 */
-			void resetPlaylist(int playlistIndex);
 
 			/**
 			 * @brief Request a new name for the playlist (usually New %1 is returned).
@@ -226,40 +140,6 @@ namespace Playlist
 			 */
 			QString requestNewPlaylistName(const QString& prefix=QString()) const;
 
-
-			/**
-			 * @brief save playlist to database, overwrite old one
-			 * @param playlistIndex playlist index
-			 * @return SaveAnswer
-			 */
-			Util::SaveAsAnswer savePlaylist(int playlistIndex);
-
-
-			/**
-			 * @brief Save playlist under new name
-			 * @param playlistIndex playlist index
-			 * @param name new playlist name
-			 * @param force_override override if name exists
-			 * @return AlreadyThere if name exists and force_override is false
-			 */
-			Util::SaveAsAnswer savePlaylistAs(int playlistIndex, const QString& name, bool forceOverride);
-
-
-			/**
-			 * @brief rename playlist
-			 * @param playlistIndex playlist index
-			 * @param name new playlist name
-			 * @return
-			 */
-			Util::SaveAsAnswer renamePlaylist(int playlistIndex, const QString& name);
-
-
-			/**
-			 * @brief save a playlist to file
-			 * @param filename, if filename does not end with m3u, extension is appended automatically
-			 * @param relative relative paths in m3u file
-			 */
-			void savePlaylistToFile(int playlistIndex, const QString& filename, bool relative);
 
 			/**
 			 * @brief create a new playlist
@@ -279,26 +159,16 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const QStringList& path_list, const QString& name=QString(), bool temporary=true);
-
-			/**
-			 * @brief create a new playlist (overloaded)
-			 * @param dir directory path
-			 * @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @param temporary is the playlist temporary or persistent?
-			 * @param type deprecated
-			 * @return new playlist index
-			 */
-
-			int createPlaylist(const QString& dir, const QString& name=QString(), bool temporary=true);
+			int createPlaylist(const QStringList& pathList, const QString& name=QString(), bool temporary=true);
+			int createCommandLinePlaylist(const QStringList& pathList);
 
 
 			/**
 			 * @brief create a new playlist (overloaded)
-			 * @param pl a CustomPlaylist object fetched from database
+			 * @param customPlaylist a CustomPlaylist object fetched from database
 			 * @return new playlist index
 			 */
-			int createPlaylist(const CustomPlaylist& pl);
+			int createPlaylist(const CustomPlaylist& customPlaylist);
 
 
 			/**
@@ -306,11 +176,9 @@ namespace Playlist
 			 * @param name new playlist name. If no name given, current playlist will be overwritten
 			 * @return new playlist index
 			 */
-			int createEmptyPlaylist(bool overrideCurrent=false);
-			int createEmptyPlaylist(const QString& name);
+			int createEmptyPlaylist(bool override=false);
 
-
-			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletion_mode);
+			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode);
 
 			void applyPlaylistActionAfterDoubleClick();
 
@@ -319,20 +187,18 @@ namespace Playlist
 			 * @brief load playlists of last session from database
 			 * @return number of playlists fetched
 			 */
-			int	loadOldPlaylists();
+			void loadOldPlaylists();
+
+			/**
+			 * @brief close playlist
+			 * @param playlistIndex playlist index
+			 */
+			void closePlaylist(int playlistIndex);
 
 
 		private slots:
 
-			/**
-			 * @brief play active playlist
-			 */
-			void played();
-
-			/**
-			 * @brief stop active playlist
-			 */
-			void stopped();
+			void trackChanged();
 
 			/**
 			 * @brief change track to previous track
@@ -352,20 +218,10 @@ namespace Playlist
 			 */
 			void playstateChanged(PlayState state);
 
-			void wwwTrackFinished(const MetaData& md);
+			void wwwTrackFinished(const MetaData& track);
 
-			void currentTrackChanged(int index);
-			void playlistStopped();
-
-			void playlistRenamed(int id, const QString& oldName, const QString& newName);
+			void playlistRenamed(int id, const QString& oldNamde, const QString& newName);
 			void playlistDeleted(int id);
-
-			/**
-			 * @brief Return of an async scanning operation when
-			 * creating new playlists from paths
-			 */
-			void filescannerProgressChanged(const QString& current_file);
-			void filesScanned();
 
 		private:
 			/**
@@ -378,61 +234,11 @@ namespace Playlist
 			int	addNewPlaylist(const QString& name, bool editable);
 
 			/**
-			 * @brief Create new playlist and return it
-			 * @param type
-			 * @param idx
-			 * @param name
-			 * @return
-			 */
-			PlaylistPtr newPlaylist(QString name);
-
-
-			/**
 			 * @brief Checks if playlist exists
 			 * @param name playlist name, if empty, current playlist index is returned
 			 * @return playlist index, -1 if playlist does not exist, current playlist if name is empty
 			 */
 			int exists(const QString& name) const;
-
-
-			/**
-			 * @brief get active playlist. If no playlists are available, create one.
-			 * If there's no active index, the current index is used
-			 * @return
-			 */
-			PlaylistPtr activePlaylist();
-
-			/**
-			 * @brief get playlist at a given index, return fallback if index is invalid
-			 * @param playlistIndex playlist index
-			 * @param fallback playlist returned when index is invalid
-			 * @return
-			 */
-			PlaylistPtr playlist(int playlistIndex, PlaylistPtr fallback) const;
-
-
-			/**
-			 * @brief tells PlayManager that the current track has been changed,
-			 * sets the current playlist index in settings, may insert the playlist into database nevermind if temporary
-			 * @param pl paylist of interest. if nullptr, active playlist is taken
-			 */
-			void emitCurrentTrackChanged();
-
-			/**
-			 * @brief Set active playlist index, if playlist_index is invalid,
-			 * @param playlistIndex playlist index
-			 */
-			void setActiveIndex(int playlist_index);
-
-			/**
-			 * @brief extracts metadata asynchronously
-			 * @param index the playlist index
-			 * @param paths list of paths
-			 * @param target_row_idx where the found metadata should be inserted.
-			 * If -1, the playlist is cleared before,
-			 * If greater than number of tracks, the found metadata is appended
-			 */
-			void createFilescanner(int playlist_index, const QStringList& paths, int target_row_idx);
 	};
 }
 

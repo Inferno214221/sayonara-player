@@ -210,8 +210,7 @@ int Loader::createPlaylists()
 	// no playlists found
 	if( m->playlists.isEmpty() )
 	{
-		int idx = plh->createEmptyPlaylist();
-		plh->set_current_index(idx);
+		plh->createEmptyPlaylist();
 	}
 
 	else

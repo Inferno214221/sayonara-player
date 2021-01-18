@@ -23,6 +23,7 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
+#include "Utils/Playlist/PlaylistFwd.h"
 
 #include <QObject>
 
@@ -34,15 +35,23 @@ class ExternTracksPlaylistGenerator :
 {
 	Q_OBJECT
 	PIMPL(ExternTracksPlaylistGenerator)
-	SINGLETON(ExternTracksPlaylistGenerator)
 
-private:
-	void addNewPlaylist(const QString& paths);
+	public:
+		ExternTracksPlaylistGenerator(PlaylistPtr playlist=nullptr);
+		~ExternTracksPlaylistGenerator();
 
-public:
-	void addPaths(const QStringList& paths);
-	void changeTrack();
-	bool isPlayAllowed() const;
+		void addPaths(const QStringList& paths);
+		void insertPaths(const QStringList& paths, int targetRowIndex);
+
+	signals:
+		void sigFinished();
+
+	private slots:
+		void scanFiles(const QStringList& paths);
+		void filesScanned();
+
+	private:
+		void addNewPlaylist(const QString& paths);
 };
 
 #endif // EXTERNTRACKSPLAYLISTGENERATOR_H

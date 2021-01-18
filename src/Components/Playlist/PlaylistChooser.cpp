@@ -143,10 +143,8 @@ void Chooser::loadSinglePlaylist(int id)
 
 	CustomPlaylist pl = m->findCustomPlaylist(id);
 
-	int idx = m->playlistHandler->createPlaylist(pl);
-	m->playlistHandler->set_current_index(idx);
+	m->playlistHandler->createPlaylist(pl);
 }
-
 
 int Chooser::findPlaylist(const QString& name) const
 {

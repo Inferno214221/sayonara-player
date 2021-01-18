@@ -47,8 +47,8 @@ namespace
 	void appendTrack(const MetaData& track)
 	{
 		auto* playlistHandler = Playlist::Handler::instance();
-		playlistHandler->appendTracks(MetaDataList {track},
-		                              playlistHandler->activeIndex());
+		auto activePlaylist = playlistHandler->activePlaylist();
+		activePlaylist->appendTracks(MetaDataList{track});
 	}
 
 	QMap<ArtistId, MetaDataList>

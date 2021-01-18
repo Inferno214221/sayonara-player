@@ -40,7 +40,7 @@
 
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManagerImpl.h"
@@ -368,8 +368,7 @@ void Application::initPlaylist(const QStringList& filesToPlay)
 
 	if(!filesToPlay.isEmpty())
 	{
-		const QString playlistName = m->playlistHandler->requestNewPlaylistName();
-		m->playlistHandler->createPlaylist(filesToPlay, playlistName);
+		m->playlistHandler->createCommandLinePlaylist(filesToPlay);
 	}
 }
 
@@ -503,14 +502,7 @@ void Application::createPlaylist()
 	}
 
 	const QStringList paths = instanceThread->paths();
-
-	auto* playlistGenerator = ExternTracksPlaylistGenerator::instance();
-	playlistGenerator->addPaths(paths);
-
-	if(playlistGenerator->isPlayAllowed())
-	{
-		playlistGenerator->changeTrack();
-	}
+	m->playlistHandler->createPlaylist(paths);
 }
 
 void Application::skinChanged()

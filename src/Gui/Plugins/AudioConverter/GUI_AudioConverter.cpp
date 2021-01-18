@@ -133,7 +133,7 @@ void GUI_AudioConverter::btnStartClicked()
 
 	int threadCount = GetSetting(Set::AudioConvert_NumberThreads);
 
-	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->current_index());
+	PlaylistConstPtr pl = Playlist::Handler::instance()->playlist(Playlist::Handler::instance()->currentIndex());
 	MetaDataList tracks = pl->tracks();
 
 	Converter* converter = createConverter();

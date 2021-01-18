@@ -73,7 +73,7 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 				www_files << str;
 			}
 
-			else if(Util::File::isSoundFile(str) || Util::File::isPlaylistFile(str))
+			else if(Util::File::isSoundFile(str) || Util::File::isPlaylistFile(str) || Util::File::isDir(str))
 			{
 				data.filesToPlay << Util::File::getAbsoluteFilename(str);
 			}

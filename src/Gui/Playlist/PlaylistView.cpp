@@ -157,10 +157,7 @@ View::View(PlaylistPtr playlist, QWidget* parent) :
 	              this, SLOT(playSelectedTrack()), nullptr, Qt::WidgetShortcut);
 
 	connect(m->model, &Pl::Model::sigDataReady, this, &View::refresh);
-	connect(Pl::Handler::instance(),
-	        &Pl::Handler::sigCurrentTrackChanged,
-	        this,
-	        &View::currentTrackChanged);
+
 	connect(playlist.get(), &Playlist::sigBusyChanged, this, &View::playlistBusyChanged);
 	connect(playlist.get(),
 	        &Playlist::sigCurrentScannedFileChanged,
@@ -240,7 +237,7 @@ void View::handleDrop(QDropEvent* event)
 		asyncDropHandler->start();
 	}
 
-	else
+	else if(MimeData::hasMetadata(mimedata))
 	{
 		const auto tracks = MimeData::metadata(mimedata);
 		m->model->insertTracks(tracks, dragDropLine + 1);
@@ -607,12 +604,4 @@ void View::refresh()
 	m->resizeSection(+Pl::Model::ColumnName::Description, viewportWidth - widthTime);
 
 	m->model->setRowHeight(viewRowHeight);
-}
-
-void View::currentTrackChanged(int trackIndex, int playlistIndex)
-{
-	if(m->playlist->index() == playlistIndex)
-	{
-		gotoRow(trackIndex);
-	}
 }

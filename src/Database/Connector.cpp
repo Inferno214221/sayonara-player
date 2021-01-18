@@ -849,7 +849,7 @@ DB::LibraryDatabases Connector::libraryDatabases() const
 
 DB::LibraryDatabase* Connector::libraryDatabase(LibraryId libraryId, DbId databaseId)
 {
-	LibDbIterator it = Algorithm::find(m->libraryDbs, [=](DB::LibraryDatabase* db){
+	LibDbIterator it = Algorithm::find(m->libraryDbs, [&](DB::LibraryDatabase* db){
 		return (db->libraryId() == libraryId && db->databaseId() == databaseId);
 	});
 

@@ -18,12 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Database/Connector.h>
 #include "PlaylistDBWrapper.h"
 #include "PlaylistDBInterface.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Language/Language.h"
+#include "PlaylistChangeNotifier.h"
 
 namespace Algorithm=Util::Algorithm;
 using Playlist::DBInterface;
@@ -92,19 +94,23 @@ SaveAsAnswer DBInterface::save()
 {
 	if(m->id >= 0)
 	{
-		bool success = m->playlistDatabaseWrapper->savePlaylist(tracks(), m->id, m->isTemporary);
+		const auto success = m->playlistDatabaseWrapper->savePlaylist(tracks(), m->id, m->isTemporary);
 		if(success) {
 			this->setChanged(false);
-			return SaveAsAnswer::Success;
+			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
 		}
 
-		else {
-			return SaveAsAnswer::OtherError;
-		}
+		return success ? SaveAsAnswer::Success : SaveAsAnswer::OtherError;
 	}
 
 	else {
-		return saveAs(m->name, true);
+		const auto ret = saveAs(m->name, true);
+		if(ret == SaveAsAnswer::Success)
+		{
+			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
+		}
+
+		return ret;
 	}
 }
 
@@ -122,7 +128,7 @@ bool DBInterface::insertTemporaryIntoDatabase()
 	return success;
 }
 
-SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
+SaveAsAnswer DBInterface::saveAs(const QString& name, bool forceOverride)
 {
 	if(name.isEmpty()) {
 		return Util::SaveAsAnswer::InvalidName;
@@ -136,20 +142,20 @@ SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
 		return (name.compare(skeleton.name(), Qt::CaseInsensitive) == 0);
 	});
 
-	int tgt_id = -1;
+	int targetId = -1;
 	if(it != skeletons.end())
 	{
-		if(!force_override) {
+		if(!forceOverride) {
 			return SaveAsAnswer::NameAlreadyThere;
 		}
 
-		tgt_id = it->id();
+		targetId = it->id();
 	}
 
 	// Name already exists, override
 	bool success;
-	if(tgt_id >= 0){
-		success = m->playlistDatabaseWrapper->savePlaylist(this->tracks(), tgt_id, m->isTemporary);
+	if(targetId >= 0){
+		success = m->playlistDatabaseWrapper->savePlaylist(this->tracks(), targetId, m->isTemporary);
 	}
 
 	// New playlist
@@ -159,14 +165,14 @@ SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
 
 		if(success && this->isTemporary())
 		{
-			int old_id = this->id();
-			m->playlistDatabaseWrapper->deletePlaylist(old_id);
+			const auto oldId = this->id();
+			m->playlistDatabaseWrapper->deletePlaylist(oldId);
 		}
 	}
 
 	if(success)
 	{
-		int id = m->playlistDatabaseWrapper->getPlaylistByName(name).id();
+		const auto id = m->playlistDatabaseWrapper->getPlaylistByName(name).id();
 		if(id >= 0){
 			this->setId(id);
 		}
@@ -175,15 +181,18 @@ SaveAsAnswer DBInterface::saveAs(const QString& name, bool force_override)
 		this->setName(name);
 		this->setChanged(false);
 
+		PlaylistChangeNotifier::instance()->addPlaylist(id, name);
+
 		return SaveAsAnswer::Success;
 	}
 
 	return SaveAsAnswer::OtherError;
 }
 
-SaveAsAnswer DBInterface::rename(const QString& name)
+SaveAsAnswer DBInterface::rename(const QString& newName)
 {
-	if(name.isEmpty()) {
+	auto oldName = this->name();
+	if(newName.isEmpty()) {
 		return Util::SaveAsAnswer::InvalidName;
 	}
 
@@ -191,17 +200,18 @@ SaveAsAnswer DBInterface::rename(const QString& name)
 	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
 
 	// check if name already exists
-	bool exists = Util::Algorithm::contains(skeletons, [&name](auto skeleton){
-		return (name.compare(skeleton.name(), Qt::CaseInsensitive) == 0);
+	bool exists = Util::Algorithm::contains(skeletons, [&newName](auto skeleton){
+		return (newName.compare(skeleton.name(), Qt::CaseInsensitive) == 0);
 	});
 
 	if(exists){
 		return SaveAsAnswer::NameAlreadyThere;
 	}
 
-	bool success = m->playlistDatabaseWrapper->renamePlaylist(m->id, name);
+	bool success = m->playlistDatabaseWrapper->renamePlaylist(m->id, newName);
 	if(success){
-		this->setName(name);
+		this->setName(newName);
+		PlaylistChangeNotifier::instance()->renamePlaylist(id(), oldName, newName);
 		return SaveAsAnswer::Success;
 	}
 
@@ -210,19 +220,9 @@ SaveAsAnswer DBInterface::rename(const QString& name)
 
 bool DBInterface::deletePlaylist()
 {
-	return m->playlistDatabaseWrapper->deletePlaylist(m->id);
-}
-
-bool DBInterface::removeFromDatabase()
-{
-	bool success;
-	if(m->id >= 0){
-		success = m->playlistDatabaseWrapper->deletePlaylist(m->id);
-	}
-
-	else{
-		success = m->playlistDatabaseWrapper->deletePlaylist(m->name);
-	}
+	bool success = (m->id >= 0)
+		? m->playlistDatabaseWrapper->deletePlaylist(m->id)
+		: m->playlistDatabaseWrapper->deletePlaylist(m->name);
 
 	m->isTemporary = true;
 	return success;
@@ -262,4 +262,9 @@ QString DBInterface::requestNewDatabaseName(QString prefix)
 	}
 
 	return target_name;
+}
+
+MetaDataList DBInterface::fetchTracksFromDatabase() const
+{
+	return m->playlistDatabaseWrapper->getPlaylistById(this->id());
 }

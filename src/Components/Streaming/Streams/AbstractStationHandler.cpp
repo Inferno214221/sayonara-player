@@ -21,6 +21,7 @@
 #include "AbstractStationHandler.h"
 
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/Playlist.h"
 
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -50,8 +51,10 @@ void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tr
 	}
 
 	auto* plh = Playlist::Handler::instance();
-	int index = plh->createPlaylist(tracks, playlistName);
-	plh->changeTrack(0, index);
+	const auto index = plh->createPlaylist(tracks, playlistName);
+	auto playlist = plh->playlist(index);
+
+	playlist->changeTrack(0);
 }
 
 bool AbstractStationHandler::parseStation(StationPtr station)
