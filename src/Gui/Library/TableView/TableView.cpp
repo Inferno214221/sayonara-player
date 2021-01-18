@@ -31,7 +31,7 @@ using namespace Library;
 
 struct TableView::Private
 {
-	HeaderView*	header=nullptr;
+	HeaderView* header = nullptr;
 
 	Private(TableView* tableView)
 	{
@@ -52,8 +52,8 @@ void TableView::init(AbstractLibrary* library)
 {
 	initView(library);
 
-	ColumnHeaderList headers = columnHeaders();
-	Util::Algorithm::sort(headers, [](ColumnHeaderPtr p1, ColumnHeaderPtr p2){
+	auto headers = columnHeaders();
+	Util::Algorithm::sort(headers, [](ColumnHeaderPtr p1, ColumnHeaderPtr p2) {
 		return (p1->columnIndex() < p2->columnIndex());
 	});
 
@@ -73,14 +73,18 @@ void TableView::init(AbstractLibrary* library)
 
 void TableView::headerColumnsChanged(int /*oldCount*/, int /*newCount*/)
 {
-	const IndexSet selectedIndexes = selectedItems();
-	for(int index : selectedIndexes)
+	const auto selectedIndexes = selectedItems();
+	for(const auto index : selectedIndexes)
 	{
 		this->selectRow(index);
 	}
 
 	setupColumnNames();
-	saveColumnHeaderState(m->header->saveState());
+
+	if(this->isVisible())
+	{
+		saveColumnHeaderState(m->header->saveState());
+	}
 }
 
 void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
@@ -90,17 +94,20 @@ void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
 
 void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newSize*/)
 {
-	if(!this->isVisible()){
-		return;
+	if(this->isVisible())
+	{
+		saveColumnHeaderState(m->header->saveState());
 	}
-
-	saveColumnHeaderState(m->header->saveState());
 }
 
 void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /*newVisualIndex*/)
 {
 	setupColumnNames();
-	saveColumnHeaderState(m->header->saveState());
+
+	if(this->isVisible())
+	{
+		saveColumnHeaderState(m->header->saveState());
+	}
 }
 
 void TableView::autoResizeTriggered(bool b)
@@ -114,10 +121,10 @@ void TableView::autoResizeTriggered(bool b)
 
 void TableView::setupColumnNames()
 {
-	int count = columnHeaders().count();
-	for(int i=0; i<count; i++)
+	const auto count = columnHeaders().count();
+	for(int i = 0; i < count; i++)
 	{
-		QString text = m->header->columnText(i);
+		const auto text = m->header->columnText(i);
 		model()->setHeaderData(i, Qt::Horizontal, text, Qt::DisplayRole);
 	}
 
@@ -137,5 +144,5 @@ int TableView::mapModelIndexToIndex(const QModelIndex& idx) const
 ModelIndexRange TableView::mapIndexToModelIndexes(int idx) const
 {
 	return ModelIndexRange(itemModel()->index(idx, 0),
-						   itemModel()->index(idx, itemModel()->columnCount() - 1));
+	                       itemModel()->index(idx, itemModel()->columnCount() - 1));
 }
