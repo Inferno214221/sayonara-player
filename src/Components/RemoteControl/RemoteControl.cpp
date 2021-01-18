@@ -70,12 +70,7 @@ namespace
 
 	void insertJsonCurrentTrack(QJsonObject& jsonObject, Playlist::Handler* playlistHandler, PlayManager* playManager)
 	{
-		const auto playlist = playlistHandler->playlist(playlistHandler->activeIndex());
-		if(!playlist)
-		{
-			return;
-		}
-
+		const auto playlist = playlistHandler->activePlaylist();
 		const auto& currentTrack = playManager->currentTrack();
 		const auto currentTrackIdx = playlist->currentTrackIndex();
 
@@ -107,22 +102,19 @@ namespace
 
 	void insertJsonPlaylist(QJsonArray& jsonArray, Playlist::Handler* playlistHandler)
 	{
-		const auto playlist = playlistHandler->playlist(playlistHandler->activeIndex());
-		if(playlist)
+		const auto playlist = playlistHandler->activePlaylist();
+		for(const auto& track : playlist->tracks())
 		{
-			for(const auto& track : playlist->tracks())
-			{
-				QJsonObject obj;
+			QJsonObject obj;
 
-				obj.insert("pl-track-title", track.title());
-				obj.insert("pl-track-artist", track.artist());
-				obj.insert("pl-track-album", track.album());
-				obj.insert("pl-track-total-time", QJsonValue::fromVariant(
-					QVariant::fromValue<Seconds>(Seconds(track.durationMs() / 1000)))
-				);
+			obj.insert("pl-track-title", track.title());
+			obj.insert("pl-track-artist", track.artist());
+			obj.insert("pl-track-album", track.album());
+			obj.insert("pl-track-total-time", QJsonValue::fromVariant(
+				QVariant::fromValue<Seconds>(Seconds(track.durationMs() / 1000)))
+			);
 
-				jsonArray.append(obj);
-			}
+			jsonArray.append(obj);
 		}
 	}
 
@@ -536,12 +528,9 @@ void RemoteControl::writePlaylist()
 {
 	QJsonObject jsonObject;
 
-	const auto playlist = m->playlistHandler->playlist(m->playlistHandler->activeIndex());
-	if(playlist)
-	{
-		const auto currentTrackIndex = playlist->currentTrackIndex();
-		jsonObject.insert("playlist-current-index", currentTrackIndex);
-	}
+	const auto playlist = m->playlistHandler->activePlaylist();
+	const auto currentTrackIndex = playlist->currentTrackIndex();
+	jsonObject.insert("playlist-current-index", currentTrackIndex);
 
 	QJsonArray jsonArray;
 	insertJsonPlaylist(jsonArray, m->playlistHandler);

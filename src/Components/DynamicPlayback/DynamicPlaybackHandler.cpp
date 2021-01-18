@@ -90,7 +90,7 @@ namespace
 		Util::Set<QString> playlistFilepaths;
 
 		auto* playlistHandler = Playlist::Handler::instance();
-		auto playlist = playlistHandler->playlist(playlistHandler->activeIndex());
+		auto playlist = playlistHandler->activePlaylist();
 
 		for(const auto& track : playlist->tracks())
 		{

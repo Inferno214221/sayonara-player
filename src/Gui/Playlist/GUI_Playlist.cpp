@@ -108,24 +108,20 @@ namespace
 		const auto isEmpty = (playlist) ? (playlist->count() == 0) : true;
 
 		const auto saveEnabled = (!temporary);
-		const auto saveAsEnabled = true;
 		const auto saveToFileEnabled = (!isEmpty);
 		const auto deleteEnabled = (!temporary);
 		const auto resetEnabled = (!temporary && wasChanged);
 		const auto closeEnabled = (tabWidget->count() > 2);
-		const auto renameEnabled = true;
 		const auto clearEnabled = (!isEmpty);
 
 		entries |= MenuEntry::OpenFile;
 		entries |= MenuEntry::OpenDir;
+		entries |= MenuEntry::SaveAs;
+		entries |= MenuEntry::Rename;
 
 		if(saveEnabled)
 		{
 			entries |= MenuEntry::Save;
-		}
-		if(saveAsEnabled)
-		{
-			entries |= MenuEntry::SaveAs;
 		}
 		if(saveToFileEnabled)
 		{
@@ -143,10 +139,6 @@ namespace
 		{
 			entries |= MenuEntry::Close;
 			entries |= MenuEntry::CloseOthers;
-		}
-		if(renameEnabled)
-		{
-			entries |= MenuEntry::Rename;
 		}
 		if(clearEnabled)
 		{
@@ -190,10 +182,11 @@ struct GUI_Playlist::Private
 };
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :
-	Widget(parent),
-	m(Pimpl::make<Private>()),
-	ui(new Ui::PlaylistWindow())
+	Widget(parent)
 {
+	m = Pimpl::make<Private>();
+
+	ui = new Ui::PlaylistWindow();
 	ui->setupUi(this);
 
 	setAcceptDrops(true);
@@ -547,14 +540,15 @@ void GUI_Playlist::checkTabIcon()
 {
 	for(auto i = 0; i < ui->twPlaylists->count(); i++)
 	{
-		ui->twPlaylists->setIconSize(QSize(16, 16));
+		const auto height = this->fontMetrics().height();
+		ui->twPlaylists->setIconSize(QSize(height, height));
 		ui->twPlaylists->setTabIcon(i, QIcon());
 	}
 
 	const auto activeIndex = m->playlistHandler->activeIndex();
 	auto* playlistView = viewByIndex(ui->twPlaylists, activeIndex);
 
-	if((playlistView) &&
+	if(playlistView &&
 	   (m->playManager->playstate() != PlayState::Stopped) &&
 	   (playlistView->model()->rowCount() > 0))
 	{
