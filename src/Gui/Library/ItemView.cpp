@@ -378,11 +378,11 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 	if(isMergeable())
 	{
 		QMap<Id, QString> data;
-		ItemModel* model = itemModel();
+		auto* model = itemModel();
 		for(int selectedIndex : selections)
 		{
-			Id id = model->mapIndexToId(selectedIndex);
-			QString name = model->searchableString(selectedIndex);
+			const auto id = model->mapIndexToId(selectedIndex);
+			auto name = model->searchableString(selectedIndex);
 			name.replace("&", "&&");
 
 			data.insert(id, name);

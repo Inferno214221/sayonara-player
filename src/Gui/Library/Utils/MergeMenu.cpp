@@ -87,9 +87,7 @@ QAction* MergeMenu::action() const
 bool MergeMenu::isDataValid() const
 {
 	QList<QString> valueList = m->data.values();
-
 	QStringList strings(valueList);
-	strings.removeDuplicates();
 
 	return (strings.size() > 1);
 }

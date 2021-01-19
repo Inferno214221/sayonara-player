@@ -123,7 +123,7 @@ void UserOperations::setAlbumRating(const Album& album, Rating rating)
 {
 	m->libraryDatabase->updateAlbumRating(album.id(), rating);
 
-	Album newAlbum(album);
+	auto newAlbum = album;
 	newAlbum.setRating(rating);
 
 	Tagging::ChangeNotifier::instance()->updateAlbums({AlbumPair(album, newAlbum)});
@@ -140,15 +140,13 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 		return;
 	}
 
-	bool showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
-
 	Artist artist;
-	bool success = m->libraryDatabase->getArtistByID(targetArtist, artist);
+	const auto success = m->libraryDatabase->getArtistByID(targetArtist, artist);
 	if(!success){
 		return;
 	}
 
-	Util::Set<ArtistId> wrongIds = artistIds;
+	auto wrongIds = artistIds;
 	wrongIds.remove(targetArtist);
 
 	MetaDataList tracks;
@@ -157,19 +155,20 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
+	const auto showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
 	for(int idx=0; idx<tracks.count(); idx++)
 	{
-		MetaData md(tracks[idx]);
+		auto& track = tracks[idx];
 		if(showAlbumArtists){
-			md.setAlbumArtist(artist.name(), artist.id());
+			track.setAlbumArtist(artist.name(), artist.id());
 		}
 
 		else {
-			md.setArtistId(artist.id());
-			md.setArtist(artist.name());
+			track.setArtistId(artist.id());
+			track.setArtist(artist.name());
 		}
 
-		editor->updateTrack(idx, md);
+		editor->updateTrack(idx, track);
 	}
 
 	runEditor(editor);
@@ -201,7 +200,7 @@ void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAl
 		return;
 	}
 
-	Util::Set<AlbumId> wrongIds = albumIds;
+	auto wrongIds = albumIds;
 	wrongIds.remove(targetAlbum);
 
 	MetaDataList tracks;
@@ -210,13 +209,13 @@ void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAl
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int idx=0; idx<tracks.count(); idx++)
+	for(auto idx=0; idx<tracks.count(); idx++)
 	{
-		MetaData md(tracks[idx]);
-		md.setAlbumId(album.id());
-		md.setAlbum(album.name());
+		auto& track = tracks[idx];
+		track.setAlbumId(album.id());
+		track.setAlbum(album.name());
 
-		editor->updateTrack(idx, md);
+		editor->updateTrack(idx, track);
 	}
 
 	runEditor(editor);
@@ -228,14 +227,14 @@ void UserOperations::addGenre(Util::Set<Id> ids, const Genre& genre)
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
 
-	tracks.removeTracks([&ids](const MetaData& md) {
+	tracks.removeTracks([&](const MetaData& md) {
 		return (!ids.contains(md.id()));
 	});
 
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int i=0; i<tracks.count(); i++)
+	for(auto i=0; i<tracks.count(); i++)
 	{
 		editor->addGenre(i, genre);
 	}
@@ -249,7 +248,7 @@ void UserOperations::deleteGenre(const Genre& genre)
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
 
-	tracks.removeTracks([&genre](const MetaData& md){
+	tracks.removeTracks([&](const MetaData& md){
 		return (!md.hasGenre(genre));
 	});
 
@@ -269,14 +268,14 @@ void UserOperations::renameGenre(const Genre& genre, const Genre& newGenre)
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
 
-	tracks.removeTracks([&genre](const MetaData& md){
+	tracks.removeTracks([&](const MetaData& md){
 		return (!md.hasGenre(genre));
 	});
 
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int i=0; i<tracks.count(); i++)
+	for(auto i=0; i<tracks.count(); i++)
 	{
 		editor->renameGenre(i, genre, newGenre);
 	}
@@ -289,7 +288,7 @@ void UserOperations::applyGenreToMetadata(const MetaDataList& tracks, const Genr
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int i=0; i<tracks.count(); i++)
+	for(auto i=0; i<tracks.count(); i++)
 	{
 		editor->addGenre(i, genre);
 	}
