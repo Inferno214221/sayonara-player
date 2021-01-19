@@ -1,4 +1,5 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 #include "Playlist/PlaylistTestUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Playlist/Playlist.h"
@@ -16,8 +17,12 @@ class PlaylistTest :
 
 public:
 	PlaylistTest() :
-		Test::Base("PlaylistTest")
+		Test::Base("PlaylistTest"),
+		m_playManager{PlayManagerProvider::instance()->playManager()}
 	{}
+
+private:
+	PlayManager* m_playManager;
 
 private slots:
 	void jump_test();
@@ -33,7 +38,7 @@ void PlaylistTest::jump_test()
 	MetaData md;
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
-	PL* pl = new PL(1, "Hallo");
+	PL* pl = new PL(1, "Hallo", m_playManager);
 	success = pl->currentTrack(md);
 	QVERIFY(pl->changeTrack(0) == false);
 	QVERIFY(pl->index() == 1);
@@ -73,7 +78,7 @@ void PlaylistTest::shuffleTest()
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 
 	QList<int> indexes;
-	PL* pl = new PL(1, "Hallo");
+	PL* pl = new PL(1, "Hallo", m_playManager);
 
 	Playlist::Mode mode;
 	mode.setShuffle(Playlist::Mode::State::On);
@@ -113,7 +118,7 @@ void PlaylistTest::modifyTest()
 	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
 	int curIndex;
 
-	auto pl = std::make_shared<PL>(1, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
 	pl->createPlaylist(v_md);
 	const MetaDataList& plTracks = pl->tracks();
 
@@ -203,7 +208,7 @@ void PlaylistTest::modifyTest()
 
 void PlaylistTest::insertTest()
 {
-	auto pl = std::make_shared<PL>(1, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
 	pl->createPlaylist(MetaDataList());
 
 	{

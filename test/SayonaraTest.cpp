@@ -1,4 +1,5 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 #include "Database/Connector.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
@@ -30,6 +31,8 @@ Test::Base::Base(const QString& testName) :
 	Util::File::createDirectories(mTmpPath);
 	QStandardPaths::setTestModeEnabled(true);
 	QApplication::setApplicationName("sayonara");
+
+	PlayManagerProvider::instance()->init(new TestPlayManager());
 
 	init_resources();
 	DB::Connector::instance_custom("", mTmpPath, "");

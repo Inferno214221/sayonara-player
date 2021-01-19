@@ -1,4 +1,5 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 #include "Playlist/PlaylistTestUtils.h"
 
 #include "Utils/Algorithm.h"
@@ -19,8 +20,13 @@ class PlaylistTrackModifyTest :
 
 public:
 	PlaylistTrackModifyTest() :
-		Test::Base("PlaylistTrackModifyTest")
+		Test::Base("PlaylistTrackModifyTest"),
+		m_playManager{PlayManagerProvider::instance()->playManager()}
 	{}
+
+private:
+	PlayManager* m_playManager;
+
 
 private slots:
 	void trackModifiedTest();
@@ -43,7 +49,7 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 	}
 
 	// create a playlist
-	auto pl = std::make_shared<PL>(1, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
 	pl->createPlaylist(tracks);
 
 	MetaDataList oldTracks, newTracks;
@@ -106,7 +112,7 @@ void PlaylistTrackModifyTest::trackDeletedTest()
 		it->setArtist("artist0");
 	}
 
-	auto pl = std::make_shared<PL>(1, "Hallo");
+	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
 	pl->createPlaylist(tracks);
 
 	MetaDataList tracksToDelete;

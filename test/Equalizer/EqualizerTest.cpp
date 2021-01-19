@@ -1,9 +1,10 @@
-#include <Utils/EqualizerSetting.h>
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 #include "Components/Equalizer/Equalizer.h"
 #include "Database/Equalizer.h"
 #include "Database/Connector.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/EqualizerSetting.h"
 
 class EqualizerTest :
 	public Test::Base
