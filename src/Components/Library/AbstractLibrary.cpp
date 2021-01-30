@@ -380,14 +380,14 @@ void AbstractLibrary::playNextFetchedTracks()
 {
 	auto* plh = Playlist::Handler::instance();
 	auto pl = plh->activePlaylist();
-	pl->insertTracks(tracks(), pl->currentTrackIndex());
+	pl->insertTracks(tracks(), pl->currentTrackIndex() + 1);
 }
 
 void AbstractLibrary::playNextCurrentTracks()
 {
 	auto* plh = Playlist::Handler::instance();
 	auto pl = plh->activePlaylist();
-	pl->insertTracks(currentTracks(), pl->currentTrackIndex());
+	pl->insertTracks(currentTracks(), pl->currentTrackIndex() + 1);
 }
 
 void AbstractLibrary::appendFetchedTracks()
