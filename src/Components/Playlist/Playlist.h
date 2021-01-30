@@ -57,11 +57,11 @@ namespace Playlist
 
 		public:
 			explicit Playlist(int idx, const QString& name, PlayManager* playManager);
-			~Playlist() override;
+			virtual ~Playlist() override;
 
 			int createPlaylist(const MetaDataList& tracks);
 
-			int currentTrackIndex() const;
+			virtual int currentTrackIndex() const;
 			bool currentTrack(MetaData& metadata) const;
 
 			int index() const;

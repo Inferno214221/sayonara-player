@@ -3,7 +3,6 @@
 #include "Playlist/PlaylistTestUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Components/Playlist/Playlist.h"
-#include "Database/Connector.h"
 
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
@@ -25,60 +24,60 @@ private:
 	PlayManager* m_playManager;
 
 private slots:
-	void jump_test();
+	void jumpTest();
 	void shuffleTest();
 	void modifyTest();
 	void insertTest();
 };
 
 
-void PlaylistTest::jump_test()
+void PlaylistTest::jumpTest()
 {
 	bool success;
-	MetaData md;
-	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
+	MetaData track;
+	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
 
-	PL* pl = new PL(1, "Hallo", m_playManager);
-	success = pl->currentTrack(md);
-	QVERIFY(pl->changeTrack(0) == false);
-	QVERIFY(pl->index() == 1);
-	QVERIFY(pl->runningTime() == 0);
-	QVERIFY(pl->currentTrackIndex() == -1);
+	auto* playlist = new PL(1, "Hallo", m_playManager);
+	success = playlist->currentTrack(track);
+	QVERIFY(playlist->changeTrack(0) == false);
+	QVERIFY(playlist->index() == 1);
+	QVERIFY(playlist->runningTime() == 0);
+	QVERIFY(playlist->currentTrackIndex() == -1);
 	QVERIFY(success == false);
 
-	pl->createPlaylist(v_md);
-	success = pl->currentTrack(md);
-	QVERIFY(pl->tracks().size() == 100);
-	QVERIFY(pl->currentTrackIndex() == -1);
+	playlist->createPlaylist(tracks);
+	success = playlist->currentTrack(track);
+	QVERIFY(playlist->tracks().size() == 100);
+	QVERIFY(playlist->currentTrackIndex() == -1);
 	QVERIFY(success == false);
 
-	success = pl->changeTrack(40);
+	success = playlist->changeTrack(40);
 	QVERIFY(success == true);
 
-	success = pl->currentTrack(md);
-	QVERIFY(pl->currentTrackIndex() == 40);
+	success = playlist->currentTrack(track);
+	QVERIFY(playlist->currentTrackIndex() == 40);
 	QVERIFY(success == true);
-	QVERIFY(md.id() == 40);
+	QVERIFY(track.id() == 40);
 
-	pl->fwd();
-	success = pl->currentTrack(md);
-	QVERIFY(pl->currentTrackIndex() == 41);
+	playlist->fwd();
+	success = playlist->currentTrack(track);
+	QVERIFY(playlist->currentTrackIndex() == 41);
 	QVERIFY(success == true);
-	QVERIFY(md.id() == 41);
+	QVERIFY(track.id() == 41);
 
-	pl->stop();
-	success = pl->currentTrack(md);
-	QVERIFY(pl->currentTrackIndex() == -1);
+	playlist->stop();
+	success = playlist->currentTrack(track);
+	QVERIFY(playlist->currentTrackIndex() == -1);
 	QVERIFY(success == false);
 }
 
 void PlaylistTest::shuffleTest()
 {
-	MetaData md;
-	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
+	MetaData track;
+	auto tracks = Test::Playlist::createTrackList(0, 100);
 
 	QList<int> indexes;
-	PL* pl = new PL(1, "Hallo", m_playManager);
+	auto* pl = new PL(1, "Hallo", m_playManager);
 
 	Playlist::Mode mode;
 	mode.setShuffle(Playlist::Mode::State::On);
@@ -91,12 +90,12 @@ void PlaylistTest::shuffleTest()
 	bool b = pl->changeTrack(0);
 	QVERIFY(b == false);
 
-	pl->createPlaylist(v_md);
+	pl->createPlaylist(tracks);
 	b = pl->changeTrack(0);
 	indexes << 0;
 	QVERIFY(b == true);
 
-	for(int i=1; i<v_md.count(); i++)
+	for(int i=1; i < tracks.count(); i++)
 	{
 		pl->next();
 
@@ -105,24 +104,24 @@ void PlaylistTest::shuffleTest()
 		indexes << curIndex;
 	}
 
-	QVERIFY(indexes.count() == v_md.count());
+	QVERIFY(indexes.count() == tracks.count());
 
-	QList<int> indexes_cpy = indexes;
+	QList<int> oldIndexes = indexes;
 
 	std::sort(indexes.begin(), indexes.end());
-	QVERIFY(indexes_cpy != indexes);
+	QVERIFY(oldIndexes != indexes);
 }
 
 void PlaylistTest::modifyTest()
 {
-	MetaDataList v_md = Test::Playlist::createTrackList(0, 100);
-	int curIndex;
+	auto tracks = Test::Playlist::createTrackList(0, 100);
+	int currentIndex;
 
 	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
-	pl->createPlaylist(v_md);
-	const MetaDataList& plTracks = pl->tracks();
+	pl->createPlaylist(tracks);
+	const auto& plTracks = pl->tracks();
 
-	QList<UniqueId> pl_uids = plTracks.unique_ids();
+	const auto uniqueIds = plTracks.unique_ids();
 
 	pl->changeTrack(50);
 	QVERIFY(pl->currentTrackIndex() == 50);
@@ -137,8 +136,8 @@ void PlaylistTest::modifyTest()
 		}
 
 		pl->moveTracks(indexes, 75);
-		curIndex = pl->currentTrackIndex();
-		QVERIFY(curIndex == 46);
+		currentIndex = pl->currentTrackIndex();
+		QVERIFY(currentIndex == 46);
 	}
 
 	{ // move before, after and with current track
@@ -151,8 +150,8 @@ void PlaylistTest::modifyTest()
 		}
 
 		pl->moveTracks(indexes, 10);
-		curIndex = pl->currentTrackIndex();
-		QVERIFY(curIndex == 11);
+		currentIndex = pl->currentTrackIndex();
+		QVERIFY(currentIndex == 11);
 	}
 
 	{ // move current track
@@ -163,17 +162,17 @@ void PlaylistTest::modifyTest()
 		}
 
 		pl->moveTracks(indexes, 20);
-		curIndex = pl->currentTrackIndex();
-		QVERIFY(curIndex == 18);
+		currentIndex = pl->currentTrackIndex();
+		QVERIFY(currentIndex == 18);
 	}
 
 	{ // check if uids haven't changed
-		QList<UniqueId> pl_uids_after = plTracks.unique_ids();
-		QVERIFY(pl_uids != pl_uids_after);
+		const auto currentUniqueIds = plTracks.unique_ids();
+		QVERIFY(uniqueIds != currentUniqueIds);
 
-		std::sort(pl_uids.begin(), pl_uids.end());
-		std::sort(pl_uids_after.begin(), pl_uids_after.end());
-		QVERIFY(pl_uids == pl_uids_after);
+		std::sort(uniqueIds.begin(), uniqueIds.end());
+		std::sort(currentUniqueIds.begin(), currentUniqueIds.end());
+		QVERIFY(uniqueIds == currentUniqueIds);
 	}
 
 	{ // remove a few tracks
@@ -186,8 +185,8 @@ void PlaylistTest::modifyTest()
 		}
 
 		pl->removeTracks(indexes);
-		curIndex = pl->currentTrackIndex();
-		QVERIFY(curIndex == 14);
+		currentIndex = pl->currentTrackIndex();
+		QVERIFY(currentIndex == 14);
 	}
 
 	{ // finally, remove current track
@@ -202,8 +201,8 @@ void PlaylistTest::modifyTest()
 	}
 
 	pl->removeTracks(indexes);
-	curIndex = pl->currentTrackIndex();
-	QVERIFY(curIndex == -1);
+	currentIndex = pl->currentTrackIndex();
+	QVERIFY(currentIndex == -1);
 }
 
 void PlaylistTest::insertTest()
@@ -212,16 +211,16 @@ void PlaylistTest::insertTest()
 	pl->createPlaylist(MetaDataList());
 
 	{
-		MetaDataList tracks = Test::Playlist::createTrackList(0, 3);
+		const auto tracks = Test::Playlist::createTrackList(0, 3);
 		pl->insertTracks(tracks, 20);
 
-		MetaDataList tracks_pl = pl->tracks();
+		const auto playlistTracks = pl->tracks();
 		QVERIFY(pl->count() == 3);
-		QVERIFY(pl->count() == tracks_pl.count());
+		QVERIFY(pl->count() == playlistTracks.count());
 
-		for(int i=0; i<tracks_pl.count(); i++)
+		for(int i=0; i < playlistTracks.count(); i++)
 		{
-			QVERIFY(tracks_pl[i].id() == i);
+			QVERIFY(playlistTracks[i].id() == i);
 		}
 
 		pl->clear();
@@ -230,50 +229,50 @@ void PlaylistTest::insertTest()
 
 
 	{
-		MetaDataList tracks = Test::Playlist::createTrackList(0, 3);
+		const auto tracks = Test::Playlist::createTrackList(0, 3);
 		pl->insertTracks(tracks, -1);
 
-		MetaDataList tracks_pl = pl->tracks();
+		const auto playlistTracks = pl->tracks();
 		QVERIFY(pl->count() == 3);
-		QVERIFY(pl->count() == tracks_pl.count());
+		QVERIFY(pl->count() == playlistTracks.count());
 
-		for(int i=0; i<tracks_pl.count(); i++)
+		for(int i=0; i < playlistTracks.count(); i++)
 		{
-			QVERIFY(tracks_pl[i].id() == i);
+			QVERIFY(playlistTracks[i].id() == i);
 		}
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::createTrackList(3, 4);
+		const auto tracks = Test::Playlist::createTrackList(3, 4);
 		pl->insertTracks(tracks, -1);
 
-		MetaDataList tracks_pl = pl->tracks();
+		const auto playlistTracks = pl->tracks();
 		QVERIFY(pl->count() == 4);
-		QVERIFY(pl->count() == tracks_pl.count());
+		QVERIFY(pl->count() == playlistTracks.count());
 
-		QVERIFY(tracks_pl.first().id() == 3);
+		QVERIFY(playlistTracks.first().id() == 3);
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::createTrackList(4, 5);
+		const auto tracks = Test::Playlist::createTrackList(4, 5);
 		pl->insertTracks(tracks, 3);
 
-		MetaDataList tracks_pl = pl->tracks();
+		const auto playlistTracks = pl->tracks();
 		QVERIFY(pl->count() == 5);
-		QVERIFY(pl->count() == tracks_pl.count());
+		QVERIFY(pl->count() == playlistTracks.count());
 
-		QVERIFY(tracks_pl[3].id() == 4);
+		QVERIFY(playlistTracks[3].id() == 4);
 	}
 
 	{
-		MetaDataList tracks = Test::Playlist::createTrackList(5, 6);
+		const auto tracks = Test::Playlist::createTrackList(5, 6);
 		pl->insertTracks(tracks, pl->count());
 
-		MetaDataList tracks_pl = pl->tracks();
+		const auto playlistTracks = pl->tracks();
 		QVERIFY(pl->count() == 6);
-		QVERIFY(pl->count() == tracks_pl.count());
+		QVERIFY(pl->count() == playlistTracks.count());
 
-		QVERIFY(tracks_pl.last().id() == 5);
+		QVERIFY(playlistTracks.last().id() == 5);
 	}
 }
 

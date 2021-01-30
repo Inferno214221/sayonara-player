@@ -77,6 +77,7 @@ void Handler::shutdown()
 	}
 
 	m->playlists.clear();
+	m->currentPlaylistIndex = -1;
 }
 
 void Handler::loadOldPlaylists()
@@ -86,10 +87,10 @@ void Handler::loadOldPlaylists()
 	Loader loader;
 	loader.createPlaylists();
 
-	m->currentPlaylistIndex = std::max(loader.getLastPlaylistIndex(), 0);
-
 	auto lastPlaylist = playlist(m->currentPlaylistIndex);
 	lastPlaylist->setCurrentTrack(loader.getLastTrackIndex());
+
+	setCurrentIndex(std::max(loader.getLastPlaylistIndex(), 0));
 }
 
 int Handler::addNewPlaylist(const QString& name, bool temporary)
@@ -104,7 +105,6 @@ int Handler::addNewPlaylist(const QString& name, bool temporary)
 	playlist->setTemporary(temporary);
 
 	m->playlists.push_back(playlist);
-	m->currentPlaylistIndex = std::max(0, m->currentPlaylistIndex);
 
 	emit sigNewPlaylistAdded(m->playlists.count() - 1);
 	emit sigActivePlaylistChanged(activeIndex());
@@ -132,7 +132,8 @@ int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, boo
 		playlist->setTemporary(playlist->isTemporary() && temporary);
 	}
 
-	return index;
+	setCurrentIndex(index);
+	return m->currentPlaylistIndex;
 }
 
 int Handler::createPlaylist(const QStringList& pathList, const QString& name, bool temporary)
@@ -143,7 +144,8 @@ int Handler::createPlaylist(const QStringList& pathList, const QString& name, bo
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->addPaths(pathList);
 
-	return index;
+	setCurrentIndex(index);
+	return m->currentPlaylistIndex;
 }
 
 int Handler::createCommandLinePlaylist(const QStringList& pathList)
@@ -162,7 +164,8 @@ int Handler::createCommandLinePlaylist(const QStringList& pathList)
 
 	playlistGenerator->addPaths(pathList);
 
-	return index;
+	setCurrentIndex(index);
+	return m->currentPlaylistIndex;
 }
 
 int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
@@ -176,7 +179,8 @@ int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
 	playlist->createPlaylist(customPlaylist);
 	playlist->setChanged(false);
 
-	return playlist->index();
+	setCurrentIndex(index);
+	return m->currentPlaylistIndex;
 }
 
 int Handler::createEmptyPlaylist(bool override)
@@ -242,7 +246,7 @@ void Handler::trackChanged()
 
 int Handler::activeIndex() const
 {
-	auto index = Util::Algorithm::indexOf(m->playlists, [](const auto& playlist) {
+	const auto index = Util::Algorithm::indexOf(m->playlists, [](const auto& playlist) {
 		return (playlist->currentTrackIndex() >= 0);
 	});
 
@@ -251,8 +255,12 @@ int Handler::activeIndex() const
 		return index;
 	}
 
-	return Util::between(currentIndex(), m->playlists) ? currentIndex() : 0;
+	if(Util::between(currentIndex(), m->playlists))
+	{
+		return currentIndex();
+	}
 
+	return (count() > 0) ? 0 : -1;
 }
 
 int Handler::currentIndex() const
@@ -262,7 +270,14 @@ int Handler::currentIndex() const
 
 void Handler::setCurrentIndex(int playlistIndex)
 {
-	m->currentPlaylistIndex = playlistIndex;
+	if(Util::between(playlistIndex, m->playlists))
+	{
+		if(m->currentPlaylistIndex != playlistIndex)
+		{
+			m->currentPlaylistIndex = playlistIndex;
+			emit sigCurrentPlaylistChanged(playlistIndex);
+		}
+	}
 }
 
 PlaylistPtr Handler::activePlaylist()
@@ -304,6 +319,11 @@ void Handler::closePlaylist(int playlistIndex)
 		addNewPlaylist(this->requestNewPlaylistName(), true);
 	}
 
+	if(m->currentPlaylistIndex >= m->playlists.count())
+	{
+		setCurrentIndex(m->currentPlaylistIndex - 1);
+	}
+
 	const auto activePlaylist = this->activePlaylist();
 	const auto lastPlaylistId = (activePlaylist) ? activePlaylist->id() : -1;
 	const auto lastTrack = (activePlaylist) ? activePlaylist->currentTrackIndex() : -1;
@@ -314,10 +334,10 @@ void Handler::closePlaylist(int playlistIndex)
 	emit sigPlaylistClosed(playlistIndex);
 }
 
-PlaylistPtr Handler::playlist(int idx)
+PlaylistPtr Handler::playlist(int playlistIndex)
 {
-	return (Util::between(idx, m->playlists.count()))
-	       ? m->playlists[idx]
+	return (Util::between(playlistIndex, m->playlists.count()))
+	       ? m->playlists[playlistIndex]
 	       : nullptr;
 }
 
