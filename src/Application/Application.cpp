@@ -172,7 +172,10 @@ struct Application::Private
 		playManager = playManagerProvider->playManager();
 
 		session = Session::Manager::instance();
-		playlistHandler = Playlist::Handler::instance();
+		auto* playlistHandlerProvider = Playlist::HandlerProvider::instance();
+		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
+		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
+		playlistHandlerProvider->init(playlistHandler);
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
