@@ -63,14 +63,14 @@ LocalLibrary::LocalLibrary(LibraryId libraryId, QObject* parent) :
 
 	applyDatabaseFixes();
 
-	Playlist::Handler* plh = Playlist::Handler::instance();
+	auto* plh = Playlist::HandlerProvider::instance()->handler();
 	connect(plh, &Playlist::Handler::sigTrackDeletionRequested,
 			this, &LocalLibrary::deleteTracks);
 
 	connect(plh, &Playlist::Handler::sigFindTrackRequested,
 			this, &LocalLibrary::findTrack);
 
-	Library::Manager* manager = Library::Manager::instance();
+	auto* manager = Library::Manager::instance();
 	connect(manager, &Library::Manager::sigRenamed, this, &LocalLibrary::renamed);
 
 	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::searchModeChanged);
