@@ -28,10 +28,11 @@
 
 #include "PlaylistModel.h"
 #include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
+
+#include "Interfaces/PlaylistInterface.h"
 
 #include "Database/Connector.h"
 #include "Database/CoverConnector.h"
@@ -60,7 +61,6 @@
 
 namespace Algorithm=Util::Algorithm;
 using Playlist::Model;
-using Playlist::Handler;
 
 static const QChar ALBUM_SEARCH_PREFIX='%';
 static const QChar ARTIST_SEARCH_PREFIX='$';
@@ -80,25 +80,25 @@ struct Model::Private
 	int						oldRowCount;
 	int						dragIndex;
 	int						rowHeight;
-	PlaylistPtr				pl;
+	PlaylistPtr				playlist;
 	Tagging::UserOperations* uto=nullptr;
-	Handler* playlistHandler;
+	PlaylistCreator* playlistCreator;
 
-	Private(PlaylistPtr pl) :
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist) :
 		oldRowCount(0),
 		dragIndex(-1),
 		rowHeight(20),
-		pl(pl),
-		playlistHandler{::Playlist::HandlerProvider::instance()->handler()}
+		playlist(playlist),
+		playlistCreator{playlistCreator}
 	{}
 };
 
-Model::Model(PlaylistPtr pl, QObject* parent) :
+Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<Private>(pl);
+	m = Pimpl::make<Private>(playlistCreator, playlist);
 
-	connect(m->pl.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
+	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
@@ -110,7 +110,7 @@ Model::~Model() = default;
 int Model::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
-	return m->pl->count();
+	return m->playlist->count();
 }
 
 int Model::columnCount(const QModelIndex& parent) const
@@ -138,7 +138,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	int row = index.row();
 	int col = index.column();
 
-	if ( !Util::between(row, m->pl->count())) {
+	if ( !Util::between(row, m->playlist->count())) {
 		return QVariant();
 	}
 
@@ -149,7 +149,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 
 		else if(col == ColumnName::Time) {
-			auto l = m->pl->track(row).durationMs();
+			auto l = m->playlist->track(row).durationMs();
 			if(l / 1000 <= 0){
 				return QVariant();
 			}
@@ -164,7 +164,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::Description )
 		{
-			MetaData md = m->pl->track(row);
+			MetaData md = m->playlist->track(row);
 			Rating rating = metadata(row).rating();
 
 			if(md.radioMode() != RadioMode::Off)
@@ -185,7 +185,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if (role == Qt::BackgroundRole)
 	{
-		if(m->pl->currentTrackIndex() == row)
+		if(m->playlist->currentTrackIndex() == row)
 		{
 			QPalette palette = Gui::Util::mainWindow()->palette();
 			QColor col_highlight = palette.color(QPalette::Active, QPalette::Highlight);
@@ -214,7 +214,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::Cover)
 		{
-			MetaData md = m->pl->track(row);
+			MetaData md = m->playlist->track(row);
 
 			if(!m->coverLookupMap.contains(md.albumId()))
 			{
@@ -253,7 +253,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::Description)
 		{
-			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->pl->track(row));
+			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->playlist->track(row));
 		}
 	}
 
@@ -264,12 +264,12 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if(role == Model::RatingRole)
 	{
-		return QVariant::fromValue<Rating>(m->pl->track(row).rating());
+		return QVariant::fromValue<Rating>(m->playlist->track(row).rating());
 	}
 
 	else if(role == Model::RadioModeRole)
 	{
-		return int(m->pl->track(row).radioMode());
+		return int(m->playlist->track(row).radioMode());
 	}
 
 	return QVariant();
@@ -297,7 +297,7 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
 
-	if(Util::between(row, m->pl->count()))
+	if(Util::between(row, m->playlist->count()))
 	{
 		const MetaData& md = metadata(row);
 		if(md.isDisabled()){
@@ -316,17 +316,17 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 
 void Model::clear()
 {
-	m->pl->clear();
+	m->playlist->clear();
 }
 
 void Model::removeTracks(const IndexSet& indexes)
 {
-	m->pl->removeTracks(indexes);
+	m->playlist->removeTracks(indexes);
 }
 
 IndexSet Model::moveTracks(const IndexSet& indexes, int target_index)
 {
-	return m->pl->moveTracks(indexes, target_index);
+	return m->playlist->moveTracks(indexes, target_index);
 }
 
 IndexSet Model::moveTracksUp(const IndexSet& indexes)
@@ -354,7 +354,7 @@ IndexSet Model::moveTracksDown(const IndexSet& indexes)
 
 IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
 {
-	return m->pl->copyTracks(indexes, target_index);
+	return m->playlist->copyTracks(indexes, target_index);
 }
 
 void Model::changeRating(const IndexSet& indexes, Rating rating)
@@ -364,13 +364,13 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 
 	for(auto idx : indexes)
 	{
-		MetaData md = m->pl->track(idx);
+		MetaData md = m->playlist->track(idx);
 		if(rating != md.rating())
 		{
 			tracks << md;
 			md.setRating(rating);
 
-			m->pl->replaceTrack(idx, md);
+			m->playlist->replaceTrack(idx, md);
 		}
 
 		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
@@ -390,29 +390,29 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 
 void Model::insertTracks(const MetaDataList& tracks, int row)
 {
-	m->pl->insertTracks(tracks, row);
+	m->playlist->insertTracks(tracks, row);
 }
 
 void Model::insertTracks(const QStringList& files, int row)
 {
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlistHandler, m->pl);
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlistCreator, m->playlist);
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->insertPaths(files, row);
 }
 
 int Model::currentTrack() const
 {
-	return m->pl->currentTrackIndex();
+	return m->playlist->currentTrackIndex();
 }
 
 void Model::setCurrentTrack(int row)
 {
-	m->pl->changeTrack(row);
+	m->playlist->changeTrack(row);
 }
 
 MetaData Model::metadata(int row) const
 {
-	return m->pl->track(row);
+	return m->playlist->track(row);
 }
 
 MetaDataList Model::metadata(const IndexSet &rows) const
@@ -422,7 +422,7 @@ MetaDataList Model::metadata(const IndexSet &rows) const
 
 	Util::Algorithm::transform(rows, tracks, [this](int row)
 	{
-		return m->pl->track(row);
+		return m->playlist->track(row);
 	});
 
 	return tracks;
@@ -470,7 +470,7 @@ QModelIndexList Model::searchResults(const QString& substr)
 	int rows = rowCount();
 	for(int i=0; i<rows; i++)
 	{
-		MetaData md = m->pl->track(i);
+		MetaData md = m->playlist->track(i);
 		QString str;
 		switch(plsm)
 		{
@@ -528,11 +528,11 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 
 	for(int row : Algorithm::AsConst(rows))
 	{
-		if(row >= m->pl->count()){
+		if(row >= m->playlist->count()){
 			continue;
 		}
 
-		tracks << m->pl->track(row);
+		tracks << m->playlist->track(row);
 	}
 
 	if(tracks.empty()){
@@ -541,14 +541,14 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 
 	auto* mimedata = new Gui::CustomMimeData(this);
 	mimedata->setMetadata(tracks);
-	mimedata->setPlaylistSourceIndex(m->pl->index());
+	mimedata->setPlaylistSourceIndex(m->playlist->index());
 
 	return mimedata;
 }
 
 bool Model::hasLocalMedia(const IndexSet& rows) const
 {
-	const  MetaDataList& tracks = m->pl->tracks();
+	const  MetaDataList& tracks = m->playlist->tracks();
 
 	return Algorithm::contains(rows, [tracks](int row)
 	{
@@ -582,7 +582,7 @@ void Model::setRowHeight(int rowHeight)
 
 void Model::refreshData()
 {
-	m->pl->enableAll();
+	m->playlist->enableAll();
 }
 
 void Model::lookChanged()
@@ -594,24 +594,24 @@ void Model::playlistChanged(int pl_idx)
 {
 	Q_UNUSED(pl_idx)
 
-	if(m->oldRowCount > m->pl->count())
+	if(m->oldRowCount > m->playlist->count())
 	{
-		beginRemoveRows(QModelIndex(), m->pl->count(), m->oldRowCount - 1);
+		beginRemoveRows(QModelIndex(), m->playlist->count(), m->oldRowCount - 1);
 		endRemoveRows();
 	}
 
-	else if(m->pl->count() > m->oldRowCount){
-		beginInsertRows(QModelIndex(), m->oldRowCount, m->pl->count() - 1);
+	else if(m->playlist->count() > m->oldRowCount){
+		beginInsertRows(QModelIndex(), m->oldRowCount, m->playlist->count() - 1);
 		endInsertRows();
 	}
 
-	if(m->pl->count() == 0)
+	if(m->playlist->count() == 0)
 	{
 		beginResetModel();
 		endResetModel();
 	}
 
-	m->oldRowCount = m->pl->count();
+	m->oldRowCount = m->playlist->count();
 
 	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
 	emit sigDataReady();

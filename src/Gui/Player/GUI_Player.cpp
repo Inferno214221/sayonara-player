@@ -29,6 +29,7 @@
 
 #include "Interfaces/PlaylistInterface.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
@@ -60,12 +61,10 @@ struct GUI_Player::Private
 	GUI_TrayIcon* trayIcon = nullptr;
 	GUI_ControlsBase* controls = nullptr;
 	PlayManager* playManager = nullptr;
-	PlaylistCreator* playlistCreator = nullptr;
 	bool shutdownRequested;
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, GUI_Player* parent) :
 		playManager(playManager),
-		playlistCreator(playlistCreator),
 		shutdownRequested(false)
 	{
 		logger = std::make_shared<GUI_Logger>(parent);
@@ -73,17 +72,19 @@ struct GUI_Player::Private
 	}
 };
 
-GUI_Player::GUI_Player(PlayManager* playManager, PlaylistCreator* playlistCreator, QWidget* parent) :
+GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(playManager, playlistCreator, this);
+	m = Pimpl::make<Private>(playManager, playlistHandler, this);
 
 	languageChanged();
 
 	ui = new Ui::GUI_Player();
 	ui->setupUi(this);
 	ui->retranslateUi(this);
+	ui->playlistWidget->init(playlistHandler, playManager);
+
 	ui->pluginWidget->setVisible(false);
 
 	Message::registerReceiver(this);

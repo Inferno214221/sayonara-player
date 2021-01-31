@@ -41,8 +41,11 @@
 
 namespace Playlist
 {
+	class Handler;
 	class View;
 }
+
+class PlayManager;
 
 UI_FWD(PlaylistWindow)
 
@@ -60,6 +63,8 @@ class GUI_Playlist :
 public:
 	explicit GUI_Playlist(QWidget* parent=nullptr);
 	~GUI_Playlist() override;
+
+	void init(Playlist::Handler* playlistHandler, PlayManager* playManager);
 
 private:
 	void initToolButton();

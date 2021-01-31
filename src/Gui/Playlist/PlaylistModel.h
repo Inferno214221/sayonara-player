@@ -34,6 +34,7 @@
 #include "Utils/Pimpl.h"
 
 class CustomMimeData;
+class PlaylistCreator;
 
 namespace Playlist
 {
@@ -76,7 +77,7 @@ namespace Playlist
 				EntryLookRole=Qt::UserRole + 4
 			};
 
-			explicit Model(PlaylistPtr pl, QObject* parent=nullptr);
+			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent=nullptr);
 			~Model() override;
 
 			void clear();

@@ -177,14 +177,22 @@ namespace
 
 struct GUI_Playlist::Private
 {
-	PlayManager* playManager {PlayManagerProvider::instance()->playManager()};
-	Playlist::Handler* playlistHandler {Playlist::HandlerProvider::instance()->handler()};
+	Playlist::Handler* playlistHandler;
+	PlayManager* playManager;
+
+	Private(Playlist::Handler* playlistHandler, PlayManager* playManager) :
+		playlistHandler(playlistHandler),
+		playManager(playManager)
+	{}
 };
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	Widget(parent)
+{}
+
+void GUI_Playlist::init(Playlist::Handler* playlistHandler, PlayManager* playManager)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistHandler, playManager);
 
 	ui = new Ui::PlaylistWindow();
 	ui->setupUi(this);
@@ -425,7 +433,7 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 	if(playlist)
 	{
 		const auto name = playlist->name();
-		auto* view = new View(playlist, ui->twPlaylists);
+		auto* view = new View(m->playlistHandler, playlist, ui->twPlaylists);
 
 		ui->twPlaylists->insertTab(ui->twPlaylists->count() - 1, view, name);
 

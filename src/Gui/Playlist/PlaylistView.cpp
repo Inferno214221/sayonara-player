@@ -36,8 +36,8 @@
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include <QShortcut>
 #include <QDropEvent>
@@ -63,10 +63,10 @@ struct View::Private
 	ProgressBar* progressbar = nullptr;
 	QLabel* currentFileLabel = nullptr;
 
-	Private(PlaylistPtr pl, View* parent) :
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist, View* parent) :
 		view(parent),
-		playlist(pl),
-		model(new Pl::Model(pl, parent)),
+		playlist(playlist),
+		model(new Pl::Model(playlistCreator, playlist, parent)),
 		progressbar(new ProgressBar(parent)),
 		currentFileLabel(new QLabel(parent))
 	{
@@ -131,12 +131,12 @@ struct View::Private
 	}
 };
 
-View::View(PlaylistPtr playlist, QWidget* parent) :
+View::View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
-	m = Pimpl::make<Private>(playlist, this);
+	m = Pimpl::make<Private>(playlistCreator, playlist, this);
 
 	ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
 	ListenSetting(Set::PL_ShowCovers, View::columnsChanged);
