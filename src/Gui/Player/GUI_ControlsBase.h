@@ -99,7 +99,7 @@ class GUI_ControlsBase :
 		void decreaseVolume();
 
 		void refreshCurrentPosition(int val);
-		void setTotalTimeLabel(MilliSeconds total_time);
+		void setTotalTimeLabel(MilliSeconds totalTimeMs);
 
 		void setupShortcuts();
 		void setupConnections();
@@ -114,14 +114,14 @@ class GUI_ControlsBase :
 
 		void buffering(int progress);
 
-		void currentPositionChanged(MilliSeconds pos_ms);
+		void currentPositionChanged(MilliSeconds posMs);
 		void progressMoved(int val);
 		void progressHovered(int val);
 
 		void volumeChanged(int val);
 		void muteChanged(bool muted);
 
-		void currentTrackChanged(const MetaData& md);
+		void currentTrackChanged(const MetaData& track);
 		void metadataChanged();
 
 		void refreshLabels(const MetaData& md);
