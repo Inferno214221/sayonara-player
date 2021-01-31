@@ -34,7 +34,7 @@ namespace Playlist
 	 * @ingroup Playlist
 	 */
 	class Chooser :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Chooser)
