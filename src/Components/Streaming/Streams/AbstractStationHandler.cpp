@@ -30,8 +30,8 @@
 
 struct AbstractStationHandler::Private
 {
-	StreamParser*					streamParser=nullptr;
-	StationPtr						parsedStation;
+	StreamParser* streamParser = nullptr;
+	StationPtr parsedStation;
 };
 
 AbstractStationHandler::AbstractStationHandler(QObject* parent) :
@@ -46,11 +46,12 @@ void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tr
 {
 	QString playlistName;
 
-	if(GetSetting(Set::Stream_NewTab)) {
+	if(GetSetting(Set::Stream_NewTab))
+	{
 		playlistName = station->name();
 	}
 
-	auto* plh = Playlist::Handler::instance();
+	auto* plh = Playlist::HandlerProvider::instance()->handler();
 	const auto index = plh->createPlaylist(tracks, playlistName);
 	auto playlist = plh->playlist(index);
 
@@ -59,7 +60,8 @@ void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tr
 
 bool AbstractStationHandler::parseStation(StationPtr station)
 {
-	if(m->streamParser){
+	if(m->streamParser)
+	{
 		return false;
 	}
 
@@ -88,7 +90,8 @@ void AbstractStationHandler::parserFinished(bool success)
 	{
 		MetaDataList tracks = m->streamParser->tracks();
 
-		if(!tracks.isEmpty()) {
+		if(!tracks.isEmpty())
+		{
 			createPlaylist(m->parsedStation, tracks);
 		}
 
