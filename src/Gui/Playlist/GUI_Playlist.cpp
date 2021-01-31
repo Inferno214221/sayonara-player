@@ -191,6 +191,13 @@ GUI_Playlist::GUI_Playlist(QWidget* parent) :
 
 	setAcceptDrops(true);
 
+	for(int i=0; i<m->playlistHandler->count(); i++)
+	{
+		playlistAdded(i);
+	}
+
+	ui->twPlaylists->setCurrentIndex(m->playlistHandler->currentIndex());
+
 	connect(m->playlistHandler, &Handler::sigPlaylistNameChanged, this, &GUI_Playlist::playlistNameChanged);
 	connect(m->playlistHandler, &Handler::sigNewPlaylistAdded, this, &GUI_Playlist::playlistAdded);
 	connect(m->playlistHandler, &Handler::sigCurrentPlaylistChanged, this, &GUI_Playlist::playlistIdxChanged);

@@ -330,8 +330,6 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 	delete m->timer;
 	m->timer = nullptr;
 
-	//connect(this, &Application::commitDataRequest, this, &Application::session_end_requested);
-
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
 
 	if(!GetSetting(Set::Player_StartInTray))
@@ -364,8 +362,6 @@ void Application::initPlayer(bool force_show)
 
 void Application::initPlaylist(const QStringList& filesToPlay)
 {
-	m->playlistHandler->loadOldPlaylists();
-
 	if(!filesToPlay.isEmpty())
 	{
 		m->playlistHandler->createCommandLinePlaylist(filesToPlay);

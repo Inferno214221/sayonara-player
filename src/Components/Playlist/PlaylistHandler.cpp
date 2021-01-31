@@ -24,6 +24,7 @@
 #include "PlaylistHandler.h"
 #include "Playlist.h"
 #include "PlaylistLoader.h"
+#include "PlaylistSaver.h"
 #include "PlaylistDBWrapper.h"
 #include "PlaylistChangeNotifier.h"
 #include "ExternTracksPlaylistGenerator.h"
@@ -37,9 +38,10 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
-using namespace Playlist;
+using Playlist::Handler;
+using Playlist::Loader;
 
-struct Handler::Private
+struct Playlist::Handler::Private
 {
 	PlayManager* playManager {PlayManagerProvider::instance()->playManager()};
 	QList<PlaylistPtr> playlists;
@@ -59,22 +61,15 @@ Handler::Handler(QObject* parent) :
 	auto* playlistChangeNotifier = PlaylistChangeNotifier::instance();
 	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
 	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
+
+	loadOldPlaylists();
 }
 
 Handler::~Handler() = default;
 
 void Handler::shutdown()
 {
-	if(GetSetting(Set::PL_LoadTemporaryPlaylists))
-	{
-		for(const auto& playlist : Util::Algorithm::AsConst(m->playlists))
-		{
-			if(playlist->isTemporary() && playlist->wasChanged())
-			{
-				playlist->save();
-			}
-		}
-	}
+	::Playlist::saveCurrentPlaylists(m->playlists);
 
 	m->playlists.clear();
 	m->currentPlaylistIndex = -1;
@@ -84,13 +79,29 @@ void Handler::loadOldPlaylists()
 {
 	spLog(Log::Debug, this) << "Loading playlists...";
 
-	Loader loader;
-	loader.createPlaylists();
+	::Playlist::Loader loader;
+	const auto& playlists = loader.playlists();
+	if(playlists.isEmpty())
+	{
+		this->createEmptyPlaylist();
+		return;
+	}
 
-	auto lastPlaylist = playlist(m->currentPlaylistIndex);
-	lastPlaylist->setCurrentTrack(loader.getLastTrackIndex());
+	for(const auto& playlist : playlists)
+	{
+		this->createPlaylist(playlist);
+	}
 
-	setCurrentIndex(std::max(loader.getLastPlaylistIndex(), 0));
+	const auto lastIndex = loader.getLastPlaylistIndex();
+	const auto currentIndex = std::max(0, lastIndex);
+	setCurrentIndex(currentIndex);
+
+	auto lastTrackIndex = loader.getLastTrackIndex();
+	if(lastTrackIndex >= 0)
+	{
+		auto lastPlaylist = playlist(currentIndex);
+		lastPlaylist->setCurrentTrack(lastTrackIndex);
+	}
 }
 
 int Handler::addNewPlaylist(const QString& name, bool temporary)

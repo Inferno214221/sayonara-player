@@ -24,7 +24,7 @@
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
-#include <QObject>
+#include <QList>
 
 namespace Playlist
 {
@@ -34,21 +34,17 @@ namespace Playlist
 	 * @brief The PlaylistLoader class
 	 * @ingroup Playlists
 	 */
-	class Loader :
-			public QObject
+	class Loader
 	{
-		Q_OBJECT
 		PIMPL(Loader)
 
 		public:
-			explicit Loader(QObject* parent=nullptr);
-			~Loader() override;
+			Loader();
+			~Loader();
 
-
-			CustomPlaylists			getPlaylists() const;
-			int						getLastPlaylistIndex() const;
-			int						getLastTrackIndex() const;
-			int						createPlaylists();
+			int getLastPlaylistIndex() const;
+			int getLastTrackIndex() const;
+			const QList<CustomPlaylist>& playlists() const;
 	};
 }
 
