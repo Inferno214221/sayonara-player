@@ -38,13 +38,17 @@
 #include "3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.h"
 #endif
 
+#include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistLoader.h"
+#include "Components/Playlist/PlaylistChooser.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/PlayManager/PlayManagerImpl.h"
 #include "Components/Streaming/LastFM/LastFM.h"
+#include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "Components/Session/Session.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 
@@ -433,8 +437,8 @@ void Application::initPlugins()
 	pph->addPlugin(new GUI_Equalizer());
 	pph->addPlugin(new GUI_Stream());
 	pph->addPlugin(new GUI_Podcasts());
-	pph->addPlugin(new GUI_PlaylistChooser());
-	pph->addPlugin(new GUI_AudioConverter());
+	pph->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
+	pph->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
 	pph->addPlugin(new GUI_Bookmarks());
 	pph->addPlugin(new GUI_Speed());
 	pph->addPlugin(new GUI_Broadcast());

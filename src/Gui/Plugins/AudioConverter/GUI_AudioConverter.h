@@ -27,7 +27,8 @@
 
 UI_FWD(GUI_AudioConverter)
 
-class Converter;
+class ConverterFactory;
+
 class GUI_AudioConverter :
 		public PlayerPlugin::Base
 {
@@ -36,7 +37,7 @@ class GUI_AudioConverter :
 	PIMPL(GUI_AudioConverter)
 
 	public:
-		explicit GUI_AudioConverter(QWidget* parent=nullptr);
+		explicit GUI_AudioConverter(ConverterFactory* converterFactory, QWidget* parent=nullptr);
 		virtual ~GUI_AudioConverter() override;
 
 		QString	name() const override;
@@ -56,7 +57,6 @@ class GUI_AudioConverter :
 
 	private:
 		void checkStartButton();
-		Converter* createConverter();
 
 		void retranslate() override;
 		void initUi() override;
