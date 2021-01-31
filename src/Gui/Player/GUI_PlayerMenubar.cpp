@@ -43,7 +43,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

@@ -35,7 +35,7 @@
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
 
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include <QMap>
 #include <QSettings>

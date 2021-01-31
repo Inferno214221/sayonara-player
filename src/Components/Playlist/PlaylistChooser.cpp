@@ -21,7 +21,7 @@
 #include "PlaylistChooser.h"
 #include "PlaylistChangeNotifier.h"
 
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Components/Playlist/PlaylistDBWrapper.h"
 
 #include "Utils/Algorithm.h"

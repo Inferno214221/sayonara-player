@@ -23,9 +23,9 @@
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
 #include "Components/Converter/OpusConverter.h"
-
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
+
 #include "Utils/MetaData/MetaDataList.h"
 
 namespace

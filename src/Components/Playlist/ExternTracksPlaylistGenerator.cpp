@@ -20,7 +20,7 @@
 
 #include "ExternTracksPlaylistGenerator.h"
 #include "Components/Directories/MetaDataScanner.h"
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Playlist.h"
 
 #include "Utils/Algorithm.h"

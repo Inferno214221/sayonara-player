@@ -17,8 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_PLAYLISTCREATOR_H
-#define SAYONARA_PLAYER_PLAYLISTCREATOR_H
+#ifndef SAYONARA_PLAYER_PLAYLISTINTERFACE_H
+#define SAYONARA_PLAYER_PLAYLISTINTERFACE_H
 
 #include <QString>
 
@@ -35,6 +35,19 @@ class QStringList;
 
 using PlaylistPtr = std::shared_ptr<::Playlist::Playlist>;
 
+class PlaylistAccessor
+{
+	public:
+		virtual int activeIndex() const = 0;
+		virtual PlaylistPtr activePlaylist() = 0;
+
+		virtual int currentIndex() const = 0;
+		virtual void setCurrentIndex(int playlistIndex) = 0;
+
+		virtual PlaylistPtr playlist(int playlistIndex) = 0;
+		virtual PlaylistPtr playlistById(int playlistId) = 0;
+};
+
 class PlaylistCreator
 {
 	public:
@@ -42,12 +55,6 @@ class PlaylistCreator
 		virtual ~PlaylistCreator() = default;
 		virtual PlaylistPtr playlist(int playlistIndex) = 0;
 		virtual PlaylistPtr playlistById(int playlistId) = 0;
-
-		/*virtual int activeIndex() const = 0;
-		virtual PlaylistPtr activePlaylist() = 0;
-
-		virtual int currentIndex() const = 0;
-		virtual void setCurrentIndex(int playlistIndex) = 0;*/
 
 		virtual QString requestNewPlaylistName(const QString& prefix = QString()) const = 0;
 
@@ -60,4 +67,4 @@ class PlaylistCreator
 		virtual int createCommandLinePlaylist(const QStringList& pathList) = 0;
 };
 
-#endif //SAYONARA_PLAYER_PLAYLISTCREATOR_H
+#endif //SAYONARA_PLAYER_PLAYLISTINTERFACE_H

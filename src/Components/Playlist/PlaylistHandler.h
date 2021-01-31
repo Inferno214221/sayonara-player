@@ -30,7 +30,7 @@
 #define PLAYLISTHANDLER_H_
 
 #include "PlaylistDBInterface.h"
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include "Components/PlayManager/PlayState.h"
 
@@ -53,7 +53,8 @@ namespace Playlist
 	 */
 	class Handler :
 		public QObject,
-		public PlaylistCreator
+		public PlaylistCreator,
+		public PlaylistAccessor
 	{
 		Q_OBJECT
 		PIMPL(Handler)
@@ -82,11 +83,11 @@ namespace Playlist
 			PlaylistPtr playlist(int playlistIndex) override;
 			PlaylistPtr playlistById(int playlistId) override;
 
-			int activeIndex() const;
-			PlaylistPtr activePlaylist();
+			int activeIndex() const override;
+			PlaylistPtr activePlaylist() override;
 
-			int currentIndex() const;
-			void setCurrentIndex(int playlistIndex);
+			int currentIndex() const override;
+			void setCurrentIndex(int playlistIndex) override ;
 
 			/**
 			 * @brief Request a new name for the playlist (usually New %1 is returned).

@@ -27,7 +27,7 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
-#include "Interfaces/PlaylistCreator.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
