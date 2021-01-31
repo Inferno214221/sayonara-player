@@ -1,10 +1,35 @@
 #include "SayonaraTest.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistLoader.h"
+#include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
 // access working directory with Test::Base::tempPath("somefile.txt");
+
+class DummyPlaylistLoader : public Playlist::Loader
+{
+	private:
+		QList<CustomPlaylist> m_playlists;
+
+	public:
+		int getLastPlaylistIndex() const override
+		{
+			return -1;
+		}
+
+		int getLastTrackIndex() const override
+		{
+			return -1;
+		}
+
+		const QList<CustomPlaylist>& playlists() const override
+		{
+			return m_playlists;
+		}
+};
 
 class PlaylistHandlerTest : 
     public Test::Base
@@ -16,6 +41,13 @@ class PlaylistHandlerTest :
             Test::Base("PlaylistHandlerTest")
         {}
 
+	private:
+		std::shared_ptr<Playlist::Handler> createHandler()
+		{
+    	    auto playManager = PlayManagerProvider::instance()->playManager();
+    	    return std::make_shared<Playlist::Handler>(playManager, std::make_shared<DummyPlaylistLoader>());
+		}
+
     private slots:
         void createTest();
         void closeTest();
@@ -25,32 +57,31 @@ class PlaylistHandlerTest :
 
 void PlaylistHandlerTest::createTest()
 {
-	auto* plh = Playlist::Handler::instance();
-	QVERIFY(plh->count() == 0);
-	QVERIFY(plh->activeIndex() == -1);
+	auto plh = createHandler();
+	QVERIFY(plh->count() == 1);
+	QVERIFY(plh->activeIndex() == 0);
 
 	auto index = plh->createEmptyPlaylist(false);
 	QVERIFY(plh->playlist(index)->index() == index);
-	QVERIFY(index == 0);
-	QVERIFY(plh->count() == 1);
+	QVERIFY(index == 1);
+	QVERIFY(plh->count() == 2);
 
 	index = plh->createEmptyPlaylist(false);
 	QVERIFY(plh->playlist(index)->index() == index);
-	QVERIFY(index == 1);
-	QVERIFY(plh->count() == 2);
+	QVERIFY(index == 2);
+	QVERIFY(plh->count() == 3);
 
 	index = plh->createEmptyPlaylist(true);
 	QVERIFY(plh->playlist(index)->index() == index);
-	QVERIFY(index == 1);
-	QVERIFY(plh->count() == 2);
+	QVERIFY(index == 2);
+	QVERIFY(plh->count() == 3);
 
 	plh->shutdown();
 }
 
 void PlaylistHandlerTest::closeTest()
 {
-	auto* plh = Playlist::Handler::instance();
-	plh->createEmptyPlaylist(false);
+	auto plh = createHandler();
 	plh->createEmptyPlaylist(false);
 	QVERIFY(plh->count() == 2);
 
@@ -69,82 +100,75 @@ void PlaylistHandlerTest::closeTest()
 		QVERIFY(plh->playlist(0)->index() == 0);
 		QVERIFY(plh->activeIndex() == 0);
 	}
-
-	plh->shutdown();
 }
 
 void PlaylistHandlerTest::currentIndexTest()
 {
-	auto* plh = Playlist::Handler::instance();
+	auto plh = createHandler();
 
-	QVERIFY(plh->currentIndex() == -1);
+	QVERIFY(plh->currentIndex() == 0); // one playlist
 	plh->setCurrentIndex(20);
-	QVERIFY(plh->currentIndex() == -1);
-
-	plh->createEmptyPlaylist(false);
 	QVERIFY(plh->currentIndex() == 0);
 
-	plh->createEmptyPlaylist(false);
+	plh->createEmptyPlaylist(false); // two playlists
 	QVERIFY(plh->currentIndex() == 1);
 
+	plh->createEmptyPlaylist(false); // three playlists
+	QVERIFY(plh->currentIndex() == 2);
+
 	plh->setCurrentIndex(5); // invalid current index
-	QVERIFY(plh->currentIndex() == 1);
+	QVERIFY(plh->currentIndex() == 2);
 
 	plh->setCurrentIndex(0); // valid current index
 	QVERIFY(plh->currentIndex() == 0);
 
-	plh->setCurrentIndex(1);
-	plh->closePlaylist(1); // delete current index pl
-	QVERIFY(plh->currentIndex() == 0);
+	plh->setCurrentIndex(2);
+	plh->closePlaylist(2); // delete current index pl
+	QVERIFY(plh->currentIndex() == 1);
 
 	plh->closePlaylist(0); // delete last playlist
 	QVERIFY(plh->currentIndex() == 0);
-
-	plh->shutdown();
 }
 
 void PlaylistHandlerTest::activeIndexTest()
 {
-	auto* plh = Playlist::Handler::instance();
-	QVERIFY(plh->activeIndex() == -1); // empty playlist handler
-
-	plh->createEmptyPlaylist();
+	auto plh = createHandler();
 	QVERIFY(plh->activeIndex() == 0); // one playlist
 
 	plh->createEmptyPlaylist();
+	QVERIFY(plh->activeIndex() == 1); // two playlist
+
+	plh->createEmptyPlaylist();
+	QVERIFY(plh->activeIndex() == 2); // three playlists
+
+	plh->closePlaylist(0);
 	QVERIFY(plh->activeIndex() == 1); // two playlists
-
-	plh->closePlaylist(0);
-	QVERIFY(plh->activeIndex() == 0); // one playlist
-
-	plh->closePlaylist(0);
-	QVERIFY(plh->activeIndex() == 0); // one playlist
-
-	plh->setCurrentIndex(0);
 
 	MetaDataList tracks;
 	for(int i=0; i<10; i++)
 	{
 		// file must exist
-		const auto filename = Test::Base::tempPath(QString("file%1.mp").arg(i));
+		const auto filename = Test::Base::tempPath(QString("file%1.mp3").arg(i));
 		Util::File::writeFile(QByteArray{}, filename);
 
 		tracks << MetaData{filename};
 	}
 
-	auto index = plh->createPlaylist(tracks, "new-playlist");
-	QVERIFY(index == 1);
+	auto index = plh->createPlaylist(tracks, "new-playlist"); // index = 2
+
+	plh->setCurrentIndex(0);
+	QVERIFY(plh->activeIndex() == 0);
 
 	auto playlist = plh->playlist(index);
+	auto success = playlist->changeTrack(4, 0);
+	QVERIFY(success);
 
-	playlist->changeTrack(4, 0);
 	playlist->play();
-	QVERIFY(plh->activeIndex() == index);
+	QVERIFY(plh->currentIndex() == 0);
+	QVERIFY(plh->activeIndex() == 2);
 
 	playlist->stop();
 	QVERIFY(plh->activeIndex() == plh->currentIndex());
-
-	plh->shutdown();
 }
 
 QTEST_GUILESS_MAIN(PlaylistHandlerTest)
