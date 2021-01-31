@@ -31,10 +31,11 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/StandardPaths.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
+
+#include "Interfaces/PlaylistCreator.h"
 
 #include <QMap>
 #include <QSettings>
@@ -66,11 +67,11 @@ struct SomaFM::Library::Private
 	QMap<QString, SomaFM::Station> stationMap;
 	QString requestedStation;
 	QSettings* qsettings = nullptr;
-	Playlist::Handler* playlistHandler;
+	PlaylistCreator* playlistCreator;
 
-	Private(QObject* parent) :
+	Private(PlaylistCreator* playlistCreator, QObject* parent) :
 		qsettings{new QSettings(Util::xdgConfigPath("somafm.ini"), QSettings::IniFormat, parent)},
-		playlistHandler {Playlist::HandlerProvider::instance()->handler()}
+		playlistCreator {playlistCreator}
 	{}
 
 	~Private() = default;
@@ -81,10 +82,10 @@ struct SomaFM::Library::Private
 	}
 };
 
-SomaFM::Library::Library(QObject* parent) :
+SomaFM::Library::Library(PlaylistCreator* playlistCreator, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(playlistCreator, this);
 }
 
 SomaFM::Library::~Library() = default;
@@ -175,7 +176,7 @@ void SomaFM::Library::stationStreamsFetched(bool success)
 		SomaFM::Utils::mapStationToMetadata(station, tracks);
 		station.setMetadata(tracks);
 
-		m->playlistHandler->createPlaylist(tracks, station.name(), true);
+		m->playlistCreator->createPlaylist(tracks, station.name(), true);
 	}
 
 	sender()->deleteLater();
@@ -213,7 +214,7 @@ void SomaFM::Library::playlistContentFetched(bool success)
 		SomaFM::Utils::mapStationToMetadata(station, tracks);
 		station.setMetadata(tracks);
 
-		m->playlistHandler->createPlaylist(tracks, station.name(), true);
+		m->playlistCreator->createPlaylist(tracks, station.name(), true);
 	}
 
 	sender()->deleteLater();

@@ -22,6 +22,7 @@
 /* SomaFMLibraryContainer.cpp */
 
 #include "SomaFMLibraryContainer.h"
+#include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "GUI_SomaFM.h"
 
 static void soma_fm_init_icons()
@@ -29,13 +30,23 @@ static void soma_fm_init_icons()
 	Q_INIT_RESOURCE(SomaFMIcons);
 }
 
-SomaFM::LibraryContainer::LibraryContainer(QObject* parent) :
+struct SomaFM::LibraryContainer::Private
+{
+	SomaFM::Library* library;
+
+	Private(SomaFM::Library* library) :
+		library(library)
+	{}
+};
+
+SomaFM::LibraryContainer::LibraryContainer(SomaFM::Library* library, QObject* parent) :
 	::Library::Container(parent)
 {
+	m = Pimpl::make<Private>(library);
 	soma_fm_init_icons();
 }
 
-SomaFM::LibraryContainer::~LibraryContainer() {}
+SomaFM::LibraryContainer::~LibraryContainer() = default;
 
 QString SomaFM::LibraryContainer::name() const
 {
@@ -59,7 +70,7 @@ QMenu* SomaFM::LibraryContainer::menu()
 
 void SomaFM::LibraryContainer::initUi()
 {
-	ui = new GUI_SomaFM(nullptr);
+	ui = new GUI_SomaFM(m->library, nullptr);
 }
 
 QPixmap SomaFM::LibraryContainer::icon() const

@@ -410,7 +410,7 @@ void Application::initLibraries()
 	QList<Library::AbstractContainer*> libraryContainers = localLibraryWatcher->getLocalLibraryContainers();
 
 	auto* soundcloudContainer = new SC::LibraryContainer(this);
-	auto* somafmContainer = new SomaFM::LibraryContainer(this);
+	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
 	auto* historyContainer = new HistoryContainer(this);
 
 	libraryContainers << static_cast<Library::AbstractContainer*>(somafmContainer);

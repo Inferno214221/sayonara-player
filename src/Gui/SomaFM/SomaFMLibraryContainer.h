@@ -29,18 +29,20 @@
 
 namespace SomaFM
 {
+	class Library;
 	class GUI_SomaFM;
 
 	class LibraryContainer :
 		public ::Library::Container
 	{
 		Q_OBJECT
+		PIMPL(LibraryContainer)
 
 	private:
 		GUI_SomaFM*	ui=nullptr;
 
 	public:
-		explicit LibraryContainer(QObject* parent=nullptr);
+		explicit LibraryContainer(SomaFM::Library* library, QObject* parent);
 		~LibraryContainer() override;
 
 		// override from LibraryViewInterface

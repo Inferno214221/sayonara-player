@@ -50,20 +50,19 @@ struct GUI_SomaFM::Private
 
 	QList<QPushButton*> stationButtons;
 
-	Private(GUI_SomaFM* parent)
-	{
-		library	= new SomaFM::Library(parent);
-	}
+	Private(SomaFM::Library* library) :
+		library(library)
+	{}
 };
 
 
-GUI_SomaFM::GUI_SomaFM(QWidget* parent) :
+GUI_SomaFM::GUI_SomaFM(SomaFM::Library* library, QWidget* parent) :
 	Widget(parent)
 {
 	ui = new Ui::GUI_SomaFM();
 	ui->setupUi(this);
 
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(library);
 	m->progressBar = new Gui::ProgressBar(ui->tv_stations);
 	m->progressBar->setPosition(Gui::ProgressBar::Position::Bottom);
 

@@ -45,7 +45,7 @@ namespace SomaFM
 		PIMPL(GUI_SomaFM)
 
 		public:
-			explicit GUI_SomaFM(QWidget* parent=nullptr);
+			explicit GUI_SomaFM(SomaFM::Library* library, QWidget* parent);
 			~GUI_SomaFM() override;
 
 			QFrame* headerFrame() const;
