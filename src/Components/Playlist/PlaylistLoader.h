@@ -28,23 +28,30 @@
 
 namespace Playlist
 {
-	class DBWrapper;
-
 	/**
 	 * @brief The PlaylistLoader class
 	 * @ingroup Playlists
 	 */
 	class Loader
 	{
-		PIMPL(Loader)
+		public:
+			virtual ~Loader() = default;
+			virtual int getLastPlaylistIndex() const=0;
+			virtual int getLastTrackIndex() const=0;
+			virtual const QList<CustomPlaylist>& playlists() const=0;
+	};
+
+	class LoaderImpl : public Loader
+	{
+		PIMPL(LoaderImpl)
 
 		public:
-			Loader();
-			~Loader();
+			LoaderImpl();
+			~LoaderImpl();
 
-			int getLastPlaylistIndex() const;
-			int getLastTrackIndex() const;
-			const QList<CustomPlaylist>& playlists() const;
+			int getLastPlaylistIndex() const override;
+			int getLastTrackIndex() const override;
+			const QList<CustomPlaylist>& playlists() const override;
 	};
 }
 

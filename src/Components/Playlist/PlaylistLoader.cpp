@@ -26,11 +26,11 @@
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
 
-using Playlist::Loader;
+using Playlist::LoaderImpl;
 
 namespace Algorithm = Util::Algorithm;
 
-struct Loader::Private
+struct LoaderImpl::Private
 {
 	CustomPlaylists playlists;
 	int lastPlaylistId;
@@ -42,7 +42,8 @@ struct Loader::Private
 	{}
 };
 
-Loader::Loader()
+LoaderImpl::LoaderImpl() :
+	Loader()
 {
 	m = Pimpl::make<Private>();
 
@@ -97,16 +98,16 @@ Loader::Loader()
 	}
 }
 
-Loader::~Loader() = default;
+LoaderImpl::~LoaderImpl() = default;
 
-int Loader::getLastPlaylistIndex() const
+int LoaderImpl::getLastPlaylistIndex() const
 {
 	return Util::Algorithm::indexOf(m->playlists, [&](const auto& playlist) {
 		return (playlist.id() == m->lastPlaylistId);
 	});
 }
 
-int Loader::getLastTrackIndex() const
+int LoaderImpl::getLastTrackIndex() const
 {
 	if(!GetSetting(Set::PL_LoadLastTrack))
 	{
@@ -128,7 +129,7 @@ int Loader::getLastTrackIndex() const
 	return m->lastTrackIndex;
 }
 
-const QList<CustomPlaylist>& Loader::playlists() const
+const QList<CustomPlaylist>& LoaderImpl::playlists() const
 {
 	return m->playlists;
 }
