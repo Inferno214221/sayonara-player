@@ -26,6 +26,8 @@
 #include "Utils/globals.h"
 #include <QObject>
 
+class PlaylistCreator;
+
 namespace Playlist
 {
 	/**
@@ -43,7 +45,7 @@ namespace Playlist
 			void sigPlaylistsChanged();
 
 		public:
-			Chooser(QObject* parent);
+			Chooser(PlaylistCreator* playlistCreator, QObject* parent);
 			~Chooser();
 
 			void loadSinglePlaylist(int id);

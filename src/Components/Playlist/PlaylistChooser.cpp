@@ -21,41 +21,39 @@
 #include "PlaylistChooser.h"
 #include "PlaylistChangeNotifier.h"
 
-#include "Utils/Playlist/CustomPlaylist.h"
-#include "Components/Playlist/PlaylistHandler.h"
+#include "Interfaces/PlaylistCreator.h"
 #include "Components/Playlist/PlaylistDBWrapper.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Playlist/Sorting.h"
+#include "Utils/Playlist/CustomPlaylist.h"
 
 #include <QStringList>
 
 namespace Algorithm = Util::Algorithm;
 
-using Playlist::HandlerProvider;
-using Playlist::Handler;
 using Playlist::Chooser;
 using Playlist::DBWrapper;
 
 struct Chooser::Private
 {
 	CustomPlaylistSkeletons skeletons;
-	Handler* playlistHandler = nullptr;
+	PlaylistCreator* playlistCreator = nullptr;
 	DBWrapperPtr playlistDbConnector = nullptr;
 
-	Private() :
-		playlistHandler{ HandlerProvider::instance()->handler() },
-		playlistDbConnector{ std::make_shared<DBWrapper>() }
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator {playlistCreator},
+		playlistDbConnector {std::make_shared<DBWrapper>()}
 	{
 		playlistDbConnector->getNonTemporarySkeletons(skeletons, SortOrder::NameAsc);
 	}
 };
 
-Chooser::Chooser(QObject* parent) :
+Chooser::Chooser(PlaylistCreator* playlistCreator, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistCreator);
 
 	auto* pcn = PlaylistChangeNotifier::instance();
 	connect(pcn, &PlaylistChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
@@ -136,13 +134,13 @@ void Chooser::loadSinglePlaylist(int id)
 	if(id >= 0)
 	{
 		const auto pl = m->playlistDbConnector->getPlaylistById(id);
-		m->playlistHandler->createPlaylist(pl);
+		m->playlistCreator->createPlaylist(pl);
 	}
 }
 
 int Chooser::findPlaylist(const QString& name) const
 {
-	const auto it = Util::Algorithm::find(m->skeletons, [&name](const auto& skeleton){
+	const auto it = Util::Algorithm::find(m->skeletons, [&name](const auto& skeleton) {
 		return (skeleton.name() == name);
 	});
 

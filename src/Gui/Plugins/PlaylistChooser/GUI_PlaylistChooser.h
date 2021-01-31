@@ -25,7 +25,10 @@
 #include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
-class PlaylistChooser;
+namespace Playlist
+{
+	class Chooser;
+}
 
 UI_FWD(GUI_PlaylistChooser)
 
@@ -37,7 +40,7 @@ class GUI_PlaylistChooser :
 	PIMPL(GUI_PlaylistChooser)
 
 public:
-	explicit GUI_PlaylistChooser(QWidget* parent=nullptr);
+	explicit GUI_PlaylistChooser(Playlist::Chooser* playlistChooser, QWidget* parent=nullptr);
 	~GUI_PlaylistChooser() override;
 
 	QString name() const override;

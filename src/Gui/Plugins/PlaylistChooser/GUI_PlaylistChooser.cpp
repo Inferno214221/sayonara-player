@@ -40,30 +40,29 @@ using Playlist::Chooser;
 
 struct GUI_PlaylistChooser::Private
 {
-	Chooser*	playlistChooser=nullptr;
+	Chooser* playlistChooser = nullptr;
+
+	Private(Playlist::Chooser* playlistChooser) :
+		playlistChooser(playlistChooser) {}
 };
 
-GUI_PlaylistChooser::GUI_PlaylistChooser(QWidget* parent) :
+GUI_PlaylistChooser::GUI_PlaylistChooser(Playlist::Chooser* playlistChooser, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistChooser);
 }
-
 
 GUI_PlaylistChooser::~GUI_PlaylistChooser()
 {
-	if(ui){
-		delete ui; ui=nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
-
 void GUI_PlaylistChooser::initUi()
 {
-	if(!m->playlistChooser){
-		m->playlistChooser = new Playlist::Chooser(this);
-	}
-
 	setupParent(this, &ui);
 
 	ui->btnActions->showAction(ContextMenu::EntryRename, true);
@@ -77,13 +76,12 @@ void GUI_PlaylistChooser::initUi()
 	playlistsChanged();
 }
 
-
 void GUI_PlaylistChooser::retranslate()
 {
 	ui->retranslateUi(this);
 
 	const CustomPlaylistSkeletons& skeletons =
-			m->playlistChooser->playlists();
+		m->playlistChooser->playlists();
 
 	if(skeletons.isEmpty())
 	{
@@ -92,29 +90,27 @@ void GUI_PlaylistChooser::retranslate()
 	}
 }
 
-
 QString GUI_PlaylistChooser::name() const
 {
 	return "Playlists";
 }
-
 
 QString GUI_PlaylistChooser::displayName() const
 {
 	return Lang::get(Lang::Playlists);
 }
 
-
 void GUI_PlaylistChooser::playlistsChanged()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
 	QString old_text = ui->comboPlaylists->currentText();
 
 	const CustomPlaylistSkeletons& skeletons =
-			m->playlistChooser->playlists();
+		m->playlistChooser->playlists();
 
 	ui->comboPlaylists->clear();
 
@@ -136,12 +132,12 @@ void GUI_PlaylistChooser::playlistsChanged()
 void GUI_PlaylistChooser::renameTriggered()
 {
 	auto* dialog = new Gui::LineInputDialog
-	(
-		Lang::get(Lang::Rename),
-		Lang::get(Lang::Rename),
-		ui->comboPlaylists->currentText(),
-		this
-	);
+		(
+			Lang::get(Lang::Rename),
+			Lang::get(Lang::Rename),
+			ui->comboPlaylists->currentText(),
+			this
+		);
 
 	connect(dialog, &Gui::LineInputDialog::sigClosed, this, &GUI_PlaylistChooser::renameDialogClosed);
 	dialog->show();
@@ -162,7 +158,7 @@ void GUI_PlaylistChooser::renameDialogClosed()
 		if(answer != SaveAsAnswer::Success)
 		{
 			QString error_msg = tr("Could not rename playlist");
-			if(answer == SaveAsAnswer::InvalidName || answer == SaveAsAnswer::NameAlreadyThere )
+			if(answer == SaveAsAnswer::InvalidName || answer == SaveAsAnswer::NameAlreadyThere)
 			{
 				error_msg += "<br>" + tr("Name is invalid");
 			}
@@ -188,17 +184,18 @@ void GUI_PlaylistChooser::deleteTriggered()
 	}
 }
 
-
 void GUI_PlaylistChooser::playlistSelected(int idx)
 {
 	int id = m->playlistChooser->findPlaylist(ui->comboPlaylists->currentText());
 	int data = ui->comboPlaylists->itemData(idx).toInt();
 
-	if(data < 0){
+	if(data < 0)
+	{
 		return;
 	}
 
-	if(id >= 0){
+	if(id >= 0)
+	{
 		m->playlistChooser->loadSinglePlaylist(id);
 	}
 }
