@@ -20,4 +20,44 @@
 #ifndef SAYONARA_PLAYER_PLAYLISTCREATOR_H
 #define SAYONARA_PLAYER_PLAYLISTCREATOR_H
 
+#include <QString>
+
+#include <memory>
+
+namespace Playlist
+{
+	class Playlist;
+}
+
+class CustomPlaylist;
+class MetaDataList;
+class QStringList;
+
+using PlaylistPtr = std::shared_ptr<::Playlist::Playlist>;
+
+class PlaylistCreator
+{
+	public:
+		PlaylistCreator() = default;
+		virtual ~PlaylistCreator() = default;
+		virtual PlaylistPtr playlist(int playlistIndex) = 0;
+		virtual PlaylistPtr playlistById(int playlistId) = 0;
+
+		/*virtual int activeIndex() const = 0;
+		virtual PlaylistPtr activePlaylist() = 0;
+
+		virtual int currentIndex() const = 0;
+		virtual void setCurrentIndex(int playlistIndex) = 0;*/
+
+		virtual QString requestNewPlaylistName(const QString& prefix = QString()) const = 0;
+
+		virtual int
+		createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) = 0;
+		virtual int
+		createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true) = 0;
+		virtual int createPlaylist(const CustomPlaylist& customPlaylist) = 0;
+		virtual int createEmptyPlaylist(bool override = false) = 0;
+		virtual int createCommandLinePlaylist(const QStringList& pathList) = 0;
+};
+
 #endif //SAYONARA_PLAYER_PLAYLISTCREATOR_H

@@ -41,17 +41,53 @@
 using Playlist::Handler;
 using Playlist::Loader;
 
-struct Playlist::Handler::Private
+struct Handler::Private
 {
-	PlayManager* playManager {PlayManagerProvider::instance()->playManager()};
 	QList<PlaylistPtr> playlists;
-	int currentPlaylistIndex {-1};
+	PlayManager* playManager;
+	int currentPlaylistIndex;
+
+	Private(PlayManager* playManager) :
+		playManager{playManager},
+		currentPlaylistIndex{-1}
+	{}
+
+	void initPlaylists(Handler* handler, std::shared_ptr<::Playlist::Loader> playlistLoader)
+	{
+		spLog(Log::Debug, this) << "Loading playlists...";
+
+		const auto& playlists = playlistLoader->playlists();
+		if(playlists.isEmpty())
+		{
+			handler->createEmptyPlaylist();
+			return;
+		}
+
+		for(const auto& playlist : playlists)
+		{
+			handler->createPlaylist(playlist);
+		}
+
+		const auto lastIndex = playlistLoader->getLastPlaylistIndex();
+		const auto currentIndex = std::max(0, lastIndex);
+		handler->setCurrentIndex(currentIndex);
+
+		auto lastTrackIndex = playlistLoader->getLastTrackIndex();
+		if(lastTrackIndex >= 0)
+		{
+			auto lastPlaylist = handler->playlist(currentIndex);
+			lastPlaylist->setCurrentTrack(lastTrackIndex);
+		}
+	}
 };
 
-Handler::Handler(QObject* parent) :
-	QObject(parent),
-	m(Pimpl::make<Private>())
+Handler::Handler(PlayManager* playManager, std::shared_ptr<::Playlist::Loader> playlistLoader) :
+	QObject(),
+	PlaylistCreator()
 {
+	m = Pimpl::make<Private>(playManager);
+	m->initPlaylists(this, playlistLoader);
+
 	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
 	connect(m->playManager, &PlayManager::sigNext, this, &Handler::next);
 	connect(m->playManager, &PlayManager::sigWakeup, this, &Handler::wakeUp);
@@ -61,8 +97,6 @@ Handler::Handler(QObject* parent) :
 	auto* playlistChangeNotifier = PlaylistChangeNotifier::instance();
 	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
 	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
-
-	loadOldPlaylists();
 }
 
 Handler::~Handler() = default;
@@ -73,35 +107,6 @@ void Handler::shutdown()
 
 	m->playlists.clear();
 	m->currentPlaylistIndex = -1;
-}
-
-void Handler::loadOldPlaylists()
-{
-	spLog(Log::Debug, this) << "Loading playlists...";
-
-	::Playlist::Loader loader;
-	const auto& playlists = loader.playlists();
-	if(playlists.isEmpty())
-	{
-		this->createEmptyPlaylist();
-		return;
-	}
-
-	for(const auto& playlist : playlists)
-	{
-		this->createPlaylist(playlist);
-	}
-
-	const auto lastIndex = loader.getLastPlaylistIndex();
-	const auto currentIndex = std::max(0, lastIndex);
-	setCurrentIndex(currentIndex);
-
-	auto lastTrackIndex = loader.getLastTrackIndex();
-	if(lastTrackIndex >= 0)
-	{
-		auto lastPlaylist = playlist(currentIndex);
-		lastPlaylist->setCurrentTrack(lastTrackIndex);
-	}
 }
 
 int Handler::addNewPlaylist(const QString& name, bool temporary)
@@ -271,7 +276,8 @@ int Handler::activeIndex() const
 		return currentIndex();
 	}
 
-	return (count() > 0) ? 0 : -1;
+	assert(count() > 0);
+	return 0;
 }
 
 int Handler::currentIndex() const
@@ -451,4 +457,25 @@ void Handler::applyPlaylistActionAfterDoubleClick()
 			playlist->changeTrack(0);
 		}
 	}
+}
+
+struct Playlist::HandlerProvider::Private
+{
+	Handler* handler=nullptr;
+};
+
+Playlist::HandlerProvider::HandlerProvider() :
+	m{Pimpl::make<Private>()}
+{}
+
+Playlist::HandlerProvider::~HandlerProvider() = default;
+
+void Playlist::HandlerProvider::init(Handler* handler)
+{
+	m->handler = handler;
+}
+
+Handler* Playlist::HandlerProvider::handler()
+{
+	return m->handler;
 }

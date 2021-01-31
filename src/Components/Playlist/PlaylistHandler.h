@@ -30,6 +30,7 @@
 #define PLAYLISTHANDLER_H_
 
 #include "PlaylistDBInterface.h"
+#include "Interfaces/PlaylistCreator.h"
 
 #include "Components/PlayManager/PlayState.h"
 
@@ -41,19 +42,120 @@
 #include <QObject>
 
 class CustomPlaylist;
+class PlayManager;
 
 namespace Playlist
 {
+	class Loader;
 	/**
 	 * @brief Global handler for playlists
 	 * @ingroup Playlists
 	 */
 	class Handler :
-			public QObject
+		public QObject,
+		public PlaylistCreator
 	{
 		Q_OBJECT
 		PIMPL(Handler)
-		SINGLETON_QOBJECT(Handler)
+
+		public:
+			Handler(PlayManager* playManager, std::shared_ptr<::Playlist::Loader> playlistLoader);
+			~Handler();
+
+			/**
+			 * @brief Call this before the program stops.
+			 * Singletons and Destructors don't work out so well
+			 */
+			void shutdown();
+
+			/**
+			 * @brief Returns number of playlists
+			 * @return
+			 */
+			int count() const;
+
+			/**
+			 * @brief get specific playlist at given index
+			 * @param playlistIndex playlist index
+			 * @return read only pointer object to a playlist, may be nullptr
+			 */
+			PlaylistPtr playlist(int playlistIndex) override;
+			PlaylistPtr playlistById(int playlistId) override;
+
+			int activeIndex() const;
+			PlaylistPtr activePlaylist();
+
+			int currentIndex() const;
+			void setCurrentIndex(int playlistIndex);
+
+			/**
+			 * @brief Request a new name for the playlist (usually New %1 is returned).
+			 * If the prefix differs, instead of New, the prefix is chosen.
+			 * E.g. "File system 2" for tracks added by the file manager
+			 * @param The prefix is a localized "New" by default.
+			 * @return playlist name
+			 */
+			QString requestNewPlaylistName(const QString& prefix = QString()) const override;
+
+			/**
+			 * @brief create a new playlist
+			 * @param tracks track list
+			 * @param name new playlist name. If no name given, current playlist will be overwritten
+			 * @param temporary is the playlist temporary or persistent?
+			 * @param type deprecated
+			 * @return new playlist index
+			 */
+			int createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
+
+			/**
+			 * @brief create a new playlist (overloaded)
+			 * @param pathlist paths, may contain files or directories
+			* @param name new playlist name. If no name given, current playlist will be overwritten
+			 * @param temporary is the playlist temporary or persistent?
+			 * @param type deprecated
+			 * @return new playlist index
+			 */
+			int createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true) override;
+			int createCommandLinePlaylist(const QStringList& pathList) override;
+
+			/**
+			 * @brief create a new playlist (overloaded)
+			 * @param customPlaylist a CustomPlaylist object fetched from database
+			 * @return new playlist index
+			 */
+			int createPlaylist(const CustomPlaylist& customPlaylist) override;
+
+			/**
+			 * @brief create a new empty playlist
+			 * @param name new playlist name. If no name given, current playlist will be overwritten
+			 * @return new playlist index
+			 */
+			int createEmptyPlaylist(bool override = false) override;
+
+			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode);
+
+			void applyPlaylistActionAfterDoubleClick();
+
+		public slots:
+			/**
+			 * @brief close playlist
+			 * @param playlistIndex playlist index
+			 */
+			void closePlaylist(int playlistIndex);
+
+		private:
+			int addNewPlaylist(const QString& name, bool editable);
+			int exists(const QString& name) const;
+
+		private slots:
+			void trackChanged();
+			void previous();
+			void next();
+			void wakeUp();
+			void playstateChanged(PlayState state);
+			void wwwTrackFinished(const MetaData& track);
+			void playlistRenamed(int id, const QString& oldNamde, const QString& newName);
+			void playlistDeleted(int id);
 
 		signals:
 			/**
@@ -74,7 +176,6 @@ namespace Playlist
 			 */
 			void sigCurrentPlaylistChanged(int playlistIndex);
 			void sigActivePlaylistChanged(int playlistIndex);
-			void sigInitialPlaylistCreated(int playlistIndex);
 
 			/**
 			 * @brief emitted when a track deletion was triggered over the Ui
@@ -85,160 +186,16 @@ namespace Playlist
 
 			void sigPlaylistClosed(int playlistIndex);
 			void sigFindTrackRequested(TrackID trackId);
+	};
 
+	class HandlerProvider
+	{
+		PIMPL(HandlerProvider)
+		SINGLETON(HandlerProvider)
 
 		public:
-			/**
-			 * @brief Call this before the program stops.
-			 * Singletons and Destructors don't work out so well
-			 */
-			void shutdown();
-
-
-
-			/**
-			 * @brief get active playlist index
-			 * @return
-			 */
-			int	activeIndex() const;
-
-			/**
-			 * @brief get active playlist. If no playlists are available, create one.
-			 * If there's no active index, the current index is used
-			 * @return
-			 */
-			PlaylistPtr activePlaylist();
-
-			int currentIndex() const;
-			void setCurrentIndex(int playlistIndex);
-
-			/**
-			 * @brief Returns number of playlists
-			 * @return
-			 */
-			int count() const;
-
-
-			/**
-			 * @brief get specific playlist at given index
-			 * @param playlistIndex playlist index
-			 * @return read only pointer object to a playlist, may be nullptr
-			 */
-			PlaylistPtr playlist(int playlistIndex);
-			PlaylistPtr playlistById(int playlistId);
-
-
-
-
-
-			/**
-			 * @brief Request a new name for the playlist (usually New %1 is returned).
-			 * If the prefix differs, instead of New, the prefix is chosen.
-			 * E.g. "File system 2" for tracks added by the file manager
-			 * @param The prefix is a localized "New" by default.
-			 * @return playlist name
-			 */
-			QString requestNewPlaylistName(const QString& prefix=QString()) const;
-
-
-			/**
-			 * @brief create a new playlist
-			 * @param tracks track list
-			 * @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @param temporary is the playlist temporary or persistent?
-			 * @param type deprecated
-			 * @return new playlist index
-			 */
-			int createPlaylist(const MetaDataList& tracks, const QString& name=QString(), bool temporary=true);
-
-			/**
-			 * @brief create a new playlist (overloaded)
-			 * @param pathlist paths, may contain files or directories
-			* @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @param temporary is the playlist temporary or persistent?
-			 * @param type deprecated
-			 * @return new playlist index
-			 */
-			int createPlaylist(const QStringList& pathList, const QString& name=QString(), bool temporary=true);
-			int createCommandLinePlaylist(const QStringList& pathList);
-
-
-			/**
-			 * @brief create a new playlist (overloaded)
-			 * @param customPlaylist a CustomPlaylist object fetched from database
-			 * @return new playlist index
-			 */
-			int createPlaylist(const CustomPlaylist& customPlaylist);
-
-
-			/**
-			 * @brief create a new empty playlist
-			 * @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @return new playlist index
-			 */
-			int createEmptyPlaylist(bool override=false);
-
-			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode);
-
-			void applyPlaylistActionAfterDoubleClick();
-
-		public slots:
-			/**
-			 * @brief load playlists of last session from database
-			 * @return number of playlists fetched
-			 */
-			void loadOldPlaylists();
-
-			/**
-			 * @brief close playlist
-			 * @param playlistIndex playlist index
-			 */
-			void closePlaylist(int playlistIndex);
-
-
-		private slots:
-
-			void trackChanged();
-
-			/**
-			 * @brief change track to previous track
-			 */
-			void previous();
-
-			/**
-			 * @brief change track to next track
-			 */
-			void next();
-
-			void wakeUp();
-
-
-			/**
-			 * @brief PlayManager's playstate has changed
-			 */
-			void playstateChanged(PlayState state);
-
-			void wwwTrackFinished(const MetaData& track);
-
-			void playlistRenamed(int id, const QString& oldNamde, const QString& newName);
-			void playlistDeleted(int id);
-
-		private:
-			/**
-			 * @brief adds a new playlist, creates it, if name is not in the list of playlists. If name already exists,
-			 * @param name
-			 * @param editable
-			 * @param type
-			 * @return index of new playlist
-			 */
-			int	addNewPlaylist(const QString& name, bool editable);
-
-			/**
-			 * @brief Checks if playlist exists
-			 * @param name playlist name, if empty, current playlist index is returned
-			 * @return playlist index, -1 if playlist does not exist, current playlist if name is empty
-			 */
-			int exists(const QString& name) const;
+			void init(Handler* handler);
+			Handler* handler();
 	};
 }
 
