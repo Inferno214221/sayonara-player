@@ -43,6 +43,9 @@ namespace PlayerPlugin
 	class Base;
 }
 
+class PlayManager;
+class PlaylistCreator;
+
 class GUI_Player :
 	public Gui::MainWindow,
 	public MessageReceiverInterface
@@ -55,7 +58,7 @@ class GUI_Player :
 		void sigClosed();
 
 	public:
-		explicit GUI_Player(QWidget* parent = nullptr);
+		explicit GUI_Player(PlayManager* playManager, PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
 		~GUI_Player() override;
 
 		void registerPreferenceDialog(QAction* dialog_action);

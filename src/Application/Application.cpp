@@ -354,7 +354,7 @@ void Application::initPlayer(bool force_show)
 		SetSetting(Set::Player_StartInTray, false);
 	}
 
-	m->player = new GUI_Player();
+	m->player = new GUI_Player(m->playManager, m->playlistHandler);
 	Gui::Util::setMainWindow(m->player);
 
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);

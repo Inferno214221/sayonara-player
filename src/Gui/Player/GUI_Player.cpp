@@ -27,6 +27,7 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
+#include "Interfaces/PlaylistCreator.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
@@ -59,22 +60,24 @@ struct GUI_Player::Private
 	GUI_TrayIcon* trayIcon = nullptr;
 	GUI_ControlsBase* controls = nullptr;
 	PlayManager* playManager = nullptr;
+	PlaylistCreator* playlistCreator = nullptr;
 	bool shutdownRequested;
 
-	Private(GUI_Player* parent) :
-		playManager(PlayManagerProvider::instance()->playManager()),
+	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, GUI_Player* parent) :
+		playManager(playManager),
+		playlistCreator(playlistCreator),
 		shutdownRequested(false)
 	{
 		logger = std::make_shared<GUI_Logger>(parent);
-		menubar = new Menubar(parent);
+		menubar = new Menubar(playlistCreator, parent);
 	}
 };
 
-GUI_Player::GUI_Player(QWidget* parent) :
+GUI_Player::GUI_Player(PlayManager* playManager, PlaylistCreator* playlistCreator, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(playManager, playlistCreator, this);
 
 	languageChanged();
 

@@ -26,7 +26,6 @@
 #include "GUI_PlayerMenubar.h"
 
 #include "Gui/Shutdown/GUI_Shutdown.h"
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
 
@@ -44,6 +43,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 
+#include "Interfaces/PlaylistCreator.h"
+
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QStringList>
@@ -57,6 +58,7 @@
 
 struct Menubar::Private
 {
+	PlaylistCreator* playlistCreator;
 	QMenu*			menuFile=nullptr;
 	QMenu*			menuView=nullptr;
 	QMenu*			menuPlugins=nullptr;
@@ -91,7 +93,8 @@ struct Menubar::Private
 	QLabel*			heartLabel=nullptr;
 	QLabel*			donateLabel=nullptr;
 
-	Private(Menubar* menubar)
+	Private(PlaylistCreator* playlistCreator, Menubar* menubar) :
+		playlistCreator(playlistCreator)
 	{
 		menuFile = new QMenu(menubar);
 		menuView = new QMenu(menubar);
@@ -147,10 +150,10 @@ struct Menubar::Private
 	}
 };
 
-Menubar::Menubar(QWidget* parent) :
+Menubar::Menubar(PlaylistCreator* playlistCreator, QWidget* parent) :
 	Gui::WidgetTemplate<QMenuBar>(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(playlistCreator, this);
 
 	m->actionViewLibrary->setChecked(GetSetting(Set::Lib_Show));
 	m->actionViewLibrary->setText(Lang::get(Lang::Library));
@@ -414,7 +417,7 @@ void Menubar::openDirClicked()
 	);
 
 	if(!dir.isEmpty()){
-		Playlist::Handler::instance()->createPlaylist(QStringList{dir});
+		m->playlistCreator->createPlaylist(QStringList{dir});
 	}
 }
 
@@ -435,7 +438,7 @@ void Menubar::openFilesClicked()
 	);
 
 	if(!list.isEmpty()) {
-		Playlist::Handler::instance()->createPlaylist(list);
+		m->playlistCreator->createPlaylist(list);
 	}
 }
 
