@@ -44,9 +44,8 @@ using namespace DynamicPlayback;
 
 namespace
 {
-	void appendTrack(const MetaData& track)
+	void appendTrack(Playlist::Handler* playlistHandler, const MetaData& track)
 	{
-		auto* playlistHandler = Playlist::Handler::instance();
 		auto activePlaylist = playlistHandler->activePlaylist();
 		activePlaylist->appendTracks(MetaDataList{track});
 	}
@@ -85,11 +84,10 @@ namespace
 		return result;
 	}
 
-	Util::Set<QString> getPlaylistFilepaths(const QList<ArtistId>& artistIds)
+	Util::Set<QString> getPlaylistFilepaths(Playlist::Handler* playlistHandler, const QList<ArtistId>& artistIds)
 	{
 		Util::Set<QString> playlistFilepaths;
 
-		auto* playlistHandler = Playlist::Handler::instance();
 		auto playlist = playlistHandler->activePlaylist();
 
 		for(const auto& track : playlist->tracks())
@@ -128,24 +126,25 @@ struct Handler::Private
 {
 	QString currentArtistName;
 	LibraryId currentLibraryId;
+	Playlist::Handler* playlistHandler;
 	QTimer* timer;
 
-	Private() :
+	Private(Playlist::Handler* playlistHandler) :
+		currentLibraryId{-1},
+		playlistHandler(playlistHandler),
 		timer(new QTimer())
 	{
 		timer->setSingleShot(true);
 	}
 };
 
-Handler::Handler(QObject* parent) :
+Handler::Handler(PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistHandler);
 
-	auto* pm = PlayManagerProvider::instance()->playManager();
-
-	connect(pm, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
-	connect(pm, &PlayManager::sigPlaystateChanged, this, [=](auto playState) {
+	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, [=](auto playState) {
 		if(playState == PlayState::Stopped)
 		{
 			m->timer->stop();
@@ -192,14 +191,14 @@ void Handler::similarArtistsAvailable()
 	const auto artistIds = evaluateArtistMatch(artistMatch, m->currentLibraryId);
 
 	const auto artistTrackMap = getCandidateTracks(m->currentLibraryId, artistIds);
-	const auto playlistFilepaths = getPlaylistFilepaths(artistIds);
+	const auto playlistFilepaths = getPlaylistFilepaths(m->playlistHandler, artistIds);
 
 	for(const auto& artistId : artistIds)
 	{
 		const auto track = findTrackNotInPlaylist(artistTrackMap[artistId], playlistFilepaths);
 		if(track.isValid())
 		{
-			appendTrack(track);
+			appendTrack(m->playlistHandler, track);
 			break;
 		}
 	}

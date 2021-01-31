@@ -26,6 +26,11 @@
 #include <QObject>
 
 class MetaData;
+class PlayManager;
+namespace Playlist
+{
+	class Handler;
+}
 
 namespace DynamicPlayback
 {
@@ -36,7 +41,7 @@ namespace DynamicPlayback
 		PIMPL(Handler)
 
 		public:
-			Handler(QObject* parent = nullptr);
+			Handler(PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent = nullptr);
 			~Handler();
 
 		private slots:

@@ -318,7 +318,7 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		);
 	}
 
-	new DynamicPlayback::Handler(this);
+	new DynamicPlayback::Handler(m->playManager, m->playlistHandler, this);
 
 	initLibraries();
 	initPlugins();
