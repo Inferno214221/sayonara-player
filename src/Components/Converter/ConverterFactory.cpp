@@ -23,16 +23,17 @@
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
 #include "Components/Converter/OpusConverter.h"
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
+
+#include "Interfaces/PlaylistInterface.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 
 namespace
 {
-	void addTracks(Playlist::Handler* playlistHandler, Converter* converter)
+	void addTracks(PlaylistAccessor* playlistAccessor, Converter* converter)
 	{
-		auto pl = playlistHandler->playlist(playlistHandler->currentIndex());
+		auto pl = playlistAccessor->playlist(playlistAccessor->currentIndex());
 		if(pl && converter)
 		{
 			converter->addMetadata(pl->tracks());
@@ -47,17 +48,19 @@ namespace
 
 struct ConverterFactory::Private
 {
-	Playlist::Handler* playlistHandler;
+	PlaylistAccessor* playlistAccessor;
 
-	Private(Playlist::Handler* playlistHandler) :
-		playlistHandler(playlistHandler)
+	Private(PlaylistAccessor* playlistAccessor) :
+		playlistAccessor(playlistAccessor)
 	{}
 };
 
-ConverterFactory::ConverterFactory(Playlist::Handler* playlistHandler)
+ConverterFactory::ConverterFactory(PlaylistAccessor* playlistAccessor)
 {
-	m = Pimpl::make<Private>(playlistHandler);
+	m = Pimpl::make<Private>(playlistAccessor);
 }
+
+ConverterFactory::~ConverterFactory() = default;
 
 Converter* ConverterFactory::createOggConverter(int quality)
 {
@@ -77,11 +80,8 @@ Converter* ConverterFactory::createOpusConverter(Bitrate bitrate, int quality)
 Converter* ConverterFactory::finalizeConverter(Converter* converter)
 {
 	if(checkConverter(converter)){
-		addTracks(m->playlistHandler, converter);
+		addTracks(m->playlistAccessor, converter);
 	}
 
 	return converter;
 }
-
-
-ConverterFactory::~ConverterFactory() = default;

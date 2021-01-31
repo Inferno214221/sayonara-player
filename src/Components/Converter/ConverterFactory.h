@@ -22,11 +22,7 @@
 
 #include "Utils/Pimpl.h"
 
-namespace Playlist
-{
-	class Handler;
-}
-
+class PlaylistAccessor;
 class Converter;
 class ConverterFactory
 {
@@ -46,7 +42,7 @@ class ConverterFactory
 			Variable
 		};
 
-		ConverterFactory(Playlist::Handler* playlistHandler);
+		ConverterFactory(PlaylistAccessor* playlistAccessor);
 		~ConverterFactory();
 
 		template<ConvertType t, typename...Args>
