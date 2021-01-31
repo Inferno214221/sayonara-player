@@ -38,19 +38,19 @@ struct DBusHandler::Private
 	DBusMediaKeysInterfaceGnome*	dbusGnome=nullptr;
 	DBusNotifications*				dbusNotifications=nullptr;
 
-	Private(QMainWindow* mainWindow, DBusHandler* parent)
+	Private(QMainWindow* mainWindow, PlayManager* playManager, Playlist::Handler* playlistHandler, DBusHandler* parent)
 	{
-		dbusMpris	= new DBusMPRIS::MediaPlayer2(mainWindow, parent);
+		dbusMpris = new DBusMPRIS::MediaPlayer2(mainWindow, playManager, playlistHandler, parent);
 		dbusMate = new DBusMediaKeysInterfaceMate(parent);
 		dbusGnome = new DBusMediaKeysInterfaceGnome(parent);
 		dbusNotifications = new DBusNotifications(parent);
 	}
 };
 
-DBusHandler::DBusHandler(QMainWindow* mainWindow, QObject* parent) :
+DBusHandler::DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(mainWindow, this);
+	m = Pimpl::make<Private>(mainWindow, playManager, playlistHandler, this);
 
 	QDBusConnectionInterface* dbus_interface = QDBusConnection::sessionBus().interface();
 	if(dbus_interface)

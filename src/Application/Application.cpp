@@ -302,7 +302,7 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 #ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
-		new DBusHandler(m->player, this);
+		new DBusHandler(m->player, m->playManager, m->playlistHandler, this);
 	}
 #endif
 

@@ -34,6 +34,12 @@
 using QStrRef=const QString&;
 
 class QMainWindow;
+class PlayManager;
+
+namespace Playlist
+{
+	class Handler;
+}
 
 namespace DBusMPRIS
 {
@@ -45,7 +51,7 @@ class MediaPlayer2 :
 	PIMPL(MediaPlayer2)
 
 	public:
-		explicit MediaPlayer2(QMainWindow* player, QObject* parent=nullptr);
+		explicit MediaPlayer2(QMainWindow* player, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
 		~MediaPlayer2();
 
 		Q_PROPERTY(bool			CanQuit				READ CanQuit		CONSTANT)

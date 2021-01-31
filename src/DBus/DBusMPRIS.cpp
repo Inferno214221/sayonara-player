@@ -52,16 +52,18 @@ struct DBusMPRIS::MediaPlayer2::Private
 
 	QMainWindow*	player=nullptr;
 	PlayManager*	playManager=nullptr;
+	Playlist::Handler* playlistHandler=nullptr;
 
 	double			volume;
 
 	bool			initialized;
 
-	Private(QMainWindow* player) :
+	Private(QMainWindow* player, PlayManager* playManager, Playlist::Handler* playlistHandler) :
 		playback_status("Stopped"),
 		pos(0),
 		player(player),
-		playManager(PlayManagerProvider::instance()->playManager()),
+		playManager(playManager),
+		playlistHandler(playlistHandler),
 		volume(1.0),
 		initialized(false)
 	{
@@ -72,10 +74,10 @@ struct DBusMPRIS::MediaPlayer2::Private
 	}
 };
 
-DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, QObject* parent) :
+DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent) :
 	DBusAdaptor("/org/mpris/MediaPlayer2", "org.mpris.MediaPlayer2.sayonara","org.mpris.MediaPlayer2.Player", "org.freedesktop.DBus.Properties", parent)
 {
-	m = Pimpl::make<Private>(player);
+	m = Pimpl::make<Private>(player, playManager, playlistHandler);
 
 	connect(m->playManager, &PlayManager::sigPlaystateChanged,
 			this, &DBusMPRIS::MediaPlayer2::playstateChanged);
@@ -332,14 +334,13 @@ double DBusMPRIS::MediaPlayer2::MaximumRate()
 
 bool DBusMPRIS::MediaPlayer2::CanGoNext()
 {
-	Playlist::Handler* handler = Playlist::Handler::instance();
-	PlaylistConstPtr pl = handler->playlist(handler->currentIndex());
+	auto pl = m->playlistHandler->playlist(m->playlistHandler->currentIndex());
 	if(!pl){
 		return false;
 	}
 
-	Playlist::Mode mode = pl->mode();
-	bool b =	Playlist::Mode::isActiveAndEnabled(mode.shuffle()) ||
+	const auto mode = pl->mode();
+	const auto b = Playlist::Mode::isActiveAndEnabled(mode.shuffle()) ||
 				Playlist::Mode::isActiveAndEnabled(mode.repAll());
 
 	return ((b && pl->count() > 0) || (pl->currentTrackIndex() < pl->count() - 1));
@@ -347,8 +348,7 @@ bool DBusMPRIS::MediaPlayer2::CanGoNext()
 
 bool DBusMPRIS::MediaPlayer2::CanGoPrevious()
 {
-	Playlist::Handler* handler = Playlist::Handler::instance();
-	PlaylistConstPtr pl = handler->playlist(handler->currentIndex());
+	auto pl = m->playlistHandler->playlist(m->playlistHandler->currentIndex());
 	if(!pl){
 		return false;
 	}
