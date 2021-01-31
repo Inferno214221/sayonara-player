@@ -30,7 +30,7 @@ namespace Playlist
 }
 
 using PlaylistPtr = std::shared_ptr<Playlist::Playlist>;
-using PlaylistConstPtr = std::shared_ptr<const Playlist::Playlist>;
+
 /**
  * @ingroup PlaylistHelper
  */
