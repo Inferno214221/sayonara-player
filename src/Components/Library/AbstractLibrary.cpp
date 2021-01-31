@@ -42,32 +42,32 @@
 namespace
 {
 	template<typename Tracks>
-	void createPlaylist(const Tracks& tracks, bool createNewPlaylist)
+	void createPlaylist(const Tracks& tracks, Playlist::Handler* playlistHandler, bool createNewPlaylist)
 	{
-		auto* plh = Playlist::HandlerProvider::instance()->handler();
-		const auto name = (createNewPlaylist) ? plh->requestNewPlaylistName() : QString();
+		const auto name = (createNewPlaylist)
+			? playlistHandler->requestNewPlaylistName()
+			: QString();
 
-		plh->createPlaylist(tracks, name);
-		plh->applyPlaylistActionAfterDoubleClick();
+		playlistHandler->createPlaylist(tracks, name);
+		playlistHandler->applyPlaylistActionAfterDoubleClick();
 	}
 
-	void insertTracksAfterCurrentTrack(const MetaDataList& tracks)
+	void insertTracksAfterCurrentTrack(PlaylistAccessor* playlistAccessor, const MetaDataList& tracks)
 	{
-		auto* plh = Playlist::HandlerProvider::instance()->handler();
-		auto pl = plh->activePlaylist();
-		pl->insertTracks(tracks, pl->currentTrackIndex() + 1);
+		auto playlist = playlistAccessor->activePlaylist();
+		playlist->insertTracks(tracks, playlist->currentTrackIndex() + 1);
 	}
 
-	void appendTracks(const MetaDataList& tracks)
+	void appendTracks(PlaylistAccessor* playlistAccessor, const MetaDataList& tracks)
 	{
-		auto* plh = Playlist::HandlerProvider::instance()->handler();
-		auto pl = plh->activePlaylist();
-		pl->appendTracks(tracks);
+		auto playlist = playlistAccessor->activePlaylist();
+		playlist->appendTracks(tracks);
 	}
 }
 
 struct AbstractLibrary::Private
 {
+	Playlist::Handler* playlistHandler;
 	Util::Set<ArtistId> selectedArtists;
 	Util::Set<AlbumId> selectedAlbums;
 	Util::Set<TrackID> selectedTracks;
@@ -87,6 +87,7 @@ struct AbstractLibrary::Private
 	bool loaded;
 
 	Private() :
+		playlistHandler{::Playlist::HandlerProvider::instance()->handler()},
 		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
@@ -348,37 +349,37 @@ void AbstractLibrary::findTrack(TrackID id)
 
 void AbstractLibrary::prepareFetchedTracksForPlaylist(bool createNewPlaylist)
 {
-	createPlaylist(tracks(), createNewPlaylist);
+	createPlaylist(tracks(), m->playlistHandler, createNewPlaylist);
 }
 
 void AbstractLibrary::prepareCurrentTracksForPlaylist(bool createNewPlaylist)
 {
-	createPlaylist(currentTracks(), createNewPlaylist);
+	createPlaylist(currentTracks(), m->playlistHandler, createNewPlaylist);
 }
 
 void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)
 {
-	createPlaylist(paths, createNewPlaylist);
+	createPlaylist(paths, m->playlistHandler, createNewPlaylist);
 }
 
 void AbstractLibrary::playNextFetchedTracks()
 {
-	insertTracksAfterCurrentTrack(tracks());
+	insertTracksAfterCurrentTrack(m->playlistHandler, tracks());
 }
 
 void AbstractLibrary::playNextCurrentTracks()
 {
-	insertTracksAfterCurrentTrack(currentTracks());
+	insertTracksAfterCurrentTrack(m->playlistHandler, currentTracks());
 }
 
 void AbstractLibrary::appendFetchedTracks()
 {
-	appendTracks(tracks());
+	appendTracks(m->playlistHandler, tracks());
 }
 
 void AbstractLibrary::appendCurrentTracks()
 {
-	appendTracks(currentTracks());
+	appendTracks(m->playlistHandler, currentTracks());
 }
 
 void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
