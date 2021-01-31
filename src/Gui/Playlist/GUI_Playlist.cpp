@@ -178,7 +178,7 @@ namespace
 struct GUI_Playlist::Private
 {
 	PlayManager* playManager {PlayManagerProvider::instance()->playManager()};
-	Playlist::Handler* playlistHandler {Playlist::Handler::instance()};
+	Playlist::Handler* playlistHandler {Playlist::HandlerProvider::instance()->handler()};
 };
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :

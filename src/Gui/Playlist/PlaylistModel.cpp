@@ -80,14 +80,16 @@ struct Model::Private
 	int						oldRowCount;
 	int						dragIndex;
 	int						rowHeight;
-	PlaylistPtr				pl=nullptr;
+	PlaylistPtr				pl;
 	Tagging::UserOperations* uto=nullptr;
+	Handler* playlistHandler;
 
 	Private(PlaylistPtr pl) :
 		oldRowCount(0),
 		dragIndex(-1),
 		rowHeight(20),
-		pl(pl)
+		pl(pl),
+		playlistHandler{::Playlist::HandlerProvider::instance()->handler()}
 	{}
 };
 
