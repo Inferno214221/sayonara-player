@@ -26,10 +26,7 @@
 
 class QMainWindow;
 class PlayManager;
-namespace Playlist
-{
-	class Handler;
-}
+class PlaylistAccessor;
 
 namespace DBusMPRIS
 {
@@ -43,7 +40,7 @@ class DBusHandler :
 	PIMPL(DBusHandler)
 
 public:
-	explicit DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
+	explicit DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor, QObject* parent=nullptr);
 	virtual ~DBusHandler();
 
 private slots:

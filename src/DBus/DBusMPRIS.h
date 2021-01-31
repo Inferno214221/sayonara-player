@@ -31,162 +31,140 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Pimpl.h"
 
-using QStrRef=const QString&;
+using QStrRef = const QString&;
 
 class QMainWindow;
 class PlayManager;
-
-namespace Playlist
-{
-	class Handler;
-}
+class PlaylistAccessor;
 
 namespace DBusMPRIS
 {
 
-class MediaPlayer2 :
+	class MediaPlayer2 :
 		public DBusAdaptor
-{
-	Q_OBJECT
-	PIMPL(MediaPlayer2)
+	{
+		Q_OBJECT
+		PIMPL(MediaPlayer2)
 
-	public:
-		explicit MediaPlayer2(QMainWindow* player, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
-		~MediaPlayer2();
+		public:
+			explicit MediaPlayer2(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
+			                      QObject* parent = nullptr);
+			~MediaPlayer2();
 
-		Q_PROPERTY(bool			CanQuit				READ CanQuit		CONSTANT)
-		bool					CanQuit() const;
+			Q_PROPERTY(bool CanQuit READ CanQuit CONSTANT)
+			bool CanQuit() const;
 
-		Q_PROPERTY(bool			CanRaise			READ CanRaise		CONSTANT)
-		bool					CanRaise();
+			Q_PROPERTY(bool CanRaise READ CanRaise CONSTANT)
+			bool CanRaise();
 
-		Q_PROPERTY(bool			HasTrackList		READ HasTrackList)
-		bool					HasTrackList();
+			Q_PROPERTY(bool HasTrackList READ HasTrackList)
+			bool HasTrackList();
 
+			Q_PROPERTY(QString Identity READ Identity CONSTANT)
+			QString Identity();
 
-		Q_PROPERTY(QString		Identity			READ Identity		CONSTANT)
-		QString					Identity();
+			Q_PROPERTY(QString DesktopEntry READ DesktopEntry CONSTANT)
+			QString DesktopEntry();
 
-		Q_PROPERTY(QString		DesktopEntry		READ DesktopEntry	CONSTANT)
-		QString					DesktopEntry();
+			Q_PROPERTY(QStringList SupportedUriSchemes READ SupportedUriSchemes CONSTANT)
+			QStringList SupportedUriSchemes();
 
-		Q_PROPERTY(QStringList	SupportedUriSchemes	READ SupportedUriSchemes CONSTANT)
-		QStringList				SupportedUriSchemes();
+			Q_PROPERTY(QStringList SupportedMimeTypes READ SupportedMimeTypes CONSTANT)
+			QStringList SupportedMimeTypes();
 
+			Q_PROPERTY(bool CanSetFullscreen READ CanSetFullscreen)
+			bool CanSetFullscreen();
 
-		Q_PROPERTY(QStringList	SupportedMimeTypes	READ SupportedMimeTypes CONSTANT)
-		QStringList				SupportedMimeTypes();
+			Q_PROPERTY(bool Fullscreen READ Fullscreen WRITE SetFullscreen)
+			bool Fullscreen();
+			void SetFullscreen(bool b);
 
+			void Raise();
+			void Quit();
 
-		Q_PROPERTY(bool			CanSetFullscreen	READ CanSetFullscreen)
-		bool					CanSetFullscreen();
+		private:
+			void init();
 
-		Q_PROPERTY(bool			Fullscreen			READ Fullscreen				WRITE SetFullscreen)
-		bool					Fullscreen();
-		void					SetFullscreen(bool b);
+		public:
+			Q_PROPERTY(QString PlaybackStatus READ PlaybackStatus)
+			QString PlaybackStatus();
 
-		void					Raise();
-		void					Quit();
+			Q_PROPERTY(QString LoopStatus READ LoopStatus WRITE SetLoopStatus)
+			QString LoopStatus();
+			void SetLoopStatus(QString status);
 
+			Q_PROPERTY(double Rate READ Rate WRITE SetRate)
+			double Rate();
+			void SetRate(double rate);
 
-	private:
-		void			init();
+			Q_PROPERTY(int Rating READ Rating)
+			int Rating();
 
+			Q_PROPERTY(bool Shuffle READ Shuffle WRITE SetShuffle)
+			bool Shuffle();
+			void SetShuffle(bool shuffle);
 
-	public:
-		Q_PROPERTY(QString		PlaybackStatus		READ	PlaybackStatus)
-		QString					PlaybackStatus();
+			Q_PROPERTY(QVariantMap Metadata READ Metadata)
+			QVariantMap Metadata();
 
+			Q_PROPERTY(double Volume READ Volume WRITE SetVolume)
+			double Volume();
+			void SetVolume(double volume);
+			void IncreaseVolume();
+			void DecreaseVolume();
 
-		Q_PROPERTY(QString		LoopStatus			READ	LoopStatus	WRITE	SetLoopStatus)
-		QString					LoopStatus();
-		void					SetLoopStatus(QString status);
+			Q_PROPERTY(qlonglong Position READ Position)
+			qlonglong Position();
+			void SetPosition(const QDBusObjectPath& trackId, qlonglong position);
 
+			Q_PROPERTY(double MinimumRate READ MinimumRate)
+			double MinimumRate();
 
-		Q_PROPERTY(double		Rate				READ	Rate		WRITE	SetRate)
-		double					Rate();
-		void					SetRate(double rate);
+			Q_PROPERTY(double MaximumRate READ MaximumRate)
+			double MaximumRate();
 
-		Q_PROPERTY(int			Rating				READ	Rating)
-		int						Rating();
+			Q_PROPERTY(bool CanGoNext READ CanGoNext)
+			bool CanGoNext();
 
+			Q_PROPERTY(bool CanGoPrevious READ CanGoPrevious)
+			bool CanGoPrevious();
 
-		Q_PROPERTY(bool			Shuffle				READ	Shuffle		WRITE	SetShuffle)
-		bool					Shuffle();
-		void					SetShuffle(bool shuffle);
+			Q_PROPERTY(bool CanPlay READ CanPlay)
+			bool CanPlay();
 
+			Q_PROPERTY(bool CanPause READ CanPause)
+			bool CanPause();
 
-		Q_PROPERTY(QVariantMap	Metadata			READ	Metadata)
-		QVariantMap				Metadata();
+			Q_PROPERTY(bool CanSeek READ CanSeek)
+			bool CanSeek();
 
+			Q_PROPERTY(bool CanControl READ CanControl)
+			bool CanControl();
 
-		Q_PROPERTY(double		Volume				READ	Volume		WRITE	SetVolume)
-		double					Volume();
-		void					SetVolume(double volume);
-		void					IncreaseVolume();
-		void					DecreaseVolume();
+			void Next();
+			void Previous();
+			void Pause();
+			void PlayPause();
+			void Stop();
+			void Play();
+			void Seek(qlonglong offset);
+			void OpenUri(const QString& uri);
 
+		public slots:
+			void positionChanged(MilliSeconds pos_ms);
+			void volumeChanged(int volume);
+			void trackIndexChanged(int idx);
+			void trackChanged(const MetaData& md);
+			void playstateChanged(PlayState state);
 
-		Q_PROPERTY(qlonglong	Position			READ	Position)
-		qlonglong				Position();
-		void					SetPosition(const QDBusObjectPath& trackId, qlonglong position);
+		signals:
+			void Seeked(qlonglong position);
+			void sigRaise();
 
+		private slots:
+			void trackMetadataChanged();
 
-		Q_PROPERTY(double		MinimumRate			READ	MinimumRate)
-		double					MinimumRate();
-
-
-		Q_PROPERTY(double		MaximumRate			READ	MaximumRate)
-		double					MaximumRate();
-
-
-		Q_PROPERTY(bool			CanGoNext			READ	CanGoNext)
-		bool					CanGoNext();
-
-
-		Q_PROPERTY(bool			CanGoPrevious		READ	CanGoPrevious)
-		bool					CanGoPrevious();
-
-
-		Q_PROPERTY(bool			CanPlay				READ	CanPlay)
-		bool					CanPlay();
-
-
-		Q_PROPERTY(bool			CanPause			READ	CanPause)
-		bool					CanPause();
-
-
-		Q_PROPERTY(bool			CanSeek				READ	CanSeek)
-		bool					CanSeek();
-
-
-		Q_PROPERTY(bool			CanControl			READ	CanControl)
-		bool					CanControl();
-
-		void					Next();
-		void					Previous();
-		void					Pause();
-		void					PlayPause();
-		void					Stop();
-		void					Play();
-		void					Seek(qlonglong offset);
-		void					OpenUri(const QString& uri);
-
-	public slots:
-		void					positionChanged(MilliSeconds pos_ms);
-		void					volumeChanged(int volume);
-		void					trackIndexChanged(int idx);
-		void					trackChanged(const MetaData& md);
-		void					playstateChanged(PlayState state);
-
-	signals:
-		void					Seeked(qlonglong position);
-		void					sigRaise();
-
-	private slots:
-		void					trackMetadataChanged();
-
-};
+	};
 } // end namespace DBusMPRIS
 
 #endif // DBUS_MPRIS_H

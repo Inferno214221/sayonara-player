@@ -26,6 +26,7 @@
 
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Logger/Logger.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include <QMainWindow>
 #include <QDBusConnectionInterface>
@@ -33,32 +34,32 @@
 
 struct DBusHandler::Private
 {
-	DBusMPRIS::MediaPlayer2*		dbusMpris=nullptr;
-	DBusMediaKeysInterfaceMate*		dbusMate=nullptr;
-	DBusMediaKeysInterfaceGnome*	dbusGnome=nullptr;
-	DBusNotifications*				dbusNotifications=nullptr;
+	DBusMPRIS::MediaPlayer2* dbusMpris = nullptr;
+	DBusMediaKeysInterfaceMate* dbusMate = nullptr;
+	DBusMediaKeysInterfaceGnome* dbusGnome = nullptr;
+	DBusNotifications* dbusNotifications = nullptr;
 
-	Private(QMainWindow* mainWindow, PlayManager* playManager, Playlist::Handler* playlistHandler, DBusHandler* parent)
-	{
-		dbusMpris = new DBusMPRIS::MediaPlayer2(mainWindow, playManager, playlistHandler, parent);
-		dbusMate = new DBusMediaKeysInterfaceMate(parent);
-		dbusGnome = new DBusMediaKeysInterfaceGnome(parent);
-		dbusNotifications = new DBusNotifications(parent);
-	}
+	Private(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
+	        DBusHandler* parent) :
+		dbusMpris {new DBusMPRIS::MediaPlayer2(mainWindow, playManager, playlistAccessor, parent)},
+		dbusMate {new DBusMediaKeysInterfaceMate(parent)},
+		dbusGnome {new DBusMediaKeysInterfaceGnome(parent)},
+		dbusNotifications {new DBusNotifications(parent)} {}
 };
 
-DBusHandler::DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent) :
+DBusHandler::DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
+                         QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(mainWindow, playManager, playlistHandler, this);
+	m = Pimpl::make<Private>(mainWindow, playManager, playlistAccessor, this);
 
-	QDBusConnectionInterface* dbus_interface = QDBusConnection::sessionBus().interface();
-	if(dbus_interface)
+	auto* dbusInterface = QDBusConnection::sessionBus().interface();
+	if(dbusInterface)
 	{
-		connect(dbus_interface, &QDBusConnectionInterface::serviceRegistered,
-				this, &DBusHandler::serviceRegistered);
-		connect(dbus_interface, &QDBusConnectionInterface::serviceUnregistered,
-				this, &DBusHandler::serviceUnregistered);
+		connect(dbusInterface, &QDBusConnectionInterface::serviceRegistered,
+		        this, &DBusHandler::serviceRegistered);
+		connect(dbusInterface, &QDBusConnectionInterface::serviceUnregistered,
+		        this, &DBusHandler::serviceUnregistered);
 	}
 }
 
