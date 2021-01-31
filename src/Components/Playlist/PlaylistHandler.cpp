@@ -151,7 +151,7 @@ int Handler::createPlaylist(const QStringList& pathList, const QString& name, bo
 {
 	const auto index = createPlaylist(MetaDataList(), name, temporary);
 
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(playlist(index));
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(this, playlist(index));
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->addPaths(pathList);
 
@@ -162,7 +162,7 @@ int Handler::createPlaylist(const QStringList& pathList, const QString& name, bo
 int Handler::createCommandLinePlaylist(const QStringList& pathList)
 {
 	const auto index = createPlaylist(MetaDataList(), requestNewPlaylistName(), true);
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(playlist(index));
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(this, playlist(index));
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, this, [&, index, playlistGenerator]() {
 		auto playlist = this->playlist(index);
 		if(m->playManager->initialPositionMs() > 0)

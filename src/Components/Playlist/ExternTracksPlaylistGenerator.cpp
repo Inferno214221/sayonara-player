@@ -20,7 +20,7 @@
 
 #include "ExternTracksPlaylistGenerator.h"
 #include "Components/Directories/MetaDataScanner.h"
-#include "PlaylistHandler.h"
+#include "Interfaces/PlaylistCreator.h"
 #include "Playlist.h"
 
 #include "Utils/Algorithm.h"
@@ -30,36 +30,40 @@
 #include <QStringList>
 #include <QThread>
 
+namespace
+{
+	PlaylistPtr addNewPlaylist(PlaylistCreator* playlistCreator)
+	{
+		const auto name = playlistCreator->requestNewPlaylistName();
+		auto index = playlistCreator->createPlaylist(MetaDataList(), name, true);
+
+		return playlistCreator->playlist(index);
+	}
+}
+
 struct ExternTracksPlaylistGenerator::Private
 {
+	PlaylistCreator* playlistCreator;
 	PlaylistPtr playlist;
 	int targetRowIndex;
 
-	Private(PlaylistPtr playlist) :
-		playlist(playlist ? playlist : addNewPlaylist()),
-		targetRowIndex{-1}
-	{}
-
-	PlaylistPtr addNewPlaylist()
-	{
-		auto* plh = Playlist::Handler::instance();
-		QString name = plh->requestNewPlaylistName();
-
-		auto index = plh->createPlaylist(MetaDataList(), name, true);
-		return plh->playlist(index);
-	}
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist) :
+		playlistCreator {playlistCreator},
+		playlist(playlist ? playlist : addNewPlaylist(playlistCreator)),
+		targetRowIndex {-1} {}
 };
 
-ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistPtr playlist)
+ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, PlaylistPtr playlist)
 {
-	m = Pimpl::make<Private>(playlist);
+	m = Pimpl::make<Private>(playlistCreator, playlist);
 }
 
 ExternTracksPlaylistGenerator::~ExternTracksPlaylistGenerator() = default;
 
 void ExternTracksPlaylistGenerator::insertPaths(const QStringList& paths, int targetRowIndex)
 {
-	if(!paths.isEmpty()) {
+	if(!paths.isEmpty())
+	{
 		m->targetRowIndex = targetRowIndex;
 		scanFiles(paths);
 	}
@@ -68,16 +72,12 @@ void ExternTracksPlaylistGenerator::insertPaths(const QStringList& paths, int ta
 void ExternTracksPlaylistGenerator::addPaths(const QStringList& paths)
 {
 	const auto mode = m->playlist->mode();
-	if(Playlist::Mode::isActiveAndEnabled(mode.append()))
-	{
-		insertPaths(paths, m->playlist->count() - 1);
-	}
-
-	else
+	if(!Playlist::Mode::isActiveAndEnabled(mode.append()))
 	{
 		m->playlist->clear();
-		insertPaths(paths, m->playlist->count() - 1);
 	}
+
+	insertPaths(paths, m->playlist->count() - 1);
 }
 
 void ExternTracksPlaylistGenerator::scanFiles(const QStringList& paths)
@@ -102,15 +102,17 @@ void ExternTracksPlaylistGenerator::filesScanned()
 {
 	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
 
-	auto playlist = Playlist::Handler::instance()->playlistById(m->playlist->id());
-	if(!playlist){
+	auto playlist = m->playlistCreator->playlistById(m->playlist->id());
+	if(!playlist)
+	{
 		emit sigFinished();
 		return;
 	}
 
 	playlist->setBusy(false);
 
-	if(worker->metadata().isEmpty()){
+	if(worker->metadata().isEmpty())
+	{
 		emit sigFinished();
 		return;
 	}

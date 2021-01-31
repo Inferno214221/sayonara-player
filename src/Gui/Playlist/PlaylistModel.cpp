@@ -393,7 +393,7 @@ void Model::insertTracks(const MetaDataList& tracks, int row)
 
 void Model::insertTracks(const QStringList& files, int row)
 {
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->pl);
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlistHandler, m->pl);
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->insertPaths(files, row);
 }

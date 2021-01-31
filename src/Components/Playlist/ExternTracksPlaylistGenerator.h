@@ -29,6 +29,7 @@
 
 class QStringList;
 class MetaDataList;
+class PlaylistCreator;
 
 class ExternTracksPlaylistGenerator :
 	public QObject
@@ -37,7 +38,7 @@ class ExternTracksPlaylistGenerator :
 	PIMPL(ExternTracksPlaylistGenerator)
 
 	public:
-		ExternTracksPlaylistGenerator(PlaylistPtr playlist=nullptr);
+		ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, PlaylistPtr playlist);
 		~ExternTracksPlaylistGenerator();
 
 		void addPaths(const QStringList& paths);
@@ -49,9 +50,6 @@ class ExternTracksPlaylistGenerator :
 	private slots:
 		void scanFiles(const QStringList& paths);
 		void filesScanned();
-
-	private:
-		void addNewPlaylist(const QString& paths);
 };
 
 #endif // EXTERNTRACKSPLAYLISTGENERATOR_H
