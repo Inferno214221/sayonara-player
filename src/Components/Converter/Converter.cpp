@@ -41,6 +41,7 @@ struct Converter::Private
 	QString targetDirectory;
 	QMap<int, QProcess*> runningProcesses;
 
+	int initialCount;
 	int currentIndex;
 	int commandCount;
 	int errorCount;
@@ -49,6 +50,7 @@ struct Converter::Private
 	bool stopped;
 
 	Private(int quality) :
+		initialCount(0),
 		currentIndex(0),
 		commandCount(0),
 		errorCount(0),
@@ -62,6 +64,7 @@ Converter::Converter(int quality, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(quality);
+
 }
 
 Converter::~Converter()
@@ -81,6 +84,7 @@ QString Converter::targetDirectory() const
 
 void Converter::addMetadata(const MetaDataList& tracks)
 {
+	m->initialCount = tracks.count();
 	m->tracks.clear();
 
 	QStringList formats = supportedInputFormats();
@@ -153,6 +157,11 @@ int Converter::quality() const
 int Converter::fileCount() const
 {
 	return m->tracks.count();
+}
+
+int Converter::initialCount() const
+{
+	return m->initialCount;
 }
 
 bool Converter::isAvailable() const

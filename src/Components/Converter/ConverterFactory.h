@@ -22,13 +22,66 @@
 
 #include "Utils/Pimpl.h"
 
-
-
-class ConverterFactory 
+namespace Playlist
 {
-    PIMPL(ConverterFactory)
+	class Handler;
+}
+
+class Converter;
+class ConverterFactory
+{
+	PIMPL(ConverterFactory)
+
+	public:
+		enum class ConvertType : uint8_t
+		{
+			OggVorbis = 0,
+			OggOpus,
+			Lame
+		};
+
+		enum class Bitrate : uint8_t
+		{
+			Constant = 0,
+			Variable
+		};
+
+		ConverterFactory(Playlist::Handler* playlistHandler);
+		~ConverterFactory();
+
+		template<ConvertType t, typename...Args>
+		typename std::enable_if<t == ConvertType::OggVorbis, Converter*>::type
+		createConverter(Args&& ...args)
+		{
+			return finalizeConverter(createOggConverter(args...));
+		}
+
+		template<ConvertType t, typename...Args>
+		typename std::enable_if<t == ConvertType::Lame || t == ConvertType::OggOpus, Converter*>::type
+		createConverter(Args&& ...args)
+		{
+			if(t == ConvertType::Lame)
+			{
+				return finalizeConverter(createLameConverter(args...));
+			}
+
+			else if(t == ConvertType::OggOpus)
+			{
+				return finalizeConverter(createOpusConverter(args...));
+			}
+
+			else
+			{
+				return nullptr;
+			}
+		}
+
+	private:
+		Converter* createOggConverter(int quality);
+		Converter* createLameConverter(Bitrate cbr, int quality);
+		Converter* createOpusConverter(Bitrate cbr, int quality);
+
+		Converter* finalizeConverter(Converter* converter);
 };
-
-
 
 #endif //SAYONARA_PLAYER_CONVERTERFACTORY_H

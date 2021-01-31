@@ -17,17 +17,71 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "ConverterFactory.h"
+#include "Components/Converter/Converter.h"
+#include "Components/Converter/OggConverter.h"
+#include "Components/Converter/LameConverter.h"
+#include "Components/Converter/OpusConverter.h"
+
+#include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/Playlist.h"
+#include "Utils/MetaData/MetaDataList.h"
+
+namespace
+{
+	void addTracks(Playlist::Handler* playlistHandler, Converter* converter)
+	{
+		auto pl = playlistHandler->playlist(playlistHandler->currentIndex());
+		if(pl && converter)
+		{
+			converter->addMetadata(pl->tracks());
+		}
+	}
+
+	bool checkConverter(Converter* converter)
+	{
+		return converter->isAvailable();
+	}
+}
 
 struct ConverterFactory::Private
 {
-    Private(ConverterFactory* parent)
-    {}
+	Playlist::Handler* playlistHandler;
+
+	Private(Playlist::Handler* playlistHandler) :
+		playlistHandler(playlistHandler)
+	{}
 };
 
-ConverterFactory::ConverterFactory()
+ConverterFactory::ConverterFactory(Playlist::Handler* playlistHandler)
 {
-    m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(playlistHandler);
 }
+
+Converter* ConverterFactory::createOggConverter(int quality)
+{
+	return new OggConverter(quality, nullptr);
+}
+
+Converter* ConverterFactory::createLameConverter(Bitrate bitrate, int quality)
+{
+	return new LameConverter(bitrate == Bitrate::Constant, quality, nullptr);
+}
+
+Converter* ConverterFactory::createOpusConverter(Bitrate bitrate, int quality)
+{
+	return new OpusConverter(bitrate == Bitrate::Constant, quality, nullptr);
+}
+
+Converter* ConverterFactory::finalizeConverter(Converter* converter)
+{
+	if(checkConverter(converter)){
+		addTracks(m->playlistHandler, converter);
+	}
+
+	return converter;
+}
+
 
 ConverterFactory::~ConverterFactory() = default;

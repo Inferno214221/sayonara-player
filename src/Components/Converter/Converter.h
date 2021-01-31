@@ -51,6 +51,7 @@ public:
 	void 		addMetadata(const MetaDataList& tracks);
 	int 		errorCount() const;
 	int 		quality() const;
+	int         initialCount() const;
 	int			fileCount() const;
 	bool		isAvailable() const;
 
