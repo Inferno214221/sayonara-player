@@ -22,8 +22,9 @@
 #include "ArtistMatch.h"
 #include "ArtistMatchEvaluator.h"
 
+#include "Interfaces/PlaylistInterface.h"
+
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 
 #include "Database/Connector.h"
@@ -44,9 +45,9 @@ using namespace DynamicPlayback;
 
 namespace
 {
-	void appendTrack(Playlist::Handler* playlistHandler, const MetaData& track)
+	void appendTrack(PlaylistAccessor* playlistAccessor, const MetaData& track)
 	{
-		auto activePlaylist = playlistHandler->activePlaylist();
+		auto activePlaylist = playlistAccessor->activePlaylist();
 		activePlaylist->appendTracks(MetaDataList{track});
 	}
 
@@ -84,11 +85,11 @@ namespace
 		return result;
 	}
 
-	Util::Set<QString> getPlaylistFilepaths(Playlist::Handler* playlistHandler, const QList<ArtistId>& artistIds)
+	Util::Set<QString> getPlaylistFilepaths(PlaylistAccessor* playlistAccessor, const QList<ArtistId>& artistIds)
 	{
 		Util::Set<QString> playlistFilepaths;
 
-		auto playlist = playlistHandler->activePlaylist();
+		auto playlist = playlistAccessor->activePlaylist();
 
 		for(const auto& track : playlist->tracks())
 		{
@@ -126,22 +127,22 @@ struct Handler::Private
 {
 	QString currentArtistName;
 	LibraryId currentLibraryId;
-	Playlist::Handler* playlistHandler;
+	PlaylistAccessor* playlistAccessor;
 	QTimer* timer;
 
-	Private(Playlist::Handler* playlistHandler) :
+	Private(PlaylistAccessor* playlistAccessor) :
 		currentLibraryId{-1},
-		playlistHandler(playlistHandler),
+		playlistAccessor(playlistAccessor),
 		timer(new QTimer())
 	{
 		timer->setSingleShot(true);
 	}
 };
 
-Handler::Handler(PlayManager* playManager, Playlist::Handler* playlistHandler, QObject* parent) :
+Handler::Handler(PlayManager* playManager, PlaylistAccessor* playlistAccessor, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(playlistHandler);
+	m = Pimpl::make<Private>(playlistAccessor);
 
 	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, [=](auto playState) {
@@ -191,14 +192,14 @@ void Handler::similarArtistsAvailable()
 	const auto artistIds = evaluateArtistMatch(artistMatch, m->currentLibraryId);
 
 	const auto artistTrackMap = getCandidateTracks(m->currentLibraryId, artistIds);
-	const auto playlistFilepaths = getPlaylistFilepaths(m->playlistHandler, artistIds);
+	const auto playlistFilepaths = getPlaylistFilepaths(m->playlistAccessor, artistIds);
 
 	for(const auto& artistId : artistIds)
 	{
 		const auto track = findTrackNotInPlaylist(artistTrackMap[artistId], playlistFilepaths);
 		if(track.isValid())
 		{
-			appendTrack(m->playlistHandler, track);
+			appendTrack(m->playlistAccessor, track);
 			break;
 		}
 	}
