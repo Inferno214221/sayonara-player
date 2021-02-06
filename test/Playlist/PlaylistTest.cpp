@@ -121,7 +121,7 @@ void PlaylistTest::modifyTest()
 	pl->createPlaylist(tracks);
 	const auto& plTracks = pl->tracks();
 
-	const auto uniqueIds = plTracks.unique_ids();
+	auto uniqueIds = plTracks.unique_ids();
 
 	pl->changeTrack(50);
 	QVERIFY(pl->currentTrackIndex() == 50);
@@ -167,7 +167,7 @@ void PlaylistTest::modifyTest()
 	}
 
 	{ // check if uids haven't changed
-		const auto currentUniqueIds = plTracks.unique_ids();
+		auto currentUniqueIds = plTracks.unique_ids();
 		QVERIFY(uniqueIds != currentUniqueIds);
 
 		std::sort(uniqueIds.begin(), uniqueIds.end());
