@@ -52,10 +52,10 @@ namespace Library
 
 	public:
 		LibraryId addLibrary(const QString& name, const QString& path);
-		bool renameLibrary(LibraryId id, const QString& name);
+		bool renameLibrary(LibraryId id, const QString& newName);
 		bool removeLibrary(LibraryId id);
 		bool moveLibrary(int old_row, int new_row);
-		bool changeLibraryPath(LibraryId id, const QString& path);
+		bool changeLibraryPath(LibraryId id, const QString& newPath);
 
 		QList<Info> allLibraries() const;
 
