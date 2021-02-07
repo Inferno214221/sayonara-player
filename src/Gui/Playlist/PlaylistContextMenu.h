@@ -32,7 +32,7 @@ namespace Playlist
 	 * @ingroup GuiPlaylists
 	 */
 	class ContextMenu :
-			public Library::ContextMenu
+		public Library::ContextMenu
 	{
 		Q_OBJECT
 		PIMPL(ContextMenu)
@@ -47,11 +47,11 @@ namespace Playlist
 		public:
 			enum Entry
 			{
-				EntryRating			= (Library::ContextMenu::EntryLast << 1),
-				EntryBookmarks		= (Library::ContextMenu::EntryLast << 2),
-				EntryCurrentTrack	= (Library::ContextMenu::EntryLast << 3),
-				EntryFindInLibrary	= (Library::ContextMenu::EntryLast << 4),
-				EntryReverse		= (Library::ContextMenu::EntryLast << 5)
+				EntryRating = (Library::ContextMenu::EntryLast << 1),
+				EntryBookmarks = (Library::ContextMenu::EntryLast << 2),
+				EntryCurrentTrack = (Library::ContextMenu::EntryLast << 3),
+				EntryFindInLibrary = (Library::ContextMenu::EntryLast << 4),
+				EntryReverse = (Library::ContextMenu::EntryLast << 5)
 			};
 
 			explicit ContextMenu(QWidget* parent);
@@ -61,7 +61,7 @@ namespace Playlist
 			void showActions(ContextMenu::Entries entries) override;
 
 			void setRating(Rating rating);
-			void setMetadata(const MetaData& md);
+			void setTrack(const MetaData& track, bool editableBookmarks);
 
 		private:
 			QAction* initRatingAction(Rating rating, QObject* parent);
@@ -74,6 +74,5 @@ namespace Playlist
 			void skinChanged() override;
 	};
 }
-
 
 #endif // PLAYLISTCONTEXTMENU_H

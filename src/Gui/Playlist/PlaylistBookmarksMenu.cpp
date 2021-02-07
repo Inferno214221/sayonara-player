@@ -22,12 +22,9 @@
 
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Bookmarks/Bookmark.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/Icons.h"
-
-#include "Interfaces/PlayManager.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Language/Language.h"
@@ -36,14 +33,11 @@ using Playlist::BookmarksMenu;
 
 struct BookmarksMenu::Private
 {
-	PlayManager* playManager;
 	PlayerPlugin::Handler* playerPluginHandler;
 	BookmarkStorage bookmarks;
 
 	Private() :
-		playManager {PlayManagerProvider::instance()->playManager()},
-		playerPluginHandler {PlayerPlugin::Handler::instance()}
-	{}
+		playerPluginHandler {PlayerPlugin::Handler::instance()} {}
 };
 
 BookmarksMenu::BookmarksMenu(QWidget* parent) :
@@ -61,18 +55,18 @@ bool BookmarksMenu::hasBookmarks() const
 	return (!this->actions().isEmpty());
 }
 
-void BookmarksMenu::setMetadata(const MetaData& track)
+void BookmarksMenu::setTrack(const MetaData& track, bool editAllowed)
 {
 	m->bookmarks.setTrack(track);
-	bookmarksChanged();
+	bookmarksChanged(editAllowed);
 }
 
-MetaData BookmarksMenu::metadata() const
+MetaData BookmarksMenu::track() const
 {
 	return m->bookmarks.track();
 }
 
-void BookmarksMenu::bookmarksChanged()
+void BookmarksMenu::bookmarksChanged(bool editAllowed)
 {
 	for(auto* a : this->actions())
 	{
@@ -102,10 +96,7 @@ void BookmarksMenu::bookmarksChanged()
 		m->playerPluginHandler->showPlugin("Bookmarks");
 	});
 
-	editAction->setEnabled
-		(
-			(metadata().id() == m->playManager->currentTrack().id())
-		);
+	editAction->setEnabled(editAllowed);
 }
 
 void BookmarksMenu::actionPressed()

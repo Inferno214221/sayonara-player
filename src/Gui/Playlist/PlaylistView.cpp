@@ -386,10 +386,13 @@ void View::contextMenuEvent(QContextMenuEvent* e)
 
 	if(modelIndex.row() >= 0)
 	{
+		const auto isCurrentTrack = (m->model->currentTrack() == modelIndex.row());
 		const auto track = m->model->metadata(modelIndex.row());
-		m->contextMenu->setMetadata(track);
+		const auto isLibraryTrack = (track.id() >= 0);
 
-		if(track.id() >= 0)
+		m->contextMenu->setTrack(track, (isCurrentTrack && isLibraryTrack));
+
+		if(isLibraryTrack)
 		{
 			entryMask |= Pl::ContextMenu::EntryBookmarks;
 			entryMask |= Pl::ContextMenu::EntryFindInLibrary;

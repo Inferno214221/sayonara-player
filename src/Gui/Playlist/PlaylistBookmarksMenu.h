@@ -44,12 +44,12 @@ namespace Playlist
 			virtual ~BookmarksMenu();
 
 			bool hasBookmarks() const;
-			void setMetadata(const MetaData& md);
-			MetaData metadata() const;
+			void setTrack(const MetaData& track, bool editAllowed);
+			MetaData track() const;
 
 		private slots:
 			void actionPressed();
-			void bookmarksChanged();
+			void bookmarksChanged(bool editAllowed);
 	};
 }
 

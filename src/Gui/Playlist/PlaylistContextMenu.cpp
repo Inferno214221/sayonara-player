@@ -24,6 +24,8 @@
 #include "Gui/Playlist/PlaylistActionMenu.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Widgets/RatingLabel.h"
+
+#include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 
@@ -35,21 +37,17 @@ struct ContextMenu::Private
 {
 	QMap<ContextMenu::Entry, QAction*> entryActionMap;
 
-	BookmarksMenu*	bookmarksMenu=nullptr;
-	QMenu*			ratingMenu=nullptr;
+	QMenu* ratingMenu;
+	BookmarksMenu* bookmarksMenu;
+	QMenu* playlistModeMenu;
+	QAction* playlistModeAction;
 
-	QAction*		playlistModeAction=nullptr;
-	QMenu*			playlistModeMenu=nullptr;
-
-	Private(ContextMenu* parent)
+	Private(ContextMenu* parent) :
+		ratingMenu {new QMenu(parent)},
+		bookmarksMenu {new BookmarksMenu(parent)},
+		playlistModeMenu {new ActionMenu(parent)},
+		playlistModeAction {parent->addMenu(playlistModeMenu)}
 	{
-		ratingMenu = new QMenu(parent);
-
-		bookmarksMenu = new BookmarksMenu(parent);
-
-		playlistModeMenu = new ActionMenu(parent);
-		playlistModeAction = parent->addMenu(playlistModeMenu);
-
 		entryActionMap[EntryRating] = parent->addMenu(ratingMenu);
 		entryActionMap[EntryBookmarks] = parent->addMenu(bookmarksMenu);
 		entryActionMap[EntryCurrentTrack] = new QAction(parent);
@@ -57,11 +55,11 @@ struct ContextMenu::Private
 		entryActionMap[EntryReverse] = new QAction(parent);
 
 		parent->addActions
-		({
-			entryActionMap[EntryReverse],
-			entryActionMap[EntryCurrentTrack],
-			entryActionMap[EntryFindInLibrary],
-		});
+			({
+				 entryActionMap[EntryReverse],
+				 entryActionMap[EntryCurrentTrack],
+				 entryActionMap[EntryFindInLibrary],
+			 });
 	}
 };
 
@@ -71,16 +69,16 @@ ContextMenu::ContextMenu(QWidget* parent) :
 	m = Pimpl::make<Private>(this);
 
 	QList<QAction*> ratingActions;
-	for(int i=int(Rating::Zero); i != int(Rating::Last); i++)
+	for(auto i = +Rating::Zero; i != +Rating::Last; i++)
 	{
-		ratingActions << initRatingAction(Rating(i), m->ratingMenu);
+		ratingActions << initRatingAction(static_cast<Rating>(i), m->ratingMenu);
 	}
 
 	m->ratingMenu->addActions(ratingActions);
 
-	connect(m->entryActionMap[EntryCurrentTrack],	&QAction::triggered, this, &ContextMenu::sigJumpToCurrentTrack);
-	connect(m->entryActionMap[EntryFindInLibrary],	&QAction::triggered, this, &ContextMenu::sigFindTrackTriggered);
-	connect(m->entryActionMap[EntryReverse],			&QAction::triggered, this, &ContextMenu::sigReverseTriggered);
+	connect(m->entryActionMap[EntryCurrentTrack], &QAction::triggered, this, &ContextMenu::sigJumpToCurrentTrack);
+	connect(m->entryActionMap[EntryFindInLibrary], &QAction::triggered, this, &ContextMenu::sigFindTrackTriggered);
+	connect(m->entryActionMap[EntryReverse], &QAction::triggered, this, &ContextMenu::sigReverseTriggered);
 
 	connect(m->bookmarksMenu, &BookmarksMenu::sigBookmarkPressed, this, &ContextMenu::bookmarkPressed);
 
@@ -91,11 +89,12 @@ ContextMenu::~ContextMenu() = default;
 
 ContextMenu::Entries ContextMenu::entries() const
 {
-	ContextMenu::Entries entries = Library::ContextMenu::entries();
+	auto entries = Library::ContextMenu::entries();
 
-	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
+	for(auto it = m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
-		if(it.value()->isVisible()) {
+		if(it.value()->isVisible())
+		{
 			entries |= it.key();
 		}
 	}
@@ -107,7 +106,7 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 {
 	Library::ContextMenu::showActions(entries);
 
-	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
+	for(auto it = m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
 		it.value()->setVisible(entries & it.key());
 	}
@@ -115,47 +114,35 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 
 void ContextMenu::setRating(Rating rating)
 {
-	QList<QAction*> actions = m->ratingMenu->actions();
-	for(QAction* action : actions)
+	const auto actions = m->ratingMenu->actions();
+	for(auto* action : actions)
 	{
-		auto data = action->data().value<Rating>();
+		const auto data = action->data().value<Rating>();
 		action->setChecked(data == rating);
 	}
 
-	QString rating_text = Lang::get(Lang::Rating);
-	if(rating != Rating::Zero && rating != Rating::Last)
-	{
-		QString text = QString("%1 (%2)")
-							.arg(rating_text)
-							.arg(int(rating));
+	const auto ratingText = Lang::get(Lang::Rating);
 
-		m->entryActionMap[EntryRating]->setText(text);
-	}
+	const auto text = (rating != Rating::Zero && rating != Rating::Last)
+	                  ? QString("%1 (%2)").arg(ratingText).arg(+rating)
+	                  : static_cast<QString>(ratingText);
 
-	else {
-		m->entryActionMap[EntryRating]->setText(rating_text);
-	}
+	m->entryActionMap[EntryRating]->setText(text);
 }
 
-void ContextMenu::setMetadata(const MetaData& md)
+void ContextMenu::setTrack(const MetaData& track, bool editableBookmarks)
 {
-	m->bookmarksMenu->setMetadata(md);
+	m->bookmarksMenu->setTrack(track, editableBookmarks);
 }
 
 QAction* ContextMenu::initRatingAction(Rating rating, QObject* parent)
 {
-	auto* action = new QAction
-	(
-		QString::number(int(rating)),
-		parent
-	);
+	auto* action = new QAction(QString::number(+rating), parent);
 
 	action->setData(QVariant::fromValue(rating));
 	action->setCheckable(true);
 
-	connect(action, &QAction::triggered, this, [=](bool b)
-	{
-		Q_UNUSED(b)
+	connect(action, &QAction::triggered, this, [&](bool /*b*/) {
 		emit sigRatingChanged(rating);
 	});
 
@@ -166,8 +153,8 @@ void ContextMenu::languageChanged()
 {
 	Library::ContextMenu::languageChanged();
 
-	m->entryActionMap[EntryRating]-> setText(Lang::get(Lang::Rating));
-	m->entryActionMap[EntryBookmarks]-> setText(Lang::get(Lang::Bookmarks));
+	m->entryActionMap[EntryRating]->setText(Lang::get(Lang::Rating));
+	m->entryActionMap[EntryBookmarks]->setText(Lang::get(Lang::Bookmarks));
 	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track"));
 	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library"));
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
@@ -186,5 +173,5 @@ void ContextMenu::skinChanged()
 
 void ContextMenu::bookmarkPressed(Seconds timestamp)
 {
-   emit sigBookmarkPressed(timestamp);
+	emit sigBookmarkPressed(timestamp);
 }
