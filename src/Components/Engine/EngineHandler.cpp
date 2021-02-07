@@ -51,7 +51,7 @@ void Handler::init(PlayManager* playManager)
 {
 	try
 	{
-		m->engine = new Engine(this);
+		m->engine = new Engine(playManager, this);
 	}
 
 	catch(std::exception& e)

@@ -26,6 +26,7 @@
 #include <QObject>
 
 class MetaData;
+class PlayManager;
 
 namespace StreamRecorder
 {
@@ -52,12 +53,12 @@ namespace StreamRecorder
 
 
     public:
-        explicit StreamRecorder(QObject* parent=nullptr);
+        explicit StreamRecorder(PlayManager* playManager, QObject* parent=nullptr);
         ~StreamRecorder();
 
         // change recording destination, create session path
         // returns destination file
-		QString changeTrack(const MetaData& md);
+		QString changeTrack(const MetaData& track);
 
         // start or end a session
         void record(bool b);

@@ -20,7 +20,6 @@
 
 #include "StreamRecorder.h"
 #include "Interfaces/PlayManager.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -36,48 +35,45 @@
 #include <QFile>
 #include <QDateTime>
 
-namespace SR=StreamRecorder;
-namespace FileUtils=::Util::File;
+namespace SR = StreamRecorder;
+namespace FileUtils = ::Util::File;
 
 struct SR::StreamRecorder::Private
 {
-	QString			sr_recording_dst;				// recording destination
-	QString			session_playlist_name;			// playlist name
-	MetaDataList	session_collector;				// gather all tracks of a session
-	MetaData		md;                             // current track
-	QDate           date;
-	QTime           time;
+	QString recordingDestination;
+	QString sessionPlaylistName;
+	MetaDataList sessionCollector;
+	MetaData currentTrack;
+	QDate date;
+	QTime time;
 
-	int				cur_idx;						// index of track (used for filename)
-	bool            recording;						// is in a session currently
+	int currentIndex;
+	bool recording;
 
 	Private() :
-		cur_idx(1),
-		recording(false)
-	{}
+		currentIndex(1),
+		recording(false) {}
 };
 
-
-SR::StreamRecorder::StreamRecorder(QObject* parent) :
+SR::StreamRecorder::StreamRecorder(PlayManager* playManager, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<StreamRecorder::Private>();
 
 	clear();
 
-	auto* playManager = PlayManagerProvider::instance()->playManager();
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 }
 
-SR::StreamRecorder::~StreamRecorder() {}
+SR::StreamRecorder::~StreamRecorder() = default;
 
 void SR::StreamRecorder::clear()
 {
-	m->md.setTitle("");
-	m->session_collector.clear();
-	m->sr_recording_dst = "";
-	m->session_playlist_name.clear();
-	m->cur_idx = 1;
+	m->currentTrack.setTitle("");
+	m->sessionCollector.clear();
+	m->recordingDestination = "";
+	m->sessionPlaylistName.clear();
+	m->currentIndex = 1;
 }
 
 void SR::StreamRecorder::newSession()
@@ -88,119 +84,125 @@ void SR::StreamRecorder::newSession()
 	m->time = QTime::currentTime();
 }
 
-
-QString SR::StreamRecorder::changeTrack(const MetaData& md)
+QString SR::StreamRecorder::changeTrack(const MetaData& track)
 {
-	QString sr_path = GetSetting(Set::Engine_SR_Path);
+	const auto streamRecorderPath = GetSetting(Set::Engine_SR_Path);
 
-	if(!m->recording){
-		return "";
+	if(!m->recording)
+	{
+		return QString();
 	}
 
-	if(md.title() == m->md.title()) {
-		return m->sr_recording_dst;
+	if(track.title() == m->currentTrack.title())
+	{
+		return m->recordingDestination;
 	}
 
-	bool saved = save();
+	const auto saved = save();
 	if(saved)
 	{
-		m->cur_idx++;
+		m->currentIndex++;
 	}
 
-	if(!Util::File::isWWW(md.filepath()))
+	if(!Util::File::isWWW(track.filepath()))
 	{
 		spLog(Log::Warning, this) << "Audio Source is not a stream";
-		m->sr_recording_dst = "";
-		m->session_playlist_name = "";
+		m->recordingDestination = "";
+		m->sessionPlaylistName = "";
 		m->recording = false;
-		return "";
+		return QString();
 	}
 
-	m->md = md;
-	m->md.setYear(Year(QDateTime::currentDateTime().date().year()));
-	m->md.setTrackNumber(TrackNum(m->cur_idx));
+	m->currentTrack = track;
+	m->currentTrack.setYear(Year(QDateTime::currentDateTime().date().year()));
+	m->currentTrack.setTrackNumber(TrackNum(m->currentIndex));
 
 	int i;
-	QString target_path_template = GetSetting(Set::Engine_SR_SessionPathTemplate);
-	bool use_session_path = GetSetting(Set::Engine_SR_SessionPath);
-	bool valid = (Utils::validateTemplate(target_path_template, &i) == Utils::ErrorCode::OK);
+	auto targetPathTemplate = GetSetting(Set::Engine_SR_SessionPathTemplate);
+	const auto useSessionPath = GetSetting(Set::Engine_SR_SessionPath);
+	const auto valid = (Utils::validateTemplate(targetPathTemplate, &i) == Utils::ErrorCode::OK);
 
-	if(!use_session_path || !valid)
+	if(!useSessionPath || !valid)
 	{
-		target_path_template = Utils::targetPathTemplateDefault(use_session_path);
+		targetPathTemplate = Utils::targetPathTemplateDefault(useSessionPath);
 	}
 
-	Utils::TargetPaths target_path = Utils::fullTargetPath(sr_path, target_path_template, m->md, m->date, m->time);
-	if(target_path.first.isEmpty())
+	const auto targetPath = Utils::fullTargetPath(streamRecorderPath,
+	                                              targetPathTemplate,
+	                                              m->currentTrack,
+	                                              m->date,
+	                                              m->time);
+	if(targetPath.first.isEmpty())
 	{
 		spLog(Log::Warning, this) << "Cannot determine target path";
-		m->sr_recording_dst = "";
-		m->session_playlist_name = "";
+		m->recordingDestination.clear();
+		m->sessionPlaylistName.clear();
 		m->recording = false;
-		return "";
+		return QString();
 	}
 
-	Util::File::createDirectories(Util::File::getParentDirectory(target_path.first));
+	Util::File::createDirectories(Util::File::getParentDirectory(targetPath.first));
 
-	m->sr_recording_dst = target_path.first;
-	m->session_playlist_name = target_path.second;
+	m->recordingDestination = targetPath.first;
+	m->sessionPlaylistName = targetPath.second;
 
-	return m->sr_recording_dst;
+	return m->recordingDestination;
 }
-
 
 bool SR::StreamRecorder::save()
 {
-	if(!FileUtils::exists(m->sr_recording_dst)) {
+	if(!FileUtils::exists(m->recordingDestination))
+	{
 		return false;
 	}
 
-	QFileInfo file_info(m->sr_recording_dst);
-	if(file_info.size() < 4000) {
+	const auto fileInfo = QFileInfo(m->recordingDestination);
+	if(fileInfo.size() < 4000)
+	{
 		return false;
 	}
 
-	spLog(Log::Info, this) << "Finalize file " << m->sr_recording_dst;
+	spLog(Log::Info, this) << "Finalize file " << m->recordingDestination;
 
-	m->md.setFilepath(m->sr_recording_dst);
+	m->currentTrack.setFilepath(m->recordingDestination);
 
-	Tagging::Utils::setMetaDataOfFile(m->md);
-	m->session_collector.push_back(m->md);
+	Tagging::Utils::setMetaDataOfFile(m->currentTrack);
+	m->sessionCollector.push_back(m->currentTrack);
 
-	PlaylistParser::saveM3UPlaylist(m->session_playlist_name, m->session_collector, true);
+	PlaylistParser::saveM3UPlaylist(m->sessionPlaylistName, m->sessionCollector, true);
 
 	return true;
 }
 
-
-QString SR::StreamRecorder::checkTargetPath(const QString& target_path)
+QString SR::StreamRecorder::checkTargetPath(const QString& targetPath)
 {
-	if(!FileUtils::exists(target_path)) {
-		Util::File::createDirectories(Util::File::getParentDirectory(target_path));
+	if(!FileUtils::exists(targetPath))
+	{
+		Util::File::createDirectories(Util::File::getParentDirectory(targetPath));
 	}
 
-	QFileInfo fi(target_path);
-
-	if(!fi.isWritable()){
-		return "";
-	}
-
-	return target_path;
+	const auto fileInfo = QFileInfo(targetPath);
+	return (fileInfo.isWritable())
+		? targetPath
+		: QString();
 }
 
 void SR::StreamRecorder::record(bool b)
 {
-	if(b == m->recording) {
+	if(b == m->recording)
+	{
 		return;
 	}
 
 	spLog(Log::Debug, this) << "Stream recorder: activate: " << b;
 
-	if(b) {
+	if(b)
+	{
 		newSession();
 	}
 
-	else {
+	else
+	{
 		save();
 		clear();
 	}
@@ -208,12 +210,10 @@ void SR::StreamRecorder::record(bool b)
 	m->recording = b;
 }
 
-
 bool SR::StreamRecorder::isRecording() const
 {
 	return m->recording;
 }
-
 
 void SR::StreamRecorder::playstateChanged(PlayState state)
 {

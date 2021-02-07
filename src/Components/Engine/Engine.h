@@ -33,6 +33,8 @@ namespace StreamRecorder
 	class StreamRecorder;
 }
 
+class PlayManager;
+
 namespace Engine
 {
 	class SpectrumReceiver;
@@ -82,7 +84,7 @@ namespace Engine
 			void sigError(const QString& error_message);
 
 		public:
-			explicit Engine(QObject* parent=nullptr);
+			explicit Engine(PlayManager* playManager, QObject* parent=nullptr);
 			~Engine();
 
 			void updateBitrate(Bitrate br, GstElement* src);
@@ -115,22 +117,22 @@ namespace Engine
 			void jumpAbsMs(MilliSeconds pos_ms);
 			void jumpRelMs(MilliSeconds pos_ms);
 			void jumpRel(double percent);
-			void updateMetadata(const MetaData& md, GstElement* src);
+			void updateMetadata(const MetaData& track, GstElement* src);
 			void updateCover(GstElement* src, const QByteArray& data, const QString& mimedata);
 
-			bool changeTrack(const MetaData& md);
+			bool changeTrack(const MetaData& track);
 
 			void setBufferState(int progress, GstElement* src);
 			void error(const QString& error, const QString& elementName);
 
 		private:
 			PipelinePtr initPipeline(const QString& name);
-			bool changeMetadata(const MetaData& md);
+			bool changeMetadata(const MetaData& track);
 
 			void swapPipelines();
-			bool changeTrackCrossfading(const MetaData& md);
-			bool changeTrackGapless(const MetaData& md);
-			bool changeTrackImmediatly(const MetaData& md);
+			bool changeTrackCrossfading(const MetaData& track);
+			bool changeTrackGapless(const MetaData& track);
+			bool changeTrackImmediatly(const MetaData& track);
 
 			void setCurrentPositionMs(MilliSeconds pos_ms);
 

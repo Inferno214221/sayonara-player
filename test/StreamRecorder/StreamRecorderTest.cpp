@@ -1,4 +1,5 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 
 #include "Components/Engine/StreamRecorder/StreamRecorder.h"
 
@@ -12,24 +13,24 @@
 #include <QDateTime>
 #include <QFile>
 
-namespace SR=StreamRecorder;
+namespace SR = StreamRecorder;
 
 class StreamRecorderTest :
-		public Test::Base
+	public Test::Base
 {
 	Q_OBJECT
 
-	StreamRecorder::StreamRecorder* sr=nullptr;
+		StreamRecorder::StreamRecorder* mStreamRecorder = nullptr;
+		PlayManager* mPlayManager;
 
-public:
-	StreamRecorderTest();
-	~StreamRecorderTest()=default;
+	public:
+		StreamRecorderTest();
+		~StreamRecorderTest() noexcept;
 
-private slots:
-	void target_path_template_test();
-	void www_test();
-	void file_test();
-
+	private slots:
+		void target_path_template_test();
+		void www_test();
+		void file_test();
 };
 
 StreamRecorderTest::StreamRecorderTest() :
@@ -41,7 +42,14 @@ StreamRecorderTest::StreamRecorderTest() :
 	SetSetting(Set::Engine_SR_SessionPath, true);
 	SetSetting(Set::Engine_SR_SessionPathTemplate, QString("<y><m><d>/<tn> - <t>"));
 
-	sr = new SR::StreamRecorder(this);
+	mPlayManager = new TestPlayManager();
+	mStreamRecorder = new SR::StreamRecorder(mPlayManager, this);
+}
+
+StreamRecorderTest::~StreamRecorderTest() noexcept
+{
+	delete mStreamRecorder;
+	delete mPlayManager;
 }
 
 void StreamRecorderTest::target_path_template_test()
@@ -57,32 +65,32 @@ void StreamRecorderTest::target_path_template_test()
 void StreamRecorderTest::www_test()
 {
 	QDate d = QDate::currentDate();
-	sr->record(true);
+	mStreamRecorder->record(true);
 
 	int track_num = 1;
-	for(int i=1; i<100; i++, track_num++)
+	for(int i = 1; i < 100; i++, track_num++)
 	{
 		QString filepath = QString("http://path%1.com")
-				.arg(i);
+			.arg(i);
 
 		QVERIFY(Util::File::isWWW(filepath) == true);
 
 		MetaData md;
 		md.setTitle(QString("title%1").arg(i));
-		md.setArtist( QString("artist%1").arg(i));
-		md.setFilepath( filepath);
+		md.setArtist(QString("artist%1").arg(i));
+		md.setFilepath(filepath);
 
-		QString filename = sr->changeTrack(md);
+		QString filename = mStreamRecorder->changeTrack(md);
 
 		QString should_filename =
-				tempPath() + "/" +
-				QString("%1%2%3")
-					.arg(d.year())
-					.arg(d.month(), 2, 10, QChar('0'))
-					.arg(d.day(), 2, 10, QChar('0')) +
-				QString("/%1 - %2.mp3")
-					.arg(track_num, 4, 10, QChar('0'))
-					.arg(md.title());
+			tempPath() + "/" +
+			QString("%1%2%3")
+				.arg(d.year())
+				.arg(d.month(), 2, 10, QChar('0'))
+				.arg(d.day(), 2, 10, QChar('0')) +
+			QString("/%1 - %2.mp3")
+				.arg(track_num, 4, 10, QChar('0'))
+				.arg(md.title());
 
 		if(i % 2 == 1)
 		{
@@ -94,7 +102,8 @@ void StreamRecorderTest::www_test()
 			f.close();
 		}
 
-		else {
+		else
+		{
 			// no mp3 file ->
 			// StreamRecorder::save() will fail the next time
 			// index will not be incremented by StreamRecorder
@@ -102,23 +111,22 @@ void StreamRecorderTest::www_test()
 		}
 
 		QVERIFY(filename == should_filename);
-		QVERIFY(sr->isRecording());
+		QVERIFY(mStreamRecorder->isRecording());
 	}
 
 	Util::File::deleteFiles({tempPath()});
 }
 
-
 void StreamRecorderTest::file_test()
 {
-	sr->record(true);
+	mStreamRecorder->record(true);
 
-	for(int i=1; i<100; i++)
+	for(int i = 1; i < 100; i++)
 	{
 		QString filepath = tempPath
-		(
-			QString("path%1.mp3").arg(i)
-		);
+			(
+				QString("path%1.mp3").arg(i)
+			);
 
 		QVERIFY(Util::File::isWWW(filepath) == false);
 
@@ -127,10 +135,10 @@ void StreamRecorderTest::file_test()
 		md.setArtist(QString("artist%1").arg(i));
 		md.setFilepath(filepath);
 
-		QString filename = sr->changeTrack(md);
+		QString filename = mStreamRecorder->changeTrack(md);
 
 		QVERIFY(filename.isEmpty());
-		QVERIFY(!sr->isRecording());
+		QVERIFY(!mStreamRecorder->isRecording());
 	}
 }
 
