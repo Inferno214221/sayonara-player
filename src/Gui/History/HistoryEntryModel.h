@@ -7,6 +7,11 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Session/SessionUtils.h"
 
+namespace Session
+{
+	class Manager;
+}
+
 class HistoryEntryModel :
 	public QAbstractTableModel
 {
@@ -20,7 +25,7 @@ class HistoryEntryModel :
 		const Session::Entry& entry(int row) const;
 
 	public:
-		HistoryEntryModel(Session::Timecode timecode, QObject* parent=nullptr);
+		HistoryEntryModel(Session::Manager* sessionManager, Session::Timecode timecode, QObject* parent=nullptr);
 		~HistoryEntryModel() override;
 
 		// QAbstractItemModel interface

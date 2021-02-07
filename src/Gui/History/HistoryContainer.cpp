@@ -1,16 +1,24 @@
 #include "HistoryContainer.h"
+
+#include "Components/Session/Session.h"
+
 #include "Gui/History/GUI_History.h"
 #include "Gui/Utils/Icons.h"
 
 struct HistoryContainer::Private
 {
 	GUI_History* widget = nullptr;
+	Session::Manager* sessionManager;
+
+	Private(Session::Manager* sessionManager) :
+		sessionManager(sessionManager)
+	{}
 };
 
-HistoryContainer::HistoryContainer(QObject* parent) :
+HistoryContainer::HistoryContainer(Session::Manager* sessionManager, QObject* parent) :
 	Library::Container(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(sessionManager);
 }
 
 HistoryContainer::~HistoryContainer() = default;
@@ -42,5 +50,5 @@ QPixmap HistoryContainer::icon() const
 
 void HistoryContainer::initUi()
 {
-	m->widget = new GUI_History();
+	m->widget = new GUI_History(m->sessionManager);
 }

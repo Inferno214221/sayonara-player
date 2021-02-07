@@ -6,6 +6,11 @@
 
 #include "Gui/Utils/Widgets/Widget.h"
 
+namespace Session
+{
+	class Manager;
+}
+
 class HistoryEntryWidget :
 	public Gui::Widget
 {
@@ -13,7 +18,7 @@ class HistoryEntryWidget :
 	PIMPL(HistoryEntryWidget)
 
 	public:
-		explicit HistoryEntryWidget(Session::Timecode timecode, QWidget* parent=nullptr);
+		explicit HistoryEntryWidget(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryEntryWidget() override;
 
 		Session::Id id() const;

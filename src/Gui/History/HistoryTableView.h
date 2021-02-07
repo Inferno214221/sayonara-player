@@ -9,6 +9,11 @@
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Gui/Utils/Widgets/Dragable.h"
 
+namespace Session
+{
+	class Manager;
+}
+
 class HistoryTableView :
 	public Gui::WidgetTemplate<QTableView>,
 	public Gui::Dragable
@@ -20,7 +25,7 @@ class HistoryTableView :
 		void sigRowcountChanged();
 
 	public:
-		explicit HistoryTableView(Session::Timecode timecode, QWidget* parent=nullptr);
+		explicit HistoryTableView(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryTableView() override;
 
 		int rows() const;

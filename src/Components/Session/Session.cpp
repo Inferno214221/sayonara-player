@@ -21,7 +21,6 @@
 #include "Session.h"
 
 #include "Interfaces/PlayManager.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Database/Connector.h"
 #include "Database/Session.h"
@@ -46,8 +45,8 @@ struct Manager::Private
 	QList<Session::Timecode> sessionDays;
 	bool playtimeResetted;
 
-	Private() :
-		playManager(PlayManagerProvider::instance()->playManager()),
+	Private(PlayManager* playManager) :
+		playManager(playManager),
 		playtimeResetted(true)
 	{
 		auto* db = DB::Connector::instance();
@@ -77,9 +76,9 @@ struct Manager::Private
 	}
 };
 
-Manager::Manager()
+Manager::Manager(PlayManager* playManager)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playManager);
 	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &Manager::positionChanged);
 }
 

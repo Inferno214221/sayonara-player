@@ -149,7 +149,7 @@ struct Application::Private
 	DB::Connector* db = nullptr;
 	InstanceThread* instanceThread = nullptr;
 	MetaTypeRegistry* metatypeRegistry = nullptr;
-	Session::Manager* session = nullptr;
+	Session::Manager* sessionManager = nullptr;
 	PlayManager* playManager = nullptr;
 	Playlist::Handler* playlistHandler = nullptr;
 
@@ -173,7 +173,7 @@ struct Application::Private
 		playManagerProvider->init(new PlayManagerImpl());
 		playManager = playManagerProvider->playManager();
 
-		session = Session::Manager::instance();
+		sessionManager = new Session::Manager(playManager);
 		auto* playlistHandlerProvider = Playlist::HandlerProvider::instance();
 		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
 		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
@@ -416,7 +416,7 @@ void Application::initLibraries()
 
 	auto* soundcloudContainer = new SC::LibraryContainer(this);
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
-	auto* historyContainer = new HistoryContainer(this);
+	auto* historyContainer = new HistoryContainer(m->sessionManager, this);
 
 	libraryContainers << static_cast<Library::AbstractContainer*>(somafmContainer);
 	libraryContainers << static_cast<Library::AbstractContainer*>(soundcloudContainer);

@@ -18,10 +18,10 @@ struct HistoryEntryModel::Private
 
 	Session::Timecode timecode;
 
-	Private(Session::Timecode timecode) :
+	Private(Session::Manager* sessionManager, Session::Timecode timecode) :
+		session(sessionManager),
 		timecode(timecode)
 	{
-		session = Session::Manager::instance();
 		invalidEntry.timecode = 0;
 
 		calcHistory();
@@ -45,10 +45,10 @@ struct HistoryEntryModel::Private
 	}
 };
 
-HistoryEntryModel::HistoryEntryModel(Session::Timecode timecode, QObject* parent) :
+HistoryEntryModel::HistoryEntryModel(Session::Manager* sessionManager, Session::Timecode timecode, QObject* parent) :
 	QAbstractTableModel(parent)
 {
-	m = Pimpl::make<Private>(timecode);
+	m = Pimpl::make<Private>(sessionManager, timecode);
 
 	connect(m->session, &Session::Manager::sigSessionChanged, this, &HistoryEntryModel::historyChanged);
 

@@ -10,6 +10,11 @@ class QDate;
 
 UI_FWD(GUI_History)
 
+namespace Session
+{
+	class Manager;
+}
+
 class GUI_History :
 	public Gui::Dialog
 {
@@ -18,7 +23,7 @@ class GUI_History :
 	UI_CLASS(GUI_History)
 
 public:
-	explicit GUI_History(QWidget* parent=nullptr);
+	explicit GUI_History(Session::Manager* sessionManager, QWidget* parent=nullptr);
 	~GUI_History() override;
 
 	[[nodiscard]] QFrame* header() const;

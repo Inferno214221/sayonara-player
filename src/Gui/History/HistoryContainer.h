@@ -4,6 +4,11 @@
 #include "Gui/Library/LibraryContainer.h"
 #include "Utils/Pimpl.h"
 
+namespace Session
+{
+	class Manager;
+}
+
 class HistoryContainer :
 	public Library::Container
 {
@@ -11,7 +16,7 @@ class HistoryContainer :
 	PIMPL(HistoryContainer)
 
 	public:
-		HistoryContainer(QObject* parent = nullptr);
+		HistoryContainer(Session::Manager* sessionManager, QObject* parent = nullptr);
 		~HistoryContainer() override;
 
 		// Container interface

@@ -28,6 +28,7 @@
 #include <QObject>
 #include <QDateTime>
 
+class PlayManager;
 class QDateTime;
 
 namespace Session
@@ -37,12 +38,14 @@ namespace Session
 	{
 		Q_OBJECT
 		PIMPL(Manager)
-		SINGLETON(Manager)
 
 		signals:
 			void sigSessionChanged(Session::Id id);
 
 		public:
+			explicit Manager(PlayManager* playManager);
+			~Manager();
+
 			EntryListMap history(const QDateTime& begin, const QDateTime& end);
 			EntryListMap historyForDay(const QDateTime& dt);
 			EntryListMap historyEntries(int day_index, int count);

@@ -28,7 +28,7 @@ static QString dateToString(const QDateTime& date)
 	return str;
 }
 
-HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* parent) :
+HistoryEntryWidget::HistoryEntryWidget(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>(timecode);
@@ -36,7 +36,7 @@ HistoryEntryWidget::HistoryEntryWidget(Session::Timecode timecode, QWidget* pare
 	auto* layout = new QVBoxLayout();
 	this->setLayout(layout);
 
-	m->tableView = new HistoryTableView(timecode, this);
+	m->tableView = new HistoryTableView(sessionManager, timecode, this);
 
 	auto* labelLayout = new QHBoxLayout();
 	{

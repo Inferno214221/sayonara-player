@@ -22,39 +22,35 @@
 #include <QShortcut>
 
 using Session::Timecode;
-static QWidget* createEntryListWidget(const Session::EntryListMap& history);
+static QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::EntryListMap& history);
 
 struct GUI_History::Private
 {
 	QWidget* dateRangeWidget=nullptr;
-	QPushButton* btnLoadMore=nullptr;
 	QDate startDate, endDate;
 
+	QPushButton* btnLoadMore=nullptr;
 	QAction* actionGoToBottom=nullptr;
 	QAction* actionGoToTop=nullptr;
 	QAction* actionSelecteDataRange=nullptr;
 
-	Session::Manager* session=nullptr;
+	Session::Manager* sessionManager;
 	int lastPage;
 
-	Private() :
+	Private(Session::Manager* sessionManager) :
+		btnLoadMore(new QPushButton(tr("Load more entries"))),
+		actionGoToBottom(new QAction()),
+		actionGoToTop(new QAction()),
+		actionSelecteDataRange(new QAction()),
+		sessionManager(sessionManager),
 		lastPage(-1)
-	{
-		session = Session::Manager::instance();
-
-		actionGoToTop = new QAction();
-		actionGoToBottom = new QAction();
-		actionSelecteDataRange = new QAction();
-
-		btnLoadMore = new QPushButton();
-		btnLoadMore->setText(tr("Load more entries"));
-	}
+	{}
 };
 
-GUI_History::GUI_History(QWidget* parent) :
+GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
 	Gui::Dialog(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(sessionManager);
 
 	ui = new Ui::GUI_History();
 	ui->setupUi(this);
@@ -198,10 +194,10 @@ void GUI_History::clearRangeClicked()
 
 void GUI_History::requestData(int index)
 {
-	const Session::EntryListMap history = m->session->historyEntries(index, 10);
+	const Session::EntryListMap history = m->sessionManager->historyEntries(index, 10);
 	m->btnLoadMore->setDisabled(history.isEmpty());
 
-	QWidget* page = createEntryListWidget(history);
+	QWidget* page = createEntryListWidget(m->sessionManager, history);
 
 	int oldHeight = ui->scrollArea->widget()->height();
 
@@ -243,16 +239,16 @@ void GUI_History::loadSelectedDateRange()
 	const QDateTime start(m->startDate, QTime(0,0));
 	const QDateTime end(m->endDate, QTime(23, 59));
 
-	const Session::EntryListMap history = m->session->history(start, end);
+	const Session::EntryListMap history = m->sessionManager->history(start, end);
 
-	m->dateRangeWidget = createEntryListWidget(history);
+	m->dateRangeWidget = createEntryListWidget(m->sessionManager, history);
 	ui->scrollAreaRangeContents->layout()->addWidget(m->dateRangeWidget);
 
 	ui->stackedWidget->setCurrentIndex(1);
 }
 
 
-QWidget* createEntryListWidget(const Session::EntryListMap& history)
+QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::EntryListMap& history)
 {
 	auto* page = new QWidget();
 	auto* pageLayout = new QVBoxLayout(page);
@@ -271,7 +267,7 @@ QWidget* createEntryListWidget(const Session::EntryListMap& history)
 		if(!timecodes.contains(dayBegin))
 		{
 			timecodes << dayBegin;
-			auto* historyWidget = new HistoryEntryWidget(dayBegin, page);
+			auto* historyWidget = new HistoryEntryWidget(sessionManager, dayBegin, page);
 			page->layout()->addWidget(historyWidget);
 		}
 	}

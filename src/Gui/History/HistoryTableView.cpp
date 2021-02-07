@@ -13,17 +13,19 @@ using Parent = Gui::WidgetTemplate<QTableView>;
 struct HistoryTableView::Private
 {
 	HistoryEntryModel* model = nullptr;
+
+	Private(Session::Manager* sessionManager, Session::Timecode timecode) :
+		model(new HistoryEntryModel(sessionManager, timecode))
+	{}
 };
 
-HistoryTableView::HistoryTableView(Session::Timecode timecode, QWidget* parent) :
+HistoryTableView::HistoryTableView(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent) :
 	Gui::WidgetTemplate<QTableView>(parent),
 	Gui::Dragable(this)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(sessionManager, timecode);
 
-	m->model = new HistoryEntryModel(timecode, nullptr);
 	this->setModel(m->model);
-
 	this->setAlternatingRowColors(true);
 	this->setHorizontalScrollMode(QTableView::ScrollMode::ScrollPerPixel);
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
