@@ -23,9 +23,14 @@
 
 struct StreamServerHandler::Private
 {
+	PlayManager* playManager;
 	StreamServer* streamServer=nullptr;
 
-	Private() = default;
+	Private(PlayManager* playManager) :
+		playManager(playManager),
+		streamServer(new StreamServer{playManager})
+	{}
+
 	~Private()
 	{
 		if(streamServer){
@@ -34,11 +39,9 @@ struct StreamServerHandler::Private
 	}
 };
 
-StreamServerHandler::StreamServerHandler()
+StreamServerHandler::StreamServerHandler(PlayManager* playManager)
 {
-	m = Pimpl::make<Private>();
-
-	m->streamServer = new StreamServer();
+	m = Pimpl::make<Private>(playManager);
 }
 
 StreamServerHandler::~StreamServerHandler() = default;

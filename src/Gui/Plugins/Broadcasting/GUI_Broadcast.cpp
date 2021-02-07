@@ -30,7 +30,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 
 class BroadcastAction :
-		public Gui::PreferenceAction
+	public Gui::PreferenceAction
 {
 	public:
 		BroadcastAction(QWidget* parent);
@@ -43,29 +43,32 @@ class BroadcastAction :
 };
 
 BroadcastAction::BroadcastAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::Broadcast), identifier(), parent) {}
 
 BroadcastAction::~BroadcastAction() = default;
-QString BroadcastAction::identifier() const { return "broadcast"; }
-QString BroadcastAction::displayName() const { return Lang::get(Lang::Broadcast); }
 
+QString BroadcastAction::identifier() const { return "broadcast"; }
+
+QString BroadcastAction::displayName() const { return Lang::get(Lang::Broadcast); }
 
 struct GUI_Broadcast::Private
 {
-	StreamServer*   server=nullptr;
-	QAction*        actionDismiss=nullptr;
-	QAction*        actionDismissAll=nullptr;
+	PlayManager* playManager;
+	StreamServer* server = nullptr;
+	QAction* actionDismiss = nullptr;
+	QAction* actionDismissAll = nullptr;
+
+	Private(PlayManager* playManager) :
+		playManager(playManager) {}
 };
 
-GUI_Broadcast::GUI_Broadcast(QWidget* parent) :
+GUI_Broadcast::GUI_Broadcast(PlayManager* playManager, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<GUI_Broadcast::Private>();
+	m = Pimpl::make<GUI_Broadcast::Private>(playManager);
 
 	ListenSetting(Set::Broadcast_Active, GUI_Broadcast::startServer);
 }
-
 
 GUI_Broadcast::~GUI_Broadcast()
 {
@@ -76,22 +79,20 @@ GUI_Broadcast::~GUI_Broadcast()
 
 	if(ui)
 	{
-		delete ui; ui = nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
-
 
 QString GUI_Broadcast::name() const
 {
 	return "Broadcast";
 }
 
-
 QString GUI_Broadcast::displayName() const
 {
 	return Lang::get(Lang::Broadcast);
 }
-
 
 void GUI_Broadcast::retranslate()
 {
@@ -106,10 +107,10 @@ void GUI_Broadcast::retranslate()
 	}
 }
 
-
 void GUI_Broadcast::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
@@ -144,10 +145,10 @@ void GUI_Broadcast::initUi()
 	ListenSetting(SetNoDB::MP3enc_found, GUI_Broadcast::mp3EncoderFound);
 }
 
-
 void GUI_Broadcast::setStatusLabel()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
@@ -158,40 +159,44 @@ void GUI_Broadcast::setStatusLabel()
 	ui->lab_status->setText(str_listeners);
 }
 
-
 // finally connection is established
 void GUI_Broadcast::connectionEstablished(const QString& ip)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
 	ui->combo_clients->addItem(ip);
 	setStatusLabel();
-	ui->combo_clients->setCurrentIndex(ui->combo_clients->count() -1);
+	ui->combo_clients->setCurrentIndex(ui->combo_clients->count() - 1);
 }
-
 
 void GUI_Broadcast::connectionClosed(const QString& ip)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	if(ip.isEmpty()) {
+	if(ip.isEmpty())
+	{
 		return;
 	}
 
 	spLog(Log::Info, this) << "Connection closed: " << ip;
 
 	int idx;
-	for(idx=0; idx<ui->combo_clients->count(); idx++){
-		if(ui->combo_clients->itemText(idx).contains(ip)){
+	for(idx = 0; idx < ui->combo_clients->count(); idx++)
+	{
+		if(ui->combo_clients->itemText(idx).contains(ip))
+		{
 			break;
 		}
 	}
 
-	if(idx >= ui->combo_clients->count()){
+	if(idx >= ui->combo_clients->count())
+	{
 		return;
 	}
 
@@ -204,7 +209,8 @@ void GUI_Broadcast::connectionClosed(const QString& ip)
 
 void GUI_Broadcast::canListenChanged(bool success)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
@@ -212,7 +218,8 @@ void GUI_Broadcast::canListenChanged(bool success)
 	ui->lab_error->setVisible(!success);
 	ui->btn_retry->setVisible(!success);
 
-	if(!success){
+	if(!success)
+	{
 		QString msg = tr("Cannot broadcast on port %1").arg(GetSetting(Set::Broadcast_Port));
 		msg += "\n" + tr("Maybe another application is using this port?");
 
@@ -220,26 +227,26 @@ void GUI_Broadcast::canListenChanged(bool success)
 	}
 }
 
-
 void GUI_Broadcast::retry()
 {
 	m->server->restart();
 }
 
-
 void GUI_Broadcast::dismissAt(int idx)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	if(idx < 0 || idx >= ui->combo_clients->count()){
+	if(idx < 0 || idx >= ui->combo_clients->count())
+	{
 		return;
 	}
 
 	QString ip = ui->combo_clients->itemText(idx);
 
-	if(ip.startsWith("(d)")) return;
+	if(ip.startsWith("(d)")) { return; }
 
 	ui->combo_clients->setItemText(idx, QString("(d) ") + ip);
 
@@ -248,21 +255,19 @@ void GUI_Broadcast::dismissAt(int idx)
 	updateDismissButtons();
 }
 
-
 void GUI_Broadcast::dismissClicked()
 {
 	int idx = ui->combo_clients->currentIndex();
 	dismissAt(idx);
 }
 
-
 void GUI_Broadcast::dismissAllClicked()
 {
-	for(int idx = 0; idx <ui->combo_clients->count(); idx++){
+	for(int idx = 0; idx < ui->combo_clients->count(); idx++)
+	{
 		dismissAt(idx);
 	}
 }
-
 
 void GUI_Broadcast::currentIndexChanged(int idx)
 {
@@ -270,19 +275,21 @@ void GUI_Broadcast::currentIndexChanged(int idx)
 	updateDismissButtons();
 }
 
-
 bool GUI_Broadcast::checkDismissVisible() const
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return false;
 	}
 
 	QString text = ui->combo_clients->currentText();
 
-	if(text.startsWith("(d)")){
+	if(text.startsWith("(d)"))
+	{
 		return false;
 	}
-	else if(!text.isEmpty()){
+	else if(!text.isEmpty())
+	{
 		return true;
 	}
 
@@ -291,7 +298,8 @@ bool GUI_Broadcast::checkDismissVisible() const
 
 bool GUI_Broadcast::checkDismissAllVisible() const
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return false;
 	}
 
@@ -300,7 +308,8 @@ bool GUI_Broadcast::checkDismissAllVisible() const
 
 void GUI_Broadcast::updateDismissButtons()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
@@ -313,7 +322,7 @@ void GUI_Broadcast::startServer()
 	bool enabled = GetSetting(Set::Broadcast_Active);
 	if(enabled && !m->server)
 	{
-		m->server = new StreamServer(this);
+		m->server = new StreamServer(m->playManager, this);
 
 		connect(m->server, &StreamServer::sigNewConnection, this, &GUI_Broadcast::connectionEstablished);
 		connect(m->server, &StreamServer::sigConnectionClosed, this, &GUI_Broadcast::connectionClosed);
@@ -323,7 +332,8 @@ void GUI_Broadcast::startServer()
 
 void GUI_Broadcast::mp3EncoderFound()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 

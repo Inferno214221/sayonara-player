@@ -23,12 +23,14 @@
 
 #include "Utils/Pimpl.h"
 
+class PlayManager;
+
 class StreamServerHandler
 {
 	PIMPL(StreamServerHandler)
 
 	public:
-		StreamServerHandler();
+		StreamServerHandler(PlayManager* playManager);
 		~StreamServerHandler();
 
 		void activeChanged();

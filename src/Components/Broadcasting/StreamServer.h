@@ -27,6 +27,8 @@
 // also needed for AcceptError
 #include <QTcpSocket>
 
+class PlayManager;
+
 /**
  * @brief The StreamServer class. This class is listening for new connections and holds and administrates current connections.
  * @ingroup Broadcasting
@@ -43,7 +45,7 @@ class StreamServer :
 		void sigListening(bool);
 
 	public:
-		explicit StreamServer(QObject* parent = nullptr);
+		explicit StreamServer(PlayManager* playManager, QObject* parent = nullptr);
 		~StreamServer();
 
 		QStringList connectedClients() const;

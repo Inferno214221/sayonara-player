@@ -28,6 +28,7 @@
 #include <QObject>
 
 class MetaData;
+class PlayManager;
 class QTcpSocket;
 
 /**
@@ -61,7 +62,7 @@ class StreamWriter :
 		 * @param ip
 		 * @param md
 		 */
-		StreamWriter(QTcpSocket* socket, const QString& ip);
+		StreamWriter(PlayManager* playManager, QTcpSocket* socket, const QString& ip);
 		~StreamWriter() override;
 
 		/**

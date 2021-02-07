@@ -24,9 +24,11 @@
 #include "StreamWriter.h"
 #include "StreamDataSender.h"
 #include "StreamHttpParser.h"
-#include "Interfaces/PlayManager.h"
+
 #include "Components/Engine/EngineHandler.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Interfaces/PlayManager.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
 
@@ -34,9 +36,8 @@
 
 namespace
 {
-	QString getCurrentTitle()
+	QString getCurrentTitle(PlayManager* playManager)
 	{
-		auto* playManager = PlayManagerProvider::instance()->playManager();
 		return QString("%1 - %2")
 			.arg(playManager->currentTrack().albumArtist())
 			.arg(playManager->currentTrack().title());
@@ -45,19 +46,20 @@ namespace
 
 struct StreamWriter::Private
 {
-	PlayManager* playManager = nullptr;
+	PlayManager* playManager;
+	QTcpSocket* socket;
 	Engine::Handler* engine = nullptr;
 	StreamHttpParser* parser = nullptr;
 	StreamDataSender* sender = nullptr;
-	QTcpSocket* socket = nullptr;
+
 	QString ip;
 	StreamWriter::Type type;
 
 	bool dismissed; // after that, only trash will be sent
 	bool sendData; // after that, no data at all will be sent
 
-	Private(QTcpSocket* socket, const QString& ip) :
-		playManager(PlayManagerProvider::instance()->playManager()),
+	Private(PlayManager* playManager, QTcpSocket* socket, const QString& ip) :
+		playManager(playManager),
 		socket(socket),
 		ip(ip),
 		type(StreamWriter::Type::Undefined),
@@ -71,10 +73,10 @@ struct StreamWriter::Private
 };
 
 // socket is the client socket
-StreamWriter::StreamWriter(QTcpSocket* socket, const QString& ip) :
+StreamWriter::StreamWriter(PlayManager* playManager, QTcpSocket* socket, const QString& ip) :
 	Engine::RawSoundReceiverInterface()
 {
-	m = Pimpl::make<Private>(socket, ip);
+	m = Pimpl::make<Private>(playManager, socket, ip);
 
 	if(m->socket->bytesAvailable())
 	{
@@ -156,7 +158,7 @@ void StreamWriter::writeAudioData(const QByteArray& data)
 
 	if(m->parser->isIcyStream())
 	{
-		m->sender->sendIcyData(data, getCurrentTitle());
+		m->sender->sendIcyData(data, getCurrentTitle(m->playManager));
 	} 
 
 	else
@@ -177,7 +179,7 @@ bool StreamWriter::sendFavicon()
 
 bool StreamWriter::sendMetadata()
 {
-	return m->sender->sendMetadata(getCurrentTitle());
+	return m->sender->sendMetadata(getCurrentTitle(m->playManager));
 }
 
 bool StreamWriter::sendBackground()
@@ -187,7 +189,7 @@ bool StreamWriter::sendBackground()
 
 bool StreamWriter::sendHtml5()
 {
-	return m->sender->sendHtml5(getCurrentTitle());
+	return m->sender->sendHtml5(getCurrentTitle(m->playManager));
 }
 
 bool StreamWriter::sendHeader(bool reject)

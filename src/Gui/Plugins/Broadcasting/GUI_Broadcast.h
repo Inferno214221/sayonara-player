@@ -26,6 +26,8 @@
 
 UI_FWD(GUI_Broadcast)
 
+class PlayManager;
+
 class GUI_Broadcast :
 		public PlayerPlugin::Base
 {
@@ -34,7 +36,7 @@ class GUI_Broadcast :
 	UI_CLASS(GUI_Broadcast)
 
 public:
-	explicit GUI_Broadcast(QWidget* parent=nullptr);
+	explicit GUI_Broadcast(PlayManager* playManager, QWidget* parent=nullptr);
 	~GUI_Broadcast() override;
 
 	QString name() const override;

@@ -448,7 +448,7 @@ void Application::initPlugins()
 	pph->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
 	pph->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
 	pph->addPlugin(new GUI_Speed());
-	pph->addPlugin(new GUI_Broadcast());
+	pph->addPlugin(new GUI_Broadcast(m->playManager));
 	pph->addPlugin(new GUI_Crossfader());
 	pph->addPlugin(new GUI_SpectrogramPainter(m->playManager));
 
