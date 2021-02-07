@@ -1,4 +1,4 @@
-project(say_tests)
+project(sayonara-test)
 include("NewTest.cmake")
 include(${CMAKE_SOURCE_DIR}/src/CMake/Compiler.cmake)
 

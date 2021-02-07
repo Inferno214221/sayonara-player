@@ -20,7 +20,7 @@
 #ifndef SAYONARA_PLAYER_PLAYMANAGERIMPL_H
 #define SAYONARA_PLAYER_PLAYMANAGERIMPL_H
 
-#include "PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Utils/Pimpl.h"
 #include "Utils/typedefs.h"
 

@@ -41,7 +41,7 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Parser/PlaylistParser.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 

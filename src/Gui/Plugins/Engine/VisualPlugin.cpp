@@ -20,9 +20,12 @@
 
 #include "VisualPlugin.h"
 #include "VisualColorStyleChooser.h"
-#include "Components/Engine/EngineHandler.h"
-#include "Components/PlayManager/PlayManager.h"
+
+#include "Components/PlayManager/PlayManagerProvider.h"
+
 #include "Gui/Utils/GuiUtils.h"
+
+#include "Interfaces/PlayManager.h"
 
 struct VisualPlugin::Private
 {

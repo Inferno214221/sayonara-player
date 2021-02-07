@@ -2,7 +2,8 @@
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+#include "Interfaces/PlayManager.h"
 
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"

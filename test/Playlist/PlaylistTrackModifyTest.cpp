@@ -2,10 +2,12 @@
 #include "TestPlayManager.h"
 #include "Playlist/PlaylistTestUtils.h"
 
+#include "Components/Playlist/Playlist.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+#include "Components/Tagging/ChangeNotifier.h"
+
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Components/Playlist/Playlist.h"
-#include "Components/Tagging/ChangeNotifier.h"
 
 #include <QSignalSpy>
 

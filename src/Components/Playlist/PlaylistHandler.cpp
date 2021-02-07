@@ -29,7 +29,7 @@
 #include "PlaylistChangeNotifier.h"
 #include "ExternTracksPlaylistGenerator.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"

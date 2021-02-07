@@ -1,12 +1,17 @@
 #include "SayonaraTest.h"
-#include "Components/Playlist/PlaylistHandler.h"
+
 #include "Components/Playlist/Playlist.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
-#include "Utils/Playlist/CustomPlaylist.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Interfaces/PlayManager.h"
+
+#include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/FileUtils.h"
+#include "Utils/Playlist/CustomPlaylist.h"
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class DummyPlaylistLoader : public Playlist::Loader

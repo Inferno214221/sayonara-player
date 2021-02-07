@@ -1,12 +1,15 @@
 #include "SayonaraTest.h"
 #include "TestPlayManager.h"
-#include "Database/Connector.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/StandardPaths.h"
 
-#include "Utils/Utils.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Database/Connector.h"
+
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
 
 #include <QStandardPaths>
 #include <QApplication>

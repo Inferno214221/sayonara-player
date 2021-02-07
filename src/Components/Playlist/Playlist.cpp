@@ -28,7 +28,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Logger/Logger.h"

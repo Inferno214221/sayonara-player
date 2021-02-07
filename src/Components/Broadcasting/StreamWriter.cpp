@@ -24,8 +24,9 @@
 #include "StreamWriter.h"
 #include "StreamDataSender.h"
 #include "StreamHttpParser.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Engine/EngineHandler.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
 

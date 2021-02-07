@@ -21,7 +21,9 @@
 #include "EngineHandler.h"
 #include "Engine.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Interfaces/PlayManager.h"
 #include "Interfaces/Engine/AudioDataReceiverInterface.h"
 
 #include "Utils/Algorithm.h"

@@ -28,7 +28,7 @@
 #include "Translator.h"
 
 #include "Interfaces/PlaylistInterface.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"

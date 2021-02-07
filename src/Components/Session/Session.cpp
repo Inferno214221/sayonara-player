@@ -20,7 +20,8 @@
 
 #include "Session.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Database/Connector.h"
 #include "Database/Session.h"

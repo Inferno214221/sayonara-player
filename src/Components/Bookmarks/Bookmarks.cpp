@@ -27,7 +27,7 @@
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 
 namespace
 {

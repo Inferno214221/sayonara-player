@@ -24,7 +24,7 @@
 
 #include "Interfaces/PlaylistInterface.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 
 #include "Database/Connector.h"

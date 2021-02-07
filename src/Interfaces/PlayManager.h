@@ -342,17 +342,6 @@ class PlayManager :
 		virtual void shutdown() = 0;
 };
 
-class PlayManagerProvider
-{
-	PIMPL(PlayManagerProvider)
-		SINGLETON(PlayManagerProvider)
-
-	public:
-		void init(PlayManager* playManager);
-		void shutdown();
-		PlayManager* playManager();
-};
-
 #endif
 
 

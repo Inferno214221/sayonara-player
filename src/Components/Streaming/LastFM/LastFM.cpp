@@ -31,7 +31,13 @@
 #include "LFMTrackChangedThread.h"
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
+
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Database/Connector.h"
+
 #include "Interfaces/Notification/NotificationHandler.h"
+#include "Interfaces/PlayManager.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
@@ -40,10 +46,6 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Crypt.h"
-
-#include "Components/PlayManager/PlayManager.h"
-
-#include "Database/Connector.h"
 
 #include <QUrl>
 #include <QTimer>

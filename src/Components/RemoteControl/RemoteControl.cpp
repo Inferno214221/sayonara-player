@@ -24,7 +24,7 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Covers/CoverLookup.h"
 
 #include "Utils/Settings/Settings.h"

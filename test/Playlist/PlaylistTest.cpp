@@ -1,9 +1,11 @@
 #include "SayonaraTest.h"
 #include "TestPlayManager.h"
 #include "Playlist/PlaylistTestUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Components/Playlist/Playlist.h"
 
+#include "Components/Playlist/Playlist.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 

@@ -22,7 +22,7 @@
 #include "DBus/org_mpris_media_player2_adaptor.h"
 #include "DBus/org_mpris_media_player2_player_adaptor.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 
 #include "Interfaces/PlaylistInterface.h"

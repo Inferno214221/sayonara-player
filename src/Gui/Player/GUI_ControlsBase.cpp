@@ -13,9 +13,10 @@
 #include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Gui/Utils/Widgets/FloatingLabel.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Engine/EngineHandler.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Algorithm.h"

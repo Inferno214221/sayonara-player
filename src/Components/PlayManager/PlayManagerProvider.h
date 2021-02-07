@@ -17,43 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_PLAYMANAGERPROVIDER_H
+#define SAYONARA_PLAYER_PLAYMANAGERPROVIDER_H
 
-#include "Components/PlayManager/PlayManagerProvider.h"
-#include "Interfaces/PlayManager.h"
+#include "Utils/Pimpl.h"
+#include "Utils/Singleton.h"
 
-struct PlayManagerProvider::Private
+class PlayManager;
+
+class PlayManagerProvider
 {
-	PlayManager* playManager=nullptr;
+	PIMPL(PlayManagerProvider)
+	SINGLETON(PlayManagerProvider)
 
-	Private() = default;
-	~Private()
-	{
-		if(playManager)
-		{
-			delete playManager;
-			playManager = nullptr;
-		}
-	}
+	public:
+		void init(PlayManager* playManager);
+		void shutdown();
+		PlayManager* playManager();
 };
 
-PlayManagerProvider::PlayManagerProvider()
-{
-	m = Pimpl::make<Private>();
-}
-
-PlayManagerProvider::~PlayManagerProvider() = default;
-
-void PlayManagerProvider::init(PlayManager* playManager)
-{
-	m->playManager = playManager;
-}
-
-void PlayManagerProvider::shutdown()
-{
-	m->playManager->shutdown();
-}
-
-PlayManager* PlayManagerProvider::playManager()
-{
-	return m->playManager;
-}
+#endif //SAYONARA_PLAYER_PLAYMANAGERPROVIDER_H

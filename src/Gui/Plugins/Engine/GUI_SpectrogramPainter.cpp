@@ -1,11 +1,14 @@
 #include "GUI_SpectrogramPainter.h"
 
 #include "Components/Engine/AudioDataProvider.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Gui/Utils/EventFilter.h"
+
+#include "Interfaces/PlayManager.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
-#include "Gui/Utils/EventFilter.h"
 
 #include <QPainter>
 #include <QList>

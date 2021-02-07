@@ -20,20 +20,21 @@
 
 #include "GUI_TrayIcon.h"
 
+#include "Components/PlayManager/PlayManagerProvider.h"
+
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+
+#include "Interfaces/PlayManager.h"
+
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
-
-#include "Components/PlayManager/PlayManager.h"
 
 #include <QAction>
 #include <QMenu>
 #include <QEvent>
 #include <QWheelEvent>
-#include <QHoverEvent>
-#include <QIcon>
 #include <QTimer>
 
 using namespace Gui;

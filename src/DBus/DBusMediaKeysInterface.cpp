@@ -19,8 +19,12 @@
  */
 
 #include "DBusMediaKeysInterface.h"
+
+#include "Components/PlayManager/PlayManagerProvider.h"
+
+#include "Interfaces/PlayManager.h"
+
 #include "Utils/Logger/Logger.h"
-#include "Components/PlayManager/PlayManager.h"
 
 #include <QKeyEvent>
 #include <QCoreApplication>

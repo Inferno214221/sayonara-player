@@ -19,7 +19,8 @@
  */
 
 #include "StreamRecorder.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"

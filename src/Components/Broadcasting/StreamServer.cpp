@@ -20,7 +20,7 @@
 
 #include "StreamServer.h"
 
-#include "Components/PlayManager/PlayManager.h"
+#include "Interfaces/PlayManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"

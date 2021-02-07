@@ -25,12 +25,13 @@
  */
 
 #include "Components/Shutdown/Shutdown.h"
-#include "Components/PlayManager/PlayManager.h"
+#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
+#include "Interfaces/PlayManager.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Language/Language.h"
