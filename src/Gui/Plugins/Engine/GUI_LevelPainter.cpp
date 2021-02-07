@@ -40,23 +40,23 @@
 
 static const size_t Channels = 2;
 
-using Step=uint_fast8_t;
+using Step = uint_fast8_t;
 
-using ChannelArray=std::array<float, Channels>;
-using ChannelSteps=std::vector<Step>;
-using StepArray=std::array<ChannelSteps, Channels>;
+using ChannelArray = std::array<float, Channels>;
+using ChannelSteps = std::vector<Step>;
+using StepArray = std::array<ChannelSteps, Channels>;
 
 struct GUI_LevelPainter::Private
 {
-	ChannelArray	level;
-	StepArray		steps;
-	float*			expFunctionLookupTable=nullptr;
+	ChannelArray level;
+	StepArray steps;
+	float* expFunctionLookupTable = nullptr;
 
 	std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 	void resizeSteps(int n_rects)
 	{
-		for(size_t c=0; c<level.size(); c++)
+		for(size_t c = 0; c < level.size(); c++)
 		{
 			steps[c].resize(size_t(n_rects));
 			std::fill(steps[c].begin(), steps[c].end(), 0);
@@ -67,7 +67,7 @@ struct GUI_LevelPainter::Private
 	{
 		size_t n = 40;
 		expFunctionLookupTable = new float[n];
-		for(size_t i=0; i<n; i++)
+		for(size_t i = 0; i < n; i++)
 		{
 			expFunctionLookupTable[i] = -(i / 40.0f) + 1.0f;
 		}
@@ -101,9 +101,8 @@ struct GUI_LevelPainter::Private
 	}
 };
 
-
-GUI_LevelPainter::GUI_LevelPainter(QWidget* parent) :
-	VisualPlugin(parent),
+GUI_LevelPainter::GUI_LevelPainter(PlayManager* playManager, QWidget* parent) :
+	VisualPlugin(playManager, parent),
 	Engine::LevelReceiver()
 {
 	m = Pimpl::make<Private>();
@@ -112,19 +111,19 @@ GUI_LevelPainter::GUI_LevelPainter(QWidget* parent) :
 	Set::listen<Set::Engine_ShowLevel>(this, &GUI_LevelPainter::activeChanged);
 }
 
-
 GUI_LevelPainter::~GUI_LevelPainter()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
-
 void GUI_LevelPainter::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
@@ -132,7 +131,6 @@ void GUI_LevelPainter::initUi()
 
 	setupParent(this, &ui);
 }
-
 
 void GUI_LevelPainter::finalizeInitialization()
 {
@@ -179,7 +177,8 @@ void GUI_LevelPainter::setLevel(float left, float right)
 		return;
 	}
 
-	if(m->lock.test_and_set()){
+	if(m->lock.test_and_set())
+	{
 		return;
 	}
 
@@ -198,49 +197,53 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 	QPainter painter(this);
 
 	ColorStyle style = currentStyle();
-	int n_rects =		style.n_rects;
-	int border_x =		style.hor_spacing;
-	int border_y =		style.ver_spacing;
+	int n_rects = style.n_rects;
+	int border_x = style.hor_spacing;
+	int border_y = style.ver_spacing;
 	int n_fading_steps = style.n_fading_steps;
-	int h_rect =		style.rect_height;
-	int w_rect =		style.rect_width;
+	int h_rect = style.rect_height;
+	int w_rect = style.rect_width;
 
 	int y = 10;
 	size_t num_zero = 0;
 	int x_init = (w_rect + border_x);
 
-	for(size_t c=0; c<Channels; c++)
+	for(size_t c = 0; c < Channels; c++)
 	{
 		size_t n_colored_rects = size_t(n_rects * m->level[c]);
 
 		QRect rect(0, y, w_rect, h_rect);
 
-		for(size_t r=0; r < size_t(n_rects); r++)
+		for(size_t r = 0; r < size_t(n_rects); r++)
 		{
 			if(r < n_colored_rects)
 			{
-				if(!style.style[r].contains(-1)){
+				if(!style.style[r].contains(-1))
+				{
 					spLog(Log::Debug, this) << "Style does not contain -1";
 				}
 
-				painter.fillRect(rect, style.style[r].value(-1) );
+				painter.fillRect(rect, style.style[r].value(-1));
 
 				m->setStep(c, r, Step(n_fading_steps - 1));
 			}
 
 			else
 			{
-				if(!style.style[r].contains(m->steps[c][r])){
+				if(!style.style[r].contains(m->steps[c][r]))
+				{
 					spLog(Log::Debug, this) << "2 Style does not contain " << m->steps[c][r] << ", " << c << ", " << r;
 				}
 
-				painter.fillRect(rect, style.style[r].value(m->steps[c][r]) );
+				painter.fillRect(rect, style.style[r].value(m->steps[c][r]));
 
-				if(m->steps[c][r] > 0) {
+				if(m->steps[c][r] > 0)
+				{
 					m->decreaseStep(c, r);
 				}
 
-				if(m->steps[c][r] == 0) {
+				if(m->steps[c][r] == 0)
+				{
 					num_zero++;
 				}
 			}
@@ -289,7 +292,8 @@ void GUI_LevelPainter::reload()
 	setMinimumHeight(new_height);
 	setMaximumHeight(new_height);
 
-	if(isVisible()){
+	if(isVisible())
+	{
 		emit sigReload(this);
 	}
 }
@@ -311,7 +315,7 @@ void GUI_LevelPainter::hideEvent(QHideEvent* e)
 	VisualPlugin::hideEvent(e);
 }
 
-QWidget *GUI_LevelPainter::widget()
+QWidget* GUI_LevelPainter::widget()
 {
 	return this;
 }

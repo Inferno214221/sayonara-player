@@ -21,71 +21,67 @@
 #include "VisualPlugin.h"
 #include "VisualColorStyleChooser.h"
 
-#include "Components/PlayManager/PlayManagerProvider.h"
-
 #include "Gui/Utils/GuiUtils.h"
 
 #include "Interfaces/PlayManager.h"
 
 struct VisualPlugin::Private
 {
-	GUI_StyleSettings*	style_settings=nullptr;
-	QPushButton*		btn_config=nullptr;
-	QPushButton*		btn_prev=nullptr;
-	QPushButton*		btn_next=nullptr;
-	QPushButton*		btn_close=nullptr;
+	PlayManager* playManager;
+	GUI_StyleSettings* styleSettings = nullptr;
+	QPushButton* btnConfig = nullptr;
+	QPushButton* btnPrev = nullptr;
+	QPushButton* btnNext = nullptr;
+	QPushButton* btnClose = nullptr;
 
-	QTimer*				timer=nullptr;
-	int					timer_stopped;
+	QTimer* timer = nullptr;
+	int timerStopped;
 
-	Private() :
-		timer_stopped(true)
-	{}
+	Private(PlayManager* playManager) :
+		playManager(playManager),
+		timerStopped(true) {}
 };
 
-VisualPlugin::VisualPlugin(QWidget* parent) :
+VisualPlugin::VisualPlugin(PlayManager* playManager, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playManager);
 }
-
 
 VisualPlugin::~VisualPlugin()
 {
-	if(m_ecsc){
-		delete m_ecsc; m_ecsc = nullptr;
+	if(m_ecsc)
+	{
+		delete m_ecsc;
+		m_ecsc = nullptr;
 	}
 }
 
-
 void VisualPlugin::initUi()
 {
-	auto* playManager = PlayManagerProvider::instance()->playManager();
-	connect(playManager, &PlayManager::sigPlaystateChanged, this, &VisualPlugin::playstate_changed);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &VisualPlugin::playstate_changed);
 
 	m_ecsc = new VisualColorStyleChooser(minimumWidth(), minimumHeight());
-	m->style_settings = new GUI_StyleSettings(this);
+	m->styleSettings = new GUI_StyleSettings(this);
 
 	m->timer = new QTimer();
 	m->timer->setInterval(30);
-	m->timer_stopped = true;
+	m->timerStopped = true;
 
 	connect(m->timer, &QTimer::timeout, this, &VisualPlugin::doFadeoutStep);
-	connect(m->style_settings, &GUI_StyleSettings::sig_style_update, this, &VisualPlugin::style_changed);
+	connect(m->styleSettings, &GUI_StyleSettings::sig_style_update, this, &VisualPlugin::style_changed);
 }
-
 
 bool VisualPlugin::hasTitle() const
 {
 	return false;
 }
 
-
 void VisualPlugin::set_button_sizes()
 {
 	init_buttons();
 
-	QFont font = m->btn_config->font();
+	QFont font = m->btnConfig->font();
 
 	QFontMetrics fm = this->fontMetrics();
 	int char_width = Gui::Util::textWidth(fm, "W");
@@ -93,7 +89,7 @@ void VisualPlugin::set_button_sizes()
 	int x = 10;
 	int y = 5;
 	int height = fm.height() + 2;
-	int width =  char_width + 4;
+	int width = char_width + 4;
 	int font_size = 6;
 
 	if(!hasSmallButtons())
@@ -107,7 +103,7 @@ void VisualPlugin::set_button_sizes()
 	font.setPointSize(font_size);
 
 	//QList<QPushButton*> buttons ;
-	for(QPushButton* button : { m->btn_config, m->btn_prev, m->btn_next, m->btn_close })
+	for(QPushButton* button : {m->btnConfig, m->btnPrev, m->btnNext, m->btnClose})
 	{
 		button->setFont(font);
 		button->setMaximumHeight(height);
@@ -125,34 +121,35 @@ void VisualPlugin::set_buttons_visible(bool b)
 {
 	init_buttons();
 
-	m->btn_config->setVisible(b);
-	m->btn_prev->setVisible(b);
-	m->btn_next->setVisible(b);
-	m->btn_close->setVisible(b);
+	m->btnConfig->setVisible(b);
+	m->btnPrev->setVisible(b);
+	m->btnNext->setVisible(b);
+	m->btnClose->setVisible(b);
 }
 
 void VisualPlugin::init_buttons()
 {
-	if(m->btn_config){
+	if(m->btnConfig)
+	{
 		return;
 	}
 
 	QWidget* w = widget();
-	m->btn_config = new QPushButton(QString::fromUtf8("≡"), w);
-	m->btn_prev = new QPushButton("<", w);
-	m->btn_next = new QPushButton(">", w);
-	m->btn_close = new QPushButton("x", w);
+	m->btnConfig = new QPushButton(QString::fromUtf8("≡"), w);
+	m->btnPrev = new QPushButton("<", w);
+	m->btnNext = new QPushButton(">", w);
+	m->btnClose = new QPushButton("x", w);
 
-	m->btn_close->setFocusProxy(w);
+	m->btnClose->setFocusProxy(w);
 
 	set_button_sizes();
 	set_buttons_visible(false);
 
-	connect(m->btn_config, &QPushButton::clicked, this, &VisualPlugin::config_clicked);
-	connect(m->btn_prev, &QPushButton::clicked, this, &VisualPlugin::prev_clicked);
-	connect(m->btn_next, &QPushButton::clicked, this, &VisualPlugin::next_clicked);
-	connect(m->btn_close, &QPushButton::clicked, this, &VisualPlugin::close);
-	connect(m->btn_close, &QPushButton::clicked, this->parentWidget(), &QWidget::close);
+	connect(m->btnConfig, &QPushButton::clicked, this, &VisualPlugin::config_clicked);
+	connect(m->btnPrev, &QPushButton::clicked, this, &VisualPlugin::prev_clicked);
+	connect(m->btnNext, &QPushButton::clicked, this, &VisualPlugin::next_clicked);
+	connect(m->btnClose, &QPushButton::clicked, this, &VisualPlugin::close);
+	connect(m->btnClose, &QPushButton::clicked, this->parentWidget(), &QWidget::close);
 }
 
 void VisualPlugin::showEvent(QShowEvent* e)
@@ -163,9 +160,8 @@ void VisualPlugin::showEvent(QShowEvent* e)
 
 void VisualPlugin::config_clicked()
 {
-	m->style_settings->show(currentStyleIndex());
+	m->styleSettings->show(currentStyleIndex());
 }
-
 
 void VisualPlugin::next_clicked()
 {
@@ -176,29 +172,28 @@ void VisualPlugin::next_clicked()
 	update_style(new_index);
 }
 
-
 void VisualPlugin::prev_clicked()
 {
 	int n_styles = m_ecsc->get_num_color_schemes();
 
 	int new_index = (currentStyleIndex() - 1);
-	if(new_index < 0){
+	if(new_index < 0)
+	{
 		new_index = n_styles - 1;
 	}
 
 	update_style(new_index);
 }
 
-
 void VisualPlugin::update()
 {
 	QWidget::update();
 
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 }
-
 
 void VisualPlugin::playstate_changed(PlayState state)
 {
@@ -219,18 +214,19 @@ void VisualPlugin::playstate_changed(PlayState state)
 }
 
 void VisualPlugin::played() {}
+
 void VisualPlugin::paused() {}
 
 void VisualPlugin::stopped()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
 	m->timer->start();
-	m->timer_stopped = false;
+	m->timerStopped = false;
 }
-
 
 void VisualPlugin::closeEvent(QCloseEvent* e)
 {
@@ -238,19 +234,18 @@ void VisualPlugin::closeEvent(QCloseEvent* e)
 	update();
 }
 
-
 void VisualPlugin::resizeEvent(QResizeEvent* e)
 {
 	PlayerPlugin::Base::resizeEvent(e);
 
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
 	update_style(currentStyleIndex());
 	set_button_sizes();
 }
-
 
 void VisualPlugin::mousePressEvent(QMouseEvent* e)
 {
@@ -261,19 +256,19 @@ void VisualPlugin::mousePressEvent(QMouseEvent* e)
 			break;
 
 		case Qt::MidButton:
-			if(this->parentWidget()){
+			if(this->parentWidget())
+			{
 				this->parentWidget()->close();
 			}
 			break;
 
 		case Qt::RightButton:
-			m->style_settings->show(currentStyleIndex());
+			m->styleSettings->show(currentStyleIndex());
 			break;
 		default:
 			break;
 	}
 }
-
 
 void VisualPlugin::enterEvent(QEvent* e)
 {
@@ -291,14 +286,14 @@ void VisualPlugin::leaveEvent(QEvent* e)
 	set_buttons_visible(false);
 }
 
-
 void VisualPlugin::stop_fadeout_timer()
 {
-	if(!m->timer_stopped )
+	if(!m->timerStopped)
 	{
-		m->timer_stopped = true;
+		m->timerStopped = true;
 
-		if(m->timer) {
+		if(m->timer)
+		{
 			m->timer->stop();
 		}
 	}

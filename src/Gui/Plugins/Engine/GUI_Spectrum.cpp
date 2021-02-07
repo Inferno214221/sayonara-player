@@ -39,17 +39,17 @@
 #include <algorithm>
 #include <mutex>
 
-using Step=uint_fast8_t;
-using BinSteps=std::vector<Step>;
-using StepArray=std::vector<BinSteps>;
+using Step = uint_fast8_t;
+using BinSteps = std::vector<Step>;
+using StepArray = std::vector<BinSteps>;
 using Engine::SpectrumList;
 
 struct GUI_Spectrum::Private
 {
-	std::atomic_flag	locked = ATOMIC_FLAG_INIT;
-	SpectrumList		spec;
-	StepArray			steps;
-	float*				logarithmLookupTable=nullptr;
+	std::atomic_flag locked = ATOMIC_FLAG_INIT;
+	SpectrumList spec;
+	StepArray steps;
+	float* logarithmLookupTable = nullptr;
 
 	void initLookupTable(int bins)
 	{
@@ -58,7 +58,7 @@ struct GUI_Spectrum::Private
 		// make bass value smaller than high frequencies
 		// log_lu[0] = 0.0.01666667
 		// log_lu[50] = 0.37930765
-		for(int i=0; i<bins; i++)
+		for(int i = 0; i < bins; i++)
 		{
 			logarithmLookupTable[i] = (std::pow(10.0f, (i / 140.0f) + 1.0f) / 8.0f) / 75.0f;
 		}
@@ -73,7 +73,7 @@ struct GUI_Spectrum::Private
 		spec.clear();
 		spec.reserve(s.size());
 
-		for(size_t i=0; i<s.size(); i++)
+		for(size_t i = 0; i < s.size(); i++)
 		{
 			float f = (s[i] + 75.0) * logarithmLookupTable[i];
 			spec.push_back(f);
@@ -84,7 +84,8 @@ struct GUI_Spectrum::Private
 	{
 		binCount = std::max(50, binCount);
 
-		if(binCount != (int) steps.size()){
+		if(binCount != (int) steps.size())
+		{
 			steps.resize(binCount);
 		}
 
@@ -96,14 +97,13 @@ struct GUI_Spectrum::Private
 	}
 };
 
-
-GUI_Spectrum::GUI_Spectrum(QWidget* parent) :
-	VisualPlugin(parent),
+GUI_Spectrum::GUI_Spectrum(PlayManager* playManager, QWidget* parent) :
+	VisualPlugin(playManager, parent),
 	Engine::SpectrumReceiver()
 {
 	m = Pimpl::make<Private>();
 
-	SetSetting(Set::Engine_ShowSpectrum, false);	
+	SetSetting(Set::Engine_ShowSpectrum, false);
 	Set::listen<Set::Engine_ShowSpectrum>(this, &GUI_Spectrum::activeChanged);
 }
 
@@ -111,13 +111,15 @@ GUI_Spectrum::~GUI_Spectrum()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
 void GUI_Spectrum::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
@@ -164,7 +166,8 @@ void GUI_Spectrum::retranslate() {}
 
 void GUI_Spectrum::setSpectrum(const SpectrumList& spec)
 {
-	if(!isUiInitialized() || !isVisible()){
+	if(!isUiInitialized() || !isVisible())
+	{
 		return;
 	}
 
@@ -176,7 +179,7 @@ void GUI_Spectrum::setSpectrum(const SpectrumList& spec)
 
 void GUI_Spectrum::doFadeoutStep()
 {
-	for(auto it=m->spec.begin(); it!= m->spec.end(); it++)
+	for(auto it = m->spec.begin(); it != m->spec.end(); it++)
 	{
 		*it = (*it - 1.5f);
 	}
@@ -186,11 +189,13 @@ void GUI_Spectrum::doFadeoutStep()
 
 void GUI_Spectrum::update_style(int new_index)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	if(m->locked.test_and_set()) {
+	if(m->locked.test_and_set())
+	{
 		spLog(Log::Debug, this) << "Cannot update stylde";
 		return;
 	}
@@ -236,18 +241,18 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 	const int ninety = 35;
 	const int offset = 0;
 	int n_zero = 0;
-    int x=3;
+	int x = 3;
 
 	int w_bin = ((width() + 10) / (ninety - offset)) - border_x;
 
 	// run through all bins
-	for(int i=offset; i<ninety + 1; i++)
+	for(int i = offset; i < ninety + 1; i++)
 	{
 		// if this is one bar, how tall would it be?
 		int h = int(m->spec.at(i) * widget_height);
 
 		// how many colored rectangles would fit into this bar?
-		int colored_rects = h / (h_rect + border_y) - 1 ;
+		int colored_rects = h / (h_rect + border_y) - 1;
 
 		colored_rects = std::max(colored_rects, 0);
 
@@ -258,25 +263,27 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 
 		QRect rect(x, y, w_bin, h_rect);
 		QColor col;
-		for(int r=0; r<n_rects; r++)
+		for(int r = 0; r < n_rects; r++)
 		{
 			// 100%
-			if( r < colored_rects)
+			if(r < colored_rects)
 			{
 				col = currentStyle().style[r].value(-1);
 				m->steps[i][r] = n_fading_steps;
 			}
 
-			// fading out
+				// fading out
 			else
 			{
 				col = currentStyle().style[r].value(m->steps[i][r]);
 
-				if(m->steps[i][r] > 0) {
+				if(m->steps[i][r] > 0)
+				{
 					m->steps[i][r]--;
 				}
 
-				else {
+				else
+				{
 					n_zero++;
 				}
 			}
@@ -294,7 +301,6 @@ void GUI_Spectrum::paintEvent(QPaintEvent* e)
 		stop_fadeout_timer();
 	}
 }
-
 
 QWidget* GUI_Spectrum::widget()
 {

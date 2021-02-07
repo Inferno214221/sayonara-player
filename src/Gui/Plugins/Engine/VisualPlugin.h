@@ -30,9 +30,9 @@
 #include <QTimer>
 #include <QPushButton>
 
-class VisualColorStyleChooser;
-
 class EngineHandler;
+class PlayManager;
+class VisualColorStyleChooser;
 
 class VisualPlugin : public PlayerPlugin::Base
 {
@@ -85,7 +85,7 @@ public slots:
 
 
 public:
-	explicit VisualPlugin(QWidget* parent=nullptr);
+	explicit VisualPlugin(PlayManager* playManager, QWidget* parent=nullptr);
 	virtual ~VisualPlugin();
 
 	virtual bool hasTitle() const override;

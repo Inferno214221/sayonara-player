@@ -36,7 +36,7 @@ class GUI_LevelPainter :
 		PIMPL(GUI_LevelPainter)
 
 	public:
-		explicit GUI_LevelPainter(QWidget* parent=nullptr);
+		explicit GUI_LevelPainter(PlayManager* playManager, QWidget* parent=nullptr);
 		~GUI_LevelPainter() override;
 
 		QString name() const override;

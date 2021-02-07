@@ -36,7 +36,7 @@ class GUI_Spectrum :
 	PIMPL(GUI_Spectrum)
 
 	public:
-		explicit GUI_Spectrum(QWidget* parent=nullptr);
+		explicit GUI_Spectrum(PlayManager* playManager, QWidget* parent=nullptr);
 		~GUI_Spectrum() override;
 
 		QString name() const override;

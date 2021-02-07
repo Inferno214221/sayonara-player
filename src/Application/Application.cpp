@@ -439,8 +439,8 @@ void Application::initPlugins()
 
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
-	pph->addPlugin(new GUI_LevelPainter());
-	pph->addPlugin(new GUI_Spectrum());
+	pph->addPlugin(new GUI_LevelPainter(m->playManager));
+	pph->addPlugin(new GUI_Spectrum(m->playManager));
 	pph->addPlugin(new GUI_Equalizer());
 	pph->addPlugin(new GUI_Stream());
 	pph->addPlugin(new GUI_Podcasts());
