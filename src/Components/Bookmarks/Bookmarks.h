@@ -21,20 +21,22 @@
 #ifndef BOOKMARKS_H
 #define BOOKMARKS_H
 
-#include "BookmarksBase.h"
+#include "BookmarkStorage.h"
 #include "Components/PlayManager/PlayState.h"
 
 #include <QList>
+#include <QObject>
 
 class Bookmark;
 class MetaData;
+class PlayManager;
 
 /**
  * @brief The Bookmarks logic class
  * @ingroup Bookmarks
  */
 class Bookmarks :
-	public BookmarksBase
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(Bookmarks)
@@ -59,8 +61,7 @@ class Bookmarks :
 		void sigNextChanged(const Bookmark& bm);
 
 	public:
-
-		explicit Bookmarks(QObject* parent);
+		explicit Bookmarks(PlayManager* playManager, QObject* parent=nullptr);
 		~Bookmarks() override;
 
 		/**
@@ -89,38 +90,33 @@ class Bookmarks :
 		 */
 		bool setLoop(bool b);
 
-		BookmarksBase::CreationStatus create();
+		int count() const;
 
-		bool remove(int idx) override;
+		BookmarkStorage::CreationStatus create();
+
+		bool remove(int index);
+		const QList<Bookmark>& bookmarks() const;
+
+		const MetaData& currentTrack() const;
 
 	private slots:
 		/**
 		 * @brief track position has changed
-		 * @param pos new position in ms
+		 * @param positionMs new position in ms
 		 */
-		void positionChangedMs(MilliSeconds pos);
+		void positionChangedMs(MilliSeconds positionMs);
 
 		/**
 		 * @brief current track has changed
-		 * @param md new MetaData object
+		 * @param track new MetaData object
 		 */
-		void currentTrackChanged(const MetaData& md);
+		void currentTrackChanged(const MetaData& track);
 
 		/**
 		 * @brief current playstate has changed
 		 * @param state new playstate
 		 */
 		void playstateChanged(PlayState state);
-
-	private:
-
-		using BookmarksBase::create;
-		using BookmarksBase::setMetadata;
-
-		/**
-		 * @brief fetch bookmarks from db and emit sig_bookmarks_changed signal
-		 */
-		bool load() override;
 };
 
 #endif // BOOKMARKS_H

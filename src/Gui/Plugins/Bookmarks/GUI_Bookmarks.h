@@ -41,7 +41,7 @@ class GUI_Bookmarks :
 	PIMPL(GUI_Bookmarks)
 
 public:
-	explicit GUI_Bookmarks(QWidget* parent=nullptr);
+	explicit GUI_Bookmarks(Bookmarks* bookmarks, QWidget* parent=nullptr);
 	~GUI_Bookmarks() override;
 
 	QString name() const override;
@@ -53,7 +53,7 @@ private:
 
 
 private slots:
-	void currentIndexChanged(int new_idx);
+	void currentIndexChanged(int currentIndex);
 	void nextClicked();
 	void previousClicked();
 	void newClicked();

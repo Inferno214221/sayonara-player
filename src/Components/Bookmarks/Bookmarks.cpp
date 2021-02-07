@@ -18,35 +18,43 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <Utils/Logger/Logger.h>
 #include "Bookmark.h"
 #include "Bookmarks.h"
+#include "BookmarkStorage.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
 
 #include "Components/PlayManager/PlayManager.h"
 
+namespace
+{
+	static constexpr const Seconds TimeOffset = 1;
+}
+
 struct Bookmarks::Private
 {
-	PlayManager*	playManager=nullptr;
+	PlayManager* playManager;
+	BookmarkStorage bookmarkDbAccessor;
 
-	int				previousIndex;
-	int				nextIndex;
+	int previousIndex;
+	int nextIndex;
 
-	Seconds			timeOffset;
-	Seconds			currentTime;
+	Seconds currentTime;
 
-	Seconds			loopStart;
-	Seconds			loopEnd;
+	Seconds loopStart;
+	Seconds loopEnd;
 
-	Private() :
-		playManager(PlayManagerProvider::instance()->playManager()),
-	    previousIndex(-1),
-	    nextIndex(-1),
-	    timeOffset(0),
-	    currentTime(0),
-	    loopStart(0),
-	    loopEnd(0)
+	Private(PlayManager* playManager) :
+		playManager(playManager),
+		bookmarkDbAccessor(BookmarkStorage{playManager->currentTrack()}),
+		previousIndex(-1),
+		nextIndex(-1),
+		currentTime(0),
+		loopStart(0),
+		loopEnd(0)
 	{
 		reset();
 	}
@@ -55,42 +63,28 @@ struct Bookmarks::Private
 	{
 		previousIndex = -1;
 		nextIndex = -1;
-        timeOffset = 0;
+		currentTime = 0;
 		loopStart = 0;
 		loopEnd = 0;
-        currentTime = 0;
 	}
 };
 
-
-Bookmarks::Bookmarks(QObject* parent) :
-	BookmarksBase(parent)
+Bookmarks::Bookmarks(PlayManager* playManager, QObject* parent) :
+	QObject(parent)
 {
-	m = Pimpl::make<Bookmarks::Private>();
+	m = Pimpl::make<Bookmarks::Private>(playManager);
 
 	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &Bookmarks::currentTrackChanged);
 	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &Bookmarks::positionChangedMs);
 	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Bookmarks::playstateChanged);
-
-	setMetadata(m->playManager->currentTrack());
 }
 
 Bookmarks::~Bookmarks() = default;
 
-bool Bookmarks::load()
+BookmarkStorage::CreationStatus Bookmarks::create()
 {
-	bool success = BookmarksBase::load();
-	if(success){
-		emit sigBookmarksChanged();
-	}
-
-	return success;
-}
-
-BookmarksBase::CreationStatus Bookmarks::create()
-{
-	BookmarksBase::CreationStatus status = BookmarksBase::create(m->playManager->currentPositionMs() / 1000);
-	if(status == BookmarksBase::CreationStatus::Success)
+	const auto status = m->bookmarkDbAccessor.create(m->playManager->currentPositionMs() / 1000);
+	if(status == BookmarkStorage::CreationStatus::Success)
 	{
 		emit sigBookmarksChanged();
 	}
@@ -98,43 +92,47 @@ BookmarksBase::CreationStatus Bookmarks::create()
 	return status;
 }
 
-
-bool Bookmarks::remove(int idx)
+bool Bookmarks::remove(int index)
 {
-	bool success = BookmarksBase::remove(idx);
-	if(success){
+	const auto removed = m->bookmarkDbAccessor.remove(index);
+	if(removed)
+	{
 		emit sigBookmarksChanged();
 	}
 
-	return success;
+	return removed;
 }
 
+const QList<Bookmark>& Bookmarks::bookmarks() const
+{
+	return m->bookmarkDbAccessor.bookmarks();
+}
+
+int Bookmarks::count() const
+{
+	return m->bookmarkDbAccessor.count();
+}
 
 bool Bookmarks::jumpTo(int idx)
 {
-	if(!Util::between(idx, this->count()) )
+	const auto isIndexValid = Util::between(idx, count());
+	if(isIndexValid)
 	{
-		return false;
+		const auto newTime = (idx >= 0)
+		                     ? static_cast<MilliSeconds>(m->bookmarkDbAccessor.bookmark(idx).timestamp() * 1000)
+		                     : 0;
+
+		m->playManager->seekAbsoluteMs(newTime);
 	}
 
-	if(idx < 0){
-		m->playManager->seekAbsoluteMs(0);
-	}
-	else
-	{
-		MilliSeconds new_time = bookmark(idx).timestamp() * 1000;
-		m->playManager->seekAbsoluteMs(new_time);
-	}
-
-	return true;
+	return isIndexValid;
 }
-
 
 bool Bookmarks::jumpNext()
 {
-	if( !Util::between(m->nextIndex, this->count()) )
+	if(!Util::between(m->nextIndex, count()))
 	{
-		emit sigNextChanged(Bookmark());
+		emit sigNextChanged(Bookmark {});
 		return false;
 	}
 
@@ -143,10 +141,9 @@ bool Bookmarks::jumpNext()
 	return true;
 }
 
-
 bool Bookmarks::jumpPrevious()
 {
-	if( m->previousIndex >= this->count() )
+	if(m->previousIndex >= count())
 	{
 		emit sigPreviousChanged(Bookmark());
 		return false;
@@ -157,71 +154,54 @@ bool Bookmarks::jumpPrevious()
 	return true;
 }
 
-
-void Bookmarks::positionChangedMs(MilliSeconds pos_ms)
+void Bookmarks::positionChangedMs(MilliSeconds positionMs)
 {
-	m->currentTime = (Seconds) (pos_ms / 1000);
-
-    if (m->currentTime >= m->loopEnd)
-    {
-        if (m->loopEnd != 0)
-        {
-            jumpPrevious();
-            return;
-        }
-    }
-
-    if(this->count() == 0){
+	m->currentTime = static_cast<Seconds>(positionMs / 1000);
+	if(m->loopEnd != 0 && m->currentTime >= m->loopEnd)
+	{
+		jumpPrevious();
 		return;
 	}
 
-	m->previousIndex=-1;
-	m->nextIndex=-1;
-
-	const QList<Bookmark> bookmarks = this->bookmarks();
-	for(auto it=bookmarks.begin(); it != bookmarks.end(); it++)
+	if(this->count() == 0)
 	{
-		Seconds time = it->timestamp();
-
-		if(time + m->timeOffset < m->currentTime)
-		{
-			m->previousIndex = std::distance(bookmarks.begin(), it);
-		}
-
-		else if(time > m->currentTime)
-		{
-			if(m->nextIndex == -1){
-				m->nextIndex = std::distance(bookmarks.begin(), it);
-				break;
-			}
-		}
+		return;
 	}
 
-	if( Util::between(m->previousIndex, this->count()) ){
-		emit sigPreviousChanged(this->bookmark(m->previousIndex));
-	}
-	else{
-		emit sigPreviousChanged(Bookmark());
-	}
+	const auto& bookmarks = m->bookmarkDbAccessor.bookmarks();
 
-	if( Util::between(m->nextIndex, this->count()) ){
-		emit sigNextChanged(this->bookmark(m->nextIndex));
-	}
-	else{
-		emit sigNextChanged(Bookmark());
-	}
+	const auto it = std::find_if(bookmarks.crbegin(), bookmarks.crend(), [&](const Bookmark& bookmark){
+		return (bookmark.timestamp() < m->currentTime - TimeOffset);
+	});
+
+	m->previousIndex = (it != bookmarks.crend())
+		? std::distance(it, bookmarks.crend()) - 1
+		: -1;
+
+	const auto previousBookmark = (m->previousIndex >= 0)
+	                              ? m->bookmarkDbAccessor.bookmark(m->previousIndex)
+	                              : Bookmark {};
+
+	m->nextIndex = Util::Algorithm::indexOf(bookmarks, [&](const auto& bookmark){
+		return (bookmark.timestamp() > m->currentTime);
+	});
+
+	const auto nextBookmark = (m->nextIndex >= 0)
+	                          ? m->bookmarkDbAccessor.bookmark(m->nextIndex)
+	                          : Bookmark {};
+
+	emit sigPreviousChanged(previousBookmark);
+	emit sigNextChanged(nextBookmark);
 }
 
-
-void Bookmarks::currentTrackChanged(const MetaData& md)
+void Bookmarks::currentTrackChanged(const MetaData& track)
 {
-	BookmarksBase::setMetadata(md);
+	m->bookmarkDbAccessor.setTrack(track);
 
 	emit sigBookmarksChanged();
-	emit sigPreviousChanged(Bookmark());
-	emit sigNextChanged(Bookmark());
+	emit sigPreviousChanged(Bookmark {});
+	emit sigNextChanged(Bookmark {});
 }
-
 
 void Bookmarks::playstateChanged(PlayState state)
 {
@@ -230,28 +210,33 @@ void Bookmarks::playstateChanged(PlayState state)
 		m->reset();
 
 		emit sigBookmarksChanged();
-		emit sigPreviousChanged(Bookmark());
-		emit sigNextChanged(Bookmark());
+		emit sigPreviousChanged(Bookmark{});
+		emit sigNextChanged(Bookmark{});
 	}
 }
 
 bool Bookmarks::setLoop(bool b)
 {
-	bool ret = false;
-
 	m->loopStart = 0;
 	m->loopEnd = 0;
 
-	if(b)
+	if(!b)
 	{
-		if( Util::between(m->previousIndex, this->count()) &&
-			Util::between(m->nextIndex, this->count()) )
-		{
-			m->loopStart = bookmark(m->previousIndex).timestamp();
-			m->loopEnd = bookmark(m->nextIndex).timestamp();
-			ret = true;
-		}
+		return false;
 	}
 
-	return ret;
+	const auto canLoop = Util::between(m->previousIndex, count()) &&
+	                     Util::between(m->nextIndex, count());
+	if(canLoop)
+	{
+		m->loopStart = m->bookmarkDbAccessor.bookmark(m->previousIndex).timestamp();
+		m->loopEnd = m->bookmarkDbAccessor.bookmark(m->nextIndex).timestamp();
+	}
+
+	return canLoop;
+}
+
+const MetaData& Bookmarks::currentTrack() const
+{
+	return m->bookmarkDbAccessor.track();
 }

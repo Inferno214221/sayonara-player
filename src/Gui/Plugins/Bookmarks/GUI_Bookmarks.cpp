@@ -38,20 +38,24 @@ using Gui::ContextMenuEntries;
 
 struct GUI_Bookmarks::Private
 {
-	Bookmarks*	bookmarks=nullptr;
+	Bookmarks* bookmarks;
+
+	Private(Bookmarks* bookmarks) :
+		bookmarks {bookmarks} {}
 };
 
-GUI_Bookmarks::GUI_Bookmarks(QWidget* parent) :
+GUI_Bookmarks::GUI_Bookmarks(Bookmarks* bookmarks, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(bookmarks);
 }
 
 GUI_Bookmarks::~GUI_Bookmarks()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -65,27 +69,23 @@ QString GUI_Bookmarks::displayName() const
 	return Lang::get(Lang::Bookmarks);
 }
 
-
 void GUI_Bookmarks::retranslate()
 {
 	ui->retranslateUi(this);
 
-	const QList<Bookmark>& bookmarks = m->bookmarks->bookmarks();
-	if(bookmarks.isEmpty())
+	if(m->bookmarks->count() == 0)
 	{
 		ui->cb_bookmarks->clear();
 		ui->cb_bookmarks->addItem(tr("No bookmarks found"), -1);
 	}
 }
 
-
 void GUI_Bookmarks::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
-
-	m->bookmarks = new Bookmarks(this);
 
 	setupParent(this, &ui);
 
@@ -109,65 +109,56 @@ void GUI_Bookmarks::initUi()
 	bookmarksChanged();
 }
 
-
 void GUI_Bookmarks::bookmarksChanged()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	const QList<Bookmark>& bookmarks = m->bookmarks->bookmarks();
+	const auto& bookmarks = m->bookmarks->bookmarks();
 
 	disconnect(ui->cb_bookmarks, combo_current_index_changed_int, this, &GUI_Bookmarks::currentIndexChanged);
 
 	ui->cb_bookmarks->clear();
-	for(const Bookmark& bookmark : bookmarks)
+	for(const auto& bookmark : bookmarks)
 	{
-		ui->cb_bookmarks->addItem(bookmark.name(), int(bookmark.timestamp()));
+		ui->cb_bookmarks->addItem(bookmark.name(), static_cast<int>(bookmark.timestamp()));
 	}
 
-	if(bookmarks.isEmpty()) {
+	if(bookmarks.isEmpty())
+	{
 		ui->cb_bookmarks->addItem(tr("No bookmarks found"), -1);
 	}
 
-	MetaData md = m->bookmarks->metadata();
+	const auto& track = m->bookmarks->currentTrack();
 
-	ui->btn_tool->showAction(ContextMenu::EntryNew, (md.id() >= 0) );
-	ui->btn_tool->showAction(ContextMenu::EntryDelete, !bookmarks.isEmpty() );
+	ui->btn_tool->showAction(ContextMenu::EntryNew, (track.id() >= 0));
+	ui->btn_tool->showAction(ContextMenu::EntryDelete, !bookmarks.isEmpty());
 
-	if(md.id() >= 0 && bookmarks.size() > 0){
-		ui->controls->show();
-	}
-
-	else{
-		ui->controls->hide();
-	}
+	const auto visible = (track.id() >= 0 && bookmarks.size() > 0);
+	ui->controls->setVisible(visible);
 
 	connect(ui->cb_bookmarks, combo_current_index_changed_int, this, &GUI_Bookmarks::currentIndexChanged);
 }
 
-
 void GUI_Bookmarks::disablePrevious()
 {
-	if(!isUiInitialized()){
-		return;
+	if(isUiInitialized())
+	{
+		ui->btn_prev->setEnabled(false);
+		ui->btn_prev->setText(NoBookmarkText);
 	}
-
-	ui->btn_prev->setEnabled( false );
-	ui->btn_prev->setText( NoBookmarkText );
 }
-
 
 void GUI_Bookmarks::disableNext()
 {
-	if(!isUiInitialized()){
-		return;
+	if(isUiInitialized())
+	{
+		ui->btn_next->setEnabled(false);
+		ui->btn_next->setText(NoBookmarkText);
 	}
-
-	ui->btn_next->setEnabled(false);
-	ui->btn_next->setText( NoBookmarkText );
 }
-
 
 void GUI_Bookmarks::previousChanged(const Bookmark& bookmark)
 {
@@ -176,10 +167,10 @@ void GUI_Bookmarks::previousChanged(const Bookmark& bookmark)
 		return;
 	}
 
-	ui->btn_prev->setEnabled( bookmark.isValid() );
-	ui->cb_loop->setEnabled( ui->btn_next->isEnabled() );
+	ui->btn_prev->setEnabled(bookmark.isValid());
+	ui->cb_loop->setEnabled(ui->btn_next->isEnabled());
 
-	if( !bookmark.isValid() )
+	if(!bookmark.isValid())
 	{
 		disablePrevious();
 		return;
@@ -188,17 +179,18 @@ void GUI_Bookmarks::previousChanged(const Bookmark& bookmark)
 	ui->btn_prev->setText(Util::msToString(bookmark.timestamp() * 1000, "$M:$S"));
 }
 
-
 void GUI_Bookmarks::nextChanged(const Bookmark& bookmark)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	ui->btn_next->setEnabled( bookmark.isValid() );
-	ui->cb_loop->setEnabled( ui->btn_next->isEnabled() );
+	ui->btn_next->setEnabled(bookmark.isValid());
+	ui->cb_loop->setEnabled(ui->btn_next->isEnabled());
 
-	if( !bookmark.isValid() ){
+	if(!bookmark.isValid())
+	{
 		disableNext();
 		return;
 	}
@@ -206,57 +198,48 @@ void GUI_Bookmarks::nextChanged(const Bookmark& bookmark)
 	ui->btn_next->setText(Util::msToString(bookmark.timestamp() * 1000, "$M:$S"));
 }
 
-
-void GUI_Bookmarks::currentIndexChanged(int cur_idx)
+void GUI_Bookmarks::currentIndexChanged(int currentIndex)
 {
-	ui->btn_tool->showAction(ContextMenu::EntryDelete, (cur_idx >= 0));
+	ui->btn_tool->showAction(ContextMenu::EntryDelete, (currentIndex >= 0));
 
-	int data = ui->cb_bookmarks->itemData(cur_idx).toInt();
-	if(data < 0){
-		return;
-	}
-
-	if(cur_idx >= 0)
+	const auto data = ui->cb_bookmarks->itemData(currentIndex).toInt();
+	if(data >= 0 && currentIndex >= 0)
 	{
-		m->bookmarks->jumpTo(cur_idx);
+		m->bookmarks->jumpTo(currentIndex);
 	}
 }
-
 
 void GUI_Bookmarks::nextClicked()
 {
 	m->bookmarks->jumpNext();
 }
 
-
 void GUI_Bookmarks::previousClicked()
 {
 	m->bookmarks->jumpPrevious();
 }
 
-
 void GUI_Bookmarks::loopToggled(bool b)
 {
-	bool success = m->bookmarks->setLoop(b);
-	if(!success){
+	const auto success = m->bookmarks->setLoop(b);
+	if(!success)
+	{
 		ui->cb_loop->setChecked(success);
 	}
 }
 
-
 void GUI_Bookmarks::newClicked()
 {
-	Bookmarks::CreationStatus status = m->bookmarks->create();
-	if( status == Bookmarks::CreationStatus::NoDBTrack )
+	const auto status = m->bookmarks->create();
+	if(status == BookmarkStorage::CreationStatus::NoDBTrack)
 	{
 		Message::warning(tr("Sorry, bookmarks can only be set for library tracks at the moment."),
-						Lang::get(Lang::Bookmarks));
+		                 Lang::get(Lang::Bookmarks));
 	}
 }
 
-
 void GUI_Bookmarks::deleteClicked()
 {
-	int idx = ui->cb_bookmarks->currentIndex();
-	m->bookmarks->remove(idx);
+	const auto index = ui->cb_bookmarks->currentIndex();
+	m->bookmarks->remove(index);
 }

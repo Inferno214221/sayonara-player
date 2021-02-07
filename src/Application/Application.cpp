@@ -38,6 +38,7 @@
 #include "3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.h"
 #endif
 
+#include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -442,7 +443,7 @@ void Application::initPlugins()
 	pph->addPlugin(new GUI_Podcasts());
 	pph->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
 	pph->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
-	pph->addPlugin(new GUI_Bookmarks());
+	pph->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
 	pph->addPlugin(new GUI_Speed());
 	pph->addPlugin(new GUI_Broadcast());
 	pph->addPlugin(new GUI_Crossfader());

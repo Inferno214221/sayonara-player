@@ -34,84 +34,82 @@ using Playlist::BookmarksMenu;
 
 struct BookmarksMenu::Private
 {
-	BookmarksBase*	bookmarks=nullptr;
+	PlayManager* playManager;
+	PlayerPlugin::Handler* playerPluginHandler;
+	BookmarkStorage bookmarks;
 
-	Private(BookmarksMenu* parent)
-	{
-		bookmarks = new BookmarksBase(parent);
-	}
+	Private() :
+		playManager {PlayManagerProvider::instance()->playManager()},
+		playerPluginHandler {PlayerPlugin::Handler::instance()}
+	{}
 };
 
 BookmarksMenu::BookmarksMenu(QWidget* parent) :
 	QMenu(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>();
 
-	this->setTitle( Lang::get(Lang::Bookmarks));
+	this->setTitle(Lang::get(Lang::Bookmarks));
 }
 
 BookmarksMenu::~BookmarksMenu() = default;
 
 bool BookmarksMenu::hasBookmarks() const
 {
-	return (this->actions().size() > 0);
+	return (!this->actions().isEmpty());
 }
 
-void BookmarksMenu::setMetadata(const MetaData& md)
+void BookmarksMenu::setMetadata(const MetaData& track)
 {
-	m->bookmarks->setMetadata(md);
-
+	m->bookmarks.setTrack(track);
 	bookmarksChanged();
 }
 
 MetaData BookmarksMenu::metadata() const
 {
-	return m->bookmarks->metadata();
+	return m->bookmarks.track();
 }
 
 void BookmarksMenu::bookmarksChanged()
 {
-	for(QAction* a : this->actions()){
+	for(auto* a : this->actions())
+	{
 		a->deleteLater();
 	}
 
 	this->clear();
 
-	const QList<Bookmark> bookmarks = m->bookmarks->bookmarks();
-	for(const Bookmark& bookmark : bookmarks)
+	const auto& bookmarks = m->bookmarks.bookmarks();
+	for(const auto& bookmark : bookmarks)
 	{
-		QString name = bookmark.name();
-		if(name.isEmpty()){
-			continue;
+		const auto name = bookmark.name();
+		if(!name.isEmpty())
+		{
+			auto* action = this->addAction(name);
+			action->setData(bookmark.timestamp());
+			connect(action, &QAction::triggered, this, &BookmarksMenu::actionPressed);
 		}
-
-		QAction* action = this->addAction(name);
-		action->setData(bookmark.timestamp());
-		connect(action, &QAction::triggered, this, &BookmarksMenu::actionPressed);
 	}
 
 	this->addSeparator();
-	auto* edit_action = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
-	this->addAction(edit_action);
 
-	connect(edit_action, &QAction::triggered, [](){
-		PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
-		pph->showPlugin("Bookmarks");
+	auto* editAction = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
+	this->addAction(editAction);
+
+	connect(editAction, &QAction::triggered, [&]() {
+		m->playerPluginHandler->showPlugin("Bookmarks");
 	});
 
-	auto* playManager = PlayManagerProvider::instance()->playManager();
-	edit_action->setEnabled
-	(
-		(metadata().id() == playManager->currentTrack().id())
-	);
+	editAction->setEnabled
+		(
+			(metadata().id() == m->playManager->currentTrack().id())
+		);
 }
 
 void BookmarksMenu::actionPressed()
 {
 	auto* action = dynamic_cast<QAction*>(sender());
-	Seconds time = Seconds(action->data().toInt());
+	const auto time = static_cast<Seconds>(action->data().toInt());
 
 	emit sigBookmarkPressed(time);
 }
-
-
