@@ -32,6 +32,8 @@ class QLabel;
 class QSlider;
 class QPushButton;
 
+class PlayManager;
+
 namespace Gui
 {
 	class CoverButton;
@@ -48,7 +50,7 @@ class GUI_ControlsBase :
 	PIMPL(GUI_ControlsBase)
 
 	public:
-		GUI_ControlsBase(QWidget* parent = nullptr);
+		GUI_ControlsBase(PlayManager* playManager, QWidget* parent = nullptr);
 		virtual ~GUI_ControlsBase() override;
 		virtual void init();
 

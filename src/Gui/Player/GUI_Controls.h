@@ -27,6 +27,7 @@ UI_FWD(GUI_Controls)
 
 class MetaData;
 class MetaDataList;
+class PlayManager;
 
 class GUI_Controls :
 	public GUI_ControlsBase
@@ -35,7 +36,7 @@ class GUI_Controls :
 	UI_CLASS(GUI_Controls)
 
 	public:
-		explicit GUI_Controls(QWidget* parent = nullptr);
+		explicit GUI_Controls(PlayManager* playManager, QWidget* parent = nullptr);
 		~GUI_Controls() override;
 
 		// GUI_ControlsBase interface

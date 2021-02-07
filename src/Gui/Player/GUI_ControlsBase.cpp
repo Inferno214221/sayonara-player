@@ -16,7 +16,6 @@
 #include "Interfaces/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Engine/EngineHandler.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Algorithm.h"
@@ -79,14 +78,14 @@ struct GUI_ControlsBase::Private
 	Library::ContextMenu* contextMenu = nullptr;
 	PlayManager* playManager;
 
-	Private() :
-		playManager(PlayManagerProvider::instance()->playManager()) {}
+	Private(PlayManager* playManager) :
+		playManager(playManager) {}
 };
 
-GUI_ControlsBase::GUI_ControlsBase(QWidget* parent) :
+GUI_ControlsBase::GUI_ControlsBase(PlayManager* playManager, QWidget* parent) :
 	Gui::Widget(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playManager);
 }
 
 GUI_ControlsBase::~GUI_ControlsBase() = default;

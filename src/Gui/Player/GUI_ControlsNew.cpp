@@ -21,7 +21,6 @@
 #include "GUI_ControlsNew.h"
 #include "Gui/Player/ui_GUI_ControlsNew.h"
 
-#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 
 #include "Interfaces/PlayManager.h"
@@ -30,9 +29,20 @@
 
 using Gui::RatingEditor;
 
-GUI_ControlsNew::GUI_ControlsNew(QWidget* parent) :
-	GUI_ControlsBase(parent)
+struct GUI_ControlsNew::Private
 {
+	PlayManager* playManager;
+
+	Private(PlayManager* playManager) :
+		playManager{playManager}
+	{}
+};
+
+GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, QWidget* parent) :
+	GUI_ControlsBase(playManager, parent)
+{
+	m = Pimpl::make<Private>(playManager);
+
 	ui = new Ui::GUI_ControlsNew();
 	ui->setupUi(this);
 
@@ -92,7 +102,7 @@ Gui::CoverButton* GUI_ControlsNew::btnCover() const { return ui->btn_cover; }
 
 void GUI_ControlsNew::ratingChangedHere(bool save)
 {
-	const auto& md = PlayManagerProvider::instance()->playManager()->currentTrack();
+	const auto& md = m->playManager->currentTrack();
 
 	if(!save)
 	{

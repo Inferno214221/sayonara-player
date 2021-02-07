@@ -21,8 +21,8 @@
 #include "GUI_Controls.h"
 #include "Gui/Player/ui_GUI_Controls.h"
 
-GUI_Controls::GUI_Controls(QWidget* parent) :
-	GUI_ControlsBase(parent)
+GUI_Controls::GUI_Controls(PlayManager* playManager, QWidget* parent) :
+	GUI_ControlsBase(playManager, parent)
 {
 	ui = new Ui::GUI_Controls();
 	ui->setupUi(this);

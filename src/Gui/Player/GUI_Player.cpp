@@ -60,7 +60,7 @@ struct GUI_Player::Private
 	std::shared_ptr<GUI_Logger> logger = nullptr;
 	GUI_TrayIcon* trayIcon = nullptr;
 	GUI_ControlsBase* controls = nullptr;
-	PlayManager* playManager = nullptr;
+	PlayManager* playManager;
 	bool shutdownRequested;
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, GUI_Player* parent) :
@@ -357,15 +357,9 @@ void GUI_Player::pluginActionTriggered(bool b)
 
 void GUI_Player::initControls()
 {
-	if(GetSetting(Set::Player_ControlStyle) == 0)
-	{
-		m->controls = new GUI_Controls();
-	}
-
-	else
-	{
-		m->controls = new GUI_ControlsNew();
-	}
+	m->controls = (GetSetting(Set::Player_ControlStyle) == 0)
+		? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager))
+		: static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager));
 
 	m->controls->init();
 	ui->controls->layout()->addWidget(m->controls);
