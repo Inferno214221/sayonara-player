@@ -28,6 +28,7 @@
 #include <QTcpSocket>
 
 class PlayManager;
+class RawAudioDataProvider;
 
 /**
  * @brief The StreamServer class. This class is listening for new connections and holds and administrates current connections.
@@ -45,7 +46,7 @@ class StreamServer :
 		void sigListening(bool);
 
 	public:
-		explicit StreamServer(PlayManager* playManager, QObject* parent = nullptr);
+		explicit StreamServer(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QObject* parent = nullptr);
 		~StreamServer();
 
 		QStringList connectedClients() const;

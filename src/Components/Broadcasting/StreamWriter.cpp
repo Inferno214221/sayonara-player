@@ -25,9 +25,8 @@
 #include "StreamDataSender.h"
 #include "StreamHttpParser.h"
 
-#include "Components/Engine/EngineHandler.h"
-
 #include "Interfaces/PlayManager.h"
+#include "Interfaces/AudioDataProvider.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
@@ -48,9 +47,9 @@ struct StreamWriter::Private
 {
 	PlayManager* playManager;
 	QTcpSocket* socket;
-	Engine::Handler* engine = nullptr;
-	StreamHttpParser* parser = nullptr;
-	StreamDataSender* sender = nullptr;
+	RawAudioDataProvider* audioDataProvider;
+	StreamHttpParser* parser;
+	StreamDataSender* sender;
 
 	QString ip;
 	StreamWriter::Type type;
@@ -58,25 +57,24 @@ struct StreamWriter::Private
 	bool dismissed; // after that, only trash will be sent
 	bool sendData; // after that, no data at all will be sent
 
-	Private(PlayManager* playManager, QTcpSocket* socket, const QString& ip) :
+	Private(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket, const QString& ip) :
 		playManager(playManager),
 		socket(socket),
+		audioDataProvider(audioDataProvider),
+		parser{new StreamHttpParser()},
+		sender{new StreamDataSender(socket)},
 		ip(ip),
 		type(StreamWriter::Type::Undefined),
 		dismissed(false),
 		sendData(false)
-	{
-		engine = Engine::Handler::instance();
-		parser = new StreamHttpParser();
-		sender = new StreamDataSender(socket);
-	}
+	{}
 };
 
 // socket is the client socket
-StreamWriter::StreamWriter(PlayManager* playManager, QTcpSocket* socket, const QString& ip) :
-	Engine::RawSoundReceiverInterface()
+StreamWriter::StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket, const QString& ip) :
+	Engine::RawAudioDataReceiver()
 {
-	m = Pimpl::make<Private>(playManager, socket, ip);
+	m = Pimpl::make<Private>(playManager, audioDataProvider, socket, ip);
 
 	if(m->socket->bytesAvailable())
 	{
@@ -85,9 +83,6 @@ StreamWriter::StreamWriter(PlayManager* playManager, QTcpSocket* socket, const Q
 
 	connect(socket, &QTcpSocket::disconnected, this, &StreamWriter::socketDisconnected);
 	connect(socket, &QTcpSocket::readyRead, this, &StreamWriter::dataAvailble);
-	connect(Engine::Handler::instance(), &Engine::Handler::destroyed, this, [=]() {
-		m->engine = nullptr;
-	});
 
 	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [=](const MetaData&) {
 		this->clearSocket();
@@ -105,15 +100,12 @@ StreamWriter::StreamWriter(PlayManager* playManager, QTcpSocket* socket, const Q
 		this->clearSocket();
 	});
 
-	m->engine->registerRawSoundReceiver(this);
+	m->audioDataProvider->registerAudioDataReceiver(this);
 }
 
 StreamWriter::~StreamWriter()
 {
-	if(m->engine)
-	{
-		m->engine->unregisterRawSoundReceiver(this);
-	}
+	m->audioDataProvider->unregisterAudioDataReceiver(this);
 
 	if(m->parser)
 	{
@@ -199,9 +191,9 @@ bool StreamWriter::sendHeader(bool reject)
 
 void StreamWriter::dismiss()
 {
-	if(m->engine)
+	if(m->audioDataProvider)
 	{
-		m->engine->unregisterRawSoundReceiver(this);
+		m->audioDataProvider->unregisterAudioDataReceiver(this);
 	}
 
 	m->dismissed = true;
@@ -216,9 +208,9 @@ void StreamWriter::disconnect()
 
 void StreamWriter::socketDisconnected()
 {
-	if(m->engine)
+	if(m->audioDataProvider)
 	{
-		m->engine->unregisterRawSoundReceiver(this);
+		m->audioDataProvider->unregisterAudioDataReceiver(this);
 	}
 
 	emit sigDisconnected(this);
@@ -281,7 +273,7 @@ void StreamWriter::dataAvailble()
 			if(success)
 			{
 				m->sendData = true;
-				Engine::Handler::instance()->registerRawSoundReceiver(this);
+				m->audioDataProvider->registerAudioDataReceiver(this);
 			}
 
 			emit sigNewConnection(ip());

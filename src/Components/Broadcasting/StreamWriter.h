@@ -22,7 +22,7 @@
 #define STREAM_WRITER_H
 
 #include "StreamHttpParser.h"
-#include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiver.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -30,6 +30,7 @@
 class MetaData;
 class PlayManager;
 class QTcpSocket;
+class RawAudioDataProvider;
 
 /**
  * @brief The StreamWriter class. This class is the interface between StreamDataSender and StreamServer.
@@ -38,7 +39,7 @@ class QTcpSocket;
  */
 class StreamWriter :
 	public QObject,
-	public Engine::RawSoundReceiverInterface
+	public Engine::RawAudioDataReceiver
 {
 	Q_OBJECT
 	PIMPL(StreamWriter)
@@ -62,7 +63,7 @@ class StreamWriter :
 		 * @param ip
 		 * @param md
 		 */
-		StreamWriter(PlayManager* playManager, QTcpSocket* socket, const QString& ip);
+		StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket, const QString& ip);
 		~StreamWriter() override;
 
 		/**

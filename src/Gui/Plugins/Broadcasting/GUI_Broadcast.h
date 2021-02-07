@@ -27,6 +27,7 @@
 UI_FWD(GUI_Broadcast)
 
 class PlayManager;
+class RawAudioDataProvider;
 
 class GUI_Broadcast :
 		public PlayerPlugin::Base
@@ -36,7 +37,7 @@ class GUI_Broadcast :
 	UI_CLASS(GUI_Broadcast)
 
 public:
-	explicit GUI_Broadcast(PlayManager* playManager, QWidget* parent=nullptr);
+	explicit GUI_Broadcast(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QWidget* parent=nullptr);
 	~GUI_Broadcast() override;
 
 	QString name() const override;

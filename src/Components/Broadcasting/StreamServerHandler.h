@@ -24,13 +24,14 @@
 #include "Utils/Pimpl.h"
 
 class PlayManager;
+class RawAudioDataProvider;
 
 class StreamServerHandler
 {
 	PIMPL(StreamServerHandler)
 
 	public:
-		StreamServerHandler(PlayManager* playManager);
+		StreamServerHandler(PlayManager* playManager, RawAudioDataProvider* audioDataProvider);
 		~StreamServerHandler();
 
 		void activeChanged();

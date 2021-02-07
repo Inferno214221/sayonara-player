@@ -21,14 +21,15 @@
 #include "StreamServerHandler.h"
 #include "StreamServer.h"
 
+#include "Interfaces/AudioDataProvider.h"
+#include "Interfaces/PlayManager.h"
+
 struct StreamServerHandler::Private
 {
-	PlayManager* playManager;
 	StreamServer* streamServer=nullptr;
 
-	Private(PlayManager* playManager) :
-		playManager(playManager),
-		streamServer(new StreamServer{playManager})
+	Private(PlayManager* playManager, RawAudioDataProvider* audioDataProvider) :
+		streamServer(new StreamServer{playManager, audioDataProvider})
 	{}
 
 	~Private()
@@ -39,9 +40,9 @@ struct StreamServerHandler::Private
 	}
 };
 
-StreamServerHandler::StreamServerHandler(PlayManager* playManager)
+StreamServerHandler::StreamServerHandler(PlayManager* playManager, RawAudioDataProvider* audioDataProvider)
 {
-	m = Pimpl::make<Private>(playManager);
+	m = Pimpl::make<Private>(playManager, audioDataProvider);
 }
 
 StreamServerHandler::~StreamServerHandler() = default;

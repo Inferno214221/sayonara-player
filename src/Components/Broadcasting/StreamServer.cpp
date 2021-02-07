@@ -21,11 +21,11 @@
 #include "StreamServer.h"
 
 #include "Interfaces/PlayManager.h"
+#include "Interfaces/AudioDataProvider.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/Logger/Logger.h"
@@ -42,6 +42,7 @@ namespace Algorithm = Util::Algorithm;
 struct StreamServer::Private
 {
 	PlayManager* playManager;
+	RawAudioDataProvider* audioDataProvider;
 	QTcpServer* server = nullptr;        // the server
 
 	QList<QPair<QTcpSocket*, QString>> pending;                // pending requests queue
@@ -53,17 +54,18 @@ struct StreamServer::Private
 	int currentPort;
 	bool asking;                // set if currently any requests are being processed
 
-	Private(PlayManager* playManager) :
+	Private(PlayManager* playManager, RawAudioDataProvider* audioDataProvider) :
 		playManager(playManager),
+		audioDataProvider(audioDataProvider),
 		currentPort(GetSetting(Set::Broadcast_Port)),
 		asking(false)
 	{}
 };
 
-StreamServer::StreamServer(PlayManager* playManager, QObject* parent) :
+StreamServer::StreamServer(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<StreamServer::Private>(playManager);
+	m = Pimpl::make<StreamServer::Private>(playManager, audioDataProvider);
 
 	ListenSetting(Set::Broadcast_Active, StreamServer::activeChanged);
 	ListenSetting(SetNoDB::MP3enc_found, StreamServer::activeChanged);
@@ -266,7 +268,7 @@ void StreamServer::acceptClient(QTcpSocket* socket, const QString& ip)
 
 	spLog(Log::Info, this) << "New client request from " << ip << " (" << m->clients.size() << ")";
 
-	auto* sw = new StreamWriter(m->playManager, socket, ip);
+	auto* sw = new StreamWriter(m->playManager, m->audioDataProvider, socket, ip);
 	connect(sw, &StreamWriter::sigDisconnected, this, &StreamServer::disconnected);
 	connect(sw, &StreamWriter::sigNewConnection, this, &StreamServer::newConnection);
 

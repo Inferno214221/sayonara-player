@@ -54,18 +54,20 @@ QString BroadcastAction::displayName() const { return Lang::get(Lang::Broadcast)
 struct GUI_Broadcast::Private
 {
 	PlayManager* playManager;
+	RawAudioDataProvider* audioDataProvider;
 	StreamServer* server = nullptr;
 	QAction* actionDismiss = nullptr;
 	QAction* actionDismissAll = nullptr;
 
-	Private(PlayManager* playManager) :
-		playManager(playManager) {}
+	Private(PlayManager* playManager, RawAudioDataProvider* audioDataProvider) :
+		playManager(playManager),
+		audioDataProvider(audioDataProvider) {}
 };
 
-GUI_Broadcast::GUI_Broadcast(PlayManager* playManager, QWidget* parent) :
+GUI_Broadcast::GUI_Broadcast(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<GUI_Broadcast::Private>(playManager);
+	m = Pimpl::make<GUI_Broadcast::Private>(playManager, audioDataProvider);
 
 	ListenSetting(Set::Broadcast_Active, GUI_Broadcast::startServer);
 }
@@ -322,7 +324,7 @@ void GUI_Broadcast::startServer()
 	bool enabled = GetSetting(Set::Broadcast_Active);
 	if(enabled && !m->server)
 	{
-		m->server = new StreamServer(m->playManager, this);
+		m->server = new StreamServer(m->playManager, m->audioDataProvider, this);
 
 		connect(m->server, &StreamServer::sigNewConnection, this, &GUI_Broadcast::connectionEstablished);
 		connect(m->server, &StreamServer::sigConnectionClosed, this, &GUI_Broadcast::connectionClosed);
