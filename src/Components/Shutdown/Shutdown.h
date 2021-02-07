@@ -29,6 +29,7 @@
 
 #include <QObject>
 
+class PlayManager;
 /**
  * @brief The Shutdown class
  * @ingroup Helper
@@ -50,6 +51,7 @@ private slots:
 	void playlistFinished();
 
 public:
+	void registerPlaymanager(PlayManager* playManager);
 	bool is_running() const;
 	void stop();
 	void shutdown(MilliSeconds ms=0);

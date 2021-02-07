@@ -25,7 +25,6 @@
  */
 
 #include "Components/Shutdown/Shutdown.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
@@ -50,8 +49,6 @@ struct Shutdown::Private
 	DB::Settings* db = nullptr;
 	QTimer* timer = nullptr;
 	QTimer* timerCountdown = nullptr;
-	PlayManager* playManager = nullptr;
-
 	MilliSeconds msecs2go;
 	bool isRunning;
 
@@ -59,7 +56,6 @@ struct Shutdown::Private
 		logoPath(":/Icons/logo.png"),
 		timer(new QTimer(parent)),
 		timerCountdown(new QTimer(parent)),
-		playManager(PlayManagerProvider::instance()->playManager()),
 		msecs2go(0),
 		isRunning(false)
 	{
@@ -85,7 +81,6 @@ Shutdown::Shutdown(QObject* parent) :
 
 	connect(m->timer, &QTimer::timeout, this, &Shutdown::timeout);
 	connect(m->timerCountdown, &QTimer::timeout, this, &Shutdown::countdownTimeout);
-	connect(m->playManager, &PlayManager::sigPlaylistFinished, this, &Shutdown::playlistFinished);
 }
 
 Shutdown::~Shutdown() = default;
@@ -291,6 +286,11 @@ void Shutdown::playlistFinished()
 	{
 		timeout();
 	}
+}
+
+void Shutdown::registerPlaymanager(PlayManager* playManager)
+{
+	connect(playManager, &PlayManager::sigPlaylistFinished, this, &Shutdown::timeout);
 }
 
 #endif

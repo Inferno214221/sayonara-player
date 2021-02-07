@@ -52,6 +52,7 @@
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "Components/Session/Session.h"
+#include "Components/Shutdown/Shutdown.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
@@ -172,6 +173,8 @@ struct Application::Private
 		auto* playManagerProvider = PlayManagerProvider::instance();
 		playManagerProvider->init(new PlayManagerImpl());
 		playManager = playManagerProvider->playManager();
+
+		Shutdown::instance()->registerPlaymanager(playManager);
 
 		sessionManager = new Session::Manager(playManager);
 		auto* playlistHandlerProvider = Playlist::HandlerProvider::instance();
