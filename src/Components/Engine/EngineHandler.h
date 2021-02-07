@@ -28,6 +28,8 @@
 
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
 
+class PlayManager;
+
 namespace Engine
 {
 	class RawSoundReceiverInterface;
@@ -49,6 +51,7 @@ namespace Engine
 			void sigCoverDataAvailable(const QByteArray& data, const QString& mimetype);
 
 		public:
+			void init(PlayManager* playManager);
 			void shutdown();
 			bool isValid() const;
 

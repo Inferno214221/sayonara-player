@@ -428,7 +428,9 @@ void Application::initLibraries()
 void Application::initEngine()
 {
 	measure("Engine")
-	Engine::Handler::instance()->isValid();
+	auto* engine = Engine::Handler::instance();
+	engine->init(m->playManager);
+	engine->isValid();
 }
 
 void Application::initPlugins()
