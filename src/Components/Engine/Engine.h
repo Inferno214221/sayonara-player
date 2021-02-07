@@ -23,10 +23,13 @@
 
 #include "Utils/Pimpl.h"
 #include "Interfaces/Engine/AudioDataReceiverInterface.h"
+
 #include <QObject>
+#include <QImage>
+
 #include <gst/gst.h>
 
-#include <QImage>
+#include <vector>
 
 namespace StreamRecorder
 {
@@ -97,8 +100,8 @@ namespace Engine
 			bool isStreamRecorderRecording() const;
 			void setStreamRecorderRecording(bool b);
 
-			void setSpectrum(const SpectrumList& vals);
-			SpectrumList spectrum() const;
+			void setSpectrum(const std::vector<float>& spectrum);
+			const std::vector<float>& spectrum() const;
 
 			void setLevel(float left, float right);
 			QPair<float, float> level() const;

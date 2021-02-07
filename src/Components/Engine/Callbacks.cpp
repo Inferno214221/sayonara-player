@@ -31,13 +31,12 @@
 #include "Utils/globals.h"
 
 #include <QList>
-#include <QImage>
 #include <QRegExp>
-#include <QVector>
 #include <QByteArray>
 
 #include <memory>
 #include <algorithm>
+#include <vector>
 
 #include <gst/gst.h>
 
@@ -440,7 +439,7 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	static SpectrumList	spectrum_vals;
+	static std::vector<float> spectrumValues;
 
 	auto* engine = static_cast<Engine*>(data);
 	if(!engine) {
@@ -460,9 +459,9 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
 
 	int bins = std::max(1, GetSetting(Set::Engine_SpectrumBins));
-	if(spectrum_vals.empty())
+	if(spectrumValues.empty())
 	{
-		spectrum_vals.resize(bins, 0);
+		spectrumValues.resize(bins, 0);
 	}
 
 	for (int i=0; i<bins; ++i)
@@ -473,10 +472,10 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 		}
 
 		float f = g_value_get_float(mag);
-		spectrum_vals[i] = f;
+		spectrumValues[i] = f;
 	}
 
-	engine->setSpectrum(spectrum_vals);
+	engine->setSpectrum(spectrumValues);
 
 	return true;
 }

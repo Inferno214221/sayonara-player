@@ -24,6 +24,9 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
+#include "Interfaces/CoverImageProvider.h"
+#include "Interfaces/AudioDataProvider.h"
+
 #include <QObject>
 
 #define EngineHandler_change_track_md static_cast<void (EngineHandler::*) (const MetaData& md)>(&EngineHandler::change_track)
@@ -41,14 +44,14 @@ namespace Engine
 	 * @ingroup Engine
 	 */
 	class Handler :
-			public QObject
+			public QObject,
+			public CoverImageProvider,
+			public LevelDataProvider,
+			public SpectrumDataProvider
 	{
 		Q_OBJECT
 		SINGLETON_QOBJECT(Handler)
 		PIMPL(Handler)
-
-		signals:
-			void sigCoverDataAvailable(const QByteArray& data, const QString& mimetype);
 
 		public:
 			void init(PlayManager* playManager);
@@ -58,16 +61,23 @@ namespace Engine
 			void registerRawSoundReceiver(RawSoundReceiverInterface* receiver);
 			void unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver);
 
-			void registerLevelReceiver(LevelReceiver* receiver);
-			void registerSpectrumReceiver(SpectrumReceiver* receiver);
+			void registerLevelReceiver(LevelReceiver* receiver) override;
+			void unregisterLevelReceiver(LevelReceiver* levelReceiver) override;
+			void levelActiveChanged(bool b) override;
+
+			void registerSpectrumReceiver(SpectrumReceiver* receiver) override;
+			void unregisterSpectrumReceiver(SpectrumReceiver* spectrumReceiver) override;
+			void spectrumActiveChanged(bool b) override;
+
+			void registerCoverReceiver(CoverDataReceiver* coverReceiver) override;
+			void unregisterCoverReceiver(CoverDataReceiver* coverReceiver) override;
 
 			void setEqualizer(int band, int value);
 
-		public slots:
-			void reloadLevelReceivers();
-			void reloadSpectrumReceivers();
-
 		private slots:
+			void setLevelData(float left, float right) override;
+			void setSpectrumData(const std::vector<float>& spectrum) override;
+			void setCoverData(const QByteArray& imageData, const QString& mimeData) override;
 			void playstateChanged(PlayState state);
 			void newAudioDataAvailable(const QByteArray& data);
 			void spectrumChanged();

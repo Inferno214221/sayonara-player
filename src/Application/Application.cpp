@@ -363,7 +363,7 @@ void Application::initPlayer(bool force_show)
 		SetSetting(Set::Player_StartInTray, false);
 	}
 
-	m->player = new GUI_Player(m->playManager, m->playlistHandler);
+	m->player = new GUI_Player(m->playManager, m->playlistHandler, m->engine);
 	Gui::Util::setMainWindow(m->player);
 
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
@@ -439,8 +439,8 @@ void Application::initPlugins()
 
 	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
 
-	pph->addPlugin(new GUI_LevelPainter(m->playManager));
-	pph->addPlugin(new GUI_Spectrum(m->playManager));
+	pph->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
+	pph->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
 	pph->addPlugin(new GUI_Equalizer());
 	pph->addPlugin(new GUI_Stream());
 	pph->addPlugin(new GUI_Podcasts());

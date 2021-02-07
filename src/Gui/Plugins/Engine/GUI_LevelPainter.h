@@ -25,18 +25,20 @@
 #include "Interfaces/Engine/AudioDataReceiverInterface.h"
 #include "Utils/Pimpl.h"
 
+class LevelDataProvider;
+
 UI_FWD(GUI_LevelPainter)
 
 class GUI_LevelPainter :
-		public VisualPlugin,
-		public Engine::LevelReceiver
+	public VisualPlugin,
+	public Engine::LevelReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_LevelPainter)
-		PIMPL(GUI_LevelPainter)
+	PIMPL(GUI_LevelPainter)
 
 	public:
-		explicit GUI_LevelPainter(PlayManager* playManager, QWidget* parent=nullptr);
+		GUI_LevelPainter(LevelDataProvider* dataProvider, PlayManager* playManager, QWidget* parent = nullptr);
 		~GUI_LevelPainter() override;
 
 		QString name() const override;
@@ -47,18 +49,18 @@ class GUI_LevelPainter :
 		void update_style(int new_index) override;
 
 	protected:
-	   void paintEvent(QPaintEvent* e) override;
-	   void showEvent(QShowEvent*) override;
-	   void closeEvent(QCloseEvent*) override;
-	   void hideEvent(QHideEvent* e) override;
-	   void initUi() override;
-	   void retranslate() override;
+		void paintEvent(QPaintEvent* e) override;
+		void showEvent(QShowEvent*) override;
+		void closeEvent(QCloseEvent*) override;
+		void hideEvent(QHideEvent* e) override;
+		void initUi() override;
+		void retranslate() override;
 
-	   QWidget*		widget() override;
-	   bool			hasSmallButtons() const override;
-	   ColorStyle	currentStyle() const override;
-	   int			currentStyleIndex() const override;
-	   void			finalizeInitialization() override;
+		QWidget* widget() override;
+		bool hasSmallButtons() const override;
+		ColorStyle currentStyle() const override;
+		int currentStyleIndex() const override;
+		void finalizeInitialization() override;
 
 	protected slots:
 		void doFadeoutStep() override;
@@ -66,7 +68,6 @@ class GUI_LevelPainter :
 
 	private:
 		void reload();
-		void activeChanged();
 };
 
 #endif // GUI_LEVELPAINTER_H

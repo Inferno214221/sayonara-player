@@ -29,8 +29,6 @@ class QByteArray;
 
 namespace Engine
 {
-	using SpectrumList=std::vector<float>;
-
 	/**
 	 * @brief The LevelReceiver class
 	 * @ingroup EngineInterfaces
@@ -55,7 +53,7 @@ namespace Engine
 			SpectrumReceiver();
 			virtual ~SpectrumReceiver();
 
-			virtual void setSpectrum(const SpectrumList& spectrum)=0;
+			virtual void setSpectrum(const std::vector<float>& spectrum)=0;
 			virtual bool isActive() const=0;
 	};
 

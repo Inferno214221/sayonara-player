@@ -21,10 +21,9 @@
 #include "GUI_Spectrum.h"
 #include "Gui/Plugins/ui_GUI_Spectrum.h"
 
-#include "VisualColorStyleChooser.h"
+#include "Interfaces/AudioDataProvider.h"
 
-#include "Components/Engine/Engine.h"
-#include "Components/Engine/EngineHandler.h"
+#include "VisualColorStyleChooser.h"
 
 #include "Utils/globals.h"
 #include "Utils/Settings/Settings.h"
@@ -42,14 +41,20 @@
 using Step = uint_fast8_t;
 using BinSteps = std::vector<Step>;
 using StepArray = std::vector<BinSteps>;
-using Engine::SpectrumList;
 
 struct GUI_Spectrum::Private
 {
 	std::atomic_flag locked = ATOMIC_FLAG_INIT;
-	SpectrumList spec;
+
+	std::vector<float> spec;
 	StepArray steps;
+	SpectrumDataProvider* dataProvider;
 	float* logarithmLookupTable = nullptr;
+
+
+	Private(SpectrumDataProvider* dataProvider) :
+		dataProvider(dataProvider)
+	{}
 
 	void initLookupTable(int bins)
 	{
@@ -64,18 +69,18 @@ struct GUI_Spectrum::Private
 		}
 	}
 
-	void setSpectrum(const SpectrumList& s)
+	void setSpectrum(const std::vector<float>& spectrum)
 	{
 		// s: [-75, 0]
 		// s[i] + 75: [0, 75]
 		// scaling factor of ( / 75.0) is in log_lu
 
 		spec.clear();
-		spec.reserve(s.size());
+		spec.reserve(spectrum.size());
 
-		for(size_t i = 0; i < s.size(); i++)
+		for(size_t i = 0; i < spectrum.size(); i++)
 		{
-			float f = (s[i] + 75.0) * logarithmLookupTable[i];
+			float f = (spectrum[i] + 75.0) * logarithmLookupTable[i];
 			spec.push_back(f);
 		}
 	}
@@ -97,18 +102,19 @@ struct GUI_Spectrum::Private
 	}
 };
 
-GUI_Spectrum::GUI_Spectrum(PlayManager* playManager, QWidget* parent) :
+GUI_Spectrum::GUI_Spectrum(SpectrumDataProvider* dataProvider, PlayManager* playManager, QWidget* parent) :
 	VisualPlugin(playManager, parent),
 	Engine::SpectrumReceiver()
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(dataProvider);
 
 	SetSetting(Set::Engine_ShowSpectrum, false);
-	Set::listen<Set::Engine_ShowSpectrum>(this, &GUI_Spectrum::activeChanged);
 }
 
 GUI_Spectrum::~GUI_Spectrum()
 {
+	m->dataProvider->unregisterSpectrumReceiver(this);
+
 	if(ui)
 	{
 		delete ui;
@@ -136,8 +142,8 @@ void GUI_Spectrum::finalizeInitialization()
 	m->resizeSteps(bins, currentStyle().n_rects);
 	m->spec.resize((size_t) bins, -100.0f);
 
-	Engine::Handler::instance()->registerSpectrumReceiver(this);
 	PlayerPlugin::Base::finalizeInitialization();
+	m->dataProvider->registerSpectrumReceiver(this);
 
 	update();
 }
@@ -157,21 +163,16 @@ bool GUI_Spectrum::isActive() const
 	return this->isVisible();
 }
 
-void GUI_Spectrum::activeChanged()
-{
-	Engine::Handler::instance()->reloadSpectrumReceivers();
-}
-
 void GUI_Spectrum::retranslate() {}
 
-void GUI_Spectrum::setSpectrum(const SpectrumList& spec)
+void GUI_Spectrum::setSpectrum(const std::vector<float>& spectrum)
 {
 	if(!isUiInitialized() || !isVisible())
 	{
 		return;
 	}
 
-	m->setSpectrum(spec);
+	m->setSpectrum(spectrum);
 
 	stop_fadeout_timer();
 	update();
@@ -214,12 +215,14 @@ void GUI_Spectrum::update_style(int new_index)
 void GUI_Spectrum::showEvent(QShowEvent* e)
 {
 	SetSetting(Set::Engine_ShowSpectrum, true);
+	m->dataProvider->spectrumActiveChanged(true);
 	VisualPlugin::showEvent(e);
 }
 
 void GUI_Spectrum::closeEvent(QCloseEvent* e)
 {
 	SetSetting(Set::Engine_ShowSpectrum, false);
+	m->dataProvider->spectrumActiveChanged(false);
 	VisualPlugin::closeEvent(e);
 }
 

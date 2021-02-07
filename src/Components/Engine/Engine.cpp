@@ -56,7 +56,7 @@ namespace Engine
 
 		PipelinePtr pipeline, otherPipeline;
 
-		SpectrumList spectrumValues;
+		std::vector<float> spectrumValues;
 		QPair<float, float> levelValues;
 
 		PlayManager* playManager;
@@ -574,13 +574,13 @@ namespace Engine
 		}
 	}
 
-	void Engine::setSpectrum(const SpectrumList& vals)
+	void Engine::setSpectrum(const std::vector<float>& vals)
 	{
 		m->spectrumValues = vals;
 		emit sigSpectrumChanged();
 	}
 
-	SpectrumList Engine::Engine::spectrum() const
+	const std::vector<float>& Engine::Engine::spectrum() const
 	{
 		return m->spectrumValues;
 	}

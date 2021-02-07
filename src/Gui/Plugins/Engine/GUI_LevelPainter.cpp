@@ -23,8 +23,8 @@
 #include "VisualColorStyleChooser.h"
 #include "Gui/Plugins/ui_GUI_LevelPainter.h"
 
-#include "Components/Engine/Engine.h"
-#include "Components/Engine/EngineHandler.h"
+#include "Interfaces/AudioDataProvider.h"
+
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 
@@ -32,8 +32,6 @@
 #include <QBrush>
 
 #include <cstring>
-#include <cmath>
-#include <algorithm>
 #include <array>
 #include <vector>
 #include <atomic>
@@ -51,8 +49,13 @@ struct GUI_LevelPainter::Private
 	ChannelArray level;
 	StepArray steps;
 	float* expFunctionLookupTable = nullptr;
+	LevelDataProvider* dataProvider;
 
 	std::atomic_flag lock = ATOMIC_FLAG_INIT;
+
+	Private(LevelDataProvider* dataProvider) :
+		dataProvider(dataProvider)
+	{}
 
 	void resizeSteps(int n_rects)
 	{
@@ -101,18 +104,18 @@ struct GUI_LevelPainter::Private
 	}
 };
 
-GUI_LevelPainter::GUI_LevelPainter(PlayManager* playManager, QWidget* parent) :
+GUI_LevelPainter::GUI_LevelPainter(LevelDataProvider* dataProvider, PlayManager* playManager, QWidget* parent) :
 	VisualPlugin(playManager, parent),
 	Engine::LevelReceiver()
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(dataProvider);
 	SetSetting(Set::Engine_ShowLevel, false);
-
-	Set::listen<Set::Engine_ShowLevel>(this, &GUI_LevelPainter::activeChanged);
 }
 
 GUI_LevelPainter::~GUI_LevelPainter()
 {
+	m->dataProvider->unregisterLevelReceiver(this);
+
 	if(ui)
 	{
 		delete ui;
@@ -140,7 +143,7 @@ void GUI_LevelPainter::finalizeInitialization()
 	m->setLevel(0, 0);
 
 	PlayerPlugin::Base::finalizeInitialization();
-	Engine::Handler::instance()->registerLevelReceiver(this);
+	m->dataProvider->registerLevelReceiver(this);
 
 	reload();
 }
@@ -158,11 +161,6 @@ QString GUI_LevelPainter::displayName() const
 bool GUI_LevelPainter::isActive() const
 {
 	return this->isVisible();
-}
-
-void GUI_LevelPainter::activeChanged()
-{
-	Engine::Handler::instance()->reloadLevelReceivers();
 }
 
 void GUI_LevelPainter::retranslate()
@@ -301,12 +299,14 @@ void GUI_LevelPainter::reload()
 void GUI_LevelPainter::showEvent(QShowEvent* e)
 {
 	SetSetting(Set::Engine_ShowLevel, true);
+	m->dataProvider->levelActiveChanged(true);
 	VisualPlugin::showEvent(e);
 }
 
 void GUI_LevelPainter::closeEvent(QCloseEvent* e)
 {
 	SetSetting(Set::Engine_ShowLevel, false);
+	m->dataProvider->levelActiveChanged(false);
 	VisualPlugin::closeEvent(e);
 }
 

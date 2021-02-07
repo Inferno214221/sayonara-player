@@ -24,19 +24,23 @@
 #include "VisualPlugin.h"
 #include "Utils/Pimpl.h"
 #include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/AudioDataProvider.h"
+
+#include <vector>
 
 UI_FWD(GUI_Spectrum)
 
+class SpectrumDataProvider;
 class GUI_Spectrum :
-		public VisualPlugin,
-		public Engine::SpectrumReceiver
+	public VisualPlugin,
+	public Engine::SpectrumReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Spectrum)
 	PIMPL(GUI_Spectrum)
 
 	public:
-		explicit GUI_Spectrum(PlayManager* playManager, QWidget* parent=nullptr);
+		explicit GUI_Spectrum(SpectrumDataProvider* dataProvider, PlayManager* playManager, QWidget* parent = nullptr);
 		~GUI_Spectrum() override;
 
 		QString name() const override;
@@ -50,21 +54,18 @@ class GUI_Spectrum :
 		void initUi() override;
 		void retranslate() override;
 
-		QWidget*	widget() override;
-		bool		hasSmallButtons() const override;
-		ColorStyle	currentStyle() const override;
-		int			currentStyleIndex() const override;
-		void		finalizeInitialization() override;
+		QWidget* widget() override;
+		bool hasSmallButtons() const override;
+		ColorStyle currentStyle() const override;
+		int currentStyleIndex() const override;
+		void finalizeInitialization() override;
 
 	protected slots:
 		void doFadeoutStep() override;
 
 	public slots:
-		void setSpectrum(const Engine::SpectrumList& spec) override;
+		void setSpectrum(const std::vector<float>& spectrum) override;
 		void update_style(int new_index) override;
-
-	private:
-		void activeChanged();
 };
 
 #endif // GUI_SPECTRUM_H
