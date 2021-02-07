@@ -1,9 +1,9 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Interfaces/PlayManager.h"
 
@@ -11,6 +11,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Playlist/CustomPlaylist.h"
+
+#include <memory>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
@@ -43,14 +45,16 @@ class PlaylistHandlerTest :
 
     public:
         PlaylistHandlerTest() :
-            Test::Base("PlaylistHandlerTest")
+            Test::Base("PlaylistHandlerTest"),
+            m_playManager(new TestPlayManager(this))
         {}
 
 	private:
+		PlayManager* m_playManager;
+
 		std::shared_ptr<Playlist::Handler> createHandler()
 		{
-    	    auto playManager = PlayManagerProvider::instance()->playManager();
-    	    return std::make_shared<Playlist::Handler>(playManager, std::make_shared<DummyPlaylistLoader>());
+    	    return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<DummyPlaylistLoader>());
 		}
 
     private slots:

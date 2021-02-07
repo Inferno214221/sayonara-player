@@ -25,7 +25,6 @@ class StreamRecorderTest :
 
 	public:
 		StreamRecorderTest();
-		~StreamRecorderTest() noexcept;
 
 	private slots:
 		void target_path_template_test();
@@ -42,14 +41,8 @@ StreamRecorderTest::StreamRecorderTest() :
 	SetSetting(Set::Engine_SR_SessionPath, true);
 	SetSetting(Set::Engine_SR_SessionPathTemplate, QString("<y><m><d>/<tn> - <t>"));
 
-	mPlayManager = new TestPlayManager();
+	mPlayManager = new TestPlayManager(this);
 	mStreamRecorder = new SR::StreamRecorder(mPlayManager, this);
-}
-
-StreamRecorderTest::~StreamRecorderTest() noexcept
-{
-	delete mStreamRecorder;
-	delete mPlayManager;
 }
 
 void StreamRecorderTest::target_path_template_test()

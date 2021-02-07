@@ -46,7 +46,6 @@
 #include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Playlist/PlaylistChooser.h"
 #include "Components/PlayManager/PlayManagerImpl.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/Streaming/LastFM/LastFM.h"
@@ -170,9 +169,7 @@ struct Application::Private
 		db = DB::Connector::instance();
 		db->settingsConnector()->loadSettings();
 
-		auto* playManagerProvider = PlayManagerProvider::instance();
-		playManagerProvider->init(new PlayManagerImpl());
-		playManager = playManagerProvider->playManager();
+		playManager = new PlayManagerImpl(app);
 
 		Shutdown::instance()->registerPlaymanager(playManager);
 
@@ -490,7 +487,7 @@ void Application::shutdown()
 	PlayerPlugin::Handler::instance()->shutdown();
 	Engine::Handler::instance()->shutdown();
 	m->playlistHandler->shutdown();
-	PlayManagerProvider::instance()->shutdown();
+	m->playManager->shutdown();
 
 	m->shutdownTriggered = true;
 }

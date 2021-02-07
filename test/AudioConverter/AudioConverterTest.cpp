@@ -1,13 +1,13 @@
 #include "SayonaraTest.h"
+#include "TestPlayManager.h"
+
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
-#include "Interfaces/PlayManager.h"
-
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
 #include "Components/Converter/OpusConverter.h"
+
 #include "Utils/Playlist/CustomPlaylist.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");
@@ -51,7 +51,7 @@ class AudioConverterTest :
 
 void AudioConverterTest::testFactory()
 {
-	auto* playManager = PlayManagerProvider::instance()->playManager();
+	auto* playManager = new TestPlayManager(this);
 	auto playlistHandler = new Playlist::Handler(playManager, std::make_shared<DummyLoader>());
 	auto factory = ConverterFactory(playlistHandler);
 

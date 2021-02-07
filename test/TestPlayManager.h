@@ -28,6 +28,8 @@ class TestPlayManager : public PlayManager
 	MetaData m_metadata;
 
 	public:
+		TestPlayManager(QObject* parent) : PlayManager(parent) {}
+
 		void play() override {}
 
 		void wakeUp() override {}

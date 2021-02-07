@@ -3,7 +3,6 @@
 #include "Playlist/PlaylistTestUtils.h"
 
 #include "Components/Playlist/Playlist.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Algorithm.h"
@@ -23,8 +22,13 @@ class PlaylistTrackModifyTest :
 public:
 	PlaylistTrackModifyTest() :
 		Test::Base("PlaylistTrackModifyTest"),
-		m_playManager{PlayManagerProvider::instance()->playManager()}
+		m_playManager{new TestPlayManager(this)}
 	{}
+
+	~PlaylistTrackModifyTest()
+	{
+		delete m_playManager;
+	}
 
 private:
 	PlayManager* m_playManager;

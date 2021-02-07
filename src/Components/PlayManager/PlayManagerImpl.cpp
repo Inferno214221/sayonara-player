@@ -122,8 +122,8 @@ struct PlayManagerImpl::Private
 	}
 };
 
-PlayManagerImpl::PlayManagerImpl() :
-	PlayManager()
+PlayManagerImpl::PlayManagerImpl(QObject* parent) :
+	PlayManager(parent)
 {
 	m = Pimpl::make<Private>();
 

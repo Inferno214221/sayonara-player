@@ -31,7 +31,7 @@ class PlayManagerImpl :
 	PIMPL(PlayManagerImpl)
 
 	public:
-		PlayManagerImpl();
+		PlayManagerImpl(QObject* parent);
 		~PlayManagerImpl() override;
 
 	protected:

@@ -3,7 +3,6 @@
 #include "Playlist/PlaylistTestUtils.h"
 
 #include "Components/Playlist/Playlist.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
@@ -19,8 +18,13 @@ class PlaylistTest :
 public:
 	PlaylistTest() :
 		Test::Base("PlaylistTest"),
-		m_playManager{PlayManagerProvider::instance()->playManager()}
+		m_playManager{new TestPlayManager(this)}
 	{}
+
+	~PlaylistTest()
+	{
+		delete m_playManager;
+	}
 
 private:
 	PlayManager* m_playManager;

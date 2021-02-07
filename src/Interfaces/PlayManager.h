@@ -27,6 +27,8 @@
 
 #include <QObject>
 
+#include <memory>
+
 /**
  * @brief Global handler for current playback state (Singleton)
  * @ingroup Components
@@ -287,7 +289,7 @@ class PlayManager :
 		virtual void error(const QString& message) = 0;
 
 	public:
-		PlayManager() = default;
+		PlayManager(QObject* parent) : QObject(parent) {};
 		virtual ~PlayManager() = default;
 
 		/**
@@ -343,5 +345,3 @@ class PlayManager :
 };
 
 #endif
-
-
