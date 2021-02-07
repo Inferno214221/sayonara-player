@@ -21,6 +21,8 @@
 #ifndef GUI_CONTROLSBASE_H
 #define GUI_CONTROLSBASE_H
 
+#include "Interfaces/Engine/CoverDataReceiver.h"
+
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Gui/Utils/Icons.h"
@@ -32,6 +34,7 @@ class QLabel;
 class QSlider;
 class QPushButton;
 
+class CoverDataProvider;
 class PlayManager;
 
 namespace Gui
@@ -44,13 +47,14 @@ namespace Gui
 
 class GUI_ControlsBase :
 	public Gui::Widget,
-	public InfoDialogContainer
+	public InfoDialogContainer,
+	public CoverDataReceiver
 {
 	Q_OBJECT
 	PIMPL(GUI_ControlsBase)
 
 	public:
-		GUI_ControlsBase(PlayManager* playManager, QWidget* parent = nullptr);
+		GUI_ControlsBase(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent = nullptr);
 		virtual ~GUI_ControlsBase() override;
 		virtual void init();
 
@@ -106,6 +110,8 @@ class GUI_ControlsBase :
 
 	public slots:
 		void changeVolumeByDelta(int val);
+		void setCoverData(const QByteArray& coverData, const QString& mimeType) override;
+		bool isActive() const override;
 
 	private slots:
 		void playstateChanged(PlayState state);
@@ -128,7 +134,6 @@ class GUI_ControlsBase :
 		void refreshCurrentTrack();
 
 		// cover changed by engine
-		void coverChanged(const QByteArray& data, const QString& mimedata);
 		void coverClickRejected();
 
 		void streamRecorderActiveChanged();

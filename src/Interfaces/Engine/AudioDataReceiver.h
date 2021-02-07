@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef RAWSOUNDRECEIVER_H
-#define RAWSOUNDRECEIVER_H
+#ifndef AUDIO_DATA_RECEIVER_INTERFACES_H
+#define AUDIO_DATA_RECEIVER_INTERFACES_H
 
 #include "Utils/typedefs.h"
 
@@ -36,11 +36,11 @@ namespace Engine
 	class LevelReceiver
 	{
 		public:
-		virtual void setLevel(float left, float right)=0;
-		virtual bool isActive() const=0;
+			LevelReceiver() = default;
+			virtual ~LevelReceiver() = default;
 
-		LevelReceiver();
-		virtual ~LevelReceiver();
+			virtual void setLevel(float left, float right) = 0;
+			virtual bool isActive() const = 0;
 	};
 
 	/**
@@ -50,30 +50,30 @@ namespace Engine
 	class SpectrumReceiver
 	{
 		public:
-			SpectrumReceiver();
-			virtual ~SpectrumReceiver();
+			SpectrumReceiver() = default;
+			virtual ~SpectrumReceiver() = default;
 
-			virtual void setSpectrum(const std::vector<float>& spectrum)=0;
-			virtual bool isActive() const=0;
+			virtual void setSpectrum(const std::vector<float>& spectrum) = 0;
+			virtual bool isActive() const = 0;
 	};
 
 	/**
 	 * @brief The RawSoundReceiver interface
 	 * @ingroup EngineInterfaces
 	 */
-	class RawSoundReceiverInterface
+	class RawAudioDataReceiver
 	{
 		public:
-			RawSoundReceiverInterface();
-			virtual ~RawSoundReceiverInterface();
+			RawAudioDataReceiver() = default;
+			virtual ~RawAudioDataReceiver() = default;
 
 			/**
 			 * @brief triggered when new audio data is available, has to be reimplentend
 			 * @param data audio data
 			 * @param n_bytes array size
 			 */
-			virtual void writeAudioData(const QByteArray& data)=0;
+			virtual void writeAudioData(const QByteArray& data) = 0;
 	};
 }
 
-#endif // RAWSOUNDRECEIVER_H
+#endif // AUDIO_DATA_RECEIVER_INTERFACES_H

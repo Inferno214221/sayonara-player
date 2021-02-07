@@ -1,6 +1,6 @@
-/* AudioDataReceiverInterface.cpp */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* ${CLASS_NAME}.h */
+/*
+ * Copyright (C) 2011-2021 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,14 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_COVERDATARECEIVER_H
+#define SAYONARA_PLAYER_COVERDATARECEIVER_H
 
-#include "AudioDataReceiverInterface.h"
+class QByteArray;
+class QString;
 
-Engine::RawSoundReceiverInterface::RawSoundReceiverInterface() = default;
-Engine::RawSoundReceiverInterface::~RawSoundReceiverInterface() = default;
+class CoverDataReceiver
+{
+	public:
+		virtual void setCoverData(const QByteArray& coverData, const QString& mimeType) = 0;
+		virtual bool isActive() const = 0;
+};
 
-Engine::SpectrumReceiver::SpectrumReceiver() = default;
-Engine::SpectrumReceiver::~SpectrumReceiver() = default;
-
-Engine::LevelReceiver::LevelReceiver() = default;
-Engine::LevelReceiver::~LevelReceiver() = default;
+#endif //SAYONARA_PLAYER_COVERDATARECEIVER_H

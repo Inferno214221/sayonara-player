@@ -38,8 +38,8 @@ struct GUI_ControlsNew::Private
 	{}
 };
 
-GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, QWidget* parent) :
-	GUI_ControlsBase(playManager, parent)
+GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
+	GUI_ControlsBase(playManager, coverProvider, parent)
 {
 	m = Pimpl::make<Private>(playManager);
 

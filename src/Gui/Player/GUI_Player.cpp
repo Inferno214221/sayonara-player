@@ -27,8 +27,10 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
+#include "Interfaces/CoverDataProvider.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Interfaces/PlayManager.h"
+
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
@@ -60,10 +62,12 @@ struct GUI_Player::Private
 	std::shared_ptr<GUI_Logger> logger = nullptr;
 	GUI_TrayIcon* trayIcon = nullptr;
 	GUI_ControlsBase* controls = nullptr;
+	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
 	bool shutdownRequested;
 
-	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, GUI_Player* parent) :
+	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider, GUI_Player* parent) :
+		coverProvider(coverProvider),
 		playManager(playManager),
 		shutdownRequested(false)
 	{
@@ -72,11 +76,11 @@ struct GUI_Player::Private
 	}
 };
 
-GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, QWidget* parent) :
+GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(playManager, playlistHandler, this);
+	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, this);
 
 	languageChanged();
 
@@ -358,8 +362,8 @@ void GUI_Player::pluginActionTriggered(bool b)
 void GUI_Player::initControls()
 {
 	m->controls = (GetSetting(Set::Player_ControlStyle) == 0)
-		? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager))
-		: static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager));
+		? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider))
+		: static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider));
 
 	m->controls->init();
 	ui->controls->layout()->addWidget(m->controls);

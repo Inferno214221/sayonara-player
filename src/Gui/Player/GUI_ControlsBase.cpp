@@ -1,5 +1,6 @@
 #include "GUI_ControlsBase.h"
 #include "SearchSlider.h"
+#include "Interfaces/CoverDataProvider.h"
 
 #include "Gui/Covers/CoverButton.h"
 
@@ -15,7 +16,6 @@
 
 #include "Interfaces/PlayManager.h"
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Engine/EngineHandler.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Algorithm.h"
@@ -77,18 +77,25 @@ struct GUI_ControlsBase::Private
 {
 	Library::ContextMenu* contextMenu = nullptr;
 	PlayManager* playManager;
+	CoverDataProvider* coverProvider;
 
-	Private(PlayManager* playManager) :
-		playManager(playManager) {}
+	Private(PlayManager* playManager, CoverDataProvider* coverProvider) :
+		playManager(playManager),
+		coverProvider(coverProvider) {}
 };
 
-GUI_ControlsBase::GUI_ControlsBase(PlayManager* playManager, QWidget* parent) :
+GUI_ControlsBase::GUI_ControlsBase(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
 	Gui::Widget(parent)
 {
-	m = Pimpl::make<Private>(playManager);
+	m = Pimpl::make<Private>(playManager, coverProvider);
+
+	m->coverProvider->registerCoverReceiver(this);
 }
 
-GUI_ControlsBase::~GUI_ControlsBase() = default;
+GUI_ControlsBase::~GUI_ControlsBase()
+{
+	m->coverProvider->unregisterCoverReceiver(this);
+}
 
 void GUI_ControlsBase::init()
 {
@@ -533,11 +540,6 @@ void GUI_ControlsBase::setStandardCover()
 	btnCover()->setCoverLocation(coverLocation);
 }
 
-void GUI_ControlsBase::coverChanged(const QByteArray& data, const QString& mimedata)
-{
-	btnCover()->setCoverData(data, mimedata);
-}
-
 void GUI_ControlsBase::coverClickRejected()
 {
 	showInfo();
@@ -566,9 +568,6 @@ void GUI_ControlsBase::setupConnections()
 	connect(m->playManager, &PlayManager::sigVolumeChanged, this, &GUI_ControlsBase::volumeChanged);
 	connect(m->playManager, &PlayManager::sigMuteChanged, this, &GUI_ControlsBase::muteChanged);
 	connect(m->playManager, &PlayManager::sigRecording, this, &GUI_ControlsBase::recordChanged);
-
-	auto* engine = Engine::Handler::instance();
-	connect(engine, &Engine::Handler::sigCoverDataAvailable, this, &GUI_ControlsBase::coverChanged);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GUI_ControlsBase::metadataChanged);
@@ -667,4 +666,14 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 	}
 
 	m->contextMenu->exec(e->globalPos());
+}
+
+void GUI_ControlsBase::setCoverData(const QByteArray& coverData, const QString& mimeType)
+{
+	btnCover()->setCoverData(coverData, mimeType);
+}
+
+bool GUI_ControlsBase::isActive() const
+{
+	return (btnCover() != nullptr);
 }

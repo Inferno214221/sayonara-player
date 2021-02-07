@@ -36,6 +36,8 @@ class QTranslator;
 
 UI_FWD(GUI_Player)
 
+class CoverDataProvider;
+
 namespace PlayerPlugin
 {
 	class Handler;
@@ -61,7 +63,7 @@ class GUI_Player :
 		void sigClosed();
 
 	public:
-		explicit GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, QWidget* parent = nullptr);
+		explicit GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider, QWidget* parent = nullptr);
 		~GUI_Player() override;
 
 		void registerPreferenceDialog(QAction* dialog_action);

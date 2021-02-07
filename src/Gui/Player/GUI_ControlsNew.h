@@ -37,7 +37,7 @@ class GUI_ControlsNew :
 	UI_CLASS(GUI_ControlsNew)
 
 	public:
-		explicit GUI_ControlsNew(PlayManager* playManager, QWidget* parent = nullptr);
+		explicit GUI_ControlsNew(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent = nullptr);
 		~GUI_ControlsNew() override;
 
 		// GUI_ControlsBase interface

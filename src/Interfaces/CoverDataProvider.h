@@ -1,4 +1,4 @@
-/* AudioDataProvider.cpp */
+/* ${CLASS_NAME}.h */
 /*
  * Copyright (C) 2011-2021 Michael Lugmair
  *
@@ -17,16 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "AudioDataProvider.h"
+#ifndef SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
+#define SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
 
-struct AudioDataProvider::Private
+class QByteArray;
+class QString;
+
+class CoverDataReceiver;
+class CoverImageProvider
 {
-	Private(AudioDataProvider* parent) {}
+	public:
+		virtual ~CoverImageProvider() = default;
+
+		virtual void setCoverData(const QByteArray& imageData, const QString& mimeData)=0;
+
+		virtual void registerCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
+		virtual void unregisterCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
 };
 
-AudioDataProvider::AudioDataProvider()
-{
-	m = Pimpl::make<Private>(this);
-}
-
-AudioDataProvider::~AudioDataProvider() = default;
+#endif //SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
