@@ -450,7 +450,7 @@ void Application::initPlugins()
 	pph->addPlugin(new GUI_Speed());
 	pph->addPlugin(new GUI_Broadcast());
 	pph->addPlugin(new GUI_Crossfader());
-	pph->addPlugin(new GUI_SpectrogramPainter());
+	pph->addPlugin(new GUI_SpectrogramPainter(m->playManager));
 
 	spLog(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }

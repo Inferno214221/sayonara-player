@@ -1,7 +1,6 @@
 #include "GUI_SpectrogramPainter.h"
 
 #include "Components/Engine/AudioDataProvider.h"
-#include "Components/PlayManager/PlayManagerProvider.h"
 
 #include "Gui/Utils/EventFilter.h"
 
@@ -32,8 +31,8 @@ struct GUI_SpectrogramPainter::Private
 	int promilleValues;
 	int currentPromille;
 
-	Private() :
-		playManager(PlayManagerProvider::instance()->playManager()),
+	Private(PlayManager* playManager) :
+		playManager(playManager),
 		promilleValues(0),
 		currentPromille(-1)
 	{
@@ -51,10 +50,10 @@ struct GUI_SpectrogramPainter::Private
 	}
 };
 
-GUI_SpectrogramPainter::GUI_SpectrogramPainter(QWidget* parent) :
+GUI_SpectrogramPainter::GUI_SpectrogramPainter(PlayManager* playManager, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playManager);
 	m->audioDataProvider = new AudioDataProvider(this);
 
 	this->setMouseTracking(true);
@@ -63,9 +62,8 @@ GUI_SpectrogramPainter::GUI_SpectrogramPainter(QWidget* parent) :
 	connect(m->audioDataProvider, &AudioDataProvider::sigSpectrumDataAvailable, this, &GUI_SpectrogramPainter::spectrumChanged);
 	connect(m->audioDataProvider, &AudioDataProvider::sigFinished, this, &GUI_SpectrogramPainter::finished);
 
-	auto* playManager = PlayManagerProvider::instance()->playManager();
-	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_SpectrogramPainter::trackChanged);
-	connect(playManager, &PlayManager::sigPlaystateChanged, this, &GUI_SpectrogramPainter::playstateChanged);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_SpectrogramPainter::trackChanged);
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_SpectrogramPainter::playstateChanged);
 }
 
 GUI_SpectrogramPainter::~GUI_SpectrogramPainter() = default;

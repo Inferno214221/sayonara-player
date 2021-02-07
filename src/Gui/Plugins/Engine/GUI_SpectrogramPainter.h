@@ -6,6 +6,8 @@
 #include <QList>
 #include <QWidget>
 
+class PlayManager;
+
 class GUI_SpectrogramPainter :
 	public PlayerPlugin::Base
 {
@@ -13,7 +15,7 @@ class GUI_SpectrogramPainter :
 	PIMPL(GUI_SpectrogramPainter)
 
 public:
-	explicit GUI_SpectrogramPainter(QWidget* parent = nullptr);
+	explicit GUI_SpectrogramPainter(PlayManager* playManager, QWidget* parent = nullptr);
 	~GUI_SpectrogramPainter() override;
 
 	QString name() const override;
