@@ -21,12 +21,10 @@
 #ifndef REMOTECONTROL_H
 #define REMOTECONTROL_H
 
-#include "Components/PlayManager/PlayState.h"
+#include "Utils/Pimpl.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 
 #include <QObject>
-
-#include "Utils/Pimpl.h"
 
 class QPixmap;
 class PlayManager;

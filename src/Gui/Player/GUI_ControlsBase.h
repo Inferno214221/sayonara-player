@@ -21,8 +21,6 @@
 #ifndef GUI_CONTROLSBASE_H
 #define GUI_CONTROLSBASE_H
 
-#include "Components/PlayManager/PlayState.h"
-
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Gui/Utils/Icons.h"

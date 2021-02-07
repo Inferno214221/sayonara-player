@@ -22,7 +22,6 @@
 #define BOOKMARKS_H
 
 #include "BookmarkStorage.h"
-#include "Components/PlayManager/PlayState.h"
 
 #include <QList>
 #include <QObject>

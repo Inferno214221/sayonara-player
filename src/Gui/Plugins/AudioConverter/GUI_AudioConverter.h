@@ -23,7 +23,6 @@
 
 #include "Utils/Pimpl.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
-#include "Components/PlayManager/PlayState.h"
 
 UI_FWD(GUI_AudioConverter)
 

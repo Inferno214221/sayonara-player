@@ -21,7 +21,6 @@
 #ifndef STREAMRECORDER_H
 #define STREAMRECORDER_H
 
-#include "Components/PlayManager/PlayState.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>

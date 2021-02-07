@@ -29,15 +29,14 @@
 #ifndef GUI_PLAYLIST_H_
 #define GUI_PLAYLIST_H_
 
+#include "Gui/Utils/Widgets/Widget.h"
+
+#include "Components/Playlist/PlaylistDBInterface.h"
+
 #include "Utils/Message/Message.h"
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Pimpl.h"
-
-#include "Gui/Utils/Widgets/Widget.h"
-
-#include "Components/PlayManager/PlayState.h"
-#include "Components/Playlist/PlaylistDBInterface.h"
 
 namespace Playlist
 {

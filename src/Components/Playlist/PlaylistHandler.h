@@ -32,8 +32,6 @@
 #include "PlaylistDBInterface.h"
 #include "Interfaces/PlaylistInterface.h"
 
-#include "Components/PlayManager/PlayState.h"
-
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
 #include "Utils/Playlist/PlaylistFwd.h"

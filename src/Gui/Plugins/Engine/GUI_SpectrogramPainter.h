@@ -1,7 +1,6 @@
 #ifndef GUI_SPECTROGRAMPAINTER_H
 #define GUI_SPECTROGRAMPAINTER_H
 
-#include "Components/PlayManager/PlayState.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
 
 #include <QList>

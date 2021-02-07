@@ -21,15 +21,14 @@
 #ifndef DBUS_MPRIS_H
 #define DBUS_MPRIS_H
 
-#include <QObject>
-#include <QVariant>
-#include <QDBusObjectPath>
-
 #include "DBusAdaptor.h"
-#include "Components/PlayManager/PlayState.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Pimpl.h"
+
+#include <QObject>
+#include <QVariant>
+#include <QDBusObjectPath>
 
 using QStrRef = const QString&;
 

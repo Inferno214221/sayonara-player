@@ -21,7 +21,6 @@
 #ifndef PLAY_MANAGER_H
 #define PLAY_MANAGER_H
 
-#include "PlayState.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Singleton.h"
 #include "Utils/typedefs.h"

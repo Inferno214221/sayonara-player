@@ -21,7 +21,6 @@
 #ifndef GUI_SIMPLEPLAYER_H
 #define GUI_SIMPLEPLAYER_H
 
-#include "Components/PlayManager/PlayState.h"
 #include "Gui/Utils/GuiClass.h"
 #include "Gui/Utils/Widgets/Widget.h"
 #include "Utils/Message/MessageReceiverInterface.h"

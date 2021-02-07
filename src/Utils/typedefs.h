@@ -29,53 +29,63 @@
 class QByteArray;
 class QString;
 class QStringList;
-template <typename A, typename B> struct QPair;
-template <typename A, typename B> class QMap;
-template <typename T> class QList;
+template<typename A, typename B>
+struct QPair;
+template<typename A, typename B>
+class QMap;
+template<typename T>
+class QList;
 
 /**
  * @brief Sayonara Typedefs
  * @ingroup Helper
  */
-using StringPair=QPair<QString, QString>;
-using IntList=QList<int>;
-using IdList=QList<int>;
-using IdxList=QList<int> ;
-using BoolList=QList<bool> ;
-using Id=int32_t;
-using ArtistId=Id;
-using AlbumId=Id;
-using TrackID=Id;
-using IntSet=Util::Set<int>;
-using IndexSet=Util::Set<int>;
-using IdSet=Util::Set<Id>;
-using LibraryId=int8_t;
-using DbId=uint8_t;
-using Byte=uint8_t;
-using Disc=uint8_t;
-using TrackNum=uint16_t;
-using Year=uint16_t;
-using Seconds=int32_t;
-using MilliSeconds=int64_t;
-using MicroSeconds=int64_t;
-using NanoSeconds=int64_t;
-using Bitrate=uint32_t;
-using Filesize=uint64_t;
+using StringPair = QPair<QString, QString>;
+using IntList = QList<int>;
+using IdList = QList<int>;
+using IdxList = QList<int>;
+using BoolList = QList<bool>;
+using Id = int32_t;
+using ArtistId = Id;
+using AlbumId = Id;
+using TrackID = Id;
+using IntSet = Util::Set<int>;
+using IndexSet = Util::Set<int>;
+using IdSet = Util::Set<Id>;
+using LibraryId = int8_t;
+using DbId = uint8_t;
+using Byte = uint8_t;
+using Disc = uint8_t;
+using TrackNum = uint16_t;
+using Year = uint16_t;
+using Seconds = int32_t;
+using MilliSeconds = int64_t;
+using MicroSeconds = int64_t;
+using NanoSeconds = int64_t;
+using Bitrate = uint32_t;
+using Filesize = uint64_t;
 
 template<typename K, typename V>
-using PairList = QList<QPair<K,V>>;
+using PairList = QList<QPair<K, V>>;
 
 enum class Rating : uint8_t
 {
-	Zero=0,
-	One=1,
-	Two=2,
-	Three=3,
-	Four=4,
-	Five=5,
-	Last=6
+		Zero = 0,
+		One = 1,
+		Two = 2,
+		Three = 3,
+		Four = 4,
+		Five = 5,
+		Last = 6
 };
 
+enum class PlayState : unsigned char
+{
+		Playing = 0,
+		Paused,
+		Stopped,
+		FirstStartup
+};
 
 Q_DECLARE_METATYPE(Rating)
 
