@@ -262,7 +262,7 @@ void GUI_Player::registerPreferenceDialog(QAction* dialog_action)
 
 void GUI_Player::initTrayActions()
 {
-	auto* trayIcon = new GUI_TrayIcon(this);
+	auto* trayIcon = new GUI_TrayIcon(m->playManager, this);
 
 	connect(trayIcon, &GUI_TrayIcon::sigCloseClicked, this, &GUI_Player::reallyClose);
 	connect(trayIcon, &GUI_TrayIcon::sigShowClicked, this, &GUI_Player::raise);

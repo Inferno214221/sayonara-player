@@ -29,6 +29,7 @@
 #include <QMenu>
 
 class GUI_TrayIcon;
+class PlayManager;
 class QTimer;
 
 class TrayIconContextMenu :
@@ -45,7 +46,7 @@ class TrayIconContextMenu :
 
 	private:
 		// all here called by GUI_TrayIcon
-		explicit TrayIconContextMenu(QWidget* parent=nullptr);
+		explicit TrayIconContextMenu(PlayManager* playManager, QWidget* parent=nullptr);
 		~TrayIconContextMenu() override;
 
 		void setForwardEnabled(bool b);
@@ -85,7 +86,7 @@ class GUI_TrayIcon :
 		void sigShowClicked();
 
 	public:
-		explicit GUI_TrayIcon(QObject* parent=nullptr);
+		explicit GUI_TrayIcon(PlayManager* playManager, QObject* parent=nullptr);
 		~GUI_TrayIcon() override;
 
 		bool event(QEvent* e) override;
