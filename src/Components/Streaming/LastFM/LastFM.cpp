@@ -32,8 +32,6 @@
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
 
-#include "Components/PlayManager/PlayManagerProvider.h"
-
 #include "Database/Connector.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
@@ -65,8 +63,8 @@ struct Base::Private
 	TrackChangedThread* trackChangeThread = nullptr;
 	bool loggedIn;
 
-	Private(QObject* parent) :
-		playManager(PlayManagerProvider::instance()->playManager()),
+	Private(PlayManager* playManager, QObject* parent) :
+		playManager(playManager),
 		scrobbleTimer(new QTimer()),
 		trackChangedTimer(new QTimer{}),
 		trackChangeThread(new TrackChangedThread(parent)),
@@ -77,10 +75,10 @@ struct Base::Private
 	}
 };
 
-Base::Base() :
+Base::Base(PlayManager* playManager) :
 	QObject()
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(playManager, this);
 
 	connect(m->scrobbleTimer, &QTimer::timeout, this, &Base::scrobble);
 	connect(m->trackChangedTimer, &QTimer::timeout, this, &Base::trackChangedTimerTimedOut);

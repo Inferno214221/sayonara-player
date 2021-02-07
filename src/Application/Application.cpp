@@ -401,7 +401,7 @@ void Application::initPreferences()
 	preferences->registerPreferenceDialog(new GUI_RemoteControlPreferences("remotecontrol"));
 
 	preferences->registerPreferenceDialog(new GUI_NotificationPreferences("notifications"));
-	preferences->registerPreferenceDialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base()));
+	preferences->registerPreferenceDialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base(m->playManager)));
 
 	m->player->registerPreferenceDialog(preferences->action());
 }

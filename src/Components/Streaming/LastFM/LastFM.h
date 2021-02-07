@@ -33,6 +33,8 @@
 
 #include <QObject>
 
+class PlayManager;
+
 // singleton base LastFM API class
 // signals and slots are handled by the adapter class
 namespace LastFM
@@ -47,7 +49,7 @@ namespace LastFM
 			void sigLoggedIn(bool);
 
 		public:
-			Base();
+			Base(PlayManager* playManager);
 			virtual ~Base();
 
 			void login(const QString& username, const QString& password);
