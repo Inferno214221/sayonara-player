@@ -20,8 +20,6 @@
 
 #include "DBusMediaKeysInterface.h"
 
-#include "Components/PlayManager/PlayManagerProvider.h"
-
 #include "Interfaces/PlayManager.h"
 
 #include "Utils/Logger/Logger.h"
@@ -31,32 +29,33 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 
-
 struct DBusMediaKeysInterface::Private
 {
-	QObject*		parent=nullptr;
-	bool            initialized;
-	bool			isRegistered;
+	PlayManager* playManager;
+	QObject* parent;
 
-	Private(QObject* parent) :
+	bool initialized;
+	bool isRegistered;
+
+	Private(PlayManager* playManager, QObject* parent) :
+		playManager(playManager),
 		parent(parent),
 		initialized(false),
-		isRegistered(false)
-	{}
+		isRegistered(false) {}
 };
 
-DBusMediaKeysInterface::DBusMediaKeysInterface(QObject* parent) :
+DBusMediaKeysInterface::DBusMediaKeysInterface(PlayManager* playManager, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(parent);
+	m = Pimpl::make<Private>(playManager, parent);
 }
 
-DBusMediaKeysInterface::~DBusMediaKeysInterface() {}
+DBusMediaKeysInterface::~DBusMediaKeysInterface() = default;
 
 void DBusMediaKeysInterface::init()
 {
 	QDBusConnectionInterface* dbus_interface = QDBusConnection::sessionBus().interface();
-	if (!dbus_interface->isServiceRegistered( serviceName() ))
+	if(!dbus_interface->isServiceRegistered(serviceName()))
 	{
 		return;
 	}
@@ -67,7 +66,7 @@ void DBusMediaKeysInterface::init()
 	QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
 
 	connect(watcher, &QDBusPendingCallWatcher::finished,
-			this, &DBusMediaKeysInterface::registerFinished);
+	        this, &DBusMediaKeysInterface::registerFinished);
 
 	m->initialized = true;
 }
@@ -77,55 +76,58 @@ bool DBusMediaKeysInterface::initialized() const
 	return m->initialized;
 }
 
-
 void DBusMediaKeysInterface::mediaKeyPressed(const QString& program_name, const QString& key)
 {
 	Q_UNUSED(program_name)
 
 	QKeyEvent* event = nullptr;
-	auto* playManager = PlayManagerProvider::instance()->playManager();
 
-	if(key.compare("play", Qt::CaseInsensitive) == 0){
-		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPlay, Qt::NoModifier);
-		playManager->playPause();
+	if(key.compare("play", Qt::CaseInsensitive) == 0)
+	{
+		event = new QKeyEvent(QEvent::KeyPress, Qt::Key_MediaPlay, Qt::NoModifier);
+		m->playManager->playPause();
 	}
 
-	else if(key.compare("pause", Qt::CaseInsensitive) == 0){
-		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPause, Qt::NoModifier);
-		playManager->pause();
+	else if(key.compare("pause", Qt::CaseInsensitive) == 0)
+	{
+		event = new QKeyEvent(QEvent::KeyPress, Qt::Key_MediaPause, Qt::NoModifier);
+		m->playManager->pause();
 	}
 
-	else if(key.compare("next", Qt::CaseInsensitive) == 0){
-		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaNext, Qt::NoModifier);
-		playManager->next();
+	else if(key.compare("next", Qt::CaseInsensitive) == 0)
+	{
+		event = new QKeyEvent(QEvent::KeyPress, Qt::Key_MediaNext, Qt::NoModifier);
+		m->playManager->next();
 	}
 
-	else if(key.compare("previous", Qt::CaseInsensitive) == 0){
-		event = new QKeyEvent ( QEvent::KeyPress, Qt::Key_MediaPrevious, Qt::NoModifier);
-		playManager->previous();
+	else if(key.compare("previous", Qt::CaseInsensitive) == 0)
+	{
+		event = new QKeyEvent(QEvent::KeyPress, Qt::Key_MediaPrevious, Qt::NoModifier);
+		m->playManager->previous();
 	}
 
-	else if(key.contains("stop", Qt::CaseInsensitive) == 0){
-		event = new QKeyEvent (QEvent::KeyPress, Qt::Key_MediaStop, Qt::NoModifier);
-		playManager->stop();
+	else if(key.contains("stop", Qt::CaseInsensitive) == 0)
+	{
+		event = new QKeyEvent(QEvent::KeyPress, Qt::Key_MediaStop, Qt::NoModifier);
+		m->playManager->stop();
 	}
 
-	if(event && m->parent){
-		QCoreApplication::postEvent (m->parent, event);
+	if(event && m->parent)
+	{
+		QCoreApplication::postEvent(m->parent, event);
 	}
 }
-
 
 void DBusMediaKeysInterface::registerFinished(QDBusPendingCallWatcher* watcher)
 {
 	QDBusMessage reply = watcher->reply();
 	watcher->deleteLater();
 
-	if (reply.type() == QDBusMessage::ErrorMessage)
+	if(reply.type() == QDBusMessage::ErrorMessage)
 	{
 		spLog(Log::Warning, this) << "Cannot grab media keys: "
-								   << reply.errorName() << " "
-								   << reply.errorMessage();
+		                          << reply.errorName() << " "
+		                          << reply.errorMessage();
 	}
 
 	connectMediaKeys();

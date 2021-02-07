@@ -29,7 +29,7 @@ class DBusMediaKeysInterfaceMate : public DBusMediaKeysInterface
 	PIMPL(DBusMediaKeysInterfaceMate)
 
 	public:
-		explicit DBusMediaKeysInterfaceMate(QObject* parent=nullptr);
+		explicit DBusMediaKeysInterfaceMate(PlayManager* playManager, QObject* parent=nullptr);
 		~DBusMediaKeysInterfaceMate() override;
 
 	protected:

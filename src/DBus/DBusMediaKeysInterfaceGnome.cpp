@@ -36,8 +36,8 @@ struct DBusMediaKeysInterfaceGnome::Private
 	}
 };
 
-DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(QObject* parent) :
-	DBusMediaKeysInterface(parent)
+DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent) :
+	DBusMediaKeysInterface(playManager, parent)
 {
 	m = Pimpl::make<Private>(this);
 

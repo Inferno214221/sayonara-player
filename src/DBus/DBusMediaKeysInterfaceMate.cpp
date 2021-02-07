@@ -36,8 +36,8 @@ struct DBusMediaKeysInterfaceMate::Private
 	}
 };
 
-DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(QObject* parent) :
-	DBusMediaKeysInterface(parent)
+DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(PlayManager* playManager, QObject* parent) :
+	DBusMediaKeysInterface(playManager, parent)
 {
 	m = Pimpl::make<Private>(this);
 

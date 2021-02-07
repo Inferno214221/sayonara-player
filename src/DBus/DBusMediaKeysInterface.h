@@ -26,6 +26,8 @@
 
 #include "Utils/Pimpl.h"
 
+class PlayManager;
+
 class DBusMediaKeysInterface :
 		public QObject
 {
@@ -33,7 +35,7 @@ class DBusMediaKeysInterface :
 	PIMPL(DBusMediaKeysInterface)
 
 public:
-	explicit DBusMediaKeysInterface(QObject* parent=nullptr);
+	explicit DBusMediaKeysInterface(PlayManager* playManager, QObject* parent=nullptr);
 	virtual ~DBusMediaKeysInterface();
 
 	void init();

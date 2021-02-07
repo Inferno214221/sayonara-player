@@ -34,16 +34,16 @@
 
 struct DBusHandler::Private
 {
-	DBusMPRIS::MediaPlayer2* dbusMpris = nullptr;
-	DBusMediaKeysInterfaceMate* dbusMate = nullptr;
-	DBusMediaKeysInterfaceGnome* dbusGnome = nullptr;
-	DBusNotifications* dbusNotifications = nullptr;
+	DBusMPRIS::MediaPlayer2* dbusMpris;
+	DBusMediaKeysInterfaceMate* dbusMate;
+	DBusMediaKeysInterfaceGnome* dbusGnome;
+	DBusNotifications* dbusNotifications;
 
 	Private(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
 	        DBusHandler* parent) :
 		dbusMpris {new DBusMPRIS::MediaPlayer2(mainWindow, playManager, playlistAccessor, parent)},
-		dbusMate {new DBusMediaKeysInterfaceMate(parent)},
-		dbusGnome {new DBusMediaKeysInterfaceGnome(parent)},
+		dbusMate {new DBusMediaKeysInterfaceMate(playManager, parent)},
+		dbusGnome {new DBusMediaKeysInterfaceGnome(playManager, parent)},
 		dbusNotifications {new DBusNotifications(parent)} {}
 };
 

@@ -29,7 +29,7 @@ class DBusMediaKeysInterfaceGnome : public DBusMediaKeysInterface
 	PIMPL(DBusMediaKeysInterfaceGnome)
 
 	public:
-		explicit DBusMediaKeysInterfaceGnome(QObject* parent=nullptr);
+		explicit DBusMediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent=nullptr);
 		~DBusMediaKeysInterfaceGnome() override;
 
 	protected:
