@@ -26,17 +26,23 @@
 #include <QObject>
 #include <QStringList>
 
+namespace Library
+{
+	class Manager;
+}
+
 class FileOperations :
 	public QObject
 {
 	Q_OBJECT
+	PIMPL(FileOperations)
 
 	signals:
 		void sigFinished();
 		void sigStarted();
 
 	public:
-		explicit FileOperations(QObject* parent=nullptr);
+		explicit FileOperations(Library::Manager* libraryManager, QObject* parent=nullptr);
 		~FileOperations() override;
 
 		bool renamePath(const QString& path, const QString& newName);

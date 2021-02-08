@@ -37,17 +37,27 @@
 
 #include <QStringList>
 
-FileOperations::FileOperations(QObject* parent) :
+struct FileOperations::Private
+{
+	Library::Manager* libraryManager;
+
+	Private(Library::Manager* libraryManager) :
+		libraryManager {libraryManager} {}
+};
+
+FileOperations::FileOperations(Library::Manager* libraryManager, QObject* parent) :
 	QObject(parent)
-{}
+{
+	m = Pimpl::make<Private>(libraryManager);
+}
 
 FileOperations::~FileOperations() = default;
 
-static void refreshLibraries(const QList<LibraryId>& libraries)
+static void refreshLibraries(Library::Manager* libraryManager, const QList<LibraryId>& libraries)
 {
-	for(LibraryId id : libraries)
+	for(const auto& id : libraries)
 	{
-		LocalLibrary* library = Library::Manager::instance()->libraryInstance(id);
+		auto* library = libraryManager->libraryInstance(id);
 		if(library)
 		{
 			library->refetch();
@@ -57,7 +67,7 @@ static void refreshLibraries(const QList<LibraryId>& libraries)
 
 bool FileOperations::renamePath(const QString& path, const QString& newName)
 {
-	auto* t = new FileRenameThread(path, newName, this);
+	auto* t = new FileRenameThread(m->libraryManager, path, newName, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
@@ -69,7 +79,7 @@ bool FileOperations::renamePath(const QString& path, const QString& newName)
 
 bool FileOperations::movePaths(const QStringList& paths, const QString& targetDir)
 {
-	auto* t = new FileMoveThread(paths, targetDir, this);
+	auto* t = new FileMoveThread(m->libraryManager, paths, targetDir, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
@@ -83,8 +93,8 @@ void FileOperations::moveThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
 
-	refreshLibraries(thread->sourceIds());
-	refreshLibraries(thread->targetIds());
+	refreshLibraries(m->libraryManager, thread->sourceIds());
+	refreshLibraries(m->libraryManager, thread->targetIds());
 
 	thread->deleteLater();
 	emit sigFinished();
@@ -92,7 +102,7 @@ void FileOperations::moveThreadFinished()
 
 bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDir)
 {
-	auto* t = new FileCopyThread(paths, targetDir, this);
+	auto* t = new FileCopyThread(m->libraryManager, paths, targetDir, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::copyThreadFinished);
@@ -105,7 +115,7 @@ bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDi
 void FileOperations::copyThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
-	refreshLibraries(thread->targetIds());
+	refreshLibraries(m->libraryManager, thread->targetIds());
 
 	thread->deleteLater();
 	emit sigFinished();
@@ -115,7 +125,7 @@ bool FileOperations::deletePaths(const QStringList& paths)
 {
 	spLog(Log::Info, this) << "Try to delete " << paths;
 
-	auto* t = new FileDeleteThread(paths, this);
+	auto* t = new FileDeleteThread(m->libraryManager, paths, this);
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::deleteThreadFinished);
 
@@ -127,7 +137,7 @@ bool FileOperations::deletePaths(const QStringList& paths)
 void FileOperations::deleteThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
-	refreshLibraries(thread->sourceIds());
+	refreshLibraries(m->libraryManager, thread->sourceIds());
 
 	thread->deleteLater();
 	emit sigFinished();
@@ -141,23 +151,23 @@ QStringList FileOperations::supportedReplacementTags()
 		};
 }
 
-static QString replaceTag(const QString& expression, const MetaData& md)
+static QString replaceTag(const QString& expression, const MetaData& track)
 {
 	QString ret(expression);
-	ret.replace("<title>", md.title());
-	ret.replace("<album>", md.album());
-	ret.replace("<artist>", md.artist());
-	ret.replace("<year>", QString::number(md.year()));
-	ret.replace("<bitrate>", QString::number(md.bitrate() / 1000));
+	ret.replace("<title>", track.title());
+	ret.replace("<album>", track.album());
+	ret.replace("<artist>", track.artist());
+	ret.replace("<year>", QString::number(track.year()));
+	ret.replace("<bitrate>", QString::number(track.bitrate() / 1000));
 
-	QString s_track_nr = QString::number(md.trackNumber());
-	if(md.trackNumber() < 10)
+	auto trackNrString = QString::number(track.trackNumber());
+	if(track.trackNumber() < 10)
 	{
-		s_track_nr.prepend("0");
+		trackNrString.prepend("0");
 	}
 
-	ret.replace("<tracknum>", s_track_nr);
-	ret.replace("<disc>", QString::number(int(md.discnumber())));
+	ret.replace("<tracknum>", trackNrString);
+	ret.replace("<disc>", QString::number(int(track.discnumber())));
 
 	return ret;
 }
@@ -170,15 +180,15 @@ static QString incrementFilename(const QString& filename)
 	}
 
 	auto[dir, pureFilename] = Util::File::splitFilename(filename);
-	const QString ext = Util::File::getFileExtension(filename);
+	const auto extension = Util::File::getFileExtension(filename);
 
 	for(int i = 1; i < 1000; i++)
 	{
-		const QString pureNewNameNr = pureFilename + "-" + QString::number(i);
-		const QString fullNewNameNr = dir + "/" + pureNewNameNr + "." + ext;
-		if(!Util::File::exists(fullNewNameNr))
+		const auto pureNewName = QString("%1-%2").arg(pureFilename).arg(i);
+		const auto fullNewName = QString("%1/%2.%3").arg(dir).arg(pureNewName).arg(extension);
+		if(!Util::File::exists(fullNewName))
 		{
-			return Util::File::cleanFilename(fullNewNameNr);
+			return Util::File::cleanFilename(fullNewName);
 		}
 	}
 
@@ -188,15 +198,15 @@ static QString incrementFilename(const QString& filename)
 bool FileOperations::renameByExpression(const QString& originalFilepath, const QString& expression) const
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* libraryDb = db->libraryDatabase(-1, db->databaseId());
+	auto* libraryDb = db->libraryDatabase(-1, db->databaseId());
 
-	MetaData originalTrack = libraryDb->getTrackByPath(originalFilepath);
+	auto originalTrack = libraryDb->getTrackByPath(originalFilepath);
 	if(originalTrack.id() < 0)
 	{
 		Tagging::Utils::getMetaDataOfFile(originalTrack);
 	}
 
-	const QString pureFilename = replaceTag(expression, originalTrack);
+	const auto pureFilename = replaceTag(expression, originalTrack);
 	if(pureFilename.isEmpty())
 	{
 		spLog(Log::Error, this) << "Target filename is empty";
@@ -209,10 +219,10 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 		return false;
 	}
 
-	const QString dir = Util::File::getParentDirectory(originalTrack.filepath());
-	const QString ext = Util::File::getFileExtension(originalTrack.filepath());
+	const auto dir = Util::File::getParentDirectory(originalTrack.filepath());
+	const auto ext = Util::File::getFileExtension(originalTrack.filepath());
 
-	QString fullNewName = QString("%1/%2.%3").arg(dir).arg(pureFilename).arg(ext);
+	auto fullNewName = QString("%1/%2.%3").arg(dir).arg(pureFilename).arg(ext);
 	fullNewName = incrementFilename(fullNewName);
 
 	if(originalTrack.id() < 0)
@@ -222,10 +232,10 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 
 	else
 	{
-		bool success = Util::File::renameFile(originalFilepath, fullNewName);
+		auto success = Util::File::renameFile(originalFilepath, fullNewName);
 		if(success)
 		{
-			MetaData newTrack(originalTrack);
+			auto newTrack = originalTrack;
 			newTrack.setFilepath(fullNewName);
 
 			success = libraryDb->updateTrack(newTrack);

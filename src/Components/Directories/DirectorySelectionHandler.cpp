@@ -103,7 +103,7 @@ DirectorySelectionHandler::requestImport(LibraryId libraryId, const QStringList&
 
 FileOperations* DirectorySelectionHandler::createFileOperation()
 {
-	auto* fo = new FileOperations(this);
+	auto* fo = new FileOperations(m->libraryManager, this);
 
 	connect(fo, &FileOperations::sigStarted, this, &DirectorySelectionHandler::sigFileOperationStarted);
 	connect(fo, &FileOperations::sigFinished, this, &DirectorySelectionHandler::sigFileOperationFinished);

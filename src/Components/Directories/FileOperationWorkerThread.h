@@ -4,6 +4,11 @@
 #include <QThread>
 #include "Utils/Pimpl.h"
 
+namespace Library
+{
+	class Manager;
+}
+
 class FileOperationThread :
 	public QThread
 {
@@ -21,8 +26,8 @@ class FileOperationThread :
 		QList<LibraryId> targetIds() const;
 
 	protected:
-		explicit FileOperationThread(QObject* parent);
-		FileOperationThread(const QStringList& sourceFiles, const QStringList& targetFiles, QObject* parent);
+		FileOperationThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QStringList& targetFiles, QObject* parent);
+		Library::Manager* libraryManager();
 };
 
 class FileMoveThread :
@@ -32,7 +37,7 @@ class FileMoveThread :
 	PIMPL(FileMoveThread)
 
 	public:
-		FileMoveThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
+		FileMoveThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
 		~FileMoveThread() override;
 
 	protected:
@@ -46,7 +51,7 @@ class FileCopyThread :
 	PIMPL(FileCopyThread)
 
 	public:
-		FileCopyThread(const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
+		FileCopyThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
 		~FileCopyThread() override;
 
 	protected:
@@ -60,7 +65,7 @@ class FileRenameThread :
 	PIMPL(FileRenameThread)
 
 	public:
-		FileRenameThread(const QString& sourceFile, const QString& targetFile, QObject* parent);
+		FileRenameThread(Library::Manager* libraryManager, const QString& sourceFile, const QString& targetFile, QObject* parent);
 		~FileRenameThread() override;
 
 	protected:
@@ -74,7 +79,7 @@ class FileDeleteThread :
 	PIMPL(FileDeleteThread)
 
 	public:
-		FileDeleteThread(const QStringList& sourcePaths, QObject* parent);
+		FileDeleteThread(Library::Manager* libraryManager, const QStringList& sourcePaths, QObject* parent);
 		~FileDeleteThread() override;
 
 	protected:
