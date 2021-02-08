@@ -98,7 +98,7 @@ QVariant LibraryListModel::data(const QModelIndex& index, int role) const
 
 void LibraryListModel::appendRow(const LibName& name, const LibPath& path)
 {
-	m->operations << new AddOperation(name, path);
+	m->operations << new AddOperation(m->libraryManager, name, path);
 	m->shownLibraryInfo << Info(name, path, -1);
 
 	emit dataChanged(index(0), index(rowCount()));
@@ -110,7 +110,7 @@ void LibraryListModel::renameRow(int row, const LibName& newName)
 	{
 		const auto& info = m->shownLibraryInfo[row];
 
-		m->operations << new RenameOperation(info.id(), newName);
+		m->operations << new RenameOperation(m->libraryManager, info.id(), newName);
 		m->shownLibraryInfo[row] = Info(newName, info.path(), info.id());
 	}
 }
@@ -121,7 +121,7 @@ void LibraryListModel::changePath(int row, const LibPath& path)
 	{
 		const auto& info = m->shownLibraryInfo[row];
 
-		m->operations << new ChangePathOperation(info.id(), path);
+		m->operations << new ChangePathOperation(m->libraryManager, info.id(), path);
 		m->shownLibraryInfo[row] = Info(info.name(), path, info.id());
 	}
 }
@@ -133,7 +133,7 @@ void LibraryListModel::moveRow(int from, int to)
 		return;
 	}
 
-	m->operations << new MoveOperation(from, to);
+	m->operations << new MoveOperation(m->libraryManager, from, to);
 	m->shownLibraryInfo.move(from, to);
 
 	emit dataChanged(index(0), index(rowCount()));
@@ -145,7 +145,7 @@ void LibraryListModel::removeRow(int row)
 	{
 		const auto& info = m->shownLibraryInfo[row];
 
-		m->operations << new RemoveOperation(info.id());
+		m->operations << new RemoveOperation(m->libraryManager, info.id());
 		m->shownLibraryInfo.removeAt(row);
 
 		emit dataChanged(index(0), index(rowCount()));

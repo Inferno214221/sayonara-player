@@ -23,25 +23,37 @@
 
 #include <QString>
 
-ChangeOperation::ChangeOperation() = default;
+struct ChangeOperation::Private
+{
+	Library::Manager* libraryManager;
+
+	Private(Library::Manager* libraryManager) :
+		libraryManager {libraryManager} {}
+};
+
+ChangeOperation::ChangeOperation(Library::Manager* libraryManager)
+{
+	m = Pimpl::make<Private>(libraryManager);
+}
 
 ChangeOperation::~ChangeOperation() = default;
 
 Library::Manager* ChangeOperation::manager() const
 {
-	return Library::Manager::instance();
+	return m->libraryManager;
 }
 
 struct MoveOperation::Private
 {
 	int from, to;
+
 	Private(int from, int to) :
 		from(from),
-		to(to)
-	{}
+		to(to) {}
 };
 
-MoveOperation::MoveOperation(int from, int to)
+MoveOperation::MoveOperation(Library::Manager* libraryManager, int from, int to) :
+	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(from, to);
 }
@@ -53,28 +65,27 @@ bool MoveOperation::exec()
 	return manager()->moveLibrary(m->from, m->to);
 }
 
-
 struct RenameOperation::Private
 {
 	LibraryId id;
-	QString new_name;
+	QString newName;
 
-	Private(LibraryId id, const QString& new_name) :
+	Private(LibraryId id, const QString& newName) :
 		id(id),
-		new_name(new_name)
-	{}
+		newName(newName) {}
 };
 
-RenameOperation::RenameOperation(LibraryId id, const QString& new_name)
+RenameOperation::RenameOperation(Library::Manager* libraryManager, LibraryId id, const QString& newName) :
+	ChangeOperation(libraryManager)
 {
-	m = Pimpl::make<Private>(id, new_name);
+	m = Pimpl::make<Private>(id, newName);
 }
 
 RenameOperation::~RenameOperation() = default;
 
 bool RenameOperation::exec()
 {
-	return manager()->renameLibrary(m->id, m->new_name);
+	return manager()->renameLibrary(m->id, m->newName);
 }
 
 struct RemoveOperation::Private
@@ -82,11 +93,11 @@ struct RemoveOperation::Private
 	LibraryId id;
 
 	Private(LibraryId id) :
-		id(id)
-	{}
+		id(id) {}
 };
 
-RemoveOperation::RemoveOperation(LibraryId id)
+RemoveOperation::RemoveOperation(Library::Manager* libraryManager, LibraryId id) :
+	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(id);
 }
@@ -104,11 +115,11 @@ struct AddOperation::Private
 
 	Private(const QString& name, const QString& path) :
 		name(name),
-		path(path)
-	{}
+		path(path) {}
 };
 
-AddOperation::AddOperation(const QString& name, const QString& path)
+AddOperation::AddOperation(Library::Manager* libraryManager, const QString& name, const QString& path) :
+	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(name, path);
 }
@@ -123,22 +134,22 @@ bool AddOperation::exec()
 struct ChangePathOperation::Private
 {
 	LibraryId id;
-	QString new_path;
+	QString newPath;
 
-	Private(LibraryId id, const QString& new_path) :
+	Private(LibraryId id, const QString& newPath) :
 		id(id),
-		new_path(new_path)
-	{}
+		newPath(newPath) {}
 };
 
-ChangePathOperation::ChangePathOperation(LibraryId id, const QString& new_path)
+ChangePathOperation::ChangePathOperation(Library::Manager* libraryManager, LibraryId id, const QString& newPath) :
+	ChangeOperation(libraryManager)
 {
-	m = Pimpl::make<Private>(id, new_path);
+	m = Pimpl::make<Private>(id, newPath);
 }
 
 ChangePathOperation::~ChangePathOperation() = default;
 
 bool ChangePathOperation::exec()
 {
-	return manager()->changeLibraryPath(m->id, m->new_path);
+	return manager()->changeLibraryPath(m->id, m->newPath);
 }

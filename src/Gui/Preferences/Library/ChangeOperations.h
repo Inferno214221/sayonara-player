@@ -30,12 +30,13 @@ namespace Library
 
 class ChangeOperation
 {
-public:
-	ChangeOperation();
-	virtual ~ChangeOperation();
-	virtual bool exec()=0;
+	PIMPL(ChangeOperation)
+	public:
+		ChangeOperation(Library::Manager* libraryManager);
+		virtual ~ChangeOperation();
+		virtual bool exec() = 0;
 
-	Library::Manager* manager() const;
+		Library::Manager* manager() const;
 };
 
 class MoveOperation :
@@ -43,60 +44,59 @@ class MoveOperation :
 {
 	PIMPL(MoveOperation)
 
-public:
-	MoveOperation(int from, int to);
-	~MoveOperation();
+	public:
+		MoveOperation(Library::Manager* libraryManager, int from, int to);
+		~MoveOperation();
 
-	bool exec() override;
+		bool exec() override;
 };
-
 
 class RenameOperation :
 	public ChangeOperation
 {
 	PIMPL(RenameOperation)
 
-public:
-	RenameOperation(LibraryId id, const QString& new_name);
-	~RenameOperation();
+	public:
+		RenameOperation(Library::Manager* libraryManager, LibraryId id, const QString& newName);
+		~RenameOperation();
 
-	bool exec() override;
+		bool exec() override;
 };
 
 class RemoveOperation :
-		public ChangeOperation
+	public ChangeOperation
 {
 	PIMPL(RemoveOperation)
 
-public:
-	RemoveOperation(LibraryId id);
-	~RemoveOperation();
+	public:
+		RemoveOperation(Library::Manager* libraryManager, LibraryId id);
+		~RemoveOperation();
 
-	bool exec() override;
+		bool exec() override;
 };
 
 class AddOperation :
-		public ChangeOperation
+	public ChangeOperation
 {
 	PIMPL(AddOperation)
 
-public:
-	AddOperation(const QString& name, const QString& path);
-	~AddOperation();
+	public:
+		AddOperation(Library::Manager* libraryManager, const QString& name, const QString& path);
+		~AddOperation();
 
-	bool exec() override;
+		bool exec() override;
 };
 
 class ChangePathOperation :
-		public ChangeOperation
+	public ChangeOperation
 {
 	PIMPL(ChangePathOperation)
 
-public:
-	ChangePathOperation(LibraryId id, const QString& new_path);
-	~ChangePathOperation();
+	public:
+		ChangePathOperation(Library::Manager* libraryManager, LibraryId id, const QString& newPath);
+		~ChangePathOperation();
 
-	bool exec() override;
+		bool exec() override;
 };
 
 #endif // CHANGEOPERATIONS_H
