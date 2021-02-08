@@ -45,7 +45,7 @@ class LocalLibrary :
 		void sigRenamed(const QString& newName);
 
 	protected:
-		LocalLibrary(LibraryId id, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
+		LocalLibrary(Library::Manager* libraryManager, LibraryId id, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
 
 	public:
 		~LocalLibrary() override;

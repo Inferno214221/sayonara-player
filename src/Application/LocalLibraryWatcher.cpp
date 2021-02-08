@@ -82,7 +82,7 @@ void LocalLibraryWatcher::libraryMoved(LibraryId id, int from, int to)
 
 	PluginHandler::instance()->moveLocalLibrary(from, to);
 
-	m->infos = Manager::instance()->allLibraries();
+	m->infos = m->libraryManager->allLibraries();
 }
 
 void LocalLibraryWatcher::libraryRenamed(LibraryId id)

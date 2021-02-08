@@ -43,34 +43,34 @@
 #include <limits>
 #include <QTime>
 
-
 struct LocalLibrary::Private
 {
-	Library::ReloadThread*	reloadThread=nullptr;
-	Library::Importer*		libraryImporter=nullptr;
+	Library::Manager* libraryManager;
+	Library::ReloadThread* reloadThread = nullptr;
+	Library::Importer* libraryImporter = nullptr;
 
-	LibraryId				libraryId;
+	LibraryId libraryId;
 
-	Private(LibraryId libraryId) :
-		libraryId(libraryId)
-	{}
+	Private(Library::Manager* libraryManager, LibraryId libraryId) :
+		libraryManager(libraryManager),
+		libraryId(libraryId) {}
 };
 
-LocalLibrary::LocalLibrary(LibraryId libraryId, Playlist::Handler* playlistHandler,  QObject* parent) :
+LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId, Playlist::Handler* playlistHandler,
+                           QObject* parent) :
 	AbstractLibrary(playlistHandler, parent)
 {
-	m = Pimpl::make<Private>(libraryId);
+	m = Pimpl::make<Private>(libraryManager, libraryId);
 
 	applyDatabaseFixes();
 
 	connect(playlistHandler, &Playlist::Handler::sigTrackDeletionRequested,
-			this, &LocalLibrary::deleteTracks);
+	        this, &LocalLibrary::deleteTracks);
 
 	connect(playlistHandler, &Playlist::Handler::sigFindTrackRequested,
-			this, &LocalLibrary::findTrack);
+	        this, &LocalLibrary::findTrack);
 
-	auto* manager = Library::Manager::instance();
-	connect(manager, &Library::Manager::sigRenamed, this, &LocalLibrary::renamed);
+	connect(libraryManager, &Library::Manager::sigRenamed, this, &LocalLibrary::renamed);
 
 	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::searchModeChanged);
 	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::showAlbumArtistsChanged);
@@ -82,15 +82,18 @@ void LocalLibrary::applyDatabaseFixes() {}
 
 void LocalLibrary::reloadLibrary(bool clearFirst, Library::ReloadQuality quality)
 {
-	if(isReloading()){
+	if(isReloading())
+	{
 		return;
 	}
 
-	if(!m->reloadThread){
+	if(!m->reloadThread)
+	{
 		initReloadThread();
 	}
 
-	if(clearFirst) {
+	if(clearFirst)
+	{
 		deleteAllTracks();
 	}
 
@@ -98,7 +101,6 @@ void LocalLibrary::reloadLibrary(bool clearFirst, Library::ReloadQuality quality
 	m->reloadThread->setLibrary(id(), path());
 	m->reloadThread->start();
 }
-
 
 void LocalLibrary::reloadThreadFinished()
 {
@@ -146,7 +148,7 @@ void LocalLibrary::renamed(LibraryId id)
 {
 	if(id == this->id())
 	{
-		emit sigRenamed( this->name() );
+		emit sigRenamed(this->name());
 	}
 }
 
@@ -243,11 +245,13 @@ void LocalLibrary::getTrackById(TrackID trackId, MetaData& md) const
 {
 	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	MetaData md_tmp = lib_db->getTrackById(trackId);
-	if(md_tmp.libraryId() == m->libraryId) {
+	if(md_tmp.libraryId() == m->libraryId)
+	{
 		md = md_tmp;
 	}
 
-	else {
+	else
+	{
 		md = MetaData();
 	}
 }
@@ -266,23 +270,24 @@ void LocalLibrary::getArtistById(ArtistId artistId, Artist& artist) const
 
 void LocalLibrary::initReloadThread()
 {
-	if(m->reloadThread){
+	if(m->reloadThread)
+	{
 		return;
 	}
 
 	m->reloadThread = new Library::ReloadThread(this);
 
 	connect(m->reloadThread, &Library::ReloadThread::sigReloadingLibrary,
-			this, &LocalLibrary::sigReloadingLibrary);
+	        this, &LocalLibrary::sigReloadingLibrary);
 
 	connect(m->reloadThread, &Library::ReloadThread::sigNewBlockSaved,
-			this, &LocalLibrary::reloadThreadNewBlock);
+	        this, &LocalLibrary::reloadThreadNewBlock);
 
 	connect(m->reloadThread, &Library::ReloadThread::finished,
-			this, &LocalLibrary::reloadThreadFinished);
+	        this, &LocalLibrary::reloadThreadFinished);
 }
 
-void LocalLibrary::deleteTracks(const MetaDataList &v_md, Library::TrackDeletionMode mode)
+void LocalLibrary::deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode mode)
 {
 	auto* lib_db = DB::Connector::instance()->libraryDatabase(m->libraryId, 0);
 	lib_db->deleteTracks(v_md);
@@ -291,7 +296,9 @@ void LocalLibrary::deleteTracks(const MetaDataList &v_md, Library::TrackDeletion
 }
 
 void LocalLibrary::refreshArtists() {}
+
 void LocalLibrary::refreshAlbums() {}
+
 void LocalLibrary::refreshTracks() {}
 
 void LocalLibrary::importFiles(const QStringList& files)
@@ -301,7 +308,8 @@ void LocalLibrary::importFiles(const QStringList& files)
 
 void LocalLibrary::importFilesTo(const QStringList& files, const QString& targetDirectory)
 {
-	if(files.isEmpty()){
+	if(files.isEmpty())
+	{
 		return;
 	}
 
@@ -318,27 +326,23 @@ void LocalLibrary::importFilesTo(const QStringList& files, const QString& target
 
 bool LocalLibrary::setLibraryPath(const QString& library_path)
 {
-	Library::Manager* manager = Library::Manager::instance();
-	return manager->changeLibraryPath(m->libraryId, library_path);
+	return m->libraryManager->changeLibraryPath(m->libraryId, library_path);
 }
 
 bool LocalLibrary::setLibraryName(const QString& library_name)
 {
-	Library::Manager* manager = Library::Manager::instance();
-	return manager->renameLibrary(this->id(), library_name);
+	return m->libraryManager->renameLibrary(this->id(), library_name);
 }
 
 QString LocalLibrary::name() const
 {
-	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->libraryInfo(this->id());
+	const auto info = m->libraryManager->libraryInfo(this->id());
 	return info.name();
 }
 
 QString LocalLibrary::path() const
 {
-	Library::Manager* manager = Library::Manager::instance();
-	Library::Info info = manager->libraryInfo(this->id());
+	const auto info = m->libraryManager->libraryInfo(this->id());
 	return info.path();
 }
 

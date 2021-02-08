@@ -386,7 +386,7 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 
 	if(localLibrary == nullptr)
 	{
-		localLibrary = new LocalLibrary(id, m->playlistHandler);
+		localLibrary = new LocalLibrary(this, id, m->playlistHandler);
 		m->libraryMap[id] = localLibrary;
 	}
 
