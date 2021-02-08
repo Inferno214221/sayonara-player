@@ -1,6 +1,6 @@
-/* EqualizerHandler.cpp */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* ${CLASS_NAME}.h */
+/*
+ * Copyright (C) 2011-2021 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,31 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_SOUNDMODIFIER_H
+#define SAYONARA_PLAYER_SOUNDMODIFIER_H
 
-#include "EqualizerAccesible.h"
-#include "Components/Engine/EngineUtils.h"
-
-#include <QList>
-#include <QString>
-
-using namespace PipelineExtensions;
-
-EqualizerAccessible::EqualizerAccessible() = default;
-EqualizerAccessible::~EqualizerAccessible() = default;
-
-void EqualizerAccessible::setEqualizerBand(int bandIndex, int value)
+class SoundModifier
 {
-	auto bandName = QString("band%1").arg(bandIndex);
+	public:
+		virtual void setEqualizer(int band, int value)=0;
+};
 
-	GstElement* element = this->equalizerElement();
-	if(!element){
-		return;
-	}
-
-	double newValue = (value > 0)
-		? (value * 0.25)
-		: (value * 0.75);
-
-	Engine::Utils::setValue(element, bandName.toUtf8().data(), newValue);
-}
-
+#endif //SAYONARA_PLAYER_SOUNDMODIFIER_H

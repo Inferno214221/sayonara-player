@@ -32,6 +32,8 @@
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Utils/Pimpl.h"
 
+class Equalizer;
+
 UI_FWD(GUI_Equalizer)
 
 /**
@@ -46,7 +48,7 @@ class GUI_Equalizer :
 	PIMPL(GUI_Equalizer)
 
 	public:
-		explicit GUI_Equalizer(QWidget* parent=nullptr);
+		explicit GUI_Equalizer(Equalizer* equalizer, QWidget* parent=nullptr);
 		~GUI_Equalizer() override;
 
 		QString name() const override;

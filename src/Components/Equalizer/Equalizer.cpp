@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "Equalizer.h"
-#include "Components/Engine/EngineHandler.h"
+#include "Interfaces/Engine/SoundModifier.h"
+
 #include "Database/Connector.h"
 #include "Database/Equalizer.h"
 
@@ -32,35 +33,57 @@ namespace Algorithm = Util::Algorithm;
 
 struct Equalizer::Private
 {
-	static constexpr double scaleFactors[] = {1.0, 0.6, 0.20, 0.06, 0.01};
+	private:
+		SoundModifier* mSoundModifier;
 
-	DB::Equalizer* db = nullptr;
-	QList<EqualizerSetting> presets;
-	EqualizerSetting referenceValue;
-	int currentIndex;
-	bool gaussEnabled;
+	public:
+		static constexpr double scaleFactors[] = {1.0, 0.6, 0.20, 0.06, 0.01};
 
-	Private() :
-		db {DB::Connector::instance()->equalizerConnector()},
-		currentIndex(GetSetting(Set::Eq_Last)),
-		gaussEnabled(GetSetting(Set::Eq_Gauss))
-	{
-		db->fetchAllEqualizers(presets);
-		if(!Util::between(this->currentIndex, this->presets))
+		DB::Equalizer* db = nullptr;
+
+		QList<EqualizerSetting> presets;
+		EqualizerSetting referenceValue;
+		int currentIndex;
+		bool gaussEnabled;
+
+		Private(SoundModifier* soundModifier) :
+			mSoundModifier {soundModifier},
+			db {DB::Connector::instance()->equalizerConnector()},
+			currentIndex(GetSetting(Set::Eq_Last)),
+			gaussEnabled(GetSetting(Set::Eq_Gauss))
 		{
-			this->currentIndex = 0;
-		}
-	}
+			db->fetchAllEqualizers(presets);
+			if(!Util::between(this->currentIndex, this->presets))
+			{
+				this->currentIndex = 0;
+			}
 
-	QList<int>
-	changeValue(int equalizerIndex, int band, int value, bool affectNeighbours);
-	static void applyValueToEngine(int band, int value);
+			if(Util::between(this->currentIndex, this->presets))
+			{
+				applyEqualizer(presets[currentIndex]);
+			}
+		}
+
+		QList<int>
+		changeValue(int equalizerIndex, int band, int value, bool affectNeighbours);
+
+		void applyEqualizer(const EqualizerSetting& preset)
+		{
+			if(mSoundModifier)
+			{
+				int band = 0;
+				for(const auto& value : preset)
+				{
+					mSoundModifier->setEqualizer(band++, value);
+				}
+			}
+		}
 };
 
-Equalizer::Equalizer(QObject* parent) :
+Equalizer::Equalizer(SoundModifier* soundModifier, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(soundModifier);
 }
 
 Equalizer::~Equalizer() noexcept = default;
@@ -89,12 +112,13 @@ QStringList Equalizer::defaultNames() const
 
 void Equalizer::changeValue(int index, int band, int value)
 {
+	const auto& equalizer = equalizerSetting(index);
+
 	const auto affectedBands =
 		m->changeValue(index, band, value, m->gaussEnabled);
 
 	if(!affectedBands.isEmpty())
 	{
-		const auto& equalizer = equalizerSetting(index);
 		if(m->db->updateEqualizer(equalizer))
 		{
 			for(const auto& band : affectedBands)
@@ -103,6 +127,8 @@ void Equalizer::changeValue(int index, int band, int value)
 			}
 		}
 	}
+
+	m->applyEqualizer(equalizer);
 }
 
 void Equalizer::resetPreset(int equalizerIndex)
@@ -123,6 +149,7 @@ void Equalizer::resetPreset(int equalizerIndex)
 	}
 
 	m->db->updateEqualizer(equalizer);
+	m->applyEqualizer(equalizer);
 }
 
 Equalizer::RenameError
@@ -136,17 +163,14 @@ Equalizer::renamePreset(int index, const QString& newName)
 
 	if(newName.trimmed().isEmpty())
 	{
-		spLog(Log::Error, this) << "Rename: Empty name not allowed";
+		spLog(Log::Error, this) << "Rename:  Empty name not allowed";
 		return RenameError::EmptyName;
 	}
 
-	const auto containsName = Algorithm::contains(m->presets,
-	                                              [newName](
-		                                              const auto& preset) {
-		                                              return (
-			                                              preset.name().trimmed() ==
-			                                              newName.trimmed());
-	                                              });
+	const auto containsName =
+		Algorithm::contains(m->presets, [newName](const auto& preset) {
+			return (preset.name().trimmed() == newName.trimmed());
+		});
 
 	if(containsName)
 	{
@@ -194,6 +218,8 @@ bool Equalizer::deletePreset(int index)
 			m->currentIndex = 0;
 		}
 	}
+
+	m->applyEqualizer(equalizerSetting(m->currentIndex));
 
 	return true;
 }
@@ -274,14 +300,6 @@ void Equalizer::setCurrentIndex(int index)
 
 	m->currentIndex = index;
 	SetSetting(Set::Eq_Last, index);
-
-	const auto& equalizer = equalizerSetting(index);
-
-	auto band = 0;
-	for(const auto& value : equalizer)
-	{
-		Private::applyValueToEngine(band++, value);
-	}
 }
 
 void Equalizer::startValueChange()
@@ -309,7 +327,6 @@ Equalizer::Private::changeValue(int equalizerIndex, int band, int value,
 	}
 
 	this->presets[equalizerIndex].setValue(band, value);
-	Private::applyValueToEngine(band, value);
 
 	if(affectNeighbours)
 	{
@@ -317,11 +334,10 @@ Equalizer::Private::changeValue(int equalizerIndex, int band, int value,
 
 		const auto mostLeft = std::max(band - 4, 0);
 		const auto mostRight =
-			std::min(band + 4, int(this->referenceValue.values().size()));
+			std::min(band + 4, static_cast<int>(this->referenceValue.values().size()));
 
 		QList<int> affectedBands;
-		for(auto neighbourBand = mostLeft;
-		    neighbourBand < mostRight; neighbourBand++)
+		for(auto neighbourBand = mostLeft; neighbourBand < mostRight; neighbourBand++)
 		{
 			if(neighbourBand == band)
 			{
@@ -342,9 +358,4 @@ Equalizer::Private::changeValue(int equalizerIndex, int band, int value,
 	}
 
 	return QList<int> {band};
-}
-
-void Equalizer::Private::applyValueToEngine(int band, int value)
-{
-	Engine::Handler::instance()->setEqualizer(band, value);
 }

@@ -43,7 +43,6 @@ class Application :
 		void initSingleInstanceThread();
 		void initPreferences();
 		void initLibraries();
-		void initEngine();
 		void initPlugins();
 		void initPlayer(bool force_show);
 		void initPlaylist(const QStringList& filesToPlay);

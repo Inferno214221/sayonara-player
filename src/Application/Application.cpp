@@ -41,6 +41,7 @@
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
+#include "Components/Equalizer/Equalizer.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistLoader.h"
@@ -170,8 +171,8 @@ struct Application::Private
 		db = DB::Connector::instance();
 		db->settingsConnector()->loadSettings();
 
-		engine = Engine::Handler::instance();
 		playManager = new PlayManagerImpl(app);
+		engine = new Engine::Handler(playManager);
 
 		Shutdown::instance()->registerPlaymanager(playManager);
 
@@ -307,7 +308,6 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		Proxy::init();
 	}
 
-	initEngine();
 	initPlayer(force_show);
 
 #ifdef SAYONARA_WITH_DBUS
@@ -427,14 +427,6 @@ void Application::initLibraries()
 	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer());
 }
 
-void Application::initEngine()
-{
-	measure("Engine")
-	auto* engine = Engine::Handler::instance();
-	engine->init(m->playManager);
-	engine->isValid();
-}
-
 void Application::initPlugins()
 {
 	measure("Plugins")
@@ -443,7 +435,7 @@ void Application::initPlugins()
 
 	pph->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
 	pph->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
-	pph->addPlugin(new GUI_Equalizer());
+	pph->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
 	pph->addPlugin(new GUI_Stream());
 	pph->addPlugin(new GUI_Podcasts());
 	pph->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
@@ -487,8 +479,9 @@ void Application::sessionEndRequested(QSessionManager& manager)
 void Application::shutdown()
 {
 	PlayerPlugin::Handler::instance()->shutdown();
-	Engine::Handler::instance()->shutdown();
+
 	m->playlistHandler->shutdown();
+	m->engine->shutdown();
 	m->playManager->shutdown();
 
 	m->shutdownTriggered = true;

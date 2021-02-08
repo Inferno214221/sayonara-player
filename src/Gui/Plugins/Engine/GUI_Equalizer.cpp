@@ -55,8 +55,8 @@ struct GUI_Equalizer::Private
 	QAction* actionGauss = nullptr;
 	SliderArray sliders;
 
-	Private(GUI_Equalizer* parent) :
-		equalizer(new Equalizer(parent)) {}
+	Private(Equalizer* equalizer) :
+		equalizer(equalizer) {}
 
 	void applySetting(const EqualizerSetting& equalizer)
 	{
@@ -74,10 +74,10 @@ struct GUI_Equalizer::Private
 	}
 };
 
-GUI_Equalizer::GUI_Equalizer(QWidget* parent) :
+GUI_Equalizer::GUI_Equalizer(Equalizer* equalizer, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(equalizer);
 
 	connect(m->equalizer, &Equalizer::sigValueChanged,
 	        this, &GUI_Equalizer::valueChanged);

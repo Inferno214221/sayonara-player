@@ -25,6 +25,7 @@
 #include <QObject>
 #include <QList>
 
+class SoundModifier;
 class EqualizerSetting;
 class QString;
 class Equalizer : public QObject
@@ -45,7 +46,7 @@ class Equalizer : public QObject
 			InvalidIndex
 		};
 
-		Equalizer(QObject* parent=nullptr);
+		Equalizer(SoundModifier* soundModifier, QObject* parent=nullptr);
 		~Equalizer() noexcept;
 
 		const EqualizerSetting& equalizerSetting(int index) const;

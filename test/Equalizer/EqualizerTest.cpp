@@ -1,10 +1,20 @@
 #include "SayonaraTest.h"
 #include "TestPlayManager.h"
+
 #include "Components/Equalizer/Equalizer.h"
 #include "Database/Equalizer.h"
 #include "Database/Connector.h"
+
+#include "Interfaces/Engine/SoundModifier.h"
+
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerSetting.h"
+
+class DummyEqualizerModifier : public SoundModifier
+{
+	public:
+		void setEqualizer(int /*band*/, int /*value*/) override {}
+};
 
 class EqualizerTest :
 	public Test::Base
@@ -13,13 +23,20 @@ class EqualizerTest :
 
 	private:
 		DB::Connector* db;
+		SoundModifier* soundModifier;
 
 	public:
 		EqualizerTest() :
-			Test::Base("EqualizerTest")
+			Test::Base("EqualizerTest"),
+			soundModifier(new DummyEqualizerModifier{})
 		{
 			this->db = DB::Connector::instance();
 			Settings::instance();
+		}
+
+		~EqualizerTest()
+		{
+			delete soundModifier;
 		}
 
 	private slots:
@@ -37,7 +54,8 @@ void EqualizerTest::load()
 
 	QVERIFY(GetSetting(Set::Eq_Last) == 0);
 
-	Equalizer eq;
+	Equalizer eq(soundModifier);
+
 	auto names = eq.names();
 	QVERIFY(eq.currentIndex() == 0);
 	QVERIFY(eq.names().size() == defaults.size());
@@ -52,7 +70,7 @@ void EqualizerTest::load()
 
 void EqualizerTest::restoreDefaults()
 {
-	Equalizer eq;
+	Equalizer eq(soundModifier);
 
 	const auto defaults = DB::Equalizer::factoryDefaults();
 	const auto names = eq.names();
@@ -63,13 +81,13 @@ void EqualizerTest::restoreDefaults()
 	auto success = db->equalizerConnector()->restoreFactoryDefaults();
 	QVERIFY(success);
 
-	Equalizer eq2;
+	Equalizer eq2(soundModifier);
 	QVERIFY(eq2.names().size() == defaults.size());
 }
 
 void EqualizerTest::rename()
 {
-	Equalizer eq;
+	Equalizer eq(soundModifier);
 
 	QVERIFY(GetSetting(Set::Eq_Last) == 0);
 
@@ -92,7 +110,7 @@ void EqualizerTest::rename()
 	QVERIFY(err == Equalizer::RenameError::InvalidIndex);
 	QVERIFY(eq.equalizerSetting(2).name() == oldName);
 
-	Equalizer eq2;
+	Equalizer eq2(soundModifier);
 	QVERIFY(eq2.names().indexOf("new name") == 1);
 
 	db->equalizerConnector()->restoreFactoryDefaults();
@@ -100,7 +118,7 @@ void EqualizerTest::rename()
 
 void EqualizerTest::saveAs()
 {
-	Equalizer eq;
+	Equalizer eq(soundModifier);
 
 	eq.setCurrentIndex(1);
 
@@ -125,7 +143,7 @@ void EqualizerTest::saveAs()
 	        Equalizer::RenameError::NameAlreadyKnown);
 	QVERIFY(eq.saveCurrentEqualizerAs("") == Equalizer::RenameError::EmptyName);
 
-	Equalizer eq2;
+	Equalizer eq2(soundModifier);
 	QVERIFY(eq2.names().last() == "sonstwas");
 
 	db->equalizerConnector()->restoreFactoryDefaults();
@@ -133,7 +151,7 @@ void EqualizerTest::saveAs()
 
 void EqualizerTest::remove()
 {
-	Equalizer eq;
+	Equalizer eq(soundModifier);
 	const auto names = eq.names();
 
 	const auto name = eq.equalizerSetting(0).name();
@@ -158,7 +176,7 @@ void EqualizerTest::remove()
 	EqualizerSetting::ValueArray values;
 	values.fill(0);
 
-	Equalizer eq2;
+	Equalizer eq2(soundModifier);
 	auto names2 = eq2.names();
 	QVERIFY(eq2.names().size() == 1);
 	QVERIFY(eq2.currentSetting().values() == values);
@@ -168,7 +186,7 @@ void EqualizerTest::remove()
 
 void EqualizerTest::changeValue()
 {
-	Equalizer eq;
+	Equalizer eq(soundModifier);
 	eq.setCurrentIndex(0);
 	eq.setGaussEnabled(false);
 	const auto valueCount = int(eq.currentSetting().values().size());
@@ -180,7 +198,7 @@ void EqualizerTest::changeValue()
 	const auto expected = EqualizerSetting::ValueArray{0,1,2,3,4,5,6,7,8,9};
 	QVERIFY(eq.currentSetting().values() == expected);
 
-	Equalizer eq2;
+	Equalizer eq2(soundModifier);
 	eq2.setCurrentIndex(0);
 	QVERIFY(eq2.currentSetting().values() == expected);
 

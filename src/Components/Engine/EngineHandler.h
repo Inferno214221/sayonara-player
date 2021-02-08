@@ -26,6 +26,7 @@
 
 #include "Interfaces/CoverDataProvider.h"
 #include "Interfaces/AudioDataProvider.h"
+#include "Interfaces/Engine/SoundModifier.h"
 
 #include <QObject>
 
@@ -44,14 +45,16 @@ namespace Engine
 			public CoverDataProvider,
 			public LevelDataProvider,
 			public SpectrumDataProvider,
-			public RawAudioDataProvider
+			public RawAudioDataProvider,
+			public SoundModifier
 	{
 		Q_OBJECT
-		SINGLETON_QOBJECT(Handler)
 		PIMPL(Handler)
 
 		public:
-			void init(PlayManager* playManager);
+			Handler(PlayManager* playManager);
+			virtual ~Handler();
+
 			void shutdown();
 			bool isValid() const;
 
@@ -66,9 +69,10 @@ namespace Engine
 			void registerCoverReceiver(CoverDataReceiver* coverReceiver) override;
 			void unregisterCoverReceiver(CoverDataReceiver* coverReceiver) override;
 
-			void setEqualizer(int band, int value);
 			void registerAudioDataReceiver(RawAudioDataReceiver* receiver) override;
 			void unregisterAudioDataReceiver(RawAudioDataReceiver* receiver) override;
+
+			void setEqualizer(int band, int value) override;
 
 		private slots:
 			void playstateChanged(PlayState state);

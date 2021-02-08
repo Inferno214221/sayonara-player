@@ -39,7 +39,6 @@ namespace PipelineExtensions
 			void setEqualizerBand(int bandIndex, int value);
 
 		protected:
-			void initEqualizer();
 			virtual GstElement* equalizerElement() const = 0;
 	};
 }

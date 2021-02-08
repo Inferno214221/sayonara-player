@@ -196,7 +196,6 @@ bool Pipeline::init(Engine* engine)
 	return true;
 }
 
-
 bool Pipeline::createElements()
 {
 	// input
@@ -210,7 +209,6 @@ bool Pipeline::createElements()
 	EngineUtils::createElement(&m->pitch, "pitch");
 
 	EngineUtils::createElement(&m->equalizer, "equalizer-10bands");
-	EqualizerAccessible::initEqualizer();
 
 	m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
 

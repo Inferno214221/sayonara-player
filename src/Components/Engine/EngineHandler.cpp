@@ -59,31 +59,18 @@ struct Handler::Private
 	std::set<SpectrumDataReceiver*> spectrumReceivers;
 	std::set<CoverDataReceiver*> coverReceivers;
 
-	Engine* engine = nullptr;
+	Engine* engine;
+
+	Private(Handler* engineHandler, PlayManager* playManager) :
+		engine(new Engine(playManager, engineHandler))
+	{}
 };
 
-Handler::Handler(QObject* parent) :
-	QObject(parent),
+Handler::Handler(PlayManager* playManager) :
+	QObject(),
 	CoverDataProvider()
 {
-	m = Pimpl::make<Private>();
-}
-
-void Handler::init(PlayManager* playManager)
-{
-	try
-	{
-		m->engine = new Engine(playManager, this);
-	}
-
-	catch(std::exception& e)
-	{
-		m->engine = nullptr;
-
-		spLog(Log::Error, this) << e.what();
-		Message::error(QString(e.what()), "Engine");
-		return;
-	}
+	m = Pimpl::make<Private>(this, playManager);
 
 	connect(playManager, &PlayManager::sigPlaystateChanged,
 	        this, &Handler::playstateChanged);
@@ -105,10 +92,10 @@ void Handler::init(PlayManager* playManager)
 	connect(playManager, &PlayManager::sigRecording,
 	        m->engine, &Engine::setStreamRecorderRecording);
 
-	const MetaData& md = playManager->currentTrack();
-	if(!md.filepath().isEmpty())
+	const auto& currentTrack = playManager->currentTrack();
+	if(!currentTrack.filepath().isEmpty())
 	{
-		m->engine->changeTrack(md);
+		m->engine->changeTrack(currentTrack);
 	}
 
 	connect(m->engine, &Engine::sigDataAvailable, this, &Handler::setAudioData);
@@ -256,18 +243,13 @@ void Handler::reloadReceivers()
 	m->engine->setVisualizerEnabled(l, s);
 }
 
-
 void Handler::setEqualizer(int band, int value)
 {
-	if(!m->engine)
+	if(m->engine)
 	{
-		return;
+		m->engine->setEqualizer(band, value);
 	}
-
-	m->engine->setEqualizer(band, value);
 }
-
-
 
 void Engine::Handler::registerCoverReceiver(CoverDataReceiver* coverDataReceiver)
 {
