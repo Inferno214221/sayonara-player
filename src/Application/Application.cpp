@@ -395,7 +395,7 @@ void Application::initPreferences()
 	preferences->registerPreferenceDialog(new GUI_ShortcutPreferences("shortcuts"));
 
 	preferences->registerPreferenceDialog(new GUI_PlaylistPreferences("playlist"));
-	preferences->registerPreferenceDialog(new GUI_LibraryPreferences("library"));
+	preferences->registerPreferenceDialog(new GUI_LibraryPreferences(m->libraryManager, "library"));
 	preferences->registerPreferenceDialog(new GUI_CoverPreferences("covers"));
 	preferences->registerPreferenceDialog(new GUI_EnginePreferences("engine"));
 	preferences->registerPreferenceDialog(new GUI_SearchPreferences("search"));

@@ -29,40 +29,41 @@
 
 using Library::Info;
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct LibraryListModel::Private
 {
+	Library::Manager* libraryManager;
 	QList<Info> libraryInfo;
 	QList<Info> shownLibraryInfo;
 	QList<ChangeOperation*> operations;
 
-	Private()
-	{
-		reload();
-	}
+	Private(Library::Manager* libraryManager) :
+		libraryManager {libraryManager},
+		libraryInfo {libraryManager->allLibraries()},
+		shownLibraryInfo(libraryInfo) {}
 
 	void reload()
 	{
-		libraryInfo = Library::Manager::instance()->allLibraries();
+		libraryInfo = libraryManager->allLibraries();
 		shownLibraryInfo = libraryInfo;
 	}
 
-	void clear_operations()
+	void clearOperations()
 	{
-		for(ChangeOperation* op : Algorithm::AsConst(operations))
+		for(auto* changeOperation : Algorithm::AsConst(operations))
 		{
-			delete op;
+			delete changeOperation;
 		}
 
 		operations.clear();
 	}
 };
 
-LibraryListModel::LibraryListModel(QObject* parent) :
+LibraryListModel::LibraryListModel(Library::Manager* libraryManager, QObject* parent) :
 	QAbstractListModel(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(libraryManager);
 }
 
 LibraryListModel::~LibraryListModel() = default;
@@ -75,17 +76,20 @@ int LibraryListModel::rowCount(const QModelIndex& parent) const
 
 QVariant LibraryListModel::data(const QModelIndex& index, int role) const
 {
-	int row = index.row();
+	const auto row = index.row();
 
-	if(row < 0 || row >= rowCount()){
+	if(!Util::between(row, rowCount()))
+	{
 		return QVariant();
 	}
 
-	if(role == Qt::DisplayRole)	{
+	if(role == Qt::DisplayRole)
+	{
 		return m->shownLibraryInfo[row].name();
 	}
 
-	else if(role == Qt::ToolTipRole) {
+	else if(role == Qt::ToolTipRole)
+	{
 		return m->shownLibraryInfo[row].path();
 	}
 
@@ -98,42 +102,34 @@ void LibraryListModel::appendRow(const LibName& name, const LibPath& path)
 	m->shownLibraryInfo << Info(name, path, -1);
 
 	emit dataChanged(index(0), index(rowCount()));
-
 }
 
-void LibraryListModel::renameRow(int row, const LibName& new_name)
+void LibraryListModel::renameRow(int row, const LibName& newName)
 {
-	if(!Util::between(row, m->shownLibraryInfo)) {
-		return;
+	if(Util::between(row, m->shownLibraryInfo))
+	{
+		const auto& info = m->shownLibraryInfo[row];
+
+		m->operations << new RenameOperation(info.id(), newName);
+		m->shownLibraryInfo[row] = Info(newName, info.path(), info.id());
 	}
-
-	Info info = m->shownLibraryInfo[row];
-
-	m->operations << new RenameOperation(info.id(), new_name);
-	m->shownLibraryInfo[row] =
-			Info(new_name, info.path(), info.id());
 }
 
 void LibraryListModel::changePath(int row, const LibPath& path)
 {
-	if(!Util::between(row, m->shownLibraryInfo)) {
-		return;
+	if(Util::between(row, m->shownLibraryInfo))
+	{
+		const auto& info = m->shownLibraryInfo[row];
+
+		m->operations << new ChangePathOperation(info.id(), path);
+		m->shownLibraryInfo[row] = Info(info.name(), path, info.id());
 	}
-
-	Info info = m->shownLibraryInfo[row];
-
-	m->operations << new ChangePathOperation(info.id(), path);
-	m->shownLibraryInfo[row] =
-			Info(info.name(), path, info.id());
 }
 
 void LibraryListModel::moveRow(int from, int to)
 {
-	if(!Util::between(from, m->shownLibraryInfo)) {
-		return;
-	}
-
-	if(!Util::between(to, m->shownLibraryInfo)) {
+	if(!Util::between(from, m->shownLibraryInfo) || !Util::between(to, m->shownLibraryInfo))
+	{
 		return;
 	}
 
@@ -145,60 +141,51 @@ void LibraryListModel::moveRow(int from, int to)
 
 void LibraryListModel::removeRow(int row)
 {
-	if(!Util::between(row, m->shownLibraryInfo)) {
-		return;
+	if(Util::between(row, m->shownLibraryInfo))
+	{
+		const auto& info = m->shownLibraryInfo[row];
+
+		m->operations << new RemoveOperation(info.id());
+		m->shownLibraryInfo.removeAt(row);
+
+		emit dataChanged(index(0), index(rowCount()));
 	}
-
-	Info info = m->shownLibraryInfo[row];
-
-	m->operations << new RemoveOperation(info.id());
-	m->shownLibraryInfo.removeAt(row);
-
-	emit dataChanged(index(0), index(rowCount()));
 }
 
 QStringList LibraryListModel::allNames() const
 {
-	QStringList ret;
+	QStringList names;
 
-	for(const Info& info : Algorithm::AsConst(m->shownLibraryInfo))
-	{
-		ret << info.name();
-	}
+	Util::Algorithm::transform(m->shownLibraryInfo, names, [](const auto& info) {
+		return info.name();
+	});
 
-	return ret;
+	return names;
 }
 
 QStringList LibraryListModel::allPaths() const
 {
-	QStringList ret;
+	QStringList paths;
 
-	for(const Info& info : Algorithm::AsConst(m->shownLibraryInfo))
-	{
-		ret << info.path();
-	}
+	Util::Algorithm::transform(m->shownLibraryInfo, paths, [](const auto& info) {
+		return info.path();
+	});
 
-	return ret;
+	return paths;
 }
 
 QString LibraryListModel::name(int idx) const
 {
-	if(Util::between(idx, m->shownLibraryInfo))
-	{
-		return m->shownLibraryInfo.at(idx).name();
-	}
-
-	return QString();
+	return Util::between(idx, m->shownLibraryInfo)
+	       ? m->shownLibraryInfo[idx].name()
+	       : QString();
 }
 
 QString LibraryListModel::path(int idx) const
 {
-	if(Util::between(idx, m->shownLibraryInfo))
-	{
-		return m->shownLibraryInfo.at(idx).path();
-	}
-
-	return QString();
+	return Util::between(idx, m->shownLibraryInfo)
+	       ? m->shownLibraryInfo[idx].path()
+	       : QString();
 }
 
 void LibraryListModel::reset()
@@ -209,14 +196,16 @@ void LibraryListModel::reset()
 
 bool LibraryListModel::commit()
 {
-	if(m->operations.isEmpty()){
+	if(m->operations.isEmpty())
+	{
 		return true;
 	}
 
 	bool success = true;
-	for(ChangeOperation* op : Algorithm::AsConst(m->operations))
+	for(auto* changeOperation : Algorithm::AsConst(m->operations))
 	{
-		if(!op->exec()){
+		if(!changeOperation->exec())
+		{
 			success = false;
 		}
 	}
@@ -228,4 +217,3 @@ bool LibraryListModel::commit()
 
 	return success;
 }
-

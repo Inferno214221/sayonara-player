@@ -27,6 +27,11 @@
 using LibName=QString;
 using LibPath=QString;
 
+namespace Library
+{
+	class Manager;
+}
+
 class LibraryListModel :
 		public QAbstractListModel
 {
@@ -34,7 +39,7 @@ class LibraryListModel :
 	PIMPL(LibraryListModel)
 
 public:
-	LibraryListModel(QObject* parent=nullptr);
+	LibraryListModel(Library::Manager* libraryManager, QObject* parent=nullptr);
 	~LibraryListModel();
 
 public:

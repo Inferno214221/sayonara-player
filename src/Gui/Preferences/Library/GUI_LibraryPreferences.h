@@ -26,45 +26,48 @@
 
 UI_FWD(GUI_LibraryPreferences)
 
+namespace Library
+{
+	class Manager;
+}
+
 class GUI_LibraryPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	PIMPL(GUI_LibraryPreferences)
 	UI_CLASS(GUI_LibraryPreferences)
 
-public:
-	explicit GUI_LibraryPreferences(const QString& identifier);
-	~GUI_LibraryPreferences() override;
+	public:
+		GUI_LibraryPreferences(Library::Manager* libraryManager, const QString& identifier);
+		~GUI_LibraryPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
-	void skinChanged() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
+		void skinChanged() override;
 
-	void showEvent(QShowEvent* e) override;
-	QString errorString() const override;
+		void showEvent(QShowEvent* e) override;
+		QString errorString() const override;
 
-private slots:
-	void newClicked();
-	void editClicked();
-	void deleteClicked();
+	private slots:
+		void newClicked();
+		void editClicked();
+		void deleteClicked();
 
-	void upClicked();
-	void downClicked();
+		void upClicked();
+		void downClicked();
 
-	void editDialogAccepted();
-	void selectedIndexChanged(const QModelIndex& idx);
+		void editDialogAccepted();
+		void selectedIndexChanged(const QModelIndex& idx);
 
-private:
-	int currentRow() const;
+	private:
+		int currentRow() const;
 };
-
-
 
 #endif // GUI_LIBRARYPREFERENCES_H

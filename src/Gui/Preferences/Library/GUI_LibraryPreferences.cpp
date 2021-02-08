@@ -37,13 +37,18 @@
 
 struct GUI_LibraryPreferences::Private
 {
+	Library::Manager* libraryManager;
 	LibraryListModel* model = nullptr;
+
+	Private(Library::Manager* libraryManager) :
+		libraryManager{libraryManager}
+	{}
 };
 
-GUI_LibraryPreferences::GUI_LibraryPreferences(const QString& identifier) :
+GUI_LibraryPreferences::GUI_LibraryPreferences(Library::Manager* libraryManager, const QString& identifier) :
 	Preferences::Base(identifier)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(libraryManager);
 }
 
 GUI_LibraryPreferences::~GUI_LibraryPreferences()
@@ -58,7 +63,7 @@ void GUI_LibraryPreferences::initUi()
 {
 	setupParent(this, &ui);
 
-	m->model = new LibraryListModel(ui->lvLibs);
+	m->model = new LibraryListModel(m->libraryManager, ui->lvLibs);
 
 	ui->lvLibs->setModel(m->model);
 	ui->lvLibs->setItemDelegate(
