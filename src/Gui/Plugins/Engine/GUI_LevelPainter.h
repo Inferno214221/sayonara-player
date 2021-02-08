@@ -22,7 +22,7 @@
 #define GUI_LEVELPAINTER_H
 
 #include "VisualPlugin.h"
-#include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiver.h"
 #include "Utils/Pimpl.h"
 
 class LevelDataProvider;
@@ -31,7 +31,7 @@ UI_FWD(GUI_LevelPainter)
 
 class GUI_LevelPainter :
 	public VisualPlugin,
-	public Engine::LevelReceiver
+	public Engine::LevelDataReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_LevelPainter)

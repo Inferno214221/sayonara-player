@@ -17,22 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
-#define SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
+#ifndef SAYONARA_PLAYER_COVERDATAPROVIDER_H
+#define SAYONARA_PLAYER_COVERDATAPROVIDER_H
 
 class QByteArray;
 class QString;
 
 class CoverDataReceiver;
-class CoverImageProvider
+class CoverDataProvider
 {
 	public:
-		virtual ~CoverImageProvider() = default;
-
 		virtual void setCoverData(const QByteArray& imageData, const QString& mimeData)=0;
 
 		virtual void registerCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
 		virtual void unregisterCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
 };
 
-#endif //SAYONARA_PLAYER_COVERIMAGEPROVIDER_H
+#endif //SAYONARA_PLAYER_COVERDATAPROVIDER_H

@@ -21,9 +21,9 @@
 #include "EngineHandler.h"
 #include "Engine.h"
 
-#include "Interfaces/CoverImageProvider.h"
+#include "Interfaces/CoverDataProvider.h"
 #include "Interfaces/PlayManager.h"
-#include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiver.h"
 #include "Interfaces/Engine/CoverDataReceiver.h"
 
 #include "Utils/Algorithm.h"
@@ -54,9 +54,9 @@ namespace
 
 struct Handler::Private
 {
-	std::set<RawSoundReceiverInterface*> rawSoundReceiver;
-	std::set<LevelReceiver*> levelReceivers;
-	std::set<SpectrumReceiver*> spectrumReceivers;
+	std::set<RawAudioDataReceiver*> rawSoundReceiver;
+	std::set<LevelDataReceiver*> levelReceivers;
+	std::set<SpectrumDataReceiver*> spectrumReceivers;
 	std::set<CoverDataReceiver*> coverReceivers;
 
 	Engine* engine = nullptr;
@@ -64,7 +64,7 @@ struct Handler::Private
 
 Handler::Handler(QObject* parent) :
 	QObject(parent),
-	CoverImageProvider()
+	CoverDataProvider()
 {
 	m = Pimpl::make<Private>();
 }
@@ -111,7 +111,7 @@ void Handler::init(PlayManager* playManager)
 		m->engine->changeTrack(md);
 	}
 
-	connect(m->engine, &Engine::sigDataAvailable, this, &Handler::newAudioDataAvailable);
+	connect(m->engine, &Engine::sigDataAvailable, this, &Handler::setAudioData);
 	connect(m->engine, &Engine::sigCoverDataAvailable, this, &Handler::setCoverData);
 	connect(m->engine, &Engine::sigError, playManager, &PlayManager::error);
 	connect(m->engine, &Engine::sigCurrentPositionChanged, playManager, &PlayManager::setCurrentPositionMs);
@@ -171,11 +171,27 @@ void Handler::playstateChanged(PlayState state)
 	}
 }
 
-void Handler::newAudioDataAvailable(const QByteArray& data)
+
+
+void Handler::registerSpectrumReceiver(SpectrumDataReceiver* receiver)
 {
-	for(auto* receiver : Algorithm::AsConst(m->rawSoundReceiver))
+	m->spectrumReceivers.insert(receiver);
+	reloadReceivers();
+}
+
+void Engine::Handler::unregisterSpectrumReceiver(SpectrumDataReceiver* spectrumReceiver)
+{
+	unregisterReceiver(spectrumReceiver, m->spectrumReceivers);
+}
+
+void Engine::Handler::setSpectrumData(const std::vector<float>& spectrum)
+{
+	for(auto* receiver : m->spectrumReceivers)
 	{
-		receiver->writeAudioData(data);
+		if(receiver->isActive())
+		{
+			receiver->setSpectrum(spectrum);
+		}
 	}
 }
 
@@ -189,6 +205,31 @@ void Handler::spectrumActiveChanged(bool /*b*/)
 	reloadReceivers();
 }
 
+
+
+void Handler::registerLevelReceiver(LevelDataReceiver* receiver)
+{
+	m->levelReceivers.insert(receiver);
+	reloadReceivers();
+}
+
+void Engine::Handler::unregisterLevelReceiver(LevelDataReceiver* levelReceiver)
+{
+	unregisterReceiver(levelReceiver, m->levelReceivers);
+}
+
+
+void Engine::Handler::setLevelData(float left, float right)
+{
+	for(auto* receiver : m->levelReceivers)
+	{
+		if(receiver->isActive())
+		{
+			receiver->setLevel(left, right);
+		}
+	}
+}
+
 void Handler::levelChanged()
 {
 	QPair<float, float> level = m->engine->level();
@@ -200,52 +241,21 @@ void Handler::levelActiveChanged(bool /*b*/)
 	reloadReceivers();
 }
 
+
+
 void Handler::reloadReceivers()
 {
-	bool s = Util::Algorithm::contains(m->spectrumReceivers, [](SpectrumReceiver* spectrumReceiver) {
+	bool s = Util::Algorithm::contains(m->spectrumReceivers, [](SpectrumDataReceiver* spectrumReceiver) {
 		return (spectrumReceiver->isActive());
 	});
 
-	bool l = Util::Algorithm::contains(m->levelReceivers, [](LevelReceiver* levelReceiver) {
+	bool l = Util::Algorithm::contains(m->levelReceivers, [](LevelDataReceiver* levelReceiver) {
 		return (levelReceiver->isActive());
 	});
 
 	m->engine->setVisualizerEnabled(l, s);
 }
 
-void Handler::registerRawSoundReceiver(RawSoundReceiverInterface* receiver)
-{
-	m->rawSoundReceiver.insert(receiver);
-	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.empty());
-}
-
-void Handler::unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver)
-{
-	unregisterReceiver(receiver, m->rawSoundReceiver);
-	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.empty());
-}
-
-void Handler::registerLevelReceiver(LevelReceiver* receiver)
-{
-	m->levelReceivers.insert(receiver);
-	reloadReceivers();
-}
-
-void Engine::Handler::unregisterLevelReceiver(LevelReceiver* levelReceiver)
-{
-	unregisterReceiver(levelReceiver, m->levelReceivers);
-}
-
-void Handler::registerSpectrumReceiver(SpectrumReceiver* receiver)
-{
-	m->spectrumReceivers.insert(receiver);
-	reloadReceivers();
-}
-
-void Engine::Handler::unregisterSpectrumReceiver(SpectrumReceiver* spectrumReceiver)
-{
-	unregisterReceiver(spectrumReceiver, m->spectrumReceivers);
-}
 
 void Handler::setEqualizer(int band, int value)
 {
@@ -256,6 +266,8 @@ void Handler::setEqualizer(int band, int value)
 
 	m->engine->setEqualizer(band, value);
 }
+
+
 
 void Engine::Handler::registerCoverReceiver(CoverDataReceiver* coverDataReceiver)
 {
@@ -278,24 +290,22 @@ void Engine::Handler::setCoverData(const QByteArray& imageData, const QString& m
 	}
 }
 
-void Engine::Handler::setLevelData(float left, float right)
+void Engine::Handler::registerAudioDataReceiver(RawAudioDataReceiver* receiver)
 {
-	for(auto* receiver : m->levelReceivers)
-	{
-		if(receiver->isActive())
-		{
-			receiver->setLevel(left, right);
-		}
-	}
+	m->rawSoundReceiver.insert(receiver);
+	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.empty());
 }
 
-void Engine::Handler::setSpectrumData(const std::vector<float>& spectrum)
+void Engine::Handler::unregisterAudioDataReceiver(RawAudioDataReceiver* receiver)
 {
-	for(auto* receiver : m->spectrumReceivers)
+	unregisterReceiver(receiver, m->rawSoundReceiver);
+	m->engine->setBroadcastEnabled(!m->rawSoundReceiver.empty());
+}
+
+void Engine::Handler::setAudioData(const QByteArray& data)
+{
+	for(auto* receiver : Algorithm::AsConst(m->rawSoundReceiver))
 	{
-		if(receiver->isActive())
-		{
-			receiver->setSpectrum(spectrum);
-		}
+		receiver->writeAudioData(data);
 	}
 }

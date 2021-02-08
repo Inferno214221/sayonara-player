@@ -22,7 +22,7 @@
 #define GSTPLAYBACKENGINE_H_
 
 #include "Utils/Pimpl.h"
-#include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiver.h"
 
 #include <QObject>
 #include <QImage>
@@ -40,8 +40,8 @@ class PlayManager;
 
 namespace Engine
 {
-	class SpectrumReceiver;
-	class LevelReceiver;
+	class SpectrumDataReceiver;
+	class LevelDataReceiver;
 
 	class Pipeline;
 	using PipelinePtr=std::shared_ptr<Pipeline>;

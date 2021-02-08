@@ -24,7 +24,7 @@
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include "Interfaces/CoverImageProvider.h"
+#include "Interfaces/CoverDataProvider.h"
 #include "Interfaces/AudioDataProvider.h"
 
 #include <QObject>
@@ -35,19 +35,16 @@ class PlayManager;
 
 namespace Engine
 {
-	class RawSoundReceiverInterface;
-	class LevelReceiver;
-	class SpectrumReceiver;
-
 	/**
 	 * @brief The EngineHandler class
 	 * @ingroup Engine
 	 */
 	class Handler :
 			public QObject,
-			public CoverImageProvider,
+			public CoverDataProvider,
 			public LevelDataProvider,
-			public SpectrumDataProvider
+			public SpectrumDataProvider,
+			public RawAudioDataProvider
 	{
 		Q_OBJECT
 		SINGLETON_QOBJECT(Handler)
@@ -58,33 +55,33 @@ namespace Engine
 			void shutdown();
 			bool isValid() const;
 
-			void registerRawSoundReceiver(RawSoundReceiverInterface* receiver);
-			void unregisterRawSoundReceiver(RawSoundReceiverInterface* receiver);
-
-			void registerLevelReceiver(LevelReceiver* receiver) override;
-			void unregisterLevelReceiver(LevelReceiver* levelReceiver) override;
+			void registerLevelReceiver(LevelDataReceiver* receiver) override;
+			void unregisterLevelReceiver(LevelDataReceiver* levelReceiver) override;
 			void levelActiveChanged(bool b) override;
 
-			void registerSpectrumReceiver(SpectrumReceiver* receiver) override;
-			void unregisterSpectrumReceiver(SpectrumReceiver* spectrumReceiver) override;
+			void registerSpectrumReceiver(SpectrumDataReceiver* receiver) override;
+			void unregisterSpectrumReceiver(SpectrumDataReceiver* spectrumReceiver) override;
 			void spectrumActiveChanged(bool b) override;
 
 			void registerCoverReceiver(CoverDataReceiver* coverReceiver) override;
 			void unregisterCoverReceiver(CoverDataReceiver* coverReceiver) override;
 
 			void setEqualizer(int band, int value);
+			void registerAudioDataReceiver(RawAudioDataReceiver* receiver) override;
+			void unregisterAudioDataReceiver(RawAudioDataReceiver* receiver) override;
 
 		private slots:
-			void setLevelData(float left, float right) override;
-			void setSpectrumData(const std::vector<float>& spectrum) override;
-			void setCoverData(const QByteArray& imageData, const QString& mimeData) override;
 			void playstateChanged(PlayState state);
-			void newAudioDataAvailable(const QByteArray& data);
+
 			void spectrumChanged();
 			void levelChanged();
 
 		private:
 			void reloadReceivers();
+			void setAudioData(const QByteArray& data) override;
+			void setLevelData(float left, float right) override;
+			void setSpectrumData(const std::vector<float>& spectrum) override;
+			void setCoverData(const QByteArray& imageData, const QString& mimeData) override;
 	};
 }
 

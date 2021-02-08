@@ -23,7 +23,7 @@
 
 #include "VisualPlugin.h"
 #include "Utils/Pimpl.h"
-#include "Interfaces/Engine/AudioDataReceiverInterface.h"
+#include "Interfaces/Engine/AudioDataReceiver.h"
 #include "Interfaces/AudioDataProvider.h"
 
 #include <vector>
@@ -33,7 +33,7 @@ UI_FWD(GUI_Spectrum)
 class SpectrumDataProvider;
 class GUI_Spectrum :
 	public VisualPlugin,
-	public Engine::SpectrumReceiver
+	public Engine::SpectrumDataReceiver
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Spectrum)

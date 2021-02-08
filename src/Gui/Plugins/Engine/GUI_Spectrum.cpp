@@ -104,7 +104,7 @@ struct GUI_Spectrum::Private
 
 GUI_Spectrum::GUI_Spectrum(SpectrumDataProvider* dataProvider, PlayManager* playManager, QWidget* parent) :
 	VisualPlugin(playManager, parent),
-	Engine::SpectrumReceiver()
+	Engine::SpectrumDataReceiver()
 {
 	m = Pimpl::make<Private>(dataProvider);
 

@@ -1,5 +1,5 @@
 #include "SpectrumLabel.h"
-#include "Components/Engine/EngineHandler.h"
+#include "Interfaces/AudioDataProvider.h"
 #include <cmath>
 
 #include <QPixmap>
@@ -8,18 +8,19 @@
 
 struct SpectrumLabel::Private
 {
-	Engine::Handler* engine;
+	SpectrumDataProvider* dataProvider;
 
-	Private(Engine::Handler* engine) :
-		engine(engine) {}
+	Private(SpectrumDataProvider* dataProvider) :
+		dataProvider(dataProvider) {}
 };
 
-SpectrumLabel::SpectrumLabel(Engine::Handler* engine, QWidget* parent) :
+SpectrumLabel::SpectrumLabel(SpectrumDataProvider* dataProvider, QWidget* parent) :
 	QLabel(parent)
 {
-	m = Pimpl::make<Private>(engine);
+	m = Pimpl::make<Private>(dataProvider);
 
-	m->engine->registerSpectrumReceiver(this);
+	m->dataProvider->registerSpectrumReceiver(this);
+	m->dataProvider->spectrumActiveChanged(true);
 }
 
 SpectrumLabel::~SpectrumLabel() = default;

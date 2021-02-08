@@ -106,7 +106,7 @@ struct GUI_LevelPainter::Private
 
 GUI_LevelPainter::GUI_LevelPainter(LevelDataProvider* dataProvider, PlayManager* playManager, QWidget* parent) :
 	VisualPlugin(playManager, parent),
-	Engine::LevelReceiver()
+	Engine::LevelDataReceiver()
 {
 	m = Pimpl::make<Private>(dataProvider);
 	SetSetting(Set::Engine_ShowLevel, false);
