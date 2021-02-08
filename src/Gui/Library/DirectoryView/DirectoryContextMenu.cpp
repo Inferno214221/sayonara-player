@@ -20,7 +20,7 @@
 
 #include "DirectoryContextMenu.h"
 
-#include "Components/LibraryManagement/LibraryManager.h"
+#include "Interfaces/LibraryInfoAccessor.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
@@ -52,7 +52,7 @@ struct ContextMenu::Private
 
 	ContextMenu::Mode mode;
 
-	Private(ContextMenu::Mode mode, ContextMenu* parent) :
+	Private(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInfoAccessor, ContextMenu* parent) :
 		mode(mode)
 	{
 		actionCreateDirectory = new QAction(parent);
@@ -62,8 +62,7 @@ struct ContextMenu::Private
 		actionViewInFileManager = new QAction(parent);
 
 		{ // init copy/move to library menus
-			auto* lm = Library::Manager::instance();
-			const QList<Library::Info> libraries = lm->allLibraries();
+			const QList<Library::Info> libraries = libraryInfoAccessor->allLibraries();
 
 			menuCopyToLibrary = new QMenu(parent);
 			menuMoveToLibrary = new QMenu(parent);
@@ -97,10 +96,10 @@ struct ContextMenu::Private
 	}
 };
 
-ContextMenu::ContextMenu(ContextMenu::Mode mode, QWidget* parent) :
+ContextMenu::ContextMenu(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInfoAccessor, QWidget* parent) :
 	Library::ContextMenu(parent)
 {
-	m = Pimpl::make<Private>(mode, this);
+	m = Pimpl::make<Private>(mode, libraryInfoAccessor, this);
 
 	this->showActions
 	(

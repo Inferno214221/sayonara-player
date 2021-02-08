@@ -75,7 +75,9 @@ void GUI_DirectoryView::initUi()
 
 	ui = new Ui::GUI_DirectoryView();
 	ui->setupUi(this);
+
 	ui->tvDirs->init(m->libraryManager);
+	ui->lvFiles->init(m->libraryManager);
 
 	connect(m->directorySelectionHandler,
 	        &DirectorySelectionHandler::sigImportDialogRequested,

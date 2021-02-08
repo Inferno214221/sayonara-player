@@ -53,20 +53,26 @@ using Directory::FileListView;
 
 struct FileListView::Private
 {
-	ContextMenu*	contextMenu=nullptr;
-	FileListModel*			model=nullptr;
+	LibraryInfoAccessor* libraryInfoAccessor;
+	FileListModel* model;
+	ContextMenu* contextMenu = nullptr;
 
-	Private(FileListView* parent)
-	{
-		model = new FileListModel(parent);
-	}
+	Private(LibraryInfoAccessor* libraryInfoAccessor, FileListView* parent) :
+		libraryInfoAccessor {libraryInfoAccessor},
+		model {new FileListModel {libraryInfoAccessor, parent}} {}
+
 };
 
 FileListView::FileListView(QWidget* parent) :
 	SearchableTableView(parent),
 	Gui::Dragable(this)
+{}
+
+FileListView::~FileListView() = default;
+
+void FileListView::init(LibraryInfoAccessor* libraryInfoAccessor)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(libraryInfoAccessor, this);
 
 	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
@@ -91,19 +97,18 @@ FileListView::FileListView(QWidget* parent) :
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SIGNAL(sigEnterPressed()), nullptr, Qt::WidgetShortcut);
 }
 
-FileListView::~FileListView() = default;
-
 void FileListView::initContextMenu()
 {
-	if(m->contextMenu){
+	if(m->contextMenu)
+	{
 		return;
 	}
 
-	m->contextMenu = new ContextMenu(ContextMenu::Mode::File, this);
+	m->contextMenu = new ContextMenu(ContextMenu::Mode::File, m->libraryInfoAccessor, this);
 
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [this](){ this->showLyrics(); });
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this]() { this->showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [this]() { this->showLyrics(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this]() { this->showEdit(); });
 	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &FileListView::sigDeleteClicked);
 	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &FileListView::sigPlayClicked);
 	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &FileListView::sigPlayNewTabClicked);
@@ -119,7 +124,8 @@ QModelIndexList FileListView::selectedRows() const
 {
 	QItemSelectionModel* selection_model = this->selectionModel();
 
-	if(selection_model) {
+	if(selection_model)
+	{
 		return selection_model->selectedIndexes();
 	}
 
@@ -135,7 +141,8 @@ QStringList FileListView::selectedPaths() const
 	for(const QModelIndex& idx : selections)
 	{
 		int row = idx.row();
-		if(Util::between(row, paths)){
+		if(Util::between(row, paths))
+		{
 			ret << paths[row];
 		}
 	}
@@ -158,27 +165,31 @@ QString FileListView::parentDirectory() const
 
 void FileListView::setSearchFilter(const QString& search_string)
 {
-	if(search_string.isEmpty()){
+	if(search_string.isEmpty())
+	{
 		return;
 	}
 
 	const Library::SearchModeMask smm = GetSetting(Set::Lib_SearchMode);
 	const QString search_text = Library::Utils::convertSearchstring(search_string, smm);
 
-	for(int i=0; i<m->model->rowCount(); i++)
+	for(int i = 0; i < m->model->rowCount(); i++)
 	{
 		QModelIndex idx = m->model->index(i, 0);
 		QString data = m->model->data(idx).toString();
-		if(data.isEmpty()){
+		if(data.isEmpty())
+		{
 			continue;
 		}
 
-		if(!idx.isValid()){
+		if(!idx.isValid())
+		{
 			continue;
 		}
 
 		data = Library::Utils::convertSearchstring(data, smm);
-		if(data.contains(search_text, Qt::CaseInsensitive)){
+		if(data.contains(search_text, Qt::CaseInsensitive))
+		{
 			this->selectionModel()->select(idx, (QItemSelectionModel::Select | QItemSelectionModel::Rows));
 		}
 	}
@@ -192,16 +203,17 @@ int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const
 ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 {
 	return ModelIndexRange
-	(
-		m->model->index(idx, 0),
-		m->model->index(idx, m->model->columnCount())
-	);
+		(
+			m->model->index(idx, 0),
+			m->model->index(idx, m->model->columnCount())
+		);
 }
 
 void FileListView::renameFileClicked()
 {
 	const QModelIndexList indexes = this->selectedRows();
-	if(indexes.size() != 1){
+	if(indexes.size() != 1)
+	{
 		return;
 	}
 
@@ -209,55 +221,60 @@ void FileListView::renameFileClicked()
 	int row = index.row();
 
 	QStringList files = m->model->files();
-	if(!Util::between(row, files)){
+	if(!Util::between(row, files))
+	{
 		return;
 	}
 
-	auto [dir, file] = Util::File::splitFilename(files[row]);
+	auto[dir, file] = Util::File::splitFilename(files[row]);
 	QString ext = Util::File::getFileExtension(files[row]);
-
 
 	int lastDot = file.lastIndexOf(".");
 	file = file.left(lastDot);
 
 	QString inputText = Gui::LineInputDialog::getRenameFilename(this, Lang::get(Lang::EnterNewName));
-	if(inputText.isEmpty()) {
+	if(inputText.isEmpty())
+	{
 		return;
 	}
 
 	QString newName = QDir(dir).filePath(inputText);
-	if(!newName.endsWith("." + ext)){
+	if(!newName.endsWith("." + ext))
+	{
 		newName += "." + ext;
 	}
 
 	emit sigRenameRequested(files[row], newName);
 }
 
-
 void FileListView::renameFileByTagClicked()
 {
 	const QModelIndexList indexes = this->selectedRows();
 	const QStringList files = m->model->files();
 
-	if(indexes.isEmpty() || files.isEmpty()) {
+	if(indexes.isEmpty() || files.isEmpty())
+	{
 		return;
 	}
 
 	auto* dialog = new GUI_FileExpressionDialog(this);
 	QDialog::DialogCode ret = QDialog::DialogCode(dialog->exec());
-	if(ret == QDialog::Rejected) {
+	if(ret == QDialog::Rejected)
+	{
 		return;
 	}
 
 	const QString expression = dialog->expression();
-	if(expression.isEmpty()){
+	if(expression.isEmpty())
+	{
 		return;
 	}
 
 	for(const QModelIndex& index : indexes)
 	{
 		int row = index.row();
-		if(!Util::between(row, files)){
+		if(!Util::between(row, files))
+		{
 			return;
 		}
 
@@ -287,13 +304,13 @@ QStringList FileListView::pathlist() const
 
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {
-	if(!m->contextMenu){
+	if(!m->contextMenu)
+	{
 		initContextMenu();
 	}
 
 	const QModelIndexList indexes = selectedRows();
-	auto audioFileCount = Util::Algorithm::count(indexes, [](const QModelIndex& index)
-	{
+	auto audioFileCount = Util::Algorithm::count(indexes, [](const QModelIndex& index) {
 		QString filename = index.data(Qt::UserRole).toString();
 		return Util::File::isSoundFile(filename);
 	});
@@ -313,11 +330,13 @@ void FileListView::dragMoveEvent(QDragMoveEvent* event)
 {
 	const QMimeData* mimeData = event->mimeData();
 	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
-	if(cmd){
+	if(cmd)
+	{
 		event->setAccepted(false);
 	}
 
-	else{
+	else
+	{
 		event->setAccepted(true);
 	}
 }
@@ -327,12 +346,14 @@ void FileListView::dropEvent(QDropEvent* event)
 	event->accept();
 
 	const QMimeData* mimeData = event->mimeData();
-	if(!mimeData){
+	if(!mimeData)
+	{
 		spLog(Log::Debug, this) << "Drop: No Mimedata";
 		return;
 	}
 
-	if(Gui::MimeData::isPlayerDrag(mimeData)){
+	if(Gui::MimeData::isPlayerDrag(mimeData))
+	{
 		spLog(Log::Debug, this) << "Drop: Internal player drag";
 		return;
 	}
@@ -359,6 +380,7 @@ void FileListView::dropEvent(QDropEvent* event)
 }
 
 void FileListView::languageChanged() {}
+
 void FileListView::skinChanged()
 {
 	const QFontMetrics fm = this->fontMetrics();

@@ -22,11 +22,12 @@
 
 #include "Components/Covers/LocalCoverSearcher.h"
 #include "Components/Directories/DirectoryReader.h"
-#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
+
+#include "Interfaces/LibraryInfoAccessor.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -83,20 +84,22 @@ struct FileListModel::Private
 	QStringList files;
 	QMap<QString, bool> filesInLibrary;
 
+	LibraryInfoAccessor* libraryInfoAccessor;
+
 	int	iconSize;
 	LibraryId libraryId;
 
-	Private() :
+	Private(LibraryInfoAccessor* libraryInfoAccessor) :
+		libraryInfoAccessor(libraryInfoAccessor),
 		iconSize(24),
 		libraryId(-1)
 	{}
 };
 
-
-FileListModel::FileListModel(QObject* parent) :
+FileListModel::FileListModel(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(libraryInfoAccessor);
 }
 
 FileListModel::~FileListModel() = default;
@@ -391,7 +394,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	auto* mimeData = new Gui::CustomMimeData(this);
 	mimeData->setUrls(urls);
 
-	auto* localLibrary = Library::Manager::instance()->libraryInstance(m->libraryId);
+	auto* localLibrary = m->libraryInfoAccessor->libraryInstance(m->libraryId);
 	const auto tracks = localLibrary->currentTracks();
 	mimeData->setMetadata(tracks);
 

@@ -22,6 +22,7 @@
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
+#include "Interfaces/LibraryInfoAccessor.h"
 
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/PreferenceAction.h"
@@ -54,6 +55,7 @@ using Directory::TreeView;
 
 struct TreeView::Private
 {
+	LibraryInfoAccessor* libraryInfoAccessor=nullptr;
 	Directory::ContextMenu* contextMenu=nullptr;
 	Directory::Model* model;
 	Gui::ProgressBar* progressBar=nullptr;
@@ -61,8 +63,9 @@ struct TreeView::Private
 	QTimer*	dragTimer;
 	QModelIndex	dragTargetIndex;
 
-	Private(Library::Manager* libraryManager, TreeView* parent) :
-		model{new Directory::Model(libraryManager, parent)},
+	Private(LibraryInfoAccessor* libraryInfoAccessor, TreeView* parent) :
+		libraryInfoAccessor{libraryInfoAccessor},
+		model{new Directory::Model(libraryInfoAccessor, parent)},
 		dragTimer{new QTimer{parent}}
 	{
 		dragTimer->setSingleShot(true);
@@ -84,9 +87,9 @@ TreeView::TreeView(QWidget* parent) :
 
 TreeView::~TreeView() = default;
 
-void TreeView::init(Library::Manager* libraryManager)
+void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor)
 {
-	m = Pimpl::make<Private>(libraryManager, this);
+	m = Pimpl::make<Private>(libraryInfoAccessor, this);
 
 	setModel(m->model);
 	connect(m->model, &Model::sigBusy, this, &TreeView::setBusy);
@@ -108,7 +111,7 @@ void TreeView::initContextMenu()
 		return;
 	}
 
-	m->contextMenu = new ContextMenu(ContextMenu::Mode::Dir, this);
+	m->contextMenu = new ContextMenu(ContextMenu::Mode::Dir, m->libraryInfoAccessor, this);
 
 	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &TreeView::sigDeleteClicked);
 	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &TreeView::sigPlayClicked);

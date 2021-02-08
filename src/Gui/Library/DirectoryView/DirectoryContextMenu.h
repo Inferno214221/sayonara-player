@@ -23,6 +23,8 @@
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
+class LibraryInfoAccessor;
+
 namespace Directory
 {
 	/**
@@ -62,7 +64,7 @@ namespace Directory
 				EntryViewInFM		= Library::ContextMenu::EntryLast << 6
 			};
 
-			ContextMenu(Mode mode, QWidget* parent);
+			ContextMenu(Mode mode, LibraryInfoAccessor* libraryInfoAccessor, QWidget* parent);
 			~ContextMenu() override;
 
 			void refresh(int count=0);

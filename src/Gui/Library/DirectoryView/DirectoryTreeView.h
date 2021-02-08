@@ -45,8 +45,9 @@ namespace Gui
 namespace Library
 {
 	class Info;
-	class Manager;
 }
+
+class LibraryInfoAccessor;
 
 namespace Directory
 {
@@ -74,7 +75,7 @@ namespace Directory
 			void sigCurrentIndexChanged(const QModelIndex& index);
 
 			void sigEnterPressed();
-			void sigImportRequested(LibraryId lib_id, const QStringList& v_md, const QString& targetDirectory);
+			void sigImportRequested(LibraryId libraryId, const QStringList& tracks, const QString& targetDirectory);
 
 			void sigCopyRequested(const QStringList& paths, const QString& target);
 			void sigMoveRequested(const QStringList& paths, const QString& target);
@@ -87,7 +88,7 @@ namespace Directory
 			explicit TreeView(QWidget* parent = nullptr);
 			~TreeView() override;
 
-			void init(Library::Manager* libraryManager);
+			void init(LibraryInfoAccessor* libraryInfoAccessor);
 
 			QString directoryName(const QModelIndex& index);
 

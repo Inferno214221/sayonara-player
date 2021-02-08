@@ -27,6 +27,8 @@
 
 #include "Utils/Pimpl.h"
 
+class LibraryInfoAccessor;
+
 namespace Directory
 {
 	class FileListModel;
@@ -60,6 +62,8 @@ namespace Directory
 		public:
 			explicit FileListView(QWidget* parent=nullptr);
 			~FileListView() override;
+
+			void init(LibraryInfoAccessor* libraryInfoAccessor);
 
 			QModelIndexList selectedRows() const;
 			QStringList selectedPaths() const;

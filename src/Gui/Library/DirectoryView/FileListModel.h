@@ -29,6 +29,8 @@
 class QPixmap;
 class QVariant;
 
+class LibraryInfoAccessor;
+
 namespace Directory
 {
 	class IconWorkerThread : public QObject
@@ -60,7 +62,7 @@ namespace Directory
 		PIMPL(FileListModel)
 
 		public:
-			explicit FileListModel(QObject* parent=nullptr);
+			explicit FileListModel(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent=nullptr);
 			~FileListModel() override;
 
 			QString parentDirectory() const;

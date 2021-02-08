@@ -3,7 +3,8 @@
 
 #include "Components/Covers/LocalCoverSearcher.h"
 #include "Components/Library/LocalLibrary.h"
-#include "Components/LibraryManagement/LibraryManager.h"
+
+#include "Interfaces/LibraryInfoAccessor.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
@@ -22,15 +23,15 @@ using Directory::Model;
 
 struct Model::Private
 {
-	Library::Manager* libraryManager;
+	LibraryInfoAccessor* libraryInfoAccessor;
 	QFileSystemModel* model = nullptr;
 	QTimer* filterTimer = nullptr;
 	QString filter;
 
 	LibraryId libraryId;
 
-	Private(Library::Manager* libraryManager, QObject* parent) :
-		libraryManager {libraryManager},
+	Private(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
+		libraryInfoAccessor {libraryInfoAccessor},
 		model {new QFileSystemModel(parent)},
 		libraryId(-1)
 	{
@@ -39,10 +40,10 @@ struct Model::Private
 	}
 };
 
-Model::Model(Library::Manager* libraryManager, QObject* parent) :
+Model::Model(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
 	QSortFilterProxyModel(parent)
 {
-	m = Pimpl::make<Private>(libraryManager, parent);
+	m = Pimpl::make<Private>(libraryInfoAccessor, parent);
 
 	this->setSourceModel(m->model);
 }
@@ -51,7 +52,7 @@ Model::~Model() = default;
 
 QModelIndex Model::setDataSource(LibraryId libraryId)
 {
-	const auto info = m->libraryManager->libraryInfo(libraryId);
+	const auto info = m->libraryInfoAccessor->libraryInfo(libraryId);
 	const auto index = setDataSource(info.path());
 
 	m->libraryId = libraryId;
@@ -126,7 +127,7 @@ bool Model::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) con
 
 	if(m->libraryId >= 0)
 	{
-		auto* localLibrary = m->libraryManager->libraryInstance(m->libraryId);
+		auto* localLibrary = m->libraryInfoAccessor->libraryInstance(m->libraryId);
 		const auto& tracks = localLibrary->tracks();
 
 		const auto contains = Util::Algorithm::contains(tracks, [&](const auto& track) {
