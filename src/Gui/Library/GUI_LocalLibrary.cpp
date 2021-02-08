@@ -352,7 +352,9 @@ void GUI_LocalLibrary::reloadFinished()
 
 void GUI_LocalLibrary::showInfoBox()
 {
-	GUI_LibraryInfoBox(m->library->id(), this).exec();
+	const auto info = m->libraryManager->libraryInfo(m->library->id());
+	GUI_LibraryInfoBox infoBox(info, this);
+	infoBox.exec();
 }
 
 void GUI_LocalLibrary::importDirsRequested()

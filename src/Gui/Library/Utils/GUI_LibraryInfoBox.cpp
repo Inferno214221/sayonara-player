@@ -26,8 +26,6 @@
 #include "Gui/Library/ui_GUI_LibraryInfoBox.h"
 #include "Gui/Utils/Icons.h"
 
-#include "Components/LibraryManagement/LibraryManager.h"
-
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
@@ -49,16 +47,16 @@ using Library::GUI_LibraryInfoBox;
 
 struct GUI_LibraryInfoBox::Private
 {
-	LibraryId libraryId;
+	Library::Info libraryInfo;
 
-	Private(LibraryId libraryId) :
-		libraryId(libraryId) {}
+	Private(const Library::Info& libraryInfo) :
+		libraryInfo {libraryInfo} {}
 };
 
-GUI_LibraryInfoBox::GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent) :
+GUI_LibraryInfoBox::GUI_LibraryInfoBox(const Library::Info& libraryInfo, QWidget* parent) :
 	Dialog(parent)
 {
-	m = Pimpl::make<Private>(libraryId);
+	m = Pimpl::make<Private>(libraryInfo);
 
 	ui = new Ui::GUI_LibraryInfoBox();
 	ui->setupUi(this);
@@ -81,21 +79,14 @@ void GUI_LibraryInfoBox::languageChanged()
 	ui->lab_duration->setText(Lang::get(Lang::Duration));
 	ui->lab_filesize_descr->setText(Lang::get(Lang::Filesize));
 
-	auto* manager = Library::Manager::instance();
-	Library::Info info = manager->libraryInfo(m->libraryId);
-
-	ui->lab_name->setText(Lang::get(Lang::Library) + ": " + info.name());
+	ui->lab_name->setText(Lang::get(Lang::Library) + ": " + m->libraryInfo.name());
 
 	this->setWindowTitle(Lang::get(Lang::Info));
 }
 
 void GUI_LibraryInfoBox::skinChanged()
 {
-	auto* manager = Library::Manager::instance();
-	Library::Info info = manager->libraryInfo(m->libraryId);
-	bool dark = Style::isDark();
-
-	ui->lab_path->setText(Util::createLink(info.path(), dark));
+	ui->lab_path->setText(Util::createLink( m->libraryInfo.path(), Style::isDark()));
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary));
 }
 
@@ -108,15 +99,15 @@ void GUI_LibraryInfoBox::showEvent(QShowEvent* e)
 void GUI_LibraryInfoBox::refresh()
 {
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* libDb = db->libraryDatabase(m->libraryId, 0);
+	auto* libraryDatabase = db->libraryDatabase(m->libraryInfo.id(), 0);
 
 	MetaDataList tracks;
 	AlbumList albums;
 	ArtistList artists;
 
-	libDb->getAllTracks(tracks);
-	libDb->getAllAlbums(albums, false);
-	libDb->getAllArtists(artists, false);
+	libraryDatabase->getAllTracks(tracks);
+	libraryDatabase->getAllAlbums(albums, false);
+	libraryDatabase->getAllArtists(artists, false);
 
 	auto nTracks = tracks.size();
 	auto nAlbums = albums.size();
@@ -124,14 +115,14 @@ void GUI_LibraryInfoBox::refresh()
 	MilliSeconds durationMs = 0;
 	Filesize filesize = 0;
 
-	for(const MetaData& md : tracks)
+	for(const auto& track : tracks)
 	{
-		durationMs += md.durationMs();
-		filesize += md.filesize();
+		durationMs += track.durationMs();
+		filesize += track.filesize();
 	}
 
-	const QString durationString = Util::msToString(durationMs, "$De $He $M:$S");
-	const QString filesizeStr = Util::File::getFilesizeString(filesize);
+	const auto durationString = Util::msToString(durationMs, "$De $He $M:$S");
+	const auto filesizeStr = Util::File::getFilesizeString(filesize);
 
 	ui->lab_album_count->setText(QString::number(nAlbums));
 	ui->lab_track_count->setText(QString::number(nTracks));

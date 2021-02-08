@@ -32,6 +32,8 @@ UI_FWD(GUI_LibraryInfoBox)
 
 namespace Library
 {
+	class Info;
+
 	/**
 	 * @brief A info box containing library statistics
 	 * @ingroup Gui::Library
@@ -44,7 +46,7 @@ namespace Library
 		PIMPL(GUI_LibraryInfoBox)
 
 		public:
-			explicit GUI_LibraryInfoBox(LibraryId libraryId, QWidget* parent = nullptr);
+			explicit GUI_LibraryInfoBox(const Library::Info& libraryInfo, QWidget* parent = nullptr);
 			~GUI_LibraryInfoBox() override;
 
 		protected:
