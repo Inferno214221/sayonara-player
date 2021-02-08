@@ -21,6 +21,8 @@
 #ifndef LIBRARYMANAGER_H
 #define LIBRARYMANAGER_H
 
+#include "Interfaces/LibraryInfoAccessor.h"
+
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
@@ -36,7 +38,8 @@ namespace Library
 {
 	class Info;
 	class Manager :
-			public QObject
+			public QObject,
+			public LibraryInfoAccessor
 	{
 		Q_OBJECT
 		PIMPL(Manager)
@@ -63,14 +66,11 @@ namespace Library
 		bool moveLibrary(int old_row, int new_row);
 		bool changeLibraryPath(LibraryId id, const QString& newPath);
 
-		QList<Info> allLibraries() const;
-
-		Info libraryInfo(LibraryId id) const;
-		Info libraryInfoByPath(const QString& path) const;
-
-		int count() const;
-
-		LocalLibrary* libraryInstance(LibraryId id);
+		QList<Info> allLibraries() const override;
+		Info libraryInfo(LibraryId id) const override;
+		Info libraryInfoByPath(const QString& path) const override;
+		int count() const override;
+		LocalLibrary* libraryInstance(LibraryId id) override;
 
 		static QString requestLibraryName(const QString& path);
 	};
