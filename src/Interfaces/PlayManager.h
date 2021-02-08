@@ -22,8 +22,6 @@
 #define PLAY_MANAGER_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Singleton.h"
-#include "Utils/typedefs.h"
 
 #include <QObject>
 

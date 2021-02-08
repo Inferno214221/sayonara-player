@@ -21,7 +21,6 @@
 #define SAYONARA_PLAYER_DYNAMICPLAYBACKHANDLER_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Singleton.h"
 
 #include <QObject>
 

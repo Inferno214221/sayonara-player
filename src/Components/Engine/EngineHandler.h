@@ -21,7 +21,6 @@
 #ifndef ENGINEHANDLER_H_
 #define ENGINEHANDLER_H_
 
-#include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
 #include "Interfaces/CoverDataProvider.h"

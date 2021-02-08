@@ -22,7 +22,6 @@
 #define SESSION_H
 
 #include "Utils/Pimpl.h"
-#include "Utils/Singleton.h"
 #include "Utils/Session/SessionUtils.h"
 
 #include <QObject>
