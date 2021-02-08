@@ -54,6 +54,7 @@
 #include "Components/Session/Session.h"
 #include "Components/Shutdown/Shutdown.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
 
@@ -180,6 +181,8 @@ struct Application::Private
 
 		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
 		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
+
+		Library::Manager::instance()->init(playlistHandler);
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
