@@ -30,6 +30,7 @@
 namespace Library
 {
 	class Info;
+	class Manager;
 }
 
 namespace Directory
@@ -48,7 +49,7 @@ namespace Directory
 			void sigBusy(bool b);
 
 		public:
-			explicit Model(QObject* parent=nullptr);
+			explicit Model(Library::Manager* libraryManager, QObject* parent=nullptr);
 			~Model() override;
 
 			QModelIndex setDataSource(LibraryId libraryId);

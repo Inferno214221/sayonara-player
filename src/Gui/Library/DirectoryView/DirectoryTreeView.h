@@ -45,8 +45,8 @@ namespace Gui
 namespace Library
 {
 	class Info;
+	class Manager;
 }
-
 
 namespace Directory
 {
@@ -55,14 +55,14 @@ namespace Directory
 	 * @ingroup GuiDirectories
 	 */
 	class TreeView :
-			public Gui::WidgetTemplate<QTreeView>,
-			public InfoDialogContainer,
-			protected Gui::Dragable
+		public Gui::WidgetTemplate<QTreeView>,
+		public InfoDialogContainer,
+		protected Gui::Dragable
 	{
 		Q_OBJECT
 		PIMPL(TreeView)
 
-		using Parent=Gui::WidgetTemplate<QTreeView>;
+			using Parent = Gui::WidgetTemplate<QTreeView>;
 
 		signals:
 			void sigDeleteClicked();
@@ -84,26 +84,28 @@ namespace Directory
 			void sigMoveToLibraryRequested(LibraryId libraryId);
 
 		public:
-			explicit TreeView(QWidget* parent=nullptr);
+			explicit TreeView(QWidget* parent = nullptr);
 			~TreeView() override;
 
-			QString			directoryName(const QModelIndex& index);
+			void init(Library::Manager* libraryManager);
 
-			QModelIndexList	selctedRows() const;
-			QStringList		selectedPaths() const;
+			QString directoryName(const QModelIndex& index);
 
-			void			setLibraryInfo(const Library::Info& info);
-			void			setFilterTerm(const QString& filter);
+			QModelIndexList selctedRows() const;
+			QStringList selectedPaths() const;
+
+			void setLibraryInfo(const Library::Info& info);
+			void setFilterTerm(const QString& filter);
 
 		public slots:
-			void			setBusy(bool b);
+			void setBusy(bool b);
 
 		private:
 			enum class DropAction
 			{
-				Copy,
-				Move,
-				Cancel
+					Copy,
+					Move,
+					Cancel
 			};
 
 			void initContextMenu();

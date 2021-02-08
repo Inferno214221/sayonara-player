@@ -5,6 +5,7 @@
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -21,25 +22,27 @@ using Directory::Model;
 
 struct Model::Private
 {
-	QFileSystemModel* model=nullptr;
-	QTimer*	filterTimer=nullptr;
-	QString	filter;
+	Library::Manager* libraryManager;
+	QFileSystemModel* model = nullptr;
+	QTimer* filterTimer = nullptr;
+	QString filter;
 
 	LibraryId libraryId;
 
-	Private() :
+	Private(Library::Manager* libraryManager, QObject* parent) :
+		libraryManager {libraryManager},
+		model {new QFileSystemModel(parent)},
 		libraryId(-1)
-	{}
+	{
+		model->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
+		model->setIconProvider(new IconProvider());
+	}
 };
 
-Model::Model(QObject* parent) :
+Model::Model(Library::Manager* libraryManager, QObject* parent) :
 	QSortFilterProxyModel(parent)
 {
-	m = Pimpl::make<Private>();
-
-	m->model = new QFileSystemModel(parent);
-	m->model->setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
-	m->model->setIconProvider(new IconProvider());
+	m = Pimpl::make<Private>(libraryManager, parent);
 
 	this->setSourceModel(m->model);
 }
@@ -48,8 +51,8 @@ Model::~Model() = default;
 
 QModelIndex Model::setDataSource(LibraryId libraryId)
 {
-	const Library::Info info = Library::Manager::instance()->libraryInfo(libraryId);
-	const QModelIndex index = setDataSource(info.path());
+	const auto info = m->libraryManager->libraryInfo(libraryId);
+	const auto index = setDataSource(info.path());
 
 	m->libraryId = libraryId;
 
@@ -61,12 +64,11 @@ QModelIndex Model::setDataSource(const QString& path)
 	m->libraryId = -1;
 	m->model->setRootPath(path);
 
-	const QModelIndex sourceIndex = m->model->index(path);
-	if(!Util::File::exists(path)){
-		return QModelIndex();
-	}
+	const auto sourceIndex = m->model->index(path);
 
-	return this->mapFromSource(sourceIndex);
+	return Util::File::exists(path)
+	       ? this->mapFromSource(sourceIndex)
+	       : QModelIndex();
 }
 
 LibraryId Model::libraryDataSource() const
@@ -76,7 +78,7 @@ LibraryId Model::libraryDataSource() const
 
 QString Model::filePath(const QModelIndex& index) const
 {
-	return m->model->filePath( mapToSource(index) );
+	return m->model->filePath(mapToSource(index));
 }
 
 QModelIndex Model::indexOfPath(const QString& path) const
@@ -109,29 +111,29 @@ void Model::filterTimerTimeout()
 
 bool Model::filterAcceptsRow(int sourceRow, const QModelIndex& sourceParent) const
 {
-	if(this->filterRegExp().pattern().isEmpty()){
+	if(this->filterRegExp().pattern().isEmpty())
+	{
 		return true;
 	}
 
-	const QModelIndex index = m->model->index(sourceRow, 0, sourceParent);
-	const QString path = m->model->filePath(index);
-	if(Util::File::isSubdir(m->model->rootPath(), path) || Util::File::isSamePath(m->model->rootPath(), path))
+	const auto index = m->model->index(sourceRow, 0, sourceParent);
+	const auto path = m->model->filePath(index);
+	if(Util::File::isSubdir(m->model->rootPath(), path) ||
+	   Util::File::isSamePath(m->model->rootPath(), path))
 	{
 		return true;
 	}
 
 	if(m->libraryId >= 0)
 	{
-		LocalLibrary* ll = Library::Manager::instance()->libraryInstance(m->libraryId);
-		const MetaDataList& tracks = ll->tracks();
-		for(const MetaData& md : tracks)
-		{
-			if(Util::File::isSubdir(md.filepath(), path)) {
-				return true;
-			}
-		}
+		auto* localLibrary = m->libraryManager->libraryInstance(m->libraryId);
+		const auto& tracks = localLibrary->tracks();
 
-		return false;
+		const auto contains = Util::Algorithm::contains(tracks, [&](const auto& track) {
+			return Util::File::isSubdir(track.filepath(), path);
+		});
+
+		return contains;
 	}
 
 	return true;
@@ -157,7 +159,8 @@ QMimeData* Directory::Model::mimeData(const QModelIndexList& indexes) const
 	if(!paths.isEmpty())
 	{
 		const auto coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
-		if(!coverPaths.isEmpty()) {
+		if(!coverPaths.isEmpty())
+		{
 			cmd->setCoverUrl(coverPaths.first());
 		}
 	}

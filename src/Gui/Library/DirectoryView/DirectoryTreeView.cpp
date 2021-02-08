@@ -55,17 +55,16 @@ using Directory::TreeView;
 struct TreeView::Private
 {
 	Directory::ContextMenu* contextMenu=nullptr;
-	Directory::Model* model=nullptr;
+	Directory::Model* model;
 	Gui::ProgressBar* progressBar=nullptr;
 
-	QTimer*	dragTimer=nullptr;
+	QTimer*	dragTimer;
 	QModelIndex	dragTargetIndex;
 
-	QString	lastSearchTerm;
-
-	Private(QObject* parent)
+	Private(Library::Manager* libraryManager, TreeView* parent) :
+		model{new Directory::Model(libraryManager, parent)},
+		dragTimer{new QTimer{parent}}
 	{
-		dragTimer = new QTimer(parent);
 		dragTimer->setSingleShot(true);
 		dragTimer->setInterval(750);
 	}
@@ -77,18 +76,20 @@ struct TreeView::Private
 	}
 };
 
-
 TreeView::TreeView(QWidget* parent) :
 	Gui::WidgetTemplate<QTreeView>(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
+{}
+
+TreeView::~TreeView() = default;
+
+void TreeView::init(Library::Manager* libraryManager)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(libraryManager, this);
 
-	m->model = new Model(this);
+	setModel(m->model);
 	connect(m->model, &Model::sigBusy, this, &TreeView::setBusy);
-	this->setModel(m->model);
-
 	connect(m->dragTimer, &QTimer::timeout, this, &TreeView::dragTimerTimeout);
 
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
@@ -100,8 +101,6 @@ TreeView::TreeView(QWidget* parent) :
 	connect(action, &QAction::triggered, this, &TreeView::renameDirectoryClicked);
 	this->addAction(action);
 }
-
-TreeView::~TreeView() = default;
 
 void TreeView::initContextMenu()
 {
