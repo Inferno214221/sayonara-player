@@ -44,7 +44,6 @@ public:
 	explicit ArtistInfo(const MetaDataList& tracs);
 	~ArtistInfo() override;
 
-	QString additionalInfostring() const override;
 	Cover::Location coverLocation() const override;
 };
 

@@ -37,21 +37,20 @@ class LibraryDatabase;
  */
 enum class InfoStrings : uint8_t
 {
-	nTracks=0,		// set by MetaDataInfo
-	nAlbums,		// set by ArtistInfo, AlbumInfo
-	nArtists,		// set by ArtistInfo, AlbumInfo
-	CreateDate,		// set by MetaDataInfo
-	ModifyDate,		// set by MetaDataInfo
-	Filesize,		// set by MetaDataInfo
-	PlayingTime,	// set by MetaDataInfo
-	Year,			// set by MetaDataInfo
-	Sampler,		// set by AlbumInfo
-	Bitrate,		// set by MetaDataInfo
-	Genre,			// set by MetaDataInfo
-	Filetype,		// set by MetaDataInfo
-	Comment			// set by MetaDataInfo
+		nTracks = 0,        // set by MetaDataInfo
+		nAlbums,        // set by ArtistInfo, AlbumInfo
+		nArtists,        // set by ArtistInfo, AlbumInfo
+		CreateDate,        // set by MetaDataInfo
+		ModifyDate,        // set by MetaDataInfo
+		Filesize,        // set by MetaDataInfo
+		PlayingTime,    // set by MetaDataInfo
+		Year,            // set by MetaDataInfo
+		Sampler,        // set by AlbumInfo
+		Bitrate,        // set by MetaDataInfo
+		Genre,            // set by MetaDataInfo
+		Filetype,        // set by MetaDataInfo
+		Comment            // set by MetaDataInfo
 };
-
 
 /**
  * @brief The MetaDataInfo class
@@ -63,13 +62,12 @@ class MetaDataInfo :
 	PIMPL(MetaDataInfo)
 
 	protected:
-		QString						mHeader;
-		QString						mSubheader;
-		QMap<InfoStrings, QString>	mInfo;
-		QList<StringPair>			mAdditionalInfo;
+		QString mHeader;
+		QString mSubheader;
+		QMap<InfoStrings, QString> mInfo;
+		QList<StringPair> mAdditionalInfo;
 
-
-		QString calcTracknumString( TrackNum tracknum );
+		QString calcTracknumString(TrackNum tracknum);
 		QString calcArtistString() const;
 		QString calcAlbumString();
 
@@ -89,14 +87,13 @@ class MetaDataInfo :
 		void insertNumericInfoField(InfoStrings key, int number);
 
 	public:
-		explicit MetaDataInfo(const MetaDataList& v_md);
+		explicit MetaDataInfo(const MetaDataList& tracks);
 		virtual ~MetaDataInfo();
 
 		virtual QString header() const;
 		virtual QString subheader() const;
 		virtual QString infostring() const;
 		virtual QList<StringPair> infostringMap() const;
-		virtual QString additionalInfostring() const;
 
 		virtual Cover::Location coverLocation() const;
 
@@ -109,12 +106,11 @@ class MetaDataInfo :
 		const Util::Set<ArtistId>& albumArtistIds() const;
 
 		QStringList paths() const;
-		QString pathsString() const;
 
 	private:
-		void calcCoverLocation(const MetaDataList& lst);
+		void calcCoverLocation(const MetaDataList& tracks);
 		void calcSubheader(quint16 tracknum);
-		void calcHeader(const MetaDataList& lst);
+		void calcHeader(const MetaDataList& tracks);
 
 		QString getInfoString(InfoStrings idx) const;
 };

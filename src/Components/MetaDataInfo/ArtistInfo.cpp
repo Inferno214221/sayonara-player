@@ -159,12 +159,6 @@ void ArtistInfo::calcCoverLocation()
 	}
 }
 
-// todo: delete me
-QString ArtistInfo::additionalInfostring() const
-{
-	return QString();
-}
-
 Cover::Location ArtistInfo::coverLocation() const
 {
 	return m->coverLocation;
