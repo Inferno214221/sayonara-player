@@ -22,6 +22,7 @@
 #define GUI_EMPTYLIBRARY_H
 
 #include "Gui/Utils/Widgets/Widget.h"
+#include "Utils/Pimpl.h"
 
 UI_FWD(GUI_EmptyLibrary)
 
@@ -29,6 +30,8 @@ class QFrame;
 
 namespace Library
 {
+	class Manager;
+
 	/**
 	 * @brief The GUI_EmptyLibrary class
 	 * @ingroup Gui
@@ -38,10 +41,11 @@ namespace Library
 		public Gui::Widget
 	{
 		Q_OBJECT
+		PIMPL(GUI_EmptyLibrary)
 		UI_CLASS(GUI_EmptyLibrary)
 
 		public:
-			explicit GUI_EmptyLibrary(QWidget* parent = nullptr);
+			explicit GUI_EmptyLibrary(Library::Manager* libraryManager, QWidget* parent = nullptr);
 			GUI_EmptyLibrary(const GUI_EmptyLibrary& other) = delete;
 			~GUI_EmptyLibrary() override;
 

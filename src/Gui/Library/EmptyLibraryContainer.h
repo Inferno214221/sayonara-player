@@ -24,6 +24,10 @@
 #include "Utils/Pimpl.h"
 #include "Gui/Library/LibraryContainer.h"
 
+namespace Library
+{
+	class Manager;
+}
 /**
  * @brief The EmptyLibraryContainer class
  * @ingroup Library
@@ -36,7 +40,7 @@ class EmptyLibraryContainer :
 
 		// LibraryContainerInterface interface
 	public:
-		explicit EmptyLibraryContainer(QObject* parent = nullptr);
+		explicit EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent = nullptr);
 		~EmptyLibraryContainer() override;
 
 		QString name() const override;

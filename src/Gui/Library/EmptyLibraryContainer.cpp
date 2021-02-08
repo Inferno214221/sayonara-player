@@ -32,13 +32,18 @@ using namespace Library;
 
 struct EmptyLibraryContainer::Private
 {
+	Library::Manager* libraryManager;
 	GUI_EmptyLibrary* ui = nullptr;
+
+	Private(Library::Manager* libraryManager) :
+		libraryManager{libraryManager}
+	{}
 };
 
-EmptyLibraryContainer::EmptyLibraryContainer(QObject* parent) :
+EmptyLibraryContainer::EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent) :
 	Library::Container(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(libraryManager);
 }
 
 EmptyLibraryContainer::~EmptyLibraryContainer() = default;
@@ -65,7 +70,7 @@ QMenu* EmptyLibraryContainer::menu()
 
 void EmptyLibraryContainer::initUi()
 {
-	m->ui = new GUI_EmptyLibrary();
+	m->ui = new GUI_EmptyLibrary(m->libraryManager);
 }
 
 QFrame* EmptyLibraryContainer::header() const

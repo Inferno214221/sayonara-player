@@ -34,9 +34,19 @@
 
 using namespace Library;
 
-GUI_EmptyLibrary::GUI_EmptyLibrary(QWidget* parent) :
+struct GUI_EmptyLibrary::Private
+{
+	Library::Manager* libraryManager;
+	Private(Library::Manager* libraryManager) :
+		libraryManager{libraryManager}
+	{}
+};
+
+GUI_EmptyLibrary::GUI_EmptyLibrary(Library::Manager* libraryManager, QWidget* parent) :
 	Gui::Widget(parent)
 {
+	m = Pimpl::make<Private>(libraryManager);
+
 	ui = new Ui::GUI_EmptyLibrary();
 	ui->setupUi(this);
 
@@ -63,7 +73,7 @@ void GUI_EmptyLibrary::okClicked()
 	QString name = ui->leName->text();
 	QString path = ui->lePath->text();
 
-	Manager::instance()->addLibrary(name, path);
+	m->libraryManager->addLibrary(name, path);
 }
 
 void GUI_EmptyLibrary::chooseDirClicked()
@@ -86,17 +96,15 @@ void GUI_EmptyLibrary::chooseDirClicked()
 
 bool GUI_EmptyLibrary::checkName()
 {
-	Manager* manager = Manager::instance();
-	QString name = ui->leName->text();
-
+	const auto name = ui->leName->text();
 	if(name.isEmpty())
 	{
 		ui->labError->setText(tr("Please choose a name for your library"));
 		return false;
 	}
 
-	const QList<Library::Info> infos = manager->allLibraries();
-	bool contains = Util::Algorithm::contains(infos, [&name](const Library::Info& info) {
+	const auto infos = m->libraryManager->allLibraries();
+	const auto contains = Util::Algorithm::contains(infos, [&name](const Library::Info& info) {
 		return (name.toLower() == info.name().toLower());
 	});
 
@@ -121,8 +129,7 @@ void GUI_EmptyLibrary::nameChanged(const QString& str)
 
 bool GUI_EmptyLibrary::checkPath()
 {
-	Manager* manager = Manager::instance();
-	QString path = ui->lePath->text();
+	const auto path = ui->lePath->text();
 
 	if(!Util::File::exists(path))
 	{
@@ -130,7 +137,7 @@ bool GUI_EmptyLibrary::checkPath()
 		return false;
 	}
 
-	Library::Info info = manager->libraryInfoByPath(path);
+	Library::Info info = m->libraryManager->libraryInfoByPath(path);
 	if(Util::File::isSamePath(info.path(), path))
 	{
 		ui->labError->setText(tr("A library with the same file path already exists"));
@@ -145,18 +152,18 @@ bool GUI_EmptyLibrary::checkPath()
 			);
 	}
 
-	return (!manager->libraryInfoByPath(path).valid());
+	return (!m->libraryManager->libraryInfoByPath(path).valid());
 }
 
 void GUI_EmptyLibrary::pathChanged(const QString& newPath)
 {
 	Q_UNUSED(newPath)
 
-	const QString path = ui->lePath->text();
-	const QString name = Manager::requestLibraryName(path);
+	const auto path = ui->lePath->text();
+	const auto name = Manager::requestLibraryName(path);
 	ui->leName->setText(name);
 
-	bool ok = checkPath() && checkName();
+	const auto ok = checkPath() && checkName();
 
 	ui->btnOk->setEnabled(ok);
 	ui->labError->setVisible(!ok);

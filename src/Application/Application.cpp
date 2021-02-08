@@ -428,7 +428,7 @@ void Application::initLibraries()
 	libraryContainers << static_cast<Library::AbstractContainer*>(soundcloudContainer);
 	libraryContainers << static_cast<Library::AbstractContainer*>(historyContainer);
 
-	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer());
+	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer(m->libraryManager));
 }
 
 void Application::initPlugins()
