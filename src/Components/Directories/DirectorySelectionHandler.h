@@ -7,6 +7,7 @@
 namespace Library
 {
 	class Info;
+	class Manager;
 }
 
 class FileOperations;
@@ -29,7 +30,7 @@ class DirectorySelectionHandler :
 		FileOperations* createFileOperation();
 
 	public:
-		DirectorySelectionHandler(QObject* parent = nullptr);
+		DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent = nullptr);
 		~DirectorySelectionHandler();
 
 		void playNext(const QStringList& paths);

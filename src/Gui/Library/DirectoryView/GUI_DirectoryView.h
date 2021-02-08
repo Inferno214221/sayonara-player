@@ -6,6 +6,8 @@
 
 UI_FWD(GUI_DirectoryView)
 
+namespace Library { class Manager; }
+
 class QItemSelection;
 
 class GUI_DirectoryView :
@@ -18,6 +20,8 @@ class GUI_DirectoryView :
 	public:
 		explicit GUI_DirectoryView(QWidget* parent=nullptr);
 		~GUI_DirectoryView() override;
+
+		void init(Library::Manager* libraryManager);
 
 		void setCurrentLibrary(LibraryId id);
 		void setFilterTerm(const QString& filter);

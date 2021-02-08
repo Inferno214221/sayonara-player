@@ -78,23 +78,26 @@ using namespace Library;
 
 struct GUI_LocalLibrary::Private
 {
-	LocalLibrary* library = nullptr;
-	LocalLibraryMenu* libraryMenu = nullptr;
+	Library::Manager* libraryManager;
+	LocalLibrary* library;
+	LocalLibraryMenu* libraryMenu;
 
-	Private(LibraryId id, GUI_LocalLibrary* parent)
-	{
-		library = Manager::instance()->libraryInstance(id);
-		libraryMenu = new LocalLibraryMenu(library->name(), library->path(), parent);
-	}
+	Private(LibraryId id, Library::Manager* libraryManager, GUI_LocalLibrary* parent) :
+		libraryManager{libraryManager},
+		library{libraryManager->libraryInstance(id)},
+		libraryMenu{new LocalLibraryMenu(library->name(), library->path(), parent)}
+	{}
 };
 
-GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
-	GUI_AbstractLibrary(Manager::instance()->libraryInstance(id), parent)
+GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManager, QWidget* parent) :
+	GUI_AbstractLibrary(libraryManager->libraryInstance(id), parent)
 {
-	m = Pimpl::make<Private>(id, this);
+	m = Pimpl::make<Private>(id, libraryManager, this);
 
 	setupParent(this, &ui);
 	this->setFocusProxy(ui->leSearch);
+
+	ui->directoryView->init(libraryManager);
 
 	connect(m->library, &LocalLibrary::sigReloadingLibrary, this, &GUI_LocalLibrary::progressChanged);
 	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, this, &GUI_LocalLibrary::reloadFinished);
@@ -102,9 +105,8 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, QWidget* parent) :
 	connect(m->library, &LocalLibrary::sigAllTracksLoaded, this, &GUI_LocalLibrary::tracksLoaded);
 	connect(m->library, &LocalLibrary::sigImportDialogRequested, this, &GUI_LocalLibrary::importDialogRequested);
 
-	auto* manager = Manager::instance();
-	connect(manager, &Manager::sigPathChanged, this, &GUI_LocalLibrary::pathChanged);
-	connect(manager, &Manager::sigRenamed, this, &GUI_LocalLibrary::nameChanged);
+	connect(libraryManager, &Manager::sigPathChanged, this, &GUI_LocalLibrary::pathChanged);
+	connect(libraryManager, &Manager::sigRenamed, this, &GUI_LocalLibrary::nameChanged);
 
 	connect(ui->tvAlbums, &AlbumView::sigDiscPressed, m->library, &LocalLibrary::changeCurrentDisc);
 	connect(ui->lvGenres, &GenreView::sigSelectedChanged, this, &GUI_LocalLibrary::genreSelectionChanged);
@@ -386,7 +388,7 @@ void GUI_LocalLibrary::nameChanged(LibraryId id)
 		return;
 	}
 
-	Info info = Manager::instance()->libraryInfo(id);
+	const auto info = m->libraryManager->libraryInfo(id);
 	if(info.valid())
 	{
 		m->libraryMenu->refreshName(info.name());
@@ -401,7 +403,7 @@ void GUI_LocalLibrary::pathChanged(LibraryId id)
 		return;
 	}
 
-	Info info = Manager::instance()->libraryInfo(id);
+	const auto info = m->libraryManager->libraryInfo(id);
 	if(info.valid())
 	{
 		m->libraryMenu->refreshPath(info.path());
@@ -433,8 +435,8 @@ void GUI_LocalLibrary::splitterArtistMoved(int pos, int idx)
 	Q_UNUSED(pos)
 	Q_UNUSED(idx)
 
-	QByteArray arr = ui->splitterArtistAlbum->saveState();
-	SetSetting(Set::Lib_SplitterStateArtist, arr);
+	const auto data = ui->splitterArtistAlbum->saveState();
+	SetSetting(Set::Lib_SplitterStateArtist, data);
 }
 
 void GUI_LocalLibrary::splitterTracksMoved(int pos, int idx)
@@ -442,8 +444,8 @@ void GUI_LocalLibrary::splitterTracksMoved(int pos, int idx)
 	Q_UNUSED(pos)
 	Q_UNUSED(idx)
 
-	QByteArray arr = ui->splitter_tracks->saveState();
-	SetSetting(Set::Lib_SplitterStateTrack, arr);
+	const auto data = ui->splitter_tracks->saveState();
+	SetSetting(Set::Lib_SplitterStateTrack, data);
 }
 
 void GUI_LocalLibrary::splitterGenreMoved(int pos, int idx)
@@ -451,13 +453,13 @@ void GUI_LocalLibrary::splitterGenreMoved(int pos, int idx)
 	Q_UNUSED(pos)
 	Q_UNUSED(idx)
 
-	QByteArray arr = ui->splitter_genre->saveState();
-	SetSetting(Set::Lib_SplitterStateGenre, arr);
+	const auto data = ui->splitter_genre->saveState();
+	SetSetting(Set::Lib_SplitterStateGenre, data);
 }
 
 void GUI_LocalLibrary::switchViewType()
 {
-	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+	const auto viewType = GetSetting(Set::Lib_ViewType);
 	switch(viewType)
 	{
 		case Library::ViewType::CoverView:
@@ -495,9 +497,9 @@ void GUI_LocalLibrary::switchViewType()
 
 void GUI_LocalLibrary::selectNextViewType()
 {
-	int vt = int(GetSetting(Set::Lib_ViewType));
-	vt = (vt + 1) % 3;
-	SetSetting(Set::Lib_ViewType, ViewType(vt));
+	auto viewType = static_cast<int>(GetSetting(Set::Lib_ViewType));
+	viewType = (viewType + 1) % 3;
+	SetSetting(Set::Lib_ViewType, ViewType(viewType));
 }
 
 bool GUI_LocalLibrary::hasSelections() const

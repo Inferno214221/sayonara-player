@@ -153,6 +153,7 @@ struct Application::Private
 	MetaTypeRegistry* metatypeRegistry = nullptr;
 	Session::Manager* sessionManager = nullptr;
 	PlayManager* playManager = nullptr;
+	Library::Manager* libraryManager = nullptr;
 	Engine::Handler* engine = nullptr;
 	Playlist::Handler* playlistHandler = nullptr;
 
@@ -182,7 +183,8 @@ struct Application::Private
 		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
 		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
 
-		Library::Manager::instance()->init(playlistHandler);
+		libraryManager = Library::Manager::instance();
+		libraryManager->init(playlistHandler);
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
@@ -414,7 +416,7 @@ void Application::initLibraries()
 {
 	measure("Libraries")
 
-	auto* localLibraryWatcher = new Library::LocalLibraryWatcher(this);
+	auto* localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, this);
 
 	QList<Library::AbstractContainer*> libraryContainers = localLibraryWatcher->getLocalLibraryContainers();
 

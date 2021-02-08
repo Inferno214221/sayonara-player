@@ -32,18 +32,21 @@
 using Directory::TreeView;
 using Directory::FileListView;
 
-static QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidget* parent);
-static void showImageLabel(const QString& filename);
+namespace
+{
+	QString copyOrMoveLibraryRequested(const Library::Info& libraryInfo, const QStringList& paths, QWidget* parent);
+	void showImageLabel(const QString& filename);
+}
 
 struct GUI_DirectoryView::Private
 {
-	DirectorySelectionHandler* directorySelectionHandler=nullptr;
+	Library::Manager* libraryManager;
+	DirectorySelectionHandler* directorySelectionHandler;
 	QString filterTerm;
 
-	Private()
-	{
-		directorySelectionHandler = new DirectorySelectionHandler();
-	}
+	Private(Library::Manager* libraryManager) :
+		libraryManager {libraryManager},
+		directorySelectionHandler {new DirectorySelectionHandler {libraryManager}} {}
 
 	Library::Info currentLibrary() const
 	{
@@ -52,27 +55,43 @@ struct GUI_DirectoryView::Private
 };
 
 GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
-	Gui::Widget(parent)
-{
-	m = Pimpl::make<Private>();
-	ui = nullptr;
-}
+	Gui::Widget(parent),
+	ui {nullptr}
+{}
 
 GUI_DirectoryView::~GUI_DirectoryView() = default;
 
+void GUI_DirectoryView::init(Library::Manager* libraryManager)
+{
+	m = Pimpl::make<Private>(libraryManager);
+}
+
 void GUI_DirectoryView::initUi()
 {
-	if(ui) {
+	if(ui)
+	{
 		return;
 	}
 
 	ui = new Ui::GUI_DirectoryView();
 	ui->setupUi(this);
 
-	connect(m->directorySelectionHandler, &DirectorySelectionHandler::sigImportDialogRequested, this, &GUI_DirectoryView::importDialogRequested);
-	connect(m->directorySelectionHandler, &DirectorySelectionHandler::sigFileOperationStarted, this, &GUI_DirectoryView::fileOperationStarted);
-	connect(m->directorySelectionHandler, &DirectorySelectionHandler::sigFileOperationFinished, this, &GUI_DirectoryView::fileOperationFinished);
-	connect(m->directorySelectionHandler, &DirectorySelectionHandler::sigLibrariesChanged, this, &GUI_DirectoryView::load);
+	connect(m->directorySelectionHandler,
+	        &DirectorySelectionHandler::sigImportDialogRequested,
+	        this,
+	        &GUI_DirectoryView::importDialogRequested);
+	connect(m->directorySelectionHandler,
+	        &DirectorySelectionHandler::sigFileOperationStarted,
+	        this,
+	        &GUI_DirectoryView::fileOperationStarted);
+	connect(m->directorySelectionHandler,
+	        &DirectorySelectionHandler::sigFileOperationFinished,
+	        this,
+	        &GUI_DirectoryView::fileOperationFinished);
+	connect(m->directorySelectionHandler,
+	        &DirectorySelectionHandler::sigLibrariesChanged,
+	        this,
+	        &GUI_DirectoryView::load);
 
 	connect(ui->tvDirs, &QTreeView::pressed, this, &GUI_DirectoryView::dirPressed);
 	connect(ui->tvDirs, &TreeView::sigCurrentIndexChanged, this, &GUI_DirectoryView::dirClicked);
@@ -89,7 +108,10 @@ void GUI_DirectoryView::initUi()
 	connect(ui->tvDirs, &TreeView::sigRenameRequested, this, &GUI_DirectoryView::dirRenameRequested);
 	connect(ui->tvDirs, &TreeView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::dirCopyToLibRequested);
 	connect(ui->tvDirs, &TreeView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::dirMoveToLibRequested);
-	connect(ui->tvDirs->selectionModel(), &QItemSelectionModel::selectionChanged, this, &GUI_DirectoryView::dirSelectionChanged);
+	connect(ui->tvDirs->selectionModel(),
+	        &QItemSelectionModel::selectionChanged,
+	        this,
+	        &GUI_DirectoryView::dirSelectionChanged);
 
 	connect(ui->lvFiles, &QListView::pressed, this, &GUI_DirectoryView::filePressed);
 	connect(ui->lvFiles, &QListView::doubleClicked, this, &GUI_DirectoryView::fileDoubleClicked);
@@ -101,10 +123,22 @@ void GUI_DirectoryView::initUi()
 	connect(ui->lvFiles, &FileListView::sigPlayNewTabClicked, this, &GUI_DirectoryView::filePlayNewTabClicked);
 	connect(ui->lvFiles, &FileListView::sigDeleteClicked, this, &GUI_DirectoryView::fileDeleteClicked);
 	connect(ui->lvFiles, &FileListView::sigRenameRequested, this, &GUI_DirectoryView::fileRenameRequested);
-	connect(ui->lvFiles, &FileListView::sigRenameByExpressionRequested, this, &GUI_DirectoryView::fileRenameByExpressionRequested);
-	connect(ui->lvFiles, &FileListView::sigCopyToLibraryRequested, this, &GUI_DirectoryView::fileCopyToLibraryRequested);
-	connect(ui->lvFiles, &FileListView::sigMoveToLibraryRequested, this, &GUI_DirectoryView::fileMoveToLibraryRequested);
-	connect(ui->lvFiles->selectionModel(), &QItemSelectionModel::selectionChanged, this, &GUI_DirectoryView::fileSelectionChanged);
+	connect(ui->lvFiles,
+	        &FileListView::sigRenameByExpressionRequested,
+	        this,
+	        &GUI_DirectoryView::fileRenameByExpressionRequested);
+	connect(ui->lvFiles,
+	        &FileListView::sigCopyToLibraryRequested,
+	        this,
+	        &GUI_DirectoryView::fileCopyToLibraryRequested);
+	connect(ui->lvFiles,
+	        &FileListView::sigMoveToLibraryRequested,
+	        this,
+	        &GUI_DirectoryView::fileMoveToLibraryRequested);
+	connect(ui->lvFiles->selectionModel(),
+	        &QItemSelectionModel::selectionChanged,
+	        this,
+	        &GUI_DirectoryView::fileSelectionChanged);
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_DirectoryView::splitterMoved);
 	connect(ui->btnCreateDir, &QPushButton::clicked, this, &GUI_DirectoryView::createDirectoryClicked);
@@ -118,7 +152,7 @@ void GUI_DirectoryView::initUi()
 
 void GUI_DirectoryView::load()
 {
-	Library::Info info = m->currentLibrary();
+	const auto info = m->currentLibrary();
 
 	ui->tvDirs->setLibraryInfo(info);
 	ui->tvDirs->setFilterTerm(m->filterTerm);
@@ -133,7 +167,7 @@ void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
 {
 	m->directorySelectionHandler->setLibraryId(libraryId);
 
-	Library::Info info = m->currentLibrary();
+	const auto info = m->currentLibrary();
 
 	if(ui)
 	{
@@ -146,7 +180,8 @@ void GUI_DirectoryView::setFilterTerm(const QString& filter)
 {
 	m->filterTerm = filter;
 
-	if(ui) {
+	if(ui)
+	{
 		ui->tvDirs->setFilterTerm(filter);
 	}
 }
@@ -158,11 +193,12 @@ void GUI_DirectoryView::importRequested(LibraryId id, const QStringList& paths, 
 
 void GUI_DirectoryView::importDialogRequested(const QString& targetDirectory)
 {
-	if(!this->isVisible()){
+	if(!this->isVisible())
+	{
 		return;
 	}
 
-	LocalLibrary* library = m->directorySelectionHandler->libraryInstance();
+	auto* library = m->directorySelectionHandler->libraryInstance();
 	auto* importer = new GUI_ImportDialog(library, true, this);
 	connect(importer, &GUI_ImportDialog::sigClosed, importer, &GUI_ImportDialog::deleteLater);
 
@@ -172,50 +208,54 @@ void GUI_DirectoryView::importDialogRequested(const QString& targetDirectory)
 
 void GUI_DirectoryView::newDirectoryClicked()
 {
-	const QString newDirName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory));
-	if(newDirName.isEmpty()) {
+	const auto newDirName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory));
+	if(newDirName.isEmpty())
+	{
 		return;
 	}
 
-	const Library::Info info = m->currentLibrary();
-	const QString libraryPath = info.path();
-	const QDir libraryDir = QDir(libraryPath);
+	const auto info = m->currentLibrary();
+	const auto libraryPath = info.path();
+	const auto libraryDir = QDir {libraryPath};
 
-	bool success = libraryDir.mkdir(newDirName);
+	const auto success = libraryDir.mkdir(newDirName);
 	if(!success)
 	{
-		QString message = tr("Could not create directory") + "<br>" + libraryDir.absoluteFilePath(newDirName);
+		const auto message = QString("%1<br>%2")
+			.arg(tr("Could not create directory"))
+			.arg(libraryDir.absoluteFilePath(newDirName));
+
 		Message::error(message);
 	}
 }
 
 void GUI_DirectoryView::viewInFileManagerClicked()
 {
-	const Library::Info info = m->currentLibrary();
-	const QUrl url = QUrl::fromLocalFile(info.path());
+	const auto info = m->currentLibrary();
+	const auto url = QUrl::fromLocalFile(info.path());
 
 	QDesktopServices::openUrl(url);
 }
 
 void GUI_DirectoryView::dirEnterPressed()
 {
-	const QModelIndexList indexes = ui->tvDirs->selctedRows();
-	if(!indexes.isEmpty()){
+	const auto indexes = ui->tvDirs->selctedRows();
+	if(!indexes.isEmpty())
+	{
 		ui->tvDirs->expand(indexes.first());
 	}
 }
 
 void GUI_DirectoryView::dirOpened(QModelIndex idx)
 {
-	QString dir = ui->tvDirs->directoryName(idx);
-	if(!idx.isValid()){
-		dir = m->currentLibrary().path();
-	}
+	const auto dir = (idx.isValid())
+	                 ? ui->tvDirs->directoryName(idx)
+	                 : m->currentLibrary().path();
 
-	QStringList dirs = ui->tvDirs->selectedPaths();
-	if(dirs.isEmpty()){
-		dirs << dir;
-	}
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
+	const auto dirs = (!selectedPaths.isEmpty())
+	                  ? selectedPaths
+	                  : QStringList {dir};
 
 	ui->lvFiles->setParentDirectory(m->directorySelectionHandler->libraryId(), dir);
 
@@ -227,10 +267,10 @@ void GUI_DirectoryView::dirPressed(QModelIndex idx)
 {
 	Q_UNUSED(idx)
 
-	const Qt::MouseButtons buttons = QApplication::mouseButtons();
+	const auto buttons = QApplication::mouseButtons();
 	if(buttons & Qt::MiddleButton)
 	{
-		const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+		const auto selectedPaths = ui->tvDirs->selectedPaths();
 		m->directorySelectionHandler->prepareTracksForPlaylist(selectedPaths, true);
 	}
 }
@@ -249,34 +289,34 @@ void GUI_DirectoryView::dirClicked(QModelIndex idx)
 
 void GUI_DirectoryView::dirAppendClicked()
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
 	m->directorySelectionHandler->appendTracks(selectedPaths);
 }
 
 void GUI_DirectoryView::dirPlayClicked()
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
 	m->directorySelectionHandler->prepareTracksForPlaylist(selectedPaths, false);
 }
 
 void GUI_DirectoryView::dirPlayNextClicked()
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
 	m->directorySelectionHandler->playNext(selectedPaths);
 }
 
 void GUI_DirectoryView::dirPlayInNewTabClicked()
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
 	m->directorySelectionHandler->createPlaylist(selectedPaths, true);
 }
 
 void GUI_DirectoryView::dirDeleteClicked()
 {
-	Message::Answer answer = Message::question_yn(Lang::get(Lang::Delete) + ": " + Lang::get(Lang::Really) + "?");
+	const auto answer = Message::question_yn(Lang::get(Lang::Delete) + ": " + Lang::get(Lang::Really) + "?");
 	if(answer == Message::Answer::Yes)
 	{
-		const QStringList selectedPaths = ui->tvDirs->selectedPaths();
+		const auto selectedPaths = ui->tvDirs->selectedPaths();
 		m->directorySelectionHandler->deletePaths(selectedPaths);
 	}
 }
@@ -298,8 +338,11 @@ void GUI_DirectoryView::dirRenameRequested(const QString& oldName, const QString
 
 void GUI_DirectoryView::dirCopyToLibRequested(LibraryId libraryId)
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
-	const QString targetDirectory = copyOrMoveLibraryRequested(selectedPaths, libraryId, this);
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
+	const auto targetDirectory =
+		copyOrMoveLibraryRequested(m->libraryManager->libraryInfo(libraryId),
+		                           selectedPaths,
+		                           this);
 	if(!targetDirectory.isEmpty())
 	{
 		m->directorySelectionHandler->copyPaths(selectedPaths, targetDirectory);
@@ -308,8 +351,11 @@ void GUI_DirectoryView::dirCopyToLibRequested(LibraryId libraryId)
 
 void GUI_DirectoryView::dirMoveToLibRequested(LibraryId libraryId)
 {
-	const QStringList selectedPaths = ui->tvDirs->selectedPaths();
-	const QString targetDirectory = copyOrMoveLibraryRequested(selectedPaths, libraryId, this);
+	const auto selectedPaths = ui->tvDirs->selectedPaths();
+	const auto targetDirectory =
+		copyOrMoveLibraryRequested(m->libraryManager->libraryInfo(libraryId),
+		                           selectedPaths,
+		                           this);
 	if(!targetDirectory.isEmpty())
 	{
 		m->directorySelectionHandler->movePaths(selectedPaths, targetDirectory);
@@ -320,7 +366,7 @@ void GUI_DirectoryView::filePressed(QModelIndex idx)
 {
 	Q_UNUSED(idx)
 
-	Qt::MouseButtons buttons = QApplication::mouseButtons();
+	const auto buttons = QApplication::mouseButtons();
 	if(buttons & Qt::MiddleButton)
 	{
 		m->directorySelectionHandler->prepareTracksForPlaylist(ui->lvFiles->selectedPaths(), true);
@@ -329,9 +375,9 @@ void GUI_DirectoryView::filePressed(QModelIndex idx)
 
 void GUI_DirectoryView::fileSelectionChanged(const QItemSelection& /*selected*/, const QItemSelection& /*deselected*/)
 {
-	QStringList selectedPaths = ui->lvFiles->selectedPaths();
-	auto lastIt = std::remove_if(selectedPaths.begin(), selectedPaths.end(), [](const QString& path){
-		return( !Util::File::isSoundFile(path) && !Util::File::isPlaylistFile(path) );
+	auto selectedPaths = ui->lvFiles->selectedPaths();
+	const auto lastIt = std::remove_if(selectedPaths.begin(), selectedPaths.end(), [](const auto& path) {
+		return (!Util::File::isSoundFile(path) && !Util::File::isPlaylistFile(path));
 	});
 
 	selectedPaths.erase(lastIt, selectedPaths.end());
@@ -343,7 +389,7 @@ void GUI_DirectoryView::fileSelectionChanged(const QItemSelection& /*selected*/,
 
 	else if(!ui->tvDirs->selectedPaths().isEmpty())
 	{
-		m->directorySelectionHandler->libraryInstance()->fetchTracksByPath( ui->tvDirs->selectedPaths() );
+		m->directorySelectionHandler->libraryInstance()->fetchTracksByPath(ui->tvDirs->selectedPaths());
 	}
 
 	else
@@ -360,14 +406,14 @@ void GUI_DirectoryView::fileDoubleClicked(QModelIndex idx)
 
 void GUI_DirectoryView::fileEnterPressed()
 {
-	QStringList paths = ui->lvFiles->selectedPaths();
+	const auto paths = ui->lvFiles->selectedPaths();
 	if(paths.size() == 1 && Util::File::isImageFile(paths[0]))
 	{
 		showImageLabel(paths[0]);
 		return;
 	}
 
-	bool hasSoundfiles = Util::Algorithm::contains(paths, [](auto path){
+	const auto hasSoundfiles = Util::Algorithm::contains(paths, [](auto path) {
 		return (Util::File::isSoundFile(path) || Util::File::isPlaylistFile(path));
 	});
 
@@ -399,8 +445,9 @@ void GUI_DirectoryView::filePlayNewTabClicked()
 
 void GUI_DirectoryView::fileDeleteClicked()
 {
-	Message::Answer answer = Message::question_yn(Lang::get(Lang::Delete) + ": " + Lang::get(Lang::Really) + "?");
-	if(answer == Message::Answer::Yes){
+	const auto answer = Message::question_yn(Lang::get(Lang::Delete) + ": " + Lang::get(Lang::Really) + "?");
+	if(answer == Message::Answer::Yes)
+	{
 		m->directorySelectionHandler->deletePaths(ui->lvFiles->selectedPaths());
 	}
 }
@@ -418,7 +465,10 @@ void GUI_DirectoryView::fileRenameByExpressionRequested(const QString& oldName, 
 
 void GUI_DirectoryView::fileCopyToLibraryRequested(LibraryId libraryId)
 {
-	QString targetDirectory = copyOrMoveLibraryRequested(ui->lvFiles->selectedPaths(), libraryId, this);
+	const auto targetDirectory =
+		copyOrMoveLibraryRequested(m->libraryManager->libraryInfo(libraryId),
+		                           ui->lvFiles->selectedPaths(),
+		                           this);
 	if(!targetDirectory.isEmpty())
 	{
 		m->directorySelectionHandler->copyPaths(ui->lvFiles->selectedPaths(), targetDirectory);
@@ -427,7 +477,9 @@ void GUI_DirectoryView::fileCopyToLibraryRequested(LibraryId libraryId)
 
 void GUI_DirectoryView::fileMoveToLibraryRequested(LibraryId libraryId)
 {
-	QString targetDirectory = copyOrMoveLibraryRequested(ui->lvFiles->selectedPaths(), libraryId, this);
+	const auto targetDirectory = copyOrMoveLibraryRequested(m->libraryManager->libraryInfo(libraryId),
+	                                                        ui->lvFiles->selectedPaths(),
+	                                                        this);
 	if(!targetDirectory.isEmpty())
 	{
 		m->directorySelectionHandler->movePaths(ui->lvFiles->selectedPaths(), targetDirectory);
@@ -455,8 +507,9 @@ void GUI_DirectoryView::splitterMoved(int pos, int index)
 
 void GUI_DirectoryView::createDirectoryClicked()
 {
-	const QString libraryPath = m->directorySelectionHandler->libraryInfo().path();
-	QString text = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), libraryPath);
+	const auto libraryPath = m->directorySelectionHandler->libraryInfo().path();
+	const auto text =
+		Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), libraryPath);
 
 	if(!text.isEmpty())
 	{
@@ -483,53 +536,58 @@ void GUI_DirectoryView::skinChanged()
 	}
 }
 
-QString copyOrMoveLibraryRequested(const QStringList& paths, LibraryId id, QWidget* parent)
-{
-	namespace File = Util::File;
-
-	if(paths.isEmpty()) {
-		return QString();
-	}
-
-	Library::Info info = Library::Manager::instance()->libraryInfo(id);
-
-	const QString targetDirectory = QFileDialog::getExistingDirectory(parent, parent->tr("Choose target directory"), info.path());
-	if(targetDirectory.isEmpty()) {
-		return QString();
-	}
-
-	if(!File::isSubdir(targetDirectory, info.path()) && !File::isSamePath(targetDirectory, info.path()))
-	{
-		Message::error(parent->tr("%1 is not a subdirectory of %2").arg(targetDirectory).arg(info.path()));
-		return QString();
-	}
-
-	return targetDirectory;
-}
-
-void showImageLabel(const QString& filename)
-{
-	QString f = Util::File::getFilenameOfPath(filename);
-	QPixmap pm = QPixmap(filename);
-
-	auto* label = new QLabel(nullptr);
-
-	label->setPixmap(pm);
-	label->setScaledContents(true);
-	label->setAttribute(Qt::WA_DeleteOnClose);
-	label->resize((600 * pm.width()) / pm.height(), 600);
-	label->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
-	label->setWindowTitle(QString("%1: %2x%3")
-		.arg(f)
-		.arg(pm.width())
-		.arg(pm.height())
-	);
-
-	label->show();
-}
-
 void GUI_DirectoryView::showEvent(QShowEvent* event)
 {
 	initUi();
 	Gui::Widget::showEvent(event);
+}
+
+namespace
+{
+	QString copyOrMoveLibraryRequested(const Library::Info& info, const QStringList& paths, QWidget* parent)
+	{
+		namespace File = Util::File;
+
+		if(paths.isEmpty())
+		{
+			return QString();
+		}
+
+		const QString targetDirectory = QFileDialog::getExistingDirectory(parent,
+		                                                                  parent->tr("Choose target directory"),
+		                                                                  info.path());
+		if(targetDirectory.isEmpty())
+		{
+			return QString();
+		}
+
+		if(!File::isSubdir(targetDirectory, info.path()) && !File::isSamePath(targetDirectory, info.path()))
+		{
+			Message::error(parent->tr("%1 is not a subdirectory of %2").arg(targetDirectory).arg(info.path()));
+			return QString();
+		}
+
+		return targetDirectory;
+	}
+
+	void showImageLabel(const QString& filename)
+	{
+		const auto f = Util::File::getFilenameOfPath(filename);
+		const auto pm = QPixmap(filename);
+
+		auto* label = new QLabel(nullptr);
+
+		label->setPixmap(pm);
+		label->setScaledContents(true);
+		label->setAttribute(Qt::WA_DeleteOnClose);
+		label->resize((600 * pm.width()) / pm.height(), 600);
+		label->setToolTip(QString("%1x%2").arg(pm.width()).arg(pm.height()));
+		label->setWindowTitle(QString("%1: %2x%3")
+			                      .arg(f)
+			                      .arg(pm.width())
+			                      .arg(pm.height())
+		);
+
+		label->show();
+	}
 }

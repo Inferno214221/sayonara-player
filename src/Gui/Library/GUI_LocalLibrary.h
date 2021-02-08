@@ -37,6 +37,8 @@ UI_FWD(GUI_LocalLibrary)
 
 namespace Library
 {
+	class Manager;
+
 	enum class ViewType : quint8;
 	/**
 	 * @brief The GUI_LocalLibrary class
@@ -50,7 +52,7 @@ namespace Library
 		PIMPL(GUI_LocalLibrary)
 
 		public:
-			explicit GUI_LocalLibrary(LibraryId id, QWidget* parent = nullptr);
+			explicit GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManager, QWidget* parent = nullptr);
 			~GUI_LocalLibrary() override;
 
 			QMenu* menu() const;

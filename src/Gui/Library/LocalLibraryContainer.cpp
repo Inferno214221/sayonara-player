@@ -29,21 +29,22 @@ using namespace Library;
 
 struct LocalLibraryContainer::Private
 {
+	Library::Manager* libraryManager;
 	GUI_LocalLibrary* ui = nullptr;
 	Info library;
 	QString name;
 
-	Private(const Info& library) :
-		library(library)
-	{
-		name = library.name();
-	}
+	Private(Library::Manager* libraryManager, const Info& library) :
+		libraryManager(libraryManager),
+		library(library),
+		name(library.name())
+	{}
 };
 
-LocalLibraryContainer::LocalLibraryContainer(const Library::Info& library, QObject* parent) :
+LocalLibraryContainer::LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library, QObject* parent) :
 	Container(parent)
 {
-	m = Pimpl::make<Private>(library);
+	m = Pimpl::make<Private>(libraryManager, library);
 }
 
 LocalLibraryContainer::~LocalLibraryContainer() = default;
@@ -78,12 +79,10 @@ QMenu* LocalLibraryContainer::menu()
 
 void LocalLibraryContainer::initUi()
 {
-	if(m->ui)
+	if(!m->ui)
 	{
-		return;
+		m->ui = new GUI_LocalLibrary(m->library.id(), m->libraryManager);
 	}
-
-	m->ui = new GUI_LocalLibrary(m->library.id());
 }
 
 bool LocalLibraryContainer::isLocal() const

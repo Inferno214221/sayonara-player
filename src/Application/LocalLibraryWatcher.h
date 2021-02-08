@@ -30,6 +30,8 @@
 namespace Library
 {
 	class AbstractContainer;
+	class Manager;
+
 	class LocalLibraryWatcher :
 		public QObject
 	{
@@ -37,7 +39,7 @@ namespace Library
 		PIMPL(LocalLibraryWatcher)
 
 		public:
-			explicit LocalLibraryWatcher(QObject* parent = nullptr);
+			explicit LocalLibraryWatcher(Library::Manager* libraryManager, QObject* parent = nullptr);
 			~LocalLibraryWatcher();
 
 			QList<AbstractContainer*> getLocalLibraryContainers() const;

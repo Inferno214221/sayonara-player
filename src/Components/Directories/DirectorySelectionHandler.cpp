@@ -22,18 +22,18 @@ struct DirectorySelectionHandler::Private
 	QList<Library::Info> libraries;
 	int currentLibraryIndex;
 
-	Private() :
+	Private(Library::Manager* libraryManager) :
 		genericLibrary {nullptr},
-		libraryManager {Library::Manager::instance()},
+		libraryManager {libraryManager},
 		libraries {libraryManager->allLibraries()},
 		currentLibraryIndex {(libraries.count() > 0) ? 0 : -1}
 	{}
 };
 
-DirectorySelectionHandler::DirectorySelectionHandler(QObject* parent) :
+DirectorySelectionHandler::DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(libraryManager);
 
 	connect(m->libraryManager, &Library::Manager::sigAdded, this, [&](auto ignore) {
 		Q_UNUSED(ignore)
