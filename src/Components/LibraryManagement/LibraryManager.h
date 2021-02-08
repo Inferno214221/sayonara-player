@@ -27,6 +27,10 @@
 #include <QObject>
 
 class LocalLibrary;
+namespace Playlist
+{
+	class Handler;
+}
 
 namespace Library
 {
@@ -51,6 +55,8 @@ namespace Library
 		void reset();
 
 	public:
+		void init(Playlist::Handler* playlistHandler);
+
 		LibraryId addLibrary(const QString& name, const QString& path);
 		bool renameLibrary(LibraryId id, const QString& newName);
 		bool removeLibrary(LibraryId id);

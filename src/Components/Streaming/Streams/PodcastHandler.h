@@ -28,7 +28,7 @@ class PodcastHandler :
 {
 	Q_OBJECT
 public:
-	explicit PodcastHandler(QObject* parent=nullptr);
+	explicit PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
 	~PodcastHandler() override;
 
 	bool getAllStreams(QList<StationPtr>& stations) override;

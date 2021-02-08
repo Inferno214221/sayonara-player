@@ -26,6 +26,8 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Streams/Station.h"
 
+class PlaylistCreator;
+
 class QComboBox;
 class QPushButton;
 class QLineEdit;
@@ -62,7 +64,7 @@ namespace Gui
 		PIMPL(AbstractStationPlugin)
 
 		public:
-			explicit AbstractStationPlugin(QWidget* parent=nullptr);
+			explicit AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent=nullptr);
 			virtual ~AbstractStationPlugin() override;
 
 		protected:

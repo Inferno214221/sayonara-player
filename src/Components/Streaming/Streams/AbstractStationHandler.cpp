@@ -20,7 +20,7 @@
 
 #include "AbstractStationHandler.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Components/Playlist/Playlist.h"
 
 #include "Utils/Parser/StreamParser.h"
@@ -30,14 +30,19 @@
 
 struct AbstractStationHandler::Private
 {
+	PlaylistCreator* playlistCreator;
 	StreamParser* streamParser = nullptr;
 	StationPtr parsedStation;
+
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator)
+	{}
 };
 
-AbstractStationHandler::AbstractStationHandler(QObject* parent) :
+AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<AbstractStationHandler::Private>();
+	m = Pimpl::make<Private>(playlistCreator);
 }
 
 AbstractStationHandler::~AbstractStationHandler() = default;
@@ -51,9 +56,8 @@ void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tr
 		playlistName = station->name();
 	}
 
-	auto* plh = Playlist::HandlerProvider::instance()->handler();
-	const auto index = plh->createPlaylist(tracks, playlistName);
-	auto playlist = plh->playlist(index);
+	const auto index = m->playlistCreator->createPlaylist(tracks, playlistName);
+	auto playlist = m->playlistCreator->playlist(index);
 
 	playlist->changeTrack(0);
 }

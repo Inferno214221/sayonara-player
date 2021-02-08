@@ -22,6 +22,7 @@
 #include "GUI_ConfigureStation.h"
 
 #include "Components/Streaming/Streams/AbstractStationHandler.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
@@ -40,23 +41,25 @@
 
 struct Gui::AbstractStationPlugin::Private
 {
-	QStringList				temporaryStations;
-	ProgressBar*			loadingBar=nullptr;
-	QComboBox*				comboStream=nullptr;
-	QPushButton*			btnPlay=nullptr;
-	MenuToolButton*			btnTool=nullptr;
-	AbstractStationHandler*	streamHandler=nullptr;
-	GUI_ConfigureStation*	configDialog=nullptr;
+	QStringList temporaryStations;
+	ProgressBar* loadingBar = nullptr;
+	QComboBox* comboStream = nullptr;
+	QPushButton* btnPlay = nullptr;
+	MenuToolButton* btnTool = nullptr;
+	AbstractStationHandler* streamHandler = nullptr;
+	PlaylistCreator* playlistCreator;
+	GUI_ConfigureStation* configDialog = nullptr;
 
-	bool					searching;
+	bool searching;
 
-	Private() :
-		searching(false)
-	{}
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator),
+		searching(false) {}
 
 	~Private()
 	{
-		if(configDialog) {
+		if(configDialog)
+		{
 			configDialog->deleteLater();
 		}
 	}
@@ -74,7 +77,7 @@ struct Gui::AbstractStationPlugin::Private
 	void setSearching(bool b)
 	{
 		const QString text =
-			(b == true) ? Lang::get(Lang::Stop)	: Lang::get(Lang::Listen);
+			(b == true) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
 		btnPlay->setText(text);
 		btnPlay->setDisabled(false);
@@ -83,10 +86,10 @@ struct Gui::AbstractStationPlugin::Private
 	}
 };
 
-Gui::AbstractStationPlugin::AbstractStationPlugin(QWidget* parent) :
+Gui::AbstractStationPlugin::AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistCreator);
 }
 
 Gui::AbstractStationPlugin::~AbstractStationPlugin() = default;
@@ -123,7 +126,7 @@ void Gui::AbstractStationPlugin::initUi()
 
 	m->streamHandler = streamHandler();
 	connect(m->streamHandler, &AbstractStationHandler::sigUrlCountExceeded,
-			this, &AbstractStationPlugin::urlCountExceeded);
+	        this, &AbstractStationPlugin::urlCountExceeded);
 
 	m->loadingBar = new ProgressBar(this);
 
@@ -150,11 +153,9 @@ void Gui::AbstractStationPlugin::setupStations()
 		m->comboStream->addItem(station->name(), station->url());
 	}
 
-	int idx = Util::Algorithm::indexOf(stations, [lastName, lastUrl](StationPtr station)
-	{
-		return(lastName == station->name() || lastUrl == station->url());
+	int idx = Util::Algorithm::indexOf(stations, [lastName, lastUrl](StationPtr station) {
+		return (lastName == station->name() || lastUrl == station->url());
 	});
-
 
 	if(m->comboStream->count() > 0)
 	{
@@ -210,7 +211,8 @@ void Gui::AbstractStationPlugin::listenClicked()
 		play(station_name);
 	}
 
-	else {
+	else
+	{
 		spLog(Log::Warning, this) << "Url is empty";
 	}
 }
@@ -218,7 +220,8 @@ void Gui::AbstractStationPlugin::listenClicked()
 void Gui::AbstractStationPlugin::play(const QString& station_name)
 {
 	StationPtr station = m->streamHandler->station(station_name);
-	if(!station) {
+	if(!station)
+	{
 		return;
 	}
 
@@ -240,13 +243,14 @@ void Gui::AbstractStationPlugin::error()
 	m->setSearching(false);
 
 	Message::Answer answer = Message::question_yn
-	(
-		tr("Cannot open stream") + "\n" +
-		m->currentUrl() + "\n\n" +
-		Lang::get(Lang::Retry).question()
-	);
+		(
+			tr("Cannot open stream") + "\n" +
+			m->currentUrl() + "\n\n" +
+			Lang::get(Lang::Retry).question()
+		);
 
-	if(answer == Message::Answer::Yes) {
+	if(answer == Message::Answer::Yes)
+	{
 		listenClicked();
 	}
 
@@ -301,7 +305,8 @@ void Gui::AbstractStationPlugin::editClicked()
 void Gui::AbstractStationPlugin::configFinished()
 {
 	auto* cs = static_cast<GUI_ConfigureStation*>(sender());
-	if(!cs->isAccepted()) {
+	if(!cs->isAccepted())
+	{
 		return;
 	}
 
@@ -331,7 +336,8 @@ void Gui::AbstractStationPlugin::configFinished()
 		if(m->temporaryStations.contains(m->currentName()))
 		{
 			success = m->streamHandler->addNewStream(station);
-			if(success) {
+			if(success)
+			{
 				m->temporaryStations.removeAll(m->currentName());
 			}
 		}
@@ -363,7 +369,7 @@ void Gui::AbstractStationPlugin::deleteClicked()
 void Gui::AbstractStationPlugin::urlCountExceeded(int n_urls, int n_max_urls)
 {
 	Message::error(QString("Found %1 urls").arg(n_urls) + "<br />" +
-				   QString("Maximum number is %1").arg(n_max_urls)
+	               QString("Maximum number is %1").arg(n_max_urls)
 	);
 
 	m->setSearching(false);
@@ -384,14 +390,15 @@ void Gui::AbstractStationPlugin::assignUiVariables()
 void Gui::AbstractStationPlugin::retranslate()
 {
 	const QString text = (m->searching) ?
-		Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
+	                     Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
 	m->btnPlay->setText(text);
 }
 
 void Gui::AbstractStationPlugin::skinChanged()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
@@ -399,13 +406,15 @@ void Gui::AbstractStationPlugin::skinChanged()
 	btnPlay()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
 }
 
-
 Gui::StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) :
-	PreferenceAction(QString(Lang::get(Lang::Streams) + " && " +Lang::get(Lang::Podcasts)), identifier(), parent) {}
+	PreferenceAction(QString(Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts)), identifier(), parent) {}
 
 Gui::StreamPreferenceAction::~StreamPreferenceAction() = default;
 
 QString Gui::StreamPreferenceAction::identifier() const { return "streams"; }
 
-QString Gui::StreamPreferenceAction::displayName() const { return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts); }
+QString Gui::StreamPreferenceAction::displayName() const
+{
+	return Lang::get(Lang::Streams) + " && " + Lang::get(Lang::Podcasts);
+}
 

@@ -177,10 +177,9 @@ struct Application::Private
 		Shutdown::instance()->registerPlaymanager(playManager);
 
 		sessionManager = new Session::Manager(playManager);
-		auto* playlistHandlerProvider = Playlist::HandlerProvider::instance();
+
 		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
 		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
-		playlistHandlerProvider->init(playlistHandler);
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
@@ -416,7 +415,7 @@ void Application::initLibraries()
 
 	QList<Library::AbstractContainer*> libraryContainers = localLibraryWatcher->getLocalLibraryContainers();
 
-	auto* soundcloudContainer = new SC::LibraryContainer(this);
+	auto* soundcloudContainer = new SC::LibraryContainer(m->playlistHandler, this);
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
 	auto* historyContainer = new HistoryContainer(m->sessionManager, this);
 
@@ -436,8 +435,8 @@ void Application::initPlugins()
 	pph->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
 	pph->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
 	pph->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
-	pph->addPlugin(new GUI_Stream());
-	pph->addPlugin(new GUI_Podcasts());
+	pph->addPlugin(new GUI_Stream(m->playlistHandler));
+	pph->addPlugin(new GUI_Podcasts(m->playlistHandler));
 	pph->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
 	pph->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
 	pph->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));

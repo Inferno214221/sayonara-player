@@ -86,8 +86,8 @@ struct AbstractLibrary::Private
 	Library::Filter filter;
 	bool loaded;
 
-	Private() :
-		playlistHandler{::Playlist::HandlerProvider::instance()->handler()},
+	Private(Playlist::Handler* playlistHandler) :
+		playlistHandler{playlistHandler},
 		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
@@ -97,10 +97,10 @@ struct AbstractLibrary::Private
 	}
 };
 
-AbstractLibrary::AbstractLibrary(QObject* parent) :
+AbstractLibrary::AbstractLibrary(Playlist::Handler* playlistHandler, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistHandler);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged,

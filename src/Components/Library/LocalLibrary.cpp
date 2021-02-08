@@ -56,18 +56,17 @@ struct LocalLibrary::Private
 	{}
 };
 
-LocalLibrary::LocalLibrary(LibraryId libraryId, QObject* parent) :
-	AbstractLibrary(parent)
+LocalLibrary::LocalLibrary(LibraryId libraryId, Playlist::Handler* playlistHandler,  QObject* parent) :
+	AbstractLibrary(playlistHandler, parent)
 {
 	m = Pimpl::make<Private>(libraryId);
 
 	applyDatabaseFixes();
 
-	auto* plh = Playlist::HandlerProvider::instance()->handler();
-	connect(plh, &Playlist::Handler::sigTrackDeletionRequested,
+	connect(playlistHandler, &Playlist::Handler::sigTrackDeletionRequested,
 			this, &LocalLibrary::deleteTracks);
 
-	connect(plh, &Playlist::Handler::sigFindTrackRequested,
+	connect(playlistHandler, &Playlist::Handler::sigFindTrackRequested,
 			this, &LocalLibrary::findTrack);
 
 	auto* manager = Library::Manager::instance();

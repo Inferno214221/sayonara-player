@@ -3,13 +3,15 @@
 
 #include "GUI_ConfigureStation.h"
 
+class PlaylistCreator;
+
 class ConfigureStreamDialog :
 	public GUI_ConfigureStation
 {
 	PIMPL(ConfigureStreamDialog)
 
 public:
-	ConfigureStreamDialog(QWidget* parent);
+	ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent);
 	~ConfigureStreamDialog() override;
 
 	StationPtr			configuredStation() override;

@@ -7,14 +7,19 @@
 
 struct ConfigureStreamDialog::Private
 {
+	PlaylistCreator* playlistCreator;
 	QLineEdit* name=nullptr;
 	QLineEdit* url=nullptr;
+
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator)
+	{}
 };
 
-ConfigureStreamDialog::ConfigureStreamDialog(QWidget* parent) :
+ConfigureStreamDialog::ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent) :
 	GUI_ConfigureStation(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistCreator);
 
 	m->name = new QLineEdit();
 	m->url = new QLineEdit();
@@ -24,7 +29,7 @@ ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
 StationPtr ConfigureStreamDialog::configuredStation()
 {
-	StreamHandler handler;
+	StreamHandler handler(m->playlistCreator);
 	return handler.createStreamInstance(m->name->text(), m->url->text());
 }
 

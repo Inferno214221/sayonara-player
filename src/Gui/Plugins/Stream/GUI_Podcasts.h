@@ -29,10 +29,11 @@ class GUI_Podcasts :
 		public Gui::AbstractStationPlugin
 {
 	Q_OBJECT
+	PIMPL(GUI_Podcasts)
 	UI_CLASS(GUI_Podcasts)
 
 	public:
-		explicit GUI_Podcasts(QWidget* parent=nullptr);
+		explicit GUI_Podcasts(PlaylistCreator* playlistCreator, QWidget* parent=nullptr);
 		virtual ~GUI_Podcasts() override;
 
 		QString name() const override;

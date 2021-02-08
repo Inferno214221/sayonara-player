@@ -25,8 +25,8 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Streams/Stream.h"
 
-StreamHandler::StreamHandler(QObject* parent) :
-	AbstractStationHandler(parent) {}
+StreamHandler::StreamHandler(PlaylistCreator* playlistCreator, QObject* parent) :
+	AbstractStationHandler(playlistCreator, parent) {}
 
 StreamHandler::~StreamHandler() = default;
 

@@ -26,9 +26,20 @@
 
 #include "Utils/Language/Language.h"
 
-GUI_Podcasts::GUI_Podcasts(QWidget* parent) :
-	Gui::AbstractStationPlugin(parent)
-{}
+struct GUI_Podcasts::Private
+{
+	PlaylistCreator* playlistCreator;
+
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator)
+	{}
+};
+
+GUI_Podcasts::GUI_Podcasts(PlaylistCreator* playlistCreator, QWidget* parent) :
+	Gui::AbstractStationPlugin(playlistCreator, parent)
+{
+	m = Pimpl::make<Private>(playlistCreator);
+}
 
 GUI_Podcasts::~GUI_Podcasts()
 {
@@ -82,7 +93,7 @@ Gui::MenuToolButton* GUI_Podcasts::btnMenu()
 
 AbstractStationHandler* GUI_Podcasts::streamHandler() const
 {
-	return new PodcastHandler();
+	return new PodcastHandler(m->playlistCreator);
 }
 
 GUI_ConfigureStation* GUI_Podcasts::createConfigDialog()

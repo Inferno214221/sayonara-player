@@ -32,21 +32,26 @@
 
 struct GUI_Stream::Private
 {
-	GUI_StationSearcher*	searcher = nullptr;
-	QAction*				actionSearchRadioStation=nullptr;
+	PlaylistCreator* playlistCreator;
+	GUI_StationSearcher* searcher = nullptr;
+	QAction* actionSearchRadioStation = nullptr;
+
+	Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator) {}
 };
 
-GUI_Stream::GUI_Stream(QWidget* parent) :
-	Gui::AbstractStationPlugin(parent)
+GUI_Stream::GUI_Stream(PlaylistCreator* playlistCreator, QWidget* parent) :
+	Gui::AbstractStationPlugin(playlistCreator, parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistCreator);
 }
 
 GUI_Stream::~GUI_Stream()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -112,7 +117,7 @@ Gui::MenuToolButton* GUI_Stream::btnMenu()
 
 AbstractStationHandler* GUI_Stream::streamHandler() const
 {
-	return new StreamHandler();
+	return new StreamHandler(m->playlistCreator);
 }
 
 void GUI_Stream::skinChanged()
@@ -151,8 +156,7 @@ void GUI_Stream::streamSelected(const QString& name, const QString& url, bool sa
 	}
 }
 
-
 GUI_ConfigureStation* GUI_Stream::createConfigDialog()
 {
-	return new ConfigureStreamDialog(this);
+	return new ConfigureStreamDialog(m->playlistCreator, this);
 }

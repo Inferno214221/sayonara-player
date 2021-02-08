@@ -27,6 +27,8 @@
 #include <QtGlobal>
 #include "Gui/Library/LibraryContainer.h"
 
+namespace Playlist { class Handler; }
+
 namespace SC
 {
 	class GUI_Library;
@@ -35,13 +37,14 @@ namespace SC
 		public ::Library::Container
 	{
 		Q_OBJECT
+		PIMPL(LibraryContainer)
 
 	private:
 		SC::GUI_Library*	ui=nullptr;
 
 	public:
 
-		explicit LibraryContainer(QObject* parent=nullptr);
+		explicit LibraryContainer(Playlist::Handler* playlistHandler, QObject* parent=nullptr);
 		~LibraryContainer() override;
 
 		// override from LibraryViewInterface

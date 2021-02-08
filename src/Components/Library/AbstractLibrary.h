@@ -21,7 +21,6 @@
 #ifndef ABSTRACTLIBRARY_H
 #define ABSTRACTLIBRARY_H
 
-
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sorting.h"
@@ -38,162 +37,163 @@ namespace Gui
 	class ExtensionSet;
 }
 
+namespace Playlist
+{
+	class Handler;
+}
+
 class AbstractLibrary :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(AbstractLibrary)
 
-public:
-	explicit AbstractLibrary(QObject* parent=nullptr);
-	virtual ~AbstractLibrary();
+	public:
+		explicit AbstractLibrary(Playlist::Handler* playlistHandler, QObject* parent = nullptr);
+		virtual ~AbstractLibrary();
 
-	Library::Sortings   sortorder() const;
-	Library::Filter		filter() const;
-	// calls fetch_by_filter and emits
-	void changeFilter(Library::Filter, bool force=false);
+		Library::Sortings sortorder() const;
+		Library::Filter filter() const;
+		// calls fetch_by_filter and emits
+		void changeFilter(Library::Filter, bool force = false);
 
+		const MetaDataList& tracks() const;
+		const AlbumList& albums() const;
+		const ArtistList& artists() const;
+		/**
+		 * @brief current selected tracks
+		 * @return if no track is selected, return all tracks
+		 */
+		const MetaDataList& currentTracks() const;
 
-	const MetaDataList&			tracks() const;
-	const AlbumList&			albums() const;
-	const ArtistList&			artists() const;
-	/**
-	 * @brief current selected tracks
-	 * @return if no track is selected, return all tracks
-	 */
-	const MetaDataList&			currentTracks() const;
+		const Util::Set<TrackID>& selectedTracks() const;
+		const Util::Set<AlbumId>& selectedAlbums() const;
+		const Util::Set<ArtistId>& selectedArtists() const;
 
-	const Util::Set<TrackID>&		selectedTracks() const;
-	const Util::Set<AlbumId>&		selectedAlbums() const;
-	const Util::Set<ArtistId>&		selectedArtists() const;
+		// emits new tracks, very similar to psl_selected_albums_changed
+		void changeCurrentDisc(Disc disc);
 
-	// emits new tracks, very similar to psl_selected_albums_changed
-	void changeCurrentDisc(Disc disc);
+		bool isLoaded() const;
 
-	bool isLoaded() const;
+		void setExtensions(const Gui::ExtensionSet& extensions);
+		Gui::ExtensionSet extensions() const;
 
-	void setExtensions(const Gui::ExtensionSet& extensions);
-	Gui::ExtensionSet extensions() const;
+		virtual bool isReloading() const;
+		virtual bool isEmpty() const;
 
-	virtual bool isReloading() const;
-	virtual bool isEmpty() const;
+	signals:
+		void sigTrackMimedataAvailable();
+		void sigAllTracksLoaded();
+		void sigAllAlbumsLoaded();
+		void sigAllArtistsLoaded();
 
-signals:
-	void sigTrackMimedataAvailable();
-	void sigAllTracksLoaded();
-	void sigAllAlbumsLoaded();
-	void sigAllArtistsLoaded();
+		void sigReloadingLibrary(const QString& message, int progress);
+		void sigReloadingLibraryFinished();
 
-	void sigReloadingLibrary(const QString& message, int progress);
-	void sigReloadingLibraryFinished();
+		void sigDeleteAnswer(QString);
+		void sigImportDialogRequested();
 
-	void sigDeleteAnswer(QString);
-	void sigImportDialogRequested();
+		void sigCurrentAlbumChanged(int row);
+		void sigCurrentTrackChanged(int row);
 
-	void sigCurrentAlbumChanged(int row);
-	void sigCurrentTrackChanged(int row);
+	public slots:
 
+		virtual void load();
 
-public slots:
+		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;
 
-	virtual void load();
+		/**
+		 * @brief Clears all filters and searchstrings and fetches everything again
+		 */
+		virtual void refetch();
 
-	virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality)=0;
+		/**
+		 * @brief refetches everything from database as it is, keeping selected elements,
+		 * the user won't recognize anything at all
+		 */
+		virtual void refreshCurrentView();
+		void metadataChanged();
+		void albumsChanged();
 
-	/**
-	 * @brief Clears all filters and searchstrings and fetches everything again
-	 */
-	virtual void refetch();
+		virtual void findTrack(TrackID id);
 
+		/* selection changed */
+		virtual void selectedArtistsChanged(const IndexSet& indexes);
+		virtual void selectedAlbumsChanged(const IndexSet& indexes, bool ignore_artists = false);
+		virtual void selectedTracksChanged(const IndexSet& indexes);
 
-	/**
-	 * @brief refetches everything from database as it is, keeping selected elements,
-	 * the user won't recognize anything at all
-	 */
-	virtual void refreshCurrentView();
-	void metadataChanged();
-	void albumsChanged();
+		// Those two functions are identical (1) calls (2)
+		virtual void prepareCurrentTracksForPlaylist(bool new_playlist);
+		virtual void prepareFetchedTracksForPlaylist(bool new_playlist);
+		void prepareTracksForPlaylist(const QStringList& file_paths, bool new_playlist);
 
-	virtual void findTrack(TrackID id);
+		/* append tracks after current played track in playlist */
+		virtual void playNextFetchedTracks();
+		virtual void playNextCurrentTracks();
 
-	/* selection changed */
-	virtual void selectedArtistsChanged(const IndexSet& indexes);
-	virtual void selectedAlbumsChanged(const IndexSet& indexes, bool ignore_artists=false);
-	virtual void selectedTracksChanged(const IndexSet& indexes);
+		/* append tracks after last track in playlist */
+		virtual void appendFetchedTracks();
+		virtual void appendCurrentTracks();
 
-	// Those two functions are identical (1) calls (2)
-	virtual void prepareCurrentTracksForPlaylist(bool new_playlist);
-	virtual void prepareFetchedTracksForPlaylist(bool new_playlist);
-	void prepareTracksForPlaylist(const QStringList& file_paths, bool new_playlist);
+		/* a searchfilter has been entered, nothing is emitted */
+		virtual void fetchByFilter(Library::Filter filter, bool force);
+		virtual void fetchTracksByPath(const QStringList& paths);
 
-	/* append tracks after current played track in playlist */
-	virtual void playNextFetchedTracks();
-	virtual void playNextCurrentTracks();
+		virtual void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode mode) = 0;
+		virtual void deleteTracksByIndex(const IndexSet& indexes, Library::TrackDeletionMode mode);
 
-	/* append tracks after last track in playlist */
-	virtual void appendFetchedTracks();
-	virtual void appendCurrentTracks();
+		virtual void deleteFetchedTracks(Library::TrackDeletionMode mode);
+		virtual void deleteCurrentTracks(Library::TrackDeletionMode mode);
+		virtual void deleteAllTracks();
 
-	/* a searchfilter has been entered, nothing is emitted */
-	virtual void fetchByFilter(Library::Filter filter, bool force);
-	virtual void fetchTracksByPath(const QStringList& paths);
+		//virtual void insert_tracks(const MetaDataList& v_md);
+		virtual void importFiles(const QStringList& files);
 
-	virtual void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode mode)=0;
-	virtual void deleteTracksByIndex(const IndexSet& indexes, Library::TrackDeletionMode mode);
+		virtual void changeTrackSortorder(Library::SortOrder s);
+		virtual void changeAlbumSortorder(Library::SortOrder s);
+		virtual void changeArtistSortorder(Library::SortOrder s);
 
-	virtual void deleteFetchedTracks(Library::TrackDeletionMode mode);
-	virtual void deleteCurrentTracks(Library::TrackDeletionMode mode);
-	virtual void deleteAllTracks();
+		/* Check for current selected artist if out of date and
+		 * fetch new data */
+		virtual void refreshArtists() = 0;
+		virtual void refreshAlbums() = 0;
+		virtual void refreshTracks() = 0;
 
-	//virtual void insert_tracks(const MetaDataList& v_md);
-	virtual void importFiles(const QStringList& files);
+	protected:
+		/* Emit 3 signals with shown artists, shown album, shown tracks */
+		virtual void emitAll();
 
-	virtual void changeTrackSortorder(Library::SortOrder s);
-	virtual void changeAlbumSortorder(Library::SortOrder s);
-	virtual void changeArtistSortorder(Library::SortOrder s);
+		virtual void getAllArtists(ArtistList& artists) const = 0;
+		virtual void getAllArtistsBySearchstring(Library::Filter filter, ArtistList& artists) const = 0;
 
-	/* Check for current selected artist if out of date and
-	 * fetch new data */
-	virtual void refreshArtists()=0;
-	virtual void refreshAlbums()=0;
-	virtual void refreshTracks()=0;
+		virtual void getAllAlbums(AlbumList& albums) const = 0;
+		virtual void getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const = 0;
+		virtual void getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const = 0;
 
-protected:
-	/* Emit 3 signals with shown artists, shown album, shown tracks */
-	virtual void 		emitAll();
+		virtual int getTrackCount() const = 0;
+		virtual void getAllTracks(MetaDataList& v_md) const = 0;
+		virtual void getAllTracks(const QStringList& paths, MetaDataList& v_md) const = 0;
+		virtual void getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const = 0;
+		virtual void getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const = 0;
+		virtual void getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const = 0;
+		virtual void getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const = 0;
 
-	virtual void		getAllArtists(ArtistList& artists) const=0;
-	virtual void		getAllArtistsBySearchstring(Library::Filter filter, ArtistList& artists) const=0;
+		virtual void getTrackById(TrackID trackId, MetaData& md) const = 0;
+		virtual void getAlbumById(AlbumId albumId, Album& album) const = 0;
+		virtual void getArtistById(ArtistId artistId, Artist& artist) const = 0;
 
-	virtual void		getAllAlbums(AlbumList& albums) const=0;
-	virtual void		getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const=0;
-	virtual void		getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const=0;
+		void prepareTracks();
+		void prepareAlbums();
+		void prepareArtists();
 
-	virtual	int			getTrackCount() const=0;
-	virtual void		getAllTracks(MetaDataList& v_md) const=0;
-	virtual void		getAllTracks(const QStringList& paths, MetaDataList& v_md) const=0;
-	virtual void		getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const=0;
-	virtual	void		getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const=0;
-	virtual void		getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const=0;
-	virtual void		getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const=0;
+		void ignoreArtistArticleChanged();
 
-	virtual void		getTrackById(TrackID trackId, MetaData& md) const=0;
-	virtual void		getAlbumById(AlbumId albumId, Album& album) const=0;
-	virtual void		getArtistById(ArtistId artistId, Artist& artist) const=0;
+	private:
+		void tagEditCommit();
 
-	void				prepareTracks();
-	void				prepareAlbums();
-	void				prepareArtists();
-
-	void				ignoreArtistArticleChanged();
-
-
-private:
-	void tagEditCommit();
-
-	void changeTrackSelection(const IndexSet& indexes);
-	void changeArtistSelection(const IndexSet& indexes);
-	void changeAlbumSelection(const IndexSet& indexes, bool ignore_artists=false);
+		void changeTrackSelection(const IndexSet& indexes);
+		void changeArtistSelection(const IndexSet& indexes);
+		void changeAlbumSelection(const IndexSet& indexes, bool ignore_artists = false);
 };
 
 #endif // ABSTRACTLIBRARY_H

@@ -27,7 +27,7 @@ class StreamHandler :
 	public AbstractStationHandler
 {
 public:
-	explicit StreamHandler(QObject* parent=nullptr);
+	explicit StreamHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
 	~StreamHandler() override;
 
 	bool getAllStreams(QList<StationPtr>& stations) override;

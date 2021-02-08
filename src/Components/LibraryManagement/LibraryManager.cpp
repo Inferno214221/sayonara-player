@@ -50,6 +50,7 @@ struct Manager::Private
 {
 	public:
 		QMap<LibraryId, LocalLibrary*> libraryMap;
+		Playlist::Handler* playlistHandler;
 		QList<Info> libraries;
 		DB::Connector* database;
 		DB::Library* libraryConnector;
@@ -124,6 +125,11 @@ Manager::Manager() :
 }
 
 Manager::~Manager() = default;
+
+void Manager::init(Playlist::Handler* playlistHandler)
+{
+	m->playlistHandler = playlistHandler;
+}
 
 void Manager::reset()
 {
@@ -380,7 +386,7 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 
 	if(localLibrary == nullptr)
 	{
-		localLibrary = new LocalLibrary(id);
+		localLibrary = new LocalLibrary(id, m->playlistHandler);
 		m->libraryMap[id] = localLibrary;
 	}
 

@@ -27,6 +27,8 @@
 #include <QObject>
 #include <QList>
 
+class PlaylistCreator;
+
 /**
  * @brief Used to interprete website data as streams. Some methods have to be overridden,
  * to map their functions to their specific database functions.
@@ -41,7 +43,7 @@ class AbstractStationHandler :
 	PIMPL(AbstractStationHandler)
 
 	public:
-		explicit AbstractStationHandler(QObject* parent=nullptr);
+		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
 		virtual ~AbstractStationHandler();
 
 	signals:

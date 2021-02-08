@@ -30,10 +30,10 @@
 #define PLAYLISTHANDLER_H_
 
 #include "PlaylistDBInterface.h"
+
 #include "Interfaces/PlaylistInterface.h"
 
 #include "Utils/Pimpl.h"
-#include "Utils/Singleton.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Library/LibraryNamespaces.h"
 
@@ -185,16 +185,6 @@ namespace Playlist
 
 			void sigPlaylistClosed(int playlistIndex);
 			void sigFindTrackRequested(TrackID trackId);
-	};
-
-	class HandlerProvider
-	{
-		PIMPL(HandlerProvider)
-		SINGLETON(HandlerProvider)
-
-		public:
-			void init(Handler* handler);
-			Handler* handler();
 	};
 }
 

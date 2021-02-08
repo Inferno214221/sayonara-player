@@ -458,24 +458,3 @@ void Handler::applyPlaylistActionAfterDoubleClick()
 		}
 	}
 }
-
-struct Playlist::HandlerProvider::Private
-{
-	Handler* handler=nullptr;
-};
-
-Playlist::HandlerProvider::HandlerProvider() :
-	m{Pimpl::make<Private>()}
-{}
-
-Playlist::HandlerProvider::~HandlerProvider() = default;
-
-void Playlist::HandlerProvider::init(Handler* handler)
-{
-	m->handler = handler;
-}
-
-Handler* Playlist::HandlerProvider::handler()
-{
-	return m->handler;
-}
