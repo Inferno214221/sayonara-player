@@ -34,7 +34,6 @@
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
@@ -49,24 +48,23 @@
 #include <QDesktopServices>
 
 #include <algorithm>
-#include <utility> // std::pair
 
 using Directory::TreeView;
 
 struct TreeView::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor=nullptr;
-	Directory::ContextMenu* contextMenu=nullptr;
+	LibraryInfoAccessor* libraryInfoAccessor;
 	Directory::Model* model;
-	Gui::ProgressBar* progressBar=nullptr;
+	Directory::ContextMenu* contextMenu = nullptr;
+	Gui::ProgressBar* progressBar = nullptr;
 
-	QTimer*	dragTimer;
-	QModelIndex	dragTargetIndex;
+	QTimer* dragTimer;
+	QModelIndex dragTargetIndex;
 
 	Private(LibraryInfoAccessor* libraryInfoAccessor, TreeView* parent) :
-		libraryInfoAccessor{libraryInfoAccessor},
-		model{new Directory::Model(libraryInfoAccessor, parent)},
-		dragTimer{new QTimer{parent}}
+		libraryInfoAccessor {libraryInfoAccessor},
+		model {new Directory::Model(libraryInfoAccessor, parent)},
+		dragTimer {new QTimer {parent}}
 	{
 		dragTimer->setSingleShot(true);
 		dragTimer->setInterval(750);
@@ -82,8 +80,7 @@ struct TreeView::Private
 TreeView::TreeView(QWidget* parent) :
 	Gui::WidgetTemplate<QTreeView>(parent),
 	InfoDialogContainer(),
-	Gui::Dragable(this)
-{}
+	Gui::Dragable(this) {}
 
 TreeView::~TreeView() = default;
 
@@ -113,7 +110,8 @@ void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Inf
 
 void TreeView::initContextMenu()
 {
-	if(m->contextMenu){
+	if(m->contextMenu)
+	{
 		return;
 	}
 
@@ -131,8 +129,8 @@ void TreeView::initContextMenu()
 	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &TreeView::sigCopyToLibraryRequested);
 	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &TreeView::sigMoveToLibraryRequested);
 
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this](){ this->showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this](){ this->showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this]() { this->showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this]() { this->showEdit(); });
 }
 
 QString TreeView::directoryName(const QModelIndex& index)
@@ -140,32 +138,33 @@ QString TreeView::directoryName(const QModelIndex& index)
 	return m->model->filePath(index);
 }
 
-QModelIndexList TreeView::selctedRows() const
+QModelIndexList TreeView::selectedRows() const
 {
-	return this->selectionModel()->selectedRows();
+	return selectionModel()->selectedRows();
 }
 
 QStringList TreeView::selectedPaths() const
 {
 	QStringList paths;
 
-	const QModelIndexList selections = this->selctedRows();
-	for(const QModelIndex& idx : selections)
-	{
-		paths << m->model->filePath(idx);
-	}
+	Util::Algorithm::transform(selectedRows(), paths, [&](const auto& index) {
+		return m->model->filePath(index);
+	});
 
 	return paths;
 }
 
 void TreeView::createDirectoryClicked()
 {
-	const QStringList paths = selectedPaths();
-	if(paths.size() != 1){
+	const auto paths = selectedPaths();
+	if(paths.size() != 1)
+	{
 		return;
 	}
 
-	QString newName = Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), paths[0]);
+	const auto newName =
+		Gui::LineInputDialog::getNewFilename(this, Lang::get(Lang::CreateDirectory), paths[0]);
+
 	if(!newName.isEmpty())
 	{
 		Util::File::createDir(paths[0] + "/" + newName);
@@ -175,17 +174,20 @@ void TreeView::createDirectoryClicked()
 
 void TreeView::renameDirectoryClicked()
 {
-	const QStringList paths = selectedPaths();
-	if(paths.size() != 1){
+	const auto paths = selectedPaths();
+	if(paths.size() != 1)
+	{
 		return;
 	}
 
-	QDir originalDir(paths[0]);
-	QDir parentDir(originalDir);
+	const auto originalDir = QDir(paths[0]);
+	auto parentDir = originalDir;
 
 	if(parentDir.cdUp())
 	{
-		QString newName = Gui::LineInputDialog::getRenameFilename(this, originalDir.dirName(), parentDir.absolutePath());
+		const auto newName =
+			Gui::LineInputDialog::getRenameFilename(this, originalDir.dirName(), parentDir.absolutePath());
+
 		if(!newName.isEmpty())
 		{
 			emit sigRenameRequested(originalDir.absolutePath(), parentDir.absoluteFilePath(newName));
@@ -195,10 +197,10 @@ void TreeView::renameDirectoryClicked()
 
 void TreeView::viewInFileManagerClicked()
 {
-	const QStringList paths = this->selectedPaths();
-	for(const QString& path : paths)
+	const auto paths = this->selectedPaths();
+	for(const auto& path : paths)
 	{
-		const QUrl url = QUrl::fromLocalFile(path);
+		const auto url = QUrl::fromLocalFile(path);
 		QDesktopServices::openUrl(url);
 	}
 }
@@ -209,7 +211,8 @@ void TreeView::setBusy(bool b)
 	{
 		this->setDragDropMode(DragDropMode::NoDragDrop);
 
-		if(!m->progressBar) {
+		if(!m->progressBar)
+		{
 			m->progressBar = new Gui::ProgressBar(this);
 		}
 
@@ -220,7 +223,8 @@ void TreeView::setBusy(bool b)
 	{
 		this->setDragDropMode(DragDropMode::DragDrop);
 
-		if(m->progressBar) {
+		if(m->progressBar)
+		{
 			m->progressBar->hide();
 		}
 	}
@@ -241,54 +245,48 @@ void TreeView::dragEnterEvent(QDragEnterEvent* event)
 {
 	m->resetDrag();
 
-	const QMimeData* mimeData = event->mimeData();
-	if(!mimeData || !mimeData->hasUrls())
-	{
-		event->ignore();
-		return;
-	}
-
-	event->accept();
+	const auto* mimeData = event->mimeData();
+	event->setAccepted(mimeData && mimeData->hasUrls());
 }
 
 void TreeView::dragMoveEvent(QDragMoveEvent* event)
 {
 	Parent::dragMoveEvent(event);
 
-	const QMimeData* mimeData = event->mimeData();
-	if(!mimeData) {
+	const auto* mimeData = event->mimeData();
+	if(!mimeData)
+	{
 		event->ignore();
 		return;
 	}
 
-	const QModelIndex index = this->indexAt(event->pos());
+	const auto index = this->indexAt(event->pos());
 	if(index != m->dragTargetIndex)
 	{
 		m->dragTargetIndex = index;
 
-		if(index.isValid()) {
+		if(index.isValid())
+		{
 			m->dragTimer->start();
 		}
 	}
 
 	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
 
-	if(mimeData->hasUrls()) {
+	if(mimeData->hasUrls() || (cmd && cmd->hasSource(this)))
+	{
 		event->acceptProposedAction();
 	}
 
-	else if(cmd && cmd->hasSource(this)) {
-		event->acceptProposedAction();
-	}
-
-	else {
+	else
+	{
 		event->ignore();
 	}
 
 	if(event->isAccepted() && !selectionModel()->isSelected(index))
 	{
 		selectionModel()->select(index, QItemSelectionModel::ClearAndSelect);
-	}	
+	}
 }
 
 void TreeView::dragLeaveEvent(QDragLeaveEvent* event)
@@ -306,17 +304,19 @@ void TreeView::dropEvent(QDropEvent* event)
 	m->dragTimer->stop();
 	m->dragTargetIndex = QModelIndex();
 
-	QModelIndex index = this->indexAt(event->pos());
-	if(!index.isValid()){
+	const auto index = this->indexAt(event->pos());
+	if(!index.isValid())
+	{
 		return;
 	}
 
-	const QMimeData* mimedata = event->mimeData();
-	if(!mimedata){
+	const auto* mimedata = event->mimeData();
+	if(!mimedata)
+	{
 		return;
 	}
 
-	const QString targetDirectory = m->model->filePath(index);
+	const auto targetDirectory = m->model->filePath(index);
 	const auto* cmd = Gui::MimeData::customMimedata(mimedata);
 	if(cmd)
 	{
@@ -327,40 +327,39 @@ void TreeView::dropEvent(QDropEvent* event)
 	{
 		QStringList files;
 
-		const QList<QUrl> urls = mimedata->urls();
-		for(const QUrl& url : urls)
+		const auto urls = mimedata->urls();
+		for(const auto& url : urls)
 		{
-			QString local_file = url.toLocalFile();
-			if(!local_file.isEmpty()){
-				files << local_file;
+			const auto localFile = url.toLocalFile();
+			if(!localFile.isEmpty())
+			{
+				files << localFile;
 			}
 		}
 
-		LibraryId id = m->model->libraryDataSource();
-		if(id >= 0)
+		const auto libraryId = m->model->libraryDataSource();
+		if(libraryId >= 0)
 		{
-			emit sigImportRequested(id, files, targetDirectory);
+			emit sigImportRequested(libraryId, files, targetDirectory);
 		}
 	}
 }
 
 void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString& targetDirectory)
 {
-	QList<QUrl> urls = cmd->urls();
+	const auto urls = cmd->urls();
 	QStringList sourceFiles, sourceDirectories;
 
-	for(const QUrl& url : urls)
+	for(const auto& url : urls)
 	{
-		QString localFile = url.toLocalFile();
-		if(localFile.isEmpty()){
-			localFile = url.toString(QUrl::PreferLocalFile);
-		}
+		const auto localFilename = url.toLocalFile();
+		const auto localFile = (!localFilename.isEmpty())
+		                       ? localFilename
+		                       : url.toString(QUrl::PreferLocalFile);
 
-		if(Util::File::isDir(localFile))
+		if(Util::File::isDir(localFile) && Util::File::canCopyDir(localFile, targetDirectory))
 		{
-			if(Util::File::canCopyDir(localFile, targetDirectory)){
-				sourceDirectories << localFile;
-			}
+			sourceDirectories << localFile;
 		}
 
 		else if(Util::File::isFile(localFile))
@@ -369,15 +368,10 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 		}
 	}
 
-	if(sourceDirectories.isEmpty() && sourceFiles.isEmpty()){
-		return;
-	}
-
-	TreeView::DropAction drop_action = showDropMenu(QCursor::pos());
-
 	if(!sourceDirectories.isEmpty())
 	{
-		switch(drop_action)
+		const auto dropAction = showDropMenu(QCursor::pos());
+		switch(dropAction)
 		{
 			case TreeView::DropAction::Copy:
 				emit sigCopyRequested(sourceDirectories, targetDirectory);
@@ -392,7 +386,8 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 
 	if(!sourceFiles.isEmpty())
 	{
-		switch(drop_action)
+		const auto dropAction = showDropMenu(QCursor::pos());
+		switch(dropAction)
 		{
 			case TreeView::DropAction::Copy:
 				emit sigCopyRequested(sourceFiles, targetDirectory);
@@ -408,67 +403,54 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 
 TreeView::DropAction TreeView::showDropMenu(const QPoint& pos)
 {
-	auto* menu = new QMenu(this);
+	auto menu = QMenu(this);
+	auto* copyAction = new QAction(tr("Copy here"), &menu);
+	auto* moveAction = new QAction(tr("Move here"), &menu);
+	auto* cancelAction = new QAction(Lang::get(Lang::Cancel), &menu);
 
-	const QList<QAction*> actions
+	menu.addActions(
+		{
+			copyAction,
+			moveAction,
+			menu.addSeparator(),
+			cancelAction,
+		});
+
+	auto* action = menu.exec(pos);
+	if(action == copyAction)
 	{
-		new QAction(tr("Copy here"), menu),
-		new QAction(tr("Move here"), menu),
-		menu->addSeparator(),
-		new QAction(Lang::get(Lang::Cancel), menu),
-	};
-
-	menu->addActions(actions);
-
-	QAction* action = menu->exec(pos);
-	TreeView::DropAction dropAction = TreeView::DropAction::Cancel;
-
-	if(action == actions[0]){
-		dropAction = TreeView::DropAction::Copy;
+		return TreeView::DropAction::Copy;
 	}
 
-	else if(action == actions[1]){
-		dropAction = TreeView::DropAction::Move;
+	else if(action == moveAction)
+	{
+		return TreeView::DropAction::Move;
 	}
 
-	menu->deleteLater();
-
-	return dropAction;
+	return TreeView::DropAction::Cancel;
 }
 
 void TreeView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
-	QTreeView::selectionChanged(selected, deselected);
+	if(!m->dragTimer->isActive())
+	{
+		QTreeView::selectionChanged(selected, deselected);
 
-	QModelIndex index;
-	if(!selected.indexes().isEmpty()) {
-		index = selected.indexes().first();
-	}
+		const auto index = (!selected.indexes().isEmpty())
+		                   ? selected.indexes().first()
+		                   : QModelIndex();
 
-	if(!m->dragTimer->isActive()) {
 		emit sigCurrentIndexChanged(index);
 	}
 }
 
-void TreeView::setFilterTerm(const QString& filter)
-{
-	m->model->setFilter(filter);
-}
+void TreeView::setFilterTerm(const QString& filter) { m->model->setFilter(filter); }
 
-MD::Interpretation TreeView::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
+MD::Interpretation TreeView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-MetaDataList TreeView::infoDialogData() const
-{
-	return MetaDataList();
-}
+MetaDataList TreeView::infoDialogData() const {	return MetaDataList(); }
 
-bool TreeView::hasMetadata() const
-{
-	return false;
-}
+bool TreeView::hasMetadata() const { return false; }
 
 QStringList TreeView::pathlist() const
 {
@@ -486,28 +468,27 @@ void TreeView::keyPressEvent(QKeyEvent* event)
 		case Qt::Key_Escape:
 			this->clearSelection();
 			return;
-		default: break;
+		default:
+			Parent::keyPressEvent(event);
 	}
-
-	Parent::keyPressEvent(event);
 }
 
 void TreeView::contextMenuEvent(QContextMenuEvent* event)
 {
-	if(!m->contextMenu){
+	if(!m->contextMenu)
+	{
 		initContextMenu();
 	}
 
 	m->contextMenu->refresh(selectedPaths().size());
 
-	QPoint pos = QWidget::mapToGlobal(event->pos());
+	const auto pos = QWidget::mapToGlobal(event->pos());
 	m->contextMenu->exec(pos);
 }
 
-
 void TreeView::skinChanged()
 {
-	const QFontMetrics fm = this->fontMetrics();
-	this->setIconSize(QSize(fm.height(), fm.height()));
-	this->setIndentation(fm.height());
+	const auto height = this->fontMetrics().height();
+	this->setIconSize(QSize(height, height));
+	this->setIndentation(height);
 }

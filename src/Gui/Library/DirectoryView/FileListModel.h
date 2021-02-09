@@ -29,7 +29,7 @@
 class QPixmap;
 class QVariant;
 
-class LibraryInfoAccessor;
+class LocalLibrary;
 
 namespace Directory
 {
@@ -62,11 +62,11 @@ namespace Directory
 		PIMPL(FileListModel)
 
 		public:
-			explicit FileListModel(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent=nullptr);
+			explicit FileListModel(LocalLibrary* localLibrary, QObject* parent=nullptr);
 			~FileListModel() override;
 
 			QString parentDirectory() const;
-			void setParentDirectory(LibraryId libraryId, const QString& dir);
+			void setParentDirectory(const QString& dir);
 
 			LibraryId libraryId() const;
 			QStringList files() const;

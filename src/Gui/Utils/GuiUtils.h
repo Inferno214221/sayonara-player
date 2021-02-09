@@ -26,6 +26,7 @@
 
 class QWidget;
 class QPixmap;
+class QColor;
 class QFontMetrics;
 class QImage;
 class QString;
@@ -37,6 +38,8 @@ class QSize;
 
 template<typename T>
 class QList;
+
+#include <QPalette>
 
 namespace Gui
 {
@@ -104,6 +107,8 @@ namespace Gui
 		 * @return nullptr on error
 		 */
 		QScreen* getBiggestScreen();
+
+		QColor color(QPalette::ColorGroup colorGroup, QPalette::ColorRole colorRole);
 
 		/**
 		 * @brief Place the widget in the center of the biggest screen

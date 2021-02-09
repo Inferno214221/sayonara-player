@@ -28,6 +28,10 @@
 #include "Utils/Pimpl.h"
 
 class LibraryInfoAccessor;
+namespace Library
+{
+	class Info;
+}
 
 namespace Directory
 {
@@ -37,9 +41,9 @@ namespace Directory
 	 * @ingroup GuiDirectories
 	 */
 	class FileListView :
-			public SearchableTableView,
-			public InfoDialogContainer,
-			private Gui::Dragable
+		public SearchableTableView,
+		public InfoDialogContainer,
+		private Gui::Dragable
 	{
 		Q_OBJECT
 		PIMPL(FileListView)
@@ -60,18 +64,15 @@ namespace Directory
 			void sigMoveToLibraryRequested(LibraryId libraryId);
 
 		public:
-			explicit FileListView(QWidget* parent=nullptr);
+			explicit FileListView(QWidget* parent = nullptr);
 			~FileListView() override;
 
-			void init(LibraryInfoAccessor* libraryInfoAccessor);
+			void init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info);
 
-			QModelIndexList selectedRows() const;
 			QStringList selectedPaths() const;
 
-			void setParentDirectory(LibraryId id, const QString& dir);
+			void setParentDirectory(const QString& dir);
 			QString parentDirectory() const;
-
-			void setSearchFilter(const QString& search_string);
 
 		private:
 			void initContextMenu();

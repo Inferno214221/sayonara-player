@@ -92,7 +92,7 @@ namespace Directory
 
 			QString directoryName(const QModelIndex& index);
 
-			QModelIndexList selctedRows() const;
+			QModelIndexList selectedRows() const;
 			QStringList selectedPaths() const;
 
 			void setFilterTerm(const QString& filter);

@@ -80,7 +80,7 @@ void GUI_DirectoryView::initUi()
 	const auto info = m->currentLibrary();
 
 	ui->tvDirs->init(m->libraryManager, info);
-	ui->lvFiles->init(m->libraryManager);
+	ui->lvFiles->init(m->libraryManager, info);
 
 	connect(m->directorySelectionHandler,
 	        &DirectorySelectionHandler::sigImportDialogRequested,
@@ -159,9 +159,9 @@ void GUI_DirectoryView::initUi()
 void GUI_DirectoryView::load()
 {
 	const auto info = m->currentLibrary();
-	
+
 	ui->tvDirs->setFilterTerm(m->filterTerm);
-	ui->lvFiles->setParentDirectory(info.id(), info.path());
+	ui->lvFiles->setParentDirectory(info.path());
 	ui->btnClearSelection->setVisible(false);
 
 	ui->tvDirs->setEnabled(true);
@@ -231,7 +231,7 @@ void GUI_DirectoryView::viewInFileManagerClicked()
 
 void GUI_DirectoryView::dirEnterPressed()
 {
-	const auto indexes = ui->tvDirs->selctedRows();
+	const auto indexes = ui->tvDirs->selectedRows();
 	if(!indexes.isEmpty())
 	{
 		ui->tvDirs->expand(indexes.first());
@@ -249,7 +249,7 @@ void GUI_DirectoryView::dirOpened(QModelIndex idx)
 	                  ? selectedPaths
 	                  : QStringList {dir};
 
-	ui->lvFiles->setParentDirectory(m->directorySelectionHandler->libraryId(), dir);
+	ui->lvFiles->setParentDirectory(dir);
 
 	// show in metadata table view
 	m->directorySelectionHandler->libraryInstance()->fetchTracksByPath(dirs);
@@ -486,7 +486,7 @@ void GUI_DirectoryView::fileOperationStarted()
 void GUI_DirectoryView::fileOperationFinished()
 {
 	ui->tvDirs->setBusy(false);
-	ui->lvFiles->setParentDirectory(m->directorySelectionHandler->libraryId(), ui->lvFiles->parentDirectory());
+	ui->lvFiles->setParentDirectory(ui->lvFiles->parentDirectory());
 }
 
 void GUI_DirectoryView::splitterMoved(int pos, int index)

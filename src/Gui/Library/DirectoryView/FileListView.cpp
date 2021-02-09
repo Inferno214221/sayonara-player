@@ -23,14 +23,13 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
-#include "Utils/globals.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Library/SearchMode.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Set.h"
 
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
@@ -38,6 +37,8 @@
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Icons.h"
+
+#include "Interfaces/LibraryInfoAccessor.h"
 
 #include <QDir>
 #include <QDrag>
@@ -57,10 +58,9 @@ struct FileListView::Private
 	FileListModel* model;
 	ContextMenu* contextMenu = nullptr;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor, FileListView* parent) :
+	Private(LibraryInfoAccessor* libraryInfoAccessor, LibraryId libraryId, FileListView* parent) :
 		libraryInfoAccessor {libraryInfoAccessor},
-		model {new FileListModel {libraryInfoAccessor, parent}} {}
-
+		model {new FileListModel {libraryInfoAccessor->libraryInstance(libraryId), parent}} {}
 };
 
 FileListView::FileListView(QWidget* parent) :
@@ -70,9 +70,9 @@ FileListView::FileListView(QWidget* parent) :
 
 FileListView::~FileListView() = default;
 
-void FileListView::init(LibraryInfoAccessor* libraryInfoAccessor)
+void FileListView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info)
 {
-	m = Pimpl::make<Private>(libraryInfoAccessor, this);
+	m = Pimpl::make<Private>(libraryInfoAccessor, info.id(), this);
 
 	this->setSearchableModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
@@ -120,85 +120,33 @@ void FileListView::initContextMenu()
 	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &FileListView::sigMoveToLibraryRequested);
 }
 
-QModelIndexList FileListView::selectedRows() const
-{
-	QItemSelectionModel* selection_model = this->selectionModel();
-
-	if(selection_model)
-	{
-		return selection_model->selectedIndexes();
-	}
-
-	return QModelIndexList();
-}
-
 QStringList FileListView::selectedPaths() const
 {
-	const QStringList paths = m->model->files();
-	const QModelIndexList selections = this->selectedRows();
+	const auto paths = m->model->files();
+	const auto indexes = selectionModel()->selectedIndexes();
 
-	QStringList ret;
-	for(const QModelIndex& idx : selections)
+	Util::Set<QString> selectedPaths;
+	for(const auto& index : indexes)
 	{
-		int row = idx.row();
-		if(Util::between(row, paths))
+		const auto row = index.row();
+		if(row >= 0 && row <= paths.count())
 		{
-			ret << paths[row];
+			selectedPaths.insert(paths[index.row()]);
 		}
 	}
 
-	ret.removeDuplicates();
-
-	return ret;
+	return QStringList{selectedPaths.toList()};
 }
 
-void FileListView::setParentDirectory(LibraryId libraryId, const QString& dir)
+void FileListView::setParentDirectory(const QString& dir)
 {
-	this->selectionModel()->clear();
-	m->model->setParentDirectory(libraryId, dir);
+	selectionModel()->clear();
+	m->model->setParentDirectory(dir);
 }
 
-QString FileListView::parentDirectory() const
-{
-	return m->model->parentDirectory();
-}
+QString FileListView::parentDirectory() const {	return m->model->parentDirectory(); }
 
-void FileListView::setSearchFilter(const QString& search_string)
-{
-	if(search_string.isEmpty())
-	{
-		return;
-	}
-
-	const Library::SearchModeMask smm = GetSetting(Set::Lib_SearchMode);
-	const QString search_text = Library::Utils::convertSearchstring(search_string, smm);
-
-	for(int i = 0; i < m->model->rowCount(); i++)
-	{
-		QModelIndex idx = m->model->index(i, 0);
-		QString data = m->model->data(idx).toString();
-		if(data.isEmpty())
-		{
-			continue;
-		}
-
-		if(!idx.isValid())
-		{
-			continue;
-		}
-
-		data = Library::Utils::convertSearchstring(data, smm);
-		if(data.contains(search_text, Qt::CaseInsensitive))
-		{
-			this->selectionModel()->select(idx, (QItemSelectionModel::Select | QItemSelectionModel::Rows));
-		}
-	}
-}
-
-int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const
-{
-	return idx.row();
-}
+int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
 ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 {
@@ -211,141 +159,93 @@ ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 
 void FileListView::renameFileClicked()
 {
-	const QModelIndexList indexes = this->selectedRows();
-	if(indexes.size() != 1)
+	const auto paths = this->selectedPaths();
+	if(paths.size() != 1)
 	{
 		return;
 	}
 
-	const QModelIndex index = indexes.first();
-	int row = index.row();
+	const auto path = paths.first();
+	auto[dir, file] = Util::File::splitFilename(path);
+	const auto extension = Util::File::getFileExtension(path);
 
-	QStringList files = m->model->files();
-	if(!Util::between(row, files))
-	{
-		return;
-	}
-
-	auto[dir, file] = Util::File::splitFilename(files[row]);
-	QString ext = Util::File::getFileExtension(files[row]);
-
-	int lastDot = file.lastIndexOf(".");
+	const auto lastDot = file.lastIndexOf(".");
 	file = file.left(lastDot);
 
-	QString inputText = Gui::LineInputDialog::getRenameFilename(this, Lang::get(Lang::EnterNewName));
+	const auto inputText =
+		Gui::LineInputDialog::getRenameFilename(this, Lang::get(Lang::EnterNewName));
+
 	if(inputText.isEmpty())
 	{
 		return;
 	}
 
-	QString newName = QDir(dir).filePath(inputText);
-	if(!newName.endsWith("." + ext))
-	{
-		newName += "." + ext;
-	}
+	const auto newName = inputText.endsWith("." + extension) ?
+		QDir(dir).filePath(inputText) :
+		QDir(dir).filePath(inputText) + "." + extension;
 
-	emit sigRenameRequested(files[row], newName);
+	emit sigRenameRequested(path, newName);
 }
 
 void FileListView::renameFileByTagClicked()
 {
-	const QModelIndexList indexes = this->selectedRows();
-	const QStringList files = m->model->files();
-
-	if(indexes.isEmpty() || files.isEmpty())
+	const auto files = this->selectedPaths();
+	if(!files.isEmpty())
 	{
-		return;
-	}
+		auto* dialog = new GUI_FileExpressionDialog(this);
+		const auto ret = QDialog::DialogCode(dialog->exec());
+		const auto expression = dialog->expression();
 
-	auto* dialog = new GUI_FileExpressionDialog(this);
-	QDialog::DialogCode ret = QDialog::DialogCode(dialog->exec());
-	if(ret == QDialog::Rejected)
-	{
-		return;
-	}
-
-	const QString expression = dialog->expression();
-	if(expression.isEmpty())
-	{
-		return;
-	}
-
-	for(const QModelIndex& index : indexes)
-	{
-		int row = index.row();
-		if(!Util::between(row, files))
+		if(ret == QDialog::Rejected || expression.isEmpty())
 		{
 			return;
 		}
 
-		emit sigRenameByExpressionRequested(files[row], expression);
+		for(const auto& file : files)
+		{
+			emit sigRenameByExpressionRequested(file, expression);
+		}
 	}
 }
 
-MD::Interpretation FileListView::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
+MD::Interpretation FileListView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-MetaDataList FileListView::infoDialogData() const
-{
-	return MetaDataList();
-}
+MetaDataList FileListView::infoDialogData() const {	return MetaDataList(); }
 
-bool FileListView::hasMetadata() const
-{
-	return false;
-}
+bool FileListView::hasMetadata() const { return false; }
 
-QStringList FileListView::pathlist() const
-{
-	return this->selectedPaths();
-}
+QStringList FileListView::pathlist() const { return this->selectedPaths(); }
 
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {
-	if(!m->contextMenu)
-	{
-		initContextMenu();
-	}
+	initContextMenu();
 
-	const QModelIndexList indexes = selectedRows();
-	auto audioFileCount = Util::Algorithm::count(indexes, [](const QModelIndex& index) {
-		QString filename = index.data(Qt::UserRole).toString();
+	const auto files = selectedPaths();
+	const auto audioFileCount = Util::Algorithm::count(files, [](const auto& filename) {
 		return Util::File::isSoundFile(filename);
 	});
 
 	m->contextMenu->refresh(audioFileCount);
 
-	QPoint pos = QWidget::mapToGlobal(event->pos());
+	const auto pos = QWidget::mapToGlobal(event->pos());
 	m->contextMenu->exec(pos);
 }
 
-void FileListView::dragEnterEvent(QDragEnterEvent* event)
-{
-	event->accept();
-}
+void FileListView::dragEnterEvent(QDragEnterEvent* event) {	event->accept(); }
 
 void FileListView::dragMoveEvent(QDragMoveEvent* event)
 {
-	const QMimeData* mimeData = event->mimeData();
+	const auto* mimeData = event->mimeData();
 	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
-	if(cmd)
-	{
-		event->setAccepted(false);
-	}
 
-	else
-	{
-		event->setAccepted(true);
-	}
+	event->setAccepted(cmd == nullptr);
 }
 
 void FileListView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
-	const QMimeData* mimeData = event->mimeData();
+	const auto* mimeData = event->mimeData();
 	if(!mimeData)
 	{
 		spLog(Log::Debug, this) << "Drop: No Mimedata";
@@ -364,12 +264,12 @@ void FileListView::dropEvent(QDropEvent* event)
 		return;
 	}
 
-	const QList<QUrl> urls = mimeData->urls();
+	const auto urls = mimeData->urls();
 
 	QStringList files;
-	for(const QUrl& url : urls)
+	for(const auto& url : urls)
 	{
-		const QString localFile = url.toLocalFile();
+		const auto localFile = url.toLocalFile();
 		if(!localFile.isEmpty())
 		{
 			files << localFile;
@@ -383,6 +283,6 @@ void FileListView::languageChanged() {}
 
 void FileListView::skinChanged()
 {
-	const QFontMetrics fm = this->fontMetrics();
-	this->setIconSize(QSize(fm.height(), fm.height()));
+	const auto height = this->fontMetrics().height();
+	this->setIconSize(QSize{height, height});
 }

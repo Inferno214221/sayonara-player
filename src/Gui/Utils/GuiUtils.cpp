@@ -239,6 +239,11 @@ void Util::setMainWindow(QMainWindow* window)
 	::main_window = window;
 }
 
+QColor Util::color(QPalette::ColorGroup colorGroup, QPalette::ColorRole colorRole)
+{
+	return ::main_window->palette().color(colorGroup, colorRole);
+}
+
 QScreen* Util::getBiggestScreen()
 {
 	QList<QScreen*> screens = QApplication::screens();

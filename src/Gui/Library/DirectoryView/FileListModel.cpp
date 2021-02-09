@@ -27,8 +27,7 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
-#include "Interfaces/LibraryInfoAccessor.h"
-
+#include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
@@ -48,7 +47,6 @@
 #include <QUrl>
 #include <QIcon>
 #include <QDir>
-#include <QMap>
 #include <QPixmap>
 #include <QThread>
 #include <QPixmapCache>
@@ -58,12 +56,12 @@ using Directory::FileListModel;
 
 enum ColumnName
 {
-	ColumnDecoration=0,
+	ColumnDecoration = 0,
 	ColumnName,
 	ColumnCount
 };
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct IconWorkerThread::Private
 {
@@ -73,50 +71,56 @@ struct IconWorkerThread::Private
 
 	Private(const QSize& targetSize, const QString& filename) :
 		filename(filename),
-		targetSize(targetSize)
-	{}
+		targetSize(targetSize) {}
 };
 
 struct FileListModel::Private
 {
 	QPixmapCache cache;
-	QString	parentDirectory;
+	QString parentDirectory;
 	QStringList files;
-	QMap<QString, bool> filesInLibrary;
+	Util::Set<QString> filesInLibrary;
 
-	LibraryInfoAccessor* libraryInfoAccessor;
+	LocalLibrary* localLibrary;
 
-	int	iconSize;
-	LibraryId libraryId;
+	int iconSize;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor) :
-		libraryInfoAccessor(libraryInfoAccessor),
-		iconSize(24),
-		libraryId(-1)
-	{}
+	Private(LocalLibrary* localLibrary) :
+		localLibrary(localLibrary),
+		iconSize(24) {}
+
+	void calcFilesInLibrary(const QString& dir)
+	{
+		filesInLibrary.clear();
+
+		MetaDataList tracks;
+		auto* db = DB::Connector::instance();
+		auto* libraryDatabase = db->libraryDatabase(this->localLibrary->info().id(), 0);
+
+		libraryDatabase->getAllTracksByPaths({dir}, tracks);
+		for(const auto& track : tracks)
+		{
+			filesInLibrary.insert(track.filepath());
+		}
+	}
 };
 
-FileListModel::FileListModel(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
+FileListModel::FileListModel(LocalLibrary* localLibrary, QObject* parent) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<Private>(libraryInfoAccessor);
+	m = Pimpl::make<Private>(localLibrary);
 }
 
 FileListModel::~FileListModel() = default;
 
-void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
+void FileListModel::setParentDirectory(const QString& dir)
 {
-	int oldRowcount = rowCount();
-
-	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* lib_db = db->libraryDatabase(libraryId, 0);
-
-	MetaDataList tracks;
-	lib_db->getAllTracksByPaths({dir}, tracks);
+	const auto oldRowcount = rowCount();
 
 	m->files.clear();
 	m->parentDirectory = dir;
-	m->libraryId = libraryId;
+
+	m->calcFilesInLibrary(dir);
 
 	QStringList extensions;
 	extensions << Util::soundfileExtensions();
@@ -126,13 +130,6 @@ void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
 	DirectoryReader reader;
 	reader.setFilter(extensions);
 	reader.scanFiles(QDir(dir), m->files);
-
-	for(const QString& file : m->files)
-	{
-		m->filesInLibrary[file] = Util::Algorithm::contains(tracks, [&file](const MetaData& md){
-			return Util::File::isSamePath(file, md.filepath());
-		});
-	}
 
 	if(m->files.size() > oldRowcount)
 	{
@@ -146,50 +143,55 @@ void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
 		endRemoveRows();
 	}
 
-	Algorithm::sort(m->files, [](const QString& f1, const QString& f2)
-	{
-		bool isSoundfile1 = Util::File::isSoundFile(f1);
-		bool isSoundfile2 = Util::File::isSoundFile(f2);
-
-		bool isPlaylistfile1 = Util::File::isPlaylistFile(f1);
-		bool isPlaylistfile2 = Util::File::isPlaylistFile(f2);
-
-		bool isImagefile1 = Util::File::isImageFile(f1);
-		bool isImagefile2 = Util::File::isImageFile(f2);
-
-		if(isSoundfile1 && isSoundfile2){
+	Algorithm::sort(m->files, [](const QString& f1, const QString& f2) {
+		const auto isSoundfile1 = Util::File::isSoundFile(f1);
+		const auto isSoundfile2 = Util::File::isSoundFile(f2);
+		if(isSoundfile1 && isSoundfile2)
+		{
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(isSoundfile1 && !isSoundfile2){
+		if(isSoundfile1 && !isSoundfile2)
+		{
 			return true;
 		}
 
-		if(!isSoundfile1 && isSoundfile2){
+		if(!isSoundfile1 && isSoundfile2)
+		{
 			return false;
 		}
 
-		if(isPlaylistfile1 && isPlaylistfile2){
+		const auto isPlaylistfile1 = Util::File::isPlaylistFile(f1);
+		const auto isPlaylistfile2 = Util::File::isPlaylistFile(f2);
+		if(isPlaylistfile1 && isPlaylistfile2)
+		{
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(isPlaylistfile1 && !isPlaylistfile2){
+		if(isPlaylistfile1 && !isPlaylistfile2)
+		{
 			return true;
 		}
 
-		if(!isPlaylistfile1 && isPlaylistfile2){
+		if(!isPlaylistfile1 && isPlaylistfile2)
+		{
 			return false;
 		}
 
-		if(isImagefile1 && isImagefile2){
+		const auto isImagefile1 = Util::File::isImageFile(f1);
+		const auto isImagefile2 = Util::File::isImageFile(f2);
+		if(isImagefile1 && isImagefile2)
+		{
 			return (f1.toLower() < f2.toLower());
 		}
 
-		if(isImagefile1 && !isImagefile2){
+		if(isImagefile1 && !isImagefile2)
+		{
 			return true;
 		}
 
-		if(!isImagefile1 && isImagefile2){
+		if(!isImagefile1 && isImagefile2)
+		{
 			return false;
 		}
 
@@ -197,15 +199,15 @@ void FileListModel::setParentDirectory(LibraryId libraryId, const QString& dir)
 	});
 
 	emit dataChanged
-	(
-		index(0,0),
-		index(m->files.size() - 1, this->columnCount(QModelIndex()))
-	);
+		(
+			index(0, 0),
+			index(m->files.size() - 1, this->columnCount(QModelIndex()))
+		);
 }
 
 LibraryId FileListModel::libraryId() const
 {
-	return m->libraryId;
+	return m->localLibrary->info().id();
 }
 
 QString FileListModel::parentDirectory() const
@@ -222,9 +224,10 @@ QModelIndexList FileListModel::searchResults(const QString& substr)
 {
 	QModelIndexList ret;
 
-	for(int i=0; i<m->files.size(); i++)
+	for(int i = 0; i < m->files.size(); i++)
 	{
-		if(checkRowForSearchstring(i, substr)){
+		if(checkRowForSearchstring(i, substr))
+		{
 			ret << index(i, 0);
 		}
 	}
@@ -235,7 +238,6 @@ QModelIndexList FileListModel::searchResults(const QString& substr)
 int FileListModel::rowCount(const QModelIndex& parent) const
 {
 	Q_UNUSED(parent)
-
 	return m->files.size();
 }
 
@@ -249,14 +251,15 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 {
 	using namespace Util;
 
-	int row = index.row();
-	int col = index.column();
+	const auto row = index.row();
+	const auto col = index.column();
 
-	if(!Util::between(row, m->files)) {
+	if(!Util::between(row, m->files))
+	{
 		return QVariant();
 	}
 
-	const QString& filename = m->files[row];
+	const auto& filename = m->files[row];
 
 	if((role == Qt::DisplayRole) && (col == ColumnName))
 	{
@@ -270,23 +273,24 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 			return Gui::Icons::icon(Gui::Icons::AudioFile);
 		}
 
-		if(File::isPlaylistFile(filename)){
+		if(File::isPlaylistFile(filename))
+		{
 			return Gui::Icons::icon(Gui::Icons::PlaylistFile);
 		}
 
 		if(File::isImageFile(filename))
 		{
-			QPixmap* pm = m->cache.find(filename);
-			if(!pm || pm->isNull())
+			auto* pixmap = m->cache.find(filename);
+			if(!pixmap || pixmap->isNull())
 			{
 				m->cache.insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile));
 
-				auto* worker = new IconWorkerThread(QSize(32,32), filename);
+				auto* worker = new IconWorkerThread(QSize(32, 32), filename);
 				auto* t = new QThread();
 				worker->moveToThread(t);
 
 				connect(worker, &IconWorkerThread::sigFinished, this, &FileListModel::pixmapFetched);
-				connect(worker, &IconWorkerThread::sigFinished, this, [t](const QString&){
+				connect(worker, &IconWorkerThread::sigFinished, this, [t](const QString&) {
 					t->quit();
 				});
 
@@ -301,7 +305,7 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 			else
 			{
 				QIcon icon;
-				icon.addPixmap(*pm);
+				icon.addPixmap(*pixmap);
 				return icon;
 			}
 		}
@@ -309,10 +313,9 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 
 	else if((role == Qt::TextColorRole) && Util::File::isSoundFile(filename))
 	{
-		bool inLibrary = m->filesInLibrary[filename];
-		if(!inLibrary)
+		if(!m->filesInLibrary.contains(filename))
 		{
-			return QColor(214, 68, 45);
+			return Gui::Util::color(QPalette::ColorGroup::Disabled, QPalette::ColorRole::Foreground);
 		}
 	}
 
@@ -333,11 +336,11 @@ void FileListModel::pixmapFetched(const QString& path)
 {
 	auto* worker = static_cast<IconWorkerThread*>(sender());
 
-	QPixmap pm = worker->pixmap();
-	if(!pm.isNull())
+	const auto pixmap = worker->pixmap();
+	if(!pixmap.isNull())
 	{
-		m->cache.insert(path, pm);
-		emit dataChanged(index(0,0), index(rowCount() - 1, columnCount() - 1));
+		m->cache.insert(path, pixmap);
+		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 	}
 
 	worker->deleteLater();
@@ -347,11 +350,13 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 {
 	if((role == Qt::DisplayRole) && (orientation == Qt::Orientation::Horizontal))
 	{
-		if(column == ColumnDecoration) {
+		if(column == ColumnDecoration)
+		{
 			return QString();
 		}
 
-		else if(column == ColumnName){
+		else if(column == ColumnName)
+		{
 			return Lang::get(Lang::Filename);
 		}
 	}
@@ -361,11 +366,12 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 
 bool FileListModel::checkRowForSearchstring(int row, const QString& substr) const
 {
-	QString converted_string = Library::Utils::convertSearchstring(substr, searchMode());
-	QString filename = Util::File::getFilenameOfPath(m->files[row]);
+	const auto convertedString = Library::Utils::convertSearchstring(substr, searchMode());
+	const auto filename = Util::File::getFilenameOfPath(m->files[row]);
 
-	QString converted_filepath = Library::Utils::convertSearchstring(filename, searchMode());
-	return converted_filepath.contains(converted_string);
+	const auto convertedFilepath = Library::Utils::convertSearchstring(filename, searchMode());
+
+	return convertedFilepath.contains(convertedString);
 }
 
 QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
@@ -387,19 +393,20 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 		}
 	}
 
-	if(urls.isEmpty()) {
+	if(urls.isEmpty())
+	{
 		return nullptr;
 	}
 
 	auto* mimeData = new Gui::CustomMimeData(this);
 	mimeData->setUrls(urls);
 
-	auto* localLibrary = m->libraryInfoAccessor->libraryInstance(m->libraryId);
-	const auto tracks = localLibrary->currentTracks();
+	const auto tracks = m->localLibrary->currentTracks();
 	mimeData->setMetadata(tracks);
 
 	const auto coverPaths = Cover::LocalSearcher::coverPathsFromPathHint(paths.first());
-	if(!coverPaths.isEmpty()) {
+	if(!coverPaths.isEmpty())
+	{
 		Gui::MimeData::setCoverUrl(mimeData, coverPaths.first());
 	}
 
@@ -408,12 +415,9 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 
 Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 {
-	if(index.isValid())
-	{
-		return Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled);
-	}
-
-	return Qt::NoItemFlags;
+	return (index.isValid())
+	       ? Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled)
+	       : Qt::NoItemFlags;
 }
 
 IconWorkerThread::IconWorkerThread(const QSize& targetSize, const QString& filename)
@@ -425,9 +429,10 @@ IconWorkerThread::~IconWorkerThread() = default;
 
 void IconWorkerThread::start()
 {
-	QPixmap pm = QPixmap(m->filename);
-	if(!pm.isNull()) {
-		m->pixmap = pm.scaled(m->targetSize);
+	const auto pixmap = QPixmap(m->filename);
+	if(!pixmap.isNull())
+	{
+		m->pixmap = pixmap.scaled(m->targetSize);
 	}
 
 	emit sigFinished(m->filename);
