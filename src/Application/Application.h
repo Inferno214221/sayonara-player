@@ -37,7 +37,7 @@ class Application :
 		Application(int& argc, char** argv);
 		~Application() override;
 
-		bool init(const QStringList& files_to_play, bool force_show);
+		bool init(const QStringList& filesToPlay, bool forceShow);
 
 	private:
 		void initSingleInstanceThread();

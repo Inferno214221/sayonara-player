@@ -145,91 +145,73 @@ class MeasureApp
 
 struct Application::Private
 {
-	QTime* timer = nullptr;
-	GUI_Player* player = nullptr;
-	DynamicPlaybackChecker* dyanmicPlaybackChecker = nullptr;
+	MetaTypeRegistry* metatypeRegistry;
+	DB::Connector* db;
+	PlayManager* playManager;
+	Engine::Handler* engine;
+	Session::Manager* sessionManager;
+	Playlist::Handler* playlistHandler;
+	Library::Manager* libraryManager;
+	DynamicPlaybackChecker* dynamicPlaybackChecker;
+	QTime* timer;
 
+	GUI_Player* player = nullptr;
+	DBusHandler* dbusHandler = nullptr;
+	DynamicPlayback::Handler* dynamicPlaybackHandler = nullptr;
+	Library::LocalLibraryWatcher* localLibraryWatcher = nullptr;
 	RemoteControl* remoteControl = nullptr;
-	DB::Connector* db = nullptr;
 	InstanceThread* instanceThread = nullptr;
-	MetaTypeRegistry* metatypeRegistry = nullptr;
-	Session::Manager* sessionManager = nullptr;
-	PlayManager* playManager = nullptr;
-	Library::Manager* libraryManager = nullptr;
-	Engine::Handler* engine = nullptr;
-	Playlist::Handler* playlistHandler = nullptr;
 
 	bool shutdownTriggered;
 
-	Private(Application* app)
+	Private(Application* app) :
+		shutdownTriggered{false}
 	{
-		Q_UNUSED(app)
-
 		QApplication::setApplicationName("sayonara");
 		Util::copyFromLegacyLocations();
 
 		metatypeRegistry = new MetaTypeRegistry();
-		qRegisterMetaType<uint64_t>("uint64_t");
 
 		/* Tell the settings manager which settings are necessary */
 		db = DB::Connector::instance();
 		db->settingsConnector()->loadSettings();
 
-		playManager = new PlayManagerImpl(app);
-		engine = new Engine::Handler(playManager);
-
-		Shutdown::instance()->registerPlaymanager(playManager);
-
-		sessionManager = new Session::Manager(playManager);
-
-		auto playlistLoader = std::make_shared<Playlist::LoaderImpl>();
-		playlistHandler = new Playlist::Handler(playManager, playlistLoader);
-
-		libraryManager = Library::Manager::instance();
-		libraryManager->init(playlistHandler);
-		dyanmicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
-
-		Gui::Icons::setSystemTheme(QIcon::themeName());
-		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
-
-		if(!Settings::instance()->checkSettings())
+		auto* settings = Settings::instance();
+		if(!settings->checkSettings())
 		{
 			spLog(Log::Error, this) << "Cannot initialize settings";
 			return;
 		}
 
-		Settings::instance()->applyFixes();
+		settings->applyFixes();
+
+		playManager = new PlayManagerImpl(app);
+		engine = new Engine::Handler(playManager);
+		sessionManager = new Session::Manager(playManager);
+		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
+		libraryManager = new Library::Manager(playlistHandler);
+		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
+
+		Shutdown::instance()->registerPlaymanager(playManager);
+
+		Gui::Icons::setSystemTheme(QIcon::themeName());
+		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
 
 		Private::initResources();
 
 		timer = new QTime();
-		shutdownTriggered = false;
+		timer->start();
 	}
 
 	~Private()
 	{
-		if(timer)
-		{
-			delete timer;
-			timer = nullptr;
-		}
-
-		if(instanceThread)
-		{
-			instanceThread->stop();
-			while(instanceThread->isRunning())
-			{
-				Util::sleepMs(100);
-			}
-
-			instanceThread = nullptr;
-		}
-
-		if(player)
-		{
-			delete player;
-			player = nullptr;
-		}
+		delete timer;
+		delete dynamicPlaybackChecker;
+		delete libraryManager;
+		delete playlistHandler;
+		delete sessionManager;
+		delete engine;
+		delete playManager;
 
 		if(db)
 		{
@@ -238,11 +220,7 @@ struct Application::Private
 			db = nullptr;
 		}
 
-		if(metatypeRegistry)
-		{
-			delete metatypeRegistry;
-			metatypeRegistry = nullptr;
-		}
+		delete metatypeRegistry;
 	}
 
 	static void initResources()
@@ -282,7 +260,6 @@ Application::Application(int& argc, char** argv) :
 	QApplication(argc, argv)
 {
 	m = Pimpl::make<Private>(this);
-	m->timer->start();
 
 	QApplication::setQuitOnLastWindowClosed(false);
 	QApplication::setApplicationName("sayonara");
@@ -294,15 +271,50 @@ Application::~Application()
 	{
 		shutdown();
 	}
+
+	if(m->instanceThread)
+	{
+		m->instanceThread->stop();
+		while(m->instanceThread->isRunning())
+		{
+			Util::sleepMs(100);
+		}
+
+		m->instanceThread = nullptr;
+	}
+
+	if(m->remoteControl)
+	{
+		delete m->remoteControl;
+	}
+
+	delete m->localLibraryWatcher;
+	delete m->dynamicPlaybackHandler;
+	if(m->dbusHandler)
+	{
+		delete m->dbusHandler;
+	}
+
+	delete m->player;
 }
 
-bool Application::init(const QStringList& files_to_play, bool force_show)
+void Application::shutdown()
+{
+	PlayerPlugin::Handler::instance()->shutdown();
+	Library::PluginHandler::instance()->shutdown();
+
+	m->playlistHandler->shutdown();
+	m->engine->shutdown();
+	m->playManager->shutdown();
+
+	m->shutdownTriggered = true;
+}
+
+bool Application::init(const QStringList& filesToPlay, bool forceShow)
 {
 	{
 		measure("Settings")
-
-		QString version = QString(SAYONARA_VERSION);
-		SetSetting(Set::Player_Version, version);
+		SetSetting(Set::Player_Version, QString(SAYONARA_VERSION));
 	}
 
 	{
@@ -315,12 +327,12 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		Proxy::init();
 	}
 
-	initPlayer(force_show);
+	initPlayer(forceShow);
 
 #ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
-		new DBusHandler(m->player, m->playManager, m->playlistHandler, this);
+		m->dbusHandler = new DBusHandler(m->player, m->playManager, m->playlistHandler, this);
 	}
 #endif
 
@@ -336,17 +348,15 @@ bool Application::init(const QStringList& files_to_play, bool force_show)
 		);
 	}
 
-	new DynamicPlayback::Handler(m->playManager, m->playlistHandler, this);
+	m->dynamicPlaybackHandler = new DynamicPlayback::Handler(m->playManager, m->playlistHandler, this);
 
 	initLibraries();
 	initPlugins();
 	initPreferences();
 
-	initPlaylist(files_to_play);
+	initPlaylist(filesToPlay);
 	initSingleInstanceThread();
 	spLog(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
-	delete m->timer;
-	m->timer = nullptr;
 
 	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
 
@@ -375,7 +385,7 @@ void Application::initPlayer(bool force_show)
 	m->player = new GUI_Player(m->playManager,
 	                           m->playlistHandler,
 	                           m->engine,
-	                           new DynamicPlaybackCheckerImpl(m->libraryManager));
+	                           m->dynamicPlaybackChecker);
 
 	Gui::Util::setMainWindow(m->player);
 
@@ -423,9 +433,9 @@ void Application::initLibraries()
 {
 	measure("Libraries")
 
-	auto* localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, this);
+	m->localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, this);
 
-	QList<Library::AbstractContainer*> libraryContainers = localLibraryWatcher->getLocalLibraryContainers();
+	auto libraryContainers = m->localLibraryWatcher->getLocalLibraryContainers();
 
 	auto* soundcloudContainer = new SC::LibraryContainer(m->playlistHandler, this);
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
@@ -442,20 +452,20 @@ void Application::initPlugins()
 {
 	measure("Plugins")
 
-	PlayerPlugin::Handler* pph = PlayerPlugin::Handler::instance();
+	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
 
-	pph->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
-	pph->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
-	pph->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
-	pph->addPlugin(new GUI_Stream(m->playlistHandler));
-	pph->addPlugin(new GUI_Podcasts(m->playlistHandler));
-	pph->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
-	pph->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
-	pph->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
-	pph->addPlugin(new GUI_Speed());
-	pph->addPlugin(new GUI_Broadcast(m->playManager, m->engine));
-	pph->addPlugin(new GUI_Crossfader());
-	pph->addPlugin(new GUI_SpectrogramPainter(m->playManager));
+	playerPluginHandler->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
+	playerPluginHandler->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
+	playerPluginHandler->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
+	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler));
+	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler));
+	playerPluginHandler->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
+	playerPluginHandler->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
+	playerPluginHandler->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
+	playerPluginHandler->addPlugin(new GUI_Speed());
+	playerPluginHandler->addPlugin(new GUI_Broadcast(m->playManager, m->engine));
+	playerPluginHandler->addPlugin(new GUI_Crossfader());
+	playerPluginHandler->addPlugin(new GUI_SpectrogramPainter(m->playManager));
 
 	spLog(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
@@ -485,17 +495,6 @@ void Application::sessionEndRequested(QSessionManager& manager)
 	{
 		m->player->requestShutdown();
 	}
-}
-
-void Application::shutdown()
-{
-	PlayerPlugin::Handler::instance()->shutdown();
-
-	m->playlistHandler->shutdown();
-	m->engine->shutdown();
-	m->playManager->shutdown();
-
-	m->shutdownTriggered = true;
 }
 
 void Application::remoteControlActivated()

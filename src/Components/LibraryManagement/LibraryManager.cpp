@@ -55,7 +55,8 @@ struct Manager::Private
 		DB::Connector* database;
 		DB::Library* libraryConnector;
 
-		Private() :
+		Private(Playlist::Handler* playlistHandler) :
+			playlistHandler {playlistHandler},
 			database {DB::Connector::instance()},
 			libraryConnector {database->libraryConnector()} {}
 
@@ -117,19 +118,14 @@ struct Manager::Private
 		}
 };
 
-Manager::Manager() :
+Manager::Manager(Playlist::Handler* playlistHandler) :
 	QObject()
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(playlistHandler);
 	reset();
 }
 
 Manager::~Manager() = default;
-
-void Manager::init(Playlist::Handler* playlistHandler)
-{
-	m->playlistHandler = playlistHandler;
-}
 
 void Manager::reset()
 {

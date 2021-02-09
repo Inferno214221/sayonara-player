@@ -58,6 +58,7 @@ namespace Library
 		 * @param containers Some predefined plugins
 		 */
 		void init(const QList<AbstractContainer*>& containers, AbstractContainer* fallback_library);
+		void shutdown();
 
 		/**
 		 * @brief Get a list for all found plugins. The ui is not necessarily initialized

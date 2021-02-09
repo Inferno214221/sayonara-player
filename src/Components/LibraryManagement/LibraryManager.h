@@ -38,43 +38,42 @@ namespace Library
 {
 	class Info;
 	class Manager :
-			public QObject,
-			public LibraryInfoAccessor
+		public QObject,
+		public LibraryInfoAccessor
 	{
 		Q_OBJECT
 		PIMPL(Manager)
-		SINGLETON(Manager)
 
-		friend class LocalLibrary;
+			friend class LocalLibrary;
 
-	signals:
-		void sigPathChanged(LibraryId id);
-		void sigAdded(LibraryId id);
-		void sigRenamed(LibraryId id);
-		void sigMoved(LibraryId id, int from, int to);
-		void sigRemoved(LibraryId id);
+		signals:
+			void sigPathChanged(LibraryId id);
+			void sigAdded(LibraryId id);
+			void sigRenamed(LibraryId id);
+			void sigMoved(LibraryId id, int from, int to);
+			void sigRemoved(LibraryId id);
 
-	private:
-		void reset();
+		public:
+			Manager(Playlist::Handler* playlistHandler);
+			~Manager() override;
 
-	public:
-		void init(Playlist::Handler* playlistHandler);
+			LibraryId addLibrary(const QString& name, const QString& path);
+			bool renameLibrary(LibraryId id, const QString& newName);
+			bool removeLibrary(LibraryId id);
+			bool moveLibrary(int old_row, int new_row);
+			bool changeLibraryPath(LibraryId id, const QString& newPath);
 
-		LibraryId addLibrary(const QString& name, const QString& path);
-		bool renameLibrary(LibraryId id, const QString& newName);
-		bool removeLibrary(LibraryId id);
-		bool moveLibrary(int old_row, int new_row);
-		bool changeLibraryPath(LibraryId id, const QString& newPath);
+			QList<Info> allLibraries() const override;
+			Info libraryInfo(LibraryId id) const override;
+			Info libraryInfoByPath(const QString& path) const override;
+			int count() const override;
+			LocalLibrary* libraryInstance(LibraryId id) override;
 
-		QList<Info> allLibraries() const override;
-		Info libraryInfo(LibraryId id) const override;
-		Info libraryInfoByPath(const QString& path) const override;
-		int count() const override;
-		LocalLibrary* libraryInstance(LibraryId id) override;
+			static QString requestLibraryName(const QString& path);
 
-		static QString requestLibraryName(const QString& path);
+		private:
+			void reset();
 	};
 }
-
 
 #endif // LIBRARYMANAGER_H

@@ -30,6 +30,7 @@
 #include <QPluginLoader>
 #include <QJsonObject>
 #include <QVariantMap>
+#include <QWidget>
 
 using Library::PluginHandler;
 using Library::AbstractContainer;
@@ -106,6 +107,15 @@ void PluginHandler::init(const ContainerList& containers, AbstractContainer* fal
 	}
 }
 
+void PluginHandler::shutdown()
+{
+	for(const auto& container : m->libraryContainers)
+	{
+		delete container;
+	}
+
+	m->libraryContainers.clear();
+}
 
 void PluginHandler::initLibraries(const QList<Library::AbstractContainer*>& containers)
 {
