@@ -4,10 +4,7 @@
 #include <QThread>
 #include "Utils/Pimpl.h"
 
-namespace Library
-{
-	class Manager;
-}
+class LibraryInfoAccessor;
 
 class FileOperationThread :
 	public QThread
@@ -26,8 +23,9 @@ class FileOperationThread :
 		QList<LibraryId> targetIds() const;
 
 	protected:
-		FileOperationThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QStringList& targetFiles, QObject* parent);
-		Library::Manager* libraryManager();
+		FileOperationThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		                    const QStringList& targetFiles, QObject* parent);
+		LibraryInfoAccessor* libraryInfoAccessor();
 };
 
 class FileMoveThread :
@@ -37,7 +35,8 @@ class FileMoveThread :
 	PIMPL(FileMoveThread)
 
 	public:
-		FileMoveThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
+		FileMoveThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		               const QString& targetDir, QObject* parent);
 		~FileMoveThread() override;
 
 	protected:
@@ -51,7 +50,8 @@ class FileCopyThread :
 	PIMPL(FileCopyThread)
 
 	public:
-		FileCopyThread(Library::Manager* libraryManager, const QStringList& sourceFiles, const QString& targetDir, QObject* parent);
+		FileCopyThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		               const QString& targetDir, QObject* parent);
 		~FileCopyThread() override;
 
 	protected:
@@ -65,7 +65,8 @@ class FileRenameThread :
 	PIMPL(FileRenameThread)
 
 	public:
-		FileRenameThread(Library::Manager* libraryManager, const QString& sourceFile, const QString& targetFile, QObject* parent);
+		FileRenameThread(LibraryInfoAccessor* libraryInfoAccessor, const QString& sourceFile, const QString& targetFile,
+		                 QObject* parent);
 		~FileRenameThread() override;
 
 	protected:
@@ -79,7 +80,7 @@ class FileDeleteThread :
 	PIMPL(FileDeleteThread)
 
 	public:
-		FileDeleteThread(Library::Manager* libraryManager, const QStringList& sourcePaths, QObject* parent);
+		FileDeleteThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourcePaths, QObject* parent);
 		~FileDeleteThread() override;
 
 	protected:

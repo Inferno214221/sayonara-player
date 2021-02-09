@@ -21,7 +21,7 @@
 #include "FileOperations.h"
 #include "FileOperationWorkerThread.h"
 
-#include "Components/LibraryManagement/LibraryManager.h"
+#include "Interfaces/LibraryInfoAccessor.h"
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
@@ -39,25 +39,25 @@
 
 struct FileOperations::Private
 {
-	Library::Manager* libraryManager;
+	LibraryInfoAccessor* libraryInfoAccessor;
 
-	Private(Library::Manager* libraryManager) :
-		libraryManager {libraryManager} {}
+	Private(LibraryInfoAccessor* libraryInfoAccessor) :
+		libraryInfoAccessor {libraryInfoAccessor} {}
 };
 
-FileOperations::FileOperations(Library::Manager* libraryManager, QObject* parent) :
+FileOperations::FileOperations(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(libraryManager);
+	m = Pimpl::make<Private>(libraryInfoAccessor);
 }
 
 FileOperations::~FileOperations() = default;
 
-static void refreshLibraries(Library::Manager* libraryManager, const QList<LibraryId>& libraries)
+static void refreshLibraries(LibraryInfoAccessor* libraryInfoAccessor, const QList<LibraryId>& libraries)
 {
 	for(const auto& id : libraries)
 	{
-		auto* library = libraryManager->libraryInstance(id);
+		auto* library = libraryInfoAccessor->libraryInstance(id);
 		if(library)
 		{
 			library->refetch();
@@ -67,7 +67,7 @@ static void refreshLibraries(Library::Manager* libraryManager, const QList<Libra
 
 bool FileOperations::renamePath(const QString& path, const QString& newName)
 {
-	auto* t = new FileRenameThread(m->libraryManager, path, newName, this);
+	auto* t = new FileRenameThread(m->libraryInfoAccessor, path, newName, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
@@ -79,7 +79,7 @@ bool FileOperations::renamePath(const QString& path, const QString& newName)
 
 bool FileOperations::movePaths(const QStringList& paths, const QString& targetDir)
 {
-	auto* t = new FileMoveThread(m->libraryManager, paths, targetDir, this);
+	auto* t = new FileMoveThread(m->libraryInfoAccessor, paths, targetDir, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::moveThreadFinished);
@@ -93,8 +93,8 @@ void FileOperations::moveThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
 
-	refreshLibraries(m->libraryManager, thread->sourceIds());
-	refreshLibraries(m->libraryManager, thread->targetIds());
+	refreshLibraries(m->libraryInfoAccessor, thread->sourceIds());
+	refreshLibraries(m->libraryInfoAccessor, thread->targetIds());
 
 	thread->deleteLater();
 	emit sigFinished();
@@ -102,7 +102,7 @@ void FileOperations::moveThreadFinished()
 
 bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDir)
 {
-	auto* t = new FileCopyThread(m->libraryManager, paths, targetDir, this);
+	auto* t = new FileCopyThread(m->libraryInfoAccessor, paths, targetDir, this);
 
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::copyThreadFinished);
@@ -115,7 +115,7 @@ bool FileOperations::copyPaths(const QStringList& paths, const QString& targetDi
 void FileOperations::copyThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
-	refreshLibraries(m->libraryManager, thread->targetIds());
+	refreshLibraries(m->libraryInfoAccessor, thread->targetIds());
 
 	thread->deleteLater();
 	emit sigFinished();
@@ -125,7 +125,7 @@ bool FileOperations::deletePaths(const QStringList& paths)
 {
 	spLog(Log::Info, this) << "Try to delete " << paths;
 
-	auto* t = new FileDeleteThread(m->libraryManager, paths, this);
+	auto* t = new FileDeleteThread(m->libraryInfoAccessor, paths, this);
 	connect(t, &QThread::started, this, &FileOperations::sigStarted);
 	connect(t, &QThread::finished, this, &FileOperations::deleteThreadFinished);
 
@@ -137,7 +137,7 @@ bool FileOperations::deletePaths(const QStringList& paths)
 void FileOperations::deleteThreadFinished()
 {
 	auto* thread = dynamic_cast<FileOperationThread*>(sender());
-	refreshLibraries(m->libraryManager, thread->sourceIds());
+	refreshLibraries(m->libraryInfoAccessor, thread->sourceIds());
 
 	thread->deleteLater();
 	emit sigFinished();

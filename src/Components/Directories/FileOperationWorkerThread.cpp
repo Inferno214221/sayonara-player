@@ -1,6 +1,6 @@
 #include "FileOperationWorkerThread.h"
 
-#include "Components/LibraryManagement/LibraryManager.h"
+#include "Interfaces/LibraryInfoAccessor.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
@@ -26,9 +26,9 @@ struct FileRenameThread::Private
 		targetFile(targetFile) {}
 };
 
-FileRenameThread::FileRenameThread(Library::Manager* libraryManager, const QString& sourceFile,
+FileRenameThread::FileRenameThread(LibraryInfoAccessor* libraryInfoAccessor, const QString& sourceFile,
                                    const QString& targetFile, QObject* parent) :
-	FileOperationThread(libraryManager, QStringList {sourceFile}, QStringList {targetFile}, parent)
+	FileOperationThread(libraryInfoAccessor, QStringList {sourceFile}, QStringList {targetFile}, parent)
 {
 	m = Pimpl::make<Private>(sourceFile, targetFile);
 }
@@ -54,7 +54,7 @@ void FileRenameThread::run()
 	{
 		auto* db = DB::Connector::instance();
 		auto* libraryDatabase = db->libraryDatabase(-1, db->databaseId());
-		const auto info = libraryManager()->libraryInfoByPath(m->targetFile);
+		const auto info = libraryInfoAccessor()->libraryInfoByPath(m->targetFile);
 
 		QMap<QString, QString> resultPair {{m->sourceFile, m->targetFile}};
 		libraryDatabase->renameFilepaths(resultPair, info.id());
@@ -71,9 +71,9 @@ struct FileMoveThread::Private
 		targetDir(targetDir) {}
 };
 
-FileMoveThread::FileMoveThread(Library::Manager* libraryManager, const QStringList& sourceFiles,
+FileMoveThread::FileMoveThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                const QString& targetDir, QObject* parent) :
-	FileOperationThread(libraryManager, sourceFiles, QStringList {targetDir}, parent)
+	FileOperationThread(libraryInfoAccessor, sourceFiles, QStringList {targetDir}, parent)
 {
 	m = Pimpl::make<Private>(sourceFiles, targetDir);
 }
@@ -108,7 +108,7 @@ void FileMoveThread::run()
 
 	auto* db = DB::Connector::instance();
 	auto* libraryDatabase = db->libraryDatabase(-1, db->databaseId());
-	const auto info = libraryManager()->libraryInfoByPath(m->targetDir);
+	const auto info = libraryInfoAccessor()->libraryInfoByPath(m->targetDir);
 
 	libraryDatabase->renameFilepaths(resultPair, info.id());
 }
@@ -123,9 +123,9 @@ struct FileCopyThread::Private
 		targetDir(targetDir) {}
 };
 
-FileCopyThread::FileCopyThread(Library::Manager* libraryManager, const QStringList& sourceFiles,
+FileCopyThread::FileCopyThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                const QString& targetDir, QObject* parent) :
-	FileOperationThread(libraryManager, sourceFiles, QStringList {targetDir}, parent)
+	FileOperationThread(libraryInfoAccessor, sourceFiles, QStringList {targetDir}, parent)
 {
 	m = Pimpl::make<Private>(sourceFiles, targetDir);
 }
@@ -150,8 +150,8 @@ void FileCopyThread::run()
 		}
 	}
 
-	const auto info = libraryManager()->libraryInfoByPath(m->targetDir);
-	auto* library = libraryManager()->libraryInstance(info.id());
+	const auto info = libraryInfoAccessor()->libraryInfoByPath(m->targetDir);
+	auto* library = libraryInfoAccessor()->libraryInstance(info.id());
 	library->reloadLibrary(false, Library::ReloadQuality::Fast);
 }
 
@@ -163,8 +163,9 @@ struct FileDeleteThread::Private
 		paths(paths) {}
 };
 
-FileDeleteThread::FileDeleteThread(Library::Manager* libraryManager, const QStringList& paths, QObject* parent) :
-	FileOperationThread(libraryManager, paths, QStringList(), parent)
+FileDeleteThread::FileDeleteThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& paths,
+                                   QObject* parent) :
+	FileOperationThread(libraryInfoAccessor, paths, QStringList(), parent)
 {
 	m = Pimpl::make<Private>(paths);
 }
@@ -188,20 +189,20 @@ struct FileOperationThread::Private
 	Util::Set<LibraryId> sourceIds;
 	Util::Set<LibraryId> targetIds;
 
-	Library::Manager* libraryManager;
+	LibraryInfoAccessor* libraryInfoAccessor;
 
-	Private(Library::Manager* libraryManager, const QStringList& sourceFiles, const QStringList& targetFiles) :
-		libraryManager {libraryManager}
+	Private(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles, const QStringList& targetFiles) :
+		libraryInfoAccessor {libraryInfoAccessor}
 	{
 		for(const auto& sourceFile : sourceFiles)
 		{
-			const auto info = libraryManager->libraryInfoByPath(sourceFile);
+			const auto info = libraryInfoAccessor->libraryInfoByPath(sourceFile);
 			this->sourceIds << info.id();
 		}
 
 		for(const auto& targetFile : targetFiles)
 		{
-			const auto info = libraryManager->libraryInfoByPath(targetFile);
+			const auto info = libraryInfoAccessor->libraryInfoByPath(targetFile);
 			this->targetIds << info.id();
 		}
 
@@ -210,12 +211,12 @@ struct FileOperationThread::Private
 	}
 };
 
-FileOperationThread::FileOperationThread(Library::Manager* libraryManager, const QStringList& sourceFiles,
+FileOperationThread::FileOperationThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                          const QStringList& targetFiles,
                                          QObject* parent) :
 	QThread(parent)
 {
-	m = Pimpl::make<Private>(libraryManager, sourceFiles, targetFiles);
+	m = Pimpl::make<Private>(libraryInfoAccessor, sourceFiles, targetFiles);
 }
 
 FileOperationThread::~FileOperationThread() = default;
@@ -230,7 +231,7 @@ QList<LibraryId> FileOperationThread::targetIds() const
 	return m->targetIds.toList();
 }
 
-Library::Manager* FileOperationThread::libraryManager()
+LibraryInfoAccessor* FileOperationThread::libraryInfoAccessor()
 {
-	return m->libraryManager;
+	return m->libraryInfoAccessor;
 }
