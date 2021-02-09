@@ -28,9 +28,6 @@
 #include "Gui/Utils/Widgets/Dialog.h"
 #include "Utils/Pimpl.h"
 
-class GUI_TagEdit;
-class GUI_Lyrics;
-class InfoDialogContainer;
 namespace Cover
 {
 	class Location;
@@ -50,20 +47,21 @@ class GUI_InfoDialog :
 	UI_CLASS(InfoDialog)
 
 	public:
-		enum class Tab : uint8_t
+		enum class Tab :
+			uint8_t
 		{
-			Info = 0,
-			Lyrics = 1,
-			Edit = 2
+				Info = 0,
+				Lyrics = 1,
+				Edit = 2
 		};
 
-		explicit GUI_InfoDialog(InfoDialogContainer* container, QWidget* parent = nullptr);
+		explicit GUI_InfoDialog(QWidget* parent = nullptr);
 		~GUI_InfoDialog() override;
 
 		void setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation);
 		bool hasMetadata() const;
 
-		GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab tab);
+		GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab track);
 		void showCoverEditTab();
 
 		void setBusy(bool b);
@@ -86,7 +84,7 @@ class GUI_InfoDialog :
 		void showLyricsTab();
 		void showTagEditTab();
 
-		void prepareCover(const Cover::Location& cover_path);
+		void prepareCover(const Cover::Location& coverLocation);
 		void prepareInfo(MD::Interpretation mode);
 		void prepareTab(GUI_InfoDialog::Tab idx);
 

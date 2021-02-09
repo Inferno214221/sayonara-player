@@ -46,8 +46,6 @@ InfoDialogContainer::~InfoDialogContainer()
 	delete m->asyncHelper;
 }
 
-void InfoDialogContainer::infoDialogClosed() {}
-
 void InfoDialogContainer::showInfo()
 {
 	if(initDialog(OpenMode::Info))
@@ -84,7 +82,7 @@ bool InfoDialogContainer::initDialog(OpenMode mode)
 {
 	if(!m->infoDialog)
 	{
-		m->infoDialog = new GUI_InfoDialog(this, Gui::Util::mainWindow());
+		m->infoDialog = new GUI_InfoDialog(Gui::Util::mainWindow());
 	}
 
 	if(!hasMetadata())

@@ -72,12 +72,6 @@ class InfoDialogContainer
 		InfoDialogContainer();
 		virtual ~InfoDialogContainer();
 
-		/**
-		 * @brief this function should not be called from outside.
-		 * This function is triggered when the info dialog was closed.
-		 */
-		void infoDialogClosed();
-
 	private:
 		void checkInfoDialog();
 		bool initDialog(OpenMode open_mode);

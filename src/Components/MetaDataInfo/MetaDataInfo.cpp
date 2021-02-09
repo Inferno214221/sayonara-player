@@ -19,7 +19,6 @@
  */
 
 #include "MetaDataInfo.h"
-#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
@@ -30,7 +29,6 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Genre.h"
-#include "Utils/Library/LibraryInfo.h"
 #include "Utils/Settings/Settings.h"
 
 #include "Components/Covers/CoverLocation.h"
@@ -148,18 +146,11 @@ MetaDataInfo::MetaDataInfo(const MetaDataList& tracks) :
 		// genre
 		genres << track.genres();
 
-		// paths
-		if(!Util::File::isWWW(track.filepath()))
-		{
-			const auto [dir, filename] = Util::File::splitFilename(track.filepath());
-			m->paths << dir;
-			Q_UNUSED(filename);
-		}
+		const auto path = Util::File::isWWW(track.filepath())
+			? track.filepath()
+			: Util::File::getParentDirectory(track.filepath());
 
-		else
-		{
-			m->paths << track.filepath();
-		}
+		m->paths << path;
 
 		filetypes << Util::File::getFileExtension(track.filepath());
 	}
@@ -491,33 +482,10 @@ QStringList MetaDataInfo::paths() const
 {
 	QStringList links;
 
-	const auto libraryInfos = Library::Manager::instance()->allLibraries();
-
-	QStringList libraryPaths;
-	Util::Algorithm::transform(libraryInfos, libraryPaths, [](const auto& info) {
-		return (info.path());
-	});
-
-	Algorithm::sort(libraryPaths, [](const auto& path1, const auto& path2) {
-		return (path1.length() > path2.length());
-	});
-
 	const auto dark = (GetSetting(Set::Player_Style) == 1);
-	for(const auto& path : Algorithm::AsConst(m->paths))
-	{
-		auto name = path;
-
-		for(const auto& libraryPath : Algorithm::AsConst(libraryPaths))
-		{
-			if(name.contains(libraryPath))
-			{
-				name.replace(libraryPath, "...");
-				break;
-			}
-		}
-
-		links << Util::createLink(name, dark, false, path);
-	}
+	Util::Algorithm::transform(m->paths, links, [&](const auto& path){
+		return Util::createLink(path, dark, false, path);
+	});
 
 	return links;
 }
