@@ -27,6 +27,7 @@
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/FileUtils.h"
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
@@ -44,20 +45,19 @@ using Library::ImportCachePtr;
 
 struct Importer::Private
 {
-	QString						sourceDirectory;
-	QStringList					temporaryFiles;
+	QString sourceDirectory;
+	QStringList temporaryFiles;
 
-	LocalLibrary*				library=nullptr;
-	CachingThread*				cachingThread=nullptr;
-	CopyThread*					copyThread=nullptr;
-	ImportCachePtr				importCache=nullptr;
+	LocalLibrary* library = nullptr;
+	CachingThread* cachingThread = nullptr;
+	CopyThread* copyThread = nullptr;
+	ImportCachePtr importCache = nullptr;
 
-	Importer::ImportStatus		status;
+	Importer::ImportStatus status;
 
 	Private(LocalLibrary* library) :
 		library(library),
-		status(Importer::ImportStatus::NoTracks)
-	{}
+		status(Importer::ImportStatus::NoTracks) {}
 
 	void deleteTemporaryFiles()
 	{
@@ -79,17 +79,19 @@ Importer::~Importer() = default;
 bool Importer::isRunning() const
 {
 	return (m->copyThread && m->copyThread->isRunning()) ||
-		(m->cachingThread && m->cachingThread->isRunning());
+	       (m->cachingThread && m->cachingThread->isRunning());
 }
 
 void Importer::importFiles(const QStringList& files, const QString& targetDir)
 {
 	QStringList filesToBeImported;
 
-	for(const QString& file : files)
+	for(const auto& file : files)
 	{
-		if(Util::File::isSubdir(file, m->library->path()) ||
-			Util::File::isSamePath(file, m->library->path()))
+		const auto info = m->library->info();
+
+		if(Util::File::isSubdir(file, info.path()) ||
+		   Util::File::isSamePath(file, info.path()))
 		{
 			continue;
 		}
@@ -110,7 +112,7 @@ void Importer::importFiles(const QStringList& files, const QString& targetDir)
 		emit sigTargetDirectoryChanged(targetDir);
 	}
 
-	auto* thread = new CachingThread(filesToBeImported, m->library->path());
+	auto* thread = new CachingThread(filesToBeImported, m->library->info().path());
 	connect(thread, &CachingThread::finished, this, &Importer::cachingThreadFinished);
 	connect(thread, &CachingThread::sigCachedFilesChanged, this, &Importer::sigCachedFilesChanged);
 	connect(thread, &CachingThread::destroyed, this, [=]() {
@@ -120,7 +122,6 @@ void Importer::importFiles(const QStringList& files, const QString& targetDir)
 	m->cachingThread = thread;
 	thread->start();
 }
-
 
 // preload thread has cached everything, but ok button has not been clicked yet
 void Importer::cachingThreadFinished()
@@ -158,7 +159,8 @@ void Importer::cachingThreadFinished()
 
 int Importer::cachedFileCount() const
 {
-	if(!m->importCache){
+	if(!m->importCache)
+	{
 		return 0;
 	}
 
@@ -166,22 +168,20 @@ int Importer::cachedFileCount() const
 }
 
 // fired if ok was clicked in dialog
-void  Importer::acceptImport(const QString& targetDir)
+void Importer::acceptImport(const QString& targetDir)
 {
 	emitStatus(ImportStatus::Importing);
 
 	auto* copy_thread = new CopyThread(targetDir, m->importCache, this);
 	connect(copy_thread, &CopyThread::sigProgress, this, &Importer::sigProgress);
 	connect(copy_thread, &CopyThread::finished, this, &Importer::copyThreadFinished);
-	connect(copy_thread, &CachingThread::destroyed, this, [=]()
-	{
+	connect(copy_thread, &CachingThread::destroyed, this, [=]() {
 		m->copyThread = nullptr;
 	});
 
 	m->copyThread = copy_thread;
 	copy_thread->start();
 }
-
 
 void Importer::copyThreadFinished()
 {
@@ -190,7 +190,7 @@ void Importer::copyThreadFinished()
 	reset();
 
 	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->library->id(), db->databaseId());
+	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->library->info().id(), db->databaseId());
 
 	MetaDataList tracks = copyThread->copiedMetadata();
 	{ // no tracks were copied or rollback was finished
@@ -229,21 +229,20 @@ void Importer::copyThreadFinished()
 		return;
 	}
 
-
 	int copiedFilecount = copyThread->copiedFileCount();
 	int cacheFilecount = m->importCache->count();
 
 	QString message;
 	if(cacheFilecount == copiedFilecount)
 	{
-		message =  tr("All files could be imported");
+		message = tr("All files could be imported");
 	}
 
 	else
 	{
 		message = tr("%1 of %2 files could be imported")
-				.arg(copiedFilecount)
-				.arg(cacheFilecount);
+			.arg(copiedFilecount)
+			.arg(cacheFilecount);
 	}
 
 	emitStatus(ImportStatus::Imported);
@@ -251,7 +250,6 @@ void Importer::copyThreadFinished()
 
 	Tagging::ChangeNotifier::instance()->clearChangedMetadata();
 }
-
 
 void Importer::metadataChanged()
 {
@@ -261,7 +259,6 @@ void Importer::metadataChanged()
 		m->importCache->changeMetadata(cn->changedMetadata());
 	}
 }
-
 
 // fired if cancel button was clicked in dialog
 bool Importer::cancelImport()

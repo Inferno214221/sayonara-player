@@ -21,9 +21,7 @@ class GUI_DirectoryView :
 		explicit GUI_DirectoryView(QWidget* parent=nullptr);
 		~GUI_DirectoryView() override;
 
-		void init(Library::Manager* libraryManager);
-
-		void setCurrentLibrary(LibraryId id);
+		void init(Library::Manager* libraryManager, LibraryId libraryId);
 		void setFilterTerm(const QString& filter);
 
 	private:

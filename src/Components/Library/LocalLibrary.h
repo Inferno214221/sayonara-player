@@ -29,6 +29,7 @@ class ReloadThread;
 
 namespace Library
 {
+	class Info;
 	class Manager;
 }
 
@@ -43,6 +44,7 @@ class LocalLibrary :
 	signals:
 		void sigImportDialogRequested(const QString& targetDirectory);
 		void sigRenamed(const QString& newName);
+		void sigPathChanged(const QString& newPath);
 
 	protected:
 		LocalLibrary(Library::Manager* libraryManager, LibraryId id, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
@@ -50,13 +52,11 @@ class LocalLibrary :
 	public:
 		~LocalLibrary() override;
 
-		QString	path() const;
 		bool setLibraryPath(const QString& path);
-
-		QString	name() const;
 		bool setLibraryName(const QString& name);
 
-		LibraryId id() const;
+		Library::Info info() const;
+
 		Library::Importer* importer();
 
 		bool isReloading() const override;
@@ -64,9 +64,6 @@ class LocalLibrary :
 	public slots:
 		void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
 		void reloadLibrary(bool clear_first, Library::ReloadQuality quality) override;
-
-
-
 		void importFiles(const QStringList& files) override;
 		void importFilesTo(const QStringList& files, const QString& targetDirectory);
 
@@ -98,12 +95,13 @@ class LocalLibrary :
 		void refreshAlbums() override;
 		void refreshTracks() override;
 
+
+
 	private slots:
 		void reloadThreadNewBlock();
 		void reloadThreadFinished();
 		void searchModeChanged();
 		void showAlbumArtistsChanged();
-		void renamed(LibraryId id);
 		void importStatusChanged(Library::Importer::ImportStatus status);
 };
 

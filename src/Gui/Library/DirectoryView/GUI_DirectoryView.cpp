@@ -61,9 +61,10 @@ GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 
 GUI_DirectoryView::~GUI_DirectoryView() = default;
 
-void GUI_DirectoryView::init(Library::Manager* libraryManager)
+void GUI_DirectoryView::init(Library::Manager* libraryManager, LibraryId libraryId)
 {
 	m = Pimpl::make<Private>(libraryManager);
+	m->directorySelectionHandler->setLibraryId(libraryId);
 }
 
 void GUI_DirectoryView::initUi()
@@ -76,7 +77,9 @@ void GUI_DirectoryView::initUi()
 	ui = new Ui::GUI_DirectoryView();
 	ui->setupUi(this);
 
-	ui->tvDirs->init(m->libraryManager);
+	const auto info = m->currentLibrary();
+
+	ui->tvDirs->init(m->libraryManager, info);
 	ui->lvFiles->init(m->libraryManager);
 
 	connect(m->directorySelectionHandler,
@@ -156,27 +159,13 @@ void GUI_DirectoryView::initUi()
 void GUI_DirectoryView::load()
 {
 	const auto info = m->currentLibrary();
-
-	ui->tvDirs->setLibraryInfo(info);
+	
 	ui->tvDirs->setFilterTerm(m->filterTerm);
 	ui->lvFiles->setParentDirectory(info.id(), info.path());
 	ui->btnClearSelection->setVisible(false);
 
 	ui->tvDirs->setEnabled(true);
 	ui->tvDirs->setBusy(false);
-}
-
-void GUI_DirectoryView::setCurrentLibrary(LibraryId libraryId)
-{
-	m->directorySelectionHandler->setLibraryId(libraryId);
-
-	const auto info = m->currentLibrary();
-
-	if(ui)
-	{
-		ui->tvDirs->setLibraryInfo(info);
-		ui->lvFiles->setParentDirectory(info.id(), info.path());
-	}
 }
 
 void GUI_DirectoryView::setFilterTerm(const QString& filter)

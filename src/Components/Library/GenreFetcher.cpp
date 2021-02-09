@@ -27,6 +27,7 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 
@@ -71,7 +72,7 @@ void GenreFetcher::reloadGenres()
 		return;
 	}
 
-	LibraryId libraryId = m->localLibrary->id();
+	LibraryId libraryId = m->localLibrary->info().id();
 
 	DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(libraryId, 0);
 	m->genres = lib_db->getAllGenres();

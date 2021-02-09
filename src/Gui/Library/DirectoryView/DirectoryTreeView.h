@@ -88,14 +88,13 @@ namespace Directory
 			explicit TreeView(QWidget* parent = nullptr);
 			~TreeView() override;
 
-			void init(LibraryInfoAccessor* libraryInfoAccessor);
+			void init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info);
 
 			QString directoryName(const QModelIndex& index);
 
 			QModelIndexList selctedRows() const;
 			QStringList selectedPaths() const;
 
-			void setLibraryInfo(const Library::Info& info);
 			void setFilterTerm(const QString& filter);
 
 		public slots:

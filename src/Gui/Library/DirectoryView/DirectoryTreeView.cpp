@@ -87,7 +87,7 @@ TreeView::TreeView(QWidget* parent) :
 
 TreeView::~TreeView() = default;
 
-void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor)
+void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor, this);
 
@@ -103,6 +103,12 @@ void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor)
 	action->setShortcutContext(Qt::WidgetShortcut);
 	connect(action, &QAction::triggered, this, &TreeView::renameDirectoryClicked);
 	this->addAction(action);
+
+	const auto index = m->model->setDataSource(info.id());
+	if(index.isValid())
+	{
+		this->setRootIndex(index);
+	}
 }
 
 void TreeView::initContextMenu()
@@ -441,15 +447,6 @@ void TreeView::selectionChanged(const QItemSelection& selected, const QItemSelec
 
 	if(!m->dragTimer->isActive()) {
 		emit sigCurrentIndexChanged(index);
-	}
-}
-
-void TreeView::setLibraryInfo(const Library::Info& info)
-{
-	const QModelIndex index = m->model->setDataSource(info.id());
-	if(index.isValid())
-	{
-		this->setRootIndex(index);
 	}
 }
 

@@ -98,8 +98,8 @@ namespace Library
 
 			void importDirsRequested();
 			void importFilesRequested();
-			void nameChanged(LibraryId id);
-			void pathChanged(LibraryId id);
+			void nameChanged(const QString& newName);
+			void pathChanged(const QString& newPath);
 
 			// importer requests dialog
 			void importDialogRequested(const QString& targetDirectory);

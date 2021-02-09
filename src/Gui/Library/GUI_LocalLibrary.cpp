@@ -78,35 +78,32 @@ using namespace Library;
 
 struct GUI_LocalLibrary::Private
 {
-	Library::Manager* libraryManager;
 	LocalLibrary* library;
 	LocalLibraryMenu* libraryMenu;
 
-	Private(LibraryId id, Library::Manager* libraryManager, GUI_LocalLibrary* parent) :
-		libraryManager{libraryManager},
-		library{libraryManager->libraryInstance(id)},
-		libraryMenu{new LocalLibraryMenu(library->name(), library->path(), parent)}
+	Private(LocalLibrary* localLibrary, GUI_LocalLibrary* parent) :
+		library{localLibrary},
+		libraryMenu{new LocalLibraryMenu(library->info().name(), library->info().path(), parent)}
 	{}
 };
 
 GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManager, QWidget* parent) :
 	GUI_AbstractLibrary(libraryManager->libraryInstance(id), parent)
 {
-	m = Pimpl::make<Private>(id, libraryManager, this);
+	m = Pimpl::make<Private>(libraryManager->libraryInstance(id), this);
 
 	setupParent(this, &ui);
 	this->setFocusProxy(ui->leSearch);
 
-	ui->directoryView->init(libraryManager);
+	ui->directoryView->init(libraryManager, id);
 
 	connect(m->library, &LocalLibrary::sigReloadingLibrary, this, &GUI_LocalLibrary::progressChanged);
 	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, this, &GUI_LocalLibrary::reloadFinished);
 	connect(m->library, &LocalLibrary::sigReloadingLibraryFinished, ui->lvGenres, &GenreView::reloadGenres);
 	connect(m->library, &LocalLibrary::sigAllTracksLoaded, this, &GUI_LocalLibrary::tracksLoaded);
 	connect(m->library, &LocalLibrary::sigImportDialogRequested, this, &GUI_LocalLibrary::importDialogRequested);
-
-	connect(libraryManager, &Manager::sigPathChanged, this, &GUI_LocalLibrary::pathChanged);
-	connect(libraryManager, &Manager::sigRenamed, this, &GUI_LocalLibrary::nameChanged);
+	connect(m->library, &LocalLibrary::sigRenamed, this, &GUI_LocalLibrary::nameChanged);
+	connect(m->library, &LocalLibrary::sigPathChanged, this, &GUI_LocalLibrary::pathChanged);
 
 	connect(ui->tvAlbums, &AlbumView::sigDiscPressed, m->library, &LocalLibrary::changeCurrentDisc);
 	connect(ui->lvGenres, &GenreView::sigSelectedChanged, this, &GUI_LocalLibrary::genreSelectionChanged);
@@ -133,7 +130,6 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManage
 
 	ui->extensionBar->init(m->library);
 	ui->lvGenres->init(m->library);
-	ui->directoryView->setCurrentLibrary(m->library->id());
 	ui->btnView->setOverrideText(true);
 
 	ListenSetting(Set::Lib_ViewType, GUI_LocalLibrary::switchViewType);
@@ -145,10 +141,12 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManage
 		this->selectNextViewType();
 	});
 
+	const auto libraryPath = m->library->info().path();
+
 	const QStringList paths
 		{
-			m->library->path(),
-			Util::File::getParentDirectory(m->library->path())
+			libraryPath,
+			Util::File::getParentDirectory(libraryPath)
 		};
 
 	auto* action = new Gui::LibraryPreferenceAction(this);
@@ -182,7 +180,7 @@ void GUI_LocalLibrary::checkViewState()
 
 void GUI_LocalLibrary::checkMainSplitterStatus()
 {
-	bool pathExists = Util::File::exists(m->library->path());
+	bool pathExists = Util::File::exists(m->library->info().path());
 	bool isLibraryEmpty = m->library->isEmpty();
 
 	ReloadWidgetIndex index = ReloadWidgetIndex::TableView;
@@ -206,7 +204,7 @@ void GUI_LocalLibrary::checkMainSplitterStatus()
 
 	if(index == ReloadWidgetIndex::NoDirView)
 	{
-		ui->labDir->setText(m->library->path());
+		ui->labDir->setText(m->library->info().path());
 	}
 
 	else
@@ -234,8 +232,10 @@ void GUI_LocalLibrary::tracksLoaded()
 {
 	checkViewState();
 
-	ui->labLibraryName->setText(m->library->name());
-	ui->labPath->setText(Util::createLink(m->library->path(), Style::isDark()));
+	const auto info = m->library->info();
+
+	ui->labLibraryName->setText(info.name());
+	ui->labPath->setText(Util::createLink(info.path(), Style::isDark()));
 
 	ui->btnScanForFiles->setIcon(Gui::Icons::icon(Gui::Icons::Refresh));
 	ui->btnImportDirectories->setIcon(Gui::Icons::icon(Gui::Icons::Folder));
@@ -314,7 +314,7 @@ void GUI_LocalLibrary::reloadLibraryRequestedWithQuality(ReloadQuality quality)
 {
 	if(quality == ReloadQuality::Unknown)
 	{
-		auto* dialog = new GUI_LibraryReloadDialog(m->library->name(), this);
+		auto* dialog = new GUI_LibraryReloadDialog(m->library->info().name(), this);
 		connect(dialog, &GUI_LibraryReloadDialog::sigAccepted, this, &GUI_LocalLibrary::reloadLibraryAccepted);
 
 		dialog->setQuality(quality);
@@ -352,7 +352,7 @@ void GUI_LocalLibrary::reloadFinished()
 
 void GUI_LocalLibrary::showInfoBox()
 {
-	const auto info = m->libraryManager->libraryInfo(m->library->id());
+	const auto info = m->library->info();
 	GUI_LibraryInfoBox infoBox(info, this);
 	infoBox.exec();
 }
@@ -383,39 +383,22 @@ void GUI_LocalLibrary::importFilesRequested()
 	m->library->importFiles(files);
 }
 
-void GUI_LocalLibrary::nameChanged(LibraryId id)
+void GUI_LocalLibrary::nameChanged(const QString& newName)
 {
-	if(m->library->id() != id)
-	{
-		return;
-	}
-
-	const auto info = m->libraryManager->libraryInfo(id);
-	if(info.valid())
-	{
-		m->libraryMenu->refreshName(info.name());
-		ui->labLibraryName->setText(info.name());
-	}
+	m->libraryMenu->refreshName(newName);
+	ui->labLibraryName->setText(newName);
 }
 
-void GUI_LocalLibrary::pathChanged(LibraryId id)
+void GUI_LocalLibrary::pathChanged(const QString& newPath)
 {
-	if(m->library->id() != id)
+	m->libraryMenu->refreshPath(newPath);
+
+	if(this->isVisible())
 	{
-		return;
+		reloadLibraryRequestedWithQuality(ReloadQuality::Accurate);
+		ui->labPath->setText(newPath);
 	}
 
-	const auto info = m->libraryManager->libraryInfo(id);
-	if(info.valid())
-	{
-		m->libraryMenu->refreshPath(info.path());
-
-		if(this->isVisible())
-		{
-			reloadLibraryRequestedWithQuality(ReloadQuality::Accurate);
-			ui->labPath->setText(info.path());
-		}
-	}
 }
 
 void GUI_LocalLibrary::importDialogRequested(const QString& targetDirectory)
@@ -489,7 +472,6 @@ void GUI_LocalLibrary::switchViewType()
 
 		case Library::ViewType::Standard:
 		default:
-			//ui->swViewType->setFocusProxy(ui->tvArtists);
 			ui->swViewType->setCurrentIndex(AlbumViewIndex::ArtistAlbumTableView);
 			break;
 	}

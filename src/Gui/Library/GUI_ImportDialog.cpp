@@ -25,6 +25,7 @@
 
 #include "Components/Library/LocalLibrary.h"
 
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
@@ -61,7 +62,7 @@ GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copyEnabled, QWid
 	connect(m->importer, &Library::Importer::sigCachedFilesChanged, this, &GUI_ImportDialog::cachedFilesChanged);
 	connect(m->importer, &Library::Importer::sigTriggered, this, &GUI_ImportDialog::show);
 
-	ui->labTargetPath->setText(library->path());
+	ui->labTargetPath->setText(library->info().path());
 	ui->labTargetPath->setVisible(copyEnabled);
 	ui->labTargetInfo->setVisible(copyEnabled);
 
@@ -87,7 +88,7 @@ GUI_ImportDialog::~GUI_ImportDialog()
 void GUI_ImportDialog::setTargetDirectory(const QString& targetDirectory)
 {
 	QString subdir = targetDirectory;
-	subdir.remove(m->library->path() + "/");
+	subdir.remove(m->library->info().path() + "/");
 
 	ui->leDirectory->setText(subdir);
 }
@@ -210,7 +211,7 @@ void GUI_ImportDialog::reject()
 
 void GUI_ImportDialog::chooseDirectory()
 {
-	const QString libraryPath = m->library->path();
+	const QString libraryPath = m->library->info().path();
 	QString dir = QFileDialog::getExistingDirectory(this,
 	                                                tr("Choose target directory"),
 	                                                libraryPath,
@@ -250,7 +251,7 @@ void GUI_ImportDialog::editPressed()
 void GUI_ImportDialog::showEvent(QShowEvent* e)
 {
 	Dialog::showEvent(e);
-	ui->labTargetPath->setText(m->library->path());
+	ui->labTargetPath->setText(m->library->info().path());
 
 	this->setStatus(m->importer->status());
 }

@@ -70,7 +70,19 @@ LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId
 	connect(playlistHandler, &Playlist::Handler::sigFindTrackRequested,
 	        this, &LocalLibrary::findTrack);
 
-	connect(libraryManager, &Library::Manager::sigRenamed, this, &LocalLibrary::renamed);
+	connect(libraryManager, &Library::Manager::sigRenamed, this, [&](const auto id){
+		if(id == m->libraryId)
+		{
+			emit sigRenamed(info().name());
+		}
+	});
+
+	connect(libraryManager, &Library::Manager::sigPathChanged, this, [&](const auto id){
+		if(id == m->libraryId)
+		{
+			emit sigPathChanged(info().path());
+		}
+	});
 
 	ListenSettingNoCall(Set::Lib_SearchMode, LocalLibrary::searchModeChanged);
 	ListenSettingNoCall(Set::Lib_ShowAlbumArtists, LocalLibrary::showAlbumArtistsChanged);
@@ -97,8 +109,9 @@ void LocalLibrary::reloadLibrary(bool clearFirst, Library::ReloadQuality quality
 		deleteAllTracks();
 	}
 
+	const auto info = this->info();
+	m->reloadThread->setLibrary(info.id(), info.path());
 	m->reloadThread->setQuality(quality);
-	m->reloadThread->setLibrary(id(), path());
 	m->reloadThread->start();
 }
 
@@ -142,14 +155,6 @@ void LocalLibrary::showAlbumArtistsChanged()
 	}
 
 	refreshCurrentView();
-}
-
-void LocalLibrary::renamed(LibraryId id)
-{
-	if(id == this->id())
-	{
-		emit sigRenamed(this->name());
-	}
 }
 
 void LocalLibrary::importStatusChanged(Library::Importer::ImportStatus status)
@@ -331,24 +336,12 @@ bool LocalLibrary::setLibraryPath(const QString& library_path)
 
 bool LocalLibrary::setLibraryName(const QString& library_name)
 {
-	return m->libraryManager->renameLibrary(this->id(), library_name);
+	return m->libraryManager->renameLibrary(m->libraryId, library_name);
 }
 
-QString LocalLibrary::name() const
+Library::Info LocalLibrary::info() const
 {
-	const auto info = m->libraryManager->libraryInfo(this->id());
-	return info.name();
-}
-
-QString LocalLibrary::path() const
-{
-	const auto info = m->libraryManager->libraryInfo(this->id());
-	return info.path();
-}
-
-LibraryId LocalLibrary::id() const
-{
-	return m->libraryId;
+	return m->libraryManager->libraryInfo(m->libraryId);
 }
 
 Library::Importer* LocalLibrary::importer()
