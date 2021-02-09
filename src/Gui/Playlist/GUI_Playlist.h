@@ -45,6 +45,7 @@ namespace Playlist
 }
 
 class PlayManager;
+class DynamicPlaybackChecker;
 
 UI_FWD(PlaylistWindow)
 
@@ -63,7 +64,7 @@ public:
 	explicit GUI_Playlist(QWidget* parent=nullptr);
 	~GUI_Playlist() override;
 
-	void init(Playlist::Handler* playlistHandler, PlayManager* playManager);
+	void init(Playlist::Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker);
 
 private:
 	void initToolButton();

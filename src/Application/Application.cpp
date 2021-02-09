@@ -41,6 +41,7 @@
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
+#include "Components/DynamicPlayback/DynamicPlaybackCheckerImpl.h"
 #include "Components/Equalizer/Equalizer.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
@@ -146,6 +147,7 @@ struct Application::Private
 {
 	QTime* timer = nullptr;
 	GUI_Player* player = nullptr;
+	DynamicPlaybackChecker* dyanmicPlaybackChecker = nullptr;
 
 	RemoteControl* remoteControl = nullptr;
 	DB::Connector* db = nullptr;
@@ -185,6 +187,7 @@ struct Application::Private
 
 		libraryManager = Library::Manager::instance();
 		libraryManager->init(playlistHandler);
+		dyanmicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 
 		Gui::Icons::setSystemTheme(QIcon::themeName());
 		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
@@ -369,7 +372,11 @@ void Application::initPlayer(bool force_show)
 		SetSetting(Set::Player_StartInTray, false);
 	}
 
-	m->player = new GUI_Player(m->playManager, m->playlistHandler, m->engine);
+	m->player = new GUI_Player(m->playManager,
+	                           m->playlistHandler,
+	                           m->engine,
+	                           new DynamicPlaybackCheckerImpl(m->libraryManager));
+
 	Gui::Util::setMainWindow(m->player);
 
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);

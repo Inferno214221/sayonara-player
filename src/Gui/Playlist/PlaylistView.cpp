@@ -56,16 +56,18 @@ using Pl::View;
 
 struct View::Private
 {
-	View* view = nullptr;
+	View* view;
 	PlaylistPtr playlist;
+	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	Pl::ContextMenu* contextMenu = nullptr;
-	Pl::Model* model = nullptr;
-	ProgressBar* progressbar = nullptr;
-	QLabel* currentFileLabel = nullptr;
+	Pl::Model* model;
+	ProgressBar* progressbar;
+	QLabel* currentFileLabel;
 
-	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist, View* parent) :
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, View* parent) :
 		view(parent),
 		playlist(playlist),
+		dynamicPlaybackChecker(dynamicPlaybackChecker),
 		model(new Pl::Model(playlistCreator, playlist, parent)),
 		progressbar(new ProgressBar(parent)),
 		currentFileLabel(new QLabel(parent))
@@ -131,12 +133,12 @@ struct View::Private
 	}
 };
 
-View::View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QWidget* parent) :
+View::View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
-	m = Pimpl::make<Private>(playlistCreator, playlist, this);
+	m = Pimpl::make<Private>(playlistCreator, playlist, dynamicPlaybackChecker, this);
 
 	ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
 	ListenSetting(Set::PL_ShowCovers, View::columnsChanged);
@@ -175,7 +177,7 @@ void View::initContextMenu()
 {
 	using Pl::ContextMenu;
 
-	m->contextMenu = new ContextMenu(this);
+	m->contextMenu = new ContextMenu(m->dynamicPlaybackChecker, this);
 	m->contextMenu->addPreferenceAction(new PlaylistPreferenceAction(m->contextMenu));
 
 	connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Pl::Model::refreshData);

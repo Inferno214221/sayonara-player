@@ -40,6 +40,7 @@
 #include "Utils/Pimpl.h"
 
 class QPoint;
+class DynamicPlaybackChecker;
 class PlaylistCreator;
 
 namespace Playlist
@@ -62,7 +63,7 @@ namespace Playlist
 			void sigBookmarkPressed(int trackIdx, Seconds timestamp);
 
 		public:
-			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QWidget* parent=nullptr);
+			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
 			~View() override;
 
 			void gotoRow(int row);

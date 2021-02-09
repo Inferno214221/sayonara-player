@@ -25,6 +25,8 @@
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Widgets/RatingLabel.h"
 
+#include "Interfaces/DynamicPlayback.h"
+
 #include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
@@ -42,10 +44,10 @@ struct ContextMenu::Private
 	QMenu* playlistModeMenu;
 	QAction* playlistModeAction;
 
-	Private(ContextMenu* parent) :
+	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, ContextMenu* parent) :
 		ratingMenu {new QMenu(parent)},
 		bookmarksMenu {new BookmarksMenu(parent)},
-		playlistModeMenu {new ActionMenu(parent)},
+		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, parent)},
 		playlistModeAction {parent->addMenu(playlistModeMenu)}
 	{
 		entryActionMap[EntryRating] = parent->addMenu(ratingMenu);
@@ -63,10 +65,10 @@ struct ContextMenu::Private
 	}
 };
 
-ContextMenu::ContextMenu(QWidget* parent) :
+ContextMenu::ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
 	Library::ContextMenu(parent)
 {
-	m = Pimpl::make<Private>(this);
+	m = Pimpl::make<Private>(dynamicPlaybackChecker, this);
 
 	QList<QAction*> ratingActions;
 	for(auto i = +Rating::Zero; i != +Rating::Last; i++)

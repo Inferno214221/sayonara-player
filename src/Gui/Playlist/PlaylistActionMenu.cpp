@@ -19,10 +19,11 @@
  */
 
 #include "PlaylistActionMenu.h"
-#include "Components/LibraryManagement/LibraryManager.h"
 
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/PreferenceAction.h"
+
+#include "Interfaces/DynamicPlayback.h"
 
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -36,34 +37,38 @@ using Playlist::ActionMenu;
 
 struct ActionMenu::Private
 {
-	Playlist::Mode		plm;
+	DynamicPlaybackChecker* dynamicPlaybackChecker;
 
-	QAction*		actionRep1=nullptr;
-	QAction*		actionAppend=nullptr;
-	QAction*		actionRepall=nullptr;
-	QAction*		actionDynamic=nullptr;
-	QAction*		actionShuffle=nullptr;
-	QAction*		actionGapless=nullptr;
+	Playlist::Mode plm;
+
+	QAction* actionRep1 = nullptr;
+	QAction* actionAppend = nullptr;
+	QAction* actionRepall = nullptr;
+	QAction* actionDynamic = nullptr;
+	QAction* actionShuffle = nullptr;
+	QAction* actionGapless = nullptr;
+
+	Private(DynamicPlaybackChecker* dynamicPlaybackChecker) :
+		dynamicPlaybackChecker(dynamicPlaybackChecker) {}
 
 	QList<QAction*> actions()
 	{
 		return
-		{
-			actionRep1,
-			actionAppend,
-			actionRepall,
-			actionDynamic,
-			actionShuffle,
-			actionGapless,
-		};
+			{
+				actionRep1,
+				actionAppend,
+				actionRepall,
+				actionDynamic,
+				actionShuffle,
+				actionGapless,
+			};
 	}
 };
 
-
-ActionMenu::ActionMenu(QWidget* parent) :
+ActionMenu::ActionMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
 	Gui::WidgetTemplate<QMenu>(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(dynamicPlaybackChecker);
 
 	using namespace Gui;
 	m->actionRep1 = new QAction(this);
@@ -74,7 +79,7 @@ ActionMenu::ActionMenu(QWidget* parent) :
 	m->actionGapless = new QAction(this);
 
 	const auto actions = m->actions();
-	for(auto action : actions)
+	for(auto* action : actions)
 	{
 		action->setCheckable(true);
 	}
@@ -107,7 +112,8 @@ ActionMenu::~ActionMenu() = default;
 
 void ActionMenu::rep1Checked(bool checked)
 {
-	if(checked){
+	if(checked)
+	{
 		m->actionRepall->setChecked(false);
 		m->actionShuffle->setChecked(false);
 	}
@@ -117,7 +123,8 @@ void ActionMenu::rep1Checked(bool checked)
 
 void ActionMenu::repAllChecked(bool checked)
 {
-	if(checked){
+	if(checked)
+	{
 		m->actionRep1->setChecked(false);
 	}
 
@@ -126,26 +133,27 @@ void ActionMenu::repAllChecked(bool checked)
 
 void ActionMenu::shuffleChecked(bool checked)
 {
-	if(checked){
+	if(checked)
+	{
 		m->actionRep1->setChecked(false);
 	}
 
 	changePlaylistMode();
 }
 
-
 // setting slot
 void ActionMenu::playlistModeSettingChanged()
 {
 	Playlist::Mode plm = GetSetting(Set::PL_Mode);
 
-	if(plm == m->plm) {
+	if(plm == m->plm)
+	{
 		return;
 	}
 
 	m->plm = plm;
 
-	m->actionAppend->setChecked( Playlist::Mode::isActive(m->plm.append()));
+	m->actionAppend->setChecked(Playlist::Mode::isActive(m->plm.append()));
 	m->actionRep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
 	m->actionRepall->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
 	m->actionShuffle->setChecked(Playlist::Mode::isActive(m->plm.shuffle()));
@@ -172,7 +180,8 @@ void ActionMenu::changePlaylistMode()
 	plm.setShuffle(m->actionShuffle->isChecked(), m->actionShuffle->isEnabled());
 	plm.setDynamic(m->actionDynamic->isChecked(), m->actionDynamic->isEnabled());
 
-	if(plm == m->plm){
+	if(plm == m->plm)
+	{
 		return;
 	}
 
@@ -188,13 +197,13 @@ void ActionMenu::gaplessClicked()
 
 void ActionMenu::checkDynamicPlayButton()
 {
-	int libCount = Library::Manager::instance()->count();
-
-	if(libCount == 0) {
+	if(m->dynamicPlaybackChecker->isDynamicPlaybackPossible())
+	{
 		m->actionDynamic->setToolTip(tr("Please set library path first"));
 	}
 
-	else{
+	else
+	{
 		m->actionDynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
 	}
 }

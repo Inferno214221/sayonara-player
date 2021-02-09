@@ -23,6 +23,7 @@
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
+class DynamicPlaybackChecker;
 class MetaData;
 
 namespace Playlist
@@ -54,7 +55,7 @@ namespace Playlist
 				EntryReverse = (Library::ContextMenu::EntryLast << 5)
 			};
 
-			explicit ContextMenu(QWidget* parent);
+			ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent);
 			~ContextMenu() override;
 
 			ContextMenu::Entries entries() const override;

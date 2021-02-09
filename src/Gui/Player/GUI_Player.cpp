@@ -28,6 +28,7 @@
 #include "Translator.h"
 
 #include "Interfaces/CoverDataProvider.h"
+#include "Interfaces/DynamicPlayback.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Interfaces/PlayManager.h"
 
@@ -66,7 +67,8 @@ struct GUI_Player::Private
 	PlayManager* playManager;
 	bool shutdownRequested;
 
-	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider, GUI_Player* parent) :
+	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
+	        GUI_Player* parent) :
 		coverProvider(coverProvider),
 		playManager(playManager),
 		shutdownRequested(false)
@@ -76,7 +78,8 @@ struct GUI_Player::Private
 	}
 };
 
-GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider, QWidget* parent) :
+GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
+                       DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
@@ -87,7 +90,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 	ui = new Ui::GUI_Player();
 	ui->setupUi(this);
 	ui->retranslateUi(this);
-	ui->playlistWidget->init(playlistHandler, playManager);
+	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker);
 
 	ui->pluginWidget->setVisible(false);
 
@@ -362,8 +365,8 @@ void GUI_Player::pluginActionTriggered(bool b)
 void GUI_Player::initControls()
 {
 	m->controls = (GetSetting(Set::Player_ControlStyle) == 0)
-		? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider))
-		: static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider));
+	              ? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider))
+	              : static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider));
 
 	m->controls->init();
 	ui->controls->layout()->addWidget(m->controls);

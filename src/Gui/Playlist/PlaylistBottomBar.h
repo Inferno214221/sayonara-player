@@ -30,6 +30,8 @@
 	class GUI_Shutdown;
 #endif
 
+class DynamicPlaybackChecker;
+
 namespace Playlist
 {
 	class Mode;
@@ -49,8 +51,10 @@ namespace Playlist
 			void sigPlaylistModeChanged(const ::Playlist::Mode& mode);
 
 		public:
-			explicit BottomBar(QWidget* parent=nullptr);
+			BottomBar(QWidget* parent=nullptr);
 			~BottomBar() override;
+
+			void init(DynamicPlaybackChecker* dynamicPlaybackChecker);
 
 			void checkDynamicPlayButton();
 
@@ -64,9 +68,9 @@ namespace Playlist
 			void playlistModeSettingChanged();
 
 		#ifdef SAYONARA_WITH_SHUTDOWN
-			void shutdown_clicked();
-			void shutdown_started(MilliSeconds time2go);
-			void shutdown_closed();
+			void shutdownClicked();
+			void shutdownStarted(MilliSeconds time2go);
+			void shutdownClosed();
 		#endif
 
 		protected:

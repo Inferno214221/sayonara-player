@@ -42,6 +42,8 @@
 #include "Utils/Parser/PlaylistParser.h"
 
 #include "Interfaces/PlayManager.h"
+#include "Interfaces/DynamicPlayback.h"
+
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 
@@ -179,10 +181,12 @@ struct GUI_Playlist::Private
 {
 	Playlist::Handler* playlistHandler;
 	PlayManager* playManager;
+	DynamicPlaybackChecker* dynamicPlaybackChecker;
 
-	Private(Playlist::Handler* playlistHandler, PlayManager* playManager) :
+	Private(Playlist::Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker) :
 		playlistHandler(playlistHandler),
-		playManager(playManager)
+		playManager(playManager),
+		dynamicPlaybackChecker(dynamicPlaybackChecker)
 	{}
 };
 
@@ -190,12 +194,13 @@ GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	Widget(parent)
 {}
 
-void GUI_Playlist::init(Playlist::Handler* playlistHandler, PlayManager* playManager)
+void GUI_Playlist::init(Playlist::Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker)
 {
-	m = Pimpl::make<Private>(playlistHandler, playManager);
+	m = Pimpl::make<Private>(playlistHandler, playManager, dynamicPlaybackChecker);
 
 	ui = new Ui::PlaylistWindow();
 	ui->setupUi(this);
+	ui->bottomBar->init(dynamicPlaybackChecker);
 
 	setAcceptDrops(true);
 
@@ -261,7 +266,7 @@ GUI_Playlist::~GUI_Playlist()
 
 void GUI_Playlist::initToolButton()
 {
-	auto* menu = new Playlist::ActionMenu(this);
+	auto* menu = new Playlist::ActionMenu(m->dynamicPlaybackChecker, this);
 	const auto actions = menu->actions();
 	for(auto* action : actions)
 	{
@@ -433,7 +438,7 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 	if(playlist)
 	{
 		const auto name = playlist->name();
-		auto* view = new View(m->playlistHandler, playlist, ui->twPlaylists);
+		auto* view = new View(m->playlistHandler, playlist, m->dynamicPlaybackChecker, ui->twPlaylists);
 
 		ui->twPlaylists->insertTab(ui->twPlaylists->count() - 1, view, name);
 

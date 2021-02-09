@@ -25,6 +25,7 @@
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 
+class DynamicPlaybackChecker;
 namespace Playlist
 {
 	/**
@@ -38,7 +39,7 @@ namespace Playlist
 		PIMPL(ActionMenu)
 
 	public:
-		ActionMenu(QWidget* parent=nullptr);
+		ActionMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
 		~ActionMenu() override;
 
 		void checkDynamicPlayButton();
