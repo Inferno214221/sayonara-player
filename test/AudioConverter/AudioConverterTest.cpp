@@ -1,9 +1,8 @@
 #include "SayonaraTest.h"
-#include "TestPlayManager.h"
+#include "PlayManagerMock.h"
+#include "PlaylistMocks.h"
 
 #include "Components/Converter/ConverterFactory.h"
-#include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
 #include "Components/Converter/OpusConverter.h"
@@ -11,30 +10,6 @@
 #include "Utils/Playlist/CustomPlaylist.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");
-
-class DummyLoader : public Playlist::Loader
-{
-	private:
-		QList<CustomPlaylist> m_playlists;
-
-	public:
-		~DummyLoader() override = default;
-
-		int getLastPlaylistIndex() const override
-		{
-			return 0;
-		}
-
-		int getLastTrackIndex() const override
-		{
-			return 0;
-		}
-
-		const QList<CustomPlaylist>& playlists() const override
-		{
-			return m_playlists;
-		}
-};
 
 class AudioConverterTest :
 	public Test::Base
@@ -51,8 +26,7 @@ class AudioConverterTest :
 
 void AudioConverterTest::testFactory()
 {
-	auto* playManager = new TestPlayManager(this);
-	auto playlistHandler = new Playlist::Handler(playManager, std::make_shared<DummyLoader>());
+	auto playlistHandler = new Playlist::Handler(new PlayManagerMock(), std::make_shared<PlaylistLoaderMock>());
 	auto factory = ConverterFactory(playlistHandler);
 
 	{

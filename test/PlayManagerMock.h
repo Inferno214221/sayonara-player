@@ -17,18 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_TESTPLAYMANAGER_H
-#define SAYONARA_PLAYER_TESTPLAYMANAGER_H
+#ifndef SAYONARA_PLAYER_PLAYMANAGERMOCK_H
+#define SAYONARA_PLAYER_PLAYMANAGERMOCK_H
 
 #include "Interfaces/PlayManager.h"
 #include "Utils/MetaData/MetaData.h"
 
-class TestPlayManager : public PlayManager
+class PlayManagerMock : public PlayManager
 {
 	MetaData m_metadata;
 
 	public:
-		TestPlayManager(QObject* parent) : PlayManager(parent) {}
+		PlayManagerMock() : PlayManager(nullptr) {}
 
 		void play() override {}
 
@@ -128,4 +128,4 @@ class TestPlayManager : public PlayManager
 		void shutdown() override {}
 };
 
-#endif //SAYONARA_PLAYER_TESTPLAYMANAGER_H
+#endif //SAYONARA_PLAYER_PLAYMANAGERMOCK_H

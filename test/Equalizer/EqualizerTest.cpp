@@ -1,5 +1,5 @@
 #include "SayonaraTest.h"
-#include "TestPlayManager.h"
+#include "PlayManagerMock.h"
 
 #include "Components/Equalizer/Equalizer.h"
 #include "Database/Equalizer.h"

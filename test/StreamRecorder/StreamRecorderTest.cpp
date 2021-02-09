@@ -1,5 +1,5 @@
 #include "SayonaraTest.h"
-#include "TestPlayManager.h"
+#include "PlayManagerMock.h"
 
 #include "Components/Engine/StreamRecorder/StreamRecorder.h"
 
@@ -8,7 +8,6 @@
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Utils.h"
 
 #include <QDateTime>
 #include <QFile>
@@ -41,7 +40,7 @@ StreamRecorderTest::StreamRecorderTest() :
 	SetSetting(Set::Engine_SR_SessionPath, true);
 	SetSetting(Set::Engine_SR_SessionPathTemplate, QString("<y><m><d>/<tn> - <t>"));
 
-	mPlayManager = new TestPlayManager(this);
+	mPlayManager = new PlayManagerMock();
 	mStreamRecorder = new SR::StreamRecorder(mPlayManager, this);
 }
 

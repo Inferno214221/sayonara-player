@@ -1,9 +1,14 @@
 #include "SayonaraTest.h"
+#include "PlayManagerMock.h"
+#include "PlaylistMocks.h"
+
 #include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 
 #include <map>
+#include <memory>
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class LibraryManagerTest : 
@@ -14,14 +19,24 @@ class LibraryManagerTest :
     public:
         LibraryManagerTest() :
             Test::Base("LibraryManagerTest")
-        {
-    	    removeAllLibraries();
-        }
+        {}
 
 	private:
-		void removeAllLibraries()
+
+		std::shared_ptr<Library::Manager> createLibraryManager()
 		{
-			auto* manager = Library::Manager::instance();
+    	    auto* playlistHandler = new PlaylistHandlerMock(new PlayManagerMock(), std::make_shared<PlaylistLoaderMock>());
+
+    	    auto libraryManager = std::shared_ptr<Library::Manager>(new Library::Manager(playlistHandler), [&](Library::Manager* libraryManager){
+				removeAllLibraries(libraryManager);
+				delete libraryManager;
+    	    });
+
+    	    return libraryManager;
+		}
+
+		void removeAllLibraries(Library::Manager* manager)
+		{
 			auto allLibraries = manager->allLibraries();
 			for(const auto& library : allLibraries)
 			{
@@ -32,11 +47,9 @@ class LibraryManagerTest :
 			QVERIFY(manager->count() == 0);
 		}
 
-		void createLibraries(int count)
+		void createLibraries(std::shared_ptr<Library::Manager> manager, int count)
 		{
-			removeAllLibraries();
-
-			auto manager = Library::Manager::instance();
+			removeAllLibraries(manager.get());
 
 			for(int i=0; i<count; i++)
 			{
@@ -59,7 +72,7 @@ class LibraryManagerTest :
 
 void LibraryManagerTest::addTest()
 {
-	auto manager = Library::Manager::instance();
+	auto manager = createLibraryManager();
 	QVERIFY(manager->allLibraries().isEmpty());
 
 	for(int i=0; i<3; i++)
@@ -93,13 +106,11 @@ void LibraryManagerTest::addTest()
 		QVERIFY(id == -1);
 		QVERIFY(manager->allLibraries().size() == 3);
 	}
-
-	removeAllLibraries();
 }
 
 void LibraryManagerTest::infoTest()
 {
-	auto manager = Library::Manager::instance();
+	auto manager = createLibraryManager();
 	QVERIFY(manager->count() == 0);
 
 	for(int i=0; i<3; i++)
@@ -114,14 +125,12 @@ void LibraryManagerTest::infoTest()
 		QVERIFY(Util::File::isSamePath(info.path(), dir));
 		QVERIFY(info.valid());
 	}
-
-	removeAllLibraries();
 }
 
 void LibraryManagerTest::removeTest()
 {
-	auto manager = Library::Manager::instance();
-	createLibraries(3);
+	auto manager = createLibraryManager();
+	createLibraries(manager, 3);
 
 	auto allLibraries = manager->allLibraries();
 	QVERIFY(allLibraries.size() == 3);
@@ -155,14 +164,12 @@ void LibraryManagerTest::removeTest()
 		QVERIFY(!success);
 		QVERIFY(allLibraries.size() == 1);
 	}
-
-	removeAllLibraries();
 }
 
 void LibraryManagerTest::renameTest()
 {
-	auto manager = Library::Manager::instance();
-	createLibraries(3);
+	auto manager = createLibraryManager();
+	createLibraries(manager, 3);
 
 	auto allLibraries = manager->allLibraries();
 	QVERIFY(allLibraries.size() == 3);
@@ -192,16 +199,14 @@ void LibraryManagerTest::renameTest()
 		QVERIFY(manager->libraryInfo(id).name() == oldName);
 		allLibraries = manager->allLibraries();
 	}
-
-	removeAllLibraries();
 }
 
 void LibraryManagerTest::moveTest()
 {
-	auto manager = Library::Manager::instance();
+	auto manager = createLibraryManager();
 
 	{ // move forward
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		manager->moveLibrary(0, 2);
 		const auto newLibraries = manager->allLibraries();
@@ -212,7 +217,7 @@ void LibraryManagerTest::moveTest()
 	}
 
 	{ // move to the end
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		manager->moveLibrary(0, 3);
 		const auto newLibraries = manager->allLibraries();
@@ -223,7 +228,7 @@ void LibraryManagerTest::moveTest()
 	}
 
 	{ // move back
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		const auto success = manager->moveLibrary(2, 0);
 		QVERIFY(success);
@@ -232,11 +237,12 @@ void LibraryManagerTest::moveTest()
 		QVERIFY(newLibraries[1].id() == oldLibraries[0].id());
 		QVERIFY(newLibraries[2].id() == oldLibraries[1].id());
 		QVERIFY(newLibraries[3].id() == oldLibraries[3].id());
-		removeAllLibraries();
+		removeAllLibraries(manager.get());
+		QVERIFY(manager->count() == 0);
 	}
 
 	{ // same position
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		const auto success = manager->moveLibrary(2, 2);
 		QVERIFY(success);
@@ -245,11 +251,12 @@ void LibraryManagerTest::moveTest()
 		QVERIFY(newLibraries[1].id() == oldLibraries[1].id());
 		QVERIFY(newLibraries[2].id() == oldLibraries[2].id());
 		QVERIFY(newLibraries[3].id() == oldLibraries[3].id());
-		removeAllLibraries();
+		removeAllLibraries(manager.get());
+		QVERIFY(manager->count() == 0);
 	}
 
 	{ // invalid position (negative)
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		const auto success = manager->moveLibrary(2, -2);
 		QVERIFY(!success);
@@ -258,11 +265,12 @@ void LibraryManagerTest::moveTest()
 		QVERIFY(newLibraries[1].id() == oldLibraries[1].id());
 		QVERIFY(newLibraries[2].id() == oldLibraries[2].id());
 		QVERIFY(newLibraries[3].id() == oldLibraries[3].id());
-		removeAllLibraries();
+		removeAllLibraries(manager.get());
+		QVERIFY(manager->count() == 0);
 	}
 
 	{ // invalid position (too far)
-		createLibraries(4);
+		createLibraries(manager, 4);
 		const auto oldLibraries = manager->allLibraries();
 		const auto success = manager->moveLibrary(2, 4);
 		QVERIFY(!success);
@@ -271,7 +279,8 @@ void LibraryManagerTest::moveTest()
 		QVERIFY(newLibraries[1].id() == oldLibraries[1].id());
 		QVERIFY(newLibraries[2].id() == oldLibraries[2].id());
 		QVERIFY(newLibraries[3].id() == oldLibraries[3].id());
-		removeAllLibraries();
+		removeAllLibraries(manager.get());
+		QVERIFY(manager->count() == 0);
 	}
 }
 

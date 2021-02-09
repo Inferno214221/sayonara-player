@@ -2,7 +2,7 @@ function(NEW_TEST ...)
 	string(REGEX MATCH "^(.*/)*(.*)\\.[^.]*$" dummy ${ARGV0})
 	set(TEST_NAME ${CMAKE_MATCH_2})
 
-	add_executable(${TEST_NAME} SayonaraTest.cpp TestPlayManager.h ${ARGV} ${RESOURCES_RCC})
+	add_executable(${TEST_NAME} SayonaraTest.cpp PlayManagerMock.h ${ARGV} ${RESOURCES_RCC})
 	target_link_libraries(${TEST_NAME}
 		sayonara_components
 		Qt5::Test

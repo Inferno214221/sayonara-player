@@ -38,6 +38,8 @@ using PlaylistPtr = std::shared_ptr<::Playlist::Playlist>;
 class PlaylistAccessor
 {
 	public:
+		virtual ~PlaylistAccessor() = default;
+
 		virtual int activeIndex() const = 0;
 		virtual PlaylistPtr activePlaylist() = 0;
 
@@ -46,13 +48,15 @@ class PlaylistAccessor
 
 		virtual PlaylistPtr playlist(int playlistIndex) = 0;
 		virtual PlaylistPtr playlistById(int playlistId) = 0;
+
+		virtual int count() const = 0;
 };
 
 class PlaylistCreator
 {
 	public:
-		PlaylistCreator() = default;
 		virtual ~PlaylistCreator() = default;
+
 		virtual PlaylistPtr playlist(int playlistIndex) = 0;
 		virtual PlaylistPtr playlistById(int playlistId) = 0;
 

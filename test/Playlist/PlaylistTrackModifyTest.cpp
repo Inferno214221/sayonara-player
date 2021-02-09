@@ -1,5 +1,5 @@
 #include "SayonaraTest.h"
-#include "TestPlayManager.h"
+#include "PlayManagerMock.h"
 #include "Playlist/PlaylistTestUtils.h"
 
 #include "Components/Playlist/Playlist.h"
@@ -22,7 +22,7 @@ class PlaylistTrackModifyTest :
 public:
 	PlaylistTrackModifyTest() :
 		Test::Base("PlaylistTrackModifyTest"),
-		m_playManager{new TestPlayManager(this)}
+		m_playManager{new PlayManagerMock()}
 	{}
 
 	~PlaylistTrackModifyTest()

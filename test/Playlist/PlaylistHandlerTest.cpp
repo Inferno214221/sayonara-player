@@ -1,42 +1,19 @@
 #include "SayonaraTest.h"
-#include "TestPlayManager.h"
+#include "PlayManagerMock.h"
+#include "PlaylistMocks.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/PlaylistLoader.h"
 
 #include "Interfaces/PlayManager.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Playlist/CustomPlaylist.h"
 
 #include <memory>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
-
-class DummyPlaylistLoader : public Playlist::Loader
-{
-	private:
-		QList<CustomPlaylist> m_playlists;
-
-	public:
-		int getLastPlaylistIndex() const override
-		{
-			return -1;
-		}
-
-		int getLastTrackIndex() const override
-		{
-			return -1;
-		}
-
-		const QList<CustomPlaylist>& playlists() const override
-		{
-			return m_playlists;
-		}
-};
 
 class PlaylistHandlerTest : 
     public Test::Base
@@ -46,7 +23,7 @@ class PlaylistHandlerTest :
     public:
         PlaylistHandlerTest() :
             Test::Base("PlaylistHandlerTest"),
-            m_playManager(new TestPlayManager(this))
+            m_playManager(new PlayManagerMock())
         {}
 
 	private:
@@ -54,7 +31,7 @@ class PlaylistHandlerTest :
 
 		std::shared_ptr<Playlist::Handler> createHandler()
 		{
-    	    return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<DummyPlaylistLoader>());
+    	    return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>());
 		}
 
     private slots:

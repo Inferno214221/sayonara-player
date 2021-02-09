@@ -17,14 +17,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_DYNAMICPLAYBACK_H
-#define SAYONARA_PLAYER_DYNAMICPLAYBACK_H
+#ifndef SAYONARA_PLAYER_PLAYLISTMOCKS_H
+#define SAYONARA_PLAYER_PLAYLISTMOCKS_H
 
-class DynamicPlaybackChecker
+#include <QList>
+
+#include "Utils/Playlist/CustomPlaylist.h"
+#include "Components/Playlist/PlaylistLoader.h"
+#include "Components/Playlist/PlaylistHandler.h"
+
+class PlaylistLoaderMock : public Playlist::Loader
 {
+		QList<CustomPlaylist> m_playlists;
+
 	public:
-		virtual ~DynamicPlaybackChecker() = default;
-		virtual bool isDynamicPlaybackPossible() const = 0;
+		int getLastPlaylistIndex() const override
+		{
+			return -1;
+		}
+
+		int getLastTrackIndex() const override
+		{
+			return -1;
+		}
+
+		const QList<CustomPlaylist>& playlists() const override
+		{
+			return m_playlists;
+		}
 };
 
-#endif //SAYONARA_PLAYER_DYNAMICPLAYBACK_H
+using PlaylistHandlerMock = Playlist::Handler;
+
+#endif //SAYONARA_PLAYER_PLAYLISTMOCKS_H

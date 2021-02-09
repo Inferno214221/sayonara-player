@@ -71,7 +71,7 @@ namespace Playlist
 			 * @brief Returns number of playlists
 			 * @return
 			 */
-			int count() const;
+			int count() const override;
 
 			/**
 			 * @brief get specific playlist at given index
