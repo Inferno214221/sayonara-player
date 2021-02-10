@@ -23,6 +23,7 @@
 
 #include "Utils/Pimpl.h"
 #include "Utils/Settings/SettingConvertible.h"
+#include "Utils/Library/LibraryInfoFwd.h"
 
 #include <QtGlobal>
 
