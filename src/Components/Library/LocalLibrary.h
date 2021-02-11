@@ -62,7 +62,7 @@ class LocalLibrary :
 		bool isReloading() const override;
 
 	public slots:
-		void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode answer) override;
+		void deleteTracks(const MetaDataList& tracks, Library::TrackDeletionMode answer) override;
 		void reloadLibrary(bool clear_first, Library::ReloadQuality quality) override;
 		void importFiles(const QStringList& files) override;
 		void importFilesTo(const QStringList& files, const QString& targetDirectory);
@@ -80,13 +80,13 @@ class LocalLibrary :
 
 		int getTrackCount() const override;
 		void getAllTracks(MetaDataList& v_md) const override;
-		void getAllTracks(const QStringList& paths, MetaDataList& v_md) const override;
-		void getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const override;
-		void getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const override;
+		void getAllTracks(const QStringList& paths, MetaDataList& tracks) const override;
+		void getAllTracksByArtist(IdList artistIds, MetaDataList& tracks, Library::Filter filter) const override;
+		void getAllTracksByAlbum(IdList albumIds, MetaDataList& tracks, Library::Filter filter) const override;
 		void getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const override;
 		void getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const override;
 
-		void getTrackById(TrackID trackId, MetaData& md) const override;
+		void getTrackById(TrackID trackId, MetaData& track) const override;
 		void getAlbumById(AlbumId albumId, Album& album) const override;
 		void getArtistById(ArtistId artistId, Artist& artist) const override;
 
