@@ -104,6 +104,19 @@ namespace Util
 		{
 			std::copy_if(in.begin(), in.end(), std::back_inserter(out), fn);
 		}
+
+		template<class ContainerIn, class ContainerOut, typename FN>
+		void moveIf(ContainerIn& in, ContainerOut& out, FN fn)
+		{
+			for(auto& element : in)
+			{
+				if(fn(element))
+				{
+					out.emplace_back(std::move(element));
+				}
+			}
+			std::copy_if(in.begin(), in.end(), std::back_inserter(out), fn);
+		}
 	}
 }
 

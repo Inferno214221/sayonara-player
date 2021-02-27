@@ -71,7 +71,7 @@ class AbstractLibrary :
 		const Util::Set<ArtistId>& selectedArtists() const;
 
 		// emits new tracks, very similar to psl_selected_albums_changed
-		void changeCurrentDisc(Disc disc);
+		void changeCurrentDisc(Disc track);
 
 		bool isLoaded() const;
 
@@ -149,9 +149,9 @@ class AbstractLibrary :
 		//virtual void insert_tracks(const MetaDataList& v_md);
 		virtual void importFiles(const QStringList& files);
 
-		virtual void changeTrackSortorder(Library::SortOrder s);
-		virtual void changeAlbumSortorder(Library::SortOrder s);
-		virtual void changeArtistSortorder(Library::SortOrder s);
+		virtual void changeTrackSortorder(Library::SortOrder sortOrder);
+		virtual void changeAlbumSortorder(Library::SortOrder sortOrder);
+		virtual void changeArtistSortorder(Library::SortOrder sortOrder);
 
 		/* Check for current selected artist if out of date and
 		 * fetch new data */
