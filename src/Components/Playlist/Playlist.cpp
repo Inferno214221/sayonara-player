@@ -126,7 +126,7 @@ void Playlist::Playlist::findTrack(int idx)
 {
 	if(Util::between(idx, m->tracks))
 	{
-		emit sigFindTrack(m->tracks[idx].id());
+		//emit sigFindTrack(m->tracks[idx].id());
 	}
 }
 

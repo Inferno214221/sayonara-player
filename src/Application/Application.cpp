@@ -190,9 +190,11 @@ struct Application::Private
 		playManager = new PlayManagerImpl(app);
 		engine = new Engine::Handler(playManager);
 		sessionManager = new Session::Manager(playManager);
+
 		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
 		libraryPlaylistInteractor = new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
 		libraryManager = new Library::Manager(libraryPlaylistInteractor);
+
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 
 		Shutdown::instance()->registerPlaymanager(playManager);

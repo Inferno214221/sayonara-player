@@ -124,7 +124,6 @@ int Handler::addNewPlaylist(const QString& name, bool temporary)
 	emit sigNewPlaylistAdded(m->playlists.count() - 1);
 	emit sigActivePlaylistChanged(activeIndex());
 
-	connect(playlist.get(), &Playlist::Playlist::sigFindTrack, this, &Handler::sigFindTrackRequested);
 	connect(playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Handler::trackChanged);
 
 	return playlist->index();
@@ -394,31 +393,6 @@ void Handler::playlistDeleted(int id)
 	if(playlist)
 	{
 		playlist->setTemporary(true);
-	}
-}
-
-void Handler::deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode)
-{
-	auto playlist = this->playlist(playlistIndex);
-	if(!playlist)
-	{
-		return;
-	}
-
-	MetaDataList tracks;
-	tracks.reserve(rows.size());
-
-	for(const auto row : rows)
-	{
-		if(Util::between(row, playlist->count()))
-		{
-			tracks << playlist->track(row);
-		}
-	}
-
-	if(!tracks.isEmpty())
-	{
-		emit sigTrackDeletionRequested(tracks, deletionMode);
 	}
 }
 

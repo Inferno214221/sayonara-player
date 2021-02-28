@@ -367,20 +367,6 @@ void GUI_Playlist::openDirClicked(int playlistIndex, const QString& dir)
 	openFileClicked(playlistIndex, QStringList {dir});
 }
 
-void GUI_Playlist::deleteTracksClicked(const IndexSet& rows)
-{
-	auto dialog = GUI_DeleteDialog(rows.count(), this);
-	dialog.exec();
-
-	const auto deletionMode = dialog.answer();
-	if(deletionMode == Library::TrackDeletionMode::None)
-	{
-		return;
-	}
-
-	m->playlistHandler->deleteTracks(ui->twPlaylists->currentIndex(), rows, deletionMode);
-}
-
 void GUI_Playlist::playlistNameChanged(int playlistIndex)
 {
 	auto playlist = m->playlistHandler->playlist(playlistIndex);
@@ -443,7 +429,6 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 		ui->twPlaylists->insertTab(ui->twPlaylists->count() - 1, view, name);
 
 		connect(view, &View::sigDoubleClicked, this, &GUI_Playlist::doubleClicked);
-		connect(view, &View::sigDeleteTracks, this, &GUI_Playlist::deleteTracksClicked);
 		connect(view, &View::sigBookmarkPressed, this, &GUI_Playlist::bookmarkSelected);
 		connect(playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &GUI_Playlist::playlistChanged);
 

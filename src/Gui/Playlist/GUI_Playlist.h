@@ -89,7 +89,6 @@ private slots:
 	void tabFilesDropped(int playlistIndex, const QStringList& paths);
 	void openFileClicked(int playlistIndex, const QStringList& files);
 	void openDirClicked(int playlistIndex, const QString& dir);
-	void deleteTracksClicked(const IndexSet& rows);
 
 	void checkTabIcon();
 

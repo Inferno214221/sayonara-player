@@ -133,8 +133,6 @@ namespace Playlist
 			 */
 			int createEmptyPlaylist(bool override = false) override;
 
-			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode);
-
 		public slots:
 			/**
 			 * @brief close playlist
@@ -184,7 +182,6 @@ namespace Playlist
 			void sigTrackDeletionRequested(const MetaDataList& tracks, Library::TrackDeletionMode deletion_mode);
 
 			void sigPlaylistClosed(int playlistIndex);
-			void sigFindTrackRequested(TrackID trackId);
 	};
 }
 
