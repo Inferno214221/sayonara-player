@@ -38,6 +38,8 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
+#include <cassert>
+
 using Playlist::Handler;
 using Playlist::Loader;
 
