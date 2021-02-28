@@ -29,10 +29,7 @@
 #include <QObject>
 
 class LocalLibrary;
-namespace Playlist
-{
-	class Handler;
-}
+class LibraryPlaylistInteractor;
 
 namespace Library
 {
@@ -54,7 +51,7 @@ namespace Library
 			void sigRemoved(LibraryId id);
 
 		public:
-			Manager(Playlist::Handler* playlistHandler);
+			Manager(LibraryPlaylistInteractor* playlistInteractor);
 			~Manager() override;
 
 			LibraryId addLibrary(const QString& name, const QString& path);

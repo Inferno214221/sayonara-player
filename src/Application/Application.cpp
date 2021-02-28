@@ -47,6 +47,7 @@
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Playlist/PlaylistChooser.h"
+#include "Components/Playlist/LibraryPlaylistInteractorImpl.h"
 #include "Components/PlayManager/PlayManagerImpl.h"
 #include "Components/RemoteControl/RemoteControl.h"
 #include "Components/Engine/EngineHandler.h"
@@ -151,6 +152,7 @@ struct Application::Private
 	Engine::Handler* engine;
 	Session::Manager* sessionManager;
 	Playlist::Handler* playlistHandler;
+	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Library::Manager* libraryManager;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	QTime* timer;
@@ -189,7 +191,8 @@ struct Application::Private
 		engine = new Engine::Handler(playManager);
 		sessionManager = new Session::Manager(playManager);
 		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
-		libraryManager = new Library::Manager(playlistHandler);
+		libraryPlaylistInteractor = new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
+		libraryManager = new Library::Manager(libraryPlaylistInteractor);
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 
 		Shutdown::instance()->registerPlaymanager(playManager);
@@ -437,7 +440,7 @@ void Application::initLibraries()
 
 	auto libraryContainers = m->localLibraryWatcher->getLocalLibraryContainers();
 
-	auto* soundcloudContainer = new SC::LibraryContainer(m->playlistHandler, this);
+	auto* soundcloudContainer = new SC::LibraryContainer(m->libraryPlaylistInteractor, this);
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
 	auto* historyContainer = new HistoryContainer(m->sessionManager, this);
 

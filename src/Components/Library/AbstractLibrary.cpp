@@ -20,9 +20,9 @@
 
 #include "AbstractLibrary.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/Playlist.h"
 #include "Components/Tagging/ChangeNotifier.h"
+
+#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -32,43 +32,15 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Library/SearchMode.h"
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/ExtensionSet.h"
 #include "Utils/Set.h"
 
 #include <QHash>
 
-namespace
-{
-	template<typename Tracks>
-	void createPlaylist(const Tracks& tracks, Playlist::Handler* playlistHandler, bool createNewPlaylist)
-	{
-		const auto name = (createNewPlaylist)
-		                  ? playlistHandler->requestNewPlaylistName()
-		                  : QString();
-
-		playlistHandler->createPlaylist(tracks, name);
-		playlistHandler->applyPlaylistActionAfterDoubleClick();
-	}
-
-	void insertTracksAfterCurrentTrack(PlaylistAccessor* playlistAccessor, const MetaDataList& tracks)
-	{
-		auto playlist = playlistAccessor->activePlaylist();
-		playlist->insertTracks(tracks, playlist->currentTrackIndex() + 1);
-	}
-
-	void appendTracks(PlaylistAccessor* playlistAccessor, const MetaDataList& tracks)
-	{
-		auto playlist = playlistAccessor->activePlaylist();
-		playlist->appendTracks(tracks);
-	}
-}
-
 struct AbstractLibrary::Private
 {
-	Playlist::Handler* playlistHandler;
+	LibraryPlaylistInteractor* playlistInteractor;
 	Util::Set<ArtistId> selectedArtists;
 	Util::Set<AlbumId> selectedAlbums;
 	Util::Set<TrackID> selectedTracks;
@@ -87,8 +59,8 @@ struct AbstractLibrary::Private
 	Library::Filter filter;
 	bool loaded;
 
-	Private(Playlist::Handler* playlistHandler) :
-		playlistHandler {playlistHandler},
+	Private(LibraryPlaylistInteractor* playlistInteractor) :
+		playlistInteractor {playlistInteractor},
 		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
@@ -98,10 +70,10 @@ struct AbstractLibrary::Private
 	}
 };
 
-AbstractLibrary::AbstractLibrary(Playlist::Handler* playlistHandler, QObject* parent) :
+AbstractLibrary::AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(playlistHandler);
+	m = Pimpl::make<Private>(playlistInteractor);
 
 	auto* mdcn = Tagging::ChangeNotifier::instance();
 	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged,
@@ -350,37 +322,38 @@ void AbstractLibrary::findTrack(TrackID id)
 
 void AbstractLibrary::prepareFetchedTracksForPlaylist(bool createNewPlaylist)
 {
-	createPlaylist(tracks(), m->playlistHandler, createNewPlaylist);
+	m->playlistInteractor->createPlaylist(tracks(), createNewPlaylist);
 }
 
 void AbstractLibrary::prepareCurrentTracksForPlaylist(bool createNewPlaylist)
 {
-	createPlaylist(currentTracks(), m->playlistHandler, createNewPlaylist);
+	m->playlistInteractor->createPlaylist(currentTracks(), createNewPlaylist);
 }
 
 void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)
 {
-	createPlaylist(paths, m->playlistHandler, createNewPlaylist);
+	m->playlistInteractor->createPlaylist(paths, createNewPlaylist);
 }
 
 void AbstractLibrary::playNextFetchedTracks()
 {
-	insertTracksAfterCurrentTrack(m->playlistHandler, tracks());
+
+	m->playlistInteractor->insertAfterCurrentTrack(tracks());
 }
 
 void AbstractLibrary::playNextCurrentTracks()
 {
-	insertTracksAfterCurrentTrack(m->playlistHandler, currentTracks());
+	m->playlistInteractor->insertAfterCurrentTrack(currentTracks());
 }
 
 void AbstractLibrary::appendFetchedTracks()
 {
-	appendTracks(m->playlistHandler, tracks());
+	m->playlistInteractor->append(tracks());
 }
 
 void AbstractLibrary::appendCurrentTracks()
 {
-	appendTracks(m->playlistHandler, currentTracks());
+	m->playlistInteractor->append(currentTracks());
 }
 
 void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)

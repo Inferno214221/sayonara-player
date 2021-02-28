@@ -34,9 +34,9 @@ namespace Library
 }
 
 class LocalLibrary :
-		public AbstractLibrary
+	public AbstractLibrary
 {
-	friend class Library::Manager;
+		friend class Library::Manager;
 
 	Q_OBJECT
 	PIMPL(LocalLibrary)
@@ -47,7 +47,8 @@ class LocalLibrary :
 		void sigPathChanged(const QString& newPath);
 
 	protected:
-		LocalLibrary(Library::Manager* libraryManager, LibraryId id, Playlist::Handler* playlistHandler, QObject* parent=nullptr);
+		LocalLibrary(Library::Manager* libraryManager, LibraryId id, LibraryPlaylistInteractor* playlistInteractor,
+		             QObject* parent = nullptr);
 
 	public:
 		~LocalLibrary() override;
@@ -94,8 +95,6 @@ class LocalLibrary :
 		void refreshArtists() override;
 		void refreshAlbums() override;
 		void refreshTracks() override;
-
-
 
 	private slots:
 		void reloadThreadNewBlock();

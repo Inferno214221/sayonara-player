@@ -27,7 +27,7 @@
 #include <QtGlobal>
 #include "Gui/Library/LibraryContainer.h"
 
-namespace Playlist { class Handler; }
+class LibraryPlaylistInteractor;
 
 namespace SC
 {
@@ -44,7 +44,7 @@ namespace SC
 
 	public:
 
-		explicit LibraryContainer(Playlist::Handler* playlistHandler, QObject* parent=nullptr);
+		explicit LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent=nullptr);
 		~LibraryContainer() override;
 
 		// override from LibraryViewInterface

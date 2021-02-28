@@ -94,8 +94,8 @@ struct SC::Library::Private
 	}
 };
 
-SC::Library::Library(Playlist::Handler* playlistHandler, QObject* parent) :
-	AbstractLibrary(playlistHandler, parent)
+SC::Library::Library(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
+	AbstractLibrary(playlistInteractor, parent)
 {
 	m = Pimpl::make<Private>();
 }

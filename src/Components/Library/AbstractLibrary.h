@@ -37,10 +37,7 @@ namespace Gui
 	class ExtensionSet;
 }
 
-namespace Playlist
-{
-	class Handler;
-}
+class LibraryPlaylistInteractor;
 
 class AbstractLibrary :
 	public QObject
@@ -49,7 +46,7 @@ class AbstractLibrary :
 	PIMPL(AbstractLibrary)
 
 	public:
-		explicit AbstractLibrary(Playlist::Handler* playlistHandler, QObject* parent = nullptr);
+		explicit AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 		virtual ~AbstractLibrary();
 
 		Library::Sortings sortorder() const;

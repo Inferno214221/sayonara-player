@@ -22,8 +22,9 @@
 
 #include "SoundcloudLibraryContainer.h"
 #include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
+
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
-#include "Components/Playlist/PlaylistHandler.h"
+#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include <qglobal.h>
 #include <QPixmap>
@@ -35,19 +36,19 @@ static void sc_init_icons()
 
 struct SC::LibraryContainer::Private
 {
-	Playlist::Handler* playlistHandler;
+	LibraryPlaylistInteractor* playlistInteractor;
 
-	Private(Playlist::Handler* playlistHandler) :
-		playlistHandler(playlistHandler)
+	Private(LibraryPlaylistInteractor* playlistInteractor) :
+		playlistInteractor(playlistInteractor)
 	{}
 };
 
-SC::LibraryContainer::LibraryContainer(Playlist::Handler* playlistHandler, QObject* parent) :
+SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
 	::Library::Container(parent)
 {
 	sc_init_icons();
 
-	m = Pimpl::make<Private>(playlistHandler);
+	m = Pimpl::make<Private>(playlistInteractor);
 }
 
 SC::LibraryContainer::~LibraryContainer() = default;
@@ -78,7 +79,7 @@ QMenu* SC::LibraryContainer::menu()
 
 void SC::LibraryContainer::initUi()
 {
-	SC::Library* library = new SC::Library(m->playlistHandler, this);
+	auto* library = new SC::Library(m->playlistInteractor, this);
 	ui = new SC::GUI_Library(library);
 }
 

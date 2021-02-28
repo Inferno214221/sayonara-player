@@ -48,9 +48,8 @@ struct Handler::Private
 	int currentPlaylistIndex;
 
 	Private(PlayManager* playManager) :
-		playManager{playManager},
-		currentPlaylistIndex{-1}
-	{}
+		playManager {playManager},
+		currentPlaylistIndex {-1} {}
 
 	void initPlaylists(Handler* handler, std::shared_ptr<::Playlist::Loader> playlistLoader)
 	{
@@ -429,32 +428,5 @@ void Handler::wwwTrackFinished(const MetaData& track)
 	{
 		auto playlist = activePlaylist();
 		playlist->insertTracks(MetaDataList {track}, playlist->currentTrackIndex());
-	}
-}
-
-void Handler::applyPlaylistActionAfterDoubleClick()
-{
-	if(GetSetting(Set::Lib_DC_DoNothing))
-	{
-		return;
-	}
-
-	if(GetSetting(Set::Lib_DC_PlayIfStopped))
-	{
-		if(m->playManager->playstate() != PlayState::Playing)
-		{
-			auto playlist = this->playlist(currentIndex());
-			playlist->changeTrack(0);
-		}
-	}
-
-	else if(GetSetting(Set::Lib_DC_PlayImmediately))
-	{
-		const auto plm = GetSetting(Set::PL_Mode);
-		if(plm.append() == ::Playlist::Mode::State::Off)
-		{
-			auto playlist = this->playlist(currentIndex());
-			playlist->changeTrack(0);
-		}
 	}
 }

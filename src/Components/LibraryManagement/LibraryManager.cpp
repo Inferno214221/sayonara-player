@@ -19,11 +19,14 @@
  */
 
 #include "LibraryManager.h"
+
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
+
+#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -50,13 +53,13 @@ struct Manager::Private
 {
 	public:
 		QMap<LibraryId, LocalLibrary*> libraryMap;
-		Playlist::Handler* playlistHandler;
+		LibraryPlaylistInteractor* playlistInteractor;
 		QList<Info> libraries;
 		DB::Connector* database;
 		DB::Library* libraryConnector;
 
-		Private(Playlist::Handler* playlistHandler) :
-			playlistHandler {playlistHandler},
+		Private(LibraryPlaylistInteractor* playlistInteractor) :
+			playlistInteractor {playlistInteractor},
 			database {DB::Connector::instance()},
 			libraryConnector {database->libraryConnector()} {}
 
@@ -118,10 +121,10 @@ struct Manager::Private
 		}
 };
 
-Manager::Manager(Playlist::Handler* playlistHandler) :
+Manager::Manager(LibraryPlaylistInteractor* playlistInteractor) :
 	QObject()
 {
-	m = Pimpl::make<Private>(playlistHandler);
+	m = Pimpl::make<Private>(playlistInteractor);
 	reset();
 }
 
@@ -382,7 +385,7 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 
 	if(localLibrary == nullptr)
 	{
-		localLibrary = new LocalLibrary(this, id, m->playlistHandler);
+		localLibrary = new LocalLibrary(this, id, m->playlistInteractor);
 		m->libraryMap[id] = localLibrary;
 	}
 

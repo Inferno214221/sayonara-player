@@ -47,7 +47,7 @@ namespace SC
 		void sigTracksFound(const MetaDataList& v_md);
 
 	public:
-		explicit Library(Playlist::Handler* playlistHandler, QObject* parent=nullptr);
+		explicit Library(LibraryPlaylistInteractor* playlistInteractor, QObject* parent=nullptr);
 		~Library() override;
 
 		void	load() override;

@@ -85,7 +85,7 @@ namespace Playlist
 			PlaylistPtr activePlaylist() override;
 
 			int currentIndex() const override;
-			void setCurrentIndex(int playlistIndex) override ;
+			void setCurrentIndex(int playlistIndex) override;
 
 			/**
 			 * @brief Request a new name for the playlist (usually New %1 is returned).
@@ -104,7 +104,8 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
+			int
+			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
 
 			/**
 			 * @brief create a new playlist (overloaded)
@@ -114,7 +115,8 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true) override;
+			int createPlaylist(const QStringList& pathList, const QString& name = QString(),
+			                   bool temporary = true) override;
 			int createCommandLinePlaylist(const QStringList& pathList) override;
 
 			/**
@@ -132,8 +134,6 @@ namespace Playlist
 			int createEmptyPlaylist(bool override = false) override;
 
 			void deleteTracks(int playlistIndex, const IndexSet& rows, Library::TrackDeletionMode deletionMode);
-
-			void applyPlaylistActionAfterDoubleClick();
 
 		public slots:
 			/**

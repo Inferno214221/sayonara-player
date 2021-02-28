@@ -22,12 +22,13 @@
 #include "Importer/LibraryImporter.h"
 #include "Threads/ReloadThread.h"
 
+#include "Components/LibraryManagement/LibraryManager.h"
+
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
-#include "Components/LibraryManagement/LibraryManager.h"
+#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
@@ -53,19 +54,13 @@ struct LocalLibrary::Private
 		libraryManager(libraryManager) {}
 };
 
-LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId, Playlist::Handler* playlistHandler,
-                           QObject* parent) :
-	AbstractLibrary(playlistHandler, parent)
+LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId,
+                           LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
+	AbstractLibrary(playlistInteractor, parent)
 {
 	m = Pimpl::make<Private>(libraryManager, libraryId);
 
 	applyDatabaseFixes();
-
-	connect(playlistHandler, &Playlist::Handler::sigTrackDeletionRequested,
-	        this, &LocalLibrary::deleteTracks);
-
-	connect(playlistHandler, &Playlist::Handler::sigFindTrackRequested,
-	        this, &LocalLibrary::findTrack);
 
 	connect(libraryManager, &Library::Manager::sigRenamed, this, [&](const auto id) {
 		if(id == m->libraryId)
