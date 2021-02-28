@@ -79,6 +79,10 @@ struct Handler::Private
 			auto lastPlaylist = handler->playlist(currentIndex);
 			lastPlaylist->setCurrentTrack(lastTrackIndex);
 		}
+
+		else {
+			this->playManager->stop();
+		}
 	}
 };
 

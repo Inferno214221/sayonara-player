@@ -144,16 +144,6 @@ QSize GUI_ControlsBase::buttonSize() const
 // new track
 void GUI_ControlsBase::currentTrackChanged(const MetaData& track)
 {
-	labSayonara()->hide();
-	labVersion()->hide();
-	labWrittenBy()->hide();
-	labCopyright()->hide();
-
-	labTitle()->show();
-	labArtist()->show();
-	labAlbum()->show();
-	widgetDetails()->show();
-
 	refreshCurrentPosition(0);
 	refreshLabels(track);
 
@@ -165,6 +155,18 @@ void GUI_ControlsBase::currentTrackChanged(const MetaData& track)
 
 void GUI_ControlsBase::playstateChanged(PlayState state)
 {
+	labSayonara()->setVisible(state == PlayState::Stopped);
+	labVersion()->setVisible(state == PlayState::Stopped);
+	labWrittenBy()->setVisible(state == PlayState::Stopped);
+	labCopyright()->setVisible(state == PlayState::Stopped);
+
+	labTitle()->setVisible(state != PlayState::Stopped);
+	labArtist()->setVisible(state != PlayState::Stopped);
+	labAlbum()->setVisible(state != PlayState::Stopped);
+	widgetDetails()->setVisible(state != PlayState::Stopped);
+	labCurrentTime()->setVisible(state != PlayState::Stopped);
+	labMaxTime()->setVisible(state != PlayState::Stopped);
+
 	switch(state)
 	{
 		case PlayState::Stopped:
@@ -196,13 +198,11 @@ QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
 
 void GUI_ControlsBase::played()
 {
-	labCurrentTime()->setVisible(true);
 	btnPlay()->setIcon(icon(Gui::Icons::Pause));
 }
 
 void GUI_ControlsBase::paused()
 {
-	labCurrentTime()->setVisible(true);
 	btnPlay()->setIcon(icon(Gui::Icons::Play));
 }
 
@@ -213,20 +213,7 @@ void GUI_ControlsBase::stopped()
 	btnPlay()->setIcon(icon(Gui::Icons::Play));
 	sliProgress()->set_buffering(-1);
 
-	labTitle()->hide();
-	labArtist()->hide();
-	labAlbum()->hide();
-	widgetDetails()->hide();
-
 	labCurrentTime()->setText("00:00");
-	labCurrentTime()->hide();
-	labMaxTime()->clear();
-	labMaxTime()->setVisible(false);
-
-	labSayonara()->show();
-	labWrittenBy()->show();
-	labVersion()->show();
-	labCopyright()->show();
 
 	sliProgress()->setValue(0);
 	sliProgress()->setEnabled(false);
