@@ -400,6 +400,11 @@ void Model::insertTracks(const QStringList& files, int row)
 	playlistGenerator->insertPaths(files, row);
 }
 
+void Model::reverseTracks()
+{
+	m->playlist->reverse();
+}
+
 int Model::currentTrack() const
 {
 	return m->playlist->currentTrackIndex();
@@ -615,4 +620,29 @@ void Model::playlistChanged(int pl_idx)
 
 	emit dataChanged(index(0,0), index(rowCount()-1, columnCount()-1));
 	emit sigDataReady();
+}
+
+void Playlist::Model::deleteTracks(const IndexSet& rows)
+{
+	m->playlist->deleteTracks(rows);
+}
+
+void Playlist::Model::findTrack(int index)
+{
+	m->playlist->findTrack(index);
+}
+
+QModelIndex Playlist::Model::getRowIndexOf(const QString& substr, int row, bool is_forward)
+{
+	return QModelIndex();
+}
+
+int Playlist::Model::playlistIndex() const
+{
+	return m->playlist->index();
+}
+
+void Playlist::Model::setBusy(bool b)
+{
+	m->playlist->setBusy(b);
 }

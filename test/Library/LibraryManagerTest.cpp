@@ -1,8 +1,8 @@
 #include "SayonaraTest.h"
-#include "PlayManagerMock.h"
-#include "PlaylistMocks.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
+
+#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
@@ -11,28 +11,43 @@
 #include <memory>
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class LibraryManagerTest : 
-    public Test::Base
+class LibraryPlaylistInteractorStub : public LibraryPlaylistInteractor
 {
-    Q_OBJECT
+	public:
+		~LibraryPlaylistInteractorStub() override = default;
 
-    public:
-        LibraryManagerTest() :
-            Test::Base("LibraryManagerTest")
-        {}
+		void createPlaylist(const QStringList&, bool) override {}
+
+		void createPlaylist(const MetaDataList&, bool) override {}
+
+		void append(const MetaDataList&) override {}
+
+		void insertAfterCurrentTrack(const MetaDataList&) override {}
+};
+
+class LibraryManagerTest :
+	public Test::Base
+{
+	Q_OBJECT
+
+	public:
+		LibraryManagerTest() :
+			Test::Base("LibraryManagerTest") {}
 
 	private:
 
 		std::shared_ptr<Library::Manager> createLibraryManager()
 		{
-    	    auto* playlistHandler = new PlaylistHandlerMock(new PlayManagerMock(), std::make_shared<PlaylistLoaderMock>());
-
-    	    auto libraryManager = std::shared_ptr<Library::Manager>(new Library::Manager(playlistHandler), [&](Library::Manager* libraryManager){
+			auto deleter = [&](Library::Manager* libraryManager) {
 				removeAllLibraries(libraryManager);
 				delete libraryManager;
-    	    });
+			};
 
-    	    return libraryManager;
+			auto* libraryPlaylistInteractor = new LibraryPlaylistInteractorStub();
+			auto libraryManager =
+				std::shared_ptr<Library::Manager>(new Library::Manager(libraryPlaylistInteractor), deleter);
+
+			return libraryManager;
 		}
 
 		void removeAllLibraries(Library::Manager* manager)
@@ -51,7 +66,7 @@ class LibraryManagerTest :
 		{
 			removeAllLibraries(manager.get());
 
-			for(int i=0; i<count; i++)
+			for(int i = 0; i < count; i++)
 			{
 				const auto name = QString("Library%1").arg(i);
 				const auto dir = Test::Base::tempPath(name);
@@ -62,12 +77,12 @@ class LibraryManagerTest :
 			QVERIFY(manager->count() == count);
 		}
 
-    private slots:
-        void addTest();
-        void infoTest();
-        void removeTest();
-        void renameTest();
-        void moveTest();
+	private slots:
+		void addTest();
+		void infoTest();
+		void removeTest();
+		void renameTest();
+		void moveTest();
 };
 
 void LibraryManagerTest::addTest()
@@ -75,14 +90,14 @@ void LibraryManagerTest::addTest()
 	auto manager = createLibraryManager();
 	QVERIFY(manager->allLibraries().isEmpty());
 
-	for(int i=0; i<3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		const auto name = QString("Library%1").arg(i);
 		const auto dir = Test::Base::tempPath(name);
 		const auto id = manager->addLibrary(name, dir);
 		QVERIFY(id >= 0);
-		QVERIFY(manager->allLibraries().size() == (i+1));
-		QVERIFY(manager->count() == i+1);
+		QVERIFY(manager->allLibraries().size() == (i + 1));
+		QVERIFY(manager->count() == i + 1);
 	}
 
 	{ // already available library
@@ -113,7 +128,7 @@ void LibraryManagerTest::infoTest()
 	auto manager = createLibraryManager();
 	QVERIFY(manager->count() == 0);
 
-	for(int i=0; i<3; i++)
+	for(int i = 0; i < 3; i++)
 	{
 		const auto name = QString("Library%1").arg(i);
 		const auto dir = Test::Base::tempPath(name);
@@ -285,4 +300,5 @@ void LibraryManagerTest::moveTest()
 }
 
 QTEST_GUILESS_MAIN(LibraryManagerTest)
+
 #include "LibraryManagerTest.moc"

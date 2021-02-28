@@ -23,8 +23,10 @@
 
 #include "PlaylistDBInterface.h"
 #include "PlaylistStopBehavior.h"
+
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Playlist/PlaylistMode.h"
+
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -48,6 +50,9 @@ namespace Playlist
 			friend class Handler;
 
 		signals:
+			void sigFindTrackRequested(const MetaData& track);
+			void sigDeleteFilesRequested(const MetaDataList& tracks);
+
 			void sigItemsChanged(int index);
 			void sigTrackChanged();
 			void sigStopped();
@@ -103,6 +108,7 @@ namespace Playlist
 			bool wasChanged() const override;
 
 			void reloadFromDatabase();
+			void deleteTracks(const IndexSet& indexes);
 
 		public slots:
 			void metadataDeleted();

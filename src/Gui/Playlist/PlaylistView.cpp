@@ -31,8 +31,10 @@
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
-#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 
@@ -57,22 +59,21 @@ using Pl::View;
 struct View::Private
 {
 	View* view;
-	PlaylistPtr playlist;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	Pl::ContextMenu* contextMenu = nullptr;
 	Pl::Model* model;
 	ProgressBar* progressbar;
 	QLabel* currentFileLabel;
 
-	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, View* parent) :
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
+	        View* parent) :
 		view(parent),
-		playlist(playlist),
 		dynamicPlaybackChecker(dynamicPlaybackChecker),
 		model(new Pl::Model(playlistCreator, playlist, parent)),
 		progressbar(new ProgressBar(parent)),
 		currentFileLabel(new QLabel(parent))
 	{
-		view->setObjectName("playlist_view" + QString::number(this->playlist->index()));
+		view->setObjectName(QString("playlist_view%1").arg(playlist->index()));
 		view->setSearchableModel(this->model);
 		view->setItemDelegate(new Pl::Delegate(view));
 
@@ -133,7 +134,8 @@ struct View::Private
 	}
 };
 
-View::View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
+View::View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
+           QWidget* parent) :
 	SearchableTableView(parent),
 	InfoDialogContainer(),
 	Gui::Dragable(this)
@@ -181,9 +183,9 @@ void View::initContextMenu()
 	m->contextMenu->addPreferenceAction(new PlaylistPreferenceAction(m->contextMenu));
 
 	connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Pl::Model::refreshData);
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=]() { showEdit(); });
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=]() { showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=]() { showLyrics(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [&]() { showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [&]() { showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [&]() { showLyrics(); });
 	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &View::deleteSelectedTracks);
 	connect(m->contextMenu, &ContextMenu::sigRemoveClicked, this, &View::removeSelectedRows);
 	connect(m->contextMenu, &ContextMenu::sigClearClicked, this, &View::clear);
@@ -191,10 +193,9 @@ void View::initContextMenu()
 	connect(m->contextMenu, &ContextMenu::sigJumpToCurrentTrack, this, &View::gotoToCurrentTrack);
 	connect(m->contextMenu, &ContextMenu::sigBookmarkPressed, this, &View::bookmarkTriggered);
 	connect(m->contextMenu, &ContextMenu::sigFindTrackTriggered, this, &View::findTrackTriggered);
-	connect(m->contextMenu,
-	        &ContextMenu::sigReverseTriggered,
-	        m->playlist.get(),
-	        &Playlist::reverse);
+	connect(m->contextMenu, &ContextMenu::sigReverseTriggered, this, [&]() {
+		m->model->reverseTracks();
+	});
 }
 
 void View::gotoRow(int row)
@@ -212,7 +213,7 @@ void View::handleDrop(QDropEvent* event)
 
 	const auto* mimedata = event->mimeData();
 	const auto dragDropLine = m->calcDragDropLine(event->pos());
-	const auto isInnerDragDrop = MimeData::isInnerDragDrop(mimedata, m->playlist->index());
+	const auto isInnerDragDrop = MimeData::isInnerDragDrop(mimedata, m->model->playlistIndex());
 	if(isInnerDragDrop)
 	{
 		const auto selectedRows = selectedItems();
@@ -231,7 +232,7 @@ void View::handleDrop(QDropEvent* event)
 	auto* asyncDropHandler = MimeData::asyncDropHandler(mimedata);
 	if(asyncDropHandler)
 	{
-		m->playlist->setBusy(true);
+		m->model->setBusy(true);
 
 		asyncDropHandler->setTargetIndex(dragDropLine + 1);
 		connect(asyncDropHandler, &Gui::AsyncDropHandler::sigFinished,
@@ -252,7 +253,7 @@ void View::asyncDropFinished()
 
 	// busy playlists do not accept playlists modifications, so we have
 	// to disable busy status before inserting the tracks
-	m->playlist->setBusy(false);
+	m->model->setBusy(false);
 
 	const auto tracks = asyncDropHandler->tracks();
 	m->model->insertTracks(tracks, asyncDropHandler->targetIndex());
@@ -295,7 +296,7 @@ void View::findTrackTriggered()
 	const auto row = this->currentIndex().row();
 	if(row >= 0)
 	{
-		m->playlist->findTrack(row);
+		m->model->findTrack(row);
 	}
 }
 
@@ -324,8 +325,20 @@ void View::removeSelectedRows()
 
 void View::deleteSelectedTracks()
 {
-	const auto selections = selectedItems();
-	emit sigDeleteTracks(selections);
+	const auto indexes = selectedItems();
+
+	if(!indexes.isEmpty())
+	{
+		const auto text = tr("You are about to delete %n file(s)", "", indexes.count()) +
+		                  "!\n" +
+		                  Lang::get(Lang::Continue).question();
+
+		const auto answer = Message::question_yn(text);
+		if(answer == Message::Answer::Yes)
+		{
+			m->model->deleteTracks(indexes);
+		}
+	}
 }
 
 void View::clear()

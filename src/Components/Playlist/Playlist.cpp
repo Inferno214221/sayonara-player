@@ -126,7 +126,7 @@ void Playlist::Playlist::findTrack(int idx)
 {
 	if(Util::between(idx, m->tracks))
 	{
-		//emit sigFindTrack(m->tracks[idx].id());
+		emit sigFindTrackRequested(m->tracks[idx]);
 	}
 }
 
@@ -635,4 +635,18 @@ void PlaylistImpl::reloadFromDatabase()
 		this->clear();
 		this->createPlaylist(customPlaylist);
 	}
+}
+
+void Playlist::Playlist::deleteTracks(const IndexSet& indexes)
+{
+	MetaDataList tracks;
+	for(const auto& index : indexes)
+	{
+		if(index >= 0 && index < m->tracks.count())
+		{
+			tracks << m->tracks[index];
+		}
+	}
+
+	emit sigDeleteFilesRequested(tracks);
 }

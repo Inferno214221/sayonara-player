@@ -30,8 +30,10 @@
 #define PLAYLISTITEMMODEL_H_
 
 #include "Gui/Utils/SearchableWidget/SearchableModel.h"
+
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Pimpl.h"
+
 
 class CustomMimeData;
 class PlaylistCreator;
@@ -80,14 +82,21 @@ namespace Playlist
 			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent=nullptr);
 			~Model() override;
 
+			int playlistIndex() const;
+
 			void clear();
 			void removeTracks(const IndexSet& rows);
+			void deleteTracks(const IndexSet& rows);
+
+			void findTrack(int index);
+
 			IndexSet moveTracks(const IndexSet& rows, int target_index);
 			IndexSet moveTracksUp(const IndexSet& rows);
 			IndexSet moveTracksDown(const IndexSet& rows);
 			IndexSet copyTracks(const IndexSet& rows, int target_index);
 			void insertTracks(const MetaDataList& tracks, int row);
 			void insertTracks(const QStringList& files, int row);
+			void reverseTracks();
 
 			int	currentTrack() const;
 			void setCurrentTrack(int row);
@@ -99,6 +108,8 @@ namespace Playlist
 			void setDragIndex(int dragIndex);
 			void setRowHeight(int rowHeight);
 			void changeRating(const IndexSet& rows, Rating rating);
+
+			void setBusy(bool b);
 
 			QModelIndex	getRowIndexOf(const QString& substr, int row, bool is_forward);
 

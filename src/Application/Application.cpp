@@ -43,10 +43,11 @@
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/DynamicPlayback/DynamicPlaybackCheckerImpl.h"
 #include "Components/Equalizer/Equalizer.h"
-#include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Playlist/PlaylistChooser.h"
+#include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/PlaylistLibraryInteractor.h"
+#include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Playlist/LibraryPlaylistInteractorImpl.h"
 #include "Components/PlayManager/PlayManagerImpl.h"
 #include "Components/RemoteControl/RemoteControl.h"
@@ -154,6 +155,7 @@ struct Application::Private
 	Playlist::Handler* playlistHandler;
 	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Library::Manager* libraryManager;
+	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	QTime* timer;
 
@@ -195,6 +197,8 @@ struct Application::Private
 		libraryPlaylistInteractor = new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
 		libraryManager = new Library::Manager(libraryPlaylistInteractor);
 
+		playlistLibraryInteractor = new Playlist::LibraryInteractor(playlistHandler, libraryManager);
+
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 
 		Shutdown::instance()->registerPlaymanager(playManager);
@@ -212,7 +216,9 @@ struct Application::Private
 	{
 		delete timer;
 		delete dynamicPlaybackChecker;
+		delete playlistLibraryInteractor;
 		delete libraryManager;
+		delete libraryPlaylistInteractor;
 		delete playlistHandler;
 		delete sessionManager;
 		delete engine;
