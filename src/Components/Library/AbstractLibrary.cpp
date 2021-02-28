@@ -506,7 +506,6 @@ void AbstractLibrary::selectedArtistsChanged(const IndexSet& indexes)
 void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreArtists)
 {
 	Util::Set<AlbumId> selectedAlbums;
-	const auto showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	for(const auto& index : indexes)
 	{
@@ -529,7 +528,7 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreA
 			getAllTracksByAlbum(m->selectedAlbums.toList(), tracks, m->filter);
 
 			Util::Algorithm::moveIf(tracks, m->tracks, [&](const auto& track) {
-				const auto artistId = (showAlbumArtists)
+				const auto artistId = (GetSetting(Set::Lib_ShowAlbumArtists))
 				                      ? track.albumArtistId()
 				                      : track.artistId();
 

@@ -252,7 +252,7 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 	Dialog::show();
 	if(size.isValid())
 	{
-		QTimer::singleShot(100, this, [&]() {
+		QTimer::singleShot(100, this, [&, size]() {
 			this->resize(size);
 		});
 	}
