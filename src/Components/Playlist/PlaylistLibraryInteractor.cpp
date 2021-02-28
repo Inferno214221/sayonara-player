@@ -53,13 +53,13 @@ LibraryInteractor::LibraryInteractor(Handler* playlistHandler, LibraryInfoAccess
 	m = Pimpl::make<Private>(playlistHandler, libraryInfoAccessor);
 
 	connect(playlistHandler, &Handler::sigNewPlaylistAdded, this, [&](const auto index){
-		auto playlist = playlistHandler->playlist(index);
+		auto playlist = m->playlistHandler->playlist(index);
 		initPlaylistConnections(playlist);
 	});
 
 	for(int i=0; i<playlistHandler->count(); i++)
 	{
-		auto playlist = playlistHandler->playlist(i);
+		auto playlist = m->playlistHandler->playlist(i);
 		initPlaylistConnections(playlist);
 	}
 }
