@@ -102,8 +102,11 @@ void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 	const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
 
 	painter->save();
-	painter->setBrush(background);
-	painter->drawPixmap(r2, pixmap);
+	if(option.state & QStyle::State_Selected)
+	{
+		painter->fillRect(option.rect, option.palette.highlight());
+	}
+	painter->drawPixmap(rect, pixmap);
 	painter->restore();
 }
 
