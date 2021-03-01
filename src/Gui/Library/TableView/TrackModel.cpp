@@ -35,6 +35,7 @@
 #include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/GuiUtils.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/globals.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -199,13 +200,9 @@ Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const
 		return Qt::ItemIsEnabled;
 	}
 
-	const auto columnIndex = ColumnIndex::Track(index.column());
-	if(columnIndex == ColumnIndex::Track::Rating)
-	{
-		return (QAbstractTableModel::flags(index) | Qt::ItemIsEditable);
-	}
-
-	return QAbstractTableModel::flags(index);
+	return (index.column() == +ColumnIndex::Track::Rating)
+	       ? (QAbstractTableModel::flags(index) | Qt::ItemIsEditable)
+	       : QAbstractTableModel::flags(index);
 }
 
 bool
@@ -282,24 +279,21 @@ Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
 		}
 	}
 
-	if(rows.isEmpty()){
+	if(rows.isEmpty())
+	{
 		return Cover::Location::invalidLocation();
 	}
 
 	const auto firstRow = rows.first();
 	const auto albumId = tracks[firstRow].albumId();
-	for(const auto& row : rows)
-	{
-		if(Util::between(row, tracks))
-		{
-			if(tracks[row].albumId() != albumId)
-			{
-				return Cover::Location::invalidLocation();
-			}
-		}
-	}
 
-	return Cover::Location::coverLocation(tracks[firstRow]);
+	const auto containsMultipleAlbums = Util::Algorithm::contains(rows, [&](const auto row) {
+		return (tracks[row].albumId() != albumId);
+	});
+
+	return containsMultipleAlbums
+	       ? Cover::Location::invalidLocation()
+	       : Cover::Location::coverLocation(tracks[firstRow]);
 }
 
 int TrackModel::searchableColumn() const

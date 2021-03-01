@@ -45,22 +45,19 @@
 #include <QPixmap>
 #include <QColor>
 
-
 using namespace Library;
 
 struct AlbumModel::Private
 {
-	QPixmap						pixmapSingle;
-	QPixmap						pixmapMulti;
-	QPair<int, Rating>			tempRating;
-	Tagging::UserOperations*	uto=nullptr;
+	QPixmap pixmapSingle;
+	QPixmap pixmapMulti;
+	QPair<int, Rating> tempRating;
+	Tagging::UserOperations* uto = nullptr;
 
 	Private() :
 		pixmapSingle(Gui::Util::pixmap("cd.png", Gui::Util::NoTheme)),
-		pixmapMulti(Gui::Util::pixmap("cds.png", Gui::Util::NoTheme))
-	{
-		tempRating.first = -1;
-	}
+		pixmapMulti(Gui::Util::pixmap("cds.png", Gui::Util::NoTheme)),
+		tempRating {-1, Rating::Zero} {}
 };
 
 AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
@@ -75,28 +72,18 @@ AlbumModel::~AlbumModel() = default;
 
 Id AlbumModel::mapIndexToId(int index) const
 {
-	const AlbumList& albums = library()->albums();
-
-	if(index < 0 || index >= albums.count()){
-		return -1;
-	}
-
-	else {
-		return albums[index].id();
-	}
+	const auto& albums = library()->albums();
+	return (Util::between(index, albums))
+	       ? albums[index].id()
+	       : -1;
 }
 
 QString AlbumModel::searchableString(int row) const
 {
-	const AlbumList& albums = library()->albums();
-
-	if(row < 0 || row >= albums.count()){
-		return QString();
-	}
-
-	else {
-		return albums[row].name();
-	}
+	const auto& albums = library()->albums();
+	return (Util::between(row, albums))
+	       ? albums[row].name()
+	       : QString {};
 }
 
 Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
@@ -113,43 +100,37 @@ Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 	}
 
 	const auto row = static_cast<AlbumList::size_type>(rows.first());
-	const AlbumList& albums = library()->albums();
+	const auto& albums = library()->albums();
 
 	return (Util::between(row, albums))
-		? Cover::Location::xcoverLocation(albums[row])
-		: Cover::Location::invalidLocation();
+	       ? Cover::Location::xcoverLocation(albums[row])
+	       : Cover::Location::invalidLocation();
 }
 
 QVariant AlbumModel::data(const QModelIndex& index, int role) const
 {
-	if (!index.isValid()) {
+	if(!index.isValid())
+	{
 		return QVariant();
 	}
 
-	const AlbumList& albums = library()->albums();
-	if (index.row() >= albums.count())
-		return QVariant();
-
-	int row = index.row();
-	int column = index.column();
-	auto col = ColumnIndex::Album(column);
-
-	const Album& album = albums[row];
-
-	if(role == Qt::TextAlignmentRole )
+	const auto& albums = library()->albums();
+	if(index.row() >= albums.count())
 	{
-		int alignment = Qt::AlignVCenter;
-		switch(col)
-		{
-			case ColumnIndex::Album::Name:
-			//case ColumnIndex::Album::AlbumArtist:
-				alignment |= Qt::AlignLeft;
-				break;
-			default:
-				alignment |= Qt::AlignRight;
-		}
+		return QVariant();
+	}
 
-		return alignment;
+	const auto row = index.row();
+	const auto column = index.column();
+	const auto col = ColumnIndex::Album(column);
+
+	const auto& album = albums[row];
+
+	if(role == Qt::TextAlignmentRole)
+	{
+		return (col == ColumnIndex::Album::Name)
+		       ? (+Qt::AlignVCenter | +Qt::AlignLeft)
+		       : (+Qt::AlignVCenter | +Qt::AlignRight);
 	}
 
 	else if(role == Qt::ForegroundRole)
@@ -164,11 +145,9 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnIndex::Album::MultiDisc)
 		{
-			if(album.discnumbers().size() > 1){
-				return m->pixmapMulti;
-			}
-
-			return m->pixmapSingle;
+			return (album.discnumbers().size() > 1)
+			       ? m->pixmapMulti
+			       : m->pixmapSingle;
 		}
 	}
 
@@ -180,40 +159,28 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				return QString::number(album.songcount());
 
 			case ColumnIndex::Album::Year:
-				if(album.year() == 0){
-					return Lang::get(Lang::UnknownYear);
-				}
-				return album.year();
+				return (album.year() == 0)
+				       ? Lang::get(Lang::UnknownYear)
+				       : QVariant::fromValue(album.year());
 
 			case ColumnIndex::Album::Name:
-				if(album.name().trimmed().isEmpty()){
-					return Lang::get(Lang::UnknownAlbum);
-				}
-				return album.name();
-
-//			case ColumnIndex::Album::AlbumArtist:
-//			{
-//				QString albumArtist = album.albumArtists().join(", ");
-//				if(albumArtist.isEmpty()){
-//					return Lang::get(Lang::UnknownArtist);
-//				}
-//				return albumArtist;
-//			}
+				return (album.name().trimmed().isEmpty())
+				       ? Lang::get(Lang::UnknownAlbum)
+				       : album.name();
 
 			case ColumnIndex::Album::Duration:
 				return ::Util::msToString(album.durationSec() * 1000, "$He $M:$S");
 
 			case ColumnIndex::Album::Rating:
 			{
-				if(role == Qt::DisplayRole) {
+				if(role == Qt::DisplayRole)
+				{
 					return QVariant();
 				}
 
-				Rating rating = album.rating();
-				if(row == m->tempRating.first)
-				{
-					rating = m->tempRating.second;
-				}
+				const auto rating = (row == m->tempRating.first)
+				                    ? m->tempRating.second
+				                    : album.rating();
 
 				return QVariant::fromValue(rating);
 			}
@@ -223,7 +190,8 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole){
+	else if(role == Qt::SizeHintRole)
+	{
 		return QSize(1, Gui::Util::viewRowHeight());
 	}
 
@@ -233,18 +201,18 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int role)
 {
 	if((index.column() != int(ColumnIndex::Album::Rating) ||
-	   (role != Qt::EditRole)))
+	    (role != Qt::EditRole)))
 	{
 		return false;
 	}
 
-	int row = index.row();
+	const auto row = index.row();
 
-	const AlbumList& albums = library()->albums();
-	if(row >= 0 && row < albums.count())
+	const auto& albums = library()->albums();
+	if(Util::between(row, albums))
 	{
-		Album album = albums[row];
-		Rating rating = value.value<Rating>();
+		const auto& album = albums[row];
+		const auto rating = value.value<Rating>();
 
 		if(album.rating() != rating)
 		{
@@ -266,12 +234,7 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 void AlbumModel::albumChanged(int row)
 {
 	m->tempRating.first = -1;
-
-	emit dataChanged
-	(
-		this->index(row, 0),
-		this->index(row, columnCount())
-	);
+	emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
 }
 
 int AlbumModel::rowCount(const QModelIndex&) const
@@ -281,22 +244,19 @@ int AlbumModel::rowCount(const QModelIndex&) const
 
 Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 {
-	if (!index.isValid()) {
+	if(!index.isValid())
+	{
 		return Qt::ItemIsEnabled;
 	}
 
-	int col = index.column();
-	if(col == scast(int, ColumnIndex::Album::Rating))
-	{
-		return (ItemModel::flags(index) | Qt::ItemIsEditable);
-	}
-
-	return ItemModel::flags(index);
+	return (index.column() == +ColumnIndex::Album::Rating)
+	       ? (ItemModel::flags(index) | Qt::ItemIsEditable)
+	       : ItemModel::flags(index);
 }
 
 int AlbumModel::searchableColumn() const
 {
-	return scast(int, ColumnIndex::Album::Name);
+	return +ColumnIndex::Album::Name;
 }
 
 const MetaDataList& Library::AlbumModel::selectedMetadata() const

@@ -49,32 +49,18 @@ ArtistModel::~ArtistModel() = default;
 
 Id ArtistModel::mapIndexToId(int row) const
 {
-	const ArtistList& artists = library()->artists();
-
-	if(row < 0 || row >= artists.count())
-	{
-		return -1;
-	}
-
-	else
-	{
-		return artists[ArtistList::Size(row)].id();
-	}
+	const auto& artists = library()->artists();
+	return Util::between(row, artists)
+	       ? artists[ArtistList::Size(row)].id()
+	       : -1;
 }
 
 QString ArtistModel::searchableString(int row) const
 {
-	const ArtistList& artists = library()->artists();
-
-	if(row < 0 || row >= artists.count())
-	{
-		return QString();
-	}
-
-	else
-	{
-		return artists[ArtistList::Size(row)].name();
-	}
+	const auto& artists = library()->artists();
+	return Util::between(row, artists)
+	       ? artists[ArtistList::Size(row)].name()
+	       : QString();
 }
 
 QVariant ArtistModel::data(const QModelIndex& index, int role) const
@@ -90,33 +76,31 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		return QVariant();
 	}
 
-	int row = index.row();
-	int col = index.column();
+	const auto row = index.row();
+	const auto col = index.column();
 	auto columnIndex = ColumnIndex::Artist(col);
 
 	const Artist& artist = artists[ArtistList::Size(row)];
 
-	if(role == Qt::TextAlignmentRole)
+	if(role == +Qt::TextAlignmentRole)
 	{
 		switch(columnIndex)
 		{
 			case ColumnIndex::Artist::Name:
-				return int(Qt::AlignLeft | Qt::AlignVCenter);
+				return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
 			default:
-				return int(Qt::AlignRight | Qt::AlignVCenter);
+				return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
 		}
 	}
 
-	else if(role == Qt::DisplayRole)
+	else if(role == +Qt::DisplayRole)
 	{
 		switch(columnIndex)
 		{
 			case ColumnIndex::Artist::Name:
-				if(artist.name().isEmpty())
-				{
-					return Lang::get(Lang::UnknownArtist);
-				}
-				return artist.name();
+				return (artist.name().isEmpty())
+				       ? Lang::get(Lang::UnknownArtist)
+				       : artist.name();
 
 			case ColumnIndex::Artist::Tracks:
 				return QString::number(artist.songcount());
@@ -126,7 +110,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole)
+	else if(role == +Qt::SizeHintRole)
 	{
 		return QSize(1, Gui::Util::viewRowHeight());
 	}
@@ -141,12 +125,9 @@ int ArtistModel::rowCount(const QModelIndex&) const
 
 Qt::ItemFlags ArtistModel::flags(const QModelIndex& index) const
 {
-	if(!index.isValid())
-	{
-		return Qt::ItemIsEnabled;
-	}
-
-	return QAbstractTableModel::flags(index);
+	return index.isValid()
+	       ? QAbstractTableModel::flags(index)
+	       : Qt::ItemIsEnabled;
 }
 
 Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
@@ -162,17 +143,17 @@ Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
 		return Cover::Location::invalidLocation();
 	}
 
-	const ArtistList& artists = library()->artists();
+	const auto& artists = library()->artists();
 	const auto row = static_cast<ArtistList::Size>(rows.first());
 
 	return (Util::between(row, artists))
-		? Cover::Location::coverLocation(artists[row])
-		: Cover::Location::invalidLocation();
+	       ? Cover::Location::coverLocation(artists[row])
+	       : Cover::Location::invalidLocation();
 }
 
 int ArtistModel::searchableColumn() const
 {
-	return int(ColumnIndex::Artist::Name);
+	return static_cast<int>(ColumnIndex::Artist::Name);
 }
 
 const MetaDataList& Library::ArtistModel::selectedMetadata() const

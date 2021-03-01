@@ -62,19 +62,17 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 		return;
 	}
 
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
+	const auto rating = index.data(Qt::EditRole).value<Rating>();
 
-	RatingLabel label(nullptr, true);
+	auto label = RatingLabel(nullptr, true);
 	label.setRating(rating);
 	label.paint(painter, option.rect);
 }
 
 QWidget*
-RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+RatingDelegate::createEditor(QWidget* parent, [[maybe_unused]] const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	Q_UNUSED(option)
-
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
+	const auto rating = index.data(Qt::EditRole).value<Rating>();
 	auto* editor = new RatingEditor(rating, parent);
 
 	connect(editor, &RatingEditor::sigFinished, this, &RatingDelegate::deleteEditor);
@@ -83,40 +81,36 @@ RatingDelegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option
 	return editor;
 }
 
-void RatingDelegate::deleteEditor(bool save)
+void RatingDelegate::deleteEditor([[maybe_unused]] bool save)
 {
-	Q_UNUSED(save)
-
-	auto* editor = qobject_cast<RatingEditor*>(sender());
-	if(!editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(sender());
+	if(ratingEditor)
 	{
-		return;
+		disconnect(ratingEditor, &RatingEditor::sigFinished, this, &RatingDelegate::deleteEditor);
+
+		emit commitData(ratingEditor);
+		emit closeEditor(ratingEditor);
 	}
-
-	disconnect(editor, &RatingEditor::sigFinished, this, &RatingDelegate::deleteEditor);
-
-	emit commitData(editor);
-	emit closeEditor(editor);
 }
 
 void RatingDelegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(!rating_editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
+	if(!ratingEditor)
 	{
 		return;
 	}
 
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	rating_editor->setRating(rating);
+	const auto rating = index.data(Qt::EditRole).value<Rating>();
+	ratingEditor->setRating(rating);
 }
 
 void RatingDelegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(rating_editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
+	if(ratingEditor)
 	{
-		Rating rating = rating_editor->rating();
+		const auto rating = ratingEditor->rating();
 		model->setData(index, QVariant::fromValue(rating));
 	}
 }
