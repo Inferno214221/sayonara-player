@@ -31,24 +31,24 @@ struct Gui::StyledItemDelegate::Private
 	QHash<int, QSize> minimumActualSizeMap;
 
 	Private() :
-		decorationColumn(-1)
-	{}
+		decorationColumn(-1) {}
 
 	QSize calcPixmapSize(QSize size)
 	{
-		int minimum = std::min(size.width(), size.height());
-		if(this->minimumActualSizeMap.contains(minimum)){
+		const auto minimum = std::min(size.width(), size.height());
+		if(this->minimumActualSizeMap.contains(minimum))
+		{
 			return this->minimumActualSizeMap[minimum];
 		}
 
-		int scaledMinimum = ((minimum * 30) / 40);
+		const auto scaledMinimum = ((minimum * 30) / 40);
 
-		const QList<int> rounds{16, 22, 24, 32, 36, 48};
-		auto it = std::min_element(rounds.begin(), rounds.end(), [scaledMinimum](int r1, int r2){
+		const auto rounds = QList<int> {16, 22, 24, 32, 36, 48};
+		auto it = std::min_element(rounds.begin(), rounds.end(), [scaledMinimum](int r1, int r2) {
 			return (std::abs(scaledMinimum - r1) < std::abs(scaledMinimum - r2));
 		});
 
-		QSize ret(*it, *it);
+		const auto ret = QSize(*it, *it);
 		this->minimumActualSizeMap[minimum] = ret;
 
 		return ret;
@@ -71,17 +71,16 @@ Gui::StyledItemDelegate::~StyledItemDelegate() = default;
 
 QSize Gui::StyledItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	int width = index.data(Qt::SizeHintRole).toSize().width();
-	int height = Gui::Util::viewRowHeight();
-
-	if(height < 0) {
-		height = option.fontMetrics.height() + 4;
-	}
+	const auto width = index.data(Qt::SizeHintRole).toSize().width();
+	const auto height = (Gui::Util::viewRowHeight() < 0)
+	                    ? option.fontMetrics.height() + 4
+	                    : Gui::Util::viewRowHeight();
 
 	return QSize(width, height);
 }
 
-void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+void
+Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if(index.column() != m->decorationColumn)
 	{
@@ -89,17 +88,12 @@ void Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewIte
 		return;
 	}
 
-	bool isSelected = (option.state & QStyle::State_Selected);
+	const auto actualSize = m->calcPixmapSize(option.rect.size());
+	auto rect = QRect(option.rect);
+	rect.setSize(actualSize);
+	rect.translate((option.rect.bottomRight() - rect.bottomRight()) / 2);
 
-	const QPalette palette = option.palette;
-	const QBrush background = (isSelected) ? palette.background() : palette.highlight();
-
-	const QSize actualSize = m->calcPixmapSize(option.rect.size());
-	QRect r2(option.rect);
-		r2.setSize(actualSize);
-		r2.translate((option.rect.bottomRight() - r2.bottomRight()) / 2);
-
-	const QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
+	const auto pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
 
 	painter->save();
 	if(option.state & QStyle::State_Selected)
