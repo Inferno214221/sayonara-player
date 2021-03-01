@@ -28,9 +28,10 @@
 
 namespace
 {
-	QString operator /(const QString& first, const QString& second)
+	QString operator/(const QString& first, const QString& second)
 	{
-		if(second.isEmpty()){
+		if(second.isEmpty())
+		{
 			return Util::File::cleanFilename(first);
 		}
 
@@ -57,29 +58,30 @@ namespace
 			return true;
 		}
 
-		QString newName;
-		bool success = true;
-		const auto fileInfo = QFileInfo(filename);
+		if(const auto pureFilename = Util::File::getFilenameOfPath(filename);
+			Util::File::exists(targetDir / pureFilename))
+		{
+			return true;
+		}
 
+		auto success = true;
+
+		const auto fileInfo = QFileInfo(filename);
 		if(fileInfo.isFile())
 		{
+			auto newName = QString {};
 			success = Util::File::moveFile(filename, targetDir, newName);
 		}
 
 		else if(fileInfo.isDir())
 		{
+			auto newName = QString {};
 			success = Util::File::moveDir(filename, targetDir, newName);
 		}
 
 		if(!success)
 		{
-			spLog(Log::Warning, "Copy legacy file") << "Could not copy " << filename << " to "
-			                                        << targetDir;
-			if(Util::File::exists(newName))
-			{
-				spLog(Log::Warning, "Copy legacy file") << "Please delete " << newName << " "
-				                                        << "first";
-			}
+			spLog(Log::Warning, "Copy legacy file") << "Could not copy " << filename << " to " << targetDir;
 		}
 
 		return success;
