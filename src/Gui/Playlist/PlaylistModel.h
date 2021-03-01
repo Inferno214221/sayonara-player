@@ -99,7 +99,6 @@ namespace Playlist
 			void reverseTracks();
 
 			int	currentTrack() const;
-			void setCurrentTrack(int row);
 
 			MetaData metadata(int row) const;
 			MetaDataList metadata(const IndexSet& rows) const;
@@ -110,8 +109,6 @@ namespace Playlist
 			void changeRating(const IndexSet& rows, Rating rating);
 
 			void setBusy(bool b);
-
-			QModelIndex	getRowIndexOf(const QString& substr, int row, bool is_forward);
 
 			Qt::ItemFlags flags(const QModelIndex& index=QModelIndex()) const override;
 			QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;

@@ -290,14 +290,13 @@ Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
 			extension = "png";
 		}
 		const QString coverToken = Util::Covers::calcCoverToken(md.artist(), md.album());
-		const QString coverPath = Util::coverDirectory(coverToken + "." + extension);
 
 		QList<QUrl> urls;
 		Util::Algorithm::transform(cdu, urls, [](const QString& url) {
 			return QUrl(url);
 		});
 
-		cl = coverLocation(urls, coverPath);
+		cl = coverLocation(urls, coverToken);
 	}
 
 	else if(md.albumId() >= 0)
