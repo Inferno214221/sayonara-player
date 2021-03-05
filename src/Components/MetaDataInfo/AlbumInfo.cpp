@@ -155,7 +155,7 @@ void AlbumInfo::calcCoverLocation()
 			album.setDatabaseId(libraryDatabase->databaseId());
 		}
 
-		m->coverLocation = Cover::Location::xcoverLocation(album);
+		m->coverLocation = Cover::Location::coverLocation(album);
 	}
 
 	else if( albums().size() == 1)

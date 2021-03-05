@@ -247,7 +247,7 @@ void MetaDataInfo::calcCoverLocation(const MetaDataList& tracks)
 
 		album.setPathHint(pathHints);
 
-		m->coverLocation = Cover::Location::xcoverLocation(album);
+		m->coverLocation = Cover::Location::coverLocation(album);
 	}
 
 	else if(m->albums.size() == 1 && m->artists.size() == 1)

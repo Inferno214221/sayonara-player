@@ -27,7 +27,6 @@
 #include "Utils/CoverUtils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Set.h"
-#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -38,53 +37,43 @@
 #include <QDir>
 #include <QUrl>
 #include <QStringList>
-#include <QImage>
 #include <QPixmap>
 #include <QFileInfo>
 
 using Cover::Location;
-using namespace Cover::Fetcher;
-using Cover::StringMap;
-
-using FetchManager = Cover::Fetcher::Manager;
 using Cover::Fetcher::Url;
 
-namespace File = ::Util::File;
+namespace{
+	QList<Url> extractDownloadUrls(const LibraryItem* item)
+	{
+		const auto downloadUrls = item->coverDownloadUrls();
+		auto* fetchManager = Cover::Fetcher::Manager::instance();
 
-static QList<Url> extractDownloadUrls(const LibraryItem* item)
-{
-	const QStringList downloadUrls = item->coverDownloadUrls();
+		QList<Url> urls;
+		Util::Algorithm::transform(downloadUrls, urls, [&](const QString& downloadUrl) {
+			return Util::File::isImageFile(downloadUrl)
+			       ? fetchManager->directFetcherUrl(downloadUrl)
+			       : fetchManager->websiteFetcherUrl(downloadUrl);
+		});
 
-	QList<Url> urls;
-	Util::Algorithm::transform(downloadUrls, urls, [](const QString& downloadUrl) {
-		if(Util::File::isImageFile(downloadUrl))
-		{
-			return FetchManager::instance()->directFetcherUrl(downloadUrl);
-		}
-
-		else
-		{
-			return FetchManager::instance()->websiteFetcherUrl(downloadUrl);
-		}
-	});
-
-	return urls;
+		return urls;
+	}
 }
 
 struct Location::Private
 {
-	QString searchTerm;        // Term provided to search engine
-	QList<Url> searchUrls;        // Search url where to fetch covers
-	QList<Url> searchTermUrls;    // Search urls where to fetch cover when using freetext search
+	QString searchTerm;
+	QList<Url> searchUrls;
+	QList<Url> searchTermUrls;
 	QStringList localPathHints;
-	QString identifier;            // Some human readable identifier with methods where invokded
-	QString audioFileSource;    // A saved cover from an audio file
+	QString identifier;
+	QString audioFileSource;
 	QString audioFileTarget;
 
-	QString hash;                // A unique identifier, mostly referred to as the cover token
+	QString hash;
 
 	bool freetextSearch;
-	bool valid;                // valid if CoverLocation object contains a valid download url
+	bool valid;
 
 	Private() :
 		freetextSearch(false),
@@ -93,8 +82,10 @@ struct Location::Private
 	~Private() = default;
 
 	Private(const Private& other) = default;
+	Private(Private&& other) = default;
 
 	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) = default;
 };
 
 Location::Location()
@@ -111,9 +102,20 @@ Location::Location(const Location& other)
 	m = Pimpl::make<Location::Private>(*(other.m));
 }
 
+Location::Location(Location&& other)
+{
+	m = Pimpl::make<Private>(std::move(*other.m));
+}
+
 Location& Location::operator=(const Location& other)
 {
 	*m = *(other.m);
+	return *this;
+}
+
+Location& Location::operator=(Location&& other)
+{
+	*m = std::move(*other.m);
 	return *this;
 }
 
@@ -124,108 +126,107 @@ QString Location::invalidPath()
 
 Location Location::invalidLocation()
 {
-	Location cl;
+	Location location;
 
-	cl.setValid(false);
-	cl.setSearchUrls(QList<Url>());
-	cl.setSearchTerm(QString());
-	cl.setIdentifier("Invalid location");
-	cl.setAudioFileSource(QString(), QString());
-	cl.setLocalPathHints(QStringList());
+	location.setValid(false);
+	location.setSearchUrls(QList<Url>());
+	location.setSearchTerm(QString());
+	location.setIdentifier("Invalid location");
+	location.setAudioFileSource(QString(), QString());
+	location.setLocalPathHints(QStringList());
 
-	return cl;
+	return location;
 }
 
 Location Location::coverLocation(const QString& albumName, const QString& artistName)
 {
-	using namespace Cover::Fetcher;
 	if(albumName.trimmed().isEmpty() && artistName.trimmed().isEmpty())
 	{
 		return invalidLocation();
 	}
 
 	const auto coverToken = Util::Covers::calcCoverToken(artistName, albumName);
-	auto* cfm = Fetcher::Manager::instance();
+	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
-	Location ret;
+	Location location;
 	{
-		ret.setValid(true);
-		ret.setHash(coverToken);
-		ret.setSearchTerm(artistName + " " + albumName);
-		ret.setSearchUrls(cfm->albumAddresses(artistName, albumName));
-		ret.setIdentifier("CL:By album: " + albumName + " by " + artistName);
+		location.setValid(true);
+		location.setHash(coverToken);
+		location.setSearchTerm(artistName + " " + albumName);
+		location.setSearchUrls(fetchManager->albumAddresses(artistName, albumName));
+		location.setIdentifier("CL:By album: " + albumName + " by " + artistName);
 	}
 
-	return ret;
+	return location;
 }
 
 Location Location::coverLocation(const QString& albumName, const QStringList& artists)
 {
-	const QString majorArtist = ArtistList::majorArtist(artists);
+	const auto majorArtist = ArtistList::majorArtist(artists);
 	return coverLocation(albumName, majorArtist);
 }
 
-Location Location::xcoverLocation(const Album& album)
+Location Location::coverLocation(const Album& album)
 {
-	Location cl;
+	Location location;
 
 	{ //setup basic CoverLocation
 		if(!album.albumArtist().trimmed().isEmpty())
 		{
-			cl = Location::coverLocation(album.name(), album.albumArtist());
+			location = std::move(Location::coverLocation(album.name(), album.albumArtist()));
 		}
 
 		else if(album.artists().size() > 1)
 		{
-			cl = Location::coverLocation(album.name(), album.artists());
+			location = std::move(Location::coverLocation(album.name(), album.artists()));
 		}
 
-		else if(album.artists().size() == 1)
+		else if(!album.artists().isEmpty())
 		{
-			cl = Location::coverLocation(album.name(), album.artists().at(0));
+			location = std::move(Location::coverLocation(album.name(), album.artists().first()));
 		}
 
 		else
 		{
-			cl = Location::coverLocation(album.name(), "");
+			location = std::move(Location::coverLocation(album.name(), QString()));
 		}
 
-		const QList<Url> urls = extractDownloadUrls(&album);
+		const auto urls = extractDownloadUrls(&album);
 		if(!urls.isEmpty())
 		{
-			cl.setSearchUrls(urls);
+			location.setSearchUrls(urls);
 		}
 	}
 
 	// setup local paths. No audio file source. That may last too long
 	{
-		const QStringList pathHints = album.pathHint();
+		const auto pathHints = album.pathHint();
 		if(!pathHints.isEmpty())
 		{
-			cl.setLocalPathHints(pathHints);
-			cl.setAudioFileSource(pathHints.first(), cl.hashPath());
+			location.setLocalPathHints(pathHints);
+			location.setAudioFileSource(pathHints.first(), location.hashPath());
 		}
 	}
 
-	cl.setSearchTerm(album.name() + " " + ArtistList::majorArtist(album.artists()));
+	location.setSearchTerm(album.name() + " " + ArtistList::majorArtist(album.artists()));
 
-	return cl;
+	return location;
 }
 
 Location Location::coverLocation(const Artist& artist)
 {
-	Location cl = Location::coverLocation(artist.name());
+	auto location = std::move(Location::coverLocation(artist.name()));
 
-	const QList<Url> urls = extractDownloadUrls(&artist);
+	const auto urls = extractDownloadUrls(&artist);
 	if(!urls.isEmpty())
 	{
-		cl.setSearchUrls(urls);
+		location.setSearchUrls(urls);
 	}
 
-	cl.setSearchTerm(artist.name());
-	cl.setIdentifier("CL:By artist: " + artist.name());
+	location.setSearchTerm(artist.name());
+	location.setIdentifier("CL:By artist: " + artist.name());
 
-	return cl;
+	return location;
 }
 
 Location Location::coverLocation(const QString& artist)
@@ -236,18 +237,18 @@ Location Location::coverLocation(const QString& artist)
 	}
 
 	const auto coverToken = QString("artist_%1").arg(Util::Covers::calcCoverToken(artist, ""));
-	auto* cfm = Fetcher::Manager::instance();
+	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
-	Location ret;
+	Location location;
 	{
-		ret.setValid(true);
-		ret.setHash(coverToken);
-		ret.setSearchUrls(cfm->artistAddresses(artist));
-		ret.setSearchTerm(artist);
-		ret.setIdentifier("CL:By artist name: " + artist);
+		location.setValid(true);
+		location.setHash(coverToken);
+		location.setSearchUrls(fetchManager->artistAddresses(artist));
+		location.setSearchTerm(artist);
+		location.setIdentifier("CL:By artist name: " + artist);
 	}
 
-	return ret;
+	return location;
 }
 
 Location Location::coverLocationRadio(const QString& radioStation)
@@ -258,146 +259,130 @@ Location Location::coverLocationRadio(const QString& radioStation)
 	}
 
 	const auto coverToken = QString("radio_%1").arg(Util::Covers::calcCoverToken(radioStation, ""));
-	auto* cfm = Fetcher::Manager::instance();
+	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
-	Location ret;
+	Location location;
 	{
-		ret.setValid(true);
-		ret.setHash(coverToken);
-		ret.setSearchUrls(cfm->searchAddresses(radioStation));
-		ret.setSearchTerm(radioStation);
-		ret.setIdentifier("CL:By radio station: " + radioStation);
+		location.setValid(true);
+		location.setHash(coverToken);
+		location.setSearchUrls(fetchManager->searchAddresses(radioStation));
+		location.setSearchTerm(radioStation);
+		location.setIdentifier("CL:By radio station: " + radioStation);
 	}
 
-	return ret;
+	return location;
 }
 
-Location Location::coverLocation(const MetaData& md)
+Location Location::coverLocation(const MetaData& track)
 {
-	return Location::coverLocation(md, true);
+	return Location::coverLocation(track, true);
 }
 
-Location Location::coverLocation(const MetaData& md, bool checkForCoverart)
+Location Location::coverLocation(const MetaData& track, bool checkForCoverart)
 {
-	Location cl;
+	Location location;
 
-	const QStringList cdu = md.coverDownloadUrls();
-	if(!cdu.isEmpty())
+	const auto coverDownloadUrls = track.coverDownloadUrls();
+	if(!coverDownloadUrls.isEmpty())
 	{
-		QString extension = File::getFileExtension(cdu.first());
-		if(extension.isEmpty())
-		{
-			extension = "png";
-		}
-		const QString coverToken = Util::Covers::calcCoverToken(md.artist(), md.album());
+		const auto coverToken = Util::Covers::calcCoverToken(track.artist(), track.album());
 
 		QList<QUrl> urls;
-		Util::Algorithm::transform(cdu, urls, [](const QString& url) {
+		Util::Algorithm::transform(coverDownloadUrls, urls, [](const auto& url) {
 			return QUrl(url);
 		});
 
-		cl = coverLocation(urls, coverToken);
+		location = std::move(Location::coverLocation(urls, coverToken));
 	}
 
-	else if(md.albumId() >= 0)
+	else if(track.albumId() >= 0)
 	{
 		Album album;
 		{
-			album.setId(md.albumId());
-			album.setName(md.album());
-			album.setArtists({md.artist()});
-			album.setAlbumArtist(md.albumArtist());
-			album.setDatabaseId(md.databaseId());
-			album.setPathHint({md.filepath()});
+			album.setId(track.albumId());
+			album.setName(track.album());
+			album.setArtists({track.artist()});
+			album.setAlbumArtist(track.albumArtist());
+			album.setDatabaseId(track.databaseId());
+			album.setPathHint({track.filepath()});
 		}
 
-		cl = xcoverLocation(album);
+		location = std::move(Location::coverLocation(album));
 	}
 
-	if(!cl.isValid())
+	if(!location.isValid())
 	{
-		if(md.radioMode() == RadioMode::Station)
+		if(track.radioMode() == RadioMode::Station)
 		{
-			cl = coverLocationRadio(md.radioStation());
+			location = std::move(Location::coverLocationRadio(track.radioStation()));
 		}
 
-		else if(!md.album().isEmpty() && !md.artist().isEmpty())
+		else if(!track.album().isEmpty() && !track.artist().isEmpty())
 		{
-			cl = coverLocation(md.album(), md.artist());
+			location = std::move(Location::coverLocation(track.album(), track.artist()));
 		}
 	}
 
-	bool hasCoverArt;
-	if(checkForCoverart)
+	const auto hasCoverArt = checkForCoverart
+	                         ? Tagging::Covers::hasCover(track.filepath())
+	                         : track.customField("has_album_art").toInt() != 0;
+
+	if(location.audioFileSource().isEmpty() && !track.filepath().isEmpty() && hasCoverArt)
 	{
-		hasCoverArt = Tagging::Covers::hasCover(md.filepath());
+		location.setAudioFileSource(track.filepath(), location.hashPath());
 	}
 
-	else
+	if(location.searchUrls().isEmpty())
 	{
-		hasCoverArt = (md.customField("has_album_art").toInt() != 0);
-	}
-
-	if(cl.audioFileSource().isEmpty() && !md.filepath().isEmpty() && hasCoverArt)
-	{
-		cl.setAudioFileSource(md.filepath(), cl.hashPath());
-	}
-
-	if(cl.searchUrls().isEmpty())
-	{
-		const QList<Url> urls = extractDownloadUrls(&md);
-		cl.setSearchUrls(urls);
-		QString identifier = QString("CL:By metadata: %1 by %2 with %3 direct download urls")
-			.arg(md.album())
-			.arg(md.artist())
+		const auto urls = extractDownloadUrls(&track);
+		const auto identifier = QString("CL:By metadata: %1 by %2 with %3 direct download urls")
+			.arg(track.album())
+			.arg(track.artist())
 			.arg(urls.size());
 
-		cl.setIdentifier(identifier);
+		location.setSearchUrls(urls);
+		location.setIdentifier(identifier);
 	}
 
 	else
 	{
-		cl.setIdentifier("CL:By metadata: " + md.album() + " by " + md.albumArtist());
+		location.setIdentifier("CL:By metadata: " + track.album() + " by " + track.albumArtist());
 	}
 
-	cl.setLocalPathHints(QStringList {md.filepath()});
+	location.setLocalPathHints(QStringList {track.filepath()});
 
-	const QString customHash = md.customField("cover-hash");
+	const auto customHash = track.customField("cover-hash");
 	if(!customHash.isEmpty())
 	{
-		cl.setHash(customHash);
+		location.setHash(customHash);
 	}
 
-	return cl;
+	return location;
 }
 
 Location Location::coverLocation(const QList<QUrl>& urls, const QString& token)
 {
 	QList<Url> fetchUrls;
-	QString merged;
-	for(const QUrl& url : urls)
+	QStringList merged;
+	for(const auto& url : urls)
 	{
-		merged += url.toString();
-		if(Util::File::isImageFile(url.toString()))
-		{
-			fetchUrls << FetchManager::instance()->directFetcherUrl(url.toString());
-		}
-
-		else
-		{
-			fetchUrls << FetchManager::instance()->websiteFetcherUrl(url.toString());
-		}
+		merged << url.toString();
+		auto* fetchManager = Cover::Fetcher::Manager::instance();
+		const auto fetchUrl = (Util::File::isImageFile(url.toString())
+		                       ? fetchManager->directFetcherUrl(url.toString())
+		                       : fetchManager->websiteFetcherUrl(url.toString()));
+		fetchUrls << fetchUrl;
 	}
 
-	Location cl;
+	Location location;
 	{
-		cl.setValid(true);
-		cl.setHash(token);
-		cl.setSearchUrls(fetchUrls);
-		cl.setIdentifier("CL:By direct download url: " + merged);
+		location.setValid(true);
+		location.setHash(token);
+		location.setSearchUrls(fetchUrls);
+		location.setIdentifier("CL:By direct download url: " + merged.join(";"));
 	}
 
-	return cl;
+	return location;
 }
 
 bool Location::isValid() const
@@ -415,10 +400,10 @@ QString Location::preferredPath() const
 	// first search for cover in track
 	if(hasAudioFileSource())
 	{
-		bool targetExists = File::exists(this->audioFileTarget());
+		auto targetExists = Util::File::exists(this->audioFileTarget());
 		if(!targetExists)
 		{
-			const QPixmap pm = Tagging::Covers::extractCover(this->audioFileSource());
+			const auto pm = Tagging::Covers::extractCover(this->audioFileSource());
 			if(!pm.isNull())
 			{
 				targetExists = pm.save(this->audioFileTarget());
@@ -431,12 +416,9 @@ QString Location::preferredPath() const
 		}
 	}
 
-	if(!m->localPathHints.isEmpty())
-	{
-		return localPath();
-	}
-
-	return Location::invalidPath();
+	return (!m->localPathHints.isEmpty())
+	       ? localPath()
+	       : Location::invalidPath();
 }
 
 QString Location::alternativePath() const
@@ -448,9 +430,9 @@ QString Location::alternativePath() const
 	return alternativePath;
 }
 
-void Location::setValid(bool b)
+void Location::setValid(bool valid)
 {
-	m->valid = b;
+	m->valid = valid;
 }
 
 void Location::setIdentifier(const QString& identifier)
@@ -470,15 +452,9 @@ QString Location::identifer() const
 
 QList<Url> Location::searchUrls() const
 {
-	if(m->freetextSearch)
-	{
-		return m->searchTermUrls;
-	}
-
-	else
-	{
-		return m->searchUrls;
-	}
+	return (m->freetextSearch)
+	       ? m->searchTermUrls
+	       : m->searchUrls;
 }
 
 bool Location::hasSearchUrls() const
@@ -493,48 +469,36 @@ QString Location::searchTerm() const
 
 void Location::setSearchTerm(const QString& searchTerm)
 {
-	auto* cfm = Fetcher::Manager::instance();
+	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
 	m->searchTerm = searchTerm;
-	m->searchTermUrls = cfm->searchAddresses(searchTerm);
+	m->searchTermUrls = fetchManager->searchAddresses(searchTerm);
 }
 
 void Location::setSearchTerm(const QString& searchTerm, const QString& coverFetcherIdentifier)
 {
-	auto* cfm = Fetcher::Manager::instance();
+	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
 	m->searchTerm = searchTerm;
-	m->searchTermUrls = cfm->searchAddresses(searchTerm, coverFetcherIdentifier);
+	m->searchTermUrls = fetchManager->searchAddresses(searchTerm, coverFetcherIdentifier);
 }
 
 void Location::setSearchUrls(const QList<Url>& urls)
 {
-	QStringList lst
-		{
-			"hallo", "du"
-		};
-
-	QList<QString> lst2
-		{
-			"hallo", "helmut"
-		};
-	QList<Url> urls2 = urls;
 	m->searchUrls = urls;
 }
 
-void Location::enableFreetextSearch(bool b)
+void Location::enableFreetextSearch(bool enabled)
 {
-	m->freetextSearch = b;
+	m->freetextSearch = enabled;
 }
 
 bool Location::hasAudioFileSource() const
 {
-	return
-		(
-			(m->audioFileTarget.size() > 0) &&
-			(m->audioFileSource.size() > 0) &&
-			(File::exists(m->audioFileSource))
-		);
+	return (
+		(!m->audioFileTarget.isEmpty()) &&
+		(!m->audioFileSource.isEmpty()) &&
+		(Util::File::exists(m->audioFileSource)));
 }
 
 QString Location::audioFileSource() const
@@ -557,9 +521,9 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 		return false;
 	}
 
-	auto[dir, filename] = File::splitFilename(coverPath);
+	auto[dir, filename] = Util::File::splitFilename(coverPath);
 
-	const QString extension = Util::File::getFileExtension(filename);
+	const auto extension = Util::File::getFileExtension(filename);
 	if(extension.isEmpty())
 	{
 		filename += ".png";
@@ -573,18 +537,13 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 
 QString Location::localPath() const
 {
-	const QString dir = localPathDir();
-	if(dir.isEmpty())
+	const auto localDir = localPathDir();
+	if(localDir.isEmpty() || hashPath().isEmpty())
 	{
 		return QString();
 	}
 
-	if(hashPath().isEmpty())
-	{
-		return QString();
-	}
-
-	const QFileInfo info(hashPath());
+	const auto info = QFileInfo(hashPath());
 	if(info.exists())
 	{
 		if(info.isSymLink())
@@ -614,7 +573,7 @@ QString Location::localPath() const
 		}
 	}
 
-	const QStringList localPaths = Cover::LocalSearcher::coverPathsFromPathHint(dir);
+	const auto localPaths = Cover::LocalSearcher::coverPathsFromPathHint(localDir);
 	if(localPaths.isEmpty())
 	{
 		return QString();
@@ -627,38 +586,35 @@ QString Location::localPath() const
 QString Location::localPathDir() const
 {
 	Util::Set<QString> parentDirectories;
-	const QStringList lph = localPathHints();
 
-	for(const QString& localPath : lph)
+	const auto pathHints = localPathHints();
+	for(const auto& localPath : pathHints)
 	{
-		const QFileInfo fi(localPath);
-		if(!fi.exists())
+		const auto fileInfo = QFileInfo(localPath);
+		if(!fileInfo.exists())
 		{
 			continue;
 		}
 
-		if(fi.isFile())
+		if(fileInfo.isFile())
 		{
 			parentDirectories << Util::File::getParentDirectory(localPath);
 		}
 
-		else if(fi.isDir())
+		else if(fileInfo.isDir())
 		{
 			parentDirectories << localPath;
 		}
 
 		if(parentDirectories.size() > 1)
 		{
-			break;
+			return QString {};
 		}
 	}
 
-	if(parentDirectories.isEmpty() || parentDirectories.size() > 1)
-	{
-		return QString();
-	}
-
-	return parentDirectories.first();
+	return (parentDirectories.isEmpty())
+	       ? QString()
+	       : parentDirectories.first();
 }
 
 QStringList Location::localPathHints() const
@@ -669,13 +625,9 @@ QStringList Location::localPathHints() const
 void Location::setLocalPathHints(const QStringList& pathHints)
 {
 	m->localPathHints.clear();
-	for(const QString& pathHint : pathHints)
-	{
-		if(!Util::File::isWWW(pathHint))
-		{
-			m->localPathHints << pathHint;
-		}
-	}
+	Util::Algorithm::copyIf(pathHints, m->localPathHints, [](const auto& pathHint) {
+		return (!Util::File::isWWW(pathHint));
+	});
 }
 
 QString Location::hash() const

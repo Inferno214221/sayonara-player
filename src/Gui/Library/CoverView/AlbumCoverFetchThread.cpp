@@ -150,7 +150,7 @@ void AlbumCoverFetchThread::run()
 			Hash hash = p.first;
 			Album album = p.second;
 
-			Cover::Location cl = Cover::Location::xcoverLocation(album);
+			Cover::Location cl = Cover::Location::coverLocation(album);
 			{
 				LOCK_GUARD(m->mutexHashLocationPairs)
 				m->hashLocationPairs << HashLocationPair(hash, cl);

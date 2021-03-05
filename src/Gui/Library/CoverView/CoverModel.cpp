@@ -348,7 +348,7 @@ Location CoverModel::cover(const QModelIndexList& indexes) const
 	const auto linearIndex = (firstIndex.row() * columnCount() + firstIndex.column());
 
 	return (Util::between(linearIndex, albums))
-		? Cover::Location::xcoverLocation(albums[linearIndex])
+		? Cover::Location::coverLocation(albums[linearIndex])
 		: Location::invalidLocation();
 }
 

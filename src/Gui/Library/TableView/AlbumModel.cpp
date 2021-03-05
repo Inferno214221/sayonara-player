@@ -103,7 +103,7 @@ Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 	const auto& albums = library()->albums();
 
 	return (Util::between(row, albums))
-	       ? Cover::Location::xcoverLocation(albums[row])
+	       ? Cover::Location::coverLocation(albums[row])
 	       : Cover::Location::invalidLocation();
 }
 
