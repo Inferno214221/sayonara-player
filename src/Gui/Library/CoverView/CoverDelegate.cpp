@@ -18,93 +18,103 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CoverModel.h"                    // Role names
+#include "CoverModel.h"
 #include "CoverDelegate.h"
 #include "Utils/Settings/Settings.h"
 
-#include <QBrush>
 #include <QColor>
 #include <QPainter>
 #include <QFontMetrics>
 
-Library::CoverDelegate::CoverDelegate(QObject* parent) :
-	QStyledItemDelegate(parent) {}
+namespace
+{
+	QRect calcBoundingRect(const QRect& optionRect, const int pixmapHeight)
+	{
+		const auto height = pixmapHeight + 2;
+		const auto width = height;
+		const auto left = (optionRect.width() - width) / 2;
+		const auto top = (pixmapHeight / 20) - 1;
 
-Library::CoverDelegate::~CoverDelegate() = default;
+		auto rect = QRect(left, top, width, height);
+		rect.translate(optionRect.topLeft());
+
+		return rect;
+	}
+
+	void drawItemRectangle(QPainter* painter, const QStyleOptionViewItem& option, const int pixmapHeight)
+	{
+		if(option.state & QStyle::State_Selected)
+		{
+			painter->fillRect(option.rect, option.palette.highlight());
+		}
+
+		const auto rect = calcBoundingRect(option.rect, pixmapHeight);
+
+		const auto oldColor = painter->pen().color();
+		auto color = option.palette.highlightedText().color();
+		color.setAlpha(128);
+
+		painter->setPen(color);
+		painter->drawRect(rect);
+		painter->setPen(oldColor);
+	}
+
+	void paintPixmap(QPainter* painter, const QStyleOptionViewItem& option, const QPixmap& pixmap, int height)
+	{
+		if(!pixmap.isNull())
+		{
+			const auto left = (option.rect.width() - height) / 2;
+			const auto target = QRect(left, 0, height, height);
+			const auto source = QRect(0, 0, pixmap.width(), pixmap.height());
+
+			painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
+			painter->drawPixmap(target, pixmap, source);
+		}
+	}
+
+	void drawText(QPainter* painter, const QStyleOptionViewItem& option, const QString& text, int alpha)
+	{
+		constexpr const auto textOffset = 3;
+		const auto textWidth = option.rect.width() - (2 * textOffset);
+
+		const auto& fontMetrics = option.fontMetrics;
+		const auto elidedText = fontMetrics.elidedText(text, Qt::ElideRight, textWidth);
+
+		const auto oldPen = painter->pen();
+		auto textColor = (option.state & QStyle::State_Selected)
+		                 ? option.palette.highlightedText().color()
+		                 : option.palette.text().color();
+		textColor.setAlpha(alpha);
+
+		painter->setPen(textColor);
+		painter->drawText(QRect{textOffset, 0, textWidth, fontMetrics.height()},
+		                  static_cast<int>(option.displayAlignment),
+		                  elidedText);
+
+		painter->setPen(oldPen);
+	}
+}
 
 void
 Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	const int textOffset = 3;
-
-	QFontMetrics fm = option.fontMetrics;
-	int zoom = GetSetting(Set::Lib_CoverZoom);
-
 	painter->save();
+
+	const auto pixmapHeight = GetSetting(Set::Lib_CoverZoom);
+	drawItemRectangle(painter, option, pixmapHeight);
 	painter->translate(option.rect.x(), option.rect.y());
 
-	{
-		const QPixmap pm = index.data(CoverModel::CoverRole).value<QPixmap>();
-		if(pm.isNull())
-		{
-			painter->restore();
-			return;
-		}
+	const auto pixmap = index.data(CoverModel::CoverRole).value<QPixmap>();
+	painter->translate(0, pixmapHeight / 20);
+	paintPixmap(painter, option, pixmap, pixmapHeight);
+	painter->translate(0, pixmapHeight + 4);
 
-		painter->translate(0, zoom / 20);
+	const auto album = index.data(CoverModel::AlbumRole).toString();
+	drawText(painter, option, album, 255);
+	painter->translate(0, option.fontMetrics.height());
 
-		int xZoom = (option.rect.width() - zoom) / 2;
-
-		QPen pen = painter->pen();
-		QColor oldColor = pen.color();
-
-		QColor color = option.palette.color(QPalette::Active, QPalette::Highlight);
-		pen.setColor(color);
-		painter->setPen(pen);
-
-		painter->drawRect(xZoom - 2, -2, zoom + 3, zoom + 3);
-
-		pen.setColor(oldColor);
-		painter->setPen(pen);
-
-		painter->setRenderHint(QPainter::SmoothPixmapTransform, true);
-		QRectF target(xZoom, 0, zoom, zoom);
-		QRectF source(0, 0, pm.width(), pm.height());
-		painter->drawPixmap(target, pm, source);
-
-		painter->translate(0, zoom + 4);
-	}
-
-	{
-		QString album = index.data(CoverModel::AlbumRole).toString();
-		album = fm.elidedText(album, Qt::ElideRight, option.rect.width() - 2 * textOffset);
-		painter->drawText(textOffset,
-		                  0,
-		                  option.rect.width() - 2 * textOffset,
-		                  fm.height(),
-		                  int(option.displayAlignment),
-		                  album);
-		painter->translate(0, fm.height());
-	}
-
-	{
-		QString artist = index.data(CoverModel::ArtistRole).toString();
-		artist = fm.elidedText(artist, Qt::ElideRight, option.rect.width() - 2 * textOffset);
-		if(!artist.isEmpty())
-		{
-			QPen pen = painter->pen();
-			QColor color = pen.color();
-			color.setAlpha(172);
-			pen.setColor(color);
-			painter->setPen(pen);
-			painter->drawText(textOffset,
-			                  0,
-			                  option.rect.width() - 2 * textOffset,
-			                  fm.height(),
-			                  option.displayAlignment,
-			                  artist);
-		}
-	}
+	const auto artist = index.data(CoverModel::ArtistRole).toString();
+	drawText(painter, option, album, 172);
 
 	painter->restore();
 }

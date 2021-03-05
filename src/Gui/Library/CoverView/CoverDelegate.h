@@ -21,7 +21,6 @@
 #ifndef ALBUMCOVERDELEGATE_H
 #define ALBUMCOVERDELEGATE_H
 
-#include <QItemDelegate>
 #include <QStyledItemDelegate>
 
 namespace Library
@@ -36,10 +35,9 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			explicit CoverDelegate(QObject* parent = nullptr);
-			~CoverDelegate() override;
+			using QStyledItemDelegate::QStyledItemDelegate;
 
-		public:
+		protected:
 			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	};
 }
