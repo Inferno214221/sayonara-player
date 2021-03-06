@@ -36,27 +36,49 @@ using ActionPairList = QList<ActionPair>;
 
 struct CoverViewContextMenu::Private
 {
-	QMenu* menuSorting = nullptr;
-	QAction* actionSorting = nullptr;
+	QAction* actionShowArtist;
+	QAction* actionShowUtils;
 
-	QMenu* menuZoom = nullptr;
-	QAction* actionZoom = nullptr;
+	QMenu* menuSorting;
+	QAction* actionSorting;
 
-	QAction* actionShowUtils = nullptr;
-	QAction* actionShowArtist = nullptr;
+	QMenu* menuZoom;
+	QAction* actionZoom;
 
-	QStringList zoomActions;
 	ActionPairList sortingActions;
+	QStringList zoomActions;
 
-	Private() :
-		zoomActions(Library::CoverView::zoomActions()),
-		sortingActions(Library::CoverView::sortingActions()) {}
+	Private(CoverViewContextMenu* menu) :
+		actionShowArtist(new QAction(menu)),
+		actionShowUtils(new QAction(menu)),
+		menuSorting(new QMenu(menu)),
+		menuZoom(new QMenu(menu)),
+		sortingActions(Library::CoverView::sortingActions()),
+		zoomActions(Library::CoverView::zoomActions())
+	{
+		actionShowArtist->setCheckable(true);
+		actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
+		actionShowUtils->setCheckable(true);
+		actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
+
+		menu->addPreferenceAction(new Gui::CoverPreferenceAction(menu));
+		menu->addSeparator();
+
+		// insert everything before the preferences
+		auto* sepBeforePrefs = menu->beforePreferenceAction();
+		menu->insertSeparator(sepBeforePrefs);
+		menu->insertAction(sepBeforePrefs, actionShowArtist);
+		menu->insertAction(sepBeforePrefs, actionShowUtils);
+
+		this->actionSorting = menu->insertMenu(sepBeforePrefs, menuSorting);
+		this->actionZoom = menu->insertMenu(sepBeforePrefs, menuZoom);
+	}
 };
 
 CoverViewContextMenu::CoverViewContextMenu(QWidget* parent) :
 	Library::ContextMenu(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(this);
 
 	init();
 }
@@ -65,38 +87,16 @@ CoverViewContextMenu::~CoverViewContextMenu() = default;
 
 void CoverViewContextMenu::init()
 {
-	this->addPreferenceAction(new Gui::CoverPreferenceAction(this));
-	this->addSeparator();
-
-	// insert everything before the preferences
-	QAction* sepBeforePrefs = this->beforePreferenceAction();
-	this->insertSeparator(sepBeforePrefs);
-
-	m->actionShowArtist = new QAction(this);
-	m->actionShowArtist->setCheckable(true);
-	m->actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
-	this->insertAction(sepBeforePrefs, m->actionShowArtist);
+	initSortingActions();
+	initZoomActions();
 
 	connect(m->actionShowArtist, &QAction::triggered, this, [=]() {
 		SetSetting(Set::Lib_CoverShowArtist, m->actionShowArtist->isChecked());
 	});
 
-	m->actionShowUtils = new QAction(this);
-	m->actionShowUtils->setCheckable(true);
-	m->actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
-	this->insertAction(sepBeforePrefs, m->actionShowUtils);
-
 	connect(m->actionShowUtils, &QAction::triggered, this, [=]() {
 		SetSetting(Set::Lib_CoverShowUtils, m->actionShowUtils->isChecked());
 	});
-
-	m->menuSorting = new QMenu(this);
-	m->actionSorting = this->insertMenu(sepBeforePrefs, m->menuSorting);
-	initSortingActions();
-
-	m->menuZoom = new QMenu(this);
-	m->actionZoom = this->insertMenu(sepBeforePrefs, m->menuZoom);
-	initZoomActions();
 }
 
 void CoverViewContextMenu::initSortingActions()
@@ -104,14 +104,12 @@ void CoverViewContextMenu::initSortingActions()
 	m->menuSorting->clear();
 	m->actionSorting->setText(Lang::get(Lang::SortBy));
 
-	for(const ActionPair& ap : m->sortingActions)
+	for(const auto& actionPair : m->sortingActions)
 	{
-		QAction* a = m->menuSorting->addAction(ap.name());
-
-		a->setCheckable(true);
-		a->setData((int) ap.sortorder());
-
-		connect(a, &QAction::triggered, this, &CoverViewContextMenu::actionSortingTriggered);
+		auto* action = m->menuSorting->addAction(actionPair.name());
+		action->setCheckable(true);
+		action->setData(static_cast<int>(actionPair.sortorder()));
+		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionSortingTriggered);
 	}
 }
 
@@ -119,37 +117,35 @@ void CoverViewContextMenu::initZoomActions()
 {
 	m->menuZoom->clear();
 
-	for(const QString& z : m->zoomActions)
+	for(const auto& zoomLevel : m->zoomActions)
 	{
-		QAction* action = m->menuZoom->addAction(z);
-		action->setData(z.toInt());
+		auto* action = m->menuZoom->addAction(zoomLevel);
+		action->setData(zoomLevel.toInt());
 		action->setCheckable(true);
-
 		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionZoomTriggered);
 	}
 }
 
-void CoverViewContextMenu::actionZoomTriggered(bool b)
+void CoverViewContextMenu::actionZoomTriggered([[maybe_unused]] bool b)
 {
-	Q_UNUSED(b)
 	auto* action = dynamic_cast<QAction*>(sender());
 
-	int zoom = action->data().toInt();
+	const auto zoom = action->data().toInt();
 	emit sigZoomChanged(zoom);
 }
 
-void CoverViewContextMenu::actionSortingTriggered(bool b)
+void CoverViewContextMenu::actionSortingTriggered([[maybe_unused]] bool b)
 {
-	Q_UNUSED(b)
 	auto* action = dynamic_cast<QAction*>(sender());
 
-	Library::SortOrder so = Library::SortOrder(action->data().toInt());
-	emit sigSortingChanged(so);
+	const auto sortorder = static_cast<Library::SortOrder>(action->data().toInt());
+	emit sigSortingChanged(sortorder);
 }
 
 CoverViewContextMenu::Entries CoverViewContextMenu::entries() const
 {
-	CoverViewContextMenu::Entries entries = Library::ContextMenu::entries();
+	auto entries = Library::ContextMenu::entries();
+
 	entries |= CoverViewContextMenu::EntryShowUtils;
 	entries |= CoverViewContextMenu::EntrySorting;
 	entries |= CoverViewContextMenu::EntryZoom;
@@ -170,25 +166,22 @@ void CoverViewContextMenu::showActions(CoverViewContextMenu::Entries entries)
 
 void CoverViewContextMenu::setZoom(int zoom)
 {
-	bool found = false;
+	auto found = false;
 
-	const QList<QAction*> actions = m->menuZoom->actions();
-	for(QAction* a : actions)
+	const auto actions = m->menuZoom->actions();
+	for(auto* action : actions)
 	{
-		a->setChecked((a->text().toInt() >= zoom) && !found);
-		if(a->text().toInt() >= zoom)
-		{
-			found = true;
-		}
+		action->setChecked((action->text().toInt() >= zoom) && !found);
+		found |= (action->text().toInt() >= zoom);
 	}
 }
 
-void CoverViewContextMenu::setSorting(Library::SortOrder so)
+void CoverViewContextMenu::setSorting(Library::SortOrder sortOrder)
 {
-	const QList<QAction*> actions = m->menuSorting->actions();
-	for(QAction* a : actions)
+	const auto actions = m->menuSorting->actions();
+	for(auto* action : actions)
 	{
-		a->setChecked(a->data().toInt() == static_cast<int>(so));
+		action->setChecked(action->data().toInt() == static_cast<int>(sortOrder));
 	}
 }
 

@@ -76,10 +76,10 @@ namespace Library
 			void showArtistChanged();
 
 		private slots:
-			void comboSortingChanged(int idx);
-			void comboZoomChanged(int idx);
+			void comboSortingChanged(int index);
+			void comboZoomChanged(int index);
 			void closeClicked();
-			void showArtistTriggered(bool b);
+			void showArtistTriggered(bool showArtist);
 
 			void showUtilsChanged();
 	};

@@ -98,6 +98,12 @@ namespace
 void
 Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
+	if(!index.isValid())
+	{
+		// may happen if not all columns are filled within the last row
+		return;
+	}
+
 	painter->save();
 
 	const auto pixmapHeight = GetSetting(Set::Lib_CoverZoom);

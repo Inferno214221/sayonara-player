@@ -67,7 +67,7 @@ namespace Library
 			void initZoomActions();
 
 			void setZoom(int zoom);
-			void setSorting(Library::SortOrder so);
+			void setSorting(Library::SortOrder sortOrder);
 
 		private slots:
 			void actionZoomTriggered(bool b);

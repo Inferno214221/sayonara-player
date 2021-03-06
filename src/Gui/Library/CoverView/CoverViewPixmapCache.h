@@ -45,13 +45,11 @@ namespace Library
 
 			QPixmap pixmap(const Hash& hash) const;
 			QPixmap invalidPixmap() const;
-			void addPixmap(const Hash& hash, const QPixmap& pm);
+			void addPixmap(const Hash& hash, const QPixmap& pixmap);
 
 			bool isOutdated(const Hash& hash) const;
-			void setOutdated(const Hash& hash);
 			void setAllOutdated();
 
-			int cacheSize() const;
 			void setCacheSize(int cacheSize);
 
 			void clear();

@@ -78,14 +78,10 @@ namespace Library
 			/**
 			 * @brief check if album is already processed or about
 			 * to be processed in the future
-			 * @param hash
+			 * @param hashLocationPair
 			 * @return
 			 */
-			bool checkAlbum(const QString& hash);
-
-			int lookupsReady() const;
-			int queuedHashes() const;
-			int unprocessedHashes() const;
+			bool checkAlbum(const QString& hashLocationPair);
 
 			HashLocationPair takeCurrentLookup();
 

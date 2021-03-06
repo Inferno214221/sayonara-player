@@ -85,12 +85,9 @@ bool GUI_CoverView::isInitialized() const
 
 IndexSet GUI_CoverView::selectedItems() const
 {
-	if(ui)
-	{
-		return ui->tb_view->selectedItems();
-	}
-
-	return IndexSet();
+	return (ui)
+		? ui->tb_view->selectedItems()
+		: IndexSet{};
 }
 
 void GUI_CoverView::clearSelections() const
@@ -105,33 +102,31 @@ void GUI_CoverView::initSortingActions()
 {
 	ui->combo_sorting->clear();
 
-	const QList <ActionPair> action_pairs = CoverView::sortingActions();
-	for(const ActionPair& ap : action_pairs)
+	const auto actionPairs = CoverView::sortingActions();
+	for(const auto& actionPair : actionPairs)
 	{
-		ui->combo_sorting->addItem(ap.name(), int(ap.sortorder()));
+		ui->combo_sorting->addItem(actionPair.name(), static_cast<int>(actionPair.sortorder()));
 	}
 
 	sortorderChanged();
 }
 
-void GUI_CoverView::comboSortingChanged(int idx)
+void GUI_CoverView::comboSortingChanged([[maybe_unused]] int index)
 {
-	Q_UNUSED(idx)
+	const auto data = ui->combo_sorting->currentData().toInt();
+	const auto sortOrder = static_cast<Library::SortOrder>(data);
 
-	int data = ui->combo_sorting->currentData().toInt();
-
-	auto so = Library::SortOrder(data);
-	ui->tb_view->changeSortorder(so);
+	ui->tb_view->changeSortorder(sortOrder);
 }
 
 void GUI_CoverView::sortorderChanged()
 {
-	Library::Sortings s = GetSetting(Set::Lib_Sorting);
-	Library::SortOrder so = s.so_albums;
+	const auto sortings = GetSetting(Set::Lib_Sorting);
+	const auto sortOrder = sortings.so_albums;
 
-	for(int i = 0; i < ui->combo_sorting->count(); i++)
+	for(auto i = 0; i < ui->combo_sorting->count(); i++)
 	{
-		if(ui->combo_sorting->itemData(i).toInt() == int(so))
+		if(ui->combo_sorting->itemData(i).toInt() == static_cast<int>(sortOrder))
 		{
 			ui->combo_sorting->setCurrentIndex(i);
 			break;
@@ -139,22 +134,22 @@ void GUI_CoverView::sortorderChanged()
 	}
 }
 
-void GUI_CoverView::showArtistTriggered(bool b)
+void GUI_CoverView::showArtistTriggered(bool showArtist)
 {
-	SetSetting(Set::Lib_CoverShowArtist, b);
+	SetSetting(Set::Lib_CoverShowArtist, showArtist);
 	ui->tb_view->reload();
 }
 
 void GUI_CoverView::showArtistChanged()
 {
-	bool b = GetSetting(Set::Lib_CoverShowArtist);
-	ui->cb_show_artist->setChecked(b);
+	const auto showArtist = GetSetting(Set::Lib_CoverShowArtist);
+	ui->cb_show_artist->setChecked(showArtist);
 }
 
 void GUI_CoverView::initZoomActions()
 {
-	const QStringList zoomData = CoverView::zoomActions();
-	for(const QString& zoom : zoomData)
+	const auto zoomData = CoverView::zoomActions();
+	for(const auto& zoom : zoomData)
 	{
 		ui->combo_zoom->addItem(zoom + "%", zoom);
 	}
@@ -162,11 +157,9 @@ void GUI_CoverView::initZoomActions()
 	zoomChanged();
 }
 
-void GUI_CoverView::comboZoomChanged(int idx)
+void GUI_CoverView::comboZoomChanged([[maybe_unused]] int index)
 {
-	Q_UNUSED(idx)
-
-	int zoom = ui->combo_zoom->currentData().toInt();
+	const auto zoom = ui->combo_zoom->currentData().toInt();
 	SetSetting(Set::Lib_CoverZoom, zoom);
 	ui->tb_view->changeZoom(zoom);
 }
@@ -178,39 +171,37 @@ void GUI_CoverView::closeClicked()
 
 void GUI_CoverView::zoomChanged()
 {
-	const QStringList zoomActions = CoverView::zoomActions();
+	const auto zoomActions = CoverView::zoomActions();
 
-	int zoom = GetSetting(Set::Lib_CoverZoom);
-	int idx = Algorithm::indexOf(zoomActions, [zoom](const QString& str) {
+	const auto zoom = GetSetting(Set::Lib_CoverZoom);
+	const auto index = Algorithm::indexOf(zoomActions, [zoom](const QString& str) {
 		return (str == QString::number(zoom));
 	});
 
-	if(idx >= 0)
+	if(index >= 0)
 	{
-		ui->combo_zoom->setCurrentIndex(idx);
+		ui->combo_zoom->setCurrentIndex(index);
 	}
 }
 
 void GUI_CoverView::showUtilsChanged()
 {
-	bool b = GetSetting(Set::Lib_CoverShowUtils);
-	ui->topbar->setVisible(b);
+	const auto showUtils = GetSetting(Set::Lib_CoverShowUtils);
+	ui->topbar->setVisible(showUtils);
 }
 
 void GUI_CoverView::languageChanged()
 {
-	if(!ui)
+	if(ui)
 	{
-		return;
+		Gui::Widget::languageChanged();
+
+		initSortingActions();
+
+		ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
+		ui->btn_close->setText(Lang::get(Lang::Hide));
+		ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
 	}
-
-	Gui::Widget::languageChanged();
-
-	initSortingActions();
-
-	ui->combo_zoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
-	ui->btn_close->setText(Lang::get(Lang::Hide));
-	ui->cb_show_artist->setText(Lang::get(Lang::ShowAlbumArtists));
 }
 
 void GUI_CoverView::showEvent(QShowEvent* e)

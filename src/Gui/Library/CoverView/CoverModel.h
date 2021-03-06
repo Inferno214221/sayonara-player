@@ -69,14 +69,14 @@ namespace Library
 			int zoom() const;
 
 		protected:
-			// ItemModel
+			QModelIndex index(int row, int column, const QModelIndex& parent=QModelIndex()) const override;
 			const MetaDataList& selectedMetadata() const override;
 
 			QModelIndexList searchResults(const QString& substr) override;
 
 			int searchableColumn() const override;
-			QString searchableString(int idx) const override;
-			int mapIndexToId(int idx) const override;
+			QString searchableString(int index) const override;
+			int mapIndexToId(int index) const override;
 			Cover::Location cover(const QModelIndexList& indexes) const override;
 
 		private:

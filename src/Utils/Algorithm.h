@@ -87,6 +87,13 @@ namespace Util
 			}
 		}
 
+		template<class Container, class Function>
+		void removeIf(Container& container, Function fn)
+		{
+			auto it = std::remove_if(container.begin(), container.end(), fn);
+			container.erase(it, container.end());
+		}
+
 		template<class ContainerIn, class ContainerOut, typename FN>
 		void transform(const ContainerIn& in, ContainerOut& out, FN fn)
 		{

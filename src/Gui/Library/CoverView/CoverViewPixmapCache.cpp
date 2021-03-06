@@ -21,7 +21,6 @@
 #include "CoverViewPixmapCache.h"
 #include "Components/Covers/CoverLocation.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Image.h"
 #include "Utils/Set.h"
 
@@ -31,28 +30,16 @@
 
 using Library::CoverViewPixmapCache;
 
-struct Pair
-{
-	Hash hash;
-	QPixmap pm;
-
-	Pair() = default;
-
-	Pair(Hash hash, QPixmap pm) :
-		hash(hash), pm(pm) {}
-};
-
 struct CoverViewPixmapCache::Private
 {
 	QCache<Hash, Util::Image> pixmaps;
 	Util::Set<Hash> validHashes;
 	QPixmap invalidCover;
 
-	Private()
-	{
-		pixmaps.setMaxCost(1000);
-		invalidCover = QPixmap(Cover::Location::invalidPath());
-	}
+	Private() :
+		pixmaps{QCache<Hash, Util::Image>(1000)},
+		invalidCover {Cover::Location::invalidPath()}
+	{}
 };
 
 CoverViewPixmapCache::CoverViewPixmapCache()
@@ -72,20 +59,13 @@ QPixmap CoverViewPixmapCache::invalidPixmap() const
 	return m->invalidCover;
 }
 
-void CoverViewPixmapCache::addPixmap(const Hash& hash, const QPixmap& pm)
+void CoverViewPixmapCache::addPixmap(const Hash& hash, const QPixmap& pixmap)
 {
-	if(pm.isNull())
+	if(!pixmap.isNull())
 	{
-		return;
+		m->validHashes.insert(hash);
+		m->pixmaps.insert(hash, new Util::Image(pixmap, QSize(200, 200)));
 	}
-
-	m->validHashes.insert(hash);
-	m->pixmaps.insert(hash, new Util::Image(pm, QSize(200, 200)));
-}
-
-int CoverViewPixmapCache::cacheSize() const
-{
-	return m->pixmaps.keys().size();
 }
 
 QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
@@ -96,12 +76,9 @@ QPixmap CoverViewPixmapCache::pixmap(const Hash& hash) const
 	}
 
 	auto* img = m->pixmaps.object(hash);
-	if(!img)
-	{
-		return QPixmap();
-	}
-
-	return img->pixmap();
+	return (img != nullptr)
+	       ? img->pixmap()
+	       : QPixmap();
 }
 
 bool CoverViewPixmapCache::isOutdated(const Hash& hash) const
@@ -109,24 +86,17 @@ bool CoverViewPixmapCache::isOutdated(const Hash& hash) const
 	return (!m->validHashes.contains(hash));
 }
 
-void CoverViewPixmapCache::setOutdated(const Hash& hash)
-{
-	m->validHashes.remove(hash);
-}
-
 void CoverViewPixmapCache::setAllOutdated()
 {
 	m->validHashes.clear();
 }
 
-void CoverViewPixmapCache::setCacheSize(int cache_size)
+void CoverViewPixmapCache::setCacheSize(int cacheSize)
 {
-	if(m->pixmaps.maxCost() > cache_size)
+	if(m->pixmaps.maxCost() <= cacheSize)
 	{
-		return;
+		m->pixmaps.setMaxCost(std::min(30, cacheSize));
 	}
-
-	m->pixmaps.setMaxCost(std::min(30, cache_size));
 }
 
 void CoverViewPixmapCache::clear()
