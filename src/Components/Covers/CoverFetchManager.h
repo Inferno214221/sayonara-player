@@ -34,6 +34,9 @@ namespace Cover
 		class Base;
 		class Url;
 
+		using CoverFetcherPtr = std::shared_ptr<Cover::Fetcher::Base>;
+		using CoverFetcherList = QList<CoverFetcherPtr>;
+
 		/**
 		 * @brief Retrieve Download Urls for Cover Searcher.
 		 * CoverFetcherInterface can be registered, so for
@@ -50,12 +53,14 @@ namespace Cover
 			PIMPL(Manager)
 
 			public:
+
+
 				/**
 				 * @brief Register a cover fetcher. Per default
 				 * there is one for Discogs, last.fm and Google
-				 * @param t an instance of a CoverFetcherInterface
+				 * @param fetcher an instance of a CoverFetcherInterface
 				 */
-				void registerCoverFetcher(Cover::Fetcher::Base* t);
+				void registerCoverFetcher(CoverFetcherPtr fetcher);
 
 				/**
 				 * @brief get urls for a artist search query
@@ -85,7 +90,7 @@ namespace Cover
 				 * @return list of urls
 				 */
 				QList<Url> searchAddresses(const QString& str,
-				                           const QString& cover_fetcher_identifier) const;
+				                           const QString& coverFetcherIdentifier) const;
 
 				/**
 				 * @brief get a CoverFetcherInterface by a specific url
@@ -93,18 +98,15 @@ namespace Cover
 				 * search_addresses() or direct_fetch_url()
 				 * @return null, if there's no suitable CoverFetcherInterface registered
 				 */
-				Cover::Fetcher::Base* coverfetcher(const Url& url) const;
+				CoverFetcherPtr coverfetcher(const Url& url) const;
 
 				/**
 				 * @brief fetches all available cover fetcher
 				 * @return
 				 */
-				QList<Cover::Fetcher::Base*> coverfetchers() const;
+				CoverFetcherList coverfetchers() const;
 
-				QList<Cover::Fetcher::Base*> activeCoverfetchers() const;
-				QList<Cover::Fetcher::Base*> inactiveCoverfetchers() const;
-
-				bool isActive(const Cover::Fetcher::Base* cfi) const;
+				bool isActive(const CoverFetcherPtr fetcher) const;
 				bool isActive(const QString& identifier) const;
 
 				/**

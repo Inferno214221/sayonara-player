@@ -49,8 +49,8 @@ using Fetcher::Url;
 
 struct FetchThread::Private
 {
-	AsyncWebAccess* currentWebAccess=nullptr;
-	Fetcher::Base* coverFetcher = nullptr;
+	AsyncWebAccess* currentWebAccess{nullptr};
+	Cover::Fetcher::CoverFetcherPtr coverFetcher {nullptr};
 
 	QList<QPixmap> pixmaps;
 	QList<Url> searchUrls;              // links to websites found in the Cover::Location

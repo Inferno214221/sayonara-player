@@ -133,13 +133,11 @@ bool AlternativeLookup::isSilent() const
 
 QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode mode) const
 {
-	using CoverFetcher = Cover::Fetcher::Base;
-
 	auto* cfm = Cover::Fetcher::Manager::instance();
-	const QList<CoverFetcher*> coverFetchers = cfm->coverfetchers();
+	const auto coverFetchers = cfm->coverfetchers();
 
 	QStringList ret;
-	for(const CoverFetcher* coverFetcher : coverFetchers)
+	for(const auto coverFetcher : coverFetchers)
 	{
 		const QString identifier = coverFetcher->identifier();
 		if(!cfm->isActive(identifier))

@@ -15,14 +15,13 @@ namespace Cover::Fetcher
 	 */
 	class Url
 	{
-		friend class Manager;
 		PIMPL(Url)
 
 		private:
 			Url();
-			Url(const QString& identifier, const QString& url);
 
 		public:
+			Url(const QString& identifier, const QString& url);
 			Url(const Url& other);
 			Url& operator=(const Url& other);
 			~Url();

@@ -143,8 +143,8 @@ void GUI_CoverPreferences::revert()
 	ui->lvCoverSearchers->clear();
 	ui->lvInactiveCoverSearchers->clear();
 
-	QList<Cover::Fetcher::Base*> cover_fetchers = cfm->coverfetchers();
-	for(const Cover::Fetcher::Base* b : cover_fetchers)
+	const auto cover_fetchers = cfm->coverfetchers();
+	for(const auto b : cover_fetchers)
 	{
 		QString name = b->identifier();
 
