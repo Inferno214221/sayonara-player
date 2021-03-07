@@ -364,5 +364,5 @@ bool AsyncWebAccess::hasError() const
 
 void AsyncWebAccess::stop()
 {
-	m->abort_request();
+	m->abort_request(true);
 }

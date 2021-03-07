@@ -23,27 +23,26 @@
 
 struct Cover::LookupBase::Private
 {
-	Cover::Location cl;
+	Cover::Location coverLocation;
 
-	Private(const Cover::Location& cl) :
-		cl(cl)
-	{}
+	Private(const Cover::Location& coverLocation) :
+		coverLocation(coverLocation) {}
 };
 
-Cover::LookupBase::LookupBase(const Cover::Location& cl, QObject* parent) :
+Cover::LookupBase::LookupBase(const Cover::Location& coverLocation, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(cl);
+	m = Pimpl::make<Private>(coverLocation);
 }
 
 Cover::LookupBase::~LookupBase() = default;
 
 Cover::Location Cover::LookupBase::coverLocation() const
 {
-	return m->cl;
+	return m->coverLocation;
 }
 
-void Cover::LookupBase::setCoverLocation(const Cover::Location& cl)
+void Cover::LookupBase::setCoverLocation(const Cover::Location& coverLocation)
 {
-	m->cl = cl;
+	m->coverLocation = coverLocation;
 }

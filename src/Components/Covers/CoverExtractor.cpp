@@ -23,28 +23,31 @@
 
 #include "Utils/CoverUtils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Mutex.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Tagging/TaggingCover.h"
 
 #include <QString>
 #include <QPixmap>
-
-static std::mutex mutexIo;
+#include <mutex>
 
 namespace FileUtils = ::Util::File;
 using Util::Covers::Source;
+using LockGuard = std::lock_guard<std::mutex>;
+
+namespace
+{
+	std::mutex mutexIo;
+}
 
 struct Cover::Extractor::Private
 {
 	QPixmap pixmap;
-	Cover::Location cl;
+	Cover::Location coverLocation;
 	Source source;
 
-	Private(const Cover::Location& cl) :
-		cl(cl),
-		source(Source::Unknown)
-	{}
+	Private(const Cover::Location& coverLocation) :
+		coverLocation(coverLocation),
+		source(Source::Unknown) {}
 };
 
 Cover::Extractor::Extractor(const Location& cl, QObject* parent) :
@@ -70,11 +73,11 @@ void Cover::Extractor::start()
 	m->pixmap = QPixmap();
 
 	{ // check for audio file target
-		LOCK_GUARD(mutexIo)
-		QString audio_file_target = m->cl.audioFileTarget();
-		if(FileUtils::exists(audio_file_target))
+		[[maybe_unused]] const auto lockGuard = LockGuard(mutexIo);
+		const auto audioFileTarget = m->coverLocation.audioFileTarget();
+		if(FileUtils::exists(audioFileTarget))
 		{
-			m->pixmap = QPixmap(m->cl.audioFileTarget());
+			m->pixmap = QPixmap(m->coverLocation.audioFileTarget());
 			m->source = Source::AudioFile;
 		}
 	}
@@ -82,11 +85,11 @@ void Cover::Extractor::start()
 	// check sayonara path
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutexIo)
-		QString cover_path = m->cl.hashPath();
-		if(FileUtils::exists(cover_path))
+		[[maybe_unused]] const auto lockGuard = LockGuard(mutexIo);
+		const auto coverPath = m->coverLocation.hashPath();
+		if(FileUtils::exists(coverPath))
 		{
-			m->pixmap = QPixmap(cover_path);
+			m->pixmap = QPixmap(coverPath);
 			m->source = Source::SayonaraDir;
 		}
 	}
@@ -94,11 +97,11 @@ void Cover::Extractor::start()
 	// check for audio file source
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutexIo)
-		QString audio_file_source = m->cl.audioFileSource();
-		if(FileUtils::exists(audio_file_source))
+		[[maybe_unused]] const auto lockGuard = LockGuard(mutexIo);
+		const auto audioFileSource = m->coverLocation.audioFileSource();
+		if(FileUtils::exists(audioFileSource))
 		{
-			m->pixmap = Tagging::Covers::extractCover(audio_file_source);
+			m->pixmap = Tagging::Covers::extractCover(audioFileSource);
 			m->source = Source::AudioFile;
 		}
 	}
@@ -106,11 +109,11 @@ void Cover::Extractor::start()
 	// check for path in library dir
 	if(m->pixmap.isNull())
 	{
-		LOCK_GUARD(mutexIo)
-		QString local_path = m->cl.localPath();
-		if(FileUtils::exists(local_path))
+		[[maybe_unused]] const auto lockGuard = LockGuard(mutexIo);
+		const auto localPath = m->coverLocation.localPath();
+		if(FileUtils::exists(localPath))
 		{
-			m->pixmap = QPixmap(local_path);
+			m->pixmap = QPixmap(localPath);
 			m->source = Source::Library;
 		}
 	}

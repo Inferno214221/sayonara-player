@@ -46,18 +46,16 @@ using UrlList = QList<Url>;
 
 struct AlternativeLookup::Private
 {
-	Lookup* lookup = nullptr;
+	Lookup* lookup;
 	int coverCount;
 	bool running;
 	bool silent;
 
-	Private(const Cover::Location& cl, int coverCount, bool silent, AlternativeLookup* parent) :
+	Private(const Cover::Location& coverLocation, int coverCount, bool silent, AlternativeLookup* parent) :
+		lookup {new Lookup(coverLocation, coverCount, parent)},
 		coverCount(coverCount),
 		running(false),
-		silent(silent)
-	{
-		lookup = new Lookup(cl, coverCount, parent);
-	}
+		silent(silent) {}
 
 	~Private()
 	{
@@ -65,10 +63,11 @@ struct AlternativeLookup::Private
 	}
 };
 
-AlternativeLookup::AlternativeLookup(const Cover::Location& cl, int coverCount, bool silent, QObject* parent) :
-	LookupBase(cl, parent)
+AlternativeLookup::AlternativeLookup(const Cover::Location& coverLocation, int coverCount, bool silent,
+                                     QObject* parent) :
+	LookupBase(coverLocation, parent)
 {
-	m = Pimpl::make<Private>(cl, coverCount, silent, this);
+	m = Pimpl::make<Private>(coverLocation, coverCount, silent, this);
 
 	connect(m->lookup, &Lookup::sigStarted, this, &AlternativeLookup::started);
 	connect(m->lookup, &Lookup::sigCoverFound, this, &AlternativeLookup::coverFound);
@@ -99,24 +98,22 @@ bool AlternativeLookup::save(const QPixmap& cover, bool saveToLibrary)
 		return false;
 	}
 
-	Cover::Location cl = coverLocation();
-
+	const auto coverLocation = LookupBase::coverLocation();
 	if(!m->silent)
 	{
-		Cover::writeCoverIntoDatabase(cl, cover);
-
+		Cover::writeCoverIntoDatabase(coverLocation, cover);
 		if(saveToLibrary)
 		{
-			Cover::writeCoverToLibrary(cl, cover);
+			Cover::writeCoverToLibrary(coverLocation, cover);
 		}
 	}
 
-	else if(!cover.save(cl.alternativePath()))
+	else if(!cover.save(coverLocation.alternativePath()))
 	{
-		spLog(Log::Warning, this) << "Cannot save cover to " << cl.alternativePath();
+		spLog(Log::Warning, this) << "Cannot save cover to " << coverLocation.alternativePath();
 	}
 
-	emit sigCoverChanged(cl);
+	emit sigCoverChanged(coverLocation);
 
 	return true;
 }
@@ -133,31 +130,31 @@ bool AlternativeLookup::isSilent() const
 
 QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode mode) const
 {
-	auto* cfm = Cover::Fetcher::Manager::instance();
-	const auto coverFetchers = cfm->coverfetchers();
+	auto* coverFetchManager = Cover::Fetcher::Manager::instance();
+	const auto coverFetchers = coverFetchManager->coverfetchers();
 
 	QStringList ret;
 	for(const auto coverFetcher : coverFetchers)
 	{
-		const QString identifier = coverFetcher->identifier();
-		if(!cfm->isActive(identifier))
+		const auto identifier = coverFetcher->identifier();
+		if(!coverFetchManager->isActive(identifier))
 		{
 			continue;
 		}
 
-		bool validIdentifier = false;
+		bool validIdentifier;
 		if(mode == AlternativeLookup::SearchMode::Fulltext)
 		{
-			const QString address = coverFetcher->fulltextSearchAddress("some dummy text");
+			const auto address = coverFetcher->fulltextSearchAddress("some dummy text");
 			validIdentifier = (!address.isEmpty());
 		}
 
 		else
 		{
-			const UrlList searchUrls = coverLocation().searchUrls();
+			const auto searchUrls = coverLocation().searchUrls();
 
-			validIdentifier = Algorithm::contains(searchUrls, [identifier](const Url& url) {
-				return (url.identifier().compare(identifier, Qt::CaseInsensitive) == 0);
+			validIdentifier = Algorithm::contains(searchUrls, [&](const auto& url) {
+				return (url.identifier().toLower() == identifier.toLower());
 			});
 		}
 
@@ -207,35 +204,35 @@ void AlternativeLookup::start()
 
 void AlternativeLookup::start(const QString& identifier)
 {
-	Location cl = coverLocation();
-	const UrlList searchUrls = coverLocation().searchUrls();
+	auto coverLocation = LookupBase::coverLocation();
+	const auto searchUrls = coverLocation.searchUrls();
 
-	auto it = Algorithm::find(searchUrls, [&identifier](const Url& url) {
+	const auto it = Algorithm::find(searchUrls, [&identifier](const auto& url) {
 		return (identifier == url.identifier());
 	});
 
 	if(it != searchUrls.end())
 	{
-		Url url = *it;
-		cl.setSearchUrls({url});
+		coverLocation.setSearchUrls({*it});
 	}
 
-	go(cl);
+	go(coverLocation);
 }
 
 void AlternativeLookup::startTextSearch(const QString& searchTerm)
 {
-	Location cl = coverLocation();
-	cl.setSearchTerm(searchTerm);
-	cl.enableFreetextSearch(true);
-	go(cl);
+	auto coverLocation = LookupBase::coverLocation();
+	coverLocation.setSearchTerm(searchTerm);
+	coverLocation.enableFreetextSearch(true);
+
+	go(coverLocation);
 }
 
 void AlternativeLookup::startTextSearch(const QString& searchTerm, const QString& coverFetcherIdentifier)
 {
-	Location cl = coverLocation();
-	cl.setSearchTerm(searchTerm, coverFetcherIdentifier);
-	cl.enableFreetextSearch(true);
-	go(cl);
-}
+	auto coverLocation = LookupBase::coverLocation();
+	coverLocation.setSearchTerm(searchTerm, coverFetcherIdentifier);
+	coverLocation.enableFreetextSearch(true);
 
+	go(coverLocation);
+}

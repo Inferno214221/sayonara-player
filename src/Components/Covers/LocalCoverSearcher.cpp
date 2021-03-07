@@ -25,7 +25,6 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 
-#include <QFile>
 #include <QDir>
 #include <QFileInfo>
 #include <QPixmap>
@@ -34,119 +33,129 @@
 #include <cmath>
 
 using namespace Cover;
-static const char* ClassName = "LocalSearcher";
 
-static double calc_name_factor(const QString& name)
+namespace
 {
-	if(name.contains(QStringLiteral("cover"), Qt::CaseInsensitive) ||
-	   name.contains(QStringLiteral("albumart"), Qt::CaseInsensitive) ||
-	   name.contains(QStringLiteral("front"), Qt::CaseInsensitive) ||
-	   name.contains(QStringLiteral("folder"), Qt::CaseInsensitive))
+	constexpr const char* ClassName = "LocalSearcher";
+
+	double calcNameFactor(const QString& name)
 	{
-		if(name.contains(QStringLiteral("large"), Qt::CaseInsensitive))
+		if(name.contains("cover", Qt::CaseInsensitive) ||
+		   name.contains("albumart", Qt::CaseInsensitive) ||
+		   name.contains("front", Qt::CaseInsensitive) ||
+		   name.contains("folder", Qt::CaseInsensitive))
 		{
-			return 2.0;
+			if(name.contains("large", Qt::CaseInsensitive))
+			{
+				return 2.0;
+			}
+
+			else if(!name.contains("small", Qt::CaseInsensitive))
+			{
+				return 3.0;
+			}
+
+			else
+			{
+				return 4.0;
+			}
 		}
 
-		else if(!name.contains(QStringLiteral("small"), Qt::CaseInsensitive))
-		{
-			return 3.0;
-		}
-
-		else
-		{
-			return 4.0;
-		}
+		return 5.0;
 	}
 
-	return 5.0;
-}
-
-static double calc_square_factor(int width, int height)
-{
-	double dWidth = double(width);
-	double dHeight = double(height);
-
-	double pixels = dWidth * dHeight;
-
-	// calc how 'square' the cover is
-	double r = (std::abs(dHeight - dWidth) / dWidth) + 1.0;
-	return (r * r * std::max(dHeight, dWidth)) / pixels;
-}
-
-static double calcRating(const QPixmap& pixmap, const QString& name)
-{
-	if(pixmap.width() == 0)
+	double calcSquareFactor(int width, int height)
 	{
-		return -1.0;
+		const auto dWidth = static_cast<double>(width);
+		const auto dHeight = static_cast<double>(height);
+
+		const auto pixels = dWidth * dHeight;
+
+		// calc how 'square' the cover is
+		const auto r = (std::abs(dHeight - dWidth) / dWidth) + 1.0;
+
+		return (std::pow(r, 2.0) * std::max(dHeight, dWidth)) / pixels;
 	}
 
-	double squareFactor = calc_square_factor(pixmap.width(), pixmap.height());
-	double nameFactor = calc_name_factor(name);
+	double calcRating(const QPixmap& pixmap, const QString& name)
+	{
+		if(pixmap.width() == 0)
+		{
+			return -1.0;
+		}
 
-	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has square factor "
-	                               << QString::number(squareFactor, 'g', 2);
-	spLog(Log::Develop, ClassName) << "  Coverfile " << name << " has name factor "
-	                               << QString::number(nameFactor, 'g', 2);
+		const auto squareFactor = calcSquareFactor(pixmap.width(), pixmap.height());
+		const auto nameFactor = calcNameFactor(name);
 
-	return squareFactor * nameFactor;
+		spLog(Log::Develop, ClassName)
+			<< "  Coverfile: " << name
+			<< ", square factor: " << QString::number(squareFactor, 'g', 2)
+			<< ", name factor: " << QString::number(nameFactor, 'g', 2);
+
+		return squareFactor * nameFactor;
+	}
+
+	QStringList getCoverFileFilters()
+	{
+		auto filters = Util::imageExtensions();
+
+		QStringList upperFilters;
+		Util::Algorithm::transform(filters, upperFilters, [](const auto& filter) {
+			return filter.toUpper();
+		});
+
+		filters << upperFilters;
+
+		return filters;
+	}
 }
 
-QStringList LocalSearcher::coverPathsFromPathHint(const QString& filepath_hint)
-{
-	spLog(Log::Develop, ClassName) << "Search for covers. Hint: " << filepath_hint;
 
-	QString filepath(filepath_hint);
+QStringList LocalSearcher::coverPathsFromPathHint(const QString& filename)
+{
+	spLog(Log::Develop, ClassName) << "Search for covers. Hint: " << filename;
+
+	auto filepath = filename;
 	if(!QFileInfo(filepath).isDir())
 	{
-		filepath = Util::File::getParentDirectory(filepath_hint);
-		spLog(Log::Develop, ClassName) << filepath_hint << " is not a directory. Try using " << filepath << " instead";
+		filepath = Util::File::getParentDirectory(filename);
+		spLog(Log::Develop, ClassName) << filename << " is not a directory. Try using " << filepath << " instead";
 
-		QFileInfo info(filepath);
+		const auto info = QFileInfo(filepath);
 		if(!info.isDir() || !info.exists())
 		{
 			return QStringList();
 		}
 	}
 
-	QStringList filters = Util::imageExtensions();
-
-	QStringList upperFilters;
-	Util::Algorithm::transform(filters, upperFilters, [](const QString& filter) {
-		return filter.toUpper();
-	});
-
-	filters << upperFilters;
-
-	const QDir dir(filepath);
-	const QStringList entries = dir.entryList(filters, (QDir::Files | QDir::NoDotAndDotDot));
+	const auto dir = QDir(filepath);
+	const auto entries = dir.entryList(getCoverFileFilters(), (QDir::Files | QDir::NoDotAndDotDot));
 	if(entries.isEmpty())
 	{
 		return QStringList();
 	}
 
 	QStringList ret;
-	QMap<QString, double> size_map;
-	for(const QString& entry : entries)
+	QMap<QString, double> sizeMap;
+	for(const auto& entry : entries)
 	{
-		const QString f = filepath + "/" + entry;
-		const QPixmap pm(f + "/" + entry);
+		const auto pixmapPath = filepath + "/" + entry;
+		const auto pixmap = QPixmap(pixmapPath);
+		const auto rating = calcRating(pixmap, entry);
 
-		double rating = calcRating(pm, entry);
+		spLog(Log::Develop, ClassName)
+			<< "  Coverfile " << pixmapPath << " has final rating " << QString::number(rating, 'g', 2)
+			<< " (Lower is better)";
 
-		spLog(Log::Develop, ClassName) << "  Coverfile " << f << " has final rating " << QString::number(rating, 'g', 2)
-		                               << " (Lower is better)";
-
-		size_map[f] = rating;
-		ret << f;
+		sizeMap[pixmapPath] = rating;
+		ret << pixmapPath;
 	}
 
-	Util::Algorithm::sort(ret, [=](const QString& f1, const QString& f2) {
-		return (size_map[f1] < size_map[f2]);
+	Util::Algorithm::sort(ret, [=](const auto& file1, const auto& file2) {
+		return (sizeMap[file1] < sizeMap[file2]);
 	});
 
 	spLog(Log::Develop, ClassName) << "  Sorted cover files " << ret;
 
 	return ret;
 }
-

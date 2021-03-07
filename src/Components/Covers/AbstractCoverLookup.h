@@ -49,7 +49,7 @@ namespace Cover
 			virtual void stop() = 0;
 
 		public:
-			explicit LookupBase(const Location& cl, QObject* parent = nullptr);
+			explicit LookupBase(const Location& coverLocation, QObject* parent = nullptr);
 			virtual ~LookupBase();
 
 			Location coverLocation() const;

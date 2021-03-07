@@ -29,8 +29,10 @@
 #ifndef COVERFETCHTHREAD_H_
 #define COVERFETCHTHREAD_H_
 
-#include <QObject>
 #include "Utils/Pimpl.h"
+
+#include <QObject>
+#include <functional>
 
 class QImage;
 class AsyncWebAccess;
@@ -39,78 +41,35 @@ namespace Cover
 {
 	class Location;
 
-
-	/**
-	 * @brief The CoverFetchThread class, This is not a real QThread class, but behaves like one because of AsyncWebAccess
-	 * @ingroup Covers
-	 */
-	class FetchThread :
-			public QObject
+	class WebCoverFetcher :
+		public QObject
 	{
 		Q_OBJECT
-		PIMPL(FetchThread)
+		PIMPL(WebCoverFetcher)
 
-	signals:
-		/**
-		 * @brief emitted, when thread has finished
-		 * @param b true, if couvers could be fetched. false else
-		 */
-		void sigFinished(bool b);
+		signals:
+			void sigFinished();
+			void sigCoverFound(int idx);
 
-		/**
-		 * @brief emitted, when covers has been found
-		 * @param cl CoverLocation including the local cover path
-		 */
-		void sigCoverFound(int idx);
+		public:
+			WebCoverFetcher() = delete;
+			WebCoverFetcher(QObject* parent, const Cover::Location& coverLocation, const int requestedCovers);
+			virtual ~WebCoverFetcher();
 
+			bool start();
+			void stop();
 
-	public:
-		FetchThread()=delete;
-		FetchThread(QObject* parent, const Cover::Location& cl, const int n_covers);
-		virtual ~FetchThread();
-
-		/**
-		 * @brief start fetching covers, if the url does not contain "google",
-		 *   a direct link to an image is assumed and will be downloaded directly
-		 * @return always true
-		 */
-		bool start();
-
-		/**
-		 * @brief fetch next cover
-		 * @return false, if there are no more covers to fetch
-		 */
-		bool fetchNextCover();
-
-		/**
-		 * @brief stops the current search
-		 */
-		void stop();
-
-		/**
-		 * @brief Google, Amazon, Last.Fm
-		 * @return
-		 */
-		QString url(int idx) const;
-		QPixmap pixmap(int idx) const;
+			QString url(int idx) const;
+			QPixmap pixmap(int idx) const;
 
 		private slots:
-		/**
-		 * @brief A single image has been fetched (reached when _n_covers was set to 1),
-		 *   calls save_and_emit_image
-		 * @param success indicates if image could be fetched successfully
-		 */
-		void imageFetched();
+			void imageFetched();
+			void contentFetched();
 
-
-		/**
-		 * @brief The website content has been fetched
-		 * @param success indicates if content could be fetched
-		 */
-		void contentFetched();
-
-	private:
-		void emitFinished(bool success);
+		private:
+			bool processNextSearchUrl();
+			bool processNextImageUrl();
+			bool startNextRequest();
 	};
 }
 

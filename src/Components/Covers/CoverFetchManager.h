@@ -53,8 +53,6 @@ namespace Cover
 			PIMPL(Manager)
 
 			public:
-
-
 				/**
 				 * @brief Register a cover fetcher. Per default
 				 * there is one for Discogs, last.fm and Google

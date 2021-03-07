@@ -39,14 +39,14 @@ namespace Cover
 		PIMPL(AlternativeLookup)
 
 		signals:
-			void sigCoverChanged(Cover::Location& cl);
+			void sigCoverChanged(const Cover::Location& cl);
 			void sigCoverfetchersChanged();
 
 		private:
 			void go(const Cover::Location& cl);
 
 		public:
-			AlternativeLookup(const Cover::Location& cl, int n_covers, bool silent, QObject* parent);
+			AlternativeLookup(const Cover::Location& coverLocation, int n_covers, bool silent, QObject* parent);
 			~AlternativeLookup() override;
 
 			void start();
