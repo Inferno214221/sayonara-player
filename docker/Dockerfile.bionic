@@ -1,0 +1,77 @@
+# Use an official Python runtime as a parent image
+FROM ubuntu:bionic
+
+# Set the working directory to /app
+WORKDIR /app
+
+# Copy the current directory contents into the container at /app
+COPY . /app
+
+ENV DEBIAN_FRONTEND "noninteractive"
+RUN apt-get update -qq && \
+	apt-get install -y -qq --no-install-recommends \
+	gnupg-agent \
+	software-properties-common \
+	wget \ 
+	apt-utils
+
+# Qt 5.12.3
+RUN add-apt-repository --yes ppa:beineri/opt-qt-5.12.3-bionic
+
+# Clang 9
+RUN echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main" > /etc/apt/sources.list.d/clang.list
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
+
+RUN	apt-get update -qq && \
+	apt-get install -y --no-install-recommends \
+	make \
+	coreutils \
+	clang-9 \
+	git \
+	libclang-cpp9 \
+	libgstreamer-plugins-bad1.0-dev \
+	libgstreamer-plugins-base1.0-dev \
+	libgstreamer1.0-dev \
+	pkg-config \
+	qttools5-dev-tools \
+	qt512base \
+	qt512svg \
+	qt512tools \
+	qt512translations \
+	qt512x11extras \
+	qt512xmlpatterns \
+	transifex-client \
+	zlib1g-dev \
+    libgl1-mesa-dev
+
+# Needed for linuxdeploy images
+RUN apt-get install -y -qq --no-install-recommends \
+	ca-certificates \
+	file \
+	libfuse2 \
+	openssl \
+	wget
+
+# cmake
+ENV CMAKE_VERSION_NR "3.15.4"
+ENV CMAKE_VERSION "${CMAKE_VERSION_NR}-Linux-x86_64"
+RUN wget "https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-${CMAKE_VERSION}.tar.gz"
+RUN tar xzf "cmake-${CMAKE_VERSION}.tar.gz"
+RUN cp -r "cmake-${CMAKE_VERSION}/bin" /usr/local
+RUN cp -r "cmake-${CMAKE_VERSION}/doc" /usr/local
+RUN cp -r "cmake-${CMAKE_VERSION}/share" /usr/local
+RUN rm -rf "cmake-*"
+
+# App Image
+RUN wget "https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage"
+RUN wget "https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage"
+RUN wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage"
+
+RUN mv "linuxdeploy-x86_64.AppImage" "linuxdeploy-plugin-qt-x86_64.AppImage" "appimagetool-x86_64.AppImage" /usr/local/bin/
+RUN chmod a+x /usr/local/bin/*.AppImage
+
+# make clang the default compiler
+ENV CC clang-9
+ENV CXX clang++-9
+
+CMD ["bash"]

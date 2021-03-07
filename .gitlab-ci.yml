@@ -1,4 +1,4 @@
-image: "luciocarreras/sayonara-ubuntu:xenial"
+image: "registry.gitlab.com/luciocarreras/sayonara-player:bionic"
 stages:
   - build
   - test
@@ -99,7 +99,7 @@ build-language:
   stage: build
   script:
     - mkdir -p tx
-    - lupdate -no-obsolete -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
+    - /opt/qt512/bin/lupdate -no-obsolete -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
   artifacts:
     paths:
       - tx/sayonara_lang_en.ts
