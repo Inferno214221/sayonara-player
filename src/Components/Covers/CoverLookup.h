@@ -33,9 +33,10 @@
 #include "Utils/Pimpl.h"
 #include "Utils/CoverUtils.h"
 
-#include <QPixmap>
 #include <QList>
+#include <any>
 
+class QPixmap;
 namespace Cover
 {
 	class Location;
@@ -45,77 +46,92 @@ namespace Cover
 	 * @ingroup Covers
 	 */
 	class Lookup :
-			public LookupBase
+		public LookupBase
 	{
 		Q_OBJECT
 		PIMPL(Lookup)
 
-	public:
+		public:
+			Lookup(const Location& cl, int n_covers, QObject* parent);
+			~Lookup() override;
 
-		Lookup(const Location& cl, int n_covers, QObject* parent);
-		~Lookup() override;
-
-		/**
-		 * @brief Stop the Cover::FetchThread if running and
-		 * retrieve the sigFinished signal
-		 * If no Cover::FetchThread is running, nothing will happen
-		 */
-		void stop() override;
+			/**
+			 * @brief Stop the Cover::FetchThread if running and
+			 * retrieve the sigFinished signal
+			 * If no Cover::FetchThread is running, nothing will happen
+			 */
+			void stop() override;
 
 			/**
 			 * @brief Set some custom data you can retrieve later
 			 * @param data
 			 */
-		void setUserData(void* data);
+			template<typename T>
+			void setUserData(const T t)
+			{
+				mUserData = t;
+			}
 
-		/**
-		 * @brief Fetch your custom data again
-		 * @return
-		 */
-		void* userData();
+			/**
+			 * @brief Fetch your custom data again
+			 * @return
+			 */
+			template<typename T>
+			auto userData() const -> T
+			{
+				try {
+					return std::any_cast<T>(mUserData);
+				}
+				catch(...)
+				{
+					return T{};
+				}
+			}
 
-		/**
-		 * @brief Get a copy of all pixmaps that where fetched
-		 * @return
-		 */
-		QList<QPixmap> pixmaps() const;
+			/**
+			 * @brief Get a copy of all pixmaps that where fetched
+			 * @return
+			 */
+			QList<QPixmap> pixmaps() const;
 
-		Util::Covers::Source source() const;
+			Util::Covers::Source source() const;
 
-	private:
+		private:
 
-		bool fetchFromDatabase();
-		bool fetchFromExtractor();
-		bool fetchFromWWW();
+			bool fetchFromDatabase();
+			bool fetchFromExtractor();
+			bool fetchFromWWW();
 
+			bool startExtractor(const Location& cl);
+			/**
+			 * @brief Starts a new CoverFetchThread
+			 * @param cl CoverLocation object
+			 */
+			bool startNewThread(const Location& cl);
 
-		bool startExtractor(const Location& cl);
-		/**
-		 * @brief Starts a new CoverFetchThread
-		 * @param cl CoverLocation object
-		 */
-		bool startNewThread(const Location& cl);
+			bool addNewCover(const QPixmap& pm, bool save);
 
-		bool addNewCover(const QPixmap& pm, bool save);
+			void emitFinished(bool success);
 
-		void emitFinished(bool success);
+		public slots:
+			void start();
 
-	public slots:
-		void start();
+		private slots:
+			/**
+			 * @brief called when CoverFetchThread has found cover
+			 * @param cl
+			 */
+			void coverFound(int idx);
 
-	private slots:
-		/**
-		 * @brief called when CoverFetchThread has found cover
-		 * @param cl
-		 */
-		void coverFound(int idx);
+			/**
+			 * @brief called when CoverFetchThread has finished
+			 */
+			void threadFinished(bool);
 
-		/**
-		 * @brief called when CoverFetchThread has finished
-		 */
-		void threadFinished(bool);
+			void extractorFinished();
 
-		void extractorFinished();
+		private:
+			std::any mUserData;
 	};
 
 
@@ -123,7 +139,7 @@ namespace Cover
 	 * @brief CoverLookupPtr
 	 * @ingroup Covers
 	 */
-	using LookupPtr=std::shared_ptr<Lookup>;
+	using LookupPtr = std::shared_ptr<Lookup>;
 
 }
 #endif /* COVERLOOKUP_H_ */

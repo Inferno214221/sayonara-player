@@ -143,12 +143,11 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	}
 
 	const auto& album = albums[linearIndex];
-	const auto trimmedAlbumName = album.name().trimmed();
 
 	switch(role)
 	{
 		case CoverModel::AlbumRole:
-			return (trimmedAlbumName.isEmpty())
+			return (album.name().trimmed().isEmpty())
 			       ? Lang::get(Lang::UnknownAlbum)
 			       : album.name();
 
@@ -194,7 +193,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			                        ? Lang::get(Lang::UnknownArtist)
 			                        : album.albumArtist();
 
-			const auto albumName = (trimmedAlbumName.isEmpty())
+			const auto albumName = (album.name().trimmed().isEmpty())
 			                       ? Lang::get(Lang::UnknownAlbum)
 			                       : album.name();
 
@@ -204,25 +203,23 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 		}
 
 		default:
-			return QVariant{};
+			return QVariant {};
 	}
 }
 
 void CoverModel::nextHash()
 {
-	auto* fetchThread = dynamic_cast<AlbumCoverFetchThread*>(sender());
-	if(!fetchThread)
+	if(!m->coverThread)
 	{
 		return;
 	}
 
-	const auto[hash, location] = fetchThread->takeCurrentLookup();
+	const auto[hash, location] = m->coverThread->takeCurrentLookup();
 	if(!hash.isEmpty() && location.isValid())
 	{
 		auto* coverLookup = new Lookup(location, 1, nullptr);
-		auto* data = new Hash(hash);
 
-		coverLookup->setUserData(data);
+		coverLookup->setUserData(hash);
 		connect(coverLookup, &Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
 
 		coverLookup->start();
@@ -232,9 +229,8 @@ void CoverModel::nextHash()
 void CoverModel::coverLookupFinished(bool success)
 {
 	auto* coverLookup = dynamic_cast<Lookup*>(sender());
-	auto* data = static_cast<Hash*>(coverLookup->userData());
+	auto hash = coverLookup->userData<Hash>();
 
-	const auto hash = *data;
 	const auto pixmaps = (success)
 	                     ? coverLookup->pixmaps()
 	                     : QList<QPixmap> {};

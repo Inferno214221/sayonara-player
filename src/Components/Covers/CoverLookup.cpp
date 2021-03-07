@@ -46,7 +46,6 @@
 #include <QStringList>
 #include <QThread>
 #include <QDir>
-#include <mutex>
 
 using Cover::Location;
 using Cover::Lookup;
@@ -57,7 +56,6 @@ struct Lookup::Private
 {
 	QList<QPixmap> pixmaps;
 	FetchThread* cft = nullptr;
-	void* userData = nullptr;
 
 	const int initialCoverCount;
 	int coverCount;
@@ -332,17 +330,6 @@ void Lookup::emitFinished(bool success)
 		m->finished = true;
 		emit sigFinished(success);
 	}
-}
-
-void Lookup::setUserData(void* data)
-{
-	m->userData = data;
-}
-
-void* Lookup::userData()
-{
-	void* data = m->userData;
-	return data;
 }
 
 QList<QPixmap> Lookup::pixmaps() const
