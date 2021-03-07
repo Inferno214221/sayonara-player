@@ -44,9 +44,9 @@ using Cover::Location;
 using Cover::Fetcher::Url;
 
 namespace{
-	QList<Url> extractDownloadUrls(const LibraryItem* item)
+	QList<Url> extractDownloadUrls(const LibraryItem& item)
 	{
-		const auto downloadUrls = item->coverDownloadUrls();
+		const auto downloadUrls = item.coverDownloadUrls();
 		auto* fetchManager = Cover::Fetcher::Manager::instance();
 
 		QList<Url> urls;
@@ -173,25 +173,25 @@ Location Location::coverLocation(const Album& album)
 	{ //setup basic CoverLocation
 		if(!album.albumArtist().trimmed().isEmpty())
 		{
-			location = std::move(Location::coverLocation(album.name(), album.albumArtist()));
+			location = Location::coverLocation(album.name(), album.albumArtist());
 		}
 
 		else if(album.artists().size() > 1)
 		{
-			location = std::move(Location::coverLocation(album.name(), album.artists()));
+			location = Location::coverLocation(album.name(), album.artists());
 		}
 
 		else if(!album.artists().isEmpty())
 		{
-			location = std::move(Location::coverLocation(album.name(), album.artists().first()));
+			location = Location::coverLocation(album.name(), album.artists().first());
 		}
 
 		else
 		{
-			location = std::move(Location::coverLocation(album.name(), QString()));
+			location = Location::coverLocation(album.name(), QString());
 		}
 
-		const auto urls = extractDownloadUrls(&album);
+		const auto urls = extractDownloadUrls(album);
 		if(!urls.isEmpty())
 		{
 			location.setSearchUrls(urls);
@@ -215,9 +215,9 @@ Location Location::coverLocation(const Album& album)
 
 Location Location::coverLocation(const Artist& artist)
 {
-	auto location = std::move(Location::coverLocation(artist.name()));
+	auto location = Location::coverLocation(artist.name());
 
-	const auto urls = extractDownloadUrls(&artist);
+	const auto urls = extractDownloadUrls(artist);
 	if(!urls.isEmpty())
 	{
 		location.setSearchUrls(urls);
@@ -292,7 +292,7 @@ Location Location::coverLocation(const MetaData& track, bool checkForCoverart)
 			return QUrl(url);
 		});
 
-		location = std::move(Location::coverLocation(urls, coverToken));
+		location = Location::coverLocation(urls, coverToken);
 	}
 
 	else if(track.albumId() >= 0)
@@ -307,19 +307,19 @@ Location Location::coverLocation(const MetaData& track, bool checkForCoverart)
 			album.setPathHint({track.filepath()});
 		}
 
-		location = std::move(Location::coverLocation(album));
+		location = Location::coverLocation(album);
 	}
 
 	if(!location.isValid())
 	{
 		if(track.radioMode() == RadioMode::Station)
 		{
-			location = std::move(Location::coverLocationRadio(track.radioStation()));
+			location = Location::coverLocationRadio(track.radioStation());
 		}
 
 		else if(!track.album().isEmpty() && !track.artist().isEmpty())
 		{
-			location = std::move(Location::coverLocation(track.album(), track.artist()));
+			location = Location::coverLocation(track.album(), track.artist());
 		}
 	}
 
@@ -334,7 +334,7 @@ Location Location::coverLocation(const MetaData& track, bool checkForCoverart)
 
 	if(location.searchUrls().isEmpty())
 	{
-		const auto urls = extractDownloadUrls(&track);
+		const auto urls = extractDownloadUrls(track);
 		const auto identifier = QString("CL:By metadata: %1 by %2 with %3 direct download urls")
 			.arg(track.album())
 			.arg(track.artist())
