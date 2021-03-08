@@ -8,23 +8,22 @@ struct Url::Private
 {
 	QString identifier;
 	QString url;
+
+	Private(const QString& identifier, const QString& url) :
+		identifier(identifier),
+		url(url) {}
 };
 
-Cover::Fetcher::Url::Url()
-{
-	m = Pimpl::make<Private>();
-}
+Cover::Fetcher::Url::Url() :
+	Url(QString(), QString()) {}
 
-Url::Url(const QString& identifier, const QString& url) :
-	Url()
+Url::Url(const QString& identifier, const QString& url)
 {
-	m->identifier = identifier;
-	m->url = url;
+	m = Pimpl::make<Private>(identifier, url);
 }
 
 Url::Url(const Cover::Fetcher::Url& other) :
-	Url(other.identifier(), other.url())
-{}
+	Url(other.identifier(), other.url()) {}
 
 Cover::Fetcher::Url& Url::operator=(const Cover::Fetcher::Url& other)
 {

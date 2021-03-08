@@ -34,7 +34,7 @@ namespace Cover::Fetcher
 	class Base
 	{
 		private:
-			virtual QString privateIdentifier() const=0;
+			virtual QString privateIdentifier() const = 0;
 
 		public:
 			Base();
@@ -44,7 +44,7 @@ namespace Cover::Fetcher
 			 * @brief Can the cover be fetched from the adress without starting a two-stage query?
 			 * @return
 			 */
-			virtual bool canFetchCoverDirectly() const=0;
+			virtual bool canFetchCoverDirectly() const = 0;
 
 			/**
 			 * @brief  Get addresses from the downloaded website.
@@ -52,14 +52,13 @@ namespace Cover::Fetcher
 			 * @param website website data
 			 * @return
 			 */
-			virtual QStringList parseAddresses(const QByteArray& website) const=0;
+			virtual QStringList parseAddresses(const QByteArray& website) const = 0;
 
 			/**
 			 * @brief get name of CoverFetcherInterface like e.g. Discogs
 			 * @return
 			 */
 			virtual QString identifier() const final;
-
 
 			/**
 			 * @brief Get the artist search url.
@@ -90,7 +89,7 @@ namespace Cover::Fetcher
 			 * @brief get_estimated_size. Rough image size of the CoverFetchInterface
 			 * @return e.g. 300px
 			 */
-			virtual int estimatedSize() const=0;
+			virtual int estimatedSize() const = 0;
 	};
 
 } // Cover::Fetcher

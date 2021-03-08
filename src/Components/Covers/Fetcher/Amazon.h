@@ -26,7 +26,7 @@
 namespace Cover::Fetcher
 {
 	class Amazon :
-            public Cover::Fetcher::Base
+		public Cover::Fetcher::Base
 	{
 		private:
 			QString privateIdentifier() const override;
@@ -36,7 +36,7 @@ namespace Cover::Fetcher
 			QStringList parseAddresses(const QByteArray& website) const override;
 
 			QString albumAddress(const QString& artist, const QString& album) const override;
-			QString fulltextSearchAddress(const QString& str) const override;
+			QString fulltextSearchAddress(const QString& searchString) const override;
 
 			int estimatedSize() const override;
 	};

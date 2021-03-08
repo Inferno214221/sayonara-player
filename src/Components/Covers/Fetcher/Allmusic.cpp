@@ -39,10 +39,10 @@ QStringList Allmusic::parseAddresses(const QByteArray& website) const
 	QRegExp re("<img.*lazy.*src=\"(https?://.+\\.[a-z]{3}(.+f=.)?)\"");
 	re.setMinimal(true);
 
-	int index = re.indexIn(website);
+	auto index = re.indexIn(website);
 	while(index > 0)
 	{
-		QString link = re.cap(1);
+		auto link = re.cap(1);
 		if(link.contains("f="))
 		{
 			link = link.left(link.size() - 3);
@@ -76,19 +76,19 @@ QString Allmusic::privateIdentifier() const
 
 QString Allmusic::artistAddress(const QString& artist) const
 {
-	const QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist));
+	const auto str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist));
 	return QString("https://www.allmusic.com/search/artists/%1").arg(str);
 }
 
 QString Allmusic::albumAddress(const QString& artist, const QString& album) const
 {
-	const QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist + " " + album));
+	const auto str = QString::fromLocal8Bit(QUrl::toPercentEncoding(artist + " " + album));
 	return QString("https://www.allmusic.com/search/albums/%1").arg(str);
 }
 
 QString Allmusic::fulltextSearchAddress(const QString& searchstring) const
 {
-	const QString str = QString::fromLocal8Bit(QUrl::toPercentEncoding(searchstring));
+	const auto str = QString::fromLocal8Bit(QUrl::toPercentEncoding(searchstring));
 	return QString("https://www.allmusic.com/search/all/%1").arg(str);
 }
 

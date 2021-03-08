@@ -26,31 +26,23 @@ bool DirectFetcher::canFetchCoverDirectly() const
 	return true;
 }
 
-QStringList DirectFetcher::parseAddresses(const QByteArray& website) const
+QStringList DirectFetcher::parseAddresses([[maybe_unused]] const QByteArray& website) const
 {
-	Q_UNUSED(website)
 	return QStringList();
 }
 
-QString DirectFetcher::artistAddress(const QString& artist) const
+QString DirectFetcher::artistAddress([[maybe_unused]] const QString& artist) const
 {
-	Q_UNUSED(artist)
-
 	return m->url;
 }
 
-QString DirectFetcher::albumAddress(const QString& artist, const QString& album) const
+QString DirectFetcher::albumAddress([[maybe_unused]] const QString& artist, [[maybe_unused]] const QString& album) const
 {
-	Q_UNUSED(artist)
-	Q_UNUSED(album)
-
 	return m->url;
 }
 
-QString DirectFetcher::fulltextSearchAddress(const QString& str) const
+QString DirectFetcher::fulltextSearchAddress([[maybe_unused]] const QString& str) const
 {
-	Q_UNUSED(str)
-
 	return m->url;
 }
 

@@ -37,23 +37,22 @@ QStringList Website::parseAddresses(const QByteArray& website) const
 		return QStringList();
 	}
 
-	const QString website_str = QString::fromLocal8Bit(website);
+	const auto websiteData = QString::fromLocal8Bit(website);
 
-	QRegExp regex("[\"'](\\S+\\.(jpg|png|gif|tiff|svg))[\"']");
+	auto regex = QRegExp("[\"'](\\S+\\.(jpg|png|gif|tiff|svg))[\"']");
 	regex.setMinimal(true);
 
 	QStringList images;
-	int index = regex.indexIn(website_str);
+	auto index = regex.indexIn(websiteData);
 	while(index > 0)
 	{
-		QString image = regex.cap(1);
-		if(!image.contains("://"))
-		{
-			image.prepend(m->website + "/");
-		}
+		const auto caption = regex.cap(1);
+		const auto imagePath = (caption.contains("://"))
+			? caption
+			: QString("%1/%2").arg(m->website).arg(caption);
 
-		images << image;
-		index = regex.indexIn(website_str, index + 5);
+		images << imagePath;
+		index = regex.indexIn(websiteData, index + 5);
 	}
 
 	return images;
@@ -64,18 +63,14 @@ int Website::estimatedSize() const
 	return 1;
 }
 
-QString Website::fulltextSearchAddress(const QString& address) const
+QString Website::fulltextSearchAddress([[maybe_unused]] const QString& address) const
 {
-	Q_UNUSED(address)
 	return m->website;
 }
 
 void Website::setWebsite(const QString& website)
 {
-	m->website = website;
-
-	if(!m->website.startsWith("http"))
-	{
-		m->website.prepend("http://");
-	}
+	m->website = (website.startsWith("http"))
+	              ? website
+	              : QString("https://%1").arg(website);
 }

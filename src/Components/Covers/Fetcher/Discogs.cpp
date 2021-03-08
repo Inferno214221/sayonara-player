@@ -26,14 +26,17 @@
 
 using namespace Cover::Fetcher;
 
-static QString basicUrl(const QString& str)
+namespace
 {
-	QString str2(str);
-	str2 = str2.replace(" ", "+");
+	QString basicUrl(const QString& str)
+	{
+		auto stringCopy = str;
+		stringCopy = stringCopy.replace(" ", "+");
 
-	return QString("https://%1/search/?q=%2")
-		.arg("www.discogs.com")
-		.arg(QString(QUrl::toPercentEncoding(str2)));
+		return QString("https://%1/search/?q=%2")
+			.arg("www.discogs.com")
+			.arg(QString(QUrl::toPercentEncoding(stringCopy)));
+	}
 }
 
 bool Discogs::canFetchCoverDirectly() const
@@ -45,16 +48,16 @@ QStringList Discogs::parseAddresses(const QByteArray& website) const
 {
 	QStringList ret;
 
-	QRegExp re("class=\"thumbnail_center\">\\s*<img\\s*data-src\\s*=\\s*\"(.+)\"");
-	re.setMinimal(true);
+	auto regExp = QRegExp("class=\"thumbnail_center\">\\s*<img\\s*data-src\\s*=\\s*\"(.+)\"");
+	regExp.setMinimal(true);
 
-	QString websiteString = QString::fromLocal8Bit(website);
-	int idx = re.indexIn(websiteString);
+	const auto websiteData = QString::fromLocal8Bit(website);
+	auto idx = regExp.indexIn(websiteData);
 	while(idx > 0)
 	{
-		ret << re.cap(1);
-		websiteString.remove(0, idx + 5);
-		idx = re.indexIn(websiteString);
+		const auto caption = regExp.cap(1);
+		ret << caption;
+		idx = regExp.indexIn(websiteData, idx + caption.size());
 	}
 
 	return ret;

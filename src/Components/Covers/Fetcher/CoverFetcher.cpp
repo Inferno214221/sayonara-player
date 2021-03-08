@@ -30,23 +30,18 @@ QString Cover::Fetcher::Base::identifier() const
 	return this->privateIdentifier().toLower();
 }
 
-QString Cover::Fetcher::Base::artistAddress(const QString& artist) const
+QString Cover::Fetcher::Base::artistAddress([[maybe_unused]] const QString& artist) const
 {
-	Q_UNUSED(artist)
 	return QString();
 }
 
-QString Cover::Fetcher::Base::albumAddress(const QString& artist, const QString& album) const
+QString
+Cover::Fetcher::Base::albumAddress([[maybe_unused]] const QString& artist, [[maybe_unused]] const QString& album) const
 {
-	Q_UNUSED(artist)
-	Q_UNUSED(album)
-
 	return QString();
 }
 
-QString Cover::Fetcher::Base::fulltextSearchAddress(const QString& str) const
+QString Cover::Fetcher::Base::fulltextSearchAddress([[maybe_unused]] const QString& str) const
 {
-	Q_UNUSED(str)
-
 	return QString();
 }

@@ -32,7 +32,6 @@ namespace Cover::Fetcher
 	class Discogs :
 		public Cover::Fetcher::Base
 	{
-
 		private:
 			QString privateIdentifier() const override;
 

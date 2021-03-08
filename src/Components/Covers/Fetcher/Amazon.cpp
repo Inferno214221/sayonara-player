@@ -37,8 +37,9 @@ QStringList Amazon::parseAddresses(const QByteArray& website) const
 {
 	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
-	int index = re.indexIn(website);
-	if(index < 0){
+	auto index = re.indexIn(website);
+	if(index < 0)
+	{
 		return QStringList();
 	}
 
@@ -47,27 +48,27 @@ QStringList Amazon::parseAddresses(const QByteArray& website) const
 	QStringList sources;
 	QMap<QString, double> itemSources;
 
-	int offset = 0;
+	auto offset = 0;
 	while(index > 0)
 	{
-		const QString caption = re.cap(1);
-		const QRegExp itemRegExp("(http[s]*://\\S+\\.jpg)\\s([0-9+](\\.[0-9]+)*)x");
+		const auto caption = re.cap(1);
+		const auto itemRegExp = QRegExp("(http[s]*://\\S+\\.jpg)\\s([0-9+](\\.[0-9]+)*)x");
 
-		int itemIndex = itemRegExp.indexIn(website, offset);
-		int itemOffset = 0;
+		auto itemIndex = itemRegExp.indexIn(website, offset);
+		auto itemOffset = 0;
 		while(itemIndex >= 0)
 		{
-			QString item_caption = itemRegExp.cap(1);
-			QString val = itemRegExp.cap(2);
+			const auto itemCaption = itemRegExp.cap(1);
+			const auto val = itemRegExp.cap(2);
 
-			itemSources.insert(item_caption, val.toDouble());
+			itemSources.insert(itemCaption, val.toDouble());
 			itemIndex = itemRegExp.indexIn(caption, itemOffset);
-			itemOffset = itemIndex + item_caption.size();
+			itemOffset = itemIndex + itemCaption.size();
 		}
 
-		double maxVal=0;
+		double maxVal = 0;
 		QString maxStr;
-		for(auto it=itemSources.begin(); it != itemSources.end(); it++)
+		for(auto it = itemSources.begin(); it != itemSources.end(); it++)
 		{
 			if(it.value() > maxVal)
 			{
@@ -94,18 +95,18 @@ QString Amazon::privateIdentifier() const
 
 QString Amazon::albumAddress(const QString& artist, const QString& album) const
 {
-	QString str(artist + "+" + album);
+	auto str = QString(artist + "+" + album);
 	str.replace(" ", "+");
 	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(str));
 
 	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }
 
-QString Amazon::fulltextSearchAddress(const QString& search_string) const
+QString Amazon::fulltextSearchAddress(const QString& searchString) const
 {
-	QString str(search_string);
+	auto str = QString(searchString);
 	str.replace(" ", "+");
-	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(search_string));
+	str = QString::fromLocal8Bit(QUrl::toPercentEncoding(searchString));
 
 	return QString("https://www.amazon.de/s?k=%1&i=digital-music&ref=nb_sb_noss").arg(str);
 }

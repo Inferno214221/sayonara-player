@@ -40,28 +40,28 @@ bool Yandex::canFetchCoverDirectly() const
 
 QStringList Yandex::parseAddresses(const QByteArray& website) const
 {
-	QRegExp re("<img.+class=\"serp-item__thumb.+src=\"(.+)\"");
+	auto re = QRegExp("<img.+class=\"serp-item__thumb.+src=\"(.+)\"");
 	re.setMinimal(true);
-	int idx = re.indexIn(website);
 
-	if(idx < 0){
+	auto idx = re.indexIn(website);
+	if(idx < 0)
+	{
 		return QStringList();
 	}
 
 	QStringList ret;
 	while(idx >= 0)
 	{
-		QString url = "https:" + re.cap(1);
+		auto url = "https:" + re.cap(1);
 		url.replace("&amp;", "&");
 		ret << url;
-		idx += re.cap(1).size();
 
+		idx += re.cap(1).size();
 		idx = re.indexIn(website, idx);
 	}
 
 	return ret;
 }
-
 
 QString Yandex::artistAddress(const QString& artist) const
 {
@@ -75,8 +75,8 @@ QString Yandex::albumAddress(const QString& artist, const QString& album) const
 
 QString Yandex::fulltextSearchAddress(const QString& str) const
 {
-	QString pe = QUrl::toPercentEncoding(str);
-	return QString("https://yandex.com/images/search?text=%1&iorient=square&from=tabbar").arg(pe);
+	const auto encoded = QString(QUrl::toPercentEncoding(str));
+	return QString("https://yandex.com/images/search?text=%1&iorient=square&from=tabbar").arg(encoded);
 }
 
 int Yandex::estimatedSize() const

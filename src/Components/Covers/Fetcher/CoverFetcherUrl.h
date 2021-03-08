@@ -26,7 +26,7 @@ namespace Cover::Fetcher
 			Url& operator=(const Url& other);
 			~Url();
 
-						void setIdentifier(const QString& identifier);
+			void setIdentifier(const QString& identifier);
 			QString identifier() const;
 
 			void setUrl(const QString& url);
