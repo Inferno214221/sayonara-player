@@ -63,6 +63,11 @@ int Website::estimatedSize() const
 	return 1;
 }
 
+bool Website::isWebserviceFetcher() const
+{
+	return false;
+}
+
 QString Website::fulltextSearchAddress([[maybe_unused]] const QString& address) const
 {
 	return m->website;

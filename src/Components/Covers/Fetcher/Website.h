@@ -31,6 +31,7 @@ namespace Cover::Fetcher
 			QStringList parseAddresses(const QByteArray& website) const override;
 
 			int estimatedSize() const override;
+			bool isWebserviceFetcher() const override;
 
 			/**
 			 * @brief will always return the website which has been set by

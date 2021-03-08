@@ -56,3 +56,8 @@ void Cover::Fetcher::DirectFetcher::setDirectUrl(const QString& url)
 	m->url = url;
 }
 
+bool Cover::Fetcher::DirectFetcher::isWebserviceFetcher() const
+{
+	return false;
+}
+

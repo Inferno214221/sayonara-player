@@ -90,6 +90,8 @@ namespace Cover::Fetcher
 			 * @return e.g. 300px
 			 */
 			virtual int estimatedSize() const = 0;
+
+			virtual bool isWebserviceFetcher() const;
 	};
 
 } // Cover::Fetcher

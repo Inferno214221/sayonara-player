@@ -28,10 +28,9 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/Fetcher/CoverFetcher.h"
 
-#include "Utils/CoverUtils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 #include "Utils/StandardPaths.h"
@@ -41,11 +40,33 @@
 
 #include <QListWidgetItem>
 #include <QList>
-#include <QDir>
-#include <QFileInfo>
-#include <QCheckBox>
 
 using namespace Cover;
+
+namespace
+{
+	bool checkCoverTemplate(const QString& coverTemplate)
+	{
+		if(coverTemplate.trimmed().isEmpty())
+		{
+			return false;
+		}
+
+		auto coverTemplateCopy(coverTemplate);
+		coverTemplateCopy.remove("<h>");
+
+		const auto invalidChars = QList<QChar>
+			{
+				'/', '\\', '|', ':', '\"', '?', '$', '<', '>', '*', '#', '%', '&'
+			};
+
+		const auto contains = Util::Algorithm::contains(invalidChars, [&](const auto& c){
+			return (coverTemplateCopy.contains(c));
+		});
+
+		return (!contains);
+	}
+}
 
 GUI_CoverPreferences::GUI_CoverPreferences(const QString& identifier) :
 	Base(identifier) {}
@@ -59,56 +80,30 @@ GUI_CoverPreferences::~GUI_CoverPreferences()
 	}
 }
 
-static bool checkCoverTemplate(const QString& coverTemplate)
-{
-	if(coverTemplate.trimmed().isEmpty())
-	{
-		return false;
-	}
-
-	QString str(coverTemplate);
-	str.remove("<h>");
-
-	QList<QChar> invalid_chars
-		{
-			'/', '\\', '|', ':', '\"', '?', '$', '<', '>', '*', '#', '%', '&'
-		};
-
-	for(const QChar& c : invalid_chars)
-	{
-		if(str.contains(c))
-		{
-			return false;
-		}
-	}
-
-	return true;
-}
-
 bool GUI_CoverPreferences::commit()
 {
-	QStringList active_items;
+	QStringList activeItems;
 
-	for(int i = 0; i < ui->lvCoverSearchers->count(); i++)
+	for(auto i = 0; i < ui->lvCoverSearchers->count(); i++)
 	{
-		QListWidgetItem* item = ui->lvCoverSearchers->item(i);
-		active_items << item->text().toLower();
+		auto* listWidgetItem = ui->lvCoverSearchers->item(i);
+		activeItems << listWidgetItem->text().toLower();
 	}
 
-	SetSetting(Set::Cover_Server, active_items);
+	SetSetting(Set::Cover_Server, activeItems);
 	SetSetting(Set::Cover_FetchFromWWW, ui->cbFetchFromWWW->isChecked());
 	SetSetting(Set::Cover_SaveToDB, ui->cbSaveToDatabase->isChecked());
 	SetSetting(Set::Cover_SaveToLibrary, ui->cbSaveToLibrary->isChecked() && ui->cbSaveToLibrary->isEnabled());
 	SetSetting(Set::Cover_SaveToSayonaraDir,
 	           ui->cbSaveToSayonaraDir->isChecked() && ui->cbSaveToSayonaraDir->isEnabled());
 
-	QString coverTemplate = ui->leCoverTemplate->text().trimmed();
+	auto coverTemplate = ui->leCoverTemplate->text().trimmed();
 	if(checkCoverTemplate(coverTemplate))
 	{
 		if(!Util::File::isImageFile(coverTemplate))
 		{
-			QString ext = Util::File::getFileExtension(coverTemplate);
-			if(ext.isEmpty())
+			const auto extension = Util::File::getFileExtension(coverTemplate);
+			if(extension.isEmpty())
 			{
 				coverTemplate.append(".jpg");
 				coverTemplate.replace("..jpg", ".jpg");
@@ -116,7 +111,7 @@ bool GUI_CoverPreferences::commit()
 
 			else
 			{
-				coverTemplate.replace("." + ext, ".jpg");
+				coverTemplate.replace("." + extension, ".jpg");
 			}
 
 			ui->leCoverTemplate->setText(coverTemplate);
@@ -136,31 +131,23 @@ bool GUI_CoverPreferences::commit()
 
 void GUI_CoverPreferences::revert()
 {
-	Cover::Fetcher::Manager* cfm = Cover::Fetcher::Manager::instance();
-
-	QStringList cover_servers = GetSetting(Set::Cover_Server);
+	auto* coverFetchManager = Cover::Fetcher::Manager::instance();
+	const auto coverFetchers = coverFetchManager->coverfetchers();
+	const auto coverServers = GetSetting(Set::Cover_Server);
 
 	ui->lvCoverSearchers->clear();
 	ui->lvInactiveCoverSearchers->clear();
 
-	const auto cover_fetchers = cfm->coverfetchers();
-	for(const auto b : cover_fetchers)
+	for(const auto coverFetcher : coverFetchers)
 	{
-		QString name = b->identifier();
-
-		if(name.trimmed().isEmpty())
+		const auto identifier = coverFetcher->identifier();
+		if(!identifier.trimmed().isEmpty() && (coverFetcher->isWebserviceFetcher()))
 		{
-			continue;
-		}
+			auto* widget = (coverServers.contains(identifier))
+				? ui->lvCoverSearchers
+				: ui->lvInactiveCoverSearchers;
 
-		if(cover_servers.contains(name))
-		{
-			ui->lvCoverSearchers->addItem(Util::stringToVeryFirstUpper(name));
-		}
-
-		else
-		{
-			ui->lvInactiveCoverSearchers->addItem(Util::stringToVeryFirstUpper(name));
+			widget->addItem(Util::stringToVeryFirstUpper(identifier));
 		}
 	}
 
@@ -213,7 +200,6 @@ void GUI_CoverPreferences::initUi()
 void GUI_CoverPreferences::retranslate()
 {
 	ui->retranslateUi(this);
-
 	ui->btnUp->setText(Lang::get(Lang::MoveUp));
 	ui->btnDown->setText(Lang::get(Lang::MoveDown));
 }
@@ -229,52 +215,50 @@ void GUI_CoverPreferences::skinChanged()
 
 void GUI_CoverPreferences::upClicked()
 {
-	int cur_row = ui->lvCoverSearchers->currentRow();
+	const auto currentRow = ui->lvCoverSearchers->currentRow();
 
-	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(cur_row);
-	ui->lvCoverSearchers->insertItem(cur_row - 1, item);
-	ui->lvCoverSearchers->setCurrentRow(cur_row - 1);
+	auto* listWidgetItem = ui->lvCoverSearchers->takeItem(currentRow);
+	ui->lvCoverSearchers->insertItem(currentRow - 1, listWidgetItem);
+	ui->lvCoverSearchers->setCurrentRow(currentRow - 1);
 }
 
 void GUI_CoverPreferences::downClicked()
 {
-	int cur_row = ui->lvCoverSearchers->currentRow();
+	const auto currentRow = ui->lvCoverSearchers->currentRow();
 
-	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(cur_row);
-	ui->lvCoverSearchers->insertItem(cur_row + 1, item);
-	ui->lvCoverSearchers->setCurrentRow(cur_row + 1);
+	auto* listWidgetItem = ui->lvCoverSearchers->takeItem(currentRow);
+	ui->lvCoverSearchers->insertItem(currentRow + 1, listWidgetItem);
+	ui->lvCoverSearchers->setCurrentRow(currentRow + 1);
 }
 
 void GUI_CoverPreferences::addClicked()
 {
-	QListWidgetItem* item = ui->lvInactiveCoverSearchers->takeItem(ui->lvInactiveCoverSearchers->currentRow());
-	if(!item)
+	auto* listWidgetItem = ui->lvInactiveCoverSearchers->takeItem(ui->lvInactiveCoverSearchers->currentRow());
+	if(!listWidgetItem)
 	{
-		return;
+		ui->lvCoverSearchers->addItem(listWidgetItem->text());
+		delete listWidgetItem;
 	}
-
-	ui->lvCoverSearchers->addItem(item->text());
-	delete item;
-	item = nullptr;
 }
 
 void GUI_CoverPreferences::removeClicked()
 {
-	QListWidgetItem* item = ui->lvCoverSearchers->takeItem(ui->lvCoverSearchers->currentRow());
-	if(!item)
+	auto* listWidgetItem = ui->lvCoverSearchers->takeItem(ui->lvCoverSearchers->currentRow());
+	if(!listWidgetItem)
 	{
-		return;
+		ui->lvInactiveCoverSearchers->addItem(listWidgetItem->text());
+		delete listWidgetItem;
 	}
-
-	ui->lvInactiveCoverSearchers->addItem(item->text());
-	delete item;
-	item = nullptr;
 }
 
 void GUI_CoverPreferences::currentRowChanged(int row)
 {
-	ui->btnUp->setDisabled(row <= 0 || row >= ui->lvCoverSearchers->count());
-	ui->btnDown->setDisabled(row < 0 || row >= ui->lvCoverSearchers->count() - 1);
+	ui->btnUp->setDisabled(
+		(row <= 0) || (row >= ui->lvCoverSearchers->count())
+	);
+	ui->btnDown->setDisabled(
+		(row < 0) || (row >= ui->lvCoverSearchers->count() - 1)
+	);
 }
 
 void GUI_CoverPreferences::deleteCoversFromDb()
@@ -296,9 +280,7 @@ void GUI_CoverPreferences::fetchCoversFromWWWTriggered(bool b)
 	ui->btnUp->setEnabled(b);
 	ui->btnAdd->setEnabled(b);
 	ui->btnRemove->setEnabled(b);
-
 	ui->cbSaveToSayonaraDir->setEnabled(b);
-
 	ui->cbSaveToLibrary->setEnabled(b);
 	ui->leCoverTemplate->setEnabled(b);
 	ui->labCoverTemplate->setEnabled(b);
@@ -312,7 +294,7 @@ void GUI_CoverPreferences::saveCoverToLibraryToggled(bool b)
 
 void GUI_CoverPreferences::coverTemplateEdited(const QString& text)
 {
-	bool valid = checkCoverTemplate(text);
+	const auto valid = checkCoverTemplate(text);
 	ui->labTemplateError->setVisible(!valid);
 	ui->labTemplateError->setText(Lang::get(Lang::Error) + ": " + Lang::get(Lang::InvalidChars));
 }

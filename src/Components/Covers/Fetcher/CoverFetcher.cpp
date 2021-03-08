@@ -45,3 +45,8 @@ QString Cover::Fetcher::Base::fulltextSearchAddress([[maybe_unused]] const QStri
 {
 	return QString();
 }
+
+bool Cover::Fetcher::Base::isWebserviceFetcher() const
+{
+	return true;
+}

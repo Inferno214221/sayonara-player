@@ -24,8 +24,10 @@ namespace Cover::Fetcher
 			QString albumAddress(const QString& artist, const QString& album) const override;
 			QString fulltextSearchAddress(const QString& str) const override;
 			int estimatedSize() const override;
+			bool isWebserviceFetcher() const override;
 
 			void setDirectUrl(const QString& url);
+
 	};
 }
 
