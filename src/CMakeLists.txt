@@ -128,17 +128,22 @@ else()
 	set(WIN32 0)
 endif()
 
-# check execinfo for FreeBSD
+# check libexecinfo for non-glibc systems
 if(WIN32)
 	link_directories(${GIO_LIBRARY_DIRS})
-elseif(${CMAKE_SYSTEM_NAME} MATCHES "FreeBSD")
-	find_library(execinfo_LIB execinfo)
-	if(NOT execinfo_LIB)
-		message(FATAL_ERROR "FreeBSD requires execinfo library")
+else()
+	include(CheckSymbolExists)
+	message("Checking if backtrace symbol present")
+	check_symbol_exists(backtrace execinfo.h backtrace_exists)
+	if(NOT backtrace_exists)
+		message("backtrace is missing (non-glibc platform), trying to find libexecinfo")
+		find_library(execinfo_LIB execinfo)
+		if(NOT execinfo_LIB)
+			message(FATAL_ERROR "libexecinfo not found")
+		endif()
+		set(OS_LIBRARIES ${execinfo_LIB})
 	endif()
-	set(OS_LIBRARIES ${execinfo_LIB})
 endif()
-
 
 # Check demangle
 check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
