@@ -49,7 +49,7 @@ struct AbstractLibrary::Private
 	AlbumList albums;
 	MetaDataList tracks;
 	MetaDataList currentTracks;
-	MetaDataList filteredTracks;            // a subset of tracks with the desired filename extension
+	MetaDataList filteredTracks;
 
 	Gui::ExtensionSet extensions;
 

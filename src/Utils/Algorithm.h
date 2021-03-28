@@ -122,7 +122,6 @@ namespace Util
 					out.emplace_back(std::move(element));
 				}
 			}
-			std::copy_if(in.begin(), in.end(), std::back_inserter(out), fn);
 		}
 	}
 }
