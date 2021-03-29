@@ -104,6 +104,8 @@ namespace Playlist
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
 			MetaDataList infoDialogData() const override;
+            QWidget* getParentWidget() override;
+
 			int mapModelIndexToIndex(const QModelIndex& idx) const override;
 			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 

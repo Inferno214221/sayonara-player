@@ -136,6 +136,7 @@ namespace Directory
 			MetaDataList infoDialogData() const override;
 			bool hasMetadata() const override;
 			QStringList pathlist() const override;
+            QWidget* getParentWidget() override;
 	};
 }
 

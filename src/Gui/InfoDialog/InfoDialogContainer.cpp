@@ -38,7 +38,7 @@ struct InfoDialogContainer::Private
 
 InfoDialogContainer::InfoDialogContainer()
 {
-	m = Pimpl::make<Private>();
+    m = Pimpl::make<Private>();
 }
 
 InfoDialogContainer::~InfoDialogContainer()
@@ -82,7 +82,7 @@ bool InfoDialogContainer::initDialog(OpenMode mode)
 {
 	if(!m->infoDialog)
 	{
-		m->infoDialog = new GUI_InfoDialog(Gui::Util::mainWindow());
+        m->infoDialog = new GUI_InfoDialog(getParentWidget());
 	}
 
 	if(!hasMetadata())

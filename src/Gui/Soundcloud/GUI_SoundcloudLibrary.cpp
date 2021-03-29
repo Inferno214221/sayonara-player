@@ -95,7 +95,7 @@ Library::TrackDeletionMode GUI_Library::showDeleteDialog(int trackCount)
 
 void GUI_Library::btnAddClicked()
 {
-	m->artistSearch->resize(0.6);
+    m->artistSearch->resizeRelative(this, 1.0, QSize(800, 600));
 	m->artistSearch->show();
 }
 

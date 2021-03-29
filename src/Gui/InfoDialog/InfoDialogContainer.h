@@ -69,12 +69,11 @@ class InfoDialogContainer
 		friend class GUI_InfoDialog;
 
 	public:
-		InfoDialogContainer();
+        InfoDialogContainer();
 		virtual ~InfoDialogContainer();
 
 	private:
-		void checkInfoDialog();
-		bool initDialog(OpenMode open_mode);
+        bool initDialog(OpenMode open_mode);
 
 		void go(OpenMode open_mode, const MetaDataList& v_md);
 
@@ -100,6 +99,8 @@ class InfoDialogContainer
 		 * @return MetaDataList
 		 */
 		virtual MetaDataList infoDialogData() const = 0;
+
+        virtual QWidget* getParentWidget() = 0;
 
 		/**
 		 * @brief returns, if the widget can provide metadata instantly

@@ -607,7 +607,12 @@ MetaDataList GUI_ControlsBase::infoDialogData() const
 {
 	return (m->playManager->playstate() != PlayState::Stopped)
 	       ? MetaDataList {m->playManager->currentTrack()}
-	       : MetaDataList();
+           : MetaDataList();
+}
+
+QWidget* GUI_ControlsBase::getParentWidget()
+{
+    return this;
 }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)

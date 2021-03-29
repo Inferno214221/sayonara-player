@@ -46,19 +46,21 @@ namespace Algorithm=Util::Algorithm;
 struct GUI_PreferenceDialog::Private
 {
 	QList<Base*>	preferenceWidgets;
+    QMainWindow*    mainWindow;
 	Action*			action=nullptr;
 	int				currentRow;
 
-	Private() :
+    Private(QMainWindow* mainWindow) :
+        mainWindow(mainWindow),
 		currentRow(-1)
 	{}
 };
 
-GUI_PreferenceDialog::GUI_PreferenceDialog(QWidget* parent) :
+GUI_PreferenceDialog::GUI_PreferenceDialog(QMainWindow* parent) :
 	Gui::Dialog(parent),
 	PreferenceUi()
 {
-	m = Pimpl::make<Private>();
+    m = Pimpl::make<Private>(parent);
 
 	PreferenceRegistry::instance()->setUserInterface(this);
 }
@@ -299,7 +301,7 @@ void GUI_PreferenceDialog::initUi()
 
 	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
 
-	QSize sz = Gui::Util::mainWindow()->size();
+    auto sz = m->mainWindow->size();
 	sz *= 0.66;
 	this->resize(sz);
 }

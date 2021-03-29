@@ -164,7 +164,7 @@ void GUI_History::dateRangeClicked()
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigAccepted, this, &GUI_History::calendarFinished);
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigRejected, calendarWidget, &QObject::deleteLater);
 
-	calendarWidget->resize(0.6);
+    calendarWidget->resizeRelative(this, 1.0, QSize(800, 600));
 	calendarWidget->show();
 }
 

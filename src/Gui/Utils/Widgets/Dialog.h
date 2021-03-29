@@ -25,7 +25,7 @@
 #include <QDialog>
 
 class QAbstractButton;
-
+class QSize;
 namespace Gui
 {
 	/**
@@ -47,9 +47,8 @@ namespace Gui
 		explicit Dialog(QWidget* parent=nullptr);
 		virtual ~Dialog() override;
 
+        void resizeRelative(QWidget* widget, double percent, const QSize& maxSize);
 		bool isAccepted() const;
-		void resize(double percent);
-		using QDialog::resize;
 
 	protected:
 		virtual void closeEvent(QCloseEvent* e) override;

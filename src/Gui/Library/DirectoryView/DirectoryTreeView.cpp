@@ -454,7 +454,12 @@ bool TreeView::hasMetadata() const { return false; }
 
 QStringList TreeView::pathlist() const
 {
-	return this->selectedPaths();
+    return this->selectedPaths();
+}
+
+QWidget *TreeView::getParentWidget()
+{
+    return this;
 }
 
 void TreeView::keyPressEvent(QKeyEvent* event)

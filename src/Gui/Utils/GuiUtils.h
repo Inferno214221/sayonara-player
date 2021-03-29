@@ -18,11 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-/* GuiUtils.h */
-
-#ifndef GuiUtils_H
-#define GuiUtils_H
+#ifndef GUI_UTILS_H
+#define GUI_UTILS_H
 
 class QWidget;
 class QPixmap;
@@ -45,77 +42,24 @@ namespace Gui
 {
 	namespace Util
 	{
-
-		/**
-		 * @brief The IconTheme enum
-		 * @ingroup Gui
-		 */
 		enum IconTheme
 		{
 			MintY,
 			NoTheme
 		};
 
-		/**
-		 * @brief fetch a icon from resources
-		 * @ingroup Gui
-		 * @param iconName if iconName ends with png the input string is not modified, else a .svg.png is appended
-		 * @return icon
-		 */
 		QIcon icon(const QString& iconName, IconTheme themeName);
 
-
-		/**
-		 * @brief fetch a pixmap from resources
-		 * @ingroup Gui
-		 * @param iconName if iconName ends with png the input string is not modified, else a .svg.png is appended
-		 * @param theme name use the MintY theme or the standard theme
-		 * @param sz target size of pixmap
-		 * @param keepAspect if true, aspect ratio is kept
-		 * @return pixmap
-		 */
 		QPixmap pixmap(const QString& iconName, IconTheme themeName);
-		QPixmap pixmap(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspect=true);
+		QPixmap pixmap(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspectRatio = true);
 
-		/**
-		 * @brief see pixmap()
-		 * @ingroup Gui
-		 * @param iconName
-		 * @param themeName
-		 * @return
-		 */
 		QImage image(const QString& iconName, IconTheme themeName);
-		QImage image(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspect=true);
+		QImage image(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspectRatio = true);
 
-
-		/**
-		 * @brief set the applications' main window
-		 * @ingroup Gui
-		 * @param window the new main window
-		 */
-		void setMainWindow(QMainWindow* window);
-
-		/**
-		 * @brief get the applications' main window
-		 * @ingroup Gui
-		 * @return main window of application
-		 */
-		QMainWindow* mainWindow();
-
-		/**
-		 * @brief return the screen with biggest screen
-		 * @return nullptr on error
-		 */
 		QScreen* getBiggestScreen();
 
 		QColor color(QPalette::ColorGroup colorGroup, QPalette::ColorRole colorRole);
 
-		/**
-		 * @brief Place the widget in the center of the biggest screen
-		 * @param widget
-		 * @param rel_size_x a percentage value between 0 and 1 regarding width of screen
-		 * @param rel_size_y a percentage value between 0 and 1 regarding height of screen
-		 */
 		void placeInScreenCenter(QWidget* widget, float relativeSizeX, float relativeSizeY);
 
 		int textWidth(const QFontMetrics& fm, const QString& text);
@@ -125,4 +69,4 @@ namespace Gui
 	}
 }
 
-#endif // GuiUtils_H
+#endif // GUI_UTILS_H

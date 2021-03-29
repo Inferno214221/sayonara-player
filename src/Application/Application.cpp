@@ -398,8 +398,6 @@ void Application::initPlayer(bool force_show)
 	                           m->engine,
 	                           m->dynamicPlaybackChecker);
 
-	Gui::Util::setMainWindow(m->player);
-
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
 }
 

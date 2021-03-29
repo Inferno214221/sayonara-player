@@ -37,10 +37,10 @@
 
 #include "Gui/Utils/GuiUtils.h"
 
+#include <QApplication>
 #include <QFontMetrics>
 #include <QStringList>
 #include <QPixmap>
-#include <QMainWindow>
 #include <QMimeData>
 
 #include <mutex>
@@ -364,7 +364,7 @@ static QSize calcItemSize(int zoom, const QFont& font)
 void CoverModel::setZoom(int zoom, const QSize& viewSize)
 {
 	m->zoom = zoom;
-	m->itemSize = calcItemSize(zoom, Gui::Util::mainWindow()->font());
+    m->itemSize = calcItemSize(zoom, QApplication::font());
 
 	const auto columns = (viewSize.width() / m->itemSize.width());
 	if(columns > 0)
@@ -381,7 +381,7 @@ void CoverModel::setZoom(int zoom, const QSize& viewSize)
 
 void CoverModel::showArtistsChanged()
 {
-	m->itemSize = calcItemSize(m->zoom, Gui::Util::mainWindow()->font());
+    m->itemSize = calcItemSize(m->zoom, QApplication::font());
 }
 
 void CoverModel::reload()

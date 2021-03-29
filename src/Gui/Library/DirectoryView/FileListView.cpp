@@ -216,6 +216,11 @@ bool FileListView::hasMetadata() const { return false; }
 
 QStringList FileListView::pathlist() const { return this->selectedPaths(); }
 
+QWidget *FileListView::getParentWidget()
+{
+    return this;
+}
+
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {
 	initContextMenu();

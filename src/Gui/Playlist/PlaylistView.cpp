@@ -354,7 +354,12 @@ MD::Interpretation View::metadataInterpretation() const
 
 MetaDataList View::infoDialogData() const
 {
-	return m->model->metadata(selectedItems());
+    return m->model->metadata(selectedItems());
+}
+
+QWidget* View::getParentWidget()
+{
+    return this;
 }
 
 void View::contextMenuEvent(QContextMenuEvent* e)

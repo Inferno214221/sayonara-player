@@ -272,6 +272,11 @@ MetaDataList ItemView::infoDialogData() const
 	return itemModel()->selectedMetadata();
 }
 
+QWidget* ItemView::getParentWidget()
+{
+    return this;
+}
+
 void ItemView::mergeActionTriggered()
 {
 	Library::MergeData mergedata = m->mergeMenu->mergedata();

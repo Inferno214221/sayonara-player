@@ -51,11 +51,13 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 
+#include <QApplication>
+#include <QFont>
 #include <QUrl>
 #include <QPalette>
 #include <QHash>
 #include <QPixmap>
-#include <QMainWindow>
+#include <QApplication>
 
 namespace Algorithm = Util::Algorithm;
 using Playlist::Model;
@@ -182,7 +184,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(m->playlist->currentTrackIndex() == row)
 		{
-			const auto palette = Gui::Util::mainWindow()->palette();
+            const auto palette = QApplication::palette();
 			auto highlight = palette.color(QPalette::Active, QPalette::Highlight);
 			highlight.setAlpha(80);
 			return highlight;
@@ -191,7 +193,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::FontRole)
 	{
-		auto font = Gui::Util::mainWindow()->font();
+        auto font = QApplication::font();
 		const auto pointSize = GetSetting(Set::PL_FontSize);
 		if(pointSize > 0)
 		{

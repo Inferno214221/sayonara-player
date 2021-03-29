@@ -25,6 +25,8 @@
 #include "Gui/Utils/Widgets/Dialog.h"
 #include "Components/Preferences/PreferenceRegistry.h"
 
+#include <QMainWindow>
+
 namespace Preferences
 {
 	class Base;
@@ -49,7 +51,7 @@ class GUI_PreferenceDialog :
 		void sigError(const QString& error_message);
 
 	public:
-		explicit GUI_PreferenceDialog(QWidget* parent=nullptr);
+        explicit GUI_PreferenceDialog(QMainWindow* parent);
 		~GUI_PreferenceDialog() override;
 
 		QString actionName() const;

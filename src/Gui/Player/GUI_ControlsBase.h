@@ -139,9 +139,9 @@ class GUI_ControlsBase :
 		void streamRecorderActiveChanged();
 
 	protected:
-
 		MD::Interpretation metadataInterpretation() const override;
 		MetaDataList infoDialogData() const override;
+        QWidget* getParentWidget() override;
 
 		void resizeEvent(QResizeEvent* e) override;
 		void showEvent(QShowEvent* e) override;
