@@ -23,6 +23,8 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/GuiUtils.h"
 
+#include <QApplication>
+
 using Gui::MenuToolButton;
 using Gui::ContextMenu;
 
@@ -136,7 +138,8 @@ void MenuToolButton::languageChanged()
 
 void MenuToolButton::skinChanged()
 {
-	QFont font = this->font();
-	font.setPixelSize(26);
+	auto font = QApplication::font();
+	const auto pixelsize = (font.pixelSize() > 0) ? font.pixelSize() : 12;
+	font.setPixelSize(pixelsize * 2);
 	this->setFont(font);
 }

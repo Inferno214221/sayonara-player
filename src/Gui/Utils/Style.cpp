@@ -130,8 +130,7 @@ void Style::applyCurrentStyle(QApplication* app, QMainWindow* player)
 
 	if(Style::isDark())
 	{
-		QPalette palette;
-		palette = QToolTip::palette();
+		auto palette = QToolTip::palette();
 		palette.setBrush(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipBase, QColor(66, 78, 114));
 		palette.setColor(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipText, QColor(0, 0, 0));
 		QToolTip::setPalette(palette);

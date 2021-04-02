@@ -38,7 +38,8 @@ using Gui::WidgetTemplate;
 Dialog::Dialog(QWidget* parent) :
 	WidgetTemplate<QDialog>(parent)
 {
-	setSizeGripEnabled(true);
+    this->setAttribute(Qt::WA_StyledBackground);
+    setSizeGripEnabled(true);
 }
 
 Dialog::~Dialog() = default;

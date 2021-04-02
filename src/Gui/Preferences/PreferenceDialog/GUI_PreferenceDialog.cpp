@@ -277,6 +277,8 @@ void GUI_PreferenceDialog::initUi()
 		return;
 	}
 
+    this->setAttribute(Qt::WA_StyledBackground);
+
 	ui = new Ui::GUI_PreferenceDialog();
 	ui->setupUi(this);
 

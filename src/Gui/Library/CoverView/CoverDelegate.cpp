@@ -77,15 +77,19 @@ namespace
 		constexpr const auto textOffset = 3;
 		const auto textWidth = option.rect.width() - (2 * textOffset);
 
-		const auto& fontMetrics = option.fontMetrics;
-		const auto elidedText = fontMetrics.elidedText(text, Qt::ElideRight, textWidth);
-
 		const auto oldPen = painter->pen();
 		auto textColor = (option.state & QStyle::State_Selected)
 		                 ? option.palette.highlightedText().color()
 		                 : option.palette.text().color();
 		textColor.setAlpha(alpha);
 
+		auto font = painter->font();
+		font.setBold(bold);
+
+		const auto fontMetrics = QFontMetrics(font);
+		const auto elidedText = fontMetrics.elidedText(text, Qt::ElideRight, textWidth);
+
+		painter->setFont(font);
 		painter->setPen(textColor);
 		painter->drawText(QRect{textOffset, 0, textWidth, fontMetrics.height()},
 		                  static_cast<int>(option.displayAlignment),
