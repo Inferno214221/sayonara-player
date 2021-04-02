@@ -52,6 +52,7 @@ namespace Gui
 
 	protected:
 		virtual void closeEvent(QCloseEvent* e) override;
+        virtual void paintEvent(QPaintEvent* e) override;
 	};
 }
 

@@ -26,6 +26,9 @@
 #include <QDialog>
 #include <QCloseEvent>
 #include <QMainWindow>
+#include <QPainter>
+#include <QStyle>
+#include <QStyleOption>
 
 #include <cmath>
 
@@ -60,4 +63,12 @@ void Dialog::closeEvent(QCloseEvent* e)
 	emit sigClosed();
 }
 
+void Dialog::paintEvent(QPaintEvent *e)
+{
+    QStyleOption option;
+    option.init(this);
+    QPainter p(this);
+    style()->drawPrimitive(QStyle::PE_Widget, &option, &p, this);
 
+    QDialog::paintEvent(e);
+}
