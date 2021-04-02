@@ -369,7 +369,7 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 	initSingleInstanceThread();
 	spLog(Log::Debug, this) << "Initialized: " << m->timer->elapsed() << "ms";
 
-	ListenSetting(SetNoDB::Player_MetaStyle, Application::skinChanged);
+	ListenSetting(Set::Player_Style, Application::skinChanged);
 
 	if(!GetSetting(Set::Player_StartInTray))
 	{
@@ -528,5 +528,5 @@ void Application::createPlaylist()
 
 void Application::skinChanged()
 {
-	Style::applyCurrentStyle(this);
+	Style::applyCurrentStyle(this, m->player);
 }

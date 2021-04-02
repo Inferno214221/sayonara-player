@@ -32,6 +32,7 @@
 class QString;
 class QFont;
 class QApplication;
+class QMainWindow;
 
 /**
  * @define the Style namespace
@@ -81,7 +82,7 @@ namespace Style
 	 */
 	void setDark(bool b);
 
-	void applyCurrentStyle(QApplication* app);
+	void applyCurrentStyle(QApplication* app, QMainWindow* mainWindow);
 }
 
 #endif /* STYLE_H_ */

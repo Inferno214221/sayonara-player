@@ -124,11 +124,7 @@ void SettingsTest::test_registry()
 
 		QVERIFY(GetSetting(Set::Engine_Vol) > 10);
 
-		QVERIFY(GetSetting(Set::PL_FontSize) == -1);
 		QVERIFY(GetSetting(Set::Lib_FontBold) == true);
-		QVERIFY(GetSetting(Set::Lib_FontSize) == -1);
-		QVERIFY(GetSetting(Set::Player_FontName).isEmpty());
-		QVERIFY(GetSetting(Set::Player_FontSize) == 0);
 		QVERIFY(GetSetting(Set::Logger_Level) == 0);
 	}
 }

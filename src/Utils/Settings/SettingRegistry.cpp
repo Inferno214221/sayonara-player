@@ -41,19 +41,7 @@
 template<typename KeyClass>
 void registerSetting(const char* db_key, const typename KeyClass::Data& default_value)
 {
-//	const char* name = typeid(typename KeyClass::Data).name();
-
-//	std::cout
-//		<< "Register setting "
-//		<< db_key
-//		<< " of type "
-//		<< name
-//		<< " and index "
-//		<< (int) KeyClass::key
-//		<< std::endl;
-
 	auto setting = new Setting<KeyClass>(db_key, default_value);
-
 	Settings::instance()->registerSetting(setting);
 }
 
@@ -61,7 +49,6 @@ template<typename KeyClass>
 void registerSetting(const typename KeyClass::Data& default_value)
 {
 	auto setting = new Setting<KeyClass>(default_value);
-
 	Settings::instance()->registerSetting(setting);
 }
 
@@ -95,13 +82,15 @@ bool SettingRegistry::init()
 
 	{
 		QByteArray splitter_genres;
-		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,2,65,0,0,0,186,1,255,255,255,255,1,0,0,0,1,0", splitter_genres);
+		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,2,65,0,0,0,186,1,255,255,255,255,1,0,0,0,1,0",
+		                             splitter_genres);
 		registerSetting<Set::Lib_SplitterStateGenre>("splitter_state_genre", splitter_genres);
 	}
 
 	{
 		QByteArray splitter_tracks;
-		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,150,0,0,1,48,1,255,255,255,255,1,0,0,0,2,0", splitter_tracks);
+		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,150,0,0,1,48,1,255,255,255,255,1,0,0,0,2,0",
+		                             splitter_tracks);
 		registerSetting<Set::Lib_SplitterStateTrack>("splitter_state_track", splitter_tracks);
 	}
 
@@ -134,10 +123,8 @@ bool SettingRegistry::init()
 
 #ifdef Q_OS_WIN
 	registerSetting<Set::Lib_FontBold>("lib_font_bold", false);
-	registerSetting<Set::Lib_FontSize>("lib_font_size", -1);
 #else
 	registerSetting<Set::Lib_FontBold>("lib_font_bold", true);
-	registerSetting<Set::Lib_FontSize>("lib_font_size", -1);
 #endif
 
 	registerSetting<Set::Dir_ShowTracks>("dir_show_tracks", true);
@@ -149,8 +136,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Player_Language>("player_language", QLocale().name());
 	registerSetting<Set::Player_Style>("player_style", 1);
 	registerSetting<Set::Player_ControlStyle>("player_control_style", 1);
-	registerSetting<Set::Player_FontName>("player_font", "");					// set by Style:: later
-	registerSetting<Set::Player_FontSize>("player_font_size", 0);				// set by Style:: later
+	registerSetting<Set::Player_ScalingFactor>("player_scaling_factor", 1.0f);
 	registerSetting<Set::Player_FadingCover>("player_fading_cover", true);
 	registerSetting<Set::Player_Geometry>("player_geometry", QByteArray());
 	registerSetting<Set::Player_Fullscreen>("player_fullscreen", false);
@@ -165,7 +151,8 @@ bool SettingRegistry::init()
 
 	{
 		QByteArray splitter_state_player;
-		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,82,0,0,3,72,0,0,0,0,4,1,0,0,0,1,0", splitter_state_player);
+		SettingConverter::fromString("0,0,0,255,0,0,0,1,0,0,0,2,0,0,1,82,0,0,3,72,0,0,0,0,4,1,0,0,0,1,0",
+		                             splitter_state_player);
 		registerSetting<Set::Player_SplitterState>("splitter_state_player", splitter_state_player);
 	}
 
@@ -186,7 +173,6 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_ShowNumbers>("show_playlist_numbers", true);
 	registerSetting<Set::PL_ShowBottomBar>("show_bottom_bar", true);
 	registerSetting<Set::PL_EntryLook>("playlist_look", QString("*%title%* - %artist%"));
-	registerSetting<Set::PL_FontSize>("playlist_font_size", -1);
 	registerSetting<Set::PL_ShowClearButton>("playlist_show_clear_button", false);
 	registerSetting<Set::PL_RememberTrackAfterStop>("playlist_remember_track_after_stop", false);
 	registerSetting<Set::PL_ShowCovers>("playlist_show_covers", false);
@@ -245,7 +231,8 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lyrics_Server>("lyrics_server", QString());
 	registerSetting<Set::Lyrics_Zoom>("lyrics_zoom", 100);
 
-	registerSetting<Set::Cover_Server>("cover_server", QStringList{"discogs", "audioscrobbler", "amazon", "allmusic", "google"});
+	registerSetting<Set::Cover_Server>("cover_server",
+	                                   QStringList {"discogs", "audioscrobbler", "amazon", "allmusic", "google"});
 	registerSetting<Set::Cover_FetchFromWWW>("cover_fetch_from_www", true);
 	registerSetting<Set::Cover_SaveToDB>("cover_save_to_db", true);
 	registerSetting<Set::Cover_SaveToSayonaraDir>("cover_save_to_sayonara_dir", false);
@@ -271,10 +258,9 @@ bool SettingRegistry::init()
 	registerSetting<Set::Settings_Revision>("settings_version", 0);
 	registerSetting<Set::Logger_Level>("logger_level", 0);
 
-	registerSetting<SetNoDB::MP3enc_found>( true);
-	registerSetting<SetNoDB::Pitch_found>( true);
-	registerSetting<SetNoDB::Player_Quit>( false);
-	registerSetting<SetNoDB::Player_MetaStyle>(1);
+	registerSetting<SetNoDB::MP3enc_found>(true);
+	registerSetting<SetNoDB::Pitch_found>(true);
+	registerSetting<SetNoDB::Player_Quit>(false);
 
 	SetSetting(Set::Player_Version, SAYONARA_VERSION);
 
@@ -284,23 +270,20 @@ bool SettingRegistry::init()
 QList<SettingKey> SettingRegistry::undeployableKeys()
 {
 	return QList<SettingKey>
-	{
-		SettingKey::Player_Version,
-		SettingKey::Player_Language,
-		SettingKey::Player_FontName,
-		SettingKey::Player_FontSize,
+		{
+			SettingKey::Player_Version,
+			SettingKey::Player_Language,
 
-		SettingKey::Player_PublicId,
-		SettingKey::Player_PrivId,
+			SettingKey::Player_PublicId,
+			SettingKey::Player_PrivId,
 
-		SettingKey::AudioConvert_NumberThreads,
+			SettingKey::AudioConvert_NumberThreads,
 
-		SettingKey::Engine_CovertTargetPath,
-		SettingKey::Engine_SR_Path,
+			SettingKey::Engine_CovertTargetPath,
+			SettingKey::Engine_SR_Path,
 
-		SettingKey::MP3enc_found,
-		SettingKey::Pitch_found,
-		SettingKey::Player_Quit,
-		SettingKey::Player_MetaStyle
-	};
+			SettingKey::MP3enc_found,
+			SettingKey::Pitch_found,
+			SettingKey::Player_Quit
+		};
 }

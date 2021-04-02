@@ -191,23 +191,6 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::FontRole)
-	{
-        auto font = QApplication::font();
-		const auto pointSize = GetSetting(Set::PL_FontSize);
-		if(pointSize > 0)
-		{
-			font.setPointSize(pointSize);
-		}
-
-		if(col == ColumnName::TrackNumber)
-		{
-			font.setBold(true);
-		}
-
-		return font;
-	}
-
 	else if(role == Qt::DecorationRole)
 	{
 		if(col == ColumnName::Cover)

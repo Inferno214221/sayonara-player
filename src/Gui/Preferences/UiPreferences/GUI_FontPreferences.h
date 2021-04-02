@@ -45,19 +45,10 @@ public:
 	QString actionName() const;
 
 protected:
-	void languageChanged() override;
-	void skinChanged() override;
+	void languageChanged() override;	
 	void showEvent(QShowEvent* e) override;
 
-protected slots:
-	void defaultClicked();
-	void comboFontsChanged(const QFont& font);
-
 private:
-	QStringList availableFontSizes(const QString& fontName, const QString& style=QString());
-	QStringList availableFontSizes(const QFont& font);
-
-	void fillSizes(const QStringList& sizes);
 	void initUi();
 };
 

@@ -11,37 +11,6 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="4" column="0" colspan="2">
-    <widget class="Line" name="line_4">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0" rowspan="4" colspan="2">
-    <layout class="QHBoxLayout" name="horizontalLayout">
-     <item>
-      <spacer name="horizontalSpacer">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btn_default">
-       <property name="text">
-        <string notr="true">Default</string>
-       </property>
-      </widget>
-     </item>
-    </layout>
-   </item>
    <item row="3" column="0" colspan="2">
     <widget class="QScrollArea" name="scrollArea">
      <property name="widgetResizable">
@@ -52,8 +21,8 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>380</width>
-        <height>254</height>
+        <width>376</width>
+        <height>292</height>
        </rect>
       </property>
       <layout class="QGridLayout" name="gridLayout_2">
@@ -69,101 +38,21 @@
        <property name="bottomMargin">
         <number>5</number>
        </property>
-       <item row="3" column="1">
-        <widget class="Gui::ComboBox" name="combo_sizes"/>
-       </item>
-       <item row="13" column="1">
-        <widget class="Gui::ComboBox" name="combo_plSize"/>
-       </item>
-       <item row="8" column="1">
-        <widget class="Gui::ComboBox" name="combo_libSize"/>
-       </item>
-       <item row="13" column="0">
-        <widget class="QLabel" name="label_6">
-         <property name="text">
-          <string>Font size</string>
-         </property>
-        </widget>
-       </item>
-       <item row="8" column="0">
-        <widget class="QLabel" name="label_5">
-         <property name="text">
-          <string>Font size</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label">
-         <property name="text">
-          <string>Font size</string>
-         </property>
-        </widget>
-       </item>
-       <item row="11" column="0" colspan="2">
+       <item row="6" column="0" colspan="2">
         <widget class="Line" name="line_2">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>
         </widget>
        </item>
-       <item row="9" column="0">
-        <widget class="QLabel" name="label_7">
-         <property name="text">
-          <string>Bold</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QFontComboBox" name="combo_fonts"/>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="label_2">
-         <property name="text">
-          <string>Font name</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0" colspan="2">
-        <widget class="Line" name="line_3">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
-         </property>
-        </widget>
-       </item>
-       <item row="7" column="0" colspan="2">
-        <widget class="QLabel" name="lab_library">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string notr="true">Library</string>
-         </property>
-        </widget>
-       </item>
-       <item row="12" column="0" colspan="2">
-        <widget class="QLabel" name="lab_playlist">
-         <property name="font">
-          <font>
-           <weight>75</weight>
-           <bold>true</bold>
-          </font>
-         </property>
-         <property name="text">
-          <string notr="true">Playlist</string>
-         </property>
-        </widget>
-       </item>
-       <item row="9" column="1">
-        <widget class="QCheckBox" name="cb_libBold">
+       <item row="4" column="1">
+        <widget class="QCheckBox" name="cbBold">
          <property name="text">
           <string/>
          </property>
         </widget>
        </item>
-       <item row="14" column="1">
+       <item row="7" column="1">
         <spacer name="verticalSpacer">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -175,6 +64,67 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="labScalingFactor">
+         <property name="text">
+          <string>Scaling Factor</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QLabel" name="labBold">
+         <property name="text">
+          <string>Bold Library Font</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="1">
+        <widget class="Gui::ComboBox" name="comboScalingFactor">
+         <property name="currentIndex">
+          <number>3</number>
+         </property>
+         <item>
+          <property name="text">
+           <string notr="true">50%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">66%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">75%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">100%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">125%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">150%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">175%</string>
+          </property>
+         </item>
+         <item>
+          <property name="text">
+           <string notr="true">200%</string>
+          </property>
+         </item>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -191,12 +141,7 @@
  </customwidgets>
  <tabstops>
   <tabstop>scrollArea</tabstop>
-  <tabstop>combo_fonts</tabstop>
-  <tabstop>combo_sizes</tabstop>
-  <tabstop>combo_libSize</tabstop>
-  <tabstop>cb_libBold</tabstop>
-  <tabstop>combo_plSize</tabstop>
-  <tabstop>btn_default</tabstop>
+  <tabstop>cbBold</tabstop>
  </tabstops>
  <resources/>
  <connections/>

@@ -29,7 +29,7 @@ Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplatePar
 	mWtp = wtp;
 
 	ListenSetting(Set::Player_Language, AbstrWidgetTemplate::languageChanged);
-	ListenSetting(SetNoDB::Player_MetaStyle, AbstrWidgetTemplate::skinChanged);
+	ListenSetting(Set::Player_Style, AbstrWidgetTemplate::skinChanged);
 }
 
 Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() {}

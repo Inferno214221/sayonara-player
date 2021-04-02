@@ -37,111 +37,78 @@
 #include <QColor>
 #include <QFont>
 #include <QFontMetrics>
+#include <QMainWindow>
 #include <QPalette>
 #include <QStyle>
 #include <QToolTip>
 
-#define NEWLINE "\n";
+namespace
+{
+	int getFontSize(QApplication* app)
+	{
+		const auto fontSize = app->font().pointSize();
+		static auto defaultFontSize = (fontSize > 0) ? fontSize : 12;
+
+		const auto scalingFactor = GetSetting(Set::Player_ScalingFactor);
+
+		return static_cast<int>(scalingFactor * defaultFontSize);
+	}
+
+	QString getFontStyleSheet(QApplication* app)
+	{
+		return QString(R"(
+			QWidget
+			{
+				font-size: %1px;
+			}
+
+			Library--View,
+			Library--ItemView,
+			Library--GenreView
+			{
+				font-weight: %2;
+			}
+		)")
+			.arg(getFontSize(app))
+			.arg(GetSetting(Set::Lib_FontBold) ? "600" : "normal");
+	}
+}
 
 QString Style::style(bool dark)
 {
-	QFont std_font =		QApplication::font();
-	QString font_family =	GetSetting(Set::Player_FontName);
-
-	int font_size =			GetSetting(Set::Player_FontSize);
-	int font_size_lib =		GetSetting(Set::Lib_FontSize);
-	int font_size_pl =		GetSetting(Set::PL_FontSize);
-	bool lib_bold =			GetSetting(Set::Lib_FontBold);
-
-	if(font_family.isEmpty()){
-		font_family = std_font.family();
-	}
-
-	if(font_size <= 0){
-		font_size = std_font.pointSize();
-	}
-
-	if(font_size_lib <= 0){
-		font_size_lib = font_size;
-	}
-
-	if(font_size_pl <= 0){
-		font_size_pl = font_size;
-	}
-
-	QString style, additionalStyle;
-	QString path, additionalPath;
-
-	if(!dark)
+	QString style;
+	if(dark)
 	{
-		path = ":/Style/standard.css";
-		additionalPath = Util::xdgConfigPath("standard.css");
+		Util::File::readFileIntoString(":/Style/dark.css", style);
 	}
 
-	else
-	{
-		path = ":/Style/dark.css";
-		additionalPath = Util::xdgConfigPath("dark.css");
-	}
+	const auto additionalPath = (dark)
+	                            ? Util::xdgConfigPath("dark.css")
+	                            : Util::xdgConfigPath("standard.css");
 
-	Util::File::readFileIntoString(path, style );
 	if(Util::File::exists(additionalPath))
 	{
-		QString additional_style;
-		Util::File::readFileIntoString(additionalPath, additional_style);
-		style += "\n" + additional_style.trimmed();
+		QString additionalStyle;
+		Util::File::readFileIntoString(additionalPath, additionalStyle);
+		style += "\n" + additionalStyle.trimmed();
 	}
-
-	style.replace("<<FONT_FAMILY>>", font_family);
-	style.replace("<<FONT_SIZE>>", QString::number(font_size));
-	style.replace("<<FONT_SIZE_LIB>>", QString::number(font_size_lib));
-	style.replace("<<FONT_SIZE_PL>>", QString::number(font_size_pl));
-	style.replace("<<FONT_WEIGHT_LIB>>", lib_bold ? "600" : "normal");
 
 	return style;
 }
 
 QFont Style::currentFont()
 {
-	QFont std_font = QApplication::font();
-
-	QString font_family =	GetSetting(Set::Player_FontName);
-	int font_size =			GetSetting(Set::Player_FontSize);
-	int font_size_lib =		GetSetting(Set::Lib_FontSize);
-	int font_size_pl =		GetSetting(Set::PL_FontSize);
-	bool lib_bold =			GetSetting(Set::Lib_FontBold);
-
-	Q_UNUSED(lib_bold);
-
-	if(font_family.isEmpty()){
-		font_family = std_font.family();
-	}
-
-	if(font_size <= 0){
-		font_size = std_font.pointSize();
-	}
-
-	if(font_size_lib <= 0){
-		font_size_lib = font_size;
-	}
-
-	if(font_size_pl <= 0){
-		font_size_pl = font_size;
-	}
-
-	return QFont(font_family, font_size);
+	return QApplication::font();
 }
 
 QString Style::currentStyle()
 {
-	return style( isDark() );
+	return style(isDark());
 }
 
 int Style::recommendedHeight()
 {
-	QFontMetrics fm(currentFont());
-	int h = fm.height();
-	return h;
+	return QFontMetrics(currentFont()).height();
 }
 
 bool Style::isDark()
@@ -152,21 +119,26 @@ bool Style::isDark()
 void Style::setDark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
-	Set::shout<SetNoDB::Player_MetaStyle>();
 }
 
-void Style::applyCurrentStyle(QApplication* app)
+void Style::applyCurrentStyle(QApplication* app, QMainWindow* player)
 {
-	app->setStyleSheet(currentStyle());
+	const auto style = Style::currentStyle();
+	const auto fontStyle = getFontStyleSheet(app);
 
-	QPalette palette;
+    player->setStyleSheet(fontStyle + '\n' + style);
 
 	if(Style::isDark())
 	{
+		QPalette palette;
 		palette = QToolTip::palette();
 		palette.setBrush(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipBase, QColor(66, 78, 114));
 		palette.setColor(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipText, QColor(0, 0, 0));
+		QToolTip::setPalette(palette);
 	}
 
-	QToolTip::setPalette(palette);
+	else
+	{
+		QToolTip::setPalette(app->palette());
+	}
 }

@@ -57,7 +57,7 @@ bool GUI_UiPreferences::commit()
 	SetSetting(Set::Player_Style, ui->cb_darkMode->isChecked() ? 1 : 0);
 	SetSetting(Set::Player_FadingCover, ui->cb_fadingCover->isChecked());
 
-	Set::shout<SetNoDB::Player_MetaStyle>();
+	Set::shout<Set::Player_Style>();
 
 	return true;
 }

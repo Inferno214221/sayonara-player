@@ -150,15 +150,8 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 
 	QFont font = option.font;
 	{ // set the font
-		if(GetSetting(Set::PL_FontSize) > 0) {
-			font.setPointSize(GetSetting(Set::PL_FontSize));
-		}
-
-		else if(GetSetting(Set::Player_FontSize) > 0) {
-			font.setPointSize(GetSetting(Set::Player_FontSize));
-		}
-
-		painter->setFont(font);
+		/*font.setPointSizeF(GetSetting(Set::Player_ScalingFactor) * font.pointSizeF());
+		painter->setFont(font);*/
 	}
 
 	int alignment = int(Qt::AlignLeft);

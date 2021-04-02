@@ -61,7 +61,7 @@ void GUI_CssEditor::applyClicked()
 	QString filename = m->filename();
 	Util::File::writeFile(ui->te_css->toPlainText().toLocal8Bit(), filename);
 
-	Set::shout<SetNoDB::Player_MetaStyle>();
+	Set::shout<Set::Player_Style>();
 }
 
 void GUI_CssEditor::saveClicked()
@@ -92,6 +92,5 @@ void GUI_CssEditor::showEvent(QShowEvent* e)
 
 void GUI_CssEditor::skinChanged()
 {
-	Gui::Dialog::skinChanged();
 	ui->te_css->setFont(QFont("monospace"));
 }

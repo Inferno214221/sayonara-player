@@ -114,7 +114,7 @@ bool GUI_IconPreferences::commit()
 	Gui::Icons::forceStandardIcons(forceStandardIcons);
 	SetSetting(Set::Icon_ForceInDarkTheme, forceStandardIcons);
 
-	Set::shout<SetNoDB::Player_MetaStyle>();
+	Set::shout<Set::Player_Style>();
 
 	return true;
 }
