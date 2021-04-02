@@ -45,12 +45,12 @@ namespace Library
 		PIMPL(ItemModel)
 
 		public:
-			ItemModel(QObject* parent, AbstractLibrary* library);
+            ItemModel(int columnCount, QObject* parent, AbstractLibrary* library);
 			~ItemModel() override;
 
-			QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-			bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value,
-			                   int role = Qt::EditRole) override;
+            QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+            bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value,
+                               int role = Qt::EditRole) override;
 
 			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 

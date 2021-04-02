@@ -111,7 +111,7 @@ struct CoverModel::Private
 };
 
 CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(parent, library)
+    ItemModel(0, parent, library)
 {
 	m = Pimpl::make<Private>(this);
 

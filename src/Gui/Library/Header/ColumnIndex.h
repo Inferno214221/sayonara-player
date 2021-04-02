@@ -40,14 +40,16 @@ namespace ColumnIndex
 			//AlbumArtist,
 			NumSongs,
 			Year,
-			Rating
+            Rating,
+            Count
 	};
 
 	enum class Artist : IntegerType
 	{
 			//Undefined=0,
 			Name = 0,
-			Tracks
+            Tracks,
+            Count
 	};
 
 	enum class Track : IntegerType
@@ -64,7 +66,8 @@ namespace ColumnIndex
 			Filetype,
 			AddedDate,
 			ModifiedDate,
-			Rating
+            Rating,
+            Count
 	};
 }
 

@@ -61,7 +61,7 @@ struct AlbumModel::Private
 };
 
 AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(parent, library)
+    ItemModel(+ColumnIndex::Album::Count, parent, library)
 {
 	m = Pimpl::make<AlbumModel::Private>();
 

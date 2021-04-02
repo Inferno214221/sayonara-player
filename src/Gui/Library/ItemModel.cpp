@@ -36,52 +36,45 @@ using namespace Library;
 struct ItemModel::Private
 {
 	AbstractLibrary* library = nullptr;
-	QStringList headerNames;
+    QStringList headerNames;
 	int oldRowCount;
 
-	Private(AbstractLibrary* library) :
+    Private(int columnCount, AbstractLibrary* library) :
 		library(library),
-		oldRowCount(0) {}
+        oldRowCount(0)
+    {
+        for(int i=0; i<columnCount; i++)
+        {
+            headerNames << QString();
+        }
+    }
 };
 
-ItemModel::ItemModel(QObject* parent, AbstractLibrary* library) :
+ItemModel::ItemModel(int columnCount, QObject* parent, AbstractLibrary* library) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<ItemModel::Private>(library);
+    m = Pimpl::make<ItemModel::Private>(columnCount, library);
 }
 
 ItemModel::~ItemModel() = default;
 
 QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if(role != Qt::DisplayRole)
-	{
-		return SearchableTableModel::headerData(section, orientation, role);
-	}
-
-	if(section < 0 || section >= m->headerNames.size())
-	{
-		return QVariant();
-	}
-
-	return m->headerNames[section];
+    return ((role == Qt::DisplayRole) && Util::between(section, m->headerNames))
+            ? m->headerNames[section]
+            : SearchableTableModel::headerData(section, orientation, role);
 }
 
 bool ItemModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role)
 {
-	if(role != Qt::DisplayRole)
-	{
-		return SearchableTableModel::setHeaderData(section, orientation, value, role);
-	}
+    if(role == Qt::DisplayRole && Util::between(section, m->headerNames))
+    {
+        m->headerNames[section] = value.toString();
+        emit headerDataChanged(orientation, section, section);
+        return true;
+    }
 
-	while(section >= m->headerNames.size())
-	{
-		m->headerNames << QString();
-	}
-
-	m->headerNames[section] = value.toString();
-
-	return true;
+    return QAbstractItemModel::setHeaderData(section, orientation, value, role);
 }
 
 int ItemModel::columnCount(const QModelIndex&) const

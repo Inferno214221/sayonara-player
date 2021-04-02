@@ -59,7 +59,7 @@ struct TrackModel::Private
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(parent, library)
+    ItemModel(+ColumnIndex::Track::Count, parent, library)
 {
 	m = Pimpl::make<Private>();
 

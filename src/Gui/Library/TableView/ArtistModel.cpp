@@ -43,7 +43,7 @@
 using namespace Library;
 
 ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(parent, library) {}
+    ItemModel(+ColumnIndex::Artist::Count, parent, library) {}
 
 ArtistModel::~ArtistModel() = default;
 
@@ -115,7 +115,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		return QSize(1, Gui::Util::viewRowHeight());
 	}
 
-	return QVariant();
+    return QVariant();
 }
 
 int ArtistModel::rowCount(const QModelIndex&) const
