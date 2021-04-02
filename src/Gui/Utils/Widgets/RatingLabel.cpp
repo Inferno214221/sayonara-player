@@ -25,47 +25,50 @@
 
 #include <QMouseEvent>
 #include <QPainter>
-#include <QPixmap>
+#include <QIcon>
 
 #include <algorithm>
 
 using Gui::RatingLabel;
 
-static QPixmap* pixmapProvider(bool active)
+namespace
 {
-	if(active) {
-		static QPixmap pmActive = Gui::Util::pixmap("star.png", Gui::Util::NoTheme, QSize(14, 14), true);
-		return &pmActive;
+	struct IconCache
+	{
+		const QIcon active = Gui::Util::icon(QStringLiteral("star.png"), Gui::Util::NoTheme);
+		const QIcon inactive = Gui::Util::icon(QStringLiteral("star_disabled.png"), Gui::Util::NoTheme);
+	};
+
+	QIcon iconProvider(bool active)
+	{
+		static IconCache iconCache;
+		return (active)
+			? iconCache.active
+			: iconCache.inactive;
 	}
 
-	else {
-		static QPixmap pmInactive = Gui::Util::pixmap("star_disabled.png", Gui::Util::NoTheme, QSize(14, 14), true);
-		return &pmInactive;
+	int iconSize(const QLabel* label, int verticalOffset)
+	{
+		return std::min(label->height() - verticalOffset - 4, label->width() / 6);
 	}
 }
 
 struct RatingLabel::Private
 {
-	int			offsetX;
-	int			offsetY;
+	int offsetX;
+	int offsetY;
 
-	Rating		rating;
-	uint8_t     iconSize;
-	bool		enabled;
-
-	QMap<Rating, QPixmap> pixmapCache;
+	Rating rating;
+	bool enabled;
 
 	Private(bool enabled) :
 		offsetX(3),
 		offsetY(0),
 		rating(Rating::Zero),
-		iconSize(14),
-		enabled(enabled)
-	{}
+		enabled(enabled) {}
 
 	Private() :
-		Private(true)
-	{}
+		Private(true) {}
 };
 
 RatingLabel::RatingLabel(QWidget* parent, bool enabled) :
@@ -78,22 +81,22 @@ RatingLabel::~RatingLabel() = default;
 
 Rating RatingLabel::ratingAt(QPoint pos) const
 {
-	double drating = ((pos.x() * 1.0) / (m->iconSize + 2.0)) + 0.5;
-	int iRating = int(drating);
-	Rating rating = Rating(iRating);
+	const auto drating = ((pos.x() * 1.0) / (iconSize(this, m->offsetY) + 2.0)) + 0.5;
+	const auto iRating = static_cast<int>(drating);
 
-	rating=std::min(rating, Rating::Five);
-	rating=std::max(rating, Rating::Zero);
+	auto rating = static_cast<Rating>(iRating);
+	rating = std::min(rating, Rating::Five);
+	rating = std::max(rating, Rating::Zero);
 
 	return rating;
 }
 
 QSize RatingLabel::sizeHint() const
 {
-	int	h = m->iconSize + 2;
-	int w = (m->iconSize + 2) * 5;
+	const auto height = iconSize(this, m->offsetY);
+	const auto width = iconSize(this, m->offsetY) * 5;
 
-	return QSize(w, h);
+	return QSize(width, height);
 }
 
 QSize RatingLabel::minimumSizeHint() const
@@ -120,30 +123,26 @@ void RatingLabel::paint(QPainter* painter, const QRect& rect)
 {
 	this->setGeometry(rect);
 
+	const auto sz = iconSize(this, m->offsetY);
+
 	painter->save();
-	int offsetY = m->offsetY;
-	if(m->offsetY == 0) {
-		offsetY = (this->height() - m->iconSize) / 2;
-	}
+	const auto offsetY =
+		(m->offsetY == 0)
+		? (this->height() - sz) / 2
+		: m->offsetY;
 
-	painter->translate(rect.x() + m->offsetX, rect.y() + offsetY );
+	painter->translate(rect.x() + m->offsetX, rect.y() + offsetY);
 
-	for(uchar i=0; i<uchar(Rating::Five); i++)
+	for(uchar i = 0; i < uchar(Rating::Five); i++)
 	{
-		Rating rating = Rating(i);
-		if(rating < m->rating)
-		{
-			QPixmap* pm = pixmapProvider(true);
-			painter->drawPixmap(0, 0, m->iconSize, m->iconSize, *pm);
-		}
+		const auto rating = static_cast<Rating>(i);
+		const auto icon = (rating < m->rating)
+		                  ? iconProvider(true)
+		                  : iconProvider(false);
 
-		else
-		{
-			QPixmap* pmInactive = pixmapProvider(false);
-			painter->drawPixmap(0, 0, m->iconSize, m->iconSize, *pmInactive);
-		}
+		painter->drawPixmap(0, 0, sz, sz, icon.pixmap(sz, sz));
 
-		painter->translate(m->iconSize + 2, 0);
+		painter->translate(sz + 2, 0);
 	}
 
 	painter->restore();
@@ -151,27 +150,26 @@ void RatingLabel::paint(QPainter* painter, const QRect& rect)
 
 struct Gui::RatingEditor::Private
 {
-	RatingLabel*	label=nullptr;
-	bool			mouseTrackable;
+	RatingLabel* label = nullptr;
+	bool mouseTrackable;
 
 	// this rating is the rating we want to set
 	// the rating shown in RatingLabel is the visible
 	// rating. actual_rating is updated on mouse click
 	// This is the _ONLY_ way to update it
-	Rating			actualRating;
+	Rating actualRating;
 
 	Private(Rating rating) :
+		label {new RatingLabel(nullptr, true)},
 		mouseTrackable(true),
 		actualRating(rating)
 	{
-		label = new RatingLabel(nullptr, true);
-		label->setRating(rating);
+		label->setRating(actualRating);
 	}
 };
 
 Gui::RatingEditor::RatingEditor(QWidget* parent) :
-	Gui::RatingEditor(Rating::Zero, parent)
-{}
+	Gui::RatingEditor(Rating::Zero, parent) {}
 
 Gui::RatingEditor::RatingEditor(Rating rating, QWidget* parent) :
 	QWidget(parent)
@@ -228,7 +226,7 @@ void Gui::RatingEditor::paintEvent(QPaintEvent* e)
 	e->accept();
 
 	QPainter painter(this);
-	m->label->paint(&painter, rect());
+	m->label->paint(&painter, e->rect());
 }
 
 void Gui::RatingEditor::focusInEvent(QFocusEvent* e)
@@ -249,7 +247,7 @@ void Gui::RatingEditor::focusOutEvent(QFocusEvent* e)
 
 void Gui::RatingEditor::mousePressEvent(QMouseEvent* e)
 {
-	Rating rating = m->label->ratingAt(e->pos());
+	const auto rating = m->label->ratingAt(e->pos());
 	m->label->setRating(rating);
 
 	repaint();
@@ -259,7 +257,7 @@ void Gui::RatingEditor::mousePressEvent(QMouseEvent* e)
 
 void Gui::RatingEditor::mouseMoveEvent(QMouseEvent* e)
 {
-	Rating rating = m->label->ratingAt(e->pos());
+	const auto rating = m->label->ratingAt(e->pos());
 	m->label->setRating(rating);
 
 	repaint();

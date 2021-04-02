@@ -22,9 +22,6 @@
 #define PLAYLISTITEMDELEGATE_H_
 
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
-#include "Utils/Pimpl.h"
-
-class QTableView;
 
 namespace Playlist
 {
@@ -33,23 +30,22 @@ namespace Playlist
 	 * @ingroup GuiPlaylists
 	 */
 	class Delegate :
-			public Gui::StyledItemDelegate
+		public Gui::StyledItemDelegate
 	{
 		Q_OBJECT
-		PIMPL(Delegate)
 
 		public:
-			explicit Delegate(QTableView* parent);
+			explicit Delegate(QObject* parent);
 			~Delegate() override;
 
 			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 
-			QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+			QWidget*
+			createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 			void setEditorData(QWidget* editor, const QModelIndex& index) const override;
 			void setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const override;
 
 		private slots:
-			void playlistShowRatingChanged();
 			void deleteEditor(bool save);
 	};
 }

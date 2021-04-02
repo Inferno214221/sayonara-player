@@ -74,12 +74,12 @@ namespace Playlist
 			enum Roles
 			{
 				RatingRole=Qt::UserRole + 1,
-				RadioModeRole=Qt::UserRole + 2,
-				DragIndexRole=Qt::UserRole + 3,
-				EntryLookRole=Qt::UserRole + 4
+				DragIndexRole=Qt::UserRole + 2,
+				EntryLookRole=Qt::UserRole + 3,
+				CurrentPlayingRole=Qt::UserRole + 4
 			};
 
-			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent=nullptr);
+			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent);
 			~Model() override;
 
 			int playlistIndex() const;
@@ -125,6 +125,7 @@ namespace Playlist
 
 		private slots:
 			void playlistChanged(int playlistIndex);
+			void currentTrackChanged();
 
 		private:
 			void lookChanged();

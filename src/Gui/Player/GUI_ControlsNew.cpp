@@ -46,6 +46,9 @@ GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, CoverDataProvider* co
 	ui = new Ui::GUI_ControlsNew();
 	ui->setupUi(this);
 
+	ui->widget_rating->setMaximumHeight(this->fontMetrics().height() * 1.5);
+	ui->widget_rating->setMaximumWidth(ui->widget_rating->height() * 5);
+
 	ui->widget_rating->setMouseTrackable(false);
 	connect(ui->widget_rating, &RatingEditor::sigFinished, this, &GUI_ControlsNew::ratingChangedHere);
 }

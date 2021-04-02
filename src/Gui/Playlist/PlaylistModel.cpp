@@ -38,7 +38,7 @@
 #include "Database/CoverConnector.h"
 
 #include "Gui/Utils/MimeData/CustomMimeData.h"
-#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -51,13 +51,10 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 
-#include <QApplication>
 #include <QFont>
 #include <QUrl>
-#include <QPalette>
 #include <QHash>
 #include <QPixmap>
-#include <QApplication>
 
 namespace Algorithm = Util::Algorithm;
 using Playlist::Model;
@@ -67,6 +64,20 @@ namespace
 	constexpr const auto AlbumSearchPrefix = '%';
 	constexpr const auto ArtistSearchPrefix = '$';
 	constexpr const auto JumpPrefix = ':';
+
+	static QString convertEntryLook(const QString& entryLook, const MetaData& md)
+	{
+		auto ret = entryLook;
+		ret.replace(QStringLiteral("*"), QChar(Model::Bold));
+		ret.replace(QStringLiteral("'"), QChar(Model::Italic));
+
+		ret.replace(QStringLiteral("%title%"), md.title());
+		ret.replace(QStringLiteral("%nr%"), QString::number(md.trackNumber()));
+		ret.replace(QStringLiteral("%artist%"), md.artist());
+		ret.replace(QStringLiteral("%album%"), md.album());
+
+		return ret;
+	}
 }
 
 enum class PlaylistSearchMode
@@ -83,15 +94,17 @@ struct Model::Private
 	int oldRowCount;
 	int dragIndex;
 	int rowHeight;
+	int currentTrack;
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
 	PlaylistCreator* playlistCreator;
 
-	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist) :
+	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlistArg) :
 		oldRowCount(0),
 		dragIndex(-1),
 		rowHeight(20),
-		playlist(playlist),
+		currentTrack(playlistArg->currentTrackIndex()),
+		playlist(playlistArg),
 		playlistCreator {playlistCreator} {}
 };
 
@@ -101,6 +114,7 @@ Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* pa
 	m = Pimpl::make<Private>(playlistCreator, playlist);
 
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
+	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
@@ -119,20 +133,6 @@ int Model::columnCount([[maybe_unused]] const QModelIndex& parent) const
 	return int(ColumnName::NumColumns);
 }
 
-static QString convertEntryLook(const QString& entryLook, const MetaData& md)
-{
-	auto ret = entryLook;
-	ret.replace("*", QChar(Model::Bold));
-	ret.replace("'", QChar(Model::Italic));
-
-	ret.replace("%title%", md.title());
-	ret.replace("%nr%", QString::number(md.trackNumber()));
-	ret.replace("%artist%", md.artist());
-	ret.replace("%album%", md.album());
-
-	return ret;
-}
-
 QVariant Model::data(const QModelIndex& index, int role) const
 {
 	const auto row = index.row();
@@ -147,7 +147,9 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::TrackNumber)
 		{
-			return QString("%1.").arg(row + 1);
+			return (row == m->currentTrack)
+			       ? QString()
+			       : QString("%1.").arg(row + 1);
 		}
 
 		else if(col == ColumnName::Time)
@@ -155,39 +157,19 @@ QVariant Model::data(const QModelIndex& index, int role) const
 			auto durationMs = m->playlist->track(row).durationMs();
 			return (durationMs / 1000 <= 0)
 			       ? QVariant()
-			       : Util::msToString(durationMs, "$M:$S");
+			       : Util::msToString(durationMs, QStringLiteral("$M:$S"));
 		}
 
 		return QVariant();
 	}
 
-	else if(role == Qt::EditRole)
-	{
-		if(col == ColumnName::Description)
-		{
-			const auto& track = m->playlist->track(row);
-			return (track.radioMode() == RadioMode::Off)
-			       ? QVariant::fromValue(metadata(row).rating())
-			       : QVariant::fromValue(Rating::Last);
-		}
-	}
+
 
 	else if(role == Qt::TextAlignmentRole)
 	{
 		if(col != ColumnName::Description)
 		{
 			return QVariant(Qt::AlignRight | Qt::AlignVCenter);
-		}
-	}
-
-	else if(role == Qt::BackgroundRole)
-	{
-		if(m->playlist->currentTrackIndex() == row)
-		{
-			const auto palette = QApplication::palette();
-			auto highlight = palette.color(QPalette::Active, QPalette::Highlight);
-			highlight.setAlpha(80);
-			return highlight;
 		}
 	}
 
@@ -246,14 +228,20 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		return (row == m->dragIndex);
 	}
 
-	else if(role == Model::RatingRole)
+	else if(role == Model::RatingRole || role == Qt::EditRole)
 	{
-		return QVariant::fromValue<Rating>(m->playlist->track(row).rating());
+		if(col == ColumnName::Description)
+		{
+			const auto& track = m->playlist->track(row);
+			return (track.radioMode() == RadioMode::Off)
+			       ? QVariant::fromValue(metadata(row).rating())
+			       : QVariant::fromValue(Rating::Last);
+		}
 	}
 
-	else if(role == Model::RadioModeRole)
+	else if(role == Model::CurrentPlayingRole)
 	{
-		return static_cast<int>(m->playlist->track(row).radioMode());
+		return (row == m->currentTrack);
 	}
 
 	return QVariant();
@@ -584,6 +572,18 @@ void Model::playlistChanged([[maybe_unused]] int playlistIndex)
 
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 	emit sigDataReady();
+}
+
+void Model::currentTrackChanged()
+{
+	if(m->currentTrack >= 0)
+	{
+		emit dataChanged(index(m->currentTrack, 0), index(m->currentTrack, columnCount() - 1));
+	}
+
+	const auto row = m->playlist->currentTrackIndex();
+	m->currentTrack = row;
+	emit dataChanged(index(row, 0), index(row, columnCount() - 1));
 }
 
 void Playlist::Model::deleteTracks(const IndexSet& rows)

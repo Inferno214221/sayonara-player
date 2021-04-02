@@ -588,7 +588,7 @@ void View::showRatingChanged()
 void View::refresh()
 {
 	const auto fm = this->fontMetrics();
-	auto viewRowHeight = std::max(fm.height() + 4, Gui::Util::viewRowHeight());
+	auto viewRowHeight = std::min(static_cast<int>(fm.height() * 1.6), fm.height() + 10);
 
 	if(GetSetting(Set::PL_ShowRating))
 	{

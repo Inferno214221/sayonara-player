@@ -22,93 +22,181 @@
 #include "PlaylistDelegate.h"
 
 #include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/RadioMode.h"
 
 #include "Gui/Utils/Widgets/RatingLabel.h"
-#include "Gui/Utils/Widgets/SpectrumLabel.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
 
 #include <QPainter>
-#include <QFontMetrics>
-#include <QTableView>
+#include <QIcon>
 
-const static int PLAYLIST_BOLD = 70;
 using Gui::RatingEditor;
 using Gui::RatingLabel;
 using Playlist::Delegate;
 using Playlist::Model;
 
-struct PlaylistStyleItem
+namespace
 {
-	QString text;
-
-	bool isBold;
-	bool isItalic;
-
-	PlaylistStyleItem() :
-		isBold(false), isItalic(false) {}
-};
-
-static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
-{
-	QList<PlaylistStyleItem> ret;
-	PlaylistStyleItem currentItem;
-
-	for(QChar c : entryLook)
+	struct PlaylistStyleItem
 	{
-		if((c != QChar(Model::StyleElement::Bold)) && (c != QChar(Model::StyleElement::Italic)))
+		QString text;
+		bool isBold {false};
+		bool isItalic {false};
+	};
+
+	QList<PlaylistStyleItem> parseEntryLookString(const QModelIndex& index)
+	{
+		const auto entryLook = index.data(Model::EntryLookRole).toString();
+
+		QList<PlaylistStyleItem> ret;
+		PlaylistStyleItem currentItem;
+
+		for(const auto c : entryLook)
 		{
-			currentItem.text += c;
-			continue;
+			if((c != QChar(Model::StyleElement::Bold)) && (c != QChar(Model::StyleElement::Italic)))
+			{
+				currentItem.text += c;
+				continue;
+			}
+
+			ret << currentItem;
+			currentItem.text.clear();
+
+			if(c == QChar(Model::StyleElement::Bold))
+			{
+				currentItem.isBold = !currentItem.isBold;
+			}
+
+			else if(c == QChar(Model::StyleElement::Italic))
+			{
+				currentItem.isItalic = !currentItem.isItalic;
+			}
 		}
 
-		ret << currentItem;
-		currentItem.text.clear();
-
-		if(c == QChar(Model::StyleElement::Bold))
+		if(!currentItem.text.isEmpty())
 		{
-			currentItem.isBold = !currentItem.isBold;
+			ret << currentItem;
 		}
 
-		else if(c == QChar(Model::StyleElement::Italic))
+		return ret;
+	}
+
+	inline bool isTrackNumberColumn(const QModelIndex& index)
+	{
+		return (index.column() == Model::ColumnName::TrackNumber);
+	}
+
+	inline bool isCurrentTrack(const QModelIndex& index)
+	{
+		return index.data(Model::CurrentPlayingRole).toBool();
+	}
+
+	inline bool isDragIndex(const QModelIndex& index)
+	{
+		return index.data(Model::DragIndexRole).toBool();
+	}
+
+	inline Rating parseRating(const QModelIndex& index)
+	{
+		return index.data(Model::RatingRole).value<Rating>();
+	}
+
+	void drawDragDropLine(QPainter* painter, const QRect& rect)
+	{
+		const auto y = rect.topLeft().y() + rect.height() - 1;
+		painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
+	}
+
+	void setTextColor(QPainter* painter, const QStyleOptionViewItem& option)
+	{
+		const auto isSelected = (option.state & QStyle::State_Selected);
+		const auto isEnabled = (option.state & QStyle::State_Enabled);
+
+		auto textColor = (isSelected)
+		                 ? option.palette.color(QPalette::Active, QPalette::HighlightedText)
+		                 : option.palette.color(QPalette::Active, QPalette::WindowText);
+
+		if(!isEnabled)
 		{
-			currentItem.isItalic = !currentItem.isItalic;
+			textColor.setAlpha(196);
+		}
+
+		auto pen = painter->pen();
+		pen.setColor(textColor);
+		painter->setPen(pen);
+	}
+
+	void setFontStyle(QPainter* painter, bool isBold, bool isItalic, int standardWeight)
+	{
+		constexpr const auto BoldWeight = 70;
+
+		auto font = painter->font();
+		font.setWeight(isBold ? BoldWeight : standardWeight);
+		font.setItalic(isItalic);
+		painter->setFont(font);
+	}
+
+	void drawStyleItem(QPainter* painter, const PlaylistStyleItem& styleItem, bool alignTop, int standardWeight, QRect& rect)
+	{
+		setFontStyle(painter, styleItem.isBold, styleItem.isItalic, standardWeight);
+
+		const auto alignment = (alignTop)
+		                       ? (Qt::AlignLeft | Qt::AlignTop)
+		                       : (Qt::AlignLeft | Qt::AlignVCenter);
+
+		const auto fontMetric = painter->fontMetrics();
+		painter->drawText(rect, alignment, fontMetric.elidedText(styleItem.text, Qt::ElideRight, rect.width()));
+
+		const auto horizontalOffset = Gui::Util::textWidth(fontMetric, styleItem.text);
+		rect.setWidth(rect.width() - horizontalOffset);
+		rect.translate(horizontalOffset, 0);
+	}
+
+	void drawTrackMetadata(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index, bool alignTop)
+	{
+		setTextColor(painter, option);
+
+		auto rect = (alignTop)
+		            ? QRect(option.rect.left(), option.rect.y() + 1, option.rect.width(), option.rect.height() - 2)
+		            : option.rect;
+
+		const auto styleItems = parseEntryLookString(index);
+		for(const auto& styleItem : styleItems)
+		{
+			drawStyleItem(painter, styleItem, alignTop, option.font.weight(), rect);
 		}
 	}
 
-	if(!currentItem.text.isEmpty())
+	void paintRatingLabel(QPainter* painter, const Rating& rating, const QRect& rect)
 	{
-		ret << currentItem;
+		if(rating != Rating::Last)
+		{
+			painter->translate(0, 2);
+
+			auto ratingLabel = RatingLabel(nullptr, true);
+			ratingLabel.setRating(rating);
+			ratingLabel.setVerticalOffset(rect.height() / 2);
+			ratingLabel.paint(painter, rect);
+		}
 	}
 
-	return ret;
+	void paintPlayPixmap(QPainter* painter, const QRect& rect)
+	{
+		constexpr const auto ScaleFactor = 8;
+
+		const auto icon = Gui::Icons::icon(Gui::Icons::Play);
+		const auto yTop = rect.y() + (rect.height() / ScaleFactor);
+		const auto height = (rect.height() * (ScaleFactor - 2)) / ScaleFactor;
+		const auto xLeft = rect.x() + (rect.width() - height) / 2;
+
+		painter->drawPixmap(xLeft, yTop, icon.pixmap(height, height));
+	}
 }
 
-struct Delegate::Private
-{
-	SpectrumLabel* spectrum = nullptr;
-
-	int ratingHeight;
-	bool showRating;
-
-	Private() :
-		ratingHeight(18),
-		showRating(false)
-	{
-		showRating = GetSetting(Set::PL_ShowRating);
-	}
-};
-
-Delegate::Delegate(QTableView* parent) :
+Delegate::Delegate(QObject* parent) :
 	StyledItemDelegate(parent)
-{
-	m = Pimpl::make<Private>();
-
-	//m->spectrum = new SpectrumLabel(nullptr);
-
-	ListenSettingNoCall(Set::PL_ShowRating, Delegate::playlistShowRatingChanged);
-}
+{}
 
 Delegate::~Delegate() = default;
 
@@ -119,160 +207,79 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
 		return;
 	}
 
-	QPalette palette = option.palette;
-	QRect rect(option.rect);
-
 	StyledItemDelegate::paint(painter, option, index);
 
-	// drag and drop active
-	if(index.data(Model::DragIndexRole).toBool() == true)
+	if(isCurrentTrack(index) && isTrackNumberColumn(index))
 	{
-		int y = rect.topLeft().y() + rect.height() - 1;
-		painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
+		paintPlayPixmap(painter, option.rect);
 	}
 
-	// finished if not the middle column
-	if(index.column() != Model::ColumnName::Description)
+	if(isDragIndex(index))
 	{
-		return;
+		drawDragDropLine(painter, option.rect);
 	}
 
-	painter->save();
-
-	{ // give that pen some alpha value, so it appears lighter
-		bool isEnabled = (option.state & QStyle::State_Enabled);
-		if(!isEnabled)
-		{
-			QColor textColor = palette.color(QPalette::Disabled, QPalette::WindowText);
-			if(Style::isDark())
-			{
-				textColor.setAlpha(196);
-			}
-
-			QPen pen = painter->pen();
-			pen.setColor(textColor);
-			painter->setPen(pen);
-		}
-	}
-
-	QFont font = option.font;
-	{ // set the font
-		/*font.setPointSizeF(GetSetting(Set::Player_ScalingFactor) * font.pointSizeF());
-		painter->setFont(font);*/
-	}
-
-	int alignment = int(Qt::AlignLeft);
-	{ // set alignment
-		if(m->showRating)
-		{
-			alignment |= Qt::AlignTop;
-			rect.setY(option.rect.y() + 2);
-		}
-
-		else
-		{
-			alignment |= Qt::AlignVCenter;
-		}
-	}
-
-	int xOffset = 4;
-	int standardWeight = font.weight();
-
-	const QString entryLook = index.data(Model::EntryLookRole).toString();
-	QList<PlaylistStyleItem> styleItems = parseEntryLookString(entryLook);
-	for(const PlaylistStyleItem& item : styleItems)
+	if(index.column() == Model::ColumnName::Description)
 	{
-		font.setWeight(item.isBold ? PLAYLIST_BOLD : standardWeight);
-		font.setItalic(item.isItalic);
-		painter->setFont(font);
-
-		QFontMetrics fm(font);
-		painter->translate(xOffset, 0);
-		painter->drawText(rect, alignment, fm.elidedText(item.text, Qt::ElideRight, rect.width()));
-
-		xOffset = Gui::Util::textWidth(fm, item.text);
-		rect.setWidth(rect.width() - xOffset);
-	}
-
-	if(m->showRating)
-	{
-		painter->restore();
 		painter->save();
 
-		RadioMode radioMode = RadioMode(index.data(Model::RadioModeRole).toInt());
-		if(radioMode != RadioMode::Station)
+		const auto showRating = GetSetting(Set::PL_ShowRating);
+		drawTrackMetadata(painter, option, index, showRating);
+
+		if(showRating)
 		{
-			painter->translate(0, 2);
-
-			Rating rating = index.data(Model::RatingRole).value<Rating>();
-
-			RatingLabel ratingLabel(nullptr, true);
-			ratingLabel.setRating(rating);
-			ratingLabel.setVerticalOffset(option.rect.height() - m->ratingHeight);
-			ratingLabel.paint(painter, option.rect);
+			const auto rating = parseRating(index);
+			paintRatingLabel(painter, rating, option.rect);
 		}
+
+		painter->restore();
 	}
-
-	painter->restore();
-}
-
-void Delegate::playlistShowRatingChanged()
-{
-	m->showRating = GetSetting(Set::PL_ShowRating);
 }
 
 QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	Q_UNUSED(option)
-
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	if(rating == Rating::Last)
+	const auto rating = parseRating(index);
+	if(rating != Rating::Last)
 	{
-		return nullptr;
+		auto* ratingEditor = new RatingEditor(rating, parent);
+		ratingEditor->setVerticalOffset(option.rect.height() / 2);
+
+		connect(ratingEditor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
+
+		return ratingEditor;
 	}
 
-	auto* editor = new RatingEditor(rating, parent);
-	editor->setVerticalOffset(option.rect.height() - m->ratingHeight);
-
-	connect(editor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
-
-	return editor;
+	return nullptr;
 }
 
-void Delegate::deleteEditor(bool save)
+void Delegate::deleteEditor([[maybe_unused]] bool save)
 {
-	Q_UNUSED(save)
-
-	auto* editor = qobject_cast<RatingEditor*>(sender());
-	if(!editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(sender());
+	if(ratingEditor)
 	{
-		return;
+		disconnect(ratingEditor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
+
+		emit commitData(ratingEditor);
+		emit closeEditor(ratingEditor);
 	}
-
-	disconnect(editor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
-
-	emit commitData(editor);
-	emit closeEditor(editor);
 }
 
 void Delegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(!rating_editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
+	if(!ratingEditor)
 	{
-		return;
+		const auto rating = parseRating(index);
+		ratingEditor->setRating(rating);
 	}
-
-	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	rating_editor->setRating(rating);
 }
 
 void Delegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(rating_editor)
+	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
+	if(ratingEditor)
 	{
-		Rating rating = rating_editor->rating();
+		const auto rating = ratingEditor->rating();
 		model->setData(index, QVariant::fromValue(rating));
 	}
 }

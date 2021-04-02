@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>421</width>
-    <height>532</height>
+    <width>395</width>
+    <height>380</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -83,7 +83,7 @@
       <widget class="QLabel" name="lab_max_time">
        <property name="minimumSize">
         <size>
-         <width>57</width>
+         <width>36</width>
          <height>0</height>
         </size>
        </property>
@@ -325,12 +325,6 @@
          <verstretch>0</verstretch>
         </sizepolicy>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>70</width>
-         <height>16777215</height>
-        </size>
-       </property>
        <property name="focusPolicy">
         <enum>Qt::ClickFocus</enum>
        </property>
@@ -565,6 +559,9 @@
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
           </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
+          </property>
           <property name="sizeHint" stdset="0">
            <size>
             <width>10</width>
@@ -617,6 +614,9 @@
          <spacer name="horizontalSpacer_7">
           <property name="orientation">
            <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::MinimumExpanding</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
