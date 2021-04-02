@@ -61,7 +61,6 @@ GUI_PreferenceDialog::GUI_PreferenceDialog(QMainWindow* parent) :
 	PreferenceUi()
 {
     m = Pimpl::make<Private>(parent);
-
 	PreferenceRegistry::instance()->setUserInterface(this);
 }
 
@@ -281,7 +280,7 @@ void GUI_PreferenceDialog::initUi()
 	ui = new Ui::GUI_PreferenceDialog();
 	ui->setupUi(this);
 
-	for(Base* widget : Algorithm::AsConst(m->preferenceWidgets))
+    for(Base* widget : Algorithm::AsConst(m->preferenceWidgets))
 	{
 		ui->listPreferences->addItem(widget->actionName());
 	}
@@ -303,5 +302,5 @@ void GUI_PreferenceDialog::initUi()
 
     auto sz = m->mainWindow->size();
 	sz *= 0.66;
-	this->resize(sz);
+    this->resize(sz);
 }

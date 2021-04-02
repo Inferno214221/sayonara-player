@@ -169,7 +169,7 @@ struct Application::Private
 	bool shutdownTriggered;
 
 	Private(Application* app) :
-		shutdownTriggered{false}
+		shutdownTriggered {false}
 	{
 		QApplication::setApplicationName("sayonara");
 		Util::copyFromLegacyLocations();
@@ -413,7 +413,7 @@ void Application::initPreferences()
 {
 	measure("Preferences")
 
-	auto* preferences = new GUI_PreferenceDialog(m->player);
+    auto* preferences = new GUI_PreferenceDialog(m->player);
 
 	preferences->registerPreferenceDialog(new GUI_PlayerPreferences("application"));
 	preferences->registerPreferenceDialog(new GUI_LanguagePreferences("language"));

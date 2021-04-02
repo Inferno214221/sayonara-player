@@ -41,8 +41,7 @@ struct GUI_LibraryPreferences::Private
 	LibraryListModel* model = nullptr;
 
 	Private(Library::Manager* libraryManager) :
-		libraryManager{libraryManager}
-	{}
+		libraryManager {libraryManager} {}
 };
 
 GUI_LibraryPreferences::GUI_LibraryPreferences(Library::Manager* libraryManager, const QString& identifier) :
@@ -55,7 +54,8 @@ GUI_LibraryPreferences::~GUI_LibraryPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -67,7 +67,7 @@ void GUI_LibraryPreferences::initUi()
 
 	ui->lvLibs->setModel(m->model);
 	ui->lvLibs->setItemDelegate(
-				new Gui::StyledItemDelegate(ui->lvLibs)
+		new Gui::StyledItemDelegate(ui->lvLibs)
 	);
 
 	ui->tab_widget->setCurrentIndex(0);
@@ -90,7 +90,6 @@ QString GUI_LibraryPreferences::actionName() const
 {
 	return Lang::get(Lang::Library);
 }
-
 
 bool GUI_LibraryPreferences::commit()
 {
@@ -131,13 +130,12 @@ void GUI_LibraryPreferences::retranslate()
 
 void GUI_LibraryPreferences::skinChanged()
 {
-	if(!ui){
-		return;
+	if(ui)
+	{
+		ui->btnNew->setIcon(Gui::Icons::icon(Gui::Icons::New));
+		ui->btnEdit->setIcon(Gui::Icons::icon(Gui::Icons::Edit));
+		ui->btnDelete->setIcon(Gui::Icons::icon(Gui::Icons::Remove));
 	}
-
-	ui->btnNew->setIcon(Gui::Icons::icon(Gui::Icons::New));
-	ui->btnEdit->setIcon(Gui::Icons::icon(Gui::Icons::Edit));
-	ui->btnDelete->setIcon(Gui::Icons::icon(Gui::Icons::Remove));
 }
 
 void GUI_LibraryPreferences::showEvent(QShowEvent* e)
@@ -146,18 +144,15 @@ void GUI_LibraryPreferences::showEvent(QShowEvent* e)
 	this->revert();
 }
 
-
 QString GUI_LibraryPreferences::errorString() const
 {
 	return tr("Cannot edit library");
 }
 
-
 int GUI_LibraryPreferences::currentRow() const
 {
 	return ui->lvLibs->selectionModel()->currentIndex().row();
 }
-
 
 void GUI_LibraryPreferences::newClicked()
 {
@@ -171,7 +166,8 @@ void GUI_LibraryPreferences::newClicked()
 void GUI_LibraryPreferences::editClicked()
 {
 	int cur_row = currentRow();
-	if(cur_row < 0){
+	if(cur_row < 0)
+	{
 		return;
 	}
 
@@ -188,19 +184,19 @@ void GUI_LibraryPreferences::editClicked()
 void GUI_LibraryPreferences::deleteClicked()
 {
 	QModelIndex idx = ui->lvLibs->currentIndex();
-	if(!idx.isValid()){
+	if(!idx.isValid())
+	{
 		return;
 	}
 
 	m->model->removeRow(idx.row());
 }
 
-
 void GUI_LibraryPreferences::upClicked()
 {
 	int row = ui->lvLibs->currentIndex().row();
 
-	m->model->moveRow(row, row-1);
+	m->model->moveRow(row, row - 1);
 	ui->lvLibs->setCurrentIndex(m->model->index(row - 1));
 }
 
@@ -208,10 +204,9 @@ void GUI_LibraryPreferences::downClicked()
 {
 	int row = ui->lvLibs->currentIndex().row();
 
-	m->model->moveRow(row, row+1);
+	m->model->moveRow(row, row + 1);
 	ui->lvLibs->setCurrentIndex(m->model->index(row + 1));
 }
-
 
 void GUI_LibraryPreferences::editDialogAccepted()
 {
@@ -224,32 +219,39 @@ void GUI_LibraryPreferences::editDialogAccepted()
 
 	switch(edit_mode)
 	{
-	case GUI_EditLibrary::EditMode::New:
-	{
-		if(!name.isEmpty() && !path.isEmpty()) {
-			m->model->appendRow(name, path);
-		}
-
-	} break;
-
-	case GUI_EditLibrary::EditMode::Edit:
-	{
-		if(!name.isEmpty()) {
-			if(edit_dialog->hasNameChanged()){
-				m->model->renameRow(currentRow(), name);
+		case GUI_EditLibrary::EditMode::New:
+		{
+			if(!name.isEmpty() && !path.isEmpty())
+			{
+				m->model->appendRow(name, path);
 			}
-		}
 
-		if(!path.isEmpty()) {
-			if(edit_dialog->hasPathChanged())	{
-				m->model->changePath(currentRow(), path);
+		}
+			break;
+
+		case GUI_EditLibrary::EditMode::Edit:
+		{
+			if(!name.isEmpty())
+			{
+				if(edit_dialog->hasNameChanged())
+				{
+					m->model->renameRow(currentRow(), name);
+				}
 			}
+
+			if(!path.isEmpty())
+			{
+				if(edit_dialog->hasPathChanged())
+				{
+					m->model->changePath(currentRow(), path);
+				}
+			}
+
 		}
+			break;
 
-	} break;
-
-	default:
-		break;
+		default:
+			break;
 	}
 
 	edit_dialog->deleteLater();
@@ -266,7 +268,8 @@ void GUI_LibraryPreferences::selectedIndexChanged(const QModelIndex& idx)
 	ui->btnEdit->setDisabled(curentRow < 0 || curentRow >= rowCount);
 
 	ui->labCurrentPath->setVisible(curentRow >= 0 || curentRow < rowCount);
-	if(curentRow < 0 || curentRow >= rowCount){
+	if(curentRow < 0 || curentRow >= rowCount)
+	{
 		return;
 	}
 

@@ -244,7 +244,7 @@ QScreen* Util::getBiggestScreen()
 
 void Util::placeInScreenCenter(QWidget* widget, float relativeSizeX, float relativeSizeY)
 {
-	auto* screen = getBiggestScreen();
+	QScreen* screen = getBiggestScreen();
 	if(!screen)
 	{
 		return;

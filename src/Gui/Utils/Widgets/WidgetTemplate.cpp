@@ -32,12 +32,11 @@ Gui::AbstrWidgetTemplate::AbstrWidgetTemplate(QObject* parent, WidgetTemplatePar
 	ListenSetting(Set::Player_Style, AbstrWidgetTemplate::skinChanged);
 }
 
-Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() {}
+Gui::AbstrWidgetTemplate::~AbstrWidgetTemplate() = default;
 
 void Gui::AbstrWidgetTemplate::languageChanged() { mWtp->languageChanged(); }
 
 void Gui::AbstrWidgetTemplate::skinChanged() { mWtp->skinChanged(); }
-
 
 Gui::WidgetTemplateParent::WidgetTemplateParent() {}
 Gui::WidgetTemplateParent::~WidgetTemplateParent() {}

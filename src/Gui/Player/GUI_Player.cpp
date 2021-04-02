@@ -365,8 +365,8 @@ void GUI_Player::pluginActionTriggered(bool b)
 void GUI_Player::initControls()
 {
 	m->controls = (GetSetting(Set::Player_ControlStyle) == 0)
-	              ? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider))
-	              : static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider));
+                  ? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider, this))
+                  : static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider, this));
 
 	m->controls->init();
 	ui->controls->layout()->addWidget(m->controls);
@@ -513,10 +513,10 @@ void GUI_Player::checkControlSplitter()
 {
 	if(m->controls && m->controls->isExternResizeAllowed())
 	{
-		QList<int> sizes = ui->splitterControls->sizes();
+		auto sizes = ui->splitterControls->sizes();
 
 		// remove empty space on top/bottom of cover
-		int difference = m->controls->btnCover()->verticalPadding();
+		const auto difference = m->controls->btnCover()->verticalPadding();
 		sizes[0] -= difference;
 
 		if(sizes[0] > 0)
@@ -524,14 +524,17 @@ void GUI_Player::checkControlSplitter()
 			ui->splitterControls->widget(0)->setMaximumHeight(sizes[0]);
 		}
 
-		int minimumHeight = ui->pluginWidget->isVisible() ? 350 : 200;
+		const auto minimumHeight = ui->pluginWidget->isVisible()
+			? 350
+			: 200;
+
 		ui->splitterControls->widget(1)->setMinimumHeight(minimumHeight);
 	}
 }
 
 void GUI_Player::languageChanged()
 {
-	const QString language = GetSetting(Set::Player_Language);
+	const auto language = GetSetting(Set::Player_Language);
 	Translator::instance()->changeLanguage(this, language);
 
 	if(ui)

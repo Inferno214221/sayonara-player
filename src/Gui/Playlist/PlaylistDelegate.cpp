@@ -33,7 +33,7 @@
 #include <QFontMetrics>
 #include <QTableView>
 
-const static int PLAYLIST_BOLD=70;
+const static int PLAYLIST_BOLD = 70;
 using Gui::RatingEditor;
 using Gui::RatingLabel;
 using Playlist::Delegate;
@@ -46,7 +46,8 @@ struct PlaylistStyleItem
 	bool isBold;
 	bool isItalic;
 
-	PlaylistStyleItem() : isBold(false), isItalic(false) {}
+	PlaylistStyleItem() :
+		isBold(false), isItalic(false) {}
 };
 
 static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
@@ -56,7 +57,7 @@ static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
 
 	for(QChar c : entryLook)
 	{
-		if( (c != QChar(Model::StyleElement::Bold)) && (c != QChar(Model::StyleElement::Italic)) )
+		if((c != QChar(Model::StyleElement::Bold)) && (c != QChar(Model::StyleElement::Italic)))
 		{
 			currentItem.text += c;
 			continue;
@@ -65,16 +66,19 @@ static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
 		ret << currentItem;
 		currentItem.text.clear();
 
-		if(c == QChar(Model::StyleElement::Bold)) {
+		if(c == QChar(Model::StyleElement::Bold))
+		{
 			currentItem.isBold = !currentItem.isBold;
 		}
 
-		else if(c == QChar(Model::StyleElement::Italic)) {
+		else if(c == QChar(Model::StyleElement::Italic))
+		{
 			currentItem.isItalic = !currentItem.isItalic;
 		}
 	}
 
-	if(!currentItem.text.isEmpty()) {
+	if(!currentItem.text.isEmpty())
+	{
 		ret << currentItem;
 	}
 
@@ -83,10 +87,10 @@ static QList<PlaylistStyleItem> parseEntryLookString(const QString& entryLook)
 
 struct Delegate::Private
 {
-	SpectrumLabel* spectrum=nullptr;
+	SpectrumLabel* spectrum = nullptr;
 
-	int			ratingHeight;
-	bool		showRating;
+	int ratingHeight;
+	bool showRating;
 
 	Private() :
 		ratingHeight(18),
@@ -108,9 +112,10 @@ Delegate::Delegate(QTableView* parent) :
 
 Delegate::~Delegate() = default;
 
-void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, const QModelIndex& index) const
+void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	if(!index.isValid()) {
+	if(!index.isValid())
+	{
 		return;
 	}
 
@@ -127,7 +132,8 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 	}
 
 	// finished if not the middle column
-	if(index.column() != Model::ColumnName::Description) {
+	if(index.column() != Model::ColumnName::Description)
+	{
 		return;
 	}
 
@@ -138,7 +144,8 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 		if(!isEnabled)
 		{
 			QColor textColor = palette.color(QPalette::Disabled, QPalette::WindowText);
-			if(Style::isDark()) {
+			if(Style::isDark())
+			{
 				textColor.setAlpha(196);
 			}
 
@@ -156,12 +163,14 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 
 	int alignment = int(Qt::AlignLeft);
 	{ // set alignment
-		if(m->showRating) {
+		if(m->showRating)
+		{
 			alignment |= Qt::AlignTop;
 			rect.setY(option.rect.y() + 2);
 		}
 
-		else {
+		else
+		{
 			alignment |= Qt::AlignVCenter;
 		}
 	}
@@ -198,9 +207,9 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem &option, cons
 			Rating rating = index.data(Model::RatingRole).value<Rating>();
 
 			RatingLabel ratingLabel(nullptr, true);
-				ratingLabel.setRating(rating);
-				ratingLabel.setVerticalOffset(option.rect.height() - m->ratingHeight);
-				ratingLabel.paint(painter, option.rect);
+			ratingLabel.setRating(rating);
+			ratingLabel.setVerticalOffset(option.rect.height() - m->ratingHeight);
+			ratingLabel.paint(painter, option.rect);
 		}
 	}
 
@@ -217,7 +226,8 @@ QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& opt
 	Q_UNUSED(option)
 
 	Rating rating = index.data(Qt::EditRole).value<Rating>();
-	if(rating == Rating::Last) {
+	if(rating == Rating::Last)
+	{
 		return nullptr;
 	}
 
@@ -234,7 +244,8 @@ void Delegate::deleteEditor(bool save)
 	Q_UNUSED(save)
 
 	auto* editor = qobject_cast<RatingEditor*>(sender());
-	if(!editor) {
+	if(!editor)
+	{
 		return;
 	}
 
@@ -247,7 +258,8 @@ void Delegate::deleteEditor(bool save)
 void Delegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
 	auto* rating_editor = qobject_cast<RatingEditor*>(editor);
-	if(!rating_editor) {
+	if(!rating_editor)
+	{
 		return;
 	}
 

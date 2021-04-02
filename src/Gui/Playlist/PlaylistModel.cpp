@@ -184,7 +184,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(m->playlist->currentTrackIndex() == row)
 		{
-            const auto palette = QApplication::palette();
+			const auto palette = QApplication::palette();
 			auto highlight = palette.color(QPalette::Active, QPalette::Highlight);
 			highlight.setAlpha(80);
 			return highlight;
@@ -286,8 +286,8 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 
 	const auto itemFlags = QAbstractTableModel::flags(index);
 	return (index.column() == static_cast<int>(ColumnName::Description))
-		? (itemFlags | Qt::ItemIsEditable)
-		: (itemFlags | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
+	       ? (itemFlags | Qt::ItemIsEditable)
+	       : (itemFlags | Qt::ItemIsEnabled | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled);
 }
 
 void Model::clear()
@@ -431,8 +431,8 @@ QModelIndexList Model::searchResults(const QString& substr)
 		const auto line = pureSearchString.toInt(&ok);
 
 		return (ok && line < rowCount())
-			? QModelIndexList{this->index(line, 0)}
-			: QModelIndexList{QModelIndex{}};
+		       ? QModelIndexList {this->index(line, 0)}
+		       : QModelIndexList {QModelIndex {}};
 	}
 
 	const auto rows = rowCount();
@@ -456,11 +456,11 @@ QModelIndexList Model::searchResults(const QString& substr)
 		str = Library::Utils::convertSearchstring(str, searchMode());
 		if(str.contains(pureSearchString))
 		{
-			return QModelIndexList{this->index(i, 0)};
+			return QModelIndexList {this->index(i, 0)};
 		}
 	}
 
-	return QModelIndexList{};
+	return QModelIndexList {};
 }
 
 using ExtraTriggerMap = SearchableModelInterface::ExtraTriggerMap;

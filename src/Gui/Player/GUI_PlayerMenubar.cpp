@@ -59,39 +59,38 @@
 struct Menubar::Private
 {
 	PlaylistCreator* playlistCreator;
-	QMenu*			menuFile=nullptr;
-	QMenu*			menuView=nullptr;
-	QMenu*			menuPlugins=nullptr;
-	QMenu*			menuHelp=nullptr;
+	QMenu* menuFile = nullptr;
+	QMenu* menuView = nullptr;
+	QMenu* menuPlugins = nullptr;
+	QMenu* menuHelp = nullptr;
 
-	QAction*		menuHelpAction=nullptr;
+	QAction* menuHelpAction = nullptr;
 
 	//file
-	QAction*		actionOpenFile=nullptr;
-	QAction*		actionOpenDir=nullptr;
-	QAction*		sepAfterOpen=nullptr; // after open file and open dir
-	QAction*		sepAfterPreferences=nullptr;
-	QAction*		actionShutdown=nullptr;
-	QAction*		actionClose=nullptr;
+	QAction* actionOpenFile = nullptr;
+	QAction* actionOpenDir = nullptr;
+	QAction* sepAfterOpen = nullptr; // after open file and open dir
+	QAction* sepAfterPreferences = nullptr;
+	QAction* actionShutdown = nullptr;
+	QAction* actionClose = nullptr;
 
 	// view
-	QAction*		actionViewLibrary=nullptr;
-	QAction*		actionDark=nullptr;
-	QAction*		actionBigCover=nullptr;
-	QAction*		actionFullscreen=nullptr;
+	QAction* actionViewLibrary = nullptr;
+	QAction* actionDark = nullptr;
+	QAction* actionBigCover = nullptr;
+	QAction* actionFullscreen = nullptr;
 
 	// help
-	QAction*		actionHelp=nullptr;
-	QAction*		actionAbout=nullptr;
-	QAction*		actionLogger=nullptr;
+	QAction* actionHelp = nullptr;
+	QAction* actionAbout = nullptr;
+	QAction* actionLogger = nullptr;
 
-	QAction*		currentLibraryMenuAction=nullptr;
+	QAction* currentLibraryMenuAction = nullptr;
 
-	QMessageBox*	aboutBox=nullptr;
-	Library::AbstractContainer* currentLibrary=nullptr;
+	Library::AbstractContainer* currentLibrary = nullptr;
 
-	QLabel*			heartLabel=nullptr;
-	QLabel*			donateLabel=nullptr;
+	QLabel* heartLabel = nullptr;
+	QLabel* donateLabel = nullptr;
 
 	Private(PlaylistCreator* playlistCreator, Menubar* menubar) :
 		playlistCreator(playlistCreator)
@@ -114,10 +113,12 @@ struct Menubar::Private
 		actionShutdown = new QAction(menuFile);
 		actionClose = new QAction(menuFile);
 
-		menuFile->insertActions(nullptr,
-		{
-			actionOpenFile, actionOpenDir, sepAfterOpen, sepAfterPreferences, actionShutdown, actionClose
-		});
+		menuFile->insertActions(
+			nullptr,
+			{
+				actionOpenFile, actionOpenDir, sepAfterOpen, sepAfterPreferences, actionShutdown,
+				actionClose
+			});
 
 		// view
 		actionViewLibrary = new QAction(menuView);
@@ -130,23 +131,25 @@ struct Menubar::Private
 		actionFullscreen = new QAction(menuView);
 		actionFullscreen->setCheckable(true);
 
-		menuView->insertActions(nullptr,
-		{
-			actionViewLibrary,
-			actionBigCover,
-			actionDark,
-			actionFullscreen
-		});
+		menuView->insertActions(
+			nullptr,
+			{
+				actionViewLibrary,
+				actionBigCover,
+				actionDark,
+				actionFullscreen
+			});
 
 		//help
 		actionHelp = new QAction(menuHelp);
 		actionAbout = new QAction(menuHelp);
 		actionLogger = new QAction(menuHelp);
 
-		menuHelp->insertActions(nullptr,
-		{
-			actionLogger, actionHelp, menuHelp->addSeparator(), actionAbout
-		});
+		menuHelp->insertActions(
+			nullptr,
+			{
+				actionLogger, actionHelp, menuHelp->addSeparator(), actionAbout
+			});
 	}
 };
 
@@ -204,32 +207,30 @@ QAction* Menubar::changeCurrentLibrary(Library::AbstractContainer* library)
 		return nullptr;
 	}
 
-	QMenu* newLibraryMenu = library->menu();
+	auto* newLibraryMenu = library->menu();
 
-	if(m->currentLibraryMenuAction) {
+	if(m->currentLibraryMenuAction)
+	{
 		this->removeAction(m->currentLibraryMenuAction);
 	}
 
 	m->currentLibraryMenuAction = nullptr;
 
-	if(!newLibraryMenu) {
+	if(!newLibraryMenu)
+	{
 		showLibraryAction(false);
 		return nullptr;
 	}
 
+	const auto actionText = (library->isLocal())
+	                        ? Lang::get(Lang::Library)
+	                        : library->displayName();
+
 	m->currentLibraryMenuAction = this->insertMenu(m->menuHelpAction, newLibraryMenu);
+	m->currentLibraryMenuAction->setText(actionText);
 
-	if(library->isLocal())
-	{
-		m->currentLibraryMenuAction->setText(Lang::get(Lang::Library));
-	}
-
-	else {
-		m->currentLibraryMenuAction->setText(library->displayName());
-	}
-
-	bool library_visible = GetSetting(Set::Lib_Show);
-	showLibraryAction(library_visible);
+	const auto isLibraryVisible = GetSetting(Set::Lib_Show);
+	showLibraryAction(isLibraryVisible);
 
 	return m->currentLibraryMenuAction;
 }
@@ -249,8 +250,8 @@ void Menubar::setShowLibraryActionEnabled(bool b)
 
 void Menubar::showLibraryMenu(bool b)
 {
-	auto* lph = Library::PluginHandler::instance();
-	this->changeCurrentLibrary(lph->currentLibrary());
+	auto* libraryPluginHandler = Library::PluginHandler::instance();
+	this->changeCurrentLibrary(libraryPluginHandler->currentLibrary());
 
 	if(m->currentLibraryMenuAction)
 	{
@@ -258,18 +259,16 @@ void Menubar::showLibraryMenu(bool b)
 	}
 }
 
-[[maybe_unused]] QString getLinkColor(QWidget* parent)
+QString getLinkColor(QWidget* parent)
 {
 	if(!Style::isDark())
 	{
-		const QPalette p = parent->palette();
-		const QColor color = p.windowText().color();
+		const auto palette = parent->palette();
+		const auto color = palette.windowText().color();
 		return color.name(QColor::NameFormat::HexRgb);
 	}
 
-	else {
-		return "f3841a";
-	}
+	return "f3841a";
 }
 
 void Menubar::initDonateLink()
@@ -295,13 +294,13 @@ void Menubar::initDonateLink()
 
 void Menubar::pluginAdded(PlayerPlugin::Base* plugin)
 {
-	auto* pph = PlayerPlugin::Handler::instance();
-	QList<PlayerPlugin::Base*> lst = pph->allPlugins();
+	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
+	const auto allPlugins = playerPluginHandler->allPlugins();
 
-	QAction* action = plugin->pluginAction();
+	auto* action = plugin->pluginAction();
 
-	QKeySequence ks("Shift+F" + QString::number(lst.size()));
-	action->setShortcut(ks);
+	const auto keySequence = QKeySequence("Shift+F" + QString::number(allPlugins.size()));
+	action->setShortcut(keySequence);
 	action->setData(plugin->name());
 
 	m->menuPlugins->addAction(action);
@@ -327,22 +326,22 @@ void Menubar::initConnections()
 	connect(m->actionHelp, &QAction::triggered, this, &Menubar::helpClicked);
 
 	// shortcuts
-	auto* sch = ShortcutHandler::instance();
-	sch->shortcut(ShortcutIdentifier::Quit).connect(this, this, SLOT(closeClicked()));
-	sch->shortcut(ShortcutIdentifier::Minimize).connect(this, this, SLOT(minimizeClicked()));
+	auto* shortcutHandler = ShortcutHandler::instance();
+	shortcutHandler->shortcut(ShortcutIdentifier::Quit).connect(this, this, SLOT(closeClicked()));
+	shortcutHandler->shortcut(ShortcutIdentifier::Minimize).connect(this, this, SLOT(minimizeClicked()));
 
 	shortcutChanged(ShortcutIdentifier::Invalid);
 
-	connect(sch, &ShortcutHandler::sigShortcutChanged, this, &Menubar::shortcutChanged);
+	connect(shortcutHandler, &ShortcutHandler::sigShortcutChanged, this, &Menubar::shortcutChanged);
 
 	// Library
-	auto* lph = Library::PluginHandler::instance();
-	connect(lph, &Library::PluginHandler::sigLibrariesChanged, this, [=](){
-		this->changeCurrentLibrary(lph->currentLibrary());
+	auto* libraryPluginHandler = Library::PluginHandler::instance();
+	connect(libraryPluginHandler, &Library::PluginHandler::sigLibrariesChanged, this, [=]() {
+		this->changeCurrentLibrary(libraryPluginHandler->currentLibrary());
 	});
 
-	auto* pph = PlayerPlugin::Handler::instance();
-	connect(pph, &PlayerPlugin::Handler::sigPluginAdded, this, &Menubar::pluginAdded);
+	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
+	connect(playerPluginHandler, &PlayerPlugin::Handler::sigPluginAdded, this, &Menubar::pluginAdded);
 }
 
 void Menubar::languageChanged()
@@ -369,22 +368,16 @@ void Menubar::languageChanged()
 
 	if(m->currentLibrary && m->currentLibraryMenuAction)
 	{
-		if(m->currentLibrary->isLocal())
-		{
-			m->currentLibraryMenuAction->setText(Lang::get(Lang::Library));
-		}
+		const auto actionText = (m->currentLibrary->isLocal())
+		                        ? Lang::get(Lang::Library)
+		                        : m->currentLibrary->displayName();
 
-		else {
-			m->currentLibraryMenuAction->setText(m->currentLibrary->displayName());
-		}
+		m->currentLibraryMenuAction->setText(actionText);
 	}
 }
 
 void Menubar::skinChanged()
 {
-	const QString stylesheet = Style::currentStyle();
-	this->setStyleSheet(stylesheet);
-
 	{
 		using namespace Gui;
 		m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
@@ -395,13 +388,19 @@ void Menubar::skinChanged()
 	}
 
 	{
-		bool dark = Style::isDark();
+		const auto heartColor = QColor(243, 132, 26);
+		const auto textColor = (Style::isDark()) ? heartColor : QColor();
 
-		const QColor heartColor(243,132,26);
-		const QColor textColor = (dark) ? heartColor : QColor();
-
-		const QString heartLink = Util::createLink("❤ ", heartColor, false, "https://sayonara-player.com/donations.php");
-		const QString sayonaraLink = Util::createLink("Sayonara", textColor, true, "https://sayonara-player.com/donations.php");
+		const auto heartLink = Util::createLink(
+			"❤ ",
+			heartColor,
+			false,
+			"https://sayonara-player.com/donations.php");
+		const auto sayonaraLink = Util::createLink(
+			"Sayonara",
+			textColor,
+			true,
+			"https://sayonara-player.com/donations.php");
 
 		m->heartLabel->setText(heartLink);
 		m->donateLabel->setText(sayonaraLink);
@@ -410,34 +409,36 @@ void Menubar::skinChanged()
 
 void Menubar::openDirClicked()
 {
-	const QString dir = QFileDialog::getExistingDirectory(this,
-		Lang::get(Lang::OpenDir),
-		QDir::homePath(),
-		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
+	const auto dir = QFileDialog::getExistingDirectory(this,
+	                                                   Lang::get(Lang::OpenDir),
+	                                                   QDir::homePath(),
+	                                                   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
 	);
 
-	if(!dir.isEmpty()){
-		m->playlistCreator->createPlaylist(QStringList{dir});
+	if(!dir.isEmpty())
+	{
+		m->playlistCreator->createPlaylist(QStringList {dir});
 	}
 }
 
 void Menubar::openFilesClicked()
 {
-	const QString filter = Util::getFileFilter
-	(
-		Util::Extensions(Util::Extension::Soundfile | Util::Extension::Playlist),
-		tr("Media files")
-	);
+	const auto filter = Util::getFileFilter
+		(
+			Util::Extensions(Util::Extension::Soundfile | Util::Extension::Playlist),
+			tr("Media files")
+		);
 
-	const QStringList list = QFileDialog::getOpenFileNames
-	(
-		this,
-		tr("Open Media files"),
-		QDir::homePath(),
-		filter
-	);
+	const auto list = QFileDialog::getOpenFileNames
+		(
+			this,
+			tr("Open Media files"),
+			QDir::homePath(),
+			filter
+		);
 
-	if(!list.isEmpty()) {
+	if(!list.isEmpty())
+	{
 		m->playlistCreator->createPlaylist(list);
 	}
 }
@@ -489,64 +490,59 @@ void Menubar::showFullscreenToggled(bool b)
 
 void Menubar::helpClicked()
 {
-	const QStringList text
-	{
-		tr("For bug reports and feature requests please visit Sayonara's project page at GitLab"),
-		Util::createLink("https://gitlab.com/luciocarreras/sayonara-player", Style::isDark()),
-		"",
-		tr("FAQ") + ": ",
-		Util::createLink("http://sayonara-player.com/faq.php", Style::isDark()),
-	};
+	const auto text =
+		QStringList
+			{
+				tr("For bug reports and feature requests please visit Sayonara's project page at GitLab"),
+				Util::createLink("https://gitlab.com/luciocarreras/sayonara-player", Style::isDark()),
+				"",
+				tr("FAQ") + ": ",
+				Util::createLink("http://sayonara-player.com/faq.php", Style::isDark()),
+			};
 
 	Message::info(text.join("<br/>"));
 }
 
-// private slot
 void Menubar::aboutClicked()
 {
-	QString version = GetSetting(Set::Player_Version);
+	const auto version = GetSetting(Set::Player_Version);
 
-	if(!m->aboutBox)
-	{
-		m->aboutBox = new QMessageBox(this);
-		m->aboutBox->setParent(this);
-		m->aboutBox->setIconPixmap(Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(150, 150), true));
-		m->aboutBox->setWindowFlags(Qt::Dialog);
-		m->aboutBox->setModal(true);
-		m->aboutBox->setStandardButtons(QMessageBox::Ok);
-		m->aboutBox->setWindowTitle(tr("About Sayonara"));
+	auto* aboutBox = new QMessageBox(this);
+	aboutBox->setIconPixmap(Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(150, 150), true));
+	aboutBox->setStandardButtons(QMessageBox::Ok);
+	aboutBox->setWindowTitle(tr("About Sayonara"));
+	aboutBox->setText(
+		QStringList
+			({
+				 R"(<b><font size="+2">)",
+				 QString("Sayonara Player %1").arg(version),
+				 "</font></b>"
+			 }).join(""));
 
-		m->aboutBox->setText(QStringList
-		({
-			"<b><font size=\"+2\">",
-			"Sayonara Player " + version,
-			"</font></b>"
-		}).join(""));
+	aboutBox->setInformativeText(
+		QStringList
+			({
+				 tr("Written by %1").arg("Michael Lugmair"),
+				 "",
+				 tr("License") + ": GPLv3",
+				 QString("Copyright 2011-%1").arg(QDateTime::currentDateTime().date().year()),
+				 Util::createLink("http://sayonara-player.com", Style::isDark()),
+				 "",
+				 QString("<b>%1</b>").arg(tr("Donate")),
+				 Util::createLink("http://sayonara-player.com/donations.php", Style::isDark()),
+				 "",
+				 tr("Thanks to all the brave translators and to everyone who helps building Sayonara packages") +
+				 ".<br>" +
+				 tr("And special thanks to those people with local music collections") + "!"
+			 }).join("<br/>"));
 
-		m->aboutBox->setInformativeText( QStringList
-		({
-			tr("Written by %1").arg("Michael Lugmair (Lucio Carreras)"),
-			"",
-			tr("License") + ": GPLv3",
-			"Copyright 2011-" + QString::number(QDateTime::currentDateTime().date().year()),
-			Util::createLink("http://sayonara-player.com", Style::isDark()),
-			"",
-			"<b>" + tr("Donate") + "</b>",
-			Util::createLink("http://sayonara-player.com/donations.php", Style::isDark()),
-			"",
-			tr("Thanks to all the brave translators and to everyone who helps building Sayonara packages") + ".<br>" +
-			tr("And special thanks to those people with local music collections") + "!"
-		}).join("<br/>"));
-	}
-
-	m->aboutBox->exec();
+	aboutBox->exec();
+	aboutBox->deleteLater();
 }
 
-void Menubar::shortcutChanged(ShortcutIdentifier identifier)
+void Menubar::shortcutChanged([[maybe_unused]] ShortcutIdentifier identifier)
 {
-	Q_UNUSED(identifier)
-
-	ShortcutHandler* sch = ShortcutHandler::instance();
-	Shortcut sc = sch->shortcut(ShortcutIdentifier::ViewLibrary);
-	m->actionViewLibrary->setShortcut(sc.sequence());
+	auto* shortcutHandler = ShortcutHandler::instance();
+	const auto shortcut = shortcutHandler->shortcut(ShortcutIdentifier::ViewLibrary);
+	m->actionViewLibrary->setShortcut(shortcut.sequence());
 }

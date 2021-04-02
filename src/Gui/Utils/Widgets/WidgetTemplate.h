@@ -91,9 +91,9 @@ namespace Gui
 			AbstrWidgetTemplate* mAwt=nullptr;
 
 		public:
-			template<typename... Args>
-			WidgetTemplate(Args&&... args) :
-				T(std::forward<Args>(args)...),
+            template<typename... Args>
+            WidgetTemplate(Args... args) :
+                T(args...),
 				WidgetTemplateParent()
 			{
 				mAwt = new AbstrWidgetTemplate(this, this);

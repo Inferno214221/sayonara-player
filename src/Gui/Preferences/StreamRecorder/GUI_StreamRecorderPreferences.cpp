@@ -43,7 +43,7 @@
 #include <QMouseEvent>
 #include <QGridLayout>
 
-namespace SR=StreamRecorder;
+namespace SR = StreamRecorder;
 
 struct GUI_StreamRecorderPreferences::Private
 {
@@ -60,7 +60,8 @@ GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -80,7 +81,7 @@ void GUI_StreamRecorderPreferences::initUi()
 
 	QList<QPair<QString, QString>> desc = StreamRecorder::Utils::descriptions();
 
-	int i=0;
+	int i = 0;
 	for(const QPair<QString, QString>& keyval : desc)
 	{
 		auto* btn = new TagButton(keyval.first, this);
@@ -88,8 +89,7 @@ void GUI_StreamRecorderPreferences::initUi()
 			Util::stringToFirstUpper(keyval.second)
 		);
 
-		connect(btn, &QPushButton::clicked, this, [=]()
-		{
+		connect(btn, &QPushButton::clicked, this, [=]() {
 			int old_position = ui->leTemplate->cursorPosition();
 
 			ui->leTemplate->insert("<" + keyval.first + ">");
@@ -111,12 +111,12 @@ void GUI_StreamRecorderPreferences::initUi()
 	connect(ui->btnPath, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::pathButtonClicked);
 	connect(ui->leTemplate, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::lineEditChanged);
 	connect(ui->lePath, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::lineEditChanged);
-	connect(ui->cbCreateSessionPath, &QCheckBox::toggled, this, [=](bool b){
+	connect(ui->cbCreateSessionPath, &QCheckBox::toggled, this, [=](bool b) {
 		ui->tabWidget->setTabEnabled(1, b);
 	});
 
 	connect(ui->btnDefault, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::defaultButtonClicked);
-	connect(ui->btnUndo, &QPushButton::clicked, this, [=](){
+	connect(ui->btnUndo, &QPushButton::clicked, this, [=]() {
 		ui->leTemplate->undo();
 	});
 
@@ -134,12 +134,11 @@ void GUI_StreamRecorderPreferences::retranslate()
 
 void GUI_StreamRecorderPreferences::skinChanged()
 {
-	if(!ui){
-		return;
+	if(ui)
+	{
+		ui->btnUndo->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
+		ui->btnDefault->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
 	}
-
-	ui->btnUndo->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
-	ui->btnDefault->setIcon(Gui::Icons::icon(Gui::Icons::Undo));
 }
 
 QString GUI_StreamRecorderPreferences::errorString() const
@@ -163,19 +162,21 @@ void GUI_StreamRecorderPreferences::activeToggled(bool b)
 void GUI_StreamRecorderPreferences::pathButtonClicked()
 {
 	QString path = ui->lePath->text();
-	if(path.isEmpty()) {
+	if(path.isEmpty())
+	{
 		path = QDir::homePath();
 	}
 
 	const QString dir = QFileDialog::getExistingDirectory
-	(
-		this,
-		tr("Choose target directory"),
-		path,
-		QFileDialog::ShowDirsOnly
-	);
+		(
+			this,
+			tr("Choose target directory"),
+			path,
+			QFileDialog::ShowDirsOnly
+		);
 
-	if(!dir.isEmpty()) {
+	if(!dir.isEmpty())
+	{
 		ui->lePath->setText(dir);
 	}
 }
@@ -204,13 +205,13 @@ void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
 	if(err == SR::Utils::ErrorCode::OK)
 	{
 		SR::Utils::TargetPaths targetPath = SR::Utils::fullTargetPath
-		(
-			ui->lePath->text(),
-			templateText,
-			md,
-			QDate::currentDate(),
-			QTime::currentTime()
-		);
+			(
+				ui->lePath->text(),
+				templateText,
+				md,
+				QDate::currentDate(),
+				QTime::currentTime()
+			);
 
 		ui->leResultPath->setText(targetPath.first);
 	}
@@ -221,11 +222,11 @@ void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
 
 		int maxSelectedIndex = std::min(errorIndex + 5, templateText.size());
 		ui->leResultPath->setText
-		(
-			QString("%1: '...%2...'")
-				.arg(errorString)
-				.arg(templateText.mid(errorIndex, maxSelectedIndex - errorIndex))
-		);
+			(
+				QString("%1: '...%2...'")
+					.arg(errorString)
+					.arg(templateText.mid(errorIndex, maxSelectedIndex - errorIndex))
+			);
 	}
 }
 
@@ -242,7 +243,8 @@ bool GUI_StreamRecorderPreferences::commit()
 		{
 			if(path.isEmpty())
 			{
-				m->errorString = tr("Target directory is empty").arg(path) + "\n" + tr("Please choose another directory");
+				m->errorString =
+					tr("Target directory is empty").arg(path) + "\n" + tr("Please choose another directory");
 				everythingOk = false;
 			}
 
@@ -287,7 +289,8 @@ void GUI_StreamRecorderPreferences::revert()
 	bool createSessionPath = GetSetting(Set::Engine_SR_SessionPath);
 	bool autoRecord = GetSetting(Set::Engine_SR_AutoRecord);
 
-	if(templatePath.isEmpty()){
+	if(templatePath.isEmpty())
+	{
 		templatePath = SR::Utils::targetPathTemplateDefault(true);
 	}
 
@@ -307,11 +310,13 @@ void GUI_StreamRecorderPreferences::revert()
 	ui->tabWidget->setCurrentIndex(0);
 	ui->tabWidget->setTabEnabled(1, active && createSessionPath);
 
-	if(!isLameAvailable){
+	if(!isLameAvailable)
+	{
 		ui->labWarning->setText(Lang::get(Lang::CannotFindLame));
 	}
 
-	else {
+	else
+	{
 		ui->labWarning->clear();
 	}
 }
@@ -326,8 +331,7 @@ struct TagButton::Private
 	QString tagName;
 
 	Private(const QString& tagName) :
-		tagName(tagName)
-	{}
+		tagName(tagName) {}
 };
 
 TagButton::TagButton(const QString& tagName, QWidget* parent) :
