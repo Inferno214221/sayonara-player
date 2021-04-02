@@ -173,17 +173,15 @@ void LocalLibraryMenu::languageChanged()
 
 void LocalLibraryMenu::skinChanged()
 {
-	if(!m->isInitialized)
+	if(m->isInitialized)
 	{
-		return;
+		using namespace Gui;
+		m->reloadLibraryAction->setIcon(Icons::icon(Icons::Refresh));
+		m->importFileAction->setIcon(Icons::icon(Icons::Open));
+		m->importFolderAction->setIcon(Icons::icon(Icons::Open));
+		m->infoAction->setIcon(Icons::icon(Icons::Info));
+		m->editAction->setIcon(Icons::icon(Icons::Edit));
 	}
-
-	using namespace Gui;
-	m->reloadLibraryAction->setIcon(Icons::icon(Icons::Refresh));
-	m->importFileAction->setIcon(Icons::icon(Icons::Open));
-	m->importFolderAction->setIcon(Icons::icon(Icons::Open));
-	m->infoAction->setIcon(Icons::icon(Icons::Info));
-	m->editAction->setIcon(Icons::icon(Icons::Edit));
 }
 
 void LocalLibraryMenu::shortcutChanged(ShortcutIdentifier identifier)

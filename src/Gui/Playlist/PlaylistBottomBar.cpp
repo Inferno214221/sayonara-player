@@ -271,8 +271,6 @@ void BottomBar::languageChanged()
 
 void BottomBar::skinChanged()
 {
-	Gui::Widget::skinChanged();
-
 	const auto fm = this->fontMetrics();
 	auto width = (Gui::Util::textWidth(fm, "m") * 250) / 100;
 	width = std::max(29, width);

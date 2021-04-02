@@ -397,13 +397,11 @@ void Gui::AbstractStationPlugin::retranslate()
 
 void Gui::AbstractStationPlugin::skinChanged()
 {
-	if(!isUiInitialized())
+	if(isUiInitialized())
 	{
-		return;
+		m->setSearching(m->searching);
+		btnPlay()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
 	}
-
-	m->setSearching(m->searching);
-	btnPlay()->setIcon(Gui::Icons::icon(Gui::Icons::Play));
 }
 
 Gui::StreamPreferenceAction::StreamPreferenceAction(QWidget* parent) :

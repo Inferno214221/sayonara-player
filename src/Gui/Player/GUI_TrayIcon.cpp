@@ -177,9 +177,6 @@ void TrayIconContextMenu::languageChanged()
 
 void TrayIconContextMenu::skinChanged()
 {
-	QString stylesheet = Style::currentStyle();
-	this->setStyleSheet(stylesheet);
-
 	using namespace Gui;
 
 	m->stopAction->setIcon(Icons::icon(Icons::Stop));

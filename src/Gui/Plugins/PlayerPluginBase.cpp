@@ -91,18 +91,11 @@ void Base::finalizeInitialization()
 		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this, parentWidget(), SLOT(close()), Qt::WidgetWithChildrenShortcut);
 	}
 
-	ListenSetting(Set::Player_Style, Base::skinChanged);
-
 	setUiInitialized();
 	retranslate();
 }
 
 void Base::assignUiVariables() {}
-
-void Base::skinChanged()
-{
-	Gui::Widget::skinChanged();
-}
 
 void Base::languageChanged()
 {

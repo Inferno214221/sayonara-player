@@ -472,8 +472,6 @@ void GUI_ControlsBase::skinChanged()
 	btnStop()->setObjectName("ControlStopButton");
 	btnMute()->setObjectName("ControlMuteButton");
 
-	Gui::Widget::skinChanged();
-
 	using namespace Gui;
 
 	setIcon(btnNext(), icon(Icons::Forward));

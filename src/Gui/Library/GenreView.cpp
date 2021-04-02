@@ -531,13 +531,6 @@ QString GenreView::invalidGenreName()
 	return "<" + Lang::get(Lang::UnknownGenre) + ">";
 }
 
-void GenreView::skinChanged()
-{
-/*	QFontMetrics fm = this->fontMetrics();
-	this->setIconSize(QSize(fm.height(), fm.height()));
-	this->setIndentation(fm.height());*/
-}
-
 void GenreView::languageChanged()
 {
 	QAbstractItemModel* model = this->model();

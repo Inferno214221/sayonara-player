@@ -88,14 +88,6 @@ void GUI_BroadcastPreferences::revert()
 	refreshUrl();
 }
 
-
-void GUI_BroadcastPreferences::skinChanged()
-{
-	if(!isUiInitialized()){
-		return;
-	}
-}
-
 void GUI_BroadcastPreferences::retranslate()
 {
 	ui->retranslateUi(this);

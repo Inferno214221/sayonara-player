@@ -99,7 +99,6 @@ namespace Library
 			void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
 		protected:
-			void skinChanged() override;
 			void languageChanged() override;
 			void dragEnterEvent(QDragEnterEvent* e) override;
 			void dragMoveEvent(QDragMoveEvent* e) override;

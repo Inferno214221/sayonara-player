@@ -55,22 +55,29 @@ void HistoryTableView::rowcountChanged()
 	emit sigRowcountChanged();
 }
 
-void HistoryTableView::languageChanged() {}
-
 void HistoryTableView::skinChanged()
 {
-	const int rows = m->model->rowCount(QModelIndex());
-	const int allHeight = (rows * (this->fontMetrics().height() + 2)) +
-	                      horizontalHeader()->height() * 2 +
-	                      horizontalScrollBar()->height();
+	if(isVisible())
+	{
+		const int rows = m->model->rowCount(QModelIndex());
+		const int allHeight = (rows * (this->fontMetrics().height() + 2)) +
+		                      horizontalHeader()->height() * 2 +
+		                      horizontalScrollBar()->height();
 
-	this->setMinimumHeight(std::min(allHeight, 400));
+		this->setMinimumHeight(std::min(allHeight, 400));
 
-	this->verticalHeader()->resetDefaultSectionSize();
+		this->verticalHeader()->resetDefaultSectionSize();
+	}
 }
 
 void HistoryTableView::resizeEvent(QResizeEvent* e)
 {
 	QTableView::resizeEvent(e);
 	this->resizeColumnToContents(0);
+}
+
+void HistoryTableView::showEvent(QShowEvent* e)
+{
+	Gui::WidgetTemplate<QTableView>::showEvent(e);
+	skinChanged();
 }

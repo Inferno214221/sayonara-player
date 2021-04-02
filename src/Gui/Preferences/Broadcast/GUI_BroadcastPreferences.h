@@ -45,7 +45,6 @@ public:
 
 protected:
 	void initUi() override;
-	void skinChanged() override;
 	void retranslate() override;
 
 private slots:

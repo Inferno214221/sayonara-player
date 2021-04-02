@@ -34,10 +34,10 @@ class HistoryTableView :
 		void rowcountChanged();
 
 	protected:
-		void languageChanged() override;
 		void skinChanged() override;
 
 		void resizeEvent(QResizeEvent* e) override;
+		void showEvent(QShowEvent* e) override;
 };
 
 #endif // HISTORYTABLEVIEW_H

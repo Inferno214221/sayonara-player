@@ -95,7 +95,6 @@ namespace PlayerPlugin
 
 
 	protected:
-
 		virtual void finalizeInitialization();
 
 		/**
@@ -105,7 +104,6 @@ namespace PlayerPlugin
 		virtual bool isUiInitialized() const;
 		virtual void assignUiVariables();
 
-		virtual void skinChanged() override;
 		virtual void retranslate()=0;
 
 		template<typename T, typename UiClass>

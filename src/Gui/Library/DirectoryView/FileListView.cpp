@@ -284,8 +284,6 @@ void FileListView::dropEvent(QDropEvent* event)
 	emit sigImportRequested(m->model->libraryId(), files, m->model->parentDirectory());
 }
 
-void FileListView::languageChanged() {}
-
 void FileListView::skinChanged()
 {
 	const auto height = this->fontMetrics().height();
