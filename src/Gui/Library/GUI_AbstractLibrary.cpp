@@ -38,6 +38,17 @@
 
 using namespace Library;
 
+namespace
+{
+	void applyFontSetting(QAbstractItemView* view)
+	{
+		auto font = view->font();
+		font.setBold(GetSetting(Set::Lib_FontBold));
+		view->setFont(font);
+		view->repaint();
+	}
+}
+
 struct GUI_AbstractLibrary::Private
 {
 	AbstractLibrary* library = nullptr;
@@ -78,6 +89,7 @@ void GUI_AbstractLibrary::init()
 	}
 
 	ListenSetting(Set::Lib_LiveSearch, GUI_AbstractLibrary::liveSearchChanged);
+	ListenSetting(Set::Lib_FontBold, GUI_AbstractLibrary::boldFontChanged);
 }
 
 void GUI_AbstractLibrary::initSearchBar()
@@ -92,8 +104,6 @@ void GUI_AbstractLibrary::initSearchBar()
 
 	connect(m->leSearch, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::searchTriggered);
 }
-
-void GUI_AbstractLibrary::languageChanged() {}
 
 void GUI_AbstractLibrary::initShortcuts()
 {
@@ -215,5 +225,14 @@ void GUI_AbstractLibrary::liveSearchChanged()
 	else
 	{
 		disconnect(m->leSearch, &QLineEdit::textEdited, this, &GUI_AbstractLibrary::searchEdited);
+	}
+}
+
+void GUI_AbstractLibrary::boldFontChanged()
+{
+	const auto allViews = this->allViews();
+	for(auto* view : allViews)
+	{
+		applyFontSetting(view);
 	}
 }

@@ -81,7 +81,6 @@ enum class SettingKey : unsigned short
 		Dir_TagToFilenameExpression,
 		Player_Version,
 		Player_Language,
-		Player_ScalingFactor,
 		Player_Style,
 		Player_FadingCover,
 		Player_ControlStyle,
@@ -293,7 +292,6 @@ INST(QString, Player_Version)            /* Version string of player */
 INST(QString, Player_Language)            /* language of player */
 INST(int, Player_Style)                /* dark or native: native = 0, dark = 1 */
 INST(int, Player_ControlStyle)        /* Big cover or not */
-INST(float, Player_ScalingFactor)            /* font scaling factor */
 INST(bool, Player_FadingCover)            /* If cover buttons should fade */
 INST(bool, Player_Fullscreen)            /* player fullscreen */
 INST(bool, Player_Maximized)            /* player maximized */

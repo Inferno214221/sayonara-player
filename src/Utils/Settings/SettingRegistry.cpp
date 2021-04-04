@@ -136,7 +136,6 @@ bool SettingRegistry::init()
 	registerSetting<Set::Player_Language>("player_language", QLocale().name());
 	registerSetting<Set::Player_Style>("player_style", 1);
 	registerSetting<Set::Player_ControlStyle>("player_control_style", 1);
-	registerSetting<Set::Player_ScalingFactor>("player_scaling_factor", 1.0f);
 	registerSetting<Set::Player_FadingCover>("player_fading_cover", true);
 	registerSetting<Set::Player_Geometry>("player_geometry", QByteArray());
 	registerSetting<Set::Player_Fullscreen>("player_fullscreen", false);

@@ -29,9 +29,12 @@
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Pimpl.h"
 
+#include <QList>
+
 class QPushButton;
 class QComboBox;
 class AbstractLibrary;
+class QAbstractItemView;
 
 namespace Library
 {
@@ -43,60 +46,56 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class GUI_AbstractLibrary :
-			public Gui::Widget
+		public Gui::Widget
 	{
 		Q_OBJECT
 		PIMPL(GUI_AbstractLibrary)
 
-	public:
-		explicit GUI_AbstractLibrary(AbstractLibrary* library,
-									 QWidget* parent=nullptr);
+		public:
+			explicit GUI_AbstractLibrary(AbstractLibrary* library, QWidget* parent = nullptr);
+			virtual ~GUI_AbstractLibrary() override;
 
-		virtual ~GUI_AbstractLibrary() override;
+		protected slots:
+			virtual void liveSearchChanged();
+			virtual void clearSelections();
+			virtual void searchTriggered();
+			virtual void searchEdited(const QString& searchstring);
+			virtual void keyPressed(int key);
+			virtual void queryLibrary();
+			virtual void itemDeleteClicked();
+			virtual void showDeleteAnswer(const QString& text);
 
-	private:
-		virtual void init();
-		virtual void initSearchBar();
+			void tracksDeleteClicked();
 
-	protected:
-		virtual void languageChanged() override;
-		virtual void initShortcuts();
-		virtual bool hasSelections() const;
+		protected:
+			virtual void initShortcuts();
+			virtual bool hasSelections() const;
 
-		virtual TrackDeletionMode showDeleteDialog(int n_tracks)=0;
+			virtual TrackDeletionMode showDeleteDialog(int trackCount) = 0;
 
-	protected slots:
-		virtual void liveSearchChanged();
+			virtual TableView* lvArtist() const = 0;
+			virtual TableView* lvAlbum() const = 0;
+			virtual TableView* lvTracks() const = 0;
+			virtual SearchBar* leSearch() const = 0;
+			virtual QList<QAbstractItemView*> allViews() const = 0;
 
-		virtual void clearSelections();
-		virtual void searchTriggered();
-		virtual void searchEdited(const QString& searchstring);
-		virtual void keyPressed(int key);
-		virtual void queryLibrary();
+			virtual QList<Filter::Mode> searchOptions() const = 0;
 
-		virtual void itemDeleteClicked();
-		virtual void showDeleteAnswer(const QString& text);
+			template<typename T, typename UI>
+			void setupParent(T* subclass, UI** ui)
+			{
+				*ui = new UI();
 
-		void tracksDeleteClicked();
+				UI* uiPtr = *ui;
+				uiPtr->setupUi(subclass);
 
-	protected:
-		virtual TableView* lvArtist() const=0;
-		virtual TableView* lvAlbum() const=0;
-		virtual TableView* lvTracks() const=0;
-		virtual SearchBar* leSearch() const=0;
+				init();
+			}
 
-		virtual QList<Filter::Mode> searchOptions() const=0;
-
-		template<typename T, typename UI>
-		void setupParent(T* subclass, UI** ui)
-		{
-			*ui = new UI();
-
-			UI* uiPtr = *ui;
-			uiPtr->setupUi(subclass);
-
-			init();
-		}
+		private:
+			void init();
+			void initSearchBar();
+			void boldFontChanged();
 	};
 }
 

@@ -24,14 +24,35 @@
        <string notr="true">General</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
+       <item row="0" column="0">
+        <widget class="QCheckBox" name="cbDarkMode">
+         <property name="text">
+          <string notr="true">Dark mode</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="0">
+        <widget class="QCheckBox" name="cbFadingCover">
+         <property name="text">
+          <string>Fading cover</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QPushButton" name="btn_editCss">
+         <property name="text">
+          <string>Edit style sheet</string>
+         </property>
+        </widget>
+       </item>
        <item row="1" column="0">
-        <widget class="QCheckBox" name="cb_bigCover">
+        <widget class="QCheckBox" name="cbBigCover">
          <property name="text">
           <string notr="true">Big cover</string>
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -44,24 +65,10 @@
          </property>
         </spacer>
        </item>
-       <item row="0" column="0">
-        <widget class="QCheckBox" name="cb_darkMode">
-         <property name="text">
-          <string notr="true">Dark mode</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="0">
-        <widget class="QCheckBox" name="cb_fadingCover">
-         <property name="text">
-          <string>Fading cover</string>
-         </property>
-        </widget>
-       </item>
        <item row="3" column="0">
-        <widget class="QPushButton" name="btn_editCss">
+        <widget class="QCheckBox" name="cbBoldLibraryFont">
          <property name="text">
-          <string>Edit style sheet</string>
+          <string>Bold Library Font</string>
          </property>
         </widget>
        </item>
@@ -73,8 +80,8 @@
  </widget>
  <tabstops>
   <tabstop>tabWidget</tabstop>
-  <tabstop>cb_darkMode</tabstop>
-  <tabstop>cb_bigCover</tabstop>
+  <tabstop>cbDarkMode</tabstop>
+  <tabstop>cbBigCover</tabstop>
  </tabstops>
  <resources/>
  <connections/>

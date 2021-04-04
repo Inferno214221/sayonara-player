@@ -28,51 +28,9 @@
 
 #include "Style.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/FileUtils.h"
 #include "Utils/StandardPaths.h"
-
-#include <QApplication>
-#include <QColor>
-#include <QFont>
-#include <QFontMetrics>
-#include <QMainWindow>
-#include <QPalette>
-#include <QStyle>
-#include <QToolTip>
-
-namespace
-{
-	int getFontSize(QApplication* app)
-	{
-		const auto fontSize = app->font().pointSize();
-		static auto defaultFontSize = (fontSize > 0) ? fontSize : 12;
-
-		const auto scalingFactor = GetSetting(Set::Player_ScalingFactor);
-
-		return static_cast<int>(scalingFactor * defaultFontSize);
-	}
-
-	QString getFontStyleSheet(QApplication* app)
-	{
-		return QString(R"(
-			QWidget
-			{
-				font-size: %1px;
-			}
-
-			Library--View,
-			Library--ItemView,
-			Library--GenreView
-			{
-				font-weight: %2;
-			}
-		)")
-			.arg(getFontSize(app))
-			.arg(GetSetting(Set::Lib_FontBold) ? "600" : "normal");
-	}
-}
 
 QString Style::style(bool dark)
 {
@@ -96,19 +54,9 @@ QString Style::style(bool dark)
 	return style;
 }
 
-QFont Style::currentFont()
-{
-	return QApplication::font();
-}
-
 QString Style::currentStyle()
 {
 	return style(isDark());
-}
-
-int Style::recommendedHeight()
-{
-	return QFontMetrics(currentFont()).height();
 }
 
 bool Style::isDark()
@@ -119,25 +67,4 @@ bool Style::isDark()
 void Style::setDark(bool dark)
 {
 	SetSetting(Set::Player_Style, dark ? 1 : 0);
-}
-
-void Style::applyCurrentStyle(QApplication* app, QMainWindow* player)
-{
-	const auto style = Style::currentStyle();
-	const auto fontStyle = getFontStyleSheet(app);
-
-    player->setStyleSheet(fontStyle + '\n' + style);
-
-	if(Style::isDark())
-	{
-		auto palette = QToolTip::palette();
-		palette.setBrush(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipBase, QColor(66, 78, 114));
-		palette.setColor(QPalette::ColorGroup::Inactive, QPalette::ColorRole::ToolTipText, QColor(0, 0, 0));
-		QToolTip::setPalette(palette);
-	}
-
-	else
-	{
-		QToolTip::setPalette(app->palette());
-	}
 }

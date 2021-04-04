@@ -538,6 +538,11 @@ Library::TableView* GUI_LocalLibrary::lvAlbum() const { return ui->tvAlbums; }
 
 Library::TableView* GUI_LocalLibrary::lvTracks() const { return ui->tvTracks; }
 
+QList<QAbstractItemView*> GUI_LocalLibrary::allViews() const
+{
+	return {ui->lvGenres, ui->tvAlbums, ui->tvArtists, ui->tvTracks};
+}
+
 Library::SearchBar* GUI_LocalLibrary::leSearch() const { return ui->leSearch; }
 
 // LocalLibraryContainer

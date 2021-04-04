@@ -29,7 +29,8 @@
 #ifndef STYLE_H_
 #define STYLE_H_
 
-class QString;
+#include <QString>
+
 class QFont;
 class QApplication;
 class QMainWindow;
@@ -55,20 +56,6 @@ namespace Style
 	QString currentStyle();
 
 	/**
-	 * @brief current_font
-	 * @ingroup Style
-	 * @return
-	 */
-	QFont currentFont();
-
-	/**
-	 * @brief recommended_height
-	 * @ingroup Style
-	 * @return
-	 */
-	int recommendedHeight();
-
-	/**
 	 * @brief is_dark
 	 * @ingroup Style
 	 * @return
@@ -82,7 +69,15 @@ namespace Style
 	 */
 	void setDark(bool b);
 
-	void applyCurrentStyle(QApplication* app, QMainWindow* mainWindow);
+	template<typename T>
+	void applyCurrentStyle(T* instance)
+	{
+		const auto styleSheet = instance->styleSheet();
+		if(styleSheet != currentStyle())
+		{
+			instance->setStyleSheet(currentStyle());
+		}
+	}
 }
 
 #endif /* STYLE_H_ */

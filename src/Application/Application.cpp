@@ -528,5 +528,5 @@ void Application::createPlaylist()
 
 void Application::skinChanged()
 {
-	Style::applyCurrentStyle(this, m->player);
+	Style::applyCurrentStyle(this);
 }

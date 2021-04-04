@@ -19,7 +19,6 @@
  */
 
 #include "GUI_UiPreferences.h"
-#include "GUI_FontPreferences.h"
 #include "GUI_IconPreferences.h"
 #include "GUI_CssEditor.h"
 #include "Gui/Utils/Style.h"
@@ -28,10 +27,8 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-
 struct GUI_UiPreferences::Private
 {
-	GUI_FontPreferences* fontConfig=nullptr;
 	GUI_IconPreferences* iconConfig=nullptr;
 };
 
@@ -50,12 +47,13 @@ QString GUI_UiPreferences::actionName() const
 
 bool GUI_UiPreferences::commit()
 {
-	m->fontConfig->commit();
+
 	m->iconConfig->commit();
 
-	SetSetting(Set::Player_ControlStyle, ui->cb_bigCover->isChecked() ? 1 : 0);
-	SetSetting(Set::Player_Style, ui->cb_darkMode->isChecked() ? 1 : 0);
-	SetSetting(Set::Player_FadingCover, ui->cb_fadingCover->isChecked());
+	SetSetting(Set::Player_ControlStyle, ui->cbBigCover->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_Style, ui->cbDarkMode->isChecked() ? 1 : 0);
+	SetSetting(Set::Player_FadingCover, ui->cbFadingCover->isChecked());
+	SetSetting(Set::Lib_FontBold, ui->cbBoldLibraryFont->isChecked());
 
 	Set::shout<Set::Player_Style>();
 
@@ -64,10 +62,10 @@ bool GUI_UiPreferences::commit()
 
 void GUI_UiPreferences::revert()
 {
-	m->fontConfig->revert();
 	m->iconConfig->revert();
 
-	ui->cb_fadingCover->setChecked(GetSetting(Set::Player_FadingCover));
+	ui->cbFadingCover->setChecked(GetSetting(Set::Player_FadingCover));
+	ui->cbBoldLibraryFont->setChecked(GetSetting(Set::Lib_FontBold));
 
 	styleChanged();
 }
@@ -80,10 +78,8 @@ void GUI_UiPreferences::initUi()
 
 	setupParent(this, &ui);
 
-	m->fontConfig = new GUI_FontPreferences(ui->tabWidget);
 	m->iconConfig = new GUI_IconPreferences(ui->tabWidget);
 
-	ui->tabWidget->addTab(m->fontConfig, m->fontConfig->actionName());
 	ui->tabWidget->addTab(m->iconConfig, m->iconConfig->actionName());
 
 	connect(ui->btn_editCss, &QPushButton::clicked, this, &GUI_UiPreferences::editCssClicked);
@@ -97,8 +93,8 @@ void GUI_UiPreferences::initUi()
 
 void GUI_UiPreferences::styleChanged()
 {
-	ui->cb_bigCover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
-	ui->cb_darkMode->setChecked(Style::isDark());
+	ui->cbBigCover->setChecked(GetSetting(Set::Player_ControlStyle) == 1);
+	ui->cbDarkMode->setChecked(Style::isDark());
 }
 
 void GUI_UiPreferences::editCssClicked()
@@ -110,12 +106,8 @@ void GUI_UiPreferences::editCssClicked()
 void GUI_UiPreferences::retranslate()
 {
 	ui->tabWidget->setTabText(0, tr("General"));
-	ui->cb_bigCover->setText(tr("Show large cover"));
-	ui->cb_darkMode->setText(Lang::get(Lang::DarkMode));
-
-	if(m->fontConfig){
-		ui->tabWidget->setTabText(1, m->fontConfig->actionName());
-	}
+	ui->cbBigCover->setText(tr("Show large cover"));
+	ui->cbDarkMode->setText(Lang::get(Lang::DarkMode));
 
 	if(m->iconConfig){
 		ui->tabWidget->setTabText(2, m->iconConfig->actionName());

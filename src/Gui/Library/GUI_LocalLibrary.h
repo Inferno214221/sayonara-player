@@ -65,6 +65,7 @@ namespace Library
 			TableView* lvArtist() const override;
 			TableView* lvAlbum() const override;
 			TableView* lvTracks() const override;
+			QList<QAbstractItemView*> allViews() const override;
 
 			SearchBar* leSearch() const override;
 			QList<Filter::Mode> searchOptions() const override;

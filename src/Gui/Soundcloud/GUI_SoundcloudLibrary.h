@@ -60,6 +60,7 @@ namespace SC
 			::Library::TableView* lvArtist() const override;
 			::Library::TableView* lvAlbum() const override;
 			::Library::TableView* lvTracks() const override;
+			QList<QAbstractItemView*> allViews() const override;
 
 			::Library::SearchBar* leSearch() const override;
 

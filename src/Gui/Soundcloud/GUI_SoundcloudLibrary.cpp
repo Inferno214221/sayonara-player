@@ -120,6 +120,11 @@ Library::TableView* GUI_Library::lvTracks() const
 	return ui->tv_tracks;
 }
 
+QList<QAbstractItemView*> GUI_Library::allViews() const
+{
+	return {ui->tv_albums, ui->tv_artists, ui->tv_tracks};
+}
+
 Library::SearchBar* GUI_Library::leSearch() const
 {
 	return ui->le_search;
