@@ -19,14 +19,46 @@
  */
 
 #include "DirectoryIconProvider.h"
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
-#include "Gui/Utils/GuiUtils.h"
+#include "Utils/Algorithm.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
 
+#include <QList>
+#include <QPixmap>
+
 using Directory::IconProvider;
+
+namespace
+{
+	QList<QPixmap> extractPixmaps(const QIcon& icon)
+	{
+		QList<QPixmap> result;
+
+		const auto availableSizes = icon.availableSizes();
+		Util::Algorithm::transform(availableSizes, result, [&](const auto& size){
+			return icon.pixmap(size);
+		});
+
+		return result;
+	}
+
+	void insertPixmaps(QIcon& icon, QIcon::Mode mode, QIcon::State state, const QList<QPixmap>& pixmaps)
+	{
+		for(const auto& pixmap : pixmaps)
+		{
+			icon.addPixmap(pixmap, mode, state);
+		}
+	}
+
+	void fillIcon(QIcon& icon, Gui::Icons::IconName iconName, QIcon::Mode iconMode)
+	{
+		const auto fetchedIcon = Gui::Icons::icon(iconName);
+		const auto pixmaps = extractPixmaps(fetchedIcon);
+		insertPixmaps(icon, iconMode, QIcon::State::On, pixmaps);
+	}
+}
 
 IconProvider::IconProvider() :
 	QFileIconProvider()
@@ -38,14 +70,9 @@ QIcon IconProvider::icon(IconType type) const
 {
 	if(type==IconType::Folder)
 	{
-		QPixmap pm = Gui::Icons::pixmap(Gui::Icons::Folder);
-		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderOpen);
-
 		QIcon icon;
-
-		icon.addPixmap(pm, QIcon::Mode::Normal, QIcon::State::On);
-		icon.addPixmap(pm_open, QIcon::Mode::Selected, QIcon::State::On);
-
+		fillIcon(icon, Gui::Icons::Folder, QIcon::Mode::Normal);
+		fillIcon(icon, Gui::Icons::FolderOpen, QIcon::Mode::Selected);
 		return icon;
 	}
 
@@ -61,14 +88,9 @@ QIcon IconProvider::icon(const QFileInfo& info) const
 
 	if(info.isDir())
 	{
-		QPixmap pm = Gui::Icons::pixmap(Gui::Icons::Folder);
-		QPixmap pm_open = Gui::Icons::pixmap(Gui::Icons::FolderOpen);
-
 		QIcon icon;
-
-		icon.addPixmap(pm, QIcon::Mode::Normal, QIcon::State::On);
-		icon.addPixmap(pm_open, QIcon::Mode::Selected, QIcon::State::On);
-
+		fillIcon(icon, Gui::Icons::Folder, QIcon::Mode::Normal);
+		fillIcon(icon, Gui::Icons::FolderOpen, QIcon::Mode::Selected);
 		return icon;
 	}
 

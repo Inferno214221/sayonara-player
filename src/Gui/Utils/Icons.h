@@ -25,6 +25,7 @@ class QString;
 class QStringList;
 class QIcon;
 class QPixmap;
+class QSize;
 
 template <typename T>
 class QList;
@@ -121,31 +122,16 @@ namespace Gui
 		 * @param name
 		 * @return
 		 */
-		QPixmap pixmap(IconName name);
-		QPixmap pixmap(IconName name, IconMode mode);
-
-		/**
-		 * @brief set system icon theme
-		 * @param name
-		 */
-		void setSystemTheme(const QString& name);
-
-		/**
-		 * @brief returns the system icon theme
-		 * @return
-		 */
-		QString systemTheme();
-
-		/**
-		 * @brief force_standard_icons
-		 * @param b
-		 */
-		void forceStandardIcons(bool b);
+		QPixmap pixmap(IconName name, const QSize& size);
+		QPixmap pixmap(IconName name, const QSize& size, IconMode mode);
 
 		/**
 		 * @brief change_theme
 		 */
 		void changeTheme();
+
+		QString defaultSystemTheme();
+		void setDefaultSystemTheme(const QString& themeName);
 	}
 }
 

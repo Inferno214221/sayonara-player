@@ -35,88 +35,78 @@
 
 using namespace Gui;
 
-static char* sSystemTheme=nullptr;
-static bool sForceStandardIcons=false;
-
-using P=QPair<QString, QString>;
-
-static const QMap<Icons::IconName, QPair<QString, QString>> s_icon_map =
+namespace
 {
-	{Icons::AudioFile,		P("audio-x-generic", "cd.png")},
-	{Icons::Append,			P("list-add", "append")},
-	{Icons::Backward,		P("media-skip-backward", "bwd")},
-	{Icons::Clear,			P("edit-clear", "")},
-	{Icons::Close,			P("window-close", "")},
-	{Icons::Delete,			P("edit-delete", "")},
-	{Icons::Dynamic,		P("dynamic", "dynamic")},
-	{Icons::Edit,			P("edit-copy", "")},
-	{Icons::Exit,			P("application-exit", "")},
-	{Icons::File,			P("text-x-generic", "")},
-	{Icons::FileManager,	P("system-file-manager", "")},
-	{Icons::Folder,			P("folder", "")},
-	{Icons::FolderOpen,		P("folder-open", "")},
-	{Icons::Forward,		P("media-skip-forward", "fwd")},
-	{Icons::Gapless,		P("gapless", "gapless")},
-	{Icons::Grid,			P("view-grid", "")},
-	{Icons::ImageFile,		P("image-x-generic", "")},
-	{Icons::Info,			P("dialog-information", "")},
-	{Icons::LocalLibrary,	P("audio-x-generic", "append")},
-	{Icons::Lyrics,			P("format-justify-left", "")},
-	{Icons::New,			P("document-new", "")},
-	{Icons::Next,			P("media-skip-forward", "fwd")},
-	{Icons::Open,			P("document-open", "")},
-	{Icons::Pause,			P("media-playback-pause", "pause")},
-	{Icons::Play,			P("media-playback-start", "play")},
-	{Icons::PlaySmall,		P("media-playback-start", "")},
-	{Icons::PlayBorder,		P("media-playback-start", "")},
-	{Icons::PlaylistFile,	P("text-x-generic", "")},
-	{Icons::Preferences,	P("applications-system", "")},
-	{Icons::Previous,		P("media-skip-backward", "bwd")},
-	{Icons::Record,			P("media-record", "rec")},
-	{Icons::Refresh,		P("view-refresh", "")},
-	{Icons::Remove,			P("list-remove", "")},
-	{Icons::Rename,			P("edit-copy", "")},
-	{Icons::Repeat1,		P("rep_1", "rep_1")},
-	{Icons::RepeatAll,		P("rep_all", "rep_all")},
-	{Icons::Save,			P("document-save", "")},
-	{Icons::SaveAs,			P("document-save-as", "")},
-	{Icons::Search,			P("edit-find", "")},
-	{Icons::Shuffle,		P("shuffle", "shuffle")},
-	{Icons::Shutdown,		P("system-shutdown", "")},
-	{Icons::Star,			P("star.png", "star.png")},
-	{Icons::StarDisabled,	P("star_disabled.png", "star_disabled.png")},
-	{Icons::Stop,			P("media-playback-stop", "stop")},
-	{Icons::Table,			P("format-justify-fill", "")},
-	{Icons::Undo,			P("edit-undo", "")},
-	{Icons::Vol1,			P("audio-volume-low", "")},
-	{Icons::Vol2,			P("audio-volume-medium", "")},
-	{Icons::Vol3,			P("audio-volume-high", "")},
-	{Icons::VolMute,		P("audio-volume-muted", "")},
-};
-
-
-#ifdef Q_OS_WIN
-QString get_win_icon_name(const QString& name)
-{
-	QString icon_name = QString(":/IconsWindows/") + name + ".png";
-	return icon_name;
+	auto standardTheme = QString();
+	const QMap<Icons::IconName, QPair<QString, QString>> iconMap =
+		{
+			{Icons::AudioFile,    {"audio-x-generic",      "cd.png"}},
+			{Icons::Append,       {"list-add",             "append"}},
+			{Icons::Backward,     {"media-skip-backward",  "bwd"}},
+			{Icons::Clear,        {"edit-clear",           ""}},
+			{Icons::Close,        {"window-close",         ""}},
+			{Icons::Delete,       {"edit-delete",          ""}},
+			{Icons::Dynamic,      {"dynamic",              "dynamic"}},
+			{Icons::Edit,         {"edit-copy",            ""}},
+			{Icons::Exit,         {"application-exit",     ""}},
+			{Icons::File,         {"text-x-generic",       ""}},
+			{Icons::FileManager,  {"system-file-manager",  ""}},
+			{Icons::Folder,       {"folder",               ""}},
+			{Icons::FolderOpen,   {"folder-open",          ""}},
+			{Icons::Forward,      {"media-skip-forward",   "fwd"}},
+			{Icons::Gapless,      {"gapless",              "gapless"}},
+			{Icons::Grid,         {"view-grid",            ""}},
+			{Icons::ImageFile,    {"image-x-generic",      ""}},
+			{Icons::Info,         {"dialog-information",   ""}},
+			{Icons::LocalLibrary, {"audio-x-generic",      "append"}},
+			{Icons::Lyrics,       {"format-justify-left",  ""}},
+			{Icons::New,          {"document-new",         ""}},
+			{Icons::Next,         {"media-skip-forward",   "fwd"}},
+			{Icons::Open,         {"document-open",        ""}},
+			{Icons::Pause,        {"media-playback-pause", "pause"}},
+			{Icons::Play,         {"media-playback-start", "play"}},
+			{Icons::PlaySmall,    {"media-playback-start", ""}},
+			{Icons::PlayBorder,   {"media-playback-start", ""}},
+			{Icons::PlaylistFile, {"text-x-generic",       ""}},
+			{Icons::Preferences,  {"applications-system",  ""}},
+			{Icons::Previous,     {"media-skip-backward",  "bwd"}},
+			{Icons::Record,       {"media-record",         "rec"}},
+			{Icons::Refresh,      {"view-refresh",         ""}},
+			{Icons::Remove,       {"list-remove",          ""}},
+			{Icons::Rename,       {"edit-copy",            ""}},
+			{Icons::Repeat1,      {"rep_1",                "rep_1"}},
+			{Icons::RepeatAll,    {"rep_all",              "rep_all"}},
+			{Icons::Save,         {"document-save",        ""}},
+			{Icons::SaveAs,       {"document-save-as",     ""}},
+			{Icons::Search,       {"edit-find",            ""}},
+			{Icons::Shuffle,      {"shuffle",              "shuffle"}},
+			{Icons::Shutdown,     {"system-shutdown",      ""}},
+			{Icons::Star,         {"star.png",             "star.png"}},
+			{Icons::StarDisabled, {"star_disabled.png",    "star_disabled.png"}},
+			{Icons::Stop,         {"media-playback-stop",  "stop"}},
+			{Icons::Table,        {"format-justify-fill",  ""}},
+			{Icons::Undo,         {"edit-undo",            ""}},
+			{Icons::Vol1,         {"audio-volume-low",     ""}},
+			{Icons::Vol2,         {"audio-volume-medium",  ""}},
+			{Icons::Vol3,         {"audio-volume-high",    ""}},
+			{Icons::VolMute,      {"audio-volume-muted",   ""}},
+		};
 }
-#endif
 
 QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 {
-	QString std_name = s_icon_map[spec].first;
-	QString dark_name = s_icon_map[spec].second;
+	const auto standardName = iconMap[spec].first;
+	const auto darkName = iconMap[spec].second;
 
-	QList<QIcon> icons
-	{
-		QIcon::fromTheme(std_name),			// from theme
-		Gui::Util::icon(std_name, Gui::Util::MintY),			// new icons
-		Gui::Util::icon(dark_name, Gui::Util::NoTheme)			// old icons
-	};
+	const auto icons = std::vector
+		{
+			QIcon::fromTheme(standardName),
+			Gui::Util::icon(standardName, Gui::Util::MintY),
+			Gui::Util::icon(darkName, Gui::Util::NoTheme)
+		};
 
-	int index = 0;
-	bool is_dark = Style::isDark();
+	int index;
+	const auto isDark = Style::isDark();
 
 	if(mode == Icons::IconMode::ForceStdIcon)
 	{
@@ -130,114 +120,74 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 
 	else
 	{
-		if(is_dark)
-		{
-			index = 1;
-		}
-
-		else
-		{
-			index = 0;
-		}
+		index = (isDark) ? 1 : 0;
 	}
 
-	QIcon icon = icons[index];
-	if(icon.isNull())
-	{
-		index = 2;
-		icon = icons[index];
-	}
-
-	return icon;
+	return (!icons[index].isNull())
+	       ? icons[index]
+	       : icons[2];
 }
-
 
 QIcon Icons::icon(IconName spec)
 {
 	changeTheme();
 
-	if(sForceStandardIcons){
-		return icon(spec, IconMode::ForceStdIcon);
-	}
-
-	else {
-		return icon(spec, IconMode::Automatic);
-	}
+	return (GetSetting(Set::Icon_ForceInDarkTheme))
+	       ? icon(spec, IconMode::ForceStdIcon)
+	       : icon(spec, IconMode::Automatic);
 }
 
 void Icons::changeTheme()
 {
-	QString theme = GetSetting(Set::Icon_Theme);
-	if(theme.isEmpty()){
-		theme = Icons::systemTheme();
-	}
+	const static auto standardTheme = QIcon::themeName();
+	const auto settingTheme = GetSetting(Set::Icon_Theme);
 
-	QIcon::setThemeName(theme);
+	QIcon::setThemeName
+		(
+			(!settingTheme.isEmpty())
+			? settingTheme
+			: standardTheme
+		);
 }
 
-QPixmap Icons::pixmap(Icons::IconName spec)
+QPixmap Icons::pixmap(Icons::IconName spec, const QSize& size)
 {
-	if(sForceStandardIcons){
-		return pixmap(spec, IconMode::ForceStdIcon);
-	}
-
-	return pixmap(spec, IconMode::Automatic);
+	return (GetSetting(Set::Icon_ForceInDarkTheme))
+	       ? pixmap(spec, size, IconMode::ForceStdIcon)
+	       : pixmap(spec, size, IconMode::Automatic);
 }
 
-QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
+QPixmap Icons::pixmap(Icons::IconName spec, const QSize& size, Icons::IconMode mode)
 {
-	QString std_name = s_icon_map[spec].first;
-	QString dark_name = s_icon_map[spec].second;
+	const auto standardName = iconMap[spec].first;
+	const auto darkName = iconMap[spec].second;
 
 	QPixmap pm;
 
-	if(mode == IconMode::ForceSayonaraIcon){
-		pm = Gui::Util::pixmap(dark_name, Gui::Util::NoTheme);
+	if(mode == IconMode::ForceSayonaraIcon)
+	{
+		pm = Gui::Util::pixmap(darkName, Gui::Util::NoTheme);
 	}
 
 	else if(mode == IconMode::ForceStdIcon)
 	{
-		QIcon icon = QIcon::fromTheme(std_name);
+		const auto icon = QIcon::fromTheme(standardName);
 		if(!icon.isNull())
 		{
-			QList<QSize> sizes = icon.availableSizes();
-			::Util::Algorithm::sort(sizes, [](QSize sz1, QSize sz2){
-				return (sz1.width() < sz2.width());
-			});
-
-			QSize sz(32, 32);
-			if(!sizes.isEmpty())
-			{
-				sz = sizes.last();
-			}
-
-			pm = icon.pixmap(sz);
+			pm = icon.pixmap(size);
 		}
 	}
 
-	else {
-		pm = Gui::Util::pixmap(std_name, Gui::Util::MintY);
+	else
+	{
+		pm = Gui::Util::pixmap(standardName, Gui::Util::MintY);
 	}
 
 	if(pm.isNull())
 	{
-		if(!Style::isDark())
-		{
-	#ifdef Q_OS_WIN
-			pm = QIcon(get_win_icon_name(std_name)).pixmap(QSize(32,32));
-	#else
-			pm = QIcon::fromTheme(std_name).pixmap(QSize(32,32));
-	#endif
-		}
-
-		else
-		{
-	#ifdef Q_OS_WIN
-			pm = QIcon(get_win_icon_name(std_name)).pixmap(QSize(32,32));
-	#else
-			pm = Gui::Util::pixmap(dark_name, Gui::Util::MintY);
-	#endif
-		}
+		pm = (!Style::isDark())
+		     ? QIcon::fromTheme(standardName).pixmap(QSize(32, 32))
+		     : Gui::Util::pixmap(darkName, Gui::Util::MintY);
 	}
 
 	if(!pm.isNull())
@@ -245,20 +195,15 @@ QPixmap Icons::pixmap(Icons::IconName spec, Icons::IconMode mode)
 		return pm;
 	}
 
-	return Gui::Util::pixmap(dark_name, Gui::Util::NoTheme);
+	return Gui::Util::pixmap(darkName, Gui::Util::NoTheme);
 }
 
-void Icons::setSystemTheme(const QString& name)
+QString Icons::defaultSystemTheme()
 {
-	sSystemTheme = strdup(name.toLocal8Bit().data());
+	return standardTheme;
 }
 
-QString Icons::systemTheme()
+void Icons::setDefaultSystemTheme(const QString& themeName)
 {
-	return QString(sSystemTheme);
-}
-
-void Icons::forceStandardIcons(bool b)
-{
-	sForceStandardIcons = b;
+	standardTheme = themeName;
 }

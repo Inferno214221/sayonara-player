@@ -47,7 +47,7 @@ GUI_Shutdown::~GUI_Shutdown()
 
 void GUI_Shutdown::skinChanged()
 {
-	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Shutdown));
+	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Shutdown, ui->lab_icon->size()));
 }
 
 

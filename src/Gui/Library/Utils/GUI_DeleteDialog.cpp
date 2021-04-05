@@ -84,7 +84,8 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 
 	this->setFocus();
 
-	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info));
+	const auto height = this->fontMetrics().height() * 2;
+	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info, QSize{height, height}));
 	ui->cbOnlyFromLibrary->setText(tr("Only from library"));
 	ui->labWarning->setText(Lang::get(Lang::Warning) + "!");
 	ui->labInfo->setText

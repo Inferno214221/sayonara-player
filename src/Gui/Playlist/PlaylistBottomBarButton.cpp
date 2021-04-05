@@ -27,22 +27,22 @@ using Playlist::BottomBarButton;
 
 struct BottomBarButton::Private
 {
-	QPixmap pixmap;
+	QIcon icon;
 
-	Private(const QPixmap& pm) : pixmap(pm) {}
+	Private(const QIcon& icon) : icon(icon) {}
 };
 
-BottomBarButton::BottomBarButton(const QPixmap& pm, QWidget* parent) :
+BottomBarButton::BottomBarButton(const QIcon& icon, QWidget* parent) :
 	QPushButton(parent)
 {
-	m = Pimpl::make<Private>(pm);
+	m = Pimpl::make<Private>(icon);
 }
 
 BottomBarButton::~BottomBarButton() = default;
 
-void BottomBarButton::setPixmap(const QPixmap& pm)
+void BottomBarButton::setIcon(const QIcon& icon)
 {
-	m->pixmap = pm;
+	m->icon = icon;
 }
 
 void BottomBarButton::paintEvent(QPaintEvent* e)
@@ -52,7 +52,7 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
 		QPushButton::paintEvent(e);
 	}
 
-    if (!m->pixmap.isNull())
+    if (!m->icon.isNull())
     {
 		const int w = this->width();
 		const int h = this->height();
@@ -71,7 +71,7 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
 			pm_h++;
 		}
 
-		QPixmap pm = m->pixmap.scaled(pm_w, pm_h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		QPixmap pm = m->icon.pixmap(pm_w, pm_h);;
 
         QPainter painter(this);
         if(this->isChecked())

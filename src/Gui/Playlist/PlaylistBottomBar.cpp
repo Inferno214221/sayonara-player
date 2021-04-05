@@ -96,13 +96,13 @@ void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker)
 	m = Pimpl::make<Private>(dynamicPlaybackChecker);
 
 	using namespace Gui;
-	m->btnRep1 = new BottomBarButton(Icons::pixmap(Icons::Repeat1, Icons::ForceSayonaraIcon), this);
-	m->btnRepall = new BottomBarButton(Icons::pixmap(Icons::RepeatAll, Icons::ForceSayonaraIcon), this);
-	m->btnAppend = new BottomBarButton(Icons::pixmap(Icons::Append, Icons::ForceSayonaraIcon), this);
-	m->btnDynamic = new BottomBarButton(Icons::pixmap(Icons::Dynamic, Icons::ForceSayonaraIcon), this);
-	m->btnShuffle = new BottomBarButton(Icons::pixmap(Icons::Shuffle, Icons::ForceSayonaraIcon), this);
-	m->btnGapless = new BottomBarButton(Icons::pixmap(Icons::Gapless, Icons::ForceSayonaraIcon), this);
-	m->btnShutdown = new BottomBarButton(Icons::pixmap(Icons::Shutdown), this);
+	m->btnRep1 = new BottomBarButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), this);
+	m->btnRepall = new BottomBarButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), this);
+	m->btnAppend = new BottomBarButton(Icons::icon(Icons::Append, Icons::ForceSayonaraIcon), this);
+	m->btnDynamic = new BottomBarButton(Icons::icon(Icons::Dynamic, Icons::ForceSayonaraIcon), this);
+	m->btnShuffle = new BottomBarButton(Icons::icon(Icons::Shuffle, Icons::ForceSayonaraIcon), this);
+	m->btnGapless = new BottomBarButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), this);
+	m->btnShutdown = new BottomBarButton(Icons::icon(Icons::Shutdown), this);
 
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);

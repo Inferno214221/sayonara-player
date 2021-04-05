@@ -32,19 +32,19 @@
 #include <QDir>
 #include <QRadioButton>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 class IconRadioButton : public QRadioButton
 {
-private:
-	QString mTheme;
+	private:
+		QString mTheme;
 
-public:
-	IconRadioButton(const QString& text, QWidget* parent);
-	~IconRadioButton();
+	public:
+		IconRadioButton(const QString& text, QWidget* parent);
+		~IconRadioButton();
 
-	void setTheme(const QString& theme);
-	QString theme() const;
+		void setTheme(const QString& theme);
+		QString theme() const;
 };
 
 static
@@ -52,12 +52,14 @@ IconRadioButton* addRadioButton(QWidget* widget, const QString& text, const QStr
 {
 	QIcon::setThemeName(themeName);
 	QIcon icon = QIcon::fromTheme("media-playback-start");
-	if(icon.isNull() && !isSystemTheme){
+	if(icon.isNull() && !isSystemTheme)
+	{
 		return nullptr;
 	}
 
 	auto* rb = new IconRadioButton(text, widget);
-	if(!isSystemTheme){
+	if(!isSystemTheme)
+	{
 		rb->setTheme(themeName);
 	}
 
@@ -73,7 +75,7 @@ struct GUI_IconPreferences::Private
 
 	Private()
 	{
-		systemTheme = Gui::Icons::systemTheme();
+		systemTheme = Gui::Icons::defaultSystemTheme();
 		originalTheme = GetSetting(Set::Icon_Theme);
 	}
 };
@@ -93,7 +95,8 @@ QString GUI_IconPreferences::actionName() const
 
 bool GUI_IconPreferences::commit()
 {
-	if(!ui) {
+	if(!ui)
+	{
 		return true;
 	}
 
@@ -111,7 +114,6 @@ bool GUI_IconPreferences::commit()
 	}
 
 	bool forceStandardIcons = ui->cbAlsoUseInDarkStyle->isChecked();
-	Gui::Icons::forceStandardIcons(forceStandardIcons);
 	SetSetting(Set::Icon_ForceInDarkTheme, forceStandardIcons);
 
 	Set::shout<Set::Player_Style>();
@@ -121,7 +123,8 @@ bool GUI_IconPreferences::commit()
 
 void GUI_IconPreferences::revert()
 {
-	if(!ui) {
+	if(!ui)
+	{
 		return;
 	}
 
@@ -141,7 +144,7 @@ static void applyIcon(const QString& iconName, const QString& themeName, QLabel*
 	QIcon::setThemeName(themeName);
 	QIcon icon = QIcon::fromTheme(iconName);
 	label->setPixmap(icon.pixmap(32, 32)
-		.scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+		                 .scaled(32, 32, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 }
 
 void GUI_IconPreferences::themeChanged(const QString& theme)
@@ -163,7 +166,8 @@ void GUI_IconPreferences::radioButtonToggled(bool b)
 
 void GUI_IconPreferences::initUi()
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
@@ -176,12 +180,12 @@ void GUI_IconPreferences::initUi()
 	QLayout* layout = scrollWidget->layout();
 	{ // system theme
 		IconRadioButton* rbSystemTheme = addRadioButton
-		(
-			scrollWidget,
-			tr("System theme") + " (" + m->systemTheme + ")",
-			QString(),
-			true
-		);
+			(
+				scrollWidget,
+				tr("System theme") + " (" + m->systemTheme + ")",
+				QString(),
+				true
+			);
 
 		rbSystemTheme->setStyleSheet("font-weight: bold;");
 		connect(rbSystemTheme, &QRadioButton::toggled, this, &GUI_IconPreferences::radioButtonToggled);
@@ -191,7 +195,7 @@ void GUI_IconPreferences::initUi()
 	}
 
 	QStringList iconPaths = QIcon::themeSearchPaths();
-	Algorithm::sort(iconPaths, [](const QString& s1, const QString& s2){
+	Algorithm::sort(iconPaths, [](const QString& s1, const QString& s2) {
 		return (s1.size() < s2.size() || s1 < s2);
 	});
 	QIcon::setThemeSearchPaths(iconPaths);
@@ -201,24 +205,28 @@ void GUI_IconPreferences::initUi()
 		const QDir d(iconPath);
 		const QStringList subdirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
 
-		if(subdirs.isEmpty()){
+		if(subdirs.isEmpty())
+		{
 			continue;
 		}
 
 		for(const QString& subdir : subdirs)
 		{
-			if(subdir.isEmpty() || (subdir == m->systemTheme)) {
+			if(subdir.isEmpty() || (subdir == m->systemTheme))
+			{
 				continue;
 			}
 
 			IconRadioButton* rb = addRadioButton(scrollWidget, subdir, subdir, false);
-			if(!rb) {
+			if(!rb)
+			{
 				continue;
 			}
 
 			connect(rb, &QRadioButton::toggled, this, &GUI_IconPreferences::radioButtonToggled);
 
-			if(m->originalTheme == QIcon::themeName()) {
+			if(m->originalTheme == QIcon::themeName())
+			{
 				rb->setStyleSheet("font-weight: bold;");
 			}
 
@@ -239,9 +247,9 @@ void GUI_IconPreferences::languageChanged()
 	if(itSystemTheme != m->radioButtons.end())
 	{
 		IconRadioButton* rb = *itSystemTheme;
-		const QString standardTheme(Gui::Icons::systemTheme());
-
-		rb->setText(tr("System theme") + " (" + standardTheme + ")");
+		rb->setText(
+			tr("System theme") + ' ' + QString("(%1)").arg(Gui::Icons::defaultSystemTheme())
+		);
 	}
 }
 
@@ -251,7 +259,8 @@ void GUI_IconPreferences::showEvent(QShowEvent* e)
 	Gui::Widget::showEvent(e);
 }
 
-IconRadioButton::IconRadioButton(const QString& text, QWidget* parent) : QRadioButton(text, parent) {}
+IconRadioButton::IconRadioButton(const QString& text, QWidget* parent) :
+	QRadioButton(text, parent) {}
 
 IconRadioButton::~IconRadioButton() = default;
 

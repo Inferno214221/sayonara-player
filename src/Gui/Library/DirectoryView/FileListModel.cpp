@@ -283,9 +283,10 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 			auto* pixmap = m->cache.find(filename);
 			if(!pixmap || pixmap->isNull())
 			{
-				m->cache.insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile));
+				const auto size = QSize(32, 32);
+				m->cache.insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile, size));
 
-				auto* worker = new IconWorkerThread(QSize(32, 32), filename);
+				auto* worker = new IconWorkerThread(size, filename);
 				auto* t = new QThread();
 				worker->moveToThread(t);
 

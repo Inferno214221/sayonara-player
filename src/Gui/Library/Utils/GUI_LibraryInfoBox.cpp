@@ -86,8 +86,9 @@ void GUI_LibraryInfoBox::languageChanged()
 
 void GUI_LibraryInfoBox::skinChanged()
 {
+	const auto height = ui->lab_icon->height();
 	ui->lab_path->setText(Util::createLink( m->libraryInfo.path(), Style::isDark()));
-	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary));
+	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary, QSize(height, height)));
 }
 
 void GUI_LibraryInfoBox::showEvent(QShowEvent* e)

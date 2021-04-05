@@ -24,7 +24,7 @@
 #include "Utils/Pimpl.h"
 #include <QPushButton>
 
-class QPixmap;
+class QIcon;
 
 namespace Playlist
 {
@@ -39,10 +39,10 @@ namespace Playlist
 		PIMPL(BottomBarButton)
 
 		public:
-			BottomBarButton(const QPixmap& pm, QWidget* parent);
+			BottomBarButton(const QIcon& icon, QWidget* parent);
 			~BottomBarButton() override;
 
-			void setPixmap(const QPixmap& pm);
+			void setIcon(const QIcon& icon);
 
 		private:
 			using QPushButton::setIcon;

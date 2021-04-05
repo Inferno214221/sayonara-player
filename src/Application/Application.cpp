@@ -171,7 +171,7 @@ struct Application::Private
 	Private(Application* app) :
 		shutdownTriggered {false}
 	{
-		QApplication::setApplicationName("sayonara");
+		QApplication::setApplicationName(QStringLiteral("sayonara"));
 		Util::copyFromLegacyLocations();
 
 		metatypeRegistry = new MetaTypeRegistry();
@@ -203,8 +203,7 @@ struct Application::Private
 
 		Shutdown::instance()->registerPlaymanager(playManager);
 
-		Gui::Icons::setSystemTheme(QIcon::themeName());
-		Gui::Icons::forceStandardIcons(GetSetting(Set::Icon_ForceInDarkTheme));
+		Gui::Icons::setDefaultSystemTheme(QIcon::themeName());
 
 		Private::initResources();
 
@@ -273,7 +272,6 @@ Application::Application(int& argc, char** argv) :
 	m = Pimpl::make<Private>(this);
 
 	QApplication::setQuitOnLastWindowClosed(false);
-	QApplication::setApplicationName("sayonara");
 }
 
 Application::~Application()
