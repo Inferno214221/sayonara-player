@@ -145,7 +145,7 @@ namespace Playlist
 			int exists(const QString& name) const;
 
 		private slots:
-			void trackChanged();
+			void trackChanged(int oldIndex, int newIndex);
 			void previous();
 			void next();
 			void wakeUp();

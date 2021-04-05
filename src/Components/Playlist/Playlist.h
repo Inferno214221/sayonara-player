@@ -54,7 +54,7 @@ namespace Playlist
 			void sigDeleteFilesRequested(const MetaDataList& tracks);
 
 			void sigItemsChanged(int index);
-			void sigTrackChanged();
+			void sigTrackChanged(int oldIndex, int newIndex);
 			void sigStopped();
 			void sigBusyChanged(bool b);
 			void sigCurrentScannedFileChanged(const QString& currentFile);
@@ -66,7 +66,7 @@ namespace Playlist
 			int createPlaylist(const MetaDataList& tracks);
 
 			virtual int currentTrackIndex() const;
-			bool currentTrack(MetaData& metadata) const;
+			bool currentTrack(MetaData& track) const;
 
 			int index() const;
 			void setIndex(int idx);
@@ -91,16 +91,16 @@ namespace Playlist
 
 			void reverse();
 
-			const MetaData& track(int idx) const override;
+			const MetaData& track(int index) const override;
 			const MetaDataList& tracks() const override;
 
-			void insertTracks(const MetaDataList& lst, int tgt);
-			void appendTracks(const MetaDataList& lst);
+			void insertTracks(const MetaDataList& tracks, int targetIndex);
+			void appendTracks(const MetaDataList& tracks);
 			void removeTracks(const IndexSet& indexes);
 			void replaceTrack(int idx, const MetaData& track);
 			void clear();
 
-			IndexSet moveTracks(const IndexSet& indexes, int tgt);
+			IndexSet moveTracks(const IndexSet& index, int targetRow);
 			IndexSet copyTracks(const IndexSet& indexes, int tgt);
 
 			void findTrack(int idx);
@@ -121,7 +121,7 @@ namespace Playlist
 
 		private:
 			int calcShuffleTrack();
-			void setCurrentTrack(int idx);
+			void setCurrentTrack(int index);
 			void setChanged(bool b) override;
 	};
 }

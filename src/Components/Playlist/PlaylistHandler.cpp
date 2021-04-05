@@ -249,7 +249,7 @@ void Handler::wakeUp()
 	next();
 }
 
-void Handler::trackChanged()
+void Handler::trackChanged([[maybe_unused]] int oldIndex, [[maybe_unused]] int newIndex)
 {
 	auto* playlist = static_cast<Playlist*>(sender());
 	if(playlist->currentTrackIndex() >= 0)

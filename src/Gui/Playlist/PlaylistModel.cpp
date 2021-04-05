@@ -94,7 +94,6 @@ struct Model::Private
 	int oldRowCount;
 	int dragIndex;
 	int rowHeight;
-	int currentTrack;
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
 	PlaylistCreator* playlistCreator;
@@ -103,7 +102,6 @@ struct Model::Private
 		oldRowCount(0),
 		dragIndex(-1),
 		rowHeight(20),
-		currentTrack(playlistArg->currentTrackIndex()),
 		playlist(playlistArg),
 		playlistCreator {playlistCreator} {}
 };
@@ -137,6 +135,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 {
 	const auto row = index.row();
 	const auto col = index.column();
+	const auto isCurrentTrack = (row == m->playlist->currentTrackIndex());
 
 	if(!Util::between(row, m->playlist->count()))
 	{
@@ -147,7 +146,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	{
 		if(col == ColumnName::TrackNumber)
 		{
-			return (row == m->currentTrack)
+			return (isCurrentTrack)
 			       ? QString()
 			       : QString("%1.").arg(row + 1);
 		}
@@ -162,8 +161,6 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 		return QVariant();
 	}
-
-
 
 	else if(role == Qt::TextAlignmentRole)
 	{
@@ -241,7 +238,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if(role == Model::CurrentPlayingRole)
 	{
-		return (row == m->currentTrack);
+		return isCurrentTrack;
 	}
 
 	return QVariant();
@@ -574,16 +571,17 @@ void Model::playlistChanged([[maybe_unused]] int playlistIndex)
 	emit sigDataReady();
 }
 
-void Model::currentTrackChanged()
+void Model::currentTrackChanged(int oldIndex, int newIndex)
 {
-	if(m->currentTrack >= 0)
+	if(oldIndex >= 0)
 	{
-		emit dataChanged(index(m->currentTrack, 0), index(m->currentTrack, columnCount() - 1));
+		emit dataChanged(index(oldIndex, 0), index(oldIndex, columnCount() - 1));
 	}
 
-	const auto row = m->playlist->currentTrackIndex();
-	m->currentTrack = row;
-	emit dataChanged(index(row, 0), index(row, columnCount() - 1));
+	if(newIndex >= 0)
+	{
+		emit dataChanged(index(newIndex, 0), index(newIndex, columnCount() - 1));
+	}
 }
 
 void Playlist::Model::deleteTracks(const IndexSet& rows)

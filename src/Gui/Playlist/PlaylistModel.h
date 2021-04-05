@@ -125,7 +125,7 @@ namespace Playlist
 
 		private slots:
 			void playlistChanged(int playlistIndex);
-			void currentTrackChanged();
+			void currentTrackChanged(int oldIndex, int newIndex);
 
 		private:
 			void lookChanged();
