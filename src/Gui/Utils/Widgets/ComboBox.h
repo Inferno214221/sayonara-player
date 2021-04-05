@@ -26,21 +26,17 @@
 
 namespace Gui
 {
-	/**
-	 * @brief A custom combobox which also uses the Gui::ComboBoxDelegate
-	 * @ingroup Widgets
-	 */
 	class ComboBox :
-			public Gui::WidgetTemplate<QComboBox>
+		public Gui::WidgetTemplate<QComboBox>
 	{
 		Q_OBJECT
 
 		public:
-			explicit ComboBox(QWidget* parent=nullptr);
+			explicit ComboBox(QWidget* parent = nullptr);
 			virtual ~ComboBox() override;
 
 		protected:
-			void changeEvent(QEvent* e) override;
+			void skinChanged() override;
 	};
 }
 

@@ -20,35 +20,29 @@
 
 #include "ComboBox.h"
 #include "Gui/Utils/Delegates/ComboBoxDelegate.h"
-#include "Gui/Utils/Delegates/StyledItemDelegate.h"
-
 #include <QAbstractItemView>
-#include <QEvent>
+#include <QLineEdit>
+
+#include "Gui/Utils/Style.h"
 
 using Gui::ComboBox;
-using Gui::WidgetTemplate;
 
 ComboBox::ComboBox(QWidget* parent) :
-	WidgetTemplate<QComboBox>(parent)
+	Gui::WidgetTemplate<QComboBox>(parent)
 {
 	this->setItemDelegate(new Gui::ComboBoxDelegate(this));
 }
 
 ComboBox::~ComboBox() = default;
 
-void ComboBox::changeEvent(QEvent* event)
+void ComboBox::skinChanged()
 {
-	WidgetTemplate<QComboBox>::changeEvent(event);
+	if(view() && view()->parentWidget())
+	{
+		const auto stylesheet = (Style::isDark())
+			? QStringLiteral("background: #505050; border: none;")
+			: QString();
 
-	if(event->type() != QEvent::StyleChange){
-		return;
+		view()->parentWidget()->setStyleSheet(stylesheet);
 	}
-
-	QFontMetrics f(this->font());
-	int h = f.height();
-	h = std::max(h, 16);
-
-	this->setIconSize(QSize(h, h));
-	update();
 }
-

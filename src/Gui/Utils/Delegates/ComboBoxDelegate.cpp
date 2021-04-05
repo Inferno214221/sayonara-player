@@ -19,27 +19,24 @@
  */
 
 #include "ComboBoxDelegate.h"
-#include <QVariant>
+#include "Gui/Utils/Style.h"
+
 #include <QModelIndex>
+#include <QSize>
 
 using Gui::ComboBoxDelegate;
 
 ComboBoxDelegate::ComboBoxDelegate(QObject* parent) :
 	QStyledItemDelegate(parent) {}
 
-ComboBoxDelegate::~ComboBoxDelegate() {}
+ComboBoxDelegate::~ComboBoxDelegate() = default;
 
-void ComboBoxDelegate::paint(QPainter *painter, const QStyleOptionViewItem & option, const QModelIndex&  index) const
+QSize ComboBoxDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	QStyledItemDelegate::paint(painter, option, index);
-}
+	const auto defaultSize = QStyledItemDelegate::sizeHint(option, index);
+	const auto height = option.fontMetrics.height();
 
-
-QSize ComboBoxDelegate::sizeHint(const QStyleOptionViewItem &option, const QModelIndex& index) const
-{
-	Q_UNUSED(index)
-
-	QFontMetrics fm = option.fontMetrics;
-
-	return QSize(1, std::max(std::max(fm.height() + 4, 28), option.decorationSize.height() + 4));
+	return (Style::isDark())
+	       ? QSize(defaultSize.width(), std::min(height * 2, height + 12))
+	       : defaultSize;
 }

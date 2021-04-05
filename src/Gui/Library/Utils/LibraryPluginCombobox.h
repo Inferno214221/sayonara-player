@@ -24,8 +24,6 @@
 #include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/ComboBox.h"
 
-class QEvent;
-
 namespace Library
 {
 	class PluginCombobox :
@@ -41,14 +39,13 @@ namespace Library
 		public slots:
 			void setupActions();
 
-		private slots:
-			void actionTriggered(bool b);
-			void currentLibraryChanged();
-			void currentIndexChanged(int index);
-
 		protected:
 			void skinChanged() override;
 			void languageChanged() override;
+
+		private slots:
+			void currentLibraryChanged();
+			void currentIndexChanged(int index);
 	};
 }
 

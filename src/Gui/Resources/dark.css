@@ -388,7 +388,7 @@ QComboBox QAbstractItemView:focus {
     border: 1px solid #202020;
     selection-background-color: #424e72;
     margin: 0 0;
-    padding: 0 0
+    padding: 0 0;
 
 }
 

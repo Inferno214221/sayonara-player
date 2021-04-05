@@ -24,152 +24,126 @@
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 
-#include "Utils/Algorithm.h"
-#include "Utils/Logger/Logger.h"
-
 #include <QList>
 #include <QAction>
-#include <QSize>
 #include <QFontMetrics>
 
-using Library::AbstractContainer;
-using Library::PluginHandler;
-using Library::PluginCombobox;
-using Library::PluginComboBoxDelegate;
-
-namespace Algorithm = Util::Algorithm;
-
-struct PluginCombobox::Private
+namespace
 {
-	QList<QAction*> actions;
-};
-
-PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
-	ComboBox(parent)
-{
-	m = Pimpl::make<Private>();
-
-	this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
-	this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-	this->setFrame(false);
-	this->setIconSize(QSize(16, 16));
-	this->setFocusPolicy(Qt::ClickFocus);
-
-	this->setItemDelegate(new PluginComboBoxDelegate(this));
-
-	auto* lph = PluginHandler::instance();
-	connect(lph, &PluginHandler::sigLibrariesChanged, this, &PluginCombobox::setupActions);
-	connect(lph, &PluginHandler::sigCurrentLibraryChanged, this, &PluginCombobox::currentLibraryChanged);
-
-	connect(this, combo_activated_int, this, &PluginCombobox::currentIndexChanged);
-
-	setupActions();
-	setCurrentText(text);
+	QString getElidedText(const Library::AbstractContainer* container, const QFontMetrics& fontMetrics)
+	{
+		return fontMetrics.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
+	}
 }
 
-PluginCombobox::~PluginCombobox() = default;
-
-void PluginCombobox::setupActions()
+namespace Library
 {
-	QFontMetrics fm(this->font());
-
-	this->clear();
-
-	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
-	for(const AbstractContainer* container : libraries)
+	struct PluginCombobox::Private
 	{
-		const auto icon = container->icon();
+		QList<QAction*> actions;
+		PluginHandler* pluginHandler {PluginHandler::instance()};
+	};
 
-		QString display_name = fm.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
-		this->addItem(icon, display_name, container->name());
+	PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
+		ComboBox(parent)
+	{
+		m = Pimpl::make<Private>();
+
+		this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
+		this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+		this->setFocusPolicy(Qt::ClickFocus);
+		this->setItemDelegate(new PluginComboBoxDelegate(this));
+
+		connect(m->pluginHandler, &PluginHandler::sigLibrariesChanged, this, &PluginCombobox::setupActions);
+		connect(m->pluginHandler,
+		        &PluginHandler::sigCurrentLibraryChanged,
+		        this,
+		        &PluginCombobox::currentLibraryChanged);
+
+		connect(this, combo_activated_int, this, &PluginCombobox::currentIndexChanged);
+
+		setupActions();
+		setCurrentText(text);
 	}
 
-	this->insertSeparator(1);
-	this->setItemIcon(1, QIcon());
+	PluginCombobox::~PluginCombobox() = default;
 
-	currentLibraryChanged();
-}
-
-void PluginCombobox::actionTriggered(bool b)
-{
-	if(!b)
+	void PluginCombobox::setupActions()
 	{
-		return;
-	}
+		this->clear();
 
-	auto* action = dynamic_cast<QAction*>(sender());
-	QString name = action->data().toString();
-
-	PluginHandler::instance()->setCurrentLibrary(name);
-	for(QAction* libraryAction : Algorithm::AsConst(m->actions))
-	{
-		if(libraryAction == action)
+		const auto containers = m->pluginHandler->libraries(true);
+		for(const auto* container : containers)
 		{
-			continue;
+			const auto icon = container->icon();
+			const auto displayName = getElidedText(container, this->fontMetrics());
+
+			this->addItem(icon, displayName, container->name());
 		}
 
-		libraryAction->setChecked(false);
-	}
-}
+		this->insertSeparator(1);
+		this->setItemIcon(1, QIcon());
 
-void PluginCombobox::currentLibraryChanged()
-{
-	AbstractContainer* currentLibrary = PluginHandler::instance()->currentLibrary();
-	if(!currentLibrary)
-	{
-		return;
+		currentLibraryChanged();
 	}
 
-	QString name = currentLibrary->name();
-	for(int i = 0; i < this->count(); i++)
+	void PluginCombobox::currentLibraryChanged()
 	{
-		if(this->itemData(i).toString().compare(name) == 0)
+		auto* currentLibrary = m->pluginHandler->currentLibrary();
+		if(!currentLibrary)
 		{
-			if(i != this->currentIndex())
+			return;
+		}
+
+		const auto name = currentLibrary->name();
+
+		for(auto i = 0; i < this->count(); i++)
+		{
+			if(this->itemData(i).toString() == name)
 			{
-				this->setCurrentIndex(i);
+				if(i != this->currentIndex())
+				{
+					this->setCurrentIndex(i);
+				}
+
+				break;
+			}
+		}
+	}
+
+	void PluginCombobox::currentIndexChanged(int index)
+	{
+		m->pluginHandler->setCurrentLibrary(index - 2);
+	}
+
+	void PluginCombobox::languageChanged()
+	{
+		if(m)
+		{
+			setupActions();
+		}
+	}
+
+	void PluginCombobox::skinChanged()
+	{
+		if(!m)
+		{
+			return;
+		}
+
+		auto i = 0;
+
+		const auto containers = m->pluginHandler->libraries(true);
+		for(const auto* container : containers)
+		{
+			if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())
+			{
+				i++;
 			}
 
-			break;
-		}
-	}
-}
-
-void PluginCombobox::currentIndexChanged(int index)
-{
-	PluginHandler::instance()->setCurrentLibrary(index - 2);
-}
-
-void PluginCombobox::languageChanged()
-{
-	if(!m)
-	{
-		return;
-	}
-
-	setupActions();
-}
-
-void PluginCombobox::skinChanged()
-{
-	if(!m)
-	{
-		return;
-	}
-
-	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
-	int i = 0;
-
-	for(const AbstractContainer* container : libraries)
-	{
-		const auto icon = container->icon();
-
-		if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())
-		{
+			const auto icon = container->icon();
+			this->setItemIcon(i, icon);
 			i++;
 		}
-
-		this->setItemIcon(i, icon);
-		i++;
 	}
 }

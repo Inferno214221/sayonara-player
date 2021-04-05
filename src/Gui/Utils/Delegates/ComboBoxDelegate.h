@@ -25,21 +25,15 @@
 
 namespace Gui
 {
-	/**
-	 * @brief The ComboBoxDelegate class\n
-	 * Set this delegate to ComboBoxes if they should look nice
-	 * @ingroup Gui
-	 */
 	class ComboBoxDelegate : public QStyledItemDelegate
 	{
-	Q_OBJECT
+		Q_OBJECT
 
-	public:
-	  explicit ComboBoxDelegate(QObject* parent = nullptr);
-	  virtual ~ComboBoxDelegate() override;
+		public:
+			explicit ComboBoxDelegate(QObject* parent = nullptr);
+			virtual ~ComboBoxDelegate() override;
 
-	  virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-	  virtual QSize sizeHint(const QStyleOptionViewItem &option, const QModelIndex& index) const override;
+			virtual QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	};
 }
 
