@@ -1,12 +1,16 @@
 #include "SomaFMStationDelegate.h"
+
+#include "Utils/Logger/Logger.h"
 #include <QPainter>
+#include <QPixmap>
+#include <QIcon>
 
 SomaFMStationDelegate::SomaFMStationDelegate(QObject* parent) :
 	Gui::StyledItemDelegate(parent)
 {}
 
 SomaFMStationDelegate::~SomaFMStationDelegate() = default;
-
+/*
 void SomaFMStationDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	if(index.column() != 0)
@@ -16,23 +20,15 @@ void SomaFMStationDelegate::paint(QPainter* painter, const QStyleOptionViewItem&
 	}
 	painter->save();
 
-	QPixmap pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
+	const auto icon = index.data(Qt::DecorationRole).value<QIcon>();
+	const auto pixmap = icon.pixmap(option.rect.size());
 
-	const QList<int> rounds{24, 32, 36, 48};
+	if(pixmap.isNull())
+	{
+		spLog(Log::Info, this) << "Pixmap is NULL!";
+	}
 
-	QRect r2 = option.rect;
-	r2.setWidth((option.rect.width() * 30) / 40);
-	r2.setHeight((option.rect.height() * 30) / 40);
-	int minimum = std::min(r2.width(), r2.height());
-
-	auto it = std::min_element(rounds.begin(), rounds.end(), [minimum](int r1, int r2){
-		return (std::abs(minimum - r1) < std::abs(minimum - r2));
-	});
-
-	r2.setWidth(*it);
-	r2.setHeight(*it);
-	r2.translate((option.rect.bottomRight() - r2.bottomRight()) / 2);
-
-	painter->drawPixmap(r2, pixmap);
+	painter->drawPixmap(option.rect, icon.pixmap(option.rect.size()));
 	painter->restore();
 }
+*/

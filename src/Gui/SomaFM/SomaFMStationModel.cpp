@@ -78,7 +78,6 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	if(!index.isValid())
 	{
-		spLog(Log::Debug, this) << "Index not valid";
 		return QVariant();
 	}
 
@@ -103,14 +102,12 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 		}
 
 		if(m->status == Status::Error){
-			return Gui::Icons::pixmap(Gui::Icons::Undo);
+			return Gui::Icons::icon(Gui::Icons::Undo);
 		}
 
-		if(m->stations[row].isLoved()){
-			return Gui::Icons::pixmap(Gui::Icons::Star, Gui::Icons::IconMode::ForceSayonaraIcon);
-		}
-
-		return Gui::Icons::pixmap(Gui::Icons::StarDisabled);
+		return m->stations[row].isLoved()
+			? Gui::Icons::icon(Gui::Icons::Star)
+			: Gui::Icons::icon(Gui::Icons::StarDisabled);
 	}
 
 	else if(role == Qt::DisplayRole && col == 1)

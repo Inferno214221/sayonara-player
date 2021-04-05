@@ -37,7 +37,7 @@ namespace Library
 		PIMPL(RatingDelegate)
 
 		public:
-			RatingDelegate(QObject* parent, int ratingColumn, bool enabled);
+			RatingDelegate(int ratingColumn, int decorationColumn=-1, QObject* parent=nullptr);
 			~RatingDelegate() override;
 
 			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;

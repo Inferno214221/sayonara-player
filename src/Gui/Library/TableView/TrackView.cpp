@@ -62,7 +62,7 @@ void TrackView::initView(AbstractLibrary* library)
 	m->library = library;
 
 	auto* trackModel = new TrackModel(this, library);
-	auto* trackDelegate = new RatingDelegate(this, int(ColumnIndex::Track::Rating), true);
+	auto* trackDelegate = new RatingDelegate(static_cast<int>(ColumnIndex::Track::Rating), -1, this);
 
 	this->setItemModel(trackModel);
 	this->setItemDelegate(trackDelegate);

@@ -24,35 +24,45 @@
 #include <QSize>
 #include <QPainter>
 #include <QBrush>
+#include <QVariant>
+
+namespace
+{
+	QPixmap extractPixmapFromIndex(const QModelIndex& index, const QSize& size, double scaleFactor)
+	{
+		const auto variant = index.data(Qt::DecorationRole);
+		if(variant.canConvert<QPixmap>())
+		{
+			return variant.value<QPixmap>().scaled(size * scaleFactor, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+		}
+
+		else if(variant.canConvert<QIcon>())
+		{
+			const auto icon = variant.value<QIcon>();
+			return icon.pixmap(size * scaleFactor);
+		}
+
+		return QPixmap();
+	}
+
+	QRect getPixmapBoundingRectangle(const QPixmap& pixmap, const QRect& rect)
+	{
+		auto result = rect;
+
+		result.translate((rect.width() - pixmap.width()) / 2, (rect.height() - pixmap.height()) / 2);
+		result.setWidth(pixmap.width());
+		result.setHeight(pixmap.height());
+
+		return result;
+	}
+}
 
 struct Gui::StyledItemDelegate::Private
 {
 	int decorationColumn;
-	QHash<int, QSize> minimumActualSizeMap;
 
 	Private() :
 		decorationColumn(-1) {}
-
-	QSize calcPixmapSize(QSize size)
-	{
-		const auto minimum = std::min(size.width(), size.height());
-		if(this->minimumActualSizeMap.contains(minimum))
-		{
-			return this->minimumActualSizeMap[minimum];
-		}
-
-		const auto scaledMinimum = ((minimum * 30) / 40);
-
-		const auto rounds = QList<int> {16, 22, 24, 32, 36, 48};
-		auto it = std::min_element(rounds.begin(), rounds.end(), [scaledMinimum](int r1, int r2) {
-			return (std::abs(scaledMinimum - r1) < std::abs(scaledMinimum - r2));
-		});
-
-		const auto ret = QSize(*it, *it);
-		this->minimumActualSizeMap[minimum] = ret;
-
-		return ret;
-	}
 };
 
 Gui::StyledItemDelegate::StyledItemDelegate(QObject* parent) :
@@ -61,10 +71,10 @@ Gui::StyledItemDelegate::StyledItemDelegate(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-Gui::StyledItemDelegate::StyledItemDelegate(int columnIndex, QObject* parent) :
+Gui::StyledItemDelegate::StyledItemDelegate(int decorationColumn, QObject* parent) :
 	Gui::StyledItemDelegate(parent)
 {
-	m->decorationColumn = columnIndex;
+	m->decorationColumn = decorationColumn;
 }
 
 Gui::StyledItemDelegate::~StyledItemDelegate() = default;
@@ -88,23 +98,20 @@ Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 		return;
 	}
 
-	const auto actualSize = m->calcPixmapSize(option.rect.size());
-	auto rect = QRect(option.rect);
-	rect.setSize(actualSize);
-	rect.translate((option.rect.bottomRight() - rect.bottomRight()) / 2);
-
-	const auto pixmap = index.data(Qt::DecorationRole).value<QPixmap>();
-
 	painter->save();
-	if(option.state & QStyle::State_Selected)
+
+	const auto isSelected = (option.state & QStyle::State_Selected);
+	if(isSelected)
 	{
 		painter->fillRect(option.rect, option.palette.highlight());
 	}
-	painter->drawPixmap(rect, pixmap);
-	painter->restore();
-}
 
-void Gui::StyledItemDelegate::setDecorationColumn(int index)
-{
-	m->decorationColumn = index;
+	const auto pixmap = extractPixmapFromIndex(index, option.rect.size(), 0.8);
+	if(!pixmap.isNull())
+	{
+		const auto rect = getPixmapBoundingRectangle(pixmap, option.rect);
+		painter->drawPixmap(rect, pixmap);
+	}
+
+	painter->restore();
 }

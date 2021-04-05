@@ -33,17 +33,15 @@ using namespace Library;
 struct RatingDelegate::Private
 {
 	int ratingColumn;
-	bool enabled;
 
-	Private(bool enabled, int ratingColumn) :
-		ratingColumn(ratingColumn),
-		enabled(enabled) {}
+	Private(int ratingColumn) :
+		ratingColumn(ratingColumn) {}
 };
 
-RatingDelegate::RatingDelegate(QObject* parent, int ratingColumn, bool enabled) :
-	StyledItemDelegate(parent)
+RatingDelegate::RatingDelegate(int ratingColumn, int decorationColumn, QObject* parent) :
+	StyledItemDelegate(decorationColumn, parent)
 {
-	m = Pimpl::make<Private>(enabled, ratingColumn);
+	m = Pimpl::make<Private>(ratingColumn);
 }
 
 RatingDelegate::~RatingDelegate() = default;

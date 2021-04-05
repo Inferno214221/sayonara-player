@@ -183,14 +183,15 @@ namespace
 
 	void paintPlayPixmap(QPainter* painter, const QRect& rect)
 	{
-		constexpr const auto ScaleFactor = 8;
+		constexpr const auto ScaleFactor = 10;
 
 		const auto icon = Gui::Icons::icon(Gui::Icons::Play);
+
 		const auto yTop = rect.y() + (rect.height() / ScaleFactor);
 		const auto height = (rect.height() * (ScaleFactor - 2)) / ScaleFactor;
 		const auto xLeft = rect.x() + (rect.width() - height) / 2;
 
-		painter->drawPixmap(xLeft, yTop, icon.pixmap(height, height));
+		painter->drawPixmap(xLeft, yTop, icon.pixmap(height, height).scaledToHeight(height));
 	}
 }
 

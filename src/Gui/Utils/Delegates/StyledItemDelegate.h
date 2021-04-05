@@ -37,7 +37,7 @@ namespace Gui
 		PIMPL(StyledItemDelegate)
 
 		public:
-			explicit StyledItemDelegate(int columnIndex, QObject* parent=nullptr);
+			explicit StyledItemDelegate(int decorationColumn, QObject* parent=nullptr);
 			explicit StyledItemDelegate(QObject* parent=nullptr);
 			~StyledItemDelegate() override;
 
@@ -45,8 +45,6 @@ namespace Gui
 						   const QModelIndex& index) const override;
 
 			virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
-
-			void setDecorationColumn(int index);
 	};
 }
 

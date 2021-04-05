@@ -63,8 +63,7 @@ void AlbumView::initView(AbstractLibrary* library)
 	m->library = library;
 
 	auto* model = new AlbumModel(this, m->library);
-	auto* delegate = new RatingDelegate(this, static_cast<int>(ColumnIndex::Album::Rating), true);
-	delegate->setDecorationColumn(0);
+	auto* delegate = new RatingDelegate(static_cast<int>(ColumnIndex::Album::Rating), 0, this);
 
 	this->setItemModel(model);
 	this->setItemDelegate(delegate);
