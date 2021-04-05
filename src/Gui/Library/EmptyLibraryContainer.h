@@ -48,7 +48,7 @@ class EmptyLibraryContainer :
 		QWidget* widget() const override;
 		QMenu* menu() override;
 		QFrame* header() const override;
-		QPixmap icon() const override;
+		QIcon icon() const override;
 
 		void initUi() override;
 };

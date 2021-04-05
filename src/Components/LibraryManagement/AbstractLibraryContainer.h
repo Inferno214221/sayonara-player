@@ -3,7 +3,7 @@
 
 class QWidget;
 class QFrame;
-class QPixmap;
+class QIcon;
 class QMenu;
 class QAction;
 
@@ -59,7 +59,7 @@ namespace Library
 			 * combo box
 			 * @return
 			 */
-			virtual QPixmap				icon() const=0;
+			virtual QIcon				icon() const=0;
 
 			/**
 			 * @brief init

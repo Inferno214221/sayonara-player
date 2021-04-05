@@ -24,6 +24,7 @@
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QAction>
+#include <QIcon>
 
 using namespace Library;
 
@@ -95,9 +96,9 @@ QFrame* LocalLibraryContainer::header() const
 	return m->ui->headerFrame();
 }
 
-QPixmap LocalLibraryContainer::icon() const
+QIcon LocalLibraryContainer::icon() const
 {
-	return Gui::Icons::pixmap(Gui::Icons::LocalLibrary);
+	return Gui::Icons::icon(Gui::Icons::LocalLibrary);
 }
 
 void LocalLibraryContainer::rename(const QString& name)

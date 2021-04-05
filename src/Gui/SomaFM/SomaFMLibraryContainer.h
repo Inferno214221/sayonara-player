@@ -49,7 +49,7 @@ namespace SomaFM
 		QString			name() const override;
 		QString			displayName() const override;
 		QWidget*		widget() const override;
-		QPixmap			icon() const override;
+		QIcon			icon() const override;
 		QMenu*			menu() override;
 		QFrame*			header() const override;
 		void			initUi() override;

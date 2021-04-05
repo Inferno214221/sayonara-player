@@ -25,7 +25,7 @@ class HistoryContainer :
 		QString displayName() const override;
 		QWidget* widget() const override;
 		QFrame* header() const override;
-		QPixmap icon() const override;
+		QIcon icon() const override;
 
 		// ContainerImpl interface
 	protected:

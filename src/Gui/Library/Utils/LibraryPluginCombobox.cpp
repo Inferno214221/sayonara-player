@@ -78,14 +78,10 @@ void PluginCombobox::setupActions()
 	const QList<AbstractContainer*> libraries = PluginHandler::instance()->libraries(true);
 	for(const AbstractContainer* container : libraries)
 	{
-		QPixmap pm = container->icon().scaled(
-			this->iconSize(),
-			Qt::KeepAspectRatio,
-			Qt::SmoothTransformation
-		);
+		const auto icon = container->icon();
 
 		QString display_name = fm.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
-		this->addItem(QIcon(pm), display_name, container->name());
+		this->addItem(icon, display_name, container->name());
 	}
 
 	this->insertSeparator(1);
@@ -166,18 +162,14 @@ void PluginCombobox::skinChanged()
 
 	for(const AbstractContainer* container : libraries)
 	{
-		QPixmap pm = container->icon().scaled(
-			this->iconSize(),
-			Qt::KeepAspectRatio,
-			Qt::SmoothTransformation
-		);
+		const auto icon = container->icon();
 
 		if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())
 		{
 			i++;
 		}
 
-		this->setItemIcon(i, QIcon(pm));
+		this->setItemIcon(i, icon);
 		i++;
 	}
 }

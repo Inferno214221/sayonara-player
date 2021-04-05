@@ -50,7 +50,7 @@ class LocalLibraryContainer :
 		QWidget* widget() const override;
 		QMenu* menu() override;
 		QFrame* header() const override;
-		QPixmap icon() const override;
+		QIcon icon() const override;
 		void initUi() override;
 		bool isLocal() const override;
 		void rename(const QString& new_name) override;

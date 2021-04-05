@@ -5,6 +5,8 @@
 #include "Gui/History/GUI_History.h"
 #include "Gui/Utils/Icons.h"
 
+#include <QIcon>
+
 struct HistoryContainer::Private
 {
 	GUI_History* widget = nullptr;
@@ -43,9 +45,9 @@ QFrame* HistoryContainer::header() const
 	return m->widget->header();
 }
 
-QPixmap HistoryContainer::icon() const
+QIcon HistoryContainer::icon() const
 {
-	return Gui::Icons::pixmap(Gui::Icons::Edit);
+	return Gui::Icons::icon(Gui::Icons::Edit);
 }
 
 void HistoryContainer::initUi()

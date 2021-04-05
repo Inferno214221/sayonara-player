@@ -27,7 +27,7 @@
 #include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include <qglobal.h>
-#include <QPixmap>
+#include <QIcon>
 
 static void sc_init_icons()
 {
@@ -88,8 +88,8 @@ QFrame* SC::LibraryContainer::header() const
 	return ui->headerFrame();
 }
 
-QPixmap SC::LibraryContainer::icon() const
+QIcon SC::LibraryContainer::icon() const
 {
 	sc_init_icons();
-	return QPixmap(":/sc_icons/icon.png");
+	return QIcon(":/sc_icons/icon.png");
 }

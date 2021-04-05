@@ -25,6 +25,8 @@
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
 #include "GUI_SomaFM.h"
 
+#include <QIcon>
+
 static void soma_fm_init_icons()
 {
 	Q_INIT_RESOURCE(SomaFMIcons);
@@ -73,9 +75,9 @@ void SomaFM::LibraryContainer::initUi()
 	ui = new GUI_SomaFM(m->library, nullptr);
 }
 
-QPixmap SomaFM::LibraryContainer::icon() const
+QIcon SomaFM::LibraryContainer::icon() const
 {
-	return QPixmap(":/soma_icons/soma.png");
+	return QIcon(":/soma_icons/soma.png");
 }
 
 QFrame* SomaFM::LibraryContainer::header() const
