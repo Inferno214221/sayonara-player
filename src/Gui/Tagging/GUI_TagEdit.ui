@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>660</width>
-    <height>589</height>
+    <width>600</width>
+    <height>704</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -24,13 +24,6 @@
        <string notr="true">Tags</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_3">
-       <item row="4" column="0">
-        <widget class="QLabel" name="lab_genres">
-         <property name="text">
-          <string notr="true">Genres</string>
-         </property>
-        </widget>
-       </item>
        <item row="2" column="4">
         <widget class="QLabel" name="label_9">
          <property name="sizePolicy">
@@ -44,11 +37,65 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="2">
-        <widget class="QCheckBox" name="cb_album_all">
+       <item row="1" column="0">
+        <widget class="QLabel" name="lab_album">
+         <property name="text">
+          <string notr="true">Album</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="2">
+        <widget class="QCheckBox" name="cb_artist_all">
          <property name="focusPolicy">
           <enum>Qt::StrongFocus</enum>
          </property>
+         <property name="text">
+          <string notr="true">all</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="1">
+        <widget class="Gui::LineEdit" name="le_album_artist">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="6">
+        <widget class="QCheckBox" name="cb_rating_all">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true">all</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1">
+        <widget class="Gui::LineEdit" name="le_genre">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QLabel" name="lab_track_title">
+         <property name="text">
+          <string notr="true">Title</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="2">
+        <widget class="QCheckBox" name="cb_genre_all">
          <property name="text">
           <string notr="true">all</string>
          </property>
@@ -67,133 +114,29 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="lab_album_artist">
-         <property name="text">
-          <string>Album artist</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="0">
-        <widget class="QLabel" name="lab_album">
-         <property name="text">
-          <string notr="true">Album</string>
-         </property>
-        </widget>
-       </item>
-       <item row="4" column="1">
-        <widget class="Gui::LineEdit" name="le_genre">
+       <item row="5" column="1">
+        <widget class="QPlainTextEdit" name="te_comment">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
          </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>100</height>
+          </size>
+         </property>
+         <property name="tabChangesFocus">
+          <bool>true</bool>
+         </property>
         </widget>
        </item>
-       <item row="4" column="2">
-        <widget class="QCheckBox" name="cb_genre_all">
-         <property name="focusPolicy">
-          <enum>Qt::StrongFocus</enum>
-         </property>
+       <item row="4" column="0">
+        <widget class="QLabel" name="lab_genres">
          <property name="text">
-          <string notr="true">all</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="2">
-        <widget class="QCheckBox" name="cb_album_artist_all">
-         <property name="text">
-          <string notr="true">all</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="2">
-        <widget class="QCheckBox" name="cb_artist_all">
-         <property name="focusPolicy">
-          <enum>Qt::StrongFocus</enum>
-         </property>
-         <property name="text">
-          <string notr="true">all</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="5">
-        <widget class="QSpinBox" name="sb_year">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimum">
-          <number>-1</number>
-         </property>
-         <property name="maximum">
-          <number>2100</number>
-         </property>
-         <property name="value">
-          <number>2011</number>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="4">
-        <widget class="QLabel" name="lab_rating_descr">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string notr="true">Rating</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="lab_track_title">
-         <property name="text">
-          <string notr="true">Title</string>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="4">
-        <widget class="QLabel" name="lab_year">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="text">
-          <string notr="true">Year</string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="1">
-        <widget class="Gui::LineEdit" name="le_title">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
-        <widget class="QLabel" name="lab_comment">
-         <property name="text">
-          <string>Comment</string>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="1">
-        <widget class="Gui::LineEdit" name="le_album_artist">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+          <string notr="true">Genres</string>
          </property>
         </widget>
        </item>
@@ -201,29 +144,6 @@
         <widget class="QLabel" name="lab_artist">
          <property name="text">
           <string notr="true">Artist</string>
-         </property>
-        </widget>
-       </item>
-       <item row="2" column="1">
-        <widget class="Gui::LineEdit" name="le_artist">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="5">
-        <widget class="QSpinBox" name="sb_track_num">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximum">
-          <number>999</number>
          </property>
         </widget>
        </item>
@@ -246,26 +166,116 @@
          </property>
         </widget>
        </item>
-       <item row="1" column="3">
-        <spacer name="horizontalSpacer_5">
-         <property name="orientation">
-          <enum>Qt::Horizontal</enum>
+       <item row="0" column="5">
+        <widget class="QSpinBox" name="sb_track_num">
+         <property name="maximum">
+          <number>999</number>
          </property>
-         <property name="sizeHint" stdset="0">
-          <size>
-           <width>40</width>
-           <height>20</height>
-          </size>
-         </property>
-        </spacer>
+        </widget>
        </item>
        <item row="1" column="1">
         <widget class="Gui::LineEdit" name="le_album">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="4">
+        <widget class="QLabel" name="lab_rating_descr">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true">Rating</string>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="5">
+        <widget class="Gui::RatingEditor" name="widget_rating" native="true"/>
+       </item>
+       <item row="0" column="1">
+        <widget class="Gui::LineEdit" name="le_title">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="1">
+        <widget class="Gui::LineEdit" name="le_artist">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="5">
+        <widget class="QSpinBox" name="sb_year">
+         <property name="minimum">
+          <number>-1</number>
+         </property>
+         <property name="maximum">
+          <number>2100</number>
+         </property>
+         <property name="value">
+          <number>2011</number>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="lab_album_artist">
+         <property name="text">
+          <string>Album artist</string>
+         </property>
+        </widget>
+       </item>
+       <item row="6" column="1">
+        <spacer name="verticalSpacer_3">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item row="5" column="0">
+        <widget class="QLabel" name="lab_comment">
+         <property name="text">
+          <string>Comment</string>
+         </property>
+        </widget>
+       </item>
+       <item row="2" column="5">
+        <widget class="QSpinBox" name="sb_discnumber">
+         <property name="minimum">
+          <number>0</number>
+         </property>
+         <property name="maximum">
+          <number>1000</number>
+         </property>
+         <property name="value">
+          <number>1</number>
+         </property>
+        </widget>
+       </item>
+       <item row="5" column="2">
+        <widget class="QCheckBox" name="cb_comment_all">
+         <property name="text">
+          <string>all</string>
          </property>
         </widget>
        </item>
@@ -285,73 +295,51 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="5">
-        <widget class="QSpinBox" name="sb_discnumber">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="minimum">
-          <number>0</number>
-         </property>
-         <property name="maximum">
-          <number>1000</number>
-         </property>
-         <property name="value">
-          <number>1</number>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="1">
-        <widget class="QPlainTextEdit" name="te_comment">
-         <property name="maximumSize">
-          <size>
-           <width>16777215</width>
-           <height>100</height>
-          </size>
-         </property>
-         <property name="tabChangesFocus">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="3" column="6">
-        <widget class="QCheckBox" name="cb_rating_all">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="1" column="2">
+        <widget class="QCheckBox" name="cb_album_all">
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
          </property>
          <property name="text">
           <string notr="true">all</string>
          </property>
         </widget>
        </item>
-       <item row="5" column="2">
-        <widget class="QCheckBox" name="cb_comment_all">
+       <item row="3" column="2">
+        <widget class="QCheckBox" name="cb_album_artist_all">
          <property name="text">
-          <string>all</string>
+          <string notr="true">all</string>
          </property>
         </widget>
        </item>
-       <item row="6" column="1">
-        <spacer name="verticalSpacer_3">
+       <item row="1" column="4">
+        <widget class="QLabel" name="lab_year">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="text">
+          <string notr="true">Year</string>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="3">
+        <spacer name="horizontalSpacer_5">
          <property name="orientation">
-          <enum>Qt::Vertical</enum>
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::MinimumExpanding</enum>
          </property>
          <property name="sizeHint" stdset="0">
           <size>
-           <width>20</width>
-           <height>40</height>
+           <width>100</width>
+           <height>20</height>
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="3" column="5">
-        <widget class="Gui::RatingEditor" name="widget_rating" native="true"/>
        </item>
       </layout>
      </widget>

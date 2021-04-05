@@ -675,7 +675,9 @@ void GUI_TagEdit::loadEntireAlbum()
 void GUI_TagEdit::showEvent(QShowEvent* e)
 {
 	Widget::showEvent(e);
+
 	refreshCurrentTrack();
 
 	ui->le_title->setFocus();
+	ui->widget_rating->setMaximumHeight(fontMetrics().height() * 2);
 }
