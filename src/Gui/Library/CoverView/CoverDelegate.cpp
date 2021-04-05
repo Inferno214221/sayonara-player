@@ -72,7 +72,7 @@ namespace
 		}
 	}
 
-	void drawText(QPainter* painter, const QStyleOptionViewItem& option, const QString& text, int alpha)
+	void drawText(QPainter* painter, const QStyleOptionViewItem& option, const QString& text, int alpha, bool bold)
 	{
 		constexpr const auto textOffset = 3;
 		const auto textWidth = option.rect.width() - (2 * textOffset);
@@ -120,11 +120,11 @@ Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 	painter->translate(0, pixmapHeight + 4);
 
 	const auto album = index.data(CoverModel::AlbumRole).toString();
-	drawText(painter, option, album, 255);
+	drawText(painter, option, album, 255, GetSetting(Set::Lib_FontBold));
 	painter->translate(0, option.fontMetrics.height());
 
 	const auto artist = index.data(CoverModel::ArtistRole).toString();
-	drawText(painter, option, album, 172);
+	drawText(painter, option, artist, 172, false);
 
 	painter->restore();
 }
