@@ -27,7 +27,6 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QIcon>
 #include <QMap>
@@ -91,41 +90,36 @@ namespace
 			{Icons::Vol3,         {"audio-volume-high",    ""}},
 			{Icons::VolMute,      {"audio-volume-muted",   ""}},
 		};
+
 }
 
 QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 {
 	const auto standardName = iconMap[spec].first;
 	const auto darkName = iconMap[spec].second;
-
-	const auto icons = std::vector
-		{
-			QIcon::fromTheme(standardName),
-			Gui::Util::icon(standardName, Gui::Util::MintY),
-			Gui::Util::icon(darkName, Gui::Util::NoTheme)
-		};
-
-	int index;
 	const auto isDark = Style::isDark();
 
+	QIcon icon;
 	if(mode == Icons::IconMode::ForceStdIcon)
 	{
-		index = 0;
+		icon = Gui::Util::systemThemeIcon(standardName);
 	}
 
 	else if(mode == Icons::IconMode::ForceSayonaraIcon)
 	{
-		index = 2;
+		Gui::Util::icon(darkName, Gui::Util::NoTheme);
 	}
 
 	else
 	{
-		index = (isDark) ? 1 : 0;
+		icon = (isDark)
+			? Gui::Util::icon(standardName, Gui::Util::MintY)
+			: Gui::Util::systemThemeIcon(standardName);
 	}
 
-	return (!icons[index].isNull())
-	       ? icons[index]
-	       : icons[2];
+	return (!icon.isNull())
+	       ? icon
+	       : Gui::Util::icon(darkName, Gui::Util::NoTheme);
 }
 
 QIcon Icons::icon(IconName spec)
@@ -164,12 +158,16 @@ QPixmap Icons::pixmap(Icons::IconName spec, const QSize& size, Icons::IconMode m
 
 	QPixmap pm;
 
-	if(mode == IconMode::ForceSayonaraIcon)
+	if((mode == IconMode::ForceSayonaraIcon) || (mode == IconMode::Automatic))
 	{
-		pm = Gui::Util::pixmap(darkName, Gui::Util::NoTheme);
+		const auto themeSource = (mode == IconMode::ForceSayonaraIcon)
+			? Gui::Util::NoTheme
+			: Gui::Util::MintY;
+
+		pm = Gui::Util::pixmap(darkName, themeSource);
 	}
 
-	else if(mode == IconMode::ForceStdIcon)
+	else // if(mode == IconMode::ForceStdIcon)
 	{
 		const auto icon = QIcon::fromTheme(standardName);
 		if(!icon.isNull())
@@ -178,15 +176,10 @@ QPixmap Icons::pixmap(Icons::IconName spec, const QSize& size, Icons::IconMode m
 		}
 	}
 
-	else
-	{
-		pm = Gui::Util::pixmap(standardName, Gui::Util::MintY);
-	}
-
 	if(pm.isNull())
 	{
 		pm = (!Style::isDark())
-		     ? QIcon::fromTheme(standardName).pixmap(QSize(32, 32))
+		     ? QIcon::fromTheme(standardName).pixmap(size)
 		     : Gui::Util::pixmap(darkName, Gui::Util::MintY);
 	}
 

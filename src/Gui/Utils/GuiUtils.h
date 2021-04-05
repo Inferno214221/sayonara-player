@@ -48,13 +48,14 @@ namespace Gui
 			NoTheme
 		};
 
-		QIcon icon(const QString& iconName, IconTheme themeName);
-
-		QPixmap pixmap(const QString& iconName, IconTheme themeName);
-		QPixmap pixmap(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspectRatio = true);
+		QIcon icon(const QString& iconName, IconTheme iconTheme);
+		QIcon systemThemeIcon(const QString& iconName);
 
 		QImage image(const QString& iconName, IconTheme themeName);
-		QImage image(const QString& iconName, IconTheme themeName, QSize sz, bool keepAspectRatio = true);
+		QImage image(const QString& iconName, IconTheme themeName, const QSize& size, bool keepAspectRatio = true);
+
+		QPixmap pixmap(const QString& iconName, IconTheme themeName);
+		QPixmap pixmap(const QString& iconName, IconTheme themeName, const QSize& size, bool keepAspectRatio = true);
 
 		QScreen* getBiggestScreen();
 

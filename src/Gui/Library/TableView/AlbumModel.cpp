@@ -55,8 +55,8 @@ struct AlbumModel::Private
 	Tagging::UserOperations* uto = nullptr;
 
 	Private() :
-		pixmapSingle(Gui::Util::pixmap("cd.png", Gui::Util::NoTheme)),
-		pixmapMulti(Gui::Util::pixmap("cds.png", Gui::Util::NoTheme)),
+		pixmapSingle(Gui::Util::pixmap(QStringLiteral("cd.png"), Gui::Util::NoTheme)),
+		pixmapMulti(Gui::Util::pixmap(QStringLiteral("cds.png"), Gui::Util::NoTheme)),
 		tempRating {-1, Rating::Zero} {}
 };
 
