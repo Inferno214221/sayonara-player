@@ -17,17 +17,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef HEADERVIEW_H
-#define HEADERVIEW_H
+#ifndef LIBRARY_HEADERVIEW_H
+#define LIBRARY_HEADERVIEW_H
 
 #include "Gui/Library/Header/ColumnHeader.h"
-#include "Gui/Utils/Widgets/WidgetTemplate.h"
+#include "Gui/Utils/Widgets/HeaderView.h"
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
-
-#include <QTableView>
-#include <QHeaderView>
-#include <QMenu>
 
 namespace Library
 {
@@ -36,7 +32,7 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class HeaderView :
-			public Gui::WidgetTemplate<QHeaderView>
+			public Gui::HeaderView
 	{
 		Q_OBJECT
 		PIMPL(HeaderView)
@@ -69,4 +65,4 @@ namespace Library
 	};
 }
 
-#endif // HEADERVIEW_H
+#endif // LIBRARY_HEADERVIEW_H

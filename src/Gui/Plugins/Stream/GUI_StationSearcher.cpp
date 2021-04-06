@@ -30,15 +30,30 @@
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/Widgets/HeaderView.h"
 
 #include <QMenu>
 
+namespace
+{
+	QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics& fm)
+	{
+		auto* item = new QTableWidgetItem(text);
+
+		const auto width = std::min(Gui::Util::textWidth(fm, text + "bla"), 250);
+		item->setSizeHint(QSize(width, Gui::Util::viewRowHeight()));
+		item->setToolTip(text);
+
+		return item;
+	}
+}
+
 struct GUI_StationSearcher::Private
 {
-	QList<RadioStation>		stations;
-	StationSearcher*		searcher;
-	StationSearcher::Mode	mode;
-	QMenu*					contextMenu=nullptr;
+	QList<RadioStation> stations;
+	StationSearcher* searcher;
+	StationSearcher::Mode mode;
+	QMenu* contextMenu = nullptr;
 
 	Private(GUI_StationSearcher* parent) :
 		mode(StationSearcher::NewSearch)
@@ -50,30 +65,29 @@ struct GUI_StationSearcher::Private
 	{
 		label->setVisible(stations.size() > 5);
 
-		if(stations.size() < 5){
+		if(stations.size() < 5)
+		{
 			return;
 		}
 
 		label->setText
-		(
-			tr("Show radio stations from %1 to %2")
-				.arg("<b>" + stations.first().name + "</b>")
-				.arg("<b>" + stations.last().name + "</b>" )
-		);
+			(
+				tr("Show radio stations from %1 to %2")
+					.arg("<b>" + stations.first().name + "</b>")
+					.arg("<b>" + stations.last().name + "</b>")
+			);
 	}
 
 	void setPlaceholderText(QLineEdit* le)
 	{
-		if(mode == StationSearcher::Style)
-		{
-			le->setPlaceholderText(Lang::get(Lang::SearchVerb) + ": " + Lang::get(Lang::Genre));
-		}
+		const auto placeholderSuffix = (mode == StationSearcher::Style)
+		                               ? Lang::get(Lang::Genre)
+		                               : Lang::get(Lang::RadioStation);
 
-		else {
-			le->setPlaceholderText(Lang::get(Lang::SearchVerb) + ": " + Lang::get(Lang::RadioStation));
-		}
+		le->setPlaceholderText(QString("%1: %2")
+			                       .arg(Lang::get(Lang::SearchVerb))
+			                       .arg(placeholderSuffix));
 	}
-
 };
 
 GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
@@ -97,9 +111,11 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 
 	ui->twStations->setItemDelegate(new Gui::StyledItemDelegate(ui->twStations));
 	ui->twStations->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	ui->twStations->setHorizontalHeader(new Gui::HeaderView(Qt::Orientation::Horizontal, ui->twStations));
+
 	ui->twStreams->setItemDelegate(new Gui::StyledItemDelegate(ui->twStreams));
 	ui->twStreams->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-
+	ui->twStreams->setHorizontalHeader(new Gui::HeaderView(Qt::Orientation::Horizontal, ui->twStreams));
 
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::okClicked);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
@@ -125,20 +141,19 @@ void GUI_StationSearcher::initLineEdit()
 	auto* cmf = new Gui::ContextMenuFilter(ui->leSearch);
 	auto* menu = new QMenu(ui->leSearch);
 	m->contextMenu = menu;
-	connect(cmf, &Gui::ContextMenuFilter::sigContextMenu, this, [menu](const QPoint& p, QAction* action)
-	{
+	connect(cmf, &Gui::ContextMenuFilter::sigContextMenu, this, [menu](const QPoint& p, QAction* action) {
 		Q_UNUSED(action)
 		menu->exec(p);
 	});
 
-	QAction* action1 = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
-	QAction* action2 = m->contextMenu->addAction(Lang::get(Lang::Genre));
+	auto* action1 = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
+	auto* action2 = m->contextMenu->addAction(Lang::get(Lang::Genre));
 
-	connect(action1, &QAction::triggered, this, [this](){
+	connect(action1, &QAction::triggered, this, [this]() {
 		this->changeMode(StationSearcher::Mode::NewSearch);
 	});
 
-	connect(action2, &QAction::triggered, this, [this](){
+	connect(action2, &QAction::triggered, this, [this]() {
 		this->changeMode(StationSearcher::Mode::Style);
 	});
 
@@ -149,14 +164,16 @@ void GUI_StationSearcher::checkListenButton()
 {
 	okButton()->setEnabled(false);
 
-	int currentStationIndex = ui->twStations->currentRow();
-	if(currentStationIndex < 0 || currentStationIndex >= m->stations.size()){
+	const auto currentStationIndex = ui->twStations->currentRow();
+	if(currentStationIndex < 0 || currentStationIndex >= m->stations.size())
+	{
 		return;
 	}
 
-	RadioStation station = m->stations[currentStationIndex];
+	const auto station = m->stations[currentStationIndex];
 	int currentStreamIndex = ui->twStreams->currentRow();
-	if(currentStreamIndex < 0 || currentStreamIndex >= station.streams.size()){
+	if(currentStreamIndex < 0 || currentStreamIndex >= station.streams.size())
+	{
 		return;
 	}
 
@@ -166,7 +183,8 @@ void GUI_StationSearcher::checkListenButton()
 void GUI_StationSearcher::clearStations()
 {
 	ui->twStations->clear();
-	while(ui->twStations->rowCount() > 0){
+	while(ui->twStations->rowCount() > 0)
+	{
 		ui->twStations->removeRow(0);
 	}
 
@@ -176,7 +194,8 @@ void GUI_StationSearcher::clearStations()
 void GUI_StationSearcher::clearStreams()
 {
 	ui->twStreams->clear();
-	while(ui->twStreams->rowCount() > 0){
+	while(ui->twStreams->rowCount() > 0)
+	{
 		ui->twStreams->removeRow(0);
 	}
 
@@ -192,7 +211,8 @@ void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
 void GUI_StationSearcher::searchClicked()
 {
 	const QString text = ui->leSearch->text();
-	if(text.isEmpty()){
+	if(text.isEmpty())
+	{
 		return;
 	}
 
@@ -210,7 +230,6 @@ void GUI_StationSearcher::searchClicked()
 	{
 		m->searcher->searchStation(text);
 	}
-
 
 	ui->pbProgress->setVisible(true);
 }
@@ -233,17 +252,6 @@ void GUI_StationSearcher::searchNextClicked()
 	ui->twStreams->setEnabled(false);
 }
 
-static
-QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics& fm)
-{
-	auto* item = new QTableWidgetItem(text);
-	int width = std::min(Gui::Util::textWidth(fm, text + "bla"), 250);
-	item->setSizeHint(QSize(width, Gui::Util::viewRowHeight()));
-	item->setToolTip(text);
-
-	return item;
-}
-
 void GUI_StationSearcher::stationsFetched()
 {
 	const QList<RadioStation> stations = m->searcher->foundStations();
@@ -256,9 +264,9 @@ void GUI_StationSearcher::stationsFetched()
 
 	if(stations.isEmpty())
 	{
-		if( m->searcher->mode() == StationSearcher::NewSearch ||
-			m->searcher->mode() == StationSearcher::Style)
-		{			
+		if(m->searcher->mode() == StationSearcher::NewSearch ||
+		   m->searcher->mode() == StationSearcher::Style)
+		{
 			ui->labFromTo->setVisible(false);
 
 			clearStations();
@@ -284,13 +292,13 @@ void GUI_StationSearcher::stationsFetched()
 
 	ui->twStations->horizontalHeader()->setResizeContentsPrecision(20);
 
-	const QFontMetrics fm = this->fontMetrics();
-	int row=0;
+	const auto fm = this->fontMetrics();
+	auto row = 0;
 	for(const RadioStation& station : m->stations)
 	{
 		auto* itemName = createTableWidgetItem(station.name, fm);
 		auto* itemLocation = createTableWidgetItem(station.location, fm);
-		auto* itemDesc = createTableWidgetItem(station.description, fm );
+		auto* itemDesc = createTableWidgetItem(station.description, fm);
 		auto* itemUrl = createTableWidgetItem(station.home_url, fm);
 
 		ui->twStations->setItem(row, 0, itemName);
@@ -309,11 +317,11 @@ void GUI_StationSearcher::stationsFetched()
 
 void GUI_StationSearcher::okClicked()
 {
-	int currentStationIndex = ui->twStations->currentRow();
-	const RadioStation station = m->stations.at(currentStationIndex);
+	const auto currentStationIndex = ui->twStations->currentRow();
+	const auto station = m->stations.at(currentStationIndex);
 
-	int currentStreamIndex = ui->twStreams->currentRow();
-	const RadioUrl radioUrl = station.streams.at(currentStreamIndex);
+	const auto currentStreamIndex = ui->twStreams->currentRow();
+	const auto radioUrl = station.streams.at(currentStreamIndex);
 
 	emit sigStreamSelected(station.name, radioUrl.url, ui->cbSave->isChecked());
 
@@ -343,12 +351,13 @@ void GUI_StationSearcher::stationsChanged()
 {
 	okButton()->setEnabled(false);
 
-	int currentRow = ui->twStations->currentRow();
-	if(currentRow < 0 || currentRow >= m->stations.count()){
+	const auto currentRow = ui->twStations->currentRow();
+	if(currentRow < 0 || currentRow >= m->stations.count())
+	{
 		return;
 	}
 
-	RadioStation station = m->stations[currentRow];
+	const auto station = m->stations[currentRow];
 
 	clearStreams();
 	checkListenButton();
@@ -360,10 +369,10 @@ void GUI_StationSearcher::stationsChanged()
 	ui->twStreams->setHorizontalHeaderItem(1, new QTableWidgetItem(Lang::get(Lang::Bitrate)));
 	ui->twStreams->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Url")));
 
-	const QFontMetrics fm = this->fontMetrics();
+	const auto fm = this->fontMetrics();
 
-	int row = 0;
-	for(const RadioUrl& radioUrl : station.streams)
+	auto row = 0;
+	for(const auto& radioUrl : station.streams)
 	{
 		auto* itemType = createTableWidgetItem(radioUrl.type, fm);
 		auto* itemBitrate = createTableWidgetItem(radioUrl.bitrate, fm);
@@ -391,7 +400,7 @@ void GUI_StationSearcher::showEvent(QShowEvent* e)
 	ui->leSearch->setFocus();
 	Gui::Dialog::showEvent(e);
 
-	QSize sz = GetSetting(Set::Stream_SearchWindowSize);
+	const auto sz = GetSetting(Set::Stream_SearchWindowSize);
 	if(!sz.isEmpty())
 	{
 		this->resize(sz);
@@ -414,7 +423,7 @@ void GUI_StationSearcher::languageChanged()
 	ui->btnSearchNext->setText(Lang::get(Lang::NextPage));
 	ui->btnSearchPrev->setText(Lang::get(Lang::PreviousPage));
 
-	const QString tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
+	const auto tooltip = QString("<b>%1</b><br />s:, n: %2<br />g: %3")
 		.arg(Lang::get(Lang::SearchNoun))
 		.arg(Lang::get(Lang::RadioStation))
 		.arg(Lang::get(Lang::Genre));
@@ -429,7 +438,7 @@ void GUI_StationSearcher::languageChanged()
 
 void GUI_StationSearcher::skinChanged()
 {
-	const QFontMetrics fm = this->fontMetrics();
+	const auto fm = this->fontMetrics();
 
 	ui->twStations->horizontalHeader()->setMinimumHeight(std::max(fm.height() + 10, 20));
 	ui->labLink->setText(Util::createLink("fmstream.org", Style::isDark(), true, "http://fmstream.org"));

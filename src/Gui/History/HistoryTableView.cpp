@@ -1,9 +1,8 @@
 #include "HistoryTableView.h"
 #include "HistoryEntryModel.h"
 
-#include "Utils/Language/Language.h"
+#include "Gui/Utils/Widgets/HeaderView.h"
 
-#include <QHeaderView>
 #include <QStringListModel>
 #include <QScrollBar>
 #include <QDrag>
@@ -31,8 +30,10 @@ HistoryTableView::HistoryTableView(Session::Manager* sessionManager, Session::Ti
 	this->setHorizontalScrollBarPolicy(Qt::ScrollBarPolicy::ScrollBarAlwaysOff);
 	this->setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectRows);
 	this->verticalHeader()->setVisible(false);
+	this->setShowGrid(false);
 
-	QHeaderView* horizontalHeader = this->horizontalHeader();
+	auto horizontalHeader = new Gui::HeaderView(Qt::Orientation::Horizontal, this);
+	this->setHorizontalHeader(horizontalHeader);
 	horizontalHeader->setStretchLastSection(true);
 	horizontalHeader->setSectionResizeMode(0, QHeaderView::Interactive);
 	horizontalHeader->setSectionResizeMode(1, QHeaderView::Stretch);

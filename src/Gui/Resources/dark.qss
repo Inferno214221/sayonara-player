@@ -182,12 +182,6 @@ QScrollBar::handle:horizontal:pressed {
     background: #404040;
 }
 
-QHeaderView::section
-{
-    background: #3c3c3c;
-    color: #d8d8d8;
-}
-
 QHeaderView::section {
     background: #3c3c3c;
     color: #d8d8d8;
@@ -198,18 +192,6 @@ QHeaderView::section {
 
 QHeaderView::section:last {
     border-right: none;
-}
-
-QHeaderView::up-arrow {
-    width: 0.5em;
-    margin-right: 0.5em;
-    image: url(':/Icons/arrow_up.svg');
-}
-
-QHeaderView::down-arrow {
-    width: 0.5em;
-    margin-right: 0.5em;
-    image: url(':/Icons/arrow_down.svg');
 }
 
 QMenuBar {
@@ -282,6 +264,10 @@ QLabel {
 QScrollArea {
     border: 1px solid #282828;
     background: rgba(0, 0, 0, 0);
+}
+
+#tabTagScrollArea {
+    border: none;
 }
 
 QComboBox,

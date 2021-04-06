@@ -38,7 +38,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
 
-#include "Gui/Library/Header/HeaderView.h"
+#include "Gui/Library/Header/LibraryHeaderView.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"

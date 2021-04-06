@@ -17,18 +17,18 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "HeaderView.h"
+#include "LibraryHeaderView.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
+#include <QAction>
 #include <QFontMetrics>
 #include <QPair>
 
 using Library::ColumnHeaderPtr;
 using Library::HeaderView;
-using Parent = Gui::WidgetTemplate<QHeaderView>;
 
 using ColumnActionPair = QPair<ColumnHeaderPtr, QAction*>;
 using ColumnActionPairList = QList<ColumnActionPair>;
@@ -52,7 +52,7 @@ struct HeaderView::Private
 };
 
 HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
-	Parent(orientation, parent)
+	Gui::HeaderView(orientation, parent)
 {
 	m = Pimpl::make<Private>(this);
 
@@ -225,7 +225,7 @@ void HeaderView::languageChanged()
 
 void HeaderView::showEvent(QShowEvent* e)
 {
-	Parent::showEvent(e);
+	Gui::HeaderView::showEvent(e);
 
 	if(m->isInitialized)
 	{
@@ -259,7 +259,7 @@ void HeaderView::showEvent(QShowEvent* e)
 
 void HeaderView::resizeEvent(QResizeEvent* e)
 {
-	Parent::resizeEvent(e);
+	Gui::HeaderView::resizeEvent(e);
 
 	if(m && m->actionAutoResize->isChecked())
 	{

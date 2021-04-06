@@ -79,6 +79,12 @@
       <property name="verticalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
       </property>
+      <property name="showGrid">
+       <bool>false</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::DotLine</enum>
+      </property>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>30</number>
       </attribute>
@@ -101,6 +107,12 @@
       </property>
       <property name="verticalScrollMode">
        <enum>QAbstractItemView::ScrollPerPixel</enum>
+      </property>
+      <property name="showGrid">
+       <bool>false</bool>
+      </property>
+      <property name="gridStyle">
+       <enum>Qt::DotLine</enum>
       </property>
       <attribute name="horizontalHeaderVisible">
        <bool>false</bool>

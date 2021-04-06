@@ -3,15 +3,12 @@
 #include "DoubleCalendarDialog.h"
 
 #include "Gui/History/ui_GUI_History.h"
-#include "Gui/Utils/Widgets/CalendarWidget.h"
 #include "Gui/Utils/Style.h"
 
 #include "Components/Session/Session.h"
 
-#include "Utils/Set.h"
-#include "Utils/Utils.h"
-
 #include "Utils/Algorithm.h"
+#include "Utils/Set.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Language/LanguageUtils.h"
 

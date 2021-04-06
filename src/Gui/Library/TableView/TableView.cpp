@@ -22,7 +22,7 @@
 
 #include "Gui/Library/ItemModel.h"
 #include "Gui/Library/Header/ColumnHeader.h"
-#include "Gui/Library/Header/HeaderView.h"
+#include "Gui/Library/Header/LibraryHeaderView.h"
 
 #include "Utils/Set.h"
 #include "Utils/Algorithm.h"
