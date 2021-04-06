@@ -79,7 +79,7 @@ QMenu* GUI_Library::getMenu() const
 
 QFrame* GUI_Library::headerFrame() const
 {
-	return ui->header_frame;
+	return ui->headerFrame;
 }
 
 QList<::Library::Filter::Mode> GUI_Library::searchOptions() const

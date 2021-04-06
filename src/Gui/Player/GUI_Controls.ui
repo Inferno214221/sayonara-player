@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>601</width>
-    <height>170</height>
+    <width>663</width>
+    <height>173</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -27,7 +27,7 @@
     <number>3</number>
    </property>
    <item row="4" column="1">
-    <layout class="QHBoxLayout" name="layout_buttons">
+    <layout class="QHBoxLayout" name="layoutButtons">
      <property name="spacing">
       <number>0</number>
      </property>
@@ -38,7 +38,7 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPushButton" name="btn_ctrl_bw">
+      <widget class="QPushButton" name="btnPrev">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -71,7 +71,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ctrl_play">
+      <widget class="QPushButton" name="btnPlay">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -106,7 +106,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ctrl_rec">
+      <widget class="QPushButton" name="btnRec">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -138,7 +138,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_ctrl_fw">
+      <widget class="QPushButton" name="btnNext">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -173,12 +173,12 @@
     </layout>
    </item>
    <item row="0" column="2" rowspan="4" colspan="2">
-    <layout class="QGridLayout" name="layout_labels">
+    <layout class="QGridLayout" name="layoutLabels">
      <property name="spacing">
       <number>3</number>
      </property>
      <item row="0" column="1">
-      <widget class="Gui::FloatingLabel" name="lab_title">
+      <widget class="Gui::FloatingLabel" name="labTitle">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -207,7 +207,7 @@
       </widget>
      </item>
      <item row="3" column="0">
-      <widget class="QLabel" name="lab_copyright">
+      <widget class="QLabel" name="labCopyright">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -235,7 +235,7 @@
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="lab_sayonara">
+      <widget class="QLabel" name="labSayonara">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -273,7 +273,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="lab_version">
+      <widget class="QLabel" name="labVersion">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -295,7 +295,7 @@
       </widget>
      </item>
      <item row="2" column="0">
-      <widget class="QLabel" name="lab_writtenby">
+      <widget class="QLabel" name="labWrittenBy">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
          <horstretch>0</horstretch>
@@ -323,7 +323,7 @@
       </widget>
      </item>
      <item row="3" column="1">
-      <widget class="QWidget" name="widget_details" native="true">
+      <widget class="QWidget" name="widgetDetails" native="true">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -350,14 +350,14 @@
          <number>2</number>
         </property>
         <item row="0" column="4" colspan="2">
-         <widget class="QLabel" name="lab_bitrate">
+         <widget class="QLabel" name="labBitrate">
           <property name="text">
            <string/>
           </property>
          </widget>
         </item>
         <item row="0" column="1" colspan="2">
-         <widget class="QLabel" name="lab_filesize">
+         <widget class="QLabel" name="labFilesize">
           <property name="text">
            <string/>
           </property>
@@ -393,7 +393,7 @@
       </widget>
      </item>
      <item row="2" column="1">
-      <widget class="Gui::FloatingLabel" name="lab_album">
+      <widget class="Gui::FloatingLabel" name="labAlbum">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -412,7 +412,7 @@
       </widget>
      </item>
      <item row="1" column="1">
-      <widget class="Gui::FloatingLabel" name="lab_artist">
+      <widget class="Gui::FloatingLabel" name="labArtist">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -450,7 +450,7 @@
       <enum>QLayout::SetFixedSize</enum>
      </property>
      <item>
-      <widget class="QPushButton" name="btn_mute">
+      <widget class="QPushButton" name="btnMute">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
          <horstretch>0</horstretch>
@@ -497,7 +497,7 @@
       </widget>
      </item>
      <item>
-      <widget class="Gui::SearchSlider" name="sli_volume">
+      <widget class="Gui::SearchSlider" name="sliVolume">
        <property name="enabled">
         <bool>true</bool>
        </property>
@@ -548,9 +548,9 @@
     </layout>
    </item>
    <item row="0" column="1" rowspan="3">
-    <layout class="QGridLayout" name="layout_cover">
+    <layout class="QGridLayout" name="layoutCover">
      <item row="0" column="0">
-      <widget class="Gui::CoverButton" name="btn_cover">
+      <widget class="Gui::CoverButton" name="btnCover">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -605,7 +605,7 @@
     </layout>
    </item>
    <item row="4" column="3">
-    <widget class="QPushButton" name="btn_ctrl_stop">
+    <widget class="QPushButton" name="btnStop">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
        <horstretch>0</horstretch>
@@ -642,7 +642,7 @@
       <number>2</number>
      </property>
      <item row="1" column="0">
-      <widget class="QLabel" name="lab_cur_time">
+      <widget class="QLabel" name="labCurrentTime">
        <property name="minimumSize">
         <size>
          <width>50</width>
@@ -664,7 +664,7 @@
       </widget>
      </item>
      <item row="1" column="2">
-      <widget class="QLabel" name="lab_max_time">
+      <widget class="QLabel" name="labDuration">
        <property name="minimumSize">
         <size>
          <width>50</width>
@@ -705,7 +705,7 @@
       </spacer>
      </item>
      <item row="0" column="0" colspan="3">
-      <widget class="Gui::SearchSlider" name="sli_progress">
+      <widget class="Gui::SearchSlider" name="sliProgress">
        <property name="focusPolicy">
         <enum>Qt::NoFocus</enum>
        </property>

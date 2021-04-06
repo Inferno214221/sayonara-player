@@ -84,7 +84,7 @@ class GUI_CoverEdit :
 		QPixmap selectedCover(int index) const;
 
 	private:
-		void setCover(const MetaData& md);
+		void setCover(const MetaData& track);
 		void showReplacementField(bool b);
 		bool isCoverReplacementActive() const;
 
@@ -95,7 +95,7 @@ class GUI_CoverEdit :
 		void coverChanged();
 		void replaceToggled(bool b);
 		void coverAllToggled(bool b);
-		void setMetadata(const MetaDataList& v_md);
+		void setMetadata(const MetaDataList& tracks);
 
 	protected:
 		void languageChanged() override;

@@ -32,7 +32,7 @@
       <number>4</number>
      </property>
      <item>
-      <widget class="QFrame" name="header_frame">
+      <widget class="QFrame" name="headerFrame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -154,10 +154,10 @@
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
        </attribute>
-       <attribute name="verticalHeaderDefaultSectionSize">
+       <attribute name="verticalHeaderMinimumSectionSize">
         <number>20</number>
        </attribute>
-       <attribute name="verticalHeaderMinimumSectionSize">
+       <attribute name="verticalHeaderDefaultSectionSize">
         <number>20</number>
        </attribute>
       </widget>
@@ -213,10 +213,10 @@
        <attribute name="verticalHeaderVisible">
         <bool>false</bool>
        </attribute>
-       <attribute name="verticalHeaderDefaultSectionSize">
+       <attribute name="verticalHeaderMinimumSectionSize">
         <number>20</number>
        </attribute>
-       <attribute name="verticalHeaderMinimumSectionSize">
+       <attribute name="verticalHeaderDefaultSectionSize">
         <number>20</number>
        </attribute>
       </widget>
@@ -261,11 +261,11 @@
       <attribute name="horizontalHeaderCascadingSectionResizes">
        <bool>true</bool>
       </attribute>
-      <attribute name="horizontalHeaderHighlightSections">
-       <bool>false</bool>
-      </attribute>
       <attribute name="horizontalHeaderMinimumSectionSize">
        <number>23</number>
+      </attribute>
+      <attribute name="horizontalHeaderHighlightSections">
+       <bool>false</bool>
       </attribute>
       <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
        <bool>true</bool>
@@ -276,10 +276,10 @@
       <attribute name="verticalHeaderVisible">
        <bool>false</bool>
       </attribute>
-      <attribute name="verticalHeaderDefaultSectionSize">
+      <attribute name="verticalHeaderMinimumSectionSize">
        <number>20</number>
       </attribute>
-      <attribute name="verticalHeaderMinimumSectionSize">
+      <attribute name="verticalHeaderDefaultSectionSize">
        <number>20</number>
       </attribute>
      </widget>

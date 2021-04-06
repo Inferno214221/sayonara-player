@@ -21,7 +21,7 @@
    <item row="1" column="1" rowspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
-      <widget class="QLabel" name="lab_image">
+      <widget class="QLabel" name="labImage">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
          <horstretch>0</horstretch>
@@ -58,7 +58,7 @@ border: 2px solid #202020;
     </widget>
    </item>
    <item row="10" column="1">
-    <widget class="QLabel" name="lab_donate">
+    <widget class="QLabel" name="labDonate">
      <property name="text">
       <string/>
      </property>
@@ -99,7 +99,7 @@ border: 2px solid #202020;
    <item row="0" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
-      <widget class="QFrame" name="header_frame">
+      <widget class="QFrame" name="headerFrame">
        <property name="frameShape">
         <enum>QFrame::StyledPanel</enum>
        </property>
@@ -140,7 +140,7 @@ border: 2px solid #202020;
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="QLabel" name="lab_description">
+    <widget class="QLabel" name="labDescription">
      <property name="font">
       <font>
        <pointsize>11</pointsize>
@@ -167,7 +167,7 @@ border: 2px solid #202020;
     </widget>
    </item>
    <item row="1" column="0" rowspan="10">
-    <widget class="SomaFMStationView" name="tv_stations">
+    <widget class="SomaFMStationView" name="tvStations">
      <property name="sizePolicy">
       <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
        <horstretch>0</horstretch>
@@ -219,7 +219,7 @@ border: 2px solid #202020;
   </customwidget>
  </customwidgets>
  <tabstops>
-  <tabstop>tv_stations</tabstop>
+  <tabstop>tvStations</tabstop>
  </tabstops>
  <resources/>
  <connections/>

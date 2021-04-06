@@ -26,15 +26,10 @@ QGroupBox::title {
 }
 
 QFrame {
-    border-bottom: 1px solid qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 transparent, stop: 0.3 #242424, stop: 0.7 #242424, stop: 1.0 transparent);
+    border-bottom: 1px solid qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(0, 0, 0, 0), stop: 0.3 #242424, stop: 0.7 #242424, stop: 1.0 rgba(0, 0, 0, 0));
 }
 
-#player_frame,
-#genre_frame,
-#my_frame,
-#my_frame_2,
-#my_frame_3,
-#header_frame {
+#headerFrame {
     padding: 0;
     background-repeat: no-repeat;
     border: none;
@@ -44,23 +39,22 @@ QStackedWidget {
     border: none;
 }
 
-
 QSplitter {
     border: none;
 }
 
-QSplitter:handle {
+QSplitter::handle {
     margin: 1px;
 }
 
-QSplitter:handle:vertical {
+QSplitter::handle:vertical {
 
-    image: url(:/Icons/splitter_ver.svg);
+    image: url(':/Icons/splitter_ver.svg');
 }
 
-QSplitter:handle:horizontal {
+QSplitter::handle:horizontal {
 
-    image: url(:/Icons/splitter_hor.svg);
+    image: url(':/Icons/splitter_hor.svg');
 }
 
 Gui--MiniSearcher {
@@ -126,7 +120,7 @@ QTreeView::branch:open:has-children:has-siblings {
     image: url(':/Icons/arrow_filled_down.svg');
 }
 
-QScrollBar::vertical {
+QScrollBar:vertical {
     margin: 0;
     padding-left: 2px;
     padding-right: 1px;
@@ -142,7 +136,7 @@ QScrollBar::sub-line:vertical,
 QScrollBar::add-line:vertical,
 QScrollBar::add-page:vertical,
 QScrollBar::sub-page:vertical {
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
 }
 
 QScrollBar::handle:vertical {
@@ -157,7 +151,7 @@ QScrollBar::handle:vertical:pressed {
     background: #404040;
 }
 
-QScrollBar::horizontal {
+QScrollBar:horizontal {
     margin: 0;
     padding-top: 2px;
     padding-bottom: 1px;
@@ -173,7 +167,7 @@ QScrollBar::sub-line:horizontal,
 QScrollBar::add-line:horizontal,
 QScrollBar::sub-page:horizontal,
 QScrollBar::add-page:horizontal {
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
 }
 
 QScrollBar::handle:horizontal {
@@ -223,8 +217,8 @@ QMenuBar {
 }
 
 QMenuBar::item {
-    padding: 6px 5px;
-    background: transparent;
+    padding: 0.5ex 0.5em;
+    background: rgba(0, 0, 0, 0);
 }
 
 QMenuBar::item:selected {
@@ -233,16 +227,14 @@ QMenuBar::item:selected {
 }
 
 QMenu {
-    margin-top: -1px;
     border: 1px solid #202020;
     background-color: #383838;
-    padding: 4px 2px 4px 2px;
+    padding: 1ex 0 1ex 0;
 }
 
 QMenu::item {
-    border-left: 5px solid transparent;
-    padding: 4px 20px 4px 25px;
-    background-color: transparent;
+    padding: 0.5ex 2em 0.5ex 1.5em;
+    background-color: rgba(0, 0, 0, 0);
 }
 
 QMenu::item:selected {
@@ -252,17 +244,18 @@ QMenu::item:selected {
     color: white;
 }
 
+QMenu::icon,
+QMenu::indicator
+{
+    position: absolute;
+    left: 0.5em;
+}
+
 QMenu::indicator:checked {
-    margin-left: 5px;
-    width: 8px;
-    height: 8px;
     image: url(':/Icons/tool_orange.svg');
 }
 
 QMenu::indicator:unchecked {
-    margin-left: 5px;
-    width: 8px;
-    height: 8px;
     image: url(':/Icons/tool_dark_grey.svg');
 }
 
@@ -270,21 +263,9 @@ QMenu::indicator:unchecked:pressed {
     image: url(':/Icons/tool_grey.svg');
 }
 
-QMenu::Icon:checked {
-    max-height: 0;
-    max-width: 0;
-    image: url(':/Icons/tool_orange.svg');
-}
-
-QMenu::Icon:unchecked {
-    max-height: 0;
-    max-width: 0;
-    image: url(':/Icons/tool_dark_grey.svg');
-}
-
 QMenu::separator {
     height: 1px;
-    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 transparent, stop: 0.3 #242424, stop: 0.7 #242424, stop: 1.0 transparent);
+    background: qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgba(0, 0, 0, 0), stop: 0.3 #242424, stop: 0.7 #242424, stop: 1.0 rgba(0, 0, 0, 0));
     margin: 3px 5px;
 }
 
@@ -295,12 +276,12 @@ Library--ContextMenu {
 
 QLabel {
     border: none;
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
 }
 
 QScrollArea {
     border: 1px solid #282828;
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
 }
 
 QComboBox,
@@ -337,8 +318,8 @@ QComboBox:editable:focus,
 QLineEdit:hover,
 QSpinBox:hover,
 QPlainTextEdit:hover,
-QPushButton[flat=false]:hover,
-QPushButton[flat=false]:pressed,
+QPushButton:hover[flat=false],
+QPushButton:pressed[flat=false],
 QLineEdit:focus,
 QSpinBox:focus,
 QTextEdit:hover,
@@ -351,7 +332,7 @@ QToolButton:focus {
     border: 1px solid #e8841a;
 }
 
-QPushButton[flat=false]:focus {
+QPushButton:focus[flat=false] {
     color: #e8841a;
 }
 
@@ -419,9 +400,9 @@ QComboBox:disabled {
 #ControlFwdButton:hover,
 #ControlBwdButton:hover,
 #ControlStopButton:hover {
-    background-color: qradialgradient(spread:pad,
+    background-color: qradialgradient(
     cx: 0.5, cy: 0.5, radius: 0.54,
-    fx: 0.502, fy: 0.500876,
+    fx: 0.5, fy: 0.5,
     stop: 0.45 rgba(243, 132, 26, 255),
     stop: 1 rgba(255, 255, 255, 0));
 }
@@ -432,12 +413,9 @@ QComboBox:disabled {
 #ControlFwdButton:pressed,
 #ControlBwdButton:pressed,
 #ControlStopButton:pressed {
-    background-color: qradialgradient(spread:pad,
-    cx: 0.5,
-    cy: 0.5,
-    radius: 0.54,
-    fx: 0.502,
-    fy: 0.500876,
+    background-color: qradialgradient(
+    cx: 0.5, cy: 0.5, radius: 0.54,
+    fx: 0.5, fy: 0.5,
     stop: 0.8 rgba(243, 132, 26, 255),
     stop: 1 rgba(255, 255, 255, 0));
 }
@@ -460,11 +438,6 @@ QPushButton[flat=false]:disabled {
 QPushButton[flat=false]:pressed {
     background: #505050;
 }
-
-QPushButton[flat=false]:released {
-    border: 1px solid #282828;
-}
-
 
 QSpinBox:focus {
     padding-right: 15px;
@@ -648,7 +621,6 @@ QProgressBar {
     max-height: 3ex;
     background: #828282;
     text-align: center;
-    vertical-align: middle;
     color: #f8f8f8;
 }
 
@@ -658,17 +630,15 @@ QProgressBar::chunk {
     margin: 0.1ex;
 }
 
-#loading_bar,
-#sli_buffer {
+#loadingBar {
     border: 1px solid #202020;
     background: #282828;
-    color: transparent;
+    color: rgba(0, 0, 0, 0);
     padding-top: 2px;
     padding-bottom: 2px;
 }
 
-#loading_bar::chunk,
-#sli_buffer::chunk {
+#loadingBar::chunk {
     width: 1em;
     background: #e8841a;
     margin: 0;
@@ -691,15 +661,15 @@ RatingLabel:focus {
 }
 
 CoverButton,
-#btn_cover {
-    background: transparent;
+#btnCover {
+    background: rgba(0, 0, 0, 0);
     border: none;
     padding: 0;
     margin: 0;
 }
 
 CoverButton:hover,
-#btn_cover:hover {
+#btnCover:hover {
     border: 1px solid #e8841a;
 }
 
@@ -717,7 +687,7 @@ CoverButton:hover,
 
 #PreferenceButton {
     border: none;
-    background: transparent;
+    background: rgba(0, 0, 0, 0);
     color: #e8841a;
 }
 

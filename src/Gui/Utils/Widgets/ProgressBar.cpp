@@ -42,7 +42,7 @@ ProgressBar::ProgressBar(QWidget* parent) :
 	m = Pimpl::make<Private>();
 
 	this->setEnabled(false);
-	this->setObjectName("loading_bar");
+	this->setObjectName("loadingBar");
 
 	this->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
 	this->setMaximumHeight(m->fixedHeight);

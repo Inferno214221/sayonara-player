@@ -34,47 +34,47 @@ GUI_Controls::~GUI_Controls()
 	ui = nullptr;
 }
 
-QLabel* GUI_Controls::labSayonara() const { return ui->lab_sayonara; }
+QLabel* GUI_Controls::labSayonara() const { return ui->labSayonara; }
 
-QLabel* GUI_Controls::labTitle() const { return ui->lab_title; }
+QLabel* GUI_Controls::labTitle() const { return ui->labTitle; }
 
-QLabel* GUI_Controls::labVersion() const { return ui->lab_version; }
+QLabel* GUI_Controls::labVersion() const { return ui->labVersion; }
 
-QLabel* GUI_Controls::labAlbum() const { return ui->lab_album; }
+QLabel* GUI_Controls::labAlbum() const { return ui->labAlbum; }
 
-QLabel* GUI_Controls::labArtist() const { return ui->lab_artist; }
+QLabel* GUI_Controls::labArtist() const { return ui->labArtist; }
 
-QLabel* GUI_Controls::labWrittenBy() const { return ui->lab_writtenby; }
+QLabel* GUI_Controls::labWrittenBy() const { return ui->labWrittenBy; }
 
-QLabel* GUI_Controls::labBitrate() const { return ui->lab_bitrate; }
+QLabel* GUI_Controls::labBitrate() const { return ui->labBitrate; }
 
-QLabel* GUI_Controls::labFilesize() const { return ui->lab_filesize; }
+QLabel* GUI_Controls::labFilesize() const { return ui->labFilesize; }
 
-QLabel* GUI_Controls::labCopyright() const { return ui->lab_copyright; }
+QLabel* GUI_Controls::labCopyright() const { return ui->labCopyright; }
 
-QLabel* GUI_Controls::labCurrentTime() const { return ui->lab_cur_time; }
+QLabel* GUI_Controls::labCurrentTime() const { return ui->labCurrentTime; }
 
-QLabel* GUI_Controls::labMaxTime() const { return ui->lab_max_time; }
+QLabel* GUI_Controls::labMaxTime() const { return ui->labDuration; }
 
-QWidget* GUI_Controls::widgetDetails() const { return ui->widget_details; }
+QWidget* GUI_Controls::widgetDetails() const { return ui->widgetDetails; }
 
-Gui::SearchSlider* GUI_Controls::sliProgress() const { return ui->sli_progress; }
+Gui::SearchSlider* GUI_Controls::sliProgress() const { return ui->sliProgress; }
 
-Gui::SearchSlider* GUI_Controls::sliVolume() const { return ui->sli_volume; }
+Gui::SearchSlider* GUI_Controls::sliVolume() const { return ui->sliVolume; }
 
-QPushButton* GUI_Controls::btnMute() const { return ui->btn_mute; }
+QPushButton* GUI_Controls::btnMute() const { return ui->btnMute; }
 
-QPushButton* GUI_Controls::btnPlay() const { return ui->btn_ctrl_play; }
+QPushButton* GUI_Controls::btnPlay() const { return ui->btnPlay; }
 
-QPushButton* GUI_Controls::btnRecord() const { return ui->btn_ctrl_rec; }
+QPushButton* GUI_Controls::btnRecord() const { return ui->btnRec; }
 
-QPushButton* GUI_Controls::btnPrevious() const { return ui->btn_ctrl_bw; }
+QPushButton* GUI_Controls::btnPrevious() const { return ui->btnPrev; }
 
-QPushButton* GUI_Controls::btnNext() const { return ui->btn_ctrl_fw; }
+QPushButton* GUI_Controls::btnNext() const { return ui->btnNext; }
 
-QPushButton* GUI_Controls::btnStop() const { return ui->btn_ctrl_stop; }
+QPushButton* GUI_Controls::btnStop() const { return ui->btnStop; }
 
-Gui::CoverButton* GUI_Controls::btnCover() const { return ui->btn_cover; }
+Gui::CoverButton* GUI_Controls::btnCover() const { return ui->btnCover; }
 
 bool GUI_Controls::isExternResizeAllowed() const
 {

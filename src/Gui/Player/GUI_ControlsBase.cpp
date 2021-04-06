@@ -122,6 +122,7 @@ void GUI_ControlsBase::init()
 	setupShortcuts();
 
 	btnCover()->setAlternativeSearchEnabled(false);
+	btnCover()->setObjectName("btnCover");
 	connect(btnCover(), &Gui::CoverButton::sigRejected, this, &GUI_ControlsBase::coverClickRejected);
 
 	ListenSetting(Set::Engine_SR_Active, GUI_ControlsBase::streamRecorderActiveChanged);

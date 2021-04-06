@@ -168,7 +168,6 @@
         <file>Icons/bg.png</file>
     </qresource>
     <qresource prefix="/Style">
-        <file>standard.css</file>
-        <file>dark.css</file>
+        <file>dark.qss</file>
     </qresource>
 </RCC>

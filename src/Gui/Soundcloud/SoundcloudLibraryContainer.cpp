@@ -38,7 +38,7 @@ struct SC::LibraryContainer::Private
 {
 	LibraryPlaylistInteractor* playlistInteractor;
 
-	Private(LibraryPlaylistInteractor* playlistInteractor) :
+	explicit Private(LibraryPlaylistInteractor* playlistInteractor) :
 		playlistInteractor(playlistInteractor)
 	{}
 };

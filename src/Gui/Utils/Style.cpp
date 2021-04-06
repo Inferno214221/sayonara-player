@@ -37,7 +37,7 @@ QString Style::style(bool dark)
 	QString style;
 	if(dark)
 	{
-		Util::File::readFileIntoString(":/Style/dark.css", style);
+		Util::File::readFileIntoString(":/Style/dark.qss", style);
 	}
 
 	const auto additionalPath = (dark)

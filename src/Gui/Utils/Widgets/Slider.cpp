@@ -136,7 +136,6 @@ void Slider::paintEvent(QPaintEvent* e)
 	{
 		int otherValue = this->additionalValue();
 
-		spLog(Log::Develop, this) << "value: " << this->value() << " buffer: " << this->additionalValue();
 		QRect rect = calculateRectangle(this, otherValue, isHorizontal);
 		rects << RectColorPair(rect, this->additionalValueColor());
 	}

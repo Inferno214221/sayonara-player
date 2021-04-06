@@ -45,16 +45,13 @@ using SomaFM::GUI_SomaFM;
 
 struct GUI_SomaFM::Private
 {
-	SomaFM::Library*	library=nullptr;
-	Gui::ProgressBar*	progressBar=nullptr;
-
+	SomaFM::Library* library;
+	Gui::ProgressBar* progressBar = nullptr;
 	QList<QPushButton*> stationButtons;
 
-	Private(SomaFM::Library* library) :
-		library(library)
-	{}
+	explicit Private(SomaFM::Library* library) :
+		library(library) {}
 };
-
 
 GUI_SomaFM::GUI_SomaFM(SomaFM::Library* library, QWidget* parent) :
 	Widget(parent)
@@ -63,79 +60,84 @@ GUI_SomaFM::GUI_SomaFM(SomaFM::Library* library, QWidget* parent) :
 	ui->setupUi(this);
 
 	m = Pimpl::make<Private>(library);
-	m->progressBar = new Gui::ProgressBar(ui->tv_stations);
+	m->progressBar = new Gui::ProgressBar(ui->tvStations);
 	m->progressBar->setPosition(Gui::ProgressBar::Position::Bottom);
 
 	auto* modelStations = new SomaFM::StationModel(this);
 
-	this->setFocusProxy(ui->tv_stations);
-	ui->tv_stations->setSearchableModel(modelStations);
-	ui->tv_stations->setItemDelegate(new Gui::StyledItemDelegate(0, ui->tv_stations));
-	ui->tv_stations->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	ui->tv_stations->setEnabled(false);
-	ui->tv_stations->setColumnWidth(0, 20);
+	this->setFocusProxy(ui->tvStations);
+	ui->tvStations->setSearchableModel(modelStations);
+	ui->tvStations->setItemDelegate(new Gui::StyledItemDelegate(0, ui->tvStations));
+	ui->tvStations->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	ui->tvStations->setEnabled(false);
+	ui->tvStations->setColumnWidth(0, 20);
 
-	QPixmap logo = QPixmap(":/soma_icons/soma_logo.png")
+	const auto logo = QPixmap(":/soma_icons/soma_logo.png")
 		.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
 
-	ui->lab_image->setPixmap(logo);
+	ui->labImage->setPixmap(logo);
 
-	bool dark = Style::isDark();
-	QString description =
+	const auto isDark = Style::isDark();
+	const auto description =
 		"Listener-supported, commercial-free, underground/alternative radio<br /><br />" +
-		Util::createLink("https://somafm.com", dark);
+		Util::createLink("https://somafm.com", isDark);
 
-	ui->lab_description->setText(description);
-	ui->lab_donate->setText(Util::createLink("https://somafm.com/support/", dark));
+	ui->labDescription->setText(description);
+	ui->labDonate->setText(Util::createLink("https://somafm.com/support/", isDark));
 
 	connect(m->library, &SomaFM::Library::sigStationsLoaded, this, &GUI_SomaFM::stationsLoaded);
 	connect(m->library, &SomaFM::Library::sigStationChanged, this, &GUI_SomaFM::stationChanged);
 	connect(m->library, &SomaFM::Library::sigLoadingStarted, m->progressBar, &QWidget::show);
 	connect(m->library, &SomaFM::Library::sigLoadingFinished, m->progressBar, &QWidget::hide);
 
-	connect(ui->tv_stations, &QListView::activated, this, &GUI_SomaFM::stationIndexChanged);
-	connect(ui->tv_stations, &QListView::clicked, this, &GUI_SomaFM::stationClicked);
-	connect(ui->tv_stations, &QListView::doubleClicked, this, &GUI_SomaFM::stationDoubleClicked);
+	connect(ui->tvStations, &QListView::activated, this, &GUI_SomaFM::stationIndexChanged);
+	connect(ui->tvStations, &QListView::clicked, this, &GUI_SomaFM::stationClicked);
+	connect(ui->tvStations, &QListView::doubleClicked, this, &GUI_SomaFM::stationDoubleClicked);
 
 	m->library->searchStations();
 }
 
 GUI_SomaFM::~GUI_SomaFM()
 {
-	if(m->library) {
-		m->library->deleteLater(); m->library = nullptr;
+	if(m->library)
+	{
+		m->library->deleteLater();
+		m->library = nullptr;
 	}
 
-	if(ui){
-		delete ui; ui = nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
 QFrame* GUI_SomaFM::headerFrame() const
 {
-	return ui->header_frame;
+	return ui->headerFrame;
 }
 
 void GUI_SomaFM::stationsLoaded(const QList<SomaFM::Station>& stations)
 {
-	if(!ui){
+	if(!ui)
+	{
 		return;
 	}
 
 	spLog(Log::Debug, this) << "Stations loaded";
-	auto* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* model = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
 	model->setStations(stations);
 
-	ui->tv_stations->setEnabled(true);
-	ui->tv_stations->setDragEnabled(true);
-	ui->tv_stations->setDragDropMode(QAbstractItemView::DragDrop);
-	ui->tv_stations->resizeColumnToContents(0);
-	ui->tv_stations->resizeRowsToContents();
+	ui->tvStations->setEnabled(true);
+	ui->tvStations->setDragEnabled(true);
+	ui->tvStations->setDragDropMode(QAbstractItemView::DragDrop);
+	ui->tvStations->resizeColumnToContents(0);
+	ui->tvStations->resizeRowsToContents();
 }
 
 void GUI_SomaFM::stationChanged(const SomaFM::Station& station)
 {
-	auto* model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* model = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
 	model->replaceStation(station);
 }
 
@@ -146,79 +148,80 @@ void GUI_SomaFM::stationDoubleClicked(const QModelIndex& idx)
 
 void GUI_SomaFM::selectionChanged(const QModelIndexList& indexes)
 {
-	if(indexes.isEmpty()){
-		return;
+	if(!indexes.isEmpty())
+	{
+		stationIndexChanged(indexes.first());
 	}
-
-	stationIndexChanged(indexes.first());
 }
 
 SomaFM::Station GUI_SomaFM::getStation(int row) const
 {
-	auto* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
+	auto* stationModel = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
 
-	QModelIndex idx = station_model->index(row, 1);
-	QString station_name = station_model->data(idx).toString();
+	const auto index = stationModel->index(row, 1);
+	const auto stationName = stationModel->data(index).toString();
 
-	return m->library->station(station_name);
+	return m->library->station(stationName);
 }
 
 void GUI_SomaFM::stationClicked(const QModelIndex& idx)
 {
-	if(!idx.isValid()){
+	if(!idx.isValid())
+	{
 		return;
 	}
 
-	auto* station_model = static_cast<SomaFM::StationModel*>(ui->tv_stations->model());
-	if(!station_model->hasStations() && idx.column() == 0)
+	auto* stationModel = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
+	if(!stationModel->hasStations() && idx.column() == 0)
 	{
-		station_model->setWaiting();
+		stationModel->setWaiting();
 		m->library->searchStations();
 
 		return;
 	}
 
-	SomaFM::Station station = getStation(idx.row());
+	const auto station = getStation(idx.row());
 
-	if(idx.column() == 0){
-		m->library->setStationLoved( station.name(), !station.isLoved());
+	if(idx.column() == 0)
+	{
+		m->library->setStationLoved(station.name(), !station.isLoved());
 	}
 
 	stationIndexChanged(idx);
 }
 
-
 void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 {
-	if(!idx.isValid()){
+	if(!idx.isValid())
+	{
 		return;
 	}
 
-	const QPixmap pixmap(":/soma_icons/soma_logo.png");
-	ui->lab_image->setPixmap(pixmap.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+	const auto pixmap = QPixmap(":/soma_icons/soma_logo.png");
+	ui->labImage->setPixmap(pixmap.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
-	const SomaFM::Station station = getStation(idx.row());
-	ui->lab_description->setText(station.description());
+	const auto station = getStation(idx.row());
+	ui->labDescription->setText(station.description());
 
-	for(QPushButton* btn : m->stationButtons)
+	for(auto* stationButton : m->stationButtons)
 	{
-		ui->verticalLayout->removeWidget(btn);
-		btn->deleteLater();
+		ui->verticalLayout->removeWidget(stationButton);
+		stationButton->deleteLater();
 	}
 
 	m->stationButtons.clear();
 
-	const QStringList playlists = station.playlists();
+	const auto playlists = station.playlists();
 
-	int index=0;
-	for(const QString& playlist : playlists)
+	auto index = 0;
+	for(const auto& playlist : playlists)
 	{
-		const QString text = station.urlTypeString(playlist);
-		const QIcon icon = Gui::Icons::icon(Gui::Icons::Play);
+		const auto text = station.urlTypeString(playlist);
+		const auto icon = Gui::Icons::icon(Gui::Icons::Play);
 
 		auto* button = new QPushButton(icon, text, this);
 
-		connect(button, &QPushButton::clicked, this, [this, index](){
+		connect(button, &QPushButton::clicked, this, [this, index]() {
 			m->library->createPlaylistFromStreamlist(index);
 		});
 
@@ -228,10 +231,10 @@ void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 		index++;
 	}
 
-	auto* cl = new Cover::Lookup(station.coverLocation(), 1, this);
-	connect(cl, &Cover::LookupBase::sigCoverFound, this, &GUI_SomaFM::coverFound);
+	auto* coverLookup = new Cover::Lookup(station.coverLocation(), 1, this);
+	connect(coverLookup, &Cover::LookupBase::sigCoverFound, this, &GUI_SomaFM::coverFound);
 
-	cl->start();
+	coverLookup->start();
 }
 
 void GUI_SomaFM::playlistDoubleClicked(const QModelIndex& idx)
@@ -241,17 +244,23 @@ void GUI_SomaFM::playlistDoubleClicked(const QModelIndex& idx)
 
 void GUI_SomaFM::coverFound(const QPixmap& cover)
 {
-	auto* cl = static_cast<Cover::Lookup*>(sender());
+	auto* coverLookup = static_cast<Cover::Lookup*>(sender());
 
-	QPixmap pixmap = cover.scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-	if(pixmap.isNull()){
-		pixmap = QPixmap(":/soma_icons/soma_logo.png").scaled(QSize(200, 200), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	auto pixmap = cover.scaled(QSize(200, 200),
+	                           Qt::KeepAspectRatio,
+	                           Qt::SmoothTransformation);
+	if(pixmap.isNull())
+	{
+		pixmap = QPixmap(":/soma_icons/soma_logo.png").scaled(QSize(200, 200),
+		                                                      Qt::KeepAspectRatio,
+		                                                      Qt::SmoothTransformation);
 	}
 
-	ui->lab_image->setPixmap(pixmap);
+	ui->labImage->setPixmap(pixmap);
 
-	if(cl){
-		cl->deleteLater();
+	if(coverLookup)
+	{
+		coverLookup->deleteLater();
 	}
 }
 

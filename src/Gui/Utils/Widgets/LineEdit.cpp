@@ -30,17 +30,17 @@ using Gui::LineEdit;
 
 struct LineEdit::Private
 {
-	QMenu*			contextMenu=nullptr;
-	QAction*		removeSpecialChars=nullptr;
+	QMenu* contextMenu = nullptr;
+	QAction* removeSpecialChars = nullptr;
 
-	QStringList		items;
+	QStringList items;
 
 	QList<QAction*> actions;
-	int				currentIndex;
+	int currentIndex;
 };
 
 LineEdit::LineEdit(QWidget* parent) :
-    WidgetTemplate<QLineEdit>(parent)
+	WidgetTemplate<QLineEdit>(parent)
 {
 	m = Pimpl::make<Private>();
 
@@ -66,7 +66,8 @@ void LineEdit::initContextMenu()
 void LineEdit::itemTextChanged(const QString& text)
 {
 	m->currentIndex = m->items.indexOf(text);
-	if(m->currentIndex >= 0){
+	if(m->currentIndex >= 0)
+	{
 		return;
 	}
 
@@ -81,14 +82,14 @@ void LineEdit::itemTextChanged(const QString& text)
 	m->items.removeDuplicates();
 	m->currentIndex = m->items.indexOf(text);
 
-	for(QAction* a : m->actions)
+	for(auto* action : m->actions)
 	{
-		m->contextMenu->removeAction(a);
+		m->contextMenu->removeAction(action);
 	}
 
 	m->actions.clear();
 
-	for(const QString& item : m->items)
+	for(const auto& item : m->items)
 	{
 		auto* action = new QAction(item, m->contextMenu);
 		connect(action, &QAction::triggered, this, &LineEdit::itemActionTriggered);
@@ -107,22 +108,21 @@ void LineEdit::itemActionTriggered()
 
 void LineEdit::removeSpecialCharsTriggered()
 {
-	QString newText;
-	const QString text = this->text();
+	static const auto specialChars = QStringLiteral("-_+<>=*+~#%.:;#");
+	static const auto doubleSpace = QStringLiteral("  ");
+	static const auto singleSpace = QStringLiteral(" ");
 
-	QString chars = "-_+<>=*+~#%.:;#";
-	for(QChar c : text)
+	QString newText;
+	const auto text = this->text();
+
+	for(const auto& c : text)
 	{
-		if(!chars.contains(c)){
-			newText.append(c);
-		}
-		else {
-			newText.append(' ');
-		}
+		newText.append((!specialChars.contains(c)) ? c : ' ');
 	}
 
-	while(newText.contains("  ")){
-		newText.replace("  ", " ");
+	while(newText.contains(doubleSpace))
+	{
+		newText.replace(doubleSpace, singleSpace);
 	}
 
 	this->setText(newText);
@@ -146,21 +146,16 @@ void LineEdit::keyPressEvent(QKeyEvent* event)
 
 	else if(event->key() == Qt::Key_Down)
 	{
-		m->currentIndex--;
-		if(m->currentIndex < 0){
-			m->currentIndex = m->items.size() - 1;
-		}
+		m->currentIndex = (m->currentIndex == 0)
+			? m->items.size() - 1
+			: m->currentIndex - 1;
 
 		this->setText(m->items[m->currentIndex]);
 	}
 }
 
-void LineEdit::contextMenuEvent(QContextMenuEvent* event)
+void LineEdit::contextMenuEvent([[maybe_unused]] QContextMenuEvent* event)
 {
-	QPoint pos = event->pos();
-		pos.setX(QCursor::pos().x());
-		pos.setY(QCursor::pos().y());
-
-	m->contextMenu->exec(pos);
+	m->contextMenu->exec(QCursor::pos());
 }
 
