@@ -36,7 +36,11 @@ namespace Tagging
 class MetaData;
 class MetaDataList;
 class QPixmap;
-class GUI_TagEdit;
+
+namespace Tagging
+{
+	class Editor;
+}
 
 /**
  * @brief The GUI_CoverEdit class
@@ -55,7 +59,7 @@ class GUI_CoverEdit :
 		 * @param editor The same tag editor as used in GUI_TagEdit
 		 * @param parent
 		 */
-		explicit GUI_CoverEdit(GUI_TagEdit* parent);
+		explicit GUI_CoverEdit(Tagging::Editor* tagEditor, QWidget* parent);
 		~GUI_CoverEdit() override;
 
 		/**

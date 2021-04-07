@@ -22,7 +22,6 @@
 #define GUI_TAGEDIT_H_
 
 #include "Gui/Utils/Widgets/Widget.h"
-#include "Components/Tagging/Expression.h"
 #include "Utils/Pimpl.h"
 
 /**
@@ -49,126 +48,39 @@ class GUI_TagEdit :
 
 	signals:
 		void sigOkClicked(const MetaDataList&);
-		void sigUndoClicked(int idx);
-		void sigUndoAllClicked();
 		void sigCancelled();
 
 	public:
 		explicit GUI_TagEdit(QWidget* parent=nullptr);
 		~GUI_TagEdit() override;
 
-		/**
-		 * @brief Commits changes to db/file
-		 */
-		void commit();
-
-		/**
-		 * @brief calls undo_all, and closes the entire dialog
-		 */
-		void cancel();
-
-		/**
-		 * @brief shows/hides the close button. We don't need a close button
-		 * when this widget is part of another
-		 * @param show
-		 */
-		void showCloseButton(bool show);
-
 		void showDefaultTab();
-		/**
-		 * @brief Directly go to the cover tab
-		 */
 		void showCoverTab();
 
+		void setMetadata(const MetaDataList& tracks);
 
-		void setMetadata(const MetaDataList& v_md);
-		int count() const;
+	private slots:
+		void nextButtonClicked();
+		void prevButtonClicked();
+		void undoClicked();
+		void undoAllClicked();
+		void loadEntireAlbumClicked();
 
-		Tagging::Editor* editor() const;
+		void metadataChanged(const MetaDataList& tracks);
+		void applyTagFromPathTriggered();
+		void applyAllTagFromPathTriggered();
 
-		QAbstractButton* saveButton();
-		QAbstractButton* closeButton();
+		void commit();
+		void commitStarted();
+		void commitFinished();
+		void progressChanged(int val);
 
 	private:
 		void setCurrentIndex(int index);
-		void initCompleter();
-
-		/**
-		 * @brief fills track information for current index (_cur_idx)
-		 */
 		void refreshCurrentTrack();
-
-		/**
-		 * @brief resets the ui, sets the _cur_idx to -1
-		 */
 		void reset();
-
-		/**
-		 * @brief writes changes to the tag edit logic, does not write to db or file, also see ok_button_clicked()
-		 * @param idx track index
-		 */
-		void writeChanges(int idx);
-
-		/**
-		 * @brief checks, if current index is valid
-		 * @param idx index of interest
-		 * @return true if index is inside bounds, false else
-		 */
-		bool checkIndex(int idx) const;
-
-		Tagging::Editor* createEditor();
+		void writeChanges(int trackIndex);
 		void runEditor(Tagging::Editor* editor);
-
-	private slots:
-		/**
-		 * @brief calls write_changes and trackIdx_changed with new _cur_idx
-		 */
-		void nextButtonClicked();
-
-		/**
-		 * @brief calls write_changes and trackIdx_changed with new _cur_idx
-		 */
-		void prevButtonClicked();
-
-		/**
-		 * @brief Undo on current track
-		 */
-		void undoClicked();
-
-		/**
-		 * @brief Undo on all tracks
-		 */
-		void undoAllClicked();
-
-		/**
-		 * @brief Shows progress bar if val > 0
-		 * @param val value of progress bar
-		 */
-		void progressChanged(int val);
-
-		/**
-		 * @brief update gui, if metadata was changed
-		 */
-		void metadataChanged(const MetaDataList&);
-
-		void applyTagFromPath();
-
-		void applyAllTagFromPath();
-
-		/**
-		 * @brief private slots for notifying when to disable everything
-		 */
-		void commitStarted();
-
-		/**
-		 * @brief private slot for notifying the MetaDataChangeNotifier
-		 */
-		void commitFinished();
-
-		/**
-		 * @brief loads the complete album for the current track
-		 */
-		void loadEntireAlbum();
 
 	protected:
 		void showEvent(QShowEvent* e) override;

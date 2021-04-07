@@ -312,7 +312,7 @@ void Editor::insertMissingArtistsAndAlbums()
 
 void Editor::updateCover(int idx, const QPixmap& cover)
 {
-	if(isCoverSupported(idx))
+	if(isCoverSupported(idx) && !cover.isNull())
 	{
 		m->changeInfo[idx].updateCover(cover);
 	}

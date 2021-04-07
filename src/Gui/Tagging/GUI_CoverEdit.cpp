@@ -61,10 +61,10 @@ struct GUI_CoverEdit::Private
 		currentIndex(0) {}
 };
 
-GUI_CoverEdit::GUI_CoverEdit(GUI_TagEdit* parent) :
+GUI_CoverEdit::GUI_CoverEdit(Tagging::Editor* editor, QWidget* parent) :
 	Widget(parent)
 {
-	m = Pimpl::make<Private>(parent->editor());
+	m = Pimpl::make<Private>(editor);
 
 	ui = new Ui::GUI_CoverEdit();
 	ui->setupUi(this);

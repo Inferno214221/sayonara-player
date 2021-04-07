@@ -46,8 +46,14 @@ GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
 
 	showErrorFrame(false);
 
-	connect(ui->btn_apply_tag, &QPushButton::clicked, this, &GUI_TagFromPath::sigApply);
-	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, &GUI_TagFromPath::sigApplyAll);
+	connect(ui->btn_apply_tag, &QPushButton::clicked, this, [&]() {
+		clearInvalidFilepaths();
+		emit sigApply();
+	});
+	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, [&](){
+		clearInvalidFilepaths();
+		emit sigApplyAll();
+	});
 
 	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagFromPath::tagTextChanged);
 

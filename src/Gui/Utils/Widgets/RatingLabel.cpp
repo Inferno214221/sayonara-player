@@ -93,8 +93,8 @@ Rating RatingLabel::ratingAt(QPoint pos) const
 
 QSize RatingLabel::sizeHint() const
 {
-	const auto height = iconSize(this, m->offsetY);
-	const auto width = iconSize(this, m->offsetY) * 5;
+	const auto height = m->offsetY + fontMetrics().height() * 2;
+	const auto width = height * 5;
 
 	return QSize(width, height);
 }
@@ -218,7 +218,7 @@ QSize Gui::RatingEditor::sizeHint() const
 
 QSize Gui::RatingEditor::minimumSizeHint() const
 {
-	return m->label->sizeHint();
+	return m->label->minimumSizeHint();
 }
 
 void Gui::RatingEditor::paintEvent(QPaintEvent* e)
