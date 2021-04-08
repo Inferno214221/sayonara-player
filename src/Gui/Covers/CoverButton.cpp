@@ -32,28 +32,21 @@
 #include <QMenu>
 #include <QThread>
 
+using namespace Cover;
 using Gui::ImageButton;
 using Gui::CoverButton;
-using Cover::Location;
-using Cover::Lookup;
-using Cover::ChangeNotfier;
 using Util::Covers::Source;
-using CoverButtonBase = Gui::WidgetTemplate<QPushButton>;
 
 struct CoverButton::Private
 {
 	QString coverHash;
 	Location coverLocation;
 
-	Lookup* coverLookup = nullptr;
-	Source coverSource;
-	bool silent;
-	bool alternativeSearchEnabled;
-
-	Private() :
-		coverSource(Source::Unknown),
-		silent(false),
-		alternativeSearchEnabled(true) {}
+	Cover::ChangeNotfier* coverChangeNotifier {ChangeNotfier::instance()};
+	Lookup* coverLookup {nullptr};
+	Source coverSource {Source::Unknown};
+	bool silent {false};
+	bool alternativeSearchEnabled {true};
 };
 
 CoverButton::CoverButton(QWidget* parent) :
@@ -62,10 +55,8 @@ CoverButton::CoverButton(QWidget* parent) :
 	m = Pimpl::make<CoverButton::Private>();
 
 	this->setObjectName("CoverButton");
-	this->setToolTip(tr("Search an alternative cover"));
 
-	auto* cn = Cover::ChangeNotfier::instance();
-	connect(cn, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverButton::coversChanged);
+	connect(m->coverChangeNotifier, &ChangeNotfier::sigCoversChanged, this, &CoverButton::coversChanged);
 	connect(this, &ImageButton::sigPixmapChanged, this, &CoverButton::sigCoverChanged);
 	connect(this, &ImageButton::sigTriggered, this, &CoverButton::trigger);
 
@@ -106,18 +97,12 @@ void CoverButton::trigger()
 
 	if(m->alternativeSearchEnabled)
 	{
-		auto* alternativeCover = new GUI_AlternativeCovers(m->coverLocation,
-		                                                   m->silent,
-		                                                   this->parentWidget());
+		auto* alternativeCover =
+			new GUI_AlternativeCovers(m->coverLocation, m->silent, this->parentWidget());
 
-		connect(alternativeCover,
-		        &GUI_AlternativeCovers::sigCoverChanged,
-		        this,
-		        &CoverButton::alternativeCoverFetched);
-		connect(alternativeCover,
-		        &GUI_AlternativeCovers::sigClosed,
-		        alternativeCover,
-		        &GUI_AlternativeCovers::deleteLater);
+		connect(alternativeCover, &GUI_AlternativeCovers::sigCoverChanged, this, &CoverButton::alternativeCoverFetched);
+		connect(alternativeCover, &GUI_AlternativeCovers::sigClosed,
+		        alternativeCover, &GUI_AlternativeCovers::deleteLater);
 
 		alternativeCover->show();
 	}
@@ -128,30 +113,30 @@ void CoverButton::trigger()
 	}
 }
 
-void CoverButton::setCoverLocation(const Location& cl)
+void CoverButton::setCoverLocation(const Location& coverLocation)
 {
-	if(!m->coverHash.isEmpty() && cl.hash() == m->coverHash)
+	if(!m->coverHash.isEmpty() && coverLocation.hash() == m->coverHash)
 	{
 		return;
 	}
 
-	m->coverHash = cl.hash();
+	m->coverHash = coverLocation.hash();
 
-	if(!cl.isValid())
+	if(!coverLocation.isValid())
 	{
 		this->showDefaultPixmap();
 	}
 
-	m->coverLocation = cl;
+	m->coverLocation = coverLocation;
 
-	if(cl.hash().isEmpty() || !cl.isValid())
+	if(coverLocation.hash().isEmpty() || !coverLocation.isValid())
 	{
 		return;
 	}
 
 	if(!m->coverLookup)
 	{
-		m->coverLookup = new Lookup(cl, 1, this);
+		m->coverLookup = new Lookup(coverLocation, 1, this);
 
 		connect(m->coverLookup, &Lookup::sigCoverFound, this, &CoverButton::setPixmap);
 		connect(m->coverLookup, &Lookup::sigFinished, this, &CoverButton::coverLookupFinished);
@@ -159,7 +144,7 @@ void CoverButton::setCoverLocation(const Location& cl)
 
 	else
 	{
-		m->coverLookup->setCoverLocation(cl);
+		m->coverLookup->setCoverLocation(coverLocation);
 	}
 
 	m->coverLookup->start();
@@ -186,22 +171,22 @@ void CoverButton::coversChanged()
 	}
 }
 
-void CoverButton::alternativeCoverFetched(const Location& cl)
+void CoverButton::alternativeCoverFetched(const Location& coverLocation)
 {
 	m->coverHash.clear();
 	m->coverSource = Source::Unknown;
 
 	if(!isSilent())
 	{
-		if(cl.isValid())
+		if(coverLocation.isValid())
 		{
-			ChangeNotfier::instance()->shout();
+			m->coverChangeNotifier->shout();
 		}
 	}
 
 	else
 	{
-		this->setPixmapPath(cl.alternativePath());
+		this->setPixmapPath(coverLocation.alternativePath());
 	}
 }
 
@@ -213,4 +198,9 @@ void CoverButton::setSilent(bool silent)
 bool CoverButton::isSilent() const
 {
 	return m->silent;
+}
+
+void CoverButton::languageChanged()
+{
+	this->setToolTip(tr("Search an alternative cover"));
 }

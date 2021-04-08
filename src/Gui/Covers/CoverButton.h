@@ -52,9 +52,9 @@ namespace Gui
 			/**
 			 * @brief Set an appropriate cover location.
 			 * Afterwards a search is triggered to find the cover.
-			 * @param cl
+			 * @param coverLocation
 			 */
-			void setCoverLocation(const Cover::Location& cl);
+			void setCoverLocation(const Cover::Location& coverLocation);
 
 			/**
 			 * @brief silent results that the cover is not stored
@@ -69,16 +69,19 @@ namespace Gui
 			void setAlternativeSearchEnabled(bool b);
 			bool isAlternativeSearchEnabled() const;
 
-		private:
-			void coverFadingChanged();
-
 		public slots:
 			void trigger();
 
 		private slots:
-			void alternativeCoverFetched(const Cover::Location& cl);
+			void alternativeCoverFetched(const Cover::Location& coverLocation);
 			void coverLookupFinished(bool success);
 			void coversChanged();
+
+		private:
+			void coverFadingChanged();
+
+		protected:
+			void languageChanged() override;
 	};
 }
 

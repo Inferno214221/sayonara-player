@@ -53,30 +53,24 @@ class GUI_AlternativeCovers :
 	UI_CLASS(GUI_AlternativeCovers)
 
 	signals:
-		void sigCoverChanged(const Cover::Location& cl);
+		void sigCoverChanged(const Cover::Location& coverLocation);
 
 	public:
-		explicit GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent);
+		explicit GUI_AlternativeCovers(const Cover::Location& coverLocation, bool silent, QWidget* parent);
 		~GUI_AlternativeCovers() override;
 
-		void setCoverLocation(const Cover::Location& cl);
+		void setCoverLocation(const Cover::Location& coverLocation);
 
 	public slots:
 		void start();
 		void stop();
-
-	private:
-		void initUi();
-		void reset();
-		void reloadCombobox();
-		void initSaveToLibrary();
 
 	private slots:
 		void okClicked();
 		void applyClicked();
 		void openFileDialog();
 
-		void coverPressed(const QModelIndex& idx);
+		void coverPressed(const QModelIndex& index);
 		void coverLookupStarted();
 		void coverLookupFinished(bool);
 		void coverFound(const QPixmap& cover);
@@ -89,6 +83,12 @@ class GUI_AlternativeCovers :
 		void wwwActiveChanged();
 
 		void searchTextEdited(const QString& text);
+
+	private:
+		void initUi();
+		void reset();
+		void reloadCombobox();
+		void initSaveToLibrary();
 
 	protected:
 		void showEvent(QShowEvent* e) override;

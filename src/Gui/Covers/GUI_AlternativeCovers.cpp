@@ -50,38 +50,47 @@ using Cover::AlternativeLookup;
 using Cover::Location;
 using Gui::ProgressBar;
 
-static QPixmap getPixmapFromListWidgetItem(QListWidgetItem* item)
+namespace
 {
-	QPixmap pm;
-
-	if(item != nullptr)
+	QPixmap getPixmapFromListWidgetItem(QListWidgetItem* item)
 	{
-		QIcon icon = item->icon();
-		QList<QSize> sizes = icon.availableSizes();
+		QPixmap pm;
 
-		Util::Algorithm::sort(sizes, [](auto s1, auto s2) {
-			return (s1.width() * s1.height()) < (s2.width() * s2.height());
-		});
-
-		if(!sizes.isEmpty())
+		if(item != nullptr)
 		{
-			QSize sz = sizes.first();
-			pm = icon.pixmap(sz);
+			const auto icon = item->icon();
+			const auto sizes = icon.availableSizes();
+			const auto itMaxSize = std::max_element(sizes.begin(), sizes.end(), [](const auto& s1, const auto& s2){
+				return (s1.width() * s1.height()) < (s2.width() * s2.height());
+			});
+
+			if(!sizes.isEmpty())
+			{
+				pm = icon.pixmap(*itMaxSize);
+			}
 		}
+
+		return pm;
 	}
 
-	return pm;
+	void setButtonEnabled(QDialogButtonBox* buttonBox, QDialogButtonBox::StandardButton standardButton, bool enable)
+	{
+		auto* button = buttonBox->button(standardButton);
+		if(button)
+		{
+			button->setEnabled(enable);
+		}
+	}
 }
 
 struct GUI_AlternativeCovers::Private
 {
-	AlternativeLookup* alternativeLookup = nullptr;
+	AlternativeLookup* alternativeLookup;
 	ProgressBar* loadingBar = nullptr;
 
-	Private(const Cover::Location& cl, bool silent, QObject* parent)
-	{
-		alternativeLookup = new AlternativeLookup(cl, 20, silent, parent);
-	}
+	Private(const Cover::Location& coverLocation, bool silent, QObject* parent) :
+		alternativeLookup{new AlternativeLookup(coverLocation, 20, silent, parent)}
+	{}
 
 	~Private()
 	{
@@ -92,13 +101,6 @@ struct GUI_AlternativeCovers::Private
 		}
 	}
 
-	static void setButtonEnabled(QDialogButtonBox* buttonBox, QDialogButtonBox::StandardButton standardButton, bool enable)
-	{
-		auto* button = buttonBox->button(standardButton);
-		if(button){
-			button->setEnabled(enable);
-		}
-	}
 };
 
 GUI_AlternativeCovers::GUI_AlternativeCovers(const Cover::Location& cl, bool silent, QWidget* parent) :
@@ -144,7 +146,7 @@ void GUI_AlternativeCovers::initUi()
 
 		ui->cbAutostart->setChecked(GetSetting(Set::Cover_StartSearch));
 
-		bool isSilent = m->alternativeLookup->isSilent();
+		const auto isSilent = m->alternativeLookup->isSilent();
 		ui->cbSaveToLibrary->setChecked(GetSetting(Set::Cover_SaveToLibrary) && !isSilent);
 		ui->cbSaveToLibrary->setEnabled(!isSilent);
 
@@ -181,12 +183,12 @@ void GUI_AlternativeCovers::initUi()
 		ListenSetting(Set::Cover_FetchFromWWW, GUI_AlternativeCovers::wwwActiveChanged);
 	}
 
-	Cover::Location cl = m->alternativeLookup->coverLocation();
+	const auto coverLocation = m->alternativeLookup->coverLocation();
 	m->loadingBar->hide();
 	ui->tabWidget->setCurrentIndex(0);
-	ui->labStatus->setText("");
+	ui->labStatus->clear();
 	ui->rbAutosearch->setChecked(true);
-	ui->leSearch->setText(cl.searchTerm());
+	ui->leSearch->setText(coverLocation.searchTerm());
 
 	initSaveToLibrary();
 	reloadCombobox();
@@ -203,10 +205,10 @@ void GUI_AlternativeCovers::start()
 
 	if(ui->rbTextsearch->isChecked())
 	{
-		QString searchTerm = ui->leSearch->text();
+		const auto searchTerm = ui->leSearch->text();
 		if(ui->comboSearchFetchers->currentIndex() > 0)
 		{
-			QString identifier = ui->comboSearchFetchers->currentText();
+			const auto identifier = ui->comboSearchFetchers->currentText();
 			m->alternativeLookup->startTextSearch(searchTerm, identifier);
 		}
 
@@ -220,7 +222,7 @@ void GUI_AlternativeCovers::start()
 	{
 		if(ui->comboSearchFetchers->currentIndex() > 0)
 		{
-			QString identifier = ui->comboSearchFetchers->currentText();
+			const auto identifier = ui->comboSearchFetchers->currentText();
 			m->alternativeLookup->start(identifier);
 		}
 
@@ -246,13 +248,11 @@ void GUI_AlternativeCovers::okClicked()
 
 void GUI_AlternativeCovers::applyClicked()
 {
-	QPixmap cover = getPixmapFromListWidgetItem(ui->tvImages->currentItem());
-	if(cover.isNull())
+	const auto pixmap = getPixmapFromListWidgetItem(ui->tvImages->currentItem());
+	if(!pixmap.isNull())
 	{
-		return;
+		m->alternativeLookup->save(pixmap, ui->cbSaveToLibrary->isChecked());
 	}
-
-	m->alternativeLookup->save(cover, ui->cbSaveToLibrary->isChecked());
 }
 
 void GUI_AlternativeCovers::coverLookupStarted()
@@ -275,10 +275,8 @@ void GUI_AlternativeCovers::readyForProgressbar()
 	}
 }
 
-void GUI_AlternativeCovers::coverLookupFinished(bool success)
+void GUI_AlternativeCovers::coverLookupFinished([[maybe_unused]] bool success)
 {
-	Q_UNUSED(success)
-
 	m->loadingBar->hide();
 
 	ui->btnSearch->setVisible(true);
@@ -287,16 +285,16 @@ void GUI_AlternativeCovers::coverLookupFinished(bool success)
 
 void GUI_AlternativeCovers::coverFound(const QPixmap& pm)
 {
-	auto* item = new QListWidgetItem(ui->tvImages);
-	item->setIcon(QIcon(pm));
-	item->setText(QString("%1x%2").arg(pm.width()).arg(pm.height()));
+	auto* listWidgetItem = new QListWidgetItem(ui->tvImages);
+	listWidgetItem->setIcon(QIcon(pm));
+	listWidgetItem->setText(QString("%1x%2").arg(pm.width()).arg(pm.height()));
 
-	ui->tvImages->addItem(item);
+	ui->tvImages->addItem(listWidgetItem);
 
-	Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, true);
-	Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, true);
+	setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, true);
+	setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, true);
 
-	const QString text = tr("%n cover(s) found", "", ui->tvImages->count());
+	const auto text = tr("%n cover(s) found", "", ui->tvImages->count());
 	ui->labStatus->setText(text);
 }
 
@@ -312,8 +310,7 @@ void GUI_AlternativeCovers::autostartToggled(bool b)
 
 void GUI_AlternativeCovers::rbAutosearchToggled(bool b)
 {
-	bool isTextSearch = ui->rbTextsearch->isChecked();
-
+	const auto isTextSearch = ui->rbTextsearch->isChecked();
 	ui->leSearch->setEnabled(isTextSearch);
 	ui->btnSearch->setEnabled(!isTextSearch);
 	ui->comboSearchFetchers->setEnabled(!isTextSearch);
@@ -331,44 +328,42 @@ void GUI_AlternativeCovers::rbAutosearchToggled(bool b)
 
 void GUI_AlternativeCovers::wwwActiveChanged()
 {
-	bool is_active = GetSetting(Set::Cover_FetchFromWWW);
+	const auto isActive = GetSetting(Set::Cover_FetchFromWWW);
 
-	ui->labWebsearchDisabled->setVisible(!is_active);
-	ui->btnSearch->setVisible(is_active);
+	ui->labWebsearchDisabled->setVisible(!isActive);
+	ui->btnSearch->setVisible(isActive);
 
-	ui->comboSearchFetchers->setEnabled(is_active);
-	ui->rbAutosearch->setEnabled(is_active);
-	ui->rbTextsearch->setEnabled(is_active);
+	ui->comboSearchFetchers->setEnabled(isActive);
+	ui->rbAutosearch->setEnabled(isActive);
+	ui->rbTextsearch->setEnabled(isActive);
 }
 
 void GUI_AlternativeCovers::searchTextEdited(const QString& text)
 {
-	if(!ui->rbTextsearch->isChecked())
+	if(ui->rbTextsearch->isChecked())
 	{
-		return;
+		ui->btnSearch->setEnabled(text.size() > 0);
+
+		const auto isDirectUrl = Cover::Fetcher::Manager::isSearchstringWebsite(text);
+		ui->comboSearchFetchers->setDisabled(isDirectUrl);
 	}
-
-	ui->btnSearch->setEnabled(text.size() > 0);
-
-	bool isDirectUrl = Cover::Fetcher::Manager::isSearchstringWebsite(text);
-	ui->comboSearchFetchers->setDisabled(isDirectUrl);
 }
 
 void GUI_AlternativeCovers::coverPressed(const QModelIndex& idx)
 {
-	QPixmap pm = getPixmapFromListWidgetItem(ui->tvImages->currentItem());
-	bool valid = (idx.isValid() && !(pm.isNull()));
+	const auto pixmap = getPixmapFromListWidgetItem(ui->tvImages->currentItem());
+	const auto isValid = (idx.isValid() && !(pixmap.isNull()));
 
-	Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, valid);
-	Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, valid);
+	setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, isValid);
+	setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, isValid);
 }
 
 void GUI_AlternativeCovers::reset()
 {
 	if(ui)
 	{
-		Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, false);
-		Private::setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, false);
+		setButtonEnabled(ui->buttonBox, QDialogButtonBox::Ok, false);
+		setButtonEnabled(ui->buttonBox, QDialogButtonBox::Apply, false);
 
 		ui->btnSearch->setVisible(false);
 		ui->btnStopSearch->setVisible(true);
@@ -383,31 +378,28 @@ void GUI_AlternativeCovers::reset()
 
 void GUI_AlternativeCovers::openFileDialog()
 {
-	QString dir = QDir::homePath();
-
-	Cover::Location cl = m->alternativeLookup->coverLocation();
-	if(!cl.localPathDir().isEmpty())
-	{
-		dir = cl.localPathDir();
-	}
+	const auto coverLocation = m->alternativeLookup->coverLocation();
+	const auto dir = (!coverLocation.localPathDir().isEmpty())
+	                 ? coverLocation.localPathDir()
+	                 : QDir::homePath();
 
 	auto* dialog = new Gui::ImageSelectionDialog(dir, this);
 	if(dialog->exec())
 	{
-		QStringList selectedFiles = dialog->selectedFiles();
+		const auto selectedFiles = dialog->selectedFiles();
 
-		if(selectedFiles.count() > 0)
+		if(!selectedFiles.isEmpty())
 		{
 			reset();
 
-			for(const QString& path : selectedFiles)
+			for(const auto& selectedFile : selectedFiles)
 			{
-				auto* item = new QListWidgetItem(ui->tvImages);
-				QPixmap pm(path);
+				auto* widgetListItem = new QListWidgetItem(ui->tvImages);
+				QPixmap pm(selectedFile);
 
-				item->setIcon(QIcon(pm));
-				item->setText(QString("%1x%2").arg(pm.width()).arg(pm.height()));
-				ui->tvImages->addItem(item);
+				widgetListItem->setIcon(QIcon(pm));
+				widgetListItem->setText(QString("%1x%2").arg(pm.width()).arg(pm.height()));
+				ui->tvImages->addItem(widgetListItem);
 			}
 		}
 	}
@@ -417,19 +409,16 @@ void GUI_AlternativeCovers::openFileDialog()
 
 void GUI_AlternativeCovers::reloadCombobox()
 {
-	AlternativeLookup::SearchMode searchMode = AlternativeLookup::SearchMode::Default;
-
-	bool fulltextSearch = ui->rbTextsearch->isChecked();
-	if(fulltextSearch)
-	{
-		searchMode = AlternativeLookup::SearchMode::Fulltext;
-	}
+	const auto fulltextSearch = ui->rbTextsearch->isChecked();
+	const auto searchMode = (fulltextSearch)
+	                        ? AlternativeLookup::SearchMode::Fulltext
+	                        : AlternativeLookup::SearchMode::Default;
 
 	ui->comboSearchFetchers->clear();
 	ui->comboSearchFetchers->addItem(Lang::get(Lang::All));
 
-	const QStringList coverfetchers = m->alternativeLookup->activeCoverfetchers(searchMode);
-	for(const QString& coverfetcher : coverfetchers)
+	const auto coverfetchers = m->alternativeLookup->activeCoverfetchers(searchMode);
+	for(const auto& coverfetcher : coverfetchers)
 	{
 		ui->comboSearchFetchers->addItem(coverfetcher);
 	}
@@ -437,13 +426,13 @@ void GUI_AlternativeCovers::reloadCombobox()
 
 void GUI_AlternativeCovers::initSaveToLibrary()
 {
-	Cover::Location cl = m->alternativeLookup->coverLocation();
+	const auto cl = m->alternativeLookup->coverLocation();
 
-	const QString text = tr("Also save cover to %1").arg(cl.localPathDir());
-	const QFontMetrics fm = this->fontMetrics();
+	const auto text = tr("Also save cover to %1").arg(cl.localPathDir());
+	const auto fontMetrics = this->fontMetrics();
 
 	ui->cbSaveToLibrary->setText(
-		fm.elidedText(text, Qt::ElideRight, this->width() - 50)
+		fontMetrics.elidedText(text, Qt::ElideRight, this->width() - 50)
 	);
 
 	ui->cbSaveToLibrary->setToolTip(cl.localPathDir());
@@ -465,23 +454,23 @@ void GUI_AlternativeCovers::languageChanged()
 	ui->btnSearch->setVisible(!m->alternativeLookup->isRunning());
 	ui->btnStopSearch->setVisible(m->alternativeLookup->isRunning());
 
-	const Cover::Location cl = m->alternativeLookup->coverLocation();
-	const QString text = tr("Also save cover to %1").arg(cl.localPathDir());
+	const auto coverLocation = m->alternativeLookup->coverLocation();
+	const auto text = tr("Also save cover to %1").arg(coverLocation.localPathDir());
 
 	ui->cbSaveToLibrary->setText(text);
 }
 
 void GUI_AlternativeCovers::showEvent(QShowEvent* e)
 {
-	const QSize sz = GetSetting(Set::AlternativeCovers_Size);
+	const auto coverSize = GetSetting(Set::AlternativeCovers_Size);
 
 	initUi();
 	Gui::Dialog::showEvent(e);
 
-	if(sz.isValid())
+	if(coverSize.isValid())
 	{
-		QTimer::singleShot(100, this, [sz, this]() {
-			this->resize(sz);
+		QTimer::singleShot(100, this, [coverSize, this]() {
+			this->resize(coverSize);
 		});
 	}
 
@@ -499,16 +488,16 @@ void GUI_AlternativeCovers::resizeEvent(QResizeEvent* e)
 	{
 		if(ui->cbSaveToLibrary)
 		{
-			QCheckBox* cb = ui->cbSaveToLibrary;
-			bool checked = cb->isChecked();
+			auto* cbSaveToLibrary = ui->cbSaveToLibrary;
+			const auto checked = cbSaveToLibrary->isChecked();
 			initSaveToLibrary();
-			cb->setChecked(checked);
+			cbSaveToLibrary->setChecked(checked);
 		}
 
 		if(isVisible())
 		{
-			QSize sz = e->size();
-			SetSetting(Set::AlternativeCovers_Size, sz);
+			const auto newSize = e->size();
+			SetSetting(Set::AlternativeCovers_Size, newSize);
 		}
 	}
 
