@@ -357,7 +357,7 @@ void GUI_Lyrics::wheelEvent(QWheelEvent* e)
 	   (e->modifiers() & Qt::ControlModifier))
 	{
 		int delta_zoom = 10;
-		if(e->delta() < 0)
+		if(e->angleDelta().y() < 0)
 		{
 			delta_zoom = -10;
 		}

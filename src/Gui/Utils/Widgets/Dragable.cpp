@@ -136,7 +136,7 @@ QDrag* Dragable::createDrag() const
 	auto* selectionModel = m->widget->selectionModel();
 	if(selectionModel)
 	{
-		auto selectedIndexes = selectionModel->selectedIndexes();
+		const auto selectedIndexes = selectionModel->selectedIndexes();
 		auto* model = m->widget->model();
 		if(model)
 		{
@@ -171,15 +171,15 @@ QDrag* Dragable::createDrag() const
 
 	pmWidth += logoWidth + 50;
 
-	const QString coverUrl = Gui::MimeData::coverUrl(mimeData);
-	QPixmap cover(coverUrl);
+	const auto coverUrl = Gui::MimeData::coverUrl(mimeData);
+	auto cover = QPixmap(coverUrl);
 	if(cover.isNull())
 	{
 		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logoSize, true);
 	}
 
-	QPixmap pm(pmWidth, pmHeight);
-	QPainter painter(&pm);
+	auto pm = QPixmap(pmWidth, pmHeight);
+	auto painter = QPainter(&pm);
 
 	painter.fillRect(pm.rect(), m->widget->palette().highlight().color());
 	painter.setPen(m->widget->palette().highlightedText().color());
@@ -196,7 +196,7 @@ QDrag* Dragable::createDrag() const
 	mimeData->setImageData(pm);
 	drag->setMimeData(mimeData);
 	drag->setPixmap(pm);
-	drag->start();
+	drag->exec(Qt::DropAction::IgnoreAction);
 
 	return drag;
 }

@@ -243,7 +243,8 @@ bool GUI_TrayIcon::event(QEvent* e)
 
 		if(wheel_event)
 		{
-			emit sigWheelChanged(wheel_event->delta());
+			const auto delta = wheel_event->angleDelta().y();
+			emit sigWheelChanged(delta);
 		}
 	}
 

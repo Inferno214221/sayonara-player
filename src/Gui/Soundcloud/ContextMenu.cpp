@@ -45,7 +45,7 @@ ContextMenu::Entries ContextMenu::entries() const
 
 void ContextMenu::showActions(ContextMenu::Entries entries)
 {
-	m->actionAddArtist->setVisible(entries | SCEntryAddArtist);
+	m->actionAddArtist->setVisible(entries & SCEntryAddArtist);
 
 	Library::ContextMenu::showActions(entries);
 }

@@ -303,9 +303,10 @@ void CoverView::runMergeOperation(const Library::MergeData& mergedata)
 
 void CoverView::wheelEvent(QWheelEvent* e)
 {
-	if( (e->modifiers() & Qt::ControlModifier) && (e->delta() != 0) )
+	const auto delta = e->angleDelta().y();
+	if( (e->modifiers() & Qt::ControlModifier) && (delta != 0) )
 	{
-		int d = (e->delta() > 0) ? 10 : -10;
+		int d = (delta > 0) ? 10 : -10;
 
 		changeZoom(m->model->zoom() + d);
 	}

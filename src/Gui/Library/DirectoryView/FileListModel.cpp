@@ -76,7 +76,6 @@ struct IconWorkerThread::Private
 
 struct FileListModel::Private
 {
-	QPixmapCache cache;
 	QString parentDirectory;
 	QStringList files;
 	Util::Set<QString> filesInLibrary;
@@ -280,11 +279,12 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 
 		if(File::isImageFile(filename))
 		{
-			auto* pixmap = m->cache.find(filename);
-			if(!pixmap || pixmap->isNull())
+			QPixmap pixmap;
+			if(!QPixmapCache::find(filename, &pixmap) || pixmap.isNull())
 			{
 				const auto size = QSize(32, 32);
-				m->cache.insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile, size));
+
+				QPixmapCache::insert(filename, Gui::Icons::pixmap(Gui::Icons::ImageFile, size));
 
 				auto* worker = new IconWorkerThread(size, filename);
 				auto* t = new QThread();
@@ -306,17 +306,17 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 			else
 			{
 				QIcon icon;
-				icon.addPixmap(*pixmap);
+				icon.addPixmap(pixmap);
 				return icon;
 			}
 		}
 	}
 
-	else if((role == Qt::TextColorRole) && Util::File::isSoundFile(filename))
+	else if((role == Qt::ForegroundRole) && Util::File::isSoundFile(filename))
 	{
 		if(!m->filesInLibrary.contains(filename))
 		{
-			return Gui::Util::color(QPalette::ColorGroup::Disabled, QPalette::ColorRole::Foreground);
+			return Gui::Util::color(QPalette::ColorGroup::Disabled, QPalette::WindowText);
 		}
 	}
 
@@ -340,7 +340,7 @@ void FileListModel::pixmapFetched(const QString& path)
 	const auto pixmap = worker->pixmap();
 	if(!pixmap.isNull())
 	{
-		m->cache.insert(path, pixmap);
+		QPixmapCache::insert(path, pixmap);
 		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 	}
 

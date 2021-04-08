@@ -117,17 +117,17 @@
 #include "Database/Settings.h"
 
 #include <QIcon>
-#include <QTime>
+#include <QElapsedTimer>
 #include <QSessionManager>
 
 class MeasureApp
 {
-		QTime* mTime;
+		QElapsedTimer* mTime;
 		QString mComponent;
 		int mStart;
 
 	public:
-		MeasureApp(const QString& component, QTime* t) :
+		MeasureApp(const QString& component, QElapsedTimer* t) :
 			mTime(t),
 			mComponent(component)
 		{
@@ -157,7 +157,7 @@ struct Application::Private
 	Library::Manager* libraryManager;
 	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
-	QTime* timer;
+	QElapsedTimer* timer;
 
 	GUI_Player* player = nullptr;
 	DBusHandler* dbusHandler = nullptr;
@@ -207,7 +207,7 @@ struct Application::Private
 
 		Private::initResources();
 
-		timer = new QTime();
+		timer = new QElapsedTimer();
 		timer->start();
 	}
 

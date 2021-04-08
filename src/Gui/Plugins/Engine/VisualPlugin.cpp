@@ -255,7 +255,7 @@ void VisualPlugin::mousePressEvent(QMouseEvent* e)
 			next_clicked();
 			break;
 
-		case Qt::MidButton:
+		case Qt::MiddleButton:
 			if(this->parentWidget())
 			{
 				this->parentWidget()->close();

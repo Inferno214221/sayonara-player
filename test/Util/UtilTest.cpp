@@ -110,7 +110,7 @@ void UtilTest::dateToIntTest()
 	const auto date = QDate(2020, 4, 14);
 	const auto time = QTime(9, 20, 32);
 	auto dateTime = QDateTime(date, time);
-	dateTime.setUtcOffset(0);
+	dateTime.setOffsetFromUtc(0);
 
 	auto intDate = Util::dateToInt(dateTime);
 

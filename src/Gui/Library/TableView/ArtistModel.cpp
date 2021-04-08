@@ -80,9 +80,9 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 	const auto col = index.column();
 	auto columnIndex = ColumnIndex::Artist(col);
 
-	const Artist& artist = artists[ArtistList::Size(row)];
+	const auto& artist = artists[ArtistList::Size(row)];
 
-	if(role == +Qt::TextAlignmentRole)
+	if(role == Qt::TextAlignmentRole)
 	{
 		switch(columnIndex)
 		{
@@ -93,7 +93,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == +Qt::DisplayRole)
+	else if(role == Qt::DisplayRole)
 	{
 		switch(columnIndex)
 		{
@@ -110,7 +110,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == +Qt::SizeHintRole)
+	else if(role == Qt::SizeHintRole)
 	{
 		return QSize(1, Gui::Util::viewRowHeight());
 	}

@@ -20,13 +20,9 @@ struct GUI_CssEditor::Private
 
 	QString filename() const
 	{
-		if(this->dark) {
-			return Util::xdgConfigPath("dark.css");
-		}
-
-		else {
-			return Util::xdgConfigPath("standard.css");
-		}
+		return(this->dark)
+			? Util::xdgConfigPath("dark.css")
+			: Util::xdgConfigPath("standard.css");
 	}
 };
 

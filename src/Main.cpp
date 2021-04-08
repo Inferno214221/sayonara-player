@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
 	}
 
 	QByteArray key("SayonaraMemory");
-	key += QDir::homePath();
+	key += QDir::homePath().toUtf8();
 
 	QSharedMemory memory(key);
 

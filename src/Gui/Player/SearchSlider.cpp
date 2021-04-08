@@ -66,7 +66,7 @@ bool SearchSlider::event(QEvent* e)
 			deltaVal = 50;
 		}
 
-		if(we->delta() > 0)
+		if(we->angleDelta().y() > 0)
 		{
 			setValue(value() + deltaVal);
 		}

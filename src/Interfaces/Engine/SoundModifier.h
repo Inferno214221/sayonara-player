@@ -23,6 +23,7 @@
 class SoundModifier
 {
 	public:
+		virtual ~SoundModifier() = default;
 		virtual void setEqualizer(int band, int value)=0;
 };
 

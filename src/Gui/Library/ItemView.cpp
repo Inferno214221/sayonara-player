@@ -352,7 +352,7 @@ void ItemView::mousePressEvent(QMouseEvent* event)
 
 	SearchableTableView::mousePressEvent(event);
 
-	if(event->button() == Qt::MidButton)
+	if(event->button() == Qt::MiddleButton)
 	{
 		if(!this->selectedItems().isEmpty()){
 			playNewTabClicked();
