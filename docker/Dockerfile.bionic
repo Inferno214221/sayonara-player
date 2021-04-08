@@ -15,31 +15,32 @@ RUN apt-get update -qq && \
 	wget \ 
 	apt-utils
 
-# Qt 5.12.3
-RUN add-apt-repository --yes ppa:beineri/opt-qt-5.12.3-bionic
+# Qt 5.15.2
+RUN add-apt-repository --yes ppa:beineri/opt-qt-5.15.2-bionic
 
-# Clang 9
-RUN echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-9 main" > /etc/apt/sources.list.d/clang.list
+# Clang 12
+RUN echo "deb http://apt.llvm.org/bionic/ llvm-toolchain-bionic-12 main" > /etc/apt/sources.list.d/clang.list
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key| apt-key add -
 
 RUN	apt-get update -qq && \
 	apt-get install -y --no-install-recommends \
 	make \
 	coreutils \
-	clang-9 \
+	clang-12 \
 	git \
-	libclang-cpp9 \
+	libclang-cpp12 \
 	libgstreamer-plugins-bad1.0-dev \
 	libgstreamer-plugins-base1.0-dev \
 	libgstreamer1.0-dev \
 	pkg-config \
 	qttools5-dev-tools \
-	qt512base \
-	qt512svg \
-	qt512tools \
-	qt512translations \
-	qt512x11extras \
-	qt512xmlpatterns \
+	qt515base \
+	qt515svg \
+	qt515tools \
+	qt515translations \
+	qt515x11extras \
+	qt515xmlpatterns \
+	qttools5-dev \
 	transifex-client \
 	zlib1g-dev \
     libgl1-mesa-dev
@@ -53,9 +54,9 @@ RUN apt-get install -y -qq --no-install-recommends \
 	wget
 
 # cmake
-ENV CMAKE_VERSION_NR "3.15.4"
-ENV CMAKE_VERSION "${CMAKE_VERSION_NR}-Linux-x86_64"
-RUN wget "https://github.com/Kitware/CMake/releases/download/v3.15.4/cmake-${CMAKE_VERSION}.tar.gz"
+ENV CMAKE_VERSION_NR "3.20.1"
+ENV CMAKE_VERSION "${CMAKE_VERSION_NR}-linux-x86_64"
+RUN wget "https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION_NR}/cmake-${CMAKE_VERSION}.tar.gz"
 RUN tar xzf "cmake-${CMAKE_VERSION}.tar.gz"
 RUN cp -r "cmake-${CMAKE_VERSION}/bin" /usr/local
 RUN cp -r "cmake-${CMAKE_VERSION}/doc" /usr/local
@@ -71,7 +72,7 @@ RUN mv "linuxdeploy-x86_64.AppImage" "linuxdeploy-plugin-qt-x86_64.AppImage" "ap
 RUN chmod a+x /usr/local/bin/*.AppImage
 
 # make clang the default compiler
-ENV CC clang-9
-ENV CXX clang++-9
+ENV CC clang-12
+ENV CXX clang++-12
 
 CMD ["bash"]
