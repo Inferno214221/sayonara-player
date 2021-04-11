@@ -50,9 +50,6 @@ rm -rf src/3rdParty/Taglib
 %install
 %cmake_install
 
-# remove menu dir, because it's not necessary
-rm -rf %{buildroot}/%{_datadir}/menu
-
 %find_lang %{name} --all-name --with-qt
 
 %check
