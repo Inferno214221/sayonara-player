@@ -160,17 +160,17 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManage
 	});
 
 	const auto libraryPath = m->library->info().path();
-	const auto paths = {
-		libraryPath,
-		Util::File::getParentDirectory(libraryPath)
-	};
+
+	const auto paths = QStringList()
+		<< libraryPath
+		<< Util::File::getParentDirectory(libraryPath);
 
 	auto* action = new Gui::LibraryPreferenceAction(this);
 	connect(ui->btnLibraryPreferences, &QPushButton::clicked, action, &QAction::trigger);
 
 	auto* fileSystemWatcher = new QFileSystemWatcher(this);
-	fileSystemWatcher->addPaths(QStringList{paths}); // old qt versions don't have the new constructor
-	connect(fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, [this](const auto& /*path*/) {
+	fileSystemWatcher->addPaths(paths); // old qt versions don't have the new constructor
+	connect(fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, [this]([[maybe_unused]] const auto& path) {
 		this->checkMainSplitterStatus();
 	});
 }
