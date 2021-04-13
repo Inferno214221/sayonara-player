@@ -230,7 +230,7 @@ void ReloadThread::storeMetadataBlock(const MetaDataList& v_md)
 			int progress = ((idx++) * 100) / v_md.count();
 			emit sigReloadingLibrary(status, progress);
 
-			Cover::Location cl = Cover::Location::coverLocation(md, false);
+			Cover::Location cl = Cover::Location::coverLocation(md);
 			if(!cl.isValid()){
 				continue;
 			}

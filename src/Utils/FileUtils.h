@@ -127,6 +127,9 @@ namespace Util
 		bool			createSymlink(const QString& source, const QString& target);
 
 
+		bool checkSymLink(const QString& symlinkPath);
+
+
 		/**
 		 * @brief convert filesize to string
 		 * @param filesize in bytes

@@ -24,6 +24,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QDir>
 #include <QFileInfo>
@@ -110,7 +111,6 @@ namespace
 	}
 }
 
-
 QStringList LocalSearcher::coverPathsFromPathHint(const QString& filename)
 {
 	spLog(Log::Develop, ClassName) << "Search for covers. Hint: " << filename;
@@ -141,13 +141,18 @@ QStringList LocalSearcher::coverPathsFromPathHint(const QString& filename)
 	{
 		const auto pixmapPath = filepath + "/" + entry;
 		const auto pixmap = QPixmap(pixmapPath);
-		const auto rating = calcRating(pixmap, entry);
+
+		const auto isTemplatePath = entry.startsWith(GetSetting(Set::Cover_TemplatePath) + ".");
+		const auto rating = isTemplatePath
+		                    ? 100.0
+		                    : calcRating(pixmap, entry);
 
 		spLog(Log::Develop, ClassName)
 			<< "  Coverfile " << pixmapPath << " has final rating " << QString::number(rating, 'g', 2)
 			<< " (Lower is better)";
 
 		sizeMap[pixmapPath] = rating;
+
 		ret << pixmapPath;
 	}
 

@@ -339,8 +339,30 @@ bool Util::File::checkFile(const QString& filepath)
 
 bool Util::File::createSymlink(const QString& source, const QString& target)
 {
+	QFileInfo targetInfo(target);
+	if(targetInfo.exists() && targetInfo.isSymLink())
+	{
+		Util::File::deleteFiles({target});
+	}
+
 	QFile f(source);
 	return f.link(target);
+}
+
+bool Util::File::checkSymLink(const QString& symlinkPath)
+{
+	const auto info = QFileInfo(symlinkPath);
+	if(info.isSymLink())
+	{
+		if(Util::File::exists(info.symLinkTarget()))
+		{
+			return true;
+		}
+
+		Util::File::deleteFiles({symlinkPath});
+	}
+
+	return false;
 }
 
 QString Util::File::getCommonDirectory(QString dir1, QString dir2)

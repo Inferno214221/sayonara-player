@@ -254,7 +254,7 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
 	md.setComment(comment);
 
 	int hasCover = int(Tagging::Covers::hasCover(parsed_tag));
-	md.addCustomField("has_album_art", "", QString::number(hasCover));
+	md.addCustomField("has-album-art", "", QString::number(hasCover));
 
 	if(md.title().length() == 0)
 	{

@@ -96,7 +96,7 @@ bool Lookup::startNewThread(const Cover::Location& coverLocation)
 		return false;
 	}
 
-	spLog(Log::Develop, this) << "Start new cover fetch thread for " << coverLocation.identifer();
+	spLog(Log::Develop, this) << "Start new cover fetch thread for " << coverLocation.identifier();
 
 	auto* thread = new QThread(nullptr);
 
@@ -121,7 +121,7 @@ void Lookup::start()
 	m->stopped = false;
 	m->source = Source::Unknown;
 
-	spLog(Log::Develop, this) << "Search cover for id " << coverLocation().identifer();
+	spLog(Log::Develop, this) << "Search cover for id " << coverLocation().identifier();
 
 	const auto coverLocation = LookupBase::coverLocation();
 	if(coverLocation.isValid())

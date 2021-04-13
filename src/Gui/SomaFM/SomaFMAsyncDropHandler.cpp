@@ -2,6 +2,7 @@
 #include "Components/Streaming/SomaFM/SomaFMUtils.h"
 #include "Components/Streaming/SomaFM/SomaFMStation.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/Fetcher/CoverFetcherUrl.h"
 
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"

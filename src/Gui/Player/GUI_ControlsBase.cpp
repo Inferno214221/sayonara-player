@@ -516,7 +516,7 @@ void GUI_ControlsBase::checkRecordButtonVisible()
 
 void GUI_ControlsBase::setCoverLocation(const MetaData& md)
 {
-	const auto coverLocation = Cover::Location::coverLocation(md, false);
+	const auto coverLocation = Cover::Location::coverLocation(md);
 	btnCover()->setCoverLocation(coverLocation);
 }
 

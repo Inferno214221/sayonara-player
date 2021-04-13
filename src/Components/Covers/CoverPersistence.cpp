@@ -51,7 +51,12 @@ void Cover::writeCoverToLibrary(const Cover::Location& cl, const QPixmap& pm)
 	coverTemplate.replace("<h>", cl.hash());
 
 	const auto extension = pm.hasAlphaChannel() ? "png" : "jpg";
-	const auto filepath = QDir(localDir).absoluteFilePath(coverTemplate) + "." + extension;
+	const auto lastDot = coverTemplate.lastIndexOf(".");
+	if(lastDot > 0)
+	{
+		coverTemplate = coverTemplate.left(lastDot);
+	}
 
+	const auto filepath = QDir(localDir).absoluteFilePath(coverTemplate) + "." + extension;
 	pm.save(filepath);
 }

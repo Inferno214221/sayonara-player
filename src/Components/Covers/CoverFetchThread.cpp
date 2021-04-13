@@ -82,7 +82,7 @@ namespace
 
 		requestList << request;
 
-		request->setBehavior(AsyncWebAccess::Behavior::AsSayonara);
+		request->setBehavior(AsyncWebAccess::Behavior::AsBrowser);
 		request->run(address, Timeout);
 	}
 }
@@ -183,8 +183,8 @@ bool WebCoverFetcher::processNextSearchUrl()
 	}
 
 	const auto callback = m->coverFetcher->canFetchCoverDirectly()
-		? &WebCoverFetcher::imageFetched
-		: &WebCoverFetcher::contentFetched;
+	                      ? &WebCoverFetcher::imageFetched
+	                      : &WebCoverFetcher::contentFetched;
 
 	startWebRequest(this, url.url(), m->runningRequests, callback);
 

@@ -19,7 +19,6 @@
  */
 
 #include "Amazon.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QString>
 #include <QUrl>
@@ -35,7 +34,7 @@ bool Amazon::canFetchCoverDirectly() const
 
 QStringList Amazon::parseAddresses(const QByteArray& website) const
 {
-	QRegExp re("<img.*class=\"s-image\".*srcset=\"(.+[0-9]+x)\"");
+	QRegExp re("<img.*class=\"s-image\".*src(set)?=\"(.+[0-9]+x)\"");
 	re.setMinimal(true);
 	auto index = re.indexIn(website);
 	if(index < 0)
@@ -43,15 +42,13 @@ QStringList Amazon::parseAddresses(const QByteArray& website) const
 		return QStringList();
 	}
 
-	spLog(Log::Info, this) << re.cap(1);
-
 	QStringList sources;
 	QMap<QString, double> itemSources;
 
 	auto offset = 0;
 	while(index > 0)
 	{
-		const auto caption = re.cap(1);
+		const auto caption = re.cap(2);
 		const auto itemRegExp = QRegExp("(http[s]*://\\S+\\.jpg)\\s([0-9+](\\.[0-9]+)*)x");
 
 		auto itemIndex = itemRegExp.indexIn(website, offset);

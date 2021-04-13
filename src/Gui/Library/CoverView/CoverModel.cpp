@@ -229,8 +229,8 @@ void CoverModel::nextHash()
 void CoverModel::coverLookupFinished(bool success)
 {
 	auto* coverLookup = dynamic_cast<Lookup*>(sender());
-	auto hash = coverLookup->userData<Hash>();
 
+	const auto hash = coverLookup->userData<Hash>();
 	const auto pixmaps = (success)
 	                     ? coverLookup->pixmaps()
 	                     : QList<QPixmap> {};
