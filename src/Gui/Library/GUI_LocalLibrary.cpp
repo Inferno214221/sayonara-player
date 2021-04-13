@@ -169,7 +169,7 @@ GUI_LocalLibrary::GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManage
 	connect(ui->btnLibraryPreferences, &QPushButton::clicked, action, &QAction::trigger);
 
 	auto* fileSystemWatcher = new QFileSystemWatcher(this);
-	fileSystemWatcher->addPaths(paths); // old qt versions don't have the new constructor
+	fileSystemWatcher->addPaths(QStringList{paths}); // old qt versions don't have the new constructor
 	connect(fileSystemWatcher, &QFileSystemWatcher::directoryChanged, this, [this](const auto& /*path*/) {
 		this->checkMainSplitterStatus();
 	});
