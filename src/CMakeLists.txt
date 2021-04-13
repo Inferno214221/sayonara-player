@@ -142,6 +142,8 @@ else()
 			message(FATAL_ERROR "libexecinfo not found")
 		endif()
 		set(OS_LIBRARIES ${execinfo_LIB})
+	else()
+		set(SAYONARA_HAS_BACKTRACE 1)
 	endif()
 endif()
 

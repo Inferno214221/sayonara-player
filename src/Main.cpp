@@ -26,187 +26,61 @@
  */
 
 #include "Application/Application.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
+#include "Application/InstanceChecker.h"
+
 #include "Utils/Parser/CommandLineParser.h"
-#include "Utils/Logger/Logger.h"
-#include "Database/Connector.h"
 #include "Utils/StandardPaths.h"
 
-#include <QSharedMemory>
-#include <QTranslator>
-#include <QFontDatabase>
-#include <QtGlobal>
-#include <QDir>
-#include <QIcon>
-#include <algorithm>
+#include "Utils/Logger/Logger.h"
 
-namespace FileUtils=::Util::File;
-
-static const int MemorySize=16384;
-
-#ifdef Q_OS_UNIX
-	#include <execinfo.h>		// backtrace
-	#include <csignal>			// kill/signal
-	#include <sys/types.h>		// kill
-	#include <cstring>			// memcpy
-	#include <unistd.h>			// STDERR_FILENO
-#else
-
-	#include <glib-2.0/glib.h>
-	#undef signals
-	#include <gio/gio.h>
-
+#ifdef SAYONARA_HAS_BACKTRACE
+#include <execinfo.h>
+#include <csignal>
+#include <unistd.h>
 #endif
 
-#ifdef Q_OS_WIN
-void init_gio()
+namespace
 {
-	QString gio_path = FileUtils::clean_filename(QApplication::applicationDirPath()) + "/gio-modules";
-	QString gst_plugin_path = FileUtils::clean_filename(QApplication::applicationDirPath()) + "/gstreamer-1.0/";
+#ifdef SAYONARA_HAS_BACKTRACE
 
-	Util::set_environment("GST_PLUGIN_PATH", gst_plugin_path);
-	Util::set_environment("GST_PLUGIN_SYSTEM_PATH", gst_plugin_path);
+	void segfaultHandler([[maybe_unused]] int sig)
+	{
+		std::array<void*, 20> backtraceData;
+		// get void*'s for all entries on the stack
+		const auto size = backtrace(backtraceData.data(), 20);
+		backtrace_symbols_fd(backtraceData.data(), size, STDERR_FILENO);
+	}
 
-	g_io_extension_point_register("gio-tls-backend");
-	g_io_modules_load_all_in_directory(gio_path.toLocal8Bit().data());
-
-	sp_log(Log::Debug, this) << "Done " << gio_path;
-}
 #endif
-
-#include <stdio.h>
-
-void segfault_handler(int sig)
-{
-	Q_UNUSED(sig)
-
-#ifdef Q_OS_UNIX
-	void* array[10];
-	size_t size;
-
-	// get void*'s for all entries on the stack
-	size = backtrace(array, 20);
-	backtrace_symbols_fd(array, size, STDERR_FILENO);
-#endif
-
 }
 
-bool check_for_other_instance(const CommandLineData& cmd_data, QSharedMemory* memory)
+int main(int argc, char* argv[])
 {
-	spLog(Log::Debug, "Main") << "Check for another instance";
-	if(memory->create(MemorySize, QSharedMemory::ReadWrite))
+	const auto commandLineData = CommandLineParser::parse(argc, argv);
+	if(commandLineData.abort)
 	{
-		spLog(Log::Debug, "Main") << "Could create memory";
-		return false;
-	}
-
-	memory->attach(QSharedMemory::ReadWrite);
-	if(!memory->data())
-	{
-		spLog(Log::Debug, "Main") << "No shared memory data";
-		return false;
-	}
-
-	QByteArray data("Req");
-	int size = MemorySize;
-	Byte* ptr = static_cast<Byte*>(memory->data());
-
-	if(!cmd_data.filesToPlay.isEmpty())
-	{
-		data += 'D';
-		data += cmd_data.filesToPlay.join('\n').toUtf8();
-
-		size = std::min(data.size(), MemorySize - 1);
-		if(size < data.size()){
-			data.resize(MemorySize);
-		}
-
-		data[MemorySize-1] = '\0';
-	}
-
-	else {
-		data += "E";
-	}
-
-	memory->lock();
-	spLog(Log::Debug, "Main") << "Sending to shared memory: " << data;
-	memcpy(ptr, data.data(), size_t(data.size()));
-	memory->unlock();
-
-	Util::sleepMs(500);
-
-	if(memcmp(memory->data(), "Ack", 3) == 0)
-	{
-		spLog(Log::Debug, "Main") << "There's probably another instance running";
-		memory->detach();
-
-		return true;
-	}
-
-	else {
-		spLog(Log::Debug, "Main") << "Other instance not responding";
-	}
-
-	return false;
-}
-
-
-int main(int argc, char *argv[])
-{
-	//Util::setEnvironment("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
-	//Util::setEnvironment("QT_SCALE_FACTOR", "1.5");
-
-	Application app(argc, argv);
-
-	CommandLineData cmd_data = CommandLineParser::parse(argc, argv);
-	if(cmd_data.abort){
 		return 0;
 	}
 
-	QByteArray key("SayonaraMemory");
-	key += QDir::homePath().toUtf8();
-
-	QSharedMemory memory(key);
-
-	if(!cmd_data.multipleInstances)
+	InstanceChecker instanceChecker;
+	if(!instanceChecker.isCurrentInstanceAllowed(commandLineData))
 	{
-		bool has_other_instance = check_for_other_instance(cmd_data, &memory);
-		if(has_other_instance){
-			return 0;
-		}
-
-		if(memory.data())
-		{
-			bool success = memory.attach(QSharedMemory::ReadWrite);
-			spLog(Log::Debug, "Main") << "Attach memory " << success;
-			if(!success){
-				spLog(Log::Debug, "Main") << "Cannot attach memory " << memory.error() << ": " << memory.errorString();
-			}
-			memory.lock();
-			memcpy(memory.data(), "Sayonara", 8);
-			memory.unlock();
-		}
+		return 0;
 	}
 
-	spLog(Log::Debug, "Sayonara") << "Sayonara config path: " << Util::xdgConfigPath();
-	spLog(Log::Debug, "Sayonara") << "Sayonara share path: " << Util::xdgSharePath();
+	auto app = Application(argc, argv);
 
-	DB::Connector::instance();
+	spLog(Log::Info, "Sayonara") << "Config path: " << Util::xdgConfigPath();
+	spLog(Log::Info, "Sayonara") << "Share path: " << Util::xdgSharePath();
 
-#ifdef Q_OS_WIN
-	init_gio();
+#ifdef SAYONARA_HAS_BACKTRACE
+	signal(SIGSEGV, segfaultHandler);
 #endif
 
-#ifdef Q_OS_UNIX
-	signal(SIGSEGV, segfault_handler);
-#endif
-
-	if(!app.init(cmd_data.filesToPlay, cmd_data.forceShow)) {
+	if(!app.init(commandLineData.filesToPlay, commandLineData.forceShow))
+	{
 		return 1;
 	}
 
-	app.exec();
-
-	return 0;
+	return app.exec();
 }

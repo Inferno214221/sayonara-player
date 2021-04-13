@@ -321,6 +321,8 @@ void Application::shutdown()
 
 bool Application::init(const QStringList& filesToPlay, bool forceShow)
 {
+	DB::Connector::instance();
+
 	{
 		measure("Settings")
 		SetSetting(Set::Player_Version, QString(SAYONARA_VERSION));

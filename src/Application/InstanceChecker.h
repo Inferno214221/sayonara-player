@@ -1,5 +1,6 @@
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* InstanceChecker.h */
+/*
+ * Copyright (C) 2011-2021 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -16,34 +17,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_INSTANCECHECKER_H
+#define SAYONARA_PLAYER_INSTANCECHECKER_H
 
-#ifndef INSTANCETHREAD_H
-#define INSTANCETHREAD_H
-
-#include <QThread>
-#include <QSharedMemory>
-#include <QMainWindow>
 #include "Utils/Pimpl.h"
 
-class InstanceThread :
-	public QThread
-{
-	Q_OBJECT
-	PIMPL(InstanceThread)
+struct CommandLineData;
 
-	signals:
-		void sigPlayerRise();
-		void sigCreatePlaylist();
+class InstanceChecker
+{
+	PIMPL(InstanceChecker)
 
 	public:
-		InstanceThread(QObject* parent = nullptr);
-		~InstanceThread() override;
+		InstanceChecker();
+		~InstanceChecker();
 
-		void stop();
-		QStringList paths() const;
-
-	private:
-		void run() override;
+		bool isCurrentInstanceAllowed(const CommandLineData& commandLineData);
 };
 
-#endif // INSTANCETHREAD_H
+#endif //SAYONARA_PLAYER_INSTANCECHECKER_H

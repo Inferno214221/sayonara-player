@@ -124,9 +124,11 @@ struct Logger::Private
 				}
 
 				break;
+			case Log::Always:
+				[[fallthrough]];
 			default:
 				color = LOG_YELLOW;
-				type_str = "Debug";
+				type_str = "";
 				break;
 		}
 

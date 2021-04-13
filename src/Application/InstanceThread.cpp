@@ -21,21 +21,79 @@
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
-#include "Components/Playlist/PlaylistHandler.h"
 
 #include <QByteArray>
 #include <QDir>
 
+namespace
+{
+	bool attachMemory(QSharedMemory& memory)
+	{
+		return (memory.isAttached() || memory.attach());
+	}
+
+	void writeToMemory(const QByteArray& data, QSharedMemory& memory)
+	{
+		if(attachMemory(memory) && memory.data())
+		{
+			memory.lock();
+			memcpy(memory.data(), data.constData(), std::min(data.size(), memory.size()));
+			memory.unlock();
+		}
+	}
+
+	QByteArray readMemory(QSharedMemory& memory, int offset, int maxBytes)
+	{
+		if(attachMemory(memory) && memory.data())
+		{
+			offset = std::min(memory.size() - 1, offset);
+			maxBytes = std::min(memory.size() - offset, maxBytes);
+
+			const auto* data = static_cast<const char*>(memory.constData()) + offset;
+
+			return (data && (maxBytes > 0))
+			       ? QByteArray(data, maxBytes)
+			       : QByteArray();
+		}
+
+		return QByteArray();
+	}
+
+	bool isFilepathValid(const QString& filepath)
+	{
+		return (!filepath.isEmpty()) &&
+		       (Util::File::isPlaylistFile(filepath) || Util::File::isSoundFile(filepath));
+	}
+
+	QStringList parseMemory(QSharedMemory& memory)
+	{
+		QStringList result;
+
+		const auto data = readMemory(memory, 4, memory.size() - 5);
+		if(!data.isNull())
+		{
+			spLog(Log::Info, "InstanceThread") << data;
+			const auto filepaths = data.split('\n');
+			for(const auto& filepathData : filepaths)
+			{
+				const auto filepath = QString::fromUtf8(filepathData);
+				if(isFilepathValid(filepath))
+				{
+					spLog(Log::Debug, "FromSharedMemory") << "Add file " << filepath;
+					result << filepath;
+				}
+			}
+		}
+
+		return result;
+	}
+}
+
 struct InstanceThread::Private
 {
-	QSharedMemory memory;
+	QSharedMemory memory {QByteArray("SayonaraMemory") + QDir::homePath()};
 	QStringList paths;
-	bool mayRun;
-
-	Private() :
-		memory(QByteArray("SayonaraMemory") + QDir::homePath()),
-		mayRun(true)
-	{}
+	bool mayRun {true};
 };
 
 InstanceThread::InstanceThread(QObject* parent) :
@@ -51,29 +109,25 @@ InstanceThread::~InstanceThread()
 
 void InstanceThread::run()
 {
-	m->memory.attach(QSharedMemory::ReadWrite);
-	if(!m->memory.data())
+	if(!attachMemory(m->memory))
 	{
 		return;
 	}
 
 	while(m->mayRun)
 	{
-		char* ptr = (char*) m->memory.data();
-
-		if(memcmp(ptr, "Req", 3) == 0)
+		const auto data = readMemory(m->memory, 0, 4);
+		if((data.size() == 4) && data.startsWith("Req"))
 		{
 			spLog(Log::Info, this) << "Second instance saying hello";
 
-			if(*(ptr + 3) == 'D')
+			if(data[3] == 'D')
 			{
-				parseMemory();
+				m->paths = parseMemory(m->memory);
+				emit sigCreatePlaylist();
 			}
 
-			m->memory.lock();
-			memcpy(m->memory.data(), "Ack", 3);
-			m->memory.unlock();
-
+			writeToMemory("Ack", m->memory);
 			emit sigPlayerRise();
 		}
 
@@ -87,49 +141,6 @@ void InstanceThread::run()
 void InstanceThread::stop()
 {
 	m->mayRun = false;
-}
-
-void InstanceThread::parseMemory()
-{
-	spLog(Log::Debug, this) << "parse memory for new file...";
-
-	if(m->memory.isAttached())
-	{
-		spLog(Log::Debug, this) << "memory already attached";
-	}
-
-	else if(!m->memory.attach())
-	{
-		spLog(Log::Debug, this) << "Cannot attach shared memory " << m->memory.errorString();
-		return;
-	}
-
-	m->memory.lock();
-
-	auto* data = static_cast<const char*>(m->memory.constData()) + 4;
-	if(data)
-	{
-		QByteArray array(data, m->memory.size());
-		QList<QByteArray> strings = array.split('\n');
-		QStringList file_list;
-
-		for(const QByteArray& arr : strings)
-		{
-			QString filename = QString::fromUtf8(arr);
-
-			if(!filename.isEmpty() &&
-			   (Util::File::isPlaylistFile(filename) || Util::File::isSoundFile(filename)))
-			{
-				spLog(Log::Debug, this) << "Add file " << filename;
-				file_list << filename;
-			}
-		}
-
-		m->paths = file_list;
-		emit sigCreatePlaylist();
-	}
-
-	m->memory.unlock();
 }
 
 QStringList InstanceThread::paths() const

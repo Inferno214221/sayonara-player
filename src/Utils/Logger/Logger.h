@@ -49,7 +49,8 @@ enum class Log : unsigned char
 	Info,
 	Debug,
 	Develop,
-	Crazy
+	Crazy,
+	Always
 };
 
 
