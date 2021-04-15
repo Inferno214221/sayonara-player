@@ -1,5 +1,24 @@
 # Sayonara Player
-[https://sayonara-player.com]()
+[https://sayonara-player.com](https://sayonara-player.com)
+
+<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KD4GKTTLAP3JQ&source=url">
+    <img src="https://img.shields.io/badge/PayPal-Donate-blue.svg"
+            alt="PayPal: Donate">
+</a>
+<a href="https://patreon.com/sayonaraplayer">
+    <img src="https://img.shields.io/badge/Patreon-Become a patron-orange.svg"
+        alt="Patreon: Become a patron">
+</a>
+<a href="bitcoin:1M1pY98SGfyt2SR858Q14F8GCweHf17jQs?message=Sayonara%20Player%20Donation&time=1514892640">
+    <img src="https://img.shields.io/badge/Bitcoin-Donate-green" 
+        alt="Bitcoin">
+</a>
+![Maintenance](https://img.shields.io/maintenance/yes/2021)
+![License](https://img.shields.io/badge/License-GPLv3-green)
+
+![Debian package](https://img.shields.io/debian/v/sayonara/sid)
+![Fedora package](https://img.shields.io/fedora/v/sayonara)
+![AUR version](https://img.shields.io/aur/version/sayonara-player-git)
 
 Sayonara is a small, clear and fast audio player for Linux written in C++, supported by the Qt framework. It uses GStreamer as audio backend. Sayonara is open source and uses the GPLv3 license. One of Sayonara's goals is intuitive and easy usablility. Currently, it is only available for Linux and BSD. 
 
