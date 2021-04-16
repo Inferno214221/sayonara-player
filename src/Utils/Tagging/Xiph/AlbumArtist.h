@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef XIPH_ALBUMARTIST_H_
-#define XIPH_ALBUMARTIST_H_
+#ifndef SAYONARA_XIPH_ALBUMARTIST_H
+#define SAYONARA_XIPH_ALBUMARTIST_H
 
 #include "XiphFrame.h"
+
 #include <QString>
 
 /**
@@ -48,4 +47,4 @@ namespace Xiph
     };
 }
 
-#endif // ALBUMARTIST_H
+#endif // SAYONARA_XIPH_ALBUMARTIST_H

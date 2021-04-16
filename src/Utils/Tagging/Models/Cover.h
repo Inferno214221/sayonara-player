@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef COVER_MODELS_H_
-#define COVER_MODELS_H_
+#ifndef SAYONARA_TAGGING_COVER_MODEL_H
+#define SAYONARA_TAGGING_COVER_MODEL_H
 
 #include <QString>
 
@@ -58,4 +56,4 @@ namespace Models
     };
 }
 
-#endif // COVER_H
+#endif // SAYONARA_TAGGING_COVER_MODEL_H

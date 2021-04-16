@@ -18,13 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DISCNUMBER_H
-#define DISCNUMBER_H
+#ifndef SAYONARA_ID3V2_DISCNUMBER_H
+#define SAYONARA_ID3V2_DISCNUMBER_H
 
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Discnumber.h"
 
-#include "taglib/textidentificationframe.h"
+#include <taglib/textidentificationframe.h>
 
 namespace ID3v2
 {
@@ -46,4 +46,4 @@ namespace ID3v2
 	};
 }
 
-#endif // DISCNUMBER_H
+#endif // SAYONARA_ID3V2_DISCNUMBER_H

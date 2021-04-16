@@ -24,7 +24,7 @@
 ID3v2::DiscnumberFrame::DiscnumberFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPOS") {}
 
-ID3v2::DiscnumberFrame::~DiscnumberFrame() {}
+ID3v2::DiscnumberFrame::~DiscnumberFrame() = default;
 
 void ID3v2::DiscnumberFrame::map_model_to_frame(const Models::Discnumber& model, TagLib::ID3v2::TextIdentificationFrame* frame)
 {

@@ -18,10 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POPULARIMETER_MODELS_H_
-#define POPULARIMETER_MODELS_H_
+#ifndef SAYONARA_TAGGING_POPULARIMETER_MODEL_H
+#define SAYONARA_TAGGING_POPULARIMETER_MODEL_H
 
 #include "Utils/typedefs.h"
+
 #include <QString>
 
 namespace Models
@@ -46,4 +47,4 @@ namespace Models
 	};
 }
 
-#endif // POPULARIMETER_H
+#endif // SAYONARA_TAGGING_POPULARIMETER_MODEL_H

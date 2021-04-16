@@ -19,12 +19,13 @@
  */
 
 #include "Cover.h"
-#include "taglib/flacpicture.h"
-#include "taglib/flacfile.h"
-#include "taglib/oggfile.h"
-#include "taglib/tmap.h"
 
 #include "Utils/Logger/Logger.h"
+
+#include <taglib/flacpicture.h>
+#include <taglib/flacfile.h>
+#include <taglib/oggfile.h>
+#include <taglib/tmap.h>
 
 namespace TL=TagLib;
 
@@ -32,7 +33,7 @@ Xiph::CoverFrame::CoverFrame(TagLib::Ogg::XiphComment* tag) :
 	Xiph::XiphFrame<Models::Cover>(tag, "")
 {}
 
-Xiph::CoverFrame::~CoverFrame() {}
+Xiph::CoverFrame::~CoverFrame() = default;
 
 bool Xiph::CoverFrame::is_frame_found() const
 {

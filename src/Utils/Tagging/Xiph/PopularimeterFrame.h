@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef POPULARIMETERFRAME_H
-#define POPULARIMETERFRAME_H
+#ifndef SAYONARA_XIPH_POPULARIMETER_H
+#define SAYONARA_XIPH_POPULARIMETER_H
 
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
@@ -48,4 +46,4 @@ namespace Xiph
 	};
 }
 
-#endif // POPULARIMETERFRAME_H
+#endif // SAYONARA_XIPH_POPULARIMETER_H

@@ -19,6 +19,7 @@
  */
 
 #include "Discnumber.h"
+
 #include <QString>
 
 Models::Discnumber::Discnumber() :

@@ -18,16 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "DiscnumberFrame.h"
+
 #include <QStringList>
 
 Xiph::DiscnumberFrame::DiscnumberFrame(TagLib::Ogg::XiphComment* tag) :
     Xiph::XiphFrame<Models::Discnumber>(tag, "DISCNUMBER")
 {}
 
-Xiph::DiscnumberFrame::~DiscnumberFrame() {}
+Xiph::DiscnumberFrame::~DiscnumberFrame() = default;
 
 bool Xiph::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
 {

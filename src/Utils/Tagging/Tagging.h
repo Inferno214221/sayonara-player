@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAGGING_H_
-#define TAGGING_H_
+#ifndef SAYONARA_UTIL_TAGGING_H
+#define SAYONARA_UTIL_TAGGING_H
 
 #include "TaggingEnums.h"
 
@@ -68,4 +68,4 @@ namespace Tagging
 	}
 }
 
-#endif
+#endif // SAYONARA_UTIL_TAGGING_H

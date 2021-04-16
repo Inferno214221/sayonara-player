@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef MP4_POPULARIMETERFRAME_H
-#define MP4_POPULARIMETERFRAME_H
+#ifndef SAYONARA_MP4_POPULARIMETERFRAME_H
+#define SAYONARA_MP4_POPULARIMETERFRAME_H
 
 #include "Utils/Tagging/MP4/MP4Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
@@ -42,4 +40,4 @@ namespace MP4
 	};
 }
 
-#endif // MP4_POPULARIMETERFRAME_H
+#endif // SAYONARA_MP4_POPULARIMETERFRAME_H

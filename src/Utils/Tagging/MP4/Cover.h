@@ -18,14 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef MP4COVER_H
-#define MP4COVER_H
+#ifndef SAYONARA_MP4_COVER_H
+#define SAYONARA_MP4_COVER_H
 
 #include "MP4Frame.h"
+
 #include "Utils/Tagging/Models/Cover.h"
 
-#include "taglib/mp4coverart.h"
-#include "taglib/tag.h"
+#include <taglib/mp4coverart.h>
+#include <taglib/tag.h>
 
 namespace MP4
 {
@@ -43,4 +44,4 @@ namespace MP4
 		bool map_model_to_tag(const Models::Cover& model) override;
 	};
 }
-#endif // MP4COVER_H
+#endif // SAYONARA_MP4_COVER_H

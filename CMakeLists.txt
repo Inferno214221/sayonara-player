@@ -4,7 +4,6 @@ project("Sayonara Player")
 option(WITH_DOC "Building with doxygen support" OFF)
 option(WITH_TESTS "Building with tests" OFF)
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
-option(WITH_SYSTEM_TAGLIB "Use the taglib provided by the destribution, which contains critical bugs in 1.11" OFF)
 option(LINK_GSTREAMER_PLUGINS "Link the most common GStreamer plugins into the binary. Used for the creation of AppImage files")
 option(WITH_CCACHE "Use CCache if available" OFF)
 

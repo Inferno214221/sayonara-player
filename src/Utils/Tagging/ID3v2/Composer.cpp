@@ -19,12 +19,13 @@
  */
 
 #include "Composer.h"
-#include "taglib/textidentificationframe.h"
+
+#include <taglib/textidentificationframe.h>
 
 ID3v2::ComposerFrame::ComposerFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(tag, "\xA9wrt") {}
 
-ID3v2::ComposerFrame::~ComposerFrame() {}
+ID3v2::ComposerFrame::~ComposerFrame() = default;
 
 void ID3v2::ComposerFrame::map_model_to_frame(const QString& model, TagLib::ID3v2::TextIdentificationFrame* frame)
 {

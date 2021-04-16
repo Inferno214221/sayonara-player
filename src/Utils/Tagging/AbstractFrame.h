@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef TAGGINGABSTRACTFRAME_H
-#define TAGGINGABSTRACTFRAME_H
+#ifndef SAYONARA_TAGGING_ABSTRACTFRAME_H
+#define SAYONARA_TAGGING_ABSTRACTFRAME_H
 
 #include "Utils/Pimpl.h"
 
@@ -78,4 +76,4 @@ namespace Tagging
 			}
 	};
 }
-#endif // TAGGINGABSTRACTFRAME_H
+#endif // SAYONARA_TAGGING_ABSTRACTFRAME_H

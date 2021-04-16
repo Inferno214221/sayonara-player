@@ -18,13 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SAYONARA_XIPH_DISCNUMBER_H
+#define SAYONARA_XIPH_DISCNUMBER_H
 
-
-#ifndef DISCNUMBERXIPHFRAME_H
-#define DISCNUMBERXIPHFRAME_H
+#include "XiphFrame.h"
 
 #include "Utils/Tagging/Models/Discnumber.h"
-#include "XiphFrame.h"
 
 /**
  * @ingroup Tagging
@@ -48,4 +47,4 @@ namespace Xiph
 	};
 }
 
-#endif // DISCNUMBERFRAME_H
+#endif // SAYONARA_XIPH_DISCNUMBER_H

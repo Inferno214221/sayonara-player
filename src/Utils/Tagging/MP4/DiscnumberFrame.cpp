@@ -19,13 +19,14 @@
  */
 
 #include "DiscnumberFrame.h"
-#include "taglib/mp4item.h"
+
+#include <taglib/mp4item.h>
 
 MP4::DiscnumberFrame::DiscnumberFrame(TagLib::MP4::Tag* tag) :
     MP4::MP4Frame<Models::Discnumber>(tag, "disk")
 {}
 
-MP4::DiscnumberFrame::~DiscnumberFrame() {}
+MP4::DiscnumberFrame::~DiscnumberFrame() = default;
 
 bool MP4::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
 {

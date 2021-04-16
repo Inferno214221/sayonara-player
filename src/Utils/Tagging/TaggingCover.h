@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef TAGGINGCOVER_H
-#define TAGGINGCOVER_H
+#ifndef SAYONARA_TAGGING_COVER_H
+#define SAYONARA_TAGGING_COVER_H
 
 class QPixmap;
 class QString;
@@ -45,4 +45,4 @@ namespace Tagging
 	}
 }
 
-#endif // TAGGINGCOVER_H
+#endif // SAYONARA_TAGGING_COVER_H

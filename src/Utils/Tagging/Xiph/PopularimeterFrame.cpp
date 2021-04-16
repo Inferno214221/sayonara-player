@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PopularimeterFrame.h"
 
 Xiph::PopularimeterFrame::PopularimeterFrame(TagLib::Ogg::XiphComment* tag) :
 	XiphFrame<Models::Popularimeter>(tag, "RATING")
 {}
 
-Xiph::PopularimeterFrame::~PopularimeterFrame() {}
+Xiph::PopularimeterFrame::~PopularimeterFrame() = default;
 
 bool Xiph::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 {

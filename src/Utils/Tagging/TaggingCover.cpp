@@ -39,9 +39,9 @@
 #include <QFile>
 #include <QFileInfo>
 
-#include "taglib/fileref.h"
-#include "taglib/flacpicture.h"
-#include "taglib/tlist.h"
+#include <taglib/fileref.h>
+#include <taglib/flacpicture.h>
+#include <taglib/tlist.h>
 
 using Tagging::ParsedTag;
 
@@ -292,9 +292,6 @@ bool Tagging::Covers::isCoverSupported(const QString& filepath)
 
 	bool supported = (tag_type == Tagging::TagType::ID3v2 || tag_type == Tagging::TagType::MP4);
 
-#ifdef SAYONARA_INTERNAL_TAGLIB
-	return supported || (tag_type == Tagging::TagType::Xiph);
-#else
 	if(	((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION == 11) && (TAGLIB_PATCH_VERSION == 1)) ||
 		((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION < 10)) )
 	{
@@ -304,6 +301,5 @@ bool Tagging::Covers::isCoverSupported(const QString& filepath)
 	else {
 		return supported || (tag_type == Tagging::TagType::Xiph);
 	}
-#endif
 }
 

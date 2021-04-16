@@ -23,7 +23,7 @@
 ID3v2::PopularimeterFrame::PopularimeterFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>(tag, "POPM") {}
 
-ID3v2::PopularimeterFrame::~PopularimeterFrame() {}
+ID3v2::PopularimeterFrame::~PopularimeterFrame() = default;
 
 TagLib::ID3v2::Frame* ID3v2::PopularimeterFrame::create_id3v2_frame()
 {

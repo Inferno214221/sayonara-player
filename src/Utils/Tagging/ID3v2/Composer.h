@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMPOSER_H_
-#define COMPOSER_H_
+#ifndef SAYONARA_ID3V2_COMPOSER_H
+#define SAYONARA_ID3V2_COMPOSER_H
 
 #include "ID3v2Frame.h"
 
@@ -44,4 +44,4 @@ namespace ID3v2
 	};
 }
 
-#endif // COMPOSER_H_
+#endif // SAYONARA_ID3V2_COMPOSER_H

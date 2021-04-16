@@ -18,14 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SAYONARA_XIPH_COVER_H
+#define SAYONARA_XIPH_COVER_H
 
-
-#ifndef XIPH_COVER_H
-#define XIPH_COVER_H
+#include "XiphFrame.h"
 
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Cover.h"
-#include "XiphFrame.h"
 
 /**
  * @ingroup Tagging
@@ -47,4 +46,4 @@ namespace Xiph
 	};
 }
 
-#endif // COVER_H
+#endif // SAYONARA_XIPH_COVER_H

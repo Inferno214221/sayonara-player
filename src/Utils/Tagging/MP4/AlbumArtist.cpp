@@ -18,14 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "AlbumArtist.h"
 
 MP4::AlbumArtistFrame::AlbumArtistFrame(TagLib::MP4::Tag* tag) :
 	MP4::MP4Frame<QString>(tag, "aART") {}
 
-MP4::AlbumArtistFrame::~AlbumArtistFrame() {}
+MP4::AlbumArtistFrame::~AlbumArtistFrame() = default;
 
 bool MP4::AlbumArtistFrame::map_tag_to_model(QString& model)
 {

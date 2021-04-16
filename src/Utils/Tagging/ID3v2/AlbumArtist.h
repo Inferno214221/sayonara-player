@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ALBUMARTIST_H
-#define ALBUMARTIST_H
+#ifndef SAYONARA_ID3V2_ALBUMARTIST_H
+#define SAYONARA_ID3V2_ALBUMARTIST_H
 
 #include "ID3v2Frame.h"
 
@@ -44,4 +44,4 @@ namespace ID3v2
 	};
 }
 
-#endif // ALBUMARTIST_H
+#endif // SAYONARA_ID3V2_ALBUMARTIST_H

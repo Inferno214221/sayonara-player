@@ -18,15 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LyricsFrame.h"
 
 Xiph::LyricsFrame::LyricsFrame(TagLib::Ogg::XiphComment* tag) :
     Xiph::XiphFrame<QString>(tag, "LYRICS")
 {}
 
-Xiph::LyricsFrame::~LyricsFrame() {}
+Xiph::LyricsFrame::~LyricsFrame() = default;
 
 bool Xiph::LyricsFrame::map_tag_to_model(QString& model)
 {

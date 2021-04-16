@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef DISCNUMBER_MODELS_H_
-#define DISCNUMBER_MODELS_H_
+#ifndef SAYONARA_TAGGING_DISCNUMBER_MODEL_H
+#define SAYONARA_TAGGING_DISCNUMBER_MODEL_H
 
 #include "Utils/typedefs.h"
+
 class QString;
 
 namespace Models
@@ -43,4 +42,4 @@ namespace Models
 	};
 }
 
-#endif // DISCNUMBER_H
+#endif // SAYONARA_TAGGING_DISCNUMBER_MODEL_H

@@ -18,17 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ID3V2_FRAME_H_
-#define ID3V2_FRAME_H_
+#ifndef SAYONARA_ID3V2_FRAME_H
+#define SAYONARA_ID3V2_FRAME_H
 
 #include "Utils/Tagging/AbstractFrame.h"
 
-#include "taglib/fileref.h"
-#include "taglib/mpegfile.h"
-#include "taglib/id3v2tag.h"
-#include "taglib/id3v2frame.h"
-
 #include <QString>
+
+#include <taglib/fileref.h>
+#include <taglib/mpegfile.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/id3v2frame.h>
 
 /**
  * @brief ID3v2Frame namespace
@@ -157,4 +157,4 @@ namespace ID3v2
 	};
 }
 
-#endif // ABSTRACTFRAME_H
+#endif // SAYONARA_ID3V2_FRAME_H

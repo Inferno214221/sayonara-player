@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SAYONARA_ID3V2_LYRICS_FRAME_H
+#define SAYONARA_ID3V2_LYRICS_FRAME_H
 
-
-#ifndef LYRICS_FRAME_H
-#define LYRICS_FRAME_H
+#include "ID3v2Frame.h"
 
 #include <QString>
-#include "ID3v2Frame.h"
-#include "taglib/unsynchronizedlyricsframe.h"
+
+#include <taglib/unsynchronizedlyricsframe.h>
 
 namespace ID3v2
 {
@@ -43,4 +43,4 @@ namespace ID3v2
 	};
 }
 
-#endif // LYRICS_FRAME_H
+#endif // SAYONARA_ID3V2_LYRICS_FRAME_H

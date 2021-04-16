@@ -36,50 +36,13 @@ if(WIN32)
 	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
 endif()
 
-set(TAGLIB_FOUND 0)
-
-if(WITH_SYSTEM_TAGLIB)
-	message("Looking for system taglib")
-	# overwrites TAGLIB_FOUND, TAGLIB_LIBRARY_DIRS, TAGLIB_LIBRARIES
-	pkg_check_modules(TAGLIB taglib>=1.10 REQUIRED)
-
-	# Some distributions do not clean the taglib include path
-	# or the pkg-config .pc file for taglib after uninstalling
-	find_path(TAGLIB_INCLUDE_FOUND "audioproperties.h" PATHS ${TAGLIB_INCLUDE_DIRS})
-	if(NOT TAGLIB_INCLUDE_FOUND)
-		message(FATAL_ERROR "Taglib does not seem to be fully installed" )
-	endif()
-endif()
-
-if(NOT TAGLIB_FOUND)
-	set(WITH_SYSTEM_TAGLIB 0)
-
-	set(TAGLIB_INCLUDE_DIRS
-		${CMAKE_SOURCE_DIR}/src/3rdParty
-		${CMAKE_CURRENT_BINARY_DIR}/3rdParty
-		${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib
-	)
-
-	set(TAGLIB_LIBARARY_DIRS
-		${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib
-	)
-
-	set(TAGLIB_LIBRARY_DIRS ${CMAKE_CURRENT_BINARY_DIR}/3rdParty/taglib/taglib)
-	set(TAGLIB_LIBRARIES tag)
-	
-	# Macros.h.in
-	set(SAYONARA_INTERNAL_TAGLIB 1)
-else()
-	# Macros.h.in
-	set(SAYONARA_SYSTEM_TAGLIB 1)
-endif()
-
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
 pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
 pkg_check_modules(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
 pkg_check_modules(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
 pkg_check_modules(ZLIB REQUIRED zlib REQUIRED)
+pkg_check_modules(TAGLIB REQUIRED taglib REQUIRED)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -163,7 +126,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC OFF)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-add_subdirectory(3rdParty)
 add_subdirectory(Application)
 add_subdirectory(Components)
 add_subdirectory(Database)

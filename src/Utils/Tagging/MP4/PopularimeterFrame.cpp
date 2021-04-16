@@ -18,18 +18,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PopularimeterFrame.h"
-
 
 MP4::PopularimeterFrame::PopularimeterFrame(TagLib::MP4::Tag* tag) :
 	MP4::MP4Frame<Models::Popularimeter>(tag, "rtng")
-{
+{}
 
-}
-
-MP4::PopularimeterFrame::~PopularimeterFrame() {}
+MP4::PopularimeterFrame::~PopularimeterFrame() = default;
 
 bool MP4::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
 {

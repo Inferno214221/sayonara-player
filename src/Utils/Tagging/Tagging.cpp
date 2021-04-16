@@ -36,23 +36,23 @@
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Logger/Logger.h"
 
-#include "taglib/tag.h"
-#include "taglib/taglib.h"
-#include "taglib/fileref.h"
-#include "taglib/mpegfile.h"
-#include "taglib/oggfile.h"
-#include "taglib/oggflacfile.h"
-#include "taglib/flacfile.h"
-#include "taglib/tbytevector.h"
-#include "taglib/tbytevectorstream.h"
-#include "taglib/id3v1tag.h"
-#include "taglib/mp4file.h"
-#include "taglib/mp4tag.h"
-
 #include <QFileInfo>
 #include <QRegExp>
 #include <QStringList>
 #include <QDateTime>
+
+#include <taglib/tag.h>
+#include <taglib/taglib.h>
+#include <taglib/fileref.h>
+#include <taglib/mpegfile.h>
+#include <taglib/oggfile.h>
+#include <taglib/oggflacfile.h>
+#include <taglib/flacfile.h>
+#include <taglib/tbytevector.h>
+#include <taglib/tbytevectorstream.h>
+#include <taglib/id3v1tag.h>
+#include <taglib/mp4file.h>
+#include <taglib/mp4tag.h>
 
 using namespace Tagging::Utils;
 namespace FileUtils=::Util::File;

@@ -18,18 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef ABSTRACT_MP4_FRAME_H_
-#define ABSTRACT_MP4_FRAME_H_
+#ifndef SAYONARA_ABSTRACT_MP4_FRAME_H
+#define SAYONARA_ABSTRACT_MP4_FRAME_H
 
 #include "Utils/Tagging/AbstractFrame.h"
 
-#include "taglib/tag.h"
-#include "taglib/tstringlist.h"
-#include "taglib/mp4tag.h"
-
 #include <QString>
+
+#include <taglib/tag.h>
+#include <taglib/tstringlist.h>
+#include <taglib/mp4tag.h>
 
 namespace MP4
 {
@@ -120,4 +118,4 @@ public:
 };
 }
 
-#endif // ABSTRACT_MP4_FRAME_H_
+#endif // SAYONARA_ABSTRACT_MP4_FRAME_H

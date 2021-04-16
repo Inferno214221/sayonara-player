@@ -18,15 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef POPULARIMETER_H
-#define POPULARIMETER_H
-
+#ifndef SAYONARA_ID3V2_POPULARIMETER_H
+#define SAYONARA_ID3V2_POPULARIMETER_H
 
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
-#include "taglib/popularimeterframe.h"
 
 #include <QString>
+
+#include <taglib/popularimeterframe.h>
 
 namespace ID3v2
 {
@@ -49,4 +49,4 @@ namespace ID3v2
 	};
 }
 
-#endif // POPULARIMETER_H
+#endif // SAYONARA_ID3V2_POPULARIMETER_H

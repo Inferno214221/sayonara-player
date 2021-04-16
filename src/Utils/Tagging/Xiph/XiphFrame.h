@@ -18,18 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef ABSTRACT_XIPH_FRAME_H_
-#define ABSTRACT_XIPH_FRAME_H_
+#ifndef SAYONARA_ABSTRACT_XIPH_FRAME_H
+#define SAYONARA_ABSTRACT_XIPH_FRAME_H
 
 #include "Utils/Tagging/AbstractFrame.h"
+
 #include <QString>
 
-#include "taglib/tag.h"
-#include "taglib/xiphcomment.h"
-#include "taglib/tstring.h"
-#include "taglib/tstringlist.h"
+#include <taglib/tag.h>
+#include <taglib/xiphcomment.h>
+#include <taglib/tstring.h>
+#include <taglib/tstringlist.h>
 
 namespace Xiph
 {
@@ -114,4 +113,4 @@ namespace Xiph
 	};
 }
 
-#endif // ABSTRACTFRAME_H
+#endif // SAYONARA_ABSTRACT_XIPH_FRAME_H

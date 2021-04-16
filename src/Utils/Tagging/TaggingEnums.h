@@ -18,16 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SAYONARA_TAGGING_ENUMS_H
+#define SAYONARA_TAGGING_ENUMS_H
 
-
-#ifndef TAGGINGENUMS
-#define TAGGINGENUMS
-
-#include "taglib/audioproperties.h"
-#include "taglib/id3v1tag.h"
-#include "taglib/id3v2tag.h"
-#include "taglib/mp4tag.h"
-#include "taglib/xiphcomment.h"
+#include <taglib/audioproperties.h>
+#include <taglib/id3v1tag.h>
+#include <taglib/id3v2tag.h>
+#include <taglib/mp4tag.h>
+#include <taglib/xiphcomment.h>
 
 namespace Tagging
 {
@@ -73,5 +71,5 @@ namespace Tagging
 			}
 		};
 }
-#endif // TAGGINGENUMS
+#endif // SAYONARA_TAGGING_ENUMS_H
 

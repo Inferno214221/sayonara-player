@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef TAGGINGLYRICS_H
-#define TAGGINGLYRICS_H
+#ifndef SAYONARA_TAGGING_LYRICS_H
+#define SAYONARA_TAGGING_LYRICS_H
 
 class MetaData;
 class QString;
@@ -36,4 +34,4 @@ namespace Tagging
 	}
 }
 
-#endif // TAGGINGLYRICS_H
+#endif // SAYONARA_TAGGING_LYRICS_H

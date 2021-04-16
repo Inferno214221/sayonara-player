@@ -19,8 +19,9 @@
  */
 
 #include "AlbumArtist.h"
-#include "taglib/textidentificationframe.h"
-#include "taglib/tstring.h"
+
+#include <taglib/textidentificationframe.h>
+#include <taglib/tstring.h>
 
 ID3v2::AlbumArtistFrame::AlbumArtistFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPE2") {}

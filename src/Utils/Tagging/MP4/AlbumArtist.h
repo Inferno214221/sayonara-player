@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef MP4_ALBUMARTIST_H
-#define MP4_ALBUMARTIST_H
+#ifndef SAYONARA_MP4_ALBUMARTIST_H
+#define SAYONARA_MP4_ALBUMARTIST_H
 
 #include "Utils/Tagging/MP4/MP4Frame.h"
+
 #include <QString>
 
 namespace MP4
@@ -42,4 +41,4 @@ namespace MP4
 	};
 }
 
-#endif // MP4_ALBUMARTIST_H
+#endif // SAYONARA_MP4_ALBUMARTIST_H

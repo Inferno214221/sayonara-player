@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "TaggingLyrics.h"
 #include "Tagging.h"
 #include "Tagging/ID3v2/Lyrics.h"
@@ -28,10 +26,9 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
 
-#include "taglib/fileref.h"
-
 #include <QString>
 
+#include <taglib/fileref.h>
 
 bool Tagging::Lyrics::writeLyrics(const MetaData& md, const QString& lyrics_data)
 {

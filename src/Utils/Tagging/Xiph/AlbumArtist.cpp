@@ -19,12 +19,13 @@
  */
 
 #include "AlbumArtist.h"
+
 #include <QString>
 
 Xiph::AlbumArtistFrame::AlbumArtistFrame(TagLib::Ogg::XiphComment* tag) :
 	Xiph::XiphFrame<QString>(tag, "ALBUMARTIST") {}
 
-Xiph::AlbumArtistFrame::~AlbumArtistFrame() {}
+Xiph::AlbumArtistFrame::~AlbumArtistFrame() = default;
 
 bool Xiph::AlbumArtistFrame::map_tag_to_model(QString& model)
 {

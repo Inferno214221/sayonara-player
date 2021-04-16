@@ -18,14 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Cover.h"
 
 MP4::CoverFrame::CoverFrame(TagLib::MP4::Tag* tag) :
 	MP4Frame<Models::Cover>(tag, "covr") {}
 
-MP4::CoverFrame::~CoverFrame() {}
+MP4::CoverFrame::~CoverFrame() = default;
 
 bool MP4::CoverFrame::map_tag_to_model(Models::Cover& model)
 {

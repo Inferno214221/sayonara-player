@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef MP4_DISCNUMBERFRAME_H
-#define MP4_DISCNUMBERFRAME_H
+#ifndef SAYONARA_MP4_DISCNUMBERFRAME_H
+#define SAYONARA_MP4_DISCNUMBERFRAME_H
 
 #include "Utils/Tagging/Models/Discnumber.h"
 #include "Utils/Tagging/MP4/MP4Frame.h"
@@ -48,4 +46,4 @@ namespace MP4
 	};
 }
 
-#endif // MP4_DISCNUMBERXIPHFRAME_H
+#endif // SAYONARA_MP4_DISCNUMBERFRAME_H

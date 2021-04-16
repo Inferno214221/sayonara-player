@@ -18,12 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "AbstractFrame.h"
-#include "taglib/tstring.h"
 
 #include <QString>
+
+#include <taglib/tstring.h>
 
 struct Tagging::AbstractFrameHelper::Private
 {
@@ -36,8 +35,7 @@ Tagging::AbstractFrameHelper::AbstractFrameHelper(const QString& key)
 	m->key = key;
 }
 
-Tagging::AbstractFrameHelper::~AbstractFrameHelper() {}
-
+Tagging::AbstractFrameHelper::~AbstractFrameHelper() = default;
 
 TagLib::String Tagging::AbstractFrameHelper::convert_string(const QString& str) const
 {

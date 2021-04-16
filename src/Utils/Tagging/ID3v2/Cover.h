@@ -18,15 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COVER_H
-#define COVER_H
+#ifndef SAYONARA_ID3V2_COVER_H
+#define SAYONARA_ID3V2_COVER_H
 
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Cover.h"
-#include "taglib/attachedpictureframe.h"
 
 #include <QByteArray>
 #include <QString>
+
+#include <taglib/attachedpictureframe.h>
 
 namespace ID3v2
 {
@@ -48,4 +49,4 @@ namespace ID3v2
 	};
 }
 
-#endif // COVER_H
+#endif // SAYONARA_ID3V2_COVER_H

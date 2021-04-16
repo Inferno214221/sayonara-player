@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef LYRICS_H
-#define LYRICS_H
+#ifndef SAYONARA_XIPH_LYRICS_H
+#define SAYONARA_XIPH_LYRICS_H
 
 #include "XiphFrame.h"
 
@@ -37,7 +35,6 @@ namespace Xiph
 			bool map_tag_to_model(QString& model) override;
 			bool map_model_to_tag(const QString& model) override;
     };
-
 }
 
-#endif // LYRICS_H
+#endif // SAYONARA_XIPH_LYRICS_H
