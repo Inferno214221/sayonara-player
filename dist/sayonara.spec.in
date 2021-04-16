@@ -38,12 +38,9 @@ that use %{name}.
 %autosetup -p1 -n %{name}-player-%{version}-%{release}
 
 rm -rf .gitignore .gitlab-ci.yml debian
-# use system taglib
-rm -rf src/3rdParty/Taglib
 
 %build
 %cmake . -DCMAKE_BUILD_TYPE="RelWithDebInfo" \
-         -DWITH_SYSTEM_TAGLIB=ON             \
          -DCMAKE_INSTALL_PREFIX=%{_prefix}
 %cmake_build
 

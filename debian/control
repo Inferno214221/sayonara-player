@@ -12,6 +12,7 @@ Build-Depends: cmake (>= 3.8),
                qttools5-dev,
                qttools5-dev-tools,
 			   libqt5svg5-dev,
+			   libtag1-dev,
                zlib1g-dev
 Standards-Version: 3.9.8
 Homepage: http://sayonara-player.com
