@@ -125,15 +125,6 @@ bool Tagging::Covers::writeCover(const QString& filepath, const QString& coverIm
 
 	else if(tagType == Tagging::TagType::Xiph)
 	{
-
-#ifdef WITH_SYSTEM_TAGLIB
-		if(TAGLIB_MINOR_VERSION == 11 && TAGLIB_PATCH_VERSION == 1)
-		{
-			sp_log(Log::Warning, "TaggingCover") << "Not writing cover due to taglib bug";
-			return false;
-		}
-#endif
-
 		auto* xiph = parsedTag.xiphTag();
 		Xiph::CoverFrame coverFrame(xiph);
 		if(!coverFrame.write(cover))

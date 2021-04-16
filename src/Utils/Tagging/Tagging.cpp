@@ -323,16 +323,6 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 
 	else if(parsed_tag.type == TagType::Xiph)
 	{
-
-#ifdef WITH_SYSTEM_TAGLIB
-		if(TAGLIB_MINOR_VERSION == 11 && TAGLIB_PATCH_VERSION == 1)
-		{
-			sp_log(Log::Warning, "Tagging") << "Taglib will probably break everything. ";
-			sp_log(Log::Warning, "Tagging") << "    Not writing any tags to " << md.filepath();
-			return false;
-		}
-#endif
-
 		auto xiph = parsed_tag.xiphTag();
 		Xiph::PopularimeterFrame popularimeter_frame(xiph);
 		popularimeter_frame.write(popularimeter);
