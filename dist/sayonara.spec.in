@@ -67,6 +67,8 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %dir %{_datadir}/%{name}/translations/icons
 %{_datadir}/%{name}/translations/icons/*.png
 %{_mandir}/man1/%{name}.1.gz
+%{_mandir}/man1/%{name}-ctl.1.gz
+%{_mandir}/man1/%{name}-query.1.gz
 
 %changelog
 * @SAYONARA_DATE_TODAY@ Michael Lugmair <sayonara-player@posteo.org> - @SAYONARA_VERSION@
