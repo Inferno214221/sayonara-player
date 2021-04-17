@@ -8,7 +8,7 @@ case "$1" in
 
 	build)
 		mkdir -p build && cd build
-		cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt512
+		cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt
 		make -j8
 		make install DESTDIR=AppDir
 		;;
@@ -19,8 +19,11 @@ case "$1" in
 		if [ "x${DOCKER_QT_BASE_DIR}" != "x" ] ; then
 			export QT_BASE_DIR=${DOCKER_QT_BASE_DIR}
 		else
-			export QT_BASE_DIR=/opt/qt512
+			export QT_BASE_DIR=/opt/qt
 		fi
+
+		# avoid fuse problems
+		export APPIMAGE_EXTRACT_AND_RUN=1
 
 		export QMAKE="$QT_BASE_DIR/bin/qmake"
 		export QTDIR=$QT_BASE_DIR
