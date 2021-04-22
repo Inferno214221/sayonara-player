@@ -3,94 +3,163 @@
 #include "Components/Tagging/Expression.h"
 #include "Utils/MetaData/MetaDataList.h"
 
-class TagFromPathTest : public Test::Base
+class TagFromPathTest :
+	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	TagFromPathTest() :
-		Test::Base("TagFromPathTest")
-	{}
+	public:
+		TagFromPathTest() :
+			Test::Base("TagFromPathTest") {}
 
-	~TagFromPathTest() override = default;
+		~TagFromPathTest() override = default;
 
 	private slots:
-		void apply_regex_test();
+		void applyRegexTest();
+		void unknownTagTest();
+		void noMatchingStringTest();
+		void wrongTrackNumTest();
+		void emptyTagResultTest();
+		void badNumericTest();
+		void emptyTagStringTest();
 };
 
-
-void TagFromPathTest::apply_regex_test()
+void TagFromPathTest::applyRegexTest()
 {
-	const QStringList tag_strings
-	{
-		"/media/Sound/Dr. Dre/1999 2001/<tracknum>. <title>.m4a",
-		"/media/Sound/<artist>/1999 2001/<tracknum>. <title>.m4a",
-		"/media/Sound/<artist>/<year> 2001/<tracknum>. <title>.m4a",
-		"/media/Sound/<artist>/<year> <album>/<tracknum>. <title>.m4a"
-	};
+	const QStringList tagStrings
+		{
+			"/media/Sound/Dr. Dre/1999 2001/<tracknum>. <title>.m4a",
+			"/media/Sound/<artist>/1999 2001/<tracknum>. <title>.m4a",
+			"/media/Sound/<artist>/<year> 2001/<tracknum>. <title>.m4a",
+			"/media/Sound/<artist>/<year> <album>/<tracknum>. <title>.m4a"
+		};
 
 	const QStringList paths
-	{
-		"/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a",
-		"/media/Sound/Dr. Dre/1999 2001/04. Still D.R.E. (feat. Snoop Dogg).m4a",
-		"/media/Sound/Dr. Dre/1999 2001/06. Xxplosive (feat. Hittman, Kurupt, Nate Dogg & Six-Two).m4a",
-		"/media/Sound/Dr. Dre/1999 2001/07. What's The Difference (feat. Eminem & Xzibit).m4a"
-	};
-
-	for(const QString& tag_str : tag_strings)
-	{
-		for(const QString& path : paths)
 		{
-			Tagging::Expression e(tag_str, path);
-			QVERIFY(e.is_valid() == true);
+			"/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a",
+			"/media/Sound/Dr. Dre/1999 2001/04. Still D.R.E. (feat. Snoop Dogg).m4a",
+			"/media/Sound/Dr. Dre/1999 2001/06. Xxplosive (feat. Hittman, Kurupt, Nate Dogg & Six-Two).m4a",
+			"/media/Sound/Dr. Dre/1999 2001/07. What's The Difference (feat. Eminem & Xzibit).m4a"
+		};
+
+	for(const auto& tagString : tagStrings)
+	{
+		for(const auto& path : paths)
+		{
+			const Tagging::Expression expression(tagString, path);
+			QVERIFY(expression.isValid());
 		}
 	}
 
 	{
-		QString path = paths[0];
-		MetaData md(path);
+		const auto path = paths[0];
+		auto track = MetaData(path);
 
-		Tagging::Expression e1(tag_strings[0], path);
-		e1.apply(md);
-		QVERIFY(md.trackNumber() == 2);
-		QVERIFY(md.title() == "The Watcher (feat. Eminem & Knoc-Turn'al)");
+		Tagging::Expression expression(tagStrings[0], path);
+		expression.apply(track);
+
+		QVERIFY(track.trackNumber() == 2);
+		QVERIFY(track.title() == "The Watcher (feat. Eminem & Knoc-Turn'al)");
 	}
 
 	{
-		QString path = paths[1];
-		MetaData md(path);
+		const auto path = paths[1];
+		auto track = MetaData(path);
 
-		Tagging::Expression e1(tag_strings[1], path);
-		e1.apply(md);
-		QVERIFY(md.trackNumber() == 4);
-		QVERIFY(md.title() == "Still D.R.E. (feat. Snoop Dogg)");
-		QVERIFY(md.artist() == "Dr. Dre");
+		Tagging::Expression expression(tagStrings[1], path);
+		expression.apply(track);
+
+		QVERIFY(track.trackNumber() == 4);
+		QVERIFY(track.title() == "Still D.R.E. (feat. Snoop Dogg)");
+		QVERIFY(track.artist() == "Dr. Dre");
 	}
 
 	{
-		QString path = paths[2];
-		MetaData md(path);
+		const auto path = paths[2];
+		auto track = MetaData(path);
 
-		Tagging::Expression e1(tag_strings[2], path);
-		e1.apply(md);
-		QVERIFY(md.trackNumber() == 6);
-		QVERIFY(md.title() == "Xxplosive (feat. Hittman, Kurupt, Nate Dogg & Six-Two)");
-		QVERIFY(md.artist() == "Dr. Dre");
-		QVERIFY(md.year() == 1999);
+		Tagging::Expression expression(tagStrings[2], path);
+		expression.apply(track);
+
+		QVERIFY(track.trackNumber() == 6);
+		QVERIFY(track.title() == "Xxplosive (feat. Hittman, Kurupt, Nate Dogg & Six-Two)");
+		QVERIFY(track.artist() == "Dr. Dre");
+		QVERIFY(track.year() == 1999);
 	}
 
 	{
-		QString path = paths[3];
-		MetaData md(path);
+		const auto path = paths[3];
+		auto track = MetaData(path);
 
-		Tagging::Expression e1(tag_strings[3], path);
-		e1.apply(md);
-		QVERIFY(md.trackNumber() == 7);
-		QVERIFY(md.title() == "What's The Difference (feat. Eminem & Xzibit)");
-		QVERIFY(md.artist() == "Dr. Dre");
-		QVERIFY(md.year() == 1999);
-		QVERIFY(md.album() == "2001");
+		Tagging::Expression expression(tagStrings[3], path);
+		expression.apply(track);
+
+		QVERIFY(track.trackNumber() == 7);
+		QVERIFY(track.title() == "What's The Difference (feat. Eminem & Xzibit)");
+		QVERIFY(track.artist() == "Dr. Dre");
+		QVERIFY(track.year() == 1999);
+		QVERIFY(track.album() == "2001");
 	}
+}
+
+void TagFromPathTest::unknownTagTest()
+{
+	const auto tagString = "/media/Sound/Dr. Dre/<strange tag>1999 2001/<tracknum>. <title>.m4a";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
+}
+
+void TagFromPathTest::noMatchingStringTest()
+{
+	const auto tagString = "/media/Sound/1999 2001/<tracknum>. <title>.m4a";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
+}
+
+void TagFromPathTest::wrongTrackNumTest()
+{
+	const auto tagString = "/media/Sound/Dr. Dre/1999 2001/03. <title>.m4a";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
+}
+
+void TagFromPathTest::emptyTagResultTest()
+{
+	const auto tagString = "/media/Sound/Dr. Dre/1999 2001/02. <title>.m4a<album>";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
+}
+
+void TagFromPathTest::badNumericTest()
+{
+	const auto tagString = "/media/Sound/Dr. Dre/<year>2001/02. <title>.m4a";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
+}
+
+void TagFromPathTest::emptyTagStringTest()
+{
+	const auto tagString = "";
+	const auto path = "/media/Sound/Dr. Dre/1999 2001/02. The Watcher (feat. Eminem & Knoc-Turn'al).m4a";
+	const auto expression = Tagging::Expression(tagString, path);
+
+	QVERIFY(!expression.isValid());
+	QVERIFY(expression.capturedTags().isEmpty());
 }
 
 QTEST_GUILESS_MAIN(TagFromPathTest)

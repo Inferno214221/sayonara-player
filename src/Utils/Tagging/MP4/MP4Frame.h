@@ -22,6 +22,7 @@
 #define SAYONARA_ABSTRACT_MP4_FRAME_H
 
 #include "Utils/Tagging/AbstractFrame.h"
+#include "Utils/Algorithm.h"
 
 #include <QString>
 
@@ -29,93 +30,103 @@
 #include <taglib/tstringlist.h>
 #include <taglib/mp4tag.h>
 
+#include <algorithm>
+#include <optional>
+
 namespace MP4
 {
-template<typename Model_t>
-class MP4Frame :
+	template<typename Model_t>
+	class MP4Frame :
 		protected Tagging::AbstractFrame<TagLib::MP4::Tag>
-{
-protected:
-	TagLib::MP4::ItemListMap::ConstIterator find_key(const TagLib::MP4::ItemListMap& ilm) const
 	{
-		for(TagLib::MP4::ItemListMap::ConstIterator it=ilm.begin(); it!=ilm.end(); it++){
-			QString key = this->key();
-			if( this->convert_string(it->first).compare(key, Qt::CaseInsensitive) == 0){
-				return it;
-			}
-		}
-
-		return ilm.end();
-	}
-
-	virtual bool map_tag_to_model(Model_t& model)=0;
-	virtual bool map_model_to_tag(const Model_t& model)=0;
-
-
-public:
-	MP4Frame(TagLib::MP4::Tag* tag, const QString& identifier) :
-		Tagging::AbstractFrame<TagLib::MP4::Tag>(tag, identifier) {}
-
-	virtual ~MP4Frame()	= default;
-
-	bool read(Model_t& model)
-	{
-		TagLib::MP4::Tag* key = this->tag();
-		if(!key) {
-			return false;
-		}
-
-		const TagLib::MP4::ItemListMap& ilm = key->itemListMap();
-
-		bool found = (find_key(ilm) != ilm.end());
-		if(!found){
-			return false;
-		}
-
-		bool success = map_tag_to_model(model);
-
-		return success;
-	}
-
-	bool write(const Model_t& model)
-	{
-		TagLib::MP4::Tag* tag = this->tag();
-		if(!tag) {
-			return false;
-		}
-
-		TagLib::MP4::ItemListMap& ilm = tag->itemListMap();
-
-		auto itcopy=ilm.begin();
-		for(auto it=ilm.begin(); it!=ilm.end(); it++)
-		{
-			QString key = this->key();
-			if( this->convert_string(it->first).compare(key, Qt::CaseInsensitive) == 0)
+		protected:
+			TagLib::MP4::ItemListMap::ConstIterator findKey(const TagLib::MP4::ItemListMap& itemListMap) const
 			{
-				ilm.erase(it);
-				it = itcopy;
+				return std::find_if(itemListMap.begin(), itemListMap.end(), [&](const auto& itemList) {
+					const auto convertedString = Tagging::convertString(itemList.first);
+					return (convertedString.compare(key(), Qt::CaseInsensitive) == 0);
+				});
 			}
 
-			else{
-				itcopy = it;
+			void eraseAllFromItemListMap(TagLib::MP4::ItemListMap& itemListMap, const QString& key)
+			{
+				auto itBegin = itemListMap.begin();
+				for(auto it = itemListMap.begin(); it != itemListMap.end(); it++)
+				{
+					if(Tagging::convertString(it->first).compare(key, Qt::CaseInsensitive) == 0)
+					{
+						itemListMap.erase(it);
+						it = itBegin;
+					}
+
+					else
+					{
+						itBegin = it;
+					}
+				}
 			}
-		}
 
-		return map_model_to_tag(model);
-	}
+			virtual std::optional<Model_t> mapItemToData(const TagLib::MP4::Item& item) const = 0;
+			virtual std::optional<TagLib::MP4::Item> mapDataToItem(const Model_t& model) = 0;
 
-	bool is_frame_found()
-	{
-		TagLib::MP4::Tag* key = this->tag();
-		if(!key) {
-			return false;
-		}
+		public:
+			MP4Frame(TagLib::MP4::Tag* tag, const QString& identifier) :
+				Tagging::AbstractFrame<TagLib::MP4::Tag>(tag, identifier) {}
 
-		const TagLib::MP4::ItemListMap& ilm = key->itemListMap();
+			virtual ~MP4Frame() = default;
 
-		return (find_key(ilm) != ilm.end());
-	}
-};
+			bool read(Model_t& data) const
+			{
+				if(!tag())
+				{
+					return false;
+				}
+
+				const auto& itemListMap = tag()->itemListMap();
+				const auto it = findKey(itemListMap);
+				if(it != itemListMap.end() && it->second.isValid())
+				{
+					const auto optionalData = mapItemToData(it->second);
+					if(optionalData.has_value())
+					{
+						data = optionalData.value();
+						return true;
+					}
+				}
+
+				return false;
+			}
+
+			bool write(const Model_t& data)
+			{
+				if(!tag())
+				{
+					return false;
+				}
+
+				auto& itemListMap = tag()->itemListMap();
+				eraseAllFromItemListMap(itemListMap, key());
+
+				const auto item = mapDataToItem(data);
+				if(item.has_value() && item.value().isValid())
+				{
+					tag()->itemListMap().insert(tagKey(), *item);
+				}
+
+				return item.has_value();
+			}
+
+			bool isFrameAvailable() const
+			{
+				if(!tag())
+				{
+					return false;
+				}
+
+				const auto& itemListMap = tag()->itemListMap();
+				return (findKey(itemListMap) != itemListMap.end());
+			}
+	};
 }
 
 #endif // SAYONARA_ABSTRACT_MP4_FRAME_H

@@ -24,25 +24,18 @@
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
 
-/**
- * @ingroup Tagging
- */
 namespace Xiph
 {
-	/**
-	 * @brief The PopularimeterFrame class
-	 * @ingroup Xiph
-	 */
 	class PopularimeterFrame :
-			public XiphFrame<Models::Popularimeter>
+		public XiphFrame<Models::Popularimeter>
 	{
-	public:
-		PopularimeterFrame(TagLib::Ogg::XiphComment* tag);
-		~PopularimeterFrame() override;
+		public:
+			PopularimeterFrame(TagLib::Ogg::XiphComment* tag);
+			~PopularimeterFrame() override;
 
-	protected:
-		bool map_tag_to_model(Models::Popularimeter& model) override;
-		bool map_model_to_tag(const Models::Popularimeter& model) override;
+		protected:
+			std::optional<Models::Popularimeter> mapTagToData() const override;
+			void mapDataToTag(const Models::Popularimeter& pop) override;
 	};
 }
 

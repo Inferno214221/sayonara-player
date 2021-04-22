@@ -20,27 +20,35 @@
 
 #include "Popularimeter.h"
 
-ID3v2::PopularimeterFrame::PopularimeterFrame(TagLib::ID3v2::Tag* tag) :
+using ID3v2::PopularimeterFrame;
+
+PopularimeterFrame::PopularimeterFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>(tag, "POPM") {}
 
-ID3v2::PopularimeterFrame::~PopularimeterFrame() = default;
+PopularimeterFrame::~PopularimeterFrame() = default;
 
-TagLib::ID3v2::Frame* ID3v2::PopularimeterFrame::create_id3v2_frame()
+TagLib::ID3v2::Frame* PopularimeterFrame::createId3v2Frame()
 {
 	return new TagLib::ID3v2::PopularimeterFrame();
 }
 
-void ID3v2::PopularimeterFrame::map_model_to_frame(const Models::Popularimeter& model, TagLib::ID3v2::PopularimeterFrame* frame)
+void PopularimeterFrame::mapDataToFrame(const Models::Popularimeter& data,
+                                        TagLib::ID3v2::PopularimeterFrame* frame)
 {
-	frame->setEmail(TagLib::String(model.email.toUtf8().data(), TagLib::String::UTF8));
-	frame->setCounter(model.playcount);
-	frame->setRating(model.get_rating_byte());
+	frame->setEmail(TagLib::String(data.email.toUtf8().data(), TagLib::String::UTF8));
+	frame->setCounter(data.playcount);
+	frame->setRating(data.ratingByte());
 	frame->render();
 }
 
-void ID3v2::PopularimeterFrame::map_frame_to_model(const TagLib::ID3v2::PopularimeterFrame* frame, Models::Popularimeter& model)
+std::optional<Models::Popularimeter>
+PopularimeterFrame::mapFrameToData(const TagLib::ID3v2::PopularimeterFrame* frame) const
 {
-	model.playcount = frame->counter();
-	model.email = QString::fromLatin1(frame->email().toCString());
-	model.set_rating_byte((Byte) frame->rating());
+	auto pop = Models::Popularimeter();
+
+	pop.playcount = frame->counter();
+	pop.email = QString::fromLatin1(frame->email().toCString());
+	pop.setRatingByte((Byte) frame->rating());
+
+	return std::optional(pop);
 }

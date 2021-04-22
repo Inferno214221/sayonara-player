@@ -30,7 +30,7 @@ struct TextSelection;
  * @ingroup GuiTagging
  */
 class TagLineEdit :
-		public QLineEdit
+	public QLineEdit
 {
 	Q_OBJECT
 
@@ -41,13 +41,11 @@ class TagLineEdit :
 		 */
 		struct TextSelection
 		{
-			int selectionStart;
-			int selectionSize;
-
-			TextSelection();
+			int selectionStart {-1};
+			int selectionSize {0};
 		};
 
-		explicit TagLineEdit(QWidget* parent=nullptr);
+		explicit TagLineEdit(QWidget* parent = nullptr);
 		~TagLineEdit() override;
 
 	public:

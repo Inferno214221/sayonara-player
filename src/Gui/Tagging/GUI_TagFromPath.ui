@@ -19,14 +19,14 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="TagLineEdit" name="le_tag">
+    <widget class="TagLineEdit" name="leTag">
      <property name="focusPolicy">
       <enum>Qt::TabFocus</enum>
      </property>
     </widget>
    </item>
    <item row="1" column="0">
-    <widget class="QPushButton" name="btn_tag_help">
+    <widget class="QPushButton" name="btnTagHelp">
      <property name="focusPolicy">
       <enum>Qt::TabFocus</enum>
      </property>
@@ -41,7 +41,7 @@
       <number>5</number>
      </property>
      <item>
-      <widget class="QPushButton" name="btn_title">
+      <widget class="QPushButton" name="btnTitle">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -54,7 +54,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_album">
+      <widget class="QPushButton" name="btnAlbum">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -67,7 +67,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_artist">
+      <widget class="QPushButton" name="btnArtist">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -80,7 +80,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_year">
+      <widget class="QPushButton" name="btnYear">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -93,7 +93,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_disc_nr">
+      <widget class="QPushButton" name="btnDiscNumber">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -106,7 +106,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_track_nr">
+      <widget class="QPushButton" name="btnTrackNumber">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -128,7 +128,7 @@
     </widget>
    </item>
    <item row="3" column="0">
-    <widget class="QLabel" name="lab_tag_type">
+    <widget class="QLabel" name="labTagType">
      <property name="text">
       <string/>
      </property>
@@ -150,7 +150,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_apply_tag_all">
+      <widget class="QPushButton" name="btnApplyTagAll">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -160,7 +160,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_apply_tag">
+      <widget class="QPushButton" name="btnApplyTag">
        <property name="focusPolicy">
         <enum>Qt::TabFocus</enum>
        </property>
@@ -172,14 +172,14 @@
     </layout>
    </item>
    <item row="4" column="0" colspan="2">
-    <widget class="QStackedWidget" name="sw_tag_from_path">
+    <widget class="QStackedWidget" name="swTagFromPath">
      <property name="currentIndex">
       <number>0</number>
      </property>
      <widget class="QWidget" name="page">
       <layout class="QGridLayout" name="gridLayout_4">
        <item row="0" column="0">
-        <widget class="QLabel" name="lab_tag_from_path_warning">
+        <widget class="QLabel" name="labTagFromPathWarning">
          <property name="font">
           <font>
            <weight>75</weight>
@@ -192,7 +192,7 @@
         </widget>
        </item>
        <item row="1" column="0">
-        <widget class="QListWidget" name="lv_invalidFilepaths"/>
+        <widget class="QListWidget" name="lvInvalidFilepaths"/>
        </item>
       </layout>
      </widget>

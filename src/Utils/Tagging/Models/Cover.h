@@ -23,37 +23,29 @@
 
 #include <QString>
 
-/**
- * @ingroup Tagging
- */
 namespace Models
 {
-	/**
-	 * @brief The Cover class
-	 * @ingroup Tagging
-	 */
-    class Cover
-    {
+	class Cover
+	{
 		private:
 			QString description;
 
 		public:
 			enum class MimeType
 			{
-				JPEG,
-				PNG,
-				Unsupported
+					JPEG,
+					PNG,
+					Unsupported
 			};
-
 
 			QString mimeType;
 			QByteArray imageData;
 
-
 			Cover();
 			Cover(const QString& mimeType, const QByteArray& imageData);
-			MimeType getMimeType() const;
-    };
+
+			MimeType convertMimeType() const;
+	};
 }
 
 #endif // SAYONARA_TAGGING_COVER_MODEL_H

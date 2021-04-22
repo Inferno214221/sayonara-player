@@ -27,23 +27,19 @@
 
 namespace Models
 {
-	/**
-	 * @brief The Popularimeter class
-	 * @ingroup Tagging
-	 */
 	struct Popularimeter
 	{
-		QString		email;
-		Rating		rating;
-		int			playcount;
+		QString email;
+		Rating rating;
+		int playcount;
 
 		Popularimeter();
-		Popularimeter(const QString& email, Rating rating_byte, int playcount);
-		void set_rating(Rating max_5);
-		void set_rating_byte(Byte byte);
-		Rating get_rating() const;
-		Byte get_rating_byte() const;
-		QString to_string();
+		Popularimeter(const QString& email, Rating rating, int playcount);
+
+		void setRatingByte(Byte byte);
+		Byte ratingByte() const;
+
+		QString toString();
 	};
 }
 

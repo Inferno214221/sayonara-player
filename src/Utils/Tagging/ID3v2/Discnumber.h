@@ -28,21 +28,20 @@
 
 namespace ID3v2
 {
-	/**
-	 * @brief The DiscnumberFrame class
-	 * @ingroup ID3v2
-	 */
 	class DiscnumberFrame :
-			public ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>
+		public ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>
 	{
 		public:
 			DiscnumberFrame(TagLib::ID3v2::Tag* tag);
 			~DiscnumberFrame() override;
 
-			void map_model_to_frame(const Models::Discnumber& model, TagLib::ID3v2::TextIdentificationFrame* frame) override;
-			void map_frame_to_model(const TagLib::ID3v2::TextIdentificationFrame* frame, Models::Discnumber& model) override;
+		protected:
+			std::optional<Models::Discnumber>
+			mapFrameToData(const TagLib::ID3v2::TextIdentificationFrame* frame) const override;
+			void mapDataToFrame(const Models::Discnumber& discnumber,
+			                    TagLib::ID3v2::TextIdentificationFrame* frame) override;
 
-			TagLib::ID3v2::Frame* create_id3v2_frame() override;
+			TagLib::ID3v2::Frame* createId3v2Frame() override;
 	};
 }
 

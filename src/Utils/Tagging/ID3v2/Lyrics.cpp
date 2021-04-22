@@ -23,24 +23,28 @@
 #include <taglib/tstring.h>
 
 ID3v2::LyricsFrame::LyricsFrame(TagLib::ID3v2::Tag* tag) :
-	ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>(tag, "USLT")
-{}
+	ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>(tag, "USLT") {}
 
 ID3v2::LyricsFrame::~LyricsFrame() = default;
 
-void ID3v2::LyricsFrame::map_model_to_frame(const QString& model, TagLib::ID3v2::UnsynchronizedLyricsFrame* frame)
+void ID3v2::LyricsFrame::mapDataToFrame(const QString& data, TagLib::ID3v2::UnsynchronizedLyricsFrame* frame)
 {
-	const TagLib::String str(model.toUtf8().constData(), TagLib::String::Type::UTF8);
+	const auto dataUtf8 = data.toUtf8();
+	const auto str = TagLib::String(dataUtf8.constData(), TagLib::String::Type::UTF8);
 	frame->setText(str);
 }
 
-void ID3v2::LyricsFrame::map_frame_to_model(const TagLib::ID3v2::UnsynchronizedLyricsFrame* frame, QString& model)
+std::optional<QString> ID3v2::LyricsFrame::mapFrameToData(const TagLib::ID3v2::UnsynchronizedLyricsFrame* frame) const
 {
-	const TagLib::String tagString = frame->text();
-	model = QString::fromUtf8(frame->toString().toCString(true));
+	const auto tagString = frame->text();
+	const auto str = QString::fromUtf8(frame->toString().toCString(true));
+
+	return std::optional(str);
 }
 
-TagLib::ID3v2::Frame* ID3v2::LyricsFrame::create_id3v2_frame()
+TagLib::ID3v2::Frame* ID3v2::LyricsFrame::createId3v2Frame()
 {
 	return new TagLib::ID3v2::UnsynchronizedLyricsFrame(TagLib::String::UTF8);
 }
+
+

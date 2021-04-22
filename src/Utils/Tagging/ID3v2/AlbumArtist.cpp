@@ -26,23 +26,26 @@
 ID3v2::AlbumArtistFrame::AlbumArtistFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPE2") {}
 
-ID3v2::AlbumArtistFrame::~AlbumArtistFrame() {}
+ID3v2::AlbumArtistFrame::~AlbumArtistFrame() = default;
 
-void ID3v2::AlbumArtistFrame::map_model_to_frame(const QString& model, TagLib::ID3v2::TextIdentificationFrame* frame)
+void ID3v2::AlbumArtistFrame::mapDataToFrame(const QString& data, TagLib::ID3v2::TextIdentificationFrame* frame)
 {
-	QByteArray data = model.toUtf8();
-	TagLib::String str(data.constData(), TagLib::String::UTF8);
+	const auto dataUtf8 = data.toUtf8();
+	const auto str = TagLib::String(dataUtf8.constData(), TagLib::String::UTF8);
+
 	frame->setText(str);
 }
 
-void ID3v2::AlbumArtistFrame::map_frame_to_model(const TagLib::ID3v2::TextIdentificationFrame* frame, QString& model)
+std::optional<QString>
+ID3v2::AlbumArtistFrame::mapFrameToData(const TagLib::ID3v2::TextIdentificationFrame* frame) const
 {
-	TagLib::String tag_str = frame->toString();
-	QString str = QString::fromUtf8( tag_str.toCString(true) );
-	model = str;
+	const auto tagString = frame->toString();
+	const auto data = QString::fromUtf8(tagString.toCString(true));
+
+	return std::optional(data);
 }
 
-TagLib::ID3v2::Frame* ID3v2::AlbumArtistFrame::create_id3v2_frame()
+TagLib::ID3v2::Frame* ID3v2::AlbumArtistFrame::createId3v2Frame()
 {
 	return new TagLib::ID3v2::TextIdentificationFrame("TPE2", TagLib::String::UTF8);
 }

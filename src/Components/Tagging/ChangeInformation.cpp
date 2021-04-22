@@ -15,17 +15,16 @@ struct ChangeInformation::Private
 	bool hasChanges;
 	bool hasNewCover;
 
-	Private(const MetaData& md) :
-		originalMetadata(md),
-		changedMetadata(md),
+	Private(const MetaData& track) :
+		originalMetadata(track),
+		changedMetadata(track),
 		hasChanges(false),
-		hasNewCover(false)
-	{}
+		hasNewCover(false) {}
 };
 
-ChangeInformation::ChangeInformation(const MetaData& md)
+ChangeInformation::ChangeInformation(const MetaData& track)
 {
-	m = Pimpl::make<Private>(md);
+	m = Pimpl::make<Private>(track);
 }
 
 ChangeInformation::~ChangeInformation() = default;
@@ -41,19 +40,20 @@ Tagging::ChangeInformation& ChangeInformation::operator=(const Tagging::ChangeIn
 	return *this;
 }
 
-void ChangeInformation::update(const MetaData& md)
+void ChangeInformation::update(const MetaData& track)
 {
-	bool is_equal = md.isEqualDeep( m->originalMetadata );
-	if(!is_equal)
+	const auto isEqual = track.isEqualDeep(m->originalMetadata);
+	if(!isEqual)
 	{
-		m->changedMetadata = md;
+		m->changedMetadata = track;
 		m->hasChanges = true;
 	}
 }
 
 void ChangeInformation::updateCover(const QPixmap& pm)
 {
-	if(pm.isNull()){
+	if(pm.isNull())
+	{
 		spLog(Log::Warning, this) << "Bad cover: Will not update";
 		return;
 	}

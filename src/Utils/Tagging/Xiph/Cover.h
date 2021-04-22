@@ -38,11 +38,11 @@ namespace Xiph
 			CoverFrame(TagLib::Ogg::XiphComment* tag);
 			~CoverFrame() override;
 
-			bool is_frame_found() const override;
+			bool isFrameAvailable() const override;
 
 		protected:
-			bool map_tag_to_model(Models::Cover& model) override;
-			bool map_model_to_tag(const Models::Cover& model) override;
+			std::optional<Models::Cover> mapTagToData() const override;
+			void mapDataToTag(const Models::Cover& cover) override;
 	};
 }
 

@@ -25,26 +25,19 @@
 
 #include <QString>
 
-/**
- * @ingroup Tagging
- */
 namespace Xiph
 {
-	/**
-	 * @brief The AlbumArtistFrame class
-	 * @ingroup Xiph
-	 */
 	class AlbumArtistFrame :
 		public Xiph::XiphFrame<QString>
-    {
-	public:
-		AlbumArtistFrame(TagLib::Ogg::XiphComment* tag);
-		~AlbumArtistFrame() override;
+	{
+		public:
+			AlbumArtistFrame(TagLib::Ogg::XiphComment* tag);
+			~AlbumArtistFrame() override;
 
-	protected:
-		bool map_tag_to_model(QString& model) override;
-		bool map_model_to_tag(const QString& model) override;
-    };
+		protected:
+			std::optional<QString> mapTagToData() const override;
+			void mapDataToTag(const QString& albumArtist) override;
+	};
 }
 
 #endif // SAYONARA_XIPH_ALBUMARTIST_H

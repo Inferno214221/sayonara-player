@@ -27,18 +27,15 @@ class QString;
 
 namespace Models
 {
-	/**
-	 * @brief The Discnumber class
-	 * @ingroup Tagging
-	 */
 	struct Discnumber
 	{
-		Disc		disc;
-		Disc		disccount;
+		Disc disc{1};
+		Disc disccount{1};
 
-		Discnumber();
-		Discnumber(Disc disc, Disc disccount=1);
-		QString to_string() const;
+		Discnumber() = default;
+		Discnumber(Disc disc, Disc discCount = 1);
+
+		QString toString() const;
 	};
 }
 

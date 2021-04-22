@@ -20,25 +20,26 @@
 
 #include "Cover.h"
 
-Models::Cover::Cover()
-{
-	description = "Cover by Sayonara Player";
-}
 
-Models::Cover::Cover(const QString& mime_type_, const QByteArray& image_data_) :
-	Models::Cover::Cover()
-{
-	mimeType = mime_type_;
-	imageData = image_data_;
-}
+Models::Cover::Cover(const QString& mimeType_, const QByteArray& imageData_) :
+	mimeType(mimeType_),
+	imageData(imageData_),
+	description("Cover by Sayonara Player")
+{}
 
-Models::Cover::MimeType Models::Cover::getMimeType() const
+Models::Cover::Cover() :
+	Models::Cover::Cover(QString(), QByteArray())
+{}
+
+Models::Cover::MimeType Models::Cover::convertMimeType() const
 {
-	if(mimeType.contains("jpeg", Qt::CaseInsensitive)){
+	if(mimeType.contains("jpeg", Qt::CaseInsensitive))
+	{
 		return Models::Cover::MimeType::JPEG;
 	}
 
-	else if(mimeType.contains("png", Qt::CaseInsensitive)){
+	else if(mimeType.contains("png", Qt::CaseInsensitive))
+	{
 		return Models::Cover::MimeType::PNG;
 	}
 

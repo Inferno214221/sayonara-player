@@ -20,37 +20,44 @@
 
 #include "PopularimeterFrame.h"
 
+namespace
+{
+	std::optional<Models::Popularimeter> popularimeterFromQString(const QString& data)
+	{
+		const auto iRating = data.toInt();
+		auto ratingByte = static_cast<Byte>(iRating);
+
+		auto pop = Models::Popularimeter();
+		if(ratingByte <= 5)
+		{
+			pop.rating = static_cast<Rating>(ratingByte);
+		}
+
+		else
+		{
+			pop.setRatingByte(ratingByte);
+		}
+
+		return std::optional(pop);
+	}
+}
+
 Xiph::PopularimeterFrame::PopularimeterFrame(TagLib::Ogg::XiphComment* tag) :
-	XiphFrame<Models::Popularimeter>(tag, "RATING")
-{}
+	XiphFrame<Models::Popularimeter>(tag, "RATING") {}
 
 Xiph::PopularimeterFrame::~PopularimeterFrame() = default;
 
-bool Xiph::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
+std::optional<Models::Popularimeter> Xiph::PopularimeterFrame::mapTagToData() const
 {
-	TagLib::String str;
-	bool success = this->value(str);
-	if(!success){
-		return false;
-	}
+	const auto popData = this->stringData();
 
-	auto bRating = static_cast<Byte>(convert_string(str).toInt());
-	if(bRating <= 5){
-		Rating rating = static_cast<Rating>(bRating);
-		model.set_rating(rating);
-	}
-
-	else{
-		model.set_rating_byte(bRating);
-	}
-
-	return true;
+	return (popData.has_value())
+		? popularimeterFromQString(Tagging::convertString(popData.value()))
+		: std::optional<Models::Popularimeter>();
 }
 
-bool Xiph::PopularimeterFrame::map_model_to_tag(const Models::Popularimeter& model)
+void Xiph::PopularimeterFrame::mapDataToTag(const Models::Popularimeter& pop)
 {
-	Rating rating = model.get_rating();
-	auto iRating = static_cast<int>(rating);
-	set_value( QString::number(iRating) );
-	return true;
+	const auto iRating = static_cast<int>(pop.rating);
+	setStringData(QString::number(iRating));
 }

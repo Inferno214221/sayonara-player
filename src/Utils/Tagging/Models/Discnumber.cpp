@@ -22,18 +22,14 @@
 
 #include <QString>
 
-Models::Discnumber::Discnumber() :
-	disc(1),
-	disccount(1)
-{}
-
-Models::Discnumber::Discnumber(Disc disc, Disc n_discs) :
+Models::Discnumber::Discnumber(Disc disc, Disc discCount) :
 	disc(disc),
-	disccount(n_discs)
+	disccount(discCount)
 {}
 
-
-QString Models::Discnumber::to_string() const
+QString Models::Discnumber::toString() const
 {
-	return QString::number(disc) + "/" + QString::number(disccount);
+	return QString("%1/%2")
+		.arg(static_cast<int32_t>(disc))
+		.arg(static_cast<int32_t>(disccount));
 }

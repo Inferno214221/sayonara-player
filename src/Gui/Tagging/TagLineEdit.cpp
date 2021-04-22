@@ -30,20 +30,14 @@ TagLineEdit::~TagLineEdit() = default;
 
 TagLineEdit::TextSelection TagLineEdit::textSelection() const
 {
-	TagLineEdit::TextSelection ts;
+	TagLineEdit::TextSelection textSelection;
 
-	QString selected_text = this->selectedText();
-	if(!selected_text.isEmpty())
+	const auto selectedText = this->selectedText();
+	if(!selectedText.isEmpty())
 	{
-		ts.selectionStart = this->selectionStart();
-		ts.selectionSize = selected_text.size();
+		textSelection.selectionStart = this->selectionStart();
+		textSelection.selectionSize = selectedText.size();
 	}
 
-	return ts;
+	return textSelection;
 }
-
-
-TagLineEdit::TextSelection::TextSelection() :
-	selectionStart(-1),
-	selectionSize(0)
-{}

@@ -24,47 +24,48 @@ ID3v2::CoverFrame::CoverFrame(TagLib::ID3v2::Tag* tag) :
 
 ID3v2::CoverFrame::~CoverFrame() = default;
 
-void  ID3v2::CoverFrame::map_model_to_frame(const Models::Cover& model, TagLib::ID3v2::AttachedPictureFrame* frame)
+void ID3v2::CoverFrame::mapDataToFrame(const Models::Cover& cover, TagLib::ID3v2::AttachedPictureFrame* frame)
 {
-	TagLib::String description("Cover by Sayonara Player");
-	TagLib::String::Type encoding = TagLib::String::Latin1;
-	TagLib::String mime_type(model.mimeType.toLatin1().constData());
-	TagLib::ID3v2::AttachedPictureFrame::Type type = TagLib::ID3v2::AttachedPictureFrame::FrontCover;
+	const auto description = TagLib::String("Cover by Sayonara Player");
+	const auto encoding = TagLib::String::Latin1;
+	const auto mimeType = TagLib::String(cover.mimeType.toLatin1().constData());
+	const auto type = TagLib::ID3v2::AttachedPictureFrame::FrontCover;
 
-	const QByteArray& image_data = model.imageData;
+	const auto& imageData = cover.imageData;
 
-	TagLib::ByteVector taglib_image_data;
-	taglib_image_data.setData(image_data.data(), quint32(image_data.size()));
+	TagLib::ByteVector taglibImageData;
+	taglibImageData.setData(imageData.data(), quint32(imageData.size()));
 
 	frame->setDescription(description);
 	frame->setTextEncoding(encoding);
-	frame->setMimeType(mime_type);
+	frame->setMimeType(mimeType);
 	frame->setType(type);
-	frame->setPicture(taglib_image_data);
+	frame->setPicture(taglibImageData);
 
-	const TagLib::ByteVector vec_header = TagLib::ByteVector("APIC", 4);
+	const auto headerData = TagLib::ByteVector("APIC", 4);
 
-	TagLib::ByteVector vec = frame->render();
-	if( !vec.startsWith(vec_header) ){
-		vec = vec_header + vec;
+	auto renderedFrame = frame->render();
+	if(!renderedFrame.startsWith(headerData))
+	{
+		renderedFrame = headerData + renderedFrame;
 	}
 
-	frame->setData(vec);
+	frame->setData(renderedFrame);
 }
 
-void ID3v2::CoverFrame::map_frame_to_model(const TagLib::ID3v2::AttachedPictureFrame* frame, Models::Cover& model)
+std::optional<Models::Cover> ID3v2::CoverFrame::mapFrameToData(const TagLib::ID3v2::AttachedPictureFrame* frame) const
 {
-	TagLib::ByteVector taglib_image_data = frame->picture();
-	TagLib::String mime_type = frame->mimeType();
+	const auto taglibImageData = frame->picture();
+	const auto taglibMimeType = frame->mimeType();
 
-	model.imageData = QByteArray(taglib_image_data.data(), qint32(taglib_image_data.size()));
-	model.mimeType = QString::fromLatin1(mime_type.toCString(), qint32(mime_type.length()));
+	auto cover = Models::Cover {};
+	cover.imageData = QByteArray(taglibImageData.data(), qint32(taglibImageData.size()));
+	cover.mimeType = QString::fromLatin1(taglibMimeType.toCString(), qint32(taglibMimeType.length()));
+
+	return std::optional(cover);
 }
 
-TagLib::ID3v2::Frame* ID3v2::CoverFrame::create_id3v2_frame()
+TagLib::ID3v2::Frame* ID3v2::CoverFrame::createId3v2Frame()
 {
 	return new TagLib::ID3v2::AttachedPictureFrame(TagLib::ByteVector());
 }
-
-
-

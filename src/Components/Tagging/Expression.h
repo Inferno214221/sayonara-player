@@ -27,12 +27,12 @@ class MetaData;
 
 namespace Tagging
 {
-	using TagString=QString;
-	using ReplacedString=QString;
+	using TagString = QString;
+	using ReplacedString = QString;
 
 	enum TagName
 	{
-		TagNone=0,
+		TagNone = 0,
 		TagTitle,
 		TagAlbum,
 		TagArtist,
@@ -42,9 +42,7 @@ namespace Tagging
 		TagIgnore
 	};
 
-	QMap<Tagging::TagName, TagString>	tag_name_map();
-	TagString							tag_name_to_string(Tagging::TagName name);
-	Tagging::TagName					tag_string_to_name(const TagString& tag_string);
+	QString tagNameToString(TagName tagName);
 
 	/**
 	 * @brief The TagExpression class
@@ -54,49 +52,18 @@ namespace Tagging
 	{
 		PIMPL(Expression)
 
-	private:
-		/**
-		 * @brief prepends a "\\" before special characters
-		 * @param str string to be modified
-		 * @return new string with escaped characters
-		 */
-		QString escape_special_chars(const QString& str) const;
+		private:
+			bool updateTag(const QString& lineEditString, const QString& filepath);
 
+		public:
+			Expression() = delete;
+			Expression(const QString& tagString, const QString& filepath);
+			~Expression();
 
-		/**
-		 * @brief calcs the regular expression string
-		 * @param splitted_tag_str a stringlist gennerated by split_tag_string
-		 * @return the regular expression string
-		 */
-		QString calc_regex_string(const QStringList& splitted_tag_str) const;
+			QMap<Tagging::TagName, QString> capturedTags() const;
+			bool isValid() const;
 
-
-		/**
-		 * @brief splits the tag string into normal string and tags e.g. foo<t>bar -> (foo, <t>, bar)
-		 * @param tag_str
-		 * @return a stringlist containing normal strings and tags
-		 */
-		QStringList split_tag_string(const QString& tag_str) const;
-
-
-		/**
-		 * @brief fills the captured_texts
-		 * @param tag_str the tag string entered in UI
-		 * @param filepath the filepath
-		 * @return true if regular expressions can be applied to filepath, false else
-		 */
-		bool update_tag(const QString& tag_str, const QString& filepath);
-
-
-	public:
-		Expression()=delete;
-		Expression(const QString& tag_str, const QString& filepath);
-		virtual ~Expression();
-
-		QMap<Tagging::TagName, QString> captured_tags() const;
-		bool is_valid() const;
-
-		bool apply(MetaData& md) const;
+			bool apply(MetaData& track) const;
 	};
 }
 

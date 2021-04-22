@@ -42,7 +42,7 @@ class MetaData;
  * @ingroup GuiTagging
  */
 class GUI_TagFromPath :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_TagFromPath)
@@ -53,7 +53,7 @@ class GUI_TagFromPath :
 		void sigApplyAll();
 
 	public:
-		GUI_TagFromPath(QWidget* parent=nullptr);
+		GUI_TagFromPath(QWidget* parent = nullptr);
 		~GUI_TagFromPath();
 
 		void setFilepath(const QString& filepath);
@@ -69,12 +69,10 @@ class GUI_TagFromPath :
 		void reset();
 
 	private:
-		/**
-		 * @brief sets red if not valid
-		 * @param valid if tag is valid or not
-		 */
+		bool checkIfAnyButtonIsChecked() const;
+		void initButtons();
 		void setTagColors(bool valid);
-		bool replaceSelectedTagText(Tagging::TagName t, bool b);
+		bool replaceSelectedTagText(Tagging::TagName tagName, bool buttonChecked);
 		void btnChecked(QPushButton* btn, bool b, Tagging::TagName tagName);
 		void showErrorFrame(bool b);
 
@@ -87,14 +85,7 @@ class GUI_TagFromPath :
 		/**
 		 * @brief tries to apply the tag
 		 */
-		void tagTextChanged(const QString& newText);
-
-		void btnTitleChecked(bool b);
-		void btnArtistChecked(bool b);
-		void btnAlbumChecked(bool b);
-		void btnTrackNrChecked(bool b);
-		void btnDiscnumberChecked(bool b);
-		void btnYearChecked(bool b);
+		void tagTextChanged(const QString& tagString);
 
 	protected:
 		void languageChanged();

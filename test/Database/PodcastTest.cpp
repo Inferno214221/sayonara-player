@@ -4,7 +4,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Streams/Podcast.h"
+#include "Utils/Streams/Station.h"
 #include "Utils/Algorithm.h"
 
 #include <QMap>

@@ -20,20 +20,15 @@
 
 #include "Tagging.h"
 #include "Tagging/TaggingCover.h"
-#include "ID3v2/Popularimeter.h"
-#include "ID3v2/Discnumber.h"
-#include "ID3v2/AlbumArtist.h"
-#include "Xiph/AlbumArtist.h"
-#include "Xiph/PopularimeterFrame.h"
-#include "Xiph/DiscnumberFrame.h"
-#include "MP4/AlbumArtist.h"
-#include "MP4/DiscnumberFrame.h"
-#include "MP4/PopularimeterFrame.h"
+#include "Tagging/TaggingExtraFields.h"
+#include "Tagging/TaggingUtils.h"
+#include "Tagging/Models/Discnumber.h"
+#include "Tagging/Models/Popularimeter.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/MetaData/Genre.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QFileInfo>
@@ -41,423 +36,197 @@
 #include <QStringList>
 #include <QDateTime>
 
-#include <taglib/tag.h>
-#include <taglib/taglib.h>
-#include <taglib/fileref.h>
-#include <taglib/mpegfile.h>
-#include <taglib/oggfile.h>
-#include <taglib/oggflacfile.h>
-#include <taglib/flacfile.h>
-#include <taglib/tbytevector.h>
-#include <taglib/tbytevectorstream.h>
-#include <taglib/id3v1tag.h>
-#include <taglib/mp4file.h>
-#include <taglib/mp4tag.h>
-
 using namespace Tagging::Utils;
-namespace FileUtils=::Util::File;
+namespace FileUtils = ::Util::File;
 
-bool Tagging::Utils::isValidFile(const TagLib::FileRef& f)
+namespace
 {
-	if( f.isNull() ||
-		!f.tag() ||
-		!f.file() ||
-		!f.file()->isValid() )
+	struct ReadingProperties
 	{
-		return false;
-	}
-
-	return true;
-}
-
-bool Tagging::Utils::getMetaDataOfFile(MetaData& md, Quality quality)
-{
-	bool success;
-
-	QFileInfo fi(md.filepath());
-	md.setFilesize(Filesize(fi.size()));
-
-	QDateTime createDate;
-
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-	createDate = fi.birthTime();
-	if(!createDate.isValid()){
-		createDate = fi.metadataChangeTime();
-	}
-
-	spLog(Log::Develop, "Tagging") << "Birth Date: " << createDate.toString() << ", " << fi.lastModified().toString();
-#else
-	createDate = fi.created();
-#endif
-
-	if(!createDate.isValid()) {
-		createDate = fi.lastModified();
-	}
-
-	md.setCreatedDate(::Util::dateToInt(createDate));
-	md.setModifiedDate(Util::dateToInt(fi.lastModified()));
-
-	if(fi.size() <= 0){
-		return false;
-	}
-
-	TagLib::AudioProperties::ReadStyle readStyle = TagLib::AudioProperties::Fast;
-	bool readAudioProperties=true;
-
-	switch(quality)
-	{
-		case Quality::Quality:
-			readStyle = TagLib::AudioProperties::Accurate;
-			break;
-		case Quality::Standard:
-			readStyle = TagLib::AudioProperties::Average;
-			break;
-		case Quality::Fast:
-			readStyle = TagLib::AudioProperties::Fast;
-			break;
-		case Quality::Dirty:
-			readStyle = TagLib::AudioProperties::Fast;
-			readAudioProperties = false;
-			break;
+		TagLib::AudioProperties::ReadStyle readStyle {TagLib::AudioProperties::ReadStyle::Fast};
+		bool readAudioProperties {true};
 	};
 
-	TagLib::FileRef f(
-			TagLib::FileName(md.filepath().toUtf8()),
-			readAudioProperties,
-			readStyle
-	);
+	ReadingProperties getReadingProperties(Tagging::Quality quality)
+	{
+		ReadingProperties readingProperties;
 
-	if(!isValidFile(f)){
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 1";
+		switch(quality)
+		{
+			case Tagging::Quality::Quality:
+				readingProperties.readStyle = TagLib::AudioProperties::Accurate;
+				break;
+			case Tagging::Quality::Standard:
+				readingProperties.readStyle = TagLib::AudioProperties::Average;
+				break;
+			case Tagging::Quality::Fast:
+				readingProperties.readStyle = TagLib::AudioProperties::Fast;
+				break;
+			case Tagging::Quality::Dirty:
+				readingProperties.readStyle = TagLib::AudioProperties::Fast;
+				readingProperties.readAudioProperties = false;
+				break;
+		};
+
+		return readingProperties;
+	}
+
+	QString getTitleFromFilename(const QString& filepath)
+	{
+		const auto[dir, filename] = FileUtils::splitFilename(filepath);
+		return (filename.size() > 4)
+		       ? filename.left(filename.length() - 4)
+		       : filename;
+	}
+
+	void setDate(MetaData& track)
+	{
+		const auto fileInfo = QFileInfo(track.filepath());
+		QDateTime createDate;
+
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
+		createDate = fileInfo.birthTime();
+		if(!createDate.isValid())
+		{
+			createDate = fileInfo.metadataChangeTime();
+		}
+#else
+		createDate = fi.created();
+#endif
+
+		if(!createDate.isValid())
+		{
+			createDate = fileInfo.lastModified();
+		}
+
+		track.setCreatedDate(::Util::dateToInt(createDate));
+		track.setModifiedDate(Util::dateToInt(fileInfo.lastModified()));
+	}
+
+	QStringList extractGenres(const QString& genreString)
+	{
+		auto genres = genreString.split(QRegExp(",|/|;"));
+		Util::Algorithm::transform(genres, [](const auto& genre) {
+			return genre.trimmed();
+		});
+
+		genres.removeDuplicates();
+		genres.removeAll("");
+
+		return genres;
+	}
+}
+
+bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
+{
+	const auto fileInfo = QFileInfo(track.filepath());
+	track.setFilesize(static_cast<Filesize>(fileInfo.size()));
+	setDate(track);
+
+	if(fileInfo.size() <= 0)
+	{
 		return false;
 	}
 
-	ParsedTag parsed_tag = getTagTypeFromFileref(f);
-	TagLib::Tag* tag = parsed_tag.tag;
+	const auto readingProperties = getReadingProperties(quality);
+	auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()),
+	                                     readingProperties.readAudioProperties,
+	                                     readingProperties.readStyle);
 
-	QString artist = QString::fromUtf8(tag->artist().toCString(true));
-	QString album = QString::fromUtf8(tag->album().toCString(true));
-	QString title = QString::fromUtf8(tag->title().toCString(true));
-	QString genre = QString::fromUtf8(tag->genre().toCString(true));
-	QString comment = QString::fromUtf8(tag->comment().toCString(true));
-
-	QString album_artist;
-
-	Models::Discnumber discnumber;
-	Models::Popularimeter popularimeter;
-	if(parsed_tag.type == TagType::ID3v2)
+	if(!isValidFile(fileRef))
 	{
-		auto id3v2 = parsed_tag.id3Tag();
-		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
-		success = album_artist_frame.read(album_artist);
-		if(success){
-			md.setAlbumArtist(album_artist);
-		}
-
-		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
-		success = popularimeter_frame.read(popularimeter);
-		if(success){
-			md.setRating(popularimeter.get_rating());
-		}
-
-		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
-		success = discnumber_frame.read(discnumber);
-		if(success){
-			md.setDiscnumber(discnumber.disc);
-			md.setDiscCount(discnumber.disccount);
-		}
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 1";
+		return false;
 	}
 
-	else if(parsed_tag.type == TagType::Xiph)
+	const auto parsedTag = getParsedTagFromFileRef(fileRef);
+	if(!parsedTag.tag)
 	{
-		auto xiph = parsed_tag.xiphTag();
-
-		Xiph::AlbumArtistFrame album_artist_frame(xiph);
-		success = album_artist_frame.read(album_artist);
-		if(success){
-			md.setAlbumArtist(album_artist);
-		}
-
-		Xiph::PopularimeterFrame popularimeter_frame(xiph);
-		success = popularimeter_frame.read(popularimeter);
-		if(success){
-			md.setRating(popularimeter.get_rating());
-		}
-
-		Xiph::DiscnumberFrame discnumber_frame(xiph);
-		success = discnumber_frame.read(discnumber);
-		if(success){
-			md.setDiscnumber(discnumber.disc);
-			md.setDiscCount(discnumber.disccount);
-		}
+		return false;
 	}
 
-	else if(parsed_tag.type == TagType::MP4)
-	{
-		auto mp4 = parsed_tag.mp4Tag();
+	const auto artist = convertString(parsedTag.tag->artist());
+	const auto album = convertString(parsedTag.tag->album());
+	const auto title = convertString(parsedTag.tag->title());
+	const auto genre = convertString(parsedTag.tag->genre());
+	const auto comment = convertString(parsedTag.tag->comment());
+	const auto year = parsedTag.tag->year();
+	const auto trackNumber = parsedTag.tag->track();
+	const auto bitrate = (quality != Quality::Dirty)
+	                     ? fileRef.audioProperties()->bitrate() * 1000
+	                     : 0;
 
-		MP4::AlbumArtistFrame album_artist_frame(mp4);
-		success = album_artist_frame.read(album_artist);
-		if(success){
-			md.setAlbumArtist(album_artist);
-		}
+	const auto length = (quality != Quality::Dirty)
+	                    ? fileRef.audioProperties()->length() * 1000
+	                    : 0;
 
-		MP4::DiscnumberFrame discnumber_frame(mp4);
-		success = discnumber_frame.read(discnumber);
-		if(success){
-			md.setDiscnumber(discnumber.disc);
-			md.setDiscCount(discnumber.disccount);
-		}
+	const auto genres = extractGenres(genre);
 
-		MP4::PopularimeterFrame popularimeter_frame(mp4);
+	track.setAlbum(album);
+	track.setArtist(artist);
+	track.setTitle(title.isEmpty() ? getTitleFromFilename(track.filepath()) : title);
+	track.setDurationMs(length);
+	track.setYear(Year(year));
+	track.setTrackNumber(static_cast<TrackNum>(trackNumber));
+	track.setBitrate(Bitrate(bitrate));
+	track.setGenres(genres);
+	track.setComment(comment);
 
-		success = popularimeter_frame.read(popularimeter);
-		if(success){
-			md.setRating(popularimeter.get_rating());
-		}
+	Tagging::readAlbumArtist(track, parsedTag);
+	Tagging::readDiscnumber(track, parsedTag);
+	Tagging::readPopularimeter(track, parsedTag);
 
-		//sp_log(Log::Debug, this) << "Read rating " << (int) md.rating << ": " << success;
-	}
-
-	uint year = tag->year();
-	uint track = tag->track();
-
-	int bitrate=0;
-	int length=0;
-
-	if( quality != Quality::Dirty ){
-		bitrate = f.audioProperties()->bitrate() * 1000;
-		length = f.audioProperties()->length() * 1000;
-	}
-
-	QStringList genres;
-	QString genreString(genre);
-	genres = genreString.split(QRegExp(",|/|;"));
-	for(int i=0; i<genres.size(); i++) {
-		genres[i] = genres[i].trimmed();
-	}
-
-	genres.removeDuplicates();
-	genres.removeAll("");
-
-	md.setAlbum(album);
-	md.setArtist(artist);
-	md.setTitle(title);
-	md.setDurationMs(length);
-	md.setYear(Year(year));
-	md.setTrackNumber(TrackNum(track));
-	md.setBitrate(Bitrate(bitrate));
-	md.setGenres(genres);
-	md.setDiscnumber(discnumber.disc);
-	md.setDiscCount(discnumber.disccount);
-	md.setRating(popularimeter.get_rating());
-	md.setComment(comment);
-
-	int hasCover = int(Tagging::Covers::hasCover(parsed_tag));
-	md.addCustomField("has-album-art", "", QString::number(hasCover));
-
-	if(md.title().length() == 0)
-	{
-		QString dir, filename;
-		FileUtils::splitFilename(md.filepath(), dir, filename);
-
-		if(filename.size() > 4){
-			filename = filename.left(filename.length() - 4);
-		}
-
-		md.setTitle(filename);
-	}
+	const auto hasCover = static_cast<int>(Tagging::hasCover(parsedTag));
+	track.addCustomField("has-album-art", "", QString::number(hasCover));
 
 	return true;
 }
-
 
 bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 {
-	QString filepath = md.filepath();
-	QFileInfo info(filepath);
-	if(info.size() <= 0){
+	const auto filepath = md.filepath();
+	const auto fileInfo = QFileInfo(filepath);
+	if(fileInfo.size() <= 0)
+	{
 		return false;
 	}
 
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-
-	if(!isValidFile(f)){
+	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
+	if(!isValidFile(fileRef))
+	{
 		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
 		return false;
 	}
 
-	TagLib::String album(md.album().toUtf8().data(), TagLib::String::UTF8);
-	TagLib::String artist(md.artist().toUtf8().data(), TagLib::String::UTF8);
-	TagLib::String title(md.title().toUtf8().data(), TagLib::String::UTF8);
-	TagLib::String genre(md.genresToString().toUtf8().data(), TagLib::String::UTF8);
-	TagLib::String comment(md.comment().toUtf8().data(), TagLib::String::UTF8);
+	const auto album = convertString(md.album());
+	const auto artist = convertString(md.artist());
+	const auto title = convertString(md.title());
+	const auto genre = convertString(md.genresToString());
+	const auto comment = convertString(md.comment());
 
-	ParsedTag parsed_tag = getTagTypeFromFileref(f);
-	TagLib::Tag* tag = parsed_tag.tag;
-
-	tag->setAlbum(album);
-	tag->setArtist(artist);
-	tag->setTitle(title);
-	tag->setGenre(genre);
-	tag->setYear(md.year());
-	tag->setTrack(md.trackNumber());
-	tag->setComment(comment);
-
-	Models::Popularimeter popularimeter("sayonara player", Rating::Zero, 0);
-	popularimeter.set_rating(md.rating());
-	Models::Discnumber discnumber(md.discnumber(), md.discCount());
-
-	if(parsed_tag.type == TagType::ID3v2)
+	const auto parsedTag = getParsedTagFromFileRef(fileRef);
+	if(!parsedTag.tag)
 	{
-		auto id3v2 = parsed_tag.id3Tag();
-		ID3v2::PopularimeterFrame popularimeter_frame(id3v2);
-		popularimeter_frame.write(popularimeter);
-
-		ID3v2::DiscnumberFrame discnumber_frame(id3v2);
-		discnumber_frame.write(discnumber);
-
-		ID3v2::AlbumArtistFrame album_artist_frame(id3v2);
-		album_artist_frame.write(md.albumArtist());
+		return false;
 	}
 
-	else if(parsed_tag.type == TagType::Xiph)
+	parsedTag.tag->setAlbum(album);
+	parsedTag.tag->setArtist(artist);
+	parsedTag.tag->setTitle(title);
+	parsedTag.tag->setGenre(genre);
+	parsedTag.tag->setYear(md.year());
+	parsedTag.tag->setTrack(md.trackNumber());
+	parsedTag.tag->setComment(comment);
+
+	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara player", md.rating(), 0));
+	Tagging::writeDiscnumber(parsedTag, Models::Discnumber(md.discnumber(), md.discCount()));
+	Tagging::writeAlbumArtist(parsedTag, md.albumArtist());
+
+	const auto success = fileRef.save();
+	if(!success)
 	{
-		auto xiph = parsed_tag.xiphTag();
-		Xiph::PopularimeterFrame popularimeter_frame(xiph);
-		popularimeter_frame.write(popularimeter);
-
-		Xiph::DiscnumberFrame discnumber_frame(xiph);
-		discnumber_frame.write(discnumber);
-
-		Xiph::AlbumArtistFrame album_artist_frame(xiph);
-		album_artist_frame.write(md.albumArtist());
-	}
-
-	else if(parsed_tag.type == TagType::MP4)
-	{
-		auto mp4 = parsed_tag.mp4Tag();
-		MP4::AlbumArtistFrame album_artist_frame(mp4);
-		album_artist_frame.write(md.albumArtist());
-
-		MP4::DiscnumberFrame discnumber_frame(mp4);
-		discnumber_frame.write(discnumber);
-
-		MP4::PopularimeterFrame popularimeter_frame(mp4);
-		popularimeter_frame.write(popularimeter);
-	}
-
-	bool success = f.save();
-	if(!success){
 		spLog(Log::Warning, "Tagging") << "Could not save " << md.filepath();
-
 	}
 
 	return success;
 }
-
-Tagging::ParsedTag Tagging::Utils::getTagTypeFromFileref(const TagLib::FileRef& f)
-{
-	ParsedTag ret;
-
-	ret.tag = f.tag();
-	ret.type = TagType::Unsupported;
-
-	TagLib::MPEG::File* mpg = dynamic_cast<TagLib::MPEG::File*>(f.file());
-	if(mpg)
-	{
-		if(mpg->hasID3v2Tag())
-		{
-			ret.tag = mpg->ID3v2Tag();
-			ret.type = TagType::ID3v2;
-			return ret;
-		}
-
-		else if(mpg->hasID3v1Tag())
-		{
-			ret.tag = mpg->ID3v1Tag();
-			ret.type = TagType::ID3v1;
-			return ret;
-		}
-	}
-
-	TagLib::FLAC::File* flac = dynamic_cast<TagLib::FLAC::File*>(f.file());
-	if(flac)
-	{
-		if(flac->hasXiphComment())
-		{
-			ret.tag = flac->xiphComment();
-			ret.type = TagType::Xiph;
-			return ret;
-		}
-
-		else if(flac->hasID3v2Tag())
-		{
-			ret.tag = flac->ID3v2Tag();
-			ret.type = TagType::ID3v2;
-			return ret;
-		}
-
-		else if(flac->hasID3v1Tag())
-		{
-			ret.tag = flac->ID3v1Tag();
-			ret.type = TagType::ID3v1;
-		}
-	}
-
-	TagLib::Tag* tag = f.tag();
-	if(dynamic_cast<TagLib::ID3v2::Tag*>(tag) != nullptr)
-	{
-		ret.type = TagType::ID3v2;
-	}
-
-	else if(dynamic_cast<TagLib::ID3v1::Tag*>(tag) != nullptr)
-	{
-		ret.type = TagType::ID3v1;
-	}
-
-	else if(dynamic_cast<TagLib::Ogg::XiphComment*>(tag) != nullptr)
-	{
-		ret.type = TagType::Xiph;
-	}
-
-	else if(dynamic_cast<TagLib::MP4::Tag*>(tag) != nullptr)
-	{
-		ret.type = TagType::MP4;
-	}
-
-	return ret;
-}
-
-
-Tagging::TagType Tagging::Utils::getTagType(const QString& filepath)
-{
-	TagLib::FileRef f(TagLib::FileName(filepath.toUtf8()));
-	if(!isValidFile(f)){
-		return TagType::Unknown;
-	}
-
-	ParsedTag parsed = getTagTypeFromFileref(f);
-	return parsed.type;
-}
-
-QString Tagging::Utils::tagTypeToString(TagType type)
-{
-	switch(type){
-		case TagType::ID3v1:
-			return "ID3v1";
-		case TagType::ID3v2:
-			return "ID3v2";
-		case TagType::Xiph:
-			return "Xiph";
-		case TagType::MP4:
-			return "MP4";
-		case TagType::Unknown:
-			return "Unknown";
-		default:
-			return "Partially unsupported";
-	}
-}
-
-
-

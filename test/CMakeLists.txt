@@ -66,11 +66,13 @@ new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
 
 new_test(Tagging/AlbumArtistTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/CoverTest.cpp  Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/DiscnumberTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/EditorTest.cpp)
 new_test(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/RatingTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/TagFromPathTest.cpp)
+new_test(Tagging/TaggingTest.cpp Tagging/AbstractTaggingTest.cpp)
 
 new_test(Util/UtilTest.cpp)
 new_test(Util/CryptTest.cpp)
@@ -88,3 +90,4 @@ new_test(Util/TreeTest.cpp)
 new_test(AudioConverter/AudioConverterTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
 new_test(Covers/CoverFetchManagerTest.cpp)
+

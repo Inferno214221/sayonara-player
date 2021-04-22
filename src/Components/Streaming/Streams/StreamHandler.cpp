@@ -23,7 +23,7 @@
 #include "Database/Streams.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/Streams/Stream.h"
+#include "Utils/Streams/Station.h"
 
 StreamHandler::StreamHandler(PlaylistCreator* playlistCreator, QObject* parent) :
 	AbstractStationHandler(playlistCreator, parent) {}

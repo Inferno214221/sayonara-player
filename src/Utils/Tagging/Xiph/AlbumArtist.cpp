@@ -27,19 +27,16 @@ Xiph::AlbumArtistFrame::AlbumArtistFrame(TagLib::Ogg::XiphComment* tag) :
 
 Xiph::AlbumArtistFrame::~AlbumArtistFrame() = default;
 
-bool Xiph::AlbumArtistFrame::map_tag_to_model(QString& model)
+std::optional<QString> Xiph::AlbumArtistFrame::mapTagToData() const
 {
-	TagLib::String str;
-	bool success = value(str);
-	if(success){
-		model = convert_string(str);
-	}
+	const auto albumArtistData = stringData();
 
-	return success;
+	return (albumArtistData.has_value())
+		? std::optional(Tagging::convertString(albumArtistData.value()))
+		: std::nullopt;
 }
 
-bool Xiph::AlbumArtistFrame::map_model_to_tag(const QString& model)
+void Xiph::AlbumArtistFrame::mapDataToTag(const QString& albumArtist)
 {
-	set_value(model);
-    return true;
+	setStringData(albumArtist);
 }

@@ -37,23 +37,12 @@ Tagging::AbstractFrameHelper::AbstractFrameHelper(const QString& key)
 
 Tagging::AbstractFrameHelper::~AbstractFrameHelper() = default;
 
-TagLib::String Tagging::AbstractFrameHelper::convert_string(const QString& str) const
-{
-	return TagLib::String(str.toUtf8().data(), TagLib::String::Type::UTF8);
-}
-
-QString Tagging::AbstractFrameHelper::convert_string(const TagLib::String& str) const
-{
-	return QString(str.toCString(true));
-}
-
 QString Tagging::AbstractFrameHelper::key() const
 {
 	return m->key;
 }
 
-TagLib::String Tagging::AbstractFrameHelper::tag_key() const
+TagLib::String Tagging::AbstractFrameHelper::tagKey() const
 {
-	return convert_string(m->key);
+	return convertString(m->key);
 }
-

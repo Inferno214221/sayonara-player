@@ -20,53 +20,44 @@
 
 #include "Popularimeter.h"
 
-Models::Popularimeter::Popularimeter()
-{
-	email = "sayonara player";
-	rating = Rating::Zero;
-	playcount = 0;
-}
+Models::Popularimeter::Popularimeter() :
+	Models::Popularimeter::Popularimeter("sayonara player", Rating::Zero, 0)
+{}
 
 Models::Popularimeter::Popularimeter(const QString& email, Rating rating, int playcount) :
 	email(email),
 	rating(rating),
-	playcount(playcount)
-{}
+	playcount(playcount) {}
 
-
-void Models::Popularimeter::set_rating(Rating max_5)
+void Models::Popularimeter::setRatingByte(Byte byte)
 {
-	rating = max_5;
-}
-
-void Models::Popularimeter::set_rating_byte(Byte byte)
-{
-	if(byte == 0x00){
+	if(byte == 0x00)
+	{
 		rating = Rating::Zero;
 	}
-	else if(byte < 0x30){   //48
+	else if(byte < 0x30)
+	{   //48
 		rating = Rating::One;
 	}
-	else if(byte < 0x60){	// 92
+	else if(byte < 0x60)
+	{    // 92
 		rating = Rating::Two;
 	}
-	else if(byte < 0xA0){	// 160
+	else if(byte < 0xA0)
+	{    // 160
 		rating = Rating::Three;
 	}
-	else if(byte < 0xD8){	// 216
+	else if(byte < 0xD8)
+	{    // 216
 		rating = Rating::Four;
 	}
-	else{
-		rating = Rating::Five;			// 255
+	else
+	{
+		rating = Rating::Five;            // 255
 	}
 }
 
-Rating Models::Popularimeter::get_rating() const
-{
-	return rating;
-}
-
-Byte Models::Popularimeter::get_rating_byte() const
+Byte Models::Popularimeter::ratingByte() const
 {
 	Byte rating_byte;
 
@@ -97,7 +88,10 @@ Byte Models::Popularimeter::get_rating_byte() const
 	return rating_byte;
 }
 
-QString Models::Popularimeter::to_string()
+QString Models::Popularimeter::toString()
 {
-	return QString("POPM: ") + email + " " + QString::number(get_rating_byte()) + " " + QString::number(playcount);
+	return QString("POPM: %1 %2 %3")
+		.arg(email)
+		.arg(ratingByte())
+		.arg(playcount);
 }

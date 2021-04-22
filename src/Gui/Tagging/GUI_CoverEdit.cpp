@@ -153,7 +153,7 @@ void GUI_CoverEdit::setCover(const MetaData& track)
 	ui->labCoverOriginal->setFixedSize(size);
 	ui->btnCoverReplacement->setFixedSize(size);
 
-	const auto hasCover = Tagging::Covers::hasCover(track.filepath());
+	const auto hasCover = Tagging::hasCover(track.filepath());
 	if(!hasCover)
 	{
 		ui->labCoverOriginal->clear();
@@ -162,7 +162,7 @@ void GUI_CoverEdit::setCover(const MetaData& track)
 
 	else
 	{
-		const auto pixmap = Tagging::Covers::extractCover(track.filepath());
+		const auto pixmap = Tagging::extractCover(track.filepath());
 		if(pixmap.isNull())
 		{
 			ui->labCoverOriginal->clear();

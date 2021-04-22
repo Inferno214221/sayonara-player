@@ -101,7 +101,7 @@ void Cover::Extractor::start()
 		const auto audioFileSource = m->coverLocation.audioFileSource();
 		if(FileUtils::exists(audioFileSource))
 		{
-			m->pixmap = Tagging::Covers::extractCover(audioFileSource);
+			m->pixmap = Tagging::extractCover(audioFileSource);
 			m->source = Source::AudioFile;
 		}
 	}

@@ -39,7 +39,7 @@ namespace Tagging
 	 * @ingroup Tagging
 	 */
 	class Editor :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Editor)
@@ -51,37 +51,35 @@ namespace Tagging
 			void sigMetadataReceived(const MetaDataList& tracks);
 
 		public:
-			explicit Editor(QObject* parent=nullptr);
-			explicit Editor(const MetaDataList& tracks, QObject* parent=nullptr);
+			explicit Editor(QObject* parent = nullptr);
+			explicit Editor(const MetaDataList& tracks, QObject* parent = nullptr);
 			~Editor() override;
 
 			enum FailReason
 			{
-				FileNotWriteable=1,
+				FileNotWriteable = 1,
 				FileNotFound,
-				TagLibError
+				TagLibError,
+				NoError
 			};
-
 
 			/**
 			 * @brief undo changes for a specific track
-			 * @param idx track index
+			 * @param index track index
 			 */
-			void undo(int idx);
+			void undo(int index);
 
 			/**
 			 * @brief undo changes for all tracks
 			 */
 			void undoAll();
 
-
 			/**
 			 * @brief get the (changed) metadata for a specific index
-			 * @param idx track index
+			 * @param index track index
 			 * @return MetaData object
 			 */
-			MetaData metadata(int idx) const;
-
+			MetaData metadata(int index) const;
 
 			/**
 			 * @brief get all (changed) metadata
@@ -89,17 +87,15 @@ namespace Tagging
 			 */
 			MetaDataList metadata() const;
 
-
-			bool applyRegularExpression(const QString& regex, int idx);
+			bool applyRegularExpression(const QString& regex, int index);
 
 			/**
 			 * @brief Add a genre to all (changed) metdata
 			 * @param genre the genre name
 			 */
-			void addGenre(int idx, const Genre& genre);
+			void addGenre(int index, const Genre& genre);
 
-
-			void deleteGenre(int idx, const Genre& genre);
+			void deleteGenre(int index, const Genre& genre);
 
 			void renameGenre(int idx, const Genre& genre, const Genre& new_genre);
 
@@ -109,40 +105,37 @@ namespace Tagging
 			 */
 			int count() const;
 
-
 			/**
 			 * @brief indicates if there are pending changes
 			 */
 			bool hasChanges() const;
 
-
 			/**
 			 * @brief writes changes to (changed) metadata for a specific track
-			 * @param idx track index
-			 * @param md new MetaData replacing the old track
+			 * @param index track index
+			 * @param track new MetaData replacing the old track
 			 */
-			void updateTrack(int idx, const MetaData& md);
+			void updateTrack(int index, const MetaData& track);
 
 			/**
 			 * @brief update the cover for a specific track.
-			 * @param idx track index
+			 * @param index track index
 			 * @param cover new cover image
 			 */
-			void updateCover(int idx, const QPixmap& cover);
+			void updateCover(int index, const QPixmap& cover);
 
 			/**
 			 * @brief remove_cover for a specific track
 			 * @param idx track index
 			 */
-		//	void remove_cover(int idx);
+			//	void remove_cover(int idx);
 
 			/**
 			 * @brief does the user want to replace/add a cover
-			 * @param idx track index
+			 * @param index track index
 			 * @return false, if no new alternative cover is desired
 			 */
-			bool hasCoverReplacement(int idx) const;
-
+			bool hasCoverReplacement(int index) const;
 
 			/**
 			 * @brief initializes the TagEdit object with a MetaDataList
@@ -150,7 +143,7 @@ namespace Tagging
 			 */
 			void setMetadata(const MetaDataList& tracks);
 
-			bool isCoverSupported(int idx) const;
+			bool isCoverSupported(int index) const;
 
 			bool canLoadEntireAlbum() const;
 			void loadEntireAlbum();
@@ -164,12 +157,12 @@ namespace Tagging
 			 */
 			void commit();
 
-
 		private:
 			/**
 			 * @brief applies the new artists and albums to the original metadata
 			 */
 			void insertMissingArtistsAndAlbums();
+			void startSameAlbumCrawler(const QString& filepath);
 
 		private slots:
 			void loadEntireAlbumFinished();

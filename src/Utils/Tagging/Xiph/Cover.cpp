@@ -27,91 +27,97 @@
 #include <taglib/oggfile.h>
 #include <taglib/tmap.h>
 
-namespace TL=TagLib;
+namespace TL = TagLib;
+
+namespace
+{
+	TL::FLAC::Picture* getBestFittingPicture(const TL::List<TL::FLAC::Picture*>& pictures)
+	{
+		if(pictures.isEmpty())
+		{
+			return nullptr;
+		}
+
+		TL::FLAC::Picture* candidate = nullptr;
+		for(auto* picture : pictures)
+		{
+			if(picture->type() == TL::FLAC::Picture::FrontCover)
+			{
+				if(picture->data().size() < 100)
+				{
+					continue;
+				}
+
+				candidate = picture;
+			}
+
+			else if((picture->type() == TL::FLAC::Picture::Other) && !candidate)
+			{
+				if(picture->data().size() < 100)
+				{
+					continue;
+				}
+
+				candidate = picture;
+			}
+		}
+
+		return (!candidate)
+		       ? pictures[0]
+		       : candidate;
+	}
+}
 
 Xiph::CoverFrame::CoverFrame(TagLib::Ogg::XiphComment* tag) :
-	Xiph::XiphFrame<Models::Cover>(tag, "")
-{}
+	Xiph::XiphFrame<Models::Cover>(tag, "") {}
 
 Xiph::CoverFrame::~CoverFrame() = default;
 
-bool Xiph::CoverFrame::is_frame_found() const
+std::optional<Models::Cover> Xiph::CoverFrame::mapTagToData() const
 {
-	// string, stringlist
-//	TagLib::Ogg::FieldListMap field_list_map = this->tag()->fieldListMap();
-//	for(auto it=field_list_map.begin(); it!=field_list_map.end(); it++)
-//	{
-//		sp_log(Log::Develop, this) << it->first.toCString() << ": " << it->second.toString(", ").toCString();
-//	}
-
-	bool has_entries = (this->tag()->pictureList().isEmpty() == false);
-	spLog(Log::Develop, this) << "Picture list has " << this->tag()->pictureList().size() << " entries";
-
-	return has_entries;
-}
-
-bool Xiph::CoverFrame::map_tag_to_model(Models::Cover& model)
-{
-	TL::Ogg::XiphComment* xiph = this->tag();
-	TL::List<TL::FLAC::Picture*> pictures = xiph->pictureList();
+	const auto pictures = tag()->pictureList();
 	if(pictures.isEmpty())
 	{
-		model.mimeType = QString();
-		model.imageData.clear();
-		return true;
+		const auto cover = Models::Cover(QString(), QByteArray());
+		return std::optional(cover);
 	}
 
-	TL::FLAC::Picture* pic_of_interest = nullptr;
-	for(TL::FLAC::Picture* pic : pictures)
+	auto* picture = getBestFittingPicture(pictures);
+	if(picture)
 	{
-		if(pic->type() == TL::FLAC::Picture::FrontCover)
-		{
-			if(pic->data().size() < 100){
-				continue;
-			}
+		const auto data = picture->data();
+		const auto cover = Models::Cover(
+			Tagging::convertString(picture->mimeType()),
+			QByteArray(data.data(), static_cast<int>(data.size()))
+		);
 
-			pic_of_interest = pic;
-		}
-
-		else if(!pic_of_interest && pic->type() == TL::FLAC::Picture::Other)
-		{
-			if(pic->data().size() < 100){
-				continue;
-			}
-
-			pic_of_interest = pic;
-		}
+		return std::optional(cover);
 	}
 
-	if(pic_of_interest == nullptr)
-	{
-		pic_of_interest = pictures[0];
-	}
-
-	{
-		TL::ByteVector data = pic_of_interest->data();
-		model.imageData = QByteArray(data.data(), static_cast<int>(data.size()));
-		model.mimeType = convert_string(pic_of_interest->mimeType());
-	}
-
-	return true;
+	return std::optional<Models::Cover>();
 }
 
-bool Xiph::CoverFrame::map_model_to_tag(const Models::Cover& model)
+void Xiph::CoverFrame::mapDataToTag(const Models::Cover& cover)
 {
 	this->tag()->removeAllPictures();
 
-	unsigned int length = static_cast<unsigned int>(model.imageData.size());
+	const auto dataSize = static_cast<unsigned int>(cover.imageData.size());
+	const auto imageData = TL::ByteVector(cover.imageData.data(), dataSize);
 
-	TL::ByteVector img_data(model.imageData.data(), length);
+	auto* picture = new TL::FLAC::Picture();
 
-	TL::Ogg::XiphComment* tag = this->tag();
-	TL::FLAC::Picture* pic = new TL::FLAC::Picture();
-	pic->setType(TL::FLAC::Picture::FrontCover);
-	pic->setMimeType(convert_string(model.mimeType));
-	pic->setDescription(TL::String("Front Cover By Sayonara"));
-	pic->setData(TL::ByteVector(model.imageData.data(), length) );
-	tag->addPicture(pic); // do not delete the picture, because tag will take ownership
+	picture->setType(TL::FLAC::Picture::FrontCover);
+	picture->setMimeType(Tagging::convertString(cover.mimeType));
+	picture->setDescription(TL::String("Front Cover By Sayonara"));
+	picture->setData(TL::ByteVector(cover.imageData.data(), dataSize));
 
-	return true;
+	tag()->addPicture(picture); // do not delete the picture, because tag will take ownership
+}
+
+bool Xiph::CoverFrame::isFrameAvailable() const
+{
+	const auto hasEntries = (this->tag()->pictureList().isEmpty() == false);
+	spLog(Log::Develop, this) << "Picture list has " << this->tag()->pictureList().size() << " entries";
+
+	return hasEntries;
 }

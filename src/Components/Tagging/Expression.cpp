@@ -21,7 +21,6 @@
 #include "Expression.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 
@@ -30,296 +29,285 @@
 #include <QRegExp>
 #include <QMap>
 
-namespace Algorithm=Util::Algorithm;
+#include <cassert>
+
+namespace Algorithm = Util::Algorithm;
 using namespace Tagging;
+
+namespace
+{
+	constexpr const auto EscapeStrings =
+		{
+			'\\', '?', '+', '*', '[', ']', '(', ')', '{', '}', '.'
+		};
+
+	QMap<TagName, TagString> tagNameMap()
+	{
+		return QMap<TagName, TagString>
+			{{TagNone, QString()},
+			 {TagTitle,    QStringLiteral("<title>")},
+			 {TagAlbum,    QStringLiteral("<album>")},
+			 {TagArtist,   QStringLiteral("<artist>")},
+			 {TagTrackNum, QStringLiteral("<tracknum>")},
+			 {TagYear,     QStringLiteral("<year>")},
+			 {TagDisc,     QStringLiteral("<disc>")},
+			 {TagIgnore,   QStringLiteral("<ignore>")}};
+	}
+
+	QMap<TagName, QString> getTagRegexMap()
+	{
+		return QMap<TagName, TagString>
+			{{TagTitle,    QStringLiteral(".+")},
+			 {TagAlbum,    QStringLiteral(".+")},
+			 {TagArtist,   QStringLiteral(".+")},
+			 {TagTrackNum, QStringLiteral("\\d+")},
+			 {TagYear,     QStringLiteral("\\d{4}")},
+			 {TagDisc,     QStringLiteral("\\d{1,3}")},
+			 {TagIgnore,   QStringLiteral(".+")}};
+	}
+
+	TagName tagStringToName(const TagString& tagString)
+	{
+		const auto map = tagNameMap();
+		return map.key(tagString, TagNone);
+	}
+
+	QString escapeSpecialChars(const QString& originalString)
+	{
+		auto stringCopy = originalString;
+		for(const auto& c : EscapeStrings)
+		{
+			stringCopy.replace(c, QString("\\") + c);
+		}
+
+		return stringCopy;
+	}
+
+	QString createRegexChunk(const QString& splittedChunk, const QMap<TagName, QString>& tagRegexMap)
+	{
+		if(splittedChunk.isEmpty())
+		{
+			return QString();
+		}
+
+		const auto tagName = tagStringToName(splittedChunk);
+		return (tagRegexMap.contains(tagName))
+		       ? QString("(%1)").arg(tagRegexMap[tagName])
+		       : QString("(%1)").arg(splittedChunk);
+	}
+
+	QString calcRegexString(const QStringList& splittedString, const QMap<TagName, QString>& tagRegexMap)
+	{
+		QString regex;
+
+		for(const auto& splitted : splittedString)
+		{
+			regex += createRegexChunk(splitted, tagRegexMap);
+		}
+
+		return regex;
+	}
+
+	QStringList getTagNames()
+	{
+		QStringList names;
+		const auto map = tagNameMap();
+		for(const auto& value : map)
+		{
+			names << value;
+		}
+
+		return names;
+	}
+
+	QMap<int, TagString> getTagPositions(const QString& expression)
+	{
+		auto indexStringMap = QMap<int, TagString>();
+		const auto tagNames = getTagNames();
+
+		for(const auto& tagName : tagNames)
+		{
+			if(!tagName.isEmpty())
+			{
+				if(const auto index = expression.indexOf(tagName); index >= 0)
+				{
+					indexStringMap.insert(index, tagName);
+				}
+			}
+		}
+
+		return indexStringMap;
+	}
+
+	QStringList splitTagString(const QString& lineEditString)
+	{
+		const auto lineEditEscaped = escapeSpecialChars(lineEditString);
+		const auto tagPositions = getTagPositions(lineEditEscaped);
+
+		auto currentIndex = 0;
+		auto splittedTagString = QStringList();
+		for(auto it = tagPositions.cbegin(); it != tagPositions.cend(); it++)
+		{
+			const auto index = it.key();
+			const auto tagString = it.value();
+			const auto length = index - currentIndex;
+
+			const auto stringUntilTag = lineEditEscaped.mid(currentIndex, length);
+			if(!stringUntilTag.isEmpty())
+			{
+				splittedTagString << stringUntilTag;
+				currentIndex += stringUntilTag.size();
+			}
+
+			assert(!tagString.isEmpty());
+
+			splittedTagString << tagString;
+			currentIndex += tagString.size();
+		}
+
+		const auto restOfLine = lineEditEscaped.right(lineEditEscaped.length() - currentIndex);
+		if(!restOfLine.isEmpty())
+		{
+			splittedTagString << restOfLine;
+		}
+
+		return splittedTagString;
+	}
+
+	void logRegexError(const QString& regexString, int tagCount, const QStringList& capturedTexts,
+	                   Expression* expression)
+	{
+		spLog(Log::Debug, expression) << "Regex: " << regexString << ": " << capturedTexts.count()
+		                              << " tags found, but requested "
+		                              << tagCount;
+
+		for(const auto& s : capturedTexts)
+		{
+			spLog(Log::Debug, expression) << "Captured texts:  " << s;
+		}
+
+		spLog(Log::Debug, expression) << "";
+	}
+}
 
 struct Expression::Private
 {
-	QMap<TagName, ReplacedString>	captured_tags;
-	QMap<TagName, QString>			tag_regex_map;
+	QMap<TagName, ReplacedString> capturedTags;
+	QMap<TagName, QString> tagRegexMap {getTagRegexMap()};
 
-	bool							valid;
-
-	Private() :
-		valid(false)
-	{
-		tag_regex_map.insert(TagTitle, QString("(.+)"));
-		tag_regex_map.insert(TagAlbum, QString ("(.+)"));
-		tag_regex_map.insert(TagArtist, QString("(.+)"));
-		tag_regex_map.insert(TagTrackNum, QString("(\\d+)"));
-		tag_regex_map.insert(TagYear, QString("(\\d{4})"));
-		tag_regex_map.insert(TagDisc, QString("(\\d{1,3})"));
-		tag_regex_map.insert(TagIgnore, QString("(.+)"));
-	}
+	bool valid {false};
 };
 
-Expression::Expression(const QString& tag_str, const QString& filepath)
+Expression::Expression(const QString& tagString, const QString& filepath)
 {
 	m = Pimpl::make<Private>();
-	m->valid = update_tag(tag_str, filepath);
+	m->valid = updateTag(tagString, filepath);
 }
 
 Expression::~Expression() = default;
 
-QMap<TagName, QString> Expression::captured_tags() const
+QMap<TagName, QString> Expression::capturedTags() const
 {
-	return m->captured_tags;
+	return m->capturedTags;
 }
 
-bool Expression::is_valid() const
+bool Expression::isValid() const
 {
 	return m->valid;
 }
 
-bool Expression::apply(MetaData& md) const
+bool Expression::apply(MetaData& track) const
 {
-	bool b = false;
+	auto success = false;
 
-	const QMap<Tagging::TagName, QString> captured_tags = this->captured_tags();
-	for(auto it=captured_tags.begin(); it != captured_tags.end(); it++)
+	const auto capturedTags = this->capturedTags();
+	for(auto it = capturedTags.begin(); it != capturedTags.end(); it++)
 	{
-		Tagging::TagName key = it.key();
-		QString value = it.value();
+		const auto tagName = it.key();
+		const auto value = it.value();
 
-		if(key == Tagging::TagTitle) {
-			b |= (value != md.title());
-			md.setTitle(value);
+		if(tagName == Tagging::TagTitle)
+		{
+			success |= (value != track.title());
+			track.setTitle(value);
 		}
 
-		else if(key == Tagging::TagAlbum) {
-			b |= (value != md.album());
-			md.setAlbum(value);
+		else if(tagName == Tagging::TagAlbum)
+		{
+			success |= (value != track.album());
+			track.setAlbum(value);
 		}
 
-		else if(key == Tagging::TagArtist) {
-			b |= (value != md.artist());
-			md.setArtist(value);
+		else if(tagName == Tagging::TagArtist)
+		{
+			success |= (value != track.artist());
+			track.setArtist(value);
 		}
 
-		else if(key == Tagging::TagTrackNum) {
-			TrackNum t = TrackNum(value.toInt());
-			b |= (t != md.trackNumber());
-			md.setTrackNumber(t);
+		else if(tagName == Tagging::TagTrackNum)
+		{
+			const auto trackNumber = static_cast<TrackNum>(value.toInt());
+			success |= (trackNumber != track.trackNumber());
+			track.setTrackNumber(trackNumber);
 		}
 
-		else if(key == Tagging::TagYear) {
-			Year y = Year(value.toInt());
-			b |= (y != md.year());
-			md.setYear(y);
+		else if(tagName == Tagging::TagYear)
+		{
+			const auto year = static_cast<Year>(value.toInt());
+			success |= (year != track.year());
+			track.setYear(year);
 		}
 
-		else if(key == Tagging::TagDisc) {
-			auto d = Disc(value.toInt());
-			b |= (d != md.discnumber());
-			md.setDiscnumber(d);
+		else if(tagName == Tagging::TagDisc)
+		{
+			const auto disc = static_cast<Disc>(value.toInt());
+			success |= (disc != track.discnumber());
+			track.setDiscnumber(disc);
 		}
 	}
 
-	return b;
+	return success;
 }
 
-QString Expression::escape_special_chars(const QString& str) const
+bool Expression::updateTag(const QString& lineEditString, const QString& filepath)
 {
-	QString s = str;
-	const QStringList str2escape
-	{
-		QStringLiteral("\\"),
-		QStringLiteral("?"),
-		QStringLiteral("+"),
-		QStringLiteral("*"),
-		QStringLiteral("["),
-		QStringLiteral("]"),
-		QStringLiteral("("),
-		QStringLiteral(")"),
-		QStringLiteral("{"),
-		QStringLiteral("}"),
-		QStringLiteral(".")
-	};
+	m->capturedTags.clear();
 
-	for(const QString& c : str2escape)
-	{
-		s.replace(c, QString("\\") + c);
-	}
-
-	return s;
-}
-
-QStringList Expression::split_tag_string( const QString& line_edit_str ) const
-{
-	// split the line edit: Write strings not covered by tags and tags
-	// into the return value
-
-	QString line_edit_escaped = escape_special_chars(line_edit_str);
-
-	using IndexStringMap=QMap<int, TagString>;
-	IndexStringMap index_string_map;
-
-	const QStringList available_tags
-	{
-		tag_name_to_string(TagTitle),
-		tag_name_to_string(TagAlbum),
-		tag_name_to_string(TagArtist),
-		tag_name_to_string(TagTrackNum),
-		tag_name_to_string(TagYear),
-		tag_name_to_string(TagDisc)
-	};
-
-	// search for the tags in tag_str and save the combination
-	// Index and TagString into index_string_map
-	for(const TagString& tag : available_tags)
-	{
-		int idx = line_edit_escaped.indexOf(tag);
-		if(idx >= 0)
-		{
-			index_string_map.insert(idx, tag);
-		}
-	}
-
-	// split the string and fill splitted_tag_str with
-	// non-tags and tags
-	int cur_idx = 0;
-	QStringList splitted_tag_str;
-	for(auto it=index_string_map.cbegin(); it != index_string_map.cend(); it++)
-	{
-		int idx = it.key();
-		int len = idx - cur_idx;
-
-		QString str_until_tag = line_edit_escaped.mid(cur_idx, len);
-		if(!str_until_tag.isEmpty())
-		{
-			splitted_tag_str << str_until_tag;
-		}
-
-		TagString tag_string = it.value();
-		splitted_tag_str << tag_string;
-
-		cur_idx += (tag_string.size() + len);
-	}
-
-	// rest of the line
-	QString rest_of_line = line_edit_escaped.right(line_edit_escaped.length() - cur_idx);
-	if(!rest_of_line.isEmpty())
-	{
-		splitted_tag_str << rest_of_line;
-	}
-
-	return splitted_tag_str;
-}
-
-
-QString Expression::calc_regex_string(const QStringList& splitted_str) const
-{
-	QString regex;
-
-	for(const QString& s : splitted_str)
-	{
-		if(s.isEmpty()) {
-			continue;
-		}
-
-		TagName tag_name = tag_string_to_name(s);
-		if( m->tag_regex_map.contains(tag_name) )
-		{
-			regex += m->tag_regex_map[tag_name];
-		}
-
-		else
-		{
-			// write a non-tag string into parenthesis to
-			// trigger the capturing of the regex
-			regex += "(" + s + ")";
-		}
-	}
-
-	return regex;
-}
-
-
-bool Expression::update_tag(const QString& line_edit_str, const QString& filepath)
-{
-	m->captured_tags.clear();
-
-	// create regular expression out of tag_str
-	QStringList splitted_tag_str = split_tag_string(line_edit_str);
-	QString regex =	calc_regex_string(splitted_tag_str);
-	QRegExp re(regex);
+	const auto splittedTagString = splitTagString(lineEditString);
+	const auto regexString = calcRegexString(splittedTagString, m->tagRegexMap);
 
 	// save content of all entered tags and the rest into captured texts
-	re.indexIn( filepath );
+	auto re = QRegExp(regexString);
+	re.indexIn(filepath);
 
-	QStringList captured_texts = re.capturedTexts();
-	captured_texts.removeAt(0);
-	captured_texts.removeAll("");
+	auto capturedTexts = re.capturedTexts();
+	capturedTexts.removeAt(0);
+	capturedTexts.removeAll("");
 
-	int n_caps = captured_texts.size();
-	int n_tags = splitted_tag_str.size();
+	const auto captureCount = capturedTexts.size();
+	const auto regexSplitCount = splittedTagString.size();
 
-	bool valid = (n_caps == n_tags);
-
-	if(!valid)
+	if((captureCount != regexSplitCount) || (captureCount == 0) || (regexSplitCount == 0))
 	{
-		spLog(Log::Debug, this) << "Regex: " << regex << ": " << n_caps << " tags found, but requested " << n_tags;
-
-		for(const QString& s : Algorithm::AsConst(captured_texts))
-		{
-			spLog(Log::Debug, this) << "Captured texts:  " << s;
-		}
-
-		spLog(Log::Debug, this) << "";
-
+		logRegexError(regexString, regexSplitCount, capturedTexts, this);
 		return false;
 	}
 
-	for(int i=0; i<n_caps; i++)
+	for(auto i = 0; i < captureCount; i++)
 	{
-		QString splitted = splitted_tag_str[i]; // the original out of line edit
-		QString captured = captured_texts[i]; // maybe replaced by the content of a tag
+		const auto splitted = splittedTagString[i];
 
-		if(i==0)
+		const auto tagName = tagStringToName(splitted);
+		if(tagName != TagName::TagNone)
 		{
-			QString dir, filename;
-			Util::File::splitFilename(captured, dir, filename);
-			captured = filename;
-		}
-
-		TagName tag_name = Tagging::tag_string_to_name(splitted);
-		if(tag_name != TagName::TagNone)
-		{
-			m->captured_tags[tag_name] = captured;
+			m->capturedTags[tagName] = capturedTexts[i];
 		}
 	}
 
 	return true;
 }
 
-
-QMap<TagName, TagString> Tagging::tag_name_map()
+QString Tagging::tagNameToString(TagName tagName)
 {
-	QMap<TagName, TagString> map =
-	{
-		{TagNone, QString()},
-		{TagTitle, "<title>"},
-		{TagAlbum, "<album>"},
-		{TagArtist, "<artist>"},
-		{TagTrackNum, "<tracknum>"},
-		{TagYear, "<year>"},
-		{TagDisc, "<disc>"},
-		{TagIgnore, "<ignore>"},
-	};
-
-	return map;
+	return tagNameMap()[tagName];
 }
-
-
-TagString Tagging::tag_name_to_string(TagName name)
-{
-	QMap<TagName, TagString> map = tag_name_map();
-	return map[name];
-}
-
-TagName Tagging::tag_string_to_name(const TagString& tag_string)
-{
-	QMap<TagName, TagString> map = tag_name_map();
-	return map.key(tag_string, TagNone);
-}
-

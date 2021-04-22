@@ -21,24 +21,20 @@
 #include "LyricsFrame.h"
 
 Xiph::LyricsFrame::LyricsFrame(TagLib::Ogg::XiphComment* tag) :
-    Xiph::XiphFrame<QString>(tag, "LYRICS")
-{}
+	Xiph::XiphFrame<QString>(tag, "LYRICS") {}
+
+std::optional<QString> Xiph::LyricsFrame::mapTagToData() const
+{
+	const auto lyricData = stringData();
+
+	return (lyricData.has_value())
+	       ? std::optional(Tagging::convertString(lyricData.value()))
+	       : std::nullopt;
+}
+
+void Xiph::LyricsFrame::mapDataToTag(const QString& lyrics)
+{
+	setStringData(lyrics);
+}
 
 Xiph::LyricsFrame::~LyricsFrame() = default;
-
-bool Xiph::LyricsFrame::map_tag_to_model(QString& model)
-{
-    TagLib::String str;
-    bool success = value(str);
-    if(success){
-	    model = convert_string(str);
-    }
-
-    return success;
-}
-
-bool Xiph::LyricsFrame::map_model_to_tag(const QString& model)
-{
-    set_value(model);
-    return true;
-}

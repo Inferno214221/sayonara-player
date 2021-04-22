@@ -30,42 +30,38 @@
 #include <taglib/tstring.h>
 #include <taglib/tstringlist.h>
 
+#include <optional>
+
 namespace Xiph
 {
 	template<typename Model_t>
 	class XiphFrame :
-			protected Tagging::AbstractFrame<TagLib::Ogg::XiphComment>
+		protected Tagging::AbstractFrame<TagLib::Ogg::XiphComment>
 	{
 		protected:
-			virtual bool map_tag_to_model(Model_t& model)=0;
-			virtual bool map_model_to_tag(const Model_t& model)=0;
+			virtual std::optional<Model_t> mapTagToData() const = 0;
+			virtual void mapDataToTag(const Model_t& model) = 0;
 
-			// those methods are usually called by the implementations
-			// in order to retrieve and write back the data easily
-			bool value(TagLib::String& str) const
+			std::optional<TagLib::String> stringData() const
 			{
-				TagLib::Ogg::XiphComment* tag = this->tag();
-				const TagLib::Ogg::FieldListMap& map = tag->fieldListMap();
-				TagLib::Ogg::FieldListMap::ConstIterator it = map.find( this->tag_key() );
-				if(it == map.end()){
-					str = TagLib::String();
-					return false;
+				const auto& map = tag()->fieldListMap();
+				const auto it = map.find(tagKey());
+				return (it == map.end())
+					? std::optional<TagLib::String>{}
+					: std::optional(it->second.front());
+			}
+
+			void setStringData(const TagLib::String& value)
+			{
+				if(tag())
+				{
+					tag()->addField(tagKey(), value, true);
 				}
-
-				str = it->second.front();
-				return true;
 			}
 
-			void set_value(const TagLib::String& value)
+			void setStringData(const QString& value)
 			{
-				TagLib::Ogg::XiphComment* tag = this->tag();
-				tag->addField(this->tag_key(), value, true);
-			}
-
-			void set_value(const QString& value)
-			{
-				TagLib::String str = this->convert_string(value);
-				set_value(str);
+				setStringData(Tagging::convertString(value));
 			}
 
 		public:
@@ -74,41 +70,40 @@ namespace Xiph
 
 			virtual ~XiphFrame() = default;
 
-			bool read(Model_t& model)
+			bool read(Model_t& model) const
 			{
-				if(!this->tag()){
-					return false;
+				const auto data = (tag() != nullptr)
+					? mapTagToData()
+					: std::nullopt;
+
+				if(data.has_value())
+				{
+					model = data.value();
 				}
 
-				bool success = map_tag_to_model(model);
-
-				return success;
+				return data.has_value();
 			}
 
 			bool write(const Model_t& model)
 			{
-				TagLib::Ogg::XiphComment* tag = this->tag();
-				if(!tag) {
+				if(!tag())
+				{
 					return false;
 				}
 
-				TagLib::String key = this->tag_key();
-				if(!key.isEmpty())
+				if(!tagKey().isEmpty())
 				{
-					tag->removeField( this->tag_key() );
+					tag()->removeField(tagKey());
 				}
 
-				return map_model_to_tag(model);
+				mapDataToTag(model);
+
+				return true;
 			}
 
-			virtual bool is_frame_found() const
+			virtual bool isFrameAvailable() const
 			{
-				if(this->tag_key().isEmpty())
-				{
-					return false;
-				}
-
-				return this->tag()->contains("METADTA_BLOCK_PICTURE");
+				return (!tagKey().isEmpty() && tag()->contains("METADATA_BLOCK_PICTURE"));
 			}
 	};
 }

@@ -22,6 +22,7 @@
 #define SAYONARA_TAGGING_ABSTRACTFRAME_H
 
 #include "Utils/Pimpl.h"
+#include "Utils/Tagging/TaggingUtils.h"
 
 #include <QString>
 
@@ -36,43 +37,34 @@ namespace Tagging
 	class AbstractFrameHelper
 	{
 		public:
-			explicit AbstractFrameHelper(const QString& key=QString());
+			explicit AbstractFrameHelper(const QString& key = QString());
 			virtual ~AbstractFrameHelper();
 
 		protected:
-			QString convert_string(const TagLib::String& str) const;
-			TagLib::String convert_string(const QString& str) const;
 			QString key() const;
-			TagLib::String tag_key() const;
+			TagLib::String tagKey() const;
 
 		private:
-			PIMPL(AbstractFrameHelper)
+		PIMPL(AbstractFrameHelper)
 	};
 
 	template<typename TagImpl>
 	class AbstractFrame :
-			public AbstractFrameHelper
+		public AbstractFrameHelper
 	{
 		private:
-			TagImpl*	mTag=nullptr;
+			TagImpl* mTag {nullptr};
 
 		protected:
-			AbstractFrame(TagImpl* tag, const QString& key=QString()) :
-				AbstractFrameHelper(key)
-			{
-				mTag = tag;
-			}
+			AbstractFrame(TagImpl* tag, const QString& key = QString()) :
+				AbstractFrameHelper(key),
+				mTag(tag) {}
 
 			virtual ~AbstractFrame() = default;
 
 			TagImpl* tag() const
 			{
 				return mTag;
-			}
-
-			void set_tag(TagImpl* tag)
-			{
-				mTag  = tag;
 			}
 	};
 }

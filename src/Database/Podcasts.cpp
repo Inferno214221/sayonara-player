@@ -21,7 +21,7 @@
 #include "Database/Query.h"
 #include "Database/Podcasts.h"
 
-#include "Utils/Streams/Podcast.h"
+#include "Utils/Streams/Station.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"
 

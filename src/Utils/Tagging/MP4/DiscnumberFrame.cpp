@@ -23,42 +23,21 @@
 #include <taglib/mp4item.h>
 
 MP4::DiscnumberFrame::DiscnumberFrame(TagLib::MP4::Tag* tag) :
-    MP4::MP4Frame<Models::Discnumber>(tag, "disk")
-{}
+	MP4::MP4Frame<Models::Discnumber>(tag, "disk") {}
 
 MP4::DiscnumberFrame::~DiscnumberFrame() = default;
 
-bool MP4::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
+std::optional<Models::Discnumber> MP4::DiscnumberFrame::mapItemToData(const TagLib::MP4::Item& item) const
 {
-	TagLib::MP4::Tag* tag = this->tag();
+	const auto intPair = item.toIntPair();
+	const auto discnumber = Models::Discnumber(intPair.first, intPair.second);
 
-	TagLib::MP4::ItemListMap ilm = tag->itemListMap();
-	TagLib::MP4::Item item = ilm[tag_key()];
-
-	if(item.isValid()){
-		TagLib::MP4::Item::IntPair p = item.toIntPair();
-		model.disc = p.first;
-		model.disccount = p.second;
-		return true;
-	}
-
-	return false;
+	return std::optional(discnumber);
 }
 
-bool MP4::DiscnumberFrame::map_model_to_tag(const Models::Discnumber& model)
+std::optional<TagLib::MP4::Item> MP4::DiscnumberFrame::mapDataToItem(const Models::Discnumber& discnumber)
 {
-	TagLib::MP4::ItemListMap& ilm = this->tag()->itemListMap();
-	TagLib::MP4::Item item(model.disc, model.disccount);
-	TagLib::String key_str = tag_key();
+	const auto item = TagLib::MP4::Item(discnumber.disc, discnumber.disccount);
 
-	auto it = ilm.find(key_str);
-	while(it != ilm.end()){
-		ilm.erase(it);
-		it = ilm.find(key_str);
-	}
-
-	ilm.insert(key_str, item);
-
-    return true;
+	return std::optional(item);
 }
-

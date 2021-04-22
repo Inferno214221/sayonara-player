@@ -22,7 +22,7 @@
 #include "Database/Query.h"
 
 #include "Utils/Utils.h"
-#include "Utils/Streams/Stream.h"
+#include "Utils/Streams/Station.h"
 
 using DB::Streams;
 using DB::Query;

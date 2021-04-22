@@ -22,26 +22,21 @@
 #define SAYONARA_MP4_COVER_H
 
 #include "MP4Frame.h"
-
 #include "Utils/Tagging/Models/Cover.h"
-
-#include <taglib/mp4coverart.h>
-#include <taglib/tag.h>
 
 namespace MP4
 {
 	class CoverFrame :
-			public MP4Frame<Models::Cover>
+		public MP4Frame<Models::Cover>
 	{
-	public:
-		explicit CoverFrame(TagLib::MP4::Tag* tag);
-		~CoverFrame() override;
+		public:
+			explicit CoverFrame(TagLib::MP4::Tag* tag);
+			~CoverFrame() override;
 
-
-		// AbstractFrame interface
-	protected:
-		bool map_tag_to_model(Models::Cover& model) override;
-		bool map_model_to_tag(const Models::Cover& model) override;
+		protected:
+			std::optional<Models::Cover> mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Cover& model) override;
 	};
 }
+
 #endif // SAYONARA_MP4_COVER_H

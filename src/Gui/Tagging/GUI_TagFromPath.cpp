@@ -24,7 +24,6 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QDesktopServices>
 #include <QMap>
@@ -33,209 +32,193 @@ using namespace Tagging;
 
 struct GUI_TagFromPath::Private
 {
-	QString							currentFilepath;
-	QMap<TagName, ReplacedString>	tagReplaceStringMap;
+	QString currentFilepath;
+	QMap<TagName, ReplacedString> tagReplaceStringMap;
 };
 
 GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
 	Gui::Widget(parent)
 {
 	m = Pimpl::make<Private>();
+
 	ui = new Ui::GUI_TagFromPath();
 	ui->setupUi(this);
 
 	showErrorFrame(false);
 
-	connect(ui->btn_apply_tag, &QPushButton::clicked, this, [&]() {
+	connect(ui->btnApplyTag, &QPushButton::clicked, this, [&]() {
 		clearInvalidFilepaths();
 		emit sigApply();
 	});
-	connect(ui->btn_apply_tag_all, &QPushButton::clicked, this, [&](){
+
+	connect(ui->btnApplyTagAll, &QPushButton::clicked, this, [&]() {
 		clearInvalidFilepaths();
 		emit sigApplyAll();
 	});
 
-	connect(ui->le_tag, &QLineEdit::textChanged, this, &GUI_TagFromPath::tagTextChanged);
+	connect(ui->leTag, &QLineEdit::textChanged, this, &GUI_TagFromPath::tagTextChanged);
+	connect(ui->btnTagHelp, &QPushButton::clicked, this, &GUI_TagFromPath::btnTagHelpClicked);
 
-	connect(ui->btn_title, &QPushButton::toggled, this, &GUI_TagFromPath::btnTitleChecked);
-	connect(ui->btn_artist, &QPushButton::toggled, this, &GUI_TagFromPath::btnArtistChecked);
-	connect(ui->btn_album, &QPushButton::toggled, this, &GUI_TagFromPath::btnAlbumChecked);
-	connect(ui->btn_track_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btnTrackNrChecked);
-	connect(ui->btn_year, &QPushButton::toggled, this, &GUI_TagFromPath::btnYearChecked);
-	connect(ui->btn_disc_nr, &QPushButton::toggled, this, &GUI_TagFromPath::btnDiscnumberChecked);
-	connect(ui->btn_tag_help, &QPushButton::clicked, this, &GUI_TagFromPath::btnTagHelpClicked);
-
+	initButtons();
 	languageChanged();
 }
 
 GUI_TagFromPath::~GUI_TagFromPath() = default;
 
+void GUI_TagFromPath::initButtons()
+{
+	connect(ui->btnTitle, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnTitle, b, TagTitle);
+	});
+
+	connect(ui->btnArtist, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnArtist, b, TagArtist);
+	});
+
+	connect(ui->btnAlbum, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnAlbum, b, TagAlbum);
+	});
+
+	connect(ui->btnTrackNumber, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnTrackNumber, b, TagTrackNum);
+	});
+
+	connect(ui->btnYear, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnYear, b, TagYear);
+	});
+
+	connect(ui->btnDiscNumber, &QPushButton::toggled, this, [&](const auto b) {
+		btnChecked(ui->btnDiscNumber, b, TagDisc);
+	});
+}
+
+bool GUI_TagFromPath::checkIfAnyButtonIsChecked() const
+{
+	return (ui->btnAlbum->isChecked() ||
+	        ui->btnArtist->isChecked() ||
+	        ui->btnTitle->isChecked() ||
+	        ui->btnYear->isChecked() ||
+	        ui->btnDiscNumber->isChecked() ||
+	        ui->btnTrackNumber->isChecked());
+}
+
 void GUI_TagFromPath::setFilepath(const QString& filepath)
 {
 	m->currentFilepath = filepath;
 
-	if(ui->le_tag->text().isEmpty()){
-		ui->le_tag->setText(filepath);
-	}
-
-	else if( !(ui->btn_album->isChecked() ||
-			ui->btn_artist->isChecked() ||
-			ui->btn_title->isChecked() ||
-			ui->btn_year->isChecked() ||
-			ui->btn_disc_nr->isChecked() ||
-			ui->btn_track_nr->isChecked()))
+	if(ui->leTag->text().isEmpty() || !checkIfAnyButtonIsChecked())
 	{
-		ui->le_tag->setText(filepath);
+		ui->leTag->setText(filepath);
 	}
 
-	Expression e(ui->le_tag->text(), filepath);
-	bool valid = e.is_valid();
-	setTagColors(valid);
+	const auto expression = Tagging::Expression(ui->leTag->text(), filepath);
+	setTagColors(expression.isValid());
 
-	Tagging::TagType tag_type = Tagging::Utils::getTagType(filepath);
-	QString tag_type_string = Tagging::Utils::tagTypeToString(tag_type);
+	const auto tagType = Tagging::getTagType(filepath);
+	const auto tagTypeString = Tagging::tagTypeToString(tagType);
 
-	ui->lab_tag_type->setText(tr("Tag") + ": " + tag_type_string);
+	ui->labTagType->setText(tr("Tag") + ": " + tagTypeString);
 }
-
 
 void GUI_TagFromPath::reset()
 {
-	ui->le_tag->clear();
-	ui->le_tag->setEnabled(true);
-	ui->lv_invalidFilepaths->clear();
+	ui->leTag->clear();
+	ui->leTag->setEnabled(true);
+	ui->lvInvalidFilepaths->clear();
 
-	ui->btn_album->setChecked(false);
-	ui->btn_artist->setChecked(false);
-	ui->btn_title->setChecked(false);
-	ui->btn_year->setChecked(false);
-	ui->btn_disc_nr->setChecked(false);
-	ui->btn_track_nr->setChecked(false);
+	ui->btnAlbum->setChecked(false);
+	ui->btnArtist->setChecked(false);
+	ui->btnTitle->setChecked(false);
+	ui->btnYear->setChecked(false);
+	ui->btnDiscNumber->setChecked(false);
+	ui->btnTrackNumber->setChecked(false);
 }
 
 void GUI_TagFromPath::setTagColors(bool valid)
 {
-	if( !valid ){
-		ui->le_tag->setStyleSheet("font-family: mono; font-size: 12pt; color: red;");
-	}
+	const auto stylesheet = (valid)
+	                        ? QStringLiteral("font-family: mono; font-size: 120%;")
+	                        : QStringLiteral("font-family: mono; font-size: 120%; color: red;");
 
-	else{
-		ui->le_tag->setStyleSheet("font-family: mono; font-size: 12pt;");
-	}
-
-	ui->btn_apply_tag->setEnabled(valid);
-	ui->btn_apply_tag_all->setEnabled(valid);
+	ui->leTag->setStyleSheet(stylesheet);
+	ui->btnApplyTag->setEnabled(valid);
+	ui->btnApplyTagAll->setEnabled(valid);
 }
 
-
-void GUI_TagFromPath::tagTextChanged(const QString& tag_string)
+void GUI_TagFromPath::tagTextChanged(const QString& tagString)
 {
-	Expression e(tag_string, m->currentFilepath);
-	setTagColors(e.is_valid());
+	const auto expression = Tagging::Expression(tagString, m->currentFilepath);
+	setTagColors(expression.isValid());
 }
-
 
 void GUI_TagFromPath::clearInvalidFilepaths()
 {
 	showErrorFrame(false);
-	ui->lv_invalidFilepaths->clear();
+	ui->lvInvalidFilepaths->clear();
 }
 
 void GUI_TagFromPath::addInvalidFilepath(const QString& filepath)
 {
 	showErrorFrame(true);
-	ui->lv_invalidFilepaths->addItem(filepath);
+	ui->lvInvalidFilepaths->addItem(filepath);
 }
 
-bool GUI_TagFromPath::replaceSelectedTagText(TagName tag_name, bool b)
+bool GUI_TagFromPath::replaceSelectedTagText(TagName tagName, bool buttonChecked)
 {
-	TagLineEdit::TextSelection ts = ui->le_tag->textSelection();
+	const auto textSelection = ui->leTag->textSelection();
 
-	if(ts.selectionStart < 0 && b)
+	if(buttonChecked && (textSelection.selectionStart < 0))
 	{
-		spLog(Log::Debug, this) << "Nothing selected...";
-
 		Message::info(tr("Please select text first"));
 		return false;
 	}
 
-	QString text = ui->le_tag->text();
-	QString tag_string = Tagging::tag_name_to_string(tag_name);
+	auto lineEditText = ui->leTag->text();
+	const auto tagString = Tagging::tagNameToString(tagName);
 
-	// replace the string by a tag
-	if(b)
+	if(buttonChecked)
 	{
-		ReplacedString selected_text = text.mid( ts.selectionStart, ts.selectionSize );
+		const auto selectedText = lineEditText.mid(textSelection.selectionStart, textSelection.selectionSize);
 
-		text.replace(ts.selectionStart, ts.selectionSize, tag_string);
-		ui->le_tag->setText(text);
+		lineEditText.replace(textSelection.selectionStart, textSelection.selectionSize, tagString);
+		m->tagReplaceStringMap[tagName] = selectedText;
 
-		m->tagReplaceStringMap[tag_name] = selected_text;
+		ui->leTag->setText(lineEditText);
 	}
 
-	// replace tag by the original string
 	else
 	{
-		text.replace(tag_string, m->tagReplaceStringMap[tag_name]);
-		ui->le_tag->setText(text);
+		lineEditText.replace(tagString, m->tagReplaceStringMap[tagName]);
+		m->tagReplaceStringMap.remove(tagName);
 
-		m->tagReplaceStringMap.remove(tag_name);
+		ui->leTag->setText(lineEditText);
 	}
 
-	Expression e(text, m->currentFilepath);
-	setTagColors(e.is_valid());
+	const auto expression = Tagging::Expression(lineEditText, m->currentFilepath);
+	setTagColors(expression.isValid());
 
 	return true;
 }
 
-void GUI_TagFromPath::btnChecked(QPushButton* btn, bool b, TagName tag_name)
+void GUI_TagFromPath::btnChecked(QPushButton* btn, bool b, TagName tagName)
 {
-	ui->lab_tag_from_path_warning->setVisible(false);
-	ui->lv_invalidFilepaths->setVisible(false);
+	ui->labTagFromPathWarning->setVisible(false);
+	ui->lvInvalidFilepaths->setVisible(false);
 
-	if(!replaceSelectedTagText(tag_name, b)){
+	if(!replaceSelectedTagText(tagName, b))
+	{
 		btn->setChecked(false);
 	}
 }
 
 void GUI_TagFromPath::showErrorFrame(bool b)
 {
-	ui->sw_tag_from_path->setCurrentIndex((b == true) ? 0 : 1);
-}
-
-void GUI_TagFromPath::btnTitleChecked(bool b)
-{
-	btnChecked(ui->btn_title, b, TagTitle);
-}
-
-void GUI_TagFromPath::btnArtistChecked(bool b)
-{
-	btnChecked(ui->btn_artist, b, TagArtist);
-}
-
-void GUI_TagFromPath::btnAlbumChecked(bool b)
-{
-	btnChecked(ui->btn_album, b, TagAlbum);
-}
-
-void GUI_TagFromPath::btnTrackNrChecked(bool b)
-{
-	btnChecked(ui->btn_track_nr, b, TagTrackNum);
-}
-
-void GUI_TagFromPath::btnDiscnumberChecked(bool b)
-{
-	btnChecked(ui->btn_disc_nr, b, TagDisc);
-}
-
-void GUI_TagFromPath::btnYearChecked(bool b)
-{
-	btnChecked(ui->btn_year, b, TagYear);
+	ui->swTagFromPath->setCurrentIndex(b ? 0 : 1);
 }
 
 void GUI_TagFromPath::btnTagHelpClicked()
 {
-	QUrl url(QString("http://sayonara-player.com/faq.php#tag-edit"));
+	const auto url = QUrl(QStringLiteral("https://sayonara-player.com/faq.php#tag-edit"));
 	QDesktopServices::openUrl(url);
 }
 
@@ -243,18 +226,18 @@ void GUI_TagFromPath::languageChanged()
 {
 	ui->retranslateUi(this);
 
-	ui->btn_title->setText(Lang::get(Lang::Title));
-	ui->btn_album->setText(Lang::get(Lang::Album));
-	ui->btn_artist->setText(Lang::get(Lang::Artist));
-	ui->btn_year->setText(Lang::get(Lang::Year));
-	ui->btn_track_nr->setText(Lang::get(Lang::TrackNo).toFirstUpper());
-	ui->lab_tag_from_path_warning->setText(Lang::get(Lang::Warning));
+	ui->btnTitle->setText(Lang::get(Lang::Title));
+	ui->btnAlbum->setText(Lang::get(Lang::Album));
+	ui->btnArtist->setText(Lang::get(Lang::Artist));
+	ui->btnYear->setText(Lang::get(Lang::Year));
+	ui->btnTrackNumber->setText(Lang::get(Lang::TrackNo).toFirstUpper());
+	ui->labTagFromPathWarning->setText(Lang::get(Lang::Warning));
 
-	ui->btn_apply_tag_all->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::All).toFirstUpper());
-	ui->btn_apply_tag->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::Title).toFirstUpper());
+	ui->btnApplyTagAll->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::All).toFirstUpper());
+	ui->btnApplyTag->setText(Lang::get(Lang::Apply) + ": " + Lang::get(Lang::Title).toFirstUpper());
 }
 
 QString GUI_TagFromPath::getRegexString() const
 {
-	return ui->le_tag->text();
+	return ui->leTag->text();
 }

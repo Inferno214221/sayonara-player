@@ -24,28 +24,23 @@
 #include "ID3v2Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
 
-#include <QString>
-
 #include <taglib/popularimeterframe.h>
 
 namespace ID3v2
 {
-	/**
-	 * @brief The PopularimeterFrame class
-	 * @ingroup ID3v2
-	 */
 	class PopularimeterFrame :
-			public ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>
+		public ID3v2Frame<Models::Popularimeter, TagLib::ID3v2::PopularimeterFrame>
 	{
-		protected:
-			TagLib::ID3v2::Frame* create_id3v2_frame() override;
-
 		public:
 			PopularimeterFrame(TagLib::ID3v2::Tag* tag);
 			~PopularimeterFrame() override;
 
-			void map_model_to_frame(const Models::Popularimeter& model, TagLib::ID3v2::PopularimeterFrame* frame) override;
-			void map_frame_to_model(const TagLib::ID3v2::PopularimeterFrame* frame, Models::Popularimeter& model) override;
+		protected:
+			TagLib::ID3v2::Frame* createId3v2Frame() override;
+
+			std::optional<Models::Popularimeter>
+			mapFrameToData(const TagLib::ID3v2::PopularimeterFrame* frame) const override;
+			void mapDataToFrame(const Models::Popularimeter& model, TagLib::ID3v2::PopularimeterFrame* frame) override;
 	};
 }
 

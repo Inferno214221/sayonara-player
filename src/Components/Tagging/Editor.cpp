@@ -23,43 +23,121 @@
 #include "ChangeNotifier.h"
 #include "ChangeInformation.h"
 
-#include "Components/MetaDataInfo/MetaDataInfo.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Directories/MetaDataScanner.h"
+#include "Components/MetaDataInfo/MetaDataInfo.h"
+
+#include "Database/Connector.h"
 #include "Database/CoverConnector.h"
+#include "Database/LibraryDatabase.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Set.h"
 #include "Utils/FileUtils.h"
-
-#include "Utils/Tagging/Tagging.h"
-#include "Utils/Tagging/TaggingCover.h"
-
-#include "Utils/MetaData/Genre.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/MetaData/Album.h"
-#include "Utils/MetaData/Artist.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/Sortorder.h"
-
-#include "Database/LibraryDatabase.h"
-#include "Database/Connector.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/Genre.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 
 #include <QHash>
 #include <QFileInfo>
 
-namespace Algorithm=Util::Algorithm;
+using Tagging::Editor;
 
-using namespace Tagging;
+namespace
+{
+	QList<AlbumId> getOriginalAlbumIds(const QList<Tagging::ChangeInformation>& changeInfos)
+	{
+		Util::Set<AlbumId> albumIds;
+		for(const auto& changeInfo : changeInfos)
+		{
+			albumIds << changeInfo.originalMetadata().albumId();
+		}
+
+		return albumIds.toList();
+	}
+
+	Editor::FailReason checkFailReason(const QString& filepath, Editor* editor)
+	{
+		if(const auto fileInfo = QFileInfo(filepath); !fileInfo.exists())
+		{
+			spLog(Log::Warning, editor) << "Failed to write tags to file: File not found: " << filepath;
+			return Editor::FailReason::FileNotFound;
+		}
+
+		else if(!fileInfo.isWritable())
+		{
+			spLog(Log::Warning, editor) << "Failed to write tags to file: File not writeable: " << filepath;
+			return Editor::FailReason::FileNotWriteable;
+		}
+
+		spLog(Log::Warning, editor) << "Failed to write tags to file: Other error: " << filepath;
+		return Editor::FailReason::TagLibError;
+	}
+
+	QPixmap scalePixmap(const QPixmap& pixmap)
+	{
+		constexpr const auto MaxSize = 1000;
+		return ((pixmap.size().width() > MaxSize) || (pixmap.size().height() > MaxSize))
+		       ? pixmap.scaled(QSize(MaxSize, MaxSize), Qt::KeepAspectRatio, Qt::SmoothTransformation)
+		       : pixmap;
+	}
+
+	bool saveCoverInTrack(const QString& filepath, const QPixmap& pixmap, Editor* editor)
+	{
+		const auto success = Tagging::writeCover(filepath, pixmap);
+		if(!success)
+		{
+			spLog(Log::Warning, editor) << "Failed to write cover";
+		}
+
+		return success;
+	}
+
+	bool saveCoverToPersistence(const MetaData& track, const QPixmap& cover, DB::Covers* coverDatabase, Editor* editor)
+	{
+		const auto coverLocation = Cover::Location::coverLocation(track);
+
+		const auto pixmap = scalePixmap(cover);
+		saveCoverInTrack(track.filepath(), pixmap, editor);
+
+		pixmap.save(coverLocation.audioFileTarget());
+
+		return coverDatabase->setCover(coverLocation.hash(), pixmap);
+	}
+
+	bool applyTrackChangesToDatabase(const MetaData& currentMetadata, DB::LibraryDatabase* libraryDatabase)
+	{
+		return (!currentMetadata.isExtern() && (currentMetadata.id() >= 0))
+		       ? libraryDatabase->updateTrack(currentMetadata)
+		       : true;
+	}
+
+	Editor::FailReason applyTrackChangesToFile(const MetaData& currentMetadata, Editor* editor)
+	{
+		return Tagging::Utils::setMetaDataOfFile(currentMetadata)
+		       ? Editor::FailReason::NoError
+		       : checkFailReason(currentMetadata.filepath(), editor);
+	}
+
+	int checkForChanges(const QList<Tagging::ChangeInformation>& changeInformation)
+	{
+		return Util::Algorithm::count(changeInformation, [](const auto& changeInfo) {
+			return (changeInfo.hasChanges() || changeInfo.hasNewCover());
+		});
+	}
+}
 
 struct Editor::Private
 {
 	QList<ChangeInformation> changeInfo;
-
-	QMap<QString, Editor::FailReason>	failedFiles;
+	QMap<QString, Editor::FailReason> failedFiles;
 };
 
 Editor::Editor(QObject* parent) :
@@ -76,68 +154,66 @@ Editor::Editor(const MetaDataList& tracks, QObject* parent) :
 
 Editor::~Editor() = default;
 
-void Editor::updateTrack(int idx, const MetaData& md)
+void Editor::updateTrack(int index, const MetaData& track)
 {
-	if(Util::between(idx, m->changeInfo))
+	if(Util::between(index, m->changeInfo))
 	{
-		m->changeInfo[idx].update(md);
+		m->changeInfo[index].update(track);
 	}
 }
 
-void Editor::undo(int idx)
+void Editor::undo(int index)
 {
-	if(Util::between(idx, m->changeInfo))
+	if(Util::between(index, m->changeInfo))
 	{
-		m->changeInfo[idx].undo();
+		m->changeInfo[index].undo();
 	}
 }
 
 void Editor::undoAll()
 {
-	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
+	for(auto& changeInfo : m->changeInfo)
 	{
-		it->undo();
+		changeInfo.undo();
 	}
 }
 
-MetaData Editor::metadata(int idx) const
+MetaData Editor::metadata(int index) const
 {
-	if(Util::between(idx, m->changeInfo))
-	{
-		return m->changeInfo[idx].currentMetadata();
-	}
-
-	return MetaData();
+	return (Util::between(index, m->changeInfo))
+	       ? m->changeInfo[index].currentMetadata()
+	       : MetaData();
 }
 
 MetaDataList Editor::metadata() const
 {
 	MetaDataList tracks;
-	tracks.reserve( size_t(m->changeInfo.size()) );
-	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
-	{
-		tracks.push_back(it->currentMetadata());
-	}
+
+	Util::Algorithm::transform(m->changeInfo, tracks, [](const auto& changeInfo) {
+		return (changeInfo.currentMetadata());
+	});
 
 	return tracks;
 }
 
-bool Editor::applyRegularExpression(const QString& regex, int idx)
+bool Editor::applyRegularExpression(const QString& regex, int index)
 {
-	if(!Util::between(idx, m->changeInfo)) {
+	if(!Util::between(index, m->changeInfo))
+	{
 		return false;
 	}
 
-	MetaData& md = m->changeInfo[idx].currentMetadata();
-	Expression e(regex, md.filepath());
-	if(!e.is_valid()) {
-		return false;
+	auto& changeInfo = m->changeInfo[index];
+	auto& currentMetadata = changeInfo.currentMetadata();
+	const auto expression = Tagging::Expression(regex, currentMetadata.filepath());
+
+	if(expression.isValid())
+	{
+		const auto success = expression.apply(currentMetadata);
+		changeInfo.setChanged(success);
 	}
 
-	bool b = e.apply(md);
-	m->changeInfo[idx].setChanged(b);
-
-	return true;
+	return expression.isValid();
 }
 
 int Editor::count() const
@@ -147,31 +223,31 @@ int Editor::count() const
 
 bool Editor::hasChanges() const
 {
-	return Algorithm::contains(m->changeInfo, [](const ChangeInformation& info){
-		return info.hasChanges();
+	return Util::Algorithm::contains(m->changeInfo, [](const auto& changeInfo) {
+		return changeInfo.hasChanges();
 	});
 }
 
-void Editor::addGenre(int idx, const Genre& genre)
+void Editor::addGenre(int index, const Genre& genre)
 {
-	if(Util::between(idx, m->changeInfo))
+	if(Util::between(index, m->changeInfo))
 	{
-		MetaData& md = m->changeInfo[idx].currentMetadata();
-		if(md.addGenre(genre))
+		auto& currentMetadata = m->changeInfo[index].currentMetadata();
+		if(currentMetadata.addGenre(genre))
 		{
-			m->changeInfo[idx].setChanged(true);
+			m->changeInfo[index].setChanged(true);
 		}
 	}
 }
 
-void Editor::deleteGenre(int idx, const Genre& genre)
+void Editor::deleteGenre(int index, const Genre& genre)
 {
-	if(Util::between(idx, m->changeInfo))
+	if(Util::between(index, m->changeInfo))
 	{
-		MetaData& md = m->changeInfo[idx].currentMetadata();
-		if(md.removeGenre(genre))
+		auto& currentMetadata = m->changeInfo[index].currentMetadata();
+		if(currentMetadata.removeGenre(genre))
 		{
-			m->changeInfo[idx].setChanged(true);
+			m->changeInfo[index].setChanged(true);
 		}
 	}
 }
@@ -184,101 +260,87 @@ void Editor::renameGenre(int index, const Genre& genre, const Genre& newGenre)
 
 void Editor::setMetadata(const MetaDataList& tracks)
 {
-	m->changeInfo.clear();
-	m->changeInfo.reserve(int(tracks.size()));
-
-	for(const MetaData& md : tracks)
-	{
-		m->changeInfo << ChangeInformation(md);
-	}
-
 	m->failedFiles.clear();
+	m->changeInfo.clear();
+
+	Util::Algorithm::transform(tracks, m->changeInfo, [](const auto& track) {
+		return ChangeInformation(track);
+	});
 
 	emit sigMetadataReceived(tracks);
 }
 
-bool Editor::isCoverSupported(int idx) const
+bool Editor::isCoverSupported(int index) const
 {
-	if(Util::between(idx, m->changeInfo))
+	if(Util::between(index, m->changeInfo))
 	{
-		const MetaData& md = m->changeInfo[idx].originalMetadata();
-		return Tagging::Covers::isCoverSupported(md.filepath());
+		const auto& originalMetadata = m->changeInfo[index].originalMetadata();
+		return Tagging::isCoverSupported(originalMetadata.filepath());
 	}
 
 	return false;
 }
 
 bool Editor::canLoadEntireAlbum() const
-{	
-	Util::Set<AlbumId> albumIds;
-
-	for(const ChangeInformation& info : m->changeInfo)
-	{
-		albumIds << info.originalMetadata().albumId();
-		if(albumIds.size() > 1) {
-			return false;
-		}
-	}
-
-	return (albumIds.size() == 1);
+{
+	const auto albumIds = getOriginalAlbumIds(m->changeInfo);
+	return (albumIds.count() == 1);
 }
 
 void Editor::loadEntireAlbum()
 {
-	Util::Set<AlbumId> albumIds;
-	for(const ChangeInformation& info : m->changeInfo)
+	const auto albumIds = getOriginalAlbumIds(m->changeInfo);
+	if(albumIds.size() != 1)
 	{
-		albumIds << info.originalMetadata().albumId();
-	}
-
-	if(albumIds.size() != 1){
 		return;
 	}
 
-	AlbumId id = albumIds.first();
-	if(id < 0 && m->changeInfo.size() > 0)
+	const auto albumId = albumIds.first();
+	if((albumId < 0) && (!m->changeInfo.isEmpty()))
 	{
+		const auto filepath = m->changeInfo[0].originalMetadata().filepath();
+		startSameAlbumCrawler(filepath);
+
 		emit sigStarted();
 		emit sigProgress(-1);
-
-		QString dir, filename;
-		QString path = m->changeInfo[0].originalMetadata().filepath();
-		Util::File::splitFilename(path, dir, filename);
-
-		using Directory::MetaDataScanner;
-		auto* t = new QThread();
-		auto* worker = new MetaDataScanner({dir}, true);
-		worker->moveToThread(t);
-
-		connect(t, &QThread::finished, t, &QObject::deleteLater);
-		connect(t, &QThread::started, worker, &MetaDataScanner::start);
-		connect(worker, &MetaDataScanner::sigFinished, t, &QThread::quit);
-		connect(worker, &MetaDataScanner::sigFinished, this, &Editor::loadEntireAlbumFinished);
-
-		t->start();
 	}
 
 	else
 	{
+		auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, 0);
+
 		MetaDataList tracks;
-
-		auto* db = DB::Connector::instance();
-		auto* ldb = db->libraryDatabase(-1, 0);
-
-		ldb->getAllTracksByAlbum(IdList{id}, tracks, ::Library::Filter(), -1);
+		libraryDatabase->getAllTracksByAlbum(IdList {albumId}, tracks, ::Library::Filter(), -1);
 		tracks.sort(::Library::SortOrder::TrackDiscnumberAsc);
 		setMetadata(tracks);
 	}
+}
+
+void Editor::startSameAlbumCrawler(const QString& filepath)
+{
+	using Directory::MetaDataScanner;
+
+	const auto[dir, filename] = Util::File::splitFilename(filepath);
+
+	auto* thread = new QThread();
+	auto* worker = new MetaDataScanner({dir}, true);
+	worker->moveToThread(thread);
+
+	connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+	connect(thread, &QThread::started, worker, &MetaDataScanner::start);
+	connect(worker, &MetaDataScanner::sigFinished, thread, &QThread::quit);
+	connect(worker, &MetaDataScanner::sigFinished, this, &Editor::loadEntireAlbumFinished);
+
+	thread->start();
 }
 
 void Editor::loadEntireAlbumFinished()
 {
 	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
 
-	MetaDataList tracks = worker->metadata();
-	if(!tracks.isEmpty())
+	if(const auto tracks = worker->metadata(); !tracks.isEmpty())
 	{
-		this->setMetadata(tracks);
+		setMetadata(tracks);
 	}
 
 	worker->deleteLater();
@@ -288,20 +350,19 @@ void Editor::loadEntireAlbumFinished()
 
 void Editor::insertMissingArtistsAndAlbums()
 {
-	auto* db = DB::Connector::instance();
-	auto* ldb = db->libraryDatabase(-1, 0);
-
 	MetaDataList tracksToBeModified;
-	Util::Algorithm::transform(m->changeInfo, tracksToBeModified, [](const ChangeInformation& ci){
-		return ci.currentMetadata();
+	Util::Algorithm::transform(m->changeInfo, tracksToBeModified, [](const auto& changeInfo) {
+		return changeInfo.currentMetadata();
 	});
 
-	MetaDataList modifiedTracks = ldb->insertMissingArtistsAndAlbums(tracksToBeModified);
+	auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, 0);
+	const auto modifiedTracks = libraryDatabase->insertMissingArtistsAndAlbums(tracksToBeModified);
 
-	int i=0;
-	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++, i++)
+	auto i = 0;
+	for(auto it = m->changeInfo.begin(); it != m->changeInfo.end(); it++, i++)
 	{
-		if(!Util::between(i, modifiedTracks)) {
+		if(!Util::between(i, modifiedTracks))
+		{
 			spLog(Log::Warning, this) << "Index out of bounds when updating tracks!";
 			break;
 		}
@@ -310,142 +371,94 @@ void Editor::insertMissingArtistsAndAlbums()
 	}
 }
 
-void Editor::updateCover(int idx, const QPixmap& cover)
+void Editor::updateCover(int index, const QPixmap& cover)
 {
-	if(isCoverSupported(idx) && !cover.isNull())
+	if(isCoverSupported(index) && !cover.isNull())
 	{
-		m->changeInfo[idx].updateCover(cover);
+		m->changeInfo[index].updateCover(cover);
 	}
 }
 
-bool Editor::hasCoverReplacement(int idx) const
+bool Editor::hasCoverReplacement(int index) const
 {
-	return (Util::between(idx, m->changeInfo) && m->changeInfo[idx].hasNewCover());
+	return (Util::between(index, m->changeInfo) && m->changeInfo[index].hasNewCover());
 }
+
+struct CommitResult
+{
+	bool coverChanged {false};
+	QList<MetaDataPair> changedTracks;
+	QMap<QString, Editor::FailReason> failedFiles;
+};
 
 void Editor::commit()
 {
-	emit sigStarted();
-
-	auto* db = DB::Connector::instance();
-	auto* db_covers = db->coverConnector();
-	auto* ldb = db->libraryDatabase(-1, 0);
-
-	QList<MetaDataPair> changedTracks;
-
-	const auto changedTrackCount = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
-		return (info.hasChanges());
-	});
-
-	const auto changedCoverCount = std::count_if(m->changeInfo.begin(), m->changeInfo.end(), [](const ChangeInformation& info){
-		return (info.hasNewCover());
-	});
-
-	if((changedTrackCount + changedCoverCount) == 0)
+	const auto numChanges = checkForChanges(m->changeInfo);
+	if(numChanges == 0)
 	{
-		emit sigFinished();
 		return;
 	}
 
-	spLog(Log::Debug, this) << "Changing " << changedTrackCount << " tracks and " << changedCoverCount << " covers";
+	emit sigStarted();
 
 	insertMissingArtistsAndAlbums();
 
+	auto* db = DB::Connector::instance();
+	auto* libraryDatabase = db->libraryDatabase(-1, 0);
+	auto* coverDatabase = db->coverConnector();
+
 	db->transaction();
 
-	int progress = 0;
-	for(auto it=m->changeInfo.begin(); it != m->changeInfo.end(); it++)
+	auto progress = 0;
+	auto commitResult = CommitResult();
+
+	for(auto& changeInfo : m->changeInfo)
 	{
-		bool hasNewCover = it->hasNewCover();
+		const auto& currentMetadata = changeInfo.currentMetadata();
+		const auto& originalMetadata = changeInfo.originalMetadata();
 
-		emit sigProgress(((progress + 1) * 100) / (changedTrackCount + changedCoverCount));
-
-		/* Normal tags changed */
-		if(it->hasChanges())
+		if(changeInfo.hasNewCover())
 		{
-			bool success;
-			{ // write Metadata to file
-				success = Tagging::Utils::setMetaDataOfFile(it->currentMetadata());
-				if(!success)
-				{
-					QString filepath = it->currentMetadata().filepath();
-					QFileInfo fi(filepath);
-					if(!fi.exists())
-					{
-						m->failedFiles.insert(filepath, FailReason::FileNotFound);
-						spLog(Log::Warning, this) << "Failed to write tags to file: File not found: " << filepath;
-					}
-
-					else if(!fi.isWritable())
-					{
-						m->failedFiles.insert(filepath, FailReason::FileNotWriteable);
-						spLog(Log::Warning, this) << "Failed to write tags to file: File not writeable: " << filepath;
-					}
-
-					else
-					{
-						m->failedFiles.insert(filepath, FailReason::TagLibError);
-						spLog(Log::Warning, this) << "Failed to write tags to file: Other error: " << filepath;
-					}
-				}
-			}
-
-			if(success)
-			{ // write changed to db
-				const MetaData& originalMetadata = it->originalMetadata();
-				const MetaData& modifiedMetadata = it->currentMetadata();
-				if( !modifiedMetadata.isExtern() && modifiedMetadata.id() >= 0 )
-				{
-					if(ldb->updateTrack(modifiedMetadata))
-					{
-						changedTracks << MetaDataPair(originalMetadata, modifiedMetadata);
-
-						// update track
-						it->apply();
-					}
-				}
-
-				else
-				{
-					changedTracks << MetaDataPair(originalMetadata, modifiedMetadata);
-				}
-			}
-
-			progress++;
+			commitResult.coverChanged |=
+				saveCoverToPersistence(currentMetadata, changeInfo.cover(), coverDatabase, this);
 		}
 
-		/* Covers changed */
-		if(hasNewCover)
+		if(changeInfo.hasChanges())
 		{
-			QPixmap pm = it->cover();
-			if(pm.size().width() > 1000 || pm.size().height() > 1000)
+			const auto writeResult = applyTrackChangesToFile(currentMetadata, this);
+
+			if((writeResult == Editor::FailReason::NoError) &&
+			   applyTrackChangesToDatabase(currentMetadata, libraryDatabase))
 			{
-				pm = pm.scaled(QSize(1000, 1000), Qt::KeepAspectRatio, Qt::SmoothTransformation);
+				commitResult.changedTracks << MetaDataPair(originalMetadata, currentMetadata);
+				changeInfo.apply();
 			}
 
-			const MetaData& md = it->currentMetadata();
-			Cover::Location cl = Cover::Location::coverLocation(md);
-
-			bool success = Tagging::Covers::writeCover(md.filepath(), pm);
-			if(!success)
+			else
 			{
-				spLog(Log::Warning, this) << "Failed to write cover";
+				commitResult.failedFiles.insert(originalMetadata.filepath(), writeResult);
+				changeInfo.undo();
 			}
-
-			pm.save(cl.audioFileTarget());
-
-			db_covers->setCover(cl.hash(), pm);
-
-			progress++;
 		}
+
+		emit sigProgress((++progress * 100) / numChanges);
 	}
 
 	db->commit();
 	db->libraryConnector()->createIndexes();
 	db->closeDatabase();
 
-	Cover::ChangeNotfier::instance()->shout();
-	ChangeNotifier::instance()->changeMetadata(changedTracks);
+	m->failedFiles = std::move(commitResult.failedFiles);
+
+	if(commitResult.coverChanged)
+	{
+		Cover::ChangeNotfier::instance()->shout();
+	}
+
+	if(!commitResult.changedTracks.isEmpty())
+	{
+		Tagging::ChangeNotifier::instance()->changeMetadata(commitResult.changedTracks);
+	}
 
 	emit sigFinished();
 }

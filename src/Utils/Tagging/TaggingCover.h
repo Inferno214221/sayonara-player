@@ -29,20 +29,17 @@ namespace Tagging
 {
 	struct ParsedTag;
 
-	namespace Covers
-	{
-		bool writeCover(const QString& filepath, const QPixmap& image);
-		bool writeCover(const QString& filepath, const QString& imagePath);
+	bool writeCover(const QString& filepath, const QPixmap& image);
+	bool writeCover(const QString& filepath, const QString& imagePath);
 
-		bool extractCover(const ParsedTag& parsedTag, QByteArray& coverData, QString& mimeType);
-		bool extractCover(const QString& filepath, QByteArray& coverData, QString& mimeType);
-		QPixmap extractCover(const QString& filepath);
+	bool extractCover(const ParsedTag& parsedTag, QByteArray& coverData, QString& mimeType);
+	bool extractCover(const QString& filepath, QByteArray& coverData, QString& mimeType);
+	QPixmap extractCover(const QString& filepath);
 
-		bool hasCover(const ParsedTag& parsedTag);
-		bool hasCover(const QString& filepath);
+	bool hasCover(const ParsedTag& parsedTag);
+	bool hasCover(const QString& filepath);
 
-		bool isCoverSupported(const QString& filepath);
-	}
+	bool isCoverSupported(const QString& filepath);
 }
 
 #endif // SAYONARA_TAGGING_COVER_H

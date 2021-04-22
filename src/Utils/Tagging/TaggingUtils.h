@@ -26,50 +26,54 @@
 #include <taglib/id3v2tag.h>
 #include <taglib/mp4tag.h>
 #include <taglib/xiphcomment.h>
+#include <taglib/tstring.h>
+#include <taglib/fileref.h>
+
+#include <QString>
 
 namespace Tagging
 {
-		/**
-		 * @brief The Quality enum
-		 */
-		enum class Quality : unsigned char
-		{
-			Fast=TagLib::AudioProperties::Fast,
-			Standard=TagLib::AudioProperties::Average,
-			Quality=TagLib::AudioProperties::Accurate,
+	/**
+	 * @brief The Quality enum
+	 */
+	enum class Quality :
+		unsigned char
+	{
+			Fast = TagLib::AudioProperties::Fast,
+			Standard = TagLib::AudioProperties::Average,
+			Quality = TagLib::AudioProperties::Accurate,
 			Dirty
-		};
+	};
 
-		enum class TagType : unsigned char
-		{
-			ID3v1=0,
+	enum class TagType :
+		unsigned char
+	{
+			ID3v1 = 0,
 			ID3v2,
 			Xiph,
 			MP4,
 			Unsupported,
 			Unknown
-		};
+	};
 
-		struct ParsedTag
-		{
-			TagLib::Tag* tag;
-			TagType type;
+	struct ParsedTag
+	{
+		TagLib::Tag* tag {nullptr};
+		TagType type {TagType::Unknown};
 
-			TagLib::MP4::Tag* mp4Tag() const
-			{
-				return dynamic_cast<TagLib::MP4::Tag*>(this->tag);
-			}
+		TagLib::MP4::Tag* mp4Tag() const;
+		TagLib::ID3v2::Tag* id3Tag() const;
+		TagLib::Ogg::XiphComment* xiphTag() const;
+	};
 
-			TagLib::ID3v2::Tag* id3Tag() const
-			{
-				return dynamic_cast<TagLib::ID3v2::Tag*>(this->tag);
-			}
+	bool isValidFile(const TagLib::FileRef& fileRef);
 
-			TagLib::Ogg::XiphComment* xiphTag() const
-			{
-				return dynamic_cast<TagLib::Ogg::XiphComment*>(this->tag);
-			}
-		};
+	Tagging::TagType getTagType(const QString& filepath);
+	QString tagTypeToString(Tagging::TagType);
+	Tagging::ParsedTag getParsedTagFromFileRef(const TagLib::FileRef& fileRef);
+
+	TagLib::String convertString(const QString& str);
+	QString convertString(const TagLib::String& str);
 }
 #endif // SAYONARA_TAGGING_ENUMS_H
 

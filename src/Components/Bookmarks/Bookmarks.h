@@ -49,13 +49,13 @@ class Bookmarks :
 
 		/**
 		 * @brief previous bookmark has changed
-		 * @param bm new bookmark. Check for Bookmark::is_valid()
+		 * @param bm new bookmark. Check for Bookmark::isValid()
 		 */
 		void sigPreviousChanged(const Bookmark& bm);
 
 		/**
 		 * @brief next bookmark has changed
-		 * @param bm new bookmark. Check for Bookmark::is_valid()
+		 * @param bm new bookmark. Check for Bookmark::isValid()
 		 */
 		void sigNextChanged(const Bookmark& bm);
 

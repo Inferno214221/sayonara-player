@@ -117,7 +117,7 @@ namespace
 	bool checkPathHintForCover(const QString& pathHint)
 	{
 		return (Util::File::isFile(pathHint))
-		       ? Tagging::Covers::hasCover(pathHint)
+		       ? Tagging::hasCover(pathHint)
 		       : false;
 	}
 
@@ -128,7 +128,7 @@ namespace
 
 	bool saveToAudioFileTarget(const QString& audioFileSource, const QString& audioFileTarget)
 	{
-		const auto pixmap = Tagging::Covers::extractCover(audioFileSource);
+		const auto pixmap = Tagging::extractCover(audioFileSource);
 		return (!pixmap.isNull()) && pixmap.save(audioFileTarget);
 	}
 }

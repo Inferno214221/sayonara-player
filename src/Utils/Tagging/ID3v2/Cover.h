@@ -31,21 +31,19 @@
 
 namespace ID3v2
 {
-	/**
-	 * @brief The DiscnumberFrame class
-	 * @ingroup ID3v2
-	 */
 	class CoverFrame :
-			public ID3v2Frame<Models::Cover, TagLib::ID3v2::AttachedPictureFrame>
+		public ID3v2Frame<Models::Cover, TagLib::ID3v2::AttachedPictureFrame>
 	{
 		public:
 			CoverFrame(TagLib::ID3v2::Tag* tag);
 			~CoverFrame() override;
 
-			void map_model_to_frame(const Models::Cover& model, TagLib::ID3v2::AttachedPictureFrame* frame) override;
-			void map_frame_to_model(const TagLib::ID3v2::AttachedPictureFrame* frame, Models::Cover& model) override;
+		protected:
+			std::optional<Models::Cover>
+			mapFrameToData(const TagLib::ID3v2::AttachedPictureFrame* frame) const override;
+			void mapDataToFrame(const Models::Cover& cover, TagLib::ID3v2::AttachedPictureFrame* frame) override;
 
-			TagLib::ID3v2::Frame* create_id3v2_frame() override;
+			TagLib::ID3v2::Frame* createId3v2Frame() override;
 	};
 }
 

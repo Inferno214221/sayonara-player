@@ -25,25 +25,18 @@
 
 #include "Utils/Tagging/Models/Discnumber.h"
 
-/**
- * @ingroup Tagging
- */
 namespace Xiph
 {
-	/**
-	 * @brief The DiscnumberFrame class
-	 * @ingroup Xiph
-	 */
 	class DiscnumberFrame :
 		public Xiph::XiphFrame<Models::Discnumber>
 	{
-	public:
-		DiscnumberFrame(TagLib::Ogg::XiphComment* tag);
-		~DiscnumberFrame() override;
+		public:
+			DiscnumberFrame(TagLib::Ogg::XiphComment* tag);
+			~DiscnumberFrame() override;
 
-	protected:
-		bool map_tag_to_model(Models::Discnumber& model) override;
-		bool map_model_to_tag(const Models::Discnumber& model) override;
+		protected:
+			std::optional<Models::Discnumber> mapTagToData() const override;
+			void mapDataToTag(const Models::Discnumber& model) override;
 	};
 }
 

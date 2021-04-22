@@ -21,7 +21,7 @@
 #ifndef SAYONARA_UTIL_TAGGING_H
 #define SAYONARA_UTIL_TAGGING_H
 
-#include "TaggingEnums.h"
+#include "TaggingUtils.h"
 
 namespace TagLib { class FileRef; }
 
@@ -42,16 +42,15 @@ namespace TagLib
  */
 namespace Tagging
 {
-
 	namespace Utils
 	{
 		/**
 		 * @brief get metadata of file. Filepath should be given within the MetaData struct
-		 * @param md MetaData that will be filled
+		 * @param track MetaData that will be filled
 		 * @param quality fast, normal, accurate
 		 * @return true, if metadata could be filled. false else
 		 */
-		bool getMetaDataOfFile(MetaData& md, Tagging::Quality quality=Tagging::Quality::Standard);
+		bool getMetaDataOfFile(MetaData& track, Tagging::Quality quality=Tagging::Quality::Standard);
 
 		/**
 		 * @brief writes metadata into file specivied in MetaData::_filepath
@@ -59,12 +58,6 @@ namespace Tagging
 		 * @return true if metadata could be written. false else
 		 */
 		bool setMetaDataOfFile(const MetaData& md);
-
-		bool isValidFile(const TagLib::FileRef& f);
-
-		Tagging::TagType getTagType(const QString& filepath);
-		QString tagTypeToString(Tagging::TagType);
-		Tagging::ParsedTag getTagTypeFromFileref(const TagLib::FileRef& f);
 	}
 }
 

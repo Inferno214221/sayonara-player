@@ -30,16 +30,17 @@
 namespace ID3v2
 {
 	class LyricsFrame :
-			public ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>
+		public ID3v2Frame<QString, TagLib::ID3v2::UnsynchronizedLyricsFrame>
 	{
 		public:
 			explicit LyricsFrame(TagLib::ID3v2::Tag* tag);
 			~LyricsFrame() override;
 
-			void map_model_to_frame(const QString& model, TagLib::ID3v2::UnsynchronizedLyricsFrame* frame) override;
-			void map_frame_to_model(const TagLib::ID3v2::UnsynchronizedLyricsFrame* frame, QString& model) override;
+		protected:
+			std::optional<QString> mapFrameToData(const TagLib::ID3v2::UnsynchronizedLyricsFrame* frame) const override;
+			void mapDataToFrame(const QString& data, TagLib::ID3v2::UnsynchronizedLyricsFrame* frame) override;
 
-			TagLib::ID3v2::Frame* create_id3v2_frame() override;
+			TagLib::ID3v2::Frame* createId3v2Frame() override;
 	};
 }
 

@@ -257,7 +257,7 @@ QStringList Util::soundfileExtensions(bool withAsterisk)
 {
 	const auto filters = QStringList {
 		"mp3", "ogg", "opus", "oga", "m4a", "wav", "flac", "aac", "wma", "mpc", "aiff", "ape",
-		"webm"
+		"webm", "mp4"
 	};
 
 	return createFileExtensionList(filters, withAsterisk);

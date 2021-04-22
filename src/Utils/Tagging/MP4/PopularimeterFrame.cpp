@@ -21,44 +21,31 @@
 #include "PopularimeterFrame.h"
 
 MP4::PopularimeterFrame::PopularimeterFrame(TagLib::MP4::Tag* tag) :
-	MP4::MP4Frame<Models::Popularimeter>(tag, "rtng")
-{}
+	MP4::MP4Frame<Models::Popularimeter>(tag, "rtng") {}
 
 MP4::PopularimeterFrame::~PopularimeterFrame() = default;
 
-bool MP4::PopularimeterFrame::map_tag_to_model(Models::Popularimeter& model)
+std::optional<Models::Popularimeter> MP4::PopularimeterFrame::mapItemToData(const TagLib::MP4::Item& item) const
 {
-	TagLib::MP4::Tag* tag = this->tag();
-	TagLib::MP4::ItemListMap ilm = tag->itemListMap();
-	TagLib::MP4::Item item = ilm[tag_key()];
-
-	if(item.isValid())
+	auto popularimeter = Models::Popularimeter {};
+	const auto ratingByte = item.toByte();
+	if(ratingByte <= 5)
 	{
-		auto rating = item.toByte();
-		if(rating <= 5)
-		{
-			Rating r = static_cast<Rating>(rating);
-			model.set_rating(r);
-		}
-
-		else{
-			model.set_rating_byte(rating);
-		}
-
-		return true;
+		popularimeter.rating = static_cast<Rating>(ratingByte);
 	}
 
-	return false;
+	else
+	{
+		popularimeter.setRatingByte(ratingByte);
+	}
+
+	return std::optional(popularimeter);
 }
 
-
-bool MP4::PopularimeterFrame::map_model_to_tag(const Models::Popularimeter& model)
+std::optional<TagLib::MP4::Item> MP4::PopularimeterFrame::mapDataToItem(const Models::Popularimeter& popularimeter)
 {
-	TagLib::MP4::Tag* tag = this->tag();
-	TagLib::MP4::ItemListMap& ilm = tag->itemListMap();
-	TagLib::MP4::Item item((uchar) model.get_rating_byte());
+	const auto byte = static_cast<uchar>(popularimeter.ratingByte());
+	const auto item = TagLib::MP4::Item(byte);
 
-	ilm.insert(tag_key(), item);
-
-	return true;
+	return std::optional(item);
 }

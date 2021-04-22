@@ -97,7 +97,7 @@ namespace
 		Tagging::Utils::setMetaDataOfFile(createTrack(newName));
 		if(withCover)
 		{
-			const auto success = Tagging::Covers::writeCover(newName, ":/test/logo.png");
+			const auto success = Tagging::writeCover(newName, ":/test/logo.png");
 			QVERIFY(success);
 		}
 	}

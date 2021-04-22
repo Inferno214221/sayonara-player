@@ -12,13 +12,13 @@ namespace Tagging
 		PIMPL(ChangeInformation)
 
 		public:
-			ChangeInformation(const MetaData& md);
+			ChangeInformation(const MetaData& track);
 			~ChangeInformation();
 
 			ChangeInformation(const ChangeInformation& other);
 			ChangeInformation& operator=(const ChangeInformation& other);
 
-			void update(const MetaData& md);
+			void update(const MetaData& track);
 			void updateCover(const QPixmap& pm);
 
 			/**

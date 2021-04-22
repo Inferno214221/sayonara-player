@@ -26,15 +26,16 @@
 namespace Xiph
 {
 	class LyricsFrame :
-            public Xiph::XiphFrame<QString>
-    {
-        public:
+		public Xiph::XiphFrame<QString>
+	{
+		public:
 			explicit LyricsFrame(TagLib::Ogg::XiphComment* tag);
 			~LyricsFrame() override;
 
-			bool map_tag_to_model(QString& model) override;
-			bool map_model_to_tag(const QString& model) override;
-    };
+		protected:
+			std::optional<QString> mapTagToData() const  override;
+			void mapDataToTag(const QString& lyrics) override;
+	};
 }
 
 #endif // SAYONARA_XIPH_LYRICS_H

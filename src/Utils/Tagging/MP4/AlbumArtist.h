@@ -21,23 +21,22 @@
 #ifndef SAYONARA_MP4_ALBUMARTIST_H
 #define SAYONARA_MP4_ALBUMARTIST_H
 
-#include "Utils/Tagging/MP4/MP4Frame.h"
+#include "MP4Frame.h"
 
-#include <QString>
+class QString;
 
 namespace MP4
 {
 	class AlbumArtistFrame :
-			public MP4::MP4Frame<QString>
+		public MP4::MP4Frame<QString>
 	{
-	public:
-		AlbumArtistFrame(TagLib::MP4::Tag* tag);
-		~AlbumArtistFrame() override;
+		public:
+			AlbumArtistFrame(TagLib::MP4::Tag* tag);
+			~AlbumArtistFrame() override;
 
-		// AbstractFrame interface
-	protected:
-		bool map_tag_to_model(QString& model) override;
-		bool map_model_to_tag(const QString& model) override;
+		protected:
+			std::optional<QString> mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const QString& model) override;
 	};
 }
 

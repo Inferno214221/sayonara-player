@@ -21,22 +21,21 @@
 #ifndef SAYONARA_MP4_POPULARIMETERFRAME_H
 #define SAYONARA_MP4_POPULARIMETERFRAME_H
 
-#include "Utils/Tagging/MP4/MP4Frame.h"
+#include "MP4Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
 
 namespace MP4
 {
 	class PopularimeterFrame :
-			public MP4::MP4Frame<Models::Popularimeter>
+		public MP4::MP4Frame<Models::Popularimeter>
 	{
-	public:
-		PopularimeterFrame(TagLib::MP4::Tag* tag);
-		~PopularimeterFrame() override;
+		public:
+			PopularimeterFrame(TagLib::MP4::Tag* tag);
+			~PopularimeterFrame() override;
 
-		// AbstractFrame interface
-	protected:
-		bool map_tag_to_model(Models::Popularimeter& model) override;
-		bool map_model_to_tag(const Models::Popularimeter& model) override;
+		protected:
+			std::optional<Models::Popularimeter> mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& model) override;
 	};
 }
 

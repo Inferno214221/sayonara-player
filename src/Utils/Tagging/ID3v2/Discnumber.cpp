@@ -26,31 +26,38 @@ ID3v2::DiscnumberFrame::DiscnumberFrame(TagLib::ID3v2::Tag* tag) :
 
 ID3v2::DiscnumberFrame::~DiscnumberFrame() = default;
 
-void ID3v2::DiscnumberFrame::map_model_to_frame(const Models::Discnumber& model, TagLib::ID3v2::TextIdentificationFrame* frame)
+void ID3v2::DiscnumberFrame::mapDataToFrame(const Models::Discnumber& discnumber,
+                                            TagLib::ID3v2::TextIdentificationFrame* frame)
 {
-	TagLib::String str(model.to_string().toLatin1().constData(), TagLib::String::Latin1);
-	frame->setText(str);
+	const auto discnumberData = discnumber.toString().toLatin1();
+	const auto data = TagLib::String(discnumberData.constData(), TagLib::String::Latin1);
+	frame->setText(data);
 }
 
-void ID3v2::DiscnumberFrame::map_frame_to_model(const TagLib::ID3v2::TextIdentificationFrame* frame, Models::Discnumber& model)
+TagLib::ID3v2::Frame* ID3v2::DiscnumberFrame::createId3v2Frame()
 {
-	TagLib::String text = frame->toString();
-	QString str = QString::fromLatin1(text.toCString());
+	return new TagLib::ID3v2::TextIdentificationFrame("TPOS", TagLib::String::Latin1);
+}
 
-	QStringList lst = str.split('/');
+std::optional<Models::Discnumber>
+ID3v2::DiscnumberFrame::mapFrameToData(const TagLib::ID3v2::TextIdentificationFrame* frame) const
+{
+	const auto text = frame->toString();
+	const auto str = QString::fromLatin1(text.toCString());
+
+	auto discnumber = Models::Discnumber(1, 1);
+
+	const auto lst = str.split('/');
 	if(lst.size() > 0)
 	{
-		model.disc = lst[0].toInt();
+		discnumber.disc = lst[0].toInt();
 	}
 
 	if(lst.size() > 1)
 	{
-		model.disccount = lst[1].toInt();
+		discnumber.disccount = lst[1].toInt();
 	}
-}
 
-TagLib::ID3v2::Frame* ID3v2::DiscnumberFrame::create_id3v2_frame()
-{
-	return new TagLib::ID3v2::TextIdentificationFrame("TPOS", TagLib::String::Latin1);
+	return std::optional(discnumber);
 }
 

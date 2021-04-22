@@ -21,28 +21,21 @@
 #ifndef SAYONARA_MP4_DISCNUMBERFRAME_H
 #define SAYONARA_MP4_DISCNUMBERFRAME_H
 
+#include "MP4Frame.h"
 #include "Utils/Tagging/Models/Discnumber.h"
-#include "Utils/Tagging/MP4/MP4Frame.h"
 
-/**
- * @ingroup Tagging
- */
 namespace MP4
 {
-	/**
-	 * @brief The DiscnumberFrame class
-	 * @ingroup Xiph
-	 */
 	class DiscnumberFrame :
 		public MP4::MP4Frame<Models::Discnumber>
 	{
-	public:
-		DiscnumberFrame(TagLib::MP4::Tag* tag);
-		~DiscnumberFrame() override;
+		public:
+			DiscnumberFrame(TagLib::MP4::Tag* tag);
+			~DiscnumberFrame() override;
 
-	protected:
-		bool map_tag_to_model(Models::Discnumber& model) override;
-		bool map_model_to_tag(const Models::Discnumber& model) override;
+		protected:
+			std::optional<Models::Discnumber> mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Discnumber& model) override;
 	};
 }
 

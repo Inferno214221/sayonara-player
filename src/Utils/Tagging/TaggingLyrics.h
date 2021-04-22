@@ -26,12 +26,9 @@ class QString;
 
 namespace Tagging
 {
-	namespace Lyrics
-	{
-		bool writeLyrics(const MetaData& md, const QString& lyrics);
-		bool extractLyrics(const MetaData& md, QString& lyrics);
-		bool isLyricsSupported(const QString& filepath);
-	}
+	bool writeLyrics(const MetaData& track, const QString& lyricsData);
+	bool extractLyrics(const MetaData& track, QString& lyricsData);
+	bool isLyricsSupported(const QString& filepath);
 }
 
 #endif // SAYONARA_TAGGING_LYRICS_H

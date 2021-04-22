@@ -25,22 +25,18 @@
 
 namespace ID3v2
 {
-	/**
-	 * @brief The AlbumArtistFrame class
-	 * @ingroup ID3v2
-	 */
 	class ComposerFrame :
-			public ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>
+		public ID3v2Frame<QString, TagLib::ID3v2::TextIdentificationFrame>
 	{
 		public:
 			explicit ComposerFrame(TagLib::ID3v2::Tag* tag);
 			~ComposerFrame() override;
 
 		protected:
-			TagLib::ID3v2::Frame* create_id3v2_frame() override;
+			TagLib::ID3v2::Frame* createId3v2Frame() override;
 
-			void map_model_to_frame(const QString& model, TagLib::ID3v2::TextIdentificationFrame* frame) override;
-			void map_frame_to_model(const TagLib::ID3v2::TextIdentificationFrame* frame, QString& model) override;
+			void mapDataToFrame(const QString& model, TagLib::ID3v2::TextIdentificationFrame* frame) override;
+			std::optional<QString> mapFrameToData(const TagLib::ID3v2::TextIdentificationFrame* frame) const override;
 	};
 }
 

@@ -27,21 +27,22 @@ ID3v2::ComposerFrame::ComposerFrame(TagLib::ID3v2::Tag* tag) :
 
 ID3v2::ComposerFrame::~ComposerFrame() = default;
 
-void ID3v2::ComposerFrame::map_model_to_frame(const QString& model, TagLib::ID3v2::TextIdentificationFrame* frame)
+void ID3v2::ComposerFrame::mapDataToFrame(const QString& data, TagLib::ID3v2::TextIdentificationFrame* frame)
 {
-	QByteArray data = model.toUtf8();
-	TagLib::String str(data.constData(), TagLib::String::UTF8);
-	frame->setText(str);
+	const auto dataUtf8 = data.toUtf8();
+	const auto dataString = TagLib::String(dataUtf8.constData(), TagLib::String::UTF8);
+	frame->setText(dataString);
 }
 
-void ID3v2::ComposerFrame::map_frame_to_model(const TagLib::ID3v2::TextIdentificationFrame* frame, QString& model)
+std::optional<QString> ID3v2::ComposerFrame::mapFrameToData(const TagLib::ID3v2::TextIdentificationFrame* frame) const
 {
-	TagLib::String tag_str = frame->toString();
-	QString str = QString::fromUtf8( tag_str.toCString(true) );
-	model = str;
+	const auto tagString = frame->toString();
+	const auto str = QString::fromUtf8(tagString.toCString(true));
+
+	return std::optional(str);
 }
 
-TagLib::ID3v2::Frame* ID3v2::ComposerFrame::create_id3v2_frame()
+TagLib::ID3v2::Frame* ID3v2::ComposerFrame::createId3v2Frame()
 {
 	return new TagLib::ID3v2::TextIdentificationFrame("\xA9wrt", TagLib::String::UTF8);
 }

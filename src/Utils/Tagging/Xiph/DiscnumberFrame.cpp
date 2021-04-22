@@ -22,42 +22,51 @@
 
 #include <QStringList>
 
+namespace
+{
+	std::optional<Models::Discnumber> discnumberFromQString(const QString& data)
+	{
+		const auto splittedData = data.split("/");
+
+		auto discnumber = Models::Discnumber();
+		if(splittedData.isEmpty())
+		{
+			return std::optional<Models::Discnumber>();
+		}
+
+		if(splittedData.size() > 0)
+		{
+			discnumber.disc = splittedData[0].toInt();
+		}
+
+		if(splittedData.size() > 1)
+		{
+			discnumber.disccount = splittedData[1].toInt();
+		}
+
+		return std::optional(discnumber);
+	}
+}
+
 Xiph::DiscnumberFrame::DiscnumberFrame(TagLib::Ogg::XiphComment* tag) :
-    Xiph::XiphFrame<Models::Discnumber>(tag, "DISCNUMBER")
-{}
+	Xiph::XiphFrame<Models::Discnumber>(tag, "DISCNUMBER") {}
 
 Xiph::DiscnumberFrame::~DiscnumberFrame() = default;
 
-bool Xiph::DiscnumberFrame::map_tag_to_model(Models::Discnumber& model)
+std::optional<Models::Discnumber> Xiph::DiscnumberFrame::mapTagToData() const
 {
-	TagLib::String str;
-	bool success = value(str);
-	if(!success){
-		return false;
-	}
+	const auto data = stringData();
 
-	QString sval = convert_string(str);
-    QStringList lst = sval.split("/");
-    if(lst.size() > 0){
-		model.disc = lst[0].toInt();
-    }
-
-    if(lst.size() > 1){
-		model.disccount= lst[1].toInt();
-    }
-
-    return (lst.size() > 0);
+	return (data.has_value())
+	       ? discnumberFromQString(Tagging::convertString(data.value()))
+	       : std::nullopt;
 }
 
-bool Xiph::DiscnumberFrame::map_model_to_tag(const Models::Discnumber& model)
+void Xiph::DiscnumberFrame::mapDataToTag(const Models::Discnumber& model)
 {
-    QString str;
-    str += QString::number(model.disc);
-    str += "/";
-    str += QString::number(model.disccount);
+	const auto value = QString("%1/%2")
+		.arg(static_cast<uint32_t>(model.disc))
+		.arg(static_cast<uint32_t>(model.disccount));
 
-	this->set_value(str);
-
-    return true;
+	this->setStringData(Tagging::convertString(value));
 }
-
