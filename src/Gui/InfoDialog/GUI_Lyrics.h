@@ -41,12 +41,12 @@ class GUI_Lyrics :
 		explicit GUI_Lyrics(QWidget* parent = nullptr);
 		~GUI_Lyrics() override;
 
-		void setTrack(const MetaData& md);
+		void setTrack(const MetaData& track);
 
 	private:
 		void init();
 
-		void zoom(qreal font_size);
+		void zoom(int zoomFactor);
 		void setupSources();
 		void chooseSource();
 		void showLyrics(const QString& lyrics, const QString& header, bool rich);

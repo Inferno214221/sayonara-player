@@ -27,7 +27,6 @@ private slots:
 
 void LyricsTest::run_test(const QString& filename)
 {
-
 	const QString lyrics = QString::fromUtf8("Those are söme lyrics фыва");
 	MetaData md(filename);
 	Tagging::Utils::getMetaDataOfFile(md);

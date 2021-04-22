@@ -43,10 +43,10 @@ namespace Lyrics
 			Server();
 			~Server();
 
-			using StartEndTag=QPair<QString, QString>;
-			using StartEndTags=QList<StartEndTag>;
-			using Replacement=QPair<QString, QString>;
-			using Replacements=QList<Replacement>;
+			using StartEndTag = QPair<QString, QString>;
+			using StartEndTags = QList<StartEndTag>;
+			using Replacement = QPair<QString, QString>;
+			using Replacements = QList<Replacement>;
 
 			bool canFetchDirectly() const;
 			bool canSearch() const;
@@ -99,7 +99,5 @@ namespace Lyrics
 			QString applyReplacements(const QString& str) const;
 	};
 }
-
-
 
 #endif /* LYRICSERVER_H_ */

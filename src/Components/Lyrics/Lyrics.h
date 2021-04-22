@@ -30,36 +30,36 @@
 namespace Lyrics
 {
 	class Lyrics :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Lyrics)
 
-	signals:
-		void sigLyricsFetched();
+		signals:
+			void sigLyricsFetched();
 
-	public:
-		explicit Lyrics(QObject* parent=nullptr);
-		~Lyrics();
+		public:
+			explicit Lyrics(QObject* parent = nullptr);
+			~Lyrics();
 
-		QStringList servers() const;
-		void setMetadata(const MetaData& md);
-		bool fetchLyrics(const QString& artist, const QString& title, int server_index);
-		bool saveLyrics(const QString& plainText);
+			QStringList servers() const;
+			void setMetadata(const MetaData& track);
+			bool fetchLyrics(const QString& artist, const QString& title, int serverIndex);
+			bool saveLyrics(const QString& plainText);
 
-		QString artist() const;
-		QString title() const;
-		QString lyricHeader() const;
-		QString localLyricHeader() const;
-		QString lyrics() const;
-		QString localLyrics() const;
+			QString artist() const;
+			QString title() const;
+			QString lyricHeader() const;
+			QString localLyricHeader() const;
+			QString lyrics() const;
+			QString localLyrics() const;
 
-		bool isLyricValid() const;
-		bool isLyricTagAvailable() const;
-		bool isLyricTagSupported() const;
+			bool isLyricValid() const;
+			bool isLyricTagAvailable() const;
+			bool isLyricTagSupported() const;
 
-	private slots:
-		void lyricsFetched();
+		private slots:
+			void lyricsFetched();
 	};
 }
 

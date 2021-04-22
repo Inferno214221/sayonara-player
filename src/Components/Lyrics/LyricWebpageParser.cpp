@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LyricWebpageParser.h"
 #include "LyricServer.h"
 
@@ -29,127 +27,191 @@
 
 using namespace Lyrics;
 
-static QString convertTagToRegex(const QString& tag, const QMap<QString, QString>& regexConversions)
+namespace
 {
-	QString ret(tag);
-
-	const QList<QString> keys = regexConversions.keys();
-	for(const QString& key : keys)
+	QString convertTagToRegex(const QString& tag, const QMap<QString, QString>& regexConversions,
+	                          bool closeBeginningAngledBracket)
 	{
-		ret.replace(key, regexConversions.value(key));
+		auto result = tag;
+
+		const auto keys = regexConversions.keys();
+		for(const auto& key : keys)
+		{
+			result.replace(key, regexConversions.value(key));
+		}
+
+		result.replace(" ", "\\s+");
+
+		if(closeBeginningAngledBracket && result.startsWith("<") && !result.endsWith(">"))
+		{
+			result.append(".*>");
+		}
+
+		return result;
 	}
 
-	ret.replace(" ", "\\s+");
-
-	return ret;
-}
-
-
-QString WebpageParser::parseWebpage(const QByteArray& raw, const QMap<QString, QString>& regexConversions, Server* server)
-{
-	QString dst(raw);
-
-	Server::StartEndTags tags = server->startEndTag();
-	for(const Server::StartEndTag& tag : tags)
+	QString parseNumericContent(const QString& content)
 	{
-		QString startTag = convertTagToRegex(tag.first, regexConversions);
-		if(startTag.startsWith("<") && !startTag.endsWith(">")){
-			startTag.append(".*>");
+		const auto regExp = QRegExp("&#(\\d+);|<br />|</span>|</p>");
+
+		QString word;
+		QStringList words;
+
+		auto pos = 0;
+		while((pos = regExp.indexIn(content, pos)) != -1)
+		{
+			const auto caption = regExp.cap(1);
+
+			pos += regExp.matchedLength();
+			if(caption.isEmpty())
+			{
+				words << word;
+				word.clear();
+			}
+
+			else
+			{
+				word.append(QChar(caption.toInt()));
+			}
 		}
 
-		QString endTag = convertTagToRegex(tag.second, regexConversions);
+		return words.join("<br>");
+	}
 
-		QString content;
-		QRegExp regex;
-		regex.setMinimal(true);
-		regex.setPattern(startTag + "(.+)" + endTag);
-		if(regex.indexIn(dst) != -1){
-			content  = regex.cap(1);
+	void removePreformatTag(QString& data)
+	{
+		auto regExp = QRegExp("<p\\s.*>");
+		regExp.setMinimal(true);
+		data.remove(regExp);
+		data.remove(QRegExp("</p>"));
+	}
+
+	void removeComments(QString& data)
+	{
+		auto regExp = QRegExp("<!--.*-->");
+		regExp.setMinimal(true);
+		data.remove(regExp);
+	}
+
+	void formatLineFeeds(QString& data)
+	{
+		data.replace("<br>\n", "<br>");
+		data.replace(QRegExp("<br\\s*/>\n"), "<br>");
+		data.replace("\r\n", "<br>");
+		data.replace("\\r\\n", "<br>");
+		data.replace("\n", "<br>");
+		data.replace("\\n", "<br>");
+		data.replace(QRegExp("<br\\s*/>"), "<br>");
+		data.replace("\\\"", "\"");
+	}
+
+	void removeLineFeeds(QString& data)
+	{
+		formatLineFeeds(data);
+
+		const auto lineBreaks = QStringLiteral("<br>\\s*<br>\\s*<br>");
+
+		auto regExp = QRegExp(lineBreaks);
+		while(data.contains(regExp))
+		{
+			data.replace(regExp, "<br><br>");
 		}
 
-		if(content.isEmpty()){
-			continue;
+		while(data.startsWith("<br>"))
+		{
+			data = data.right(data.count() - 4);
 		}
+	}
 
+	void removeScript(QString& data)
+	{
 		QRegExp reScript;
 		reScript.setPattern("<script.+</script>");
 		reScript.setMinimal(true);
-		while(reScript.indexIn(content) != -1){
-			content.replace(reScript, "");
-		}
-
-		QString word;
-		if(server->isNumeric())
+		while(reScript.indexIn(data) != -1)
 		{
-			QRegExp rx("&#(\\d+);|<br />|</span>|</p>");
-
-			QStringList tmplist;
-			int pos = 0;
-			while ((pos = rx.indexIn(content, pos)) != -1)
-			{
-				QString str = rx.cap(1);
-
-				pos += rx.matchedLength();
-				if(str.size() == 0)
-				{
-					tmplist.push_back(word);
-					word = "";
-					tmplist.push_back("<br>");
-				}
-
-				else{
-					word.append(QChar(str.toInt()));
-				}
-			}
-
-			dst = "";
-
-			for(const QString& str : tmplist) {
-				dst.append(str);
-			}
-		}
-
-		else {
-			dst = content;
-		}
-
-		dst.replace("<br>\n", "<br>");
-		dst.replace(QRegExp("<br\\s*/>\n"), "<br>");
-		dst.replace("\n", "<br>");
-		dst.replace("\\n", "<br>");
-		dst.replace(QRegExp("<br\\s*/>"), "<br>");
-		dst.replace("\\\"", "\"");
-
-		QRegExp re_ptag("<p\\s.*>");
-		re_ptag.setMinimal(true);
-		dst.remove(re_ptag);
-		dst.remove(QRegExp("</p>"));
-
-		QRegExp re_comment("<!--.*-->");
-		re_comment.setMinimal(true);
-		dst.remove(re_comment);
-
-		QRegExp re_linefeed("<br>\\s*<br>\\s*<br>");
-		while(dst.contains(re_linefeed)) {
-			dst.replace(re_linefeed, "<br><br>");
-		}
-
-		while(dst.startsWith("<br>")){
-			dst = dst.right(dst.count() - 4);
-		}
-
-		int idx = dst.indexOf("<a");
-		while(idx >= 0)
-		{
-			int idx2 = dst.indexOf("\">", idx);
-			dst.remove(idx, idx2 - idx + 2);
-			idx = dst.indexOf("<a");
-		}
-
-		if(dst.size() > 100){
-			break;
+			data.replace(reScript, "");
 		}
 	}
 
-	return dst.trimmed();
+	void removeLinks(QString& result)
+	{
+		{
+			auto startIndexOpening = result.indexOf("<a");
+			while(startIndexOpening >= 0)
+			{
+				const auto endIndex = result.indexOf(">", startIndexOpening);
+				const auto length = endIndex - startIndexOpening + 1;
+
+				result.remove(startIndexOpening, length);
+				startIndexOpening = result.indexOf("<a", startIndexOpening);
+			}
+		}
+
+		{
+			auto startIndexClosing = result.indexOf("</a>");
+			while(startIndexClosing >= 0)
+			{
+				result.remove(startIndexClosing, 4);
+				startIndexClosing = result.indexOf("</a>", startIndexClosing);
+			}
+		}
+	}
+
+	void preProcessContent(QString& result)
+	{
+		removeScript(result);
+	}
+
+	void postProcessResult(QString& result)
+	{
+		removePreformatTag(result);
+		removeComments(result);
+		removeLineFeeds(result);
+		removeLinks(result);
+	}
+
+	QString extractContentFromWebpage(const QString& startTagRegex, const QString& endTagRegex, const QString& website)
+	{
+		QRegExp regex(startTagRegex + "(.+)" + endTagRegex);
+		regex.setMinimal(true);
+
+		return (regex.indexIn(website) != -1)
+		       ? regex.cap(1)
+		       : QString();
+	}
+}
+
+QString
+WebpageParser::parseWebpage(const QByteArray& rawData, const QMap<QString, QString>& regexConversions, Server* server)
+{
+	const auto website = QString::fromUtf8(rawData);
+
+	const auto startEndTags = server->startEndTag();
+	for(const auto& startEndTag : startEndTags)
+	{
+		const auto startTag = convertTagToRegex(startEndTag.first, regexConversions, true);
+		const auto endTag = convertTagToRegex(startEndTag.second, regexConversions, false);
+
+		auto content = extractContentFromWebpage(startTag, endTag, website);
+		if(content.isEmpty())
+		{
+			continue;
+		}
+
+		preProcessContent(content);
+
+		auto result = (server->isNumeric())
+		              ? parseNumericContent(content)
+		              : std::move(content);
+
+		postProcessResult(result);
+
+		if(result.size() > 100)
+		{
+			return result.trimmed();
+		}
+	}
+
+	return QString();
 }

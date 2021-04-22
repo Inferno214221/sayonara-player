@@ -18,10 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "LyricServer.h"
 #include "LyricServerJsonWriter.h"
+
+#include "Utils/FileUtils.h"
 
 #include <QJsonDocument>
 #include <QJsonValue>
@@ -31,6 +31,113 @@
 #include <QDir>
 
 using Lyrics::Server;
+
+namespace
+{
+	Server::Replacement getReplacement(const QJsonObject& object)
+	{
+		Server::Replacement replacement;
+
+		for(auto it = object.begin(); it != object.end(); it++)
+		{
+			if(it.key() == "replacement_from")
+			{
+				replacement.first = it->toString();
+			}
+
+			else if(it.key() == "replacement_to")
+			{
+				replacement.second = it->toString();
+			}
+		}
+
+		return replacement;
+	}
+
+	Server::Replacements getReplacements(const QJsonArray& array)
+	{
+		Server::Replacements replacements;
+
+		for(auto it = array.begin(); it != array.end(); it++)
+		{
+			const auto replacement = getReplacement(it->toObject());
+			if(!replacement.first.isEmpty())
+			{
+				replacements << replacement;
+			}
+		}
+
+		return replacements;
+	}
+
+	Server::StartEndTag getStartEndTag(const QJsonObject& object)
+	{
+		Server::StartEndTag startEndTag;
+
+		for(auto it = object.begin(); it != object.end(); it++)
+		{
+			if(it.key() == "start_tag")
+			{
+				startEndTag.first = it->toString();
+			}
+
+			else if(it.key() == "end_tag")
+			{
+				startEndTag.second = it->toString();
+			}
+		}
+
+		return startEndTag;
+	}
+
+	Server::StartEndTags getStartEndTags(const QJsonArray& array)
+	{
+		Server::StartEndTags startEndTags;
+
+		for(auto it = array.begin(); it != array.end(); it++)
+		{
+			const auto startEndTag = getStartEndTag(it->toObject());
+			if(!startEndTag.first.isEmpty() && !startEndTag.second.isEmpty())
+			{
+				startEndTags << startEndTag;
+			}
+		}
+
+		return startEndTags;
+	}
+
+	QJsonArray replacementsToArray(const Server::Replacements& replacements)
+	{
+		QJsonArray result;
+
+		for(const auto& replacement : replacements)
+		{
+			QJsonObject replacementObject;
+			replacementObject.insert("replacement_from", QJsonValue(replacement.first));
+			replacementObject.insert("replacement_to", QJsonValue(replacement.second));
+
+			result.append(QJsonValue(replacementObject));
+		}
+
+		return result;
+	}
+
+	QJsonArray startEndTagsToArray(const Server::StartEndTags& startEndTags)
+	{
+		QJsonArray result;
+
+		for(const auto& startEndTag : startEndTags)
+		{
+			QJsonObject startEndTagObject;
+			startEndTagObject.insert("start_tag", QJsonValue(startEndTag.first));
+			startEndTagObject.insert("end_tag", QJsonValue(startEndTag.second));
+
+			result.append(QJsonValue(startEndTagObject));
+		}
+
+		return result;
+	}
+}
 
 QJsonObject Lyrics::ServerJsonWriter::toJson(Lyrics::Server* server)
 {
@@ -45,31 +152,11 @@ QJsonObject Lyrics::ServerJsonWriter::toJson(Lyrics::Server* server)
 	object.insert("is_lowercase", QJsonValue(server->isLowercase()));
 	object.insert("error_string", QJsonValue(server->errorString()));
 
-	QJsonArray arr_replacements;
-	auto replacements = server->replacements();
-	for(const Server::Replacement& replacement : replacements)
-	{
-		QJsonObject replacement_object;
-		replacement_object.insert("replacement_from", QJsonValue(replacement.first));
-		replacement_object.insert("replacement_to", QJsonValue(replacement.second));
+	const auto arrayReplacements = replacementsToArray(server->replacements());
+	object.insert("replacements", QJsonValue(arrayReplacements));
 
-		arr_replacements.append(QJsonValue(replacement_object));
-	}
-
-	object.insert("replacements", QJsonValue(arr_replacements));
-
-	QJsonArray arr_start_end_tags;
-	auto start_end_tags = server->startEndTag();
-	for(const Server::StartEndTag& start_end_tag : start_end_tags)
-	{
-		QJsonObject start_end_tag_object;
-		start_end_tag_object.insert("start_tag", QJsonValue(start_end_tag.first));
-		start_end_tag_object.insert("end_tag", QJsonValue(start_end_tag.second));
-
-		arr_start_end_tags.append(QJsonValue(start_end_tag_object));
-	}
-
-	object.insert("start_end_tags", QJsonValue(arr_start_end_tags));
+	const auto arrStartEndTags = startEndTagsToArray(server->startEndTag());
+	object.insert("start_end_tags", QJsonValue(arrStartEndTags));
 
 	object.insert("search_result_regex", QJsonValue(server->searchResultRegex()));
 	object.insert("search_result_url_template", QJsonValue(server->searchResultUrlTemplate()));
@@ -78,130 +165,76 @@ QJsonObject Lyrics::ServerJsonWriter::toJson(Lyrics::Server* server)
 	return object;
 }
 
-
 Lyrics::Server* Lyrics::ServerJsonReader::fromJson(const QJsonObject& json)
 {
-	Server* server = new Server();
+	auto* server = new Server();
 
-	for(auto it=json.begin(); it != json.end(); it++)
+	for(auto it = json.begin(); it != json.end(); it++)
 	{
-		QString key = it.key();
-		QJsonValue val = *it;
-
+		const auto key = it.key();
 		if(key == "name")
 		{
-			server->setName(val.toString());
+			server->setName(it->toString());
 		}
 
 		else if(key == "address")
 		{
-			server->setAddress(val.toString());
+			server->setAddress(it->toString());
 		}
 
 		else if(key == "replacements")
 		{
-			Server::Replacements replacements;
-			QJsonArray arr = val.toArray();
-			for(auto arr_it=arr.begin(); arr_it != arr.end(); arr_it++)
-			{
-
-				Server::Replacement replacement;
-
-				QJsonObject obj = (*arr_it).toObject();
-				for(auto obj_it=obj.begin(); obj_it != obj.end(); obj_it++)
-				{
-					if(obj_it.key() == "replacement_from")
-					{
-						replacement.first = (*obj_it).toString();
-					}
-
-					else if(obj_it.key() == "replacement_to")
-					{
-						replacement.second = (*obj_it).toString();
-					}
-				}
-
-				if(!replacement.first.isEmpty()){
-					replacements << replacement;
-				}
-			}
-
-			server->setReplacements(replacements);
+			server->setReplacements(getReplacements(it->toArray()));
 		}
 
 		else if(key == "direct_url_template")
 		{
-			server->setDirectUrlTemplate(val.toString());
+			server->setDirectUrlTemplate(it->toString());
 		}
 
 		else if(key == "start_end_tags")
 		{
-			Server::StartEndTags start_end_tags;
-			QJsonArray arr = val.toArray();
-			for(auto arr_it=arr.begin(); arr_it != arr.end(); arr_it++)
-			{
-				Server::StartEndTag start_end_tag;
-
-				QJsonObject obj = (*arr_it).toObject();
-				for(auto obj_it=obj.begin(); obj_it != obj.end(); obj_it++)
-				{
-					if(obj_it.key() == "start_tag")
-					{
-						start_end_tag.first = (*obj_it).toString();
-					}
-
-					else if(obj_it.key() == "end_tag")
-					{
-						start_end_tag.second = (*obj_it).toString();
-					}
-				}
-
-				if(!start_end_tag.first.isEmpty() && !start_end_tag.second.isEmpty()){
-					start_end_tags << start_end_tag;
-				}
-			}
-
-			server->setStartEndTag(start_end_tags);
+			server->setStartEndTag(getStartEndTags(it->toArray()));
 		}
 
 		else if(key == "is_start_tag_included")
 		{
-			server->setIsStartTagIncluded(val.toBool());
+			server->setIsStartTagIncluded(it->toBool());
 		}
 
 		else if(key == "is_end_tag_included")
 		{
-			server->setIsEndTagIncluded(val.toBool());
+			server->setIsEndTagIncluded(it->toBool());
 		}
 
 		else if(key == "is_numeric")
 		{
-			server->setIsNumeric(val.toBool());
+			server->setIsNumeric(it->toBool());
 		}
 
 		else if(key == "is_lowercase")
 		{
-			server->setIsLowercase(val.toBool());
+			server->setIsLowercase(it->toBool());
 		}
 
 		else if(key == "error_string")
 		{
-			server->setErrorString(val.toString());
+			server->setErrorString(it->toString());
 		}
 
 		else if(key == "search_result_regex")
 		{
-			server->setSearchResultRegex(val.toString());
+			server->setSearchResultRegex(it->toString());
 		}
 
 		else if(key == "search_result_url_template")
 		{
-			server->setSearchResultUrlTemplate(val.toString());
+			server->setSearchResultUrlTemplate(it->toString());
 		}
 
 		else if(key == "search_url_template")
 		{
-			server->setSearchUrlTemplate(val.toString());
+			server->setSearchUrlTemplate(it->toString());
 		}
 	}
 
@@ -214,24 +247,20 @@ Lyrics::Server* Lyrics::ServerJsonReader::fromJson(const QJsonObject& json)
 	return server;
 }
 
-
 QList<Lyrics::Server*> Lyrics::ServerJsonReader::parseJsonFile(const QString& filename)
 {
 	QList<Server*> ret;
+	QByteArray data;
+	Util::File::readFileIntoByteArray(filename, data);
 
-	QFile f(filename);
-	f.open(QFile::ReadOnly);
-	QByteArray data = f.readAll();
-	f.close();
-
-	QJsonDocument doc = QJsonDocument::fromJson(data);
+	const auto doc = QJsonDocument::fromJson(data);
 	if(doc.isArray())
 	{
-		QJsonArray arr = doc.array();
-		for(auto it=arr.begin(); it != arr.end(); it++)
+		const auto arr = doc.array();
+		for(auto it = arr.begin(); it != arr.end(); it++)
 		{
-			Server* server = fromJson( (*it).toObject() );
-			if(server){
+			if(auto* server = fromJson(it->toObject()); server != nullptr)
+			{
 				ret << server;
 			}
 		}
@@ -239,8 +268,8 @@ QList<Lyrics::Server*> Lyrics::ServerJsonReader::parseJsonFile(const QString& fi
 
 	else if(doc.isObject())
 	{
-		Server* server = fromJson( doc.object() );
-		if(server){
+		if(auto* server = fromJson(doc.object()); server != nullptr)
+		{
 			ret << server;
 		}
 	}

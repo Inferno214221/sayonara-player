@@ -25,199 +25,201 @@
 #include <QJsonArray>
 #include <QJsonValue>
 
-using namespace Lyrics;
-
-struct Server::Private
+namespace Lyrics
 {
-	QString name;
-	QString address;
-	Server::Replacements replacements;
-	QString directUrlTemplate;
-	Server::StartEndTags startEndTag;
-	bool isStartTagIncluded=false;
-	bool isEndTagIncluded=false;
-	bool isNumeric=false;
-	bool isLowercase=false;
-	QString errorString;
-
-	QString searchResultRegex;
-	QString searchResultUrlTemplate;
-	QString searchUrlTemplate;
-};
-
-Server::Server()
-{
-	m = Pimpl::make<Private>();
-}
-
-Server::~Server() = default;
-
-bool Server::canFetchDirectly() const
-{
-	return !(m->address.isEmpty() || m->directUrlTemplate.isEmpty() || m->startEndTag.isEmpty());
-}
-
-bool Server::canSearch() const
-{
-	return !(m->address.isEmpty() || m->searchResultRegex.isEmpty() || m->searchResultUrlTemplate.isEmpty() || m->searchUrlTemplate.isEmpty());
-}
-
-QString Server::name() const
-{
-	return m->name;
-}
-
-void Server::setName(const QString& name)
-{
-	m->name = name;
-}
-
-QString Server::address() const
-{
-	return m->address;
-}
-
-void Server::setAddress(const QString& address)
-{
-	m->address = address;
-}
-
-Server::Replacements Server::replacements() const
-{
-	return m->replacements;
-}
-
-void Server::setReplacements(const Server::Replacements& replacements)
-{
-	m->replacements = replacements;
-}
-
-QString Server::directUrlTemplate() const
-{
-	return m->directUrlTemplate;
-}
-
-void Server::setDirectUrlTemplate(const QString& direct_url_template)
-{
-	m->directUrlTemplate = direct_url_template;
-}
-
-Server::StartEndTags Server::startEndTag() const
-{
-	return m->startEndTag;
-}
-
-void Server::setStartEndTag(const StartEndTags& start_end_tag)
-{
-	m->startEndTag = start_end_tag;
-}
-
-bool Server::isStartTagIncluded() const
-{
-	return m->isStartTagIncluded;
-}
-
-void Server::setIsStartTagIncluded(bool is_start_tag_included)
-{
-	m->isStartTagIncluded = is_start_tag_included;
-}
-
-bool Server::isEndTagIncluded() const
-{
-	return m->isEndTagIncluded;
-}
-
-void Server::setIsEndTagIncluded(bool is_end_tag_included)
-{
-	m->isEndTagIncluded = is_end_tag_included;
-}
-
-bool Server::isNumeric() const
-{
-	return m->isNumeric;
-}
-
-void Server::setIsNumeric(bool is_numeric)
-{
-	m->isNumeric = is_numeric;
-}
-
-bool Server::isLowercase() const
-{
-	return m->isLowercase;
-}
-
-void Server::setIsLowercase(bool is_lowercase)
-{
-	m->isLowercase = is_lowercase;
-}
-
-QString Server::errorString() const
-{
-	return m->errorString;
-}
-
-void Server::setErrorString(const QString& error_string)
-{
-	m->errorString = error_string;
-}
-
-QString Server::searchResultRegex() const
-{
-	return m->searchResultRegex;
-}
-
-void Server::setSearchResultRegex(const QString& search_result_regex)
-{
-	m->searchResultRegex = search_result_regex;
-}
-
-QString Server::searchResultUrlTemplate() const
-{
-	return m->searchResultUrlTemplate;
-}
-
-void Server::setSearchResultUrlTemplate(const QString& search_result_url_template)
-{
-	m->searchResultUrlTemplate = search_result_url_template;
-}
-
-QString Server::searchUrlTemplate() const
-{
-	return m->searchUrlTemplate;
-}
-
-void Server::setSearchUrlTemplate(const QString& search_url_template)
-{
-	m->searchUrlTemplate = search_url_template;
-}
-
-QJsonObject Server::toJson()
-{
-	return Lyrics::ServerJsonWriter::toJson(this);
-}
-
-Server* Server::fromJson(const QJsonObject& json)
-{
-	return Lyrics::ServerJsonReader::fromJson(json);
-}
-
-QString Server::applyReplacements(const QString& str, const Server::Replacements& replacements)
-{
-	QString ret(str);
-
-	for(const Server::Replacement& r : replacements)
+	struct Server::Private
 	{
-		while(ret.contains(r.first))
-		{
-			ret.replace(r.first, r.second);
-		}
+		QString name;
+		QString address;
+		Server::Replacements replacements;
+		QString directUrlTemplate;
+		Server::StartEndTags startEndTag;
+		bool isStartTagIncluded = false;
+		bool isEndTagIncluded = false;
+		bool isNumeric = false;
+		bool isLowercase = false;
+		QString errorString;
+
+		QString searchResultRegex;
+		QString searchResultUrlTemplate;
+		QString searchUrlTemplate;
+	};
+
+	Server::Server()
+	{
+		m = Pimpl::make<Private>();
 	}
 
-	return ret;
-}
+	Server::~Server() = default;
 
-QString Server::applyReplacements(const QString& str) const
-{
-	return applyReplacements(str, this->replacements());
+	bool Server::canFetchDirectly() const
+	{
+		return !(m->address.isEmpty() || m->directUrlTemplate.isEmpty() || m->startEndTag.isEmpty());
+	}
+
+	bool Server::canSearch() const
+	{
+		return !(m->address.isEmpty() || m->searchResultRegex.isEmpty() || m->searchResultUrlTemplate.isEmpty() ||
+		         m->searchUrlTemplate.isEmpty());
+	}
+
+	QString Server::name() const
+	{
+		return m->name;
+	}
+
+	void Server::setName(const QString& name)
+	{
+		m->name = name;
+	}
+
+	QString Server::address() const
+	{
+		return m->address;
+	}
+
+	void Server::setAddress(const QString& address)
+	{
+		m->address = address;
+	}
+
+	Server::Replacements Server::replacements() const
+	{
+		return m->replacements;
+	}
+
+	void Server::setReplacements(const Server::Replacements& replacements)
+	{
+		m->replacements = replacements;
+	}
+
+	QString Server::directUrlTemplate() const
+	{
+		return m->directUrlTemplate;
+	}
+
+	void Server::setDirectUrlTemplate(const QString& direct_url_template)
+	{
+		m->directUrlTemplate = direct_url_template;
+	}
+
+	Server::StartEndTags Server::startEndTag() const
+	{
+		return m->startEndTag;
+	}
+
+	void Server::setStartEndTag(const StartEndTags& start_end_tag)
+	{
+		m->startEndTag = start_end_tag;
+	}
+
+	bool Server::isStartTagIncluded() const
+	{
+		return m->isStartTagIncluded;
+	}
+
+	void Server::setIsStartTagIncluded(bool is_start_tag_included)
+	{
+		m->isStartTagIncluded = is_start_tag_included;
+	}
+
+	bool Server::isEndTagIncluded() const
+	{
+		return m->isEndTagIncluded;
+	}
+
+	void Server::setIsEndTagIncluded(bool isEndTagIncluded)
+	{
+		m->isEndTagIncluded = isEndTagIncluded;
+	}
+
+	bool Server::isNumeric() const
+	{
+		return m->isNumeric;
+	}
+
+	void Server::setIsNumeric(bool isNumeric)
+	{
+		m->isNumeric = isNumeric;
+	}
+
+	bool Server::isLowercase() const
+	{
+		return m->isLowercase;
+	}
+
+	void Server::setIsLowercase(bool isLowercase)
+	{
+		m->isLowercase = isLowercase;
+	}
+
+	QString Server::errorString() const
+	{
+		return m->errorString;
+	}
+
+	void Server::setErrorString(const QString& errorString)
+	{
+		m->errorString = errorString;
+	}
+
+	QString Server::searchResultRegex() const
+	{
+		return m->searchResultRegex;
+	}
+
+	void Server::setSearchResultRegex(const QString& searchResultRegex)
+	{
+		m->searchResultRegex = searchResultRegex;
+	}
+
+	QString Server::searchResultUrlTemplate() const
+	{
+		return m->searchResultUrlTemplate;
+	}
+
+	void Server::setSearchResultUrlTemplate(const QString& searchResultUrlTemplate)
+	{
+		m->searchResultUrlTemplate = searchResultUrlTemplate;
+	}
+
+	QString Server::searchUrlTemplate() const
+	{
+		return m->searchUrlTemplate;
+	}
+
+	void Server::setSearchUrlTemplate(const QString& searchUrlTemplate)
+	{
+		m->searchUrlTemplate = searchUrlTemplate;
+	}
+
+	QJsonObject Server::toJson()
+	{
+		return Lyrics::ServerJsonWriter::toJson(this);
+	}
+
+	Server* Server::fromJson(const QJsonObject& json)
+	{
+		return Lyrics::ServerJsonReader::fromJson(json);
+	}
+
+	QString Server::applyReplacements(const QString& str) const
+	{
+		return applyReplacements(str, this->replacements());
+	}
+
+	QString Server::applyReplacements(const QString& str, const Lyrics::Server::Replacements& replacements)
+	{
+		auto result = str;
+
+		for(const auto& replacement : replacements)
+		{
+			while(result.contains(replacement.first))
+			{
+				result.replace(replacement.first, replacement.second);
+			}
+		}
+
+		return result;
+	}
 }

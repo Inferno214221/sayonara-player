@@ -30,17 +30,17 @@
       <number>6</number>
      </property>
      <item row="1" column="1">
-      <widget class="QLineEdit" name="le_title"/>
+      <widget class="QLineEdit" name="leTitle"/>
      </item>
      <item row="0" column="2" rowspan="2">
-      <widget class="QPushButton" name="btn_switch">
+      <widget class="QPushButton" name="btnSwitch">
        <property name="text">
         <string>switch</string>
        </property>
       </widget>
      </item>
      <item row="0" column="1">
-      <widget class="QLineEdit" name="le_artist"/>
+      <widget class="QLineEdit" name="leArtist"/>
      </item>
      <item row="0" column="3" rowspan="2" colspan="3">
       <widget class="Line" name="line_2">
@@ -50,7 +50,7 @@
       </widget>
      </item>
      <item row="0" column="6">
-      <widget class="QLabel" name="lab_source">
+      <widget class="QLabel" name="labSource">
        <property name="toolTip">
         <string notr="true"/>
        </property>
@@ -60,7 +60,7 @@
       </widget>
      </item>
      <item row="1" column="0">
-      <widget class="QLabel" name="lab_tit">
+      <widget class="QLabel" name="labTitle">
        <property name="toolTip">
         <string notr="true"/>
        </property>
@@ -70,7 +70,7 @@
       </widget>
      </item>
      <item row="0" column="7">
-      <widget class="Gui::ComboBox" name="combo_servers">
+      <widget class="Gui::ComboBox" name="comboServers">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -86,7 +86,7 @@
       </widget>
      </item>
      <item row="1" column="6">
-      <widget class="QLabel" name="lab_zoom">
+      <widget class="QLabel" name="labZoom">
        <property name="toolTip">
         <string notr="true"/>
        </property>
@@ -96,7 +96,7 @@
       </widget>
      </item>
      <item row="1" column="7">
-      <widget class="QSpinBox" name="sb_zoom">
+      <widget class="QSpinBox" name="sbZoom">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
          <horstretch>0</horstretch>
@@ -121,7 +121,7 @@
       </widget>
      </item>
      <item row="0" column="0">
-      <widget class="QLabel" name="lab_artist">
+      <widget class="QLabel" name="labArtist">
        <property name="toolTip">
         <string notr="true"/>
        </property>
@@ -140,7 +140,7 @@
     </widget>
    </item>
    <item row="0" column="0" colspan="2">
-    <widget class="QLabel" name="lab_header">
+    <widget class="QLabel" name="labHeader">
      <property name="text">
       <string notr="true"/>
      </property>
@@ -153,7 +153,7 @@
     </widget>
    </item>
    <item row="1" column="0" colspan="2">
-    <widget class="QTextEdit" name="te_lyrics"/>
+    <widget class="QTextEdit" name="teLyrics"/>
    </item>
    <item row="4" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
@@ -174,14 +174,14 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_save_lyrics">
+      <widget class="QPushButton" name="btnSaveLyrics">
        <property name="text">
         <string>Save Lyrics</string>
        </property>
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="btn_search">
+      <widget class="QPushButton" name="btnSearch">
        <property name="minimumSize">
         <size>
          <width>80</width>

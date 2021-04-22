@@ -42,39 +42,37 @@ namespace Lyrics
 	 * @ingroup Lyrics
 	 */
 	class LookupThread :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(LookupThread)
 
-	signals:
-		void sigFinished();
+		signals:
+			void sigFinished();
 
-	public:
-		explicit LookupThread(QObject* parent=nullptr);
-		virtual	~LookupThread();
+		public:
+			explicit LookupThread(QObject* parent = nullptr);
+			virtual    ~LookupThread();
 
-		QString	lyricData() const;
-		QString lyricHeader() const;
-		QStringList servers() const;
+			QString lyricData() const;
+			QString lyricHeader() const;
+			QStringList servers() const;
 
-		void run(const QString& artist, const QString& title, int serverIndex);
-		void stop();
+			void run(const QString& artist, const QString& title, int serverIndex);
+			void stop();
 
-		bool hasError() const;
+			bool hasError() const;
 
-	private:
-		void initServerList();
-		void initCustomServers();
+		private:
+			void initServerList();
+			void initCustomServers();
 
-		void addServer(Server* server);
-		void startSearch(const QString& url);
-		void callWebsite(const QString& url);
+			void startSearch(const QString& url);
+			void callWebsite(const QString& url);
 
-
-	private slots:
-		void contentFetched();
-		void searchFinished();
+		private slots:
+			void contentFetched();
+			void searchFinished();
 	};
 }
 

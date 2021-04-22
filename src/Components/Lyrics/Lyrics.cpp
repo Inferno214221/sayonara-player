@@ -26,195 +26,175 @@
 
 #include <QStringList>
 
-using LyricsImpl=::Lyrics::Lyrics;
-
-struct LyricsImpl::Private
+namespace
 {
-	QStringList servers;
-	MetaData md;
-	QString artist;
-	QString title;
-	QString lyrics;
-	QString lyric_header;
-	QString lyric_tag_content;
-
-	bool is_valid;
-
-	Private()
+	std::pair<QString, QString> guessArtistAndTitle(const MetaData& track)
 	{
-		is_valid = false;
+		auto artist = track.albumArtist();
+		auto title = track.title();
 
-		auto* lyric_thread = new ::Lyrics::LookupThread();
-		servers = lyric_thread->servers();
-		delete lyric_thread;
-	}
+		if((track.radioMode() == RadioMode::Station) && track.artist().contains("://"))
+		{
+			if(track.title().contains("-"))
+			{
+				auto splitted = track.title().split("-");
+				artist = splitted.takeFirst().trimmed();
+				title = splitted.join("-").trimmed();
+			}
 
-	void guess_artist_and_title();
-};
+			else if(track.title().contains(":"))
+			{
+				auto splitted = track.title().split(":");
+				artist = splitted.takeFirst().trimmed();
+				title = splitted.join(":").trimmed();
+			}
+		}
 
-LyricsImpl::Lyrics(QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>();
-}
-
-LyricsImpl::~Lyrics() {}
-
-bool LyricsImpl::fetchLyrics(const QString& artist, const QString& title, int server_index)
-{
-	if(artist.isEmpty() || title.isEmpty()) {
-		return false;
-	}
-
-	if(server_index < 0 || server_index >= m->servers.size()) {
-		return false;
-	}
-
-	auto* lyric_thread = new ::Lyrics::LookupThread(this);
-	connect(lyric_thread, &::Lyrics::LookupThread::sigFinished, this, &LyricsImpl::lyricsFetched);
-
-	lyric_thread->run(artist, title, server_index);
-	return true;
-}
-
-bool LyricsImpl::saveLyrics(const QString& plain_text)
-{
-	if(plain_text.isEmpty()){
-		return false;
-	}
-
-	if(m->md.filepath().isEmpty()){
-		return false;
-	}
-
-	bool success = Tagging::writeLyrics(m->md, plain_text);
-	if(success){
-		m->is_valid = true;
-		m->lyric_tag_content = plain_text;
-	}
-
-	return success;
-}
-
-QStringList LyricsImpl::servers() const
-{
-	return m->servers;
-}
-
-void LyricsImpl::setMetadata(const MetaData& md)
-{
-	m->md = md;
-	m->guess_artist_and_title();
-
-	bool has_lyrics = Tagging::extractLyrics(md, m->lyric_tag_content);
-	if(!has_lyrics){
-		spLog(Log::Debug, this) << "Could not find lyrics in " << md.filepath();
-	}
-
-	else {
-		spLog(Log::Debug, this) << "Lyrics found in " << md.filepath();
+		return {artist, title};
 	}
 }
 
-QString LyricsImpl::artist() const
+namespace Lyrics
 {
-	return m->artist;
-}
-
-QString LyricsImpl::title() const
-{
-	return m->title;
-}
-
-QString LyricsImpl::lyricHeader() const
-{
-	return m->lyric_header;
-}
-
-QString LyricsImpl::localLyricHeader() const
-{
-	return "<b>" + artist() + " - " + title() + "</b>";
-}
-
-QString LyricsImpl::lyrics() const
-{
-	return m->lyrics.trimmed();
-}
-
-QString LyricsImpl::localLyrics() const
-{
-	if(isLyricTagAvailable()){
-		return m->lyric_tag_content.trimmed();
-	}
-
-	return QString();
-}
-
-bool LyricsImpl::isLyricValid() const
-{
-	return m->is_valid;
-}
-
-bool LyricsImpl::isLyricTagAvailable() const
-{
-	return (!m->lyric_tag_content.isEmpty());
-}
-
-bool LyricsImpl::isLyricTagSupported() const
-{
-	return Tagging::isLyricsSupported(m->md.filepath());
-}
-
-void LyricsImpl::lyricsFetched()
-{
-	auto* lyric_thread = static_cast<::Lyrics::LookupThread*>(sender());
-
-	m->lyrics = lyric_thread->lyricData();
-	m->lyric_header = lyric_thread->lyricHeader();
-	m->is_valid = (!lyric_thread->hasError());
-
-	lyric_thread->deleteLater();
-
-	emit sigLyricsFetched();
-}
-
-void LyricsImpl::Private::guess_artist_and_title()
-{
-	bool guessed = false;
-
-	if(	md.radioMode() == RadioMode::Station &&
-		md.artist().contains("://"))
+	struct Lyrics::Private
 	{
-		if(md.title().contains("-")){
-			QStringList lst = md.title().split("-");
-			artist = lst.takeFirst().trimmed();
-			title = lst.join("-").trimmed();
-			guessed = true;
-		}
+		QStringList servers;
+		MetaData track;
+		QString artist;
+		QString title;
+		QString lyrics;
+		QString lyricHeader;
+		QString lyricTagContent;
 
-		else if(md.title().contains(":")){
-			QStringList lst = md.title().split(":");
-			artist = lst.takeFirst().trimmed();
-			title = lst.join(":").trimmed();
-			guessed = true;
-		}
+		bool isValid;
+
+		Private() :
+			servers(::Lyrics::LookupThread().servers()),
+			isValid(false) {}
+	};
+
+	Lyrics::Lyrics(QObject* parent) :
+		QObject(parent)
+	{
+		m = Pimpl::make<Private>();
 	}
 
-	if(guessed == false) {
-		if(!md.artist().isEmpty()) {
-			artist = md.artist();
-			title = md.title();
+	Lyrics::~Lyrics() = default;
+
+	bool Lyrics::fetchLyrics(const QString& artist, const QString& title, int serverIndex)
+	{
+		if(artist.isEmpty() || title.isEmpty())
+		{
+			return false;
 		}
 
-		else if(!md.albumArtist().isEmpty()) {
-			artist = md.albumArtist();
-			title = md.title();
+		if((serverIndex < 0) || (serverIndex >= m->servers.size()))
+		{
+			return false;
 		}
 
-		else {
-			artist = md.artist();
-			title = md.title();
+		auto* lyricThread = new LookupThread(this);
+		connect(lyricThread, &LookupThread::sigFinished, this, &Lyrics::lyricsFetched);
+
+		lyricThread->run(artist, title, serverIndex);
+		return true;
+	}
+
+	bool Lyrics::saveLyrics(const QString& plainText)
+	{
+		if(plainText.isEmpty() || m->track.filepath().isEmpty())
+		{
+			return false;
 		}
+
+		m->isValid = Tagging::writeLyrics(m->track, plainText);
+		if(m->isValid)
+		{
+			m->lyricTagContent = plainText;
+		}
+
+		return m->isValid;
+	}
+
+	QStringList Lyrics::servers() const
+	{
+		return m->servers;
+	}
+
+	void Lyrics::setMetadata(const MetaData& track)
+	{
+		const auto[artist, title] = guessArtistAndTitle(track);
+		m->artist = artist;
+		m->title = title;
+		m->track = track;
+
+		const auto hasLyrics = Tagging::extractLyrics(track, m->lyricTagContent);
+		const auto logString = (hasLyrics)
+		                       ? QString("Could not find lyrics in %1").arg(track.filepath())
+		                       : QString("Lyrics found in %1").arg(track.filepath());
+
+		spLog(Log::Debug, this) << logString;
+	}
+
+	QString Lyrics::artist() const
+	{
+		return m->artist;
+	}
+
+	QString Lyrics::title() const
+	{
+		return m->title;
+	}
+
+	QString Lyrics::lyricHeader() const
+	{
+		return m->lyricHeader;
+	}
+
+	QString Lyrics::localLyricHeader() const
+	{
+		return QString("<b>%1 - %2</b>")
+			.arg(artist())
+			.arg(title());
+	}
+
+	QString Lyrics::lyrics() const
+	{
+		return m->lyrics.trimmed();
+	}
+
+	QString Lyrics::localLyrics() const
+	{
+		return isLyricTagAvailable()
+		       ? m->lyricTagContent.trimmed()
+		       : QString();
+	}
+
+	bool Lyrics::isLyricValid() const
+	{
+		return m->isValid;
+	}
+
+	bool Lyrics::isLyricTagAvailable() const
+	{
+		return (!m->lyricTagContent.isEmpty());
+	}
+
+	bool Lyrics::isLyricTagSupported() const
+	{
+		return Tagging::isLyricsSupported(m->track.filepath());
+	}
+
+	void Lyrics::lyricsFetched()
+	{
+		auto* lyricThread = static_cast<::Lyrics::LookupThread*>(sender());
+
+		m->lyrics = lyricThread->lyricData();
+		m->lyricHeader = lyricThread->lyricHeader();
+		m->isValid = (!lyricThread->hasError());
+
+		lyricThread->deleteLater();
+
+		emit sigLyricsFetched();
 	}
 }
-
