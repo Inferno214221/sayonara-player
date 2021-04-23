@@ -27,9 +27,6 @@ namespace Models
 {
 	class Cover
 	{
-		private:
-			QString description;
-
 		public:
 			enum class MimeType
 			{

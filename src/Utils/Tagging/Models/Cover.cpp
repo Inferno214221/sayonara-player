@@ -20,11 +20,9 @@
 
 #include "Cover.h"
 
-
 Models::Cover::Cover(const QString& mimeType_, const QByteArray& imageData_) :
 	mimeType(mimeType_),
-	imageData(imageData_),
-	description("Cover by Sayonara Player")
+	imageData(imageData_)
 {}
 
 Models::Cover::Cover() :

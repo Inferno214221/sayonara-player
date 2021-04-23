@@ -43,7 +43,7 @@
 namespace
 {
 	using IconCache = QCache<QString, QIcon>;
-	Q_GLOBAL_STATIC_WITH_ARGS(IconCache, iconCache, (50));
+	Q_GLOBAL_STATIC_WITH_ARGS(IconCache, iconCache, (50))
 
 	QString getCacheKey(const QString& iconName, Gui::Util::IconTheme theme)
 	{

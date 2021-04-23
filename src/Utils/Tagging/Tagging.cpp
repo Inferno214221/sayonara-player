@@ -73,7 +73,7 @@ namespace
 
 	QString getTitleFromFilename(const QString& filepath)
 	{
-		const auto[dir, filename] = FileUtils::splitFilename(filepath);
+		const auto filename = FileUtils::getFilenameOfPath(filepath);
 		return (filename.size() > 4)
 		       ? filename.left(filename.length() - 4)
 		       : filename;
@@ -91,7 +91,7 @@ namespace
 			createDate = fileInfo.metadataChangeTime();
 		}
 #else
-		createDate = fi.created();
+		createDate = fileInfo.created();
 #endif
 
 		if(!createDate.isValid())

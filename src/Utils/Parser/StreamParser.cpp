@@ -352,17 +352,17 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& 
 
 		else if(Util::File::isSoundFile(foundUrl))
 		{
-			MetaData md;
-			setMetadataTag(md, url.toString());
+			MetaData track;
+			setMetadataTag(track, url.toString());
 
-			auto [dir, filename] = Util::File::splitFilename(url.path());
+			const auto filename = Util::File::getFilenameOfPath(url.path());
 			if(!filename.trimmed().isEmpty())
 			{
-				md.setTitle(filename);
+				track.setTitle(filename);
 			}
 
-			md.setCoverDownloadUrls({m->lastUrl});
-			tracks << md;
+			track.setCoverDownloadUrls({m->lastUrl});
+			tracks << track;
 		}
 	}
 
