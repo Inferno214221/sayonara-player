@@ -369,7 +369,7 @@ int Model::currentTrack() const
 	return m->playlist->currentTrackIndex();
 }
 
-MetaData Model::metadata(int row) const
+const MetaData& Model::metadata(int row) const
 {
 	return m->playlist->track(row);
 }
@@ -573,14 +573,15 @@ void Model::playlistChanged([[maybe_unused]] int playlistIndex)
 
 void Model::currentTrackChanged(int oldIndex, int newIndex)
 {
-	if(oldIndex >= 0)
+	if(Util::between(oldIndex, m->playlist->count()))
 	{
 		emit dataChanged(index(oldIndex, 0), index(oldIndex, columnCount() - 1));
 	}
 
-	if(newIndex >= 0)
+	if(Util::between(oldIndex, m->playlist->count()))
 	{
 		emit dataChanged(index(newIndex, 0), index(newIndex, columnCount() - 1));
+		emit sigCurrentTrackChanged(newIndex);
 	}
 }
 

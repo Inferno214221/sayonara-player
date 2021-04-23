@@ -35,6 +35,20 @@ using Playlist::ContextMenu;
 using Playlist::BookmarksMenu;
 using Playlist::ActionMenu;
 
+namespace
+{
+	ContextMenu::Entries analyzeTrack(const MetaData& track)
+	{
+		const auto isLibraryTrack = (track.id() >= 0);
+		const auto isLocalTrack = (track.radioMode() == RadioMode::Off);
+
+		return ((isLibraryTrack) ? ContextMenu::EntryBookmarks : 0) |
+		       ((isLibraryTrack) ? ContextMenu::EntryFindInLibrary : 0) |
+		       ((isLocalTrack) ? ContextMenu::EntryRating : 0) |
+		       ContextMenu::EntryLyrics;
+	}
+}
+
 struct ContextMenu::Private
 {
 	QMap<ContextMenu::Entry, QAction*> entryActionMap;
@@ -110,7 +124,8 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 
 	for(auto it = m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
-		it.value()->setVisible(entries & it.key());
+		const auto isVisible = (entries & it.key());
+		it.value()->setVisible(isVisible);
 	}
 }
 
@@ -132,9 +147,24 @@ void ContextMenu::setRating(Rating rating)
 	m->entryActionMap[EntryRating]->setText(text);
 }
 
-void ContextMenu::setTrack(const MetaData& track, bool editableBookmarks)
+ContextMenu::Entries ContextMenu::setTrack(const MetaData& track, bool isCurrentTrack)
 {
-	m->bookmarksMenu->setTrack(track, editableBookmarks);
+	const auto isLibraryTrack = (track.id() >= 0);
+	const auto isLocalTrack = (track.radioMode() == RadioMode::Off);
+
+	m->bookmarksMenu->setTrack(track, (isCurrentTrack && isLibraryTrack));
+	setRating(track.rating());
+
+	return ((isLibraryTrack) ? ContextMenu::EntryBookmarks : 0) |
+	       ((isLibraryTrack) ? ContextMenu::EntryFindInLibrary : 0) |
+	       ((isLocalTrack) ? ContextMenu::EntryRating : 0) |
+	       ContextMenu::EntryLyrics;
+}
+
+void ContextMenu::clearTrack()
+{
+	m->bookmarksMenu->setTrack(MetaData(), false);
+	setRating(Rating::Last);
 }
 
 QAction* ContextMenu::initRatingAction(Rating rating, QObject* parent)

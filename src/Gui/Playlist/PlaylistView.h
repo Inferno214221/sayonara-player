@@ -59,14 +59,12 @@ namespace Playlist
 
 		signals:
 			void sigDoubleClicked(int row);
-			void sigDeleteTracks(const IndexSet& rows);
 			void sigBookmarkPressed(int trackIdx, Seconds timestamp);
 
 		public:
 			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
 			~View() override;
 
-			void gotoRow(int row);
 			void deleteSelectedTracks();
 
 			/**
@@ -79,6 +77,7 @@ namespace Playlist
 		public slots:
 			void clear();
 			void removeSelectedRows();
+			void gotoRow(int row);
 
 		private slots:
 			void refresh();
@@ -91,14 +90,13 @@ namespace Playlist
 			void moveSelectedRowsUp();
 			void moveSelectedRowsDown();
 			void playSelectedTrack();
-			void gotoToCurrentTrack();
-			void playlistBusyChanged(bool b);
+			void jumpToCurrentTrack();
+			void playlistBusyChanged(bool isBusy);
 			void currentScannedFileChanged(const QString& currentFile);
 
 		private:
 			void initContextMenu();
-
-			// d & d
+			void initShortcuts();
 			void handleDrop(QDropEvent* event);
 
 		protected:

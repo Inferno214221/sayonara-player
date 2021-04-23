@@ -61,10 +61,11 @@ namespace Playlist
 			ContextMenu::Entries entries() const override;
 			void showActions(ContextMenu::Entries entries) override;
 
-			void setRating(Rating rating);
-			void setTrack(const MetaData& track, bool editableBookmarks);
+			ContextMenu::Entries setTrack(const MetaData& track, bool isCurrentTrack);
+			void clearTrack();
 
 		private:
+			void setRating(Rating rating);
 			QAction* initRatingAction(Rating rating, QObject* parent);
 
 		private slots:

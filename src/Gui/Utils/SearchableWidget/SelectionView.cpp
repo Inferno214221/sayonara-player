@@ -47,12 +47,10 @@ struct SelectionViewInterface::Private
 	QItemSelection getSelection() const
 	{
 		auto selModel = view->selectionModel();
-		if(selModel)
-		{
-			return selModel->selection();
-		}
 
-		return QItemSelection();
+		return (selModel)
+			? selModel->selection()
+			: QItemSelection();
 	}
 
 	void select(const QItemSelection& selection)
@@ -222,15 +220,22 @@ void SelectionViewInterface::selectItems(const IndexSet& indexes)
 
 IndexSet SelectionViewInterface::selectedItems() const
 {
-	const QModelIndexList indexList = m->getSelection().indexes();
+	if(!m->view || !m->view->model())
+	{
+		return IndexSet{};
+	}
+
+	const auto indexList = m->getSelection().indexes();
 
 	IndexSet ret;
-	for(auto idx : indexList)
+	for(const auto& modelIndex : indexList)
 	{
-		int row = mapModelIndexToIndex(idx);
-		if(!ret.contains(row))
+		if(modelIndex.isValid())
 		{
-			ret.insert(row);
+			if(const auto index = mapModelIndexToIndex(modelIndex); index >= 0)
+			{
+				ret.insert(index);
+			}
 		}
 	}
 

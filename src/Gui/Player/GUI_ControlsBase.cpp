@@ -270,8 +270,6 @@ void GUI_ControlsBase::progressMoved(int val)
 
 void GUI_ControlsBase::currentPositionChanged(MilliSeconds posMs)
 {
-	spLog(Log::Crazy, this) << "Current position: " << posMs;
-
 	const auto duration = m->playManager->durationMs();
 	const auto max = sliProgress()->maximum();
 	const auto percent = (posMs * 1.0) / duration;

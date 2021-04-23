@@ -54,6 +54,7 @@ namespace Playlist
 
 		signals:
 			void sigDataReady();
+			void sigCurrentTrackChanged(int index);
 
 		public:
 			enum StyleElement
@@ -96,11 +97,10 @@ namespace Playlist
 			IndexSet copyTracks(const IndexSet& rows, int target_index);
 			void insertTracks(const MetaDataList& tracks, int row);
 			void insertTracks(const QStringList& files, int row);
-			void reverseTracks();
 
 			int	currentTrack() const;
 
-			MetaData metadata(int row) const;
+			const MetaData& metadata(int row) const;
 			MetaDataList metadata(const IndexSet& rows) const;
 
 			bool hasLocalMedia(const IndexSet& rows) const;
@@ -122,6 +122,7 @@ namespace Playlist
 
 		public slots:
 			void refreshData();
+			void reverseTracks();
 
 		private slots:
 			void playlistChanged(int playlistIndex);

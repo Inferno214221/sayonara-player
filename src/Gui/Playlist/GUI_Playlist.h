@@ -54,60 +54,63 @@ UI_FWD(PlaylistWindow)
  * @ingroup GuiPlaylists
  */
 class GUI_Playlist :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
-	UI_CLASS(PlaylistWindow)
 	PIMPL(GUI_Playlist)
 
-public:
-	explicit GUI_Playlist(QWidget* parent=nullptr);
-	~GUI_Playlist() override;
+	public:
+		explicit GUI_Playlist(QWidget* parent = nullptr);
+		~GUI_Playlist() override;
 
-	void init(Playlist::Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker);
+		void init(Playlist::Handler* playlistHandler, PlayManager* playManager,
+		          DynamicPlaybackChecker* dynamicPlaybackChecker);
 
-private:
-	void initToolButton();
+	private:
+		void initToolButton();
 
-private slots:
+	private slots:
 
-	// triggered from playlist
-	void playlistAdded(int playlistIndex);
-	void playlistNameChanged(int playlistIndex);
-	void playlistChanged(int playlistIndex);
-	void playlistIdxChanged(int playlistIndex);
-	void playlistClosed(int playlistIndex);
+		// triggered from playlist
+		void playlistAdded(int playlistIndex);
+		void playlistNameChanged(int playlistIndex);
+		void playlistChanged(int playlistIndex);
+		void playlistIdxChanged(int playlistIndex);
+		void playlistClosed(int playlistIndex);
 
-	// triggered by GUI
-	void tabSavePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
-	void tabSavePlaylistAsClicked(int playlistIndex, const QString& newName); // GUI_PlaylistTabs.cpp
-	void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename); // GUI_PlaylistTabs.cpp
-	void tabRenameClicked(int playlistIndex, const QString& newName);
-	void tabResetClicked(int playlistIndex);
-	void tabDeletePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
-	void tabMetadataDropped(int playlistIndex, const MetaDataList& tracks);
-	void tabFilesDropped(int playlistIndex, const QStringList& paths);
-	void openFileClicked(int playlistIndex, const QStringList& files);
-	void openDirClicked(int playlistIndex, const QString& dir);
+		// triggered by GUI
+		void tabSavePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
+		void tabSavePlaylistAsClicked(int playlistIndex, const QString& newName); // GUI_PlaylistTabs.cpp
+		void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename); // GUI_PlaylistTabs.cpp
+		void tabRenameClicked(int playlistIndex, const QString& newName);
+		void tabResetClicked(int playlistIndex);
+		void tabDeletePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
+		void tabMetadataDropped(int playlistIndex, const MetaDataList& tracks);
+		void tabFilesDropped(int playlistIndex, const QStringList& paths);
+		void openFileClicked(int playlistIndex, const QStringList& files);
+		void openDirClicked(int playlistIndex, const QString& dir);
 
-	void checkTabIcon();
+		void checkTabIcon();
 
-	void doubleClicked(int row);
+		void doubleClicked(int row);
 
-	void clearButtonPressed(int playlistIndex);
-	void bookmarkSelected(int trackIndex, Seconds timestamp);
+		void clearButtonPressed(int playlistIndex);
+		void bookmarkSelected(int trackIndex, Seconds timestamp);
 
-	void showClearButtonChanged();
-	void showBottomBarChanged();
+		void showClearButtonChanged();
+		void showBottomBarChanged();
 
-protected:
-	void languageChanged() override;
-	void skinChanged() override;
+	protected:
+		void languageChanged() override;
+		void skinChanged() override;
 
-	void dragEnterEvent(QDragEnterEvent* event) override;
-	void dragLeaveEvent(QDragLeaveEvent* event) override;
-	void dropEvent(QDropEvent* event) override;
-	void dragMoveEvent(QDragMoveEvent* event) override;
+		void dragEnterEvent(QDragEnterEvent* event) override;
+		void dragLeaveEvent(QDragLeaveEvent* event) override;
+		void dropEvent(QDropEvent* event) override;
+		void dragMoveEvent(QDragMoveEvent* event) override;
+
+	private:
+		std::shared_ptr<Ui::PlaylistWindow> ui;
 };
 
 #endif /* GUI_PLAYLIST_H_ */
