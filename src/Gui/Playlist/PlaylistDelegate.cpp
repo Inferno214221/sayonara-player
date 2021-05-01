@@ -127,19 +127,17 @@ namespace
 		painter->setPen(pen);
 	}
 
-	void setFontStyle(QPainter* painter, bool isBold, bool isItalic, int standardWeight)
+	void setFontStyle(QPainter* painter, bool isBold, bool isItalic)
 	{
-		constexpr const auto BoldWeight = 70;
-
 		auto font = painter->font();
-		font.setWeight(isBold ? BoldWeight : standardWeight);
+		font.setBold(isBold);
 		font.setItalic(isItalic);
 		painter->setFont(font);
 	}
 
-	void drawStyleItem(QPainter* painter, const PlaylistStyleItem& styleItem, bool alignTop, int standardWeight, QRect& rect)
+	void drawStyleItem(QPainter* painter, const PlaylistStyleItem& styleItem, bool alignTop, QRect& rect)
 	{
-		setFontStyle(painter, styleItem.isBold, styleItem.isItalic, standardWeight);
+		setFontStyle(painter, styleItem.isBold, styleItem.isItalic);
 
 		const auto alignment = (alignTop)
 		                       ? (Qt::AlignLeft | Qt::AlignTop)
@@ -164,7 +162,7 @@ namespace
 		const auto styleItems = parseEntryLookString(index);
 		for(const auto& styleItem : styleItems)
 		{
-			drawStyleItem(painter, styleItem, alignTop, option.font.weight(), rect);
+			drawStyleItem(painter, styleItem, alignTop, rect);
 		}
 	}
 
