@@ -21,8 +21,12 @@
 #ifndef GUICLASS_H
 #define GUICLASS_H
 
+#include <memory>
+
 #define UI_FWD(x) namespace Ui { class x ; }
 #define UI_CLASS(x) private: \
 	Ui:: x *ui=nullptr;
+#define UI_CLASS_SHARED_PTR(x) private: \
+	std::shared_ptr<Ui:: x> ui{nullptr};
 
 #endif // GUICLASS_H
