@@ -16,13 +16,13 @@ QWidget:disabled {
 QGroupBox {
     border: none;
     padding-top: 2ex;
+    font-weight: bold;
 }
 
 QGroupBox::title {
     subcontrol-origin: margin;
     subcontrol-position: top left;
     padding: 0 3px;
-    font-weight: 800;
 }
 
 QFrame {
@@ -230,8 +230,7 @@ QMenu::item:selected {
 }
 
 QMenu::icon,
-QMenu::indicator
-{
+QMenu::indicator {
     position: absolute;
     left: 0.5em;
 }
