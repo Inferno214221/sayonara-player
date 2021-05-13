@@ -67,6 +67,10 @@ Gui--MiniSearcher QLineEdit {
     min-width: 1em;
 }
 
+QAbstractItemView::item {
+	color: #d8d8d8;
+}
+
 QListView,
 QTableView,
 QTreeView,
@@ -223,7 +227,6 @@ QMenu::item:selected {
     border-top: 1px solid #202020;
     border-bottom: 1px solid #202020;
     background: #424e72;
-    color: white;
 }
 
 QMenu::icon,
@@ -270,6 +273,8 @@ QScrollArea {
     border: none;
 }
 
+QRadioButton,
+QCheckBox,
 QComboBox,
 QLineEdit,
 QSpinBox,
@@ -364,7 +369,6 @@ QComboBox QAbstractItemView::item:selected {
     border-top: 1px solid #383838;
     border-bottom: 1px solid #383838;
     background: #424e72;
-    color: white;
 }
 
 QComboBox:disabled {
