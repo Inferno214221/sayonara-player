@@ -93,6 +93,7 @@ namespace Playlist
 			void jumpToCurrentTrack();
 			void playlistBusyChanged(bool isBusy);
 			void currentScannedFileChanged(const QString& currentFile);
+			void currentTrackChanged(int index);
 
 		private:
 			void initContextMenu();

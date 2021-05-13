@@ -151,6 +151,8 @@ bool GUI_PlaylistPreferences::commit()
 	SetSetting(Set::PL_CurrentTrackCustomColorDark, hasCustomColorDark);
 	SetSetting(Set::PL_CurrentTrackColorStringDark, hasCustomColorDark ? ui->btnCustomColorDark->text() : QString());
 
+	SetSetting(Set::PL_JumpToCurrentTrack, ui->cbJumpToCurrentTrack->isChecked());
+
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
 	{
@@ -191,6 +193,8 @@ void GUI_PlaylistPreferences::revert()
 	ui->cbCustomColorDark->setChecked(GetSetting(Set::PL_CurrentTrackCustomColorDark));
 	ui->btnCustomColorDark->setVisible(GetSetting(Set::PL_CurrentTrackCustomColorDark));
 	applyColorToButton(ui->btnCustomColorDark, QColor(GetSetting(Set::PL_CurrentTrackColorStringDark)), palette());
+
+	ui->cbJumpToCurrentTrack->setChecked(GetSetting(Set::PL_JumpToCurrentTrack));
 }
 
 void GUI_PlaylistPreferences::initUi()

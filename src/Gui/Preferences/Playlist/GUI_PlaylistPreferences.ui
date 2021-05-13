@@ -29,14 +29,14 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
        <string>Behavior</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_4">
-       <item row="8" column="0">
+       <item row="9" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -48,6 +48,28 @@
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="7" column="0">
+        <widget class="QGroupBox" name="groupBox_2">
+         <property name="title">
+          <string>Stop behaviour</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_2">
+          <property name="topMargin">
+           <number>6</number>
+          </property>
+          <property name="bottomMargin">
+           <number>6</number>
+          </property>
+          <item>
+           <widget class="QCheckBox" name="cbRememberAfterStop">
+            <property name="text">
+             <string>Load last track after pressing stop</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
        </item>
        <item row="5" column="0">
         <widget class="Line" name="line">
@@ -119,22 +141,16 @@
          </layout>
         </widget>
        </item>
-       <item row="7" column="0">
-        <widget class="QGroupBox" name="groupBox_2">
+       <item row="8" column="0">
+        <widget class="QGroupBox" name="gbCurrentTrack">
          <property name="title">
-          <string>Stop behaviour</string>
+          <string>Current track</string>
          </property>
-         <layout class="QVBoxLayout" name="verticalLayout_2">
-          <property name="topMargin">
-           <number>6</number>
-          </property>
-          <property name="bottomMargin">
-           <number>6</number>
-          </property>
+         <layout class="QVBoxLayout" name="verticalLayout_3">
           <item>
-           <widget class="QCheckBox" name="cbRememberAfterStop">
+           <widget class="QCheckBox" name="cbJumpToCurrentTrack">
             <property name="text">
-             <string>Load last track after pressing stop</string>
+             <string>Jump to current track when track changes</string>
             </property>
            </widget>
           </item>

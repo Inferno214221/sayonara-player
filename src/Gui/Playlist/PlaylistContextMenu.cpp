@@ -150,15 +150,11 @@ void ContextMenu::setRating(Rating rating)
 ContextMenu::Entries ContextMenu::setTrack(const MetaData& track, bool isCurrentTrack)
 {
 	const auto isLibraryTrack = (track.id() >= 0);
-	const auto isLocalTrack = (track.radioMode() == RadioMode::Off);
 
 	m->bookmarksMenu->setTrack(track, (isCurrentTrack && isLibraryTrack));
 	setRating(track.rating());
 
-	return ((isLibraryTrack) ? ContextMenu::EntryBookmarks : 0) |
-	       ((isLibraryTrack) ? ContextMenu::EntryFindInLibrary : 0) |
-	       ((isLocalTrack) ? ContextMenu::EntryRating : 0) |
-	       ContextMenu::EntryLyrics;
+	return analyzeTrack(track);
 }
 
 void ContextMenu::clearTrack()
@@ -174,7 +170,7 @@ QAction* ContextMenu::initRatingAction(Rating rating, QObject* parent)
 	action->setData(QVariant::fromValue(rating));
 	action->setCheckable(true);
 
-	connect(action, &QAction::triggered, this, [&](bool /*b*/) {
+	connect(action, &QAction::triggered, this, [&]([[maybe_unused]] const auto b) {
 		emit sigRatingChanged(rating);
 	});
 
@@ -187,11 +183,13 @@ void ContextMenu::languageChanged()
 
 	m->entryActionMap[EntryRating]->setText(Lang::get(Lang::Rating));
 	m->entryActionMap[EntryBookmarks]->setText(Lang::get(Lang::Bookmarks));
-	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track"));
-	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library"));
+	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track") + QString("    "));
+	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library") + QString("    "));
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
-
 	m->playlistModeAction->setText(tr("Playlist mode"));
+
+	m->entryActionMap[EntryCurrentTrack]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_J));
+	m->entryActionMap[EntryFindInLibrary]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_G));
 }
 
 void ContextMenu::skinChanged()

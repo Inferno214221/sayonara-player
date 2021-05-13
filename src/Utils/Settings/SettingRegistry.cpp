@@ -180,6 +180,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_CurrentTrackColorStringStandard>("playlist_current_track_custom_color_string_standard", QString());
 	registerSetting<Set::PL_CurrentTrackCustomColorDark>("playlist_current_track_custom_color_dark", true);
 	registerSetting<Set::PL_CurrentTrackColorStringDark>("playlist_current_track_custom_color_string_dark", QString("#6f91cc"));
+	registerSetting<Set::PL_JumpToCurrentTrack >("playlist_jump_to_current_track", true);
 
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000);

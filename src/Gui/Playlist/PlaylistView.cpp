@@ -174,7 +174,7 @@ namespace Playlist
 		ListenSetting(Set::PL_ShowRating, View::showRatingChanged);
 
 		connect(m->model, &Model::sigDataReady, this, &View::refresh);
-		connect(m->model, &Model::sigCurrentTrackChanged, this, &View::gotoRow);
+		connect(m->model, &Model::sigCurrentTrackChanged, this, &View::currentTrackChanged);
 
 		connect(playlist.get(), &Playlist::sigBusyChanged, this, &View::playlistBusyChanged);
 		connect(playlist.get(), &Playlist::sigCurrentScannedFileChanged,
@@ -191,6 +191,8 @@ namespace Playlist
 		createShortcut(QKeySequence(QKeySequence::Delete), this, &View::removeSelectedRows);
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, &View::moveSelectedRowsUp);
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, &View::moveSelectedRowsDown);
+		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_J), this, &View::jumpToCurrentTrack);
+		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_G), this, &View::findTrackTriggered);
 		createShortcut(QKeySequence(Qt::Key_Return), this, &View::playSelectedTrack);
 		createShortcut(QKeySequence(Qt::Key_Enter),  this,&View::playSelectedTrack);
 	}
@@ -301,6 +303,15 @@ namespace Playlist
 	void View::jumpToCurrentTrack()
 	{
 		gotoRow(m->model->currentTrack());
+		selectRow(m->model->currentTrack());
+	}
+
+	void View::currentTrackChanged(int index)
+	{
+		if(GetSetting(Set::PL_JumpToCurrentTrack) && (index >= 0))
+		{
+			gotoRow(index);
+		}
 	}
 
 	void View::findTrackTriggered()

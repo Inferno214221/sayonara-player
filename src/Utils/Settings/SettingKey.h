@@ -119,6 +119,7 @@ enum class SettingKey : unsigned short
 		PL_CurrentTrackColorStringStandard,
 		PL_CurrentTrackCustomColorDark,
 		PL_CurrentTrackColorStringDark,
+		PL_JumpToCurrentTrack,
 		Notification_Show,
 		Notification_Timeout,
 		Notification_Name,
@@ -335,6 +336,7 @@ INST(bool, PL_CurrentTrackCustomColorStandard) /* use custom color in standard t
 INST(QString, PL_CurrentTrackColorStringStandard) /* custom color string in standard theme */
 INST(bool, PL_CurrentTrackCustomColorDark) /* use custom color in dark theme */
 INST(QString, PL_CurrentTrackColorStringDark) /* custom color in dark theme */
+INST(bool, PL_JumpToCurrentTrack) /* jump to current track when track changes */
 
 INST(bool, Notification_Show)            /* show notifications */
 INST(int, Notification_Timeout)        /* notification timeout */
