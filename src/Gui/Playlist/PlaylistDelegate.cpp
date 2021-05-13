@@ -38,6 +38,11 @@ using Playlist::Model;
 
 namespace
 {
+	inline bool isCurrentTrack(const QModelIndex& index)
+	{
+		return index.data(Model::CurrentPlayingRole).toBool();
+	}
+
 	struct PlaylistStyleItem
 	{
 		QString text;
@@ -54,7 +59,8 @@ namespace
 
 		for(const auto c : entryLook)
 		{
-			if((c != QChar(Model::StyleElement::Bold)) && (c != QChar(Model::StyleElement::Italic)))
+			if((c != QChar(Model::StyleElement::Bold)) &&
+			   (c != QChar(Model::StyleElement::Italic)))
 			{
 				currentItem.text += c;
 				continue;
@@ -87,11 +93,6 @@ namespace
 		return (index.column() == Model::ColumnName::TrackNumber);
 	}
 
-	inline bool isCurrentTrack(const QModelIndex& index)
-	{
-		return index.data(Model::CurrentPlayingRole).toBool();
-	}
-
 	inline bool isDragIndex(const QModelIndex& index)
 	{
 		return index.data(Model::DragIndexRole).toBool();
@@ -105,17 +106,54 @@ namespace
 	void drawDragDropLine(QPainter* painter, const QRect& rect)
 	{
 		const auto y = rect.topLeft().y() + rect.height() - 1;
-		painter->drawLine(QLine(rect.x(), y, rect.x() + rect.width(), y));
+		painter->drawLine(rect.x(), y, rect.x() + rect.width(), y);
 	}
 
-	void setTextColor(QPainter* painter, const QStyleOptionViewItem& option)
+	QColor getCurrentTrackColor(bool hasCustomColor, const QString& customColor, const QColor& standardColor)
+	{
+		if(hasCustomColor)
+		{
+			if(const auto color = QColor(customColor); color.isValid())
+			{
+				return color;
+			}
+		}
+
+		return standardColor;
+	}
+
+	QColor getTextColor(const QStyleOptionViewItem& option, bool isCurrentTrack)
+	{
+		const auto standardColor = option.palette.color(QPalette::Active, QPalette::WindowText);
+		if(isCurrentTrack)
+		{
+			if(Style::isDark())
+			{
+				return getCurrentTrackColor(GetSetting(Set::PL_CurrentTrackCustomColorDark),
+				                            GetSetting(Set::PL_CurrentTrackColorStringDark),
+				                            standardColor);
+			}
+
+			else
+			{
+				return getCurrentTrackColor(GetSetting(Set::PL_CurrentTrackCustomColorStandard),
+				                            GetSetting(Set::PL_CurrentTrackColorStringStandard),
+				                            standardColor);
+			}
+		}
+
+		return standardColor;
+	}
+
+	void setTextColor(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index)
 	{
 		const auto isSelected = (option.state & QStyle::State_Selected);
 		const auto isEnabled = (option.state & QStyle::State_Enabled);
+		const auto isCurrentTrack = ::isCurrentTrack(index);
 
 		auto textColor = (isSelected)
 		                 ? option.palette.color(QPalette::Active, QPalette::HighlightedText)
-		                 : option.palette.color(QPalette::Active, QPalette::WindowText);
+		                 : getTextColor(option, isCurrentTrack);
 
 		if(!isEnabled)
 		{
@@ -151,9 +189,10 @@ namespace
 		rect.translate(horizontalOffset, 0);
 	}
 
-	void drawTrackMetadata(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index, bool alignTop)
+	void
+	drawTrackMetadata(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index, bool alignTop)
 	{
-		setTextColor(painter, option);
+		setTextColor(painter, option, index);
 
 		auto rect = (alignTop)
 		            ? QRect(option.rect.left(), option.rect.y() + 1, option.rect.width(), option.rect.height() - 2)
@@ -166,7 +205,7 @@ namespace
 		}
 	}
 
-	void paintRatingLabel(QPainter* painter, const Rating& rating, const QRect& rect)
+	void paintRatingLabel(QPainter* painter, const Rating rating, const QRect& rect)
 	{
 		if(rating != Rating::Last)
 		{
@@ -194,8 +233,7 @@ namespace
 }
 
 Delegate::Delegate(QObject* parent) :
-	StyledItemDelegate(parent)
-{}
+	StyledItemDelegate(parent) {}
 
 Delegate::~Delegate() = default;
 
@@ -221,6 +259,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
 	if(index.column() == Model::ColumnName::Description)
 	{
 		painter->save();
+		painter->translate(8, 0);
 
 		const auto showRating = GetSetting(Set::PL_ShowRating);
 		drawTrackMetadata(painter, option, index, showRating);
@@ -237,8 +276,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
 
 QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
-	const auto rating = parseRating(index);
-	if(rating != Rating::Last)
+	if(const auto rating = parseRating(index); (rating != Rating::Last))
 	{
 		auto* ratingEditor = new RatingEditor(rating, parent);
 		ratingEditor->setVerticalOffset(option.rect.height() / 2);
@@ -253,8 +291,7 @@ QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& opt
 
 void Delegate::deleteEditor([[maybe_unused]] bool save)
 {
-	auto* ratingEditor = qobject_cast<RatingEditor*>(sender());
-	if(ratingEditor)
+	if(auto* ratingEditor = dynamic_cast<RatingEditor*>(sender()); ratingEditor)
 	{
 		disconnect(ratingEditor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
 
@@ -265,8 +302,7 @@ void Delegate::deleteEditor([[maybe_unused]] bool save)
 
 void Delegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 {
-	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
-	if(!ratingEditor)
+	if(auto* ratingEditor = dynamic_cast<RatingEditor*>(editor); ratingEditor)
 	{
 		const auto rating = parseRating(index);
 		ratingEditor->setRating(rating);
@@ -275,8 +311,7 @@ void Delegate::setEditorData(QWidget* editor, const QModelIndex& index) const
 
 void Delegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QModelIndex& index) const
 {
-	auto* ratingEditor = qobject_cast<RatingEditor*>(editor);
-	if(ratingEditor)
+	if(auto* ratingEditor = dynamic_cast<RatingEditor*>(editor); ratingEditor)
 	{
 		const auto rating = ratingEditor->rating();
 		model->setData(index, QVariant::fromValue(rating));

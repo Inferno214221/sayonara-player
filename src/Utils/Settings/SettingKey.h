@@ -115,6 +115,10 @@ enum class SettingKey : unsigned short
 		PL_ShowBottomBar,
 		PL_ShowRating,
 		PL_StartPlaying,
+		PL_CurrentTrackCustomColorStandard,
+		PL_CurrentTrackColorStringStandard,
+		PL_CurrentTrackCustomColorDark,
+		PL_CurrentTrackColorStringDark,
 		Notification_Show,
 		Notification_Timeout,
 		Notification_Name,
@@ -327,6 +331,10 @@ INST(bool, PL_ShowBottomBar)            /* Show bottom bar in playlist */
 INST(bool, PL_RememberTrackAfterStop)    /* when stop button is pressed, remember last track index */
 INST(bool, PL_ShowCovers)                /* Show covers in Playlist */
 INST(bool, PL_ShowRating)                /* Show rating in playlist */
+INST(bool, PL_CurrentTrackCustomColorStandard) /* use custom color in standard theme */
+INST(QString, PL_CurrentTrackColorStringStandard) /* custom color string in standard theme */
+INST(bool, PL_CurrentTrackCustomColorDark) /* use custom color in dark theme */
+INST(QString, PL_CurrentTrackColorStringDark) /* custom color in dark theme */
 
 INST(bool, Notification_Show)            /* show notifications */
 INST(int, Notification_Timeout)        /* notification timeout */

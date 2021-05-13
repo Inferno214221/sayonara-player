@@ -29,77 +29,90 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-namespace Algorithm=Util::Algorithm;
+#include <QColorDialog>
+#include <QPainter>
+#include <QPalette>
 
-static
-bool evaluate_expression(const QString& expr)
+namespace
 {
-	if(expr.isEmpty()){
-		return false;
-	}
-
-	int star_count=0;
-	int apostroph_count=0;
-	int percent_count=0;
-	for(QChar c : expr)
+	QStringList extractExpressionsBetweenPercents(const QString& expr)
 	{
-		if(c == '\''){
-			apostroph_count ++;
-		}
+		QStringList result;
 
-		else if(c == '*'){
-			star_count ++;
-		}
+		auto re = QRegExp("%(.*)%");
+		re.setMinimal(true);
 
-		else if(c == '%'){
-			percent_count ++;
-		}
-	}
-
-	if(apostroph_count % 2 == 1){
-		return false;
-	}
-
-	if(percent_count % 2 == 1){
-		return false;
-	}
-
-	if(star_count % 2 == 1){
-		return false;
-	}
-
-	QStringList between_percents;
-	QRegExp re("%(.*)%");
-	re.setMinimal(true);
-
-	int idx = re.indexIn(expr);
-	while(idx >= 0 && idx < expr.size()){
-		QString cap = re.cap(1);
-		between_percents << cap;
-		idx = re.indexIn(expr, idx + 1 + cap.size());
-	}
-
-	int correct_ones = 0;
-	int incorrect_ones = 0;
-
-	for(const QString& between_percent : Algorithm::AsConst(between_percents))
-	{
-		if((between_percent.compare("nr") != 0) &&
-		   (between_percent.compare("title") != 0) &&
-		   (between_percent.compare("artist") != 0) &&
-		   (between_percent.compare("album") != 0))
+		auto idx = re.indexIn(expr);
+		while((idx >= 0) && (idx < expr.size()))
 		{
-			incorrect_ones++;
+			const auto cap = re.cap(1);
+			result << cap;
+			idx = re.indexIn(expr, idx + 2 + cap.size());
 		}
 
-		else {
-			correct_ones++;
-		}
+		return result;
 	}
 
-	return (correct_ones > incorrect_ones);
-}
+	bool evaluateExpression(const QString& expr)
+	{
+		if(expr.isEmpty())
+		{
+			return false;
+		}
 
+		auto starCount = 0;
+		auto apostrophCount = 0;
+		auto percentCount = 0;
+		for(const auto& c : expr)
+		{
+			if(c == '\'')
+			{
+				apostrophCount++;
+			}
+
+			else if(c == '*')
+			{
+				starCount++;
+			}
+
+			else if(c == '%')
+			{
+				percentCount++;
+			}
+		}
+
+		if((apostrophCount % 2 == 1) ||
+		   (percentCount % 2 == 1) ||
+		   (starCount % 2 == 1))
+		{
+			return false;
+		}
+
+		const auto betweenPercents = extractExpressionsBetweenPercents(expr);
+
+		const auto isIncorrect = Util::Algorithm::contains(betweenPercents, [](const auto& betweenPercent) {
+			return ((betweenPercent != QStringLiteral("nr")) &&
+			        (betweenPercent != QStringLiteral("title")) &&
+			        (betweenPercent != QStringLiteral("artist")) &&
+			        (betweenPercent != QStringLiteral("album")));
+		});
+
+		return (!isIncorrect);
+	}
+
+	void applyColorToButton(QPushButton* button, const QColor& color, const QPalette& standardPalette)
+	{
+		const auto newColor = color.isValid()
+		                      ? color
+		                      : standardPalette.color(QPalette::ColorGroup::Active, QPalette::ColorRole::WindowText);
+
+		const auto colorName = newColor.name(QColor::NameFormat::HexRgb);
+		const auto stylesheet = QString("color: %1").arg(colorName);
+
+		button->setText(colorName);
+		button->setStyleSheet(stylesheet);
+	}
+}
 
 GUI_PlaylistPreferences::GUI_PlaylistPreferences(const QString& identifier) :
 	Base(identifier) {}
@@ -108,18 +121,18 @@ GUI_PlaylistPreferences::~GUI_PlaylistPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
-
 bool GUI_PlaylistPreferences::commit()
 {
-	SetSetting(Set::PL_LoadSavedPlaylists, ui->cbLoadSavedPlaylists->isChecked() );
-	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cbLoadTemporaryPlaylists->isChecked() );
-	SetSetting(Set::PL_LoadLastTrack, (ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled()) );
-	SetSetting(Set::PL_RememberTime, (ui->cbRememberTime->isChecked() && ui->cbRememberTime->isEnabled()) );
-	SetSetting(Set::PL_StartPlaying, (ui->cbStartPlaying->isChecked() && ui->cbStartPlaying->isEnabled()) );
+	SetSetting(Set::PL_LoadSavedPlaylists, ui->cbLoadSavedPlaylists->isChecked());
+	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cbLoadTemporaryPlaylists->isChecked());
+	SetSetting(Set::PL_LoadLastTrack, (ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled()));
+	SetSetting(Set::PL_RememberTime, (ui->cbRememberTime->isChecked() && ui->cbRememberTime->isEnabled()));
+	SetSetting(Set::PL_StartPlaying, (ui->cbStartPlaying->isChecked() && ui->cbStartPlaying->isEnabled()));
 
 	SetSetting(Set::PL_ShowNumbers, ui->cbShowNumbers->isChecked());
 	SetSetting(Set::PL_ShowCovers, ui->cbShowCovers->isChecked());
@@ -129,21 +142,31 @@ bool GUI_PlaylistPreferences::commit()
 	SetSetting(Set::PL_ShowClearButton, ui->cbShowClearButton->isChecked());
 	SetSetting(Set::PL_RememberTrackAfterStop, ui->cbRememberAfterStop->isChecked());
 
-	if(evaluate_expression(ui->leExpression->text())){
+	const auto hasCustomColorStandard = ui->cbCustomColorStandard->isChecked();
+	SetSetting(Set::PL_CurrentTrackCustomColorStandard, hasCustomColorStandard);
+	SetSetting(Set::PL_CurrentTrackColorStringStandard,
+	           hasCustomColorStandard ? ui->btnCustomColorStandard->text() : QString());
+
+	const auto hasCustomColorDark = ui->cbCustomColorDark->isChecked();
+	SetSetting(Set::PL_CurrentTrackCustomColorDark, hasCustomColorDark);
+	SetSetting(Set::PL_CurrentTrackColorStringDark, hasCustomColorDark ? ui->btnCustomColorDark->text() : QString());
+
+	const auto success = evaluateExpression(ui->leExpression->text());
+	if(success)
+	{
 		SetSetting(Set::PL_EntryLook, ui->leExpression->text());
-		return true;
 	}
 
-	return false;
+	return success;
 }
 
 void GUI_PlaylistPreferences::revert()
 {
-	bool loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
-	bool loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
-	bool loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
-	bool rememberTime = GetSetting(Set::PL_RememberTime);
-	bool startPlaying = GetSetting(Set::PL_StartPlaying);
+	const auto loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
+	const auto loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
+	const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
+	const auto rememberTime = GetSetting(Set::PL_RememberTime);
+	const auto startPlaying = GetSetting(Set::PL_StartPlaying);
 
 	ui->cbLoadSavedPlaylists->setChecked(loadSavedPlaylists);
 	ui->cbLoadTemporaryPlaylists->setChecked(loadTemporaryPlaylists);
@@ -158,12 +181,22 @@ void GUI_PlaylistPreferences::revert()
 	ui->cbShowClearButton->setChecked(GetSetting(Set::PL_ShowClearButton));
 	ui->cbRememberAfterStop->setChecked(GetSetting(Set::PL_RememberTrackAfterStop));
 	ui->cbShowBottomBar->setChecked(GetSetting(Set::PL_ShowBottomBar));
-}
 
+	ui->cbCustomColorStandard->setChecked(GetSetting(Set::PL_CurrentTrackCustomColorStandard));
+	ui->btnCustomColorStandard->setVisible(GetSetting(Set::PL_CurrentTrackCustomColorStandard));
+	applyColorToButton(ui->btnCustomColorStandard,
+	                   QColor(GetSetting(Set::PL_CurrentTrackColorStringStandard)),
+	                   palette());
+
+	ui->cbCustomColorDark->setChecked(GetSetting(Set::PL_CurrentTrackCustomColorDark));
+	ui->btnCustomColorDark->setVisible(GetSetting(Set::PL_CurrentTrackCustomColorDark));
+	applyColorToButton(ui->btnCustomColorDark, QColor(GetSetting(Set::PL_CurrentTrackColorStringDark)), palette());
+}
 
 void GUI_PlaylistPreferences::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
@@ -180,9 +213,12 @@ void GUI_PlaylistPreferences::initUi()
 	connect(ui->cbLoadTemporaryPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
 	connect(ui->cbRememberTime, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
 	connect(ui->cbStartPlaying, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
+	connect(ui->cbCustomColorStandard, &QCheckBox::toggled, ui->btnCustomColorStandard, &QWidget::setVisible);
+	connect(ui->cbCustomColorDark, &QCheckBox::toggled, ui->btnCustomColorDark, &QWidget::setVisible);
+	connect(ui->btnCustomColorStandard, &QPushButton::clicked, this, &GUI_PlaylistPreferences::chooseColorClicked);
+	connect(ui->btnCustomColorDark, &QPushButton::clicked, this, &GUI_PlaylistPreferences::chooseColorClicked);
 
-	connect(ui->btnDefault, &QPushButton::clicked, this, [=]()
-	{
+	connect(ui->btnDefault, &QPushButton::clicked, this, [=]() {
 		ui->leExpression->setText("*%title%* - %artist%");
 	});
 }
@@ -216,16 +252,27 @@ QString GUI_PlaylistPreferences::errorString() const
 	return tr("Playlist look: Invalid expression");
 }
 
-void GUI_PlaylistPreferences::checkboxToggled(bool b)
+void GUI_PlaylistPreferences::checkboxToggled([[maybe_unused]] bool b)
 {
-	Q_UNUSED(b);
-
-	bool load = (ui->cbLoadSavedPlaylists->isChecked() || ui->cbLoadTemporaryPlaylists->isChecked());
+	const auto load = (ui->cbLoadSavedPlaylists->isChecked() || ui->cbLoadTemporaryPlaylists->isChecked());
 
 	ui->cbLoadLastTrack->setEnabled(load);
 	ui->cbRememberTime->setEnabled(load);
 	ui->cbStartPlaying->setEnabled(load);
 
-	bool cbLoadLastTrack_checked = ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled();
-	ui->cbRememberTime->setEnabled(cbLoadLastTrack_checked);
+	const auto loadLastTrack = ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled();
+	ui->cbRememberTime->setEnabled(loadLastTrack);
+}
+
+void GUI_PlaylistPreferences::chooseColorClicked()
+{
+	if(auto* button = dynamic_cast<QPushButton*>(sender()); button != nullptr)
+	{
+		const auto currentColor = QColor(button->text());
+		const auto newColor = QColorDialog::getColor(currentColor.isValid() ? currentColor : Qt::black, this);
+		if(newColor.isValid())
+		{
+			applyColorToButton(button, newColor, palette());
+		}
+	}
 }

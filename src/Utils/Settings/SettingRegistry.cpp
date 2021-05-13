@@ -176,6 +176,10 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_RememberTrackAfterStop>("playlist_remember_track_after_stop", false);
 	registerSetting<Set::PL_ShowCovers>("playlist_show_covers", false);
 	registerSetting<Set::PL_ShowRating>("playlist_show_rating", false);
+	registerSetting<Set::PL_CurrentTrackCustomColorStandard>("playlist_current_track_custom_color_standard", false);
+	registerSetting<Set::PL_CurrentTrackColorStringStandard>("playlist_current_track_custom_color_string_standard", QString());
+	registerSetting<Set::PL_CurrentTrackCustomColorDark>("playlist_current_track_custom_color_dark", true);
+	registerSetting<Set::PL_CurrentTrackColorStringDark>("playlist_current_track_custom_color_string_dark", QString("#6f91cc"));
 
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000);

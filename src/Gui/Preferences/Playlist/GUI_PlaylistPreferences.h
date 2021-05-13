@@ -29,29 +29,30 @@
 UI_FWD(GUI_PlaylistPreferences)
 
 class GUI_PlaylistPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_PlaylistPreferences)
 
-public:
-	explicit GUI_PlaylistPreferences(const QString& identifier);
-	~GUI_PlaylistPreferences() override;
+	public:
+		explicit GUI_PlaylistPreferences(const QString& identifier);
+		~GUI_PlaylistPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
-	void skinChanged() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
+		void skinChanged() override;
 
-	QString errorString() const override;
+		QString errorString() const override;
 
-private slots:
-	void checkboxToggled(bool b);
+	private slots:
+		void checkboxToggled(bool b);
+		void chooseColorClicked();
 };
 
 #endif // GUI_PLAYLISTPREFERENCES_H
