@@ -41,13 +41,13 @@ VersionChecker::~VersionChecker() = default;
 void VersionChecker::versionCheckFinished()
 {
 	auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-	if(awa)
+	if(!awa)
 	{
 		return;
 	}
 
-	const AsyncWebAccess::Status status = awa->status();
-	const QByteArray data = awa->data();
+	const auto status = awa->status();
+	const auto data = awa->data();
 
 	awa->deleteLater();
 
@@ -56,23 +56,18 @@ void VersionChecker::versionCheckFinished()
 		return;
 	}
 
-	const QString newVersion = QString(data).trimmed();
-	const QString curVersion = GetSetting(Set::Player_Version);
+	const auto newVersion = QString(data).trimmed();
+	const auto curVersion = GetSetting(Set::Player_Version);
 
 	spLog(Log::Info, this) << "Newest Version: " << newVersion;
 	spLog(Log::Info, this) << "This Version:   " << curVersion;
 
-	bool notifyNewVersion = GetSetting(Set::Player_NotifyNewVersion);
-	if(notifyNewVersion)
+	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
 		if(newVersion > curVersion)
 		{
-			Message::info
-				(
-					tr("A new version is available!") +
-					"<br />" +
-					Util::createLink("http://sayonara-player.com", Style::isDark())
-				);
+			Message::info(tr("A new version is available!") + "<br />" +
+			              Util::createLink("http://sayonara-player.com", Style::isDark()));
 		}
 	}
 

@@ -138,7 +138,7 @@ void GUI_CoverPreferences::revert()
 	ui->lvCoverSearchers->clear();
 	ui->lvInactiveCoverSearchers->clear();
 
-	for(const auto coverFetcher : coverFetchers)
+	for(const auto& coverFetcher : coverFetchers)
 	{
 		const auto identifier = coverFetcher->identifier();
 		if(!identifier.trimmed().isEmpty() && (coverFetcher->isWebserviceFetcher()))

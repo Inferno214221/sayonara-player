@@ -29,6 +29,7 @@
 #include <taglib/tag.h>
 #include <taglib/tstringlist.h>
 #include <taglib/mp4tag.h>
+#include <taglib/tpropertymap.h>
 
 #include <algorithm>
 #include <optional>
@@ -40,29 +41,20 @@ namespace MP4
 		protected Tagging::AbstractFrame<TagLib::MP4::Tag>
 	{
 		protected:
-			TagLib::MP4::ItemListMap::ConstIterator findKey(const TagLib::MP4::ItemListMap& itemListMap) const
+			TagLib::MP4::ItemMap::ConstIterator findKey(const TagLib::MP4::ItemMap& itemMap) const
 			{
-				return std::find_if(itemListMap.begin(), itemListMap.end(), [&](const auto& itemList) {
+				return std::find_if(itemMap.begin(), itemMap.end(), [&](const auto& itemList) {
 					const auto convertedString = Tagging::convertString(itemList.first);
 					return (convertedString.compare(key(), Qt::CaseInsensitive) == 0);
 				});
 			}
 
-			void eraseAllFromItemListMap(TagLib::MP4::ItemListMap& itemListMap, const QString& key)
+			void eraseAllFromTag(TagLib::MP4::Tag* tag, const QString& key)
 			{
-				auto itBegin = itemListMap.begin();
-				for(auto it = itemListMap.begin(); it != itemListMap.end(); it++)
+				const auto taglibKey = Tagging::convertString(key);
+				while(tag->contains(taglibKey))
 				{
-					if(Tagging::convertString(it->first).compare(key, Qt::CaseInsensitive) == 0)
-					{
-						itemListMap.erase(it);
-						it = itBegin;
-					}
-
-					else
-					{
-						itBegin = it;
-					}
+					tag->removeItem(taglibKey);
 				}
 			}
 
@@ -82,9 +74,9 @@ namespace MP4
 					return false;
 				}
 
-				const auto& itemListMap = tag()->itemListMap();
-				const auto it = findKey(itemListMap);
-				if(it != itemListMap.end() && it->second.isValid())
+				const auto& itemMap = tag()->itemMap();
+				const auto it = findKey(itemMap);
+				if(it != itemMap.end() && it->second.isValid())
 				{
 					const auto optionalData = mapItemToData(it->second);
 					if(optionalData.has_value())
@@ -104,13 +96,12 @@ namespace MP4
 					return false;
 				}
 
-				auto& itemListMap = tag()->itemListMap();
-				eraseAllFromItemListMap(itemListMap, key());
+				eraseAllFromTag(tag(), key());
 
 				const auto item = mapDataToItem(data);
 				if(item.has_value() && item.value().isValid())
 				{
-					tag()->itemListMap().insert(tagKey(), *item);
+					tag()->setItem(tagKey(), *item);
 				}
 
 				return item.has_value();
@@ -123,8 +114,8 @@ namespace MP4
 					return false;
 				}
 
-				const auto& itemListMap = tag()->itemListMap();
-				return (findKey(itemListMap) != itemListMap.end());
+				const auto& itemMap = tag()->itemMap();
+				return (findKey(itemMap) != itemMap.end());
 			}
 	};
 }

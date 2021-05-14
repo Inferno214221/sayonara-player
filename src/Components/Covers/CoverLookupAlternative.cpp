@@ -134,7 +134,7 @@ QStringList AlternativeLookup::activeCoverfetchers(AlternativeLookup::SearchMode
 	const auto coverFetchers = coverFetchManager->coverfetchers();
 
 	QStringList ret;
-	for(const auto coverFetcher : coverFetchers)
+	for(const auto& coverFetcher : coverFetchers)
 	{
 		const auto identifier = coverFetcher->identifier();
 		if(!coverFetchManager->isActive(identifier))

@@ -93,7 +93,7 @@ namespace Xiph
 
 				if(!tagKey().isEmpty())
 				{
-					tag()->removeField(tagKey());
+					tag()->removeFields(tagKey());
 				}
 
 				mapDataToTag(model);

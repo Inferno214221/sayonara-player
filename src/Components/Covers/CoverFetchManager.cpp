@@ -111,7 +111,7 @@ namespace
 	                            std::function<QString(const CoverFetcherPtr)> addressExtractor)
 	{
 		QList<Url> urls;
-		for(const auto fetcher : fetchers)
+		for(const auto& fetcher : fetchers)
 		{
 			const auto address = addressExtractor(fetcher);
 			if(!address.isEmpty())
