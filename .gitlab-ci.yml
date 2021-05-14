@@ -10,7 +10,7 @@ build-sayonara:
   script: 
     - mkdir -p build && cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt
-    - make -j8
+    - make -j`nproc`
     - make install DESTDIR=AppDir
   artifacts:
     untracked: true
@@ -54,13 +54,15 @@ deploy-sayonara-appimage:
 deploy-sayonara-snap:
   image: tschlaeppi/sayonara-snapcraft:core18
   stage: deploy
+  variables:
+    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 16G
   script:
     - apt-get update -qq
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
     - ./snap/local/Set-SnapVersion.sh
     - env > env.txt
-    - snapcraft
+    - snapcraft --destructive-mode
     - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
     - snapcraft login --with snapcraft.login
     - snapcraft push *.snap --release edge
@@ -77,8 +79,6 @@ deploy-sayonara-snap:
 ## Fedora
 build-sayonara-fedora:
   image: "fedora:latest"
-  variables:
-    RPM_BUILD_NCPUS: 8
   stage: build
   script:
     - dnf --refresh --assumeyes makecache
@@ -89,7 +89,7 @@ build-sayonara-fedora:
     - dist/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
   artifacts:
     paths:
-      - /root/rpmbuild/RPMS/*.rpm
+      - /root/rpmbuild/RPMS
     expire_in: 1 week
   when: manual
 
