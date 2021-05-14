@@ -2,7 +2,9 @@ image: "registry.gitlab.com/luciocarreras/sayonara-player:bionic"
 stages:
   - build
   - test
+  - packaging
   - deploy
+
 
 # Build
 build-sayonara:
@@ -18,6 +20,7 @@ build-sayonara:
   only:
     - branches
     - tags
+
 
 # Unit tests
 test-sayonara:
@@ -36,10 +39,31 @@ test-sayonara:
   only:
     - branches
     - tags
-      
-## Deploy AppImage
-deploy-sayonara-appimage:
-  stage: deploy
+
+
+# Fedora
+## Package Fedora
+package-fedora:
+  image: "fedora:latest"
+  stage: packaging
+  script:
+    - dnf --refresh --assumeyes makecache
+    - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib libnotify-devel qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg-devel gstreamer1-plugins-base-devel taglib-devel zlib-devel hicolor-icon-theme auto-buildrequires
+    - rm -rf build && mkdir build && cd build
+    - cmake ..
+    - cd ..
+    - dist/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
+  artifacts:
+    paths:
+      - /root/rpmbuild/RPMS
+    expire_in: 1 week
+  when: manual
+
+
+# AppImage
+## Package AppImage
+package-appimage:
+  stage: packaging
   dependencies:
     - build-sayonara
   script:
@@ -50,53 +74,57 @@ deploy-sayonara-appimage:
     expire_in: 1 week
   when: manual
 
-## Deploy Snap Package
-deploy-sayonara-snap:
+
+# Snap
+## Package Snap
+package-snap:
   image: tschlaeppi/sayonara-snapcraft:core18
-  stage: deploy
+  stage: packaging
+  tags:
+    - luke-1
   variables:
-    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 16G
+    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 1G
   script:
     - apt-get update -qq
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
     - ./snap/local/Set-SnapVersion.sh
-    - env > env.txt
     - snapcraft --destructive-mode
-    - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
-    - snapcraft login --with snapcraft.login
-    - snapcraft push *.snap --release edge
   artifacts:
     when: always
     paths:
-      - ./env.txt
       - ./*.snap
     expire_in: 1 week
   only:
     - master
     - tags
+    - web
 
-## Fedora
-build-sayonara-fedora:
-  image: "fedora:latest"
-  stage: build
+
+# Deploy Snap
+deploy-snap:
+  image: tschlaeppi/sayonara-snapcraft:core18
+  stage: deploy
+  dependencies:
+    - package-snap
+  tags:
+    - luke-1
+  variables:
+    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 1G
   script:
-    - dnf --refresh --assumeyes makecache
-    - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib libnotify-devel qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg-devel gstreamer1-plugins-base-devel taglib-devel zlib-devel hicolor-icon-theme auto-buildrequires
-    - mkdir build && cd build
-    - cmake ..
-    - cd ..
-    - dist/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
-  artifacts:
-    paths:
-      - /root/rpmbuild/RPMS
-    expire_in: 1 week
-  when: manual
+    - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
+    - snapcraft login --with snapcraft.login
+    - snapcraft push *.snap --release edge
+  only:
+    - master
+    - tags
+    - web
+
 
 # Languages
 ## Create ts file
-build-language:
-  stage: build
+package-language:
+  stage: packaging
   script:
     - mkdir -p tx
     - /opt/qt/bin/lupdate -no-obsolete -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
@@ -112,7 +140,7 @@ build-language:
 deploy-language:
   stage: deploy
   dependencies:
-    - build-language
+    - package-language
   script:
     - cd tx
     - export TX_TOKEN="$TX_API_KEY"
