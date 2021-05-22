@@ -48,12 +48,12 @@
         <translation>在目录中查找封面</translation>
     </message>
     <message numerus="yes">
-        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+299"/>
+        <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+297"/>
         <source>%n cover(s) found</source>
         <translation><numerusform>找到了 %n 个封面</numerusform></translation>
     </message>
     <message>
-        <location line="+143"/>
+        <location line="+134"/>
         <location line="+27"/>
         <source>Also save cover to %1</source>
         <translation>同时保存封面到 %1</translation>
@@ -72,12 +72,12 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/Gui/History/GUI_History.cpp" line="+50"/>
+        <location filename="../src/Gui/History/GUI_History.cpp" line="+38"/>
         <source>Load more entries</source>
         <translation>加载更多条目</translation>
     </message>
     <message>
-        <location line="+139"/>
+        <location line="+144"/>
         <source>Scroll to top</source>
         <translation>滚动到顶部</translation>
     </message>
@@ -123,7 +123,7 @@
         <translation>保存歌词</translation>
     </message>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+314"/>
+        <location filename="../src/Gui/InfoDialog/GUI_Lyrics.cpp" line="+285"/>
         <source>Save lyrics not supported</source>
         <translation>不支持保存歌词</translation>
     </message>
@@ -138,7 +138,7 @@
         <translation>保存歌词</translation>
     </message>
     <message>
-        <location line="+14"/>
+        <location line="+11"/>
         <source>Source</source>
         <translation>来源</translation>
     </message>
@@ -161,7 +161,7 @@
         <translation>选择目标文件夹</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+123"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+124"/>
         <source>Loading tracks</source>
         <translation>正在载入歌曲</translation>
     </message>
@@ -209,12 +209,12 @@
         <translation>媒体库</translation>
     </message>
     <message>
-        <location line="+469"/>
+        <location line="+446"/>
         <source>Directory does not exist</source>
         <translation>目录不存在</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+376"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+378"/>
         <source>Audio files</source>
         <translation>音频文件</translation>
     </message>
@@ -244,7 +244,7 @@
     <name>GUI_AudioConverter</name>
     <message>
         <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+273"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+305"/>
         <source>Start</source>
         <translation>播放</translation>
     </message>
@@ -272,7 +272,7 @@
         <translation>比特率</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-162"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-164"/>
         <source>Audio Converter</source>
         <translation>音频转换器</translation>
     </message>
@@ -282,13 +282,13 @@
         <translation>线程</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <location line="+121"/>
+        <location line="+26"/>
+        <location line="+123"/>
         <source>Cannot find encoder</source>
         <translation>找不到编码器</translation>
     </message>
     <message>
-        <location line="-109"/>
+        <location line="-112"/>
         <location line="+13"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
         <translation>播放列表中没有转换器支持的曲目</translation>
@@ -319,12 +319,12 @@
         <translation>请检查日志文件</translation>
     </message>
     <message>
-        <location line="+9"/>
+        <location line="+10"/>
         <source>All tracks could be converted</source>
         <translation>所有曲目都能被转换</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+11"/>
         <source>Successfully finished</source>
         <translation>成功完成</translation>
     </message>
@@ -337,13 +337,13 @@
         <translation>循环</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+77"/>
-        <location line="+53"/>
+        <location filename="../src/Gui/Plugins/Bookmarks/GUI_Bookmarks.cpp" line="+79"/>
+        <location line="+52"/>
         <source>No bookmarks found</source>
         <translation>未发现书签</translation>
     </message>
     <message>
-        <location line="+122"/>
+        <location line="+105"/>
         <source>Sorry, bookmarks can only be set for library tracks at the moment.</source>
         <translation>抱歉，目前仅能对媒体库中的曲目加书签。</translation>
     </message>
@@ -356,7 +356,7 @@
         <translation>无法广播</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+104"/>
+        <location filename="../src/Gui/Plugins/Broadcasting/GUI_Broadcast.cpp" line="+107"/>
         <source>Dismiss</source>
         <translation>放弃</translation>
     </message>
@@ -371,7 +371,7 @@
         <translation><numerusform>%n 名听众</numerusform></translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+66"/>
         <source>Cannot broadcast on port %1</source>
         <translation>无法在 %1 端口广播</translation>
     </message>
@@ -524,17 +524,17 @@
         <translation>搜索广播电台</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+59"/>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+75"/>
         <source>Show radio stations from %1 to %2</source>
         <translation>显示从 %1 到 %2 的广播电台</translation>
     </message>
     <message>
-        <location line="+222"/>
+        <location line="+214"/>
         <source>Country</source>
         <translation>国家</translation>
     </message>
     <message>
-        <location line="+78"/>
+        <location line="+79"/>
         <source>Type</source>
         <translation>类型</translation>
     </message>
@@ -557,7 +557,7 @@
         <translation>请求许可</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+161"/>
+        <location filename="../src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+153"/>
         <source>Port %1 already in use</source>
         <translation>端口 %1 已被使用</translation>
     </message>
@@ -791,7 +791,7 @@
         <translation>忽略英文专辑名开头的&quot;The&quot;</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+147"/>
+        <location filename="../src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+149"/>
         <source>Cannot edit library</source>
         <translation>无法编辑媒体库</translation>
     </message>
@@ -850,12 +850,22 @@
         <translation>行为</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+19"/>
+        <source>Stop behaviour</source>
+        <translation>停止时的行为</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Load last track after pressing stop</source>
+        <translation>按下停止后加载最后一首曲目</translation>
+    </message>
+    <message>
+        <location line="+17"/>
         <source>Start up</source>
         <translation>启动</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+15"/>
         <source>Load temporary playlists</source>
         <translation>加载临时播放列表</translation>
     </message>
@@ -881,13 +891,14 @@
     </message>
     <message>
         <location line="+10"/>
-        <source>Stop behaviour</source>
-        <translation>停止时的行为</translation>
+        <location line="+231"/>
+        <source>Current track</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+6"/>
-        <source>Load last track after pressing stop</source>
-        <translation>按下停止后加载最后一首曲目</translation>
+        <location line="-225"/>
+        <source>Jump to current track when track changes</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location line="+11"/>
@@ -895,27 +906,12 @@
         <translation>外观</translation>
     </message>
     <message>
-        <location line="+9"/>
-        <source>Show covers</source>
-        <translation>显示封面</translation>
+        <location line="+62"/>
+        <source>*bold text*</source>
+        <translation>*粗体文本*</translation>
     </message>
     <message>
-        <location line="+7"/>
-        <source>Show numbers</source>
-        <translation>显示播放次数</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Show rating</source>
-        <translation>显示评级</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Show clear button</source>
-        <translation>显示清除按钮</translation>
-    </message>
-    <message>
-        <location line="+20"/>
+        <location line="+33"/>
         <source>&apos;italic text&apos;</source>
         <translation>&apos;斜体文本&apos;</translation>
     </message>
@@ -925,17 +921,52 @@
         <translation>示例</translation>
     </message>
     <message>
-        <location line="+27"/>
-        <source>*bold text*</source>
-        <translation>*粗体文本*</translation>
+        <location line="+22"/>
+        <source>Playlist item text</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+36"/>
+        <source>Show covers</source>
+        <translation>显示封面</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show numbers</source>
+        <translation>显示播放次数</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show clear button</source>
+        <translation>显示清除按钮</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Show footer</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+216"/>
+        <location line="+7"/>
+        <source>Show rating</source>
+        <translation>显示评级</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Playlist</source>
+        <translation>播放列表</translation>
+    </message>
+    <message>
+        <location line="+27"/>
+        <source>Custom font color in standard theme</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+33"/>
+        <source>Custom font color in dark theme</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+256"/>
         <source>Playlist look: Invalid expression</source>
         <translation>播放列表外观：无效的表达式</translation>
     </message>
@@ -943,7 +974,7 @@
 <context>
     <name>GUI_PreferenceDialog</name>
     <message>
-        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+150"/>
+        <location filename="../src/Gui/Preferences/PreferenceDialog/GUI_PreferenceDialog.ui" line="+23"/>
         <source>Preferences</source>
         <translation>偏好</translation>
     </message>
@@ -1124,7 +1155,7 @@
         <translation>选择目标目录</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+74"/>
         <source>Target directory is empty</source>
         <translation>目标目录是空的</translation>
     </message>
@@ -1145,7 +1176,7 @@
         <translation>目录模板无效</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+62"/>
         <source>Stream recorder</source>
         <translation>流录音机</translation>
     </message>
@@ -1182,7 +1213,7 @@
     <name>GUI_CssEditor</name>
     <message>
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_CssEditor.ui" line="+14"/>
-        <location line="+34"/>
+        <location line="+31"/>
         <source>Edit style sheet</source>
         <translation>编辑样式表</translation>
     </message>
@@ -1193,32 +1224,6 @@
     </message>
 </context>
 <context>
-    <name>GUI_FontPreferences</name>
-    <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_FontPreferences.ui" line="+84"/>
-        <location line="+7"/>
-        <location line="+7"/>
-        <source>Font size</source>
-        <translation>字体大小</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>Bold</source>
-        <translation>粗体</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Font name</source>
-        <translation>字体名称</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_FontPreferences.cpp" line="+129"/>
-        <location line="+1"/>
-        <source>Inherit</source>
-        <translation>来自系统</translation>
-    </message>
-</context>
-<context>
     <name>GUI_IconPreferences</name>
     <message>
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.ui" line="+20"/>
@@ -1226,13 +1231,13 @@
         <translation>也对暗色模式应用图标主题</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+91"/>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_IconPreferences.cpp" line="+93"/>
         <source>Icons</source>
         <translation>图标</translation>
     </message>
     <message>
-        <location line="+90"/>
-        <location line="+63"/>
+        <location line="+92"/>
+        <location line="+66"/>
         <source>System theme</source>
         <translation>系统主题</translation>
     </message>
@@ -1240,7 +1245,7 @@
 <context>
     <name>GUI_UiPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+57"/>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.ui" line="+37"/>
         <source>Fading cover</source>
         <translation>封面渐隐</translation>
     </message>
@@ -1250,12 +1255,17 @@
         <translation>编辑样式表</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+48"/>
+        <location line="+27"/>
+        <source>Bold Library Font</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+45"/>
         <source>User Interface</source>
         <translation>用户界面</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+63"/>
         <source>General</source>
         <translation>通用</translation>
     </message>
@@ -1332,12 +1342,12 @@
     </message>
     <message>
         <location line="+73"/>
-        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="+223"/>
+        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="+213"/>
         <source>Original</source>
         <translation>原版的</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-56"/>
+        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-53"/>
         <location line="+9"/>
         <source>File has no cover</source>
         <translation>文件不含封面</translation>
@@ -1369,47 +1379,47 @@
 <context>
     <name>GUI_TagEdit</name>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+43"/>
-        <source>Discnumber</source>
-        <translation>光盘编号</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Album artist</source>
-        <translation>专辑艺术家</translation>
-    </message>
-    <message>
-        <location line="+113"/>
-        <source>Comment</source>
-        <translation>备注</translation>
-    </message>
-    <message>
-        <location line="+150"/>
-        <source>all</source>
-        <translation>全部</translation>
-    </message>
-    <message>
-        <location line="+24"/>
-        <source>Tag from path</source>
-        <translation>从路径获取标签</translation>
-    </message>
-    <message>
-        <location line="+69"/>
-        <source>Read only file</source>
-        <translation>只读文件</translation>
-    </message>
-    <message>
-        <location line="+119"/>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.ui" line="+52"/>
         <source>Undo all</source>
         <translation>撤销全部</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+160"/>
+        <location line="+155"/>
+        <source>Read only file</source>
+        <translation>只读文件</translation>
+    </message>
+    <message>
+        <location line="+150"/>
+        <source>Discnumber</source>
+        <translation>光盘编号</translation>
+    </message>
+    <message>
+        <location line="+97"/>
+        <source>Comment</source>
+        <translation>备注</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>all</source>
+        <translation>全部</translation>
+    </message>
+    <message>
+        <location line="+159"/>
+        <source>Album artist</source>
+        <translation>专辑艺术家</translation>
+    </message>
+    <message>
+        <location line="+93"/>
+        <source>Tag from path</source>
+        <translation>从路径获取标签</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+268"/>
         <source>Load complete album</source>
         <translation>读取完整专辑</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+2"/>
         <source>Metadata</source>
         <translation>元数据</translation>
     </message>
@@ -1417,21 +1427,6 @@
         <location line="+1"/>
         <source>Tags from path</source>
         <translation>从路径获取标签</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+91"/>
-        <source>Cannot apply expression to %n track(s)</source>
-        <translation><numerusform>无法对 %n 首曲目应用表达式</numerusform></translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Ignore these tracks?</source>
-        <translation>忽略这些曲目？</translation>
-    </message>
-    <message>
-        <location line="+398"/>
-        <source>All changes will be lost</source>
-        <translation>你的更改将被丢弃</translation>
     </message>
 </context>
 <context>
@@ -1452,12 +1447,12 @@
         <translation>应用到全部</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagFromPath.cpp" line="+92"/>
+        <location filename="../src/Gui/Tagging/GUI_TagFromPath.cpp" line="+120"/>
         <source>Tag</source>
         <translation>标签</translation>
     </message>
     <message>
-        <location line="+60"/>
+        <location line="+52"/>
         <source>Please select text first</source>
         <translation>请先选择文本</translation>
     </message>
@@ -1465,20 +1460,28 @@
 <context>
     <name>StreamServer</name>
     <message>
-        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+223"/>
+        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+221"/>
         <source>%1 wants to listen to your music.</source>
         <translation>%1 想聆听您的音乐。</translation>
     </message>
 </context>
 <context>
+    <name>Engine::Engine</name>
+    <message>
+        <location filename="../src/Components/Engine/Engine.cpp" line="+625"/>
+        <source>You should restart Sayonara now</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+845"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+752"/>
         <source>All %1 could be removed</source>
         <translation>全部 %1 都能被删除</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+1"/>
         <source>%1 of %2 %3 could not be removed</source>
         <translation>%1 个（共%2个) %3 不能被删除</translation>
     </message>
@@ -1491,7 +1494,7 @@
         <translation>无法导入曲目</translation>
     </message>
     <message>
-        <location line="+12"/>
+        <location line="+11"/>
         <source>All files could be imported</source>
         <translation>所有文件可被导入</translation>
     </message>
@@ -1522,13 +1525,13 @@
 <context>
     <name>Lyrics::LookupThread</name>
     <message>
-        <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+171"/>
-        <location line="+35"/>
+        <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+238"/>
+        <location line="+30"/>
         <source>Cannot fetch lyrics from %1</source>
         <translation>无法从 %1 获得歌词</translation>
     </message>
     <message>
-        <location line="+10"/>
+        <location line="+5"/>
         <source>No lyrics found</source>
         <translation>未找到歌词</translation>
     </message>
@@ -1536,13 +1539,13 @@
 <context>
     <name>Shutdown</name>
     <message>
-        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+100"/>
+        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+94"/>
         <source>Computer will shutdown after playlist has finished</source>
         <translation>将在播放列表结束后关机</translation>
     </message>
     <message numerus="yes">
         <location line="+29"/>
-        <location line="+35"/>
+        <location line="+30"/>
         <source>Computer will shutdown in %n minute(s)</source>
         <translation><numerusform>将在 %n 分钟后关机</numerusform></translation>
     </message>
@@ -1550,7 +1553,7 @@
 <context>
     <name>LastFM::Base</name>
     <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+151"/>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+132"/>
         <source>Cannot login to Last.fm</source>
         <translation>Last.fm登录失败</translation>
     </message>
@@ -1558,7 +1561,7 @@
 <context>
     <name>SC::JsonParser</name>
     <message>
-        <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+123"/>
+        <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+124"/>
         <source>Website</source>
         <translation>网站</translation>
     </message>
@@ -1583,7 +1586,7 @@
 <context>
     <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+65"/>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
         <source>Search an alternative cover</source>
         <translation>搜索替代封面</translation>
     </message>
@@ -1609,7 +1612,7 @@
 <context>
     <name>HistoryContainer</name>
     <message>
-        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+25"/>
+        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
         <source>History</source>
         <translation>历史记录</translation>
     </message>
@@ -1617,7 +1620,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+105"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+93"/>
         <source>Write cover to tracks</source>
         <translation>将封面写入曲目</translation>
     </message>
@@ -1625,7 +1628,7 @@
 <context>
     <name>Library::CoverViewContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+212"/>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+205"/>
         <source>Toolbar</source>
         <translation>工具栏</translation>
     </message>
@@ -1633,7 +1636,7 @@
 <context>
     <name>Library::GUI_CoverView</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+211"/>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+201"/>
         <source>Use Ctrl + mouse wheel to zoom</source>
         <translation>用 Ctrl + 鼠标滚轮缩放</translation>
     </message>
@@ -1641,7 +1644,7 @@
 <context>
     <name>Directory::ContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+303"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+302"/>
         <source>Rename by metadata</source>
         <translation>按元数据重命名</translation>
     </message>
@@ -1669,7 +1672,7 @@
 <context>
     <name>Directory::TreeView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+408"/>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+407"/>
         <source>Copy here</source>
         <translation>拷贝到此处</translation>
     </message>
@@ -1682,7 +1685,7 @@
 <context>
     <name>GUI_DirectoryView</name>
     <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+187"/>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+217"/>
         <source>Could not create directory</source>
         <translation>不能新建目录</translation>
     </message>
@@ -1703,7 +1706,7 @@
 <context>
     <name>Library::GUI_EmptyLibrary</name>
     <message>
-        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
+        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+102"/>
         <source>Please choose a name for your library</source>
         <translation>请为媒体库起一个名称</translation>
     </message>
@@ -1713,7 +1716,7 @@
         <translation>请重新为媒体库起一个名称</translation>
     </message>
     <message>
-        <location line="+24"/>
+        <location line="+23"/>
         <source>The file path is invalid</source>
         <translation>路径无效</translation>
     </message>
@@ -1731,7 +1734,7 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/HeaderView.cpp" line="+222"/>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+222"/>
         <source>Resize columns</source>
         <translation>调整列宽</translation>
     </message>
@@ -1744,7 +1747,7 @@
 <context>
     <name>Library::TrackModel</name>
     <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+143"/>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+144"/>
         <source>kBit/s</source>
         <translation type="unfinished"/>
     </message>
@@ -1752,7 +1755,7 @@
 <context>
     <name>GUI_DeleteDialog</name>
     <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+88"/>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
         <source>Only from library</source>
         <translation>仅自媒体库</translation>
     </message>
@@ -1802,7 +1805,7 @@
     <name>Gui::MergeMenu</name>
     <message>
         <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
-        <location line="+59"/>
+        <location line="+57"/>
         <source>Merge</source>
         <translation>合并</translation>
     </message>
@@ -1810,7 +1813,7 @@
 <context>
     <name>GUI_ControlsBase</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+72"/>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+104"/>
         <source>Sayonara Player</source>
         <translation>Sayonara播放器</translation>
     </message>
@@ -1828,7 +1831,7 @@
 <context>
     <name>Menubar</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+348"/>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+350"/>
         <source>View</source>
         <translation>视图</translation>
     </message>
@@ -1854,7 +1857,7 @@
         <translation>全屏</translation>
     </message>
     <message>
-        <location line="+64"/>
+        <location line="+65"/>
         <source>Media files</source>
         <translation>媒体文件</translation>
     </message>
@@ -1864,7 +1867,7 @@
         <translation>打开媒体文件</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+61"/>
         <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
         <translation>有关错误报告和功能请求，请访问Sayonara的GitLab项目页面</translation>
     </message>
@@ -1874,12 +1877,12 @@
         <translation>FAQ</translation>
     </message>
     <message>
-        <location line="+20"/>
+        <location line="+14"/>
         <source>About Sayonara</source>
         <translation>关于 Sayonara 播放器</translation>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+12"/>
         <source>Written by %1</source>
         <translation>编写者：</translation>
     </message>
@@ -1899,7 +1902,7 @@
         <translation>感谢所有无私的翻译人员和所有帮助构建Sayonara软件包的人员</translation>
     </message>
     <message>
-        <location line="+1"/>
+        <location line="+2"/>
         <source>And special thanks to those people with local music collections</source>
         <translation>特别感谢给帮助本地音乐收藏的人</translation>
     </message>
@@ -1907,7 +1910,7 @@
 <context>
     <name>TrayIconContextMenu</name>
     <message>
-        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+128"/>
+        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+127"/>
         <source>Current song</source>
         <translation>当前歌曲</translation>
     </message>
@@ -1915,7 +1918,7 @@
 <context>
     <name>VersionChecker</name>
     <message>
-        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+72"/>
+        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+69"/>
         <source>A new version is available!</source>
         <translation>有新版本可用！</translation>
     </message>
@@ -1923,22 +1926,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+252"/>
-        <source>Playlist empty</source>
-        <translation>播放列表为空</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Media files</source>
-        <translation>媒体文件</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Open Media files</source>
-        <translation>打开媒体文件</translation>
-    </message>
-    <message>
-        <location line="+206"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+466"/>
         <source>Playlist name already exists</source>
         <translation>播放列表名已存在</translation>
     </message>
@@ -1946,7 +1934,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+194"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+202"/>
         <source>Please set library path first</source>
         <translation>请先设置媒体库路径</translation>
     </message>
@@ -1954,12 +1942,12 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+244"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+250"/>
         <source>Please set library path first</source>
         <translation>请先设置媒体库路径</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+51"/>
         <source>Cancel shutdown?</source>
         <translation>取消关机？</translation>
     </message>
@@ -1967,7 +1955,7 @@
 <context>
     <name>Playlist::ContextMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+171"/>
+        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+186"/>
         <source>Jump to current track</source>
         <translation>跳转到当前曲目</translation>
     </message>
@@ -1977,7 +1965,7 @@
         <translation>在媒体库中显示歌曲</translation>
     </message>
     <message>
-        <location line="+3"/>
+        <location line="+2"/>
         <source>Playlist mode</source>
         <translation>播放列表模式</translation>
     </message>
@@ -1985,9 +1973,30 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+501"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+459"/>
         <source>Goto row</source>
         <translation>跳到行</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::TabBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+124"/>
+        <source>Media files</source>
+        <translation>媒体文件</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Open Media files</source>
+        <translation>打开媒体文件</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::View</name>
+    <message numerus="yes">
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+351"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
 </context>
 <context>
@@ -2031,7 +2040,7 @@
 <context>
     <name>GUI_LevelPainter</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+157"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
         <source>Level</source>
         <translation>声压</translation>
     </message>
@@ -2039,7 +2048,7 @@
 <context>
     <name>GUI_SpectrogramPainter</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+77"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+78"/>
         <source>Spectrogram</source>
         <translation>声谱</translation>
     </message>
@@ -2047,7 +2056,7 @@
 <context>
     <name>GUI_Spectrum</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+150"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
         <source>Spectrum</source>
         <translation>频谱</translation>
     </message>
@@ -2073,8 +2082,8 @@
 <context>
     <name>GUI_PlaylistChooser</name>
     <message>
-        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+91"/>
-        <location line="+38"/>
+        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+89"/>
+        <location line="+36"/>
         <source>No playlists found</source>
         <translation>未找到播放列表</translation>
     </message>
@@ -2102,17 +2111,17 @@
 <context>
     <name>Gui::AbstractStationPlugin</name>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+244"/>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+247"/>
         <source>Cannot open stream</source>
         <translation>无法打开流</translation>
     </message>
     <message>
-        <location line="+72"/>
+        <location line="+74"/>
         <source>Please choose another name</source>
         <translation>请重新选择名称</translation>
     </message>
     <message>
-        <location line="+36"/>
+        <location line="+37"/>
         <source>Do you really want to delete %1</source>
         <translation>你确定要删除 %1 吗</translation>
     </message>
@@ -2120,7 +2129,7 @@
 <context>
     <name>GUI_Podcasts</name>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+65"/>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
         <source>Podcast</source>
         <translation>播客</translation>
     </message>
@@ -2128,7 +2137,7 @@
 <context>
     <name>GUI_Stream</name>
     <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+68"/>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+73"/>
         <source>Search radio station</source>
         <translation>搜索广播电台</translation>
     </message>
@@ -2162,7 +2171,7 @@
 <context>
     <name>SomaFM::StationModel</name>
     <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+125"/>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
         <source>Cannot fetch stations</source>
         <translation>无法获取电台</translation>
     </message>
@@ -2298,7 +2307,7 @@
 <context>
     <name>Lang</name>
     <message>
-        <location filename="../src/Utils/Language/Language.cpp" line="+79"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="+78"/>
         <source>About</source>
         <translation>关于</translation>
     </message>
