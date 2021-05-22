@@ -31,6 +31,8 @@
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverChangeNotifier.h"
+#include "Components/Covers/CoverLookup.h"
 
 #include "Interfaces/PlaylistInterface.h"
 
@@ -54,6 +56,7 @@
 #include <QFont>
 #include <QUrl>
 #include <QHash>
+#include <QIcon>
 #include <QPixmap>
 
 namespace Algorithm = Util::Algorithm;
@@ -113,6 +116,9 @@ Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* pa
 
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
+
+	const auto coverChangeNotifier = Cover::ChangeNotfier::instance();
+	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &Model::coversChanged);
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
@@ -175,31 +181,19 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		if(col == ColumnName::Cover)
 		{
 			const auto& track = m->playlist->track(row);
-
 			if(!m->coverLookupMap.contains(track.albumId()))
 			{
-				const auto height = m->rowHeight - 6;
+				m->coverLookupMap.insert(track.albumId(), QPixmap {});
 
 				const auto coverLocation = Cover::Location::coverLocation(track);
-				auto* coverDatabase = DB::Connector::instance()->coverConnector();
-
-				QPixmap cover;
-				const auto hash = coverLocation.hash();
-				coverDatabase->getCover(hash, cover);
-
-				if(cover.isNull())
-				{
-					cover = QPixmap(coverLocation.preferredPath());
-				}
-
-				if(!cover.isNull())
-				{
-					m->coverLookupMap[track.albumId()] =
-						cover.scaled(height, height, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-				}
+				auto* coverLookup = new Cover::Lookup(coverLocation, 1, nullptr);
+				coverLookup->setUserData(track.albumId());
+				connect(coverLookup, &Cover::Lookup::sigCoverFound, this, &Model::coverFound);
+				connect(coverLookup, &Cover::Lookup::sigFinished, this, &Model::coverLookupFinished);
+				coverLookup->start();
 			}
 
-			return m->coverLookupMap[track.albumId()];
+			return QIcon(m->coverLookupMap[track.albumId()]);
 		}
 	}
 
@@ -537,6 +531,7 @@ void Model::setRowHeight(int rowHeight)
 
 void Model::refreshData()
 {
+	m->coverLookupMap.clear();
 	m->playlist->enableAll();
 }
 
@@ -603,4 +598,43 @@ int Playlist::Model::playlistIndex() const
 void Playlist::Model::setBusy(bool b)
 {
 	m->playlist->setBusy(b);
+}
+
+void Playlist::Model::coverFound(const QPixmap& pixmap)
+{
+	if(auto* coverLookup = static_cast<Cover::Lookup*>(sender()); coverLookup)
+	{
+		const auto albumId = coverLookup->userData<AlbumId>();
+		m->coverLookupMap[albumId] = pixmap;
+
+		const auto& tracks = m->playlist->tracks();
+
+		auto row = 0;
+		for(const auto& track : tracks)
+		{
+			if(track.albumId() == albumId)
+			{
+				constexpr const auto column = static_cast<int>(ColumnName::Cover);
+				emit dataChanged(index(row, column), index(row, column));
+			}
+
+			row++;
+		}
+	}
+}
+
+void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
+{
+	if(sender())
+	{
+		sender()->deleteLater();
+	}
+}
+
+void Playlist::Model::coversChanged()
+{
+	m->coverLookupMap.clear();
+
+	constexpr const auto column = static_cast<int>(ColumnName::Cover);
+	emit dataChanged(index(0, column), index(rowCount() - 1, column));
 }

@@ -26,17 +26,17 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#ifndef PLAYLISTITEMMODEL_H_
-#define PLAYLISTITEMMODEL_H_
+#ifndef PLAYLISTITEMMODEL_H
+#define PLAYLISTITEMMODEL_H
 
 #include "Gui/Utils/SearchableWidget/SearchableModel.h"
 
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
-
 class CustomMimeData;
 class PlaylistCreator;
+class QPixmap;
 
 namespace Playlist
 {
@@ -128,9 +128,13 @@ namespace Playlist
 			void playlistChanged(int playlistIndex);
 			void currentTrackChanged(int oldIndex, int newIndex);
 
+			void coversChanged();
+			void coverFound(const QPixmap& pixmap);
+			void coverLookupFinished(bool success);
+
 		private:
 			void lookChanged();
 	};
 }
 
-#endif /* PLAYLISTITEMMODEL_H_ */
+#endif /* PLAYLISTITEMMODEL_H */

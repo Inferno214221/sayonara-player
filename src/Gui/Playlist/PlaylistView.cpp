@@ -90,8 +90,8 @@ namespace
 	int resizeCoverSection(int coverWidth, QHeaderView* horizontalHeader)
 	{
 		return (GetSetting(Set::PL_ShowCovers))
-			? resizeSection(+Playlist::Model::ColumnName::Cover, coverWidth, horizontalHeader)
-			: 0;
+		       ? resizeSection(+Playlist::Model::ColumnName::Cover, coverWidth, horizontalHeader)
+		       : 0;
 	}
 
 	int resizeNumberSection(const QFontMetrics& fontMetrics, int maxRows, QHeaderView* horizontalHeader)
@@ -194,7 +194,7 @@ namespace Playlist
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_J), this, &View::jumpToCurrentTrack);
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_G), this, &View::findTrackTriggered);
 		createShortcut(QKeySequence(Qt::Key_Return), this, &View::playSelectedTrack);
-		createShortcut(QKeySequence(Qt::Key_Enter),  this,&View::playSelectedTrack);
+		createShortcut(QKeySequence(Qt::Key_Enter), this, &View::playSelectedTrack);
 	}
 
 	void View::initContextMenu()
@@ -593,5 +593,6 @@ namespace Playlist
 		resizeSection(+Model::ColumnName::Description, viewportWidth, horizontalHeader());
 
 		m->model->setRowHeight(viewRowHeight);
+		this->setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
 	}
 }
