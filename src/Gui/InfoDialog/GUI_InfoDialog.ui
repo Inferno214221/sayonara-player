@@ -213,6 +213,13 @@
                  </spacer>
                 </item>
                 <item>
+                 <widget class="QPushButton" name="btnChangeCover">
+                  <property name="text">
+                   <string>Change Cover</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
                  <widget class="QPushButton" name="btnWriteCoverToTracks">
                   <property name="text">
                    <string notr="true">Write cover into tracks...</string>

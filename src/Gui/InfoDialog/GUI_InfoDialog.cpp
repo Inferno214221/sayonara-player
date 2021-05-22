@@ -50,6 +50,25 @@
 
 namespace Algorithm = Util::Algorithm;
 
+namespace
+{
+	std::shared_ptr<MetaDataInfo>
+	getMetadataInfo(const MD::Interpretation& metadataInterpretation, const MetaDataList& tracks)
+	{
+		switch(metadataInterpretation)
+		{
+			case MD::Interpretation::Artists:
+				return std::shared_ptr<MetaDataInfo>(new ArtistInfo(tracks));
+			case MD::Interpretation::Albums:
+				return std::shared_ptr<MetaDataInfo>(new AlbumInfo(tracks));
+			case MD::Interpretation::None:
+			case MD::Interpretation::Tracks:
+			default:
+				return std::make_shared<MetaDataInfo>(tracks);
+		}
+	}
+}
+
 struct GUI_InfoDialog::Private
 {
 	GUI_TagEdit* uiTagEditor = nullptr;
@@ -57,7 +76,7 @@ struct GUI_InfoDialog::Private
 
 	Cover::Location coverLocation;
 	MetaDataList tracks;
-	MD::Interpretation metadataInterpretation{MD::Interpretation::None};
+	MD::Interpretation metadataInterpretation {MD::Interpretation::None};
 
 	MetaDataList localTracks() const
 	{
@@ -173,37 +192,21 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 		return;
 	}
 
-	MetaDataInfo* info;
-	switch(mdInterpretation)
-	{
-		case MD::Interpretation::Artists:
-			info = new ArtistInfo(m->tracks);
-			break;
-		case MD::Interpretation::Albums:
-			info = new AlbumInfo(m->tracks);
-			break;
-		case MD::Interpretation::None:
-		case MD::Interpretation::Tracks:
-		default:
-			info = new MetaDataInfo(m->tracks);
-			break;
-	}
+	const auto metadataInfo = getMetadataInfo(mdInterpretation, m->tracks);
 
-	ui->btnWriteCoverToTracks->setVisible(info->albums().size() == 1);
-	ui->labTitle->setText(info->header());
-	ui->labSubheader->setText(info->subheader());
+	ui->btnWriteCoverToTracks->setVisible(metadataInfo->albums().size() == 1);
+	ui->labTitle->setText(metadataInfo->header());
+	ui->labSubheader->setText(metadataInfo->subheader());
 
-	const auto infoMap = info->infostringMap();
+	const auto infoMap = metadataInfo->infostringMap();
 	prepareInfoTable(ui->tableInfo, infoMap);
 
-	const auto paths = info->paths();
+	const auto paths = metadataInfo->paths();
 	preparePaths(ui->listPaths, paths);
 
-	m->coverLocation = info->coverLocation();
+	m->coverLocation = metadataInfo->coverLocation();
 	prepareCover(m->coverLocation);
 	ui->btnImage->setEnabled(m->coverLocation.isValid());
-
-	delete info;
 }
 
 void GUI_InfoDialog::setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation)
@@ -284,6 +287,7 @@ void GUI_InfoDialog::init()
 	connect(ui->btnImage, &Gui::CoverButton::sigRejected, this, &GUI_InfoDialog::writeCoversToTracksClicked);
 	connect(ui->btnImage, &Gui::CoverButton::sigCoverChanged, this, &GUI_InfoDialog::coverChanged);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_InfoDialog::close);
+	connect(ui->btnChangeCover, &QPushButton::clicked, ui->btnImage, &Gui::CoverButton::sigTriggered);
 
 	ui->stackedWidget->setCurrentIndex(0);
 	ui->btnImage->setStyleSheet("QPushButton:hover {background-color: transparent;}");
@@ -318,8 +322,8 @@ void GUI_InfoDialog::initLyrics()
 
 void GUI_InfoDialog::tabIndexChangedInt(int index)
 {
-	index = std::min(int(GUI_InfoDialog::Tab::Edit), index);
-	index = std::max(int(GUI_InfoDialog::Tab::Info), index);
+	index = std::min(static_cast<int>(GUI_InfoDialog::Tab::Edit), index);
+	index = std::max(static_cast<int>(GUI_InfoDialog::Tab::Info), index);
 
 	prepareTab(GUI_InfoDialog::Tab(index));
 }
