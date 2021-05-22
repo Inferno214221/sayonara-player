@@ -32,6 +32,7 @@
 #include "Fetcher/DirectFetcher.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingNotifier.h"
 #include "Utils/FileUtils.h"
@@ -99,12 +100,10 @@ namespace
 
 		const auto it = Util::Algorithm::find(fetchers, [&](const auto fetcher) {
 			const auto fetcherIdentifier = fetcher->identifier().toLower();
-			return (!fetcherIdentifier.isEmpty() && (fetcherIdentifier == identifier.toLower()));
+			return (fetcherIdentifier == identifier.toLower());
 		});
 
-		return (it != fetchers.end())
-		       ? *it
-		       : nullptr;
+		return (it != fetchers.end()) ? *it : nullptr;
 	}
 
 	QList<Url> extractAddresses(const CoverFetcherList& fetchers,
@@ -113,8 +112,7 @@ namespace
 		QList<Url> urls;
 		for(const auto& fetcher : fetchers)
 		{
-			const auto address = addressExtractor(fetcher);
-			if(!address.isEmpty())
+			if(const auto address = addressExtractor(fetcher); !address.isEmpty())
 			{
 				urls << Url(fetcher->identifier(), address);
 			}
@@ -190,19 +188,9 @@ void Manager::registerCoverFetcher(CoverFetcherPtr fetcher)
 CoverFetcherPtr Manager::coverfetcher(const Url& url) const
 {
 	const auto& identifier = url.identifier();
-	const auto fetcher = coverfetcherByIdentifier(identifier, m->coverfetchers);
-
-	if(identifier == m->websiteCoverfetcher->identifier())
-	{
-		m->websiteCoverfetcher->setWebsite(url.url());
-	}
-
-	else if(identifier == m->directCoverfetcher->identifier())
-	{
-		m->directCoverfetcher->setDirectUrl(url.url());
-	}
-
-	return fetcher;
+	return (identifier == m->websiteCoverfetcher->identifier())
+	       ? m->websiteCoverfetcher
+	       : coverfetcherByIdentifier(identifier, m->coverfetchers);
 }
 
 Fetcher::Url Manager::directFetcherUrl(const QString& url)
@@ -262,10 +250,10 @@ QList<Url> Manager::searchAddresses(const QString& searchstring) const
 {
 	if(isSearchstringWebsite(searchstring))
 	{
-		m->websiteCoverfetcher->setWebsite(searchstring);
+		Cover::Fetcher::Website websiteCoverFetcher;
+		websiteCoverFetcher.setWebsite(searchstring);
 
-		const auto identifier = m->websiteCoverfetcher->identifier();
-		return {Url(identifier, m->websiteCoverfetcher->fulltextSearchAddress(""))};
+		return {Url(websiteCoverFetcher.identifier(), websiteCoverFetcher.fulltextSearchAddress(""))};
 	}
 
 	return extractAddresses(m->coverfetchers, [&](const auto fetcher) {
@@ -277,24 +265,20 @@ QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& 
 {
 	if(isSearchstringWebsite(searchstring))
 	{
-		m->websiteCoverfetcher->setWebsite(searchstring);
+		Cover::Fetcher::Website websiteCoverFetcher;
+		websiteCoverFetcher.setWebsite(searchstring);
 
-		const auto identifier = m->websiteCoverfetcher->identifier();
-		return {Url(identifier, m->websiteCoverfetcher->fulltextSearchAddress(""))};
+		return {Url(websiteCoverFetcher.identifier(), websiteCoverFetcher.fulltextSearchAddress(""))};
 	}
 
-	const auto urls = extractAddresses(m->coverfetchers, [&](const auto fetcher) {
-		const auto isValid = isActive(fetcher) &&
-		                     (fetcher->identifier().compare(coverFetcherIdentifier, Qt::CaseInsensitive) == 0);
+	const auto fetcher = coverfetcherByIdentifier(coverFetcherIdentifier, m->coverfetchers);
+	if(fetcher && isActive(fetcher))
+	{
+		auto url = Url(fetcher->identifier(), fetcher->fulltextSearchAddress(searchstring));
+		return {url};
+	}
 
-		return (isValid)
-		       ? fetcher->fulltextSearchAddress(searchstring)
-		       : QString {};
-	});
-
-	return (urls.isEmpty())
-	       ? searchAddresses(searchstring)
-	       : urls;
+	return QList<Url>();
 }
 
 bool Manager::isSearchstringWebsite(const QString& searchstring)
