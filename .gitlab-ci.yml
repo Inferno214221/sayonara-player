@@ -67,12 +67,11 @@ package-appimage:
   dependencies:
     - build-sayonara
   script:
-    - AppImage/appimage.sh deploy
+    - dist/AppImage/create-appimage.sh ${CI_COMMIT_SHORT_SHA}
   artifacts:
     paths:
       - build/*.AppImage
-    expire_in: 1 week
-  when: manual
+    expire_in: 1 day
 
 
 # Snap
