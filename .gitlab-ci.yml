@@ -46,17 +46,19 @@ test-sayonara:
 package-fedora:
   image: "fedora:latest"
   stage: packaging
+  variables:
+    RPM_BUILD_NCPUS: 1
   script:
     - dnf --refresh --assumeyes makecache
     - dnf --assumeyes install git make cmake gcc-c++ desktop-file-utils libappstream-glib libnotify-devel qt5-qtbase-devel qt5-qttools-devel qt5-qtsvg-devel gstreamer1-plugins-base-devel taglib-devel zlib-devel hicolor-icon-theme auto-buildrequires
     - rm -rf build && mkdir build && cd build
     - cmake ..
     - cd ..
-    - dist/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
+    - dist/rpm/fedora-rpm.sh ${CI_COMMIT_SHA} ./build/dist/sayonara.spec
   artifacts:
     paths:
       - /root/rpmbuild/RPMS
-    expire_in: 1 week
+    expire_in: 1 day
   when: manual
 
 
