@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ASYNCWEBACCESS_H_
-#define ASYNCWEBACCESS_H_
+#ifndef SAYONARA_ASYNC_WEB_ACCESS_H
+#define SAYONARA_ASYNC_WEB_ACCESS_H
 
 #include "AbstractWebAccess.h"
 #include "Utils/Pimpl.h"
@@ -27,148 +27,97 @@
 #include <QObject>
 
 class QImage;
-class QNetworkReply;
+
 /**
  * @brief Asynchgronous web access class
  * @ingroup Helper
  */
 class AsyncWebAccess :
-		public QObject,
-		public AbstractWebAccess
+	public QObject,
+	public AbstractWebAccess
 {
 	Q_OBJECT
-
-public:
-
-	/**
-	 * @brief The Behavior enum. Responsible for the user-agent variable in the HTTP header
-	 */
-	enum class Behavior : uint8_t
-	{
-		AsBrowser=0,
-		AsSayonara,
-		Random,
-		None
-	};
-
-
-	enum class Status : uint8_t
-	{
-		GotData,
-		AudioStream,
-		NoHttp,
-		NoData,
-		Timeout,
-		Error
-	};
-
-signals:
-	void sigFinished();
-
-public:
-
-	/**
-	 * @brief AsyncWebAccess constructor
-	 * @param parent standard QObject parent
-	 * @param header a modified header, see set_raw_header(const QByteArray& header)
-	 */
-	AsyncWebAccess(QObject* parent=nullptr, const QByteArray& header=QByteArray(),
-				   AsyncWebAccess::Behavior behavior=AsyncWebAccess::Behavior::AsBrowser);
-
-	virtual ~AsyncWebAccess() override;
-
-	/**
-	 * @brief get fetched data
-	 * @return fetched data
-	 */
-	QByteArray data() const;
-
-	/**
-	 * @brief indicates, if data is avaialbe
-	 * @return
-	 */
-	bool hasData() const;
-
-	/**
-	 * @brief get fetched data formatted as image
-	 * @return image
-	 */
-	QImage image() const;
-
-
-	/**
-	 * @brief get last called url. \n
-	 * This url may differ from the originally called url when request has been redirected.
-	 * @return url string
-	 */
-	QString	url() const;
-
-	/**
-	 * @brief Set the behaviour how sayonara should be recognized by the server. This variable will set
-	 * the user-agent string in the http header
-	 * @param behavior
-	 */
-	void setBehavior(AsyncWebAccess::Behavior behavior);
-
-
-	/**
-	 * @brief starts a GET request
-	 * @param url url to call
-	 * @param timeout timeout until request is aborted and error is emitted
-	 */
-	void run(const QString& url, int timeout=4000);
-
-	/**
-	 * @brief starts a POST request
-	 * @param url url to call
-	 * @param post_data QByteArray formatted postdata containing ?, = and & characters
-	 * @param timeout timeout until request is aborted and error is emitted
-	 */
-	void runPost(const QString& url, const QByteArray& postData, int timeout=4000);
-
-	/**
-	 * @brief modify header.
-	 * @param header new header field. e.g. "Content-Type" "text/css"
-	 */
-	void setRawHeader(const QMap<QByteArray, QByteArray>& header);
-
-	/**
-	 * @brief Request Status
-	 * @return
-	 */
-	AsyncWebAccess::Status status() const;
-
-	/**
-	 * @brief Indicates if error
-	 * @return
-	 */
-	bool hasError() const;
-
-public slots:
-	void stop() override;
-
-
-private slots:
-
-	void dataAvailable();
-
-	/**
-	 * @brief Called when request has finished. Emits sigFinished(bool success)
-	 * @param reply information about redirection, success or errors
-	 */
-	void finished();
-
-	void redirected(const QUrl& url);
-
-	/**
-	 * @brief Request has timed out. Emits sigFinished(false);\n
-	 * finished(QNetworkReply *reply) is not called anymore
-	 */
-	void timeout();
-
-private:
 	PIMPL(AsyncWebAccess)
-	void redirectRequest(QString redirecUurl);
+
+	public:
+		enum class Behavior :
+			uint8_t
+		{
+				AsBrowser = 0,
+				AsSayonara,
+				Random,
+				None
+		};
+
+		enum class Status :
+			uint8_t
+		{
+				NoError = 0,
+				GotData,
+				AudioStream,
+				NoData,
+				NoHttp,
+				NotFound,
+				Timeout,
+				Error
+		};
+
+	signals:
+		void sigFinished();
+		void sigStopped();
+
+	public:
+		explicit AsyncWebAccess(QObject* parent = nullptr,
+		                        AsyncWebAccess::Behavior behavior = AsyncWebAccess::Behavior::AsBrowser);
+
+		virtual ~AsyncWebAccess() override;
+
+		QByteArray data() const;
+		bool hasData() const;
+
+		QImage image() const;
+		QString url() const;
+
+		AsyncWebAccess::Status status() const;
+		bool hasError() const;
+
+		void setBehavior(AsyncWebAccess::Behavior behavior);
+		void setRawHeader(const QMap<QByteArray, QByteArray>& header);
+
+		void run(const QString& url, int timeout = 4000);
+		void runPost(const QString& url, const QByteArray& postData, int timeout = 4000);
+
+	public slots:
+		void stop() override;
+
+	private slots:
+		void dataAvailable();
+		void finished();
+		void timeout();
 };
 
-#endif
+class AsyncWebAccessStopper :
+	public QObject
+{
+		friend class AsyncWebAccess;
+
+	Q_OBJECT
+	PIMPL(AsyncWebAccessStopper)
+
+	signals:
+		void sigFinished();
+		void sigTimeout();
+		void sigStopped();
+
+	private:
+		explicit AsyncWebAccessStopper(QObject* parent);
+		~AsyncWebAccessStopper() noexcept;
+
+	private slots:
+		void startTimer(int timeout);
+		void stopTimer();
+		void timeout();
+		void stop();
+};
+
+#endif // SAYONARA_ASYNC_WEB_ACCESS_H
