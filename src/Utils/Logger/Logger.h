@@ -102,9 +102,9 @@ public:
 	}
 
 	template<typename T, template <typename ELEM> class CONT>
-	Logger& operator << (const CONT<T> list){
+	Logger& operator << (const CONT<T>& list){
 		for(const T& item : list){
-			(*this) << std::to_string(item) << ", ";
+			(*this) << item << ", ";
 		}
 
 		return *this;
