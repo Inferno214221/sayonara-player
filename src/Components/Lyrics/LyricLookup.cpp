@@ -213,7 +213,7 @@ void LookupThread::startSearch(const QString& url)
 {
 	spLog(Log::Debug, this) << "Search Lyrics from " << url;
 
-	auto* awa = new AsyncWebAccess(this, QByteArray(), AsyncWebAccess::Behavior::AsBrowser);
+	auto* awa = new AsyncWebAccess(this);
 	connect(awa, &AsyncWebAccess::sigFinished, this, &LookupThread::searchFinished);
 	awa->run(url);
 }
