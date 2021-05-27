@@ -75,6 +75,7 @@ new_test(Tagging/TagFromPathTest.cpp)
 new_test(Tagging/TaggingTest.cpp Tagging/AbstractTaggingTest.cpp)
 
 new_test(Util/UtilTest.cpp)
+new_test(Util/AsyncWebAccessTest.cpp)
 new_test(Util/CryptTest.cpp)
 new_test(Util/FileHelperTest.cpp)
 new_test(Util/LanguageKeyTest.cpp)
@@ -90,4 +91,3 @@ new_test(Util/TreeTest.cpp)
 new_test(AudioConverter/AudioConverterTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
 new_test(Covers/CoverFetchManagerTest.cpp)
-
