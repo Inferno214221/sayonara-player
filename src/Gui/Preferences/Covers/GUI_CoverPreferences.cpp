@@ -234,7 +234,7 @@ void GUI_CoverPreferences::downClicked()
 void GUI_CoverPreferences::addClicked()
 {
 	auto* listWidgetItem = ui->lvInactiveCoverSearchers->takeItem(ui->lvInactiveCoverSearchers->currentRow());
-	if(!listWidgetItem)
+	if(listWidgetItem)
 	{
 		ui->lvCoverSearchers->addItem(listWidgetItem->text());
 		delete listWidgetItem;
@@ -244,7 +244,7 @@ void GUI_CoverPreferences::addClicked()
 void GUI_CoverPreferences::removeClicked()
 {
 	auto* listWidgetItem = ui->lvCoverSearchers->takeItem(ui->lvCoverSearchers->currentRow());
-	if(!listWidgetItem)
+	if(listWidgetItem)
 	{
 		ui->lvInactiveCoverSearchers->addItem(listWidgetItem->text());
 		delete listWidgetItem;
