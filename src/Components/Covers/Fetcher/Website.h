@@ -4,6 +4,8 @@
 #include "CoverFetcher.h"
 #include "Utils/Pimpl.h"
 
+#include <QString>
+
 namespace Cover::Fetcher
 {
 	/**
@@ -24,7 +26,7 @@ namespace Cover::Fetcher
 			QString privateIdentifier() const override;
 
 		public:
-			Website();
+			Website(const QString& url=QString());
 			~Website() override;
 
 			bool canFetchCoverDirectly() const override;

@@ -124,14 +124,14 @@ namespace
 
 struct Manager::Private
 {
+	QString websiteFetcherIdentifer;
+	QString directFetcherIdentifier;
 	QMap<QString, bool> activeMap;
 	CoverFetcherList coverfetchers;
-	std::shared_ptr<Cover::Fetcher::Website> websiteCoverfetcher;
-	std::shared_ptr<Cover::Fetcher::DirectFetcher> directCoverfetcher;
 
 	Private() :
-		websiteCoverfetcher {std::make_shared<Fetcher::Website>()},
-		directCoverfetcher {std::make_shared<Fetcher::DirectFetcher>()} {}
+		websiteFetcherIdentifer {Website().identifier()},
+		directFetcherIdentifier {DirectFetcher().identifier()} {}
 
 	~Private()
 	{
@@ -146,8 +146,8 @@ struct Manager::Private
 	bool isActive(const QString& identifier) const
 	{
 		const auto identifierLower = identifier.toLower();
-		if((identifierLower == directCoverfetcher->identifier()) ||
-		   (identifierLower == websiteCoverfetcher->identifier()))
+		if((identifierLower == directFetcherIdentifier) ||
+		   (identifierLower == websiteFetcherIdentifer))
 		{
 			return true;
 		}
@@ -167,8 +167,8 @@ Manager::Manager() :
 	registerCoverFetcher(std::make_shared<Fetcher::Discogs>());
 	registerCoverFetcher(std::make_shared<Fetcher::Google>());
 	registerCoverFetcher(std::make_shared<Fetcher::Yandex>());
-	registerCoverFetcher(m->directCoverfetcher);
-	registerCoverFetcher(m->websiteCoverfetcher);
+	registerCoverFetcher(std::make_shared<Fetcher::Website>());
+	registerCoverFetcher(std::make_shared<Fetcher::DirectFetcher>());
 
 	ListenSetting(Set::Cover_Server, Manager::serversChanged);
 }
@@ -188,21 +188,19 @@ void Manager::registerCoverFetcher(CoverFetcherPtr fetcher)
 CoverFetcherPtr Manager::coverfetcher(const Url& url) const
 {
 	const auto& identifier = url.identifier();
-	return (identifier == m->websiteCoverfetcher->identifier())
-	       ? m->websiteCoverfetcher
+	return (identifier == m->websiteFetcherIdentifer)
+	       ? std::make_shared<Website>(url.url())
 	       : coverfetcherByIdentifier(identifier, m->coverfetchers);
 }
 
-Fetcher::Url Manager::directFetcherUrl(const QString& url)
+Fetcher::Url Manager::directFetcherUrl(const QString& url) const
 {
-	static Cover::Fetcher::DirectFetcher df;
-	return Cover::Fetcher::Url(df.identifier(), url);
+	return Url(m->directFetcherIdentifier, url);
 }
 
-Url Fetcher::Manager::websiteFetcherUrl(const QString& url)
+Url Fetcher::Manager::websiteFetcherUrl(const QString& url) const
 {
-	static Cover::Fetcher::Website wf;
-	return Cover::Fetcher::Url(wf.identifier(), url);
+	return Url(m->websiteFetcherIdentifer, url);
 }
 
 CoverFetcherList Manager::coverfetchers() const
@@ -250,10 +248,8 @@ QList<Url> Manager::searchAddresses(const QString& searchstring) const
 {
 	if(isSearchstringWebsite(searchstring))
 	{
-		Cover::Fetcher::Website websiteCoverFetcher;
-		websiteCoverFetcher.setWebsite(searchstring);
-
-		return {Url(websiteCoverFetcher.identifier(), websiteCoverFetcher.fulltextSearchAddress(""))};
+		const auto url = websiteFetcherUrl(searchstring);
+		return {url};
 	}
 
 	return extractAddresses(m->coverfetchers, [&](const auto fetcher) {
@@ -265,16 +261,14 @@ QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& 
 {
 	if(isSearchstringWebsite(searchstring))
 	{
-		Cover::Fetcher::Website websiteCoverFetcher;
-		websiteCoverFetcher.setWebsite(searchstring);
-
-		return {Url(websiteCoverFetcher.identifier(), websiteCoverFetcher.fulltextSearchAddress(""))};
+		const auto url = websiteFetcherUrl(searchstring);
+		return {url};
 	}
 
 	const auto fetcher = coverfetcherByIdentifier(coverFetcherIdentifier, m->coverfetchers);
 	if(fetcher && isActive(fetcher))
 	{
-		auto url = Url(fetcher->identifier(), fetcher->fulltextSearchAddress(searchstring));
+		const auto url = Url(fetcher->identifier(), fetcher->fulltextSearchAddress(searchstring));
 		return {url};
 	}
 

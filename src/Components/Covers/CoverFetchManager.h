@@ -115,9 +115,9 @@ namespace Cover
 				 * @param url the direct download url
 				 * @return
 				 */
-				Url directFetcherUrl(const QString& url);
+				Url directFetcherUrl(const QString& url) const;
 
-				Url websiteFetcherUrl(const QString& url);
+				Url websiteFetcherUrl(const QString& url) const;
 
 				static bool isSearchstringWebsite(const QString& searchstring);
 

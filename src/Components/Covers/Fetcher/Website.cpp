@@ -12,10 +12,11 @@ struct Website::Private
 	QString website;
 };
 
-Cover::Fetcher::Website::Website() :
+Cover::Fetcher::Website::Website(const QString& website) :
 	Base()
 {
 	m = Pimpl::make<Private>();
+	setWebsite(website);
 }
 
 Website::~Website() = default;
@@ -75,7 +76,7 @@ QString Website::fulltextSearchAddress([[maybe_unused]] const QString& address) 
 
 void Website::setWebsite(const QString& website)
 {
-	m->website = (website.startsWith("http"))
+	m->website = (website.startsWith("http") || website.isEmpty())
 	              ? website
 	              : QString("https://%1").arg(website);
 }

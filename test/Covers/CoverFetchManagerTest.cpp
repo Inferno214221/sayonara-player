@@ -132,7 +132,7 @@ void CoverFetchManagerTest::testArtistAddresses()
 	const auto fetchers = manager->coverfetchers();
 
 	QStringList identifiers;
-	for(const auto fetcher : fetchers)
+	for(const auto& fetcher : fetchers)
 	{
 		if(!fetcher->artistAddress("some-artist").isEmpty())
 		{
@@ -163,7 +163,7 @@ void CoverFetchManagerTest::testAlbumAddresses()
 	const auto fetchers = manager->coverfetchers();
 
 	QStringList identifiers;
-	for(const auto fetcher : fetchers)
+	for(const auto& fetcher : fetchers)
 	{
 		if(!fetcher->albumAddress("some-artist", "some-album").isEmpty())
 		{
@@ -194,7 +194,7 @@ void CoverFetchManagerTest::testSearchAddresses()
 	const auto fetchers = manager->coverfetchers();
 
 	QStringList identifiers;
-	for(const auto fetcher : fetchers)
+	for(const auto& fetcher : fetchers)
 	{
 		if(!fetcher->fulltextSearchAddress("search").isEmpty())
 		{
@@ -266,6 +266,9 @@ void CoverFetchManagerTest::testWwwSearch()
 
 	QVERIFY(searchAddresses.count() == 1);
 	QVERIFY(searchAddresses.first().identifier() == mWebsiteFetcherIdentifier);
+
+	auto fetcher = manager->coverfetcher(searchAddresses.first());
+	QVERIFY(fetcher->fulltextSearchAddress("") == "https://www.website.de");
 }
 
 void CoverFetchManagerTest::testIsWebsite()
