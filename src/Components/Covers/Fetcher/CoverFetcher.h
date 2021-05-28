@@ -85,6 +85,8 @@ namespace Cover::Fetcher
 			 */
 			virtual QString fulltextSearchAddress(const QString& str) const;
 
+			virtual QString radioSearchAddress(const QString& stationName, const QString& stationUrl) const;
+
 			/**
 			 * @brief get_estimated_size. Rough image size of the CoverFetchInterface
 			 * @return e.g. 300px
@@ -92,6 +94,9 @@ namespace Cover::Fetcher
 			virtual int estimatedSize() const = 0;
 
 			virtual bool isWebserviceFetcher() const;
+
+		protected:
+			QString searchStringFromRadioStation(const QString& stationName, const QString& stationUrl) const;
 	};
 
 } // Cover::Fetcher

@@ -271,9 +271,9 @@ Location Location::coverLocation(const Artist& artist)
 	return location;
 }
 
-Location Location::coverLocationRadio(const QString& radioStationName)
+Location Location::coverLocationRadio(const QString& stationName, const QString& stationUrl)
 {
-	if(radioStationName.trimmed().isEmpty())
+	if(stationName.trimmed().isEmpty())
 	{
 		return invalidLocation();
 	}
@@ -282,10 +282,10 @@ Location Location::coverLocationRadio(const QString& radioStationName)
 
 	Location location;
 	location.setValid(true);
-	location.setHash(QString("radio_%1").arg(Util::Covers::calcCoverToken(radioStationName, "")));
-	location.setSearchUrls(fetchManager->searchAddresses(radioStationName));
-	location.setSearchTerm(radioStationName);
-	location.setIdentifier(QString("CL:By radio station: %1").arg(radioStationName));
+	location.setHash(QString("radio_%1").arg(Util::Covers::calcCoverToken(stationName, "")));
+	location.setSearchUrls(fetchManager->radioSearchAddresses(stationName, stationUrl));
+	location.setSearchTerm(stationName);
+	location.setIdentifier(QString("CL:By radio station: %1").arg(stationName));
 
 	return location;
 }
@@ -293,7 +293,7 @@ Location Location::coverLocationRadio(const QString& radioStationName)
 Location Location::coverLocation(const MetaData& track)
 {
 	return (track.radioMode() == RadioMode::Station)
-	       ? coverLocationRadio(track.radioStationName())
+	       ? coverLocationRadio(track.radioStationName(), track.filepath())
 	       : Location::coverLocation(createAlbumFromTrack(track));
 }
 

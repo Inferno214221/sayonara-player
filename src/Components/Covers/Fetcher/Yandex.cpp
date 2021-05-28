@@ -79,6 +79,14 @@ QString Yandex::fulltextSearchAddress(const QString& str) const
 	return QString("https://yandex.com/images/search?text=%1&iorient=square&from=tabbar").arg(encoded);
 }
 
+QString Yandex::radioSearchAddress(const QString& stationName, const QString& stationUrl) const
+{
+	const auto searchString = searchStringFromRadioStation(stationName, stationUrl);
+	return (searchString.isEmpty())
+	       ? QString()
+	       : fulltextSearchAddress(searchString);
+}
+
 int Yandex::estimatedSize() const
 {
 	return 300;

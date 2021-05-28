@@ -19,7 +19,43 @@
  */
 
 #include "CoverFetcher.h"
+
 #include <QString>
+#include <QRegExp>
+#include <QUrl>
+
+namespace
+{
+	QString convertStringToSearchString(const QString& str)
+	{
+		QString result;
+		QChar previouseChar;
+		for(const auto& c : str)
+		{
+			if(c.isLetterOrNumber())
+			{
+				result.append(c);
+				previouseChar = c;
+			}
+
+			else if(previouseChar != ' ')
+			{
+				result.append(' ');
+			}
+		}
+
+		return result.trimmed();
+	}
+
+	QString convertUrlToSearchString(const QString& url)
+	{
+		const auto host = QUrl(url).host();
+		auto ipRegex = QRegExp("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");
+		return (ipRegex.indexIn(host) >= 0)
+			? QString()
+			: convertStringToSearchString(host);
+	}
+}
 
 Cover::Fetcher::Base::Base() = default;
 
@@ -46,7 +82,22 @@ QString Cover::Fetcher::Base::fulltextSearchAddress([[maybe_unused]] const QStri
 	return QString();
 }
 
+QString Cover::Fetcher::Base::radioSearchAddress([[maybe_unused]] const QString& stationName,
+                                                 [[maybe_unused]] const QString& stationUrl) const
+{
+	return QString();
+}
+
 bool Cover::Fetcher::Base::isWebserviceFetcher() const
 {
 	return true;
+}
+
+QString Cover::Fetcher::Base::searchStringFromRadioStation(const QString& stationName, const QString& stationUrl) const
+{
+	const auto convertedUrl = convertUrlToSearchString(stationUrl);
+	const auto convertedStation = convertStringToSearchString(stationName);
+	const auto searchString = QString("%1 %2").arg(stationName).arg(convertedUrl);
+
+	return searchString.trimmed();
 }

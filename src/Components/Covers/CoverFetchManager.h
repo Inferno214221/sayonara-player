@@ -82,6 +82,8 @@ namespace Cover
 				 */
 				QList<Url> searchAddresses(const QString& str) const;
 
+				QList<Url> radioSearchAddresses(const QString& stationName, const QString& radioUrl) const;
+
 				/**
 				 * @brief get urls for a fuzzy query
 				 * @param str query string

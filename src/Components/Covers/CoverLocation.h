@@ -112,7 +112,8 @@ namespace Cover
 
 			bool setAudioFileSource(const QString& audioFileSource, const QString& symlinkPath);
 
-			static Location coverLocationRadio(const QString& radioStationName);
+			// must be here because attributes are private
+			static Location coverLocationRadio(const QString& stationName, const QString& stationUrl);
 	};
 }
 

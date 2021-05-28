@@ -257,6 +257,14 @@ QList<Url> Manager::searchAddresses(const QString& searchstring) const
 	});
 }
 
+QList<Url> Manager::radioSearchAddresses(const QString& stationName, const QString& radioUrl) const
+{
+	return extractAddresses(m->coverfetchers, [&](const auto fetcher) {
+		return fetcher->radioSearchAddress(stationName, radioUrl);
+	});
+}
+
+
 QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& coverFetcherIdentifier) const
 {
 	if(isSearchstringWebsite(searchstring))

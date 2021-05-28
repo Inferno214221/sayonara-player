@@ -96,6 +96,14 @@ QString Google::fulltextSearchAddress(const QString& str) const
 	       + QString("&oq=%1").arg(searchString);
 }
 
+QString Google::radioSearchAddress(const QString& stationName, const QString& stationUrl) const
+{
+	const auto searchString = searchStringFromRadioStation(stationName, stationUrl);
+	return (searchString.isEmpty())
+		? QString()
+		: fulltextSearchAddress(searchString);
+}
+
 int Google::estimatedSize() const
 {
 	return 150;

@@ -38,6 +38,7 @@ namespace Cover::Fetcher
 			QString artistAddress(const QString& artist) const override;
 			QString albumAddress(const QString& artist, const QString& album) const override;
 			QString fulltextSearchAddress(const QString& str) const override;
+			QString radioSearchAddress(const QString& stationName, const QString& stationUrl) const override;
 
 			int estimatedSize() const override;
 	};
