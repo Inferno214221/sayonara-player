@@ -20,10 +20,16 @@
 
 #include "GUI_StationSearcher.h"
 #include "Gui/Plugins/ui_GUI_StationSearcher.h"
+
+#include "Components/Covers/CoverLocation.h"
 #include "Components/Streaming/StationSearcher/StationSearcher.h"
 
+#include "Utils/Algorithm.h"
+#include "Utils/globals.h"
 #include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 
 #include "Gui/Utils/GuiUtils.h"
@@ -36,6 +42,32 @@
 
 namespace
 {
+	QString getUrlFromStation(const RadioStation& radioStation)
+	{
+		if(Util::File::isWWW(radioStation.home_url))
+		{
+			return radioStation.home_url;
+		}
+
+		const auto index = Util::Algorithm::indexOf(radioStation.streams, [](const auto& stream){
+			return Util::File::isWWW(stream.url);
+		});
+
+		return (index < 0)
+			? QString()
+			: radioStation.streams[index].url;
+	}
+
+	MetaData convertStationToTrack(const RadioStation& radioStation)
+	{
+		const auto url = getUrlFromStation(radioStation);
+
+		MetaData track;
+		track.setRadioStation(url, radioStation.name);
+		track.setFilepath(url);
+		return track;
+	}
+
 	QTableWidgetItem* createTableWidgetItem(const QString& text, const QFontMetrics& fm)
 	{
 		auto* item = new QTableWidgetItem(text);
@@ -45,6 +77,92 @@ namespace
 		item->setToolTip(text);
 
 		return item;
+	}
+
+	void clearTableWidget(QTableWidget* tableWidget)
+	{
+		tableWidget->clear();
+		while(tableWidget->rowCount() > 0)
+		{
+			tableWidget->removeRow(0);
+		}
+
+		tableWidget->setEnabled(false);
+	}
+
+	void resizeHeader(QTableWidget* tableWidget)
+	{
+		for(auto i=0; i<tableWidget->columnCount() - 1; i++)
+		{
+			tableWidget->horizontalHeader()->setSectionResizeMode(0, QHeaderView::ResizeToContents);
+		}
+
+		tableWidget->horizontalHeader()->setSectionResizeMode(2, QHeaderView::Stretch);
+	}
+
+	void populateStationWidget(QTableWidget* tableWidget, const QList<RadioStation>& stations, QObject* parent)
+	{
+		tableWidget->setRowCount(stations.size());
+		tableWidget->setColumnCount(4);
+		tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem(Lang::get(Lang::Name)));
+		tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem(parent->tr("Country")));
+		tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem(Lang::get(Lang::Info)));
+		tableWidget->setHorizontalHeaderItem(3, new QTableWidgetItem("Url"));
+		tableWidget->horizontalHeader()->setResizeContentsPrecision(20);
+		tableWidget->horizontalHeader()->show();
+		tableWidget->setEnabled(true);
+		tableWidget->show();
+
+		const auto fm = tableWidget->fontMetrics();
+		auto row = 0;
+		for(const auto& station : stations)
+		{
+			auto* itemName = createTableWidgetItem(station.name, fm);
+			auto* itemLocation = createTableWidgetItem(station.location, fm);
+			auto* itemDesc = createTableWidgetItem(station.description, fm);
+			auto* itemUrl = createTableWidgetItem(station.home_url, fm);
+
+			tableWidget->setItem(row, 0, itemName);
+			tableWidget->setItem(row, 1, itemLocation);
+			tableWidget->setItem(row, 2, itemDesc);
+			tableWidget->setItem(row, 3, itemUrl);
+
+			itemName->setToolTip(station.description);
+
+			row++;
+		}
+
+		resizeHeader(tableWidget);
+	}
+	
+	void populateStreamWidget(QTableWidget* tableWidget, const RadioStation& station, QObject* parent)
+	{
+		const auto fm = tableWidget->fontMetrics();
+
+		tableWidget->setRowCount(station.streams.size());
+		tableWidget->setColumnCount(3);
+		tableWidget->setHorizontalHeaderItem(0, new QTableWidgetItem(parent->tr("Type")));
+		tableWidget->setHorizontalHeaderItem(1, new QTableWidgetItem(Lang::get(Lang::Bitrate)));
+		tableWidget->setHorizontalHeaderItem(2, new QTableWidgetItem(parent->tr("Url")));
+		tableWidget->setEnabled(true);
+		tableWidget->show();
+
+		auto row = 0;
+		for(const auto& radioUrl : station.streams)
+		{
+			auto* itemType = createTableWidgetItem(radioUrl.type, fm);
+			auto* itemBitrate = createTableWidgetItem(radioUrl.bitrate, fm);
+			auto* itemUrl = createTableWidgetItem(radioUrl.url, fm);
+
+			tableWidget->setItem(row, 0, itemType);
+			tableWidget->setItem(row, 1, itemBitrate);
+			tableWidget->setItem(row, 2, itemUrl);
+
+			row++;
+		}
+
+		tableWidget->setCurrentItem(tableWidget->item(0, 0));
+		resizeHeader(tableWidget);
 	}
 }
 
@@ -78,13 +196,13 @@ struct GUI_StationSearcher::Private
 			);
 	}
 
-	void setPlaceholderText(QLineEdit* le)
+	void setPlaceholderText(QLineEdit* lineEdit)
 	{
 		const auto placeholderSuffix = (mode == StationSearcher::Style)
 		                               ? Lang::get(Lang::Genre)
 		                               : Lang::get(Lang::RadioStation);
 
-		le->setPlaceholderText(QString("%1: %2")
+		lineEdit->setPlaceholderText(QString("%1: %2")
 			                       .arg(Lang::get(Lang::SearchVerb))
 			                       .arg(placeholderSuffix));
 	}
@@ -110,12 +228,16 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui->splitter->setStretchFactor(1, 1);
 
 	ui->twStations->setItemDelegate(new Gui::StyledItemDelegate(ui->twStations));
+	ui->twStations->setEditTriggers(static_cast<QTableView::EditTriggers>(QTableView::NoEditTriggers));
 	ui->twStations->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	ui->twStations->setHorizontalHeader(new Gui::HeaderView(Qt::Orientation::Horizontal, ui->twStations));
+	ui->twStations->horizontalHeader()->setStretchLastSection(true);
 
 	ui->twStreams->setItemDelegate(new Gui::StyledItemDelegate(ui->twStreams));
+	ui->twStreams->setEditTriggers(static_cast<QTableView::EditTriggers>(QTableView::NoEditTriggers));
 	ui->twStreams->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	ui->twStreams->setHorizontalHeader(new Gui::HeaderView(Qt::Orientation::Horizontal, ui->twStreams));
+	ui->twStreams->horizontalHeader()->setStretchLastSection(true);
 
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::okClicked);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
@@ -139,21 +261,21 @@ QAbstractButton* GUI_StationSearcher::okButton()
 void GUI_StationSearcher::initLineEdit()
 {
 	auto* cmf = new Gui::ContextMenuFilter(ui->leSearch);
-	auto* menu = new QMenu(ui->leSearch);
-	m->contextMenu = menu;
-	connect(cmf, &Gui::ContextMenuFilter::sigContextMenu, this, [menu](const QPoint& p, QAction* action) {
-		Q_UNUSED(action)
-		menu->exec(p);
-	});
+	m->contextMenu = new QMenu(ui->leSearch);
 
-	auto* action1 = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
-	auto* action2 = m->contextMenu->addAction(Lang::get(Lang::Genre));
+	auto contextMenuCallback = [=](const auto& point, [[maybe_unused]] auto* action) {
+		m->contextMenu->exec(point);
+	};
 
-	connect(action1, &QAction::triggered, this, [this]() {
+	connect(cmf, &Gui::ContextMenuFilter::sigContextMenu, this, contextMenuCallback);
+
+	auto* actionRadioStation = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
+	connect(actionRadioStation, &QAction::triggered, this, [this]() {
 		this->changeMode(StationSearcher::Mode::NewSearch);
 	});
 
-	connect(action2, &QAction::triggered, this, [this]() {
+	auto* actionGenre = m->contextMenu->addAction(Lang::get(Lang::Genre));
+	connect(actionGenre, &QAction::triggered, this, [this]() {
 		this->changeMode(StationSearcher::Mode::Style);
 	});
 
@@ -165,14 +287,14 @@ void GUI_StationSearcher::checkListenButton()
 	okButton()->setEnabled(false);
 
 	const auto currentStationIndex = ui->twStations->currentRow();
-	if(currentStationIndex < 0 || currentStationIndex >= m->stations.size())
+	if((currentStationIndex < 0) || (currentStationIndex >= m->stations.size()))
 	{
 		return;
 	}
 
 	const auto station = m->stations[currentStationIndex];
-	int currentStreamIndex = ui->twStreams->currentRow();
-	if(currentStreamIndex < 0 || currentStreamIndex >= station.streams.size())
+	const auto currentStreamIndex = ui->twStreams->currentRow();
+	if((currentStreamIndex < 0) || (currentStreamIndex >= station.streams.size()))
 	{
 		return;
 	}
@@ -182,24 +304,13 @@ void GUI_StationSearcher::checkListenButton()
 
 void GUI_StationSearcher::clearStations()
 {
-	ui->twStations->clear();
-	while(ui->twStations->rowCount() > 0)
-	{
-		ui->twStations->removeRow(0);
-	}
-
-	ui->twStations->setEnabled(false);
+	clearTableWidget(ui->twStations);
 }
 
 void GUI_StationSearcher::clearStreams()
 {
-	ui->twStreams->clear();
-	while(ui->twStreams->rowCount() > 0)
-	{
-		ui->twStreams->removeRow(0);
-	}
-
-	ui->twStreams->setEnabled(false);
+	clearTableWidget(ui->twStreams);
+	ui->btnCover->setVisible(false);
 }
 
 void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
@@ -210,35 +321,30 @@ void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
 
 void GUI_StationSearcher::searchClicked()
 {
-	const QString text = ui->leSearch->text();
-	if(text.isEmpty())
-	{
-		return;
-	}
-
 	m->stations.clear();
-
 	clearStations();
 	clearStreams();
 
-	if(m->mode == StationSearcher::Style)
+	if(const auto text = ui->leSearch->text(); !text.isEmpty())
 	{
-		m->searcher->searchStyle(text);
-	}
+		if(m->mode == StationSearcher::Style)
+		{
+			m->searcher->searchStyle(text);
+		}
 
-	else
-	{
-		m->searcher->searchStation(text);
-	}
+		else
+		{
+			m->searcher->searchStation(text);
+		}
 
-	ui->pbProgress->setVisible(true);
+		ui->pbProgress->setVisible(true);
+	}
 }
 
 void GUI_StationSearcher::searchPreviousClicked()
 {
 	m->searcher->searchPrevious();
 	ui->pbProgress->setVisible(true);
-
 	ui->twStations->setEnabled(false);
 	ui->twStreams->setEnabled(false);
 }
@@ -247,18 +353,16 @@ void GUI_StationSearcher::searchNextClicked()
 {
 	m->searcher->searchNext();
 	ui->pbProgress->setVisible(true);
-
 	ui->twStations->setEnabled(false);
 	ui->twStreams->setEnabled(false);
 }
 
 void GUI_StationSearcher::stationsFetched()
 {
-	const QList<RadioStation> stations = m->searcher->foundStations();
+	const auto stations = m->searcher->foundStations();
 
 	ui->pbProgress->setVisible(false);
 	ui->twStations->setEnabled(true);
-
 	ui->btnSearchNext->setVisible(m->searcher->canSearchNext());
 	ui->btnSearchPrev->setVisible(m->searcher->canSearchPrevious());
 
@@ -283,43 +387,13 @@ void GUI_StationSearcher::stationsFetched()
 	m->stations = stations;
 	m->setFromToLabel(ui->labFromTo);
 
-	ui->twStations->setRowCount(m->stations.size());
-	ui->twStations->setColumnCount(4);
-	ui->twStations->setHorizontalHeaderItem(0, new QTableWidgetItem(Lang::get(Lang::Name)));
-	ui->twStations->setHorizontalHeaderItem(1, new QTableWidgetItem(tr("Country")));
-	ui->twStations->setHorizontalHeaderItem(2, new QTableWidgetItem(Lang::get(Lang::Info)));
-	ui->twStations->setHorizontalHeaderItem(3, new QTableWidgetItem("Url"));
-
-	ui->twStations->horizontalHeader()->setResizeContentsPrecision(20);
-
-	const auto fm = this->fontMetrics();
-	auto row = 0;
-	for(const RadioStation& station : m->stations)
-	{
-		auto* itemName = createTableWidgetItem(station.name, fm);
-		auto* itemLocation = createTableWidgetItem(station.location, fm);
-		auto* itemDesc = createTableWidgetItem(station.description, fm);
-		auto* itemUrl = createTableWidgetItem(station.home_url, fm);
-
-		ui->twStations->setItem(row, 0, itemName);
-		ui->twStations->setItem(row, 1, itemLocation);
-		ui->twStations->setItem(row, 2, itemDesc);
-		ui->twStations->setItem(row, 3, itemUrl);
-
-		itemName->setToolTip(station.description);
-
-		row++;
-	}
-
-	ui->twStations->setEnabled(true);
-	ui->twStations->resizeColumnsToContents();
+	populateStationWidget(ui->twStations, m->stations, this);
 }
 
 void GUI_StationSearcher::okClicked()
 {
 	const auto currentStationIndex = ui->twStations->currentRow();
 	const auto station = m->stations.at(currentStationIndex);
-
 	const auto currentStreamIndex = ui->twStreams->currentRow();
 	const auto radioUrl = station.streams.at(currentStreamIndex);
 
@@ -352,42 +426,26 @@ void GUI_StationSearcher::stationsChanged()
 	okButton()->setEnabled(false);
 
 	const auto currentRow = ui->twStations->currentRow();
-	if(currentRow < 0 || currentRow >= m->stations.count())
+	if(!Util::between(currentRow, m->stations))
 	{
 		return;
 	}
 
-	const auto station = m->stations[currentRow];
-
 	clearStreams();
 	checkListenButton();
-
-	ui->twStreams->setEnabled(true);
-	ui->twStreams->setRowCount(station.streams.size());
-	ui->twStreams->setColumnCount(3);
-	ui->twStreams->setHorizontalHeaderItem(0, new QTableWidgetItem(tr("Type")));
-	ui->twStreams->setHorizontalHeaderItem(1, new QTableWidgetItem(Lang::get(Lang::Bitrate)));
-	ui->twStreams->setHorizontalHeaderItem(2, new QTableWidgetItem(tr("Url")));
-
-	const auto fm = this->fontMetrics();
-
-	auto row = 0;
-	for(const auto& radioUrl : station.streams)
-	{
-		auto* itemType = createTableWidgetItem(radioUrl.type, fm);
-		auto* itemBitrate = createTableWidgetItem(radioUrl.bitrate, fm);
-		auto* itemUrl = createTableWidgetItem(radioUrl.url, fm);
-
-		ui->twStreams->setItem(row, 0, itemType);
-		ui->twStreams->setItem(row, 1, itemBitrate);
-		ui->twStreams->setItem(row, 2, itemUrl);
-
-		row++;
-	}
-
-	ui->twStreams->resizeColumnsToContents();
-	ui->twStreams->setCurrentItem(ui->twStreams->item(0, 0));
+	populateStreamWidget(ui->twStreams, m->stations[currentRow], this);
 	streamChanged();
+
+	const auto track = convertStationToTrack(m->stations[currentRow]);
+	if(track.radioMode() == RadioMode::Station)
+	{
+		const auto coverLocation = Cover::Location::coverLocation(track);
+		if(coverLocation.isValid())
+		{
+			ui->btnCover->setCoverLocation(coverLocation);
+			ui->btnCover->setVisible(true);
+		}
+	}
 }
 
 void GUI_StationSearcher::streamChanged()
@@ -400,14 +458,15 @@ void GUI_StationSearcher::showEvent(QShowEvent* e)
 	ui->leSearch->setFocus();
 	Gui::Dialog::showEvent(e);
 
-	const auto sz = GetSetting(Set::Stream_SearchWindowSize);
-	if(!sz.isEmpty())
+	const auto windowSize = GetSetting(Set::Stream_SearchWindowSize);
+	if(windowSize.isValid())
 	{
-		this->resize(sz);
+		this->resize(windowSize);
 	}
 
 	ui->leSearch->setFocus();
 	ui->leSearch->setFocus();
+	ui->btnCover->hide();
 }
 
 void GUI_StationSearcher::closeEvent(QCloseEvent* e)
