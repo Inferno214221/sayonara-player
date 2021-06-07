@@ -90,6 +90,11 @@ void TableView::headerColumnsChanged(int /*oldCount*/, int /*newCount*/)
 void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
 {
 	applySortorder(m->header->sortorder(index, qtSortorder));
+
+	if(this->isVisible())
+	{
+		saveColumnHeaderState(m->header->saveState());
+	}
 }
 
 void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newSize*/)
