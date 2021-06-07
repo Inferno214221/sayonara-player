@@ -44,24 +44,27 @@ namespace Library
 			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
 			virtual ~HeaderView() override;
 
-			void init(const ColumnHeaderList& columnHeaders, const QByteArray& state, Library::SortOrder sorting, bool autoResizeState);
+			void init(const ColumnHeaderList& columnHeaderList, const QByteArray& state, Library::SortOrder sortOrder, bool autoResizeState);
 			void resizeColumnsAutomatically();
 
-			Library::SortOrder sortorder(int index, Qt::SortOrder sortorder);
+			Library::SortOrder sortorder(int index, Qt::SortOrder sortOrder);
 			QString columnText(int index) const;
 			void reloadColumnTexts();
 
 			QSize sizeHint() const override;
 
-		private slots:
-			void actionTriggered(bool b);
-			void actionResizeTriggered();
-			void actionAutoResizeTriggered(bool b);
-
 		protected:
 			void languageChanged() override;
 			void showEvent(QShowEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;
+
+		private:
+			void initializeView();
+
+		private slots:
+			void actionTriggered(bool b);
+			void actionResizeTriggered();
+			void actionAutoResizeTriggered(bool b);
 	};
 }
 
