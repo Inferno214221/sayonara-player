@@ -45,11 +45,12 @@ public:
 
 private:
 	QAbstractButton* okButton();
-	void initLineEdit();
-	void checkListenButton();
+	void checkOkButton();
 	void clearStations();
 	void clearStreams();
 	void changeMode(StationSearcher::Mode mode);
+	void setupCoverButton(const RadioStation& station);
+	void initLineEdit();
 
 private slots:
 	void searchClicked();
@@ -60,8 +61,7 @@ private slots:
 	void searchTextChanged(const QString& text);
 	void stationsFetched();
 
-	void stationsChanged();
-	void streamChanged();
+	void currentStationChanged();
 
 protected:
 	void showEvent(QShowEvent* e) override;

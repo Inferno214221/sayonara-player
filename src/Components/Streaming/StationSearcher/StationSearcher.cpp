@@ -20,56 +20,52 @@
 
 #include "StationSearcher.h"
 #include "FMStreamParser.h"
+#include "RadioStation.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 
 #include <QUrl>
+#include <QList>
 
 struct StationSearcher::Private
 {
 	QList<RadioStation> foundStations;
-	QString				searchstring;
-	int					currentPageIndex;
-	StationSearcher::Mode mode;
-
-	Private() :
-		currentPageIndex(0),
-		mode(StationSearcher::NewSearch)
-	{}
+	QString searchstring;
+	int currentPageIndex{0};
+	int lastPageIndex{1};
+	StationSearcher::Mode mode{StationSearcher::NewSearch};
 
 	QString url()
 	{
 		if(mode == StationSearcher::Style)
 		{
 			return QString("http://fmstream.org/index.php?style=%1")
-					.arg(searchstring);
+				.arg(searchstring);
 		}
 
 		else if(currentPageIndex == 0)
 		{
 			return QString("http://fmstream.org/index.php?s=%1&cm=0")
-					.arg(searchstring);
+				.arg(searchstring);
 		}
 
 		else
 		{
 			return QString("http://fmstream.org/index.php?s=%1&n=%2")
-					.arg(searchstring)
-					.arg(currentPageIndex);
+				.arg(searchstring)
+				.arg(currentPageIndex);
 		}
 	}
 
-
-	void increase_page()
+	void increasePage()
 	{
 		currentPageIndex += 200;
 	}
 
-	void decrease_page()
+	void decreasePage()
 	{
 		currentPageIndex = std::max(0, currentPageIndex - 200);
 	}
 };
-
 
 StationSearcher::StationSearcher(QObject* parent) :
 	QObject(parent)
@@ -77,16 +73,12 @@ StationSearcher::StationSearcher(QObject* parent) :
 	m = Pimpl::make<Private>();
 }
 
-StationSearcher::~StationSearcher() {}
-
-
+StationSearcher::~StationSearcher() = default;
 
 void StationSearcher::startCall()
 {
-	AsyncWebAccess* wa = new AsyncWebAccess(this);
-
+	auto* wa = new AsyncWebAccess(this);
 	connect(wa, &AsyncWebAccess::sigFinished, this, &StationSearcher::searchFinished);
-
 	wa->run(m->url());
 }
 
@@ -98,11 +90,11 @@ void StationSearcher::searchStyle(const QString& style)
 	startCall();
 }
 
-
 void StationSearcher::searchStation(const QString& name)
 {
 	m->mode = StationSearcher::NewSearch;
 	m->currentPageIndex = 0;
+	m->lastPageIndex = -1;
 	m->searchstring = name;
 
 	startCall();
@@ -110,7 +102,7 @@ void StationSearcher::searchStation(const QString& name)
 
 void StationSearcher::searchPrevious()
 {
-	m->decrease_page();
+	m->decreasePage();
 	m->mode = StationSearcher::Incremental;
 
 	startCall();
@@ -118,7 +110,7 @@ void StationSearcher::searchPrevious()
 
 void StationSearcher::searchNext()
 {
-	m->increase_page();
+	m->increasePage();
 	m->mode = StationSearcher::Incremental;
 
 	startCall();
@@ -126,12 +118,12 @@ void StationSearcher::searchNext()
 
 bool StationSearcher::canSearchNext() const
 {
-	return (m->foundStations.size() > 10 && m->mode != StationSearcher::Style);
+	return (m->foundStations.size() > 50) && (m->currentPageIndex != m->lastPageIndex);
 }
 
 bool StationSearcher::canSearchPrevious() const
 {
-	return (m->currentPageIndex >= 200 && m->foundStations.size() > 0 && m->mode != StationSearcher::Style);
+	return (m->currentPageIndex > 0);
 }
 
 StationSearcher::Mode StationSearcher::mode() const
@@ -139,7 +131,7 @@ StationSearcher::Mode StationSearcher::mode() const
 	return m->mode;
 }
 
-QList<RadioStation> StationSearcher::foundStations() const
+const QList<RadioStation>& StationSearcher::foundStations() const
 {
 	return m->foundStations;
 }
@@ -149,7 +141,17 @@ void StationSearcher::searchFinished()
 	auto* wa = static_cast<AsyncWebAccess*>(sender());
 
 	FMStreamParser parser(wa->data());
-	m->foundStations = parser.stations();
+	const auto stations = parser.stations();
+	if(stations.isEmpty())
+	{
+		m->decreasePage();
+		m->lastPageIndex = m->currentPageIndex;
+	}
+
+	else
+	{
+		m->foundStations = parser.stations();
+	}
 
 	wa->deleteLater();
 

@@ -21,46 +21,47 @@
 #ifndef STATIONSEARCHER_H
 #define STATIONSEARCHER_H
 
-#include <QObject>
 #include "Utils/Pimpl.h"
-#include "RadioStation.h"
 
-class StationSearcher : public QObject
+#include <QObject>
+
+struct RadioStation;
+class StationSearcher :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(StationSearcher)
 
-signals:
-	void sigStationsFound();
+	signals:
+		void sigStationsFound();
 
-private:
-	void startCall();
+	private:
+		void startCall();
 
-public:
+	public:
+		enum Mode
+		{
+			NewSearch,
+			Incremental,
+			Style
+		};
 
-	enum Mode
-	{
-		NewSearch,
-		Incremental,
-		Style
-	};
+		StationSearcher(QObject* parent = nullptr);
+		~StationSearcher();
 
-	StationSearcher(QObject* parent=nullptr);
-	~StationSearcher();
+		void searchStyle(const QString& style);
+		void searchStation(const QString& name);
+		void searchPrevious();
+		void searchNext();
 
-	void searchStyle(const QString& style);
-	void searchStation(const QString& name);
-	void searchPrevious();
-	void searchNext();
+		bool canSearchNext() const;
+		bool canSearchPrevious() const;
+		Mode mode() const;
 
-	bool canSearchNext() const;
-	bool canSearchPrevious() const;
-	Mode mode() const;
+		const QList<RadioStation>& foundStations() const;
 
-	QList<RadioStation> foundStations() const;
-
-private slots:
-	void searchFinished();
+	private slots:
+		void searchFinished();
 };
 
 #endif // STATIONSEARCHER_H

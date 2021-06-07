@@ -1,9 +1,9 @@
 #include "Station.h"
+
 #include <QString>
 
-Station::Station() {}
-Station::Station(const Station&) : Station() {}
-
+Station::Station() = default;
+Station::Station(const Station&) = default;
 Station::~Station() = default;
 
 Station& Station::station(const Station&)
@@ -32,6 +32,8 @@ Stream::Stream(const QString& name, const QString& url) :
 	m = Pimpl::make<Private>(name, url);
 }
 
+Stream::~Stream() = default;
+
 Stream::Stream(const Stream& other) :
 	Stream()
 {
@@ -43,8 +45,6 @@ Stream& Stream::operator=(const Stream& other)
 	*m = *(other.m);
 	return *this;
 }
-
-Stream::~Stream() = default;
 
 QString Stream::name() const
 {
