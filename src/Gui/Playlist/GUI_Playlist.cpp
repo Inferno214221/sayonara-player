@@ -355,7 +355,7 @@ void GUI_Playlist::playlistNameChanged(int playlistIndex)
 void GUI_Playlist::playlistChanged(int playlistIndex)
 {
 	auto playlist = m->playlistHandler->playlist(playlistIndex);
-	if(playlist && (playlistIndex != ui->twPlaylists->currentIndex()))
+	if(playlist && (playlistIndex != ui->twPlaylists->count() - 1))
 	{
 		checkPlaylistName(playlist, ui->twPlaylists);
 		calcTotalTimeLabel(playlist, ui->labTotalTime);
