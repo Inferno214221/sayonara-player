@@ -100,7 +100,12 @@
         <translation>Информация / Изменение</translation>
     </message>
     <message>
-        <location line="+274"/>
+        <location line="+198"/>
+        <source>Change Cover</source>
+        <translation>Изменить обложку</translation>
+    </message>
+    <message>
+        <location line="+83"/>
         <source>Loading files...</source>
         <translation>Загружаю файлы .. </translation>
     </message>
@@ -1620,7 +1625,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+93"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
         <source>Write cover to tracks</source>
         <translation>Сохранить обложку в файле трека</translation>
     </message>
@@ -1734,7 +1739,7 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+222"/>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+259"/>
         <source>Resize columns</source>
         <translation>Изменить размер столбцов</translation>
     </message>
@@ -1973,7 +1978,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+459"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+453"/>
         <source>Goto row</source>
         <translation>Перейти к строке</translation>
     </message>

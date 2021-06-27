@@ -15,17 +15,17 @@
     <message>
         <location line="+26"/>
         <source>Start search automatically</source>
-        <translation type="unfinished"/>
+        <translation>Spustiť vyhľadávanie automaticky</translation>
     </message>
     <message>
         <location line="+79"/>
         <source>Text or url</source>
-        <translation type="unfinished"/>
+        <translation>Text alebo URL</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Search for</source>
-        <translation type="unfinished"/>
+        <translation>Vyhľadať</translation>
     </message>
     <message>
         <location line="+20"/>
@@ -40,12 +40,12 @@
     <message>
         <location line="+13"/>
         <source>Local Search</source>
-        <translation type="unfinished"/>
+        <translation>Lokálne hľadanie</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>Find covers in directory</source>
-        <translation type="unfinished"/>
+        <translation>Nájsť obaly v priečinku</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+297"/>
@@ -69,27 +69,27 @@
     <message>
         <location filename="../src/Gui/History/GUI_History.ui" line="+14"/>
         <source>Dialog</source>
-        <translation type="unfinished"/>
+        <translation>Dialóg</translation>
     </message>
     <message>
         <location filename="../src/Gui/History/GUI_History.cpp" line="+38"/>
         <source>Load more entries</source>
-        <translation type="unfinished"/>
+        <translation>Načítať viac položiek</translation>
     </message>
     <message>
         <location line="+144"/>
         <source>Scroll to top</source>
-        <translation type="unfinished"/>
+        <translation>Scrollovať na vrch</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Scroll to bottom</source>
-        <translation type="unfinished"/>
+        <translation>Scrollovať na spodok</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Select date range</source>
-        <translation type="unfinished"/>
+        <translation>Vybrať rozsah dátumov</translation>
     </message>
 </context>
 <context>
@@ -97,12 +97,17 @@
     <message>
         <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.ui" line="+20"/>
         <source>Info / Edit</source>
-        <translation type="unfinished"/>
+        <translation>Info / Upraviť</translation>
     </message>
     <message>
-        <location line="+274"/>
+        <location line="+198"/>
+        <source>Change Cover</source>
+        <translation>Zmeniť obal</translation>
+    </message>
+    <message>
+        <location line="+83"/>
         <source>Loading files...</source>
-        <translation type="unfinished"/>
+        <translation>Načítavam súbory...</translation>
     </message>
 </context>
 <context>
@@ -183,7 +188,7 @@
     <message>
         <location line="+5"/>
         <source>Rollback</source>
-        <translation type="unfinished"/>
+        <translation>Vrátiť späť</translation>
     </message>
     <message>
         <location line="+5"/>
@@ -211,7 +216,7 @@
     <message>
         <location line="+446"/>
         <source>Directory does not exist</source>
-        <translation type="unfinished"/>
+        <translation>Priečinok neexistuje</translation>
     </message>
     <message>
         <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+378"/>
@@ -269,7 +274,7 @@
         <location line="+52"/>
         <location line="+89"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Bitový tok</translation>
     </message>
     <message>
         <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-164"/>
@@ -422,12 +427,12 @@
     <message>
         <location line="+63"/>
         <source>Spectrum</source>
-        <translation type="unfinished"/>
+        <translation>Spektrum</translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Vert. spacing</source>
-        <translation type="unfinished"/>
+        <translation>Zvislý rozostup</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -439,7 +444,7 @@
         <location line="-68"/>
         <location line="+44"/>
         <source>Hor. spacing</source>
-        <translation type="unfinished"/>
+        <translation>Vodorovný rozostup</translation>
     </message>
     <message>
         <location line="-30"/>
@@ -460,7 +465,7 @@
     <message>
         <location line="+14"/>
         <source>Ver. spacing</source>
-        <translation type="unfinished"/>
+        <translation>Zvislý rozostup</translation>
     </message>
     <message>
         <location line="+54"/>
@@ -521,7 +526,7 @@
     <message>
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Vyhľadať rádiovú stanicu</translation>
     </message>
     <message>
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+75"/>
@@ -531,17 +536,17 @@
     <message>
         <location line="+214"/>
         <source>Country</source>
-        <translation type="unfinished"/>
+        <translation>Krajina</translation>
     </message>
     <message>
         <location line="+79"/>
         <source>Type</source>
-        <translation type="unfinished"/>
+        <translation>Typ</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Url</source>
-        <translation type="unfinished"/>
+        <translation>URL</translation>
     </message>
 </context>
 <context>
@@ -559,7 +564,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Broadcast/GUI_BroadcastPreferences.cpp" line="+153"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Port %1 sa už používa</translation>
     </message>
 </context>
 <context>
@@ -567,7 +572,7 @@
     <message>
         <location filename="../src/Gui/Preferences/Covers/GUI_CoverPreferences.ui" line="+62"/>
         <source>Inactive</source>
-        <translation type="unfinished"/>
+        <translation>Neaktívny</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -577,7 +582,7 @@
     <message>
         <location line="+60"/>
         <source>Delete all covers from the database</source>
-        <translation type="unfinished"/>
+        <translation>Vymazať všetky obaly z databázy</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -587,7 +592,7 @@
     <message>
         <location line="+7"/>
         <source>Delete all covers from the Sayonara directory</source>
-        <translation type="unfinished"/>
+        <translation>Vymazať všetky obaly z adresára Sayonara</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -617,22 +622,22 @@
     <message>
         <location line="+3"/>
         <source>Save found covers to database</source>
-        <translation type="unfinished"/>
+        <translation>Ukladať nájdené obaly do databázy</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Save found covers into Sayonara directory</source>
-        <translation type="unfinished"/>
+        <translation>Ukladať nájdené obaly do priečinka Sayonara</translation>
     </message>
     <message>
         <location line="+22"/>
         <source>Cover name</source>
-        <translation type="unfinished"/>
+        <translation>Názov obalu</translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Name of cover file</source>
-        <translation type="unfinished"/>
+        <translation>Názov súboru obalu</translation>
     </message>
 </context>
 <context>
@@ -645,17 +650,17 @@
     <message>
         <location line="+24"/>
         <source>Check for update</source>
-        <translation type="unfinished"/>
+        <translation>Skontrolovať aktualizácie</translation>
     </message>
     <message>
         <location line="+11"/>
         <source>Import new language</source>
-        <translation type="unfinished"/>
+        <translation>Importovať nový jazyk</translation>
     </message>
     <message>
         <location line="+42"/>
         <source>For new languages I am always looking for translators</source>
-        <translation type="unfinished"/>
+        <translation>Neustále hľadáme prekladateľov pre ďalšie jazyky</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Language/GUI_LanguagePreferences.cpp" line="+62"/>
@@ -665,33 +670,33 @@
     <message>
         <location line="+113"/>
         <source>Cannot check for language update</source>
-        <translation type="unfinished"/>
+        <translation>Nepodarilo sa skontrolovať aktualizácie prekladu</translation>
     </message>
     <message>
         <location line="+30"/>
         <source>Language is up to date</source>
-        <translation type="unfinished"/>
+        <translation>Preklad je aktuálny</translation>
     </message>
     <message>
         <location line="+28"/>
         <location line="+24"/>
         <source>Cannot fetch language update</source>
-        <translation type="unfinished"/>
+        <translation>Nemôžem stiahnuť aktualizáciu prekladu</translation>
     </message>
     <message>
         <location line="-10"/>
         <source>Language was updated successfully</source>
-        <translation type="unfinished"/>
+        <translation>Preklad bol úspešne aktualizovaný</translation>
     </message>
     <message>
         <location line="+32"/>
         <source>The language file could not be imported</source>
-        <translation type="unfinished"/>
+        <translation>Tento preklad nemôže byť importovaný</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>The language file was imported successfully</source>
-        <translation type="unfinished"/>
+        <translation>Preklad bol úspešne importovaný</translation>
     </message>
 </context>
 <context>
@@ -788,7 +793,7 @@
     <message>
         <location line="+20"/>
         <source>Ignore English article &quot;The&quot; in artist name</source>
-        <translation type="unfinished"/>
+        <translation>Ignorovať anglický člen &quot;The&quot; v mene umelca</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+149"/>
@@ -814,12 +819,12 @@
     <message>
         <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
         <source>Hide instead of close</source>
-        <translation type="unfinished"/>
+        <translation>Skryť namiesto zatvorenia</translation>
     </message>
     <message>
         <location line="+21"/>
         <source>Start hidden</source>
-        <translation type="unfinished"/>
+        <translation>Spustiť už skryté</translation>
     </message>
     <message>
         <location line="+52"/>
@@ -1042,7 +1047,7 @@
     <message>
         <location line="+17"/>
         <source>UDP port</source>
-        <translation type="unfinished"/>
+        <translation>UDP port</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/RemoteControl/GUI_RemoteControlPreferences.cpp" line="+59"/>
@@ -1057,7 +1062,7 @@
     <message>
         <location line="+69"/>
         <source>Port %1 already in use</source>
-        <translation type="unfinished"/>
+        <translation>Port %1 sa už používa</translation>
     </message>
 </context>
 <context>
@@ -1080,12 +1085,12 @@
     <message>
         <location line="+10"/>
         <source>Ignore accents</source>
-        <translation type="unfinished"/>
+        <translation>Ignorovať diakritiku</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Ignore special characters</source>
-        <translation type="unfinished"/>
+        <translation>Ignorovať špeciálne znaky</translation>
     </message>
 </context>
 <context>
@@ -1122,12 +1127,12 @@
     <message>
         <location line="+14"/>
         <source>Automatic recording</source>
-        <translation type="unfinished"/>
+        <translation>Automatické nahrávanie</translation>
     </message>
     <message>
         <location line="+33"/>
         <source>Target directory</source>
-        <translation type="unfinished"/>
+        <translation>Cieľový priečinok</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -1191,7 +1196,7 @@
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation type="unfinished"/>
+        <translation>Veľkosť zásobníka</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1215,12 +1220,12 @@
         <location filename="../src/Gui/Preferences/UiPreferences/GUI_CssEditor.ui" line="+14"/>
         <location line="+31"/>
         <source>Edit style sheet</source>
-        <translation type="unfinished"/>
+        <translation>Upraviť štýl</translation>
     </message>
     <message>
         <location line="+20"/>
         <source>Dark mode</source>
-        <translation type="unfinished"/>
+        <translation>Tmavý režim</translation>
     </message>
 </context>
 <context>
@@ -1239,7 +1244,7 @@
         <location line="+92"/>
         <location line="+66"/>
         <source>System theme</source>
-        <translation type="unfinished"/>
+        <translation>Systémová téma</translation>
     </message>
 </context>
 <context>
@@ -1252,7 +1257,7 @@
     <message>
         <location line="+7"/>
         <source>Edit style sheet</source>
-        <translation type="unfinished"/>
+        <translation>Upraviť štýl</translation>
     </message>
     <message>
         <location line="+27"/>
@@ -1272,7 +1277,7 @@
     <message>
         <location line="+1"/>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Zobraziť veľký obal</translation>
     </message>
 </context>
 <context>
@@ -1312,7 +1317,7 @@
     <message>
         <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.ui" line="+14"/>
         <source>Search Soundcloud</source>
-        <translation type="unfinished"/>
+        <translation>Prehľadať Soundcloud</translation>
     </message>
     <message>
         <location line="+59"/>
@@ -1350,7 +1355,7 @@
         <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-53"/>
         <location line="+9"/>
         <source>File has no cover</source>
-        <translation type="unfinished"/>
+        <translation>Súbor nemá žiaden obal</translation>
     </message>
 </context>
 <context>
@@ -1358,22 +1363,22 @@
     <message>
         <location filename="../src/Gui/Tagging/GUI_FailMessageBox.ui" line="+22"/>
         <source>Details</source>
-        <translation type="unfinished"/>
+        <translation>Podrobnosti</translation>
     </message>
     <message>
         <location filename="../src/Gui/Tagging/GUI_FailMessageBox.cpp" line="+55"/>
         <source>File exists</source>
-        <translation type="unfinished"/>
+        <translation>Súbor už existuje</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Writeable</source>
-        <translation type="unfinished"/>
+        <translation>Zapisovateľný</translation>
     </message>
     <message>
         <location line="+70"/>
         <source>Some files could not be saved</source>
-        <translation type="unfinished"/>
+        <translation>Niektoré súbory sa nepodarilo uložiť</translation>
     </message>
 </context>
 <context>
@@ -1386,7 +1391,7 @@
     <message>
         <location line="+155"/>
         <source>Read only file</source>
-        <translation type="unfinished"/>
+        <translation>Len na čítanie</translation>
     </message>
     <message>
         <location line="+150"/>
@@ -1406,7 +1411,7 @@
     <message>
         <location line="+159"/>
         <source>Album artist</source>
-        <translation type="unfinished"/>
+        <translation>Autor albumu</translation>
     </message>
     <message>
         <location line="+93"/>
@@ -1421,7 +1426,7 @@
     <message>
         <location line="+2"/>
         <source>Metadata</source>
-        <translation type="unfinished"/>
+        <translation>Metadáta</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1470,7 +1475,7 @@
     <message>
         <location filename="../src/Components/Engine/Engine.cpp" line="+625"/>
         <source>You should restart Sayonara now</source>
-        <translation type="unfinished"/>
+        <translation>Teraz by ste mali reštartovať prehrávač Sayonara</translation>
     </message>
 </context>
 <context>
@@ -1509,7 +1514,7 @@
     <message>
         <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
         <source>Looking for covers</source>
-        <translation type="unfinished"/>
+        <translation>Hľadám obaly</translation>
     </message>
     <message>
         <location line="+42"/>
@@ -1519,7 +1524,7 @@
     <message>
         <location line="+109"/>
         <source>Deleting orphaned tracks</source>
-        <translation type="unfinished"/>
+        <translation>Vymazávam osamotené stopy</translation>
     </message>
 </context>
 <context>
@@ -1528,12 +1533,12 @@
         <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+238"/>
         <location line="+30"/>
         <source>Cannot fetch lyrics from %1</source>
-        <translation type="unfinished"/>
+        <translation>Nemôžem načítať text z %1</translation>
     </message>
     <message>
         <location line="+5"/>
         <source>No lyrics found</source>
-        <translation type="unfinished"/>
+        <translation>Nenašiel sa text</translation>
     </message>
 </context>
 <context>
@@ -1541,13 +1546,13 @@
     <message>
         <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+94"/>
         <source>Computer will shutdown after playlist has finished</source>
-        <translation type="unfinished"/>
+        <translation>Počítač sa vypne po skončení playlistu</translation>
     </message>
     <message numerus="yes">
         <location line="+29"/>
         <location line="+30"/>
         <source>Computer will shutdown in %n minute(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Počítač sa vypne o 1 minútu</numerusform><numerusform>Počítač sa vypne o %n minúty</numerusform><numerusform>Počítač sa vypne o %n minúty</numerusform><numerusform>Počítač sa vypne o %n minút</numerusform></translation>
     </message>
 </context>
 <context>
@@ -1580,7 +1585,7 @@
         <location line="+92"/>
         <location line="+154"/>
         <source>Purchase Url</source>
-        <translation type="unfinished"/>
+        <translation>URL pre zakúpenie</translation>
     </message>
 </context>
 <context>
@@ -1596,7 +1601,7 @@
     <message>
         <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
         <source>Select date range</source>
-        <translation type="unfinished"/>
+        <translation>Vybrať rozsah dátumov</translation>
     </message>
     <message>
         <location line="+17"/>
@@ -1620,7 +1625,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+93"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
         <source>Write cover to tracks</source>
         <translation type="unfinished"/>
     </message>
@@ -1734,7 +1739,7 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+222"/>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+259"/>
         <source>Resize columns</source>
         <translation type="unfinished"/>
     </message>
@@ -1849,7 +1854,7 @@
     <message>
         <location line="+11"/>
         <source>Show large cover</source>
-        <translation type="unfinished"/>
+        <translation>Zobraziť veľký obal</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -1973,7 +1978,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+459"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+453"/>
         <source>Goto row</source>
         <translation type="unfinished"/>
     </message>
@@ -2050,7 +2055,7 @@
     <message>
         <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+78"/>
         <source>Spectrogram</source>
-        <translation type="unfinished"/>
+        <translation>Spektrogram</translation>
     </message>
 </context>
 <context>
@@ -2058,7 +2063,7 @@
     <message>
         <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
         <source>Spectrum</source>
-        <translation type="unfinished"/>
+        <translation>Spektrum</translation>
     </message>
 </context>
 <context>
@@ -2090,7 +2095,7 @@
     <message>
         <location line="+35"/>
         <source>Could not rename playlist</source>
-        <translation type="unfinished"/>
+        <translation>Nemôžem premenovať playlist</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2301,7 +2306,7 @@
     <message>
         <location line="+1"/>
         <source>Remove special characters (letters)</source>
-        <translation type="unfinished"/>
+        <translation>Odstrániť špeciálne znaky</translation>
     </message>
 </context>
 <context>
@@ -2354,12 +2359,12 @@
     <message>
         <location line="+2"/>
         <source>Album artist</source>
-        <translation type="unfinished"/>
+        <translation>Autor albumu</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Album artists</source>
-        <translation type="unfinished"/>
+        <translation>Autori albumov</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2369,7 +2374,7 @@
     <message>
         <location line="+2"/>
         <source>All</source>
-        <translation type="unfinished"/>
+        <translation>Všetko</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2389,12 +2394,12 @@
     <message>
         <location line="+2"/>
         <source>Artist</source>
-        <translation type="unfinished"/>
+        <translation>Autor</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Artists</source>
-        <translation type="unfinished"/>
+        <translation>Autori</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2409,7 +2414,7 @@
     <message>
         <location line="+2"/>
         <source>Bitrate</source>
-        <translation type="unfinished"/>
+        <translation>Bitový tok</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2474,22 +2479,22 @@
     <message>
         <location line="+2"/>
         <source>Covers</source>
-        <translation type="unfinished"/>
+        <translation>Obaly</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Created</source>
-        <translation type="unfinished"/>
+        <translation>Vytvorené</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Create new directory</source>
-        <translation type="unfinished"/>
+        <translation>Vytvoriť nový priečinok</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Create a new library</source>
-        <translation type="unfinished"/>
+        <translation>Vytvoriť novú knižnicu</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2499,7 +2504,7 @@
     <message>
         <location line="+2"/>
         <source>Date</source>
-        <translation type="unfinished"/>
+        <translation>Dátum</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2570,17 +2575,17 @@
     <message>
         <location line="+2"/>
         <source>Enter name</source>
-        <translation type="unfinished"/>
+        <translation>Zadajte názov</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Please enter new name</source>
-        <translation type="unfinished"/>
+        <translation>Prosím, zadajte nový názov</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Enter URL</source>
-        <translation type="unfinished"/>
+        <translation>Zadajte URL</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2655,22 +2660,22 @@
     <message>
         <location line="+2"/>
         <source>Gapless playback</source>
-        <translation type="unfinished"/>
+        <translation>Neprerušované prehrávanie</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>GB</source>
-        <translation type="unfinished"/>
+        <translation>GB</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Genre</source>
-        <translation type="unfinished"/>
+        <translation>Žáner</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Genres</source>
-        <translation type="unfinished"/>
+        <translation>Žánre</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2690,17 +2695,17 @@
     <message>
         <location line="+2"/>
         <source>Import directory</source>
-        <translation type="unfinished"/>
+        <translation>Importovať priečinok</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Import files</source>
-        <translation type="unfinished"/>
+        <translation>Importovať súbory</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Inactive</source>
-        <translation type="unfinished"/>
+        <translation>Neaktívny</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2720,12 +2725,12 @@
     <message>
         <location line="+2"/>
         <source>Invalid characters</source>
-        <translation type="unfinished"/>
+        <translation>Neplatné znaky</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>KB</source>
-        <translation type="unfinished"/>
+        <translation>kB</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2755,7 +2760,7 @@
     <message>
         <location line="+2"/>
         <source>Backspace</source>
-        <translation type="unfinished"/>
+        <translation>Backspace</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2770,22 +2775,22 @@
     <message>
         <location line="+2"/>
         <source>Library path</source>
-        <translation type="unfinished"/>
+        <translation>Cesta ku knižnici</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Library view type</source>
-        <translation type="unfinished"/>
+        <translation>Zobrazenie knižnice</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Listen</source>
-        <translation type="unfinished"/>
+        <translation>Počúvať</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Live Search</source>
-        <translation type="unfinished"/>
+        <translation>Živé vyhľadávanie</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2800,7 +2805,7 @@
     <message>
         <location line="+2"/>
         <source>Lyrics</source>
-        <translation type="unfinished"/>
+        <translation>Text</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2820,7 +2825,7 @@
     <message>
         <location line="+2"/>
         <source>Minutes</source>
-        <translation type="unfinished"/>
+        <translation>Minúty</translation>
     </message>
     <message>
         <location line="+3"/>
@@ -2835,12 +2840,12 @@
     <message>
         <location line="+2"/>
         <source>Modified</source>
-        <translation type="unfinished"/>
+        <translation>Upravené</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Months</source>
-        <translation type="unfinished"/>
+        <translation>Mesiace</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2865,7 +2870,7 @@
     <message>
         <location line="+2"/>
         <source>Next page</source>
-        <translation type="unfinished"/>
+        <translation>Ďalšia strana</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2880,7 +2885,7 @@
     <message>
         <location line="+2"/>
         <source>No albums</source>
-        <translation type="unfinished"/>
+        <translation>Žiadne albumy</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2971,17 +2976,18 @@
     <message>
         <location line="+2"/>
         <source>Play/Pause</source>
-        <translation type="unfinished"/>
+        <translation>Play/Pauza</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Plugin</source>
-        <translation type="unfinished"/>
+        <translation>Plugin
+</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Podcasts</source>
-        <translation type="unfinished"/>
+        <translation>Podcast</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2991,7 +2997,7 @@
     <message>
         <location line="+2"/>
         <source>Previous page</source>
-        <translation type="unfinished"/>
+        <translation>Predchádzajúca strana</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3001,7 +3007,7 @@
     <message>
         <location line="+2"/>
         <source>Purchase Url</source>
-        <translation type="unfinished"/>
+        <translation>URL pre zakúpenie</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3011,12 +3017,12 @@
     <message>
         <location line="+2"/>
         <source>Radio</source>
-        <translation type="unfinished"/>
+        <translation>Rádio</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Radio Station</source>
-        <translation type="unfinished"/>
+        <translation>Rádiová stanica</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3026,7 +3032,7 @@
     <message>
         <location line="+2"/>
         <source>Really</source>
-        <translation type="unfinished"/>
+        <translation>Naozaj</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3101,12 +3107,12 @@
     <message>
         <location line="+2"/>
         <source>Save as</source>
-        <translation type="unfinished"/>
+        <translation>Uložiť ako</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Save to file</source>
-        <translation type="unfinished"/>
+        <translation>Uložiť do súboru</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3117,17 +3123,17 @@
         <location line="+2"/>
         <location line="+2"/>
         <source>Search</source>
-        <translation type="unfinished"/>
+        <translation>Vyhľadať</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Search next</source>
-        <translation type="unfinished"/>
+        <translation>Nájsť ďalší</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Search previous</source>
-        <translation type="unfinished"/>
+        <translation>Nájsť predchádzajúci</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3162,12 +3168,12 @@
     <message>
         <location line="+2"/>
         <source>Show Album Artists</source>
-        <translation type="unfinished"/>
+        <translation>Zobraziť autorov albumov</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Show Covers</source>
-        <translation type="unfinished"/>
+        <translation>Zobraziť obaly</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3192,17 +3198,17 @@
     <message>
         <location line="+2"/>
         <source>Streams</source>
-        <translation type="unfinished"/>
+        <translation>Streamy</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Stream URL</source>
-        <translation type="unfinished"/>
+        <translation>URL streamu</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Success</source>
-        <translation type="unfinished"/>
+        <translation>Úspech</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3222,17 +3228,17 @@
     <message>
         <location line="+2"/>
         <source>Track</source>
-        <translation type="unfinished"/>
+        <translation>Stopa</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Track number</source>
-        <translation type="unfinished"/>
+        <translation>Číslo stopy</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>track on</source>
-        <translation type="unfinished"/>
+        <translation>stopa na</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3247,22 +3253,22 @@
     <message>
         <location line="+2"/>
         <source>Unknown album</source>
-        <translation type="unfinished"/>
+        <translation>Neznámy album</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unknown artist</source>
-        <translation type="unfinished"/>
+        <translation>Neznámy autor</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unknown title</source>
-        <translation type="unfinished"/>
+        <translation>Neznámy názov</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Unknown genre</source>
-        <translation type="unfinished"/>
+        <translation>Neznámy žáner</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3272,27 +3278,27 @@
     <message>
         <location line="+3"/>
         <source>Unknown year</source>
-        <translation type="unfinished"/>
+        <translation>Neznámy rok</translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Various</source>
-        <translation type="unfinished"/>
+        <translation>Rôzne</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various albums</source>
-        <translation type="unfinished"/>
+        <translation>Rôzne albumy</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various artists</source>
-        <translation type="unfinished"/>
+        <translation>Rôzni autori</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Various tracks</source>
-        <translation type="unfinished"/>
+        <translation>Rôzne stopy</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3317,22 +3323,22 @@
     <message>
         <location line="+2"/>
         <source>Weeks</source>
-        <translation type="unfinished"/>
+        <translation>Týždne</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Year</source>
-        <translation type="unfinished"/>
+        <translation>Rok</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Years</source>
-        <translation type="unfinished"/>
+        <translation>Roky</translation>
     </message>
     <message>
         <location line="+2"/>
         <source>Yes</source>
-        <translation type="unfinished"/>
+        <translation>Áno</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3342,32 +3348,32 @@
     <message>
         <location line="+22"/>
         <source>No directories</source>
-        <translation type="unfinished"/>
+        <translation>Žiadne priečinky</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n directory(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n priečinok</numerusform><numerusform>%n priečinky</numerusform><numerusform>%n priečinky</numerusform><numerusform>%n priečinkov</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No files</source>
-        <translation type="unfinished"/>
+        <translation>Žiadne súbory</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n súbor</numerusform><numerusform>%n súbory</numerusform><numerusform>%n súbory</numerusform><numerusform>%n súborov</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No playlists</source>
-        <translation type="unfinished"/>
+        <translation>Žiadne playlisty</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n playlist(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n playlist</numerusform><numerusform>%n playlisty</numerusform><numerusform>%n playlisty</numerusform><numerusform>%n playlistov</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3377,17 +3383,17 @@
     <message numerus="yes">
         <location line="+3"/>
         <source>%n track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n stopa</numerusform><numerusform>%n stopy</numerusform><numerusform>%n stopy</numerusform><numerusform>%n stôp</numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
         <source>No tracks found</source>
-        <translation type="unfinished"/>
+        <translation>Nenašli sa žiadne stopy</translation>
     </message>
     <message numerus="yes">
         <location line="+3"/>
         <source>%n track(s) found</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>Nájdená %n stopa</numerusform><numerusform>Nájdené %n stopy</numerusform><numerusform>Nájdené %n stopy</numerusform><numerusform>Nájdených %n stôp</numerusform></translation>
     </message>
 </context>
 </TS>
