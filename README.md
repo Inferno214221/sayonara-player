@@ -36,15 +36,65 @@ In order to compile you need the following packages
  * zlib development files
 
 #### Installing packages on Debian/Ubuntu/Mint
-`apt-get install cmake pkg-config qtbase5-dev qttools5-dev qttools5-dev-tools zlib1g-dev libqt5sql5-sqlite libqt5svg5-dev libgstreamer1.0-dev libgstreamer-plugins-bad1.0-dev libgstreamer-plugins-base1.0-dev gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly vorbis-tools lame libmp3lame0`
+```
+apt install cmake \
+	cmake \
+	gstreamer1.0-plugins-bad \
+	gstreamer1.0-plugins-ugly \
+	lame \
+	libgstreamer1.0-dev \
+	libgstreamer-plugins-bad1.0-dev \
+	libgstreamer-plugins-base1.0-dev \
+	libqt5sql5-sqlite \
+	libqt5svg5-dev \
+	libmp3lame0 \
+	libtag1-dev \
+	pkg-config \
+	qtbase5-dev \
+	qttools5-dev \
+	qttools5-dev-tools \
+	vorbis-tools \
+	zlib1g-dev
+```
 
 #### Installing packages on Fedora/Suse
+```
+dnf install \
+	cmake \
+	desktop-file-utils \
+	gcc-c++ \
+	gstreamer1-plugins-base-devel \
+	hicolor-icon-theme \
+	libappstream-glib \
+	qt5-qtbase-devel \
+	qt5-qttools-devel \
+	taglib-devel \
+	zlib-devel
+```
 
-`dnf install cmake gcc-c++ desktop-file-utils libappstream-glib qt5-qtbase-devel qt5-qttools-devel gstreamer1-plugins-base-devel zlib-devel hicolor-icon-theme`
 optional: gstreamer1-plugins-ugly lame (use rpmforge or rpmfusion)
 
 #### Installing packages on Mageia
-`urpmi gcc-c++ cmake desktop-file-utils lib64 appstream-glib lib64gstreamer1.0-devel lib64gstreamer-plugins-base1.0-devel lib64zlib-devel lib64qt5base5-devel lib64qt5core-devel lib64qt5dbus-devel lib64qt5gui-devel lib64qt5network-devel lib64qt5xml-devel lib64qt5sql-devel lib64qt5network-devel lib64qt5help-devel git`
+```
+urpmi \
+	appstream-glib \
+	cmake \
+	desktop-file-utils \
+	gcc-c++ \
+	lib64 \
+	lib64gstreamer1.0-devel \
+	lib64gstreamer-plugins-base1.0-devel \
+	lib64qt5base5-devel \
+	lib64qt5core-devel \
+	lib64qt5dbus-devel \
+	lib64qt5gui-devel \
+	lib64qt5help-devel git
+	lib64qt5network-devel \
+	lib64qt5network-devel \
+	lib64qt5sql-devel \
+	lib64qt5xml-devel \
+	lib64zlib-devel
+```
 
 ### Get the source code
 
