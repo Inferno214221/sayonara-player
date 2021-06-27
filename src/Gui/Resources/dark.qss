@@ -389,11 +389,7 @@ QComboBox:disabled {
 #ControlFwdButton:hover,
 #ControlBwdButton:hover,
 #ControlStopButton:hover {
-    background-color: qradialgradient(
-    cx: 0.5, cy: 0.5, radius: 0.54,
-    fx: 0.5, fy: 0.5,
-    stop: 0.45 rgba(243, 132, 26, 255),
-    stop: 1 rgba(255, 255, 255, 0));
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.54, fx: 0.5, fy: 0.5, stop: 0.45 rgba(243, 132, 26, 255), stop: 1 rgba(255, 255, 255, 0));
 }
 
 #ControlPlayButton:pressed,
@@ -402,11 +398,7 @@ QComboBox:disabled {
 #ControlFwdButton:pressed,
 #ControlBwdButton:pressed,
 #ControlStopButton:pressed {
-    background-color: qradialgradient(
-    cx: 0.5, cy: 0.5, radius: 0.54,
-    fx: 0.5, fy: 0.5,
-    stop: 0.8 rgba(243, 132, 26, 255),
-    stop: 1 rgba(255, 255, 255, 0));
+    background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 0.54, fx: 0.5, fy: 0.5, stop: 0.8 rgba(243, 132, 26, 255), stop: 1 rgba(255, 255, 255, 0));
 }
 
 QPushButton[flat=false] {
