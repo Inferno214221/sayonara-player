@@ -265,7 +265,8 @@ Location Location::coverLocation(const Artist& artist)
 	auto location = Location::coverLocation(artist.name());
 	if(location.isValid())
 	{
-		location.setSearchUrls(convertDownloadUrls(artist.coverDownloadUrls()));
+		const auto searchUrls = convertDownloadUrls(artist.coverDownloadUrls()) + location.searchUrls();
+		location.setSearchUrls(searchUrls);
 	}
 
 	return location;
