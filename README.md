@@ -2,7 +2,7 @@
 [https://sayonara-player.com](https://sayonara-player.com)
 
 
-[![Twitter URL](https://img.shields.io/twitter/url?label=%40SayonaraPlayer&style=social&url=https%3A%2F%2Ftwitter.com%2Fsayonaraplayer)](https://twitter.com/sayonaraplayer)
+[![Twitter URL](https://img.shields.io/twitter/follow/SayonaraPlayer?style=social)](https://twitter.com/sayonaraplayer)
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KD4GKTTLAP3JQ&source=url">
     <img src="https://img.shields.io/badge/PayPal-Donate-blue.svg"
