@@ -41,6 +41,8 @@
 
 #include <QMenu>
 
+#include <optional>
+
 namespace
 {
 	void setFromToLabel(QLabel* label, const QList<RadioStation>& stations, QObject* parent)
