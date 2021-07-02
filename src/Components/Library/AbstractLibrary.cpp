@@ -466,7 +466,7 @@ void AbstractLibrary::changeFilter(Library::Filter filter, bool force)
 {
 	const auto filtertext = filter.filtertext(false);
 
-	if(!filter.isInvalidGenre())
+	if(filter.mode() != Library::Filter::InvalidGenre)
 	{
 		if(filtertext.join("").size() < 3)
 		{

@@ -837,12 +837,10 @@ static QString getFilterClause(const Filter& filter, QString cisPlaceholder)
 	switch( filter.mode() )
 	{
 		case Filter::Genre:
-			if(filter.isInvalidGenre())
-			{
-				return "genre = ''";
-			}
-
 			return "genreCissearch LIKE :" + cisPlaceholder;
+
+		case Filter::InvalidGenre:
+				return "genre = ''";
 
 		case Filter::Filename:
 			return "fileCissearch LIKE :" + cisPlaceholder;

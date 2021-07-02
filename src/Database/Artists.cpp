@@ -155,12 +155,11 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 		switch(filter.mode())
 		{
 			case Library::Filter::Genre:
-				if(filter.isInvalidGenre()){
-					query += "genre = ''";
-				}
-				else {
-					query += "genreCissearch LIKE :cissearch";
-				}
+				query += "genreCissearch LIKE :cissearch";
+				break;
+
+			case Library::Filter::InvalidGenre:
+				query += "genre = ''";
 				break;
 
 			case Library::Filter::Filename:

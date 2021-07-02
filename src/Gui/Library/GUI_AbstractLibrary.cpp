@@ -124,7 +124,6 @@ void GUI_AbstractLibrary::queryLibrary()
 	Filter filter = m->library->filter();
 	filter.setMode(current_mode);
 	filter.setFiltertext(text, GetSetting(Set::Lib_SearchMode));
-	filter.setInvalidGenre(m->leSearch->hasInvalidGenreMode());
 
 	m->library->changeFilter(filter);
 }

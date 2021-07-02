@@ -28,11 +28,6 @@ struct Filter::Private
 	QString					filtertext;
 	Filter::Mode			mode;
 	Library::SearchModeMask searchModeMask;
-	bool					invalidGenre;
-
-	Private() :
-		invalidGenre(false)
-	{}
 };
 
 Filter::Filter()
@@ -74,12 +69,7 @@ bool Filter::operator ==(const Filter& other)
 		sameFiltertext = true;
 	}
 
-	return
-	(
-		sameFiltertext &&
-		(m->mode == other.mode()) &&
-		(m->invalidGenre == other.isInvalidGenre())
-				);
+	return (sameFiltertext && (m->mode == other.mode()));
 }
 
 int Filter::count() const
@@ -161,17 +151,7 @@ void Filter::setMode(Filter::Mode mode)
 
 bool Filter::cleared() const
 {
-	return (m->filtertext.isEmpty() && !m->invalidGenre);
-}
-
-void Filter::setInvalidGenre(bool b)
-{
-	m->invalidGenre = b;
-}
-
-bool Filter::isInvalidGenre() const
-{
-	return m->invalidGenre;
+	return (m->filtertext.isEmpty() && (m->mode != Filter::Mode::InvalidGenre));
 }
 
 bool Filter::isUseable() const
@@ -181,7 +161,7 @@ bool Filter::isUseable() const
 		return false;
 	}
 
-	if(isInvalidGenre()){
+	if(m->mode == Filter::Mode::InvalidGenre){
 		return true;
 	}
 
@@ -208,6 +188,7 @@ QString Filter::text(Filter::Mode mode)
 					Lang::get(Lang::Tracks);
 
 		case Filter::Mode::Genre:
+		case Filter::Mode::InvalidGenre:
 			return Lang::get(Lang::Genre);
 
 		default:

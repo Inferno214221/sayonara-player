@@ -481,7 +481,7 @@ bool GUI_LocalLibrary::hasSelections() const
 
 QList<Filter::Mode> GUI_LocalLibrary::searchOptions() const
 {
-	return {Filter::Fulltext, Filter::Filename, Filter::Genre};
+	return {Filter::Fulltext, Filter::Filename, Filter::Genre, Filter::InvalidGenre};
 }
 
 void GUI_LocalLibrary::queryLibrary()

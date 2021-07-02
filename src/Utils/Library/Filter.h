@@ -31,7 +31,6 @@
 
 namespace Library
 {
-	class DateFilter;
 	/**
 	 * @brief The Filter class
 	 * @ingroup Library
@@ -48,6 +47,7 @@ namespace Library
 				Fulltext=0,
 				Filename,
 				Genre,
+				InvalidGenre,
 				Invalid
 			};
 
@@ -111,19 +111,6 @@ namespace Library
 			bool cleared() const;
 
 			/**
-			 * @brief Sets a genre, which is not searched directly. This is
-			 * meant to fetch all tracks which contains no genre
-			 * @param b
-			 */
-			void setInvalidGenre(bool b);
-
-			/**
-			 * @brief Is the invalid genre mode active?
-			 * @return
-			 */
-			bool isInvalidGenre() const;
-
-			/**
 			 * @brief Invalid mode is not usable.
 			 * Invalid genre means, that this is a valid query -> Usable.
 			 * When searching for a track, the id needs to be non-negative.
@@ -141,5 +128,7 @@ namespace Library
 			static QString text(Mode mode);
 	};
 }
+
+Q_DECLARE_METATYPE(Library::Filter::Mode)
 
 #endif /* FILTER_H_ */

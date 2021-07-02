@@ -402,12 +402,10 @@ static QString getFilterClause(const Filter& filter, QString placeholder)
 	switch(filter.mode())
 	{
 		case Library::Filter::Genre:
-			if(filter.isInvalidGenre()){
-				return " genre = '' ";
-			}
-			else {
-				return " genreCissearch LIKE :" + placeholder + " ";
-			}
+			return " genreCissearch LIKE :" + placeholder + " ";
+
+		case Library::Filter::InvalidGenre:
+			return " genre = '' ";
 
 		case Library::Filter::Filename:
 			return " fileCissearch LIKE :" + placeholder + " ";
