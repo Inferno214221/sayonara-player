@@ -45,8 +45,10 @@ qt5_add_resources(RESOURCES_RCC
 	${RESOURCES}
 )
 
-# With resources
+new_test(AudioConverter/AudioConverterTest.cpp)
+
 new_test(Covers/CoverLocationTest.cpp)
+new_test(Covers/CoverFetchManagerTest.cpp)
 
 new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
@@ -56,6 +58,7 @@ new_test(DynamicPlayback/ArtistMatchTest.cpp)
 new_test(Equalizer/EqualizerTest.cpp)
 
 new_test(Library/ImportCacheTest.cpp)
+new_test(Library/LibraryManagerTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp)
 new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp)
@@ -80,6 +83,7 @@ new_test(Util/CryptTest.cpp)
 new_test(Util/FileHelperTest.cpp)
 new_test(Util/LanguageKeyTest.cpp)
 new_test(Util/LanguageUtilTest.cpp)
+new_test(Util/LibraryFilterTest.cpp)
 new_test(Util/MetaDataTest.cpp)
 new_test(Util/MetaDataListTest.cpp)
 new_test(Util/MimeDataTest.cpp  ${CMAKE_SOURCE_DIR}/src/Gui/Utils/MimeData/CustomMimeData.cpp)
@@ -88,6 +92,3 @@ new_test(Util/SetTest.cpp)
 new_test(Util/CissearchTest.cpp)
 new_test(Util/StandardPathTest.cpp)
 new_test(Util/TreeTest.cpp)
-new_test(AudioConverter/AudioConverterTest.cpp)
-new_test(Library/LibraryManagerTest.cpp)
-new_test(Covers/CoverFetchManagerTest.cpp)
