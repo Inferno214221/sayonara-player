@@ -51,7 +51,9 @@ namespace
 	template<typename Callback>
 	void createShortcut(const QKeySequence& ks, Playlist::View* view, Callback callback)
 	{
-		view->connect(new QShortcut(ks, view), &QShortcut::activated, view, callback);
+		auto* shortcut = new QShortcut(ks, view);
+		shortcut->setContext(Qt::WidgetShortcut);
+		view->connect(shortcut, &QShortcut::activated, view, callback);
 	}
 
 	int minimumSelectedItem(Playlist::View* view)
