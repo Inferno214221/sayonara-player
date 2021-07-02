@@ -112,20 +112,13 @@ void GUI_AbstractLibrary::initShortcuts()
 
 void GUI_AbstractLibrary::queryLibrary()
 {
-	QString text;
-	Filter::Mode current_mode = Filter::Mode::Fulltext;
-
 	if(m->leSearch)
 	{
-		text = m->leSearch->text();
-		current_mode = m->leSearch->currentMode();
+		const auto oldFilter = m->library->filter();
+		const auto filter = m->leSearch->updateFilter(oldFilter);
+
+		m->library->changeFilter(filter);
 	}
-
-	Filter filter = m->library->filter();
-	filter.setMode(current_mode);
-	filter.setFiltertext(text, GetSetting(Set::Lib_SearchMode));
-
-	m->library->changeFilter(filter);
 }
 
 void GUI_AbstractLibrary::searchTriggered()

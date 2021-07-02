@@ -260,23 +260,18 @@ void GUI_LocalLibrary::clearSelections()
 
 void GUI_LocalLibrary::invalidGenreSelected()
 {
-	ui->leSearch->setInvalidGenreMode(true);
-	ui->leSearch->setCurrentMode(Filter::Genre);
-	ui->leSearch->setText(GenreView::invalidGenreName());
+	ui->leSearch->setGenre(GenreView::invalidGenreName(), true);
 
 	searchTriggered();
 
-	ui->leSearch->setInvalidGenreMode(false);
+	ui->leSearch->setGenre(GenreView::invalidGenreName(), false);
 }
 
 void GUI_LocalLibrary::genreSelectionChanged(const QStringList& genres)
 {
 	if(!genres.isEmpty())
 	{
-		ui->leSearch->setInvalidGenreMode(false);
-		ui->leSearch->setCurrentMode(Filter::Genre);
-		ui->leSearch->setText(genres.join(","));
-
+		ui->leSearch->setGenre(genres.join(","));
 		searchTriggered();
 	}
 }
