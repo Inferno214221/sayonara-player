@@ -59,7 +59,7 @@ namespace Library
 			virtual void liveSearchChanged();
 			virtual void clearSelections();
 			virtual void searchTriggered();
-			virtual void searchEdited(const QString& searchstring);
+			virtual void searchEdited(const QString& searchString);
 			virtual void keyPressed(int key);
 			virtual void queryLibrary();
 			virtual void itemDeleteClicked();
@@ -94,7 +94,6 @@ namespace Library
 
 		private:
 			void init();
-			void initSearchBar();
 			void boldFontChanged();
 	};
 }

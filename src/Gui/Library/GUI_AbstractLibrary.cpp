@@ -47,6 +47,15 @@ namespace
 		view->setFont(font);
 		view->repaint();
 	}
+
+	void initSearchBar(SearchBar* leSearch, const QList<Filter::Mode>& searchOptions)
+	{
+		if(leSearch)
+		{
+			leSearch->setModes(searchOptions);
+			leSearch->setCurrentMode(Filter::Fulltext);
+		}
+	}
 }
 
 struct GUI_AbstractLibrary::Private
@@ -74,7 +83,7 @@ void GUI_AbstractLibrary::init()
 	lvAlbum()->init(m->library);
 	lvArtist()->init(m->library);
 
-	initSearchBar();
+	initSearchBar(m->leSearch, this->searchOptions());
 	initShortcuts();
 
 	connect(m->library, &AbstractLibrary::sigDeleteAnswer, this, &GUI_AbstractLibrary::showDeleteAnswer);
@@ -86,23 +95,12 @@ void GUI_AbstractLibrary::init()
 	if(m->leSearch)
 	{
 		connect(m->leSearch, &SearchBar::sigCurrentModeChanged, this, &GUI_AbstractLibrary::queryLibrary);
+		connect(m->leSearch, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::searchTriggered);
+		connect(m->leSearch, &QLineEdit::editingFinished, this, &GUI_AbstractLibrary::searchTriggered);
 	}
 
 	ListenSetting(Set::Lib_LiveSearch, GUI_AbstractLibrary::liveSearchChanged);
 	ListenSetting(Set::Lib_FontBold, GUI_AbstractLibrary::boldFontChanged);
-}
-
-void GUI_AbstractLibrary::initSearchBar()
-{
-	if(!m->leSearch)
-	{
-		return;
-	}
-
-	m->leSearch->setModes(this->searchOptions());
-	m->leSearch->setCurrentMode(Filter::Fulltext);
-
-	connect(m->leSearch, &QLineEdit::returnPressed, this, &GUI_AbstractLibrary::searchTriggered);
 }
 
 void GUI_AbstractLibrary::initShortcuts()
@@ -136,11 +134,9 @@ void GUI_AbstractLibrary::searchTriggered()
 	queryLibrary();
 }
 
-void GUI_AbstractLibrary::searchEdited(const QString& search)
+void GUI_AbstractLibrary::searchEdited(const QString& searchString)
 {
-	Q_UNUSED(search)
-
-	if(GetSetting(Set::Lib_LiveSearch) || search.isEmpty())
+	if(GetSetting(Set::Lib_LiveSearch) || searchString.isEmpty())
 	{
 		queryLibrary();
 	}
@@ -154,8 +150,6 @@ bool GUI_AbstractLibrary::hasSelections() const
 
 void GUI_AbstractLibrary::keyPressed(int key)
 {
-	using Library::Filter;
-
 	if(key != Qt::Key_Escape)
 	{
 		return;
@@ -175,7 +169,7 @@ void GUI_AbstractLibrary::keyPressed(int key)
 
 		else
 		{
-			m->leSearch->setCurrentMode(Filter::Mode::Fulltext);
+			m->leSearch->setCurrentMode(Library::Filter::Mode::Fulltext);
 			m->library->refetch();
 		}
 	}
@@ -190,9 +184,8 @@ void GUI_AbstractLibrary::clearSelections()
 
 void GUI_AbstractLibrary::itemDeleteClicked()
 {
-	int n_tracks = m->library->tracks().count();
-
-	TrackDeletionMode answer = showDeleteDialog(n_tracks);
+	const auto trackCount = m->library->tracks().count();
+	const auto answer = showDeleteDialog(trackCount);
 	if(answer != TrackDeletionMode::None)
 	{
 		m->library->deleteFetchedTracks(answer);
@@ -201,9 +194,8 @@ void GUI_AbstractLibrary::itemDeleteClicked()
 
 void GUI_AbstractLibrary::tracksDeleteClicked()
 {
-	int n_tracks = m->library->currentTracks().count();
-
-	TrackDeletionMode answer = showDeleteDialog(n_tracks);
+	const auto trackCount = m->library->currentTracks().count();
+	const auto answer = showDeleteDialog(trackCount);
 	if(answer != TrackDeletionMode::None)
 	{
 		m->library->deleteCurrentTracks(answer);
