@@ -96,7 +96,7 @@ namespace
 
 	QAction* createModeAction(Filter::Mode mode, QWidget* parent)
 	{
-		auto* action = new QAction(Filter::text(mode), parent);
+		auto* action = new QAction(Filter::filterModeName(mode), parent);
 
 		action->setCheckable(false);
 		action->setData(mode);
@@ -128,7 +128,7 @@ namespace
 
 	QString calcPlaceHolderText(Filter::Mode mode)
 	{
-		return Lang::get(Lang::SearchNoun) + ": " + Filter::text(mode);
+		return Lang::get(Lang::SearchNoun) + ": " + Filter::filterModeName(mode);
 	}
 
 	void setClearButtonIcon(QLineEdit* lineEdit)
@@ -146,7 +146,7 @@ namespace
 		if(data.canConvert<Filter::Mode>())
 		{
 			const auto filterMode = data.value<Filter::Mode>();
-			action->setText(Filter::text(filterMode));
+			action->setText(Filter::filterModeName(filterMode));
 		}
 	}
 

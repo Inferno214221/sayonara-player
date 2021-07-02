@@ -25,8 +25,8 @@ using Library::Filter;
 
 struct Filter::Private
 {
-	QString					filtertext;
-	Filter::Mode			mode;
+	QString filtertext;
+	Filter::Mode mode;
 	Library::SearchModeMask searchModeMask;
 };
 
@@ -51,20 +51,21 @@ Filter& Filter::operator=(const Filter& other)
 
 Filter::~Filter() = default;
 
-bool Filter::operator ==(const Filter& other)
+bool Filter::operator==(const Filter& other)
 {
-	if(!this->isUseable() && !other.isUseable()) {
+	if((!this->isUseable()) && (!other.isUseable()))
+	{
 		return true;
 	}
 
-	bool sameFiltertext = false;
+	auto sameFiltertext = false;
 
-	if(m->filtertext.size() < 3 && other.m->filtertext.size() < 3)
+	if((m->filtertext.size() < 3) && (other.m->filtertext.size() < 3))
 	{
 		sameFiltertext = true;
 	}
 
-	else if(m->filtertext.compare(other.m->filtertext) == 0)
+	else if(m->filtertext == other.m->filtertext)
 	{
 		sameFiltertext = true;
 	}
@@ -74,63 +75,68 @@ bool Filter::operator ==(const Filter& other)
 
 int Filter::count() const
 {
-	return m->filtertext.split(",").size();
+	return (m->filtertext.isEmpty())
+	       ? 0
+	       : m->filtertext.split(",").size();
 }
-
 
 QStringList Filter::filtertext(bool withPercent) const
 {
-	QStringList ret;
-	const QStringList filterTexts = m->filtertext.split(",");
+	QStringList result;
 
-	for(QString filterText : filterTexts)
+	const auto filterTexts = m->filtertext.split(",");
+	for(auto filterText : filterTexts)
 	{
 		if(withPercent)
 		{
-			if(!filterText.startsWith('%')){
+			if(!filterText.startsWith('%'))
+			{
 				filterText.prepend('%');
 			}
 
-			if(!filterText.endsWith('%')){
+			if(!filterText.endsWith('%'))
+			{
 				filterText.append('%');
 			}
 		}
 
 		if(!filterText.isEmpty())
 		{
-			ret << filterText;
+			result << std::move(filterText);
 		}
 	}
 
-	return ret;
+	return result;
 }
 
 QStringList Filter::searchModeFiltertext(bool withPercent) const
 {
-	QStringList ret;
-	const QStringList filterTexts = m->filtertext.split(",");
+	QStringList result;
+	const auto filterTexts = m->filtertext.split(",");
 
-	for(const QString& filterText : filterTexts)
+	for(const auto& filterText : filterTexts)
 	{
-		QString convertedFiltertext = ::Library::Utils::convertSearchstring(filterText, m->searchModeMask);
+		auto convertedFiltertext = ::Library::Utils::convertSearchstring(filterText, m->searchModeMask);
 		if(withPercent)
 		{
-			if(!convertedFiltertext.startsWith('%')){
+			if(!convertedFiltertext.startsWith('%'))
+			{
 				convertedFiltertext.prepend('%');
 			}
 
-			if(!convertedFiltertext.endsWith('%')){
+			if(!convertedFiltertext.endsWith('%'))
+			{
 				convertedFiltertext.append('%');
 			}
 		}
 
 		if(!convertedFiltertext.isEmpty())
 		{
-			ret << convertedFiltertext;
+			result << std::move(convertedFiltertext);
 		}
 	}
 
-	return ret;
+	return result;
 }
 
 void Filter::setFiltertext(const QString& str, ::Library::SearchModeMask search_mode)
@@ -156,26 +162,21 @@ bool Filter::cleared() const
 
 bool Filter::isUseable() const
 {
-	if(m->mode == Filter::Mode::Invalid)
+	if((m->mode == Filter::Mode::Invalid))
 	{
 		return false;
 	}
 
-	if(m->mode == Filter::Mode::InvalidGenre){
+	if(m->mode == Filter::Mode::InvalidGenre)
+	{
 		return true;
 	}
 
-	QStringList filters = filtertext(false);
-	if(filters.join("").size() < 3)
-	{
-		return false;
-	}
-
-	return true;
+	const auto filters = filtertext(false);
+	return (filters.join("").size() >= 3);
 }
 
-
-QString Filter::text(Filter::Mode mode)
+QString Filter::filterModeName(Mode mode)
 {
 	switch(mode)
 	{
@@ -183,9 +184,9 @@ QString Filter::text(Filter::Mode mode)
 			return Lang::get(Lang::Filename);
 
 		case Filter::Mode::Fulltext:
-			return  Lang::get(Lang::Artists) + ", " +
-					Lang::get(Lang::Albums) + ", " +
-					Lang::get(Lang::Tracks);
+			return Lang::get(Lang::Artists) + ", " +
+			       Lang::get(Lang::Albums) + ", " +
+			       Lang::get(Lang::Tracks);
 
 		case Filter::Mode::Genre:
 		case Filter::Mode::InvalidGenre:
