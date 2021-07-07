@@ -470,24 +470,13 @@ QTabWidget::pane {
     top: -1px;
 }
 
-
 QTabBar::tab {
     background-color: #3c3c3c;
     border: 1px solid #2c2c2c;
     border-bottom: none;
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-    min-width: 3.5em;
-    padding: 0.6ex 0.6ex;
-    max-height: 2.5ex;
-    min-height: 2.5ex;
-}
-
-Playlist--TabBar::tab:last {
-    min-width: 1em;
-    max-width: 1em;
-    margin-top: 2px;
-    border-left: none;
+    border-top-left-radius: 1px;
+    border-top-right-radius: 1px;
+    padding: 1ex 1.5ex;
 }
 
 QTabBar::tab:selected,
@@ -504,8 +493,6 @@ QTabBar::tab:selected {
 }
 
 QTabBar::close-button {
-    padding-top: 0.3ex;
-    padding-bottom: 0.3ex;
     image: url(':/Icons/tool_dark_grey_small.svg');
 }
 
@@ -515,7 +502,6 @@ QTabBar::close-button:disabled {
 
 QTabBar::close-button:hover {
     image: url(':/Icons/tool_grey_small.svg');
-    max-height: 2ex;
 }
 
 QTabBar QToolButton {
