@@ -163,6 +163,8 @@ Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* pa
 
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
+	connect(m->playlist.get(), &Playlist::sigBusyChanged, this, &Model::sigBusyChanged);
+	connect(m->playlist.get(), &Playlist::sigCurrentScannedFileChanged, this, &Model::sigCurrentScannedFileChanged);
 
 	const auto coverChangeNotifier = Cover::ChangeNotfier::instance();
 	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &Model::coversChanged);
@@ -393,6 +395,11 @@ void Model::reverseTracks()
 int Model::currentTrack() const
 {
 	return m->playlist->currentTrackIndex();
+}
+
+void Model::changeTrack(int trackIndex, Seconds seconds)
+{
+	m->playlist->changeTrack(trackIndex, seconds * 1000);
 }
 
 const MetaData& Model::metadata(int row) const

@@ -55,6 +55,8 @@ namespace Playlist
 		signals:
 			void sigDataReady();
 			void sigCurrentTrackChanged(int index);
+			void sigCurrentScannedFileChanged(const QString& filename);
+			void sigBusyChanged(bool b);
 
 		public:
 			enum StyleElement
@@ -106,6 +108,7 @@ namespace Playlist
 			bool hasLocalMedia(const IndexSet& rows) const;
 			void setDragIndex(int dragIndex);
 			void changeRating(const IndexSet& rows, Rating rating);
+			void changeTrack(int trackIndex, Seconds seconds=0);
 
 			void setBusy(bool b);
 

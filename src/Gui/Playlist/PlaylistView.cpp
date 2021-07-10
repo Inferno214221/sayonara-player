@@ -174,10 +174,8 @@ namespace Playlist
 
 		connect(m->model, &Model::sigDataReady, this, &View::refresh);
 		connect(m->model, &Model::sigCurrentTrackChanged, this, &View::currentTrackChanged);
-
-		connect(playlist.get(), &Playlist::sigBusyChanged, this, &View::playlistBusyChanged);
-		connect(playlist.get(), &Playlist::sigCurrentScannedFileChanged,
-		        this, &View::currentScannedFileChanged);
+		connect(m->model, &Model::sigBusyChanged, this, &View::playlistBusyChanged);
+		connect(m->model, &Model::sigCurrentScannedFileChanged, this, &View::currentScannedFileChanged);
 
 		QTimer::singleShot(100, this, &View::jumpToCurrentTrack);
 	}
@@ -296,7 +294,7 @@ namespace Playlist
 
 	void View::playSelectedTrack()
 	{
-		emit sigDoubleClicked(minimumSelectedItem(this));
+		m->model->changeTrack(minimumSelectedItem(this));
 	}
 
 	void View::jumpToCurrentTrack()
@@ -323,10 +321,7 @@ namespace Playlist
 
 	void View::bookmarkTriggered(Seconds timestamp)
 	{
-		if(const auto row = currentIndex().row(); row >= 0)
-		{
-			emit sigBookmarkPressed(row, timestamp);
-		}
+		m->model->changeTrack(currentIndex().row(), timestamp);
 	}
 
 	void View::removeSelectedRows()
@@ -446,7 +441,7 @@ namespace Playlist
 		if((modelIndex.flags() & Qt::ItemIsEnabled) &&
 		   (modelIndex.flags() & Qt::ItemIsSelectable))
 		{
-			emit sigDoubleClicked(modelIndex.row());
+			m->model->changeTrack(modelIndex.row());
 		}
 	}
 

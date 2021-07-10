@@ -57,10 +57,6 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(View)
 
-		signals:
-			void sigDoubleClicked(int row);
-			void sigBookmarkPressed(int trackIdx, Seconds timestamp);
-
 		public:
 			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
 			~View() override;

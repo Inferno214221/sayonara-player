@@ -255,15 +255,6 @@ void GUI_Playlist::clearButtonPressed(int playlistIndex)
 	}
 }
 
-void GUI_Playlist::bookmarkSelected(int trackIndex, Seconds timestamp)
-{
-	const auto currentIndex = ui->twPlaylists->currentIndex();
-	if(auto playlist = m->playlistHandler->playlist(currentIndex); playlist)
-	{
-		playlist->changeTrack(trackIndex, timestamp * 1000);
-	}
-}
-
 void GUI_Playlist::tabMetadataDropped(int playlistIndex, const MetaDataList& tracks)
 {
 	const auto originTab = ui->twPlaylists->getDragOriginTab();
@@ -311,14 +302,6 @@ void GUI_Playlist::tabFilesDropped(int playlistIndex, const QStringList& paths)
 	{
 		auto playlist = m->playlistHandler->playlist(playlistIndex);
 		m->playlistHandler->createPlaylist(paths, playlist->name());
-	}
-}
-
-void GUI_Playlist::doubleClicked(int row)
-{
-	if(auto playlist = m->playlistHandler->playlist(ui->twPlaylists->currentIndex()); playlist)
-	{
-		playlist->changeTrack(row);
 	}
 }
 
@@ -386,8 +369,6 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 
 		ui->twPlaylists->insertTab(ui->twPlaylists->count() - 1, view, name);
 
-		connect(view, &View::sigDoubleClicked, this, &GUI_Playlist::doubleClicked);
-		connect(view, &View::sigBookmarkPressed, this, &GUI_Playlist::bookmarkSelected);
 		connect(playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &GUI_Playlist::playlistChanged);
 
 		ui->twPlaylists->setCurrentIndex(playlistIndex);

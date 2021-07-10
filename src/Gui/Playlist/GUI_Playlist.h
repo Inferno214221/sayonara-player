@@ -70,7 +70,6 @@ class GUI_Playlist :
 		void initToolButton();
 
 	private slots:
-
 		// triggered from playlist
 		void playlistAdded(int playlistIndex);
 		void playlistNameChanged(int playlistIndex);
@@ -92,10 +91,7 @@ class GUI_Playlist :
 
 		void checkTabIcon();
 
-		void doubleClicked(int row);
-
 		void clearButtonPressed(int playlistIndex);
-		void bookmarkSelected(int trackIndex, Seconds timestamp);
 
 		void showClearButtonChanged();
 		void showBottomBarChanged();
