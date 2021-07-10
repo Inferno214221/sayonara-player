@@ -171,7 +171,8 @@ Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* pa
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
-	playlistChanged(0);
+	// don't call virtual methods here
+	refreshPlaylist(m->playlist->count(), static_cast<int>(ColumnName::NumColumns));
 }
 
 Model::~Model() = default;
@@ -537,30 +538,38 @@ void Model::lookChanged()
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }
 
-void Model::playlistChanged([[maybe_unused]] int playlistIndex)
+void Model::refreshPlaylist(int rowCount, int columnCount)
 {
-	if(m->oldRowCount > m->playlist->count())
+	if(m->oldRowCount > rowCount)
 	{
-		beginRemoveRows(QModelIndex(), m->playlist->count(), m->oldRowCount - 1);
+		beginRemoveRows(QModelIndex(), rowCount, m->oldRowCount - 1);
 		endRemoveRows();
 	}
 
-	else if(m->playlist->count() > m->oldRowCount)
+	else if(rowCount > m->oldRowCount)
 	{
-		beginInsertRows(QModelIndex(), m->oldRowCount, m->playlist->count() - 1);
+		beginInsertRows(QModelIndex(), m->oldRowCount, rowCount - 1);
 		endInsertRows();
 	}
 
-	if(m->playlist->count() == 0)
+	if(rowCount == 0)
 	{
 		beginResetModel();
 		endResetModel();
 	}
 
-	m->oldRowCount = m->playlist->count();
+	m->oldRowCount = rowCount;
 
-	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
+	emit dataChanged(index(0, 0), index(rowCount - 1, columnCount - 1));
 	emit sigDataReady();
+}
+
+void Model::playlistChanged([[maybe_unused]] int playlistIndex)
+{
+	if(playlistIndex == m->playlist->index())
+	{
+		refreshPlaylist(m->playlist->count(), columnCount());
+	}
 }
 
 void Model::currentTrackChanged(int oldIndex, int newIndex)

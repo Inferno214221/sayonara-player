@@ -135,6 +135,7 @@ namespace Playlist
 		private:
 			void startCoverLookup(const MetaData& track) const;
 			void lookChanged();
+			void refreshPlaylist(int rowCount, int columnCount);
 	};
 }
 
