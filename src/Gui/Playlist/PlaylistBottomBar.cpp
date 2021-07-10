@@ -192,7 +192,7 @@ void BottomBar::changePlaylistMode()
 {
 	parentWidget()->setFocus();
 
-	Playlist::Mode plm;
+	auto plm = GetSetting(Set::PL_Mode);
 
 	plm.setAppend(m->btnAppend->isChecked(), m->btnAppend->isEnabled());
 	plm.setRep1(m->btnRep1->isChecked(), m->btnRep1->isEnabled());
@@ -200,14 +200,11 @@ void BottomBar::changePlaylistMode()
 	plm.setShuffle(m->btnShuffle->isChecked(), m->btnShuffle->isEnabled());
 	plm.setDynamic(m->btnDynamic->isChecked(), m->btnDynamic->isEnabled());
 
-	if(plm == m->plm)
+	if(const auto isEqual = (plm == m->plm); !isEqual)
 	{
-		return;
+		m->plm = plm;
+		SetSetting(Set::PL_Mode, m->plm);
 	}
-
-	m->plm = plm;
-
-	SetSetting(Set::PL_Mode, m->plm);
 }
 
 void BottomBar::gaplessClicked()

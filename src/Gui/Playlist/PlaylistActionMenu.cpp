@@ -172,7 +172,7 @@ void ActionMenu::playlistModeSettingChanged()
 // internal gui slot
 void ActionMenu::changePlaylistMode()
 {
-	Playlist::Mode plm;
+	auto plm = GetSetting(Set::PL_Mode);
 
 	plm.setAppend(m->actionAppend->isChecked(), m->actionAppend->isEnabled());
 	plm.setRep1(m->actionRep1->isChecked(), m->actionRep1->isEnabled());
@@ -180,14 +180,12 @@ void ActionMenu::changePlaylistMode()
 	plm.setShuffle(m->actionShuffle->isChecked(), m->actionShuffle->isEnabled());
 	plm.setDynamic(m->actionDynamic->isChecked(), m->actionDynamic->isEnabled());
 
-	if(plm == m->plm)
+	const auto isEqual = (plm == m->plm);
+	if(!isEqual)
 	{
-		return;
+		m->plm = plm;
+		SetSetting(Set::PL_Mode, m->plm);
 	}
-
-	m->plm = plm;
-
-	SetSetting(Set::PL_Mode, m->plm);
 }
 
 void ActionMenu::gaplessClicked()
