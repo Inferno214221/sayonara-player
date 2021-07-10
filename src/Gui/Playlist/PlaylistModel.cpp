@@ -36,9 +36,6 @@
 
 #include "Interfaces/PlaylistInterface.h"
 
-#include "Database/Connector.h"
-#include "Database/CoverConnector.h"
-
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/Icons.h"
 
@@ -68,7 +65,15 @@ namespace
 	constexpr const auto ArtistSearchPrefix = '$';
 	constexpr const auto JumpPrefix = ':';
 
-	static QString convertEntryLook(const QString& entryLook, const MetaData& md)
+	enum class PlaylistSearchMode
+	{
+			Artist,
+			Album,
+			Title,
+			Jump
+	};
+
+	QString convertEntryLook(const QString& entryLook, const MetaData& md)
 	{
 		auto ret = entryLook;
 		ret.replace(QStringLiteral("*"), QChar(Model::Bold));
@@ -81,15 +86,59 @@ namespace
 
 		return ret;
 	}
-}
 
-enum class PlaylistSearchMode
-{
-		Artist,
-		Album,
-		Title,
-		Jump
-};
+	std::pair<PlaylistSearchMode, QString> evaluateSearchString(QString searchString)
+	{
+		auto playlistSearchMode = PlaylistSearchMode::Title;
+
+		if(searchString.startsWith(ArtistSearchPrefix))
+		{
+			playlistSearchMode = PlaylistSearchMode::Artist;
+			searchString.remove(ArtistSearchPrefix);
+		}
+		else if(searchString.startsWith(AlbumSearchPrefix))
+		{
+			playlistSearchMode = PlaylistSearchMode::Album;
+			searchString.remove(AlbumSearchPrefix);
+		}
+		else if(searchString.startsWith(JumpPrefix))
+		{
+			playlistSearchMode = PlaylistSearchMode::Jump;
+			searchString.remove(JumpPrefix);
+		}
+
+		return std::make_pair(playlistSearchMode, searchString.trimmed());
+	}
+
+	QString
+	calculateSearchKey(const MetaData& track, PlaylistSearchMode playlistSearchMode, Library::SearchModeMask searchMode)
+	{
+		QString str;
+		switch(playlistSearchMode)
+		{
+			case PlaylistSearchMode::Artist:
+				str = track.artist();
+				break;
+			case PlaylistSearchMode::Album:
+				str = track.album();
+				break;
+			default:
+				str = track.title();
+				break;
+		}
+
+		return Library::Utils::convertSearchstring(str, searchMode);
+	}
+
+	int extractRowFromSearchstring(const QString& searchString, int maxRow)
+	{
+		auto ok = false;
+		const auto line = searchString.toInt(&ok);
+
+		return (ok && (line <= maxRow))
+		       ? line : -1;
+	}
+}
 
 struct Model::Private
 {
@@ -134,7 +183,7 @@ int Model::rowCount([[maybe_unused]] const QModelIndex& parent) const
 
 int Model::columnCount([[maybe_unused]] const QModelIndex& parent) const
 {
-	return int(ColumnName::NumColumns);
+	return static_cast<int>(ColumnName::NumColumns);
 }
 
 QVariant Model::data(const QModelIndex& index, int role) const
@@ -170,10 +219,9 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::TextAlignmentRole)
 	{
-		if(col != ColumnName::Description)
-		{
-			return QVariant(Qt::AlignRight | Qt::AlignVCenter);
-		}
+		return (col == ColumnName::Description)
+			? QVariant(Qt::AlignLeft | Qt::AlignVCenter)
+			: QVariant(Qt::AlignRight | Qt::AlignVCenter);
 	}
 
 	else if(role == Qt::DecorationRole)
@@ -184,25 +232,10 @@ QVariant Model::data(const QModelIndex& index, int role) const
 			if(!m->coverLookupMap.contains(track.albumId()))
 			{
 				m->coverLookupMap.insert(track.albumId(), QPixmap {});
-
-				const auto coverLocation = Cover::Location::coverLocation(track);
-				auto* coverLookup = new Cover::Lookup(coverLocation, 1, nullptr);
-				coverLookup->setUserData(track.albumId());
-				connect(coverLookup, &Cover::Lookup::sigCoverFound, this, &Model::coverFound);
-				connect(coverLookup, &Cover::Lookup::sigFinished, this, &Model::coverLookupFinished);
-				coverLookup->start();
+				startCoverLookup(track);
 			}
 
 			return QIcon(m->coverLookupMap[track.albumId()]);
-		}
-	}
-
-	else if(role == Qt::SizeHintRole)
-	{
-		if(col == ColumnName::Cover)
-		{
-			const auto h = m->rowHeight - 4;
-			return QSize(h, h);
 		}
 	}
 
@@ -219,7 +252,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		return (row == m->dragIndex);
 	}
 
-	else if(role == Model::RatingRole || role == Qt::EditRole)
+	else if((role == Model::RatingRole) || (role == Qt::EditRole))
 	{
 		if(col == ColumnName::Description)
 		{
@@ -314,7 +347,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	MetaDataList tracks;
 	tracks.reserve(indexes.size());
 
-	for(auto idx : indexes)
+	for(const auto idx : indexes)
 	{
 		auto track = m->playlist->track(idx);
 		if(rating != track.rating())
@@ -380,62 +413,26 @@ MetaDataList Model::metadata(const IndexSet& rows) const
 	return tracks;
 }
 
-QModelIndexList Model::searchResults(const QString& substr)
+QModelIndexList Model::searchResults(const QString& searchString)
 {
-	QModelIndexList ret;
-	auto pureSearchString = substr;
-	auto playlistSearchMode = PlaylistSearchMode::Title;
-
-	if(pureSearchString.startsWith(ArtistSearchPrefix))
-	{
-		playlistSearchMode = PlaylistSearchMode::Artist;
-		pureSearchString.remove(ArtistSearchPrefix);
-	}
-	else if(pureSearchString.startsWith(AlbumSearchPrefix))
-	{
-		playlistSearchMode = PlaylistSearchMode::Album;
-		pureSearchString.remove(AlbumSearchPrefix);
-	}
-	else if(pureSearchString.startsWith(JumpPrefix))
-	{
-		playlistSearchMode = PlaylistSearchMode::Jump;
-		pureSearchString.remove(JumpPrefix);
-	}
-
-	pureSearchString = pureSearchString.trimmed();
+	const auto[playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
 
 	if(playlistSearchMode == PlaylistSearchMode::Jump)
 	{
-		bool ok;
-		const auto line = pureSearchString.toInt(&ok);
-
-		return (ok && line < rowCount())
-		       ? QModelIndexList {this->index(line, 0)}
+		const auto row = extractRowFromSearchstring(cleanedSearchString, rowCount() - 1);
+		return (row >= 0)
+		       ? QModelIndexList {index(row, 0)}
 		       : QModelIndexList {QModelIndex {}};
 	}
 
-	const auto rows = rowCount();
-	for(int i = 0; i < rows; i++)
+	for(auto i = 0; i < rowCount(); i++)
 	{
 		const auto& track = m->playlist->track(i);
-		QString str;
-		switch(playlistSearchMode)
-		{
-			case PlaylistSearchMode::Artist:
-				str = track.artist();
-				break;
-			case PlaylistSearchMode::Album:
-				str = track.album();
-				break;
-			default:
-				str = track.title();
-				break;
-		}
+		const auto searchKey = calculateSearchKey(track, playlistSearchMode, searchMode());
 
-		str = Library::Utils::convertSearchstring(str, searchMode());
-		if(str.contains(pureSearchString))
+		if(searchKey.contains(cleanedSearchString))
 		{
-			return QModelIndexList {this->index(i, 0)};
+			return QModelIndexList {index(i, 0)};
 		}
 	}
 
@@ -573,7 +570,7 @@ void Model::currentTrackChanged(int oldIndex, int newIndex)
 		emit dataChanged(index(oldIndex, 0), index(oldIndex, columnCount() - 1));
 	}
 
-	if(Util::between(oldIndex, m->playlist->count()))
+	if(Util::between(newIndex, m->playlist->count()))
 	{
 		emit dataChanged(index(newIndex, 0), index(newIndex, columnCount() - 1));
 		emit sigCurrentTrackChanged(newIndex);
@@ -623,6 +620,24 @@ void Playlist::Model::coverFound(const QPixmap& pixmap)
 	}
 }
 
+void Playlist::Model::coversChanged()
+{
+	m->coverLookupMap.clear();
+
+	constexpr const auto column = static_cast<int>(ColumnName::Cover);
+	emit dataChanged(index(0, column), index(rowCount() - 1, column));
+}
+
+void Playlist::Model::startCoverLookup(const MetaData& track) const
+{
+	const auto coverLocation = Cover::Location::coverLocation(track);
+	auto* coverLookup = new Cover::Lookup(coverLocation, 1, nullptr);
+	coverLookup->setUserData(track.albumId());
+	connect(coverLookup, &Cover::Lookup::sigCoverFound, this, &Model::coverFound);
+	connect(coverLookup, &Cover::Lookup::sigFinished, this, &Model::coverLookupFinished);
+	coverLookup->start();
+}
+
 void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
 {
 	if(sender())
@@ -631,10 +646,3 @@ void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
 	}
 }
 
-void Playlist::Model::coversChanged()
-{
-	m->coverLookupMap.clear();
-
-	constexpr const auto column = static_cast<int>(ColumnName::Cover);
-	emit dataChanged(index(0, column), index(rowCount() - 1, column));
-}

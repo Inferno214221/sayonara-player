@@ -118,7 +118,7 @@ namespace Playlist
 
 			SearchableModelInterface::ExtraTriggerMap getExtraTriggers() override;
 			QMimeData* mimeData(const QModelIndexList& indexes) const override;
-			QModelIndexList	searchResults(const QString& substr) override;
+			QModelIndexList	searchResults(const QString& searchString) override;
 
 		public slots:
 			void refreshData();
@@ -133,6 +133,7 @@ namespace Playlist
 			void coverLookupFinished(bool success);
 
 		private:
+			void startCoverLookup(const MetaData& track) const;
 			void lookChanged();
 	};
 }
