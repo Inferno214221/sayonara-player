@@ -28,10 +28,7 @@
 
 namespace Playlist
 {
-	/**
-	 * @brief The PlaylistTabWidget class
-	 * @ingroup GuiPlaylists
-	 */
+	class View;
 	class TabWidget :
 			public QTabWidget
 	{
@@ -57,18 +54,16 @@ namespace Playlist
 			~TabWidget() override;
 
 			void showMenuItems(MenuEntries actions);
-
-			void removeTab(int index);
-			void addTab(QWidget* widget, const QIcon& icon, const QString& label);
-			void addTab(QWidget* widget, const QString& label);
-			void insertTab(int index, QWidget* widget, const QString& label);
-			void insertTab(int index, QWidget* widget, const QIcon& icon, const QString& label);
+			void checkTabButtons();
 
 			bool wasDragFromPlaylist() const;
 			int getDragOriginTab() const;
 
-		private:
-			void checkLastTab();
+			View* viewByIndex(int index);
+			View* currentView();
+
+		public slots:
+			void setActiveTab(int index);
 	};
 }
 

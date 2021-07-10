@@ -141,18 +141,6 @@ namespace
 			tabWidget->setTabText(playlist->index(), name);
 		}
 	}
-
-	View* viewByIndex(TabWidget* tabWidget, int index)
-	{
-		return Util::between(index, tabWidget->count() - 1)
-		       ? static_cast<View*>(tabWidget->widget(index))
-		       : nullptr;
-	}
-
-	View* currentView(TabWidget* tabWidget)
-	{
-		return viewByIndex(tabWidget, tabWidget->currentIndex());
-	}
 } // namespace end
 
 struct GUI_Playlist::Private
@@ -265,7 +253,7 @@ void GUI_Playlist::tabMetadataDropped(int playlistIndex, const MetaDataList& tra
 
 	if(ui->twPlaylists->wasDragFromPlaylist())
 	{
-		if(auto* playlistView = viewByIndex(ui->twPlaylists, originTab); playlistView)
+		if(auto* playlistView = ui->twPlaylists->viewByIndex(originTab); playlistView)
 		{
 			playlistView->removeSelectedRows();
 		}
@@ -321,17 +309,19 @@ void GUI_Playlist::playlistNameChanged(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		const auto name = playlist->name();
+		const auto playlistName = playlist->name();
 		checkPlaylistName(playlist, ui->twPlaylists);
 
 		for(auto i = ui->twPlaylists->count() - 2; i >= 0; i--)
 		{
-			if((i != playlistIndex) &&
-			   (ui->twPlaylists->tabText(i) == name))
+			const auto tabText = ui->twPlaylists->tabText(i);
+			if((i != playlistIndex) && (tabText == playlistName))
 			{
 				ui->twPlaylists->removeTab(i);
 			}
 		}
+
+		ui->twPlaylists->checkTabButtons();
 	}
 }
 
@@ -364,28 +354,31 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		const auto name = playlist->name();
+		const auto playlistName = playlist->name();
 		auto* view = new View(m->playlistHandler, playlist, m->dynamicPlaybackChecker, ui->twPlaylists);
 
-		ui->twPlaylists->insertTab(ui->twPlaylists->count() - 1, view, name);
+		const auto tabIndex = ui->twPlaylists->insertTab(playlistIndex, view, playlistName);
 
 		connect(playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &GUI_Playlist::playlistChanged);
 
-		ui->twPlaylists->setCurrentIndex(playlistIndex);
+		ui->twPlaylists->setCurrentIndex(tabIndex);
+		ui->twPlaylists->checkTabButtons();
 	}
 }
 
 void GUI_Playlist::playlistClosed(int playlistIndex)
 {
 	auto* playlistWidget = ui->twPlaylists->widget(playlistIndex);
-	ui->twPlaylists->removeTab(playlistIndex);
 
-	if(auto* playlistView = currentView(ui->twPlaylists); playlistView)
+	ui->twPlaylists->removeTab(playlistIndex);
+	ui->twPlaylists->checkTabButtons();
+
+	if(auto* playlistView = ui->twPlaylists->currentView(); playlistView)
 	{
 		playlistView->setFocus();
 	}
 
-	delete playlistWidget;
+	playlistWidget->deleteLater();
 }
 
 void GUI_Playlist::tabSavePlaylistClicked(int playlistIndex)
@@ -472,24 +465,12 @@ void GUI_Playlist::tabDeletePlaylistClicked(int playlistIndex)
 
 void GUI_Playlist::checkTabIcon()
 {
-	for(auto i = 0; i < ui->twPlaylists->count(); i++)
-	{
-		const auto height = this->fontMetrics().height();
+	const auto playState = m->playManager->playstate();
+	const auto activeTab = (playState != PlayState::Stopped)
+	                       ? m->playlistHandler->activeIndex()
+	                       : -1;
 
-		ui->twPlaylists->setIconSize(QSize(height, height));
-		ui->twPlaylists->setTabIcon(i, QIcon());
-	}
-
-	const auto activeIndex = m->playlistHandler->activeIndex();
-	auto* playlistView = viewByIndex(ui->twPlaylists, activeIndex);
-
-	if(playlistView &&
-	   (m->playManager->playstate() != PlayState::Stopped) &&
-	   (playlistView->model()->rowCount() > 0))
-	{
-		const auto icon = Gui::Icons::icon(Gui::Icons::PlayBorder);
-		ui->twPlaylists->tabBar()->setTabIcon(activeIndex, icon);
-	}
+	ui->twPlaylists->setActiveTab(activeTab);
 }
 
 void GUI_Playlist::showClearButtonChanged()
@@ -525,7 +506,7 @@ void GUI_Playlist::dragMoveEvent(QDragMoveEvent* event) { event->accept(); }
 
 void GUI_Playlist::dropEvent(QDropEvent* event)
 {
-	if(auto* view = currentView(ui->twPlaylists); view)
+	if(auto* view = ui->twPlaylists->currentView(); view)
 	{
 		view->dropEventFromOutside(event);
 	}

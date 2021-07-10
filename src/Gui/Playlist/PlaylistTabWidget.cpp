@@ -20,107 +20,162 @@
 
 #include "PlaylistTabWidget.h"
 #include "PlaylistTabBar.h"
+#include "PlaylistView.h"
+
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Style.h"
 
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/globals.h"
 
-using Playlist::TabWidget;
-using Playlist::TabBar;
-
-struct TabWidget::Private
+namespace
 {
-	TabBar* tabBar=nullptr;
-
-	Private(QWidget* parent) :
-		tabBar(new TabBar(parent))
-	{}
-};
-
-TabWidget::TabWidget(QWidget* parent) :
-	QTabWidget(parent)
-{
-	m = Pimpl::make<Private>(this);
-	this->setTabBar(m->tabBar);
-
-	connect(m->tabBar, &TabBar::sigOpenFile, this, &TabWidget::sigOpenFile);
-	connect(m->tabBar, &TabBar::sigOpenDir, this, &TabWidget::sigOpenDir);
-	connect(m->tabBar, &TabBar::sigTabReset, this, &TabWidget::sigTabReset);
-	connect(m->tabBar, &TabBar::sigTabSave, this, &TabWidget::sigTabSave);
-	connect(m->tabBar, &TabBar::sigTabSaveAs, this, &TabWidget::sigTabSaveAs);
-	connect(m->tabBar, &TabBar::sigTabSaveToFile, this, &TabWidget::sigTabSaveToFile);
-
-	connect(m->tabBar, &TabBar::sigTabRename, this, &TabWidget::sigTabRename);
-	connect(m->tabBar, &TabBar::sigTabDelete, this, &TabWidget::sigTabDelete);
-	connect(m->tabBar, &TabBar::sigTabClear, this, &TabWidget::sigTabClear);
-	connect(m->tabBar, &TabBar::sigCurrentIndexChanged, this, &TabWidget::currentChanged);
-	connect(m->tabBar, &TabBar::sigAddTabClicked, this, &TabWidget::sigAddTabClicked);
-	connect(m->tabBar, &TabBar::sigMetadataDropped, this, &TabWidget::sigMetadataDropped);
-	connect(m->tabBar, &TabBar::sigFilesDropped, this, &TabWidget::sigFilesDropped);
-}
-
-TabWidget::~TabWidget() = default;
-
-void TabWidget::showMenuItems(Playlist::MenuEntries entries)
-{
-	m->tabBar->showMenuItems(entries);
-}
-
-void TabWidget::checkLastTab()
-{
-	m->tabBar->setTabsClosable(count() > 2);
-
-	auto* closeButton = m->tabBar->tabButton(count() - 1, QTabBar::RightSide);
-	if(closeButton){
-		closeButton->setMaximumWidth(0);
-		closeButton->hide();
+	void hideCloseButton(QTabBar* tabBar, int index)
+	{
+		auto* closeButton = tabBar->tabButton(index, QTabBar::RightSide);
+		if(closeButton)
+		{
+			closeButton->hide();
+			closeButton->resize(0, 0);
+		}
 	}
 
-	m->tabBar->setTabIcon(count() - 1, QIcon());
+	void resizeCloseButton(QTabBar* tabBar, int index, int size)
+	{
+		auto* closeButton = tabBar->tabButton(index, QTabBar::RightSide);
+		if(closeButton)
+		{
+			closeButton->resize(size, size);
+			closeButton->show();
+		}
+	}
 
-	if(currentIndex() == count() - 1 && count() >= 2){
-		this->setCurrentIndex(count() - 2);
+	void checkCloseButtons(QTabBar* tabBar, bool closeable)
+	{
+		tabBar->setTabsClosable(closeable);
+
+		const auto size = tabBar->fontMetrics().height();
+		for(int i = 0; i < tabBar->count() - 1; i++)
+		{
+			if(tabBar->tabsClosable())
+			{
+				resizeCloseButton(tabBar, i, size);
+			}
+
+			else
+			{
+				hideCloseButton(tabBar, i);
+			}
+		}
+	}
+
+	void checkLastTab(QTabBar* tabBar)
+	{
+		const auto lastTab = tabBar->count() - 1;
+		tabBar->setTabIcon(lastTab, QIcon());
+		hideCloseButton(tabBar, lastTab);
+	}
+	
+	void checkTabs(QTabBar* tabBar)
+	{
+		const auto count = tabBar->count();
+
+		if(Style::isDark())
+		{
+			checkCloseButtons(tabBar, count > 2);
+		}
+
+		const auto isLastTab = (tabBar->currentIndex() == (count - 1));
+		if((count >= 2) && isLastTab)
+		{
+			tabBar->setCurrentIndex(count - 2);
+		}
+
+		checkLastTab(tabBar);
 	}
 }
 
-void TabWidget::removeTab(int index)
+namespace Playlist
 {
-	QTabWidget::removeTab(index);
-	checkLastTab();
+	struct TabWidget::Private
+	{
+		TabBar* tabBar = nullptr;
+
+		Private(QWidget* parent) :
+			tabBar(new TabBar(parent)) {}
+	};
+
+	TabWidget::TabWidget(QWidget* parent) :
+		QTabWidget(parent)
+	{
+		m = Pimpl::make<Private>(this);
+		this->setTabBar(m->tabBar);
+
+		connect(m->tabBar, &TabBar::sigOpenFile, this, &TabWidget::sigOpenFile);
+		connect(m->tabBar, &TabBar::sigOpenDir, this, &TabWidget::sigOpenDir);
+		connect(m->tabBar, &TabBar::sigTabReset, this, &TabWidget::sigTabReset);
+		connect(m->tabBar, &TabBar::sigTabSave, this, &TabWidget::sigTabSave);
+		connect(m->tabBar, &TabBar::sigTabSaveAs, this, &TabWidget::sigTabSaveAs);
+		connect(m->tabBar, &TabBar::sigTabSaveToFile, this, &TabWidget::sigTabSaveToFile);
+
+		connect(m->tabBar, &TabBar::sigTabRename, this, &TabWidget::sigTabRename);
+		connect(m->tabBar, &TabBar::sigTabDelete, this, &TabWidget::sigTabDelete);
+		connect(m->tabBar, &TabBar::sigTabClear, this, &TabWidget::sigTabClear);
+		connect(m->tabBar, &TabBar::sigCurrentIndexChanged, this, &TabWidget::currentChanged);
+		connect(m->tabBar, &TabBar::sigAddTabClicked, this, &TabWidget::sigAddTabClicked);
+		connect(m->tabBar, &TabBar::sigMetadataDropped, this, &TabWidget::sigMetadataDropped);
+		connect(m->tabBar, &TabBar::sigFilesDropped, this, &TabWidget::sigFilesDropped);
+	}
+
+	TabWidget::~TabWidget() = default;
+
+	void TabWidget::showMenuItems(::Playlist::MenuEntries entries)
+	{
+		m->tabBar->showMenuItems(entries);
+	}
+
+	void TabWidget::checkTabButtons()
+	{
+		checkTabs(m->tabBar);
+	}
+
+	bool TabWidget::wasDragFromPlaylist() const
+	{
+		return m->tabBar->wasDragFromPlaylist();
+	}
+
+	int TabWidget::getDragOriginTab() const
+	{
+		return m->tabBar->getDragOriginTab();
+	}
+
+	View* TabWidget::viewByIndex(int index)
+	{
+		return Util::between(index, this->count() - 1)
+		       ? dynamic_cast<View*>(this->widget(index))
+		       : nullptr;
+	}
+
+	View* TabWidget::currentView()
+	{
+		return viewByIndex(currentIndex());
+	}
+
+	void TabWidget::setActiveTab(int index)
+	{
+		for(auto i = 0; i < count(); i++)
+		{
+			const auto height = this->fontMetrics().height();
+
+			setIconSize(QSize(height, height));
+			setTabIcon(i, QIcon());
+		}
+
+		auto* view = viewByIndex(index);
+		if(view && (view->rowCount() > 0))
+		{
+			const auto icon = Gui::Icons::icon(Gui::Icons::PlayBorder);
+			setTabIcon(index, icon);
+		}
+	}
 }
-
-void TabWidget::addTab(QWidget *widget, const QIcon &icon, const QString& label)
-{
-	QTabWidget::addTab(widget, icon, label);
-	checkLastTab();
-}
-
-void TabWidget::addTab(QWidget *widget, const QString& label)
-{
-	QTabWidget::addTab(widget, label);
-	checkLastTab();
-}
-
-void TabWidget::insertTab(int index, QWidget *widget, const QString& label)
-{
-	QTabWidget::insertTab(index, widget, label);
-	setCurrentIndex(index);
-	checkLastTab();
-}
-
-void TabWidget::insertTab(int index, QWidget *widget, const QIcon &icon, const QString& label)
-{
-	QTabWidget::insertTab(index, widget, icon, label);
-	setCurrentIndex(index);
-	checkLastTab();
-}
-
-bool TabWidget::wasDragFromPlaylist() const
-{
-	return m->tabBar->wasDragFromPlaylist();
-}
-
-int TabWidget::getDragOriginTab() const
-{
-	return m->tabBar->getDragOriginTab();
-}
-
-
