@@ -31,30 +31,27 @@ GUI_Crossfader::~GUI_Crossfader()
 {
 	if(ui)
 	{
-		delete ui; ui = nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
-
 
 void GUI_Crossfader::initUi()
 {
 	setupParent(this, &ui);
 
-	Playlist::Mode mode = GetSetting(Set::PL_Mode);
+	const auto playlistMode = GetSetting(Set::PL_Mode);
+	const auto crossfaderActive = GetSetting(Set::Engine_CrossFaderActive);
+	const auto gaplessActive = (!crossfaderActive)
+	                           ? Playlist::Mode::isActiveAndEnabled(playlistMode.gapless())
+	                           : false;
 
-	bool gaplessActive = Playlist::Mode::isActive(mode.gapless());
-	bool crossfaderActive = GetSetting(Set::Engine_CrossFaderActive);
-
-	int val = GetSetting(Set::Engine_CrossFaderTime);
-
-	if(gaplessActive && crossfaderActive){
-		gaplessActive = false;
-	}
+	const auto crossfaderTime = GetSetting(Set::Engine_CrossFaderTime);
 
 	ui->cb_gapless->setChecked(gaplessActive);
 	ui->cb_crossfader->setChecked(crossfaderActive);
-	ui->sli_crossfader->setValue(val);
-	ui->lab_crossfader->setText(QString::number(val) + " ms");
+	ui->sli_crossfader->setValue(crossfaderTime);
+	ui->lab_crossfader->setText(QString::number(crossfaderTime) + " ms");
 
 	crossfaderActiveChanged(crossfaderActive);
 	gaplessActiveChanged(gaplessActive);
@@ -66,7 +63,6 @@ void GUI_Crossfader::initUi()
 	/** No crossfader with alsa **/
 	ListenSetting(Set::Engine_Sink, GUI_Crossfader::engineChanged);
 }
-
 
 void GUI_Crossfader::retranslate()
 {
@@ -83,26 +79,23 @@ QString GUI_Crossfader::name() const
 
 QString GUI_Crossfader::displayName() const
 {
-	QString g = Lang::get(Lang::GaplessPlayback);
-	QString c = tr("Crossfader");
+	const auto gaplessPlaybackString = Lang::get(Lang::GaplessPlayback);
+	const auto crossfaderString = tr("Crossfader");
 
 	return tr("%1 and %2")
-		.arg(g)
-		.arg(c);
+		.arg(gaplessPlaybackString)
+		.arg(crossfaderString);
 }
-
 
 void GUI_Crossfader::sliderChanged(int val)
 {
 	SetSetting(Set::Engine_CrossFaderTime, val);
 
-	if(val == 0){
-		ui->lab_crossfader->setText(Lang::get(Lang::GaplessPlayback));
-	}
+	const auto text = (val == 0)
+	                  ? Lang::get(Lang::GaplessPlayback)
+	                  : QString("%1 ms").arg(val);
 
-	else {
-		ui->lab_crossfader->setText(QString::number(val) + "ms");
-	}
+	ui->lab_crossfader->setText(text);
 }
 
 void GUI_Crossfader::crossfaderActiveChanged(bool b)
@@ -120,7 +113,6 @@ void GUI_Crossfader::crossfaderActiveChanged(bool b)
 	SetSetting(Set::Engine_CrossFaderActive, b);
 }
 
-
 void GUI_Crossfader::gaplessActiveChanged(bool b)
 {
 	if(b)
@@ -134,10 +126,10 @@ void GUI_Crossfader::gaplessActiveChanged(bool b)
 
 	ui->cb_gapless->setChecked(b);
 
-	Playlist::Mode plm = GetSetting(Set::PL_Mode);
-	plm.setGapless(b);
+	auto playlistMode = GetSetting(Set::PL_Mode);
+	playlistMode.setGapless(b);
 
-	SetSetting(Set::PL_Mode, plm);
+	SetSetting(Set::PL_Mode, playlistMode);
 }
 
 void GUI_Crossfader::engineChanged()
@@ -147,15 +139,15 @@ void GUI_Crossfader::engineChanged()
 		return;
 	}
 
-	QString sink = GetSetting(Set::Engine_Sink);
+	const auto sink = GetSetting(Set::Engine_Sink);
 	ui->cb_crossfader->setDisabled(sink == "alsa");
 	ui->cb_gapless->setDisabled(sink == "alsa");
 
 	if(sink == "alsa")
 	{
-		QString cfdnwwa = tr("Crossfader does not work with Alsa");
-		ui->cb_crossfader->setToolTip(cfdnwwa);
-		ui->sli_crossfader->setToolTip(cfdnwwa);
+		const auto crossfaderErrorString = tr("Crossfader does not work with Alsa");
+		ui->cb_crossfader->setToolTip(crossfaderErrorString);
+		ui->sli_crossfader->setToolTip(crossfaderErrorString);
 		ui->cb_gapless->setToolTip(tr("Gapless playback does not work with Alsa"));
 	}
 
