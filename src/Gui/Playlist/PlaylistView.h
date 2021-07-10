@@ -65,40 +65,11 @@ namespace Playlist
 			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
 			~View() override;
 
-			void deleteSelectedTracks();
-
-			/**
-			 * @brief called from GUI_Playlist when data has not been dropped
-			 * directly into the view widget. Insert on first row then
-			 * @param event
-			 */
 			void dropEventFromOutside(QDropEvent* event);
+			void removeSelectedRows();
 
 		public slots:
-			void clear();
-			void removeSelectedRows();
 			void gotoRow(int row);
-
-		private slots:
-			void refresh();
-			void asyncDropFinished();
-			void ratingChanged(Rating rating);
-			void columnsChanged();
-			void showRatingChanged();
-			void findTrackTriggered();
-			void bookmarkTriggered(Seconds timestamp);
-			void moveSelectedRowsUp();
-			void moveSelectedRowsDown();
-			void playSelectedTrack();
-			void jumpToCurrentTrack();
-			void playlistBusyChanged(bool isBusy);
-			void currentScannedFileChanged(const QString& currentFile);
-			void currentTrackChanged(int index);
-
-		private:
-			void initContextMenu();
-			void initShortcuts();
-			void handleDrop(QDropEvent* event);
 
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
@@ -123,6 +94,29 @@ namespace Playlist
 			void keyPressEvent(QKeyEvent* event) override;
 			bool viewportEvent(QEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* e) override;
+
+		private slots:
+			void clear();
+			void refresh();
+			void asyncDropFinished();
+			void ratingChanged(Rating rating);
+			void columnsChanged();
+			void showRatingChanged();
+			void findTrackTriggered();
+			void bookmarkTriggered(Seconds timestamp);
+			void moveSelectedRowsUp();
+			void moveSelectedRowsDown();
+			void playSelectedTrack();
+			void jumpToCurrentTrack();
+			void playlistBusyChanged(bool isBusy);
+			void currentScannedFileChanged(const QString& currentFile);
+			void currentTrackChanged(int index);
+			void deleteSelectedTracks();
+
+		private:
+			void initContextMenu();
+			void initShortcuts();
+			void handleDrop(QDropEvent* event);
 	};
 }
 

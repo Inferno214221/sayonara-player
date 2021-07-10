@@ -168,10 +168,9 @@ namespace Playlist
 
 		initShortcuts();
 
-		ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
-		ListenSetting(Set::PL_ShowCovers, View::columnsChanged);
-		ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
 		ListenSetting(Set::PL_ShowRating, View::showRatingChanged);
+		ListenSetting(Set::PL_ShowNumbers, View::columnsChanged);
+		ListenSettingNoCall(Set::PL_ShowCovers, View::columnsChanged);
 
 		connect(m->model, &Model::sigDataReady, this, &View::refresh);
 		connect(m->model, &Model::sigCurrentTrackChanged, this, &View::currentTrackChanged);
