@@ -591,7 +591,6 @@ namespace Playlist
 
 		resizeSection(+Model::ColumnName::Description, viewportWidth, horizontalHeader());
 
-		m->model->setRowHeight(viewRowHeight);
 		this->setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
 	}
 }

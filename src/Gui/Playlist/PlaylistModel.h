@@ -105,7 +105,6 @@ namespace Playlist
 
 			bool hasLocalMedia(const IndexSet& rows) const;
 			void setDragIndex(int dragIndex);
-			void setRowHeight(int rowHeight);
 			void changeRating(const IndexSet& rows, Rating rating);
 
 			void setBusy(bool b);

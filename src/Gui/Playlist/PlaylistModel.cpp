@@ -145,7 +145,6 @@ struct Model::Private
 	QHash<AlbumId, QPixmap> coverLookupMap;
 	int oldRowCount;
 	int dragIndex;
-	int rowHeight;
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
 	PlaylistCreator* playlistCreator;
@@ -153,7 +152,6 @@ struct Model::Private
 	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlistArg) :
 		oldRowCount(0),
 		dragIndex(-1),
-		rowHeight(20),
 		playlist(playlistArg),
 		playlistCreator {playlistCreator} {}
 };
@@ -515,15 +513,6 @@ void Model::setDragIndex(int dragIndex)
 	if(Util::between(dragIndex, rowCount()))
 	{
 		emit dataChanged(index(dragIndex, 0), index(dragIndex, columnCount() - 1));
-	}
-}
-
-void Model::setRowHeight(int rowHeight)
-{
-	if(m->rowHeight != rowHeight)
-	{
-		m->coverLookupMap.clear();
-		m->rowHeight = rowHeight;
 	}
 }
 
