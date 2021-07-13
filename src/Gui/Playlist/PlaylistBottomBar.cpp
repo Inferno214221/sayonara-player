@@ -44,9 +44,17 @@
 #include <QPushButton>
 #include <QSpacerItem>
 
-namespace Pl = ::Playlist;
-using Pl::BottomBarButton;
-using Pl::BottomBar;
+using Playlist::BottomBar;
+namespace Icons = Gui::Icons;
+
+namespace
+{
+	Playlist::BottomBarButton*
+	createButton(QWidget* parent, Icons::IconName iconName, Icons::IconMode iconMode = Icons::ForceSayonaraIcon)
+	{
+		return new Playlist::BottomBarButton {Icons::icon(iconName, iconMode), parent};
+	}
+}
 
 struct BottomBar::Private
 {
@@ -55,23 +63,29 @@ struct BottomBar::Private
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 
 #ifdef SAYONARA_WITH_SHUTDOWN
-	GUI_Shutdown* uiShutdown = nullptr;
-	Shutdown* shutdown = nullptr;
+	Shutdown* shutdown {Shutdown::instance()};
 #endif
 
-	BottomBarButton* btnRep1 = nullptr;
-	BottomBarButton* btnAppend = nullptr;
-	BottomBarButton* btnRepall = nullptr;
-	BottomBarButton* btnDynamic = nullptr;
-	BottomBarButton* btnShuffle = nullptr;
-	BottomBarButton* btnGapless = nullptr;
-	BottomBarButton* btnShutdown = nullptr;
+	BottomBarButton* btnRep1;
+	BottomBarButton* btnRepall;
+	BottomBarButton* btnAppend;
+	BottomBarButton* btnDynamic;
+	BottomBarButton* btnShuffle;
+	BottomBarButton* btnGapless;
+	BottomBarButton* btnShutdown;
 
-	Private(DynamicPlaybackChecker* dynamicPlaybackChecker) :
+	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, BottomBar* parent) :
+		plm {GetSetting(Set::PL_Mode)},
 		dynamicPlaybackChecker {dynamicPlaybackChecker},
-		shutdown {Shutdown::instance()} {}
+		btnRep1 {createButton(parent, Icons::Repeat1)},
+		btnRepall {createButton(parent, Icons::RepeatAll)},
+		btnAppend {createButton(parent, Icons::Append)},
+		btnDynamic {createButton(parent, Icons::Dynamic)},
+		btnShuffle {createButton(parent, Icons::Shuffle)},
+		btnGapless {createButton(parent, Icons::Gapless)},
+		btnShutdown {createButton(parent, Icons::Shutdown, Icons::Automatic)} {}
 
-	QList<BottomBarButton*> buttons()
+	QList<BottomBarButton*> buttons() const
 	{
 		return {
 			btnRep1,
@@ -86,23 +100,15 @@ struct BottomBar::Private
 };
 
 BottomBar::BottomBar(QWidget* parent) :
-	Widget(parent)
-{}
+	Widget(parent) {}
 
 BottomBar::~BottomBar() = default;
 
 void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker)
 {
-	m = Pimpl::make<Private>(dynamicPlaybackChecker);
+	m = Pimpl::make<Private>(dynamicPlaybackChecker, this);
 
 	using namespace Gui;
-	m->btnRep1 = new BottomBarButton(Icons::icon(Icons::Repeat1, Icons::ForceSayonaraIcon), this);
-	m->btnRepall = new BottomBarButton(Icons::icon(Icons::RepeatAll, Icons::ForceSayonaraIcon), this);
-	m->btnAppend = new BottomBarButton(Icons::icon(Icons::Append, Icons::ForceSayonaraIcon), this);
-	m->btnDynamic = new BottomBarButton(Icons::icon(Icons::Dynamic, Icons::ForceSayonaraIcon), this);
-	m->btnShuffle = new BottomBarButton(Icons::icon(Icons::Shuffle, Icons::ForceSayonaraIcon), this);
-	m->btnGapless = new BottomBarButton(Icons::icon(Icons::Gapless, Icons::ForceSayonaraIcon), this);
-	m->btnShutdown = new BottomBarButton(Icons::icon(Icons::Shutdown), this);
 
 	QLayout* layout = new QHBoxLayout(this);
 	this->setLayout(layout);
@@ -128,12 +134,6 @@ void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker)
 	}
 
 	m->btnGapless->setCheckable(false);
-
-#ifdef SAYONARA_WITH_SHUTDOWN
-	m->uiShutdown = new GUI_Shutdown(this);
-#endif
-
-	m->plm = GetSetting(Set::PL_Mode);
 
 	m->btnRep1->setChecked(Playlist::Mode::isActive(m->plm.rep1()));
 	m->btnRepall->setChecked(Playlist::Mode::isActive(m->plm.repAll()));
@@ -187,7 +187,6 @@ void BottomBar::shuffleChecked(bool checked)
 	changePlaylistMode();
 }
 
-// internal gui slot
 void BottomBar::changePlaylistMode()
 {
 	parentWidget()->setFocus();
@@ -212,11 +211,9 @@ void BottomBar::gaplessClicked()
 	PlayerPlugin::Handler::instance()->showPlugin("Crossfader");
 }
 
-// setting slot
 void BottomBar::playlistModeSettingChanged()
 {
-	Playlist::Mode plm = GetSetting(Set::PL_Mode);
-
+	const auto plm = GetSetting(Set::PL_Mode);
 	if(plm == m->plm)
 	{
 		return;
@@ -261,7 +258,8 @@ void BottomBar::languageChanged()
 	m->btnRep1->setToolTip(Lang::get(Lang::Repeat1));
 	m->btnRepall->setToolTip(Lang::get(Lang::RepeatAll));
 	m->btnShuffle->setToolTip(Lang::get(Lang::Shuffle));
-	m->btnShutdown->setToolTip(Lang::get(Lang::Shutdown) + ": " + Lang::get(Lang::Cancel));
+	m->btnShutdown->setToolTip(
+		Lang::get(Lang::Shutdown) + ": " + Lang::get(Lang::Cancel));
 
 	checkDynamicPlayButton();
 }
@@ -275,7 +273,7 @@ void BottomBar::skinChanged()
 	const auto buttons = m->buttons();
 	for(auto* button : buttons)
 	{
-		button->setFixedSize(QSize{width, width});
+		button->setFixedSize(QSize {width, width});
 	}
 }
 
@@ -302,10 +300,8 @@ void BottomBar::shutdownClicked()
 	}
 }
 
-void BottomBar::shutdownStarted(MilliSeconds time2go)
+void BottomBar::shutdownStarted([[maybe_unused]] MilliSeconds time2go)
 {
-	Q_UNUSED(time2go)
-
 	const auto b = Shutdown::instance()->is_running();
 	m->btnShutdown->setVisible(b);
 	m->btnShutdown->setChecked(b);
@@ -319,3 +315,4 @@ void BottomBar::shutdownClosed()
 }
 
 #endif
+
