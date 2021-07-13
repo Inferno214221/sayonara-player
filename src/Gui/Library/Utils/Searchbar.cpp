@@ -355,6 +355,7 @@ void SearchBar::languageChanged()
 
 void SearchBar::skinChanged()
 {
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 12, 0))
 	if(Style::isDark())
 	{
 		constexpr const auto value = 140;
@@ -365,6 +366,7 @@ void SearchBar::skinChanged()
 		palette.setColor(QPalette::Inactive, QPalette::PlaceholderText, placeholderColor);
 		setPalette(palette);
 	}
+#endif
 
 	setClearButtonIcon(this);
 	Parent::skinChanged();
