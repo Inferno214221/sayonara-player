@@ -239,15 +239,15 @@ void BottomBar::playlistModeSettingChanged()
 
 void BottomBar::checkDynamicPlayButton()
 {
-	if(m->dynamicPlaybackChecker->isDynamicPlaybackPossible())
-	{
-		m->btnDynamic->setToolTip(tr("Please set library path first"));
-	}
+	//@formatter:off
+	const auto tooltip = (!m->dynamicPlaybackChecker->isDynamicPlaybackPossible())
+	                     ? QString("%1\n%2")
+		                     .arg(Lang::get(Lang::DynamicPlayback)
+		                     .arg(tr("Please set library path first")))
+	                     : (Lang::get(Lang::DynamicPlayback));
+	//@formatter:on
 
-	else
-	{
-		m->btnDynamic->setToolTip(Lang::get(Lang::DynamicPlayback));
-	}
+	m->btnDynamic->setToolTip(tooltip);
 }
 
 void BottomBar::languageChanged()
