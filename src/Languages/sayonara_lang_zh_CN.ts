@@ -100,7 +100,12 @@
         <translation>信息 / 编辑</translation>
     </message>
     <message>
-        <location line="+274"/>
+        <location line="+198"/>
+        <source>Change Cover</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+83"/>
         <source>Loading files...</source>
         <translation>正在读取文件...</translation>
     </message>
@@ -214,7 +219,7 @@
         <translation>目录不存在</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+378"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+373"/>
         <source>Audio files</source>
         <translation>音频文件</translation>
     </message>
@@ -522,26 +527,6 @@
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
         <translation>搜索广播电台</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+75"/>
-        <source>Show radio stations from %1 to %2</source>
-        <translation>显示从 %1 到 %2 的广播电台</translation>
-    </message>
-    <message>
-        <location line="+214"/>
-        <source>Country</source>
-        <translation>国家</translation>
-    </message>
-    <message>
-        <location line="+79"/>
-        <source>Type</source>
-        <translation>类型</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Url</source>
-        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -1620,7 +1605,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+93"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
         <source>Write cover to tracks</source>
         <translation>将封面写入曲目</translation>
     </message>
@@ -1734,7 +1719,7 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+222"/>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+259"/>
         <source>Resize columns</source>
         <translation>调整列宽</translation>
     </message>
@@ -1926,7 +1911,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+466"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+440"/>
         <source>Playlist name already exists</source>
         <translation>播放列表名已存在</translation>
     </message>
@@ -1934,7 +1919,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+202"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
         <source>Please set library path first</source>
         <translation>请先设置媒体库路径</translation>
     </message>
@@ -1942,12 +1927,12 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+250"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
         <source>Please set library path first</source>
         <translation>请先设置媒体库路径</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+50"/>
         <source>Cancel shutdown?</source>
         <translation>取消关机？</translation>
     </message>
@@ -1973,7 +1958,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+459"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+456"/>
         <source>Goto row</source>
         <translation>跳到行</translation>
     </message>
@@ -1994,7 +1979,7 @@
 <context>
     <name>Playlist::View</name>
     <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+351"/>
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+347"/>
         <source>You are about to delete %n file(s)</source>
         <translation type="unfinished"><numerusform></numerusform></translation>
     </message>
@@ -2002,7 +1987,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+75"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
         <location line="+12"/>
         <source>Crossfader</source>
         <translation>交叉渐变器</translation>
@@ -2013,7 +1998,7 @@
         <translation>%1 与 %2</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+63"/>
         <source>Crossfader does not work with Alsa</source>
         <translation>交叉渐变器不支持 Alsa</translation>
     </message>

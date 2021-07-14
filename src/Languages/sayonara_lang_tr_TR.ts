@@ -219,7 +219,7 @@
         <translation>Dizin mevcut değil</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+378"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+373"/>
         <source>Audio files</source>
         <translation>Ses dosyaları</translation>
     </message>
@@ -527,26 +527,6 @@
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
         <translation>Radyo İstasyonu Ara</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+75"/>
-        <source>Show radio stations from %1 to %2</source>
-        <translation>%1 ile %2 arasındaki radyo istasyonlarını göster</translation>
-    </message>
-    <message>
-        <location line="+214"/>
-        <source>Country</source>
-        <translation>Ülke</translation>
-    </message>
-    <message>
-        <location line="+79"/>
-        <source>Type</source>
-        <translation>Tür</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Url</source>
-        <translation>Url</translation>
     </message>
 </context>
 <context>
@@ -1931,7 +1911,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+466"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+440"/>
         <source>Playlist name already exists</source>
         <translation>Oynatma listesi adı zaten var</translation>
     </message>
@@ -1939,7 +1919,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+202"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
         <source>Please set library path first</source>
         <translation>Lütfen öncelikle kütüphane yolunu ayarlayın</translation>
     </message>
@@ -1947,12 +1927,12 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+250"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
         <source>Please set library path first</source>
         <translation>Lütfen öncelikle kütüphane yolunu ayarlayın</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+50"/>
         <source>Cancel shutdown?</source>
         <translation>Kapatma iptal edilsin mi?</translation>
     </message>
@@ -1978,7 +1958,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+453"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+456"/>
         <source>Goto row</source>
         <translation>Satıra git</translation>
     </message>
@@ -1999,7 +1979,7 @@
 <context>
     <name>Playlist::View</name>
     <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+351"/>
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+347"/>
         <source>You are about to delete %n file(s)</source>
         <translation><numerusform>%n dosyayı silmek üzeresiniz</numerusform><numerusform>%n dosyayı silmek üzeresiniz</numerusform></translation>
     </message>
@@ -2007,7 +1987,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+75"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
         <location line="+12"/>
         <source>Crossfader</source>
         <translation>Geçiş yumuşatıcı</translation>
@@ -2018,7 +1998,7 @@
         <translation>%1 ve %2</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+63"/>
         <source>Crossfader does not work with Alsa</source>
         <translation>Geçiş yumuşatıcı Alsa ile birlikte çalışmıyor</translation>
     </message>

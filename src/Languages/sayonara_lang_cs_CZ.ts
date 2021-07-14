@@ -219,7 +219,7 @@
         <translation>Adresář neexistuje</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+378"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+373"/>
         <source>Audio files</source>
         <translation>Zvukové soubory</translation>
     </message>
@@ -527,26 +527,6 @@
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
         <source>Search Radio Station</source>
         <translation>Hledat rozhlasovou stanici</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+75"/>
-        <source>Show radio stations from %1 to %2</source>
-        <translation>Ukázat rozhlasové stanice od %1 do %2</translation>
-    </message>
-    <message>
-        <location line="+214"/>
-        <source>Country</source>
-        <translation>Země</translation>
-    </message>
-    <message>
-        <location line="+79"/>
-        <source>Type</source>
-        <translation>Typ</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Url</source>
-        <translation>Adresa (URL)</translation>
     </message>
 </context>
 <context>
@@ -1931,7 +1911,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+466"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+440"/>
         <source>Playlist name already exists</source>
         <translation>Název seznamu skladeb již je</translation>
     </message>
@@ -1939,7 +1919,7 @@
 <context>
     <name>Playlist::ActionMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+202"/>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
         <source>Please set library path first</source>
         <translation>Nejprve, prosím, zadejte cestu k hudební sbírce</translation>
     </message>
@@ -1947,12 +1927,12 @@
 <context>
     <name>Playlist::BottomBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+250"/>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
         <source>Please set library path first</source>
         <translation>Nejprve, prosím, zadejte cestu k hudební sbírce</translation>
     </message>
     <message>
-        <location line="+51"/>
+        <location line="+50"/>
         <source>Cancel shutdown?</source>
         <translation>Zrušit vypnutí?</translation>
     </message>
@@ -1978,7 +1958,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+453"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+456"/>
         <source>Goto row</source>
         <translation>Jít na řádek</translation>
     </message>
@@ -1999,7 +1979,7 @@
 <context>
     <name>Playlist::View</name>
     <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+351"/>
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+347"/>
         <source>You are about to delete %n file(s)</source>
         <translation><numerusform>Chystáte se smazat %n soubor</numerusform><numerusform>Chystáte se smazat %n soubory</numerusform><numerusform>Chystáte se smazat %n souborů</numerusform><numerusform>Chystáte se smazat %n souborů</numerusform></translation>
     </message>
@@ -2007,7 +1987,7 @@
 <context>
     <name>GUI_Crossfader</name>
     <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+75"/>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
         <location line="+12"/>
         <source>Crossfader</source>
         <translation>Prolínač</translation>
@@ -2018,7 +1998,7 @@
         <translation>%1 a %2</translation>
     </message>
     <message>
-        <location line="+67"/>
+        <location line="+63"/>
         <source>Crossfader does not work with Alsa</source>
         <translation>Prolínač nepracuje s ALSA</translation>
     </message>
