@@ -162,7 +162,7 @@ bool Filter::cleared() const
 
 bool Filter::isUseable() const
 {
-	if((m->mode == Filter::Mode::Invalid))
+	if(m->mode == Filter::Mode::Invalid)
 	{
 		return false;
 	}
