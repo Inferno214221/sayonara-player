@@ -22,7 +22,6 @@
 #include "Utils/Utils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QToolTip>
 #include <QImage>
@@ -65,11 +64,11 @@ namespace
 		{
 			floatingLabel->setFloatingText(text);
 		}
-		else
+
+		else if(label)
 		{
 			label->setText(text);
 		}
-
 	}
 }
 
@@ -104,7 +103,9 @@ void GUI_ControlsBase::init()
 	labSayonara()->setText(tr("Sayonara Player"));
 	labVersion()->setText(version);
 	labWrittenBy()->setText(tr("Written by %1").arg("Michael Lugmair"));
-	labCopyright()->setText(tr("Copyright") + " 2011 - " + QString::number(QDateTime::currentDateTime().date().year()));
+	labCopyright()->setText(QString("%1 2011 - %2")
+		                        .arg(tr("Copyright"))
+		                        .arg(QDateTime::currentDateTime().date().year()));
 	btnRecord()->setVisible(false);
 
 	volumeChanged(m->playManager->volume());
@@ -281,10 +282,9 @@ void GUI_ControlsBase::refreshCurrentPosition(int val)
 
 void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds totalTimeMs)
 {
-	QString lengthStr;
 	if(totalTimeMs > 0)
 	{
-		lengthStr = Util::msToString(totalTimeMs, "$M:$S");
+		const auto lengthStr = Util::msToString(totalTimeMs, "$M:$S");
 		labMaxTime()->setText(lengthStr);
 	}
 
@@ -308,7 +308,7 @@ void GUI_ControlsBase::setupVolumeButton(int percent)
 {
 	using namespace Gui;
 
-	if(percent <= 1 || m->playManager->isMuted())
+	if((percent <= 1) || m->playManager->isMuted())
 	{
 		setIcon(btnMute(), Icons::icon(Icons::VolMute));
 	}
@@ -369,8 +369,8 @@ void GUI_ControlsBase::metadataChanged()
 	const auto& changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
 	const auto& currentTrack = m->playManager->currentTrack();
 
-	const auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const MetaDataPair& trackPair) {
-		const MetaData& oldTrack = trackPair.first;
+	const auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const auto& trackPair) {
+		const auto& oldTrack = trackPair.first;
 		return (oldTrack.filepath() == currentTrack.filepath());
 	});
 
@@ -579,12 +579,12 @@ MetaDataList GUI_ControlsBase::infoDialogData() const
 {
 	return (m->playManager->playstate() != PlayState::Stopped)
 	       ? MetaDataList {m->playManager->currentTrack()}
-           : MetaDataList();
+	       : MetaDataList();
 }
 
 QWidget* GUI_ControlsBase::getParentWidget()
 {
-    return this;
+	return this;
 }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
