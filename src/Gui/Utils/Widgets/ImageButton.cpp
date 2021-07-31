@@ -14,14 +14,13 @@ using Gui::ByteArrayConverter;
 
 struct ByteArrayConverter::Private
 {
-	QByteArray	data;
-	QString		mime;
-	QPixmap		pixmap;
+	QByteArray data;
+	QString mime;
+	QPixmap pixmap;
 
 	Private(const QByteArray& data, const QString& mime) :
 		data(data),
-		mime(mime)
-	{}
+		mime(mime) {}
 };
 
 ByteArrayConverter::ByteArrayConverter(const QByteArray& data, const QString& mime) :
@@ -43,40 +42,34 @@ void ByteArrayConverter::start()
 	emit sigFinished();
 }
 
-
 struct ImageButton::Private
 {
-	QByteArray currentHash;
-	QByteArray oldHash;
+	QTimer* timer = nullptr;
 
-	QPixmap currentPixmap, currentPixmapScaled;
-	QPixmap oldPixmap, oldPixmapScaled;
-	QPixmap invalidPixmap;
+	QByteArray currentHash;
+
+	QPixmap currentPixmap {"://Icons/logo.png"};
+	QPixmap currentPixmapScaled;
+	QPixmap oldPixmapScaled;
+	QPixmap invalidPixmap {"://Icons/logo.png"};
 
 	QRect pixmapRect;
 
-	double opacity;
+	double opacity {1.0};
+	bool isFadingEnabled {true};
 
-	QTimer* timer=nullptr;
-	bool isFadingEnabled;
-
-	Private() :
-		invalidPixmap(QPixmap("://Icons/logo.png")),
-		opacity(1.0),
-		isFadingEnabled(true)
+	Private(ImageButton* parent) :
+		timer {new QTimer(parent)}
 	{
-		this->currentPixmap = this->invalidPixmap;
+		timer->setTimerType(Qt::TimerType::PreciseTimer);
+		timer->setInterval(10);
 	}
 };
 
 ImageButton::ImageButton(QWidget* parent) :
-	QPushButton (parent)
+	QPushButton(parent)
 {
-	m = Pimpl::make<Private>();
-
-	m->timer = new QTimer(this);
-	m->timer->setTimerType(Qt::TimerType::PreciseTimer);
-	m->timer->setInterval(10);
+	m = Pimpl::make<Private>(this);
 
 	this->setFlat(true);
 	this->setMouseTracking(true);
@@ -86,17 +79,17 @@ ImageButton::ImageButton(QWidget* parent) :
 
 ImageButton::~ImageButton()
 {
-	if(m->timer->isActive()){
+	if(m->timer->isActive())
+	{
 		m->timer->stop();
 	}
 }
 
-void ImageButton::setPixmap(const QPixmap& _pm)
+void ImageButton::setPixmap(const QPixmap& newPixmap)
 {
-	QPixmap pm(_pm);
-	if(pm.isNull()) {
-		pm = m->invalidPixmap;
-	}
+	const auto pixmap = (!newPixmap.isNull())
+	                    ? newPixmap
+	                    : m->invalidPixmap;
 
 	{ // check if the image is already the same
 		QPixmap pmScaled50 = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
@@ -111,7 +104,6 @@ void ImageButton::setPixmap(const QPixmap& _pm)
 	// don't change the currently fading out cover
 	if(!m->timer->isActive())
 	{
-		m->oldPixmap = m->currentPixmap;
 		m->oldPixmapScaled = m->currentPixmapScaled;
 	}
 
@@ -123,11 +115,10 @@ void ImageButton::setPixmap(const QPixmap& _pm)
 		Qt::SmoothTransformation
 	);
 
-	this->setToolTip
-	(
+	this->setToolTip(
 		QString("%1x%2")
-			.arg(pm.width())
-			.arg(pm.height())
+			.arg(pixmap.width())
+			.arg(pixmap.height())
 	);
 
 	if(m->isFadingEnabled)
@@ -177,14 +168,16 @@ void ImageButton::showDefaultPixmap()
 
 void ImageButton::byteconverterFinished()
 {
-	auto* worker = static_cast<ByteArrayConverter*>(sender());
+	auto* worker = dynamic_cast<ByteArrayConverter*>(sender());
 
-	const QPixmap pm = worker->pixmap();
-	if(!pm.isNull()) {
-		this->setPixmap(pm);
+	const auto pixmap = worker->pixmap();
+	if(!pixmap.isNull())
+	{
+		this->setPixmap(pixmap);
 	}
 
-	else {
+	else
+	{
 		spLog(Log::Warning, this) << "Cover from track seems invalid or broken";
 	}
 
@@ -226,17 +219,15 @@ void ImageButton::timerTimedOut()
 
 	else
 	{
-		m->oldPixmap = QPixmap();
 		m->oldPixmapScaled = QPixmap();
 		m->timer->stop();
 	}
 }
 
-void ImageButton::paintEvent(QPaintEvent* e)
+void ImageButton::paintEvent([[maybe_unused]] QPaintEvent* e)
 {
-	Q_UNUSED(e)
-
-	if(m->currentPixmapScaled.isNull()){
+	if(m->currentPixmapScaled.isNull())
+	{
 		return;
 	}
 
@@ -272,7 +263,8 @@ void ImageButton::paintEvent(QPaintEvent* e)
 		painter.setOpacity(m->opacity);
 	}
 
-	else {
+	else
+	{
 		painter.setOpacity(1.0);
 	}
 
@@ -304,9 +296,11 @@ void ImageButton::resizeEvent(QResizeEvent* e)
 
 void ImageButton::mouseMoveEvent(QMouseEvent* e)
 {
-	bool within = m->pixmapRect.contains(e->pos());
+	const auto isCursorWithin = m->pixmapRect.contains(e->pos());
+	const auto shape = (isCursorWithin) ?
+	                   Qt::PointingHandCursor :
+	                   Qt::ArrowCursor;
 
-	auto shape = (within) ? Qt::PointingHandCursor : Qt::ArrowCursor;
 	this->setCursor(QCursor(shape));
 
 	QPushButton::mouseMoveEvent(e);
@@ -316,8 +310,8 @@ void ImageButton::mouseReleaseEvent(QMouseEvent* e)
 {
 	if(e->button() | Qt::LeftButton)
 	{
-		bool within = m->pixmapRect.contains(e->pos());
-		if(!within)
+		const auto isCursorWithin = m->pixmapRect.contains(e->pos());
+		if(!isCursorWithin)
 		{
 			QPushButton::mouseReleaseEvent(e);
 			return;

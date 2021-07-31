@@ -43,21 +43,12 @@ namespace Gui
 
 			QPixmap pixmap() const;
 			int verticalPadding() const;
-
 			void setFadingEnabled(bool b);
-
 
 		public slots:
 			void showDefaultPixmap();
-
 			void setPixmap(const QPixmap& pm);
 			void setPixmapPath(const QString& path);
-
-			/**
-			 * @brief Sets the raw data parsed out of the audio file
-			 * @param data raw data
-			 * @param mimetype jpg, png or something similar
-			 */
 			void setCoverData(const QByteArray& data, const QString& mimetype);
 
 		private slots:

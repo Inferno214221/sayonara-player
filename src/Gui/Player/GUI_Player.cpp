@@ -365,8 +365,8 @@ void GUI_Player::pluginActionTriggered(bool b)
 void GUI_Player::initControls()
 {
 	m->controls = (GetSetting(Set::Player_ControlStyle) == 0)
-                  ? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider, this))
-                  : static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider, this));
+	              ? static_cast<GUI_ControlsBase*>(new GUI_Controls(m->playManager, m->coverProvider, this))
+	              : static_cast<GUI_ControlsBase*>(new GUI_ControlsNew(m->playManager, m->coverProvider, this));
 
 	m->controls->init();
 	ui->controls->layout()->addWidget(m->controls);
@@ -513,20 +513,19 @@ void GUI_Player::checkControlSplitter()
 {
 	if(m->controls && m->controls->isExternResizeAllowed())
 	{
-		auto sizes = ui->splitterControls->sizes();
+		const auto sizes = ui->splitterControls->sizes();
 
 		// remove empty space on top/bottom of cover
 		const auto difference = m->controls->btnCover()->verticalPadding();
-		sizes[0] -= difference;
-
-		if(sizes[0] > 0)
+		if(difference > 0)
 		{
-			ui->splitterControls->widget(0)->setMaximumHeight(sizes[0]);
+			const auto newSize = sizes[0] - difference;
+			ui->splitterControls->widget(0)->setMaximumHeight(newSize);
 		}
 
 		const auto minimumHeight = ui->pluginWidget->isVisible()
-			? 350
-			: 200;
+		                           ? 350
+		                           : 200;
 
 		ui->splitterControls->widget(1)->setMinimumHeight(minimumHeight);
 	}
