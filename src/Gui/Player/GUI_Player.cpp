@@ -441,6 +441,8 @@ void GUI_Player::showLibraryChanged()
 			sizes[1] = GetSetting(Set::Lib_OldWidth);
 			playerSize.setWidth(playerSize.width() + GetSetting(Set::Lib_OldWidth));
 		}
+
+		ui->splitter->setHandleWidth(4);
 	}
 
 	else
@@ -452,6 +454,8 @@ void GUI_Player::showLibraryChanged()
 		{
 			SetSetting(Set::Lib_OldWidth, oldLibraryWidth);
 		}
+
+		ui->splitter->setHandleWidth(0);
 	}
 
 	if((playerSize != this->size()))

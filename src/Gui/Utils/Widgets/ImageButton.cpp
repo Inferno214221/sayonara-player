@@ -12,6 +12,46 @@
 using Gui::ImageButton;
 using Gui::ByteArrayConverter;
 
+constexpr const auto Padding = 2;
+
+namespace
+{
+	QRect getPaintArea(const QWidget* widget)
+	{
+		return QRect(
+			Padding, Padding,
+			widget->width() - (2 * Padding), widget->height() - (2 * Padding)
+		);
+	}
+
+	QRect getTargetRect(const QRect& paintArea, const QSize& pixmapSize)
+	{
+		return QRect(
+			paintArea.x() + (paintArea.width() - pixmapSize.width()) / 2,
+			paintArea.y() + (paintArea.height() - pixmapSize.height()) / 2,
+			pixmapSize.width(),
+			pixmapSize.height()
+		);
+	}
+
+	QPixmap scalePixmap(const QPixmap& pixmap, const QWidget* widget)
+	{
+		const auto paintArea = getPaintArea(widget);
+		return pixmap.scaled
+			(
+				paintArea.size(),
+				Qt::KeepAspectRatio,
+				Qt::SmoothTransformation
+			);
+	}
+
+	QByteArray calcHash(const QPixmap& pixmap)
+	{
+		const auto pmScaled50 = pixmap.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
+		return Util::calcHash(Util::convertPixmapToByteArray(pmScaled50));
+	}
+}
+
 struct ByteArrayConverter::Private
 {
 	QByteArray data;
@@ -91,15 +131,13 @@ void ImageButton::setPixmap(const QPixmap& newPixmap)
 	                    ? newPixmap
 	                    : m->invalidPixmap;
 
-	{ // check if the image is already the same
-		QPixmap pmScaled50 = pm.scaled(50, 50, Qt::KeepAspectRatio, Qt::FastTransformation);
-		auto newHash = Util::calcHash(Util::convertPixmapToByteArray(pmScaled50));
-		if(newHash == m->currentHash) {
-			return;
-		}
-
-		m->currentHash = newHash;
+	const auto hash = calcHash(pixmap);
+	if(hash == m->currentHash)
+	{
+		return;
 	}
+
+	m->currentHash = hash;
 
 	// don't change the currently fading out cover
 	if(!m->timer->isActive())
@@ -107,13 +145,8 @@ void ImageButton::setPixmap(const QPixmap& newPixmap)
 		m->oldPixmapScaled = m->currentPixmapScaled;
 	}
 
-	m->currentPixmap = pm;
-	m->currentPixmapScaled = m->currentPixmap.scaled
-	(
-		(this->size() - QSize(2, 2)),
-		Qt::KeepAspectRatio,
-		Qt::SmoothTransformation
-	);
+	m->currentPixmap = pixmap;
+	m->currentPixmapScaled = scalePixmap(m->currentPixmap, this);
 
 	this->setToolTip(
 		QString("%1x%2")
@@ -195,12 +228,11 @@ int ImageButton::verticalPadding() const
 		return 0;
 	}
 
-	int p = (this->height() - m->currentPixmapScaled.size().height()) - 2;
-	if(p <= 0){
-		p = -(this->width() - m->currentPixmapScaled.size().width() - 2);
-	}
-
-	return p;
+	const auto paintArea = getPaintArea(this);
+	const auto p = (paintArea.height() - m->currentPixmapScaled.height());
+	return (p > 0)
+	       ? p
+	       : (m->currentPixmapScaled.width() - paintArea.width());
 }
 
 void ImageButton::setFadingEnabled(bool b)
@@ -233,32 +265,21 @@ void ImageButton::paintEvent([[maybe_unused]] QPaintEvent* e)
 
 	QPainter painter(this);
 
-	int h = this->height() - 2;
-	int w = this->width() - 2;
+	const auto paintArea = getPaintArea(this);
 
-	QPixmap pm = m->currentPixmapScaled;
-	QPixmap pmOld;
-	if(!m->oldPixmapScaled.isNull())
+	const auto scaledPixmap = m->currentPixmapScaled;
+	const auto oldScaledPixmap = (!m->oldPixmapScaled.isNull())
+	                             ? m->oldPixmapScaled
+	                             : QPixmap();
+
+	if(!oldScaledPixmap.isNull())
 	{
-		pmOld = m->oldPixmapScaled;
-	}
-
-	int x = (w - pm.width()) / 2;
-	int y = (h - pm.height()) / 2;
-
-	if(!pmOld.isNull())
-	{
-		int xOld = (w - pmOld.width()) / 2;
-		int yOld = (h - pmOld.height()) / 2;
+		const auto targetRect = getTargetRect(paintArea, oldScaledPixmap.size());
 
 		painter.setOpacity(1.0 - m->opacity);
-		painter.drawPixmap
-		(
-			xOld, yOld, pmOld.width(), pmOld.height(),
-			pmOld
-		);
+		painter.drawPixmap(targetRect, oldScaledPixmap);
 
-		m->pixmapRect = QRect(xOld, yOld, pmOld.width(), pmOld.height());
+		m->pixmapRect = targetRect;
 
 		painter.setOpacity(m->opacity);
 	}
@@ -268,15 +289,10 @@ void ImageButton::paintEvent([[maybe_unused]] QPaintEvent* e)
 		painter.setOpacity(1.0);
 	}
 
-	if(!pm.isNull())
+	if(!scaledPixmap.isNull())
 	{
-		painter.drawPixmap
-		(
-			x, y, pm.width(), pm.height(),
-			pm
-		);
-
-		m->pixmapRect = QRect(x, y, pm.width(), pm.height());
+		m->pixmapRect = getTargetRect(paintArea, scaledPixmap.size());
+		painter.drawPixmap(m->pixmapRect, scaledPixmap);
 	}
 }
 
@@ -284,14 +300,12 @@ void ImageButton::resizeEvent(QResizeEvent* e)
 {
 	QPushButton::resizeEvent(e);
 
-	int h = this->height() - 2;
-	int w = this->width() - 2;
-
-	if(m->currentPixmap.isNull()){
+	if(m->currentPixmap.isNull())
+	{
 		return;
 	}
 
-	m->currentPixmapScaled = m->currentPixmap.scaled(w, h, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+	m->currentPixmapScaled = scalePixmap(m->currentPixmap, this);
 }
 
 void ImageButton::mouseMoveEvent(QMouseEvent* e)
