@@ -374,7 +374,7 @@ void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 	m->albums.clear();
 	m->tracks.clear();
 
-	if(!m->selectedArtists.isEmpty())
+	if(!m->selectedArtists.isEmpty() && (m->selectedArtists.size() < m->artists.size()))
 	{
 		getAllTracksByArtist(m->selectedArtists.toList(), m->tracks, m->filter);
 		getAllAlbumsByArtist(m->selectedArtists.toList(), m->albums, m->filter);
