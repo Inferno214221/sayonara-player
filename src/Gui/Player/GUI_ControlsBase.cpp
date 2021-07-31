@@ -212,7 +212,6 @@ void GUI_ControlsBase::stopped()
 	setWindowTitle("Sayonara");
 
 	btnPlay()->setIcon(icon(Gui::Icons::Play));
-	sliProgress()->set_buffering(-1);
 
 	labCurrentTime()->setText("00:00");
 
@@ -232,31 +231,7 @@ void GUI_ControlsBase::recordChanged(bool b)
 	btnRecord()->setChecked(b);
 }
 
-void GUI_ControlsBase::buffering(int progress)
-{
-	// buffering
-	if(progress > 0 && progress < 100)
-	{
-		sliProgress()->set_buffering(progress);
-
-		labCurrentTime()->setText(QString("%1%").arg(progress));
-		labMaxTime()->setVisible(false);
-	}
-
-		//buffering stopped
-	else if(progress == 0)
-	{
-		sliProgress()->set_buffering(-1);
-		labMaxTime()->setVisible(false);
-	}
-
-		// no buffering
-	else
-	{
-		sliProgress()->set_buffering(-1);
-		labMaxTime()->setVisible(m->playManager->currentTrack().durationMs() > 0);
-	}
-}
+void GUI_ControlsBase::buffering([[maybe_unused]] int progress) {}
 
 void GUI_ControlsBase::progressMoved(int val)
 {
@@ -290,7 +265,7 @@ void GUI_ControlsBase::currentPositionChanged(MilliSeconds posMs)
 		return;
 	}
 
-	if(!sliProgress()->is_busy())
+	if(!sliProgress()->isBusy())
 	{
 		const auto currentPositionString = Util::msToString(posMs, "$M:$S");
 		labCurrentTime()->setText(currentPositionString);
@@ -538,8 +513,8 @@ void GUI_ControlsBase::setupConnections()
 	connect(btnMute(), &QPushButton::clicked, m->playManager, &PlayManager::toggleMute);
 	connect(btnRecord(), &QPushButton::clicked, m->playManager, &PlayManager::record);
 
-	connect(sliVolume(), &Gui::SearchSlider::sig_slider_moved, m->playManager, &PlayManager::setVolume);
-	connect(sliProgress(), &Gui::SearchSlider::sig_slider_moved, this, &GUI_ControlsBase::progressMoved);
+	connect(sliVolume(), &Gui::SearchSlider::sigSliderMoved, m->playManager, &PlayManager::setVolume);
+	connect(sliProgress(), &Gui::SearchSlider::sigSliderMoved, this, &GUI_ControlsBase::progressMoved);
 	connect(sliProgress(), &Gui::SearchSlider::sigSliderHovered, this, &GUI_ControlsBase::progressHovered);
 
 	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_ControlsBase::playstateChanged);

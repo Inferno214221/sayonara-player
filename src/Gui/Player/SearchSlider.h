@@ -22,45 +22,27 @@
  *
  */
 
-#ifndef SEARCHSLIDER_H_
-#define SEARCHSLIDER_H_
+#ifndef SAYONARA_SEARCHSLIDER_H
+#define SAYONARA_SEARCHSLIDER_H
 
 #include "Gui/Utils/Widgets/Slider.h"
 
 class QColor;
 namespace Gui
 {
-	/**
-	 * @brief A slider as it is used by the progress bar
-	 * You can also set a different value by calling set_buffering
-	 * which is displayed in a different color when using the
-	 * dark skin
-	 */
 	class SearchSlider :
 		public Gui::Slider
 	{
 		Q_OBJECT
-		PIMPL(SearchSlider)
 
 		signals:
-			void sig_slider_moved(int);
+			void sigSliderMoved(int);
 
 		public:
 			explicit SearchSlider(QWidget* parent = nullptr);
 			~SearchSlider() override;
 
-			/**
-			 * @brief Returns true if it's actually moved by the user
-			 * @return
-			 */
-			bool is_busy() const;
-
-			/**
-			 * @brief Set a second value beside QSlider::setValue() which
-			 * is displayed in another color
-			 * @param progress
-			 */
-			void set_buffering(int progress);
+			bool isBusy() const;
 
 		protected:
 			void mousePressEvent(QMouseEvent* e) override;
@@ -68,13 +50,9 @@ namespace Gui
 			void mouseMoveEvent(QMouseEvent* e) override;
 			bool event(QEvent* event) override;
 
-			bool hasAdditionalValue() const override;
-			int additionalValue() const override;
-			QColor additionalValueColor() const override;
-
 		private:
 			void emitNewValue(int value);
 	};
 }
 
-#endif /* SEARCHSLIDER_H_ */
+#endif /* SAYONARA_SEARCHSLIDER_H */

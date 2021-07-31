@@ -30,12 +30,8 @@ class QColor;
 
 namespace Gui
 {
-	/**
-	 * @brief Dont use it directly but inherit it
-	 * @ingroup Widgets
-	 */
 	class Slider :
-			public QSlider
+		public QSlider
 	{
 		Q_OBJECT
 		PIMPL(Slider)
@@ -46,26 +42,20 @@ namespace Gui
 			void sigSliderHovered(int);
 
 		public:
-			explicit Slider(QWidget* parent=nullptr);
-			virtual ~Slider() override;
+			explicit Slider(QWidget* parent = nullptr);
+			~Slider() override;
 
 		protected:
-			void sliderChange(SliderChange change) override;
 			int valueFromPosition(const QPoint& pos) const;
 
-			virtual void focusInEvent(QFocusEvent* e) override;
-			virtual void focusOutEvent(QFocusEvent* e) override;
-			virtual void mousePressEvent(QMouseEvent* e) override;
-			virtual void mouseMoveEvent(QMouseEvent* e) override;
-			virtual void mouseReleaseEvent(QMouseEvent* e) override;
+			void focusInEvent(QFocusEvent* e) override;
+			void focusOutEvent(QFocusEvent* e) override;
+			void mousePressEvent(QMouseEvent* e) override;
+			void mouseMoveEvent(QMouseEvent* e) override;
+			void mouseReleaseEvent(QMouseEvent* e) override;
 
-			virtual bool hasAdditionalValue() const;
-			virtual int additionalValue() const;
-			virtual QColor additionalValueColor() const;
-
-			virtual bool event(QEvent* e) override;
+			bool event(QEvent* e) override;
 			void paintEvent(QPaintEvent* e) override;
 	};
-
 }
 #endif // SAYONARA_SLIDER_H

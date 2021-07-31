@@ -24,7 +24,6 @@
 
 #include "SearchSlider.h"
 
-#include <QColor>
 #include <QEvent>
 #include <QWheelEvent>
 
@@ -32,74 +31,43 @@
 
 using Gui::SearchSlider;
 
-struct SearchSlider::Private
+namespace
 {
-	int buffer_progress;
+	int getDeltaFromModifier(const QFlags<Qt::KeyboardModifier>& modifiers)
+	{
+		if(modifiers & Qt::ShiftModifier)
+		{
+			return 10;
+		}
 
-	Private() :
-		buffer_progress(-1) {}
-};
+		if(modifiers & Qt::AltModifier)
+		{
+			return 50;
+		}
+
+		return 5;
+	}
+}
 
 SearchSlider::SearchSlider(QWidget* parent) :
 	Gui::Slider(parent)
 {
-	m = Pimpl::make<Private>();
-	this->setMouseTracking(true);
+	setMouseTracking(true);
 }
 
 SearchSlider::~SearchSlider() = default;
 
-bool SearchSlider::event(QEvent* e)
+void SearchSlider::emitNewValue(int value)
 {
-	if(e->type() == QEvent::Wheel && this->isEnabled())
-	{
-		auto* we = dynamic_cast<QWheelEvent*>(e);
+	value = std::max(value, 0);
+	value = std::min(value, maximum());
 
-		int deltaVal = 5;
-		if(we->modifiers() & Qt::ShiftModifier)
-		{
-			deltaVal = 10;
-		}
-
-		else if(we->modifiers() & Qt::AltModifier)
-		{
-			deltaVal = 50;
-		}
-
-		if(we->angleDelta().y() > 0)
-		{
-			setValue(value() + deltaVal);
-		}
-		else
-		{
-			setValue(value() - deltaVal);
-		}
-
-		emitNewValue(value());
-	}
-
-	return Gui::Slider::event(e);
+	emit sigSliderMoved(value);
 }
 
-bool SearchSlider::hasAdditionalValue() const
+bool SearchSlider::isBusy() const
 {
-	return (m->buffer_progress >= 0);
-}
-
-int SearchSlider::additionalValue() const
-{
-	return (m->buffer_progress * (this->maximum() - this->minimum())) / 100;
-}
-
-QColor SearchSlider::additionalValueColor() const
-{
-	return QColor(66, 78, 114);
-}
-
-void SearchSlider::set_buffering(int progress)
-{
-	m->buffer_progress = progress;
-	this->repaint();
+	return this->isSliderDown();
 }
 
 void SearchSlider::mousePressEvent(QMouseEvent* e)
@@ -123,16 +91,22 @@ void SearchSlider::mouseMoveEvent(QMouseEvent* e)
 	}
 }
 
-void SearchSlider::emitNewValue(int value)
+bool SearchSlider::event(QEvent* e)
 {
-	value = std::max(value, 0);
-	value = std::min(value, maximum());
+	if(isEnabled() && (e->type() == QEvent::Wheel))
+	{
+		auto* wheelEvent = dynamic_cast<QWheelEvent*>(e);
 
-	emit sig_slider_moved(value);
+		const auto deltaVal = getDeltaFromModifier(wheelEvent->modifiers());
+		const auto isScrollingDown = (wheelEvent->angleDelta().y() > 0);
+		const auto newValue = isScrollingDown
+		                      ? value() + deltaVal
+		                      : value() - deltaVal;
+
+		setValue(newValue);
+
+		emitNewValue(value());
+	}
+
+	return Gui::Slider::event(e);
 }
-
-bool SearchSlider::is_busy() const
-{
-	return this->isSliderDown();
-}
-

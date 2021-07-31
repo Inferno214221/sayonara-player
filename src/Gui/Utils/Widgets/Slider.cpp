@@ -29,13 +29,61 @@
 
 using Gui::Slider;
 
+namespace
+{
+	QRect getBasicDimensions(QSlider* slider, bool isHorizontal, int letterSize)
+	{
+		constexpr const auto Padding = 2;
+		const auto rectThickness = letterSize / 4;
+
+		return isHorizontal
+		       ? QRect(Padding, (slider->height() - rectThickness) / 2, slider->width() - Padding * 2, rectThickness)
+		       : QRect((slider->width() - rectThickness) / 2, Padding, rectThickness, slider->height() - Padding * 2);
+	}
+
+	QRect getPercentDimensions(const QRect& basicDimensions, bool isHorizontal, double percent)
+	{
+		auto result = basicDimensions;
+		if(isHorizontal)
+		{
+			const auto newWidth = static_cast<int>(basicDimensions.width() * percent);
+			result.setWidth(newWidth);
+		}
+
+		else
+		{
+			const auto newHeight = static_cast<int>(percent * basicDimensions.height());
+			const auto heightDifference = basicDimensions.height() - newHeight;
+			result.setTop(basicDimensions.top() + heightDifference);
+			result.setHeight(newHeight);
+		}
+
+		return result;
+	}
+
+	QRect calculateRectangle(QSlider* slider, int value, bool isHorizontal, int letterSize)
+	{
+		const auto minimum = slider->minimum();
+		const auto maximum = slider->maximum();
+
+		const auto basicDimensions = getBasicDimensions(slider, isHorizontal, letterSize);
+		const auto percent = ((value - minimum) * 1.0) / (maximum - minimum);
+
+		return getPercentDimensions(basicDimensions, isHorizontal, percent);
+	}
+
+	double percentFromPosition(int position, int maxPosition, bool isHorizontal)
+	{
+		return isHorizontal
+		       ? (position * 1.0) / maxPosition
+		       : 1.0 - ((position * 1.0) / maxPosition);
+	}
+}
+
 struct Slider::Private
 {
-	bool hovered;
-
-	Private() :
-		hovered(false)
-	{}
+	bool hovered {false};
+	int letterSize {16};
 };
 
 Slider::Slider(QWidget* parent) :
@@ -43,77 +91,23 @@ Slider::Slider(QWidget* parent) :
 {
 	m = Pimpl::make<Private>();
 
-	this->setTracking(true);
-	this->setMouseTracking(true);
-	this->setSingleStep(1);
-	this->setPageStep(1);
+	setTracking(true);
+	setMouseTracking(true);
+	setSingleStep(1);
+	setPageStep(1);
 }
 
 Slider::~Slider() = default;
 
-bool Slider::hasAdditionalValue() const
-{
-	return false;
-}
-
-int Slider::additionalValue() const
-{
-	return -1;
-}
-
-QColor Slider::additionalValueColor() const
-{
-	return QColor(0, 0, 0);
-}
-
-void Slider::sliderChange(SliderChange change){
-	QSlider::sliderChange(change);
-}
-
 int Slider::valueFromPosition(const QPoint& pos) const
 {
-	int percent;
-	if(this->orientation() == Qt::Vertical) {
-		percent = 100 - (pos.y() * 100) / geometry().height();
-	}
+	const auto percent = (orientation() == Qt::Horizontal)
+	                     ? percentFromPosition(pos.x(), geometry().width(), true)
+	                     : percentFromPosition(pos.y(), geometry().height(), false);
 
-	else {
-		percent = (pos.x() * 100) / geometry().width();
-	}
+	const auto range = (maximum() - minimum());
 
-	int range = this->maximum() - this->minimum();
-	return (range * percent) / 100 + this->minimum();
-}
-
-static QRect calculateRectangle(QSlider* slider, int value, bool is_horizontal)
-{
-	int longSide = slider->width();
-	int shortSide = slider->height();
-	int rectThickness = Gui::Util::textWidth(slider->fontMetrics(), "m") / 4;
-
-	if(!is_horizontal){
-		longSide = slider->height();
-		shortSide = slider->width();
-	}
-
-	int h = rectThickness;
-	int w = longSide - 4;
-	int x = 2;
-	int y = (shortSide - h) / 2;
-
-	int rectHeight = h;
-	int percent = ((value - slider->minimum()) * 10000) / (slider->maximum() - slider->minimum());
-	int rectWidth = (w * percent) / 10000;
-	int rectX = x;
-	int rectY = y + (h - rectHeight) / 2;
-
-	QRect ret(rectX, rectY, rectWidth, rectHeight);
-	if(!is_horizontal)
-	{
-		ret = QRect(rectY, longSide - rectWidth, rectHeight, rectWidth);
-	}
-
-	return ret;
+	return static_cast<int>((range * percent) + minimum());
 }
 
 void Slider::paintEvent(QPaintEvent* e)
@@ -124,43 +118,35 @@ void Slider::paintEvent(QPaintEvent* e)
 		return;
 	}
 
-	bool isHorizontal = (this->orientation() == Qt::Horizontal);
+	static const auto Dark = QColor(42, 42, 42);
+	static const auto Orange = QColor(243, 132, 26);
+	static const auto LightGrey = QColor(72, 72, 72);
 
-	using RectColorPair=QPair<QRect, QColor>;
+	const auto isHorizontal = (orientation() == Qt::Horizontal);
+
+	using RectColorPair = QPair<QRect, QColor>;
 	QList<RectColorPair> rects;
 
-	QRect rectDark = calculateRectangle(this, this->maximum(), isHorizontal);
-	rects << RectColorPair(rectDark, QColor(42, 42, 42));
+	const auto rectDark = calculateRectangle(this, this->maximum(), isHorizontal, m->letterSize);
+	rects << RectColorPair(rectDark, Dark);
 
-	if(this->hasAdditionalValue())
-	{
-		int otherValue = this->additionalValue();
-
-		QRect rect = calculateRectangle(this, otherValue, isHorizontal);
-		rects << RectColorPair(rect, this->additionalValueColor());
-	}
-
-	QRect rectOrange = calculateRectangle(this, this->value(), isHorizontal);
-	rects << RectColorPair(rectOrange, QColor(243, 132, 26));
-	//rects << RectColorPair(rect_orange, QColor(66, 78, 114));
+	const auto rectOrange = calculateRectangle(this, this->value(), isHorizontal, m->letterSize);
+	rects << RectColorPair(rectOrange, Orange);
 
 	QPainter painter(this);
 
 	if(m->hovered)
 	{
-		QColor colorLight(72,72,72);
-		painter.setPen(colorLight);
+		painter.setPen(LightGrey);
 
 		QPainterPath path;
 		path.addRoundedRect(this->rect(), 3, 3);
-		painter.fillPath(path, colorLight);
+		painter.fillPath(path, LightGrey);
 		painter.drawPath(path);
 	}
 
-	for(const RectColorPair& rcp : rects)
+	for(const auto&[rect, color] : rects)
 	{
-		QRect rect = rcp.first;
-		QColor color = rcp.second;
 		painter.setPen(color);
 		painter.drawRect(rect);
 		painter.fillRect(rect, color);
@@ -169,16 +155,15 @@ void Slider::paintEvent(QPaintEvent* e)
 
 void Slider::mouseMoveEvent(QMouseEvent* e)
 {
-	int new_val = valueFromPosition(e->pos());
-
+	const auto newValue = valueFromPosition(e->pos());
 	if(this->isSliderDown())
 	{
-		setValue(new_val);
+		setValue(newValue);
 	}
 
 	else
 	{
-		emit sigSliderHovered(new_val);
+		emit sigSliderHovered(newValue);
 	}
 }
 
@@ -198,13 +183,13 @@ void Slider::mousePressEvent(QMouseEvent* e)
 {
 	this->setSliderDown(true);
 
-	int new_val = valueFromPosition(e->pos());
-	setValue(new_val);
+	const auto newValue = valueFromPosition(e->pos());
+	setValue(newValue);
 }
 
 void Slider::mouseReleaseEvent(QMouseEvent* e)
 {
-	int newValue = valueFromPosition(e->pos());
+	const auto newValue = valueFromPosition(e->pos());
 	setValue(newValue);
 
 	this->setSliderDown(false);
@@ -223,10 +208,15 @@ bool Slider::event(QEvent* e)
 
 		case QEvent::HoverLeave:
 			m->hovered = false;
-			if(!this->hasFocus()){
+			if(!hasFocus())
+			{
 				emit sigSliderLostFocus();
 			}
 
+			break;
+
+		case QEvent::FontChange:
+			m->letterSize = this->fontMetrics().width('m');
 			break;
 
 		default:
