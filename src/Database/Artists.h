@@ -23,7 +23,10 @@
 
 #include "Query.h"
 
-namespace Library {class Filter;}
+namespace Library
+{
+	class Filter;
+}
 
 class Artist;
 class ArtistList;
@@ -38,11 +41,11 @@ namespace DB
 
 			virtual bool dbFetchArtists(Query& q, ArtistList& result) const;
 
-			virtual ArtistId getArtistID (const QString& artist) const;
-            virtual bool getArtistByID(ArtistId id, Artist& artist) const;
-			virtual bool getArtistByID(ArtistId id, Artist& artist, bool also_empty) const;
+			virtual ArtistId getArtistID(const QString& artist) const;
+			virtual bool getArtistByID(ArtistId id, Artist& artist) const;
+			virtual bool getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const;
 
-			virtual bool getAllArtists(ArtistList& result, bool also_empty) const;
+			virtual bool getAllArtists(ArtistList& result, bool alsoEmpty) const;
 			virtual bool getAllArtistsBySearchString(const ::Library::Filter& filter, ArtistList& result) const;
 
 			virtual bool deleteArtist(ArtistId id);
@@ -51,13 +54,13 @@ namespace DB
 			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
 		protected:
-			virtual QString artistIdField() const=0;
-			virtual QString artistNameField() const=0;
-			virtual QString trackView() const=0;
-			virtual QString trackSearchView() const=0;
+			virtual QString artistIdField() const = 0;
+			virtual QString artistNameField() const = 0;
+			virtual QString trackView() const = 0;
+			virtual QString trackSearchView() const = 0;
 
-			virtual Module* module()=0;
-			virtual const Module* module() const=0;
+			virtual Module* module() = 0;
+			virtual const Module* module() const = 0;
 
 			virtual void updateArtistCissearch();
 			virtual void deleteAllArtists();

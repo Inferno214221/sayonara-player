@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Artists.h"
-#include "Module.h"
+#include "Database/Artists.h"
+#include "Database/Module.h"
+#include "Database/Utils.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
@@ -30,37 +31,71 @@
 using DB::Artists;
 using DB::Query;
 
+namespace
+{
+	QString getSearchSelectStatement(const QString& artistIdField, const QString& artistNameField)
+	{
+		return QString("%1, %2, %3")
+			.arg(artistIdField)
+			.arg(artistNameField)
+			.arg(QStringLiteral("COUNT(DISTINCT trackID) AS trackCount "));
+	}
+
+	QString getSearchGroupByStatement(const QString& artistIdField, const QString& artistNameField)
+	{
+		return QString("%1, %2")
+			.arg(artistIdField)
+			.arg(artistNameField);
+	}
+
+	QString getJoinedArtistFields(const QString& trackView)
+	{
+		static const auto fields = QStringList
+			{
+				QStringLiteral("artists.artistID           AS artistID"),
+				QStringLiteral("artists.name               AS artistName"),
+				QStringLiteral("COUNT(DISTINCT %1.trackID) AS trackCount")
+			};
+
+		static const auto joinedFields = fields.join(", ");
+
+		return joinedFields.arg(trackView);
+	}
+}
+
 Artists::Artists() = default;
 Artists::~Artists() = default;
 
 QString Artists::fetchQueryArtists(bool alsoEmpty) const
 {
-	QStringList fields
-	{
-		"artists.artistID           AS artistID",
-		"artists.name               AS artistName",
-		"COUNT(DISTINCT %1.trackID) AS trackCount"
-	};
+	const auto joinedFields = getJoinedArtistFields(trackView());
+	const auto joinType = (alsoEmpty)
+	                      ? QStringLiteral("LEFT OUTER JOIN")
+	                      : QStringLiteral("INNER JOIN");
 
-	QString query = "SELECT " + fields.join(", ") + " FROM artists ";
+	const auto joinStatementArtist = QString("%1 %2 ON %2.%3 = artists.artistID")
+		.arg(joinType)
+		.arg(trackView())
+		.arg(artistIdField());
 
-	QString join = " INNER JOIN ";
-	if(alsoEmpty){
-		join = " LEFT OUTER JOIN ";
-	}
+	const auto joinStatementAlbum = QString("%1 albums ON %2.albumID = albums.albumID")
+		.arg(joinType)
+		.arg(trackView());
 
-	query += join + " %1 ON %1.%2 = artists.artistID ";			// join with tracks
-	query += join + " albums ON %1.albumID = albums.albumID ";	// join with albums
+	const auto queryText = QString("SELECT %1 FROM artists %2 %3")
+		.arg(joinedFields)
+		.arg(joinStatementArtist)
+		.arg(joinStatementAlbum);
 
-	return query.arg(trackView()).arg(artistIdField());
+	return queryText;
 }
-
 
 bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 {
 	result.clear();
 
-	if (!q.exec()) {
+	if(!q.exec())
+	{
 		q.showError("Could not get all artists from database");
 		return false;
 	}
@@ -68,11 +103,10 @@ bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 	while(q.next())
 	{
 		Artist artist;
-
-		artist.setId(			q.value(0).value<ArtistId>());
-		artist.setName(			q.value(1).toString());
-		artist.setSongcount(	q.value(2).value<uint16_t>());
-		artist.setDatabaseId(	module()->databaseId());
+		artist.setId(q.value(0).value<ArtistId>());
+		artist.setName(q.value(1).toString());
+		artist.setSongcount(q.value(2).value<uint16_t>());
+		artist.setDatabaseId(module()->databaseId());
 
 		result << artist;
 	}
@@ -82,24 +116,27 @@ bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 
 bool Artists::getArtistByID(ArtistId id, Artist& artist) const
 {
-    return getArtistByID(id, artist, false);
+	return getArtistByID(id, artist, false);
 }
 
-bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
+bool Artists::getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const
 {
-	if(id < 0) {
+	if(id < 0)
+	{
 		return false;
 	}
 
-	QString query = fetchQueryArtists(also_empty) + " WHERE artists.artistID = ?;";
+	const auto queryText = QString("%1 WHERE artists.artistID = ?;")
+		.arg(fetchQueryArtists(alsoEmpty));
 
-	Query q(module());
-	q.prepare(query);
-	q.addBindValue(id);
+	auto query = Query(module());
+	query.prepare(queryText);
+	query.addBindValue(id);
 
 	ArtistList artists;
-	bool success = dbFetchArtists(q, artists);
-	if(!success || artists.empty()){
+	const auto success = dbFetchArtists(query, artists);
+	if(!success || artists.empty())
+	{
 		return false;
 	}
 
@@ -107,82 +144,59 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool also_empty) const
 	return true;
 }
 
-
 ArtistId Artists::getArtistID(const QString& artist) const
 {
-	Query q = module()->runQuery
-	(
-		"SELECT artistID FROM artists WHERE name = :name;",
+	const auto queryText = QStringLiteral("SELECT artistID FROM artists WHERE name = :name;");
+	auto query = module()->runQuery(
+		queryText,
 		{":name", Util::convertNotNull(artist)},
 		QString("Cannot fetch artistID for artist %1").arg(artist)
 	);
 
-	if (q.hasError()) {
+	if(query.hasError())
+	{
 		return -1;
 	}
 
-	if (q.next()) {
-		return q.value(0).toInt();
-	}
-
-	return -1;
+	return (query.next())
+	       ? query.value(0).toInt()
+	       : -1;
 }
 
-bool Artists::getAllArtists(ArtistList& result, bool also_empty) const
+bool Artists::getAllArtists(ArtistList& result, bool alsoEmpty) const
 {
-	QString query = fetchQueryArtists(also_empty);
-	query += "GROUP BY artists.artistID, artists.name; ";
+	const auto queryText = QString("%1 GROUP BY artists.artistID, artists.name;")
+		.arg(fetchQueryArtists(alsoEmpty));
 
-	Query q(module());
-	q.prepare(query);
+	auto query = Query(module());
+	query.prepare(queryText);
 
-	return dbFetchArtists(q, result);
+	return dbFetchArtists(query, result);
 }
 
 bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistList& result) const
 {
-	const QStringList searchFilters = filter.searchModeFiltertext(true);
-	for(const QString& searchFilter : searchFilters)
+	static const auto cisPlaceholder = QStringLiteral(":cissearch");
+
+	const auto searchSelectStatement = getSearchSelectStatement(artistIdField(), artistNameField());
+	const auto filterWhereStatement = DB::getFilterWhereStatement(filter, cisPlaceholder);
+	const auto groupByStatement = getSearchGroupByStatement(artistIdField(), artistNameField());
+	const auto queryText = QString("SELECT %1 FROM %2 WHERE %3 GROUP BY %4;")
+		.arg(searchSelectStatement)
+		.arg(trackSearchView())
+		.arg(filterWhereStatement)
+		.arg(getSearchGroupByStatement(artistIdField(), artistNameField()));
+
+	const auto searchFilters = filter.searchModeFiltertext(true);
+	for(const auto& searchFilter : searchFilters)
 	{
-		QString query = "SELECT " +
-						 artistIdField() + ", " +
-						 artistNameField() + ", " +
-						 "COUNT(DISTINCT trackID) AS trackCount "
-						 "FROM " + trackSearchView() + " ";
+		auto query = Query(module());
+		query.prepare(queryText);
+		query.bindValue(cisPlaceholder, Util::convertNotNull(searchFilter));
 
-		query += " WHERE ";
-
-		switch(filter.mode())
-		{
-			case Library::Filter::Genre:
-				query += "genreCissearch LIKE :cissearch";
-				break;
-
-			case Library::Filter::InvalidGenre:
-				query += "genre = ''";
-				break;
-
-			case Library::Filter::Filename:
-				query += "fileCissearch LIKE :cissearch";
-				break;
-
-			case Library::Filter::Fulltext:
-			default:
-				query += "allCissearch LIKE :cissearch";
-				break;
-		}
-
-		query += QString(" GROUP BY %1, %2;")
-						.arg(artistIdField())
-						.arg(artistNameField());
-
-		Query q(module());
-		q.prepare(query);
-		q.bindValue(":cissearch", Util::convertNotNull(searchFilter));
-
-		ArtistList tmpArtist;
-		dbFetchArtists(q, tmpArtist);
-		result.appendUnique(tmpArtist);
+		ArtistList artists;
+		dbFetchArtists(query, artists);
+		result.appendUnique(artists);
 	}
 
 	return true;
@@ -190,42 +204,35 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 
 bool Artists::deleteArtist(ArtistId id)
 {
-	QMap<QString, QVariant> bindings
-	{
-		{"id", id}
-	};
-
-	Query q = module()->runQuery
-	(
-		"delete from artists where artistId=:artistId;",
+	const auto queryText = QStringLiteral("DELETE FROM artists WHERE artistId = :artistId;");
+	auto query = module()->runQuery(
+		queryText,
 		{":artistId", id},
-		QString("Cannot delete artist %1").arg(id)
-	);
+		QString("Cannot delete artist %1").arg(id));
 
-	return (!q.hasError());
+	return (!query.hasError());
 }
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 {
-	ArtistId id = getArtistID(artist);
-	if(id >= 0){
+	const auto id = getArtistID(artist);
+	if(id >= 0)
+	{
 		return id;
 	}
 
-	const QString cis = Library::Utils::convertSearchstring(artist);
+	const auto searchString = Library::Utils::convertSearchstring(artist);
 
-	QMap<QString, QVariant> bindings
-	{
-		{"name", Util::convertNotNull(artist)},
-		{"cissearch", Util::convertNotNull(cis)}
-	};
+	const auto bindings = QMap<QString, QVariant>
+		{
+			{"name",      Util::convertNotNull(artist)},
+			{"cissearch", Util::convertNotNull(searchString)}
+		};
 
-	Query q = module()->insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
-	if(q.hasError()){
-		return -1;
-	}
-
-	return q.lastInsertId().toInt();
+	auto query = module()->insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
+	return (query.hasError())
+	       ? -1
+	       : query.lastInsertId().toInt();
 }
 
 ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
@@ -240,17 +247,17 @@ void Artists::updateArtistCissearch()
 
 	module()->db().transaction();
 
-	for(const Artist& artist : artists)
+	for(const auto& artist : artists)
 	{
-		const QString cis = Library::Utils::convertSearchstring(artist.name());
+		const auto searchString = Library::Utils::convertSearchstring(artist.name());
 
-		module()->update
-		(
+		module()->update(
 			"artists",
-			{{"cissearch", Util::convertNotNull(cis)}},
+			{
+				{"cissearch", Util::convertNotNull(searchString)}
+			},
 			{"artistID", artist.id()},
-			"Cannot update artist cissearch"
-		);
+			"Cannot update artist cissearch");
 	}
 
 	module()->db().commit();
