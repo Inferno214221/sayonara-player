@@ -37,13 +37,12 @@ struct ItemModel::Private
 {
 	AbstractLibrary* library = nullptr;
     QStringList headerNames;
-	int oldRowCount;
+	int oldRowCount{0};
 
     Private(int columnCount, AbstractLibrary* library) :
-		library(library),
-        oldRowCount(0)
+		library(library)
     {
-        for(int i=0; i<columnCount; i++)
+        for(auto i=0; i<columnCount; i++)
         {
             headerNames << QString();
         }
@@ -82,10 +81,8 @@ int ItemModel::columnCount(const QModelIndex&) const
 	return m->headerNames.size();
 }
 
-bool ItemModel::removeRows(int row, int count, const QModelIndex& index)
+bool ItemModel::removeRows(int row, int count, [[maybe_unused]] const QModelIndex& index)
 {
-	Q_UNUSED(index)
-
 	beginRemoveRows(QModelIndex(), row, row + count - 1);
 	m->oldRowCount -= count;
 	endRemoveRows();
@@ -93,10 +90,8 @@ bool ItemModel::removeRows(int row, int count, const QModelIndex& index)
 	return true;
 }
 
-bool ItemModel::insertRows(int row, int count, const QModelIndex& index)
+bool ItemModel::insertRows(int row, int count, [[maybe_unused]]  const QModelIndex& index)
 {
-	Q_UNUSED(index)
-
 	beginInsertRows(QModelIndex(), row, row + count - 1);
 	m->oldRowCount += count;
 	endInsertRows();
@@ -106,8 +101,8 @@ bool ItemModel::insertRows(int row, int count, const QModelIndex& index)
 
 void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 {
-	int oldSize = m->oldRowCount;
-	int newSize = rowCount();
+	const auto oldSize = m->oldRowCount;
+	const auto newSize = rowCount();
 
 	if(rowCountBefore != nullptr)
 	{
@@ -134,41 +129,32 @@ void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 
 QMimeData* ItemModel::mimeData(const QModelIndexList& indexes) const
 {
-	auto* mimedata = new Gui::CustomMimeData(this);
+	auto* mimeData = new Gui::CustomMimeData(this);
 
 	const auto tracks = selectedMetadata();
-	mimedata->setMetadata(tracks);
-
-	Util::Set<int> rows;
-	for(const auto& modelIndex : indexes)
-	{
-		rows.insert(modelIndex.row());
-	}
+	mimeData->setMetadata(tracks);
 
 	const auto coverLocation = this->cover(indexes);
-	mimedata->setCoverUrl(coverLocation.preferredPath());
+	mimeData->setCoverUrl(coverLocation.preferredPath());
 
-	return mimedata;
+	return mimeData;
 }
 
 QModelIndexList ItemModel::searchResults(const QString& substr)
 {
-	QModelIndexList ret;
-
-	int len = rowCount();
+	const auto len = rowCount();
 	if(len == 0)
 	{
 		return QModelIndexList();
 	}
 
-	for(int i = 0; i < len; i++)
+	QModelIndexList ret;
+	for(auto i = 0; i < len; i++)
 	{
-		QString title = searchableString(i);
-		title = Library::Utils::convertSearchstring(title, searchMode());
-
+		const auto title = Library::Utils::convertSearchstring(searchableString(i), searchMode());
 		if(title.contains(substr))
 		{
-			ret << this->index(i, searchableColumn());
+			ret << index(i, searchableColumn());
 		}
 	}
 
