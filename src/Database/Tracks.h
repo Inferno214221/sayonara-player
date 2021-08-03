@@ -25,6 +25,7 @@
 #include "Utils/Pimpl.h"
 
 #include <QMap>
+#include <optional>
 
 namespace Library
 {
@@ -49,8 +50,8 @@ namespace DB
 			virtual bool getAllTracks(MetaDataList& result) const;
 
             virtual bool getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result) const;
-			virtual bool getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result,
-                                             const ::Library::Filter& filter, int discnumber) const;
+			virtual bool getAllTracksByAlbum(const IdList& track, MetaDataList& result,
+			                                 const ::Library::Filter& filter, int discnumber) const;
 			virtual bool getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result) const;
 			virtual bool getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result,
 			                                  const ::Library::Filter& filter) const;
@@ -61,14 +62,14 @@ namespace DB
 			virtual bool getAllTracksByPaths(const QStringList& paths, MetaDataList& v_md) const;
 
 			virtual MetaData	getTrackById(TrackID id) const;
-			virtual bool		getTracksByIds(const QList<TrackID> &ids, MetaDataList &v_md) const;
+			virtual bool		getTracksByIds(const QList<TrackID> &trackIds, MetaDataList &v_md) const;
 			virtual MetaData	getTrackByPath(const QString& path) const;
 			virtual bool		getMultipleTracksByPath(const QStringList& paths, MetaDataList& v_md) const;
 
-			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artistId, AlbumId albumId);
-			virtual bool insertTrackIntoDatabase(const MetaData& data, ArtistId artistId, AlbumId albumId, ArtistId album_artistId);
-			virtual bool updateTrack(const MetaData& data);
-			virtual bool updateTracks(const MetaDataList& lst);
+			virtual bool insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, AlbumId albumId);
+			virtual bool insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, AlbumId albumId, ArtistId album_artistId);
+			virtual bool updateTrack(const MetaData& track);
+			virtual bool updateTracks(const MetaDataList& track);
 
 			virtual bool renameFilepaths(const QMap<QString, QString>& paths, LibraryId libraryId);
 			virtual bool renameFilepath(const QString& old_path, const QString& new_path, LibraryId libraryId);
@@ -84,11 +85,11 @@ namespace DB
 			// function of LibraryDatabase
 			virtual bool deleteInvalidTracks(const QString& library_path, MetaDataList& double_metadata);
 
-			virtual QString fetchQueryTracks() const;
+			virtual QString fetchQueryTracks(const QString& where) const;
 
 			virtual Util::Set<Genre> getAllGenres() const;
 
-			void deleteAllTracks(bool also_views);
+			void deleteAllTracks(bool alsoViews);
 
 		protected:
 			virtual QString artistIdField() const=0;
@@ -101,7 +102,13 @@ namespace DB
 			virtual const Module* module() const=0;
 
 			virtual void updateTrackCissearch();
-		};
+
+		private:
+			MetaData getSingleTrack(const QString& queryText, const std::pair<QString, QVariant>& binding,
+			                        const QString& errorMessage) const;
+			bool getAllTracksByIdList(const IdList& ids, const QString& idField, const ::Library::Filter& filter,
+			                          MetaDataList& tracks) const;
+	};
 }
 
 #endif // DATABASETRACKS_H

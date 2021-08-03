@@ -73,7 +73,7 @@ QString SC::LibraryDatabase::fetchQueryAlbums(bool alsoEmpty) const
 	return sql;
 }
 
-QString SC::LibraryDatabase::fetchQueryTracks() const
+QString SC::LibraryDatabase::fetchQueryTracks([[maybe_unused]] const QString& where) const
 {
 	return	"SELECT "
 			"tracks.trackID			AS trackID, "			// 0

@@ -15,7 +15,7 @@ namespace SC
 
 		QString fetchQueryAlbums(bool also_empty=false) const override;
 		QString fetchQueryArtists(bool also_empty=false) const override;
-		QString fetchQueryTracks() const override;
+		QString fetchQueryTracks(const QString& where) const override;
 
 		bool dbFetchTracks(::DB::Query& q, MetaDataList& result) const override;
 		bool dbFetchAlbums(::DB::Query& q, AlbumList& result) const override;
