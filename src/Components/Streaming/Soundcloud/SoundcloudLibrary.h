@@ -78,7 +78,7 @@ namespace SC
 
 		void	updateTrack(const MetaData& md);
 		void	updateAlbum(const Album& album);
-		void	deleteTracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode) override;
+		void	deleteTracks(const MetaDataList& tracks, ::Library::TrackDeletionMode mode) override;
 
 		void    refetch() override;
 

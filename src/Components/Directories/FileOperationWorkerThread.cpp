@@ -181,7 +181,7 @@ void FileDeleteThread::run()
 
 	MetaDataList tracks;
 	libraryDatabase->getAllTracksByPaths(m->paths, tracks);
-	libraryDatabase->deleteTracks(tracks);
+	libraryDatabase->deleteTracks(tracks.trackIds());
 }
 
 struct FileOperationThread::Private

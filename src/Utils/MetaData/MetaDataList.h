@@ -24,6 +24,8 @@
 #include "MetaData.h"
 #include "Utils/Library/Sortorder.h"
 
+#include <QList>
+
 #include <deque>
 #include <functional>
 
@@ -81,6 +83,7 @@ public:
 	QList<UniqueId> unique_ids() const;
 
 	bool contains(TrackID id) const;
+	QList<TrackID> trackIds() const;
 	void removeDuplicates();
 	MetaData takeAt(int idx);
 	bool isEmpty() const;
@@ -96,6 +99,5 @@ public:
 	void reserve(size_t items);
 	size_t capacity() const;
 };
-
 
 #endif // METADATALIST_H

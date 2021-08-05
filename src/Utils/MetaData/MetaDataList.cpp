@@ -432,3 +432,14 @@ size_t MetaDataList::capacity() const
 {
 	return 0;
 }
+
+QList<TrackID> MetaDataList::trackIds() const
+{
+	QList<TrackID> trackIds;
+
+	Util::Algorithm::transform(*this, trackIds, [](const auto& track){
+		return track.id();
+	});
+
+	return trackIds;
+}

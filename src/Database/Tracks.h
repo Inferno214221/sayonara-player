@@ -69,7 +69,6 @@ namespace DB
 			virtual bool renameFilepath(const QString& oldPath, const QString& newPath, LibraryId libraryId);
 
 			virtual bool deleteTrack(TrackID id);
-			virtual bool deleteTracks(const MetaDataList& tracks);
 			virtual bool deleteTracks(const IdList& ids);
 
 			// some tracks may be inserted two times

@@ -388,11 +388,9 @@ void SC::Library::updateAlbum(const Album& album)
 	refetch();
 }
 
-void SC::Library::deleteTracks(const MetaDataList& v_md, ::Library::TrackDeletionMode mode)
+void SC::Library::deleteTracks(const MetaDataList& tracks, [[maybe_unused]] ::Library::TrackDeletionMode mode)
 {
-	Q_UNUSED(mode)
-
-	m->libraryDatabase->deleteTracks(v_md);
+	m->libraryDatabase->deleteTracks(tracks.trackIds());
 	refetch();
 }
 

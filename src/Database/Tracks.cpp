@@ -450,16 +450,6 @@ bool Tracks::deleteTracks(const IdList& ids)
 	return (success && (fileCount == ids.size()));
 }
 
-bool Tracks::deleteTracks(const MetaDataList& tracks)
-{
-	IdList ids;
-	Util::Algorithm::transform(tracks, ids, [](const auto& track) {
-		return track.id();
-	});
-
-	return deleteTracks(ids);
-}
-
 bool Tracks::deleteInvalidTracks(const QString& libraryPath, MetaDataList& doubleMetadata)
 {
 	doubleMetadata.clear();
