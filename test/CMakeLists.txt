@@ -53,6 +53,7 @@ new_test(Covers/CoverFetchManagerTest.cpp)
 new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
 new_test(Database/LibraryDatabaseTest.cpp)
+new_test(Database/TracksTest.cpp Database/TestTracks.cpp)
 new_test(DynamicPlayback/ArtistMatchTest.cpp)
 
 new_test(Equalizer/EqualizerTest.cpp)
