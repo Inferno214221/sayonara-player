@@ -27,6 +27,7 @@ class MimeDataTest :
 		void testMetadata();
 		void testDirsNonUrl();
 		void testDirsUrl();
+		void testDragSource();
 };
 
 void MimeDataTest::testMetadata()
@@ -101,6 +102,19 @@ void MimeDataTest::testDirsUrl()
 	for(const auto& url : fetchedUrls)
 	{
 		QVERIFY(Util::File::isUrl(url.toString()));
+	}
+}
+
+void MimeDataTest::testDragSource()
+{
+	{
+		auto mimeData = Gui::CustomMimeData(this);
+		QVERIFY(mimeData.hasDragSource(this));
+	}
+
+	{
+		auto mimeData = Gui::CustomMimeData();
+		QVERIFY(!mimeData.hasDragSource(this));
 	}
 }
 

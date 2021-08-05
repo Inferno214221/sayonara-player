@@ -273,7 +273,7 @@ void TreeView::dragMoveEvent(QDragMoveEvent* event)
 
 	const auto* cmd = Gui::MimeData::customMimedata(mimeData);
 
-	if(mimeData->hasUrls() || (cmd && cmd->hasSource(this)))
+	if(mimeData->hasUrls() || (cmd && cmd->hasDragSource(this)))
 	{
 		event->acceptProposedAction();
 	}

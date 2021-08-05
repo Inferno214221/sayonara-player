@@ -22,7 +22,6 @@
 
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
 
-#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -35,25 +34,19 @@ struct CustomMimeData::Private
 	MetaDataList tracks;
 	QString source;
 	QString coverUrl;
+	const QObject* dragSource;
 
-	AsyncDropHandler* asyncDropHandler = nullptr;
-	int playlistSourceIndex;
-	const void* data;
+	AsyncDropHandler* asyncDropHandler {nullptr};
+	int playlistSourceIndex {-1};
 
-	Private(const void* data) :
-		playlistSourceIndex(-1),
-		data(data) {}
+	Private(const QObject* dragSource) :
+	dragSource{dragSource}
+	{}
 };
 
-CustomMimeData::CustomMimeData(const void* data) :
-	QMimeData()
+CustomMimeData::CustomMimeData(const QObject* dragSource)
 {
-	m = Pimpl::make<Private>(data);
-}
-
-const void* CustomMimeData::ptr() const
-{
-	return m->data;
+	m = Pimpl::make<Private>(dragSource);
 }
 
 CustomMimeData::~CustomMimeData() = default;
@@ -63,14 +56,13 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 	m->tracks = tracks;
 
 	QList<QUrl> urls;
-	Util::Algorithm::transform(tracks, urls, [](const auto& track) {
-		auto url = QUrl(track.filepath());
-		if(url.scheme().isEmpty())
+	for(const auto& track : tracks)
+	{
+		if(!Util::File::isWWW(track.filepath()))
 		{
-			url.setScheme("file");
+			urls << QUrl::fromLocalFile(track.filepath());
 		}
-		return url;
-	});
+	}
 
 	this->setUrls(urls);
 
@@ -119,4 +111,9 @@ void CustomMimeData::setAsyncDropHandler(AsyncDropHandler* handler)
 AsyncDropHandler* CustomMimeData::asyncDropHandler() const
 {
 	return m->asyncDropHandler;
+}
+
+bool CustomMimeData::hasDragSource(const QObject* classInstance) const
+{
+	return (classInstance == m->dragSource);
 }

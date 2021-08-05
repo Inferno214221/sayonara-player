@@ -18,82 +18,42 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _CUSTOMMIMEDATA_H
-#define _CUSTOMMIMEDATA_H
+#ifndef SAYONARA_CUSTOM_MIME_DATA_H
+#define SAYONARA_CUSTOM_MIME_DATA_H
 
 #include "Utils/Pimpl.h"
 
 #include <QMimeData>
 
+#include <any>
 
 namespace Gui
 {
 	class AsyncDropHandler;
-	/**
-	 * @brief Mimedata class for drag and dropping metadata
-	 * @ingroup MimeData
-	 */
+
 	class CustomMimeData : public QMimeData
 	{
-
-	private:
 		PIMPL(CustomMimeData)
 
-		CustomMimeData(const void* data);
-		const void* ptr() const;
+		public:
+			explicit CustomMimeData(const QObject* dragSource = nullptr);
+			virtual ~CustomMimeData() override;
 
-	public:
-		/**
-		 * @brief Constructor
-		 */
+			void setMetadata(const MetaDataList& v_md);
+			const MetaDataList& metadata() const;
+			bool hasMetadata() const;
 
-		template<typename T>
-		CustomMimeData(const T* class_instance) :
-			CustomMimeData(static_cast<const void*>(class_instance))
-		{}
+			void setPlaylistSourceIndex(int playlistIndex);
+			int playlistSourceIndex() const;
 
-		virtual ~CustomMimeData() override;
+			QString coverUrl() const;
+			void setCoverUrl(const QString& url);
 
-		/**
-		 * @brief Set metadata you want to drag and drop
-		 * @param v_md metadata that should be sent
-		 */
-		void setMetadata(const MetaDataList& v_md);
+			void setAsyncDropHandler(Gui::AsyncDropHandler* handler);
+			Gui::AsyncDropHandler* asyncDropHandler() const;
 
-		/**
-		 * @brief get metadata from drag and drop
-		 * @param v_md reference to metadata
-		 * @return size of metadata
-		 */
-		const MetaDataList& metadata() const;
-
-		/**
-		 * @brief check, if the custom mimedata has metadata
-		 * @return true if yes, false else
-		 */
-		bool hasMetadata() const;
-
-		void setPlaylistSourceIndex(int playlistIndex);
-		int playlistSourceIndex() const;
-
-		QString coverUrl() const;
-		void setCoverUrl(const QString& url);
-
-		template<typename T>
-		bool hasSource(const T* classInstance) const
-		{
-			const void* voidPtr = ptr();
-			const T* p = static_cast<const T*>(voidPtr);
-			if(!p){
-				return false;
-			}
-
-			return (p == classInstance);
-		}
-
-		void setAsyncDropHandler(Gui::AsyncDropHandler* handler);
-		Gui::AsyncDropHandler* asyncDropHandler() const;
+			bool hasDragSource(const QObject* classInstance) const;
 	};
 }
 
-#endif
+#endif // SAYONARA_CUSTOM_MIME_DATA_H
