@@ -321,11 +321,6 @@ bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField,
 	return true;
 }
 
-bool Tracks::getTracksByIds(const QList<TrackID>& trackIds, MetaDataList& tracks) const
-{
-	return getAllTracksByIdList(trackIds, "trackID", ::Library::Filter {}, tracks);
-}
-
 bool Tracks::getAllTracks(MetaDataList& result) const
 {
 	auto q = Query(module());
@@ -362,16 +357,6 @@ Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, const 
 	result.appendUnique(tracks);
 
 	return true;
-}
-
-bool Tracks::getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result) const
-{
-	return getAllTracksByAlbumArtist(artistIds, result, Filter());
-}
-
-bool Tracks::getAllTracksByAlbumArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter) const
-{
-	return getAllTracksByArtist(artistIds, result, filter);
 }
 
 bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result) const
@@ -617,18 +602,6 @@ bool Tracks::updateTrack(const MetaData& track)
 	return (!q.hasError());
 }
 
-bool Tracks::updateTracks(const MetaDataList& tracks)
-{
-	module()->db().transaction();
-
-	const auto fileCount = Util::Algorithm::count(tracks, [=](const auto& track) {
-		return updateTrack(track);
-	});
-
-	const auto success = module()->db().commit();
-	return success && (fileCount == tracks.count());
-}
-
 bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId targetLibrary)
 {
 	module()->db().transaction();
@@ -666,11 +639,6 @@ bool Tracks::renameFilepath(const QString& oldPath, const QString& newPath, Libr
 		"Could not rename Filepath");
 
 	return (!q.hasError());
-}
-
-bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, AlbumId albumId)
-{
-	return insertTrackIntoDatabase(track, artistId, albumId, artistId);
 }
 
 bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, AlbumId albumId, ArtistId albumArtistId)

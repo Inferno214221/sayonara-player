@@ -565,7 +565,7 @@ void SC::Library::tracksFetched(const MetaDataList& v_md)
 	{
 		if(md.id() > 0)
 		{
-			m->libraryDatabase->insertTrackIntoDatabase(md, md.artistId(), md.albumId());
+			m->libraryDatabase->insertTrackIntoDatabase(md, md.artistId(), md.albumId(), md.albumArtistId());
 		}
 	}
 

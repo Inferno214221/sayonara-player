@@ -32,8 +32,8 @@ namespace SC
 
 		bool updateTrack(const MetaData& md) override;
 		bool storeMetadata(const MetaDataList& v_md) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, int album_artistId) override;
-		bool insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId) override;
+
+		bool insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, int albumArtistId) override;
 
 		bool searchInformation(SC::SearchInformationList& list);
 	};

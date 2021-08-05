@@ -419,13 +419,7 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& md)
 	return (q.hasError() == false);
 }
 
-bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, int album_artistId)
-{
-	Q_UNUSED(album_artistId)
-	return insertTrackIntoDatabase(md, artistId, albumId);
-}
-
-bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId)
+bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& md, int artistId, int albumId, [[maybe_unused]] int albumArtistId)
 {
 	int new_id = getTrackById(md.id()).id();
 	if(new_id > 0) {
@@ -483,7 +477,7 @@ bool SC::LibraryDatabase::storeMetadata(const MetaDataList& v_md)
 			continue;
 		}
 
-		insertTrackIntoDatabase (md, md.artistId(), md.albumId());
+		insertTrackIntoDatabase (md, md.artistId(), md.albumId(), md.albumArtistId());
 	}
 
 	return module()->db().commit();
