@@ -196,7 +196,7 @@ QDrag* Dragable::createDrag() const
 	mimeData->setImageData(pm);
 	drag->setMimeData(mimeData);
 	drag->setPixmap(pm);
-	drag->exec(Qt::DropAction::IgnoreAction);
+	drag->exec(Qt::DropAction::CopyAction);
 
 	return drag;
 }
