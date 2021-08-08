@@ -66,6 +66,8 @@ new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp)
 new_test(Playlist/PlaylistFileTest.cpp)
 new_test(Playlist/PlaylistHandlerTest.cpp)
 
+new_test(PlayManager/PlayManagerTest.cpp)
+
 new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
 
@@ -95,3 +97,4 @@ new_test(Util/CissearchTest.cpp)
 new_test(Util/StandardPathTest.cpp)
 new_test(Util/TreeTest.cpp)
 new_test(Util/Ranges.cpp)
+
