@@ -48,7 +48,7 @@ class PlayManagerImpl :
 		void seekRelativeMs(MilliSeconds ms) override;
 		void setCurrentPositionMs(MilliSeconds ms) override;
 		void changeCurrentTrack(const MetaData& track, int trackIdx) override;
-		void changeCurrentMetadata(const MetaData& md) override;
+		void changeCurrentMetadata(const MetaData& newMetadata) override;
 		void setTrackReady() override;
 		void setTrackFinished() override;
 		void buffering(int progress) override;

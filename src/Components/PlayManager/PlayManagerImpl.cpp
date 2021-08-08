@@ -28,74 +28,105 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/FileUtils.h"
 
 #include <QDateTime>
 
 #include <array>
 
-constexpr const auto InvalidTimeStamp {-1};
-
-template<typename T, int MAX_ITEM_COUNT>
-class RingBuffer
+namespace
 {
-	private:
-		size_t mCurrentIndex;
-		size_t mItemCount;
-		std::array<T, MAX_ITEM_COUNT> mData;
+	constexpr const auto InvalidTimeStamp {-1};
 
-	public:
-		RingBuffer()
-		{
-			clear();
-		}
+	template<typename T, int MaxItemCount>
+	class RingBuffer
+	{
+		private:
+			size_t mCurrentIndex {0};
+			size_t mItemCount {0};
+			std::array<T, MaxItemCount> mData;
 
-		void clear()
-		{
-			mCurrentIndex = 0;
-			mItemCount = 0;
-		}
+		public:
+			void clear()
+			{
+				mCurrentIndex = 0;
+				mItemCount = 0;
+			}
 
-		void insert(const T& item)
-		{
-			mData[mCurrentIndex] = item;
-			mCurrentIndex = (mCurrentIndex + 1) % MAX_ITEM_COUNT;
-			mItemCount = std::min<size_t>(MAX_ITEM_COUNT, mItemCount + 1);
-		}
+			void insert(const T& item)
+			{
+				mData[mCurrentIndex] = item;
+				mCurrentIndex = (mCurrentIndex + 1) % MaxItemCount;
+				mItemCount = std::min<size_t>(MaxItemCount, mItemCount + 1);
+			}
 
-		bool contains(const T& item) const
-		{
-			auto it = std::find(mData.begin(), mData.end(), item);
-			return (it != mData.end());
-		}
+			bool contains(const T& item) const
+			{
+				return Util::Algorithm::contains(mData, [&](const auto& element){
+					return (element == item);
+				});
+			}
 
-		int count() const
-		{
-			return int(mItemCount);
-		}
+			QStringList toString()
+			{
+				return QStringList() << mData[0] << mData[1] << mData[2];
+			}
+	};
 
-		bool isEmpty() const
+	bool isTrackValidPodcast(const MetaData& track)
+	{
+		return (track.radioMode() == RadioMode::Podcast) &&
+		       (!track.title().isEmpty()) &&
+		       (!track.artist().isEmpty()) &&
+		       (!track.album().isEmpty());
+	}
+
+	QString getTrackHash(const MetaData& track)
+	{
+		return (track.title() + track.artist() + track.album() + track.filepath());
+	}
+
+	MilliSeconds currentTimeToDuration()
+	{
+		const auto time = QTime::currentTime();
+		return (time.hour() * 60 + time.minute()) * 1000;
+	}
+
+	MetaData prepareTrackForStreamHistory(MetaData track)
+	{
+		track.setAlbum("");
+		track.setDisabled(true);
+		track.setDurationMs(currentTimeToDuration());
+
+		return track;
+	}
+
+	void showNotification(const MetaData& track)
+	{
+		if(GetSetting(Set::Notification_Show))
 		{
-			return (count() == 0);
+			NotificationHandler::instance()->notify(track);
 		}
-};
+	}
+
+	bool isStreamRecordableTrack(const MetaData& track)
+	{
+		return (track.radioMode() != RadioMode::Off) &&
+		       GetSetting(Set::Engine_SR_Active) &&
+		       GetSetting(Set::Engine_SR_AutoRecord);
+	}
+} // namespace
 
 struct PlayManagerImpl::Private
 {
 	MetaData currentTrack;
 	RingBuffer<QString, 3> ringBuffer;
-	int currentTrackIndex;
-	MilliSeconds positionMs;
-	MilliSeconds initialPositionMs;
-	MilliSeconds trackPlaytimeMs;
-	PlayState playstate;
+	int currentTrackIndex {-1};
+	MilliSeconds positionMs {0};
+	std::optional<MilliSeconds> initialPositionMs;
+	MilliSeconds trackPlaytimeMs {0};
+	PlayState playstate {PlayState::FirstStartup};
 
-	Private() :
-		currentTrackIndex(-1),
-		positionMs(0),
-		initialPositionMs(InvalidTimeStamp),
-		trackPlaytimeMs(0),
-		playstate(PlayState::FirstStartup)
+	Private()
 	{
 		const auto loadPlaylist = (GetSetting(Set::PL_LoadSavedPlaylists) ||
 		                           GetSetting(Set::PL_LoadTemporaryPlaylists));
@@ -117,7 +148,7 @@ struct PlayManagerImpl::Private
 		currentTrackIndex = -1;
 		positionMs = 0;
 		trackPlaytimeMs = 0;
-		initialPositionMs = InvalidTimeStamp;
+		initialPositionMs.reset();
 		playstate = PlayState::Stopped;
 	}
 };
@@ -151,7 +182,9 @@ MilliSeconds PlayManagerImpl::currentTrackPlaytimeMs() const
 
 MilliSeconds PlayManagerImpl::initialPositionMs() const
 {
-	return m->initialPositionMs;
+	return m->initialPositionMs.has_value()
+	       ? m->initialPositionMs.value()
+	       : InvalidTimeStamp;
 }
 
 MilliSeconds PlayManagerImpl::durationMs() const
@@ -254,21 +287,22 @@ void PlayManagerImpl::seekAbsoluteMs(MilliSeconds ms)
 void PlayManagerImpl::setCurrentPositionMs(MilliSeconds ms)
 {
 	const auto differenceMs = (ms - m->positionMs);
-	if(differenceMs > 0 && differenceMs < 1000)
+	if((differenceMs > 0) && (differenceMs < 1000))
 	{
 		m->trackPlaytimeMs += differenceMs;
 	}
 
 	m->positionMs = ms;
 
-	SetSetting(Set::Engine_CurTrackPos_s, int(m->positionMs / 1000));
+	SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m->positionMs / 1000));
 
 	emit sigPositionChangedMs(ms);
 }
 
 void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
 {
-	const auto isFirstStart = (m->playstate == PlayState::FirstStartup);
+	const auto isFirstStartup = (m->playstate == PlayState::FirstStartup);
+	const auto oldTrackHash = getTrackHash(m->currentTrack);
 
 	m->currentTrack = track;
 	m->positionMs = 0;
@@ -276,14 +310,15 @@ void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
 	m->currentTrackIndex = trackIdx;
 	m->ringBuffer.clear();
 
-	// initial position is outdated now and never needed again
-	if(m->initialPositionMs >= 0)
+	if(m->currentTrack.radioMode() == RadioMode::Station)
 	{
-		const auto oldIndex = GetSetting(Set::PL_LastTrack);
-		if(oldIndex != m->currentTrackIndex)
-		{
-			m->initialPositionMs = InvalidTimeStamp;
-		}
+		const auto trackHash = getTrackHash(m->currentTrack);
+		m->ringBuffer.insert(trackHash);
+	}
+
+	if(!oldTrackHash.isEmpty() && (oldTrackHash != getTrackHash(m->currentTrack)))
+	{
+		m->initialPositionMs.reset();
 	}
 
 	// play or stop
@@ -292,13 +327,11 @@ void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
 		emit sigCurrentTrackChanged(m->currentTrack);
 		emit sigTrackIndexChanged(m->currentTrackIndex);
 
-		if(!isFirstStart)
+		if(!isFirstStartup)
 		{
 			play();
 
-			if((track.radioMode() != RadioMode::Off) &&
-			   GetSetting(Set::Engine_SR_Active) &&
-			   GetSetting(Set::Engine_SR_AutoRecord))
+			if(isStreamRecordableTrack(track))
 			{
 				record(true);
 			}
@@ -308,11 +341,12 @@ void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
 	else
 	{
 		spLog(Log::Info, this) << "Playlist finished";
+
 		emit sigPlaylistFinished();
 		stop();
 	}
 
-	if(!isFirstStart)
+	if(!isFirstStartup)
 	{
 		// save last track
 		const auto currentIndex = (track.databaseId() == 0) ? m->currentTrackIndex : -1;
@@ -320,54 +354,37 @@ void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
 	}
 
 	// show notification
-	if(GetSetting(Set::Notification_Show))
+	if((m->currentTrackIndex > -1) && (!m->currentTrack.filepath().isEmpty()))
 	{
-		if(m->currentTrackIndex > -1 && !m->currentTrack.filepath().isEmpty())
-		{
-			NotificationHandler::instance()->notify(m->currentTrack);
-		}
+		showNotification(m->currentTrack);
 	}
 }
 
-void PlayManagerImpl::changeCurrentMetadata(const MetaData& md)
+void PlayManagerImpl::changeCurrentMetadata(const MetaData& newMetadata)
 {
-	if(m->currentTrack.radioMode() == RadioMode::Podcast)
+	if(isTrackValidPodcast(m->currentTrack))
 	{
-		if(!m->currentTrack.title().isEmpty() &&
-		   !m->currentTrack.artist().isEmpty() &&
-		   !m->currentTrack.album().isEmpty())
-		{
-			return;
-		}
+		return;
 	}
 
-	auto lastTrack = std::move(m->currentTrack);
-	m->currentTrack = md;
+	auto oldMetadata = std::move(m->currentTrack);
+	m->currentTrack = newMetadata;
 
-	const auto trackInfoString = md.title() + md.artist() + md.album();
-	const auto hasData = m->ringBuffer.contains(trackInfoString);
-
-	if(!hasData)
+	if(m->currentTrack.radioMode() == RadioMode::Station)
 	{
-		if(GetSetting(Set::Notification_Show))
+		const auto trackHash = getTrackHash(m->currentTrack);
+		const auto ignoreNewTrack = m->ringBuffer.contains(trackHash);
+		if(!ignoreNewTrack)
 		{
-			NotificationHandler::instance()->notify(m->currentTrack);
-		}
-
-		// only insert www tracks into the buffer
-		if(m->ringBuffer.count() > 0 && Util::File::isWWW(md.filepath()))
-		{
-			lastTrack.setAlbum("");
-			lastTrack.setDisabled(true);
-			lastTrack.setFilepath("");
-
-			const auto time = QTime::currentTime();
-			lastTrack.setDurationMs((time.hour() * 60 + time.minute()) * 1000);
-
-			emit sigStreamFinished(lastTrack);
-
 			m->trackPlaytimeMs = 0;
+
+			oldMetadata = prepareTrackForStreamHistory(std::move(oldMetadata));
+
+			emit sigStreamFinished(oldMetadata);
+			showNotification(m->currentTrack);
 		}
+
+		m->ringBuffer.insert(trackHash);
 	}
 
 	emit sigCurrentMetadataChanged();
@@ -375,22 +392,21 @@ void PlayManagerImpl::changeCurrentMetadata(const MetaData& md)
 
 void PlayManagerImpl::setTrackReady()
 {
-	if(m->initialPositionMs == InvalidTimeStamp)
+	if(m->initialPositionMs)
 	{
-		return;
+		const auto initialPositionMs = m->initialPositionMs.value();
+		if(initialPositionMs > 0)
+		{
+			spLog(Log::Debug, this) << "Track ready, Start at " << (initialPositionMs / 1000) << " sec";
+			seekAbsoluteMs(initialPositionMs);
+		}
+
+		m->initialPositionMs.reset();
+
+		GetSetting(Set::PL_StartPlaying)
+		? play()
+		: pause();
 	}
-
-	spLog(Log::Debug, this) << "Track ready, Start at " << m->initialPositionMs / 1000 << "ms";
-	if(m->initialPositionMs != 0)
-	{
-		this->seekAbsoluteMs(m->initialPositionMs);
-	}
-
-	m->initialPositionMs = InvalidTimeStamp;
-
-	GetSetting(Set::PL_StartPlaying)
-	? play()
-	: pause();
 }
 
 void PlayManagerImpl::setTrackFinished()
@@ -459,21 +475,21 @@ void PlayManagerImpl::shutdown()
 
 	else
 	{
-		SetSetting(Set::Engine_CurTrackPos_s, int(m->positionMs / 1000));
+		SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m->positionMs / 1000));
 	}
 }
 
 void PlayManagerImpl::trackMetadataChanged()
 {
-	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* changeNotifier = static_cast<Tagging::ChangeNotifier*>(sender());
 
-	const auto& changedMetadata = mdcn->changedMetadata();
-	for(const auto& trackPair : changedMetadata)
+	const auto& changedMetadata = changeNotifier->changedMetadata();
+	for(const auto&[oldTrack, newTrack] : changedMetadata)
 	{
-		const auto isSamePath = m->currentTrack.isEqual(trackPair.first);
+		const auto isSamePath = m->currentTrack.isEqual(oldTrack);
 		if(isSamePath)
 		{
-			this->changeCurrentMetadata(trackPair.second);
+			this->changeCurrentMetadata(newTrack);
 			return;
 		}
 	}
@@ -481,9 +497,9 @@ void PlayManagerImpl::trackMetadataChanged()
 
 void PlayManagerImpl::tracksDeleted()
 {
-	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* changeNotifier = static_cast<Tagging::ChangeNotifier*>(sender());
 
-	const auto& deletedTracks = mdcn->deletedMetadata();
+	const auto& deletedTracks = changeNotifier->deletedMetadata();
 	if(deletedTracks.contains(m->currentTrack))
 	{
 		stop();
