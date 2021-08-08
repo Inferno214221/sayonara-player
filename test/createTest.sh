@@ -15,7 +15,7 @@ else
 	TESTNAME=${PARAM}
 fi
 
-FILENAME=${TESTNAME}.cpp
+FILENAME="${DIRECTORY}/${TESTNAME}.cpp"
 rm -f ${FILENAME}
 
 cat <<EOT >> ${FILENAME}
