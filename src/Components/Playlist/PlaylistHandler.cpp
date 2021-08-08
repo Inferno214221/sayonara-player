@@ -347,7 +347,7 @@ void Handler::closePlaylist(int playlistIndex)
 
 	const auto activePlaylist = this->activePlaylist();
 	const auto lastPlaylistId = (activePlaylist) ? activePlaylist->id() : -1;
-	const auto lastTrack = (activePlaylist) ? activePlaylist->currentTrackIndex() : -1;
+	const auto lastTrack = (activePlaylist) ? activePlaylist->currentTrackWithoutDisabled() : -1;
 
 	SetSetting(Set::PL_LastTrack, lastTrack);
 	SetSetting(Set::PL_LastPlaylist, lastPlaylistId);

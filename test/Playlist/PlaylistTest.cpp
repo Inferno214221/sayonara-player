@@ -10,6 +10,18 @@
 
 using PL=Playlist::Playlist;
 
+namespace
+{
+	inline std::shared_ptr<PL> createPlaylist(int index, int min, int max, const QString& name, PlayManager* playManager)
+	{
+		const auto tracks = Test::Playlist::createTrackList(min, max);
+		auto playlist = std::make_shared<PL>(index, name, playManager);
+		playlist->createPlaylist(tracks);
+
+		return playlist;
+	}
+}
+
 class PlaylistTest :
 	public Test::Base
 {
@@ -34,6 +46,7 @@ private slots:
 	void shuffleTest();
 	void modifyTest();
 	void insertTest();
+	void trackIndexWithoutDisabledTest();
 };
 
 
@@ -279,6 +292,84 @@ void PlaylistTest::insertTest()
 		QVERIFY(pl->count() == playlistTracks.count());
 
 		QVERIFY(playlistTracks.last().id() == 5);
+	}
+}
+
+void PlaylistTest::trackIndexWithoutDisabledTest()
+{
+	{ // empty playlist
+		auto playlist = PL(1, "Hallo", m_playManager);
+		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+	}
+
+	{ // non-active playlist
+		auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
+		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+	}
+
+	{ // test all enabled
+		auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
+		playlist->changeTrack(4);
+
+		QVERIFY(playlist->currentTrackIndex() == 4);
+		QVERIFY(playlist->currentTrackWithoutDisabled() == 4);
+	}
+
+	{ // test invalid index
+		auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
+
+		playlist->changeTrack(-1);
+		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+
+		playlist->changeTrack(100);
+		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+	}
+
+	{ // all disabled except current index
+		const auto currentIndex = 4;
+		auto tracks = Test::Playlist::createTrackList(0, 10);
+		for(auto& track : tracks)
+		{
+			track.setDisabled(true);
+		}
+
+		tracks[currentIndex].setDisabled(false);
+
+		auto playlist = PL(1, "Hallo", m_playManager);
+		playlist.createPlaylist(tracks);
+		playlist.changeTrack(currentIndex);
+		QVERIFY(playlist.currentTrackWithoutDisabled() == 0);
+	}
+
+	{ // all enabled except current index
+		const auto currentIndex = 4;
+		auto tracks = Test::Playlist::createTrackList(0, 10);
+
+		tracks[currentIndex].setDisabled(true);
+
+		auto playlist = PL(1, "Hallo", m_playManager);
+		playlist.createPlaylist(tracks);
+
+		playlist.changeTrack(currentIndex);
+		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+	}
+
+	{ // test some disabled
+		auto tracks = Test::Playlist::createTrackList(0, 10);
+		tracks[0].setDisabled(true);
+		tracks[2].setDisabled(true);
+		tracks[4].setDisabled(true);
+		tracks[6].setDisabled(true);
+		// enabled: 1, 3, 5, 7, 9
+
+		auto playlist = PL(1, "Hallo", m_playManager);
+		playlist.createPlaylist(tracks);
+
+		playlist.changeTrack(4);
+		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+
+		playlist.changeTrack(5);
+		QVERIFY(playlist.currentTrackWithoutDisabled() == 2);
 	}
 }
 

@@ -156,8 +156,10 @@ void PlaylistImpl::appendTracks(const MetaDataList& tracks)
 
 	for(auto it = m->tracks.begin() + oldTrackCount; it != m->tracks.end(); it++)
 	{
-		const auto fileExists = File::checkFile(it->filepath());
-		it->setDisabled(!fileExists);
+		const auto& track = *it;
+		const auto isEnabled = File::checkFile(track.filepath()) && !track.isDisabled();
+
+		it->setDisabled(!isEnabled);
 	}
 
 	setChanged(true);
@@ -264,17 +266,17 @@ void PlaylistImpl::durationChanged()
 
 void PlaylistImpl::replaceTrack(int index, const MetaData& track)
 {
-	if(!Util::between(index, m->tracks))
+	if(!Util::between(index, m->tracks) || (m->tracks[index].isDisabled()))
 	{
 		return;
 	}
 
 	const auto oldUniqueId = m->tracks[index].uniqueId();
 	const auto isCurrent = (oldUniqueId == m->playingUniqueId);
-	const auto fileExists = File::checkFile(track.filepath());
+	const auto isEnabled = File::checkFile(track.filepath()) && !track.isDisabled();
 
 	m->tracks[index] = track;
-	m->tracks[index].setDisabled(!fileExists);
+	m->tracks[index].setDisabled(!isEnabled);
 
 	if(isCurrent)
 	{
@@ -566,6 +568,22 @@ bool PlaylistImpl::currentTrack(MetaData& track) const
 
 	track = m->tracks[trackIndex];
 	return true;
+}
+
+int PlaylistImpl::currentTrackWithoutDisabled() const
+{
+	if(!Util::between(currentTrackIndex(), m->tracks) ||
+		m->tracks[currentTrackIndex()].isDisabled())
+	{
+		return -1;
+	}
+
+	const auto disabled =
+		std::count_if(m->tracks.begin(), m->tracks.begin() + currentTrackIndex(), [](const auto& track) {
+			return track.isDisabled();
+		});
+
+	return std::max<int>(currentTrackIndex() - disabled, -1);
 }
 
 void Playlist::Playlist::setCurrentTrack(int index)

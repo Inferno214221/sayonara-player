@@ -35,7 +35,7 @@ void Playlist::saveCurrentPlaylists(const QList<PlaylistPtr>& playlists)
 		if(isActive)
 		{
 			SetSetting(Set::PL_LastPlaylist, playlist->id());
-			SetSetting(Set::PL_LastTrack, playlist->currentTrackIndex());
+			SetSetting(Set::PL_LastTrack, playlist->currentTrackWithoutDisabled());
 		}
 
 		if(GetSetting(Set::PL_LoadTemporaryPlaylists))

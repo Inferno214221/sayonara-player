@@ -67,6 +67,7 @@ namespace Playlist
 
 			virtual int currentTrackIndex() const;
 			bool currentTrack(MetaData& track) const;
+			int currentTrackWithoutDisabled() const;
 
 			int index() const;
 			void setIndex(int idx);
