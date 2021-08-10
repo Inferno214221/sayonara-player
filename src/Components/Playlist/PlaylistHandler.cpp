@@ -33,6 +33,7 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
@@ -193,10 +194,13 @@ int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
 	auto playlist = playlistById(customPlaylist.id());
 	const auto index = (playlist)
 	                   ? playlist->index()
-	                   : addNewPlaylist(customPlaylist.name(), customPlaylist.temporary());
+	                   : addNewPlaylist(customPlaylist.name(), customPlaylist.isTemporary());
 
 	playlist = m->playlists[index];
-	playlist->createPlaylist(customPlaylist);
+	playlist->setId(customPlaylist.id());
+	playlist->setTemporary(customPlaylist.isTemporary());
+	playlist->setName(customPlaylist.name());
+	playlist->createPlaylist(customPlaylist.tracks());
 	playlist->setChanged(false);
 
 	setCurrentIndex(index);

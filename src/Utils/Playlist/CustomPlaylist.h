@@ -21,29 +21,40 @@
 #ifndef CUSTOMPLAYLIST_H
 #define CUSTOMPLAYLIST_H
 
-#include "CustomPlaylistSkeleton.h"
-#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Pimpl.h"
 
-/**
- * @brief The CustomPlaylist class
- * @ingroup PlaylistHelper
- */
-class CustomPlaylist :
-		public CustomPlaylistSkeleton,
-		public MetaDataList
+class QString;
+class MetaDataList;
+
+class CustomPlaylist
 {
-public:
+	PIMPL(CustomPlaylist)
 
-	bool valid() const;
+	public:
+		CustomPlaylist();
+		CustomPlaylist(const CustomPlaylist& other);
+		CustomPlaylist(CustomPlaylist&& other) noexcept;
 
-	int trackCount() const override;
+		CustomPlaylist& operator=(const CustomPlaylist& other);
+		CustomPlaylist& operator=(CustomPlaylist&& other) noexcept;
 
-	CustomPlaylist();
-	explicit CustomPlaylist(const CustomPlaylistSkeleton& skeleton);
-	virtual ~CustomPlaylist() override;
+		~CustomPlaylist();
 
-private:
-	void setTrackCount(int trackCount) override;
+		int id() const;
+		void setId(int id);
+
+		QString name() const;
+		void setName(const QString& name);
+
+		bool isTemporary() const;
+		void setTemporary(bool temporary);
+
+		int tracksToFetch() const;
+		void setTracksToFetch(int track);
+
+		MetaDataList tracks() const;
+		void setTracks(const MetaDataList& tracks);
+		void setTracks(MetaDataList&& tracks);
 };
 
 #endif // CUSTOMPLAYLIST_H

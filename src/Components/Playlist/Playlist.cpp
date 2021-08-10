@@ -643,9 +643,9 @@ void PlaylistImpl::reloadFromDatabase()
 {
 	if(!this->isBusy())
 	{
-		const auto customPlaylist = this->fetchTracksFromDatabase();
+		const auto tracks = this->fetchTracksFromDatabase();
 		this->clear();
-		this->createPlaylist(customPlaylist);
+		this->createPlaylist(tracks);
 	}
 }
 

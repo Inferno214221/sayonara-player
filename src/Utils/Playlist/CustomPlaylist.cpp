@@ -19,31 +19,76 @@
  */
 
 #include "CustomPlaylist.h"
+#include "Utils/MetaData/MetaDataList.h"
 
-CustomPlaylist::CustomPlaylist() :
-	CustomPlaylistSkeleton(),
-	MetaDataList() {}
-
-CustomPlaylist::CustomPlaylist(const CustomPlaylistSkeleton& skeleton) :
-	CustomPlaylistSkeleton(skeleton),
-	MetaDataList() {}
-
-CustomPlaylist::~CustomPlaylist() {}
-
-void CustomPlaylist::setTrackCount(int num_tracks)
+struct CustomPlaylist::Private
 {
-	Q_UNUSED(num_tracks)
+	int id {-1};
+	QString name;
+	bool isTemporary {true};
+	int tracksToFetch {0};
+	MetaDataList tracks;
+
+	Private() = default;
+	~Private() = default;
+
+	Private(const Private& other) = default;
+	Private(Private&& other) noexcept = default;
+
+	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) noexcept = default;
+};
+
+CustomPlaylist::CustomPlaylist()
+{
+	m = Pimpl::make<Private>();
 }
 
-bool CustomPlaylist::valid() const
+CustomPlaylist::~CustomPlaylist() = default;
+
+CustomPlaylist::CustomPlaylist(const CustomPlaylist& other)
 {
-	return (this->size() > 0);
+	m = Pimpl::make<Private>(*other.m);
 }
 
-int CustomPlaylist::trackCount() const
+CustomPlaylist::CustomPlaylist(CustomPlaylist&& other) noexcept
 {
-	return this->size();
+	m = Pimpl::make<Private>(std::move(*other.m));
 }
+
+CustomPlaylist& CustomPlaylist::operator=(const CustomPlaylist& other)
+{
+	*m = *(other.m);
+	return *this;
+}
+
+CustomPlaylist& CustomPlaylist::operator=(CustomPlaylist&& other) noexcept
+{
+	*m = std::move(*(other.m));
+	return *this;
+}
+
+int CustomPlaylist::id() const { return m->id; }
+
+void CustomPlaylist::setId(int id) { m->id = id; }
+
+QString CustomPlaylist::name() const { return m->name; }
+
+void CustomPlaylist::setName(const QString& name) { m->name = name; }
+
+bool CustomPlaylist::isTemporary() const { return m->isTemporary; }
+
+void CustomPlaylist::setTemporary(bool temporary) { m->isTemporary = temporary; }
+
+MetaDataList CustomPlaylist::tracks() const { return m->tracks; }
+
+void CustomPlaylist::setTracks(const MetaDataList& tracks) { m->tracks = tracks; }
+
+void CustomPlaylist::setTracks(MetaDataList&& tracks) { m->tracks = std::move(tracks); }
+
+int CustomPlaylist::tracksToFetch() const { return m->tracksToFetch; }
+
+void CustomPlaylist::setTracksToFetch(int track) { m->tracksToFetch = track; }
 
 
 
