@@ -71,8 +71,8 @@ namespace
 				return Message::question_yn(question, Lang::get(Lang::SaveAs));
 			}
 
-			case Util::SaveAsAnswer::NotStorable:
-				return Message::warning(parent->tr("Playlists are currently only supported for library tracks."),
+			case Util::SaveAsAnswer::InvalidName:
+				return Message::warning(parent->tr("The specified name is invalid."),
 				                        parent->tr("Save playlist"));
 
 			default:
@@ -395,16 +395,7 @@ void GUI_Playlist::tabSavePlaylistClicked(int playlistIndex)
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
 		const auto success = playlist->save();
-		if(success == Util::SaveAsAnswer::Success)
-		{
-			const auto oldString = ui->twPlaylists->tabText(playlistIndex);
-			const auto newString = (oldString.startsWith("*"))
-			                       ? oldString.right(oldString.size() - 1)
-			                       : oldString;
-
-			ui->twPlaylists->setTabText(playlistIndex, oldString);
-		}
-
+		checkPlaylistName(playlist, ui->twPlaylists);
 		showSaveMessageBox(this, success);
 	}
 }
