@@ -22,7 +22,6 @@
 #define GUIPLAYLISTCHOOSER_H_
 
 #include "Gui/Plugins/PlayerPluginBase.h"
-#include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
 namespace Playlist

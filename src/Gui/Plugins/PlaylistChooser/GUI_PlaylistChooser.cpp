@@ -80,10 +80,8 @@ void GUI_PlaylistChooser::retranslate()
 {
 	ui->retranslateUi(this);
 
-	const CustomPlaylistSkeletons& skeletons =
-		m->playlistChooser->playlists();
-
-	if(skeletons.isEmpty())
+	const auto& playlists =	m->playlistChooser->playlists();
+	if(playlists.isEmpty())
 	{
 		ui->comboPlaylists->clear();
 		ui->comboPlaylists->addItem(tr("No playlists found"), -1);
@@ -109,18 +107,18 @@ void GUI_PlaylistChooser::playlistsChanged()
 
 	QString old_text = ui->comboPlaylists->currentText();
 
-	const CustomPlaylistSkeletons& skeletons =
+	const auto& playlists =
 		m->playlistChooser->playlists();
 
 	ui->comboPlaylists->clear();
 
-	for(const CustomPlaylistSkeleton& skeleton : skeletons)
+	for(const auto& playlist : playlists)
 	{
-		ui->comboPlaylists->addItem(skeleton.name(), skeleton.id());
+		ui->comboPlaylists->addItem(playlist.name(), playlist.id());
 	}
 
-	ui->btnActions->setEnabled(!skeletons.isEmpty());
-	if(skeletons.isEmpty())
+	ui->btnActions->setEnabled(!playlists.isEmpty());
+	if(playlists.isEmpty())
 	{
 		ui->comboPlaylists->addItem(tr("No playlists found"), -1);
 	}

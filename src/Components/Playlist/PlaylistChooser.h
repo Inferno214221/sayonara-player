@@ -21,11 +21,13 @@
 #ifndef PLAYLISTCHOOSER_H_
 #define PLAYLISTCHOOSER_H_
 
-#include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 #include "Utils/globals.h"
+
+#include <QList>
 #include <QObject>
 
+class CustomPlaylist;
 class PlaylistCreator;
 
 namespace Playlist
@@ -51,7 +53,7 @@ namespace Playlist
 			void loadSinglePlaylist(int id);
 			int findPlaylist(const QString& name) const;
 
-			const CustomPlaylistSkeletons& playlists();
+			const QList<CustomPlaylist>& playlists();
 
 			Util::SaveAsAnswer renamePlaylist(int id, const QString& newName);
 			bool deletePlaylist(int id);

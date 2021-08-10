@@ -32,7 +32,7 @@ namespace Algorithm = Util::Algorithm;
 
 struct LoaderImpl::Private
 {
-	CustomPlaylists playlists;
+	QList<CustomPlaylist> playlists;
 	int lastPlaylistId;
 	int lastTrackIndex;
 

@@ -21,11 +21,11 @@
 #ifndef PLAYLISTLOADER_H
 #define PLAYLISTLOADER_H
 
-#include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Pimpl.h"
 
 #include <QList>
 
+class CustomPlaylist;
 namespace Playlist
 {
 	/**
