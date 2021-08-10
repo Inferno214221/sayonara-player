@@ -22,9 +22,11 @@
 #define DATABASEPLAYLIST_H
 
 #include "Database/Module.h"
-#include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Utils/Playlist/Sorting.h"
 
+#include <QList>
+
+class CustomPlaylist;
 class MetaData;
 class MetaDataList;
 
@@ -32,40 +34,42 @@ namespace Playlist
 {
 	enum class StoreType : uint8_t
 	{
-		OnlyTemporary=1,
-		OnlyPermanent=2,
-		TemporaryAndPermanent=3
+			OnlyTemporary = 1,
+			OnlyPermanent = 2,
+			TemporaryAndPermanent = 3
 	};
 }
 
-using PlaylistStoreType=::Playlist::StoreType;
+using PlaylistStoreType = ::Playlist::StoreType;
+using PlaylistSortOrder = ::Playlist::SortOrder;
 
 namespace DB
 {
 	class Playlist :
-			private Module
+		private Module
 	{
 		public:
 			Playlist(const QString& connectionName, DbId databaseId);
 			~Playlist();
 
-			bool getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, ::Playlist::StoreType type, ::Playlist::SortOrder sortorder=::Playlist::SortOrder::NameAsc);
-			bool getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton);
-
-			int createPlaylist(QString playlist_name, bool temporary);
-			bool renamePlaylist(int id, const QString& new_name);
-
 			int getPlaylistIdByName(const QString& name);
-			bool getPlaylistById(CustomPlaylist& pl);
 
-			// checks if playlist is already there and inserts it, if necessary
-			bool storePlaylist(const MetaDataList& vec_md, QString playlist_name, bool temporary);
-			bool storePlaylist(const MetaDataList& vec_md, int playlist_id, bool temporary);
+			CustomPlaylist getPlaylistById(int playlistId, bool getTrack);
+			QList<CustomPlaylist> getAllPlaylists(PlaylistStoreType storeType, bool getTracks, PlaylistSortOrder sortOrder = PlaylistSortOrder::NameAsc);
 
-			bool deletePlaylist(int playlist_id);
-			bool emptyPlaylist(int playlist_id);
+			int createPlaylist(const QString& playlistName, bool temporary);
+			bool updatePlaylistTracks(int playlistId, const MetaDataList& tracks);
+			bool updatePlaylist(int playlistId, const QString& name, bool temporary);
+			bool renamePlaylist(int playlistId, const QString& newName);
 
-			bool insertTrackIntoPlaylist(const MetaData& md, int playlist_id, int pos);
+			bool deletePlaylist(int playlistId);
+			bool clearPlaylist(int playlistId);
+
+			bool insertTrackIntoPlaylist(const MetaData& md, int playlistId, int pos);
+
+		private:
+			MetaDataList getPlaylistWithDatabaseTracks(int playlistId);
+			MetaDataList getPlaylistWithNonDatabaseTracks(int playlistId);
 	};
 }
 

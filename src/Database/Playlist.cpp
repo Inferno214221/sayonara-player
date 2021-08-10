@@ -21,6 +21,7 @@
 #include "Database/Query.h"
 #include "Database/Playlist.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
@@ -29,192 +30,236 @@
 
 using DB::Query;
 
+namespace
+{
+	constexpr const auto PositionKey = "position";
+
+	MetaDataList filterDisabledTracks(MetaDataList tracks)
+	{
+		tracks.removeTracks([](const auto& track) {
+			return track.isDisabled();
+		});
+
+		return tracks;
+	}
+
+	QStringList variantToStringList(const QVariant& value, QChar splitter)
+	{
+		return value.toString().split(splitter);
+	}
+
+	QString createSortorderStatement(const PlaylistSortOrder& sortorder)
+	{
+		switch(sortorder)
+		{
+			case ::Playlist::SortOrder::IDAsc:
+				return QStringLiteral("playlists.playlistID ASC");
+			case ::Playlist::SortOrder::IDDesc:
+				return QStringLiteral("playlists.playlistID DESC");
+			case ::Playlist::SortOrder::NameAsc:
+				return QStringLiteral("playlists.playlist ASC");
+			case ::Playlist::SortOrder::NameDesc:
+				return QStringLiteral("playlists.playlist DESC");
+			default:
+				return QString();
+		}
+	}
+
+	QString createStoreTypeStatement(::Playlist::StoreType storeType)
+	{
+		switch(storeType)
+		{
+			case ::Playlist::StoreType::OnlyTemporary:
+				return QStringLiteral("playlists.temporary = 1");
+			case ::Playlist::StoreType::OnlyPermanent:
+				return QStringLiteral("playlists.temporary = 0");
+			default:
+				return QStringLiteral("1");
+		}
+	}
+
+	MetaDataList mergeTracks(MetaDataList tracks1, MetaDataList tracks2)
+	{
+		auto tracks = MetaDataList() << std::move(tracks1) << std::move(tracks2);
+
+		Util::Algorithm::sort(tracks, [](const auto& track1, const auto& track2) {
+			const auto pos1 = track1.customField(PositionKey).toInt();
+			const auto pos2 = track2.customField(PositionKey).toInt();
+
+			return (pos1 < pos2);
+		});
+
+		return tracks;
+	}
+
+	QString joinedPlaylistFields()
+	{
+		static const auto fields = QStringList
+			{
+				QStringLiteral("playlists.playlistID AS playlistID"),
+				QStringLiteral("playlists.playlist   AS playlistName"),
+				QStringLiteral("playlists.temporary  AS temporary"),
+				QStringLiteral("COUNT(ptt.trackID)   AS trackCount")
+			};
+
+		static const auto joinedFields = fields.join(", ");
+
+		return joinedFields;
+	}
+}
+
 DB::Playlist::Playlist(const QString& connection_name, DbId databaseId) :
 	Module(connection_name, databaseId) {}
 
 DB::Playlist::~Playlist() = default;
 
-bool DB::Playlist::getAllPlaylistSkeletons(CustomPlaylistSkeletons& skeletons, ::Playlist::StoreType type,
-                                           ::Playlist::SortOrder sortorder)
+QList<CustomPlaylist> DB::Playlist::getAllPlaylists(::Playlist::StoreType storeType, bool getTracks, ::Playlist::SortOrder sortOrder)
 {
-	skeletons.clear();
+	QList<CustomPlaylist> result;
 
-	QString sortorderString;
-	switch(sortorder)
-	{
-		case ::Playlist::SortOrder::IDAsc:
-			sortorderString = " ORDER BY playlists.playlistID ASC ";
-			break;
-		case ::Playlist::SortOrder::IDDesc:
-			sortorderString = " ORDER BY playlists.playlistID DESC ";
-			break;
-		case ::Playlist::SortOrder::NameAsc:
-			sortorderString = " ORDER BY playlists.playlist ASC ";
-			break;
-		case ::Playlist::SortOrder::NameDesc:
-			sortorderString = " ORDER BY playlists.playlist DESC ";
-			break;
-		default:
-			break;
-	}
+	const auto storeTypeStatement = createStoreTypeStatement(storeType);
+	const auto sortingStatement = createSortorderStatement(sortOrder);
 
-	QString typeClause;
-	switch(type)
-	{
-		case ::Playlist::StoreType::OnlyTemporary:
-			typeClause = " WHERE playlists.temporary = 1 ";
-			break;
-		case ::Playlist::StoreType::OnlyPermanent:
-			typeClause = " WHERE playlists.temporary = 0 ";
-			break;
-		default:
-			break;
-	}
+	const auto queryText =
+		QString("SELECT %1 "
+		        "FROM playlists "
+		        "LEFT OUTER JOIN playlistToTracks ptt ON playlists.playlistID = ptt.playlistID "
+		        "WHERE %2 "
+		        "GROUP BY playlists.playlistID "
+		        "ORDER BY %3;")
+			.arg(joinedPlaylistFields())
+			.arg(storeTypeStatement)
+			.arg(sortingStatement);
 
-	const auto fields = QStringList
-		{
-			"playlists.playlistID	AS playlistID",
-			"playlists.playlist		AS playlistName",
-			"playlists.temporary	AS temporary",
-			"COUNT(ptt.trackID)		AS trackCount"
-		};
-
-	auto query = runQuery
-		(
-			"SELECT " + fields.join(", ") + " "
-			                                "FROM playlists LEFT OUTER JOIN playlistToTracks ptt "
-			                                "ON playlists.playlistID = ptt.playlistID "
-			+ typeClause +
-			"GROUP BY playlists.playlistID " +
-			sortorderString + ";",
-
-			"Cannot fetch all playlists"
-		);
-
+	auto query = runQuery(queryText, "Cannot fetch all playlists");
 	if(query.hasError())
 	{
-		return false;
+		return QList<CustomPlaylist>{};
 	}
 
 	while(query.next())
 	{
-		CustomPlaylistSkeleton skeleton;
+		CustomPlaylist customPlaylist;
 		if(query.value(0).isNull())
 		{
 			continue;
 		}
 
-		skeleton.setId(query.value(0).toInt());
-		skeleton.setName(query.value(1).toString());
+		const auto playlistId = query.value(0).toInt();
+		customPlaylist.setId(playlistId);
+		customPlaylist.setName(query.value(1).toString());
 
-		const auto temporary = (query.value(2) != 0);
-		skeleton.setTemporary(temporary);
-		skeleton.setTrackCount(query.value(3).toInt());
+		const auto isTemporary = (query.value(2) != 0);
+		customPlaylist.setTemporary(isTemporary);
+		customPlaylist.setTracksToFetch(query.value(3).toInt());
 
-		skeletons << skeleton;
+		if(getTracks)
+		{
+			auto tracks = getPlaylistWithDatabaseTracks(playlistId);
+			auto nonDbTracks = getPlaylistWithNonDatabaseTracks(playlistId);
+			auto mergedTracks = mergeTracks(tracks, nonDbTracks);
+
+			customPlaylist.setTracks(std::move(mergedTracks));
+		}
+
+		result.push_back(std::move(customPlaylist));
 	}
 
-	return true;
+	return result;
 }
 
-bool DB::Playlist::getPlaylistSkeletonById(CustomPlaylistSkeleton& skeleton)
+CustomPlaylist DB::Playlist::getPlaylistById(int playlistId, bool getTracks)
 {
-	if(skeleton.id() < 0)
+	if(playlistId < 0)
 	{
-		spLog(Log::Warning, this) << "Cannot fetch playlist -1";
-		return false;
+		return CustomPlaylist{};
 	}
 
-	const auto fields = QStringList
-		{
-			"playlists.playlistID		AS playlistID",
-			"playlists.playlist			AS playlistName",
-			"playlists.temporary		AS temporary",
-			"COUNT(ptt.trackID)			AS trackCount"
-		};
+	const auto queryText = QString("SELECT %1 "
+	                               "FROM playlists LEFT OUTER JOIN playlistToTracks ptt "
+	                               "ON playlists.playlistID = ptt.playlistID "
+	                               "WHERE playlists.playlistid = :playlist_id "
+	                               "GROUP BY playlists.playlistID;").arg(joinedPlaylistFields());
 
-	auto query = runQuery
-		(
-			"SELECT " + fields.join(", ") + " "
-			                                "FROM playlists LEFT OUTER JOIN playlistToTracks ptt "
-			                                "ON playlists.playlistID = ptt.playlistID "
-			                                "WHERE playlists.playlistid = :playlist_id "
-			                                "GROUP BY playlists.playlistID;",
-
-			{{":playlist_id", skeleton.id()}},
-			"Cannot fetch all playlists"
-		);
-
+	auto query = runQuery(queryText, {{":playlist_id", playlistId}}, "Cannot fetch all playlists");
 	if(query.hasError())
 	{
-		return false;
+		return CustomPlaylist{};
 	}
 
 	if(query.next())
 	{
-		skeleton.setId(query.value(0).toInt());
-		skeleton.setName(query.value(1).toString());
+		CustomPlaylist result;
+
+		result.setId(query.value(0).toInt());
+		result.setName(query.value(1).toString());
 
 		const auto temporary = (query.value(2) != 0);
-		skeleton.setTemporary(temporary);
-		skeleton.setTrackCount(query.value(3).toInt());
+		result.setTemporary(temporary);
+		result.setTracksToFetch(query.value(3).toInt());
 
-		return true;
+		if(getTracks)
+		{
+			auto tracks = getPlaylistWithDatabaseTracks(playlistId);
+			auto nonDbTracks = getPlaylistWithNonDatabaseTracks(playlistId);
+
+			auto mergedTracks = mergeTracks(tracks, nonDbTracks);
+			result.setTracks(std::move(mergedTracks));
+		}
+
+		return result;
 	}
 
-	return false;
+	return CustomPlaylist{};
 }
 
-bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
+MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(int playlistId)
 {
-	if(!getPlaylistSkeletonById(pl))
-	{
-		spLog(Log::Warning, this) << "Get playlist by id: cannot fetch skeleton id " << pl.id();
-		return false;
-	}
+	MetaDataList result;
 
-	pl.clear();
-
-	const QStringList fields
+	static const auto fields = QStringList
 		{
-			"tracks.trackID				AS trackID",        // 0
-			"tracks.title				AS title",          // 1
-			"tracks.length				AS length",         // 2
-			"tracks.year				AS year",           // 3
-			"tracks.bitrate				AS bitrate",        // 4
-			"tracks.filename			AS filename",       // 5
-			"tracks.track				AS trackNum",       // 6
-			"albums.albumID				AS albumID",        // 7
-			"artists.artistID			AS artistID",       // 8
-			"albums.name				AS albumName",      // 9
-			"artists.name				AS artistName",     // 10
-			"tracks.genre				AS genrename",      // 11
-			"tracks.filesize			AS filesize",       // 12
-			"tracks.discnumber			AS discnumber",     // 13
-			"tracks.rating				AS rating",         // 14
-			"ptt.filepath				AS filepath",       // 15
-			"ptt.db_id					AS databaseId",     // 16
-			"tracks.libraryID			AS libraryId",      // 17
-			"tracks.createdate			AS createdate",     // 18
-			"tracks.modifydate			AS modifydate",     // 19
-			"ptt.coverDownloadUrl		AS coverDownloadUrl"// 20
+			QStringLiteral("tracks.trackID          AS trackID"),        // 0
+			QStringLiteral("tracks.title            AS title"),          // 1
+			QStringLiteral("tracks.length           AS length"),         // 2
+			QStringLiteral("tracks.year             AS year"),           // 3
+			QStringLiteral("tracks.bitrate          AS bitrate"),        // 4
+			QStringLiteral("tracks.filename         AS filename"),       // 5
+			QStringLiteral("tracks.track            AS trackNum"),       // 6
+			QStringLiteral("albums.albumID          AS albumID"),        // 7
+			QStringLiteral("artists.artistID        AS artistID"),       // 8
+			QStringLiteral("albums.name             AS albumName"),      // 9
+			QStringLiteral("artists.name            AS artistName"),     // 10
+			QStringLiteral("tracks.genre            AS genrename"),      // 11
+			QStringLiteral("tracks.filesize         AS filesize"),       // 12
+			QStringLiteral("tracks.discnumber       AS discnumber"),     // 13
+			QStringLiteral("tracks.rating           AS rating"),         // 14
+			QStringLiteral("ptt.filepath            AS filepath"),       // 15
+			QStringLiteral("ptt.db_id               AS databaseId"),     // 16
+			QStringLiteral("tracks.libraryID        AS libraryId"),      // 17
+			QStringLiteral("tracks.createdate       AS createdate"),     // 18
+			QStringLiteral("tracks.modifydate       AS modifydate"),     // 19
+			QStringLiteral("ptt.coverDownloadUrl    AS coverDownloadUrl"), // 20
+			QStringLiteral("ptt.position            AS position") // 21
 		};
 
-	auto query = runQuery
-		(
-			"SELECT "
-			+ fields.join(", ") + " " +
-			"FROM tracks, albums, artists, playlists, playlistToTracks ptt "
-			"WHERE playlists.playlistID = :playlist_id "
-			"AND playlists.playlistID = ptt.playlistID "
-			"AND ptt.trackID = tracks.trackID "
-			"AND tracks.albumID = albums.albumID "
-			"AND tracks.artistID = artists.artistID "
-			"ORDER BY ptt.position ASC; ",
+	static const auto joinedFields = fields.join(", ");
 
-			{{":playlist_id", pl.id()}},
-			QString("Cannot get tracks for playlist %1").arg(pl.id())
-		);
+	const auto queryText = QString("SELECT %1 "
+	                               "FROM tracks, albums, artists, playlists, playlistToTracks ptt "
+	                               "WHERE playlists.playlistID = :playlist_id "
+	                               "AND playlists.playlistID = ptt.playlistID "
+	                               "AND ptt.trackID = tracks.trackID "
+	                               "AND tracks.albumID = albums.albumID "
+	                               "AND tracks.artistID = artists.artistID "
+	                               "ORDER BY ptt.position ASC; ").arg(joinedFields);
+
+	auto query = runQuery(queryText,
+	                      {
+		                      {":playlist_id", playlistId}
+	                      },
+	                      QString("Cannot get tracks for playlist %1").arg(playlistId)
+	);
 
 	if(!query.hasError())
 	{
@@ -233,109 +278,115 @@ bool DB::Playlist::getPlaylistById(CustomPlaylist& pl)
 			data.setArtistId(query.value(8).toInt());
 			data.setAlbum(query.value(9).toString().trimmed());
 			data.setArtist(query.value(10).toString().trimmed());
-			QStringList genres = query.value(11).toString().split(",");
-			data.setGenres(genres);
+			data.setGenres(variantToStringList(query.value(11), ','));
 			data.setFilesize(query.value(12).value<Filesize>());
 			data.setDiscnumber(query.value(13).value<Disc>());
 			data.setRating(query.value(14).value<Rating>());
 			data.setLibraryid(query.value(17).value<LibraryId>());
 			data.setCreatedDate(query.value(18).value<uint64_t>());
 			data.setModifiedDate(query.value(19).value<uint64_t>());
-			data.setCoverDownloadUrls(query.value(20).toString().split(";"));
+			data.setCoverDownloadUrls(variantToStringList(query.value(20), ';'));
+			data.addCustomField(PositionKey, QString(), QString::number(query.value(21).toInt()));
 			data.setExtern(false);
 			data.setDatabaseId(databaseId());
 
-			if(query.value(16).toInt() == 0 || query.value(16).isNull())
+			if((query.value(16).toInt() == 0) || query.value(16).isNull())
 			{
-				pl.push_back(std::move(data));
+				result.push_back(std::move(data));
 			}
 		}
 	}
 
+	return result;
+}
+
+MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
+{
+	MetaDataList result;
+
+	const auto static fields = QStringList
+		{
+			QStringLiteral("ptt.filepath          AS filepath"),
+			QStringLiteral("ptt.position          AS position"),
+			QStringLiteral("ptt.stationName       AS radioStationName"),
+			QStringLiteral("ptt.station           AS radioStation"),
+			QStringLiteral("ptt.isRadio           AS isRadio"),
+			QStringLiteral("ptt.coverDownloadUrl  AS coverDownloadUrl"),
+			QStringLiteral("ptt.position          AS position")
+		};
+
+	const auto static joinedFields = fields.join(", ");
+
+	const auto queryText = QString("SELECT %1 "
+	                               "FROM playlists pl, playlistToTracks ptt "
+	                               "WHERE pl.playlistID = :playlistID "
+	                               "AND pl.playlistID = ptt.playlistID "
+	                               "AND ptt.trackID < 0 "
+	                               "ORDER BY ptt.position ASC;").arg(joinedFields);
+
 	// non database playlists
-	auto query2 = runQuery
-		(
-			"SELECT "
-			"ptt.filepath			AS filepath, "
-			"ptt.position			AS position, "
-			"ptt.stationName		AS radioStationName, "
-			"ptt.station			AS radioStation, "
-			"ptt.isRadio			AS isRadio, "
-			"ptt.coverDownloadUrl	AS coverDownloadUrl "
+	auto query = runQuery(
+		queryText,
+		{
+			{":playlistID", playlistId}
+		},
+		QString("Playlist by id: Cannot fetch playlist %1").arg(playlistId));
 
-			"FROM playlists pl, playlistToTracks ptt "
-			"WHERE pl.playlistID = :playlistID "
-			"AND pl.playlistID = ptt.playlistID "
-			"AND ptt.trackID < 0 "
-			"ORDER BY ptt.position ASC;",
-
-			{{":playlistID", pl.id()}},
-			QString("Playlist by id: Cannot fetch playlist %1").arg(pl.id())
-		);
-
-	if(query2.hasError())
+	if(query.hasError())
 	{
-		return false;
+		return result;
 	}
 
-	while(query2.next())
+	while(query.next())
 	{
-		const auto filepath = query2.value(0).toString();
-		const auto position = query2.value(1).toInt();
-		const auto radioStationName = query2.value(2).toString();
-		const auto radioStation = query2.value(3).toString();
-		const auto isRadio = query2.value(4).toBool();
-		const auto coverUrls = query2.value(5).toString().split(";");
+		const auto filepath = query.value(0).toString();
+		const auto position = query.value(1).toInt();
+		const auto radioStationName = query.value(2).toString();
+		const auto radioStation = query.value(3).toString();
+		const auto isRadio = query.value(4).toBool();
+		const auto coverUrls = variantToStringList(query.value(5), ';');
 
-		MetaData md(filepath);
-		md.setId(-1);
-		md.setExtern(true);
-		md.setDatabaseId(databaseId());
-		md.setCoverDownloadUrls(coverUrls);
+		auto track = MetaData(filepath);
+		track.setId(-1);
+		track.setExtern(true);
+		track.setDatabaseId(databaseId());
+		track.setCoverDownloadUrls(coverUrls);
 
 		if(isRadio)
 		{
-			md.setRadioStation(radioStation, radioStationName);
+			track.setRadioStation(radioStation, radioStationName);
 		}
 
 		else
 		{
-			md.setTitle(filepath);
-			md.setArtist(filepath);
+			track.setTitle(filepath);
+			track.setArtist(filepath);
 		}
 
-		for(int row = 0; row <= pl.count(); row++)
-		{
-			if(row >= position)
-			{
-				pl.insertTrack(md, row);
-				break;
-			}
-		}
+		track.addCustomField(PositionKey, QString(), QString::number(position));
+
+		result.push_back(std::move(track));
 	}
 
-	return true;
+	return result;
 }
 
 // negative, if error
 // nonnegative else
 int DB::Playlist::getPlaylistIdByName(const QString& name)
 {
-	auto query = runQuery
-		(
-			"SELECT playlistid FROM playlists WHERE playlist = :playlistName;",
-			{
-				{":playlistName", Util::convertNotNull(name)}
-			},
-			QString("Playlist by name: Cannot fetch playlist %1").arg(name)
-		);
+	const auto queryText = QStringLiteral("SELECT playlistid FROM playlists WHERE playlist = :playlistName;");
+	auto query = runQuery(
+		queryText,
+		{
+			{":playlistName", Util::convertNotNull(name)}
+		},
+		QString("Playlist by name: Cannot fetch playlist %1").arg(name)
+	);
 
-	if(!query.hasError() && query.next())
-	{
-		return query.value(0).toInt();
-	}
-
-	return -1;
+	return (!query.hasError() && query.next())
+	       ? query.value(0).toInt()
+	       : -1;
 }
 
 bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, int pos)
@@ -370,142 +421,102 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, i
 	return (!query.hasError());
 }
 
-// returns id if everything ok
-// negative otherwise
-int DB::Playlist::createPlaylist(QString playlist_name, bool temporary)
+int DB::Playlist::createPlaylist(const QString& playlistName, bool temporary)
 {
-	auto query = insert("playlists",
-	                    {
-		                 {"playlist",  Util::convertNotNull(playlist_name)},
-		                 {"temporary", (temporary == true) ? 1 : 0}
-	                 }, "Cannot create playlist");
+	const auto query = insert("playlists",
+	                          {
+		                          {"playlist",  Util::convertNotNull(playlistName)},
+		                          {"temporary", (temporary == true) ? 1 : 0}
+	                          }, "Cannot create playlist");
 
 	return (query.hasError())
-		? -1
-		: query.lastInsertId().toInt();
+	       ? -1
+	       : query.lastInsertId().toInt();
 }
 
-bool DB::Playlist::renamePlaylist(int id, const QString& new_name)
+bool DB::Playlist::updatePlaylist(int playlistId, const QString& name, bool temporary)
 {
-	auto query = update("playlists",
-	                    {{"playlist", Util::convertNotNull(new_name)}},
-	                    {"playlistId", id}, "Cannot rename playlist");
+	const auto playlist = getPlaylistById(playlistId, false);
+	const auto existingId = getPlaylistIdByName(name);
+	const auto isIdValid = (playlistId >= 0);
+	const auto otherPlaylistHasSameName = ((existingId >= 0) && (playlist.id() != existingId));
+	if(!isIdValid || otherPlaylistHasSameName)
+	{
+		return false;
+	}
+
+	const auto query = update("playlists",
+	                          {
+		                          {"temporary", (temporary == true) ? 1 : 0},
+		                          {"playlist",  Util::convertNotNull(name)}
+	                          },
+	                          {"playlistId", playlistId}, "Cannot update playlist");
 
 	return (!query.hasError());
 }
 
-bool DB::Playlist::storePlaylist(const MetaDataList& tracks, QString playlistName, bool temporary)
+bool DB::Playlist::renamePlaylist(int playlistId, const QString& name)
 {
-	if(playlistName.isEmpty())
+	const auto playlist = getPlaylistById(playlistId, false);
+	const auto existingId = getPlaylistIdByName(name);
+	if((existingId != playlistId) || name.isEmpty() || (playlist.id() < 0))
 	{
 		return false;
 	}
 
-	if(playlistName.isEmpty())
-	{
-		spLog(Log::Warning, this) << "Try to save empty playlist";
-		return false;
-	}
+	const auto query = update("playlists",
+	                          {
+		                          {"playlist", Util::convertNotNull(name)}
+	                          },
+	                          {"playlistId", playlistId}, "Cannot update playlist");
 
-	auto playlistId = getPlaylistIdByName(playlistName);
-	if(playlistId >= 0)
-	{
-		emptyPlaylist(playlistId);
-	}
-
-	else
-	{
-		playlistId = createPlaylist(playlistName, temporary);
-		if(playlistId < 0)
-		{
-			return false;
-		}
-	}
-
-	// fill playlist
-	for(int i = 0; i < tracks.count(); i++)
-	{
-		const auto success = insertTrackIntoPlaylist(tracks[i], playlistId, i);
-		if(!success)
-		{
-			return false;
-		}
-	}
-
-	return true;
+	return (!query.hasError());
 }
 
-bool DB::Playlist::storePlaylist(const MetaDataList& tracks, int playlistId, bool temporary)
+bool DB::Playlist::updatePlaylistTracks(int playlistId, const MetaDataList& tracks)
 {
-	CustomPlaylist pl;
-	pl.setId(playlistId);
-
-	const auto success = getPlaylistById(pl);
-	if(!success)
-	{
-		spLog(Log::Warning, this) << "Store: Cannot fetch playlist: " << pl.id();
-		return false;
-	}
-
-	if(pl.name().isEmpty())
+	if(const auto playlist = getPlaylistById(playlistId, false); playlist.id() < 0)
 	{
 		return false;
 	}
 
-	if(playlistId < 0)
+	clearPlaylist(playlistId);
+	if(tracks.isEmpty())
 	{
-		playlistId = createPlaylist(pl.name(), temporary);
+		return true;
 	}
 
-	else
-	{
-		emptyPlaylist(playlistId);
-	}
+	const auto enabledTracks = filterDisabledTracks(tracks);
 
-	// fill playlist
-	for(int i = 0; i < tracks.count(); i++)
+	db().transaction();
+	auto position = 0;
+	for(const auto& track : enabledTracks)
 	{
-		const auto success = insertTrackIntoPlaylist(tracks[i], playlistId, i);
-		if(!success)
+		const auto success = insertTrackIntoPlaylist(track, playlistId, position);
+		if(success)
 		{
-			return false;
+			position++;
 		}
 	}
+	db().commit();
 
-	return true;
+	return (enabledTracks.isEmpty() || (position > 0));
 }
 
-bool DB::Playlist::emptyPlaylist(int playlistId)
+bool DB::Playlist::clearPlaylist(int playlistId)
 {
-	Query q(this);
-	const auto querytext = QString("DELETE FROM playlistToTracks WHERE playlistID = :playlistID;");
-	q.prepare(querytext);
-	q.bindValue(":playlistID", playlistId);
+	const auto querytext = QStringLiteral("DELETE FROM playlistToTracks WHERE playlistID = :playlistID;");
+	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be cleared");
 
-	const auto success = q.exec();
-	if(!success)
-	{
-		q.showError("DB: Playlist cannot be cleared");
-	}
-
-	return success;
+	return (!query.hasError());
 }
 
 bool DB::Playlist::deletePlaylist(int playlistId)
 {
-	emptyPlaylist(playlistId);
+	clearPlaylist(playlistId);
 
-	Query q(this);
-	QString querytext = QString("DELETE FROM playlists WHERE playlistID = :playlistID;");
+	const auto querytext = QString("DELETE FROM playlists WHERE playlistID = :playlistID;");
+	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be deleted");
 
-	q.prepare(querytext);
-	q.bindValue(":playlistID", playlistId);
-
-	const auto success = q.exec();
-	if(!success)
-	{
-		q.showError(QString("Cannot delete playlist ") + QString::number(playlistId));
-	}
-
-	return success;
+	return (!query.hasError());
 }
