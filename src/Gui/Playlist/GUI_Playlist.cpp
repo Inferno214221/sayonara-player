@@ -408,17 +408,7 @@ void GUI_Playlist::tabSavePlaylistAsClicked(int playlistIndex, const QString& ne
 		return;
 	}
 
-	auto success = playlist->saveAs(newName, false);
-	if(success == Util::SaveAsAnswer::NameAlreadyThere)
-	{
-		if(const auto answer = showSaveMessageBox(this, success); (answer == Message::Answer::No))
-		{
-			return;
-		}
-
-		success = playlist->saveAs(newName, true);
-	}
-
+	const auto success = playlist->saveAs(newName);
 	showSaveMessageBox(this, success);
 }
 

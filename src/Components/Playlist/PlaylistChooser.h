@@ -51,7 +51,7 @@ namespace Playlist
 			~Chooser();
 
 			void loadSinglePlaylist(int id);
-			int findPlaylist(const QString& name) const;
+			int findPlaylist(const QString& playlist) const;
 
 			const QList<CustomPlaylist>& playlists();
 

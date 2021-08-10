@@ -23,6 +23,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"
 
@@ -47,8 +48,6 @@ LoaderImpl::LoaderImpl() :
 {
 	m = Pimpl::make<Private>();
 
-	auto playlistDbConnector = std::make_unique<DBWrapper>();
-
 	const auto loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
 	const auto loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
 	const auto loadLastTrackBeforeStop = GetSetting(Set::PL_RememberTrackAfterStop);
@@ -59,28 +58,27 @@ LoaderImpl::LoaderImpl() :
 		m->lastTrackIndex = GetSetting(Set::PL_LastTrackBeforeStop);
 	}
 
-	bool success;
 	if(loadSavedPlaylists && loadTemporaryPlaylists)
 	{
-		success = playlistDbConnector->getAllPlaylists(m->playlists);
+		m->playlists = DBWrapper::getPlaylists(StoreType::TemporaryAndPermanent, Playlist::SortOrder::IDAsc, true);
 	}
 
 	else if(loadSavedPlaylists && !loadTemporaryPlaylists)
 	{
-		success = playlistDbConnector->getNonTemporaryPlaylists(m->playlists);
+		m->playlists = DBWrapper::getPlaylists(StoreType::OnlyPermanent, Playlist::SortOrder::IDAsc, true);
 	}
 
 	else if(!loadSavedPlaylists && loadTemporaryPlaylists)
 	{
-		success = playlistDbConnector->getTemporaryPlaylists(m->playlists);
+		m->playlists = DBWrapper::getPlaylists(StoreType::OnlyTemporary, Playlist::SortOrder::IDAsc, true);
 	}
 
 	else
-	{ // no playlist loading
-		success = false;
+	{
+		m->playlists.clear();
 	}
 
-	if(!success)
+	if(m->playlists.isEmpty())
 	{
 		return;
 	}
@@ -93,7 +91,8 @@ LoaderImpl::LoaderImpl() :
 
 		if(!hasPlaylistId)
 		{
-			m->playlists.prepend(playlistDbConnector->getPlaylistById(m->lastPlaylistId));
+			const auto playlist = DBWrapper::getPlaylistById(m->lastPlaylistId, true);
+			m->playlists.prepend(playlist);
 		}
 	}
 }
@@ -120,7 +119,12 @@ int LoaderImpl::getLastTrackIndex() const
 		return -1;
 	}
 
-	const auto trackCount = m->playlists[lastPlaylistIndex].count();
+	const auto trackCount = m->playlists[lastPlaylistIndex].tracks().count();
+	if((trackCount > 0) && (m->lastTrackIndex >= trackCount))
+	{
+		return 0;
+	}
+
 	if(!Util::between(m->lastTrackIndex, trackCount))
 	{
 		return -1;

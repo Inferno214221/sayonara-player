@@ -317,7 +317,7 @@ int Handler::count() const
 
 QString Handler::requestNewPlaylistName(const QString& prefix) const
 {
-	return DBInterface::requestNewDatabaseName(prefix);
+	return ::Playlist::requestNewDatabaseName(prefix);
 }
 
 void Handler::closePlaylist(int playlistIndex)

@@ -18,253 +18,245 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <Database/Connector.h>
 #include "PlaylistDBWrapper.h"
 #include "PlaylistDBInterface.h"
-
-#include "Utils/Algorithm.h"
-#include "Utils/Playlist/CustomPlaylist.h"
-#include "Utils/Language/Language.h"
 #include "PlaylistChangeNotifier.h"
 
-namespace Algorithm=Util::Algorithm;
-using Playlist::DBInterface;
+#include "Utils/Algorithm.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Playlist/CustomPlaylist.h"
+#include "Utils/MetaData/MetaDataList.h"
+
+#include "Utils/Logger/Logger.h"
+
 using Util::SaveAsAnswer;
 
-struct DBInterface::Private
+namespace Playlist
 {
-	Playlist::DBWrapper*  playlistDatabaseWrapper=nullptr;
-	QString             name;
-	bool                isTemporary;
-	int                 id;
-
-	Private(const QString& name) :
-		name(name),
-		isTemporary(true)
+	namespace
 	{
-		playlistDatabaseWrapper = new DBWrapper();
-		id = playlistDatabaseWrapper->getPlaylistByName(name).id();
-	}
+		constexpr const auto ClassName = "PlaylistDbInterface";
 
-	~Private()
-	{
-		delete playlistDatabaseWrapper;
-		playlistDatabaseWrapper=nullptr;
-	}
-};
-
-DBInterface::DBInterface(const QString& name)
-{
-	m = Pimpl::make<Private>(name);
-}
-
-DBInterface::~DBInterface() {}
-
-int DBInterface::id() const
-{
-	return m->id;
-}
-
-void DBInterface::setId(int id)
-{
-	m->id = id;
-}
-
-QString DBInterface::name() const
-{
-	return m->name;
-}
-
-void DBInterface::setName(const QString& name)
-{
-	m->name = name;
-}
-
-bool DBInterface::isTemporary() const
-{
-	return m->isTemporary;
-}
-
-void DBInterface::setTemporary(bool b)
-{
-	m->isTemporary = b;
-}
-
-SaveAsAnswer DBInterface::save()
-{
-	if(m->id >= 0)
-	{
-		const auto success = m->playlistDatabaseWrapper->savePlaylist(tracks(), m->id, m->isTemporary);
-		if(success) {
-			this->setChanged(false);
-			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
-		}
-
-		return success ? SaveAsAnswer::Success : SaveAsAnswer::OtherError;
-	}
-
-	else {
-		const auto ret = saveAs(m->name, true);
-		if(ret == SaveAsAnswer::Success)
+		bool playlistExists(const QString& name)
 		{
-			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
+			const auto playlist = DBWrapper::getPlaylistByName(name, false);
+			return (playlist.id() >= 0);
 		}
 
-		return ret;
-	}
-}
-
-bool DBInterface::insertTemporaryIntoDatabase()
-{
-	if(!m->isTemporary) {
-		return false;
-	}
-
-	bool success = m->playlistDatabaseWrapper->savePlaylistTemporary(tracks(), m->name);
-	if(success) {
-		m->id = m->playlistDatabaseWrapper->getPlaylistByName(m->name).id();
-	}
-
-	return success;
-}
-
-SaveAsAnswer DBInterface::saveAs(const QString& name, bool forceOverride)
-{
-	if(name.isEmpty()) {
-		return Util::SaveAsAnswer::InvalidName;
-	}
-
-	CustomPlaylistSkeletons skeletons;
-	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
-
-	// check if name already exists
-	auto it = Util::Algorithm::find(skeletons, [&name](auto skeleton){
-		return (name.compare(skeleton.name(), Qt::CaseInsensitive) == 0);
-	});
-
-	int targetId = -1;
-	if(it != skeletons.end())
-	{
-		if(!forceOverride) {
-			return SaveAsAnswer::NameAlreadyThere;
-		}
-
-		targetId = it->id();
-	}
-
-	// Name already exists, override
-	bool success;
-	if(targetId >= 0){
-		success = m->playlistDatabaseWrapper->savePlaylist(this->tracks(), targetId, m->isTemporary);
-	}
-
-	// New playlist
-	else
-	{
-		success = m->playlistDatabaseWrapper->savePlaylistAs(this->tracks(), name);
-
-		if(success && this->isTemporary())
+		SaveAsAnswer isNameAllowedForPlaylist(int id, const QString& name)
 		{
-			const auto oldId = this->id();
-			m->playlistDatabaseWrapper->deletePlaylist(oldId);
+			if(name.isEmpty())
+			{
+				return SaveAsAnswer::InvalidName;
+			}
+
+			const auto playlist = DBWrapper::getPlaylistByName(name, false);
+			return ((playlist.id() < 0) || (playlist.id() == id))
+				? SaveAsAnswer::Success
+				: SaveAsAnswer::NameAlreadyThere;
 		}
-	}
 
-	if(success)
-	{
-		const auto id = m->playlistDatabaseWrapper->getPlaylistByName(name).id();
-		if(id >= 0){
-			this->setId(id);
-		}
-
-		this->setTemporary(false);
-		this->setName(name);
-		this->setChanged(false);
-
-		PlaylistChangeNotifier::instance()->addPlaylist(id, name);
-
-		return SaveAsAnswer::Success;
-	}
-
-	return SaveAsAnswer::OtherError;
-}
-
-SaveAsAnswer DBInterface::rename(const QString& newName)
-{
-	auto oldName = this->name();
-	if(newName.isEmpty()) {
-		return Util::SaveAsAnswer::InvalidName;
-	}
-
-	CustomPlaylistSkeletons skeletons;
-	m->playlistDatabaseWrapper->getAllSkeletons(skeletons);
-
-	// check if name already exists
-	bool exists = Util::Algorithm::contains(skeletons, [&newName](auto skeleton){
-		return (newName.compare(skeleton.name(), Qt::CaseInsensitive) == 0);
-	});
-
-	if(exists){
-		return SaveAsAnswer::NameAlreadyThere;
-	}
-
-	bool success = m->playlistDatabaseWrapper->renamePlaylist(m->id, newName);
-	if(success){
-		this->setName(newName);
-		PlaylistChangeNotifier::instance()->renamePlaylist(id(), oldName, newName);
-		return SaveAsAnswer::Success;
-	}
-
-	return SaveAsAnswer::OtherError;
-}
-
-bool DBInterface::deletePlaylist()
-{
-	bool success = (m->id >= 0)
-		? m->playlistDatabaseWrapper->deletePlaylist(m->id)
-		: m->playlistDatabaseWrapper->deletePlaylist(m->name);
-
-	m->isTemporary = true;
-	return success;
-}
-
-QString DBInterface::requestNewDatabaseName(QString prefix)
-{
-	if(prefix.isEmpty())
-	{
-		prefix = Lang::get(Lang::New);
-	}
-
-	CustomPlaylistSkeletons skeletons;
-
-	auto pdw = std::make_shared<DBWrapper>();
-	pdw->getAllSkeletons(skeletons);
-
-	QString target_name;
-
-	for(int idx = 1; idx < 1000; idx++)
-	{
-		bool found = false;
-		target_name = prefix + " " + QString::number(idx);
-		for(const CustomPlaylistSkeleton& skeleton : Algorithm::AsConst(skeletons))
+		bool updatePlaylistTracks(Playlist::DBInterface* playlist)
 		{
-			QString name = skeleton.name();
+			const auto success = DBWrapper::updatePlaylistTracks(playlist->id(), playlist->tracks());
+			if(!success)
+			{
+				spLog(Log::Warning, ClassName) << "Cannot update tracks: " << playlist->id() << ", "
+				                               << playlist->name();
+			}
 
-			if(name.compare(target_name, Qt::CaseInsensitive) == 0){
-				found = true;
-				break;
+			playlist->setChanged(!success);
+			return success;
+		}
+
+		bool updatePlaylist(const QString& name, bool isTemporary, Playlist::DBInterface* playlist)
+		{
+			auto success = DBWrapper::updatePlaylist(playlist->id(), name, isTemporary);
+			if(!success)
+			{
+				spLog(Log::Warning, ClassName) << "Cannot update playlist " << playlist->id() << ": "
+				                               << playlist->name();
+				return false;
+			}
+
+			playlist->setName(name);
+			playlist->setTemporary(isTemporary);
+
+			return true;
+		}
+
+		bool createPlaylist(const QString& name, bool isTemporary, Playlist::DBInterface* playlist)
+		{
+			const auto playlistId = DBWrapper::createPlaylist(playlist->name(), playlist->isTemporary());
+			if(playlistId < 0)
+			{
+				spLog(Log::Warning, ClassName) << "Cannot insert new playlist " << playlist->name();
+				return false;
+			}
+
+			playlist->setId(playlistId);
+			playlist->setName(name);
+			playlist->setTemporary(isTemporary);
+
+			return updatePlaylistTracks(playlist);
+		}
+	}
+
+	struct DBInterface::Private
+	{
+		PlaylistChangeNotifier* playlistChangeNotifier {PlaylistChangeNotifier::instance()};
+
+		QString name;
+		int id;
+		bool isTemporary {true};
+
+		Private(const QString& name) :
+			name {name},
+			id {DBWrapper::getPlaylistByName(name, false).id()} {}
+	};
+
+	DBInterface::DBInterface(const QString& name)
+	{
+		m = Pimpl::make<Private>(name);
+	}
+
+	DBInterface::~DBInterface() = default;
+
+	bool DBInterface::insertTemporaryIntoDatabase()
+	{
+		const auto playlists =
+			DBWrapper::getPlaylists(StoreType::TemporaryAndPermanent, SortOrder::NameAsc, false);
+
+		return (!playlistExists(name()))
+		       ? createPlaylist(name(), true, this)
+		       : false;
+	}
+
+	SaveAsAnswer DBInterface::save()
+	{
+		if(const auto answer = isNameAllowedForPlaylist(id(), name()); answer != SaveAsAnswer::Success)
+		{
+			return answer;
+		}
+
+		const auto success = (id() >= 0)
+		                     ? updatePlaylistTracks(this)
+		                     : createPlaylist(name(), isTemporary(), this);
+
+		return (success)
+		       ? SaveAsAnswer::Success
+		       : SaveAsAnswer::OtherError;
+	}
+
+	bool DBInterface::isSaveAsPossible() const
+	{
+		return isTemporary();
+	}
+
+	Util::SaveAsAnswer DBInterface::saveAs(const QString& newName)
+	{
+		if(!isSaveAsPossible())
+		{
+			return SaveAsAnswer::OtherError;
+		}
+
+		if(const auto answer = isNameAllowedForPlaylist(id(), newName); (answer != SaveAsAnswer::Success))
+		{
+			return answer;
+		}
+
+		if(id() < 0)
+		{
+			if(const auto answer = save(); (answer != SaveAsAnswer::Success))
+			{
+				return answer;
 			}
 		}
 
-		if(!found){
-			break;
+		const auto success = updatePlaylist(newName, false, this);
+		if(success)
+		{
+			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
+			updatePlaylistTracks(this);
 		}
+
+		return success
+		       ? SaveAsAnswer::Success
+		       : SaveAsAnswer::OtherError;
 	}
 
-	return target_name;
-}
+	SaveAsAnswer DBInterface::rename(const QString& newName)
+	{
+		if(const auto answer = isNameAllowedForPlaylist(id(), newName); answer != SaveAsAnswer::Success)
+		{
+			return answer;
+		}
 
-MetaDataList DBInterface::fetchTracksFromDatabase() const
-{
-	return m->playlistDatabaseWrapper->getPlaylistById(this->id());
+		const auto oldName = name();
+		const auto success = updatePlaylist(newName, isTemporary(), this);
+		if(success)
+		{
+			m->playlistChangeNotifier->renamePlaylist(id(), oldName, name());
+		}
+
+		return success
+		       ? SaveAsAnswer::Success
+		       : SaveAsAnswer::OtherError;
+	}
+
+	bool DBInterface::deletePlaylist()
+	{
+		const auto success = (id() >= 0)
+		                     ? DBWrapper::deletePlaylist(id())
+		                     : DBWrapper::deletePlaylist(name());
+
+		if(success)
+		{
+			m->playlistChangeNotifier->deletePlaylist(id());
+			setId(-1);
+			setTemporary(true);
+		}
+
+		return success;
+	}
+
+	MetaDataList DBInterface::fetchTracksFromDatabase() const
+	{
+		const auto playlist = DBWrapper::getPlaylistById(id(), true);
+		return playlist.tracks();
+	}
+
+	int DBInterface::id() const { return m->id; }
+
+	void DBInterface::setId(int id) { m->id = id; }
+
+	QString DBInterface::name() const { return m->name; }
+
+	void DBInterface::setName(const QString& name) { m->name = name; }
+
+	bool DBInterface::isTemporary() const { return m->isTemporary; }
+
+	void DBInterface::setTemporary(bool b) { m->isTemporary = b; }
+
+	QString requestNewDatabaseName(QString prefix)
+	{
+		if(prefix.isEmpty())
+		{
+			prefix = Lang::get(Lang::New);
+		}
+
+		for(auto idx = 1; idx < 1000; idx++)
+		{
+			const auto name = QString("%1 %2")
+				.arg(prefix)
+				.arg(idx);
+
+			if(!playlistExists(name))
+			{
+				return name;
+			}
+		}
+
+		return QString();
+	}
 }

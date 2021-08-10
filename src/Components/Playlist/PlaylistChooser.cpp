@@ -33,141 +33,138 @@
 
 namespace Algorithm = Util::Algorithm;
 
-using Playlist::Chooser;
-using Playlist::DBWrapper;
-
-struct Chooser::Private
+namespace Playlist
 {
-	CustomPlaylistSkeletons skeletons;
-	PlaylistCreator* playlistCreator = nullptr;
-	DBWrapperPtr playlistDbConnector = nullptr;
-
-	Private(PlaylistCreator* playlistCreator) :
-		playlistCreator {playlistCreator},
-		playlistDbConnector {std::make_shared<DBWrapper>()}
+	struct Chooser::Private
 	{
-		playlistDbConnector->getNonTemporarySkeletons(skeletons, SortOrder::NameAsc);
-	}
-};
+		QList<CustomPlaylist> playlists;
+		PlaylistCreator* playlistCreator = nullptr;
 
-Chooser::Chooser(PlaylistCreator* playlistCreator, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-
-	auto* pcn = PlaylistChangeNotifier::instance();
-	connect(pcn, &PlaylistChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
-	connect(pcn, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);
-	connect(pcn, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Chooser::playlistDeleted);
-}
-
-Chooser::~Chooser() = default;
-
-const CustomPlaylistSkeletons& Chooser::playlists()
-{
-	return m->skeletons;
-}
-
-Util::SaveAsAnswer Chooser::renamePlaylist(int id, const QString& newName)
-{
-	using Util::SaveAsAnswer;
-
-	if(newName.isEmpty())
-	{
-		return SaveAsAnswer::InvalidName;
-	}
-
-	if(id < 0)
-	{
-		return SaveAsAnswer::InvalidObject;
-	}
-
-	auto nameExists = false;
-	QString oldName;
-	for(auto it = m->skeletons.begin(); it != m->skeletons.end(); it++)
-	{
-		if(it->name() == newName)
+		Private(PlaylistCreator* playlistCreator) :
+			playlistCreator {playlistCreator}
 		{
-			nameExists = true;
+			playlists = DBWrapper::getPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
+		}
+	};
+
+	Chooser::Chooser(PlaylistCreator* playlistCreator, QObject* parent) :
+		QObject(parent)
+	{
+		m = Pimpl::make<Private>(playlistCreator);
+
+		auto* pcn = PlaylistChangeNotifier::instance();
+		connect(pcn, &PlaylistChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
+		connect(pcn, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);
+		connect(pcn, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Chooser::playlistDeleted);
+	}
+
+	Chooser::~Chooser() = default;
+
+	const QList<CustomPlaylist>& Chooser::playlists()
+	{
+		return m->playlists;
+	}
+
+	Util::SaveAsAnswer Chooser::renamePlaylist(int id, const QString& newName)
+	{
+		using Util::SaveAsAnswer;
+
+		if(newName.isEmpty())
+		{
+			return SaveAsAnswer::InvalidName;
 		}
 
-		if(it->id() == id)
+		if(id < 0)
 		{
-			oldName = it->name();
+			return SaveAsAnswer::InvalidObject;
 		}
-	}
 
-	if(nameExists)
-	{
-		spLog(Log::Warning, this) << "Playlist " << newName << " exists already";
-		return SaveAsAnswer::NameAlreadyThere;
-	}
+		auto nameExists = false;
+		QString oldName;
+		for(auto it = m->playlists.begin(); it != m->playlists.end(); it++)
+		{
+			if(it->name() == newName)
+			{
+				nameExists = true;
+			}
 
-	const auto success = m->playlistDbConnector->renamePlaylist(id, newName);
-	if(success)
-	{
-		PlaylistChangeNotifier::instance()->renamePlaylist(id, oldName, newName);
-		return SaveAsAnswer::Success;
-	}
+			if(it->id() == id)
+			{
+				oldName = it->name();
+			}
+		}
 
-	return SaveAsAnswer::OtherError;
-}
+		if(nameExists)
+		{
+			spLog(Log::Warning, this) << "Playlist " << newName << " exists already";
+			return SaveAsAnswer::NameAlreadyThere;
+		}
 
-bool Chooser::deletePlaylist(int id)
-{
-	if(id >= 0)
-	{
-		const auto success = m->playlistDbConnector->deletePlaylist(id);
+		const auto success = DBWrapper::renamePlaylist(id, newName);
 		if(success)
 		{
-			PlaylistChangeNotifier::instance()->deletePlaylist(id);
+			PlaylistChangeNotifier::instance()->renamePlaylist(id, oldName, newName);
+			return SaveAsAnswer::Success;
 		}
 
-		return success;
+		return SaveAsAnswer::OtherError;
 	}
 
-	return false;
-}
-
-void Chooser::loadSinglePlaylist(int id)
-{
-	if(id >= 0)
+	bool Chooser::deletePlaylist(int id)
 	{
-		const auto pl = m->playlistDbConnector->getPlaylistById(id);
-		m->playlistCreator->createPlaylist(pl);
+		if(id >= 0)
+		{
+			const auto success = DBWrapper::deletePlaylist(id);
+			if(success)
+			{
+				PlaylistChangeNotifier::instance()->deletePlaylist(id);
+			}
+
+			return success;
+		}
+
+		return false;
 	}
-}
 
-int Chooser::findPlaylist(const QString& name) const
-{
-	const auto it = Util::Algorithm::find(m->skeletons, [&name](const auto& skeleton) {
-		return (skeleton.name() == name);
-	});
+	void Chooser::loadSinglePlaylist(int id)
+	{
+		if(id >= 0)
+		{
+			const auto pl = DBWrapper::getPlaylistById(id, true);
+			m->playlistCreator->createPlaylist(pl);
+		}
+	}
 
-	return (it != m->skeletons.end()) ? it->id() : -1;
-}
+	int Chooser::findPlaylist(const QString& name) const
+	{
+		const auto it = Util::Algorithm::find(m->playlists, [&name](const auto& playlist) {
+			return (playlist.name() == name);
+		});
 
-void Chooser::playlistsChanged()
-{
-	m->skeletons.clear();
-	m->playlistDbConnector->getNonTemporarySkeletons(
-		m->skeletons, SortOrder::NameAsc
-	);
+		return (it != m->playlists.end()) ? it->id() : -1;
+	}
 
-	emit sigPlaylistsChanged();
-}
+	void Chooser::playlistsChanged()
+	{
+		m->playlists.clear();
+		m->playlists = DBWrapper::getPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
 
-void Chooser::playlistDeleted(int /*id*/)
-{
-	playlistsChanged();
-}
+		emit sigPlaylistsChanged();
+	}
 
-void Chooser::playlistAdded(int /*id*/, const QString& /*name*/)
-{
-	playlistsChanged();
-}
+	void Chooser::playlistDeleted([[maybe_unused]] int id)
+	{
+		playlistsChanged();
+	}
 
-void Chooser::playlistRenamed(int /*id*/, const QString& /*oldName*/, const QString& /*newName*/)
-{
-	playlistsChanged();
+	void Chooser::playlistAdded([[maybe_unused]] int id, [[maybe_unused]] const QString& name)
+	{
+		playlistsChanged();
+	}
+
+	void Chooser::playlistRenamed([[maybe_unused]] int id, [[maybe_unused]] const QString& oldName,
+	                              [[maybe_unused]] const QString& newName)
+	{
+		playlistsChanged();
+	}
 }

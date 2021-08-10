@@ -29,10 +29,6 @@ class MetaDataList;
 
 namespace Playlist
 {
-	/**
-	 * @brief The PlaylistDBInterface class
-	 * @ingroup Playlists
-	 */
 	class DBInterface
 	{
 		PIMPL(DBInterface)
@@ -52,7 +48,10 @@ namespace Playlist
 
 			bool insertTemporaryIntoDatabase();
 			Util::SaveAsAnswer save();
-			Util::SaveAsAnswer saveAs(const QString& str, bool forceOverride);
+
+			Util::SaveAsAnswer saveAs(const QString& newName);
+			bool isSaveAsPossible() const;
+
 			Util::SaveAsAnswer rename(const QString& newName);
 			bool deletePlaylist();
 
@@ -61,9 +60,9 @@ namespace Playlist
 			virtual const MetaDataList& tracks() const = 0;
 			virtual void setChanged(bool b) = 0;
 			virtual bool wasChanged() const = 0;
-
-			static QString requestNewDatabaseName(QString prefix);
 	};
+
+	QString requestNewDatabaseName(QString prefix);
 }
 
 #endif // PLAYLISTDBINTERFACE_H

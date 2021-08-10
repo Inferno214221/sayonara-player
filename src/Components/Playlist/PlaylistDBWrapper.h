@@ -21,69 +21,29 @@
 #ifndef PLAYLISTDB_WRAPPER_H
 #define PLAYLISTDB_WRAPPER_H
 
-#include "Utils/Pimpl.h"
-#include "Utils/Playlist/CustomPlaylistFwd.h"
 #include "Database/Playlist.h"
 
+#include <QList>
+
+class CustomPlaylist;
 namespace Playlist
 {
-	/**
-	 * @brief DBWrapper is responsible for fetching playlist data from database,
-	 * especially the handling between skeleton and the playlist itself
-	 * Most of the functions are wrappers for the DatabasePlaylist class
-	 * @ingroup Playlists
-	 */
-	class DBWrapper
+	namespace DBWrapper
 	{
-		PIMPL(DBWrapper)
+		QList<CustomPlaylist>
+		getPlaylists(::Playlist::StoreType type, ::Playlist::SortOrder sortOrder, bool getTracks);
 
-		public:
-			DBWrapper();
-			~DBWrapper();
+		CustomPlaylist getPlaylistById(int playlistId, bool getTracks);
+		CustomPlaylist getPlaylistByName(const QString& name, bool getTracks);
 
-			bool getSkeletons(CustomPlaylistSkeletons& skeletons,
-								   PlaylistStoreType type,
-								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			bool getAllSkeletons(CustomPlaylistSkeletons& skeletons,
-								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			bool getNonTemporarySkeletons(CustomPlaylistSkeletons& skeletons,
-								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			bool getTemporarySkeletons(CustomPlaylistSkeletons& skeletons,
-										 PlaylistSortOrder so);
-
-			bool getAllPlaylists(CustomPlaylists& playlists,
-								   PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			bool getTemporaryPlaylists(CustomPlaylists& playlists,
-										 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			bool getNonTemporaryPlaylists(CustomPlaylists& playlists,
-											 PlaylistSortOrder so=PlaylistSortOrder::IDAsc);
-
-			CustomPlaylist getPlaylistById(int id);
-			CustomPlaylist getPlaylistByName(const QString& name);
-
-			bool renamePlaylist(int id, const QString& new_name);
-			bool savePlaylistAs(const MetaDataList& v_md, const QString& name);
-			bool savePlaylistTemporary(const MetaDataList& v_md, const QString& name);
-			bool savePlaylist(const CustomPlaylist& pl);
-			bool savePlaylist(const MetaDataList& v_md, int id, bool is_temporary);
-
-			bool deletePlaylist(int id);
-			bool deletePlaylist(const QString& name);
-			bool exists(const QString& name);
-
-		private:
-			void applyTags(MetaDataList& v_md);
-			bool getPlaylists(CustomPlaylists& playlists,
-							   PlaylistStoreType type,
-							   PlaylistSortOrder sortorder);
-	};
-
-	using DBWrapperPtr=std::shared_ptr<DBWrapper>;
+		int createPlaylist(const QString& playlistName, bool temporary);
+		bool updatePlaylistTracks(int playlistId, const MetaDataList& tracks);
+		bool updatePlaylist(int playlistId, const QString& name, bool temporary);
+		bool renamePlaylist(int playlistId, const QString& name);
+		bool deletePlaylist(int id);
+		bool deletePlaylist(const QString& name);
+		bool exists(const QString& name);
+	}
 }
 
 #endif // PLAYLISTDBCONNECTOR_H
