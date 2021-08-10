@@ -88,6 +88,7 @@ class GUI_Playlist :
 		void tabFilesDropped(int playlistIndex, const QStringList& paths);
 		void openFileClicked(int playlistIndex, const QStringList& files);
 		void openDirClicked(int playlistIndex, const QString& dir);
+		void contextMenuRequested(int playlistIndex, const QPoint& position);
 
 		void checkTabIcon();
 

@@ -225,7 +225,7 @@ void TabBar::mousePressEvent(QMouseEvent* e)
 
 	if(e->button() == Qt::RightButton)
 	{
-		m->menu->exec(e->globalPos());
+		emit sigContextMenuRequested(this->currentIndex(), e->globalPos());
 	}
 
 	else if(e->button() == Qt::MiddleButton)
@@ -277,9 +277,10 @@ void TabBar::initShortcuts()
 	connect(shortcut, &QShortcut::activated, this, &TabBar::openDirPressed);
 }
 
-void TabBar::showMenuItems(Playlist::MenuEntries entries)
+void TabBar::showMenuItems(Playlist::MenuEntries entries, const QPoint& position)
 {
 	m->menu->showMenuItems(entries);
+	m->menu->exec(position);
 }
 
 void TabBar::setTabsClosable(bool b)

@@ -26,6 +26,7 @@
 
 #include <QTabWidget>
 
+class QPoint;
 namespace Playlist
 {
 	class View;
@@ -48,12 +49,13 @@ namespace Playlist
 			void sigAddTabClicked();
 			void sigMetadataDropped(int tabIndex, const MetaDataList& tracks);
 			void sigFilesDropped(int tabIndex, const QStringList& files);
+			void sigContextMenuRequested(int tabIndex, const QPoint& point);
 
 		public:
 			explicit TabWidget(QWidget* parent=nullptr);
 			~TabWidget() override;
 
-			void showMenuItems(MenuEntries actions);
+			void showMenuItems(MenuEntries actions, const QPoint& position);
 			void checkTabButtons();
 
 			bool wasDragFromPlaylist() const;

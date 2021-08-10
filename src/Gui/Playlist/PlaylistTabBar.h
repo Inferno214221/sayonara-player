@@ -26,6 +26,7 @@
 
 #include <QTabBar>
 
+class QPoint;
 namespace Playlist
 {
 	/**
@@ -55,12 +56,14 @@ namespace Playlist
 			void sigMetadataDropped(int tabIndex, const MetaDataList& v_md);
 			void sigFilesDropped(int tabIndex, const QStringList& files);
 
+			void sigContextMenuRequested(int currentIndex, const QPoint& position);
+
 
 		public:
 			explicit TabBar(QWidget* parent=nullptr);
 			~TabBar() override;
 
-			void showMenuItems(MenuEntries entries);
+			void showMenuItems(MenuEntries entries, const QPoint& position);
 			void setTabsClosable(bool b);
 
 			bool wasDragFromPlaylist() const;

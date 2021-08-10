@@ -125,13 +125,15 @@ namespace Playlist
 		connect(m->tabBar, &TabBar::sigAddTabClicked, this, &TabWidget::sigAddTabClicked);
 		connect(m->tabBar, &TabBar::sigMetadataDropped, this, &TabWidget::sigMetadataDropped);
 		connect(m->tabBar, &TabBar::sigFilesDropped, this, &TabWidget::sigFilesDropped);
+
+		connect(m->tabBar, &TabBar::sigContextMenuRequested, this, &TabWidget::sigContextMenuRequested);
 	}
 
 	TabWidget::~TabWidget() = default;
 
-	void TabWidget::showMenuItems(::Playlist::MenuEntries entries)
+	void TabWidget::showMenuItems(::Playlist::MenuEntries entries, const QPoint& position)
 	{
-		m->tabBar->showMenuItems(entries);
+		m->tabBar->showMenuItems(entries, position);
 	}
 
 	void TabWidget::checkTabButtons()

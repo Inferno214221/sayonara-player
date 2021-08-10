@@ -98,24 +98,27 @@ namespace
 		labTotalTime->setContentsMargins(0, 2, 0, 2);
 	}
 
-	void checkPlaylistMenu(PlaylistPtr playlist, TabWidget* tabWidget)
+	void checkPlaylistMenu(PlaylistPtr playlist, const QPoint& position, TabWidget* tabWidget)
 	{
+		if(!playlist)
+		{
+			return;
+		}
+
 		using Playlist::MenuEntry;
 
-		const auto temporary = (playlist) ? playlist->isTemporary() : true;
-		const auto wasChanged = (playlist) ? playlist->wasChanged() : false;
-		const auto isEmpty = (playlist) ? (playlist->count() == 0) : true;
-
-		const auto saveEnabled = (!temporary);
-		const auto saveToFileEnabled = (!isEmpty);
-		const auto deleteEnabled = (!temporary);
-		const auto resetEnabled = (!temporary && wasChanged);
+		const auto saveEnabled = (!playlist->isTemporary());
+		const auto saveAsEnabled = playlist->isTemporary();
+		const auto saveToFileEnabled = (playlist->count() > 0);
+		const auto deleteEnabled = (!playlist->isTemporary());
+		const auto resetEnabled = (!playlist->isTemporary() && playlist->wasChanged());
 		const auto closeEnabled = (tabWidget->count() > 2);
-		const auto clearEnabled = (!isEmpty);
+		const auto clearEnabled = (playlist->count() > 0);
 
 		auto entries = Playlist::MenuEntries {MenuEntry::None};
 
 		entries |= (saveEnabled) ? MenuEntry::Save : 0;
+		entries |= (saveAsEnabled) ? MenuEntry::SaveAs : 0;
 		entries |= (saveToFileEnabled) ? MenuEntry::SaveToFile : 0;
 		entries |= (deleteEnabled) ? MenuEntry::Delete : 0;
 		entries |= (resetEnabled) ? MenuEntry::Reset : 0;
@@ -124,10 +127,9 @@ namespace
 		entries |= (clearEnabled) ? MenuEntry::Clear : 0;
 		entries |= MenuEntry::OpenFile;
 		entries |= MenuEntry::OpenDir;
-		entries |= MenuEntry::SaveAs;
 		entries |= MenuEntry::Rename;
 
-		tabWidget->showMenuItems(entries);
+		tabWidget->showMenuItems(entries, position);
 	}
 
 	void checkPlaylistName(PlaylistPtr playlist, TabWidget* tabWidget)
@@ -199,6 +201,7 @@ GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPl
 	connect(ui->twPlaylists, &TabWidget::sigFilesDropped, this, &GUI_Playlist::tabFilesDropped);
 	connect(ui->twPlaylists, &TabWidget::sigOpenFile, this, &GUI_Playlist::openFileClicked);
 	connect(ui->twPlaylists, &TabWidget::sigOpenDir, this, &GUI_Playlist::openDirClicked);
+	connect(ui->twPlaylists, &TabWidget::sigContextMenuRequested, this, &GUI_Playlist::contextMenuRequested);
 
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_Playlist::clearButtonPressed);
 
@@ -332,7 +335,6 @@ void GUI_Playlist::playlistChanged(int playlistIndex)
 	{
 		checkPlaylistName(playlist, ui->twPlaylists);
 		calcTotalTimeLabel(playlist, ui->labTotalTime);
-		checkPlaylistMenu(playlist, ui->twPlaylists);
 	}
 }
 
@@ -346,7 +348,6 @@ void GUI_Playlist::playlistIdxChanged(int playlistIndex)
 
 		auto playlist = m->playlistHandler->playlist(playlistIndex);
 		calcTotalTimeLabel(playlist, ui->labTotalTime);
-		checkPlaylistMenu(playlist, ui->twPlaylists);
 	}
 }
 
@@ -379,6 +380,14 @@ void GUI_Playlist::playlistClosed(int playlistIndex)
 	}
 
 	playlistWidget->deleteLater();
+}
+
+void GUI_Playlist::contextMenuRequested(int playlistIndex, const QPoint& position)
+{
+	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
+	{
+		checkPlaylistMenu(playlist, position, ui->twPlaylists);
+	}
 }
 
 void GUI_Playlist::tabSavePlaylistClicked(int playlistIndex)
