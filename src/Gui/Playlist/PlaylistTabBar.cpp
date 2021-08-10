@@ -96,11 +96,13 @@ void TabBar::saveAsPressed()
 		.arg(tabText(currentIndex()))
 		.arg(Lang::get(Lang::SaveAs));
 
-	const auto newName =
-		QInputDialog::getText(this, Lang::get(Lang::SaveAs).triplePt(), dialogText);
-
-	if(!newName.isEmpty())
+	const auto oldName = tabText(currentIndex());
+	Gui::LineInputDialog dialog(Lang::get(Lang::SaveAs).triplePt(), dialogText, oldName, this);
+	dialog.exec();
+	
+	if(dialog.returnValue() == Gui::LineInputDialog::ReturnValue::Ok)
 	{
+		const auto newName = dialog.text();
 		emit sigTabSaveAs(currentIndex(), newName);
 	}
 }
