@@ -31,60 +31,72 @@
 #include <QDir>
 #include <QFile>
 
-MetaDataList PlaylistParser::parsePlaylist(const QString& local_filename)
+MetaDataList PlaylistParser::parsePlaylist(const QString& localFilename)
 {
-	if(Util::File::isWWW(local_filename)){
+	if(Util::File::isWWW(localFilename))
+	{
 		return MetaDataList();
 	}
 
 	MetaDataList result;
-	MetaDataList v_md_tmp;
-	MetaDataList v_md_to_delete;
-	AbstractPlaylistParser* playlist_parser;
+	MetaDataList tmpTracks;
+	MetaDataList tracksToDelete;
+	AbstractPlaylistParser* playlistParser;
 
-	if(local_filename.endsWith(QStringLiteral("m3u"), Qt::CaseInsensitive)) {
-		playlist_parser = new M3UParser(local_filename);
-	}
-
-	else if(local_filename.endsWith(QStringLiteral("pls"), Qt::CaseInsensitive)) {
-		playlist_parser = new PLSParser(local_filename);
-	}
-
-	else if(local_filename.endsWith(QStringLiteral("ram"), Qt::CaseInsensitive)) {
-		playlist_parser = new M3UParser(local_filename);
-	}
-
-	else if(local_filename.endsWith(QStringLiteral("asx"), Qt::CaseInsensitive)) {
-		playlist_parser = new ASXParser(local_filename);
-	}
-
-	else{
-		playlist_parser = new M3UParser(local_filename);
-		v_md_tmp = playlist_parser->tracks();
-
-		if(v_md_tmp.isEmpty()){
-			delete playlist_parser;
-			playlist_parser = new PLSParser(local_filename);
-			v_md_tmp = playlist_parser->tracks();
-		}
-
-		if(v_md_tmp.isEmpty()){
-			delete playlist_parser; playlist_parser = nullptr;
-			playlist_parser = new ASXParser(local_filename);
-		}
-	}
-
-	v_md_tmp = playlist_parser->tracks();
-
-	for(const MetaData& md : v_md_tmp)
+	if(localFilename.endsWith(QStringLiteral("m3u"), Qt::CaseInsensitive))
 	{
-		if( Util::File::checkFile(md.filepath()) ){
-			result << md;
+		playlistParser = new M3UParser(localFilename);
+	}
+
+	else if(localFilename.endsWith(QStringLiteral("pls"), Qt::CaseInsensitive))
+	{
+		playlistParser = new PLSParser(localFilename);
+	}
+
+	else if(localFilename.endsWith(QStringLiteral("ram"), Qt::CaseInsensitive))
+	{
+		playlistParser = new M3UParser(localFilename);
+	}
+
+	else if(localFilename.endsWith(QStringLiteral("asx"), Qt::CaseInsensitive))
+	{
+		playlistParser = new ASXParser(localFilename);
+	}
+
+	else
+	{
+		playlistParser = new M3UParser(localFilename);
+		tmpTracks = playlistParser->tracks();
+
+		if(tmpTracks.isEmpty())
+		{
+			delete playlistParser;
+			playlistParser = new PLSParser(localFilename);
+			tmpTracks = playlistParser->tracks();
+		}
+
+		if(tmpTracks.isEmpty())
+		{
+			delete playlistParser;
+			playlistParser = nullptr;
+			playlistParser = new ASXParser(localFilename);
 		}
 	}
 
-	if(playlist_parser){
-		delete playlist_parser; playlist_parser = nullptr;
+	tmpTracks = playlistParser->tracks();
+
+	for(const auto& track : tmpTracks)
+	{
+		if(Util::File::checkFile(track.filepath()))
+		{
+			result << track;
+		}
+	}
+
+	if(playlistParser)
+	{
+		delete playlistParser;
+		playlistParser = nullptr;
 	}
 
 	result.removeDuplicates();
@@ -92,42 +104,47 @@ MetaDataList PlaylistParser::parsePlaylist(const QString& local_filename)
 	return result;
 }
 
-
-void PlaylistParser::saveM3UPlaylist(const QString& filename, const MetaDataList& v_md, bool relative)
+void PlaylistParser::saveM3UPlaylist(const QString& filename, const MetaDataList& tracks, bool relative)
 {
-	QString f = filename;
-	if(!f.endsWith("m3u", Qt::CaseInsensitive)) {
+	auto f = filename;
+	if(!f.endsWith("m3u", Qt::CaseInsensitive))
+	{
 		f.append(".m3u");
 	}
 
 	bool success;
-	QString dir_str = f.left(f.lastIndexOf(QDir::separator()));
-	QDir dir(dir_str);
-	dir.cd(dir_str);
+	const auto dirString = f.left(f.lastIndexOf(QDir::separator()));
+	QDir dir(dirString);
+	dir.cd(dirString);
 
 	QFile file(f);
 	success = file.open(QIODevice::WriteOnly);
-	if(!success){
+	if(!success)
+	{
 		return;
 	}
 
-	file.write( QByteArray("#EXTM3U\n") );
+	file.write(QByteArray("#EXTM3U\n"));
 
-	int64_t lines = 0;
-	for(const MetaData& md : v_md) {
+	auto lines = 0L;
+	for(const auto& track : tracks)
+	{
 		QString str;
-		if(relative) {
-			str = dir.relativeFilePath(md.filepath());
+		if(relative)
+		{
+			str = dir.relativeFilePath(track.filepath());
 		}
 
-		else{
-			str = md.filepath();
+		else
+		{
+			str = track.filepath();
 		}
 
-		QString ext_data = "#EXTINF: " + QString::number(md.durationMs() / 1000)  + ", " + md.artist() + " - " + md.title() + "\n";
-		lines += file.write(ext_data.toLocal8Bit());
+		const auto extData =
+			"#EXTINF: " + QString::number(track.durationMs() / 1000) + ", " + track.artist() + " - " + track.title() + "\n";
+		lines += file.write(extData.toLocal8Bit());
 		lines += file.write(str.toLocal8Bit());
-		lines += file.write( QByteArray("\n") );
+		lines += file.write(QByteArray("\n"));
 	}
 
 	file.close();

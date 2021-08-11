@@ -18,20 +18,16 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PLAYLISTPARSER_H_
-#define PLAYLISTPARSER_H_
-
+#ifndef SAYONARA_PLAYER_PLAYLISTPARSER_H
+#define SAYONARA_PLAYER_PLAYLISTPARSER_H
 
 class QString;
 class MetaDataList;
-/**
- * @brief PlaylistParser namespace
- * @ingroup PlaylistParser
- */
+
 namespace PlaylistParser 
 {
-	MetaDataList parsePlaylist(const QString& playlistFile);
-    void saveM3UPlaylist(const QString& filename, const MetaDataList& md, bool relative);
+	MetaDataList parsePlaylist(const QString& localFilename);
+    void saveM3UPlaylist(const QString& filename, const MetaDataList& tracks, bool relative);
 }
 
-#endif /* PLAYLISTPARSER_H_ */
+#endif /* SAYONARA_PLAYER_PLAYLISTPARSER_H */
