@@ -55,6 +55,6 @@ namespace DB
 	void bindMappingToQuery(Query& query, const RangeMapping& rangeMapping, const QList<Id>& elements);
 
 	QString getFilterWhereStatement(const ::Library::Filter& filter, QString searchPlaceholder);
-};
+}
 
 #endif //SAYONARA_PLAYER_UTILS_H
