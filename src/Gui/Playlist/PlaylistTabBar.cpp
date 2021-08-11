@@ -114,8 +114,10 @@ void TabBar::saveToFilePressed()
 
 	if(!fileName.isEmpty())
 	{
+		const auto answer = Message::question_yn(tr("Do you want relative file paths in your playlist?"));
+
 		m->lastDir = Util::File::getParentDirectory(fileName);
-		emit sigTabSaveToFile(this->currentIndex(), fileName);
+		emit sigTabSaveToFile(this->currentIndex(), fileName, (answer == Message::Answer::Yes));
 	}
 }
 

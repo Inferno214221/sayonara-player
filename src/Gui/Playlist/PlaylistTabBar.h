@@ -46,7 +46,7 @@ namespace Playlist
 			void sigTabReset(int tabIndex);
 			void sigTabSave(int tabIndex);
 			void sigTabSaveAs(int tabIndex, const QString& name);
-			void sigTabSaveToFile(int tabIndex, const QString& filename);
+			void sigTabSaveToFile(int tabIndex, const QString& filename, bool relativePaths);
 			void sigTabRename(int tabIndex, const QString& name);
 			void sigTabClear(int tabIndex);
 

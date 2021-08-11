@@ -80,7 +80,7 @@ class GUI_Playlist :
 		// triggered by GUI
 		void tabSavePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp
 		void tabSavePlaylistAsClicked(int playlistIndex, const QString& newName); // GUI_PlaylistTabs.cpp
-		void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename); // GUI_PlaylistTabs.cpp
+		void tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename, bool relativePaths);
 		void tabRenameClicked(int playlistIndex, const QString& newName);
 		void tabResetClicked(int playlistIndex);
 		void tabDeletePlaylistClicked(int playlistIndex); // GUI_PlaylistTabs.cpp

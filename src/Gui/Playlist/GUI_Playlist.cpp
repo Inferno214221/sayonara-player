@@ -412,11 +412,11 @@ void GUI_Playlist::tabSavePlaylistAsClicked(int playlistIndex, const QString& ne
 	showSaveMessageBox(this, success);
 }
 
-void GUI_Playlist::tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename)
+void GUI_Playlist::tabSavePlaylistToFileClicked(int playlistIndex, const QString& filename, bool relativePaths)
 {
 	if(const auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		M3UParser::saveM3UPlaylist(filename, playlist->tracks(), false);
+		M3UParser::saveM3UPlaylist(filename, playlist->tracks(), relativePaths);
 	}
 }
 
