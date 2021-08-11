@@ -21,36 +21,16 @@
 #ifndef DIRECTORY_READER
 #define DIRECTORY_READER
 
-#include "Utils/Pimpl.h"
+#include <QStringList>
 
 class QDir;
-
-/**
- * @brief Directory reader functions
- * @ingroup Helper
- */
-class DirectoryReader
+class MetaDataList;
+namespace DirectoryReader
 {
-	PIMPL(DirectoryReader)
-
-	public:
-		DirectoryReader();
-		DirectoryReader(const QStringList& filter);
-		~DirectoryReader();
-
-		void setFilter(const QStringList& filter);
-		void setFilter(const QString& filter);
-
-		/**
-		 * @brief fetch all files recursively for baseDirOrig. Only files matching the name filter will be extracted
-		 * @param baseDirOrig the directory of interest
-		 * @param files this array will be filled with the found absolute file paths
-		 */
-		void scanFilesRecursive(const QDir& baseDirOrig, QStringList& files) const;
-
-		void scanFiles(const QDir& baseDir, QStringList& files) const;
-
-		MetaDataList scanMetadata(const QStringList& fileList);
-};
+	[[nodiscard]] QStringList scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters = QStringList());
+	[[nodiscard]] QStringList
+	scanFilesRecursively(const QDir& baseDirOrig, const QStringList& nameFilters = QStringList());
+	[[nodiscard]] MetaDataList scanMetadata(const QStringList& fileList);
+}
 
 #endif

@@ -61,9 +61,6 @@ void MetaDataScanner::start()
 		return;
 	}
 
-	DirectoryReader reader;
-	reader.setFilter(extensions);
-
 	if(!m->recursive)
 	{
 		m->tracks.clear();
@@ -71,15 +68,14 @@ void MetaDataScanner::start()
 		{
 			emit sigCurrentProcessedPathChanged(path);
 
-			QStringList files;
-			reader.scanFiles(QDir(path), files);
-			m->tracks << reader.scanMetadata(files);
+			const auto files = DirectoryReader::scanFilesInDirectory(QDir(path), extensions);
+			m->tracks << DirectoryReader::scanMetadata(files);
 		}
 	}
 
 	else
 	{
-		m->tracks = reader.scanMetadata(m->files);
+		m->tracks = DirectoryReader::scanMetadata(m->files);
 	}
 
 	emit sigFinished();

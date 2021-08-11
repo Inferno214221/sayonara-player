@@ -126,10 +126,7 @@ void FileListModel::setParentDirectory(const QString& dir)
 	extensions << Util::playlistExtensions();
 	extensions << "*";
 
-	DirectoryReader reader;
-	reader.setFilter(extensions);
-	reader.scanFiles(QDir(dir), m->files);
-
+	m->files = DirectoryReader::scanFilesInDirectory(QDir(dir), extensions);
 	if(m->files.size() > oldRowcount)
 	{
 		beginInsertRows(QModelIndex(), oldRowcount, m->files.size());

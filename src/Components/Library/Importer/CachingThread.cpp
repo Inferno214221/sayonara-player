@@ -166,10 +166,8 @@ bool CachingThread::scanTgzArchive(const QString& tgz)
 
 void CachingThread::scanDirectory(const QString& dir)
 {
-	DirectoryReader dr(QStringList({"*"}));
-	QStringList files;
+	const auto files = DirectoryReader::scanFilesRecursively(dir, QStringList{"*"});
 
-	dr.scanFilesRecursive(dir, files);
 	spLog(Log::Crazy, this) << "Found " << files.size() << " files";
 
 	QDir upperDir(dir);
@@ -186,9 +184,9 @@ void CachingThread::scanDirectory(const QString& dir)
 		upperDir.cdUp();
 	}
 
-	for(const auto& dirFile : Algorithm::AsConst(files))
+	for(const auto& file : files)
 	{
-		addFile(dirFile, upperDir.absolutePath());
+		addFile(file, upperDir.absolutePath());
 	}
 }
 
