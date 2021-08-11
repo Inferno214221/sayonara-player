@@ -16,7 +16,6 @@ class PlaylistFileTest :
 
 	private slots:
 		void m3u();
-		void pls();
 };
 
 void PlaylistFileTest::m3u()
@@ -25,11 +24,11 @@ void PlaylistFileTest::m3u()
 	#EXTM3U
 	#EXTINF:221,Queen - Bohemian Rhapsody
 	file1.mp3
-	#EXTINF:473,Dire Straits - Walk Of Life
+	#EXTINF:473, Dire Straits - Walk Of Life
 	file2.ogg
-	#EXTINF:264,冨田勲 - Boléro
+	#EXTINF:264 ,冨田勲 - Boléro
 	<file3>
-	#EXTINF:504,Bob Marley - Buffalo Soldier
+	#EXTINF: 504,  Bob Marley - Buffalo Soldier
 	<file4>
 	)m3u";
 
@@ -71,10 +70,6 @@ void PlaylistFileTest::m3u()
 	QVERIFY(tracks[3].filepath() == this->tempPath("file4.aac"));
 }
 
-void PlaylistFileTest::pls()
-{
-	QVERIFY(true);
-}
 
 QTEST_GUILESS_MAIN(PlaylistFileTest)
 #include "PlaylistFileTest.moc"

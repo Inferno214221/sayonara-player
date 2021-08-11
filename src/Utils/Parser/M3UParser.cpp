@@ -40,7 +40,7 @@ namespace
 			return false;
 		}
 
-		auto regex = QString("#EXTINF:\\s*([0-9]+)\\s*,\\s*(.*) - (.*)");
+		const auto regex = QStringLiteral("#EXTINF:\\s*([0-9]+)\\s*,\\s*(.*) - (.*)");
 		auto re = QRegExp(regex);
 		re.setMinimal(false);
 		if(re.indexIn(line) >= 0)
@@ -84,6 +84,7 @@ namespace
 	}
 }
 
+
 M3UParser::M3UParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
 
@@ -91,44 +92,52 @@ M3UParser::~M3UParser() = default;
 
 void M3UParser::parse()
 {
-	const QStringList list = content().split('\n');
+	MetaData track;
 
-	MetaData md;
-
-	for(QString line : list)
+	const auto lines = content().split('\n');
+	for(auto line : lines)
 	{
 		line = line.trimmed();
-		if(line.isEmpty()){
+		if(line.isEmpty())
+		{
 			continue;
 		}
 
-		if(line.startsWith("#EXTINF:", Qt::CaseInsensitive)) {
-			md = MetaData();
-			parseFirstLine(line, md);
+		if(line.startsWith("#EXTINF:", Qt::CaseInsensitive))
+		{
+			if(!track.filepath().isEmpty())
+			{
+				addTrack(track);
+				track = MetaData();
+			}
+
+			parseFirstLine(line, track);
 			continue;
 		}
 
-		if(line.trimmed().startsWith('#')) {
+		if(line.trimmed().startsWith('#'))
+		{
 			continue;
 		}
 
-		if(Util::File::isPlaylistFile(line)){
-			MetaDataList v_md = PlaylistParser::parsePlaylist(line);
-			addTracks(v_md);
+		if(Util::File::isPlaylistFile(line))
+		{
+			addTracks(PlaylistParser::parsePlaylist(line));
 			continue;
 		}
 
-		else if( !Util::File::isWWW(line)) {
-			parseLocalFile(line, md);
+		else if(!Util::File::isWWW(line))
+		{
+			auto lambda = [&](const auto& filename) -> QString {
+				return this->getAbsoluteFilename(filename);
+			};
+
+			parseLocalFile(line, track, lambda);
 		}
 
-		else {
-			parseWWWFile(line, md);
-		}
-
-		if(!md.filepath().isEmpty()){
-			addTrack(md);
-			md = MetaData();
+		else
+		{
+			parseWWWFile(line, track);
 		}
 	}
 
@@ -138,6 +147,7 @@ void M3UParser::parse()
 		track = MetaData();
 	}
 }
+
 
 void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bool relative)
 {
@@ -167,7 +177,7 @@ void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bo
 		                      : track.filepath();
 
 		lines << filepath;
-		lines << "\n";
+		lines << QString();
 	}
 
 	const auto text = lines.join("\n");
