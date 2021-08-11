@@ -26,8 +26,63 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
+#include <QDir>
+#include <QFile>
 #include <QRegExp>
 #include <QStringList>
+
+namespace
+{
+	bool parseFirstLine(const QString& line, MetaData& track)
+	{
+		if(line.indexOf("#EXTINF:") != 0)
+		{
+			return false;
+		}
+
+		auto regex = QString("#EXTINF:\\s*([0-9]+)\\s*,\\s*(.*) - (.*)");
+		auto re = QRegExp(regex);
+		re.setMinimal(false);
+		if(re.indexIn(line) >= 0)
+		{
+			if(track.title().isEmpty())
+			{
+				track.setTitle(re.cap(3).trimmed());
+			}
+
+			if(track.artist().isEmpty())
+			{
+				track.setArtist(re.cap(2).trimmed());
+			}
+
+			if(track.durationMs() <= 0)
+			{
+				track.setDurationMs(re.cap(1).trimmed().toInt() * 1000);
+			}
+		}
+
+		return true;
+	}
+
+	template<typename AbsuluteFilenameFunction>
+	void parseLocalFile(const QString& line, MetaData& track, AbsuluteFilenameFunction fn)
+	{
+		const auto absoluteFilename = fn(line);
+		if(absoluteFilename.isEmpty())
+		{
+			return;
+		}
+
+		track.setFilepath(absoluteFilename);
+		Tagging::Utils::getMetaDataOfFile(track);
+	}
+
+	void parseWWWFile(const QString& line, MetaData& track)
+	{
+		track.setRadioStation(line);
+		track.setFilepath(line);
+	}
+}
 
 M3UParser::M3UParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
@@ -76,51 +131,46 @@ void M3UParser::parse()
 			md = MetaData();
 		}
 	}
+
+	if(!track.filepath().isEmpty())
+	{
+		addTrack(track);
+		track = MetaData();
+	}
 }
 
-bool M3UParser::parseFirstLine(const QString& line, MetaData& md)
+void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bool relative)
 {
-	if(line.indexOf("#EXTINF:") != 0)
+	if(Util::File::getFileExtension(filename).toLower() != QStringLiteral("m3u"))
 	{
-		return false;
+		filename.append(".m3u");
 	}
 
-	QString substring;
-	int currentIndex = 8;
-	int newIndex = line.indexOf(',', 8);
-	substring = line.mid(currentIndex, newIndex - currentIndex);
-
-	md.setDurationMs(substring.toInt() * 1000);
-
-	currentIndex = newIndex + 1;
-	newIndex = line.indexOf(" - ", currentIndex);
-	substring = line.mid(currentIndex, newIndex - currentIndex);
-
-	if(newIndex > 0)
+	auto file = QFile(filename);
+	const auto success = file.open(QIODevice::WriteOnly);
+	if(!success)
 	{
-		md.setArtist(substring);
-		currentIndex = newIndex + 3;
-		substring = line.mid(currentIndex);
-	}
-
-	md.setTitle(substring);
-
-	return true;
-}
-
-void M3UParser::parseLocalFile(const QString& line, MetaData& md)
-{
-	QString absoluteFilename = getAbsoluteFilename(line);
-	if(absoluteFilename.isEmpty()){
 		return;
 	}
 
-	md.setFilepath(absoluteFilename);
-	Tagging::Utils::getMetaDataOfFile(md);
-}
+	auto dir = QDir(Util::File::getParentDirectory(filename));
+	auto lines = QStringList() << QStringLiteral("#EXTM3U");
+	for(const auto& track : tracks)
+	{
+		lines << QString("#EXTINF:%1,%2 - %3") // no, there is no space missing here.
+			.arg(track.durationMs() / 1000)
+			.arg(track.artist())
+			.arg(track.title());
 
-void M3UParser::parseWWWFile(const QString& line, MetaData& md)
-{
-	md.setRadioStation(line);
-	md.setFilepath(line);
+		const auto filepath = (relative)
+		                      ? dir.relativeFilePath(track.filepath())
+		                      : track.filepath();
+
+		lines << filepath;
+		lines << "\n";
+	}
+
+	const auto text = lines.join("\n");
+	file.write(text.toLocal8Bit());
+	file.close();
 }

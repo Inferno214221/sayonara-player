@@ -23,7 +23,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Parser/PlaylistParser.h"
+#include "Utils/Parser/M3UParser.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -169,7 +169,7 @@ bool SR::StreamRecorder::save()
 	Tagging::Utils::setMetaDataOfFile(m->currentTrack);
 	m->sessionCollector.push_back(m->currentTrack);
 
-	PlaylistParser::saveM3UPlaylist(m->sessionPlaylistName, m->sessionCollector, true);
+	M3UParser::saveM3UPlaylist(m->sessionPlaylistName, m->sessionCollector, true);
 
 	return true;
 }

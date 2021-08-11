@@ -23,23 +23,17 @@
 
 #include "AbstractPlaylistParser.h"
 
-/**
- * @brief The M3UParser class
- * @ingroup PlaylistParser
- */
 class M3UParser :
-		public AbstractPlaylistParser
+	public AbstractPlaylistParser
 {
-public:
-	explicit M3UParser(const QString& filename);
-	~M3UParser() override;
+	public:
+		explicit M3UParser(const QString& filename);
+		~M3UParser() override;
 
-private:
-	void parse() override;
+		static void saveM3UPlaylist(QString filename, const MetaDataList& tracks, bool relative);
 
-    bool parseFirstLine(const QString& line, MetaData& md);
-    void parseLocalFile(const QString& line, MetaData& md);
-    void parseWWWFile(const QString& line, MetaData& md);
+	private:
+		void parse() override;
 };
 
 #endif // M3UPARSER_H

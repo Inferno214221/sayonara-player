@@ -28,124 +28,86 @@
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QUrl>
-#include <QDir>
-#include <QFile>
 
-MetaDataList PlaylistParser::parsePlaylist(const QString& localFilename)
+namespace
 {
-	if(Util::File::isWWW(localFilename))
+	template<typename ParserType>
+	std::shared_ptr<ParserType> tryOutParser(const QString& filename)
+	{
+		auto parser = std::make_shared<ParserType>(filename);
+		const auto tracks = parser->tracks();
+
+		return (!parser->tracks().isEmpty())
+		       ? parser
+		       : nullptr;
+	}
+
+	std::shared_ptr<AbstractPlaylistParser> determinePlaylistParser(const QString& filename)
+	{
+		if(auto parser = tryOutParser<M3UParser>(filename); parser)
+		{
+			return parser;
+		}
+
+		if(auto parser = tryOutParser<PLSParser>(filename); parser)
+		{
+			return parser;
+		}
+
+		if(auto parser = tryOutParser<ASXParser>(filename); parser)
+		{
+			return parser;
+		}
+
+		return nullptr;
+	}
+
+	std::shared_ptr<AbstractPlaylistParser> getPlaylistParser(const QString& filename)
+	{
+		if(filename.endsWith(QStringLiteral("m3u"), Qt::CaseInsensitive))
+		{
+			return std::make_shared<M3UParser>(filename);
+		}
+
+		if(filename.endsWith(QStringLiteral("pls"), Qt::CaseInsensitive))
+		{
+			return std::make_shared<PLSParser>(filename);
+		}
+
+		if(filename.endsWith(QStringLiteral("ram"), Qt::CaseInsensitive))
+		{
+			return std::make_shared<M3UParser>(filename);
+		}
+
+		if(filename.endsWith(QStringLiteral("asx"), Qt::CaseInsensitive))
+		{
+			return std::make_shared<ASXParser>(filename);
+		}
+
+		return determinePlaylistParser(filename);
+	}
+}
+
+MetaDataList PlaylistParser::parsePlaylist(const QString& filename)
+{
+	if(Util::File::isWWW(filename))
 	{
 		return MetaDataList();
 	}
 
 	MetaDataList result;
-	MetaDataList tmpTracks;
-	MetaDataList tracksToDelete;
-	AbstractPlaylistParser* playlistParser;
 
-	if(localFilename.endsWith(QStringLiteral("m3u"), Qt::CaseInsensitive))
-	{
-		playlistParser = new M3UParser(localFilename);
-	}
+	const auto playlistParser = getPlaylistParser(filename);
 
-	else if(localFilename.endsWith(QStringLiteral("pls"), Qt::CaseInsensitive))
-	{
-		playlistParser = new PLSParser(localFilename);
-	}
-
-	else if(localFilename.endsWith(QStringLiteral("ram"), Qt::CaseInsensitive))
-	{
-		playlistParser = new M3UParser(localFilename);
-	}
-
-	else if(localFilename.endsWith(QStringLiteral("asx"), Qt::CaseInsensitive))
-	{
-		playlistParser = new ASXParser(localFilename);
-	}
-
-	else
-	{
-		playlistParser = new M3UParser(localFilename);
-		tmpTracks = playlistParser->tracks();
-
-		if(tmpTracks.isEmpty())
-		{
-			delete playlistParser;
-			playlistParser = new PLSParser(localFilename);
-			tmpTracks = playlistParser->tracks();
-		}
-
-		if(tmpTracks.isEmpty())
-		{
-			delete playlistParser;
-			playlistParser = nullptr;
-			playlistParser = new ASXParser(localFilename);
-		}
-	}
-
-	tmpTracks = playlistParser->tracks();
-
-	for(const auto& track : tmpTracks)
+	auto tracks = playlistParser->tracks();
+	for(auto& track : tracks)
 	{
 		if(Util::File::checkFile(track.filepath()))
 		{
-			result << track;
+			result << std::move(track);
 		}
 	}
-
-	if(playlistParser)
-	{
-		delete playlistParser;
-		playlistParser = nullptr;
-	}
-
-	result.removeDuplicates();
 
 	return result;
 }
 
-void PlaylistParser::saveM3UPlaylist(const QString& filename, const MetaDataList& tracks, bool relative)
-{
-	auto f = filename;
-	if(!f.endsWith("m3u", Qt::CaseInsensitive))
-	{
-		f.append(".m3u");
-	}
-
-	bool success;
-	const auto dirString = f.left(f.lastIndexOf(QDir::separator()));
-	QDir dir(dirString);
-	dir.cd(dirString);
-
-	QFile file(f);
-	success = file.open(QIODevice::WriteOnly);
-	if(!success)
-	{
-		return;
-	}
-
-	file.write(QByteArray("#EXTM3U\n"));
-
-	auto lines = 0L;
-	for(const auto& track : tracks)
-	{
-		QString str;
-		if(relative)
-		{
-			str = dir.relativeFilePath(track.filepath());
-		}
-
-		else
-		{
-			str = track.filepath();
-		}
-
-		const auto extData =
-			"#EXTINF: " + QString::number(track.durationMs() / 1000) + ", " + track.artist() + " - " + track.title() + "\n";
-		lines += file.write(extData.toLocal8Bit());
-		lines += file.write(str.toLocal8Bit());
-		lines += file.write(QByteArray("\n"));
-	}
-
-	file.close();
-}

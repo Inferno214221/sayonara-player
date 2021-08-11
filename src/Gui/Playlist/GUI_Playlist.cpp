@@ -39,7 +39,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/globals.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Parser/PlaylistParser.h"
+#include "Utils/Parser/M3UParser.h"
 
 #include "Interfaces/PlayManager.h"
 #include "Interfaces/DynamicPlayback.h"
@@ -416,7 +416,7 @@ void GUI_Playlist::tabSavePlaylistToFileClicked(int playlistIndex, const QString
 {
 	if(const auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		PlaylistParser::saveM3UPlaylist(filename, playlist->tracks(), false);
+		M3UParser::saveM3UPlaylist(filename, playlist->tracks(), false);
 	}
 }
 

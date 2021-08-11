@@ -26,8 +26,7 @@ class MetaDataList;
 
 namespace PlaylistParser 
 {
-	MetaDataList parsePlaylist(const QString& localFilename);
-    void saveM3UPlaylist(const QString& filename, const MetaDataList& tracks, bool relative);
+	MetaDataList parsePlaylist(const QString& filename);
 }
 
 #endif /* SAYONARA_PLAYER_PLAYLISTPARSER_H */
