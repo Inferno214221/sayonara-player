@@ -31,6 +31,6 @@ namespace Test
 	MetaDataList createTracks();
 	MetaData createTrack(const uint16_t trackNumber, const QString& title, const QString& artist, const QString& album,
 	                     const QString& albumArtist = QString());
-};
+}
 
 #endif //SAYONARA_PLAYER_TESTTRACKS_H
