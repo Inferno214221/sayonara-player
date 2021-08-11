@@ -26,8 +26,7 @@ struct DirectorySelectionHandler::Private
 		genericLibrary {nullptr},
 		libraryManager {libraryManager},
 		libraries {libraryManager->allLibraries()},
-		currentLibraryIndex {(libraries.count() > 0) ? 0 : -1}
-	{}
+		currentLibraryIndex {(libraries.count() > 0) ? 0 : -1} {}
 };
 
 DirectorySelectionHandler::DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent) :
@@ -35,30 +34,23 @@ DirectorySelectionHandler::DirectorySelectionHandler(Library::Manager* libraryMa
 {
 	m = Pimpl::make<Private>(libraryManager);
 
-	connect(m->libraryManager, &Library::Manager::sigAdded, this, [&](auto ignore) {
-		Q_UNUSED(ignore)
+	connect(m->libraryManager, &Library::Manager::sigAdded, this, [&](auto /* id */) {
 		librariesChanged();
 	});
 
-	connect(m->libraryManager, &Library::Manager::sigRemoved, this, [&](auto ignore) {
-		Q_UNUSED(ignore)
+	connect(m->libraryManager, &Library::Manager::sigRemoved, this, [&](auto /* id */) {
 		librariesChanged();
 	});
 
-	connect(m->libraryManager, &Library::Manager::sigMoved, this, [&](auto i1, auto i2, auto i3) {
-		Q_UNUSED(i1)
-		Q_UNUSED(i2)
-		Q_UNUSED(i3)
+	connect(m->libraryManager, &Library::Manager::sigMoved, this, [&](auto /* id */, auto /* from */, auto /* to */) {
 		librariesChanged();
 	});
 
-	connect(m->libraryManager, &Library::Manager::sigRenamed, this, [&](auto ignore) {
-		Q_UNUSED(ignore)
+	connect(m->libraryManager, &Library::Manager::sigRenamed, this, [&](auto /* id */) {
 		librariesChanged();
 	});
 
-	connect(m->libraryManager, &Library::Manager::sigPathChanged, this, [&](auto ignore) {
-		Q_UNUSED(ignore)
+	connect(m->libraryManager, &Library::Manager::sigPathChanged, this, [&](auto /* id */) {
 		librariesChanged();
 	});
 }
@@ -70,12 +62,12 @@ void DirectorySelectionHandler::createPlaylist(const QStringList& paths, bool cr
 	this->libraryInstance()->prepareTracksForPlaylist(paths, createNewPlaylist);
 }
 
-void DirectorySelectionHandler::playNext(const QStringList& /*paths*/)
+void DirectorySelectionHandler::playNext([[maybe_unused]] const QStringList& paths)
 {
 	this->libraryInstance()->playNextFetchedTracks();
 }
 
-void DirectorySelectionHandler::appendTracks(const QStringList& /*paths*/)
+void DirectorySelectionHandler::appendTracks([[maybe_unused]] const QStringList& paths)
 {
 	this->libraryInstance()->appendFetchedTracks();
 }

@@ -2,10 +2,11 @@
 #define DIRECTORYFILESCANNER_H
 
 #include "Utils/Pimpl.h"
+
 #include <QObject>
 
 class MetaDataList;
-
+class QStringList;
 namespace Directory
 {
 	class MetaDataScanner :
@@ -24,9 +25,6 @@ namespace Directory
 
 			MetaDataList metadata() const;
 			QStringList files() const;
-
-			void setData(void* data);
-			void* data() const;
 
 		public slots:
 			void start();

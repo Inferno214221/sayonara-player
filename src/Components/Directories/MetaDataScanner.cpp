@@ -14,21 +14,13 @@ using Directory::MetaDataScanner;
 struct MetaDataScanner::Private
 {
 	QStringList files;
-	QStringList extensions;
 	MetaDataList tracks;
 
-	void* data = nullptr;
-
 	bool recursive;
-	bool scanAudioFiles;
-	bool scanPlaylistFiles;
 
 	Private(const QStringList& files, bool recursive) :
 		files(files),
-		recursive(recursive),
-		scanAudioFiles(true),
-		scanPlaylistFiles(false)
-	{}
+		recursive(recursive) {}
 };
 
 MetaDataScanner::~MetaDataScanner()
@@ -44,27 +36,12 @@ MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObje
 
 void MetaDataScanner::start()
 {
-	QStringList extensions;
-	if(m->scanAudioFiles)
-	{
-		extensions << Util::soundfileExtensions();
-	}
-
-	if(m->scanPlaylistFiles)
-	{
-		extensions << Util::playlistExtensions();
-	}
-
-	if(extensions.isEmpty())
-	{
-		emit sigFinished();
-		return;
-	}
-
 	if(!m->recursive)
 	{
 		m->tracks.clear();
-		for(const QString& path : m->files)
+
+		const auto extensions = QStringList() << Util::soundfileExtensions();
+		for(const auto& path : m->files)
 		{
 			emit sigCurrentProcessedPathChanged(path);
 
@@ -81,22 +58,6 @@ void MetaDataScanner::start()
 	emit sigFinished();
 }
 
-MetaDataList MetaDataScanner::metadata() const
-{
-	return m->tracks;
-}
+MetaDataList MetaDataScanner::metadata() const { return m->tracks; }
 
-QStringList MetaDataScanner::files() const
-{
-	return m->files;
-}
-
-void MetaDataScanner::setData(void* data_object)
-{
-	m->data = data_object;
-}
-
-void* MetaDataScanner::data() const
-{
-	return m->data;
-}
+QStringList MetaDataScanner::files() const { return m->files; }
