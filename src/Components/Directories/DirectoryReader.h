@@ -38,16 +38,7 @@ class DirectoryReader
 		DirectoryReader(const QStringList& filter);
 		~DirectoryReader();
 
-		/**
-		 * @brief set name filters
-		 * @param filter name filters
-		 */
 		void setFilter(const QStringList& filter);
-
-		/**
-		 * @brief set a single name filter
-		 * @param filter name filter
-		 */
 		void setFilter(const QString& filter);
 
 		/**
@@ -57,22 +48,9 @@ class DirectoryReader
 		 */
 		void scanFilesRecursive(const QDir& baseDirOrig, QStringList& files) const;
 
-		void scanFiles(const QDir& base_dir, QStringList& files) const;
+		void scanFiles(const QDir& baseDir, QStringList& files) const;
 
-		/**
-		 * @brief extracts MetaData structures from a list of files
-		 * @param fileList List of filepaths
-		 * @return A list of MetaData extracted from paths
-		 */
 		MetaDataList scanMetadata(const QStringList& fileList);
-
-		/**
-		 * @brief Finds files recursively in the given directory with the given filter
-		 * @param dirOrig directory to search in
-		 * @param filename filenames to find
-		 * @return list of all found files
-		 */
-		QStringList findFilesRecursive(const QDir& dirOrig, const QString& filename);
 };
 
 #endif
