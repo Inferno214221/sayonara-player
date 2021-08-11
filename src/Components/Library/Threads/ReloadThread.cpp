@@ -30,7 +30,6 @@
 
 #include "ReloadThread.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "Database/Connector.h"
@@ -41,6 +40,7 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
 #include "Utils/Utils.h"
+#include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Genre.h"

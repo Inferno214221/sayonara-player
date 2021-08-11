@@ -170,7 +170,7 @@ namespace DirectoryReader
 			}
 		}
 
-		result << scanFilesInDirectory(dir);
+		result << scanFilesInDirectory(dir, nameFilter);
 
 		return result;
 	}

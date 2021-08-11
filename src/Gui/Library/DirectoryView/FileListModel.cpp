@@ -21,7 +21,6 @@
 #include "FileListModel.h"
 
 #include "Components/Covers/LocalCoverSearcher.h"
-#include "Components/Directories/DirectoryReader.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Database/Connector.h"
@@ -30,6 +29,7 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/DirectoryReader.h"
 #include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"

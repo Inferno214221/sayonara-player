@@ -20,10 +20,10 @@
 
 #include "CachingThread.h"
 
-#include "Components/Directories/DirectoryReader.h"
 #include "Components/Tagging/ChangeNotifier.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"

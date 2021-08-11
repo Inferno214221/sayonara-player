@@ -1,10 +1,10 @@
 #include "MetaDataScanner.h"
 
-#include "Components/Directories/DirectoryReader.h"
+#include "Database/Connector.h"
 
+#include "Utils/DirectoryReader.h"
 #include "Utils/Utils.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Database/Connector.h"
 
 #include <QStringList>
 #include <QDir>
