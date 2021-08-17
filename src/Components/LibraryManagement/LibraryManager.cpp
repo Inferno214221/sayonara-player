@@ -247,24 +247,21 @@ bool Manager::removeLibrary(LibraryId id)
 		return (info.id() == id);
 	}));
 
-	if(m->libraryMap[id])
-	{
-		delete m->libraryMap[id];
-	}
+	auto* localLibrary = m->libraryMap.value(id);
 
 	m->libraryMap.remove(id);
 	m->database->deleteLibraryDatabase(id);
+	m->libraryConnector->removeLibrary(id);
+	m->refetchLibraries();
 
-	const auto removed = m->libraryConnector->removeLibrary(id);
-	if(removed)
+	emit sigRemoved(id);
+
+	if(localLibrary)
 	{
-		m->refetchLibraries();
-		emit sigRemoved(id);
-
-		return exists;
+		delete localLibrary;
 	}
 
-	return false;
+	return exists;
 }
 
 bool Manager::moveLibrary(int from, int to)
