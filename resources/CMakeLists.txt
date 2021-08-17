@@ -11,8 +11,7 @@ if(NOT GZIP_BINARY)
     message("gzip not found. No manpage will be created")
 else()
     ## create date for manpage
-    execute_process(COMMAND env LC_TIME="en_US.utf8" date "+%d %B %Y" OUTPUT_VARIABLE SAYONARA_MANPAGE_DATE)
-    string(REGEX REPLACE "\n$" "" SAYONARA_MANPAGE_DATE "${SAYONARA_MANPAGE_DATE}")
+    STRING(TIMESTAMP SAYONARA_MANPAGE_DATE "%d %B %Y" UTC)
     
     ## create manpages
     configure_file(sayonara.1.man.in 
