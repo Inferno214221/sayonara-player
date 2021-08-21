@@ -220,7 +220,7 @@ bool Slider::event(QEvent* e)
 			break;
 
 		case QEvent::FontChange:
-			m->letterSize = this->fontMetrics().horizontalAdvance('m');
+			m->letterSize = Gui::Util::textWidth(this, "m");
 			break;
 
 		default:
