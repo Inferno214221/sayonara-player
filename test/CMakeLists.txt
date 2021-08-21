@@ -63,7 +63,7 @@ new_test(Library/LibraryManagerTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp)
 new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp)
-new_test(Playlist/PlaylistFileTest.cpp)
+new_test(Playlist/PlaylistFileTest.cpp Database/TestTracks.cpp)
 new_test(Playlist/PlaylistHandlerTest.cpp)
 new_test(Playlist/PlaylistDbInterfaceTest.cpp Database/TestTracks.cpp)
 
