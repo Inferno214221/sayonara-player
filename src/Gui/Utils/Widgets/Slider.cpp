@@ -107,7 +107,11 @@ int Slider::valueFromPosition(const QPoint& pos) const
 
 	const auto range = (maximum() - minimum());
 
-	return static_cast<int>((range * percent) + minimum());
+	auto value = static_cast<int>((range * percent) + minimum());
+	value = std::min(value, maximum());
+	value = std::max(value, minimum());
+
+	return value;
 }
 
 void Slider::paintEvent(QPaintEvent* e)
