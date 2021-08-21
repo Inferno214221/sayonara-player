@@ -25,6 +25,8 @@
 
 #include <QString>
 
+#include <optional>
+
 namespace Xiph
 {
 	class AlbumArtistFrame :

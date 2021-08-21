@@ -24,6 +24,8 @@
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
 
+#include <optional>
+
 namespace Xiph
 {
 	class PopularimeterFrame :

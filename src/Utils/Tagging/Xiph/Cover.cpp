@@ -27,6 +27,8 @@
 #include <taglib/oggfile.h>
 #include <taglib/tmap.h>
 
+#include <optional>
+
 namespace TL = TagLib;
 
 namespace

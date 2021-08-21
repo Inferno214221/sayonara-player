@@ -24,6 +24,8 @@
 #include "MP4Frame.h"
 #include "Utils/Tagging/Models/Discnumber.h"
 
+#include <optional>
+
 namespace MP4
 {
 	class DiscnumberFrame :

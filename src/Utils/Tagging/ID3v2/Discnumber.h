@@ -26,6 +26,8 @@
 
 #include <taglib/textidentificationframe.h>
 
+#include <optional>
+
 namespace ID3v2
 {
 	class DiscnumberFrame :

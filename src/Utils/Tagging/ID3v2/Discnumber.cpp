@@ -19,7 +19,10 @@
  */
 
 #include "Discnumber.h"
+
 #include <QStringList>
+
+#include <optional>
 
 ID3v2::DiscnumberFrame::DiscnumberFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Discnumber, TagLib::ID3v2::TextIdentificationFrame>(tag, "TPOS") {}

@@ -20,6 +20,8 @@
 
 #include "PopularimeterFrame.h"
 
+#include <optional>
+
 namespace
 {
 	std::optional<Models::Popularimeter> popularimeterFromQString(const QString& data)

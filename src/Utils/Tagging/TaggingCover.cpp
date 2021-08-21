@@ -38,6 +38,8 @@
 
 #include <taglib/fileref.h>
 
+#include <optional>
+
 using Tagging::ParsedTag;
 
 namespace

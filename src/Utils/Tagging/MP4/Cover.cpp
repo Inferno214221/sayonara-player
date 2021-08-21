@@ -19,6 +19,7 @@
  */
 
 #include "Cover.h"
+#include <optional>
 
 MP4::CoverFrame::CoverFrame(TagLib::MP4::Tag* tag) :
 	MP4Frame<Models::Cover>(tag, "covr") {}

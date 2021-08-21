@@ -22,6 +22,8 @@
 
 #include <QStringList>
 
+#include <optional>
+
 namespace
 {
 	std::optional<Models::Discnumber> discnumberFromQString(const QString& data)

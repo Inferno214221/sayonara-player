@@ -19,6 +19,8 @@
 
 #include "Cover.h"
 
+#include <optional>
+
 ID3v2::CoverFrame::CoverFrame(TagLib::ID3v2::Tag* tag) :
 	ID3v2Frame<Models::Cover, TagLib::ID3v2::AttachedPictureFrame>(tag, "APIC") {}
 

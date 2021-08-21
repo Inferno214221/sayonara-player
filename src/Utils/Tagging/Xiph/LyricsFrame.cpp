@@ -20,6 +20,8 @@
 
 #include "LyricsFrame.h"
 
+#include <optional>
+
 Xiph::LyricsFrame::LyricsFrame(TagLib::Ogg::XiphComment* tag) :
 	Xiph::XiphFrame<QString>(tag, "LYRICS") {}
 

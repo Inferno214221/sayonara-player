@@ -23,6 +23,8 @@
 
 #include "XiphFrame.h"
 
+#include <optional>
+
 namespace Xiph
 {
 	class LyricsFrame :

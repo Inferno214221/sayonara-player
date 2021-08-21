@@ -25,6 +25,8 @@
 
 #include "Utils/Tagging/Models/Discnumber.h"
 
+#include <optional>
+
 namespace Xiph
 {
 	class DiscnumberFrame :

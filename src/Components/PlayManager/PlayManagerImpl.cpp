@@ -32,6 +32,7 @@
 #include <QDateTime>
 
 #include <array>
+#include <optional>
 
 namespace
 {

@@ -26,6 +26,8 @@
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Cover.h"
 
+#include <optional>
+
 /**
  * @ingroup Tagging
  */

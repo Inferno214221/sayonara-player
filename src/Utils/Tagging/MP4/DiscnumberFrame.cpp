@@ -22,6 +22,8 @@
 
 #include <taglib/mp4item.h>
 
+#include <optional>
+
 MP4::DiscnumberFrame::DiscnumberFrame(TagLib::MP4::Tag* tag) :
 	MP4::MP4Frame<Models::Discnumber>(tag, "disk") {}
 

@@ -22,6 +22,8 @@
 
 #include <QString>
 
+#include <optional>
+
 Xiph::AlbumArtistFrame::AlbumArtistFrame(TagLib::Ogg::XiphComment* tag) :
 	Xiph::XiphFrame<QString>(tag, "ALBUMARTIST") {}
 

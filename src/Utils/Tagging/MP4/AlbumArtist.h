@@ -23,6 +23,8 @@
 
 #include "MP4Frame.h"
 
+#include <optional>
+
 class QString;
 
 namespace MP4

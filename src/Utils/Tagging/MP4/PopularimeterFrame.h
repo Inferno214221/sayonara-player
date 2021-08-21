@@ -24,6 +24,8 @@
 #include "MP4Frame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
 
+#include <optional>
+
 namespace MP4
 {
 	class PopularimeterFrame :

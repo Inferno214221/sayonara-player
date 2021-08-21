@@ -23,6 +23,8 @@
 
 #include "ID3v2Frame.h"
 
+#include <optional>
+
 namespace ID3v2
 {
 	class AlbumArtistFrame :

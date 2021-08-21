@@ -29,6 +29,8 @@
 
 #include <taglib/attachedpictureframe.h>
 
+#include <optional>
+
 namespace ID3v2
 {
 	class CoverFrame :

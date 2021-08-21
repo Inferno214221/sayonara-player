@@ -20,6 +20,8 @@
 
 #include "PopularimeterFrame.h"
 
+#include <optional>
+
 MP4::PopularimeterFrame::PopularimeterFrame(TagLib::MP4::Tag* tag) :
 	MP4::MP4Frame<Models::Popularimeter>(tag, "rtng") {}
 

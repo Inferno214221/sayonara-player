@@ -20,6 +20,8 @@
 
 #include "Popularimeter.h"
 
+#include <optional>
+
 using ID3v2::PopularimeterFrame;
 
 PopularimeterFrame::PopularimeterFrame(TagLib::ID3v2::Tag* tag) :

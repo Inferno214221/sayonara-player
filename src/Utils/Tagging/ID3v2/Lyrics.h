@@ -27,6 +27,8 @@
 
 #include <taglib/unsynchronizedlyricsframe.h>
 
+#include <optional>
+
 namespace ID3v2
 {
 	class LyricsFrame :
