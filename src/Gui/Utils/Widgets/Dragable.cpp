@@ -20,6 +20,7 @@
 
 #include "Dragable.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
 
@@ -175,7 +176,7 @@ QDrag* Dragable::createDrag() const
 	auto cover = QPixmap(coverUrl);
 	if(cover.isNull())
 	{
-		cover = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, logoSize, true);
+		cover = Gui::Icons::pixmap(Gui::Icons::Logo, logoSize, Gui::Icons::IconMode::Automatic);
 	}
 
 	auto pm = QPixmap(pmWidth, pmHeight);

@@ -58,6 +58,7 @@ namespace
 			{Icons::ImageFile,    {"image-x-generic",      ""}},
 			{Icons::Info,         {"dialog-information",   ""}},
 			{Icons::LocalLibrary, {"audio-x-generic",      "append"}},
+			{Icons::Logo,         {"logo.png",             ""}},
 			{Icons::Lyrics,       {"format-justify-left",  ""}},
 			{Icons::New,          {"document-new",         ""}},
 			{Icons::Next,         {"media-skip-forward",   "fwd"}},

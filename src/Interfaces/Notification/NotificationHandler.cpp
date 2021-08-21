@@ -51,7 +51,7 @@ void NotificationHandler::notify(const MetaData& md)
 void NotificationHandler::notify(const QString& title, const QString& message, const QString& imagePath)
 {
 	if(imagePath.isEmpty()){
-		get()->notify(title, message, "://Icons/logo.png");
+		get()->notify(title, message, ":/Icons/logo.png");
 	}
 
 	else {

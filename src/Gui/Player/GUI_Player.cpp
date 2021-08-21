@@ -97,7 +97,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 	Message::registerReceiver(this);
 
 	this->setMenuBar(m->menubar);
-	this->setWindowIcon(Gui::Util::icon("logo.png", Gui::Util::NoTheme));
+	this->setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
 	this->setAttribute(Qt::WA_DeleteOnClose, false);
 
 	initControls();

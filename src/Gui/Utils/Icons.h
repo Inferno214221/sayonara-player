@@ -76,6 +76,7 @@ namespace Gui
 			ImageFile,
 			Info,
 			LocalLibrary,
+			Logo,
 			Lyrics,
 			New,
 			Next,

@@ -88,10 +88,10 @@ struct ImageButton::Private
 
 	QByteArray currentHash;
 
-	QPixmap currentPixmap {"://Icons/logo.png"};
+	QPixmap currentPixmap {":/Icons/logo.png"};
 	QPixmap currentPixmapScaled;
 	QPixmap oldPixmapScaled;
-	QPixmap invalidPixmap {"://Icons/logo.png"};
+	QPixmap invalidPixmap {":/Icons/logo.png"};
 
 	QRect pixmapRect;
 
