@@ -272,6 +272,10 @@ Application::Application(int& argc, char** argv) :
 	m = Pimpl::make<Private>(this);
 
 	QApplication::setQuitOnLastWindowClosed(false);
+	QApplication::setApplicationName(QStringLiteral("Sayonara"));
+	QApplication::setApplicationVersion(GetSetting(Set::Player_Version));
+	QApplication::setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
+	QApplication::setDesktopFileName(QStringLiteral("com.sayonara-player.Sayonara.desktop"));
 }
 
 Application::~Application()
