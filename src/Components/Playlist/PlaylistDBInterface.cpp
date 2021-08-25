@@ -52,8 +52,8 @@ namespace Playlist
 
 			const auto playlist = DBWrapper::getPlaylistByName(name, false);
 			return ((playlist.id() < 0) || (playlist.id() == id))
-				? SaveAsAnswer::Success
-				: SaveAsAnswer::NameAlreadyThere;
+			       ? SaveAsAnswer::Success
+			       : SaveAsAnswer::NameAlreadyThere;
 		}
 
 		bool updatePlaylistTracks(Playlist::DBInterface* playlist)
@@ -87,7 +87,7 @@ namespace Playlist
 
 		bool createPlaylist(const QString& name, bool isTemporary, Playlist::DBInterface* playlist)
 		{
-			const auto playlistId = DBWrapper::createPlaylist(playlist->name(), playlist->isTemporary());
+			const auto playlistId = DBWrapper::createPlaylist(name, isTemporary);
 			if(playlistId < 0)
 			{
 				spLog(Log::Warning, ClassName) << "Cannot insert new playlist " << playlist->name();
@@ -97,6 +97,7 @@ namespace Playlist
 			playlist->setId(playlistId);
 			playlist->setName(name);
 			playlist->setTemporary(isTemporary);
+			playlist->setChanged(false);
 
 			return updatePlaylistTracks(playlist);
 		}
@@ -122,16 +123,6 @@ namespace Playlist
 
 	DBInterface::~DBInterface() = default;
 
-	bool DBInterface::insertTemporaryIntoDatabase()
-	{
-		const auto playlists =
-			DBWrapper::getPlaylists(StoreType::TemporaryAndPermanent, SortOrder::NameAsc, false);
-
-		return (!playlistExists(name()))
-		       ? createPlaylist(name(), true, this)
-		       : false;
-	}
-
 	SaveAsAnswer DBInterface::save()
 	{
 		if(const auto answer = isNameAllowedForPlaylist(id(), name()); answer != SaveAsAnswer::Success)
@@ -139,41 +130,28 @@ namespace Playlist
 			return answer;
 		}
 
-		const auto success = (id() >= 0)
-		                     ? updatePlaylistTracks(this)
-		                     : createPlaylist(name(), isTemporary(), this);
+		const auto success = (id() < 0)
+		                     ? createPlaylist(name(), isTemporary(), this)
+		                     : updatePlaylistTracks(this);
 
 		return (success)
 		       ? SaveAsAnswer::Success
 		       : SaveAsAnswer::OtherError;
 	}
 
-	bool DBInterface::isSaveAsPossible() const
-	{
-		return isTemporary();
-	}
-
 	Util::SaveAsAnswer DBInterface::saveAs(const QString& newName)
 	{
-		if(!isSaveAsPossible())
-		{
-			return SaveAsAnswer::OtherError;
-		}
-
 		if(const auto answer = isNameAllowedForPlaylist(id(), newName); (answer != SaveAsAnswer::Success))
 		{
 			return answer;
 		}
 
-		if(id() < 0)
-		{
-			if(const auto answer = save(); (answer != SaveAsAnswer::Success))
-			{
-				return answer;
-			}
-		}
+		const auto renamePermanentPlaylist = !isTemporary() && (name() != newName);
+		const auto newPlaylistNeeded = (id() < 0) || renamePermanentPlaylist;
+		const auto success = (newPlaylistNeeded)
+			? createPlaylist(newName, false, this)
+			: updatePlaylist(newName, false, this);
 
-		const auto success = updatePlaylist(newName, false, this);
 		if(success)
 		{
 			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
@@ -214,6 +192,7 @@ namespace Playlist
 		{
 			m->playlistChangeNotifier->deletePlaylist(id());
 			setId(-1);
+			setChanged(false);
 			setTemporary(true);
 		}
 

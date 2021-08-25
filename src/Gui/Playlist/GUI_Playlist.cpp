@@ -108,7 +108,7 @@ namespace
 		using Playlist::MenuEntry;
 
 		const auto saveEnabled = (!playlist->isTemporary());
-		const auto saveAsEnabled = playlist->isTemporary();
+		const auto saveAsEnabled = true;
 		const auto saveToFileEnabled = (playlist->count() > 0);
 		const auto deleteEnabled = (!playlist->isTemporary());
 		const auto resetEnabled = (!playlist->isTemporary() && playlist->wasChanged());
@@ -449,7 +449,8 @@ void GUI_Playlist::tabDeletePlaylistClicked(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		playlist->deletePlaylist();
+		playlist->setTemporary(true);
+		playlist->save();
 	}
 }
 

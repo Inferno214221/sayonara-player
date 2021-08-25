@@ -397,6 +397,7 @@ void Handler::playlistDeleted(int id)
 	if(playlist)
 	{
 		playlist->setTemporary(true);
+		playlist->setChanged(false);
 	}
 }
 

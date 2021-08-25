@@ -46,12 +46,8 @@ namespace Playlist
 			bool isTemporary() const;
 			void setTemporary(bool b);
 
-			bool insertTemporaryIntoDatabase();
 			Util::SaveAsAnswer save();
-
 			Util::SaveAsAnswer saveAs(const QString& newName);
-			bool isSaveAsPossible() const;
-
 			Util::SaveAsAnswer rename(const QString& newName);
 			bool deletePlaylist();
 

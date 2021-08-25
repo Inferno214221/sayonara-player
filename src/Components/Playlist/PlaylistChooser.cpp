@@ -112,18 +112,14 @@ namespace Playlist
 
 	bool Chooser::deletePlaylist(int id)
 	{
-		if(id >= 0)
+		const auto playlist = DBWrapper::getPlaylistById(id, false);
+		const auto success = DBWrapper::updatePlaylist(id, playlist.name(), true);
+		if(success)
 		{
-			const auto success = DBWrapper::deletePlaylist(id);
-			if(success)
-			{
-				PlaylistChangeNotifier::instance()->deletePlaylist(id);
-			}
-
-			return success;
+			PlaylistChangeNotifier::instance()->deletePlaylist(id);
 		}
 
-		return false;
+		return success;
 	}
 
 	void Chooser::loadSinglePlaylist(int id)

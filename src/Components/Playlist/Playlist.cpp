@@ -646,6 +646,7 @@ void PlaylistImpl::reloadFromDatabase()
 		const auto tracks = this->fetchTracksFromDatabase();
 		this->clear();
 		this->createPlaylist(tracks);
+		this->setChanged(false);
 	}
 }
 
