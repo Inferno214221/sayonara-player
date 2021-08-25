@@ -88,20 +88,29 @@ namespace
 	}
 }
 
-MetaDataList PlaylistParser::parsePlaylist(const QString& filename)
+MetaDataList PlaylistParser::parsePlaylist(const QString& filename, bool parseTags)
 {
+	MetaDataList result;
 	if(Util::File::isWWW(filename))
 	{
-		return MetaDataList();
+		return result;
 	}
 
-	MetaDataList result;
-
 	const auto playlistParser = getPlaylistParser(filename);
+	if(!playlistParser)
+	{
+		return result;
+	}
 
-	auto tracks = playlistParser->tracks();
+	auto tracks = playlistParser->tracks(parseTags);
 	for(auto& track : tracks)
 	{
+		if(track.title().isEmpty())
+		{
+			const auto title = Util::File::getFilenameOfPath(track.filepath());
+			track.setTitle(title);
+		}
+
 		if(Util::File::checkFile(track.filepath()))
 		{
 			result << std::move(track);

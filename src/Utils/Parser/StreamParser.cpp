@@ -275,7 +275,7 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& 
 	if(result.first.isEmpty())
 	{
 		const QString filename = m->writePlaylistFile(data);
-		result.first = PlaylistParser::parsePlaylist(filename);
+		result.first = PlaylistParser::parsePlaylist(filename, false);
 		QFile::remove(filename);
 	}
 

@@ -31,36 +31,22 @@ class AbstractPlaylistParser
 {
 	PIMPL(AbstractPlaylistParser)
 
-public:
-	explicit AbstractPlaylistParser(const QString& filepath);
-	virtual ~AbstractPlaylistParser();
+	public:
+		explicit AbstractPlaylistParser(const QString& filepath);
+		virtual ~AbstractPlaylistParser();
 
-	/**
-	 * @brief parse playlist and return found metadata
-	 * @param forceParse once if parsed, this function won't parse again and just return the metadata. \n
-	 * Set to true if you want to force parsing again
-	 * @return list of MetaData
-	 */
-	virtual MetaDataList tracks(bool forceParse=false) final;
+		virtual MetaDataList tracks(bool forceParse = false) final;
 
+	protected:
+		virtual void parse() = 0;
 
-protected:
-	void addTrack(const MetaData& md);
-	void addTracks(const MetaDataList& v_md);
-	const QString& content() const;
+		void addTrack(const MetaData& track);
+		void addTracks(const MetaDataList& tracks);
+		const QString& content() const;
 
-	/**
-	 * @brief here the parsing is done\n
-	 * Called by MetaDataList get_md(bool force_parse=false)
-	 */
-	virtual void parse()=0;
+		QString getAbsoluteFilename(const QString& filename) const;
 
-	/**
-	 * @brief calculates the absolute filename for a track depending on the path of the playlist file
-	 * @param filename as seen in the playlist
-	 * @return absolute filename if local file. filename else
-	 */
-	QString getAbsoluteFilename(const QString& filename) const;
+		bool isParseTagsActive() const;
 };
 
 #endif // ABSTRACTPLAYLISTPARSER_H

@@ -25,18 +25,16 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
+#include "Utils/Tagging/Tagging.h"
+
 #include <QDir>
 
 struct AbstractPlaylistParser::Private
 {
-	MetaDataList		tracks;
-	QString				fileContent;
-	QString				directory;
-	bool				parsed;
-
-	Private() :
-		parsed(false)
-	{}
+	MetaDataList tracks;
+	QString fileContent;
+	QString directory;
+	bool parseTags {false};
 };
 
 AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
@@ -51,18 +49,20 @@ AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
 
 AbstractPlaylistParser::~AbstractPlaylistParser() = default;
 
-MetaDataList AbstractPlaylistParser::tracks(bool forceParse)
+MetaDataList AbstractPlaylistParser::tracks(bool parseTags)
 {
-	if(forceParse){
-		m->parsed = false;
-	}
+	m->parseTags = parseTags;
+	m->tracks.clear();
 
-	if(!m->parsed){
-		m->tracks.clear();
-		parse();
-	}
+	parse();
 
-	m->parsed = true;
+	if(parseTags)
+	{
+		for(auto& track : m->tracks)
+		{
+			Tagging::Utils::getMetaDataOfFile(track);
+		}
+	}
 
 	return m->tracks;
 }
@@ -86,24 +86,34 @@ QString AbstractPlaylistParser::getAbsoluteFilename(const QString& filename) con
 {
 	QString ret;
 
-	if(filename.isEmpty()){
+	if(filename.isEmpty())
+	{
 		return "";
 	}
 
-	if(Util::File::isWWW(filename)){
+	if(Util::File::isWWW(filename))
+	{
 		return filename;
 	}
 
-	if(!Util::File::isAbsolute(filename)){
+	if(!Util::File::isAbsolute(filename))
+	{
 		ret = m->directory + "/" + filename;
 	}
-	else{
+	else
+	{
 		ret = filename;
 	}
 
-	if(!Util::File::exists(ret)){
+	if(!Util::File::exists(ret))
+	{
 		ret = "";
 	}
 
 	return Util::File::cleanFilename(ret);
+}
+
+bool AbstractPlaylistParser::isParseTagsActive() const
+{
+	return m->parseTags;
 }

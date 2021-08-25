@@ -88,7 +88,7 @@ void M3UParser::parse()
 
 		else if(Util::File::isPlaylistFile(line))
 		{
-			addTracks(PlaylistParser::parsePlaylist(line));
+			addTracks(PlaylistParser::parsePlaylist(line, isParseTagsActive()));
 		}
 
 		else if(Util::File::isSoundFile(line))

@@ -25,9 +25,8 @@
 #include "Playlist.h"
 #include "PlaylistLoader.h"
 #include "PlaylistSaver.h"
-#include "PlaylistDBWrapper.h"
 #include "PlaylistChangeNotifier.h"
-#include "ExternTracksPlaylistGenerator.h"
+#include "PlaylistFromPathCreator.h"
 
 #include "Interfaces/PlayManager.h"
 
@@ -35,7 +34,6 @@
 #include "Utils/Set.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
-#include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
@@ -81,7 +79,8 @@ struct Handler::Private
 			lastPlaylist->setCurrentTrack(lastTrackIndex);
 		}
 
-		else {
+		else
+		{
 			this->playManager->stop();
 		}
 	}
@@ -138,52 +137,18 @@ int Handler::addNewPlaylist(const QString& name, bool temporary)
 
 int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, bool temporary)
 {
-	auto index = exists(name);
-	if(index == -1)
-	{
-		index = addNewPlaylist(name, temporary);
-		auto existingPlaylist = playlist(index);
-		existingPlaylist->insertTemporaryIntoDatabase();
-	}
+	const auto index = addNewPlaylist(name, temporary);
 
-	auto playlist = this->playlist(index);
+	auto& playlist = m->playlists[index];
 	if(!playlist->isBusy())
 	{
 		playlist->createPlaylist(tracks);
 		playlist->setTemporary(playlist->isTemporary() && temporary);
-	}
-
-	setCurrentIndex(index);
-	return m->currentPlaylistIndex;
-}
-
-int Handler::createPlaylist(const QStringList& pathList, const QString& name, bool temporary)
-{
-	const auto index = createPlaylist(MetaDataList(), name, temporary);
-
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(this, playlist(index));
-	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
-	playlistGenerator->addPaths(pathList);
-
-	setCurrentIndex(index);
-	return m->currentPlaylistIndex;
-}
-
-int Handler::createCommandLinePlaylist(const QStringList& pathList)
-{
-	const auto index = createPlaylist(MetaDataList(), requestNewPlaylistName(), true);
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(this, playlist(index));
-	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, this, [&, index, playlistGenerator]() {
-		auto playlist = this->playlist(index);
-		if(m->playManager->initialPositionMs() > 0)
+		if(playlist->isTemporary())
 		{
-			m->playManager->stop();
+			playlist->save();
 		}
-		playlist->setCurrentTrack(0);
-		playlistGenerator->deleteLater();
-	});
-
-	playlistGenerator->addPaths(pathList);
+	}
 
 	setCurrentIndex(index);
 	return m->currentPlaylistIndex;
@@ -191,19 +156,48 @@ int Handler::createCommandLinePlaylist(const QStringList& pathList)
 
 int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
 {
-	auto playlist = playlistById(customPlaylist.id());
-	const auto index = (playlist)
-	                   ? playlist->index()
-	                   : addNewPlaylist(customPlaylist.name(), customPlaylist.isTemporary());
+	const auto index = createPlaylist(customPlaylist.tracks(), customPlaylist.name(), customPlaylist.isTemporary());
 
-	playlist = m->playlists[index];
+	auto& playlist = m->playlists[index];
 	playlist->setId(customPlaylist.id());
-	playlist->setTemporary(customPlaylist.isTemporary());
-	playlist->setName(customPlaylist.name());
-	playlist->createPlaylist(customPlaylist.tracks());
 	playlist->setChanged(false);
 
-	setCurrentIndex(index);
+	return m->currentPlaylistIndex;
+}
+
+int Handler::createPlaylist(const QStringList& paths, const QString& name, bool temporary)
+{
+	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
+	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [playlistFromPathCreator](int){
+		playlistFromPathCreator->deleteLater();
+	});
+
+	const auto index = playlistFromPathCreator->createPlaylists(paths, name, temporary);
+	if(index >= 0)
+	{
+		setCurrentIndex(index);
+	}
+
+	return m->currentPlaylistIndex;
+}
+
+int Handler::createCommandLinePlaylist(const QStringList& paths)
+{
+	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
+	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [&, playlistFromPathCreator](auto firstIndex){
+		if(m->playManager->initialPositionMs() > 0)
+		{
+			m->playManager->stop();
+		}
+
+		m->playManager->setCurrentPositionMs(0);
+		playlist(firstIndex)->setCurrentTrack(0);
+		setCurrentIndex(firstIndex);
+		playlistFromPathCreator->deleteLater();
+	});
+
+	playlistFromPathCreator->createPlaylists(paths, requestNewPlaylistName(), true);
+
 	return m->currentPlaylistIndex;
 }
 

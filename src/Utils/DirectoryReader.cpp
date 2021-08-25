@@ -23,6 +23,7 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Parser/PlaylistParser.h"
@@ -50,8 +51,7 @@ namespace
 		for(auto& track : tracks)
 		{
 			auto filepath = track.filepath();
-			auto pair = std::make_pair(std::move(filepath), std::move(track));
-			result.insert(std::move(pair));
+			result.emplace(std::move(filepath), std::move(track));
 		}
 
 		return result;
@@ -63,8 +63,8 @@ namespace
 		for(const auto& soundFile : soundFiles)
 		{
 			MetaData track;
-			const auto contains = (trackMap.find(soundFile) != trackMap.end());
 
+			const auto contains = (trackMap.find(soundFile) != trackMap.end());
 			if(contains)
 			{
 				tracks << std::move(trackMap.at(soundFile));
@@ -72,10 +72,12 @@ namespace
 
 			else
 			{
-				MetaData track {soundFile};
-				if(!Tagging::Utils::getMetaDataOfFile(track))
+				auto track = MetaData{soundFile};
+				const auto hasTags = Tagging::Utils::getMetaDataOfFile(track);
+				if(!hasTags)
 				{
-					track.setTitle(track.filepath());
+					const auto title = Util::File::getFilenameOfPath(track.filepath());
+					track.setTitle(title);
 				}
 
 				track.setExtern(true);
@@ -85,6 +87,19 @@ namespace
 		}
 
 		return tracks;
+	}
+
+	MetaDataList getTracksFromPlaylistFile(const QString& playlistFile)
+	{
+		const auto tracks = PlaylistParser::parsePlaylist(playlistFile, false);
+
+		auto paths = QStringList{};
+		Util::Algorithm::transform(tracks, paths, [](const auto& track){
+			return track.filepath();
+		});
+
+		auto filepathTrackMap = createLibraryTrackMap(paths);
+		return getTrackListWithTrackMap(paths, std::move(filepathTrackMap));
 	}
 }
 
@@ -144,7 +159,7 @@ namespace DirectoryReader
 
 		for(const auto& playlistFile : playlistFiles)
 		{
-			tracks << PlaylistParser::parsePlaylist(playlistFile);
+			tracks << getTracksFromPlaylistFile(playlistFile);
 		}
 
 		return tracks;

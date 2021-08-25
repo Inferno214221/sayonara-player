@@ -26,7 +26,7 @@ class MetaDataList;
 
 namespace PlaylistParser 
 {
-	MetaDataList parsePlaylist(const QString& filename);
+	MetaDataList parsePlaylist(const QString& filename, bool parseTags);
 }
 
 #endif /* SAYONARA_PLAYER_PLAYLISTPARSER_H */
