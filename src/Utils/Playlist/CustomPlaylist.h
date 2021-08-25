@@ -49,9 +49,6 @@ class CustomPlaylist
 		bool isTemporary() const;
 		void setTemporary(bool temporary);
 
-		int tracksToFetch() const;
-		void setTracksToFetch(int track);
-
 		MetaDataList tracks() const;
 		void setTracks(const MetaDataList& tracks);
 		void setTracks(MetaDataList&& tracks);

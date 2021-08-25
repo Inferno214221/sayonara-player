@@ -98,8 +98,7 @@ namespace
 			{
 				QStringLiteral("playlists.playlistID AS playlistID"),
 				QStringLiteral("playlists.playlist   AS playlistName"),
-				QStringLiteral("playlists.temporary  AS temporary"),
-				QStringLiteral("COUNT(ptt.trackID)   AS trackCount")
+				QStringLiteral("playlists.temporary  AS temporary")
 			};
 
 		static const auto joinedFields = fields.join(", ");
@@ -151,7 +150,6 @@ QList<CustomPlaylist> DB::Playlist::getAllPlaylists(::Playlist::StoreType storeT
 
 		const auto isTemporary = (query.value(2) != 0);
 		customPlaylist.setTemporary(isTemporary);
-		customPlaylist.setTracksToFetch(query.value(3).toInt());
 
 		if(getTracks)
 		{
@@ -196,7 +194,6 @@ CustomPlaylist DB::Playlist::getPlaylistById(int playlistId, bool getTracks)
 
 		const auto temporary = (query.value(2) != 0);
 		result.setTemporary(temporary);
-		result.setTracksToFetch(query.value(3).toInt());
 
 		if(getTracks)
 		{

@@ -26,7 +26,6 @@ struct CustomPlaylist::Private
 	int id {-1};
 	QString name;
 	bool isTemporary {true};
-	int tracksToFetch {0};
 	MetaDataList tracks;
 
 	Private() = default;
@@ -85,10 +84,3 @@ MetaDataList CustomPlaylist::tracks() const { return m->tracks; }
 void CustomPlaylist::setTracks(const MetaDataList& tracks) { m->tracks = tracks; }
 
 void CustomPlaylist::setTracks(MetaDataList&& tracks) { m->tracks = std::move(tracks); }
-
-int CustomPlaylist::tracksToFetch() const { return m->tracksToFetch; }
-
-void CustomPlaylist::setTracksToFetch(int track) { m->tracksToFetch = track; }
-
-
-
