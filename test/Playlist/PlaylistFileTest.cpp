@@ -88,7 +88,8 @@ class PlaylistFileTest :
 		}
 
 	private slots:
-		void m3u();
+		void parseStandardM3U();
+		void parseExtendedM3U();
 		void writeM3uAbsolute();
 		void writeM3uRelative();
 
@@ -96,24 +97,21 @@ class PlaylistFileTest :
 		PathTrackMap m_tracks;
 };
 
-void PlaylistFileTest::m3u()
+void PlaylistFileTest::parseStandardM3U()
 {
 	QString content = R"m3u(
-	#EXTM3U
-	#EXTINF:221,Queen - Bohemian Rhapsody
 	file1.mp3
-	#EXTINF:473, Dire Straits - Walk Of Life
+
 	file2.ogg
-	#EXTINF:264 ,冨田勲 - Boléro
 	<file3>
-	#EXTINF: 504,  Bob Marley - Buffalo Soldier
+    # don't parse this
 	<file4>
 	)m3u";
 
 	content.replace("<file3>", this->tempPath("file3.flac"));
 	content.replace("<file4>", this->tempPath("file4.aac"));
 
-	const auto filename = this->tempPath("playlist.m3u");
+	const auto filename = this->tempPath("standard.m3u");
 	const auto success = Util::File::writeFile(content.toUtf8(), filename);
 	QVERIFY(success);
 
@@ -123,26 +121,66 @@ void PlaylistFileTest::m3u()
 	Util::File::writeFile(QByteArray(), this->tempPath("file4.aac"));
 
 	auto parser = M3UParser(filename);
-	auto tracks = parser.tracks();
+	const auto tracks = parser.tracks();
+
+	QVERIFY(tracks.size() == 4);
+	QVERIFY(tracks[0].filepath() == this->tempPath("file1.mp3"));
+	QVERIFY(tracks[1].filepath() == this->tempPath("file2.ogg"));
+	QVERIFY(tracks[2].filepath() == this->tempPath("file3.flac"));
+	QVERIFY(tracks[3].filepath() == this->tempPath("file4.aac"));
+}
+
+void PlaylistFileTest::parseExtendedM3U()
+{
+	QString content = R"m3u(
+	#EXTM3U
+
+	#EXTINF:221,Queen - Bohemian Rhapsody
+	file1.mp3
+
+	#EXTINF:473, Dire Straits - Walk Of Life
+	file2.ogg
+	# This is a comment
+	#EXTINF:264 ,冨田勲 - Boléro
+	<file3>
+	#EXTINF: 504,  Bob Marley - Buffalo Soldier
+
+<file4>
+	)m3u";
+
+	content.replace("<file3>", this->tempPath("file3.flac"));
+	content.replace("<file4>", this->tempPath("file4.aac"));
+
+	const auto filename = this->tempPath("extended.m3u");
+	const auto success = Util::File::writeFile(content.toUtf8(), filename);
+	QVERIFY(success);
+
+	Util::File::writeFile(QByteArray(), this->tempPath("file1.mp3"));
+	Util::File::writeFile(QByteArray(), this->tempPath("file2.ogg"));
+	Util::File::writeFile(QByteArray(), this->tempPath("file3.flac"));
+	Util::File::writeFile(QByteArray(), this->tempPath("file4.aac"));
+
+	auto parser = M3UParser(filename);
+	const auto tracks = parser.tracks();
 
 	QVERIFY(tracks.size() == 4);
 
-	QVERIFY(tracks[0].durationMs() == 221000);
+	QVERIFY(tracks[0].durationMs() == 221'000);
 	QVERIFY(tracks[0].artist() == "Queen");
 	QVERIFY(tracks[0].title() == "Bohemian Rhapsody");
 	QVERIFY(tracks[0].filepath() == this->tempPath("file1.mp3"));
 
-	QVERIFY(tracks[1].durationMs() == 473000);
+	QVERIFY(tracks[1].durationMs() == 473'000);
 	QVERIFY(tracks[1].artist() == "Dire Straits");
 	QVERIFY(tracks[1].title() == "Walk Of Life");
 	QVERIFY(tracks[1].filepath() == this->tempPath("file2.ogg"));
 
-	QVERIFY(tracks[2].durationMs() == 264000);
+	QVERIFY(tracks[2].durationMs() == 264'000);
 	QVERIFY(tracks[2].artist() == QString::fromUtf8("冨田勲"));
 	QVERIFY(tracks[2].title() == QString::fromUtf8("Boléro"));
 	QVERIFY(tracks[2].filepath() == this->tempPath("file3.flac"));
 
-	QVERIFY(tracks[3].durationMs() == 504000);
+	QVERIFY(tracks[3].durationMs() == 504'000);
 	QVERIFY(tracks[3].artist() == "Bob Marley");
 	QVERIFY(tracks[3].title() == "Buffalo Soldier");
 	QVERIFY(tracks[3].filepath() == this->tempPath("file4.aac"));

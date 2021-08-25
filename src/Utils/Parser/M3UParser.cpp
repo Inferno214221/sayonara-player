@@ -21,8 +21,6 @@
 #include "PlaylistParser.h"
 #include "M3UParser.h"
 
-#include "Tagging/Tagging.h"
-
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -33,48 +31,19 @@
 
 namespace
 {
-	bool parseFirstLine(const QString& line, MetaData& track)
+	bool parseMetadataLine(const QString& line, MetaData& track)
 	{
-		if(line.indexOf("#EXTINF:") != 0)
-		{
-			return false;
-		}
-
-		const auto regex = QStringLiteral("#EXTINF:\\s*([0-9]+)\\s*,\\s*(.*) - (.*)");
+		const auto regex = QStringLiteral("#EXTINF:\\s*([0-9]+)\\s*,\\s*(.*)\\s+-\\s+(.*)");
 		auto re = QRegExp(regex);
 		re.setMinimal(false);
 		if(re.indexIn(line) >= 0)
 		{
-			if(track.title().isEmpty())
-			{
-				track.setTitle(re.cap(3).trimmed());
-			}
-
-			if(track.artist().isEmpty())
-			{
-				track.setArtist(re.cap(2).trimmed());
-			}
-
-			if(track.durationMs() <= 0)
-			{
-				track.setDurationMs(re.cap(1).trimmed().toInt() * 1000);
-			}
+			track.setTitle(re.cap(3).trimmed());
+			track.setArtist(re.cap(2).trimmed());
+			track.setDurationMs(re.cap(1).trimmed().toInt() * 1000);
 		}
 
 		return true;
-	}
-
-	template<typename AbsuluteFilenameFunction>
-	void parseLocalFile(const QString& line, MetaData& track, AbsuluteFilenameFunction fn)
-	{
-		const auto absoluteFilename = fn(line);
-		if(absoluteFilename.isEmpty())
-		{
-			return;
-		}
-
-		track.setFilepath(absoluteFilename);
-		Tagging::Utils::getMetaDataOfFile(track);
 	}
 
 	void parseWWWFile(const QString& line, MetaData& track)
@@ -82,8 +51,17 @@ namespace
 		track.setRadioStation(line);
 		track.setFilepath(line);
 	}
-}
 
+	bool isComment(const QString& line)
+	{
+		return (line.startsWith('#') && !line.toLower().startsWith("#extinf"));
+	}
+
+	bool isMetadata(const QString& line)
+	{
+		return line.toLower().startsWith("#extinf:");
+	}
+}
 
 M3UParser::M3UParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
@@ -95,59 +73,45 @@ void M3UParser::parse()
 	MetaData track;
 
 	const auto lines = content().split('\n');
-	for(auto line : lines)
+	for(auto it = lines.begin(); it != lines.end(); it++)
 	{
-		line = line.trimmed();
-		if(line.isEmpty())
+		const auto line = it->trimmed();
+		if(line.isEmpty() || isComment(line))
 		{
 			continue;
 		}
 
-		if(line.startsWith("#EXTINF:", Qt::CaseInsensitive))
+		if(isMetadata(line))
 		{
-			if(!track.filepath().isEmpty())
-			{
-				addTrack(track);
-				track = MetaData();
-			}
-
-			parseFirstLine(line, track);
-			continue;
+			parseMetadataLine(line, track);
 		}
 
-		if(line.trimmed().startsWith('#'))
-		{
-			continue;
-		}
-
-		if(Util::File::isPlaylistFile(line))
+		else if(Util::File::isPlaylistFile(line))
 		{
 			addTracks(PlaylistParser::parsePlaylist(line));
-			continue;
 		}
 
-		else if(!Util::File::isWWW(line))
+		else if(Util::File::isSoundFile(line))
 		{
-			auto lambda = [&](const auto& filename) -> QString {
-				return this->getAbsoluteFilename(filename);
-			};
+			if(Util::File::isWWW(line))
+			{
+				parseWWWFile(line, track);
+			}
 
-			parseLocalFile(line, track, lambda);
+			else
+			{
+				const auto absoluteFilename = this->getAbsoluteFilename(line);
+				if(!absoluteFilename.isEmpty())
+				{
+					track.setFilepath(absoluteFilename);
+				}
+			}
+
+			addTrack(track);
+			track = MetaData {};
 		}
-
-		else
-		{
-			parseWWWFile(line, track);
-		}
-	}
-
-	if(!track.filepath().isEmpty())
-	{
-		addTrack(track);
-		track = MetaData();
 	}
 }
-
 
 void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bool relative)
 {
@@ -180,7 +144,7 @@ void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bo
 		lines << QString();
 	}
 
-	const auto text = lines.join("\n");
+	const auto text = lines.join('\n');
 	file.write(text.toLocal8Bit());
 	file.close();
 }
