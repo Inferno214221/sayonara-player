@@ -134,13 +134,18 @@ namespace
 
 	void checkPlaylistName(PlaylistPtr playlist, TabWidget* tabWidget)
 	{
+		static const auto fontMetrics = tabWidget->fontMetrics();
+		static const auto tabWidth = fontMetrics.horizontalAdvance(QStringLiteral("This is enough [X]"));
+
 		if(playlist)
 		{
 			const auto name = (!playlist->isTemporary() && playlist->wasChanged())
 			                  ? QString("*%1").arg(playlist->name())
 			                  : playlist->name();
 
-			tabWidget->setTabText(playlist->index(), name);
+			const auto elidedName = fontMetrics.elidedText(name, Qt::ElideRight, tabWidth);
+			tabWidget->setTabText(playlist->index(), elidedName);
+			tabWidget->setTabToolTip(playlist->index(), name);
 		}
 	}
 } // namespace end
