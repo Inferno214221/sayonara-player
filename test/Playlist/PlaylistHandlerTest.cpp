@@ -11,6 +11,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
 
+#include <QSignalSpy>
+
 #include <memory>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
@@ -39,6 +41,8 @@ class PlaylistHandlerTest :
         void closeTest();
         void currentIndexTest();
         void activeIndexTest();
+        void createPlaylistFromFiles();
+        void createCommandLinePlaylist();
 };
 
 void PlaylistHandlerTest::createTest()
@@ -155,6 +159,45 @@ void PlaylistHandlerTest::activeIndexTest()
 
 	playlist->stop();
 	QVERIFY(plh->activeIndex() == plh->currentIndex());
+}
+
+void PlaylistHandlerTest::createPlaylistFromFiles()
+{
+	const auto paths = QStringList() << "path2.m3u" << "path1.mp3" << "path3.pls";
+	auto plh = createHandler();
+	QVERIFY(plh->count() == 1); // empty playlist
+
+	auto spy = QSignalSpy(plh.get(), &Playlist::Handler::sigNewPlaylistAdded);
+	plh->createPlaylist(paths, "Test");
+
+	QVERIFY(spy.count() == 3);
+	QVERIFY(plh->count() == 4);
+
+	const auto names = QStringList{"path2", "path3", "Test"};
+	auto playlistNames = QStringList{
+		plh->playlist(1)->name(),
+		plh->playlist(2)->name(),
+		plh->playlist(3)->name()
+	};
+
+	playlistNames.sort(Qt::CaseInsensitive);
+	QVERIFY(names == playlistNames);
+}
+
+void PlaylistHandlerTest::createCommandLinePlaylist()
+{
+	auto plh = createHandler();
+
+	plh->createEmptyPlaylist();
+	plh->createEmptyPlaylist();
+
+	QVERIFY(plh->count() == 3);
+
+	auto spy = QSignalSpy(plh.get(), &Playlist::Handler::sigNewPlaylistAdded);
+	const auto paths = QStringList() << "path2.m3u" << "path1.mp3" << "path3.pls";
+	plh->createCommandLinePlaylist(paths);
+	QVERIFY(spy.count() == 3);
+	QVERIFY(plh->count() == 6);
 }
 
 QTEST_GUILESS_MAIN(PlaylistHandlerTest)

@@ -521,13 +521,11 @@ void Application::remoteControlActivated()
 void Application::createPlaylist()
 {
 	auto* instanceThread = dynamic_cast<InstanceThread*>(sender());
-	if(!instanceThread)
+	if(instanceThread)
 	{
-		return;
+		const auto paths = instanceThread->paths();
+		m->playlistHandler->createCommandLinePlaylist(paths);
 	}
-
-	const QStringList paths = instanceThread->paths();
-	m->playlistHandler->createPlaylist(paths);
 }
 
 void Application::skinChanged()
