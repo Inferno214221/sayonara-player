@@ -1,13 +1,13 @@
 #include "SayonaraTest.h"
-#include "Database/TestTracks.h"
+#include "PlaylistTestUtils.h"
+
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Tagging/Tagging.h"
 #include "Utils/Utils.h"
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-using PathTrackMap = QList<std::pair<QString, MetaData>>;
+using Test::Playlist::PathTrackMap;
 
 namespace
 {
@@ -30,48 +30,6 @@ namespace
 #EXTINF:600,Artist6 - Title6
 %1path/to/another/dir/mp3test.mp3
 )";
-
-	void createFileStructure(const QString& basePath)
-	{
-		auto success = Util::File::createDirectories(QString("%1/path/to/somewhere/else").arg(basePath));
-		success &= Util::File::createDirectories(QString("%1/path/to/another/dir").arg(basePath));
-
-		if(!success)
-		{
-			throw "Could not create directories";
-		}
-	}
-
-	PathTrackMap createTrackFiles(const QString& basePath)
-	{
-		PathTrackMap result;
-
-		createFileStructure(basePath);
-
-		QStringList names;
-		names << QString("%1/path/mp3test.mp3").arg(basePath);
-		names << QString("%1/path/to/mp3test.mp3").arg(basePath);
-		names << QString("%1/path/to/somewhere/mp3test.mp3").arg(basePath);
-		names << QString("%1/path/to/somewhere/else/mp3test.mp3").arg(basePath);
-		names << QString("%1/path/to/another/mp3test.mp3").arg(basePath);
-		names << QString("%1/path/to/another/dir/mp3test.mp3").arg(basePath);
-
-		for(int i = 0; i < names.size(); i++)
-		{
-			auto track = Test::createTrack(i,
-			                               QString("Title%1").arg(i + 1),
-			                               QString("Artist%1").arg(i + 1),
-			                               QString("Album%1").arg(i + 1));
-
-			track.setFilepath(names[i]);
-			track.setDurationMs((i + 1) * 100'000);
-
-			result << std::make_pair(names[i], track);
-		}
-
-		return result;
-	}
-
 }
 
 class PlaylistFileTest :
@@ -84,7 +42,7 @@ class PlaylistFileTest :
 			Test::Base("PlaylistFileTest")
 		{
 			const auto basePath = Test::Base::tempPath();
-			m_tracks = createTrackFiles(basePath);
+			m_tracks = Test::Playlist::createTrackFiles(basePath);
 		}
 
 	private slots:
