@@ -1,13 +1,14 @@
-# have a look at freedesktop desktop specifications
-
 [Desktop Entry]
+Version=1.0
 Type=Application
-Name=Sayonara Player
-GenericName=Media player
-Comment=Music player and music library admininstration
+GenericName=Audio Player
+Name=Sayonara
+Comment=Music player and music library manager
+Comment[de]=Musik Player und Bibliotheksverwaltung
+Comment[de_DE]=Musik Player und Bibliotheksverwaltung
 Exec=sayonara %F
+TryExec=sayonara
 Icon=sayonara
 Terminal=false
-Categories=Qt;Audio;Music;Player;AudioVideo;
+Categories=Application;Audio;AudioVideo;Player;Music;Qt;
 MimeType=audio/mpeg;audio/x-mpegurl;audio/wav;audio/x-wav;audio/basic;application/x-ogg;application/ogg;audio/x-vorbis+ogg;audio/x-scpls;audio/x-mp3;audio/x-mpeg;audio/x-flac;x-content/audio-player;
-Keywords=audio;music;player;tag;library;

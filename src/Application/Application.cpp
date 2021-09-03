@@ -272,7 +272,7 @@ Application::Application(int& argc, char** argv) :
 	m = Pimpl::make<Private>(this);
 
 	QApplication::setQuitOnLastWindowClosed(false);
-	QApplication::setApplicationName(QStringLiteral("Sayonara"));
+	QApplication::setApplicationName(QStringLiteral("com.sayonara-player.Sayonara"));
 	QApplication::setApplicationVersion(GetSetting(Set::Player_Version));
 	QApplication::setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
 	QApplication::setDesktopFileName(QStringLiteral("com.sayonara-player.Sayonara.desktop"));
@@ -401,6 +401,8 @@ void Application::initPlayer(bool force_show)
 	                           m->playlistHandler,
 	                           m->engine,
 	                           m->dynamicPlaybackChecker);
+
+	m->player->setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
 
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
 }

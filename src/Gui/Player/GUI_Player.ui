@@ -13,10 +13,6 @@
   <property name="windowTitle">
    <string>Sayonara Player</string>
   </property>
-  <property name="windowIcon">
-   <iconset>
-    <normaloff>../../../../../../.designer/backup/icons/play.svg.png</normaloff>../../../../../../.designer/backup/icons/play.svg.png</iconset>
-  </property>
   <property name="toolButtonStyle">
    <enum>Qt::ToolButtonIconOnly</enum>
   </property>
