@@ -171,8 +171,7 @@ struct Application::Private
 	Private(Application* app) :
 		shutdownTriggered {false}
 	{
-		QApplication::setApplicationName(QStringLiteral("sayonara"));
-		Util::copyFromLegacyLocations();
+		Util::initXdgPaths(QStringLiteral("sayonara"));
 
 		metatypeRegistry = new MetaTypeRegistry();
 
@@ -419,7 +418,7 @@ void Application::initPreferences()
 {
 	measure("Preferences")
 
-    auto* preferences = new GUI_PreferenceDialog(m->player);
+	auto* preferences = new GUI_PreferenceDialog(m->player);
 
 	preferences->registerPreferenceDialog(new GUI_PlayerPreferences("application"));
 	preferences->registerPreferenceDialog(new GUI_LanguagePreferences("language"));
@@ -495,9 +494,8 @@ void Application::initSingleInstanceThread()
 	m->instanceThread->start();
 }
 
-void Application::sessionEndRequested(QSessionManager& manager)
+void Application::sessionEndRequested([[maybe_unused]] QSessionManager& manager)
 {
-	Q_UNUSED(manager)
 	shutdown();
 
 	if(m->db)

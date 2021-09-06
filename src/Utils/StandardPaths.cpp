@@ -17,11 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "StandardPaths.h"
 #include "FileUtils.h"
 #include "Utils.h"
 #include "Logger/Logger.h"
 
+#include <QApplication>
 #include <QDir>
 #include <QStandardPaths>
 #include <QString>
@@ -30,12 +32,9 @@ namespace
 {
 	QString operator/(const QString& first, const QString& second)
 	{
-		if(second.isEmpty())
-		{
-			return Util::File::cleanFilename(first);
-		}
-
-		return Util::File::cleanFilename(first + QDir::separator() + second);
+		return (second.isEmpty())
+		       ? Util::File::cleanFilename(first)
+		       : Util::File::cleanFilename(first + QDir::separator() + second);
 	}
 
 	QString createPath(const QString& path, const QString& appendPath)
@@ -49,6 +48,12 @@ namespace
 		}
 
 		return path / appendPath;
+	}
+
+	QString legacySayonaraPath(const QString& appendFilename = QString())
+	{
+		const auto sayonaraPath = createPath(QDir::homePath(), ".Sayonara");
+		return sayonaraPath / appendFilename;
 	}
 
 	bool copyFromLegacyLocation(const QString& filename, const QString& targetDir)
@@ -86,23 +91,45 @@ namespace
 
 		return success;
 	}
+
+	void copyFromLegacyLocations(const QString& configPath, const QString& sharePath, const QString& cachePath)
+	{
+		const auto legacyPath = legacySayonaraPath();
+
+		bool success = true;
+		success &= copyFromLegacyLocation(legacySayonaraPath("player.db"), configPath);
+		success &= copyFromLegacyLocation(legacySayonaraPath("soundcloud.db"), configPath);
+		success &= copyFromLegacyLocation(legacySayonaraPath("somafm.ini"), configPath);
+
+		success &= copyFromLegacyLocation(legacySayonaraPath("standard.css"), configPath);
+		success &= copyFromLegacyLocation(legacySayonaraPath("dark.css"), configPath);
+
+		success &= copyFromLegacyLocation(legacySayonaraPath("translations"), sharePath);
+		success &= copyFromLegacyLocation(legacySayonaraPath("covers"), cachePath);
+		success &= copyFromLegacyLocation(legacySayonaraPath("similar_artists"), cachePath);
+
+		if(success)
+		{
+			Util::File::deleteFiles({legacyPath});
+		}
+	}
 }
 
 QString Util::xdgConfigPath(const QString& appendPath)
 {
-	const auto path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+	static const auto path = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
 	return createPath(path, appendPath);
 }
 
 QString Util::xdgSharePath(const QString& appendPath)
 {
-	const auto path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+	static const auto path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
 	return createPath(path, appendPath);
 }
 
 QString Util::xdgCachePath(const QString& appendPath)
 {
-	const auto path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
+	static const auto path = QStandardPaths::writableLocation(QStandardPaths::CacheLocation);
 	return createPath(path, appendPath);
 }
 
@@ -123,7 +150,7 @@ QString Util::sharePath(const QString& appendPath)
 
 QString Util::tempPath(const QString& appendPath)
 {
-	const auto path = QDir::temp().absoluteFilePath("sayonara");
+	static const auto path = QDir::temp().absoluteFilePath("sayonara");
 	return createPath(path, appendPath);
 }
 
@@ -153,35 +180,16 @@ QString Util::coverTempDirectory(const QString& appendFilename)
 	return createPath(Util::tempPath("covers"), appendFilename);
 }
 
-QString Util::legacySayonaraPath(const QString& appendFilename)
-{
-	const auto sayonaraPath = createPath(QDir::homePath(), ".Sayonara");
-	return sayonaraPath / appendFilename;
-}
-
 QString Util::lyricsPath(const QString& appendFilename)
 {
 	return createPath(Util::xdgCachePath("lyrics"), appendFilename);
 }
 
-void Util::copyFromLegacyLocations()
+void Util::initXdgPaths(const QString& applicationName)
 {
-	const auto legacyPath = legacySayonaraPath();
+	QApplication::setApplicationName(applicationName);
 
-	bool success = true;
-	success &= copyFromLegacyLocation(legacySayonaraPath("player.db"), xdgConfigPath());
-	success &= copyFromLegacyLocation(legacySayonaraPath("soundcloud.db"), xdgConfigPath());
-	success &= copyFromLegacyLocation(legacySayonaraPath("somafm.ini"), xdgConfigPath());
-
-	success &= copyFromLegacyLocation(legacySayonaraPath("standard.css"), xdgConfigPath());
-	success &= copyFromLegacyLocation(legacySayonaraPath("dark.css"), xdgConfigPath());
-
-	success &= copyFromLegacyLocation(legacySayonaraPath("translations"), xdgSharePath());
-	success &= copyFromLegacyLocation(legacySayonaraPath("covers"), xdgCachePath());
-	success &= copyFromLegacyLocation(legacySayonaraPath("similar_artists"), xdgCachePath());
-
-	if(success)
-	{
-		Util::File::deleteFiles({legacyPath});
-	}
+	// important: all three paths need to mentioned here otherwise
+	// they will point to $HOME/.config/com.sayonara-player.Sayonara
+	copyFromLegacyLocations(xdgConfigPath(), xdgSharePath(), xdgCachePath());
 }

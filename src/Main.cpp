@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
 		return 0;
 	}
 
+	// do not access DB or any of the config/share/cache standard paths before this line
 	auto app = Application(argc, argv);
 
 	spLog(Log::Info, "Sayonara") << "Config path: " << Util::xdgConfigPath();

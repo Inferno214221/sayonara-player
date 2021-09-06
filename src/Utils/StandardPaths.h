@@ -24,24 +24,22 @@
 
 namespace Util
 {
-	QString xdgConfigPath(const QString& appendPath=QString());
-	QString xdgSharePath(const QString& appendPath=QString());
-	QString xdgCachePath(const QString& appendPath=QString());
+	QString xdgConfigPath(const QString& appendPath = QString());
+	QString xdgSharePath(const QString& appendPath = QString());
+	QString xdgCachePath(const QString& appendPath = QString());
 
-	QString sharePath(const QString& appendPath=QString());
-	QString tempPath(const QString& appendPath=QString());
+	QString sharePath(const QString& appendPath = QString());
+	QString tempPath(const QString& appendPath = QString());
 
 	QString similarArtistsPath();
 	QString translationsPath();
 	QString translationsSharePath();
 
-	QString coverDirectory(const QString& appendFilename=QString());
-	QString coverTempDirectory(const QString& appendFilename=QString());
-	QString lyricsPath(const QString& appendFilename=QString());
+	QString coverDirectory(const QString& appendFilename = QString());
+	QString coverTempDirectory(const QString& appendFilename = QString());
+	QString lyricsPath(const QString& appendFilename = QString());
 
-	QString legacySayonaraPath(const QString& appendFilename=QString());
-
-	void copyFromLegacyLocations();
+	void initXdgPaths(const QString& applicationName);
 }
 
 #endif //SAYONARA_PLAYER_STANDARDPATHS_H
