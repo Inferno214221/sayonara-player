@@ -34,6 +34,9 @@ namespace SC
 		public:
 			using ::Library::TrackView::TrackView;
 			::Library::ContextMenu::Entries contextMenuEntries() const override;
+
+		protected:
+			bool isMergeable() const override;
 	};
 
 	class AlbumView : public ::Library::AlbumView
@@ -42,6 +45,9 @@ namespace SC
 		public:
 			using ::Library::AlbumView::AlbumView;
 			::Library::ContextMenu::Entries contextMenuEntries() const override;
+
+		protected:
+			bool isMergeable() const override;
 	};
 
 	class ArtistView : public ::Library::ArtistView
@@ -57,6 +63,7 @@ namespace SC
 		// ItemView interface
 		protected:
 			void initContextMenu() override;
+			bool isMergeable() const override;
 	};
 }
 

@@ -38,9 +38,19 @@ Library::ContextMenu::Entries SC::TrackView::contextMenuEntries() const
 	return entryMask();
 }
 
+bool SC::TrackView::isMergeable() const
+{
+	return false;
+}
+
 Library::ContextMenu::Entries SC::AlbumView::contextMenuEntries() const
 {
 	return entryMask();
+}
+
+bool SC::AlbumView::isMergeable() const
+{
+	return false;
 }
 
 Library::ContextMenu::Entries SC::ArtistView::contextMenuEntries() const
@@ -58,4 +68,9 @@ void SC::ArtistView::initContextMenu()
 	ItemView::initCustomContextMenu(cm);
 
 	connect(cm, &SC::ContextMenu::sigAddArtistTriggered, this, &SC::ArtistView::sigAddArtistTriggered);
+}
+
+bool SC::ArtistView::isMergeable() const
+{
+	return false;
 }
