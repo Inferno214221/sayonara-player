@@ -27,15 +27,7 @@
 #include "Application/LocalLibraryWatcher.h"
 
 #ifdef SAYONARA_WITH_DBUS
-
 #include "DBus/DBusHandler.h"
-
-#endif
-
-#ifdef Q_OS_WIN
-#include <windows.h>
-#include "3rdParty/SomaFM/ui/SomaFMLibraryContainer.h"
-#include "3rdParty/Soundcloud/ui/GUI_SoundcloudLibrary.h"
 #endif
 
 #include "Components/Bookmarks/Bookmarks.h"
@@ -120,28 +112,41 @@
 #include <QElapsedTimer>
 #include <QSessionManager>
 
-class MeasureApp
+namespace
 {
-		QElapsedTimer* mTime;
-		QString mComponent;
-		int mStart;
+	class MeasureApp
+	{
+		public:
+			MeasureApp(const QString& component, QElapsedTimer* t) :
+				mTime(t),
+				mComponent(component)
+			{
+				mStart = mTime->elapsed();
+				spLog(Log::Debug, this) << "Init " << mComponent << ": " << mStart << "ms";
+			}
 
-	public:
-		MeasureApp(const QString& component, QElapsedTimer* t) :
-			mTime(t),
-			mComponent(component)
-		{
-			mStart = mTime->elapsed();
-			spLog(Log::Debug, this) << "Init " << mComponent << ": " << mStart << "ms";
-		}
+			~MeasureApp()
+			{
+				int end = mTime->elapsed();
+				spLog(Log::Debug, this) << "Init " << mComponent << " finished: " << end << "ms (" << end - mStart
+				                        << "ms)";
+			}
 
-		~MeasureApp()
-		{
-			int end = mTime->elapsed();
-			spLog(Log::Debug, this) << "Init " << mComponent << " finished: " << end << "ms (" << end - mStart
-			                        << "ms)";
-		}
-};
+		private:
+			QElapsedTimer* mTime;
+			QString mComponent;
+			int mStart;
+	};
+}
+
+static void initResources()
+{
+	Q_INIT_RESOURCE(Broadcasting);
+	Q_INIT_RESOURCE(Database);
+	Q_INIT_RESOURCE(Icons);
+	Q_INIT_RESOURCE(Lyrics);
+	Q_INIT_RESOURCE(Resources);
+}
 
 #define measure(c) MeasureApp mt(c, m->timer); Q_UNUSED(mt);
 
@@ -204,7 +209,7 @@ struct Application::Private
 
 		Gui::Icons::setDefaultSystemTheme(QIcon::themeName());
 
-		Private::initResources();
+		initResources();
 
 		timer = new QElapsedTimer();
 		timer->start();
@@ -231,39 +236,7 @@ struct Application::Private
 
 		delete metatypeRegistry;
 	}
-
-	static void initResources()
-	{
-		Q_INIT_RESOURCE(Broadcasting);
-		Q_INIT_RESOURCE(Database);
-		Q_INIT_RESOURCE(Icons);
-		Q_INIT_RESOURCE(Lyrics);
-		Q_INIT_RESOURCE(Resources);
-
-#ifdef Q_OS_WIN
-		Q_INIT_RESOURCE(IconsWindows);
-#endif
-	}
 };
-
-#ifdef Q_OS_WIN
-void global_key_handler()
-{
-	if(!RegisterHotKey(NULL, 1, MOD_NOREPEAT, VK_MEDIA_PLAY_PAUSE)){
-		return false;
-	}
-
-	MSG msg = {0};
-	while (GetMessage(&msg, NULL, 0, 0) != 0)
-	{
-		if (msg.message == WM_HOTKEY)
-		{
-			UINT modifiers = msg.lParam;
-			UINT key = msg.wParam;
-		}
-	}
-}
-#endif
 
 Application::Application(int& argc, char** argv) :
 	QApplication(argc, argv)
