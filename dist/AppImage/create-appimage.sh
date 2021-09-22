@@ -34,5 +34,5 @@ linuxdeploy-x86_64.AppImage --appdir=AppDir --desktop-file=./AppDir/usr/share/ap
 
 appimagetool-x86_64.AppImage AppDir
 
-mv Sayonara_Player-x86_64.AppImage "sayonara-${SAYONARA_VERSION}-g${COMMIT_ID}.AppImage"
+mv Sayonara-x86_64.AppImage "sayonara-${SAYONARA_VERSION}-g${COMMIT_ID}.AppImage"
 
