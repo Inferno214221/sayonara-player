@@ -29,6 +29,7 @@
 
 #include "Gui/Playlist/ui_GUI_Playlist.h"
 #include "Gui/Library/Utils/GUI_DeleteDialog.h"
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
 
@@ -135,7 +136,7 @@ namespace
 	void checkPlaylistName(PlaylistPtr playlist, TabWidget* tabWidget)
 	{
 		static const auto fontMetrics = tabWidget->fontMetrics();
-		static const auto tabWidth = fontMetrics.horizontalAdvance(QStringLiteral("This is enough [X]"));
+		static const auto tabWidth = Gui::Util::textWidth(fontMetrics, QStringLiteral("This is enough [X]"));
 
 		if(playlist)
 		{
