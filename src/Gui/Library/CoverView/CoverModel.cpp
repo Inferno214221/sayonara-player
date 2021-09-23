@@ -95,7 +95,7 @@ struct CoverModel::Private
 		int oldRowCount {0};
 		int oldColumnCount {0};
 		int maxColumns {10};
-		int zoom {100};
+		int zoom {GetSetting(Set::Lib_CoverZoom)};
 
 		explicit Private(QObject* parent) :
 			coverThread {new AlbumCoverFetchThread(parent)} {}
@@ -363,6 +363,8 @@ static QSize calcItemSize(int zoom, const QFont& font)
 
 void CoverModel::setZoom(int zoom, const QSize& viewSize)
 {
+	SetSetting(Set::Lib_CoverZoom, zoom);
+
 	m->zoom = zoom;
 	m->itemSize = calcItemSize(zoom, QApplication::font());
 

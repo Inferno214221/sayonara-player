@@ -59,9 +59,6 @@ namespace Library
 			void clearSelections() const;
 
 		protected:
-			void initSortingActions();
-			void initZoomActions();
-
 			void languageChanged() override;
 			void showEvent(QShowEvent* e) override;
 

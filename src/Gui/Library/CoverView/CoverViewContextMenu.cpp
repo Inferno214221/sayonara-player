@@ -45,16 +45,11 @@ struct CoverViewContextMenu::Private
 	QMenu* menuZoom;
 	QAction* actionZoom;
 
-	ActionPairList sortingActions;
-	QStringList zoomActions;
-
 	Private(CoverViewContextMenu* menu) :
 		actionShowArtist(new QAction(menu)),
 		actionShowUtils(new QAction(menu)),
 		menuSorting(new QMenu(menu)),
-		menuZoom(new QMenu(menu)),
-		sortingActions(Library::CoverView::sortingActions()),
-		zoomActions(Library::CoverView::zoomActions())
+		menuZoom(new QMenu(menu))
 	{
 		actionShowArtist->setCheckable(true);
 		actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
@@ -104,7 +99,8 @@ void CoverViewContextMenu::initSortingActions()
 	m->menuSorting->clear();
 	m->actionSorting->setText(Lang::get(Lang::SortBy));
 
-	for(const auto& actionPair : m->sortingActions)
+	static const auto sortingActions = CoverView::sortingActions();
+	for(const auto& actionPair : sortingActions)
 	{
 		auto* action = m->menuSorting->addAction(actionPair.name());
 		action->setCheckable(true);
@@ -117,10 +113,11 @@ void CoverViewContextMenu::initZoomActions()
 {
 	m->menuZoom->clear();
 
-	for(const auto& zoomLevel : m->zoomActions)
+	const static auto zoomFactors = CoverView::zoomFactors();
+	for(const auto& zoomFactor : zoomFactors)
 	{
-		auto* action = m->menuZoom->addAction(zoomLevel);
-		action->setData(zoomLevel.toInt());
+		auto* action = m->menuZoom->addAction(QString::number(zoomFactor));
+		action->setData(zoomFactor);
 		action->setCheckable(true);
 		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionZoomTriggered);
 	}

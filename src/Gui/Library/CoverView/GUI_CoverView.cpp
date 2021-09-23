@@ -30,11 +30,33 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-namespace Algorithm = Util::Algorithm;
-using Library::GUI_CoverView;
+namespace
+{
+	void initSortingActions(QComboBox* comboBox)
+	{
+		comboBox->clear();
 
-GUI_CoverView::GUI_CoverView(QWidget* parent) :
-	Gui::Widget(parent) {}
+		static const auto actionPairs = Library::CoverView::sortingActions();
+		for(const auto& actionPair : actionPairs)
+		{
+			comboBox->addItem(actionPair.name(), static_cast<int>(actionPair.sortorder()));
+		}
+	}
+
+	void initZoomActions(QComboBox* comboBox)
+	{
+		static const auto zoomActions = Library::CoverView::zoomFactors();
+		for(const auto& zoom : zoomActions)
+		{
+			comboBox->addItem(QString::number(zoom) + '%', zoom);
+		}
+	}
+}
+
+namespace Library
+{
+	GUI_CoverView::GUI_CoverView(QWidget* parent) :
+		Gui::Widget(parent) {}
 
 	GUI_CoverView::~GUI_CoverView() = default;
 
@@ -92,9 +114,6 @@ GUI_CoverView::GUI_CoverView(QWidget* parent) :
 		}
 	}
 
-	sortorderChanged();
-}
-
 	void GUI_CoverView::comboSortingChanged([[maybe_unused]] int index)
 	{
 		const auto data = ui->comboSorting->currentData().toInt();
@@ -130,35 +149,31 @@ GUI_CoverView::GUI_CoverView(QWidget* parent) :
 		ui->cbShowArtist->setChecked(showArtist);
 	}
 
-	zoomChanged();
-}
-
-void GUI_CoverView::comboZoomChanged([[maybe_unused]] int index)
-{
-	const auto zoom = ui->combo_zoom->currentData().toInt();
-	SetSetting(Set::Lib_CoverZoom, zoom);
-	ui->tb_view->changeZoom(zoom);
-}
+	void GUI_CoverView::comboZoomChanged([[maybe_unused]] int index)
+	{
+		const auto zoom = ui->comboZoom->currentData().toInt();
+		ui->coverView->changeZoom(zoom);
+	}
 
 	void GUI_CoverView::closeClicked()
 	{
 		SetSetting(Set::Lib_CoverShowUtils, false);
 	}
 
-void GUI_CoverView::zoomChanged()
-{
-	const auto zoomActions = CoverView::zoomActions();
-
-	const auto zoom = GetSetting(Set::Lib_CoverZoom);
-	const auto index = Algorithm::indexOf(zoomActions, [zoom](const QString& str) {
-		return (str == QString::number(zoom));
-	});
-
-	if(index >= 0)
+	void GUI_CoverView::zoomChanged()
 	{
-		ui->combo_zoom->setCurrentIndex(index);
+		static const auto zoomFactors = CoverView::zoomFactors();
+
+		const auto zoom = GetSetting(Set::Lib_CoverZoom);
+		const auto index = Util::Algorithm::indexOf(zoomFactors, [zoom](const auto& zoomFactor) {
+			return (zoomFactor == zoom);
+		});
+
+		if(index >= 0)
+		{
+			ui->comboZoom->setCurrentIndex(index);
+		}
 	}
-}
 
 	void GUI_CoverView::showUtilsChanged()
 	{
@@ -172,7 +187,8 @@ void GUI_CoverView::zoomChanged()
 		{
 			Gui::Widget::languageChanged();
 
-		initSortingActions();
+			initSortingActions(ui->comboSorting);
+			sortorderChanged();
 
 			ui->comboZoom->setToolTip(tr("Use Ctrl + mouse wheel to zoom"));
 			ui->btnClose->setText(Lang::get(Lang::Hide));
@@ -180,8 +196,9 @@ void GUI_CoverView::zoomChanged()
 		}
 	}
 
-void GUI_CoverView::showEvent(QShowEvent* e)
-{
-	Gui::Widget::showEvent(e);
-	ui->tb_view->changeZoom(GetSetting(Set::Lib_CoverZoom));
+	void GUI_CoverView::showEvent(QShowEvent* e)
+	{
+		Gui::Widget::showEvent(e);
+		ui->coverView->changeZoom();
+	}
 }

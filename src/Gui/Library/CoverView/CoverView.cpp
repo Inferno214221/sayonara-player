@@ -99,51 +99,58 @@ namespace Library
 		return m->library;
 	}
 
-QStringList CoverView::zoomActions()
-{
-	return QStringList{"50", "75", "100", "125", "150", "175", "200"};
-}
-
-void CoverView::changeZoom(int zoom)
-{
-	bool forceReload = (zoom < 0);
-
-	if(itemModel()->rowCount() == 0){
-		return;
-	}
-
-	if(forceReload){
-		zoom = m->model->zoom();
-	}
-
-	else
+	QList<int> CoverView::zoomFactors()
 	{
-		if(zoom == m->model->zoom()){
-			return;
-		}
+		static const auto list = QList<int> {50, 75, 100, 125, 150, 175, 200, 225, 250};
+		return list;
 	}
 
-	zoom = std::min(zoom, 200);
-	zoom = std::max(zoom, 50);
-
-	if(!forceReload)
+	int CoverView::zoom() const
 	{
-		if( zoom == m->model->zoom() )
+		return m->model->zoom();
+	}
+
+	void CoverView::changeZoom(int zoom)
+	{
+		if(itemModel()->rowCount() == 0)
 		{
 			return;
 		}
+
+		const auto forceReload = (zoom < 0);
+		if(forceReload)
+		{
+			zoom = this->zoom();
+		}
+
+		else
+		{
+			if(zoom == this->zoom())
+			{
+				return;
+			}
+		}
+
+		zoom = std::max(zoom, CoverView::zoomFactors().first());
+		zoom = std::min(zoom, CoverView::zoomFactors().last());
+
+		if(!forceReload)
+		{
+			if(zoom == m->model->zoom())
+			{
+				return;
+			}
+		}
+
+		if(m->zoomLocked.test_and_set())
+		{
+			return;
+		}
+
+		m->model->setZoom(zoom, size());
+		resizeSections();
+		m->zoomLocked.clear();
 	}
-
-	SetSetting(Set::Lib_CoverZoom, zoom);
-
-	if(m->zoomLocked.test_and_set()){
-		return;
-	}
-
-	m->model->setZoom(zoom, this->size());
-	resizeSections();
-	m->zoomLocked.clear();
-}
 
 	void CoverView::resizeSections()
 	{

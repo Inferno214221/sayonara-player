@@ -58,11 +58,12 @@ namespace Library
 			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 			SelectionViewInterface::SelectionType selectionType() const override;
 
+			int zoom() const;
 			void changeZoom(int zoom = -1);
 			void changeSortorder(SortOrder so);
 
 			static QList<ActionPair> sortingActions();
-			static QStringList zoomActions();
+			static QList<int> zoomFactors();
 
 		public slots:
 			void reload();
