@@ -37,15 +37,11 @@ namespace Library
 {
 	class CoverView;
 
-	/**
-	 * @brief The GUI_CoverView class
-	 * @ingroup GuiLibrary
-	 */
 	class GUI_CoverView :
 		public Gui::Widget
 	{
 		Q_OBJECT
-		UI_CLASS(GUI_CoverView)
+		UI_CLASS_SHARED_PTR(GUI_CoverView)
 
 		signals:
 			void sigSortorderChanged(SortOrder so);
@@ -67,7 +63,6 @@ namespace Library
 			void initZoomActions();
 
 			void languageChanged() override;
-
 			void showEvent(QShowEvent* e) override;
 
 		private:

@@ -58,13 +58,11 @@ ActionPair::~ActionPair() = default;
 
 QString ActionPair::name() const
 {
-	QString asc_desc = Lang::get(Lang::Ascending);
-	if(!m->ascending)
-	{
-		asc_desc = Lang::get(Lang::Descending);
-	}
+	const auto text = (m->ascending)
+		? Lang::get(Lang::Ascending)
+		: Lang::get(Lang::Descending);
 
-	return QString("%1 (%2)").arg(Lang::get(m->term), asc_desc);
+	return QString("%1 (%2)").arg(Lang::get(m->term), text);
 }
 
 Library::SortOrder ActionPair::sortorder() const

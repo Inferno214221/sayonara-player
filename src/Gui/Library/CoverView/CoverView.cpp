@@ -46,63 +46,58 @@
 
 #include <mutex>
 
-using Library::ActionPair;
-using Library::CoverView;
-using Library::CoverModel;
-using Library::CoverViewContextMenu;
-using AtomicBool=std::atomic<bool>;
-using AtomicInt=std::atomic<int>;
-
-struct CoverView::Private
+namespace Library
 {
-	LocalLibrary*	library=nullptr;
-	CoverModel*		model=nullptr;
+	struct CoverView::Private
+	{
+		LocalLibrary* library = nullptr;
+		CoverModel* model = nullptr;
 
-	std::atomic_flag zoomLocked = ATOMIC_FLAG_INIT;
+		std::atomic_flag zoomLocked {0};
+	};
 
-	Private() : zoomLocked(false) {}
-};
-
-CoverView::CoverView(QWidget* parent) :
-	Library::ItemView(parent)
-{
-	m = Pimpl::make<Private>();
-}
-
-CoverView::~CoverView() = default;
-
-void CoverView::init(LocalLibrary* library)
-{
-	m->library = library;
-	m->model = new Library::CoverModel(this, library);
-
-	ItemView::setItemModel(m->model);
-
-	this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-	this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-	this->setSelectionBehavior(QAbstractItemView::SelectItems);
-	this->setItemDelegate(new Library::CoverDelegate(this));
-	this->setShowGrid(false);
-	this->setAlternatingRowColors(false);
-
-	connect(m->library, &LocalLibrary::sigAllAlbumsLoaded, this, &CoverView::reload);
-
-	if(this->horizontalHeader()){
-		this->horizontalHeader()->hide();
+	CoverView::CoverView(QWidget* parent) :
+		Library::ItemView(parent)
+	{
+		m = Pimpl::make<Private>();
 	}
 
-	if(this->verticalHeader()){
-		this->verticalHeader()->hide();
+	CoverView::~CoverView() = default;
+
+	void CoverView::init(LocalLibrary* library)
+	{
+		m->library = library;
+		m->model = new Library::CoverModel(this, library);
+
+		ItemView::setItemModel(m->model);
+
+		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+		this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
+		this->setSelectionBehavior(QAbstractItemView::SelectItems);
+		this->setItemDelegate(new Library::CoverDelegate(this));
+		this->setShowGrid(false);
+		this->setAlternatingRowColors(false);
+
+		connect(m->library, &LocalLibrary::sigAllAlbumsLoaded, this, &CoverView::reload);
+
+		if(this->horizontalHeader())
+		{
+			this->horizontalHeader()->hide();
+		}
+
+		if(this->verticalHeader())
+		{
+			this->verticalHeader()->hide();
+		}
+
+		new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
+		new QShortcut(QKeySequence("F7"), this, SLOT(clearCache()));
 	}
 
-	new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
-	new QShortcut(QKeySequence("F7"), this, SLOT(clearCache()));
-}
-
-AbstractLibrary* CoverView::library() const
-{
-	return m->library;
-}
+	AbstractLibrary* CoverView::library() const
+	{
+		return m->library;
+	}
 
 QStringList CoverView::zoomActions()
 {
@@ -150,184 +145,183 @@ void CoverView::changeZoom(int zoom)
 	m->zoomLocked.clear();
 }
 
-void CoverView::resizeSections()
-{
-	if(itemModel()->rowCount() == 0){
-		return;
-	}
-
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	this->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-}
-
-
-QList<ActionPair> CoverView::sortingActions()
-{
-	using namespace Library;
-
-	QList<ActionPair> ret
+	void CoverView::resizeSections()
 	{
-		ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
-		ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
-		ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
-		ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
-		ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
-		ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
-		ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
-		ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
-		ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
-		ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc)
-	};
+		if(itemModel()->rowCount() == 0)
+		{
+			return;
+		}
 
-	return ret;
-}
-
-
-void CoverView::changeSortorder(Library::SortOrder so)
-{
-	m->library->changeAlbumSortorder(so);
-}
-
-
-void CoverView::initContextMenu()
-{
-	if(contextMenu()){
-		return;
+		verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+		horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	}
 
-	auto* cm = new CoverViewContextMenu(this);
-	ItemView::initCustomContextMenu(cm);
-
-	connect(cm, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);
-	connect(cm, &CoverViewContextMenu::sigSortingChanged, this, &CoverView::changeSortorder);
-}
-
-void CoverView::reload()
-{
-	m->model->reload();
-}
-
-void CoverView::clearCache()
-{
-	spLog(Log::Debug, this) << "Clear cache";
-	m->model->clear();
-}
-
-void CoverView::fill()
-{
-	this->clearSelection();
-}
-
-void CoverView::languageChanged() {}
-
-QStyleOptionViewItem CoverView::viewOptions() const
-{
-	QStyleOptionViewItem option = ItemView::viewOptions();
-	option.decorationAlignment = Qt::AlignHCenter;
-	option.displayAlignment = Qt::AlignHCenter;
-	option.decorationPosition = QStyleOptionViewItem::Top;
-	option.textElideMode = Qt::ElideRight;
-
-	return option;
-}
-
-int CoverView::sizeHintForColumn(int c) const
-{
-	Q_UNUSED(c)
-	return m->model->itemSize().width();
-}
-
-bool CoverView::isMergeable() const
-{
-	return true;
-}
-
-MD::Interpretation CoverView::metadataInterpretation() const
-{
-	return MD::Interpretation::Albums;
-}
-
-int CoverView::mapModelIndexToIndex(const QModelIndex& idx) const
-{
-	return idx.row() * model()->columnCount() + idx.column();
-}
-
-ModelIndexRange CoverView::mapIndexToModelIndexes(int idx) const
-{
-	int row = idx / model()->columnCount();
-	int col = idx % model()->columnCount();
-
-	return ModelIndexRange(model()->index(row, col), model()->index(row, col));
-}
-
-SelectionViewInterface::SelectionType CoverView::selectionType() const
-{
-	return SelectionViewInterface::SelectionType::Items;
-}
-
-void CoverView::playClicked()
-{
-	m->library->prepareFetchedTracksForPlaylist(false);
-}
-
-void CoverView::playNewTabClicked()
-{
-	m->library->prepareFetchedTracksForPlaylist(true);
-}
-
-void CoverView::playNextClicked()
-{
-	m->library->playNextFetchedTracks();
-}
-
-void CoverView::appendClicked()
-{
-	m->library->appendFetchedTracks();
-}
-
-void CoverView::selectedItemsChanged(const IndexSet& indexes)
-{
-	m->library->selectedAlbumsChanged(indexes);
-}
-
-void CoverView::refreshClicked() {}
-
-void CoverView::runMergeOperation(const Library::MergeData& mergedata)
-{
-	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
-
-	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
-
-	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
-}
-
-void CoverView::wheelEvent(QWheelEvent* e)
-{
-	const auto delta = e->angleDelta().y();
-	if( (e->modifiers() & Qt::ControlModifier) && (delta != 0) )
+	QList<ActionPair> CoverView::sortingActions()
 	{
-		int d = (delta > 0) ? 10 : -10;
+		static const auto result = QList<ActionPair>
+			{
+				ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
+				ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
+				ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
+				ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
+				ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
+				ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
+				ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
+				ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
+				ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
+				ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc)
+			};
 
-		changeZoom(m->model->zoom() + d);
+		return result;
 	}
 
-	else
+	void CoverView::changeSortorder(Library::SortOrder so)
 	{
-		ItemView::wheelEvent(e);
+		m->library->changeAlbumSortorder(so);
 	}
-}
 
-void CoverView::resizeEvent(QResizeEvent* e)
-{
-	ItemView::resizeEvent(e);
-	changeZoom();
-}
+	void CoverView::initContextMenu()
+	{
+		if(contextMenu())
+		{
+			return;
+		}
 
-void CoverView::hideEvent(QHideEvent* e)
-{
-	if(m->model){
+		auto* contextMenu = new CoverViewContextMenu(this);
+		ItemView::initCustomContextMenu(contextMenu);
+
+		connect(contextMenu, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);
+		connect(contextMenu, &CoverViewContextMenu::sigSortingChanged, this, &CoverView::changeSortorder);
+	}
+
+	void CoverView::reload()
+	{
+		m->model->reload();
+	}
+
+	void CoverView::clearCache()
+	{
+		spLog(Log::Debug, this) << "Clear cache";
 		m->model->clear();
 	}
 
-	ItemView::hideEvent(e);
+	void CoverView::fill()
+	{
+		this->clearSelection();
+	}
+
+	void CoverView::languageChanged() {}
+
+	QStyleOptionViewItem CoverView::viewOptions() const
+	{
+		auto option = ItemView::viewOptions();
+
+		option.decorationAlignment = Qt::AlignHCenter;
+		option.displayAlignment = Qt::AlignHCenter;
+		option.decorationPosition = QStyleOptionViewItem::Top;
+		option.textElideMode = Qt::ElideRight;
+
+		return option;
+	}
+
+	int CoverView::sizeHintForColumn([[maybe_unused]] int column) const
+	{
+		return m->model->itemSize().width();
+	}
+
+	bool CoverView::isMergeable() const
+	{
+		return true;
+	}
+
+	MD::Interpretation CoverView::metadataInterpretation() const
+	{
+		return MD::Interpretation::Albums;
+	}
+
+	int CoverView::mapModelIndexToIndex(const QModelIndex& idx) const
+	{
+		return idx.row() * model()->columnCount() + idx.column();
+	}
+
+	ModelIndexRange CoverView::mapIndexToModelIndexes(int idx) const
+	{
+		const auto row = idx / model()->columnCount();
+		const auto col = idx % model()->columnCount();
+
+		return ModelIndexRange(model()->index(row, col), model()->index(row, col));
+	}
+
+	SelectionViewInterface::SelectionType CoverView::selectionType() const
+	{
+		return SelectionViewInterface::SelectionType::Items;
+	}
+
+	void CoverView::playClicked()
+	{
+		m->library->prepareFetchedTracksForPlaylist(false);
+	}
+
+	void CoverView::playNewTabClicked()
+	{
+		m->library->prepareFetchedTracksForPlaylist(true);
+	}
+
+	void CoverView::playNextClicked()
+	{
+		m->library->playNextFetchedTracks();
+	}
+
+	void CoverView::appendClicked()
+	{
+		m->library->appendFetchedTracks();
+	}
+
+	void CoverView::selectedItemsChanged(const IndexSet& indexes)
+	{
+		m->library->selectedAlbumsChanged(indexes);
+	}
+
+	void CoverView::refreshClicked() {}
+
+	void CoverView::runMergeOperation(const MergeData& mergedata)
+	{
+		auto* taggingOperation = new Tagging::UserOperations(mergedata.libraryId(), this);
+
+		connect(taggingOperation, &Tagging::UserOperations::sigFinished,
+		        taggingOperation, &Tagging::UserOperations::deleteLater);
+
+		taggingOperation->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
+	}
+
+	void CoverView::wheelEvent(QWheelEvent* e)
+	{
+		const auto delta = e->angleDelta().y();
+		if((e->modifiers() & Qt::ControlModifier) && (delta != 0))
+		{
+			const auto d = (delta > 0) ? 10 : -10;
+			changeZoom(m->model->zoom() + d);
+		}
+
+		else
+		{
+			ItemView::wheelEvent(e);
+		}
+	}
+
+	void CoverView::resizeEvent(QResizeEvent* e)
+	{
+		ItemView::resizeEvent(e);
+		changeZoom();
+	}
+
+	void CoverView::hideEvent(QHideEvent* e)
+	{
+		if(m->model)
+		{
+			m->model->clear();
+		}
+
+		ItemView::hideEvent(e);
+	}
 }

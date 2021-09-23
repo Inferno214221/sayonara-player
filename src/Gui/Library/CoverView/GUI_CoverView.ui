@@ -27,7 +27,7 @@
     <number>0</number>
    </property>
    <item row="1" column="0">
-    <widget class="Library::CoverView" name="tb_view">
+    <widget class="Library::CoverView" name="coverView">
      <property name="focusPolicy">
       <enum>Qt::ClickFocus</enum>
      </property>
@@ -55,7 +55,7 @@
        <number>0</number>
       </property>
       <item>
-       <widget class="QCheckBox" name="cb_show_artist">
+       <widget class="QCheckBox" name="cbShowArtist">
         <property name="text">
          <string notr="true">Show artist</string>
         </property>
@@ -75,7 +75,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="Gui::ComboBox" name="combo_sorting"/>
+       <widget class="Gui::ComboBox" name="comboSorting"/>
       </item>
       <item>
        <spacer name="horizontalSpacer">
@@ -91,7 +91,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="Gui::ComboBox" name="combo_zoom"/>
+       <widget class="Gui::ComboBox" name="comboZoom"/>
       </item>
       <item>
        <spacer name="horizontalSpacer_2">
@@ -107,7 +107,7 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="btn_close">
+       <widget class="QPushButton" name="btnClose">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Maximum" vsizetype="Minimum">
           <horstretch>0</horstretch>
