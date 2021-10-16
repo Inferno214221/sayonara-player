@@ -138,11 +138,18 @@ namespace
 		return (ok && (line <= maxRow))
 		       ? line : -1;
 	}
+
+	QString getAlbumHashFromTrack(const MetaData& track)
+	{
+		return QString("%1-%2")
+			.arg(track.albumId())
+			.arg(track.album());
+	}
 }
 
 struct Model::Private
 {
-	QHash<AlbumId, QPixmap> coverLookupMap;
+	QHash<QString, QPixmap> coverLookupMap;
 	int oldRowCount;
 	int dragIndex;
 	PlaylistPtr playlist;
@@ -221,8 +228,8 @@ QVariant Model::data(const QModelIndex& index, int role) const
 	else if(role == Qt::TextAlignmentRole)
 	{
 		return (col == ColumnName::Description)
-			? QVariant(Qt::AlignLeft | Qt::AlignVCenter)
-			: QVariant(Qt::AlignRight | Qt::AlignVCenter);
+		       ? QVariant(Qt::AlignLeft | Qt::AlignVCenter)
+		       : QVariant(Qt::AlignRight | Qt::AlignVCenter);
 	}
 
 	else if(role == Qt::DecorationRole)
@@ -230,13 +237,14 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		if(col == ColumnName::Cover)
 		{
 			const auto& track = m->playlist->track(row);
-			if(!m->coverLookupMap.contains(track.albumId()))
+			const auto hash = getAlbumHashFromTrack(track);
+			if(!m->coverLookupMap.contains(hash))
 			{
-				m->coverLookupMap.insert(track.albumId(), QPixmap {});
+				m->coverLookupMap.insert(hash, QPixmap {});
 				startCoverLookup(track);
 			}
 
-			return QIcon(m->coverLookupMap[track.albumId()]);
+			return QIcon(m->coverLookupMap[hash]);
 		}
 	}
 
@@ -606,15 +614,16 @@ void Playlist::Model::coverFound(const QPixmap& pixmap)
 {
 	if(auto* coverLookup = static_cast<Cover::Lookup*>(sender()); coverLookup)
 	{
-		const auto albumId = coverLookup->userData<AlbumId>();
-		m->coverLookupMap[albumId] = pixmap;
+		const auto hash = coverLookup->userData<QString>();
+		m->coverLookupMap[hash] = pixmap;
 
 		const auto& tracks = m->playlist->tracks();
 
 		auto row = 0;
 		for(const auto& track : tracks)
 		{
-			if(track.albumId() == albumId)
+			const auto trackHash = getAlbumHashFromTrack(track);
+			if(trackHash == hash)
 			{
 				constexpr const auto column = static_cast<int>(ColumnName::Cover);
 				emit dataChanged(index(row, column), index(row, column));
@@ -637,7 +646,7 @@ void Playlist::Model::startCoverLookup(const MetaData& track) const
 {
 	const auto coverLocation = Cover::Location::coverLocation(track);
 	auto* coverLookup = new Cover::Lookup(coverLocation, 1, nullptr);
-	coverLookup->setUserData(track.albumId());
+	coverLookup->setUserData(getAlbumHashFromTrack(track));
 	connect(coverLookup, &Cover::Lookup::sigCoverFound, this, &Model::coverFound);
 	connect(coverLookup, &Cover::Lookup::sigFinished, this, &Model::coverLookupFinished);
 	coverLookup->start();
