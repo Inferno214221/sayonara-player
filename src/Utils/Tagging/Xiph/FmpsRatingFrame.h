@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAYONARA_XIPH_POPULARIMETER_H
-#define SAYONARA_XIPH_POPULARIMETER_H
+#ifndef SAYONARA_XIPH_FMPS_RATING_FRAME_H
+#define SAYONARA_XIPH_FMPS_RATING_FRAME_H
 
 #include "Utils/Tagging/Xiph/XiphFrame.h"
 #include "Utils/Tagging/Models/Popularimeter.h"
@@ -28,12 +28,24 @@
 
 namespace Xiph
 {
-	class PopularimeterFrame :
+	class FmpsRatingFrame :
 		public XiphFrame<Models::Popularimeter>
 	{
 		public:
-			PopularimeterFrame(TagLib::Ogg::XiphComment* tag);
-			~PopularimeterFrame() override;
+			FmpsRatingFrame(TagLib::Ogg::XiphComment* tag);
+			~FmpsRatingFrame() override;
+
+		protected:
+			std::optional<Models::Popularimeter> mapTagToData() const override;
+			void mapDataToTag(const Models::Popularimeter& pop) override;
+	};
+
+	class FmpsUserRatingFrame :
+		public XiphFrame<Models::Popularimeter>
+	{
+		public:
+			FmpsUserRatingFrame(TagLib::Ogg::XiphComment* tag);
+			~FmpsUserRatingFrame() override;
 
 		protected:
 			std::optional<Models::Popularimeter> mapTagToData() const override;
@@ -41,4 +53,4 @@ namespace Xiph
 	};
 }
 
-#endif // SAYONARA_XIPH_POPULARIMETER_H
+#endif // SAYONARA_XIPH_FMPS_RATING_FRAME_H

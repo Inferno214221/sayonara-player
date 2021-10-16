@@ -27,7 +27,8 @@
 #include "ID3v2/Discnumber.h"
 #include "ID3v2/AlbumArtist.h"
 #include "Xiph/AlbumArtist.h"
-#include "Xiph/PopularimeterFrame.h"
+#include "Xiph/RatingFrame.h"
+#include "Xiph/FmpsRatingFrame.h"
 #include "Xiph/DiscnumberFrame.h"
 #include "MP4/AlbumArtist.h"
 #include "MP4/DiscnumberFrame.h"
@@ -89,7 +90,9 @@ namespace Tagging
 
 		else if(parsedTag.type == Tagging::TagType::Xiph)
 		{
-			tryToRead<Xiph::PopularimeterFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
+			tryToRead<Xiph::RatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
+			tryToRead<Xiph::FmpsRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
+			tryToRead<Xiph::FmpsUserRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
 		}
 
 		else if(parsedTag.type == Tagging::TagType::MP4)
@@ -107,7 +110,8 @@ namespace Tagging
 
 		else if(parsedTag.type == Tagging::TagType::Xiph)
 		{
-			tryToWrite<Xiph::PopularimeterFrame>(parsedTag.xiphTag(), popularimeter);
+			tryToWrite<Xiph::RatingFrame>(parsedTag.xiphTag(), popularimeter);
+			tryToWrite<Xiph::FmpsRatingFrame>(parsedTag.xiphTag(), popularimeter);
 		}
 
 		else if(parsedTag.type == Tagging::TagType::MP4)

@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PopularimeterFrame.h"
+#include "RatingFrame.h"
 
 #include <optional>
 
@@ -44,12 +44,12 @@ namespace
 	}
 }
 
-Xiph::PopularimeterFrame::PopularimeterFrame(TagLib::Ogg::XiphComment* tag) :
+Xiph::RatingFrame::RatingFrame(TagLib::Ogg::XiphComment* tag) :
 	XiphFrame<Models::Popularimeter>(tag, "RATING") {}
 
-Xiph::PopularimeterFrame::~PopularimeterFrame() = default;
+Xiph::RatingFrame::~RatingFrame() = default;
 
-std::optional<Models::Popularimeter> Xiph::PopularimeterFrame::mapTagToData() const
+std::optional<Models::Popularimeter> Xiph::RatingFrame::mapTagToData() const
 {
 	const auto popData = this->stringData();
 
@@ -58,7 +58,7 @@ std::optional<Models::Popularimeter> Xiph::PopularimeterFrame::mapTagToData() co
 		: std::optional<Models::Popularimeter>();
 }
 
-void Xiph::PopularimeterFrame::mapDataToTag(const Models::Popularimeter& pop)
+void Xiph::RatingFrame::mapDataToTag(const Models::Popularimeter& pop)
 {
 	const auto iRating = static_cast<int>(pop.rating);
 	setStringData(QString::number(iRating));

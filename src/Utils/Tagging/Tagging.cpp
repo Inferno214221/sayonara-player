@@ -218,7 +218,7 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	parsedTag.tag->setTrack(md.trackNumber());
 	parsedTag.tag->setComment(comment);
 
-	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara player", md.rating(), 0));
+	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara", md.rating(), 0));
 	Tagging::writeDiscnumber(parsedTag, Models::Discnumber(md.discnumber(), md.discCount()));
 	Tagging::writeAlbumArtist(parsedTag, md.albumArtist());
 
