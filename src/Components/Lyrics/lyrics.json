@@ -1,45 +1,5 @@
 [
     {
-        "address": "http://lyrics.Wikia.com",
-        "direct_url_template": "<SERVER>/wiki/<ARTIST>:<TITLE>",
-        "is_end_tag_included": false,
-        "is_lowercase": false,
-        "is_numeric": true,
-        "is_start_tag_included": false,
-        "name": "Wikia",
-        "replacements": [
-            {
-                "replacement_from": "'",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "ö",
-                "replacement_to": "o"
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": "!",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "&",
-                "replacement_to": "%26"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "<!--",
-                "start_tag": "<div class='lyricbox'>"
-            }
-        ]
-    },
-    {
         "address": "https://www.musixmatch.com",
         "direct_url_template": "",
         "is_end_tag_included": false,
