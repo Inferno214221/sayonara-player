@@ -96,7 +96,11 @@ namespace Xiph
 					tag()->removeFields(tagKey());
 				}
 
-				mapDataToTag(model);
+				try {
+					mapDataToTag(model);
+				} catch (std::exception& /* e */) {
+					return false;
+				}
 
 				return true;
 			}

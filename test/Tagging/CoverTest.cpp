@@ -7,34 +7,34 @@
 #include <QPixmap>
 #include <QString>
 
-class CoverTest : 
-    public AbstractTaggingTest
+class CoverTest :
+	public AbstractTaggingTest
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        CoverTest() :
-	        AbstractTaggingTest("CoverTest")
-        {}
+	public:
+		CoverTest() :
+			AbstractTaggingTest("CoverTest") {}
 
 	private:
-		void run_test(const QString& filename) override;
-        QPixmap logo() const
-        {
-	        return QPixmap(":/test/logo.png");
-        }
+		void runTest(const QString& filename) override;
+
+		QPixmap logo() const
+		{
+			return QPixmap(":/test/logo.png");
+		}
 
 		QPixmap logoBig() const
 		{
 			return QPixmap(":/test/logo.png").scaled(1000, 1000);
 		}
 
-    private slots:
-		void id3_test();
-		void xiph_test();
+	private slots:
+		void id3Test();
+		void xiphTest();
 };
 
-void CoverTest::run_test(const QString& filename)
+void CoverTest::runTest(const QString& filename)
 {
 	QVERIFY(Tagging::hasCover(filename) == false);
 	QVERIFY(Tagging::isCoverSupported(filename) == true);
@@ -73,7 +73,8 @@ void CoverTest::run_test(const QString& filename)
 	}
 
 	const auto smallerFilesize = QFileInfo(filename).size();
-	QVERIFY2((smallerFilesize > originalFilesize) && (smallerFilesize < bigFilesize), "Check if filesize is in between");
+	QVERIFY2((smallerFilesize > originalFilesize) && (smallerFilesize < bigFilesize),
+	         "Check if filesize is in between");
 
 	{
 		QByteArray coverData;
@@ -85,15 +86,16 @@ void CoverTest::run_test(const QString& filename)
 	}
 }
 
-void CoverTest::id3_test()
+void CoverTest::id3Test()
 {
-	AbstractTaggingTest::id3_test();
+	AbstractTaggingTest::id3Test();
 }
 
-void CoverTest::xiph_test()
+void CoverTest::xiphTest()
 {
-	AbstractTaggingTest::xiph_test();
+	AbstractTaggingTest::xiphTest();
 }
 
 QTEST_MAIN(CoverTest)
+
 #include "CoverTest.moc"

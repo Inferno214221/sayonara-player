@@ -4,81 +4,79 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 
-class DiscnumberTest : public AbstractTaggingTest
+class DiscnumberTest :
+	public AbstractTaggingTest
 {
 	Q_OBJECT
 
-public:
-	DiscnumberTest() :
-		AbstractTaggingTest("DiscnumberTest")
-	{}
+	public:
+		DiscnumberTest() :
+			AbstractTaggingTest("DiscnumberTest") {}
 
-private:
-	void run_test(const QString& filename) override;
+	private:
+		void runTest(const QString& filename) override;
 
-private slots:
-	void id3_test();
-	void xiph_test();
+	private slots:
+		void id3Test();
+		void xiphTest();
 };
 
-
-void DiscnumberTest::run_test(const QString& filename)
+void DiscnumberTest::runTest(const QString& filename)
 {
-	QString album_artist = QString::fromUtf8("Motörhead фыва");
-	MetaData md(filename);
-	MetaData md2(filename);
+	const auto albumArtist = QString::fromUtf8("Motörhead фыва");
+	auto metadata = MetaData(filename);
+	auto metadataReloaded = metadata;
 
-	Tagging::Utils::getMetaDataOfFile(md);
-	QVERIFY(md.discnumber() == 5);
+	Tagging::Utils::getMetaDataOfFile(metadata);
+	QVERIFY(metadata.discnumber() == 5);
 
-	md.setDiscnumber(1);
-	md.setDiscCount(2);
-	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.discnumber() == 1);
-	QVERIFY(md.discCount() == 2);
+	metadata.setDiscnumber(1);
+	metadata.setDiscCount(2);
+	Tagging::Utils::setMetaDataOfFile(metadata);
+	QVERIFY(metadata.discnumber() == 1);
+	QVERIFY(metadata.discCount() == 2);
 
-	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 1, get " << md2.discnumber();
-	QVERIFY(md2.discnumber() == 1);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+	qDebug() << "Expect 1, get " << metadataReloaded.discnumber();
+	QVERIFY(metadataReloaded.discnumber() == 1);
 
-	qDebug() << "Expect 2, get " << md2.discCount();
-	QVERIFY(md2.discCount() == 2);
+	qDebug() << "Expect 2, get " << metadataReloaded.discCount();
+	QVERIFY(metadataReloaded.discCount() == 2);
 
+	metadata.setDiscnumber(8);
+	metadata.setDiscCount(9);
+	Tagging::Utils::setMetaDataOfFile(metadata);
+	QVERIFY(metadata.discnumber() == 8);
+	QVERIFY(metadata.discCount() == 9);
 
-	md.setDiscnumber(8);
-	md.setDiscCount(9);
-	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.discnumber() == 8);
-	QVERIFY(md.discCount() == 9);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+	qDebug() << "Expect 8, get " << metadataReloaded.discnumber();
+	QVERIFY(metadataReloaded.discnumber() == 8);
 
-	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 8, get " << md2.discnumber();
-	QVERIFY(md2.discnumber() == 8);
+	qDebug() << "Expect 9, get " << metadataReloaded.discCount();
+	QVERIFY(metadataReloaded.discCount() == 9);
 
-	qDebug() << "Expect 9, get " << md2.discCount();
-	QVERIFY(md2.discCount() == 9);
+	metadata.setDiscnumber(10);
+	metadata.setDiscCount(12);
+	Tagging::Utils::setMetaDataOfFile(metadata);
 
-	md.setDiscnumber(10);
-	md.setDiscCount(12);
-	Tagging::Utils::setMetaDataOfFile(md);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
 
-	Tagging::Utils::getMetaDataOfFile(md2);
+	qDebug() << "Expect 10, get " << metadataReloaded.discnumber();
+	QVERIFY(metadataReloaded.discnumber() == 10);
 
-	qDebug() << "Expect 10, get " << md2.discnumber();
-	QVERIFY(md2.discnumber() == 10);
-
-	qDebug() << "Expect 12, get " << md2.discCount();
-	QVERIFY(md2.discCount() == 12);
+	qDebug() << "Expect 12, get " << metadataReloaded.discCount();
+	QVERIFY(metadataReloaded.discCount() == 12);
 }
 
-void DiscnumberTest::id3_test()
+void DiscnumberTest::id3Test()
 {
-	AbstractTaggingTest::id3_test();
+	AbstractTaggingTest::id3Test();
 }
 
-void DiscnumberTest::xiph_test()
+void DiscnumberTest::xiphTest()
 {
-	AbstractTaggingTest::xiph_test();
+	AbstractTaggingTest::xiphTest();
 }
 
 QTEST_GUILESS_MAIN(DiscnumberTest)

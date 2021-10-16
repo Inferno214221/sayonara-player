@@ -4,28 +4,28 @@
 #include "SayonaraTest.h"
 
 class AbstractTaggingTest :
-		public Test::Base
+	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	AbstractTaggingTest(const QString& testname);
+	public:
+		AbstractTaggingTest(const QString& testname);
 
-private:
-	QString mResourceFilename;
-	QString mFilename;
+	private:
+		QString mResourceFilename;
+		QString mFilename;
 
-private:
-	void init();
-	void cleanup();
-	void run();
+	private:
+		void init();
+		void cleanup();
+		void run();
 
-protected:
-	virtual void run_test(const QString& filename)=0;
+	protected:
+		virtual void runTest(const QString& filename) = 0;
 
-protected slots:
-	void id3_test();
-	void xiph_test();
+	protected slots:
+		void id3Test();
+		void xiphTest();
 };
 
 #endif // ABSTRACTTAGGINGTEST_H

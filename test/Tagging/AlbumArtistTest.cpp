@@ -4,51 +4,45 @@
 #include "Utils/MetaData/MetaData.h"
 #include "AbstractTaggingTest.h"
 
-class AlbumArtistTest : public AbstractTaggingTest
+class AlbumArtistTest :
+	public AbstractTaggingTest
 {
 	Q_OBJECT
 
-public:
-	AlbumArtistTest() :
-		AbstractTaggingTest("AlbumArtistTest")
-	{}
+	public:
+		AlbumArtistTest() :
+			AbstractTaggingTest("AlbumArtistTest") {}
 
-private:
-	void run_test(const QString& filename) override;
+	private:
+		void runTest(const QString& filename) override;
 
-private slots:
-	void id3_test();
-	void xiph_test();
+	private slots:
+		void id3Test();
+		void xiphTest();
 };
 
-
-void AlbumArtistTest::run_test(const QString& filename)
+void AlbumArtistTest::runTest(const QString& filename)
 {
-	QString album_artist = QString::fromUtf8("Motörhead фыва");
-	MetaData md(filename);
-    Tagging::Utils::getMetaDataOfFile(md);
+	const auto albumArtist = QString::fromUtf8("Motörhead фыва");
+	auto metadata = MetaData(filename);
+	auto metadataReloaded = metadata;
+	Tagging::Utils::getMetaDataOfFile(metadata);
 
-	md.setAlbumArtist(album_artist);
-    Tagging::Utils::setMetaDataOfFile(md);
+	metadata.setAlbumArtist(albumArtist);
+	Tagging::Utils::setMetaDataOfFile(metadata);
 
-	MetaData md2(filename);
-    Tagging::Utils::getMetaDataOfFile(md2);
-
-	QString md_album_artist = md.albumArtist();
-	QString md2_album_artist = md2.albumArtist();
-
-	QVERIFY(md_album_artist.compare(album_artist) == 0);
-	QVERIFY(md_album_artist.compare(md2_album_artist) == 0);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+	QVERIFY(metadataReloaded.albumArtist() == albumArtist);
 }
 
-void AlbumArtistTest::id3_test()
+void AlbumArtistTest::id3Test()
 {
-	AbstractTaggingTest::id3_test();
+	AbstractTaggingTest::id3Test();
 }
 
-void AlbumArtistTest::xiph_test()
+void AlbumArtistTest::xiphTest()
 {
-	AbstractTaggingTest::xiph_test();
+	AbstractTaggingTest::xiphTest();
 }
 
 QTEST_GUILESS_MAIN(AlbumArtistTest)

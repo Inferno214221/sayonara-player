@@ -4,58 +4,55 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 
-class RatingTest : public AbstractTaggingTest
+class RatingTest :
+	public AbstractTaggingTest
 {
 	Q_OBJECT
 
-public:
-	RatingTest() :
-		AbstractTaggingTest("RatingTest")
-	{}
+	public:
+		RatingTest() :
+			AbstractTaggingTest("RatingTest") {}
 
-	~RatingTest() override = default;
+		~RatingTest() override = default;
 
-private:
-	void run_test(const QString& filename) override;
+	private:
+		void runTest(const QString& filename) override;
 
-private slots:
-	void id3_test();
-	void xiph_test();
+	private slots:
+		void id3Test();
+		void xiphTest();
 };
 
-
-void RatingTest::run_test(const QString& filename)
+void RatingTest::runTest(const QString& filename)
 {
-	MetaData md(filename);
-	MetaData md2(filename);
+	auto metadata = MetaData(filename);
+	auto metadataReloaded = MetaData(filename);
 
-	Tagging::Utils::getMetaDataOfFile(md);
+	Tagging::Utils::getMetaDataOfFile(metadata);
 
-	md.setRating(Rating::Three);
-	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.rating() == Rating::Three);
+	metadata.setRating(Rating::Three);
+	Tagging::Utils::setMetaDataOfFile(metadata);
+	QVERIFY(metadata.rating() == Rating::Three);
 
-	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 3, get " << static_cast<int>(md2.rating());
-	QVERIFY(md2.rating() == Rating::Three);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+	QVERIFY(metadataReloaded.rating() == Rating::Three);
 
-	md.setRating(Rating::Zero);
-	Tagging::Utils::setMetaDataOfFile(md);
-	QVERIFY(md.rating() == Rating::Zero);
+	metadata.setRating(Rating::Zero);
+	Tagging::Utils::setMetaDataOfFile(metadata);
+	QVERIFY(metadata.rating() == Rating::Zero);
 
-	Tagging::Utils::getMetaDataOfFile(md2);
-	qDebug() << "Expect 0, get " << static_cast<int>(md2.rating());
-	QVERIFY(md2.rating() == Rating::Zero);
+	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+	QVERIFY(metadataReloaded.rating() == Rating::Zero);
 }
 
-void RatingTest::id3_test()
+void RatingTest::id3Test()
 {
-	AbstractTaggingTest::id3_test();
+	AbstractTaggingTest::id3Test();
 }
 
-void RatingTest::xiph_test()
+void RatingTest::xiphTest()
 {
-	AbstractTaggingTest::xiph_test();
+	AbstractTaggingTest::xiphTest();
 }
 
 QTEST_GUILESS_MAIN(RatingTest)

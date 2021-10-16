@@ -6,49 +6,49 @@
 #include "Utils/MetaData/MetaData.h"
 #include "AbstractTaggingTest.h"
 
-class LyricsTest : public AbstractTaggingTest
+class LyricsTest :
+	public AbstractTaggingTest
 {
 	Q_OBJECT
 
-public:
-	LyricsTest() :
-		AbstractTaggingTest("LyricsTest")
-	{}
+	public:
+		LyricsTest() :
+			AbstractTaggingTest("LyricsTest") {}
 
-	~LyricsTest() override = default;
+		~LyricsTest() override = default;
 
-private:
-	void run_test(const QString& filename) override;
+	private:
+		void runTest(const QString& filename) override;
 
-private slots:
-	void id3_test();
-	void xiph_test();
+	private slots:
+		void id3Test();
+		void xiphTest();
 };
 
-void LyricsTest::run_test(const QString& filename)
+void LyricsTest::runTest(const QString& filename)
 {
-	const QString lyrics = QString::fromUtf8("Those are söme lyrics фыва");
-	MetaData md(filename);
-	Tagging::Utils::getMetaDataOfFile(md);
+	const auto lyrics = QString::fromUtf8("Those are söme lyrics фыва");
+	auto metadata = MetaData(filename);
+	Tagging::Utils::getMetaDataOfFile(metadata);
 
-	bool wroteLyrics = Tagging::writeLyrics(md, lyrics);
+	const auto wroteLyrics = Tagging::writeLyrics(metadata, lyrics);
 	QVERIFY(wroteLyrics == true);
 
 	QString readLyrics;
-	bool success = Tagging::extractLyrics(md, readLyrics);
+	const auto success = Tagging::extractLyrics(metadata, readLyrics);
 
 	QVERIFY(success == true);
 	QVERIFY(lyrics.compare(readLyrics) == 0);
 }
 
-void LyricsTest::id3_test()
+void LyricsTest::id3Test()
 {
-	AbstractTaggingTest::id3_test();
+	AbstractTaggingTest::id3Test();
 }
 
-void LyricsTest::xiph_test()
+void LyricsTest::xiphTest()
 {
-	AbstractTaggingTest::xiph_test();
+	AbstractTaggingTest::xiphTest();
 }
 
 QTEST_GUILESS_MAIN(LyricsTest)

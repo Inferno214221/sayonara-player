@@ -17,18 +17,18 @@ class TaggingTest :
         {}
 
     private slots:
-        void id3Test() { AbstractTaggingTest::id3_test(); };
-		void xiphTest() { AbstractTaggingTest::xiph_test(); };
+        void id3Test() { AbstractTaggingTest::id3Test(); };
+		void xiphTest() { AbstractTaggingTest::xiphTest(); };
 		void emptyFileTest();
 
 	protected:
-		void run_test(const QString& filename) override;
+		void runTest(const QString& filename) override;
 };
 
-void TaggingTest::run_test(const QString& f)
+void TaggingTest::runTest(const QString& filename)
 {
-	const auto filename = Util::File::getFilenameOfPath(f);
-	const auto filepath = tempPath(filename);
+	const auto pureFilename = Util::File::getFilenameOfPath(filename);
+	const auto filepath = tempPath(pureFilename);
 	auto track = MetaData(filepath);
 	track.setArtist("artist");
 	track.setAlbum("album");
