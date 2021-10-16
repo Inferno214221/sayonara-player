@@ -52,7 +52,7 @@ namespace Lyrics
 
 		public:
 			explicit LookupThread(QObject* parent = nullptr);
-			virtual    ~LookupThread();
+			virtual ~LookupThread();
 
 			QString lyricData() const;
 			QString lyricHeader() const;
