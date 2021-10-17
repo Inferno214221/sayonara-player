@@ -27,13 +27,13 @@
 #include "Utils/MetaData/MetaDataList.h"
 
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/Converter/Converter.h"
 
-#include <QFileDialog>
 #include <QStringList>
 
 namespace
@@ -204,17 +204,15 @@ void GUI_AudioConverter::btnStartClicked()
 		}
 	}
 
-	QString dir;
-	{ // set target dir
-		QString convertTargetPath = GetSetting(Set::Engine_CovertTargetPath);
-		dir = QFileDialog::getExistingDirectory(this, tr("Choose target directory"), convertTargetPath);
-		if(dir.isEmpty())
-		{
-			converter->deleteLater();
-			return;
-		}
-		SetSetting(Set::Engine_CovertTargetPath, dir);
+	const auto convertTargetPath = GetSetting(Set::Engine_CovertTargetPath);
+	const auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), convertTargetPath, true, this);
+	if(dir.isEmpty())
+	{
+		converter->deleteLater();
+		return;
 	}
+
+	SetSetting(Set::Engine_CovertTargetPath, dir);
 
 	connect(converter, &Converter::sigFinished, this, &GUI_AudioConverter::convertFinished);
 	connect(converter, &Converter::sigProgress, ui->pb_progress, &QProgressBar::setValue);

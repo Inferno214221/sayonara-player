@@ -25,6 +25,7 @@
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
@@ -136,12 +137,7 @@ void TabBar::openFilePressed()
 
 void TabBar::openDirPressed()
 {
-	const auto dir = QFileDialog::getExistingDirectory(
-		this,
-		Lang::get(Lang::OpenDir),
-		QDir::homePath(),
-		QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
-
+	const auto dir = Gui::DirectoryChooser::getDirectory(Lang::get(Lang::OpenDir), QDir::homePath(), true, this);
 	if(!dir.isEmpty())
 	{
 		emit sigOpenDir(currentIndex(), dir);

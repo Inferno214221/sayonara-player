@@ -26,17 +26,12 @@
 
 UI_FWD(GUI_EditLibrary)
 
-/**
- * @brief The GUI_EditLibrary class
- * @ingroup Gui
- * @ingroup Library
- */
 class GUI_EditLibrary :
 	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_EditLibrary)
-	UI_CLASS(GUI_EditLibrary)
+	UI_CLASS_SHARED_PTR(GUI_EditLibrary)
 
 	signals:
 		void sigAccepted();
@@ -47,9 +42,6 @@ class GUI_EditLibrary :
 		explicit GUI_EditLibrary(QWidget* parent = nullptr);
 		~GUI_EditLibrary() override;
 
-		/**
-		 * @brief Same as GUI_EditLibrary(QWidget* parent=nullptr)
-		 */
 		void reset();
 
 		enum class EditMode
@@ -74,7 +66,6 @@ class GUI_EditLibrary :
 
 	protected:
 		void languageChanged() override;
-		void skinChanged() override;
 };
 
 #endif // GUI_EDITLIBRARY_H

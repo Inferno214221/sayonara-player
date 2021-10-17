@@ -31,6 +31,7 @@
 
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Style.h"
@@ -409,12 +410,7 @@ void Menubar::skinChanged()
 
 void Menubar::openDirClicked()
 {
-	const auto dir = QFileDialog::getExistingDirectory(this,
-	                                                   Lang::get(Lang::OpenDir),
-	                                                   QDir::homePath(),
-	                                                   QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks
-	);
-
+	const auto dir = Gui::DirectoryChooser::getDirectory(Lang::get(Lang::OpenDir), QDir::homePath(), true, this);
 	if(!dir.isEmpty())
 	{
 		m->playlistCreator->createPlaylist(QStringList {dir});

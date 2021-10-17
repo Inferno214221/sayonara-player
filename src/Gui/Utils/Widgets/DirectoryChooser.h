@@ -18,25 +18,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIRCHOOSERDIALOG_H
-#define DIRCHOOSERDIALOG_H
+#ifndef SAYONARA_DIR_CHOOSER_DIALOG_H
+#define SAYONARA_DIR_CHOOSER_DIALOG_H
 
 #include <QFileDialog>
 
-namespace Library
+namespace Gui
 {
-	/**
-	 * @brief A directory chooser with some standard paths
-	 * @ingroup GuiLibrary
-	 */
-	class DirChooserDialog : public QFileDialog
+	class DirectoryChooser : protected QFileDialog
 	{
 		Q_OBJECT
 
+		protected:
+			explicit DirectoryChooser(const QString& title = QString(), const QString& initialDirectory = QString(),
+			                          bool enableMultiSelection = false, QWidget* parent = nullptr);
+			~DirectoryChooser() override;
+
 		public:
-			explicit DirChooserDialog(QWidget* parent = nullptr);
-			~DirChooserDialog() override;
+			static QString getDirectory(const QString& title = QString(), const QString& initialDirectory = QString(),
+			                            bool resolveSymlinks = true, QWidget* parent = nullptr);
+
+			static QStringList
+			getDirectories(const QString& title = QString(), const QString& initialDirectory = QString(),
+			               QWidget* parent = nullptr);
 	};
 }
 
-#endif // DIRCHOOSERDIALOG_H
+#endif // SAYONARA_DIR_CHOOSER_DIALOG_H

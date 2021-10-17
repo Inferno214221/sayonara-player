@@ -11,21 +11,19 @@
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/InputDialog/LineInputDialog.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QAction>
 #include <QDesktopServices>
 #include <QItemSelectionModel>
-#include <QFileDialog>
 #include <QLabel>
 #include <QTimer>
 
@@ -56,8 +54,7 @@ struct GUI_DirectoryView::Private
 
 GUI_DirectoryView::GUI_DirectoryView(QWidget* parent) :
 	Gui::Widget(parent),
-	ui {nullptr}
-{}
+	ui {nullptr} {}
 
 GUI_DirectoryView::~GUI_DirectoryView() = default;
 
@@ -538,22 +535,21 @@ namespace
 {
 	QString copyOrMoveLibraryRequested(const Library::Info& info, const QStringList& paths, QWidget* parent)
 	{
-		namespace File = Util::File;
-
 		if(paths.isEmpty())
 		{
 			return QString();
 		}
 
-		const QString targetDirectory = QFileDialog::getExistingDirectory(parent,
-		                                                                  parent->tr("Choose target directory"),
-		                                                                  info.path());
+		const auto targetDirectory =
+			Gui::DirectoryChooser::getDirectory(parent->tr("Choose target directory"), info.path(), true, parent);
 		if(targetDirectory.isEmpty())
 		{
 			return QString();
 		}
 
-		if(!File::isSubdir(targetDirectory, info.path()) && !File::isSamePath(targetDirectory, info.path()))
+		const auto isSubDir = Util::File::isSubdir(targetDirectory, info.path());
+		const auto isSamePath = Util::File::isSamePath(targetDirectory, info.path());
+		if(!isSubDir && !isSamePath)
 		{
 			Message::error(parent->tr("%1 is not a subdirectory of %2").arg(targetDirectory).arg(info.path()));
 			return QString();

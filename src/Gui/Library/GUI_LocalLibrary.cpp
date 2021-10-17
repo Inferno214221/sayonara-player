@@ -32,7 +32,6 @@
 #include "Gui/Library/ui_GUI_LocalLibrary.h"
 
 #include "Gui/Library/CoverView/GUI_CoverView.h"
-#include "Gui/Library/Utils/DirChooserDialog.h"
 #include "Gui/Library/Utils/GUI_ReloadLibraryDialog.h"
 #include "Gui/Library/Utils/GUI_LibraryInfoBox.h"
 #include "Gui/Library/Utils/LocalLibraryMenu.h"
@@ -42,6 +41,7 @@
 #include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -354,12 +354,10 @@ void GUI_LocalLibrary::showInfoBox()
 
 void GUI_LocalLibrary::importDirsRequested()
 {
-	DirChooserDialog dialog(this);
-
-	if(dialog.exec() == QFileDialog::Accepted)
+	const auto directories = Gui::DirectoryChooser::getDirectories(Lang::get(Lang::ImportDir), QDir::homePath(), this);
+	if(!directories.isEmpty())
 	{
-		const auto dirs = dialog.selectedFiles();
-		m->library->importFiles(dirs);
+		m->library->importFiles(directories);
 	}
 }
 

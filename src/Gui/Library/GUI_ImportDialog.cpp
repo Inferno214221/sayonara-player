@@ -22,6 +22,7 @@
 #include "Gui/Library/ui_GUI_ImportDialog.h"
 #include "Gui/Tagging/GUI_TagEdit.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Components/Library/LocalLibrary.h"
 
@@ -31,10 +32,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 
-#include <QPixmap>
 #include <QScrollBar>
-#include <QFileDialog>
-#include <QCloseEvent>
 #include <QShowEvent>
 
 struct GUI_ImportDialog::Private
@@ -87,7 +85,7 @@ GUI_ImportDialog::~GUI_ImportDialog()
 
 void GUI_ImportDialog::setTargetDirectory(const QString& targetDirectory)
 {
-	QString subdir = targetDirectory;
+	auto subdir = targetDirectory;
 	subdir.remove(m->library->info().path() + "/");
 
 	ui->leDirectory->setText(subdir);
@@ -193,7 +191,7 @@ QAbstractButton* GUI_ImportDialog::btnCancel()
 
 void GUI_ImportDialog::accept()
 {
-	QString targetDirectory = ui->leDirectory->text();
+	const auto targetDirectory = ui->leDirectory->text();
 	m->importer->acceptImport(targetDirectory);
 }
 
@@ -211,13 +209,8 @@ void GUI_ImportDialog::reject()
 
 void GUI_ImportDialog::chooseDirectory()
 {
-	const QString libraryPath = m->library->info().path();
-	QString dir = QFileDialog::getExistingDirectory(this,
-	                                                tr("Choose target directory"),
-	                                                libraryPath,
-	                                                QFileDialog::ShowDirsOnly
-	);
-
+	const auto libraryPath = m->library->info().path();
+	auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), libraryPath, true, this);
 	if(dir.isEmpty())
 	{
 		ui->leDirectory->clear();

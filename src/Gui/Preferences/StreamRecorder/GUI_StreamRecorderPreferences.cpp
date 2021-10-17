@@ -25,8 +25,7 @@
 #include "GUI_StreamRecorderPreferences.h"
 #include "Gui/Preferences/ui_GUI_StreamRecorderPreferences.h"
 #include "Gui/Utils/Icons.h"
-
-#include "Database/Connector.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
@@ -35,12 +34,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
-#include "Utils/Logger/Logger.h"
 
-#include <QFileDialog>
 #include <QDir>
-#include <QHBoxLayout>
-#include <QMouseEvent>
 #include <QGridLayout>
 
 namespace SR = StreamRecorder;
@@ -167,14 +162,7 @@ void GUI_StreamRecorderPreferences::pathButtonClicked()
 		path = QDir::homePath();
 	}
 
-	const QString dir = QFileDialog::getExistingDirectory
-		(
-			this,
-			tr("Choose target directory"),
-			path,
-			QFileDialog::ShowDirsOnly
-		);
-
+	const auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), path, true, this);
 	if(!dir.isEmpty())
 	{
 		ui->lePath->setText(dir);
@@ -344,12 +332,12 @@ TagButton::~TagButton() = default;
 
 void TagButton::languageChanged()
 {
-	QList<QPair<QString, QString>> descs = SR::Utils::descriptions();
-	for(const QPair<QString, QString>& d : descs)
+	const auto descriptions = SR::Utils::descriptions();
+	for(const auto& description : descriptions)
 	{
-		if(d.first.compare(m->tagName) == 0)
+		if(description.first == m->tagName)
 		{
-			this->setText(Util::stringToFirstUpper(d.second));
+			this->setText(Util::stringToFirstUpper(description.second));
 			break;
 		}
 	}

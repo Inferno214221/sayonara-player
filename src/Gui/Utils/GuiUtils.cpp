@@ -22,7 +22,6 @@
 /* GuiUtils.cpp */
 
 #include "GuiUtils.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QApplication>
 #include <QDesktopWidget>
@@ -74,8 +73,8 @@ namespace
 	QIcon fetchIconFromCache(const QString& cacheKey)
 	{
 		return (!iconCache.isDestroyed() && iconCache->object(cacheKey))
-			? *iconCache->object(cacheKey)
-			: QIcon();
+		       ? *iconCache->object(cacheKey)
+		       : QIcon();
 	}
 
 	QStringList searchInResource(const QString& resourceName, const QString& regex)

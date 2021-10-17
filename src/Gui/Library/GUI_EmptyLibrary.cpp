@@ -23,6 +23,7 @@
 
 #include "Components/LibraryManagement/LibraryManager.h"
 
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 #include "Gui/Utils/ui_GUI_EmptyLibrary.h"
 
 #include "Utils/Library/LibraryInfo.h"
@@ -30,16 +31,14 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
 
-#include <QFileDialog>
-
 using namespace Library;
 
 struct GUI_EmptyLibrary::Private
 {
 	Library::Manager* libraryManager;
+
 	Private(Library::Manager* libraryManager) :
-		libraryManager{libraryManager}
-	{}
+		libraryManager {libraryManager} {}
 };
 
 GUI_EmptyLibrary::GUI_EmptyLibrary(Library::Manager* libraryManager, QWidget* parent) :
@@ -78,20 +77,13 @@ void GUI_EmptyLibrary::okClicked()
 
 void GUI_EmptyLibrary::chooseDirClicked()
 {
-	static QString oldDir = QDir::homePath();
-
-	QString newDir = QFileDialog::getExistingDirectory(this,
-	                                                   Lang::get(Lang::Directory),
-	                                                   oldDir,
-	                                                   QFileDialog::ShowDirsOnly);
-
-	if(newDir.isEmpty())
+	static auto oldDir = QDir::homePath();
+	const auto newDir = Gui::DirectoryChooser::getDirectory(Lang::get(Lang::OpenDir), oldDir, true, this);
+	if(!newDir.isEmpty())
 	{
-		return;
+		oldDir = newDir;
+		ui->lePath->setText(newDir);
 	}
-
-	oldDir = newDir;
-	ui->lePath->setText(newDir);
 }
 
 bool GUI_EmptyLibrary::checkName()
@@ -117,11 +109,9 @@ bool GUI_EmptyLibrary::checkName()
 	return true;
 }
 
-void GUI_EmptyLibrary::nameChanged(const QString& str)
+void GUI_EmptyLibrary::nameChanged([[maybe_unused]] const QString& str)
 {
-	Q_UNUSED(str)
-
-	bool ok = checkPath() && checkName();
+	const auto ok = (checkPath() && checkName());
 
 	ui->btnOk->setEnabled(ok);
 	ui->labError->setVisible(!ok);
@@ -155,10 +145,8 @@ bool GUI_EmptyLibrary::checkPath()
 	return (!m->libraryManager->libraryInfoByPath(path).valid());
 }
 
-void GUI_EmptyLibrary::pathChanged(const QString& newPath)
+void GUI_EmptyLibrary::pathChanged([[maybe_unused]] const QString& newPath)
 {
-	Q_UNUSED(newPath)
-
 	const auto path = ui->lePath->text();
 	const auto name = Manager::requestLibraryName(path);
 	ui->leName->setText(name);

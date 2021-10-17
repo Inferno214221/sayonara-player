@@ -20,10 +20,10 @@
 
 #include "GUI_EditLibrary.h"
 #include "Gui/Utils/ui_GUI_EditLibrary.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 #include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
 
-#include <QFileDialog>
 #include <QSizePolicy>
 #include <QStringList>
 
@@ -32,17 +32,13 @@ struct GUI_EditLibrary::Private
 	QString oldName;
 	QString oldPath;
 
-	EditMode editMode;
-	bool nameEdited;
-
-	Private() :
-		editMode(EditMode::New),
-		nameEdited(false) {}
+	EditMode editMode {EditMode::New};
+	bool nameEdited {false};
 };
 
 GUI_EditLibrary::GUI_EditLibrary(QWidget* parent) :
 	Dialog(parent),
-	ui(new Ui::GUI_EditLibrary)
+	ui(std::make_shared<Ui::GUI_EditLibrary>())
 {
 	ui->setupUi(this);
 
@@ -74,11 +70,7 @@ GUI_EditLibrary::GUI_EditLibrary(const QString& name, const QString& path, QWidg
 	this->setAttribute(Qt::WA_DeleteOnClose);
 }
 
-GUI_EditLibrary::~GUI_EditLibrary()
-{
-	delete ui;
-	ui = nullptr;
-}
+GUI_EditLibrary::~GUI_EditLibrary() = default;
 
 void GUI_EditLibrary::okClicked()
 {
@@ -97,20 +89,11 @@ void GUI_EditLibrary::cancelClicked()
 
 void GUI_EditLibrary::chooseDirClicked()
 {
-	QString oldDir = m->oldPath;
-	if(oldDir.isEmpty())
-	{
-		oldDir = QDir::homePath();
-	}
+	const auto oldDir = (m->oldPath.isEmpty())
+	                    ? QDir::homePath()
+	                    : m->oldPath;
 
-	QString newDir = QFileDialog::getExistingDirectory
-		(
-			this,
-			Lang::get(Lang::OpenDir),
-			oldDir,
-			QFileDialog::ShowDirsOnly
-		);
-
+	auto newDir = Gui::DirectoryChooser::getDirectory(Lang::get(Lang::OpenDir), oldDir, true, this);
 	if(newDir.isEmpty())
 	{
 		newDir = m->oldPath;
@@ -120,7 +103,7 @@ void GUI_EditLibrary::chooseDirClicked()
 	{
 		if(!m->nameEdited)
 		{
-			QString pureFilename = Util::File::getFilenameOfPath(newDir);
+			const auto pureFilename = Util::File::getFilenameOfPath(newDir);
 			ui->leName->setText(pureFilename);
 		}
 	}
@@ -176,19 +159,10 @@ void GUI_EditLibrary::languageChanged()
 	ui->labPath->setText(Lang::get(Lang::Directory));
 	ui->labName->setText(Lang::get(Lang::Name));
 
-	if(m->editMode == EditMode::New)
-	{
-		ui->labTitle->setText(Lang::get(Lang::New));
-	}
-	else
-	{
-		ui->labTitle->setText(Lang::get(Lang::Edit));
-	}
+	const auto text = (m->editMode == EditMode::New)
+	                  ? Lang::get(Lang::New)
+	                  : Lang::get(Lang::Edit);
+	ui->labTitle->setText(text);
 
-	this->setWindowTitle(ui->labTitle->text());
-}
-
-void GUI_EditLibrary::skinChanged()
-{
-	Dialog::skinChanged();
+	setWindowTitle(ui->labTitle->text());
 }
