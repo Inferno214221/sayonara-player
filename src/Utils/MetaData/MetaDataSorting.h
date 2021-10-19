@@ -18,16 +18,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef METADATASORTING_H
 #define METADATASORTING_H
 
 #include "Utils/Library/Sortorder.h"
-
-class MetaData;
-class Album;
-class Artist;
 
 class MetaDataList;
 class AlbumList;
@@ -35,68 +29,9 @@ class ArtistList;
 
 namespace MetaDataSorting
 {
-	bool TracksByTrackNumAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByTrackNumDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByDiscnumberAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByDiscnumberDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByTitleAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByTitleDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByAlbumAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByAlbumDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByArtistAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByArtistDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByAlbumArtistAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByAlbumArtistDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByYearAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByYearDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByLengthAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByLengthDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByBitrateAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByBitrateDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByFilesizeAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByFilesizeDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByFiletypeAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByFiletypeDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByRatingAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByRatingDesc(const MetaData& md1, const MetaData& md2);
-
-	bool TracksByAddedDateAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByAddedDateDesc(const MetaData& md1, const MetaData& md2);
-	bool TracksByModifiedDateAsc(const MetaData& md1, const MetaData& md2);
-	bool TracksByModifiedDateDesc(const MetaData& md1, const MetaData& md2);
-
-	bool ArtistByNameAsc(const Artist& artist1, const Artist& artist2);
-	bool ArtistByNameDesc(const Artist& artist1, const Artist& artist2);
-	bool ArtistByTrackCountAsc(const Artist& artist1, const Artist& artist2);
-	bool ArtistByTrackCountDesc(const Artist& artist1, const Artist& artist2);
-
-	bool AlbumByArtistNameAsc(const Album& album1, const Album& album2);
-	bool AlbumByArtistNameDesc(const Album& album1, const Album& album2);
-	bool AlbumByNameAsc(const Album& album1, const Album& album2);
-	bool AlbumByNameDesc(const Album& album1, const Album& album2);
-	bool AlbumByYearAsc(const Album& album1, const Album& album2);
-	bool AlbumByYearDesc(const Album& album1, const Album& album2);
-	bool AlbumByDurationAsc(const Album& album1, const Album& album2);
-	bool AlbumByDurationDesc(const Album& album1, const Album& album2);
-	bool AlbumByTracksAsc(const Album& album1, const Album& album2);
-	bool AlbumByTracksDesc(const Album& album1, const Album& album2);
-	bool AlbumByRatingAsc(const Album& album1, const Album& album2);
-	bool AlbumByRatingDesc(const Album& album1, const Album& album2);
-
-	void sortMetadata(MetaDataList& v_md, Library::SortOrder);
-	void sortAlbums(AlbumList& v_md, Library::SortOrder);
-	void sortArtists(ArtistList& v_md, Library::SortOrder);
+	void sortMetadata(MetaDataList& tracks, Library::SortOrder sortOrder);
+	void sortAlbums(AlbumList& albums, Library::SortOrder sortOrder);
+	void sortArtists(ArtistList& artists, Library::SortOrder sortOrder);
 
 	void setIgnoreArticle(bool b);
 }
