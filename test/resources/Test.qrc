@@ -3,5 +3,6 @@
         <file>mp3test.mp3</file>
         <file>oggtest.ogg</file>
         <file>logo.png</file>
+        <file>fmstream.org.html</file>
     </qresource>
 </RCC>

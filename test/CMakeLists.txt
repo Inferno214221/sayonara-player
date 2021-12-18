@@ -100,3 +100,4 @@ new_test(Util/StandardPathTest.cpp)
 new_test(Util/TreeTest.cpp)
 new_test(Util/Ranges.cpp)
 
+new_test(Streaming/RadioStationParserTest.cpp)
