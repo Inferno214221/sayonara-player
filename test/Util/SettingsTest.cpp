@@ -20,113 +20,113 @@ class SettingsTest : public Test::Base
 		~SettingsTest() override = default;
 
 	private slots:
-		void test_registry();
+		void testDatabaseVersion();
+		void testUndeployableKeysNotInDatabase();
+		void testDefaultValues();
+		void testSpecialSettings();
 };
 
-void SettingsTest::test_registry()
+void SettingsTest::testDatabaseVersion()
 {
 	auto* db = DB::Connector::instance();
 	QVERIFY(db->db().isOpen());
 
-	Settings* s = Settings::instance();
-	QVERIFY(s->checkSettings());
+	auto* settings = Settings::instance();
+	QVERIFY(settings->checkSettings());
 
-	//QVERIFY(GetSetting(Set::Player_Language) == QLocale().name());
-	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
-	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
+	auto dbVersion = QString{};
+	db->settingsConnector()->loadSetting("version", dbVersion);
 
-	QString db_version;
-	db->settingsConnector()->loadSetting("version", db_version);
+	const auto oldDbVersion = db->oldDatabaseVersion();
+	const auto maxDbVersion = DB::Connector::highestDatabaseVersion();
 
+	QVERIFY(oldDbVersion == maxDbVersion);
+	QVERIFY(dbVersion.toInt() == maxDbVersion);
+
+}
+
+
+void SettingsTest::testUndeployableKeysNotInDatabase()
+{
+	// if this test fails, you should call the create_db binary first
+	// your database is not up to date
+	const auto undeployableKeys = SettingRegistry::undeployableKeys();
+
+	auto* db = DB::Connector::instance();
 	QList<SettingKey> keys;
 	db->settingsConnector()->loadSettings(keys);
 
-	{
-		int old_db_version = db->oldDatabaseVersion();
-		int max_db_version = DB::Connector::highestDatabaseVersion();
-
-		QVERIFY(old_db_version == max_db_version);
-		QVERIFY(db_version.toInt() == max_db_version);
-	}
-
-	QList<SettingKey> undeployable_keys = SettingRegistry::undeployableKeys();
-
-	int max_key = int(SettingKey::Num_Setting_Keys);
-	int c = keys.count();
-	int uks = undeployable_keys.size();
-	qDebug() << " c, uks, maxkey " << c << " " << uks << " " << max_key;
-
-	for(int i = 0; i < max_key; i++)
-	{
-		auto* ptr = Settings::instance()->setting(SettingKey(i));
-		QVERIFY(ptr != nullptr);
-	}
-
-	// if this test fails, you should call the create_db binary first
-	// your database is not up to date
-	QVERIFY(c == (max_key - uks));
+	const auto maxKey = static_cast<int>(SettingKey::Num_Setting_Keys);
+	const auto keyCount = keys.count();
+	const auto undeployableKeyCount = undeployableKeys.count();
+	QVERIFY(keyCount == (maxKey - undeployableKeyCount));
 
 	{ // undeployable keys must not be in keys
-		for(SettingKey key : undeployable_keys)
+		for(const auto settingKey : undeployableKeys)
 		{
-			QVERIFY(keys.contains(key) == false);
-		}
-
-		// some examples
-		QVERIFY(undeployable_keys.contains(SettingKey::Player_Version));
-		QVERIFY(undeployable_keys.contains(SettingKey::Player_Language));
-		QVERIFY(undeployable_keys.contains(SettingKey::Player_PublicId));
-		QVERIFY(undeployable_keys.contains(SettingKey::Player_PrivId));
-	}
-
-	{ // test for default values
-		SettingArray abstr_settings = s->settings();
-		for(AbstrSetting* abstr_setting : abstr_settings)
-		{
-			if(undeployable_keys.contains(abstr_setting->getKey()))
-			{
-				continue;
-			}
-
-			QString str = abstr_setting->valueToString();
-			abstr_setting->assignDefaultValue();
-			QString new_val = abstr_setting->valueToString();
-			if(str != new_val)
-			{
-				qDebug() << "Error with " << abstr_setting->dbKey();
-				qDebug() << "Current value: " << str;
-				qDebug() << "Default value: " << new_val;
-			}
-			QVERIFY(str == new_val);
+			QVERIFY(keys.contains(settingKey) == false);
 		}
 	}
+}
 
-	{  // Actually not needed, but it does not affect tests
-		QVERIFY(GetSetting(Set::Player_Fullscreen) == false);
-		QVERIFY(GetSetting(Set::Player_Maximized) == false);
+void SettingsTest::testDefaultValues()
+{
+	const auto undeployableKeys = SettingRegistry::undeployableKeys();
 
-		QString lfm_username = GetSetting(Set::LFM_Username);
-		QString lfm_password = GetSetting(Set::LFM_Password);
-		StringPair lfm_login = GetSetting(Set::LFM_Login);
-		QString lfm_session_key = GetSetting(Set::LFM_SessionKey);
-		QVERIFY(lfm_username.isEmpty());
-		QVERIFY(lfm_password.isEmpty());
-		QVERIFY(lfm_login.first.isEmpty());
-		QVERIFY(lfm_login.second.isEmpty());
-		QVERIFY(lfm_session_key.isEmpty());
+	auto* settings = Settings::instance();
 
-		QString proxy_username = GetSetting(Set::Proxy_Username);
-		QString proxy_password = GetSetting(Set::Proxy_Password);
-		QString proxy_hostname = GetSetting(Set::Proxy_Hostname);
-		QVERIFY(proxy_username.isEmpty());
-		QVERIFY(proxy_password.isEmpty());
-		QVERIFY(proxy_hostname.isEmpty());
+	const auto abstractSettings = settings->settings();
+	for(auto* abstractSetting : abstractSettings)
+	{
+		if(undeployableKeys.contains(abstractSetting->getKey()))
+		{
+			continue;
+		}
 
-		QVERIFY(GetSetting(Set::Engine_Vol) > 10);
+		const auto settingValue = abstractSetting->valueToString();
+		abstractSetting->assignDefaultValue();
+		const auto newValue = abstractSetting->valueToString();
 
-		QVERIFY(GetSetting(Set::Lib_FontBold) == true);
-		QVERIFY(GetSetting(Set::Logger_Level) == 0);
+		if(settingValue != newValue)
+		{
+			qDebug() << "Error with " << abstractSetting->dbKey();
+			qDebug() << "Current value: " << settingValue;
+			qDebug() << "Default value: " << newValue;
+		}
+
+		QVERIFY(settingValue == newValue);
 	}
+}
+
+void SettingsTest::testSpecialSettings()
+{
+	QVERIFY(GetSetting(Set::Player_Fullscreen) == false);
+	QVERIFY(GetSetting(Set::Player_Maximized) == false);
+
+	const auto lastFmUsername = GetSetting(Set::LFM_Username);
+	const auto lastFmPassword = GetSetting(Set::LFM_Password);
+	const auto lastFmLogin = GetSetting(Set::LFM_Login);
+	const auto lastFmSessionKey = GetSetting(Set::LFM_SessionKey);
+	QVERIFY(lastFmUsername.isEmpty());
+	QVERIFY(lastFmPassword.isEmpty());
+	QVERIFY(lastFmLogin.first.isEmpty());
+	QVERIFY(lastFmLogin.second.isEmpty());
+	QVERIFY(lastFmSessionKey.isEmpty());
+
+	const auto proxyUsername = GetSetting(Set::Proxy_Username);
+	const auto proxyPassword = GetSetting(Set::Proxy_Password);
+	const auto proxyHostname = GetSetting(Set::Proxy_Hostname);
+	QVERIFY(proxyUsername.isEmpty());
+	QVERIFY(proxyPassword.isEmpty());
+	QVERIFY(proxyHostname.isEmpty());
+
+	QVERIFY(GetSetting(Set::Engine_Vol) > 10);
+
+	QVERIFY(GetSetting(Set::Lib_FontBold) == true);
+	QVERIFY(GetSetting(Set::Logger_Level) == 0);
+
+	QVERIFY(GetSetting(Set::Player_PublicId).isEmpty());
+	QVERIFY(GetSetting(Set::Player_PrivId).isEmpty());
 }
 
 QTEST_GUILESS_MAIN(SettingsTest)
