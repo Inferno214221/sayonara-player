@@ -77,6 +77,8 @@ namespace Cover
 				}
 			}
 
+			void ignoreCache();
+
 		public slots:
 			void start();
 			void stop() override;

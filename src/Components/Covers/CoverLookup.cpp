@@ -61,8 +61,9 @@ struct Lookup::Private
 	int coversRequested;
 	Source source {Source::Unknown};
 	std::atomic<bool> stopped {false};
+	bool ignoreCache{false};
 
-	Private(int coversRequested) :
+	explicit Private(int coversRequested) :
 		coversRequested(coversRequested) {}
 
 	void stopThread()
@@ -86,6 +87,11 @@ Lookup::~Lookup()
 {
 	m->stopped = true;
 	m->stopThread();
+}
+
+void Lookup::ignoreCache()
+{
+	m->ignoreCache = true;
 }
 
 bool Lookup::startNewThread(const Cover::Location& coverLocation)
@@ -126,7 +132,7 @@ void Lookup::start()
 	const auto coverLocation = LookupBase::coverLocation();
 	if(coverLocation.isValid())
 	{
-		if(m->coversRequested == 1)
+		if((m->coversRequested == 1) && (!m->ignoreCache))
 		{
 			if(!fetchFromDatabase())
 			{
@@ -155,9 +161,7 @@ bool Lookup::fetchFromDatabase()
 	const auto hash = LookupBase::coverLocation().hash();
 	const auto success = coverConnector->getCover(hash, pixmap);
 
-	return (success)
-	       ? addNewCover(pixmap, false)
-	       : false;
+	return success && addNewCover(pixmap, false);
 }
 
 void Lookup::fetchFromExtractor()

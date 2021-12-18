@@ -24,9 +24,15 @@
 #include "Utils/Pimpl.h"
 #include "Gui/Utils/Widgets/Dialog.h"
 
+#include <QEvent>
+
 class ArtistList;
 class MetaDataList;
 class AlbumList;
+
+namespace Cover { class Location; }
+
+class QListWidget;
 
 UI_FWD(GUI_SoundcloudArtistSearch)
 
@@ -38,7 +44,7 @@ namespace SC
 			public Gui::Dialog
 	{
 		Q_OBJECT
-		UI_CLASS(GUI_SoundcloudArtistSearch)
+		UI_CLASS_SHARED_PTR(GUI_SoundcloudArtistSearch)
 		PIMPL(GUI_ArtistSearch)
 
 		public:
@@ -49,7 +55,6 @@ namespace SC
 			void searchClicked();
 			void clearClicked();
 			void addClicked();
-			void closeClicked();
 
 			void artistsFetched(const ArtistList& artists);
 			void artistsExtFetched(const ArtistList& artists);
@@ -58,9 +63,13 @@ namespace SC
 
 			void artistSelected(int idx);
 
+			void lineEditFocusEvent(QEvent::Type type);
+
 		private:
+			void initUserInterface();
 			void setTrackCountLabel(int trackCount);
 			void setPlaylistCountLabel(int playlistCount);
+			void startCoverLookup(const Cover::Location& location, QListWidget* targetView, int affectedRow);
 
 		protected:
 			void languageChanged() override;
