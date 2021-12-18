@@ -41,7 +41,7 @@
 
 struct Gui::AbstractStationPlugin::Private
 {
-	QStringList temporaryStations;
+	QMap<QString, StationPtr> temporaryStations;
 	ProgressBar* loadingBar = nullptr;
 	QComboBox* comboStream = nullptr;
 	QPushButton* btnPlay = nullptr;
@@ -74,15 +74,16 @@ struct Gui::AbstractStationPlugin::Private
 		return comboStream->currentData().toString();
 	}
 
-	void setSearching(bool b)
+	void setSearching(bool isSearching)
 	{
-		const QString text =
-			(b == true) ? Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
+		const auto text = isSearching
+		                  ? Lang::get(Lang::Stop)
+		                  : Lang::get(Lang::Listen);
 
 		btnPlay->setText(text);
 		btnPlay->setDisabled(false);
-		loadingBar->setVisible(b);
-		searching = b;
+		loadingBar->setVisible(isSearching);
+		searching = isSearching;
 	}
 };
 
@@ -139,51 +140,49 @@ void Gui::AbstractStationPlugin::initUi()
 
 void Gui::AbstractStationPlugin::setupStations()
 {
-	const QString lastName = m->currentName();
-	const QString lastUrl = m->currentUrl();
-
-	QList<StationPtr> stations;
+	const auto lastName = m->currentName();
+	const auto lastUrl = m->currentUrl();
+	auto stations = QList<StationPtr> {};
 
 	m->btnPlay->setEnabled(false);
 	m->comboStream->clear();
 	m->streamHandler->getAllStreams(stations);
 
-	for(StationPtr station : stations)
+	for(const auto& station : stations)
 	{
 		m->comboStream->addItem(station->name(), station->url());
 	}
 
-	int idx = Util::Algorithm::indexOf(stations, [lastName, lastUrl](StationPtr station) {
-		return (lastName == station->name() || lastUrl == station->url());
+	auto index = Util::Algorithm::indexOf(stations, [&](const auto& station) {
+		return (lastName == station->name()) ||
+		       (lastUrl == station->url());
 	});
 
 	if(m->comboStream->count() > 0)
 	{
-		idx = std::max(0, idx);
+		index = std::max(0, index);
 	}
 
-	if(idx >= 0)
+	if(index >= 0)
 	{
-		m->comboStream->setCurrentIndex(idx);
+		m->comboStream->setCurrentIndex(index);
 		currentIndexChanged(m->comboStream->currentIndex());
 	}
 }
 
-void Gui::AbstractStationPlugin::currentIndexChanged(int idx)
+void Gui::AbstractStationPlugin::currentIndexChanged(int index)
 {
-	const QString currentText = m->currentName();
-	const QString url = m->currentUrl();
-
-	bool isTemporary = m->temporaryStations.contains(currentText);
+	const auto currentName = m->currentName();
+	const auto currentUrl = m->currentUrl();
+	const auto isTemporary = m->temporaryStations.contains(currentName);
+	const auto isEditable = ((index >= 0) && !isTemporary);
+	const auto isListentDisabled = ((currentUrl.size() < 8) && !m->searching);
 
 	m->btnTool->showAction(ContextMenu::EntrySave, isTemporary);
-	m->btnTool->showAction(ContextMenu::EntryEdit, (idx >= 0) && !isTemporary);
-	m->btnTool->showAction(ContextMenu::EntryDelete, (idx >= 0));
-
-	m->comboStream->setToolTip(url);
-
-	bool listen_disabled = (url.size() < 8 && !m->searching);
-	m->btnPlay->setDisabled(listen_disabled);
+	m->btnTool->showAction(ContextMenu::EntryEdit, isEditable);
+	m->btnTool->showAction(ContextMenu::EntryDelete, (index >= 0));
+	m->comboStream->setToolTip(currentUrl);
+	m->btnPlay->setDisabled(isListentDisabled);
 }
 
 void Gui::AbstractStationPlugin::dataAvailable()
@@ -201,31 +200,35 @@ void Gui::AbstractStationPlugin::listenClicked()
 		return;
 	}
 
-	const QString url = m->currentUrl();
-	if(url.size() > 5)
+	if(m->currentUrl().size() > 5)
 	{
-		QString current = m->currentName();
-		QString station_name = current.isEmpty() ? titleFallbackName() : current;
+		const auto currentName = m->currentName();
+		const auto stationName = currentName.isEmpty()
+		                         ? titleFallbackName()
+		                         : currentName;
 
 		m->setSearching(true);
-		play(station_name);
-	}
+		play(stationName);
 
-	else
-	{
-		spLog(Log::Warning, this) << "Url is empty";
-	}
-}
-
-void Gui::AbstractStationPlugin::play(const QString& station_name)
-{
-	StationPtr station = m->streamHandler->station(station_name);
-	if(!station)
-	{
 		return;
 	}
 
-	bool success = m->streamHandler->parseStation(station);
+	spLog(Log::Warning, this) << "Url is empty";
+}
+
+void Gui::AbstractStationPlugin::play(const QString& stationName)
+{
+	auto stationPtr = m->streamHandler->station(stationName);
+	if(!stationPtr)
+	{
+		stationPtr = m->temporaryStations[stationName];
+		if(!stationPtr)
+		{
+			return;
+		}
+	}
+
+	bool success = m->streamHandler->parseStation(stationPtr);
 	if(!success)
 	{
 		spLog(Log::Warning, this) << "Stream Handler busy";
@@ -242,13 +245,12 @@ void Gui::AbstractStationPlugin::error()
 {
 	m->setSearching(false);
 
-	Message::Answer answer = Message::question_yn
-		(
-			tr("Cannot open stream") + "\n" +
-			m->currentUrl() + "\n\n" +
-			Lang::get(Lang::Retry).question()
-		);
+	const auto question = QString("%1\n%2\n\n%3")
+		.arg(tr("Cannot open stream"))
+		.arg(m->currentUrl())
+		.arg(Lang::get(Lang::Retry).question());
 
+	const auto answer = Message::question_yn(question);
 	if(answer == Message::Answer::Yes)
 	{
 		listenClicked();
@@ -256,8 +258,8 @@ void Gui::AbstractStationPlugin::error()
 
 	else
 	{
-		bool b = m->temporaryStations.removeOne(m->currentName());
-		if(b)
+		const auto removed = (m->temporaryStations.remove(m->currentName()) == 0);
+		if(removed)
 		{
 			m->comboStream->removeItem(m->comboStream->currentIndex());
 		}
@@ -266,7 +268,9 @@ void Gui::AbstractStationPlugin::error()
 
 int Gui::AbstractStationPlugin::addStream(const QString& name, const QString& url)
 {
-	m->temporaryStations << name;
+	const auto stationPtr = m->streamHandler->createStreamInstance(name, url);
+
+	m->temporaryStations.insert(name, stationPtr);
 	m->comboStream->addItem(name, url);
 	m->comboStream->setCurrentText(name);
 
@@ -284,7 +288,7 @@ void Gui::AbstractStationPlugin::newClicked()
 
 void Gui::AbstractStationPlugin::saveClicked()
 {
-	StationPtr station = m->streamHandler->createStreamInstance(m->currentName(), m->currentUrl());
+	const auto station = m->streamHandler->createStreamInstance(m->currentName(), m->currentUrl());
 
 	m->configDialog->setMode(m->currentName(), GUI_ConfigureStation::Mode::Save);
 	m->configDialog->configureWidgets(station);
@@ -293,7 +297,7 @@ void Gui::AbstractStationPlugin::saveClicked()
 
 void Gui::AbstractStationPlugin::editClicked()
 {
-	StationPtr station = m->streamHandler->station(m->currentName());
+	const auto station = m->streamHandler->station(m->currentName());
 	if(station)
 	{
 		m->configDialog->setMode(station->name(), GUI_ConfigureStation::Mode::Edit);
@@ -304,29 +308,28 @@ void Gui::AbstractStationPlugin::editClicked()
 
 void Gui::AbstractStationPlugin::configFinished()
 {
-	auto* cs = static_cast<GUI_ConfigureStation*>(sender());
-	if(!cs->isAccepted())
+	auto* configDialog = dynamic_cast<GUI_ConfigureStation*>(sender());
+	if(!configDialog->isAccepted())
 	{
 		return;
 	}
 
-	StationPtr station = cs->configuredStation();
-
-	GUI_ConfigureStation::Mode mode = cs->mode();
+	const auto station = configDialog->configuredStation();
+	const auto mode = configDialog->mode();
 	if(mode == GUI_ConfigureStation::Mode::New)
 	{
-		int index = m->comboStream->findText(station->name());
-		if(index >= 0)
+		const auto stationIndex = m->comboStream->findText(station->name());
+		if(stationIndex >= 0)
 		{
-			cs->setError(tr("Please choose another name"));
-			cs->open();
+			configDialog->setError(tr("Please choose another name"));
+			configDialog->open();
 			return;
 		}
 
-		bool success = m->streamHandler->addNewStream(station);
-		if(success)
+		const auto streamAdded = m->streamHandler->addNewStream(station);
+		if(streamAdded)
 		{
-			m->temporaryStations.removeAll(station->name());
+			m->temporaryStations.remove(station->name());
 		}
 	}
 
@@ -338,7 +341,7 @@ void Gui::AbstractStationPlugin::configFinished()
 			success = m->streamHandler->addNewStream(station);
 			if(success)
 			{
-				m->temporaryStations.removeAll(m->currentName());
+				m->temporaryStations.remove(m->currentName());
 			}
 		}
 
@@ -355,21 +358,20 @@ void Gui::AbstractStationPlugin::configFinished()
 
 void Gui::AbstractStationPlugin::deleteClicked()
 {
-	Message::Answer ret = Message::question_yn(tr("Do you really want to delete %1").arg(m->currentName()) + "?");
-	if(ret == Message::Answer::Yes)
+	const auto answer = Message::question_yn(tr("Do you really want to delete %1").arg(m->currentName()) + "?");
+	if(answer == Message::Answer::Yes)
 	{
-		bool success = m->streamHandler->deleteStream(m->currentName());
-
+		const auto success = m->streamHandler->deleteStream(m->currentName());
 		spLog(Log::Info, this) << "Delete " << m->currentName() << success;
 	}
 
 	setupStations();
 }
 
-void Gui::AbstractStationPlugin::urlCountExceeded(int n_urls, int n_max_urls)
+void Gui::AbstractStationPlugin::urlCountExceeded(int urlCount, int maxUrlCount)
 {
-	Message::error(QString("Found %1 urls").arg(n_urls) + "<br />" +
-	               QString("Maximum number is %1").arg(n_max_urls)
+	Message::error(QString("Found %1 urls").arg(urlCount) + "<br />" +
+	               QString("Maximum number is %1").arg(maxUrlCount)
 	);
 
 	m->setSearching(false);
@@ -389,8 +391,8 @@ void Gui::AbstractStationPlugin::assignUiVariables()
 
 void Gui::AbstractStationPlugin::retranslate()
 {
-	const QString text = (m->searching) ?
-	                     Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
+	const auto text = (m->searching) ?
+	                  Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
 
 	m->btnPlay->setText(text);
 }

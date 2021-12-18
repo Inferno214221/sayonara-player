@@ -43,7 +43,7 @@ class AbstractStationHandler :
 	PIMPL(AbstractStationHandler)
 
 	public:
-		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
+		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
 		virtual ~AbstractStationHandler();
 
 	signals:
@@ -73,7 +73,7 @@ class AbstractStationHandler :
 		 * @param streams target StreamMap
 		 * @return true if successful, false else
 		 */
-		virtual bool getAllStreams(QList<StationPtr>& streams)=0;
+		virtual bool getAllStreams(QList<StationPtr>& streams) = 0;
 
 		/**
 		 * @brief This method should add a new station to database. If the station
@@ -82,16 +82,16 @@ class AbstractStationHandler :
 		 * @param url url
 		 * @return true if successful, false else
 		 */
-		virtual bool addNewStream(StationPtr station)=0;
+		virtual bool addNewStream(StationPtr station) = 0;
 
-		virtual StationPtr createStreamInstance(const QString& name, const QString& url) const=0;
+		virtual StationPtr createStreamInstance(const QString& name, const QString& url) const = 0;
 
 		/**
 		 * @brief Delete a station from the database.
 		 * @param station_name the station to be deleted
 		 * @return true if successful, false else
 		 */
-		virtual bool deleteStream(const QString& name)=0;
+		virtual bool deleteStream(const QString& name) = 0;
 
 		/**
 		 * @brief Update the url of a station
@@ -99,9 +99,9 @@ class AbstractStationHandler :
 		 * @param url the new url
 		 * @return true if successful, false else
 		 */
-		virtual bool update(const QString& name, StationPtr station)=0;
+		virtual bool update(const QString& name, StationPtr station) = 0;
 
-		virtual StationPtr station(const QString& name)=0;
+		virtual StationPtr station(const QString& name) = 0;
 
 		/**
 		 * @brief Clears all station content

@@ -32,15 +32,13 @@ StreamHandler::~StreamHandler() = default;
 
 bool StreamHandler::getAllStreams(QList<StationPtr>& stations)
 {
-	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	auto* db = DB::Connector::instance()->streamConnector();
 
-	QList<Stream> streams;
-	bool b = db->getAllStreams(streams);
+	auto streams = QList<Stream> {};
+	const auto b = db->getAllStreams(streams);
 
-	QList<StationPtr> ret;
-	Util::Algorithm::transform(streams, stations, [this](const Stream& p)
-	{
-		return this->createStreamInstance(p.name(), p.url());
+	Util::Algorithm::transform(streams, stations, [&](const auto& stream) {
+		return createStreamInstance(stream.name(), stream.url());
 	});
 
 	return b;
@@ -48,31 +46,29 @@ bool StreamHandler::getAllStreams(QList<StationPtr>& stations)
 
 bool StreamHandler::addNewStream(StationPtr station)
 {
-	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	auto* db = DB::Connector::instance()->streamConnector();
 
-	auto* stream = dynamic_cast<Stream*>(station.get());
-	if(!stream) {
-		return false;
-	}
-
-	return db->addStream(*stream);
+	const auto* stream = dynamic_cast<Stream*>(station.get());
+	return (stream != nullptr)
+	       ? db->addStream(*stream)
+	       : false;
 }
 
 bool StreamHandler::deleteStream(const QString& name)
 {
-	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	auto* db = DB::Connector::instance()->streamConnector();
+
 	return db->deleteStream(name);
 }
 
 bool StreamHandler::update(const QString& name, StationPtr station)
 {
-	DB::Streams* db = DB::Connector::instance()->streamConnector();
-	auto* stream = dynamic_cast<Stream*>(station.get());
-	if(!stream){
-		return false;
-	}
+	auto* db = DB::Connector::instance()->streamConnector();
+	const auto* stream = dynamic_cast<Stream*>(station.get());
 
-	return db->updateStream(name, *stream);
+	return (stream != nullptr)
+	       ? db->updateStream(name, *stream)
+	       : false;
 }
 
 StationPtr StreamHandler::createStreamInstance(const QString& name, const QString& url) const
@@ -82,12 +78,10 @@ StationPtr StreamHandler::createStreamInstance(const QString& name, const QStrin
 
 StationPtr StreamHandler::station(const QString& name)
 {
-	DB::Streams* db = DB::Connector::instance()->streamConnector();
+	auto* db = DB::Connector::instance()->streamConnector();
+	const auto stream = db->getStream(name);
 
-	Stream stream = db->getStream(name);
-	if(stream.name().isEmpty()){
-		return nullptr;
-	}
-
-	return std::make_shared<Stream>(stream);
+	return !stream.name().isEmpty()
+	       ? std::make_shared<Stream>(stream)
+	       : nullptr;
 }

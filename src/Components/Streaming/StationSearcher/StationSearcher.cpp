@@ -136,12 +136,13 @@ const QList<RadioStation>& StationSearcher::foundStations() const
 	return m->foundStations;
 }
 
+#include "Utils/Logger/Logger.h"
 void StationSearcher::searchFinished()
 {
 	auto* wa = static_cast<AsyncWebAccess*>(sender());
 
 	FMStreamParser parser(wa->data());
-	const auto stations = parser.stations();
+	auto stations = parser.stations();
 	if(stations.isEmpty())
 	{
 		m->decreasePage();
@@ -150,7 +151,7 @@ void StationSearcher::searchFinished()
 
 	else
 	{
-		m->foundStations = parser.stations();
+		m->foundStations = std::move(stations);
 	}
 
 	wa->deleteLater();

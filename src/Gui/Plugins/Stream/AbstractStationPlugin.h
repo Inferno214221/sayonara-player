@@ -43,7 +43,7 @@ namespace Gui
 	 * @brief Currently only a Radio Search Entry action
 	 */
 	class StreamPreferenceAction :
-			public PreferenceAction
+		public PreferenceAction
 	{
 		Q_OBJECT
 
@@ -58,20 +58,20 @@ namespace Gui
 	};
 
 	class AbstractStationPlugin :
-			public PlayerPlugin::Base
+		public PlayerPlugin::Base
 	{
 		Q_OBJECT
 		PIMPL(AbstractStationPlugin)
 
 		public:
-			explicit AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent=nullptr);
+			explicit AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
 			virtual ~AbstractStationPlugin() override;
 
 		protected:
-			virtual void		retranslate() override;
-			virtual void		play(const QString& station_name);
+			virtual void retranslate() override;
+			virtual void play(const QString& stationName);
 
-			bool				hasLoadingBar() const override;
+			bool hasLoadingBar() const override;
 
 			template<typename T, typename UiType>
 			void setup_parent(T* subclass, UiType** uiptr)
@@ -82,7 +82,7 @@ namespace Gui
 
 		protected slots:
 			void listenClicked();
-			void currentIndexChanged(int idx);
+			void currentIndexChanged(int index);
 
 			void newClicked();
 			void saveClicked();
@@ -99,12 +99,12 @@ namespace Gui
 			void configFinished();
 
 		protected:
-			virtual QComboBox* comboStream()=0;
-			virtual QPushButton* btnPlay()=0;
-			virtual MenuToolButton* btnMenu()=0;
-			virtual AbstractStationHandler* streamHandler() const=0;
-			virtual QString	titleFallbackName() const=0;
-			virtual GUI_ConfigureStation* createConfigDialog()=0;
+			virtual QComboBox* comboStream() = 0;
+			virtual QPushButton* btnPlay() = 0;
+			virtual MenuToolButton* btnMenu() = 0;
+			virtual AbstractStationHandler* streamHandler() const = 0;
+			virtual QString titleFallbackName() const = 0;
+			virtual GUI_ConfigureStation* createConfigDialog() = 0;
 
 			virtual int addStream(const QString& name, const QString& url);
 

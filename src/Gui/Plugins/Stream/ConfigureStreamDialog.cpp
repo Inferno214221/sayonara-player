@@ -8,28 +8,26 @@
 struct ConfigureStreamDialog::Private
 {
 	PlaylistCreator* playlistCreator;
-	QLineEdit* name=nullptr;
-	QLineEdit* url=nullptr;
+	QLineEdit* name;
+	QLineEdit* url;
 
 	Private(PlaylistCreator* playlistCreator) :
-		playlistCreator(playlistCreator)
-	{}
+		playlistCreator {playlistCreator},
+		name {new QLineEdit()},
+		url {new QLineEdit()} {}
 };
 
 ConfigureStreamDialog::ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent) :
 	GUI_ConfigureStation(parent)
 {
 	m = Pimpl::make<Private>(playlistCreator);
-
-	m->name = new QLineEdit();
-	m->url = new QLineEdit();
 }
 
 ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
 StationPtr ConfigureStreamDialog::configuredStation()
 {
-	StreamHandler handler(m->playlistCreator);
+	auto handler = StreamHandler(m->playlistCreator);
 	return handler.createStreamInstance(m->name->text(), m->url->text());
 }
 
@@ -53,15 +51,15 @@ QList<QWidget*> ConfigureStreamDialog::configurationWidgets()
 	return {m->name, m->url};
 }
 
-QString ConfigureStreamDialog::labelText(int i) const
+QString ConfigureStreamDialog::labelText(int index) const
 {
-	if(i == 0){
-		return Lang::get(Lang::Name);
+	switch(index)
+	{
+		case 0:
+			return Lang::get(Lang::Name);
+		case 1:
+			return "Url";
+		default:
+			return QString {};
 	}
-
-	else if(i == 1){
-		return "Url";
-	}
-
-	return QString();
 }

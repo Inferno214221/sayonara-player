@@ -10,14 +10,14 @@ class ConfigureStreamDialog :
 {
 	PIMPL(ConfigureStreamDialog)
 
-public:
-	ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent);
-	~ConfigureStreamDialog() override;
+	public:
+		ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent);
+		~ConfigureStreamDialog() override;
 
-	StationPtr			configuredStation() override;
-	QList<QWidget*>		configurationWidgets() override;
-	void				configureWidgets(StationPtr station) override;
-	QString				labelText(int i) const override;
+		StationPtr configuredStation() override;
+		QList<QWidget*> configurationWidgets() override;
+		void configureWidgets(StationPtr station) override;
+		QString labelText(int index) const override;
 };
 
 #endif // GUI_CONFIGURESTREAM_H

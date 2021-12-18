@@ -26,17 +26,17 @@
 class StreamHandler :
 	public AbstractStationHandler
 {
-public:
-	explicit StreamHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
-	~StreamHandler() override;
+	public:
+		explicit StreamHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+		~StreamHandler() override;
 
-	bool getAllStreams(QList<StationPtr>& stations) override;
-	bool addNewStream(StationPtr station) override;
-	bool deleteStream(const QString& station_name) override;
-	bool update(const QString& station_name, StationPtr station) override;
+		bool getAllStreams(QList<StationPtr>& stations) override;
+		bool addNewStream(StationPtr station) override;
+		bool deleteStream(const QString& stationName) override;
+		bool update(const QString& stationName, StationPtr station) override;
 
-	StationPtr createStreamInstance(const QString& name, const QString& url) const override;
-	StationPtr station(const QString& name) override;
+		StationPtr createStreamInstance(const QString& name, const QString& url) const override;
+		StationPtr station(const QString& name) override;
 };
 
 #endif // STREAMHANDLERSTREAMS_H
