@@ -24,6 +24,7 @@
 #include "Gui/Plugins/ui_GUI_Stream.h"
 
 #include "Components/Streaming/Streams/StreamHandler.h"
+#include "Interfaces/PlaylistInterface.h"
 
 #include "Utils/Language/Language.h"
 #include "Gui/Utils/Icons.h"
@@ -70,15 +71,15 @@ void GUI_Stream::retranslate()
 	Gui::AbstractStationPlugin::retranslate();
 	ui->retranslateUi(this);
 
-	QString action_text = tr("Search radio station");
+	const auto actionText = tr("Search radio station");
 
 	if(m->actionSearchRadioStation)
 	{
-		m->actionSearchRadioStation->setText(action_text);
+		m->actionSearchRadioStation->setText(actionText);
 	}
 
 	ui->btnSearch->setText(Lang::get(Lang::SearchVerb));
-	ui->btnSearch->setToolTip(action_text);
+	ui->btnSearch->setToolTip(actionText);
 }
 
 void GUI_Stream::initUi()
@@ -148,8 +149,8 @@ void GUI_Stream::searchRadioTriggered()
 
 void GUI_Stream::streamSelected(const QString& name, const QString& url, bool save)
 {
-	int index = addStream(name, url);
-	if(save && index >= 0)
+	const auto index = addStream(name, url);
+	if(save && (index >= 0))
 	{
 		currentIndexChanged(index);
 		saveClicked();

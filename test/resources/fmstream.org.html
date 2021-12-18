@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>fmstream</title>
+    <link rel="stylesheet" type="text/css" href="style.css?v=12i">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="FMSTREAM - The Radio Stream Directory. Select codecs, sample- and bitrates in the browser. No plugins."/>
+    <meta name="keywords" content="radio,player,fm,live,listen,stream"/>
+    <meta name="robots" content="nofollow">
+    <meta charset="utf-8">
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <script src="hls.min.js"></script>
+    <script src="dash.all.min.js?v=313"></script>
+</head>
+
+<body>
+<div id="ctrl">
+    <div id="ctrltoggle">-</div>
+    <div id="ctrl0">
+        <div id="proginfo">(program info)</div>
+        <div id="ctrl1" tabindex="0">&#9654;</div>
+        <div id="progress">ready</div>
+        <input id="vbar" type="range" value="0" max="1" step="any">
+    </div>
+    <div id="ctrl2">
+        <div id="sctr"></div>
+        <a href="#" id="link"> </a>
+    </div>
+</div>
+
+<header>
+    <div id="nav">
+        <a href="index.php" class="h1 ib">fmstream.org</a>
+        <h2 class="ib">The Radio Stream Directory</h2></header>
+
+<nav>
+    <div id="nav1">
+        <form method="GET" action="index.php">
+            <input type="text" name="s" size="20" class="btn search tg">
+            <input type="submit" value="&#x1F50E;" class="btn tg">
+            <input type="hidden" name="cm" value="0" class="btn tg">
+        </form>
+        <div id="nav2">
+
+            <a href="index.php?cm=1&s=thrash metal" class="btn">&raquo; COMPACT</a>	<a href="index.php?c=FT&amp;cm=0" title="a few recommended stations by the editor" class="btn">FEATURED</a>
+            <a href="index.php?c=LA&amp;cm=0" title="last listened stations" class="btn">LAST</a>
+            <a href="country.htm" class="btn">COUNTRIES</a>
+            <a href="style.htm" class="btn">STYLES</a>
+            <a href="index.php?c=RD&amp;cm=0" title="random stations" class="btn">RANDOM</a></div></div>
+
+    <audio id="player" preload="none"><source src="dummy.mp3"/></audio>
+</nav>
+
+<div class="main">
+
+    <br><h3 id="mainhead">Search results for THRASH METAL</h3><br><br><div class="sm gry">Click or touch the boxes on the right and select the stream</div>
+    <article>
+        <div class="tab" id="tab">
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(153871,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Metal FM Com</h3> <img src="flagsitu/D.gif" alt="Germany">
+                    <br> <span class="loc">Wuppertal - Deutschland, Germany</span>
+                    <span class="sty">Metal</span>
+                    <a href="https://metal-fm.com" class="sm" target="hp">metal-fm.com</a>
+                    <span class="bra">Heavy Metal, Power Metal, Thrash Metal, Death Metal um.</span>  <span class="desc">Metal-FM. com, gehört zu den Top 3 der deutschen Metal Radios und ist dein Metal Radio, Metal (Fan) Magazin & Metal Community. Musikwünsche und Grüße können während den Live Zeiten über den Chat 4 Metalheads (://chat4metalheads. de) abgegeben <span onclick="this.innerText='werden'"><u>...</u></span></span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(720592,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Radio - Thrash Metal</h3> <img src="flagsitu/UKR.gif" alt="Ukraine">
+                    <br> <span class="loc">Vinnytsya, Ukraine</span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(71647,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Radio Caprice - Thrash Metal</h3> <img src="flagsitu/RUS.gif" alt="Russia">
+                    <br> <span class="loc">Moscow, Russia</span>
+                    <span class="sty">Rock Heavy-Metal</span>
+                    <a href="http://radcap.ru" class="sm" target="hp">radcap.ru</a></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(80611,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Radio Obozrevatel - Thrash Metal</h3> <img src="flagsitu/UKR.gif" alt="Ukraine">
+                    <br> <span class="loc">Ukraine</span>
+                    <span class="sty">Rock Hard-Metal</span> <span class="desc">Thrash metal, от to thrash — «молотить», «колотить».</span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(153782,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Redstar-Radio</h3> <img src="flagsitu/D.gif" alt="Germany">
+                    <br> <span class="loc">Venlo, Niederlande, Germany</span>
+                    <span class="sty">Metal Death-Metal</span>
+                    <a href="https://laut.fm/redstarradio" class="sm" target="hp">laut.fm/redstarradio</a>
+                    <span class="bra">Nu-Metal, Thrash Metal und Death Metal.</span>  <span class="desc">Willkommen auf meinen Radiosender. Das Pentagram ist nur ein Symbol bild und soll auf KEINEN Fall ernst genommen werden. Ich identifiziere mich nicht mit dem Satanismus weder distanziere ich mich davon.</span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(155023,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Thrash or die</h3> <img src="flagsitu/D.gif" alt="Germany">
+                    <br> <span class="loc">Switzerland, Germany</span>
+                    <span class="sty">Thrash-Metal Metal</span>
+                    <a href="https://thethrasherblog.wordpress.com" class="sm" target="hp">thethrasherblog.wordpress.com</a> <span class="desc">Thrash and Heavy from 80`s, 90`s and currently 24/7 Thrash / Heavy in future is coming an Liveshow Newcomer Welcome, Send me a Message.</span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(153922,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Thrashking</h3> <img src="flagsitu/D.gif" alt="Germany">
+                    <br> <span class="loc">Lehrte / Hannover, Germany</span>
+                    <span class="sty">Death-Metal Metal</span>
+                    <a href="http://thrashking.com" class="sm" target="hp">thrashking.com</a>
+                    <span class="bra">THRASH 'TIL FUCKIN' DEATH.</span>  <span class="desc">http://www.thrashking.com - .BANDS WANTED. If you want us to play your music in the NEW CRUSHING BREED show (tue/fr), just send your music (CD/LP/MC) to:  VIOLENT PROPAGANDA  c/o BURKHARD SCHMITT  P.O. BOX: 1526  31255 LEHRTE  GERMANY.</span></div></div>
+
+            <div class="stnblock">
+                <div class="fvb" onclick="tf(51997,this);">&#9734;</div>
+                <div class="stn1">
+                    <h3>Violent Forces Radio</h3>
+                    <br>
+                    <span class="sty">Thrash-Metal</span>
+                    <a href="https://violentforcesradio.weebly.com" class="sm" target="hp">violentforcesradio.weebly.com</a> <span class="desc">Thrash Metal 24/7</span></div></div>
+        </div>
+    </article>
+
+    <br>
+    <footer>
+        <a id="uparrow" class="btn r">&uarr;</a>
+        <br><a href="about.htm" class="abt">about fmstream.org</a></div>
+<div class="framedinfo">
+    Food, water, nature, sea levels.
+    <br>In 2028 it could be too late.
+    <br><a href="https://globalenergyconcept.org">Deploy solar,wind,grids and storage now!</a>
+    <br><div class="sm2">(a non-sponsored message by the developer)</div>
+</div>
+<div id="jsinfo" style="font-size:1.5em;">This site only works with JAVASCRIPT</div>
+</footer>
+<script>
+    var data=[[['stream.laut.fm\/metal-fm-com','mp3',128,44,2,234152,153871,1]],
+        [['music.myradio.ua\/Trash_Metal128.ogg','vor',80,44,2,720592,720592,1]],
+        [['79.120.77.11:8000\/thrashmetal','2',128,44,2,84599,71647],['79.120.77.11:9101\/;','2',128,44,2,84598,71647],['79.120.77.11:8002\/thrashmetal','2',48,44,2,903119,71647]],
+        [['relay.myradio.ua:8000\/Trash_Metal128.mp3','mp3',128,44,2,91773,80611],['music.myradio.ua:8000\/Trash_Metal128.mp3','mp3',128,44,2,91771,80611],['music.myradio.ua:8000\/Trash_Metal128.ogg','vor',80,44,2,91772,80611]],
+        [['stream.laut.fm\/redstarradio','mp3',128,44,2,234063,153782,1]],
+        [['stream.laut.fm\/thrashordie','mp3',128,44,2,235304,155023,1]],
+        [['stream.laut.fm\/thrashking','mp3',128,44,2,234203,153922,1]],
+        [['ca.radioboss.fm:8217\/;','mp3',192,44,2,200020,51997]]];
+    var cm=0,debug=0,fav=0;
+    var id,urlid;
+    var streamformats=['coo','h26','mp2','nsf','ra','wma','wmv'];
+    var h5streamformats=['mp3','aac','mp4','ogg','hls','mpd','opu','vor','flc','mp1'];
+    var listformats=['asp','asx','m3u','pls','ram','qtl','wax','wvx','txt'];
+    jsinfo.style.display='none';
+    ctrl.style.display='inline-block';
+</script>
+<script src="rsd.js?v=21q2"></script></body>
