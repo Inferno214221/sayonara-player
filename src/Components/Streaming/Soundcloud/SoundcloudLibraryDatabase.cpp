@@ -11,6 +11,7 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
+#include "Utils/Utils.h"
 
 using ::DB::Query;
 
@@ -22,8 +23,8 @@ namespace
 	QString getCoverUrl(const LibraryItem& libraryItem)
 	{
 		return (!libraryItem.coverDownloadUrls().isEmpty())
-		       ? libraryItem.coverDownloadUrls().first()
-		       : QString();
+		       ? libraryItem.coverDownloadUrls().constFirst()
+		       : QString("");
 	}
 
 	QList<Disc> getDiscnumbersFromVariant(const QVariant& variant)
@@ -36,7 +37,7 @@ namespace
 		}
 
 		return (discnumbers.isEmpty())
-		       ? QList<Disc>() << 1
+		       ? (QList<Disc>() << 1)
 		       : discnumbers.toList();
 	}
 }
@@ -184,7 +185,7 @@ bool SC::LibraryDatabase::dbFetchTracks(Query& query, MetaDataList& result) cons
 		track.setComment(query.value(19).toString());
 		track.setDatabaseId(module()->databaseId());
 
-		result << std::move(track);
+		result.push_back(std::move(track));
 	}
 
 	return true;
@@ -217,7 +218,7 @@ bool SC::LibraryDatabase::dbFetchAlbums(Query& query, AlbumList& result) const
 		album.setDiscnumbers(getDiscnumbersFromVariant(query.value(10)));
 		album.setDatabaseId(module()->databaseId());
 
-		result << std::move(album);
+		result.push_back(std::move(album));
 	}
 
 	return true;
@@ -259,7 +260,7 @@ bool SC::LibraryDatabase::dbFetchArtists(Query& query, ArtistList& result) const
 		artist.setAlbumcount(uint16_t(list.size()));
 		artist.setDatabaseId(module()->databaseId());
 
-		result << std::move(artist);
+		result.push_back(std::move(artist));
 	}
 
 	return true;
@@ -270,8 +271,8 @@ ArtistId SC::LibraryDatabase::updateArtist(const Artist& artist)
 	const auto query = this->update(
 		QStringLiteral("artists"),
 		{
-			{QStringLiteral("name"),                artist.name()},
-			{QStringLiteral("cissearch"),           artist.name().toLower()},
+			{QStringLiteral("name"),                Util::convertNotNull(artist.name())},
+			{QStringLiteral("cissearch"),           Util::convertNotNull(artist.name().toLower())},
 			{PermalinkUrlKey,                       artist.customField(PermalinkUrlKey)},
 			{QStringLiteral("description"),         artist.customField(QStringLiteral("description"))},
 			{QStringLiteral("followers_following"), artist.customField(QStringLiteral("followers_following"))},
@@ -305,7 +306,7 @@ bool SC::LibraryDatabase::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 ArtistId SC::LibraryDatabase::insertArtistIntoDatabase(const Artist& artist)
 {
 	Artist foundArtist;
-	if(getArtistByID(artist.id(), foundArtist) && (foundArtist.id() >= 0))
+	if(getArtistByID(artist.id(), foundArtist) && (foundArtist.id() > 0))
 	{
 		return updateArtist(artist);
 	}
@@ -314,8 +315,8 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase(const Artist& artist)
 		QStringLiteral("artists"),
 		{
 			{QStringLiteral("artistID"),            artist.id()},
-			{QStringLiteral("name"),                artist.name()},
-			{QStringLiteral("cissearch"),           artist.name().toLower()},
+			{QStringLiteral("name"),                Util::convertNotNull(artist.name())},
+			{QStringLiteral("cissearch"),           Util::convertNotNull(artist.name().toLower())},
 			{PermalinkUrlKey,                       artist.customField(PermalinkUrlKey)},
 			{QStringLiteral("description"),         artist.customField(QStringLiteral("description"))},
 			{QStringLiteral("followers_following"), artist.customField(QStringLiteral("followers_following"))},
@@ -333,8 +334,8 @@ AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 	const auto query = this->update(
 		QStringLiteral("albums"),
 		{
-			{QStringLiteral("name"),      album.name()},
-			{QStringLiteral("cissearch"), album.name().toLower()},
+			{QStringLiteral("name"),      Util::convertNotNull(album.name())},
+			{QStringLiteral("cissearch"), Util::convertNotNull(album.name().toLower())},
 			{PermalinkUrlKey,             album.customField(PermalinkUrlKey)},
 			{PurchaseUrlKey,              album.customField(PurchaseUrlKey)},
 			{QStringLiteral("cover_url"), getCoverUrl(album)}
@@ -358,8 +359,8 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase(const Album& album)
 		QStringLiteral("albums"),
 		{
 			{QStringLiteral("albumID"),   album.id()},
-			{QStringLiteral("name"),      album.name()},
-			{QStringLiteral("cissearch"), album.name().toLower()},
+			{QStringLiteral("name"),      Util::convertNotNull(album.name())},
+			{QStringLiteral("cissearch"), Util::convertNotNull(album.name().toLower())},
 			{PermalinkUrlKey,             album.customField(PermalinkUrlKey)},
 			{PurchaseUrlKey,              album.customField(PurchaseUrlKey)},
 			{QStringLiteral("cover_url"), getCoverUrl(album)}
@@ -376,18 +377,18 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& track)
 	const auto query = this->update(
 		QStringLiteral("tracks"),
 		{
-			{QStringLiteral("title"),      track.title()},
-			{QStringLiteral("filename"),   track.filepath()},
+			{QStringLiteral("title"),      Util::convertNotNull(track.title())},
+			{QStringLiteral("filename"),   Util::convertNotNull(track.filepath())},
 			{QStringLiteral("albumID"),    track.albumId()},
 			{QStringLiteral("artistID"),   track.artistId()},
 			{QStringLiteral("length"),     QVariant::fromValue(track.durationMs())},
 			{QStringLiteral("year"),       track.year()},
 			{QStringLiteral("track"),      track.trackNumber()},
 			{QStringLiteral("bitrate"),    track.bitrate()},
-			{QStringLiteral("genre"),      track.genresToList().join("),")},
+			{QStringLiteral("genre"),      Util::convertNotNull(track.genresToList().join("),"))},
 			{QStringLiteral("filesize"),   QVariant::fromValue(track.filesize())},
 			{QStringLiteral("discnumber"), track.discnumber()},
-			{QStringLiteral("cissearch"),  track.title().toLower()},
+			{QStringLiteral("cissearch"),  Util::convertNotNull(track.title().toLower())},
 			{PurchaseUrlKey,               track.customField(PurchaseUrlKey)},
 			{QStringLiteral("cover_url"),  getCoverUrl(track)},
 			{QStringLiteral("createdate"), QVariant::fromValue(track.createdDate())},
@@ -397,7 +398,7 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& track)
 		{QStringLiteral("trackID"), track.id()},
 		QString("Soundcloud: Cannot update track %1").arg(track.filepath()));
 
-	return (query.hasError() == false);
+	return (!query.hasError());
 }
 
 bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int artistId, int albumId,
@@ -412,8 +413,8 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int art
 		QStringLiteral("tracks"),
 		{
 			{QStringLiteral("trackID"),    track.id()},
-			{QStringLiteral("title"),      track.title()},
-			{QStringLiteral("filename"),   track.filepath()},
+			{QStringLiteral("title"),      Util::convertNotNull(track.title())},
+			{QStringLiteral("filename"),   Util::convertNotNull(track.filepath())},
 			{QStringLiteral("albumID"),    albumId},
 			{QStringLiteral("artistID"),   artistId},
 			{QStringLiteral("length"),     QVariant::fromValue(track.durationMs())},
@@ -423,7 +424,7 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int art
 			{QStringLiteral("genre"),      track.genresToList().join(',')},
 			{QStringLiteral("filesize"),   QVariant::fromValue(track.filesize())},
 			{QStringLiteral("discnumber"), track.discnumber()},
-			{QStringLiteral("cissearch"),  track.title().toLower()},
+			{QStringLiteral("cissearch"),  Util::convertNotNull(track.title().toLower())},
 			{PurchaseUrlKey,               track.customField(PurchaseUrlKey)},
 			{QStringLiteral("cover_url"),  getCoverUrl(track)},
 			{QStringLiteral("createdate"), QVariant::fromValue(track.createdDate())},
@@ -432,7 +433,7 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int art
 		},
 		QString("Soundcloud: Cannot insert track %1").arg(track.filepath()));
 
-	return (query.hasError() == false);
+	return (!query.hasError());
 }
 
 bool SC::LibraryDatabase::storeMetadata(const MetaDataList& tracks)

@@ -22,151 +22,148 @@
 #include "SoundcloudWebAccess.h"
 #include "SoundcloudJsonParser.h"
 
+#include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
+#include "Utils/Settings/Settings.h"
 
+#include <QMap>
 
-struct SC::DataFetcher::Private
+namespace
 {
-	MetaDataList	playlistTracks;
-	AlbumList		playlists;
-	ArtistList		artists;
-	int				artistId;
-
-	Private() : artistId(-1) {}
-};
-
-
-SC::DataFetcher::DataFetcher(QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<SC::DataFetcher::Private>();
-
-	clear();
-}
-
-SC::DataFetcher::~DataFetcher() = default;
-
-void SC::DataFetcher::searchArtists(const QString& artist_name)
-{
-	clear();
-
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished,
-			this, &SC::DataFetcher::artistsFetched);
-	awa->run( SC::WebAccess::createLinkGetArtist(artist_name));
-}
-
-void SC::DataFetcher::getArtist(int artistId)
-{
-	clear();
-
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished,
-			this, &SC::DataFetcher::artistsFetched);
-
-	awa->run( SC::WebAccess::createLinkGetArtist(artistId) );
-}
-
-
-void SC::DataFetcher::getTracksByArtist(int artistId)
-{
-	clear();
-
-	m->artistId = artistId;
-
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished,
-			this, &SC::DataFetcher::playlistTracksFetched);
-
-	awa->run( SC::WebAccess::createLinkGetPlaylists(artistId) );
-}
-
-
-void SC::DataFetcher::artistsFetched()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	if(awa->status() != AsyncWebAccess::Status::GotData) {
-		awa->deleteLater();
-		return;
-	}
-
-	QByteArray data = awa->data();
-	SC::JsonParser parser(data);
-
-	ArtistList artists;
-	parser.parseArtists(artists);
-
-	emit sigArtistsFetched(artists);
-	awa->deleteLater();
-}
-
-
-void SC::DataFetcher::playlistTracksFetched()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	if(awa->status() != AsyncWebAccess::Status::GotData) {
-		awa->deleteLater();
-		return;
-	}
-
-	QByteArray data = awa->data();
-	SC::JsonParser parser(data);
-	parser.parsePlaylists(m->artists, m->playlists, m->playlistTracks);
-
-	AsyncWebAccess* awa_new = new AsyncWebAccess(this);
-	connect(awa_new, &AsyncWebAccess::sigFinished,
-			this, &SC::DataFetcher::tracksFetched);
-
-	awa_new->run( SC::WebAccess::createLinkGetTracks(m->artistId) );
-
-	awa->deleteLater();
-}
-
-void SC::DataFetcher::tracksFetched()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	if(awa->status() != AsyncWebAccess::Status::GotData) {
-		awa->deleteLater();
-		return;
-	}
-
-	QByteArray data = awa->data();
-	SC::JsonParser parser(data);
-
-	MetaDataList tracks;
-	ArtistList artists;
-	parser.parseTracks(artists, tracks);
-
-	for(const MetaData& md : tracks)
+	QString oauthToken()
 	{
-		if(!m->playlistTracks.contains(md.id())){
-			m->playlistTracks << md;
-		}
+		return GetSetting(SetNoDB::Soundcloud_AuthToken);
 	}
 
-	for(const Artist& artist : artists)
+	QMap<QByteArray, QByteArray> requestHeader()
 	{
-		if(!m->artists.contains(artist.id())){
-			m->artists << artist;
-		}
+		return QMap<QByteArray, QByteArray> {
+			{"accept",        "application/json; charset=utf-8"},
+			{"Authorization", QString("OAuth %1").arg(oauthToken()).toLocal8Bit()}
+		};
+	}
+}
+
+namespace SC
+{
+	struct DataFetcher::Private
+	{
+		MetaDataList tracks;
+		AlbumList playlists;
+		ArtistList artists;
+		int artistId {-1};
+	};
+
+	DataFetcher::DataFetcher(QObject* parent) :
+		QObject(parent)
+	{
+		m = Pimpl::make<DataFetcher::Private>();
 	}
 
-	emit sigPlaylistsFetched(m->playlists);
-	emit sigTracksFetched(m->playlistTracks);
-	emit sigExtArtistsFetched(m->artists);
+	DataFetcher::~DataFetcher() = default;
 
-	awa->deleteLater();
+	void DataFetcher::searchArtists(const QString& artistName)
+	{
+		m->artistId = -1;
+		m->artists.clear();
+		m->playlists.clear();
+		m->tracks.clear();
+
+		auto* awa = new AsyncWebAccess(this);
+		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::artistsFetched);
+
+		awa->setRawHeader(requestHeader());
+		awa->run(createLinkGetArtist(artistName));
+	}
+
+	void DataFetcher::getArtist(int artistId)
+	{
+		m->artistId = -1;
+		m->artists.clear();
+		m->playlists.clear();
+		m->tracks.clear();
+
+		auto* awa = new AsyncWebAccess(this);
+		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::artistsFetched);
+
+		awa->setRawHeader(requestHeader());
+		awa->run(createLinkGetArtist(artistId));
+	}
+
+	void DataFetcher::artistsFetched()
+	{
+		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
+		if(awa->status() == AsyncWebAccess::Status::GotData)
+		{
+			const auto parser = JsonParser(awa->data());
+			parser.parseArtists(m->artists);
+
+			emit sigArtistsFetched(m->artists);
+		}
+
+		awa->deleteLater();
+	}
+
+	void DataFetcher::getTracksByArtist(int artistId)
+	{
+		m->artistId = artistId;
+		m->artists.clear();
+		m->playlists.clear();
+		m->tracks.clear();
+
+		auto* awa = new AsyncWebAccess(this);
+		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::playlistsFetched);
+
+		awa->setRawHeader(requestHeader());
+		awa->run(createLinkGetPlaylists(artistId));
+	}
+
+	void DataFetcher::playlistsFetched()
+	{
+		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
+		if(awa->status() == AsyncWebAccess::Status::GotData)
+		{
+			const auto parser = JsonParser(awa->data());
+			parser.parsePlaylists(m->artists, m->playlists, m->tracks);
+
+			auto emptyAlbum = Album{};
+			emptyAlbum.setId(0);
+			m->playlists.appendUnique(AlbumList() << emptyAlbum);
+
+			auto* awaTracks = new AsyncWebAccess(this);
+			connect(awaTracks, &AsyncWebAccess::sigFinished, this, &DataFetcher::tracksFetched);
+
+			awaTracks->setRawHeader(requestHeader());
+			awaTracks->run(createLinkGetTracks(m->artistId));
+		}
+
+		awa->deleteLater();
+	}
+
+	void DataFetcher::tracksFetched()
+	{
+		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
+		if(awa->status() == AsyncWebAccess::Status::GotData)
+		{
+			auto tracks = MetaDataList {};
+			auto artists = ArtistList {};
+
+			const auto parser = JsonParser(awa->data());
+			parser.parseTracks(artists, tracks);
+
+			m->tracks.appendUnique(tracks);
+			m->artists.appendUnique(artists);
+
+			emit sigPlaylistsFetched(m->playlists);
+			emit sigTracksFetched(m->tracks);
+			emit sigExtArtistsFetched(m->artists);
+		}
+
+		awa->deleteLater();
+	}
 }
-
-void SC::DataFetcher::clear()
-{
-	m->playlistTracks.clear();
-	m->playlists.clear();
-	m->artists.clear();
-	m->artistId = -1;
-}
-

@@ -19,17 +19,10 @@
  */
 
 #include "SoundcloudData.h"
-#include "SoundcloudWebAccess.h"
-
-#include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/globals.h"
 #include "Utils/StandardPaths.h"
 
 #include "Database/Query.h"
-#include "Database/Connector.h"
-
-#include <QList>
 
 using DB::Query;
 
@@ -46,19 +39,19 @@ SC::Database::~Database()
 
 QString SC::Database::loadSetting(const QString& key)
 {
-	Query q = this->runQuery
-	(
+	auto query = this->runQuery(
 		"SELECT value FROM Settings WHERE key=:key;",
 		{{":key", key}},
-		QString("Cannot load setting %1").arg(key)
-	);
+		QString("Cannot load setting %1").arg(key));
 
-	if(q.hasError()){
+	if(query.hasError())
+	{
 		return QString();
 	}
 
-	if(q.next()){
-		return q.value(0).toString();
+	if(query.next())
+	{
+		return query.value(0).toString();
 	}
 
 	return QString();
@@ -66,93 +59,114 @@ QString SC::Database::loadSetting(const QString& key)
 
 bool SC::Database::saveSetting(const QString& key, const QString& value)
 {
-	QString v = loadSetting(key);
-	if(v.isNull()){
+	const auto v = loadSetting(key);
+	if(v.isNull())
+	{
 		return insertSetting(key, value);
 	}
 
-	Query q = this->update
-	(
+	const auto query = this->update(
 		"settings",
 		{
-			{"key", key},
+			{"key",   key},
 			{"value", value}
 		},
 		{"key", key},
-		QString("Cannot apply setting %1").arg(key)
-	);
+		QString("Cannot apply setting %1").arg(key));
 
-	return (q.hasError() == false);
+	return (!query.hasError());
 }
 
 bool SC::Database::insertSetting(const QString& key, const QString& value)
 {
-	Query q = this->insert
-	(
+	const auto query = this->insert(
 		"settings",
 		{
-			{"key", key},
+			{"key",   key},
 			{"value", value}
 		},
-		QString("Cannot insert setting %1").arg(key)
-	);
+		QString("Cannot insert setting %1").arg(key));
 
-	return (q.hasError() == false);
+	return (!query.hasError());
 }
-
 
 bool SC::Database::applyFixes()
 {
-	QString creation_string =
+	constexpr const auto creationString =
 		"CREATE TABLE Settings "
 		"( "
 		"  key VARCHAR(100) PRIMARY KEY, "
 		"  value TEXT "
 		");";
 
-	bool success = checkAndCreateTable("Settings", creation_string);
-	if(!success){
+	const auto settingsCreated = checkAndCreateTable("Settings", creationString);
+	if(!settingsCreated)
+	{
 		spLog(Log::Error, this) << "Cannot create settings table for soundcloud";
 		return false;
 	}
 
 	int version;
-	QString version_string = loadSetting("version");
-	if(version_string.isEmpty()){
+	const auto versionString = loadSetting("version");
+	if(versionString.isEmpty())
+	{
 		saveSetting("version", "1");
 		version = 1;
 	}
 
-	else{
-		version = version_string.toInt();
+	else
+	{
+		version = versionString.toInt();
 	}
 
-	if(version < 2){
-		bool success = checkAndInsertColumn("tracks", "albumArtistID", "integer", "-1");
-		if(success){
+	if(version < 2)
+	{
+		const auto success = checkAndInsertColumn("tracks", "albumArtistID", "integer", "-1");
+		if(success)
+		{
 			saveSetting("version", "2");
 		}
 	}
 
-	if(version < 3) {
-		bool success = checkAndInsertColumn("tracks", "libraryID", "integer", "0");
-		if(success){
+	if(version < 3)
+	{
+		const auto success = checkAndInsertColumn("tracks", "libraryID", "integer", "0");
+		if(success)
+		{
 			saveSetting("version", "3");
 		}
 	}
 
-
-	if(version < 4) {
-		bool success = checkAndInsertColumn("tracks", "fileCissearch", "varchar(256)", "");
-		if(success){
+	if(version < 4)
+	{
+		const auto success = checkAndInsertColumn("tracks", "fileCissearch", "varchar(256)", "");
+		if(success)
+		{
 			saveSetting("version", "4");
 		}
 	}
 
-	if(version < 5) {
-		bool success = checkAndInsertColumn("tracks", "genreCissearch", "varchar(512)", "");
-		if(success){
+	if(version < 5)
+	{
+		const auto success = checkAndInsertColumn("tracks", "genreCissearch", "varchar(512)", "");
+		if(success)
+		{
 			saveSetting("version", "5");
+		}
+	}
+
+	if(version < 6)
+	{
+		auto query = Query(this);
+		constexpr const auto queryText =
+			"UPDATE tracks "
+			"SET filename=substr(filename, 0, instr(filename, '?client')) "
+			"WHERE instr(filename, '?client') > 0;";
+
+		query.prepare(queryText);
+		if(query.exec())
+		{
+			saveSetting("version", "6");
 		}
 	}
 

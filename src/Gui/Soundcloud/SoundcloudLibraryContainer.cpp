@@ -24,12 +24,15 @@
 #include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
 
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
+#include "Components/Streaming/Soundcloud/SoundcloudTokenObserver.h"
+
 #include "Interfaces/LibraryPlaylistInteractor.h"
 
-#include <qglobal.h>
 #include <QIcon>
+#include <QThread>
+#include <QtGlobal>
 
-static void sc_init_icons()
+static void initSoundcloudIcons()
 {
 	Q_INIT_RESOURCE(SoundcloudIcons);
 }
@@ -37,16 +40,26 @@ static void sc_init_icons()
 struct SC::LibraryContainer::Private
 {
 	LibraryPlaylistInteractor* playlistInteractor;
+	QThread* tokenThread;
 
 	explicit Private(LibraryPlaylistInteractor* playlistInteractor) :
-		playlistInteractor(playlistInteractor)
-	{}
+		playlistInteractor(playlistInteractor),
+		tokenThread {new QThread {}} {}
+
+	~Private()
+	{
+		while(tokenThread->isRunning())
+		{
+			tokenThread->quit();
+			QThread::currentThread()->wait(10);
+		}
+	}
 };
 
 SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
 	::Library::Container(parent)
 {
-	sc_init_icons();
+	initSoundcloudIcons();
 
 	m = Pimpl::make<Private>(playlistInteractor);
 
@@ -79,7 +92,8 @@ QWidget* SC::LibraryContainer::widget() const
 
 QMenu* SC::LibraryContainer::menu()
 {
-	if(ui){
+	if(ui)
+	{
 		return ui->getMenu();
 	}
 
@@ -99,6 +113,6 @@ QFrame* SC::LibraryContainer::header() const
 
 QIcon SC::LibraryContainer::icon() const
 {
-	sc_init_icons();
+	initSoundcloudIcons();
 	return QIcon(":/sc_icons/icon.png");
 }

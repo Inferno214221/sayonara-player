@@ -19,66 +19,52 @@
  */
 
 #include "SoundcloudWebAccess.h"
-#include "SoundcloudGlobal.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QString>
 
-#define sc_main		QString("https://api.soundcloud.com")
-#define sc_users	QString("https://api.soundcloud.com/users")
-
-QString	SC::WebAccess::createLinkGetArtist(const QString& name)
+namespace SC
 {
-	if(name.isEmpty()) {
-		return QString("");
+	namespace
+	{
+		constexpr const auto SoundcloudUrl = "https://api.soundcloud.com";
 	}
 
-
-	QString client_id_string(CLIENT_ID_STR);
-	//QString ret = QString("%1?%2&q=%3").arg(sc_users, client_id_string, name);
-	QString ret = sc_users + "?" + client_id_string + "&q=" + name;
-
-	spLog(Log::Debug, "SCWA") << "Concat: " << sc_users << ", " << client_id_string << ", " << name;
-	spLog(Log::Debug, "SCMA") << "Get Artist info from " << ret;
-
-	return ret;
-}
-
-QString	SC::WebAccess::createLinkGetArtist(int artistId)
-{
-	QString ret;
-
-	if(artistId <= 0){
-		return ret;
+	QString createLinkGetArtist(const QString& name)
+	{
+		return (name.isEmpty())
+		       ? QString()
+		       : QString("%1/users?q=%2").arg(SoundcloudUrl, name);
 	}
 
-	ret += sc_users + "/" + QString::number(artistId) + "?" + CLIENT_ID_STR;
+	QString createLinkGetArtist(int artistId)
+	{
+		return (artistId <= 0)
+		       ? QString()
+		       : QString("%1/users/%2")
+			       .arg(SoundcloudUrl)
+			       .arg(artistId);
+	}
 
-	spLog(Log::Debug, "SCMA") << "Get Artist info from " << ret;
+	QString createLinkGetPlaylists(int artistId)
+	{
+		return (artistId <= 0)
+		       ? QString()
+		       : QString("%1/users/%2/playlists")
+			       .arg(SoundcloudUrl)
+			       .arg(artistId);
+	}
 
-	return ret;
+	QString createLinkGetTracks(int artistId)
+	{
+		return (artistId <= 0)
+		       ? QString()
+		       : QString("%1/users/%2/tracks")
+			       .arg(SoundcloudUrl)
+			       .arg(artistId);
+	}
+
+	QString createLinkObtainToken()
+	{
+		return QString("https://sayonara-player.com/soundcloud");
+	}
 }
-
-QString	SC::WebAccess::createLinkGetPlaylists(int artistId)
-{
-	QString ret;
-
-	ret = sc_users + "/" + QString::number(artistId) + "/playlists?" +
-			CLIENT_ID_STR;
-
-	spLog(Log::Debug, "Soundcloud") << "Get artist playlists from " << ret;
-
-	return ret;
-}
-
-QString	SC::WebAccess::createLinkGetTracks(int artistId)
-{
-	QString ret;
-
-	ret = sc_users + "/" + QString::number(artistId) + "/tracks?" +	CLIENT_ID_STR;
-
-	spLog(Log::Debug, "Soundcloud") << "Get Artist tracks from " << ret;
-
-	return ret;
-}
-

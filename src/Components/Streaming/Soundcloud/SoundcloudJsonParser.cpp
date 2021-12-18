@@ -18,9 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SoundcloudGlobal.h"
 #include "SoundcloudJsonParser.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/Artist.h"
@@ -30,460 +30,524 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Set.h"
 #include "Utils/StandardPaths.h"
 
 #include <QJsonDocument>
-#include <QJsonParseError>
 #include <QDateTime>
 
-struct SC::JsonParser::Private
-{
-	QJsonDocument		jsonDocument;
-	QByteArray			content;
-	QJsonParseError		error;
+#include <cassert>
 
-	Private(const QByteArray& content) :
+using SC::JsonParser;
+
+namespace
+{
+	using TrackArtistPair = std::pair<MetaData, Artist>;
+	using AlbumTracksPair = std::pair<Album, QList<TrackArtistPair>>;
+
+	enum class SCJsonItemType :
+		uint8_t
+	{
+			Track = 0,
+			Artist,
+			Playlist
+	};
+
+	QString createLink(const QString& name, const QString& target)
+	{
+		auto* settings = Settings::instance();
+		const auto dark = (settings->get<Set::Player_Style>() == 0);
+
+		return Util::createLink(name, dark, true, target);
+	}
+
+	std::optional<QString> getString(const QString& key, const QJsonObject& object)
+	{
+		const auto it = object.find(key);
+		if(it != object.end() && it->isString())
+		{
+			auto str = it->toString();
+			str.replace("\\n", "<br />");
+			str.replace("\\\"", "\"");
+			str = str.trimmed();
+
+			return std::optional {str};
+		}
+
+		return std::nullopt;
+	}
+
+	std::optional<int> getInt(const QString& key, const QJsonObject& object)
+	{
+		const auto it = object.find(key);
+		return (it != object.end() && it->isDouble())
+		       ? std::optional {it->toInt()}
+		       : std::nullopt;
+	}
+
+	std::optional<QJsonArray> getArray(const QString& key, const QJsonObject& object)
+	{
+		const auto it = object.find(key);
+		return (it != object.end() && it->isArray())
+		       ? std::optional {it->toArray()}
+		       : std::nullopt;
+	}
+
+	std::optional<QJsonObject> getObject(const QString& key, const QJsonObject& object)
+	{
+		const auto it = object.find(key);
+		return (it != object.end() && it->isObject())
+		       ? std::optional(it->toObject())
+		       : std::nullopt;
+	}
+
+	std::optional<Artist> parseArtist(const QJsonObject& object)
+	{
+		auto artist = Artist {};
+
+		if(const auto artistId = getInt("id", object); artistId.has_value())
+		{
+			artist.setId(artistId.value());
+		}
+
+		if(const auto artistName = getString("username", object); artistName.has_value())
+		{
+			artist.setName(artistName.value());
+		}
+
+		if(const auto coverDownloadUrl = getString("avatar_url", object); coverDownloadUrl.has_value())
+		{
+			artist.setCoverDownloadUrls({coverDownloadUrl.value()});
+		}
+
+		if(const auto website = getString("website", object); website.has_value())
+		{
+			artist.addCustomField("website", QObject::tr("Website"), website.value());
+		}
+
+		if(const auto permalink = getString("permalink", object); permalink.has_value())
+		{
+			artist.addCustomField("permalink", QObject::tr("Permalink Url"), permalink.value());
+		}
+
+		if(const auto description = getString("description", object); description.has_value())
+		{
+			artist.addCustomField("description", Lang::get(Lang::About), description.value());
+		}
+
+		const auto followers = getInt("followers_count", object);
+		const auto following = getInt("followings_count", object);
+		if(followers.has_value() && following.has_value())
+		{
+			artist.addCustomField("followers_following",
+			                      QObject::tr("Followers/Following"),
+			                      QString("%1/%2").arg(followers.value()).arg(following.value()));
+		}
+
+		return (artist.id() > 0)
+		       ? std::optional {artist}
+		       : std::nullopt;
+	}
+
+	ArtistList parseArtistArray(const QJsonArray& arr)
+	{
+		auto artists = ArtistList {};
+
+		for(auto it = arr.begin(); it != arr.end(); it++)
+		{
+			if(it->isObject())
+			{
+				if(const auto artist = parseArtist(it->toObject()); artist.has_value())
+				{
+					assert(artist.value().id() > 0);
+					artists << artist.value();
+				}
+			}
+		}
+
+		return artists;
+	}
+
+	std::optional<TrackArtistPair> parseTrack(const QJsonObject& object)
+	{
+		auto track = MetaData {};
+		auto artist = Artist {};
+
+		track.setAlbumId(0);
+
+		if(const auto trackId = getInt("id", object); trackId.has_value())
+		{
+			track.setId(trackId.value());
+		}
+
+		if(const auto coverDownloadUrl = getString("artwork_url", object); coverDownloadUrl.has_value())
+		{
+			auto coverUrls = track.coverDownloadUrls();
+			coverUrls.prepend(coverDownloadUrl.value());
+			track.setCoverDownloadUrls(coverUrls);
+		}
+
+		if(const auto duration = getInt("duration", object); duration.has_value())
+		{
+			track.setDurationMs(static_cast<MilliSeconds>(duration.value()));
+		}
+
+		if(const auto year = getInt("release_year", object); year.has_value())
+		{
+			track.setYear(static_cast<Year>(year.value()));
+		}
+
+		if(const auto filesize = getInt("original_content_size", object); filesize.has_value())
+		{
+			track.setFilesize(static_cast<Filesize>(filesize.value()));
+		}
+
+		if(const auto title = getString("title", object); title.has_value())
+		{
+			track.setTitle(title.value());
+		}
+
+		if(const auto streamUrl = getString("stream_url", object); streamUrl.has_value())
+		{
+			track.setFilepath(streamUrl.value());
+		}
+
+		if(const auto genre = getString("genre", object); genre.has_value())
+		{
+			track.addGenre(Genre {genre.value()});
+		}
+
+		if(const auto purchaseUrl = getString("purchase_url", object); purchaseUrl.has_value())
+		{
+			track.addCustomField("purchase_url",
+			                     QObject::tr("Purchase Url"),
+			                     createLink(purchaseUrl.value(), purchaseUrl.value()));
+		}
+
+		if(const auto artistObject = getObject("user", object); artistObject.has_value())
+		{
+			if(const auto artistInfo = parseArtist(artistObject.value()); artistInfo.has_value())
+			{
+				artist = artistInfo.value();
+				track.setArtist(artist.name());
+				track.setArtistId(artist.id());
+
+				const auto coverUrls = track.coverDownloadUrls() << artistInfo->coverDownloadUrls();
+				track.setCoverDownloadUrls(coverUrls);
+			}
+		}
+
+		if(const auto modified = getString("last_modified", object); modified.has_value())
+		{
+			const auto dateTime = QDateTime::fromString(modified.value(), Qt::DateFormat::ISODate);
+			track.setModifiedDate(Util::dateToInt(dateTime));
+		}
+
+		if(const auto created = getString("created_at", object); created.has_value())
+		{
+			const auto dateTime = QDateTime::fromString(created.value(), Qt::DateFormat::ISODate);
+
+			track.setCreatedDate(Util::dateToInt(dateTime));
+			if(track.year() <= 0)
+			{
+				track.setYear(dateTime.date().year());
+			}
+		}
+
+		if(const auto description = getString("description", object); description.has_value())
+		{
+			track.setComment(description.value());
+		}
+
+		return (track.filepath().size() > 0) && (track.id() > 0)
+		       ? std::optional {std::make_pair(track, artist)}
+		       : std::nullopt;
+	}
+
+	QList<TrackArtistPair> parseTrackArray(const QJsonArray& arr)
+	{
+		auto result = QList<TrackArtistPair> {};
+
+		for(auto it = arr.begin(); it != arr.end(); it++)
+		{
+			if(it->isObject())
+			{
+				if(const auto trackArtistPair = parseTrack(it->toObject()); trackArtistPair.has_value())
+				{
+					auto track = trackArtistPair.value().first;
+					auto artist = trackArtistPair.value().second;
+
+					assert(track.id() > 0);
+					track.setTrackNumber(static_cast<TrackNum>(result.size() + 1));
+
+					result << std::make_pair(std::move(track), std::move(artist));
+				}
+			}
+		}
+
+		return result;
+	}
+
+	std::optional<AlbumTracksPair> parsePlaylist(const QJsonObject& object)
+	{
+		auto album = Album {};
+		auto trackArtistPairs = QList<TrackArtistPair> {};
+		auto albumArtist = Artist {};
+
+		if(const auto albumId = getInt("id", object); albumId.has_value())
+		{
+			album.setId(albumId.value());
+		}
+
+		if(const auto albumName = getString("title", object); albumName.has_value())
+		{
+			album.setName(albumName.value());
+		}
+
+		if(const auto coverDownloadUrl = getString("artwork_url", object); coverDownloadUrl.has_value())
+		{
+			album.setCoverDownloadUrls({coverDownloadUrl.value()});
+		}
+
+		if(const auto trackCount = getInt("track_count", object); trackCount.has_value())
+		{
+			album.setSongcount(static_cast<TrackNum>(trackCount.value()));
+		}
+
+		if(const auto duration = getInt("duration", object); duration.has_value())
+		{
+			album.setDurationSec(duration.value() / 1000);
+		}
+
+		if(const auto permalink = getString("permalink", object); permalink.has_value())
+		{
+			album.addCustomField(permalink.value(),
+			                     QObject::tr("Permalink Url"),
+			                     createLink("Soundcloud", permalink.value()));
+		}
+
+		if(const auto purchaseUrl = getString("purchase_url", object); purchaseUrl.has_value())
+		{
+			const auto& url = purchaseUrl.value();
+			album.addCustomField(url,
+			                     QObject::tr("Purchase Url"),
+			                     createLink(url, url));
+		}
+
+		if(const auto artistObject = getObject("user", object); artistObject.has_value())
+		{
+			if(const auto artist = parseArtist(artistObject.value()); artist.has_value())
+			{
+				albumArtist = artist.value();
+				album.setAlbumArtist(albumArtist.name());
+			}
+		}
+
+		if(const auto trackArray = getArray("tracks", object); trackArray.has_value())
+		{
+			trackArtistPairs = parseTrackArray(trackArray.value());
+
+			auto artistNames = Util::Set<QString> {};
+
+			for(auto& trackArtistPair : trackArtistPairs)
+			{
+				auto& track = trackArtistPair.first;
+				track.setAlbumArtist(albumArtist.name(), albumArtist.id());
+
+				track.setAlbumId(album.id());
+				track.setAlbum(album.name());
+
+				if(track.artistId() <= 0)
+				{
+					track.setArtistId(albumArtist.id());
+					track.setArtist(albumArtist.name());
+				}
+
+				if(!album.coverDownloadUrls().isEmpty())
+				{
+					track.setCoverDownloadUrls(album.coverDownloadUrls());
+				}
+
+				artistNames.insert(track.artist());
+			}
+
+			album.setArtists(artistNames.toList());
+		}
+
+		return ((album.id() > 0) && !trackArtistPairs.isEmpty())
+		       ? std::optional {std::make_pair(std::move(album), std::move(trackArtistPairs))}
+		       : std::nullopt;
+	}
+
+	QList<AlbumTracksPair> parsePlaylistArray(const QJsonArray& arr)
+	{
+		auto result = QList<AlbumTracksPair> {};
+		for(auto it = arr.begin(); it != arr.end(); it++)
+		{
+			if(it->isObject())
+			{
+				if(const auto albumTrackPair = parsePlaylist(it->toObject()); albumTrackPair.has_value())
+				{
+					const auto contains = Util::Algorithm::contains(result, [&](const auto& element) {
+						return (element.first.id() == albumTrackPair.value().first.id());
+					});
+
+					if(!contains)
+					{
+						result.push_back(albumTrackPair.value());
+					}
+				}
+			}
+		}
+
+		return result;
+	}
+}
+
+struct JsonParser::Private
+{
+	QJsonDocument jsonDocument;
+	QByteArray content;
+	QJsonParseError error; // NOLINT
+
+	explicit Private(const QByteArray& content) :
 		content(content)
 	{
 		jsonDocument = QJsonDocument::fromJson(content, &error);
 	}
 };
 
-SC::JsonParser::JsonParser(const QByteArray& content) :
-	QObject()
+JsonParser::JsonParser(const QByteArray& content)
 {
 	m = Pimpl::make<Private>(content);
-	QString targetFile = Util::tempPath("soundcloud.json");
+	const auto targetFile = Util::tempPath("soundcloud.json");
 
 	Util::File::writeFile(
 		m->jsonDocument.toJson(QJsonDocument::Indented), targetFile
 	);
 
-	QJsonParseError::ParseError pe = m->error.error;
-	if(pe != QJsonParseError::NoError){
+	const auto parserError = m->error.error;
+	if(parserError != QJsonParseError::NoError)
+	{
 		spLog(Log::Warning, this) << "Cannot parse json document: " << m->error.errorString();
 	}
 }
 
-SC::JsonParser::~JsonParser() = default;
+JsonParser::~JsonParser() = default;
 
-bool SC::JsonParser::parseArtists(ArtistList& artists)
-{
-	if(m->jsonDocument.isArray()){
-		return parseArtistList(artists, m->jsonDocument.array());
-	}
-
-	else if(m->jsonDocument.isObject()){
-		Artist artist;
-		if(parseArtist(artist, m->jsonDocument.object())){
-			artists << artist;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-bool SC::JsonParser::parseArtistList(ArtistList& artists, QJsonArray arr)
+bool JsonParser::parseArtists(ArtistList& artists) const
 {
 	artists.clear();
 
-	for(auto it = arr.begin(); it != arr.end(); it++){
-		QJsonValueRef ref = *it;
-		if(ref.isObject()){
-			Artist artist;
-			if(parseArtist(artist, ref.toObject())){
-				artists << artist;
-			}
+	if(m->jsonDocument.isArray())
+	{
+		artists = parseArtistArray(m->jsonDocument.array());
+	}
+
+	else if(m->jsonDocument.isObject())
+	{
+		if(const auto artist = parseArtist(m->jsonDocument.object()); artist.has_value())
+		{
+			assert(artist.value().id() > 0);
+			artists << artist.value();
 		}
 	}
 
-	return true;
+	return (!artists.empty());
 }
 
-
-bool SC::JsonParser::parseArtist(Artist& artist, QJsonObject object)
+bool JsonParser::parseTracks(ArtistList& artists, MetaDataList& tracks) const
 {
-	QString cover_download_url;
+	artists.clear();
+	tracks.clear();
 
-	ArtistId artistId;
-	if(getInt("id", object, artistId)) {
-		artist.setId(artistId);
-	}
-
-	QString artist_name;
-	getString("username", object, artist_name);
-	artist.setName(artist_name);
-
-	getString("avatar_url", object, cover_download_url);
-	artist.setCoverDownloadUrls({cover_download_url});
-
-	QString description, website, permalink;
-	if(getString("website", object, website)){
-		artist.addCustomField("website", tr("Website"), website);
-	}
-
-	if(getString("permalink", object, permalink)){
-		artist.addCustomField("permalink", tr("Permalink Url"), permalink);
-	}
-
-	if(getString("description", object, description)){
-		artist.addCustomField("description", Lang::get(Lang::About), description);
-	}
-
-	int followers=-1;
-	int following=-1;
-	getInt("followers_count", object, followers);
-	getInt("followings_count", object, following);
-
-	if(followers != -1 && following != -1){
-		artist.addCustomField("followers_following", tr("Followers/Following"), QString::number(followers) + "/" + QString::number(following));
-	}
-
-	return (artist.id() > 0);
-}
-
-
-bool SC::JsonParser::parseTracks(ArtistList& artists, MetaDataList &v_md)
-{
-	if(!m->jsonDocument.isArray()){
+	if(!m->jsonDocument.isArray())
+	{
 		return false;
 	}
 
-	return parseTrackList(artists, v_md, m->jsonDocument.array());
+	auto trackArtistPairs = parseTrackArray(m->jsonDocument.array());
+	for(auto& trackArtistPair : trackArtistPairs)
+	{
+		auto& track = trackArtistPair.first;
+		auto& artist = trackArtistPair.second;
+		assert(track.id() > 0);
+
+		if(!artists.contains(artist.id()))
+		{
+			artists.push_back(std::move(artist));
+		}
+
+		tracks << std::move(track);
+	}
+
+	return (!tracks.isEmpty());
 }
 
-
-bool SC::JsonParser::parseTrackList(ArtistList& artists, MetaDataList& tracks, QJsonArray arr){
+bool JsonParser::parsePlaylists(ArtistList& artists, AlbumList& albums, MetaDataList& tracks) const
+{
+	artists.clear();
+	albums.clear();
 	tracks.clear();
 
-	for(auto it = arr.begin(); it != arr.end(); it++)
+	auto albumTrackArray = QList<AlbumTracksPair> {};
+
+	if(m->jsonDocument.isArray())
 	{
-		QJsonValueRef ref = *it;
-		if(ref.isObject())
+		albumTrackArray = parsePlaylistArray(m->jsonDocument.array());
+	}
+
+	else if(m->jsonDocument.isObject())
+	{
+		if(const auto albumTracksPair = parsePlaylist(m->jsonDocument.object()); albumTracksPair.has_value())
 		{
-			MetaData md;
-			Artist artist;
-			if(parseTrack(artist, md, ref.toObject()))
+			albumTrackArray << albumTracksPair.value();
+		}
+	}
+
+	for(auto& albumTracksPair : albumTrackArray)
+	{
+		albums << albumTracksPair.first;
+
+		for(auto& trackArtistPair : albumTracksPair.second)
+		{
+			auto& track = trackArtistPair.first;
+			auto& artist = trackArtistPair.second;
+
+			tracks << std::move(track);
+			if(!artists.contains(artist.id()))
 			{
-				md.setTrackNumber(TrackNum(tracks.size() + 1));
-
-				tracks << md;
-
-				if(!artists.contains(artist.id()))
-				{
-					artists << artist;
-				}
-			}
-
-			else{
-				spLog(Log::Debug, this) << "Invalid md found";
+				artists.push_back(std::move(artist));
 			}
 		}
 	}
 
-	return true;
+	return false;
 }
 
-bool SC::JsonParser::parseTrack(Artist& artist, MetaData& md, QJsonObject object)
+std::optional<SC::OAuthTokenInfo> JsonParser::parseToken() const
 {
-	QString coverDownloadUrl;
-
-	TrackID id;
-	if(getInt("id", object, id)){
-		md.setId(id);
-	}
-
-	getString("artwork_url", object, coverDownloadUrl);
-	md.setCoverDownloadUrls({coverDownloadUrl});
-
-	int length;
-	if(getInt("duration", object, length)){
-		md.setDurationMs(MilliSeconds(length));
-	}
-
-	int year;
-	if(getInt("release_year", object, year)){
-		md.setYear(Year(year));
-	}
-
-	int filesize;
-	if(getInt("original_content_size", object, filesize)){
-		 md.setFilesize(Filesize(filesize));
-	}
-
-	QString title;
-	if(getString("title", object, title)){
-		md.setTitle(title);
-	}
-
-	QString streamUrl;
-	if(getString("stream_url", object, streamUrl)){
-		md.setFilepath(streamUrl + '?' + CLIENT_ID_STR);
-	}
-
-	QString genre;
-	if(getString("genre", object, genre)){
-		md.addGenre(Genre(genre));
-	}
-
-	QString purchaseUrl;
-	if(getString("purchase_url", object, purchaseUrl)){
-		md.addCustomField("purchase_url", tr("Purchase Url"), createLink(purchaseUrl, purchaseUrl));
-	}
-
-	QJsonObject artistObject;
-	if(getObject("user", object, artistObject))
+	auto tokenInfo = SC::OAuthTokenInfo {};
+	if(m->jsonDocument.isObject())
 	{
-		if( parseArtist(artist, artistObject) )
+		const auto object = m->jsonDocument.object();
+		if(const auto token = getString("access_token", object); token.has_value())
 		{
-			md.setArtist(artist.name());
-			md.setArtistId(artist.id());
-
-			if(md.albumId() < 0)
-			{
-				md.setAlbumId(0);
-				md.setAlbum(Lang::get(Lang::UnknownAlbum));
-			}
+			tokenInfo.oauthToken = token.value();
 		}
-	}
 
-	QString lastModifiedString;
-	if(getString("last_modified", object, lastModifiedString))
-	{
-		QDateTime dt = QDateTime::fromString(lastModifiedString, Qt::DateFormat::ISODate);
-		md.setModifiedDate(Util::dateToInt(dt));
-	}
-
-	QString createdString;
-	if(getString("created_at", object, createdString))
-	{
-		QDateTime dt = QDateTime::fromString(createdString, Qt::DateFormat::ISODate);
-		md.setCreatedDate(Util::dateToInt(dt));
-	}
-
-	QString description;
-	if(getString("description", object, description))
-	{
-		md.setComment(description);
-	}
-
-	return (md.filepath().size() > 0 && md.id() > 0);
-}
-
-
-bool SC::JsonParser::parsePlaylists(ArtistList& artists, AlbumList &albums, MetaDataList &v_md)
-{
-	if(m->jsonDocument.isArray()){
-		return parsePlaylistList(artists, albums, v_md, m->jsonDocument.array());
-	}
-
-	else if(m->jsonDocument.isObject()){
-		Album album;
-		if(parsePlaylist(artists, album, v_md, m->jsonDocument.object())){
-			albums << album;
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-bool SC::JsonParser::parsePlaylistList(ArtistList& artists, AlbumList& albums, MetaDataList& v_md, QJsonArray arr)
-{
-	albums.clear();
-
-	for(auto it = arr.begin(); it != arr.end(); it++){
-		QJsonValueRef ref = *it;
-		if(ref.isObject()){
-			Album album;
-			MetaDataList v_md_tmp;
-			ArtistList artists_tmp;
-
-			if(parsePlaylist(artists_tmp, album, v_md_tmp, ref.toObject())){
-				v_md << v_md_tmp;
-
-				for(const Artist& artist_tmp : artists_tmp){
-					if(!artists.contains(artist_tmp.id()) && artist_tmp.id() > 0){
-						artists << artist_tmp;
-					}
-				}
-
-				if(!albums.contains(album.id())){
-					albums << album;
-				}
-			}
-		}
-	}
-
-	return true;
-}
-
-
-bool SC::JsonParser::parsePlaylist(ArtistList& artists, Album& album, MetaDataList& v_md, QJsonObject object)
-{
-	Artist pl_artist;
-	QString cover_download_url;
-
-	AlbumId albumId;
-	getInt("id", object, albumId);
-	album.setId(albumId);
-
-	QString album_name;
-	getString("title", object, album_name);
-	album.setName(album_name);
-
-	getString("artwork_url", object, cover_download_url);
-	album.setCoverDownloadUrls({cover_download_url});
-
-	int num_songs;
-	if(getInt("track_count", object, num_songs)){
-		album.setSongcount(TrackNum(num_songs));
-	}
-
-	int length;
-	if(getInt("duration", object, length)){
-		album.setDurationSec(length / 1000);
-	}
-
-	QJsonObject artist_object;
-	if(getObject("user", object, artist_object))
-	{
-		parseArtist(pl_artist, artist_object);
-		if(!artists.contains(pl_artist.id()) && pl_artist.id() > 0){
-			artists << pl_artist;
-		}
-	}
-
-	QJsonArray track_array;
-	if(getArray("tracks", object, track_array))
-	{
-		ArtistList tmp_artists;
-		MetaDataList v_md_tmp;
-		parseTrackList(tmp_artists, v_md_tmp, track_array);
-		for(const Artist& tmp_artist : tmp_artists)
+		if(const auto refreshToken = getString("refresh_token", object); refreshToken.has_value())
 		{
-			if(!artists.contains(tmp_artist.id())){
-				artists << tmp_artist;
-			}
+			tokenInfo.refreshToken = refreshToken.value();
 		}
 
-		for(const MetaData& md : v_md_tmp)
+		if(const auto expiresIn = getInt("expires_in", object); expiresIn.has_value())
 		{
-			if(!v_md.contains(md.id())){
-				v_md << md;
-			}
-		}
-	}
-
-	QString permalink, purchase_url;
-	if(getString("permalink", object, permalink)){
-		album.addCustomField(permalink, tr("Permalink Url"), createLink("Soundcloud", permalink));
-	}
-
-	if(getString("purchase_url", object, purchase_url)){
-		album.addCustomField(purchase_url, tr("Purchase Url"), createLink(purchase_url, purchase_url));
-	}
-
-	album_name = album.name();
-
-	for(int i=0; i<v_md.count(); i++)
-	{
-		MetaData& md = v_md[i];
-		md.setTrackNumber(TrackNum(i+1));
-		md.setAlbum(album.name());
-		md.setAlbumId(album.id());
-
-		if(md.artistId() != pl_artist.id() && pl_artist.id() > 0 && md.artistId() > 0)
-		{
-			md.setAlbum( md.album() + " (by " + pl_artist.name() + ")");
-			album_name = album.name() + " (by " + pl_artist.name() + ")";
+			tokenInfo.expiresIn = expiresIn.value();
 		}
 
-		if(!album.coverDownloadUrls().isEmpty()){
-			v_md[i].setCoverDownloadUrls(album.coverDownloadUrls());
-		}
+		return std::optional {tokenInfo};
 	}
 
-	album.setName(album_name);
-
-	QStringList lst;
-	for(const Artist& artist : artists){
-		lst << artist.name();
-	}
-
-	album.setArtists(lst);
-
-	return (album.id() > 0);
-}
-
-
-QString SC::JsonParser::createLink(const QString& name, const QString& target)
-{
-	Settings* s = Settings::instance();
-	bool dark = (s->get<Set::Player_Style>() == 0);
-	return Util::createLink(name, dark, true, target);
-}
-
-
-bool SC::JsonParser::getString(const QString& key, const QJsonObject& object, QString& str)
-{
-	auto it = object.find(key);
-	if(it != object.end()){
-		QJsonValue ref = *it;
-		if(ref.isString()){
-			str = ref.toString();
-			str.replace("\\n", "<br />");
-			str.replace("\\\"", "\"");
-			str = str.trimmed();
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool SC::JsonParser::getInt(const QString& key, const QJsonObject& object, int& i)
-{
-	auto it = object.find(key);
-	if(it != object.end()){
-		QJsonValue ref = *it;
-		if(ref.isDouble()){
-			i = ref.toInt();
-			return true;
-		}
-	}
-
-	return false;
-}
-
-
-bool SC::JsonParser::getArray(const QString& key, const QJsonObject& object, QJsonArray& arr)
-{
-	auto it = object.find(key);
-	if(it != object.end()){
-		QJsonValue ref = *it;
-		if(ref.isArray()){
-			arr = ref.toArray();
-			return true;
-		}
-	}
-
-	return false;
-}
-
-bool SC::JsonParser::getObject(const QString& key, const QJsonObject& object, QJsonObject& o)
-{
-	auto it = object.find(key);
-	if(it != object.end()){
-		QJsonValue ref = *it;
-		if(ref.isObject()){
-			o = ref.toObject();
-			return true;
-		}
-	}
-
-	return false;
+	return std::nullopt;
 }

@@ -21,11 +21,15 @@
 #ifndef SOUNDCLOUDJSONPARSER_H
 #define SOUNDCLOUDJSONPARSER_H
 
+#include "Utils/Pimpl.h"
+
 #include <QJsonObject>
 #include <QJsonArray>
 #include <QObject>
+#include <QList>
+#include <QString>
 
-#include "Utils/Pimpl.h"
+#include <optional>
 
 class MetaData;
 class MetaDataList;
@@ -37,41 +41,26 @@ class AlbumList;
 class QByteArray;
 namespace SC
 {
-	class JsonParser : public QObject
+	struct OAuthTokenInfo
 	{
-		Q_OBJECT
+		QString oauthToken;
+		QString refreshToken;
+		int expiresIn {-1};
+	};
+
+	class JsonParser
+	{
 		PIMPL(JsonParser)
 
-	private:
-		enum class SCJsonItemType : uint8_t
-		{
-			Track=0,
-			Artist,
-			Playlist
-		};
+		public:
+			explicit JsonParser(const QByteArray& content);
+			~JsonParser();
 
-	public:
-		explicit JsonParser(const QByteArray& content);
-		~JsonParser();
+			bool parseArtists(ArtistList& artists) const;
+			bool parseTracks(ArtistList& artists, MetaDataList& tracks) const;
+			bool parsePlaylists(ArtistList& artists, AlbumList& albums, MetaDataList& tracks) const;
 
-		bool	parseArtistList(ArtistList& artists, QJsonArray arr);
-		bool	parseTrackList(ArtistList& artists, MetaDataList& v_md, QJsonArray arr);
-		bool	parsePlaylistList(ArtistList& artists, AlbumList& albums, MetaDataList& v_md, QJsonArray arr);
-
-		bool	parseArtist(Artist& artist, QJsonObject object);
-		bool	parsePlaylist(ArtistList& artists, Album& album, MetaDataList& v_md, QJsonObject object);
-		bool	parseTrack(Artist& artist, MetaData& md, QJsonObject object);
-
-		QString	createLink(const QString& name, const QString& target);
-
-		bool	getString(const QString& key, const QJsonObject& object, QString& str);
-		bool	getInt(const QString& key, const QJsonObject& object, int& i);
-		bool	getArray(const QString& key, const QJsonObject& object, QJsonArray& arr);
-		bool	getObject(const QString& key, const QJsonObject& object, QJsonObject& o);
-
-		bool	parseArtists(ArtistList& artists);
-		bool	parseTracks(ArtistList& artists, MetaDataList& v_md);
-		bool	parsePlaylists(ArtistList& artists, AlbumList& albums, MetaDataList& v_md);
+			std::optional<SC::OAuthTokenInfo> parseToken() const;
 	};
 }
 

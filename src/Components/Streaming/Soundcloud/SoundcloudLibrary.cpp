@@ -21,7 +21,6 @@
 #include "SoundcloudLibrary.h"
 #include "SoundcloudLibraryDatabase.h"
 #include "SoundcloudDataFetcher.h"
-#include "SoundcloudGlobal.h"
 #include "SearchInformation.h"
 #include "Sorting.h"
 
@@ -90,6 +89,7 @@ namespace
 		}
 
 		result.sort(sortOrder);
+
 		return result;
 	}
 }
@@ -250,11 +250,11 @@ SC::Library::getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, [[maybe_u
 		const auto& artist = m->artists[static_cast<size_t>(index)];
 
 		const auto indexes = m->artistNameAlbumIndexMap[artist.name()];
-		for(const auto& index : indexes)
+		for(const auto& artistIndex : indexes)
 		{
 			if(Util::between(index, m->albums))
 			{
-				albums.push_back(m->albums[index]);
+				albums.push_back(m->albums[artistIndex]);
 			}
 		}
 	}
@@ -296,10 +296,8 @@ int SC::Library::getTrackCount() const
 	return m->tracks.count();
 }
 
-void SC::Library::getAllTracks([[maybe_unused]] const QStringList& paths, [[maybe_unused]]  MetaDataList& tracks) const
-{
-	return;
-}
+void
+SC::Library::getAllTracks([[maybe_unused]] const QStringList& paths, [[maybe_unused]]  MetaDataList& tracks) const {}
 
 void SC::Library::getAllTracks(MetaDataList& tracks) const
 {
@@ -432,16 +430,6 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 	m->libraryDatabase->getAllAlbums(tmpAlbums, true);
 	m->libraryDatabase->getAllArtists(tmpArtists, true);
 
-	{ // insert empty artist and empty album
-		Artist tmpArtist;
-		tmpArtist.setId(0);
-		tmpArtists << std::move(tmpArtist);
-
-		Album tempAlbum;
-		tempAlbum.setId(0);
-		tmpAlbums << std::move(tempAlbum);
-	}
-
 	auto artistMap = createMap(tmpArtists);
 	auto albumMap = createMap(tmpAlbums);
 
@@ -461,7 +449,6 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 		if(!artistMap.contains(track.artist()))
 		{
 			const auto artistId = m->libraryDatabase->insertArtistIntoDatabase(track.artist());
-			track.setArtistId(artistId);
 
 			Artist artist;
 			artist.setId(artistId);
@@ -469,16 +456,19 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 			artistMap.insert(artist.name(), artist);
 		}
 
+		track.setArtistId(artistMap[track.artist()].id());
+
 		if(!albumMap.contains(track.album()))
 		{
 			const auto albumId = m->libraryDatabase->insertAlbumIntoDatabase(track.album());
-			track.setAlbumId(albumId);
 
 			Album album;
 			album.setId(albumId);
 			album.setName(track.album());
 			albumMap.insert(album.name(), album);
 		}
+
+		track.setAlbumId(albumMap[track.album()].id());
 
 		tracksCorrected << std::move(track);
 	}
@@ -519,6 +509,8 @@ void SC::Library::tracksFetched(const MetaDataList& tracks)
 
 	for(const auto& track : tracks)
 	{
+		spLog(Log::Info, this) << "Try to insert track " << track.title() << " (" << track.id() << ")";
+
 		if(track.id() > 0)
 		{
 			m->libraryDatabase->insertTrackIntoDatabase(
@@ -541,7 +533,8 @@ void SC::Library::albumsFetched(const AlbumList& albums)
 
 	for(const auto& album : albums)
 	{
-		if(album.id() > 0)
+		spLog(Log::Info, this) << "Try to insert album " << album.name() << " (" << album.id() << ")";
+		if(album.id() >= 0)
 		{
 			m->libraryDatabase->insertAlbumIntoDatabase(album);
 		}

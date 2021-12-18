@@ -24,13 +24,12 @@
 class QString;
 namespace SC
 {
-	namespace WebAccess
-	{
-		QString	createLinkGetArtist(const QString& name);
-		QString	createLinkGetArtist(int artistId);
-		QString	createLinkGetPlaylists(int artistId);
-		QString	createLinkGetTracks(int artistId);
-	}
+	QString createLinkGetArtist(const QString& name);
+	QString createLinkGetArtist(int artistId);
+	QString createLinkGetPlaylists(int artistId);
+	QString createLinkGetTracks(int artistId);
+	QString createLinkObtainToken();
+
 }
 
 #endif // SHOUTCASTHELPER_H

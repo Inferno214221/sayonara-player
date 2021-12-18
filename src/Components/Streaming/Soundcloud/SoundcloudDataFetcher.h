@@ -30,31 +30,30 @@ class MetaDataList;
 
 namespace SC
 {
-	class DataFetcher : public QObject
+	class DataFetcher :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(DataFetcher)
 
-	signals:
-		void sigExtArtistsFetched(const ArtistList& artists);
-		void sigArtistsFetched(const ArtistList& artists);
-		void sigPlaylistsFetched(const AlbumList& albums);
-		void sigTracksFetched(const MetaDataList& tracks);
+		signals:
+			void sigExtArtistsFetched(const ArtistList& artists);
+			void sigArtistsFetched(const ArtistList& artists);
+			void sigPlaylistsFetched(const AlbumList& albums);
+			void sigTracksFetched(const MetaDataList& tracks);
 
-	public:
-		explicit DataFetcher(QObject* parent=nullptr);
-		~DataFetcher();
+		public:
+			explicit DataFetcher(QObject* parent = nullptr);
+			~DataFetcher() override;
 
-		void searchArtists(const QString& artist_name);
-		void getArtist(int artistId);
-		void getTracksByArtist(int artistId);
+			void searchArtists(const QString& artistName);
+			void getArtist(int artistId);
+			void getTracksByArtist(int artistId);
 
-		void clear();
-
-	private slots:
-		void artistsFetched();
-		void playlistTracksFetched();
-		void tracksFetched();
+		private slots:
+			void artistsFetched();
+			void playlistsFetched();
+			void tracksFetched();
 	};
 }
 
