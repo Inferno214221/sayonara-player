@@ -13,15 +13,14 @@ class SettingsTest : public Test::Base
 {
 	Q_OBJECT
 
-public:
-	SettingsTest() :
-		Test::Base("SettingsTest")
-	{}
+	public:
+		SettingsTest() :
+			Test::Base("SettingsTest") {}
 
-	~SettingsTest() override = default;
+		~SettingsTest() override = default;
 
-private slots:
-	void test_registry();
+	private slots:
+		void test_registry();
 };
 
 void SettingsTest::test_registry()
@@ -57,9 +56,9 @@ void SettingsTest::test_registry()
 	int uks = undeployable_keys.size();
 	qDebug() << " c, uks, maxkey " << c << " " << uks << " " << max_key;
 
-	for(int i=0; i<max_key; i++)
+	for(int i = 0; i < max_key; i++)
 	{
-		auto* ptr = Settings::instance()->setting( SettingKey(i) );
+		auto* ptr = Settings::instance()->setting(SettingKey(i));
 		QVERIFY(ptr != nullptr);
 	}
 
@@ -80,19 +79,20 @@ void SettingsTest::test_registry()
 		QVERIFY(undeployable_keys.contains(SettingKey::Player_PrivId));
 	}
 
-
 	{ // test for default values
 		SettingArray abstr_settings = s->settings();
 		for(AbstrSetting* abstr_setting : abstr_settings)
 		{
-			if(undeployable_keys.contains(abstr_setting->getKey())){
+			if(undeployable_keys.contains(abstr_setting->getKey()))
+			{
 				continue;
 			}
 
 			QString str = abstr_setting->valueToString();
 			abstr_setting->assignDefaultValue();
 			QString new_val = abstr_setting->valueToString();
-			if(str != new_val){
+			if(str != new_val)
+			{
 				qDebug() << "Error with " << abstr_setting->dbKey();
 				qDebug() << "Current value: " << str;
 				qDebug() << "Default value: " << new_val;
