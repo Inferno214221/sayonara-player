@@ -1,6 +1,6 @@
-/* SoundcloudGlobal.h */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* SoundcloudTokenObserver.h */
+/*
+ * Copyright (C) 2011-2021 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,15 +17,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_SOUNDCLOUDTOKENOBSERVER_H
+#define SAYONARA_PLAYER_SOUNDCLOUDTOKENOBSERVER_H
 
-#ifndef SOUNDCLOUDGLOBAL_H
-#define SOUNDCLOUDGLOBAL_H
+#include "Utils/Pimpl.h"
 
-#include <QByteArray>
-#include <QString>
+#include <QObject>
 
-#define CLIENT_ID QString("ab7d663fc58d0257c64443358292f6ce")
-#define CLIENT_ID_STR QString("client_id=").append(CLIENT_ID)
+namespace SC
+{
+	class TokenObserver :
+		public QObject
+	{
+		PIMPL(TokenObserver)
 
-#endif // SOUNDCLOUDGLOBAL_H
+		public:
+			explicit TokenObserver(QObject* parent = nullptr);
+			~TokenObserver() override;
 
+			void start();
+
+		private slots:
+			void tokenObtained();
+
+		private:
+			void obtainToken();
+	};
+}
+
+#endif //SAYONARA_PLAYER_SOUNDCLOUDTOKENOBSERVER_H

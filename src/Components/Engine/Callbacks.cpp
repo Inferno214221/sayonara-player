@@ -40,27 +40,55 @@
 
 #include <gst/gst.h>
 
-namespace EngineUtils=::Engine::Utils;
-namespace Callbacks=::Engine::Callbacks;
+namespace EngineUtils = ::Engine::Utils;
+namespace Callbacks = ::Engine::Callbacks;
 using ::Engine::Engine;
-namespace EngineNS=Engine;
+namespace EngineNS = Engine;
 
 const char* ClassEngineCallbacks = "Engine Callbacks";
 
 #ifdef Q_OS_WIN
-	void EngineCallbacks::destroy_notify(gpointer data) {}
+void EngineCallbacks::destroy_notify(gpointer data) {}
 
-	GstBusSyncReply
-	EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer data) {
-		if(bus_state_changed(bus, msg, data)){
-			gst_message_unref(msg);
-			return GST_BUS_DROP;
-		}
-
+GstBusSyncReply
+EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer data) {
+	if(bus_state_changed(bus, msg, data)){
 		gst_message_unref(msg);
 		return GST_BUS_DROP;
 	}
+
+	gst_message_unref(msg);
+	return GST_BUS_DROP;
+}
 #endif
+
+namespace
+{
+	bool isSoupSource(GstElement* source)
+	{
+		auto* factory = gst_element_get_factory(source);
+		const auto elementType = gst_element_factory_get_element_type(factory);
+		const auto* name = g_type_name(elementType);
+
+		return (name && QString(name).toLower() == "gstsouphttpsrc");
+	}
+
+	GstStructure* getSoundcloudOAuthStructure()
+	{
+		const auto soundcloudAuthToken = GetSetting(SetNoDB::Soundcloud_AuthToken);
+		const auto oauthTokenValue = QString("SoundcloudAuth,Authorization=\"OAuth\\ %1\"")
+			.arg(soundcloudAuthToken);
+
+		return gst_structure_new_from_string(oauthTokenValue.toLocal8Bit().data());
+	}
+
+	bool hasSoundcloudUri(GstElement* source)
+	{
+		gchar* uri = nullptr;
+		g_object_get(source, "location", &uri, nullptr);
+		return (uri && !strncmp(uri, "https://api.soundcloud.com", 26));
+	}
+}
 
 static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* engine)
 {
@@ -70,19 +98,22 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 	if(!success)
 	{
 		success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
-		if(!success){
+		if(!success)
+		{
 			return false;
 		}
 	}
 
 	GstCaps* caps = gst_sample_get_caps(sample);
-	if(!caps){
+	if(!caps)
+	{
 		gst_sample_unref(sample);
 		return false;
 	}
 
 	EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
-	if(mimetype.data() == nullptr){
+	if(mimetype.data() == nullptr)
+	{
 		gst_sample_unref(sample);
 		return false;
 	}
@@ -91,20 +122,23 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 	QString fullMime(mimetype.data());
 
 	QRegExp re(".*(image/[a-z|A-Z]+).*");
-	if(re.indexIn(fullMime) >= 0){
+	if(re.indexIn(fullMime) >= 0)
+	{
 		mime = re.cap(1);
 	}
 
 	spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << fullMime;
 
 	GstBuffer* buffer = gst_sample_get_buffer(sample);
-	if(!buffer){
+	if(!buffer)
+	{
 		gst_sample_unref(sample);
 		return false;
 	}
 
 	gsize size = gst_buffer_get_size(buffer);
-	if(size == 0){
+	if(size == 0)
+	{
 		gst_sample_unref(sample);
 		return false;
 	}
@@ -112,7 +146,8 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 	gchar* data = new gchar[size];
 	size = gst_buffer_extract(buffer, 0, data, size);
 
-	if(size == 0) {
+	if(size == 0)
+	{
 		delete[] data;
 		gst_sample_unref(sample);
 		return false;
@@ -127,46 +162,46 @@ static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* eng
 	return (size > 0);
 }
 
-
 // check messages from bus
 gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 {
 	static QStringList string_tags
-	{
-		GST_TAG_TITLE,
-		GST_TAG_ARTIST,
-		GST_TAG_ALBUM,
-		GST_TAG_ALBUM_ARTIST,
-		GST_TAG_COMMENT,
+		{
+			GST_TAG_TITLE,
+			GST_TAG_ARTIST,
+			GST_TAG_ALBUM,
+			GST_TAG_ALBUM_ARTIST,
+			GST_TAG_COMMENT,
 
-		GST_TAG_PERFORMER,
-		GST_TAG_HOMEPAGE,
-		GST_TAG_DESCRIPTION,
-		GST_TAG_ORGANIZATION,
-		GST_TAG_CONTACT,
-		GST_TAG_SHOW_NAME,
-		GST_TAG_PUBLISHER
-	};
+			GST_TAG_PERFORMER,
+			GST_TAG_HOMEPAGE,
+			GST_TAG_DESCRIPTION,
+			GST_TAG_ORGANIZATION,
+			GST_TAG_CONTACT,
+			GST_TAG_SHOW_NAME,
+			GST_TAG_PUBLISHER
+		};
 
 	Q_UNUSED(bus);
 
 	auto* engine = static_cast<Engine*>(data);
-	if(!engine){
+	if(!engine)
+	{
 		return true;
 	}
 
 	GstMessageType msg_type = GST_MESSAGE_TYPE(msg);
-	QString	msg_src_name = QString(GST_MESSAGE_SRC_NAME(msg)).toLower();
-	GstElement*	src = reinterpret_cast<GstElement*>(msg->src);
+	QString msg_src_name = QString(GST_MESSAGE_SRC_NAME(msg)).toLower();
+	GstElement* src = reinterpret_cast<GstElement*>(msg->src);
 
-	switch (msg_type)
+	switch(msg_type)
 	{
 		case GST_MESSAGE_EOS:
 
-			if(  !msg_src_name.contains("sr_filesink") &&
-				 !msg_src_name.contains("level_sink") &&
-				 !msg_src_name.contains("spectrum_sink") &&
-				 !msg_src_name.contains("pipeline"))
+			if(!msg_src_name.contains("sr_filesink") &&
+			   !msg_src_name.contains("level_sink") &&
+			   !msg_src_name.contains("spectrum_sink") &&
+			   !msg_src_name.contains("pipeline"))
 			{
 				spLog(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << msg_src_name;
 				break;
@@ -177,11 +212,13 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			break;
 
 		case GST_MESSAGE_ELEMENT:
-			if(msg_src_name.compare("spectrum") == 0){
+			if(msg_src_name.compare("spectrum") == 0)
+			{
 				return spectrumHandler(bus, msg, engine);
 			}
 
-			if(msg_src_name.compare("level") == 0){
+			if(msg_src_name.compare("level") == 0)
+			{
 				return levelHandler(bus, msg, engine);
 			}
 
@@ -193,16 +230,17 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 
 		case GST_MESSAGE_TAG:
 		{
-			if( msg_src_name.contains("fake") ||
-			    msg_src_name.contains("lame") ||
-				!msg_src_name.contains("sink") )
+			if(msg_src_name.contains("fake") ||
+			   msg_src_name.contains("lame") ||
+			   !msg_src_name.contains("sink"))
 			{
 				break;
 			}
 
-			GstTagList*	tags = nullptr;
+			GstTagList* tags = nullptr;
 			gst_message_parse_tag(msg, &tags);
-			if(!tags){
+			if(!tags)
+			{
 				break;
 			}
 
@@ -213,39 +251,47 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			bool update_metadata = false;
 			for(const QString& tag : string_tags)
 			{
-				gchar* value=nullptr;
+				gchar* value = nullptr;
 				success = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
-				if(!success) {
+				if(!success)
+				{
 					continue;
 				}
 
 				update_metadata = true;
 
-				if(tag == GST_TAG_TITLE) {
+				if(tag == GST_TAG_TITLE)
+				{
 					md.setTitle(value);
 				}
 
-				else if(tag == GST_TAG_ARTIST) {
+				else if(tag == GST_TAG_ARTIST)
+				{
 					md.setArtist(value);
 				}
 
-				else if(tag == GST_TAG_ALBUM) {
+				else if(tag == GST_TAG_ALBUM)
+				{
 					md.setAlbum(value);
 				}
 
-				else if(tag == GST_TAG_ALBUM_ARTIST) {
+				else if(tag == GST_TAG_ALBUM_ARTIST)
+				{
 					md.setAlbumArtist(value);
 				}
 
-				else if(tag == GST_TAG_COMMENT) {
+				else if(tag == GST_TAG_COMMENT)
+				{
 					md.setComment(value);
 				}
 
-				else {
+				else
+				{
 					const gchar* nick = gst_tag_get_nick(tag.toLocal8Bit().constData());
 
 					QString sNick = tag;
-					if(nick && strnlen(nick, 3) > 0) {
+					if(nick && strnlen(nick, 3) > 0)
+					{
 						sNick = QString::fromLocal8Bit(nick);
 					}
 
@@ -262,14 +308,15 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 				engine->updateBitrate((bitrate / 1000) * 1000, src);
 			}
 
-			if(update_metadata) {
+			if(update_metadata)
+			{
 				engine->updateMetadata(md, src);
 			}
 
 			gst_tag_list_unref(tags);
 		}
 
-		break;
+			break;
 
 		case GST_MESSAGE_STATE_CHANGED:
 			GstState old_state, new_state, pending_state;
@@ -283,13 +330,14 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 //							   << " pending: "
 //							   << gst_element_state_get_name(pending_state);
 
-			if(!msg_src_name.contains("pipeline", Qt::CaseInsensitive)){
+			if(!msg_src_name.contains("pipeline", Qt::CaseInsensitive))
+			{
 				break;
 			}
 
-			if( new_state == GST_STATE_PLAYING ||
-				new_state == GST_STATE_PAUSED ||
-				new_state == GST_STATE_READY)
+			if(new_state == GST_STATE_PLAYING ||
+			   new_state == GST_STATE_PAUSED ||
+			   new_state == GST_STATE_READY)
 			{
 				engine->setTrackReady(src);
 			}
@@ -306,10 +354,11 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			GstBufferingMode mode;
 
 			gst_message_parse_buffering(msg, &percent);
-			gst_message_parse_buffering_stats(msg, &mode, &avg_in, &avg_out, &buffering_left );
+			gst_message_parse_buffering_stats(msg, &mode, &avg_in, &avg_out, &buffering_left);
 
 			spLog(Log::Crazy, "Engine Callback") << "Buffering: " << percent;
-			spLog(Log::Crazy, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out << " buffering_left: " << buffering_left;
+			spLog(Log::Crazy, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out
+			                                     << " buffering_left: " << buffering_left;
 
 			engine->setBufferState(percent, src);
 			break;
@@ -323,36 +372,36 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			break;
 
 		case GST_MESSAGE_WARNING:
-			{
-				GError*	err;
-				gst_message_parse_warning(msg, &err, nullptr);
-				spLog(Log::Warning, ClassEngineCallbacks) << "Engine: GST_MESSAGE_WARNING: " << err->message << ": "
-					 << GST_MESSAGE_SRC_NAME(msg);
-				g_error_free(err);
-			}
+		{
+			GError* err;
+			gst_message_parse_warning(msg, &err, nullptr);
+			spLog(Log::Warning, ClassEngineCallbacks) << "Engine: GST_MESSAGE_WARNING: " << err->message << ": "
+			                                          << GST_MESSAGE_SRC_NAME(msg);
+			g_error_free(err);
+		}
 			break;
 
 		case GST_MESSAGE_ERROR:
+		{
+			static QString error_msg;
+			GError* err;
+			gst_message_parse_error(msg, &err, nullptr);
+
+			QString src_name(GST_MESSAGE_SRC_NAME(msg));
+
+			spLog(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
+			                                        << src_name;
+
+			QString new_error_msg = QString(err->message);
+
+			if(error_msg != new_error_msg)
 			{
-				static QString error_msg;
-				GError*	err;
-				gst_message_parse_error(msg, &err, nullptr);
-
-				QString src_name(GST_MESSAGE_SRC_NAME(msg));
-
-				spLog(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
-						 << src_name;
-
-				QString new_error_msg = QString(err->message);
-
-				if(error_msg != new_error_msg)
-				{
-					engine->error(new_error_msg, src_name);
-					error_msg = new_error_msg;
-				}
-
-				g_error_free(err);
+				engine->error(new_error_msg, src_name);
+				error_msg = new_error_msg;
 			}
+
+			g_error_free(err);
+		}
 			break;
 
 		case GST_MESSAGE_STREAM_STATUS:
@@ -370,7 +419,6 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 	return true;
 }
 
-
 // level changed
 gboolean
 Callbacks::levelHandler(GstBus* bus, GstMessage* message, gpointer data)
@@ -378,60 +426,68 @@ Callbacks::levelHandler(GstBus* bus, GstMessage* message, gpointer data)
 	Q_UNUSED(bus);
 
 	auto* engine = static_cast<Engine*>(data);
-	if(!engine) {
+	if(!engine)
+	{
 		return true;
 	}
 
 	const GstStructure* structure = gst_message_get_structure(message);
-	if(!structure) {
+	if(!structure)
+	{
 		spLog(Log::Warning, ClassEngineCallbacks) << "structure is null";
 		return true;
 	}
 
 	const gchar* name = gst_structure_get_name(structure);
-	if ( strcmp(name, "level") != 0 ) {
+	if(strcmp(name, "level") != 0)
+	{
 		return true;
 	}
 
 	const GValue* peak_value = gst_structure_get_value(structure, "peak");
-	if(!peak_value) {
+	if(!peak_value)
+	{
 		return true;
 	}
 
 	auto* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
 	guint n_peak_elements = rms_arr->n_values;
-	if(n_peak_elements == 0) {
+	if(n_peak_elements == 0)
+	{
 		return true;
 	}
 
 	double channel_values[2];
 	n_peak_elements = std::min((guint) 2, n_peak_elements);
-	for(guint i=0; i<n_peak_elements; i++)
+	for(guint i = 0; i < n_peak_elements; i++)
 	{
 		const GValue* val = rms_arr->values + i;
 
-		if(!G_VALUE_HOLDS_DOUBLE(val)) {
+		if(!G_VALUE_HOLDS_DOUBLE(val))
+		{
 			spLog(Log::Debug, ClassEngineCallbacks) << "Could not find a double";
 			break;
 		}
 
 		double d = g_value_get_double(val);
-		if(d < 0){
+		if(d < 0)
+		{
 			channel_values[i] = d;
 		}
 	}
 
-	if(n_peak_elements >= 2) {
+	if(n_peak_elements >= 2)
+	{
 		engine->setLevel(channel_values[0], channel_values[1]);
 	}
 
-	else if(n_peak_elements == 1) {
+	else if(n_peak_elements == 1)
+	{
 		engine->setLevel(channel_values[0], channel_values[0]);
 	}
 
 	return true;
 }
-
 
 // spectrum changed
 gboolean
@@ -442,21 +498,24 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 	static std::vector<float> spectrumValues;
 
 	auto* engine = static_cast<Engine*>(data);
-	if(!engine) {
+	if(!engine)
+	{
 		return true;
 	}
 
 	const GstStructure* structure = gst_message_get_structure(message);
-	if(!structure) {
+	if(!structure)
+	{
 		return true;
 	}
 
 	const gchar* structure_name = gst_structure_get_name(structure);
-	if( strcmp(structure_name, "spectrum") != 0 ) {
+	if(strcmp(structure_name, "spectrum") != 0)
+	{
 		return true;
 	}
 
-	const GValue* magnitudes = gst_structure_get_value (structure, "magnitude");
+	const GValue* magnitudes = gst_structure_get_value(structure, "magnitude");
 
 	int bins = std::max(1, GetSetting(Set::Engine_SpectrumBins));
 	if(spectrumValues.empty())
@@ -464,10 +523,11 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 		spectrumValues.resize(bins, 0);
 	}
 
-	for (int i=0; i<bins; ++i)
+	for(int i = 0; i < bins; ++i)
 	{
 		const GValue* mag = gst_value_list_get_value(magnitudes, i);
-		if(!mag) {
+		if(!mag)
+		{
 			continue;
 		}
 
@@ -480,19 +540,18 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 	return true;
 }
 
-
-
 gboolean Callbacks::positionChanged(gpointer data)
 {
 	auto* pipeline = static_cast<Pipeline*>(data);
-	if(!pipeline){
+	if(!pipeline)
+	{
 		return false;
 	}
 
 	GstState state = pipeline->state();
-	if( state != GST_STATE_PLAYING &&
-		state != GST_STATE_PAUSED &&
-		state != GST_STATE_READY)
+	if(state != GST_STATE_PLAYING &&
+	   state != GST_STATE_PAUSED &&
+	   state != GST_STATE_READY)
 	{
 		return true;
 	}
@@ -509,8 +568,9 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* new_src_pad, gpointer
 	spLog(Log::Develop, "Callback") << "Source: " << element_name.data();
 
 	auto* element = static_cast<GstElement*>(data);
-	GstPad*	sink_pad = gst_element_get_static_pad(element, "sink");
-	if(!sink_pad){
+	GstPad* sink_pad = gst_element_get_static_pad(element, "sink");
+	if(!sink_pad)
+	{
 		return;
 	}
 
@@ -550,31 +610,36 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* new_src_pad, gpointer
 		}
 	}
 
-	else {
-		spLog(Log::Develop, "Callbacks") << "Successfully linked " << gst_element_get_name(source) << " with " << gst_element_get_name(element);
+	else
+	{
+		spLog(Log::Develop, "Callbacks") << "Successfully linked " << gst_element_get_name(source) << " with "
+		                                 << gst_element_get_name(element);
 	}
 
 	gst_object_unref(sink_pad);
 }
 
-
 #define TCP_BUFFER_SIZE 16384
-GstFlowReturn Callbacks::newBuffer(GstElement *sink, gpointer p)
+
+GstFlowReturn Callbacks::newBuffer(GstElement* sink, gpointer p)
 {
 	static char data[TCP_BUFFER_SIZE];
 
 	auto* pipeline = static_cast<PipelineExtensions::BroadcastDataReceiver*>(p);
-	if(!pipeline){
+	if(!pipeline)
+	{
 		return GST_FLOW_OK;
 	}
 
 	GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
-	if(!sample) {
+	if(!sample)
+	{
 		return GST_FLOW_OK;
 	}
 
 	GstBuffer* buffer = gst_sample_get_buffer(sample);
-	if(!buffer) {
+	if(!buffer)
+	{
 		gst_sample_unref(sample);
 		return GST_FLOW_OK;
 	}
@@ -590,28 +655,12 @@ GstFlowReturn Callbacks::newBuffer(GstElement *sink, gpointer p)
 	return GST_FLOW_OK;
 }
 
-
-static bool is_source_soup(GstElement* source)
+void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpointer /* data */)
 {
-	GstElementFactory* fac = gst_element_get_factory(source);
-	GType type = gst_element_factory_get_element_type(fac);
-
-	const gchar* name = g_type_name(type);
-	QString src_type(name);
-
-	return (src_type.compare("gstsouphttpsrc", Qt::CaseInsensitive) == 0);
-}
-
-
-void Callbacks::sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer data)
-{
-	Q_UNUSED(bin);
-	Q_UNUSED(data);
-
-	spLog(Log::Develop, "Engine Callback") << "Source ready: is soup? " << is_source_soup(source);
+	spLog(Log::Develop, "Engine Callback") << "Source ready: is soup? " << isSoupSource(source);
 	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false);
 
-	if(is_source_soup(source))
+	if(isSoupSource(source))
 	{
 		if(Proxy::active())
 		{
@@ -621,10 +670,18 @@ void Callbacks::sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer d
 			{
 				spLog(Log::Develop, "Engine Callback") << "Will use proxy username: " << Proxy::username();
 
-				EngineUtils::setValues(source,
-						"proxy-id", Proxy::username().toLocal8Bit().data(),
-						"proxy-pw", Proxy::password().toLocal8Bit().data());
+				EngineUtils::setValues(
+					source,
+					"proxy-id", Proxy::username().toLocal8Bit().data(),
+					"proxy-pw", Proxy::password().toLocal8Bit().data());
 			}
+		}
+
+		if(hasSoundcloudUri(source))
+		{
+			EngineUtils::setValues(
+				source,
+				"extra-headers", getSoundcloudOAuthStructure());
 		}
 	}
 }

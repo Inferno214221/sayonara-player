@@ -49,6 +49,15 @@ SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistIntera
 	sc_init_icons();
 
 	m = Pimpl::make<Private>(playlistInteractor);
+
+	auto* tokenObserver = new SC::TokenObserver(nullptr);
+	auto* thread = new QThread(nullptr);
+	tokenObserver->moveToThread(thread);
+
+	connect(thread, &QThread::started, tokenObserver, &SC::TokenObserver::start);
+	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+	thread->start();
 }
 
 SC::LibraryContainer::~LibraryContainer() = default;

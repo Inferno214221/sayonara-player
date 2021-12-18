@@ -183,6 +183,7 @@ enum class SettingKey : unsigned short
 		Proxy_Hostname,
 		Proxy_Port,
 		Proxy_SavePw,
+		Soundcloud_AuthToken,
 		Speed_LastTab,
 		InfoDialog_Size,
 		AlternativeCovers_Size,
@@ -417,6 +418,7 @@ INST(int, Settings_Revision)        /* Version number of settings */
 
 INST(int, Logger_Level)            /* Also log development: */
 
+INST_NO_DB(QString, Soundcloud_AuthToken)
 INST_NO_DB(bool, MP3enc_found)
 INST_NO_DB(bool, Pitch_found)
 INST_NO_DB(bool, Player_Quit)
