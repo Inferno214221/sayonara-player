@@ -22,7 +22,6 @@
 #define PLAYLIST_H
 
 #include "PlaylistDBInterface.h"
-#include "PlaylistStopBehavior.h"
 
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -37,8 +36,7 @@ namespace Playlist
 {
 	class Playlist :
 		public QObject,
-		public DBInterface,
-		protected StopBehavior
+		public DBInterface
 	{
 		Q_OBJECT
 		PIMPL(Playlist)
@@ -71,7 +69,7 @@ namespace Playlist
 			void setMode(const Mode& mode);
 
 			MilliSeconds runningTime() const;
-			int count() const override;
+			int count() const;
 
 			void enableAll();
 
@@ -87,7 +85,7 @@ namespace Playlist
 
 			void reverse();
 
-			const MetaData& track(int index) const override;
+			const MetaData& track(int index) const;
 			const MetaDataList& tracks() const override;
 
 			void insertTracks(const MetaDataList& tracks, int targetRow);

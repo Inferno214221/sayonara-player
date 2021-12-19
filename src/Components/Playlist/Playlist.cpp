@@ -19,6 +19,7 @@
  */
 
 #include "Playlist.h"
+#include "PlaylistStopBehavior.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -35,11 +36,24 @@
 
 #include <QMultiHash>
 
-namespace File = Util::File;
-namespace Algorithm = Util::Algorithm;
-
 namespace Playlist
 {
+	namespace
+	{
+		QMultiHash<QString, int> createFilepathIndexHash(const MetaDataList& tracks)
+		{
+			auto result = QMultiHash<QString, int>();
+
+			auto i = 0;
+			for(auto it = tracks.begin(); it != tracks.end(); it++, i++)
+			{
+				result.insert(it->filepath(), i);
+			}
+
+			return result;
+		}
+	}
+
 	struct Playlist::Private
 	{
 		Tagging::ChangeNotifier* metadataChangeNotifier {Tagging::ChangeNotifier::instance()};
@@ -47,6 +61,7 @@ namespace Playlist
 		PlayManager* playManager;
 		MetaDataList tracks;
 		ShuffleHistory shuffleHistory;
+		StopBehavior stopBehavior;
 		UniqueId playingUniqueId {0U};
 		PlaylistMode playlistMode;
 		int playlistIndex;
@@ -56,6 +71,7 @@ namespace Playlist
 		Private(int playlistIndex, const PlaylistMode& playlistMode, PlayManager* playManager, Playlist* playlist) :
 			playManager(playManager),
 			shuffleHistory(playlist),
+			stopBehavior(playlist),
 			playlistMode(playlistMode),
 			playlistIndex(playlistIndex) {}
 	};
@@ -95,7 +111,7 @@ namespace Playlist
 	{
 		m->tracks.moveTracks(indexes, targetRow);
 
-		const auto lineCountBeforeTarget = Algorithm::count(indexes, [&targetRow](const auto index) {
+		const auto lineCountBeforeTarget = Util::Algorithm::count(indexes, [&](const auto index) {
 			return (index < targetRow);
 		});
 
@@ -110,16 +126,16 @@ namespace Playlist
 		return newTrackPositions;
 	}
 
-	IndexSet Playlist::copyTracks(const IndexSet& indexes, int tgt)
+	IndexSet Playlist::copyTracks(const IndexSet& indexes, int targetRow)
 	{
-		m->tracks.copyTracks(indexes, tgt);
+		m->tracks.copyTracks(indexes, targetRow);
 
 		setChanged(true);
 
 		IndexSet newTrackPositions;
 		for(auto i = 0; i < indexes.count(); i++)
 		{
-			newTrackPositions << tgt + i;
+			newTrackPositions.insert(targetRow + i);
 		}
 
 		setChanged(true);
@@ -160,9 +176,7 @@ namespace Playlist
 
 		for(auto it = m->tracks.begin() + oldTrackCount; it != m->tracks.end(); it++)
 		{
-			const auto& track = *it;
-			const auto isEnabled = File::checkFile(track.filepath()) && !track.isDisabled();
-
+			const auto isEnabled = Util::File::checkFile(it->filepath()) && !it->isDisabled();
 			it->setDisabled(!isEnabled);
 		}
 
@@ -172,13 +186,13 @@ namespace Playlist
 	bool Playlist::changeTrack(int index, MilliSeconds positionMs)
 	{
 		const auto oldIndex = currentTrackIndex();
-		setTrackIndexBeforeStop(-1);
+		m->stopBehavior.setTrackIndexBeforeStop(-1);
 		setCurrentTrack(index);
 
 		if(!Util::between(index, m->tracks))
 		{
 			stop();
-			setTrackIndexBeforeStop(-1);
+			m->stopBehavior.setTrackIndexBeforeStop(-1);
 			return false;
 		}
 
@@ -206,11 +220,10 @@ namespace Playlist
 
 	void Playlist::metadataDeleted()
 	{
-		IndexSet indexes;
 		const auto deletedTracks = m->metadataChangeNotifier->deletedMetadata();
 
-		auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [deletedTracks](const auto& track) {
-			return Algorithm::contains(deletedTracks, [&track](const auto& tmpTrack) {
+		auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [&](const auto& track) {
+			return Util::Algorithm::contains(deletedTracks, [&](const auto& tmpTrack) {
 				return (track.isEqual(tmpTrack));
 			});
 		});
@@ -221,16 +234,9 @@ namespace Playlist
 
 	void Playlist::metadataChanged()
 	{
+		const auto filepathIndexMap = createFilepathIndexHash(tracks());
+
 		const auto& changedTracks = m->metadataChangeNotifier->changedMetadata();
-
-		auto filepathIndexMap = QMultiHash<QString, int>();
-
-		auto i = 0;
-		for(auto it = m->tracks.begin(); it != m->tracks.end(); it++, i++)
-		{
-			filepathIndexMap.insert(it->filepath(), i);
-		}
-
 		for(const auto& changedPair : changedTracks)
 		{
 			const auto filepath = changedPair.first.filepath();
@@ -247,8 +253,8 @@ namespace Playlist
 	void Playlist::currentMetadataChanged()
 	{
 		const auto track = m->playManager->currentTrack();
-		const auto indexList = m->tracks.findTracks(track.filepath());
 
+		const auto indexList = m->tracks.findTracks(track.filepath());
 		for(const auto index : indexList)
 		{
 			replaceTrack(index, track);
@@ -277,7 +283,7 @@ namespace Playlist
 
 		const auto oldUniqueId = m->tracks[index].uniqueId();
 		const auto isCurrent = (oldUniqueId == m->playingUniqueId);
-		const auto isEnabled = File::checkFile(track.filepath()) && !track.isDisabled();
+		const auto isEnabled = Util::File::checkFile(track.filepath()) && !track.isDisabled();
 
 		m->shuffleHistory.replaceTrack(m->tracks[index], track);
 		m->tracks[index] = track;
@@ -302,11 +308,11 @@ namespace Playlist
 	void Playlist::stop()
 	{
 		m->shuffleHistory.clear();
-		const auto currentTrack = currentTrackIndex();
 
+		const auto currentTrack = currentTrackIndex();
 		if(currentTrack >= 0)
 		{
-			setTrackIndexBeforeStop(currentTrack);
+			m->stopBehavior.setTrackIndexBeforeStop(currentTrack);
 			setCurrentTrack(-1);
 		}
 
@@ -353,11 +359,10 @@ namespace Playlist
 
 	void Playlist::next()
 	{
-		// no track
 		if(m->tracks.isEmpty())
 		{
 			stop();
-			setTrackIndexBeforeStop(-1);
+			m->stopBehavior.setTrackIndexBeforeStop(-1);
 			return;
 		}
 
@@ -366,9 +371,7 @@ namespace Playlist
 		const auto repAll = (PlaylistMode::isActiveAndEnabled(m->playlistMode.repAll()));
 		const auto isLastTrack = (currentTrackIndex() == m->tracks.count() - 1);
 
-		// stopped
-		auto trackIndex = -1;
-
+		int trackIndex;
 		if(currentTrackIndex() == -1)
 		{
 			trackIndex = 0;
@@ -381,22 +384,17 @@ namespace Playlist
 
 		else if(shuffle)
 		{
-			const auto repAllEnabled = PlaylistMode::isActiveAndEnabled(m->playlistMode.repAll());
-			trackIndex = m->shuffleHistory.nextTrackIndex(repAllEnabled);
+			trackIndex = m->shuffleHistory.nextTrackIndex(repAll);
+		}
+
+		else if(isLastTrack)
+		{
+			trackIndex = repAll ? 0 : -1;
 		}
 
 		else
-		{// normal track
-			// last track
-			if(isLastTrack)
-			{
-				trackIndex = repAll ? 0 : -1;
-			}
-
-			else
-			{
-				trackIndex = currentTrackIndex() + 1;
-			}
+		{
+			trackIndex = currentTrackIndex() + 1;
 		}
 
 		changeTrack(trackIndex);
@@ -404,18 +402,16 @@ namespace Playlist
 
 	bool Playlist::wakeUp()
 	{
-		const auto index = trackIndexBeforeStop();
-
-		// NOLINTNEXTLINE
+		const auto index = m->stopBehavior.trackIndexBeforeStop();
 		return (Util::between(index, count()))
 		       ? changeTrack(index)
-		       : false;
+		       : false; // NOLINT
+
 	}
 
 	void Playlist::setBusy(bool busy)
 	{
 		m->busy = busy;
-
 		emit sigBusyChanged(busy);
 	}
 
@@ -558,8 +554,7 @@ namespace Playlist
 
 	void Playlist::setChanged(bool b)
 	{
-		restoreTrackBeforeStop();
-
+		m->stopBehavior.restoreTrackBeforeStop();
 		m->playlistChanged = b;
 
 		emit sigItemsChanged(m->playlistIndex);
@@ -593,9 +588,9 @@ namespace Playlist
 		if(!this->isBusy())
 		{
 			const auto tracks = this->fetchTracksFromDatabase();
-			this->clear();
-			this->createPlaylist(tracks);
-			this->setChanged(false);
+			clear();
+			createPlaylist(tracks);
+			setChanged(false);
 		}
 	}
 

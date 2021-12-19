@@ -19,64 +19,71 @@
  */
 
 #include "PlaylistStopBehavior.h"
+#include "Playlist.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 
-namespace Algorithm=Util::Algorithm;
-using Playlist::StopBehavior;
-
-struct StopBehavior::Private
+namespace Playlist
 {
-	int indexBeforeStop;
-	Id	idBeforeStop;
-};
-
-Playlist::StopBehavior::StopBehavior()
-{
-	m = Pimpl::make<Private>();
-}
-
-Playlist::StopBehavior::~StopBehavior() = default;
-
-int Playlist::StopBehavior::restoreTrackBeforeStop()
-{
-	const MetaDataList& v_md = tracks();
-	auto it = Algorithm::find(v_md, [=](const MetaData& md){
-		return (md.id() == m->idBeforeStop);
-	});
-
-	if(it == v_md.end()) {
-		setTrackIndexBeforeStop(-1);
-		return -1;
-	}
-
-	else {
-		m->indexBeforeStop = std::distance(v_md.begin(), it);
-	}
-
-	return m->indexBeforeStop;
-}
-
-int Playlist::StopBehavior::trackIndexBeforeStop() const
-{
-	return m->indexBeforeStop;
-}
-
-void Playlist::StopBehavior::setTrackIndexBeforeStop(int idx)
-{
-	bool valid = Util::between(idx, tracks().count());
-	if(valid)
+	struct StopBehavior::Private
 	{
-		m->indexBeforeStop = idx;
-		m->idBeforeStop = tracks().at(idx).id();
+		Playlist* playlist;
+		int indexBeforeStop {-1};
+		Id idBeforeStop {-1};
+
+		explicit Private(Playlist* playlist) :
+			playlist {playlist} {}
+	};
+
+	StopBehavior::StopBehavior(Playlist* playlist)
+	{
+		m = Pimpl::make<Private>(playlist);
 	}
 
-	else {
-		m->indexBeforeStop = -1;
-		m->idBeforeStop = -1;
+	StopBehavior::~StopBehavior() = default;
+
+	int StopBehavior::restoreTrackBeforeStop()
+	{
+		const auto& tracks = m->playlist->tracks();
+		const auto it = Util::Algorithm::find(tracks, [&](const auto& track) {
+			return (track.id() == m->idBeforeStop);
+		});
+
+		if(it == tracks.end())
+		{
+			setTrackIndexBeforeStop(-1);
+			return -1;
+		}
+
+		else
+		{
+			m->indexBeforeStop = static_cast<int>(std::distance(tracks.begin(), it));
+		}
+
+		return m->indexBeforeStop;
 	}
 
-	SetSetting(Set::PL_LastTrackBeforeStop, m->indexBeforeStop);
+	int StopBehavior::trackIndexBeforeStop() const
+	{
+		return m->indexBeforeStop;
+	}
+
+	void StopBehavior::setTrackIndexBeforeStop(const int index)
+	{
+		const auto& tracks = m->playlist->tracks();
+		if(Util::between(index, tracks))
+		{
+			m->indexBeforeStop = index;
+			m->idBeforeStop = tracks[index].id();
+		}
+		else
+		{
+			m->indexBeforeStop = -1;
+			m->idBeforeStop = -1;
+		}
+
+		SetSetting(Set::PL_LastTrackBeforeStop, m->indexBeforeStop);
+	}
 }

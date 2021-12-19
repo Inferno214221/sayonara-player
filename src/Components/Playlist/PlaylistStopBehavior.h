@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef STOPBEHAVIOR_H
 #define STOPBEHAVIOR_H
 
@@ -30,22 +28,18 @@ class MetaData;
 
 namespace Playlist
 {
+	class Playlist;
 	class StopBehavior
 	{
 		PIMPL(StopBehavior)
 
 		public:
-			StopBehavior();
-			virtual ~StopBehavior();
+			explicit StopBehavior(Playlist* playlist);
+			~StopBehavior();
 
-			virtual const MetaDataList& tracks() const=0;
-			virtual const MetaData& track(int index) const=0;
-			virtual int count() const=0;
-
+			[[nodiscard]] int trackIndexBeforeStop() const;
+			void setTrackIndexBeforeStop(int index);
 			int restoreTrackBeforeStop();
-
-			int trackIndexBeforeStop() const;
-			void setTrackIndexBeforeStop(int idx);
 	};
 }
 
