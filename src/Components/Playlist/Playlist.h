@@ -35,10 +35,6 @@ class PlayManager;
 
 namespace Playlist
 {
-	/**
-	 * @brief The Playlist class
-	 * @ingroup Playlists
-	 */
 	class Playlist :
 		public QObject,
 		public DBInterface,
@@ -59,7 +55,7 @@ namespace Playlist
 			void sigCurrentScannedFileChanged(const QString& currentFile);
 
 		public:
-			explicit Playlist(int idx, const QString& name, PlayManager* playManager);
+			explicit Playlist(int playlistIndex, const QString& name, PlayManager* playManager);
 			virtual ~Playlist() override;
 
 			int createPlaylist(const MetaDataList& tracks);
@@ -94,16 +90,16 @@ namespace Playlist
 			const MetaData& track(int index) const override;
 			const MetaDataList& tracks() const override;
 
-			void insertTracks(const MetaDataList& tracks, int targetIndex);
+			void insertTracks(const MetaDataList& tracks, int targetRow);
 			void appendTracks(const MetaDataList& tracks);
 			void removeTracks(const IndexSet& indexes);
 			void replaceTrack(int idx, const MetaData& track);
 			void clear();
 
-			IndexSet moveTracks(const IndexSet& index, int targetRow);
-			IndexSet copyTracks(const IndexSet& indexes, int tgt);
+			IndexSet moveTracks(const IndexSet& indexes, int targetRow);
+			IndexSet copyTracks(const IndexSet& indexes, int targetRow);
 
-			void findTrack(int idx);
+			void findTrack(int index);
 			bool changeTrack(int index, MilliSeconds positionMs=0);
 			bool wasChanged() const override;
 
@@ -120,7 +116,6 @@ namespace Playlist
 			void settingPlaylistModeChanged();
 
 		private:
-			int calcShuffleTrack();
 			void setCurrentTrack(int index);
 			void setChanged(bool b) override;
 	};
