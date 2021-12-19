@@ -55,7 +55,6 @@ namespace Playlist
 
 			void sigItemsChanged(int index);
 			void sigTrackChanged(int oldIndex, int newIndex);
-			void sigStopped();
 			void sigBusyChanged(bool b);
 			void sigCurrentScannedFileChanged(const QString& currentFile);
 

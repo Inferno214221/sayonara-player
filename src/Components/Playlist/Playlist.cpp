@@ -167,7 +167,7 @@ void PlaylistImpl::appendTracks(const MetaDataList& tracks)
 
 bool PlaylistImpl::changeTrack(int index, MilliSeconds positionMs)
 {
-	const auto oldIndex = this->currentTrackIndex();
+	const auto oldIndex = currentTrackIndex();
 	setTrackIndexBeforeStop(-1);
 	setCurrentTrack(index);
 
@@ -317,7 +317,6 @@ void PlaylistImpl::stop()
 	}
 
 	emit sigTrackChanged(currentTrack, -1);
-	emit sigStopped();
 }
 
 void PlaylistImpl::fwd()

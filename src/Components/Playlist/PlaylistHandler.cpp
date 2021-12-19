@@ -228,7 +228,12 @@ void Handler::playstateChanged(PlayState state)
 
 void Handler::next()
 {
-	activePlaylist()->next();
+	auto playlist = activePlaylist();
+	playlist->next();
+	if(playlist->currentTrackIndex() < 0)
+	{
+		m->playManager->stop();
+	}
 }
 
 void Handler::previous()
