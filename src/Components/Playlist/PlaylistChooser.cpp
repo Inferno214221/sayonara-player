@@ -20,9 +20,11 @@
 
 #include "PlaylistChooser.h"
 #include "PlaylistChangeNotifier.h"
+#include "PlaylistDBWrapper.h"
 
 #include "Interfaces/PlaylistInterface.h"
-#include "Components/Playlist/PlaylistDBWrapper.h"
+#include "Database/Connector.h"
+#include "Database/Playlist.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
@@ -38,12 +40,14 @@ namespace Playlist
 	struct Chooser::Private
 	{
 		QList<CustomPlaylist> playlists;
-		PlaylistCreator* playlistCreator = nullptr;
+		PlaylistCreator* playlistCreator;
+		DB::Playlist* playlistConnector;
 
-		Private(PlaylistCreator* playlistCreator) :
-			playlistCreator {playlistCreator}
+		explicit Private(PlaylistCreator* playlistCreator) :
+			playlistCreator {playlistCreator},
+			playlistConnector {DB::Connector::instance()->playlistConnector()}
 		{
-			playlists = DBWrapper::getPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
+			playlists = loadPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
 		}
 	};
 
@@ -81,16 +85,16 @@ namespace Playlist
 
 		auto nameExists = false;
 		QString oldName;
-		for(auto it = m->playlists.begin(); it != m->playlists.end(); it++)
+		for(const auto& playlist : m->playlists)
 		{
-			if(it->name() == newName)
+			if(playlist.name() == newName)
 			{
 				nameExists = true;
 			}
 
-			if(it->id() == id)
+			if(playlist.id() == id)
 			{
-				oldName = it->name();
+				oldName = playlist.name();
 			}
 		}
 
@@ -100,7 +104,7 @@ namespace Playlist
 			return SaveAsAnswer::NameAlreadyThere;
 		}
 
-		const auto success = DBWrapper::renamePlaylist(id, newName);
+		const auto success = m->playlistConnector->renamePlaylist(id, newName);
 		if(success)
 		{
 			PlaylistChangeNotifier::instance()->renamePlaylist(id, oldName, newName);
@@ -112,8 +116,8 @@ namespace Playlist
 
 	bool Chooser::deletePlaylist(int id)
 	{
-		const auto playlist = DBWrapper::getPlaylistById(id, false);
-		const auto success = DBWrapper::updatePlaylist(id, playlist.name(), true);
+		const auto playlist = m->playlistConnector->getPlaylistById(id, false);
+		const auto success = m->playlistConnector->updatePlaylist(id, playlist.name(), true);
 		if(success)
 		{
 			PlaylistChangeNotifier::instance()->deletePlaylist(id);
@@ -126,8 +130,8 @@ namespace Playlist
 	{
 		if(id >= 0)
 		{
-			const auto pl = DBWrapper::getPlaylistById(id, true);
-			m->playlistCreator->createPlaylist(pl);
+			const auto playlist = m->playlistConnector->getPlaylistById(id, true);
+			m->playlistCreator->createPlaylist(playlist);
 		}
 	}
 
@@ -143,23 +147,22 @@ namespace Playlist
 	void Chooser::playlistsChanged()
 	{
 		m->playlists.clear();
-		m->playlists = DBWrapper::getPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
+		m->playlists = loadPlaylists(StoreType::OnlyPermanent, SortOrder::NameAsc, false);
 
 		emit sigPlaylistsChanged();
 	}
 
-	void Chooser::playlistDeleted([[maybe_unused]] int id)
+	void Chooser::playlistDeleted(int /* id */)
 	{
 		playlistsChanged();
 	}
 
-	void Chooser::playlistAdded([[maybe_unused]] int id, [[maybe_unused]] const QString& name)
+	void Chooser::playlistAdded(int /* id */, const QString& /* name */)
 	{
 		playlistsChanged();
 	}
 
-	void Chooser::playlistRenamed([[maybe_unused]] int id, [[maybe_unused]] const QString& oldName,
-	                              [[maybe_unused]] const QString& newName)
+	void Chooser::playlistRenamed(int /* id */, const QString& /* oldName */, const QString& /* newName*/ )
 	{
 		playlistsChanged();
 	}

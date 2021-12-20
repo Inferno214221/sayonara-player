@@ -20,9 +20,10 @@
 #include "SayonaraTest.h"
 #include "PlayManagerMock.h"
 #include "Database/TestTracks.h"
+#include "Database/Connector.h"
+#include "Database/Playlist.h"
 
 #include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistDBWrapper.h"
 #include "Components/Playlist/PlaylistChangeNotifier.h"
 
 #include "Utils/Settings/Settings.h"
@@ -33,52 +34,54 @@
 
 #include <QSignalSpy>
 
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 using namespace ::Playlist;
 
-namespace
+namespace Playlist
 {
-	::Playlist::Playlist createPlaylist(int index, const QString& name)
+	namespace
 	{
-		auto* playManager = new PlayManagerMock();
-		return ::Playlist::Playlist(index, name, playManager);
-	}
-
-	template<typename A, typename B, typename Comparator>
-	bool isEqual(const A& a, const B& b, Comparator comp)
-	{
-		const auto tracks1 = a.tracks();
-		const auto tracks2 = b.tracks();
-		if(tracks1.count() != tracks2.count())
+		Playlist createPlaylist(int index, const QString& name)
 		{
-			return false;
+			return Playlist(index, name, new PlayManagerMock());
 		}
 
-		const auto tracksEqual =
-			std::equal(tracks1.begin(), tracks1.end(), tracks2.begin(), [](const auto& track1, const auto& track2) {
-				return (track1.isEqual(track2));
-			});
+		template<typename A, typename B, typename Comparator>
+		bool isEqual(const A& a, const B& b, Comparator comp)
+		{
+			const auto tracks1 = a.tracks();
+			const auto tracks2 = b.tracks();
+			if(tracks1.count() != tracks2.count())
+			{
+				return false;
+			}
 
-		return comp(a, b) && tracksEqual;
-	}
+			const auto tracksEqual =
+				std::equal(tracks1.begin(), tracks1.end(), tracks2.begin(), [](const auto& track1, const auto& track2) {
+					return (track1.isEqual(track2));
+				});
 
-	template<typename A, typename B>
-	bool isEqual(const A& a, const B& b)
-	{
-		auto comparator = [](const auto& a, const auto& b) {
-			return (
-				(a.id() == b.id()) &&
-				(a.name() == b.name()) &&
-				(a.isTemporary() == b.isTemporary())
-			);
-		};
+			return comp(a, b) && tracksEqual;
+		}
 
-		return isEqual(a, b, comparator);
-	}
-}
+		template<typename A, typename B>
+		bool isEqual(const A& a, const B& b)
+		{
+			auto comparator = [](const auto& a, const auto& b) {
+				return (
+					(a.id() == b.id()) &&
+					(a.name() == b.name()) &&
+					(a.isTemporary() == b.isTemporary())
+				);
+			};
 
-namespace P = ::Playlist;
+			return isEqual(a, b, comparator);
+		}
+	} // namespace
+} // namespace Playlist
+
 class PlaylistDbInterfaceTest :
 	public Test::Base
 {
@@ -86,7 +89,8 @@ class PlaylistDbInterfaceTest :
 
 	public:
 		PlaylistDbInterfaceTest() :
-			Test::Base("PlaylistDbInterfaceTest")
+			Test::Base("PlaylistDbInterfaceTest"),
+			m_playlistConnector{DB::Connector::instance()->playlistConnector()}
 		{
 			SetSetting(Set::PL_LoadSavedPlaylists, true);
 			SetSetting(Set::PL_LoadTemporaryPlaylists, true);
@@ -99,6 +103,9 @@ class PlaylistDbInterfaceTest :
 		void testDeletion();
 		void testPlaylistChangeNotifier();
 		void testWithTracks();
+
+	private:
+		DB::Playlist* m_playlistConnector;
 };
 
 void PlaylistDbInterfaceTest::testInsertAndRename()
@@ -116,7 +123,7 @@ void PlaylistDbInterfaceTest::testInsertAndRename()
 		QVERIFY(playlist.id() >= 0);
 		QVERIFY(playlist.isTemporary());
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 	}
 
@@ -127,7 +134,7 @@ void PlaylistDbInterfaceTest::testInsertAndRename()
 		QVERIFY(playlist.name() == newName);
 		QVERIFY(playlist.isTemporary());
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 	}
 
@@ -140,7 +147,7 @@ void PlaylistDbInterfaceTest::testInsertAndRename()
 		QVERIFY(answer == Util::SaveAsAnswer::NameAlreadyThere);
 		QVERIFY(otherPlaylist.name() == otherPlaylistName);
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(otherPlaylist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(otherPlaylist.id(), false);
 		QVERIFY(isEqual(otherPlaylist, dbPlaylist));
 	}
 
@@ -167,7 +174,7 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAs()
 		QVERIFY(playlist.name() == newName);
 		QVERIFY(!playlist.isTemporary());
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 	}
 
@@ -181,10 +188,10 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAs()
 		QVERIFY(playlist.id() >= 0);
 		QVERIFY(playlist.id() != oldId);
 
-		const auto dbPlaylistNew = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylistNew = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylistNew));
 
-		const auto dbPlaylistOld = DBWrapper::getPlaylistById(oldId, false);
+		const auto dbPlaylistOld = m_playlistConnector->getPlaylistById(oldId, false);
 		QVERIFY(isEqual(playlist, dbPlaylistOld, [](const auto& /* a */, const auto& /* b */) {
 			return true;
 		}));
@@ -212,7 +219,7 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAsInvalidName()
 		QVERIFY(answer == Util::SaveAsAnswer::NameAlreadyThere);
 		QVERIFY(playlist.name() == oldName);
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 	}
 
@@ -220,7 +227,7 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAsInvalidName()
 		const auto answer = playlist.saveAs(QString());
 		QVERIFY(answer == Util::SaveAsAnswer::InvalidName);
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), false);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), false);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 	}
 }
@@ -338,7 +345,7 @@ void PlaylistDbInterfaceTest::testWithTracks()
 
 		playlist.save();
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), true);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), true);
 		QVERIFY(isEqual(playlist, dbPlaylist));
 		QVERIFY(!playlist.wasChanged());
 	}
@@ -347,7 +354,7 @@ void PlaylistDbInterfaceTest::testWithTracks()
 		const auto track = Test::createTrack(0, "title", "artist", "album");
 		playlist.appendTracks(MetaDataList {track});
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), true);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), true);
 		QVERIFY(!isEqual(playlist, dbPlaylist));
 		QVERIFY(playlist.wasChanged());
 	}
@@ -355,7 +362,7 @@ void PlaylistDbInterfaceTest::testWithTracks()
 	{
 		playlist.save();
 
-		const auto dbPlaylist = DBWrapper::getPlaylistById(playlist.id(), true);
+		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), true);
 		QVERIFY(!isEqual(playlist, dbPlaylist));
 		QVERIFY(!playlist.wasChanged());
 	}

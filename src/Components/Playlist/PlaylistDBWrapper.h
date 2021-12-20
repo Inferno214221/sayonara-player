@@ -28,22 +28,7 @@
 class CustomPlaylist;
 namespace Playlist
 {
-	namespace DBWrapper
-	{
-		QList<CustomPlaylist>
-		getPlaylists(::Playlist::StoreType type, ::Playlist::SortOrder sortOrder, bool getTracks);
-
-		CustomPlaylist getPlaylistById(int playlistId, bool getTracks);
-		CustomPlaylist getPlaylistByName(const QString& name, bool getTracks);
-
-		int createPlaylist(const QString& playlistName, bool temporary);
-		bool updatePlaylistTracks(int playlistId, const MetaDataList& tracks);
-		bool updatePlaylist(int playlistId, const QString& name, bool temporary);
-		bool renamePlaylist(int playlistId, const QString& name);
-		bool deletePlaylist(int id);
-		bool deletePlaylist(const QString& name);
-		bool exists(const QString& name);
-	}
+	QList<CustomPlaylist> loadPlaylists(StoreType type, SortOrder sortOrder, bool getTracks);
 }
 
-#endif // PLAYLISTDBCONNECTOR_H
+#endif // PLAYLISTDB_WRAPPER_H

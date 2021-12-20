@@ -62,59 +62,11 @@ namespace
 
 namespace Playlist
 {
-	QList<CustomPlaylist> DBWrapper::getPlaylists(StoreType type, SortOrder sortOrder, bool getTracks)
+	QList<CustomPlaylist> loadPlaylists(StoreType type, SortOrder sortOrder, bool getTracks)
 	{
 		auto playlists = db()->getAllPlaylists(type, getTracks, sortOrder);
 		return getTracks
 		       ? applyTagsToPlaylists(std::move(playlists))
 		       : playlists;
-	}
-
-	CustomPlaylist DBWrapper::getPlaylistById(int playlistId, bool getTracks)
-	{
-		return db()->getPlaylistById(playlistId, getTracks);
-	}
-
-	CustomPlaylist DBWrapper::getPlaylistByName(const QString& name, bool getTracks)
-	{
-		const auto playlistId = db()->getPlaylistIdByName(name);
-		return getPlaylistById(playlistId, getTracks);
-	}
-
-	bool DBWrapper::deletePlaylist(int id)
-	{
-		return db()->deletePlaylist(id);
-	}
-
-	bool DBWrapper::deletePlaylist(const QString& name)
-	{
-		const auto playlistId = db()->getPlaylistIdByName(name);
-		return db()->deletePlaylist(playlistId);
-	}
-
-	bool DBWrapper::exists(const QString& name)
-	{
-		const auto playlistId = db()->getPlaylistIdByName(name);
-		return (playlistId >= 0);
-	}
-
-	int DBWrapper::createPlaylist(const QString& playlistName, bool temporary)
-	{
-		return db()->createPlaylist(playlistName, temporary);
-	}
-
-	bool DBWrapper::updatePlaylistTracks(int playlistId, const MetaDataList& tracks)
-	{
-		return db()->updatePlaylistTracks(playlistId, tracks);
-	}
-
-	bool DBWrapper::updatePlaylist(int playlistId, const QString& name, bool temporary)
-	{
-		return db()->updatePlaylist(playlistId, name, temporary);
-	}
-
-	bool DBWrapper::renamePlaylist(int playlistId, const QString& name)
-	{
-		return db()->renamePlaylist(playlistId, name);
 	}
 }

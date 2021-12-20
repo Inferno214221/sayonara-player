@@ -26,6 +26,7 @@
 
 class QString;
 class MetaDataList;
+class CustomPlaylist;
 
 namespace Playlist
 {
@@ -37,13 +38,13 @@ namespace Playlist
 			explicit DBInterface(const QString& name);
 			virtual ~DBInterface();
 
-			int id() const;
+			[[nodiscard]] int id() const;
 			void setId(int databaseId);
 
-			QString name() const;
+			[[nodiscard]] QString name() const;
 			void setName(const QString& name);
 
-			bool isTemporary() const;
+			[[nodiscard]] bool isTemporary() const;
 			void setTemporary(bool b);
 
 			Util::SaveAsAnswer save();
@@ -51,11 +52,11 @@ namespace Playlist
 			Util::SaveAsAnswer rename(const QString& newName);
 			bool deletePlaylist();
 
-			MetaDataList fetchTracksFromDatabase() const;
+			[[nodiscard]] MetaDataList fetchTracksFromDatabase() const;
 
-			virtual const MetaDataList& tracks() const = 0;
+			[[nodiscard]] virtual const MetaDataList& tracks() const = 0;
 			virtual void setChanged(bool b) = 0;
-			virtual bool wasChanged() const = 0;
+			[[nodiscard]] virtual bool wasChanged() const = 0;
 	};
 
 	QString requestNewDatabaseName(QString prefix);
