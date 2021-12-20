@@ -8,11 +8,12 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 
-using PL=Playlist::Playlist;
+using PL = Playlist::Playlist;
 
 namespace
 {
-	inline std::shared_ptr<PL> createPlaylist(int index, int min, int max, const QString& name, PlayManager* playManager)
+	inline std::shared_ptr<Playlist::Playlist>
+	createPlaylist(int index, int min, int max, const QString& name, PlayManager* playManager)
 	{
 		const auto tracks = Test::Playlist::createTrackList(min, max);
 		auto playlist = std::make_shared<PL>(index, name, playManager);
@@ -27,28 +28,25 @@ class PlaylistTest :
 {
 	Q_OBJECT
 
-public:
-	PlaylistTest() :
-		Test::Base("PlaylistTest"),
-		m_playManager{new PlayManagerMock()}
-	{}
+	public:
+		PlaylistTest() :
+			Test::Base("PlaylistTest"),
+			m_playManager {new PlayManagerMock()} {}
 
-	~PlaylistTest()
-	{
-		delete m_playManager;
-	}
+		~PlaylistTest() override
+		{
+			delete m_playManager;
+		}
 
-private:
-	PlayManager* m_playManager;
+	private:
+		PlayManager* m_playManager;
 
-private slots:
-	void jumpTest();
-	void shuffleTest();
-	void modifyTest();
-	void insertTest();
-	void trackIndexWithoutDisabledTest();
+	private slots:
+		void jumpTest();
+		void modifyTest();
+		void insertTest();
+		void trackIndexWithoutDisabledTest();
 };
-
 
 void PlaylistTest::jumpTest()
 {
@@ -90,47 +88,6 @@ void PlaylistTest::jumpTest()
 	QVERIFY(success == false);
 }
 
-void PlaylistTest::shuffleTest()
-{
-	MetaData track;
-	auto tracks = Test::Playlist::createTrackList(0, 100);
-
-	QList<int> indexes;
-	auto* pl = new PL(1, "Hallo", m_playManager);
-
-	Playlist::Mode mode;
-	mode.setShuffle(Playlist::Mode::State::On);
-	mode.setRepAll(Playlist::Mode::State::On);
-
-	QVERIFY(Playlist::Mode::isActiveAndEnabled(mode.shuffle()));
-	QVERIFY(Playlist::Mode::isActiveAndEnabled(mode.repAll()));
-
-	pl->setMode(mode);
-	bool b = pl->changeTrack(0);
-	QVERIFY(b == false);
-
-	pl->createPlaylist(tracks);
-	b = pl->changeTrack(0);
-	indexes << 0;
-	QVERIFY(b == true);
-
-	for(int i=1; i < tracks.count(); i++)
-	{
-		pl->next();
-
-		int curIndex = pl->currentTrackIndex();
-		QVERIFY(indexes.contains(curIndex) == false);
-		indexes << curIndex;
-	}
-
-	QVERIFY(indexes.count() == tracks.count());
-
-	QList<int> oldIndexes = indexes;
-
-	std::sort(indexes.begin(), indexes.end());
-	QVERIFY(oldIndexes != indexes);
-}
-
 void PlaylistTest::modifyTest()
 {
 	auto tracks = Test::Playlist::createTrackList(0, 100);
@@ -162,10 +119,10 @@ void PlaylistTest::modifyTest()
 	{ // move before, after and with current track
 		indexes.clear();
 		{
-			indexes << 65;		// new 12
-			indexes << 32;		// new 10
-			indexes << 46;		// new 11
-			indexes << 6;		// new 9
+			indexes << 65;        // new 12
+			indexes << 32;        // new 10
+			indexes << 46;        // new 11
+			indexes << 6;        // new 9
 		}
 
 		pl->moveTracks(indexes, 10);
@@ -176,8 +133,8 @@ void PlaylistTest::modifyTest()
 	{ // move current track
 		indexes.clear();
 		{
-			indexes << 11;		// new 20 - indexes.size() = 18
-			indexes << 12;		// new 19
+			indexes << 11;        // new 20 - indexes.size() = 18
+			indexes << 12;        // new 19
 		}
 
 		pl->moveTracks(indexes, 20);
@@ -237,7 +194,7 @@ void PlaylistTest::insertTest()
 		QVERIFY(pl->count() == 3);
 		QVERIFY(pl->count() == playlistTracks.count());
 
-		for(int i=0; i < playlistTracks.count(); i++)
+		for(int i = 0; i < playlistTracks.count(); i++)
 		{
 			QVERIFY(playlistTracks[i].id() == i);
 		}
@@ -245,7 +202,6 @@ void PlaylistTest::insertTest()
 		pl->clear();
 		QVERIFY(pl->count() == 0);
 	}
-
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(0, 3);
@@ -255,7 +211,7 @@ void PlaylistTest::insertTest()
 		QVERIFY(pl->count() == 3);
 		QVERIFY(pl->count() == playlistTracks.count());
 
-		for(int i=0; i < playlistTracks.count(); i++)
+		for(int i = 0; i < playlistTracks.count(); i++)
 		{
 			QVERIFY(playlistTracks[i].id() == i);
 		}

@@ -61,7 +61,6 @@ namespace Playlist
 
 			if(index >= 0)
 			{
-				m->shuffleHistory.erase(m->shuffleHistory.begin() + historyIndex, m->shuffleHistory.end());
 				return index;
 			}
 		}

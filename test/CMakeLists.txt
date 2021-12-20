@@ -66,6 +66,7 @@ new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp Dat
 new_test(Playlist/PlaylistFileTest.cpp Playlist/PlaylistTestUtils.cpp Database/TestTracks.cpp)
 new_test(Playlist/PlaylistHandlerTest.cpp)
 new_test(Playlist/PlaylistDbInterfaceTest.cpp Database/TestTracks.cpp)
+new_test(Playlist/PlaylistShuffleTest.cpp Playlist/PlaylistTestUtils.cpp Database/TestTracks.cpp)
 
 new_test(PlayManager/PlayManagerTest.cpp)
 
@@ -101,3 +102,4 @@ new_test(Util/TreeTest.cpp)
 new_test(Util/Ranges.cpp)
 
 new_test(Streaming/RadioStationParserTest.cpp)
+
