@@ -21,6 +21,7 @@
 #include "DirectoryChooser.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Utils/Macros.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QDir>
 #include <QList>
@@ -34,11 +35,15 @@ namespace
 	QFileDialog::Options directoryDialogOptions()
 	{
 #ifdef DISABLE_NATIVE_DIR_DIALOGS
-		return static_cast<QFileDialog::Options>(QFileDialog::Option::ShowDirsOnly |
-												 QFileDialog::Option::DontUseNativeDialog);
-#else
-		return static_cast<QFileDialog::Options>(QFileDialog::Option::ShowDirsOnly);
+		const auto forceNativeDialog = GetSetting(Set::Player_ForceNativeDirDialog);
+		if(!forceNativeDialog)
+		{
+			return static_cast<QFileDialog::Options>(QFileDialog::Option::ShowDirsOnly |
+													 QFileDialog::Option::DontUseNativeDialog);
+		}
 #endif
+
+		return static_cast<QFileDialog::Options>(QFileDialog::Option::ShowDirsOnly);
 	}
 }
 
@@ -65,10 +70,10 @@ namespace Gui
 			};
 
 		auto sidebarUrls = this->sidebarUrls();
-		for(const auto& location : locations)
+		for(const auto& location: locations)
 		{
 			const auto standardLocations = QStandardPaths::standardLocations(location);
-			for(const auto& standardLocation : standardLocations)
+			for(const auto& standardLocation: standardLocations)
 			{
 				const auto url = QUrl::fromLocalFile(standardLocation);
 				if(!sidebarUrls.contains(url))

@@ -98,6 +98,7 @@ enum class SettingKey : unsigned short
 		Player_SplitterControls,
 		Player_PrivId,
 		Player_PublicId,
+		Player_ForceNativeDirDialog,
 		PL_EntryLook,
 		PL_LastTrack,
 		PL_LastTrackBeforeStop,
@@ -314,7 +315,7 @@ INST(QByteArray, Player_SplitterState)            /* spliter state between playl
 INST(QByteArray, Player_SplitterControls)    /* Splitter state between controls and playlist */
 INST(QByteArray, Player_PrivId)                /* Unique identifier */
 INST(QByteArray, Player_PublicId)                /* Unique identifier */
-
+INST(bool, Player_ForceNativeDirDialog)       /* Under some environments, native dir dialog is disabled */
 INST(QStringList,
      PL_Playlist)                /* old playlist: list of integers in case of library tracks, if no library track, filepath */
 INST(bool, PL_LoadSavedPlaylists)            /* load saved playlists on startup */

@@ -26,10 +26,11 @@
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Macros.h"
 
 struct GUI_UiPreferences::Private
 {
-	GUI_IconPreferences* iconConfig=nullptr;
+	GUI_IconPreferences* iconConfig = nullptr;
 };
 
 GUI_UiPreferences::GUI_UiPreferences(const QString& identifier) :
@@ -47,13 +48,15 @@ QString GUI_UiPreferences::actionName() const
 
 bool GUI_UiPreferences::commit()
 {
-
 	m->iconConfig->commit();
 
 	SetSetting(Set::Player_ControlStyle, ui->cbBigCover->isChecked() ? 1 : 0);
 	SetSetting(Set::Player_Style, ui->cbDarkMode->isChecked() ? 1 : 0);
 	SetSetting(Set::Player_FadingCover, ui->cbFadingCover->isChecked());
 	SetSetting(Set::Lib_FontBold, ui->cbBoldLibraryFont->isChecked());
+#ifdef DISABLE_NATIVE_DIR_DIALOGS
+	SetSetting(Set::Player_ForceNativeDirDialog, ui->cbForceNativeDirDialog->isChecked());
+#endif
 
 	Set::shout<Set::Player_Style>();
 
@@ -66,17 +69,27 @@ void GUI_UiPreferences::revert()
 
 	ui->cbFadingCover->setChecked(GetSetting(Set::Player_FadingCover));
 	ui->cbBoldLibraryFont->setChecked(GetSetting(Set::Lib_FontBold));
+#ifdef DISABLE_NATIVE_DIR_DIALOGS
+	ui->cbForceNativeDirDialog->setChecked(GetSetting(Set::Player_ForceNativeDirDialog));
+#endif
 
 	styleChanged();
 }
 
 void GUI_UiPreferences::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
 	setupParent(this, &ui);
+
+#ifdef DISABLE_NATIVE_DIR_DIALOGS
+	ui->cbForceNativeDirDialog->setVisible(true);
+#else
+	ui->cbForceNativeDirDialog->setVisible(false);
+#endif
 
 	m->iconConfig = new GUI_IconPreferences(ui->tabWidget);
 
@@ -109,7 +122,8 @@ void GUI_UiPreferences::retranslate()
 	ui->cbBigCover->setText(tr("Show large cover"));
 	ui->cbDarkMode->setText(Lang::get(Lang::DarkMode));
 
-	if(m->iconConfig){
+	if(m->iconConfig)
+	{
 		ui->tabWidget->setTabText(2, m->iconConfig->actionName());
 	}
 

@@ -38,21 +38,14 @@
          </property>
         </widget>
        </item>
-       <item row="4" column="0">
+       <item row="5" column="0">
         <widget class="QPushButton" name="btn_editCss">
          <property name="text">
           <string>Edit style sheet</string>
          </property>
         </widget>
        </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="cbBigCover">
-         <property name="text">
-          <string notr="true">Big cover</string>
-         </property>
-        </widget>
-       </item>
-       <item row="5" column="0">
+       <item row="6" column="0">
         <spacer name="verticalSpacer_2">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -65,10 +58,24 @@
          </property>
         </spacer>
        </item>
+       <item row="1" column="0">
+        <widget class="QCheckBox" name="cbBigCover">
+         <property name="text">
+          <string notr="true">Big cover</string>
+         </property>
+        </widget>
+       </item>
        <item row="3" column="0">
         <widget class="QCheckBox" name="cbBoldLibraryFont">
          <property name="text">
           <string>Bold Library Font</string>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="0">
+        <widget class="QCheckBox" name="cbForceNativeDirDialog">
+         <property name="text">
+          <string>Force native directory dialogs</string>
          </property>
         </widget>
        </item>

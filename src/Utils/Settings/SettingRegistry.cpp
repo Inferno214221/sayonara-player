@@ -158,6 +158,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Player_SplitterControls>("player_splitter_controls", QByteArray());
 	registerSetting<Set::Player_PrivId>("player_priv_id", QByteArray());
 	registerSetting<Set::Player_PublicId>("player_pub_id", QByteArray());
+	registerSetting<Set::Player_ForceNativeDirDialog>("player_native_dir_dialog", false);
 
 	registerSetting<Set::PL_Playlist>("playlist", QStringList());
 	registerSetting<Set::PL_LoadSavedPlaylists>("load_saved_playlists", false);
