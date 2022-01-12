@@ -82,6 +82,7 @@
 #include "Gui/Preferences/Broadcast/GUI_BroadcastPreferences.h"
 #include "Gui/Preferences/Covers/GUI_CoverPreferences.h"
 #include "Gui/Preferences/Engine/GUI_EnginePreferences.h"
+#include "Gui/Preferences/FileExtensions/GUI_FileExtensionPreferences.h"
 #include "Gui/Preferences/UiPreferences/GUI_UiPreferences.h"
 #include "Gui/Preferences/Language/GUI_LanguagePreferences.h"
 #include "Gui/Preferences/LastFM/GUI_LastFmPreferences.h"
@@ -412,6 +413,8 @@ void Application::initPreferences()
 
 	preferences->registerPreferenceDialog(new GUI_NotificationPreferences("notifications"));
 	preferences->registerPreferenceDialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base(m->playManager)));
+
+	preferences->registerPreferenceDialog(new GUI_FileExtensionPreferences("file-extensions"));
 
 	m->player->registerPreferenceDialog(preferences->action());
 }

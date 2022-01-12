@@ -55,6 +55,7 @@
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Settings/Settings.h"
 
 #ifdef Q_OS_UNIX
 #ifndef SAYONARA_INSTALL_LIB_PATH
@@ -255,10 +256,12 @@ QString Util::getFileFilter(Util::Extensions extensions, const QString& name)
 
 QStringList Util::soundfileExtensions(bool withAsterisk)
 {
-	const auto filters = QStringList {
+	auto filters = QStringList {
 		"mp3", "ogg", "opus", "oga", "m4a", "wav", "flac", "aac", "wma", "mpc", "aiff", "ape",
 		"webm", "mp4"
 	};
+
+	filters << GetSetting(::Set::Engine_SoundFileExtensions);
 
 	return createFileExtensionList(filters, withAsterisk);
 }

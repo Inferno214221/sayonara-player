@@ -190,6 +190,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Notification_Name>("notification_name", QString("DBus"));
 
 	registerSetting<Set::Engine_Name>("sound_engine", QString());
+	registerSetting<Set::Engine_SoundFileExtensions>("sound_file_extensions", QStringList());
 	registerSetting<Set::Engine_CurTrackPos_s>("last_track_pos", 0);
 	registerSetting<Set::Engine_Vol>("volume", 50);
 	registerSetting<Set::Engine_Mute>("mute", false);

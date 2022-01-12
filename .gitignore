@@ -12,6 +12,6 @@ doxygen/html*
 *.orig
 *.autosave
 .idea
-parts
+parts/
 
 
