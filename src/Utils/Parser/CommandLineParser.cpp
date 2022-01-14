@@ -21,48 +21,46 @@
 #include "CommandLineParser.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/FileUtils.h"
+
 #include <QDir>
 
-CommandLineData::CommandLineData()
-{
-	multipleInstances = false;
-	abort = false;
-	forceShow = false;
-}
-
+CommandLineData::CommandLineData() :
+	multipleInstances {false},
+	abort {false},
+	forceShow {false} {}
 
 CommandLineData CommandLineParser::parse(int argc, char** argv)
 {
 	CommandLineData data;
-	QStringList www_files;
+	QStringList onlineFiles;
 
-	for(int i=1; i<argc; i++)
+	for(auto i = 1; i < argc; i++)
 	{
-		QString str(argv[i]);
-		QRegExp re("--lang=([a-z]+).*");
+		const auto str = QString(argv[i]);
+		const auto regExp = QRegExp("--lang=([a-z]+).*");
 
-		if(str.compare("--help") == 0)
+		if(str == "--help")
 		{
 			help();
 			data.abort = true;
 			return data;
 		}
 
-		if(str.compare("--multi-instances") == 0)
+		if(str == "--multi-instances")
 		{
 			data.multipleInstances = true;
 			continue;
 		}
 
-		if(str.compare("--show") == 0)
+		if(str == "--show")
 		{
 			data.forceShow = true;
 			continue;
 		}
 
-		if(re.indexIn(str) >= 0)
+		if(regExp.indexIn(str) >= 0)
 		{
-			data.language = re.cap(1);
+			data.language = regExp.cap(1);
 			spLog(Log::Info, "CommandLineParser") << "Force language to " << data.language;
 		}
 
@@ -70,7 +68,7 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 		{
 			if(Util::File::isWWW(str))
 			{
-				www_files << str;
+				onlineFiles << str;
 			}
 
 			else if(Util::File::isSoundFile(str) || Util::File::isPlaylistFile(str) || Util::File::isDir(str))
@@ -80,17 +78,17 @@ CommandLineData CommandLineParser::parse(int argc, char** argv)
 		}
 	}
 
-	if(!www_files.isEmpty())
+	if(!onlineFiles.isEmpty())
 	{
-		QString playlist_filename = QDir::temp().absoluteFilePath("playlist.m3u");
-		QByteArray raw_data = www_files.join("\n").toLocal8Bit();
-		Util::File::writeFile(raw_data, playlist_filename);
-		data.filesToPlay << playlist_filename;
+		const auto playlistFilename = QDir::temp().absoluteFilePath("playlist.m3u");
+		const auto rawData = onlineFiles.join("\n").toLocal8Bit();
+		Util::File::writeFile(rawData, playlistFilename);
+
+		data.filesToPlay << playlistFilename;
 	}
 
 	return data;
 }
-
 
 void CommandLineParser::help()
 {
