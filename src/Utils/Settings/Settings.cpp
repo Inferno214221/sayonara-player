@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <iostream>
-
 #include "Utils/Library/LibraryNamespaces.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Settings/SettingRegistry.h"
@@ -27,22 +25,27 @@
 
 #include "Utils/Crypt.h"
 #include "Utils/Utils.h"
-#include "Utils/Language/Language.h"
 #include "Utils/Language/LanguageUtils.h"
 
 #include <array>
-#include <iterator>
 
 struct Settings::Private
 {
-	QString			version;
+	QString version;
 	std::array<AbstrSetting*, static_cast<int>(SettingKey::Num_Setting_Keys)> settings;
-	bool			initialized;
+	bool initialized{false};
 
-	Private()
+	Private() // NOLINT
 	{
-		std::fill(settings.begin(), settings.end(), nullptr);
-		initialized = false;
+		settings.fill(nullptr);
+	}
+
+	~Private()
+	{
+		for(auto* setting : settings)
+		{
+			delete setting;
+		}
 	}
 };
 
@@ -51,18 +54,11 @@ Settings::Settings()
 	m = Pimpl::make<Private>();
 }
 
-Settings::~Settings ()
-{
-	for(size_t i=0; i<m->settings.size(); i++)
-	{
-		delete m->settings[i];
-		m->settings[i] = nullptr;
-	}
-}
+Settings::~Settings() = default;
 
 AbstrSetting* Settings::setting(SettingKey key) const
 {
-	return m->settings[size_t(key)];
+	return m->settings[static_cast<size_t>(key)];
 }
 
 const SettingArray& Settings::settings()
@@ -72,57 +68,58 @@ const SettingArray& Settings::settings()
 
 void Settings::registerSetting(AbstrSetting* s)
 {
-	SettingKey key  = s->getKey();
-	uint i = static_cast<uint>(key);
-	m->settings[i] = s;
+	const auto key = s->getKey();
+	const auto index = static_cast<uint>(key);
+	m->settings[index] = s;
 }
-
 
 bool Settings::checkSettings()
 {
-	if(m->initialized){
+	if(m->initialized)
+	{
 		return true;
 	}
 
 	SettingRegistry::init();
-	bool has_empty = std::any_of(m->settings.begin(), m->settings.end(), [](AbstrSetting* s){
-		return (s==nullptr);
+
+	const auto hasUnitializedSetting = std::any_of(m->settings.begin(), m->settings.end(), [](auto* setting) {
+		return (setting == nullptr);
 	});
 
-	m->initialized = (!has_empty);
+	m->initialized = (!hasUnitializedSetting);
+
 	return m->initialized;
 }
 
-
 void Settings::applyFixes()
 {
-	int settingsRevision = this->get<Set::Settings_Revision>();
+	const auto settingsRevision = this->get<Set::Settings_Revision>();
 	if(settingsRevision < 1)
 	{
 		// Create Crypt keys
-		QByteArray priv_key = ::Util::randomString(32).toLocal8Bit();
-		this->set<Set::Player_PrivId>(priv_key);
+		const auto privateKey = ::Util::randomString(32).toLocal8Bit();
+		this->set<Set::Player_PrivId>(privateKey);
 
-		QByteArray pub_key = ::Util::randomString(32).toLocal8Bit();
-		this->set<Set::Player_PublicId>(pub_key);
+		const auto publicKey = ::Util::randomString(32).toLocal8Bit();
+		this->set<Set::Player_PublicId>(publicKey);
 
 		// Crypt Last FM password
-		StringPair lfm_pw = this->get<Set::LFM_Login>();
-		this->set<Set::LFM_Username>(lfm_pw.first);
-		this->set<Set::LFM_Password>(Util::Crypt::encrypt(lfm_pw.second));
+		const auto lastFmCredentials = this->get<Set::LFM_Login>();
+		this->set<Set::LFM_Username>(lastFmCredentials.first);
+		this->set<Set::LFM_Password>(Util::Crypt::encrypt(lastFmCredentials.second));
 		this->set<Set::LFM_Login>(StringPair("", ""));
 
 		// Crypt Proxy Password
-		QString proxy_pw = this->get<Set::Proxy_Password>();
-		this->set<Set::Proxy_Password>(Util::Crypt::encrypt(proxy_pw));
+		const auto proxyPassword = this->get<Set::Proxy_Password>();
+		this->set<Set::Proxy_Password>(Util::Crypt::encrypt(proxyPassword));
 
 		this->set<Set::Settings_Revision>(1);
 	}
 
 	if(settingsRevision < 2)
 	{
-		QString language = this->get<Set::Player_Language>();
-		QString fourLetter = Util::Language::convertOldLanguage(language);
+		const auto language = this->get<Set::Player_Language>();
+		const auto fourLetter = Util::Language::convertOldLanguage(language);
 		this->set<Set::Player_Language>(fourLetter);
 
 		this->set<Set::Settings_Revision>(2);
@@ -130,21 +127,17 @@ void Settings::applyFixes()
 
 	if(settingsRevision < 3)
 	{
-		bool b = this->get<Set::Lib_ShowAlbumCovers>();
-		if(b) {
-			this->set<Set::Lib_ViewType>(::Library::ViewType::CoverView);
-		}
-
-		else {
-			this->set<Set::Lib_ViewType>(::Library::ViewType::Standard);
-		}
-
+		const auto showAlbumCovers = this->get<Set::Lib_ShowAlbumCovers>();
+		const auto coverViewType = (showAlbumCovers)
+			? ::Library::ViewType::CoverView
+			: ::Library::ViewType::Standard;
+		this->set<Set::Lib_ViewType>(coverViewType);
 		this->set<Set::Settings_Revision>(3);
 	}
 
 	if(settingsRevision < 4)
 	{
-		QString path = this->get<Set::Cover_TemplatePath>();
+		auto path = this->get<Set::Cover_TemplatePath>();
 		path.replace("jpg", "png", Qt::CaseInsensitive);
 		this->set<Set::Cover_TemplatePath>(path);
 
@@ -153,7 +146,7 @@ void Settings::applyFixes()
 
 	if(settingsRevision < 5)
 	{
-		QString path = this->get<Set::Cover_TemplatePath>();
+		auto path = this->get<Set::Cover_TemplatePath>();
 		path.replace(QRegExp("\\.[a-zA-Z]{3}$"), "");
 		this->set<Set::Cover_TemplatePath>(path);
 
@@ -162,14 +155,14 @@ void Settings::applyFixes()
 
 	if(get<Set::Player_PrivId>().isEmpty())
 	{
-		QByteArray id = ::Util::randomString(32).toLocal8Bit();
-		this->set<Set::Player_PrivId>(id);
+		const auto privateId = ::Util::randomString(32).toLocal8Bit();
+		this->set<Set::Player_PrivId>(privateId);
 	}
 
 	if(get<Set::Player_PublicId>().isEmpty())
 	{
-		QByteArray id = ::Util::randomString(32).toLocal8Bit();
-		this->set<Set::Player_PublicId>(id);
+		const auto publicId = ::Util::randomString(32).toLocal8Bit();
+		this->set<Set::Player_PublicId>(publicId);
 	}
 }
 

@@ -27,13 +27,14 @@
 #include "Utils/Singleton.h"
 
 #include <array>
+#include <cassert>
 
 #define GetSetting(x) Settings::instance()->get<x>()
 #define SetSetting(x, y) Settings::instance()->set<x>(y)
 #define ListenSetting(x, y) Set::listen<x>(this, &y)
 #define ListenSettingNoCall(x, y) Set::listen<x>(this, &y, false)
 
-using SettingArray=std::array<AbstrSetting*, static_cast<unsigned int>(SettingKey::Num_Setting_Keys)>;
+using SettingArray = std::array<AbstrSetting*, static_cast<unsigned int>(SettingKey::Num_Setting_Keys)>;
 
 /**
  * @brief The Settings class
@@ -41,11 +42,11 @@ using SettingArray=std::array<AbstrSetting*, static_cast<unsigned int>(SettingKe
  */
 class Settings
 {
-	SINGLETON(Settings)
+		SINGLETON(Settings)
 	PIMPL(Settings)
 
 	public:
-		AbstrSetting* setting(SettingKey keyIndex) const;
+		[[nodiscard]] AbstrSetting* setting(SettingKey keyIndex) const;
 
 		/* get all settings (used by database) */
 		const SettingArray& settings();
@@ -60,8 +61,9 @@ class Settings
 		template<typename KeyClass>
 		const typename KeyClass::Data& get() const
 		{
-			using SettingPtr=Setting<KeyClass>*;
-			SettingPtr s = static_cast<SettingPtr>( setting(KeyClass::key) );
+			using SettingPtr = Setting<KeyClass>*;
+			auto* s = static_cast<SettingPtr>(setting(KeyClass::key));
+			assert(s);
 			return s->value();
 		}
 
@@ -69,12 +71,12 @@ class Settings
 		template<typename KeyClass>
 		void set(const typename KeyClass::Data& val)
 		{
-			using SettingPtr=Setting<KeyClass>*;
-			SettingPtr s = static_cast<SettingPtr>( setting(KeyClass::key) );
-
-			if( s->assignValue(val))
+			using SettingPtr = Setting<KeyClass>*;
+			auto* s = static_cast<SettingPtr>(setting(KeyClass::key));
+			assert(s);
+			if(s->assignValue(val))
 			{
-				SettingNotifier< KeyClass >* sn = SettingNotifier< KeyClass >::instance();
+				SettingNotifier<KeyClass>* sn = SettingNotifier<KeyClass>::instance();
 				sn->valueChanged();
 			}
 		}
@@ -83,12 +85,11 @@ class Settings
 		template<typename KeyClass>
 		void shout() const
 		{
-			SettingNotifier<KeyClass >* sn = SettingNotifier< KeyClass >::instance();
-			sn->valueChanged();
+			auto* settingNotifier = SettingNotifier<KeyClass>::instance();
+			settingNotifier->valueChanged();
 		}
 
 		void applyFixes();
 };
-
 
 #endif // SAYONARA_SETTINGS_H_
