@@ -39,16 +39,16 @@
 #include <type_traits>
 
 template<typename KeyClass>
-void registerSetting(const char* db_key, const typename KeyClass::Data& default_value)
+void registerSetting(const char* databaseKey, const typename KeyClass::Data& defaultValue)
 {
-	auto setting = new Setting<KeyClass>(db_key, default_value);
+	auto setting = new Setting<KeyClass>(databaseKey, defaultValue);
 	Settings::instance()->registerSetting(setting);
 }
 
 template<typename KeyClass>
-void registerSetting(const typename KeyClass::Data& default_value)
+void registerSetting(const typename KeyClass::Data& defaultValue)
 {
-	auto setting = new Setting<KeyClass>(default_value);
+	auto setting = new Setting<KeyClass>(defaultValue);
 	Settings::instance()->registerSetting(setting);
 }
 
@@ -178,10 +178,12 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_ShowCovers>("playlist_show_covers", false);
 	registerSetting<Set::PL_ShowRating>("playlist_show_rating", false);
 	registerSetting<Set::PL_CurrentTrackCustomColorStandard>("playlist_current_track_custom_color_standard", false);
-	registerSetting<Set::PL_CurrentTrackColorStringStandard>("playlist_current_track_custom_color_string_standard", QString());
+	registerSetting<Set::PL_CurrentTrackColorStringStandard>("playlist_current_track_custom_color_string_standard",
+	                                                         QString());
 	registerSetting<Set::PL_CurrentTrackCustomColorDark>("playlist_current_track_custom_color_dark", true);
-	registerSetting<Set::PL_CurrentTrackColorStringDark>("playlist_current_track_custom_color_string_dark", QString("#6f91cc"));
-	registerSetting<Set::PL_JumpToCurrentTrack >("playlist_jump_to_current_track", true);
+	registerSetting<Set::PL_CurrentTrackColorStringDark>("playlist_current_track_custom_color_string_dark",
+	                                                     QString("#6f91cc"));
+	registerSetting<Set::PL_JumpToCurrentTrack>("playlist_jump_to_current_track", true);
 
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000);
