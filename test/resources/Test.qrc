@@ -4,5 +4,6 @@
         <file>oggtest.ogg</file>
         <file>logo.png</file>
         <file>fmstream.org.html</file>
+        <file>star.png</file>
     </qresource>
 </RCC>

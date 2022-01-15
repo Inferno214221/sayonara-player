@@ -70,6 +70,8 @@ new_test(Playlist/PlaylistShuffleTest.cpp Playlist/PlaylistTestUtils.cpp Databas
 
 new_test(PlayManager/PlayManagerTest.cpp)
 
+new_test(Streaming/RadioStationParserTest.cpp)
+
 new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
 
@@ -81,6 +83,7 @@ new_test(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/RatingTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/TagFromPathTest.cpp)
 new_test(Tagging/TaggingTest.cpp Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/CoverEditTest.cpp Database/TestTracks.cpp)
 
 new_test(Util/UtilTest.cpp)
 new_test(Util/AsyncWebAccessTest.cpp)
@@ -100,6 +103,4 @@ new_test(Util/CissearchTest.cpp)
 new_test(Util/StandardPathTest.cpp)
 new_test(Util/TreeTest.cpp)
 new_test(Util/Ranges.cpp)
-
-new_test(Streaming/RadioStationParserTest.cpp)
 
