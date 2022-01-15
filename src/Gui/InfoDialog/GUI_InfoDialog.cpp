@@ -397,7 +397,6 @@ void GUI_InfoDialog::showTagEditTab()
 
 	initTagEdit();
 
-	m->uiTagEditor->setMetadata(localTracks);
 	ui->tabWidget->setCurrentWidget(m->uiTagEditor);
 
 	m->uiTagEditor->setMetadata(localTracks);

@@ -42,10 +42,6 @@ namespace Tagging
 	class Editor;
 }
 
-/**
- * @brief The GUI_CoverEdit class
- * @ingroup GuiTagging
- */
 class GUI_CoverEdit :
 	public Gui::Widget
 {
@@ -54,54 +50,26 @@ class GUI_CoverEdit :
 	UI_CLASS(GUI_CoverEdit)
 
 	public:
-		/**
-		 * @brief GUI_CoverEdit
-		 * @param editor The same tag editor as used in GUI_TagEdit
-		 * @param parent
-		 */
-		explicit GUI_CoverEdit(Tagging::Editor* tagEditor, QWidget* parent);
+		GUI_CoverEdit(Tagging::Editor* tagEditor, QWidget* parent);
 		~GUI_CoverEdit() override;
 
-		/**
-		 * @brief Shows the current cover (if there) and offers to replace it
-		 * Every other widget is hidden
-		 */
-		void reset();
-
-		/**
-		 * @brief refetches the track from the tag editor
-		 * and sets the cover to the left button
-		 */
-		void refreshCurrentTrack();
-
-		/**
-		 * @brief sets the current index for a track which is currently processed
-		 * @param index
-		 */
 		void setCurrentIndex(int index);
 
-		/**
-		 * @brief returns the new cover for a current track.
-		 * @param index
-		 * @return empty pixmap if index is invalid, or no new cover is desired a track
-		 */
-		QPixmap selectedCover(int index) const;
+		void refreshCurrentTrack();
+		void reset();
+		void updateTrack(int index);
 
 	private:
-		void setCover(const MetaData& track);
-		void showReplacementField(bool b);
-		bool isCoverReplacementActive() const;
+		void refreshOriginalCover();
+		void refreshReplacementCover();
 
 	private slots:
-		/**
-		 * @brief When button has finished setting up its button
-		 */
 		void coverChanged();
 		void replaceToggled(bool b);
-		void coverAllToggled(bool b);
-		void setMetadata(const MetaDataList& tracks);
+		void btnAllToggled(bool b);
 
 	protected:
+		void showEvent(QShowEvent* event) override;
 		void languageChanged() override;
 };
 

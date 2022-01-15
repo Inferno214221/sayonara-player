@@ -47,6 +47,7 @@
 
 #include <QHash>
 #include <QFileInfo>
+#include <QFile>
 
 using Tagging::Editor;
 
@@ -107,7 +108,10 @@ namespace
 		const auto pixmap = scalePixmap(cover);
 		saveCoverInTrack(track.filepath(), pixmap, editor);
 
-		pixmap.save(coverLocation.audioFileTarget());
+		if(QFile(coverLocation.audioFileTarget()).isWritable())
+		{
+			pixmap.save(coverLocation.audioFileTarget());
+		}
 
 		return coverDatabase->setCover(coverLocation.hash(), pixmap);
 	}

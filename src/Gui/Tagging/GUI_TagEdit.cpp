@@ -435,6 +435,8 @@ void GUI_TagEdit::refreshCurrentTrack()
 		ui->tabWidget->setCurrentIndex(0);
 	}
 
+	ui->tabWidget->setTabEnabled(2, isCoverSupported);
+
 	m->uiCoverEdit->refreshCurrentTrack();
 	m->uiTagFromPath->refreshCurrentTrack();
 
@@ -523,10 +525,8 @@ void GUI_TagEdit::writeChanges(int trackIndex)
 	track.setTrackNumber(TrackNum(ui->sbTrackNumber->value()));
 	track.setRating(ui->widgetRating->rating());
 
-	const auto cover = m->uiCoverEdit->selectedCover(trackIndex);
-
 	m->tagEditor->updateTrack(trackIndex, track);
-	m->tagEditor->updateCover(trackIndex, cover);
+	m->uiCoverEdit->updateTrack(trackIndex);
 }
 
 void GUI_TagEdit::commit()
@@ -586,9 +586,7 @@ void GUI_TagEdit::commit()
 		}
 
 		m->tagEditor->updateTrack(i, track);
-
-		const auto cover = m->uiCoverEdit->selectedCover(i);
-		m->tagEditor->updateCover(i, cover);
+		m->uiCoverEdit->updateTrack(i);
 	}
 
 	runEditor(m->tagEditor);
