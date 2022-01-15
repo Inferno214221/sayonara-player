@@ -244,8 +244,8 @@ GUI_InfoDialog::Tab GUI_InfoDialog::show(GUI_InfoDialog::Tab tab)
 		tab = Tab::Info;
 	}
 
-	this->setBusy(m->tracks.isEmpty());
-	this->prepareTab(tab);
+	setBusy(m->tracks.isEmpty());
+	prepareTab(tab);
 
 	if(ui->tabWidget->currentIndex() != +tab)
 	{
