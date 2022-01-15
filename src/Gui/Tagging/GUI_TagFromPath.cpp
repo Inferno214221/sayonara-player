@@ -19,11 +19,15 @@
  */
 
 #include "GUI_TagFromPath.h"
-
 #include "Gui/TagEdit/ui_GUI_TagFromPath.h"
+
+#include "Components/Tagging/Editor.h"
+
+#include "Utils/globals.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaData.h"
 
 #include <QDesktopServices>
 #include <QMap>
@@ -32,14 +36,18 @@ using namespace Tagging;
 
 struct GUI_TagFromPath::Private
 {
-	QString currentFilepath;
+	Editor* tagEdit;
+	int currentIndex {0};
 	QMap<TagName, ReplacedString> tagReplaceStringMap;
+
+	Private(Editor* tagEdit) :
+		tagEdit {tagEdit} {}
 };
 
-GUI_TagFromPath::GUI_TagFromPath(QWidget* parent) :
+GUI_TagFromPath::GUI_TagFromPath(Tagging::Editor* tagEdit, QWidget* parent) :
 	Gui::Widget(parent)
 {
-	m = Pimpl::make<Private>();
+	m = Pimpl::make<Private>(tagEdit);
 
 	ui = new Ui::GUI_TagFromPath();
 	ui->setupUi(this);
@@ -102,22 +110,34 @@ bool GUI_TagFromPath::checkIfAnyButtonIsChecked() const
 	        ui->btnTrackNumber->isChecked());
 }
 
-void GUI_TagFromPath::setFilepath(const QString& filepath)
+void GUI_TagFromPath::setCurrentIndex(int index)
 {
-	m->currentFilepath = filepath;
+	m->currentIndex = index;
 
-	if(ui->leTag->text().isEmpty() || !checkIfAnyButtonIsChecked())
+	if(isVisible() && Util::between(index, m->tagEdit->count()))
 	{
-		ui->leTag->setText(filepath);
+		refreshCurrentTrack();
 	}
+}
 
-	const auto expression = Tagging::Expression(ui->leTag->text(), filepath);
-	setTagColors(expression.isValid());
+void GUI_TagFromPath::refreshCurrentTrack()
+{
+	if(isVisible() && Util::between(m->currentIndex, m->tagEdit->count()))
+	{
+		const auto filepath = m->tagEdit->metadata(m->currentIndex).filepath();
+		if(ui->leTag->text().isEmpty() || !checkIfAnyButtonIsChecked())
+		{
+			ui->leTag->setText(filepath);
+		}
 
-	const auto tagType = Tagging::getTagType(filepath);
-	const auto tagTypeString = Tagging::tagTypeToString(tagType);
+		const auto expression = Tagging::Expression(ui->leTag->text(), filepath);
+		setTagColors(expression.isValid());
 
-	ui->labTagType->setText(tr("Tag") + ": " + tagTypeString);
+		const auto tagType = Tagging::getTagType(filepath);
+		const auto tagTypeString = Tagging::tagTypeToString(tagType);
+
+		ui->labTagType->setText(tr("Tag") + ": " + tagTypeString);
+	}
 }
 
 void GUI_TagFromPath::reset()
@@ -147,7 +167,8 @@ void GUI_TagFromPath::setTagColors(bool valid)
 
 void GUI_TagFromPath::tagTextChanged(const QString& tagString)
 {
-	const auto expression = Tagging::Expression(tagString, m->currentFilepath);
+	const auto filepath = m->tagEdit->metadata(m->currentIndex).filepath();
+	const auto expression = Tagging::Expression(tagString, filepath);
 	setTagColors(expression.isValid());
 }
 
@@ -166,7 +187,6 @@ void GUI_TagFromPath::addInvalidFilepath(const QString& filepath)
 bool GUI_TagFromPath::replaceSelectedTagText(TagName tagName, bool buttonChecked)
 {
 	const auto textSelection = ui->leTag->textSelection();
-
 	if(buttonChecked && (textSelection.selectionStart < 0))
 	{
 		Message::info(tr("Please select text first"));
@@ -179,22 +199,20 @@ bool GUI_TagFromPath::replaceSelectedTagText(TagName tagName, bool buttonChecked
 	if(buttonChecked)
 	{
 		const auto selectedText = lineEditText.mid(textSelection.selectionStart, textSelection.selectionSize);
-
 		lineEditText.replace(textSelection.selectionStart, textSelection.selectionSize, tagString);
 		m->tagReplaceStringMap[tagName] = selectedText;
-
-		ui->leTag->setText(lineEditText);
 	}
 
 	else
 	{
 		lineEditText.replace(tagString, m->tagReplaceStringMap[tagName]);
 		m->tagReplaceStringMap.remove(tagName);
-
-		ui->leTag->setText(lineEditText);
 	}
 
-	const auto expression = Tagging::Expression(lineEditText, m->currentFilepath);
+	ui->leTag->setText(lineEditText);
+
+	const auto filepath = m->tagEdit->metadata(m->currentIndex).filepath();
+	const auto expression = Tagging::Expression(lineEditText, filepath);
 	setTagColors(expression.isValid());
 
 	return true;
@@ -220,6 +238,12 @@ void GUI_TagFromPath::btnTagHelpClicked()
 {
 	const auto url = QUrl(QStringLiteral("https://sayonara-player.com/faq.php#tag-edit"));
 	QDesktopServices::openUrl(url);
+}
+
+void GUI_TagFromPath::showEvent(QShowEvent* event)
+{
+	refreshCurrentTrack();
+	Gui::Widget::showEvent(event);
 }
 
 void GUI_TagFromPath::languageChanged()

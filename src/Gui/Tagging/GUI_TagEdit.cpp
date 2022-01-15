@@ -181,7 +181,7 @@ struct GUI_TagEdit::Private
 
 	Private(GUI_TagEdit* parent, Ui::GUI_TagEdit* ui) :
 		tagEditor {new Tagging::Editor()},
-		uiTagFromPath {new GUI_TagFromPath(ui->tabFromPath)},
+		uiTagFromPath {new GUI_TagFromPath(tagEditor, ui->tabFromPath)},
 		uiCoverEdit {new GUI_CoverEdit(tagEditor, parent)},
 		currentIndex {-1}
 	{
@@ -321,7 +321,7 @@ void GUI_TagEdit::applyAllTagFromPathTriggered()
 	{
 		for(const auto& invalidFilepath : invalidFilepaths)
 		{
-			this->m->uiTagFromPath->addInvalidFilepath(invalidFilepath);
+			m->uiTagFromPath->addInvalidFilepath(invalidFilepath);
 		}
 
 		const auto answer = showInvalidFilepathsMessage(invalidFilepaths.count(), this);
@@ -344,6 +344,7 @@ void GUI_TagEdit::setCurrentIndex(int index)
 {
 	m->currentIndex = index;
 	m->uiCoverEdit->setCurrentIndex(index);
+	m->uiTagFromPath->setCurrentIndex(index);
 }
 
 void GUI_TagEdit::nextButtonClicked()
@@ -383,7 +384,6 @@ void GUI_TagEdit::refreshCurrentTrack()
 		const auto fileInfo = QFileInfo(track.filepath());
 		ui->labReadOnly->setVisible(!fileInfo.isWritable());
 		ui->labFilepath->setText(filepathLink);
-		m->uiTagFromPath->setFilepath(track.filepath());
 	}
 
 	ui->leTitle->setText(track.title());
@@ -436,6 +436,7 @@ void GUI_TagEdit::refreshCurrentTrack()
 	}
 
 	m->uiCoverEdit->refreshCurrentTrack();
+	m->uiTagFromPath->refreshCurrentTrack();
 
 	ui->sbTrackNumber->setValue(track.trackNumber());
 

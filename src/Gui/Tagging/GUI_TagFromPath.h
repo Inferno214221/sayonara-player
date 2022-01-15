@@ -37,10 +37,6 @@ namespace Tagging
 }
 class MetaData;
 
-/**
- * @brief The GUI_TagFromPath class
- * @ingroup GuiTagging
- */
 class GUI_TagFromPath :
 	public Gui::Widget
 {
@@ -53,19 +49,16 @@ class GUI_TagFromPath :
 		void sigApplyAll();
 
 	public:
-		GUI_TagFromPath(QWidget* parent = nullptr);
+		GUI_TagFromPath(Tagging::Editor* editor, QWidget* parent);
 		~GUI_TagFromPath();
 
-		void setFilepath(const QString& filepath);
-
-		/**
-		 * @brief add a filepath where the regex could not be applied on
-		 * @param filepath
-		 */
 		void addInvalidFilepath(const QString& filepath);
 		void clearInvalidFilepaths();
 
 		QString getRegexString() const;
+
+		void setCurrentIndex(int index);
+		void refreshCurrentTrack();
 		void reset();
 
 	private:
@@ -77,18 +70,12 @@ class GUI_TagFromPath :
 		void showErrorFrame(bool b);
 
 	private slots:
-		/**
-		 * @brief calls webpage with help
-		 */
 		void btnTagHelpClicked();
-
-		/**
-		 * @brief tries to apply the tag
-		 */
 		void tagTextChanged(const QString& tagString);
 
 	protected:
-		void languageChanged();
+		void showEvent(QShowEvent* event) override;
+		void languageChanged() override;
 };
 
 #endif // GUI_TAGFROMPATH_H
