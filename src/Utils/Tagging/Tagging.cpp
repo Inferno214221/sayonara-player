@@ -24,6 +24,7 @@
 #include "Tagging/TaggingUtils.h"
 #include "Tagging/Models/Discnumber.h"
 #include "Tagging/Models/Popularimeter.h"
+#include "Tagging/FileTypeResolver.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
@@ -119,6 +120,8 @@ namespace
 
 bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 {
+	Tagging::FileTypeResolver::addFileTypeResolver();
+
 	const auto fileInfo = QFileInfo(track.filepath());
 	track.setFilesize(static_cast<Filesize>(fileInfo.size()));
 	setDate(track);
@@ -184,6 +187,8 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 
 bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 {
+	Tagging::FileTypeResolver::addFileTypeResolver();
+
 	const auto filepath = md.filepath();
 	const auto fileInfo = QFileInfo(filepath);
 	if(fileInfo.size() <= 0)
