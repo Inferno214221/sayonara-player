@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
 #include "PlaylistTestUtils.h"
-#include "PlayManagerMock.h"
+
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Utils/MetaData/MetaData.h"

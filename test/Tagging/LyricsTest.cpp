@@ -1,4 +1,4 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingLyrics.h"

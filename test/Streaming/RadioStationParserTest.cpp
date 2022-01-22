@@ -17,7 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Components/Streaming/StationSearcher/FMStreamParser.h"
 #include "Utils/FileUtils.h"
 

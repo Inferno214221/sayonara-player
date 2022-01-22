@@ -1,4 +1,4 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Components/Tagging/Expression.h"
 #include "Utils/MetaData/MetaDataList.h"

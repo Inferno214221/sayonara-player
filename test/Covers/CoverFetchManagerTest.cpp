@@ -1,15 +1,15 @@
-#include <Components/Covers/Fetcher/DirectFetcher.h>
-#include "../SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
+#include "Components/Covers/Fetcher/DirectFetcher.h"
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/Fetcher/CoverFetcher.h"
 #include "Components/Covers/Fetcher/Website.h"
 #include "Components/Covers/Fetcher/Amazon.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
-
 #include "Utils/Algorithm.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Settings/Settings.h"
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 using Cover::Fetcher::Manager;

@@ -1,5 +1,7 @@
 #include "PlaylistTestUtils.h"
-#include "Database/TestTracks.h"
+
+#include "test/Common/TestTracks.h"
+
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
 

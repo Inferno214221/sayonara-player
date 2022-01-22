@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
-#include "Database/TestTracks.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/TestTracks.h"
+
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Tagging/CoverEditor.h"
 #include "Components/Tagging/Editor.h"

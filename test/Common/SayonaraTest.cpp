@@ -1,5 +1,5 @@
-#include "SayonaraTest.h"
-#include "PlayManagerMock.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
 
 #include "Database/Connector.h"
 

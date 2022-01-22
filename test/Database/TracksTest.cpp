@@ -18,8 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
-#include "TestTracks.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/TestTracks.h"
+
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 

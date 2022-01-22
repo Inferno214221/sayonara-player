@@ -1,9 +1,11 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Utils/Utils.h"
 
 #include <QDate>
 #include <QTime>
 #include <QDateTime>
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class UtilTest : 

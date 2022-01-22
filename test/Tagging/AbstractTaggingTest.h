@@ -1,7 +1,7 @@
 #ifndef ABSTRACTTAGGINGTEST_H
 #define ABSTRACTTAGGINGTEST_H
 
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 class AbstractTaggingTest :
 	public Test::Base

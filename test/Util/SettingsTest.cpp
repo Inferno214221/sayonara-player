@@ -1,4 +1,4 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"

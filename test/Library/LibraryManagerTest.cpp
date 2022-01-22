@@ -1,14 +1,13 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
-
 #include "Interfaces/LibraryPlaylistInteractor.h"
-
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 
 #include <map>
 #include <memory>
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class LibraryPlaylistInteractorStub : public LibraryPlaylistInteractor

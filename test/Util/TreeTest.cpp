@@ -1,7 +1,9 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Utils/Tree.h"
 
 #include <QString>
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class TreeTest : 

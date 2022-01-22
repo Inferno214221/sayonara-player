@@ -1,7 +1,8 @@
-#include "SayonaraTest.h"
-// access working directory with Test::Base::tempPath("somefile.txt");
+#include "test/Common/SayonaraTest.h"
 
 #include "Utils/Library/Filter.h"
+
+// access working directory with Test::Base::tempPath("somefile.txt");
 
 using Library::Filter;
 

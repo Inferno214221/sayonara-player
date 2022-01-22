@@ -1,4 +1,5 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 
 class ShortcutIdentifierTest :

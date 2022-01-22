@@ -1,8 +1,9 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
-
+#include "Utils/FileUtils.h"
 #include "Utils/StandardPaths.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
@@ -10,7 +11,6 @@
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
 
-#include "Utils/FileUtils.h"
 #include <QFile>
 
 using Cover::Location;

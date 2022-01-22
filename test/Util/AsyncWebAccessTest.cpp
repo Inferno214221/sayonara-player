@@ -1,5 +1,4 @@
-#include "SayonaraTest.h"
-// access working directory with Test::Base::tempPath("somefile.txt");
+#include "test/Common/SayonaraTest.h"
 
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/AsyncWebAccess.h"
@@ -9,6 +8,8 @@
 #include <QByteArray>
 #include <QRegExp>
 #include <QSignalSpy>
+
+// access working directory with Test::Base::tempPath("somefile.txt");
 
 namespace
 {

@@ -1,4 +1,4 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"

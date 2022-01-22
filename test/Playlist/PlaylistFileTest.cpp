@@ -1,10 +1,12 @@
-#include "SayonaraTest.h"
 #include "PlaylistTestUtils.h"
+
+#include "test/Common/SayonaraTest.h"
 
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 using Test::Playlist::PathTrackMap;

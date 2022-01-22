@@ -1,12 +1,10 @@
-#include "SayonaraTest.h"
-#include "PlayManagerMock.h"
-#include "PlaylistMocks.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
+#include "test/Common/PlaylistMocks.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-
 #include "Interfaces/PlayManager.h"
-
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"

@@ -1,12 +1,10 @@
-#include "SayonaraTest.h"
-#include "PlayManagerMock.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
 
 #include "Components/Equalizer/Equalizer.h"
 #include "Database/Equalizer.h"
 #include "Database/Connector.h"
-
 #include "Interfaces/Engine/SoundModifier.h"
-
 #include "Utils/Settings/Settings.h"
 #include "Utils/EqualizerSetting.h"
 

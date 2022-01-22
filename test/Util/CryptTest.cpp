@@ -1,5 +1,7 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Utils/Crypt.h"
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class CryptTest :

@@ -1,14 +1,14 @@
-#include "SayonaraTest.h"
-// access working directory with Test::Base::tempPath("somefile.txt");
+#include "test/Common/SayonaraTest.h"
 
 #include "Gui/Utils/MimeData/CustomMimeData.h"
-
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QUrl>
 #include <QList>
+
+// access working directory with Test::Base::tempPath("somefile.txt");
 
 class MimeDataTest :
 	public Test::Base

@@ -1,6 +1,6 @@
-#include "SayonaraTest.h"
-#include "PlayManagerMock.h"
-#include "PlaylistMocks.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
+#include "test/Common/PlaylistMocks.h"
 
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/Converter/OggConverter.h"

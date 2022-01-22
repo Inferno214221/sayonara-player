@@ -1,15 +1,14 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
-#include "Utils/MetaData/MetaData.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Components/Tagging/Editor.h"
 #include "Components/Tagging/ChangeNotifier.h"
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Tagging/Tagging.h"
-
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
 
 #include <QFile>
 #include <QSignalSpy>

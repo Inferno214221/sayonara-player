@@ -1,5 +1,7 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Utils/Set.h"
+
 #include <algorithm>
 
 class SetTest : public QObject

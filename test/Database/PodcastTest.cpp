@@ -1,7 +1,7 @@
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Database/Connector.h"
 #include "Database/Podcasts.h"
-
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Streams/Station.h"

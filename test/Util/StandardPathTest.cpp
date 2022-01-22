@@ -18,13 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
+
 #include "Utils/StandardPaths.h"
 #include "Utils/Macros.h"
 #include "Utils/FileUtils.h"
 
 #include <QDir>
 #include <QFile>
+
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 class StandardPathTest : 

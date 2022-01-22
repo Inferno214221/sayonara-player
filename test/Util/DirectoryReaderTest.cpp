@@ -17,9 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "SayonaraTest.h"
-
-#include "Database/TestTracks.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/TestTracks.h"
 
 #include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"

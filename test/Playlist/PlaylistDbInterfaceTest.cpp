@@ -17,23 +17,20 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
-#include "PlayManagerMock.h"
-#include "Database/TestTracks.h"
-#include "Database/Connector.h"
-#include "Database/Playlist.h"
+#include "test/Common/SayonaraTest.h"
+#include "test/Common/PlayManagerMock.h"
+#include "test/Common/TestTracks.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistChangeNotifier.h"
-
+#include "Database/Connector.h"
+#include "Database/Playlist.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/MetaData/MetaDataList.h"
-
 #include "Utils/Algorithm.h"
 
 #include <QSignalSpy>
-
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 

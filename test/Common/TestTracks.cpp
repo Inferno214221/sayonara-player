@@ -18,7 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/TestTracks.h"
+#include "test/Common/TestTracks.h"
+
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Utils.h"

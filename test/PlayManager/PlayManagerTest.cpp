@@ -17,13 +17,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "SayonaraTest.h"
+#include "test/Common/SayonaraTest.h"
 
 #include "Components/PlayManager/PlayManagerImpl.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
-
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"

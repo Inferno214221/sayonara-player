@@ -20,11 +20,11 @@
 #ifndef SAYONARA_PLAYER_PLAYLISTMOCKS_H
 #define SAYONARA_PLAYER_PLAYLISTMOCKS_H
 
-#include <QList>
-
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Components/Playlist/PlaylistLoader.h"
 #include "Components/Playlist/PlaylistHandler.h"
+
+#include <QList>
 
 class PlaylistLoaderMock : public Playlist::Loader
 {

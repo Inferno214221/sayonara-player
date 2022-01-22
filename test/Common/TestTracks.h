@@ -21,6 +21,7 @@
 #define SAYONARA_PLAYER_TESTTRACKS_H
 
 #include "Utils/typedefs.h"
+
 #include <QString>
 
 class MetaData;
