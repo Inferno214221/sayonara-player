@@ -25,8 +25,30 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Settings/Settings.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");
+
+namespace
+{
+	::Playlist::Playlist* createShufflePlaylist(int numTracks)
+	{
+		auto tracks = Test::Playlist::createTrackList(0, numTracks);
+
+		QList<int> indexes;
+		auto playManager = new PlayManagerMock();
+		auto* pl = new Playlist::Playlist(1, "Hallo", playManager);
+
+		SetSetting(Set::PL_StartPlaying, false);
+
+		Playlist::Mode mode;
+		mode.setShuffle(Playlist::Mode::State::On);
+		pl->setMode(mode);
+		pl->createPlaylist(tracks);
+
+		return pl;
+	}
+}
 
 class PlaylistShuffleTest :
 	public Test::Base
@@ -38,6 +60,8 @@ class PlaylistShuffleTest :
 			Test::Base("PlaylistShuffleTest") {}
 
 	private slots:
+		void testShuffleFirstTrack();
+		void testShuffleOneTrack();
 		void testUntilEndOfTracks();
 		void testWithRepAll();
 		void testWithoutRepAll();
@@ -47,20 +71,28 @@ class PlaylistShuffleTest :
 		std::pair<Playlist::Playlist*, QList<int>> prepareRepeatTest(bool withRepeatAll);
 };
 
+void PlaylistShuffleTest::testShuffleFirstTrack()
+{
+	auto* pl = createShufflePlaylist(10);
+	pl->play();
+
+	const auto currentIndex = pl->currentTrackIndex();
+	QVERIFY(currentIndex > 0);
+}
+
+void PlaylistShuffleTest::testShuffleOneTrack()
+{
+	auto* pl = createShufflePlaylist(1);
+	pl->play();
+
+	const auto currentIndex = pl->currentTrackIndex();
+	QVERIFY(currentIndex == 0);
+}
+
 void PlaylistShuffleTest::testUntilEndOfTracks()
 {
-	auto tracks = Test::Playlist::createTrackList(0, 10);
-
-	QList<int> indexes;
-	auto playManager = new PlayManagerMock();
-	auto* pl = new Playlist::Playlist(1, "Hallo", playManager);
-
-	Playlist::Mode mode;
-	mode.setShuffle(Playlist::Mode::State::On);
-
-	QVERIFY(Playlist::Mode::isActiveAndEnabled(mode.shuffle()));
-	pl->setMode(mode);
-	pl->createPlaylist(tracks);
+	auto* pl = createShufflePlaylist(10);
+	const auto& tracks = pl->tracks();
 
 	QList<int> playedTracks;
 	QList<int> incrementedTracks;

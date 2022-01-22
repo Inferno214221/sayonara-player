@@ -237,11 +237,11 @@ namespace Playlist
 		const auto filepathIndexMap = createFilepathIndexHash(tracks());
 
 		const auto& changedTracks = m->metadataChangeNotifier->changedMetadata();
-		for(const auto& changedPair : changedTracks)
+		for(const auto& changedPair: changedTracks)
 		{
 			const auto filepath = changedPair.first.filepath();
 			const auto indexes = filepathIndexMap.values(filepath);
-			for(const auto& index : indexes)
+			for(const auto& index: indexes)
 			{
 				replaceTrack(index, changedPair.second);
 			}
@@ -255,7 +255,7 @@ namespace Playlist
 		const auto track = m->playManager->currentTrack();
 
 		const auto indexList = m->tracks.findTracks(track.filepath());
-		for(const auto index : indexList)
+		for(const auto index: indexList)
 		{
 			replaceTrack(index, track);
 		}
@@ -266,7 +266,7 @@ namespace Playlist
 		const auto currentTrack = m->playManager->currentTrack();
 		const auto indexList = m->tracks.findTracks(currentTrack.filepath());
 
-		for(const auto index : indexList)
+		for(const auto index: indexList)
 		{
 			auto track = (m->tracks[index]);
 			track.setDurationMs(std::max<MilliSeconds>(0, currentTrack.durationMs()));
@@ -301,7 +301,7 @@ namespace Playlist
 	{
 		if(currentTrackIndex() < 0)
 		{
-			changeTrack(0);
+			next();
 		}
 	}
 
@@ -372,7 +372,7 @@ namespace Playlist
 		const auto isLastTrack = (currentTrackIndex() == m->tracks.count() - 1);
 
 		int trackIndex;
-		if(currentTrackIndex() == -1)
+		if((currentTrackIndex() == -1) && !shuffle)
 		{
 			trackIndex = 0;
 		}
@@ -428,7 +428,7 @@ namespace Playlist
 
 	void Playlist::enableAll()
 	{
-		for(auto& track : m->tracks)
+		for(auto& track: m->tracks)
 		{
 			track.setDisabled(false);
 		}
@@ -597,7 +597,7 @@ namespace Playlist
 	void Playlist::deleteTracks(const IndexSet& indexes)
 	{
 		MetaDataList tracks;
-		for(const auto& index : indexes)
+		for(const auto& index: indexes)
 		{
 			if(Util::between(index, m->tracks))
 			{

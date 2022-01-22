@@ -29,6 +29,28 @@
 
 namespace Playlist
 {
+	namespace
+	{
+		QList<int> getUnplayedTrackIndexes(Playlist* playlist, const QList<UniqueId>& shuffleHistory)
+		{
+			const auto& tracks = playlist->tracks();
+			auto trackIndex = 0;
+			auto unplayedTracks = QList<int>();
+			for(const auto& track: tracks)
+			{
+				const auto uniqueId = track.uniqueId();
+				if(!shuffleHistory.contains(uniqueId))
+				{
+					unplayedTracks << trackIndex;
+				}
+
+				trackIndex++;
+			}
+
+			return unplayedTracks;
+		}
+	}
+
 	struct ShuffleHistory::Private
 	{
 		QList<UniqueId> shuffleHistory;
@@ -71,26 +93,12 @@ namespace Playlist
 	int ShuffleHistory::nextTrackIndex(bool isRepeatAllEnabled) const
 	{
 		const auto& tracks = m->playlist->tracks();
-		if(tracks.count() <= 1)
+		if(tracks.isEmpty())
 		{
 			return -1;
 		}
 
-		// check all tracks played
-		auto i = 0;
-		auto unplayedTracks = QList<int>();
-		for(const auto& track : tracks)
-		{
-			const auto uniqueId = track.uniqueId();
-			if(!m->shuffleHistory.contains(uniqueId))
-			{
-				unplayedTracks << i;
-			}
-
-			i++;
-		}
-
-		// no random track to play
+		const auto unplayedTracks = getUnplayedTrackIndexes(m->playlist, m->shuffleHistory);
 		if(unplayedTracks.isEmpty())
 		{
 			if(!isRepeatAllEnabled)
@@ -99,7 +107,11 @@ namespace Playlist
 			}
 
 			m->shuffleHistory.clear();
-			return Util::randomNumber(0, static_cast<int>(tracks.size() - 1));
+		}
+
+		if(m->shuffleHistory.isEmpty() && m->playlist->count() > 1)
+		{
+			return Util::randomNumber(1, static_cast<int>(tracks.size() - 1));
 		}
 
 		const auto randomIndex = Util::randomNumber(0, unplayedTracks.size() - 1);
@@ -109,7 +121,7 @@ namespace Playlist
 	void ShuffleHistory::replaceTrack(const MetaData& oldTrack, const MetaData& newTrack)
 	{
 		auto i = 0;
-		for(const auto& uniqueId : m->shuffleHistory)
+		for(const auto& uniqueId: m->shuffleHistory)
 		{
 			if(uniqueId == oldTrack.uniqueId())
 			{

@@ -346,7 +346,9 @@ void Util::sleepMs(uint64_t ms)
 
 int Util::randomNumber(int min, int max)
 {
-	return RandomGenerator().getNumber(min, max);
+	return (min == max)
+		? min
+		: RandomGenerator().getNumber(min, max);
 }
 
 QStringList Util::ipAddresses()
