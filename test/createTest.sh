@@ -20,7 +20,7 @@ rm -f ${FILENAME}
 
 cat <<EOT >> ${FILENAME}
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2022 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ cat <<EOT >> ${FILENAME}
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class ${TESTNAME} : 
+class ${TESTNAME} :
     public Test::Base
 {
     Q_OBJECT
