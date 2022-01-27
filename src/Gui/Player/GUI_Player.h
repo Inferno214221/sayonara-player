@@ -103,7 +103,6 @@ class GUI_Player :
 		void reallyClose();
 
 		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-		void currentTrackChanged(const MetaData& md);
 
 		/* Plugins */
 		void pluginAdded(PlayerPlugin::Base* plugin);

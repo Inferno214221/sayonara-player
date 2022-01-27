@@ -57,25 +57,43 @@
 #include <QKeySequence>
 #include <QTimer>
 
+namespace
+{
+	void changeWindowTitle(QWidget* widget, const MetaData& track)
+	{
+		if(track.title().trimmed().isEmpty())
+		{
+			widget->setWindowTitle("Sayonara " + GetSetting(Set::Player_Version));
+		}
+
+		else if(track.artist().trimmed().isEmpty())
+		{
+			widget->setWindowTitle(track.title());
+		}
+
+		else
+		{
+			widget->setWindowTitle(track.artist() + " - " + track.title());
+		}
+	}
+}
+
 struct GUI_Player::Private
 {
-	Menubar* menubar = nullptr;
-	std::shared_ptr<GUI_Logger> logger = nullptr;
-	GUI_TrayIcon* trayIcon = nullptr;
-	GUI_ControlsBase* controls = nullptr;
+	Menubar* menubar {nullptr};
+	std::shared_ptr<GUI_Logger> logger {nullptr};
+	GUI_TrayIcon* trayIcon {nullptr};
+	GUI_ControlsBase* controls {nullptr};
 	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
-	bool shutdownRequested;
+	bool shutdownRequested {false};
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
 	        GUI_Player* parent) :
-		coverProvider(coverProvider),
-		playManager(playManager),
-		shutdownRequested(false)
-	{
-		logger = std::make_shared<GUI_Logger>(parent);
-		menubar = new Menubar(playlistCreator, parent);
-	}
+		menubar {new Menubar(playlistCreator, parent)},
+		logger {std::make_shared<GUI_Logger>(parent)},
+		coverProvider {coverProvider},
+		playManager {playManager} {}
 };
 
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
@@ -107,12 +125,12 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 	initConnections();
 	initTrayActions();
 
-	currentTrackChanged(m->playManager->currentTrack());
+	changeWindowTitle(this, m->playManager->currentTrack());
 
 	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
-		auto* vc = new VersionChecker(this);
-		connect(vc, &VersionChecker::sigFinished, vc, &QObject::deleteLater);
+		auto* versionChecker = new VersionChecker(this);
+		connect(versionChecker, &VersionChecker::sigFinished, versionChecker, &QObject::deleteLater);
 	}
 
 	ListenSettingNoCall(Set::Player_Fullscreen, GUI_Player::fullscreenChanged);
@@ -130,25 +148,24 @@ GUI_Player::~GUI_Player()
 
 static int16_t getGeometryVersion(const QByteArray& geometry)
 {
-	QDataStream str(geometry);
+	auto dataStream = QDataStream(geometry);
 	int32_t ignoreThis;
 	int16_t ret;
 
-	str >> ignoreThis >> ret;
+	dataStream >> ignoreThis >> ret;
 	return ret;
 }
 
 void GUI_Player::initGeometry()
 {
-	QByteArray geometry = GetSetting(Set::Player_Geometry);
+	const auto geometry = GetSetting(Set::Player_Geometry);
 	if(!geometry.isEmpty())
 	{
 		// newer version of qt store more values than older versions
 		// older version have trouble using the new representation,
 		// so we have to trim it
-		int16_t ourGeometryVersion = getGeometryVersion(this->saveGeometry());
-		int16_t dbGeometryVersion = getGeometryVersion(geometry);
-
+		const auto ourGeometryVersion = getGeometryVersion(this->saveGeometry());
+		const auto dbGeometryVersion = getGeometryVersion(geometry);
 		if(ourGeometryVersion < dbGeometryVersion)
 		{
 			Gui::Util::placeInScreenCenter(this, 0.8f, 0.8f);
@@ -193,7 +210,7 @@ void GUI_Player::initMainSplitter()
 {
 	ui->libraryWidget->setVisible(GetSetting(Set::Lib_Show));
 
-	const QByteArray splitterState = GetSetting(Set::Player_SplitterState);
+	const auto splitterState = GetSetting(Set::Player_SplitterState);
 	if(!splitterState.isEmpty())
 	{
 		ui->splitter->restoreState(splitterState);
@@ -201,15 +218,15 @@ void GUI_Player::initMainSplitter()
 
 	else
 	{
-		int w1 = width() / 3;
-		int w2 = width() - w1;
-		ui->splitter->setSizes({w1, w2});
+		const auto newWidthLeft = width() / 3;
+		const auto newWidthRight = width() - newWidthLeft;
+		ui->splitter->setSizes({newWidthLeft, newWidthRight});
 	}
 }
 
 void GUI_Player::initControlSplitter()
 {
-	const QByteArray splitterState = GetSetting(Set::Player_SplitterControls);
+	const auto splitterState = GetSetting(Set::Player_SplitterControls);
 	if(!splitterState.isEmpty())
 	{
 		ui->splitterControls->restoreState(splitterState);
@@ -222,8 +239,8 @@ void GUI_Player::initControlSplitter()
 void GUI_Player::initFontChangeFix()
 {
 	auto* filter = new Gui::GenericFilter(QEvent::Paint, this);
-	connect(filter, &Gui::GenericFilter::sigEvent, this, [=](QEvent::Type t) {
-		if(t == QEvent::Type::Paint)
+	connect(filter, &Gui::GenericFilter::sigEvent, this, [=](const auto eventType) {
+		if(eventType == QEvent::Type::Paint)
 		{
 			this->removeEventFilter(filter);
 			this->skinChanged();
@@ -239,7 +256,9 @@ void GUI_Player::initConnections()
 	auto* lph = Library::PluginHandler::instance();
 	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged, this, &GUI_Player::currentLibraryChanged);
 
-	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &GUI_Player::currentTrackChanged);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [&](const auto& track) {
+		changeWindowTitle(this, track);
+	});
 	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_Player::playstateChanged);
 	connect(m->playManager, &PlayManager::sigError, this, &GUI_Player::playError);
 
@@ -299,24 +318,6 @@ void GUI_Player::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 	else
 	{
 		minimize();
-	}
-}
-
-void GUI_Player::currentTrackChanged(const MetaData& md)
-{
-	if(md.title().trimmed().isEmpty())
-	{
-		this->setWindowTitle("Sayonara " + GetSetting(Set::Player_Version));
-	}
-
-	else if(md.artist().trimmed().isEmpty())
-	{
-		this->setWindowTitle(md.title());
-	}
-
-	else
-	{
-		this->setWindowTitle(md.artist() + " - " + md.title());
 	}
 }
 
@@ -474,7 +475,7 @@ void GUI_Player::showLibraryChanged()
 
 void GUI_Player::addCurrentLibrary()
 {
-	QLayout* layout = ui->libraryWidget->layout();
+	auto* layout = ui->libraryWidget->layout();
 	if(!layout)
 	{
 		layout = new QVBoxLayout();
@@ -483,22 +484,22 @@ void GUI_Player::addCurrentLibrary()
 
 	removeCurrentLibrary();
 
-	QWidget* w = Library::PluginHandler::instance()->currentLibraryWidget();
-	if(w)
+	auto* libraryWidget = Library::PluginHandler::instance()->currentLibraryWidget();
+	if(libraryWidget)
 	{
-		layout->addWidget(w);
+		layout->addWidget(libraryWidget);
 	}
 }
 
 void GUI_Player::removeCurrentLibrary()
 {
-	QLayout* layout = ui->libraryWidget->layout();
+	auto* layout = ui->libraryWidget->layout();
 	while(layout->count() > 0)
 	{
-		QLayoutItem* item = layout->takeAt(0);
-		if(item && item->widget())
+		auto* layoutItem = layout->takeAt(0);
+		if(layoutItem && layoutItem->widget())
 		{
-			item->widget()->hide();
+			layoutItem->widget()->hide();
 		}
 	}
 }
@@ -619,14 +620,10 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 
 bool GUI_Player::event(QEvent* e)
 {
-	bool b = Gui::MainWindow::event(e);
-
+	const auto b = Gui::MainWindow::event(e);
 	if(e->type() == QEvent::WindowStateChange)
 	{
-		m->menubar->setShowLibraryActionEnabled
-			(
-				!(isMaximized() || isFullScreen())
-			);
+		m->menubar->setShowLibraryActionEnabled(!(isMaximized() || isFullScreen()));
 	}
 
 	return b;
