@@ -544,6 +544,7 @@ void GUI_Player::languageChanged()
 	if(ui)
 	{
 		ui->retranslateUi(this);
+		changeWindowTitle(this, m->playManager->currentTrack());
 	}
 }
 
