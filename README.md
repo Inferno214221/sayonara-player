@@ -16,7 +16,7 @@
     <img src="https://img.shields.io/badge/Bitcoin-Donate-green" 
         alt="Bitcoin">
 </a>
-![Maintenance](https://img.shields.io/maintenance/yes/2021)
+![Maintenance](https://img.shields.io/maintenance/yes/2022)
 ![License](https://img.shields.io/badge/License-GPLv3-green)
 
 ![Debian package](https://img.shields.io/debian/v/sayonara/sid)
