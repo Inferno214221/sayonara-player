@@ -29,6 +29,7 @@ private slots:
 	void splitDirectoriesTest();
 	void subDirAndSameFilenameTest();
 	void isUrlTest();
+	void filenameOfPathTest();
 };
 
 
@@ -348,6 +349,17 @@ void FileHelperTest::isUrlTest()
 	QVERIFY(Util::File::isUrl("/path/to/bla") == false);
 	QVERIFY(Util::File::isUrl("http://www.domain.org/path/to/bla") == true);
 	QVERIFY(Util::File::isUrl("www.domain.org/path/to/bla") == false);
+}
+
+void FileHelperTest::filenameOfPathTest()
+{
+	QVERIFY(Util::File::getFilenameOfPath("/root.txt") == "root.txt");
+	QVERIFY(Util::File::getFilenameOfPath("/path/to/bla.txt") == "bla.txt");
+	QVERIFY(Util::File::getFilenameOfPath("/path/to/bla") == "bla");
+	QVERIFY(Util::File::getFilenameOfPath("/path/to/dir/") == "dir");
+	QVERIFY(Util::File::getFilenameOfPath("/").isEmpty());
+	QVERIFY(Util::File::getFilenameOfPath("//").isEmpty());
+	QVERIFY(Util::File::getFilenameOfPath("").isEmpty());
 }
 
 QTEST_GUILESS_MAIN(FileHelperTest)

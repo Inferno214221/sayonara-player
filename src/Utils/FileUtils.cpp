@@ -139,7 +139,9 @@ QString Util::File::getParentDirectory(const QString& filename)
 
 QString Util::File::getFilenameOfPath(const QString& path)
 {
-	return QDir(cleanFilename(path)).dirName();
+	return (!path.trimmed().isEmpty())
+		? QDir(cleanFilename(path)).dirName()
+		: QString();
 }
 
 void Util::File::splitFilename(const QString& src, QString& path, QString& filename)

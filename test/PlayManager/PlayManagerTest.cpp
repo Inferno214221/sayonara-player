@@ -71,6 +71,7 @@ class PlayManagerTest :
 
 	private slots:
 		void testRadioHistory();
+		void testCurrentTrack();
 };
 
 void PlayManagerTest::testRadioHistory()
@@ -121,6 +122,24 @@ void PlayManagerTest::testRadioHistory()
 	QVERIFY(playManager->currentTrack().title() == title1);
 
 	QVERIFY(spy.count() == 3);
+}
+
+void PlayManagerTest::testCurrentTrack()
+{
+	auto track = MetaData{};
+	track.setTitle("Title");
+	track.setFilepath("/path/to/file.mp3");
+
+	PlayManager* playManager = new PlayManagerImpl(nullptr);
+	playManager->changeCurrentTrack(track, 0);
+
+	QVERIFY(playManager->currentTrack().filepath() == track.filepath());
+	QVERIFY(playManager->currentTrack().title() == track.title());
+
+	playManager->stop();
+
+	QVERIFY(playManager->currentTrack().filepath().isEmpty());
+	QVERIFY(playManager->currentTrack().title().isEmpty());
 }
 
 //Q_DECLARE_METATYPE(MetaData)

@@ -41,7 +41,7 @@
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
 
-#include "Utils/Utils.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
@@ -59,22 +59,32 @@
 
 namespace
 {
-	void changeWindowTitle(QWidget* widget, const MetaData& track)
+	QString extractTrackName(const MetaData& track)
 	{
-		if(track.title().trimmed().isEmpty())
+		const auto trimmedTitle = track.title().trimmed();
+		return (!trimmedTitle.isEmpty())
+		       ? trimmedTitle
+		       : Util::File::getFilenameOfPath(track.filepath());
+	}
+
+	QString getWindowTitle(const MetaData& track)
+	{
+		const auto title = extractTrackName(track);
+		if(!title.isEmpty())
 		{
-			widget->setWindowTitle("Sayonara " + GetSetting(Set::Player_Version));
+			const auto artist = track.artist().trimmed();
+			return (!artist.isEmpty())
+			       ? QString("%1 - %2").arg(artist, title)
+			       : title;
 		}
 
-		else if(track.artist().trimmed().isEmpty())
-		{
-			widget->setWindowTitle(track.title());
-		}
+		return QString("Sayonara %1").arg(GetSetting(Set::Player_Version));
+	}
 
-		else
-		{
-			widget->setWindowTitle(track.artist() + " - " + track.title());
-		}
+	void changeWindowTitle(QWidget* widget, PlayManager* playManager)
+	{
+		const auto windowTitle = getWindowTitle(playManager->currentTrack());
+		widget->setWindowTitle(windowTitle);
 	}
 }
 
