@@ -576,7 +576,6 @@ void GUI_Player::reallyClose()
 {
 	spLog(Log::Info, this) << "closing player...";
 	Gui::MainWindow::close();
-	emit sigClosed();
 }
 
 void GUI_Player::requestShutdown()

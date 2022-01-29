@@ -60,9 +60,6 @@ class GUI_Player :
 	PIMPL(GUI_Player)
 	UI_CLASS_SHARED_PTR(GUI_Player)
 
-	signals:
-		void sigClosed();
-
 	public:
 		GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
 		           DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent = nullptr);

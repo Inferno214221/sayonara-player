@@ -67,6 +67,7 @@ namespace Gui
 
 	signals:
 		void sigShown();
+		void sigClosed();
 
 	public:
 		explicit MainWindow(QWidget* parent=nullptr);
@@ -76,6 +77,7 @@ namespace Gui
 
 	protected:
 		virtual void showEvent(QShowEvent* e) override;
+		virtual void closeEvent(QCloseEvent* e) override;
 	};
 }
 

@@ -94,3 +94,9 @@ void MainWindow::showEvent(QShowEvent* e)
 	WidgetTemplate<QMainWindow>::showEvent(e);
 	emit sigShown();
 }
+
+void MainWindow::closeEvent(QCloseEvent* e)
+{
+	WidgetTemplate<QMainWindow>::closeEvent(e);
+	emit sigClosed();
+}
