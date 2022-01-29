@@ -58,7 +58,7 @@ class GUI_Player :
 {
 	Q_OBJECT
 	PIMPL(GUI_Player)
-	UI_CLASS(GUI_Player)
+	UI_CLASS_SHARED_PTR(GUI_Player)
 
 	signals:
 		void sigClosed();

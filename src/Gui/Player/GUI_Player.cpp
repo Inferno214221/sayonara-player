@@ -105,7 +105,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 
 	languageChanged();
 
-	ui = new Ui::GUI_Player();
+	ui = std::make_shared<Ui::GUI_Player>();
 	ui->setupUi(this);
 	ui->retranslateUi(this);
 	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker);
@@ -142,8 +142,6 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 GUI_Player::~GUI_Player()
 {
 	spLog(Log::Debug, this) << "Player closed.";
-	delete ui;
-	ui = nullptr;
 }
 
 static int16_t getGeometryVersion(const QByteArray& geometry)
