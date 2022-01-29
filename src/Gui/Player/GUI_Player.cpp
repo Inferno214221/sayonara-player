@@ -135,7 +135,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 	initConnections();
 	initTrayActions();
 
-	changeWindowTitle(this, m->playManager->currentTrack());
+	changeWindowTitle(this, m->playManager);
 
 	if(GetSetting(Set::Player_NotifyNewVersion))
 	{
@@ -264,10 +264,15 @@ void GUI_Player::initConnections()
 	auto* lph = Library::PluginHandler::instance();
 	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged, this, &GUI_Player::currentLibraryChanged);
 
-	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [&](const auto& track) {
-		changeWindowTitle(this, track);
+	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [&](const auto& /* track */) {
+		changeWindowTitle(this, m->playManager);
 	});
-	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_Player::playstateChanged);
+	connect(m->playManager, &PlayManager::sigCurrentMetadataChanged, this, [&]() {
+		changeWindowTitle(this, m->playManager);
+	});
+	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, [&](const auto /* playstate */) {
+		changeWindowTitle(this, m->playManager);
+	});
 	connect(m->playManager, &PlayManager::sigError, this, &GUI_Player::playError);
 
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_Player::splitterMainMoved);
@@ -326,14 +331,6 @@ void GUI_Player::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 	else
 	{
 		minimize();
-	}
-}
-
-void GUI_Player::playstateChanged(PlayState state)
-{
-	if(state == PlayState::Stopped)
-	{
-		setWindowTitle("Sayonara Player");
 	}
 }
 
@@ -552,7 +549,6 @@ void GUI_Player::languageChanged()
 	if(ui)
 	{
 		ui->retranslateUi(this);
-		changeWindowTitle(this, m->playManager->currentTrack());
 	}
 }
 

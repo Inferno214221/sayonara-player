@@ -210,8 +210,6 @@ void GUI_ControlsBase::paused()
 
 void GUI_ControlsBase::stopped()
 {
-	setWindowTitle("Sayonara");
-
 	btnPlay()->setIcon(icon(Gui::Icons::Play));
 
 	labCurrentTime()->setText("00:00");
@@ -379,8 +377,6 @@ void GUI_ControlsBase::metadataChanged()
 		const auto& newTrack = it->second;
 		refreshLabels(newTrack);
 		setCoverLocation(newTrack);
-
-		setWindowTitle(QString("Sayonara - %1").arg(newTrack.title()));
 	}
 }
 

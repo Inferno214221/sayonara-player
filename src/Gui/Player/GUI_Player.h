@@ -88,7 +88,6 @@ class GUI_Player :
 		void removeCurrentLibrary();
 
 	private slots:
-		void playstateChanged(PlayState state);
 		void playError(const QString& message);
 
 		void splitterMainMoved(int pos, int idx);
