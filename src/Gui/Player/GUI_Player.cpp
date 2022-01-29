@@ -261,8 +261,9 @@ void GUI_Player::initFontChangeFix()
 
 void GUI_Player::initConnections()
 {
-	auto* lph = Library::PluginHandler::instance();
-	connect(lph, &Library::PluginHandler::sigCurrentLibraryChanged, this, &GUI_Player::currentLibraryChanged);
+	auto* libraryPluginHandler = Library::PluginHandler::instance();
+	connect(libraryPluginHandler, &Library::PluginHandler::sigCurrentLibraryChanged,
+	        this, &GUI_Player::currentLibraryChanged);
 
 	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [&](const auto& /* track */) {
 		changeWindowTitle(this, m->playManager);
@@ -282,9 +283,10 @@ void GUI_Player::initConnections()
 	connect(m->menubar, &Menubar::sigLoggerClicked, m->logger.get(), &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sigMinimizeClicked, this, &GUI_Player::minimize);
 
-	auto* pph = PlayerPlugin::Handler::instance();
-	connect(pph, &PlayerPlugin::Handler::sigPluginAdded, this, &GUI_Player::pluginAdded);
-	connect(pph, &PlayerPlugin::Handler::sigPluginActionTriggered, this, &GUI_Player::pluginActionTriggered);
+	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
+	connect(playerPluginHandler, &PlayerPlugin::Handler::sigPluginAdded, this, &GUI_Player::pluginAdded);
+	connect(playerPluginHandler, &PlayerPlugin::Handler::sigPluginActionTriggered,
+	        this, &GUI_Player::pluginActionTriggered);
 
 	auto* dblClickFilter = new Gui::GenericFilter(QEvent::MouseButtonDblClick, ui->splitterControls);
 	connect(dblClickFilter, &Gui::GenericFilter::sigEvent, this, [=](QEvent::Type) {
@@ -336,18 +338,16 @@ void GUI_Player::trayIconActivated(QSystemTrayIcon::ActivationReason reason)
 
 void GUI_Player::playError(const QString& message)
 {
-	const auto& md = m->playManager->currentTrack();
-	Message::warning
-		(
-			message + "\n\n" + md.filepath(),
-			Lang::get(Lang::Play)
-		);
+	const auto& track = m->playManager->currentTrack();
+	Message::warning(
+		message + "\n\n" + track.filepath(),
+		Lang::get(Lang::Play));
 }
 
 void GUI_Player::pluginAdded(PlayerPlugin::Base* plugin)
 {
-	auto* pph = PlayerPlugin::Handler::instance();
-	if(plugin == pph->currentPlugin())
+	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
+	if(plugin == playerPluginHandler->currentPlugin())
 	{
 		ui->pluginWidget->showCurrentPlugin();
 	}

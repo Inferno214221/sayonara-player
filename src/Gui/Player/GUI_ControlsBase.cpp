@@ -367,7 +367,7 @@ void GUI_ControlsBase::metadataChanged()
 	const auto& changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
 	const auto& currentTrack = m->playManager->currentTrack();
 
-	const auto it = Util::Algorithm::find(changedTracks, [&currentTrack](const auto& trackPair) {
+	const auto it = Util::Algorithm::find(changedTracks, [&](const auto& trackPair) {
 		const auto& oldTrack = trackPair.first;
 		return (oldTrack.filepath() == currentTrack.filepath());
 	});
