@@ -41,6 +41,7 @@ apps:
   sayonara:
     adapter: full
     command: usr/bin/sayonara
+    common-id: com.sayonara-player.Sayonara
     desktop: usr/share/applications/com.sayonara-player.Sayonara.desktop
     extensions:
       - kde-neon
