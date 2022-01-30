@@ -94,7 +94,7 @@ package-snap:
     - apt-get update -qq
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
-    - ./snap/local/Set-SnapVersion.sh
+    - ./snap/local/set-snap-version.sh
     - snapcraft --destructive-mode --enable-experimental-extensions
   artifacts:
     when: always

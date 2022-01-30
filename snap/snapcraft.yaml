@@ -70,9 +70,10 @@ layout:
 
 parts:
   sayonara:
-    source: https://gitlab.com/luciocarreras/sayonara-player.git
-    source-type: git
-    source-commit: enter-source-commit-here
+    source-type: local
+    source: .
+    # source-commit: revision
+    # source-depth: 1
     plugin: cmake
     cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
