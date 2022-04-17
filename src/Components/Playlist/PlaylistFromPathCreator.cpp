@@ -28,7 +28,7 @@
 
 struct SplittedPaths
 {
-	QStringList audioFiles;
+	QStringList standardPaths;
 	QStringList playlistFiles;
 };
 
@@ -37,11 +37,11 @@ namespace
 	SplittedPaths splitPathlist(const QStringList& paths)
 	{
 		SplittedPaths result;
-		for(const auto& path : paths)
+		for(const auto& path: paths)
 		{
-			if(Util::File::isSoundFile(path))
+			if(Util::File::isSoundFile(path) || Util::File::isDir(path))
 			{
-				result.audioFiles << path;
+				result.standardPaths << path;
 			}
 
 			else if(Util::File::isPlaylistFile(path))
@@ -58,8 +58,8 @@ namespace
 		const auto result = Util::File::getFilenameOfPath(filename);
 		const auto lastDot = result.lastIndexOf('.');
 		return (lastDot > 0)
-			? result.left(lastDot)
-			: result;
+		       ? result.left(lastDot)
+		       : result;
 	}
 }
 
@@ -69,7 +69,7 @@ struct PlaylistFromPathCreator::Private
 	std::atomic<int> playlistCount {0};
 	int firstIndex {-1};
 
-	Private(PlaylistCreator* playlistCreator) :
+	explicit Private(PlaylistCreator* playlistCreator) :
 		playlistCreator {playlistCreator} {}
 };
 
@@ -102,15 +102,15 @@ int PlaylistFromPathCreator::createSinglePlaylist(const QStringList& paths, cons
 int PlaylistFromPathCreator::createPlaylists(const QStringList& paths, const QString& name, bool temporary)
 {
 	const auto splittedPaths = splitPathlist(paths);
-	m->playlistCount = splittedPaths.audioFiles.count() + splittedPaths.playlistFiles.count();
+	m->playlistCount = splittedPaths.standardPaths.count() + splittedPaths.playlistFiles.count();
 
 	QList<int> createdPlaylists;
-	if(!splittedPaths.audioFiles.isEmpty())
+	if(!splittedPaths.standardPaths.isEmpty())
 	{
-		createdPlaylists << createSinglePlaylist(splittedPaths.audioFiles, name, temporary);
+		createdPlaylists << createSinglePlaylist(splittedPaths.standardPaths, name, temporary);
 	}
 
-	for(const auto& playlistFile : splittedPaths.playlistFiles)
+	for(const auto& playlistFile: splittedPaths.playlistFiles)
 	{
 		const auto playlistName = getPureFilename(playlistFile);
 		const auto playlistFiles = QStringList() << playlistFile;

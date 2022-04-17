@@ -38,8 +38,8 @@ class ExternTracksPlaylistGenerator :
 	PIMPL(ExternTracksPlaylistGenerator)
 
 	public:
-		ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, PlaylistPtr playlist);
-		~ExternTracksPlaylistGenerator();
+		ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist);
+		~ExternTracksPlaylistGenerator() override;
 
 		void addPaths(const QStringList& paths);
 		void insertPaths(const QStringList& paths, int targetRowIndex);

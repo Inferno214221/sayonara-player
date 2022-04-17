@@ -67,6 +67,8 @@ new_test(Playlist/PlaylistFileTest.cpp Playlist/PlaylistTestUtils.cpp Common/Tes
 new_test(Playlist/PlaylistHandlerTest.cpp)
 new_test(Playlist/PlaylistDbInterfaceTest.cpp Common/TestTracks.cpp)
 new_test(Playlist/PlaylistShuffleTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
+new_test(Playlist/ExternTracksPlaylistGeneratorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
+new_test(Playlist/PlaylistFromPathCreatorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
 new_test(Playlist/RepeatTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
 
 new_test(PlayManager/PlayManagerTest.cpp)
@@ -77,7 +79,7 @@ new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
 
 new_test(Tagging/AlbumArtistTest.cpp Tagging/AbstractTaggingTest.cpp)
-new_test(Tagging/CoverTest.cpp  Tagging/AbstractTaggingTest.cpp)
+new_test(Tagging/CoverTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/DiscnumberTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/EditorTest.cpp)
 new_test(Tagging/LyricsTest.cpp Tagging/AbstractTaggingTest.cpp)
@@ -104,4 +106,3 @@ new_test(Util/CissearchTest.cpp)
 new_test(Util/StandardPathTest.cpp)
 new_test(Util/TreeTest.cpp)
 new_test(Util/Ranges.cpp)
-

@@ -27,7 +27,8 @@
 
 class QStringList;
 struct SplittedPaths;
-class PlaylistFromPathCreator : public QObject
+class PlaylistFromPathCreator :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(PlaylistFromPathCreator)
@@ -36,7 +37,7 @@ class PlaylistFromPathCreator : public QObject
 		void sigAllPlaylistsCreated(int firstIndex);
 
 	public:
-		PlaylistFromPathCreator(PlaylistCreator* playlistCreator);
+		explicit PlaylistFromPathCreator(PlaylistCreator* playlistCreator);
 		~PlaylistFromPathCreator();
 
 		int createPlaylists(const QStringList& paths, const QString& name, bool temporary);

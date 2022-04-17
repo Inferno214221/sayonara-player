@@ -16,7 +16,7 @@ namespace
 
 		if(!success)
 		{
-			throw "Could not create directories";
+			throw std::runtime_error {"Could not create directories"};
 		}
 	}
 }
@@ -55,15 +55,21 @@ namespace Test::Playlist
 		names << QString("%1/path/to/another/mp3test.mp3").arg(basePath);
 		names << QString("%1/path/to/another/dir/mp3test.mp3").arg(basePath);
 
+		const auto source = ":/test/mp3test.mp3";
+
 		for(int i = 0; i < names.size(); i++)
 		{
 			auto track = Test::createTrack(i,
 			                               QString("Title%1").arg(i + 1),
 			                               QString("Artist%1").arg(i + 1),
 			                               QString("Album%1").arg(i + 1));
+			const auto& filepath = names[i];
 
-			track.setFilepath(names[i]);
+			track.setFilepath(filepath);
 			track.setDurationMs((i + 1) * 100'000);
+
+			auto[dir, filename] = Util::File::splitFilename(filepath);
+			Util::File::copyFile(source, dir, filename);
 
 			result << std::make_pair(names[i], track);
 		}

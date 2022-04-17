@@ -47,13 +47,14 @@ struct ExternTracksPlaylistGenerator::Private
 	PlaylistPtr playlist;
 	int targetRowIndex;
 
-	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlist) :
+	Private(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist) :
 		playlistCreator {playlistCreator},
 		playlist(playlist ? playlist : addNewPlaylist(playlistCreator)),
 		targetRowIndex {-1} {}
 };
 
-ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, PlaylistPtr playlist)
+ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator,
+                                                             const PlaylistPtr& playlist)
 {
 	m = Pimpl::make<Private>(playlistCreator, playlist);
 }
@@ -77,7 +78,7 @@ void ExternTracksPlaylistGenerator::addPaths(const QStringList& paths)
 		m->playlist->clear();
 	}
 
-	insertPaths(paths, m->playlist->count() - 1);
+	insertPaths(paths, m->playlist->count());
 }
 
 void ExternTracksPlaylistGenerator::scanFiles(const QStringList& paths)
@@ -100,18 +101,14 @@ void ExternTracksPlaylistGenerator::scanFiles(const QStringList& paths)
 
 void ExternTracksPlaylistGenerator::filesScanned()
 {
-	auto* worker = static_cast<Directory::MetaDataScanner*>(sender());
+	auto* worker = dynamic_cast<Directory::MetaDataScanner*>(sender());
 
-	auto playlist = m->playlistCreator->playlistById(m->playlist->id());
-	if(!playlist)
-	{
-		emit sigFinished();
-		return;
-	}
+	m->playlist->setBusy(false);
 
-	playlist->setBusy(false);
+	const auto tracks = worker->metadata();
+	worker->deleteLater();
 
-	if(worker->metadata().isEmpty())
+	if(tracks.isEmpty())
 	{
 		emit sigFinished();
 		return;
@@ -119,20 +116,19 @@ void ExternTracksPlaylistGenerator::filesScanned()
 
 	if(m->targetRowIndex < 0)
 	{
-		playlist->clear();
-		playlist->insertTracks(worker->metadata(), 0);
+		m->playlist->clear();
+		m->playlist->insertTracks(tracks, 0);
 	}
 
-	else if(m->targetRowIndex >= playlist->count())
+	else if(m->targetRowIndex >= m->playlist->count())
 	{
-		playlist->appendTracks(worker->metadata());
+		m->playlist->appendTracks(tracks);
 	}
 
 	else
 	{
-		playlist->insertTracks(worker->metadata(), m->targetRowIndex);
+		m->playlist->insertTracks(tracks, m->targetRowIndex);
 	}
 
-	worker->deleteLater();
-	emit sigFinished();
+	emit sigFinished(); // NOLINT(readability-misleading-indentation)
 }
