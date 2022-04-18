@@ -60,6 +60,7 @@ new_test(Equalizer/EqualizerTest.cpp)
 
 new_test(Library/ImportCacheTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
+new_test(Lyrics/LyricsLogicTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
 new_test(Playlist/PlaylistTrackModifyTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)

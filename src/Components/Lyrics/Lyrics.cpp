@@ -25,28 +25,34 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QStringList>
+#include <QUrl>
 
 namespace
 {
 	std::pair<QString, QString> guessArtistAndTitle(const MetaData& track)
 	{
-		auto artist = track.albumArtist();
+		auto artist = track.artist();
 		auto title = track.title();
 
-		if((track.radioMode() == RadioMode::Station) && track.artist().contains("://"))
+		if(track.radioMode() == RadioMode::Station)
 		{
-			if(track.title().contains("-"))
+			if(track.title().contains(":"))
+			{
+				auto splitted = track.title().split(":");
+				artist = splitted.takeFirst().trimmed();
+				title = splitted.join(":").trimmed();
+			}
+
+			else if(track.title().contains("-"))
 			{
 				auto splitted = track.title().split("-");
 				artist = splitted.takeFirst().trimmed();
 				title = splitted.join("-").trimmed();
 			}
 
-			else if(track.title().contains(":"))
+			else if(!QUrl(artist).scheme().isEmpty())
 			{
-				auto splitted = track.title().split(":");
-				artist = splitted.takeFirst().trimmed();
-				title = splitted.join(":").trimmed();
+				artist.clear();
 			}
 		}
 
@@ -66,18 +72,15 @@ namespace Lyrics
 		QString lyricHeader;
 		QString lyricTagContent;
 
-		bool isValid;
+		bool isValid {false};
 
 		Private() :
-			servers(::Lyrics::LookupThread().servers()),
-			isValid(false) {}
+			servers(::Lyrics::LookupThread().servers()) {}
 	};
 
 	Lyrics::Lyrics(QObject* parent) :
-		QObject(parent)
-	{
-		m = Pimpl::make<Private>();
-	}
+		QObject(parent),
+		m {Pimpl::make<Private>()} {}
 
 	Lyrics::~Lyrics() = default;
 

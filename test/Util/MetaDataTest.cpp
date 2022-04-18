@@ -5,6 +5,8 @@
 #include "Utils/Set.h"
 
 #include <algorithm>
+#include <array>
+#include <utility>
 
 class MetaDataTest : public Test::Base
 {
@@ -23,6 +25,7 @@ private slots:
 	void private_test();
 	void stream_test();
 	void move_test();
+	void setRadioStationTest();
 };
 
 static MetaData create_md()
@@ -86,14 +89,48 @@ void MetaDataTest::private_test()
 	QVERIFY( md.albumArtist().compare("Album artist") == 0);
 }
 
+struct Result {
+	QString station;
+	QString stationName;
+};
+
 void MetaDataTest::stream_test()
 {
-	MetaData md = create_md();
+	auto track = create_md();
+	QVERIFY(track.radioMode() == RadioMode::Off);
 
-	QVERIFY( md.radioMode() == RadioMode::Off );
+	track.setFilepath("http://path.to/my/stream");
+	QVERIFY(track.radioMode() == RadioMode::Station);
+}
 
-	md.setFilepath("http://path.to/my/stream");
-	QVERIFY( md.radioMode() == RadioMode::Station );
+void MetaDataTest::setRadioStationTest()
+{
+	const auto testCases = std::array {
+		std::tuple {"", "", Result {"", ""}},
+		std::tuple {"http://path.to/stream", "", Result {"http://path.to/stream", "path.to"}},
+		std::tuple {"http://path.to/stream", "Name", Result {"http://path.to/stream", "Name"}},
+		std::tuple {"path.to/stream", "", Result {"path.to/stream", "path.to/stream"}},
+		std::tuple {"path.to/stream", "Name", Result {"path.to/stream", "Name"}}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		const auto&[url, stationName, result] = testCase;
+		const auto&[expectedStation, expectedStationName] = result;
+
+		auto track = MetaData {};
+		track.setRadioStation(url, stationName);
+
+		const auto station = track.radioStation();
+		const auto radioStationName = track.radioStationName();
+
+		QVERIFY(track.radioStation() == expectedStation);
+		QVERIFY(track.radioStationName() == expectedStationName);
+
+		QVERIFY(track.artist() == track.radioStation());
+		QVERIFY(track.title() == track.radioStationName());
+		QVERIFY(track.album() == track.title());
+	}
 }
 
 void MetaDataTest::move_test()
