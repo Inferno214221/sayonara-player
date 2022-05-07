@@ -92,10 +92,12 @@ parts:
     stage-packages:
       - libgpm2 # requred by gstreamer autoaudiosink
       - freeglut3
+      - ffmpeg
       - gstreamer1.0-plugins-bad
+      - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
-      - libgstreamer-plugins-bad1.0-0
-      - libgstreamer-plugins-good1.0-0
+      - gstreamer1.0-plugins-ugly
+      - gstreamer1.0-libav
       - libqt5sql5-sqlite
       - libgcc1
       - libglib2.0-0
