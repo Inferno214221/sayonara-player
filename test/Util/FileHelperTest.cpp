@@ -210,43 +210,43 @@ void FileHelperTest::systemPathsTest()
 
 void FileHelperTest::resourcePathTest()
 {
-	Util::Filepath fp(":/Desktop/com.sayonara-player.Sayonara.desktop");
+	const auto filepath = Util::Filepath(":/Desktop/com.sayonara-player.Sayonara.desktop");
 
 	qint64 filesize=0;
 
 	{ // check if exists
-		QFile f(fp.path());
+		auto f = QFile(filepath.path());
 
-		bool is_open = f.open(QFile::ReadOnly);
-		QVERIFY(is_open == true);
+		const auto isOpen = f.open(QFile::ReadOnly);
+		QVERIFY(isOpen == true);
+
 		filesize = f.size();
-
 		QVERIFY(filesize > 10);
+
 		f.close();
 	}
 
 	{
-		QString fs_path = fp.fileystemPath();
-		QVERIFY(fs_path.startsWith(Util::tempPath()));
-		QVERIFY(Util::File::exists(fs_path));
-		QVERIFY(fs_path != fp.path());
+		const auto fileystemPath = filepath.fileystemPath();
+		QVERIFY(fileystemPath.startsWith(Util::tempPath()));
+		QVERIFY(Util::File::exists(fileystemPath));
+		QVERIFY(fileystemPath != filepath.path());
 
-		QFile f(fs_path);
-		bool is_open = f.open(QFile::ReadOnly);
-		QVERIFY(is_open == true);
+		auto f = QFile(fileystemPath);
+		const auto isOpen = f.open(QFile::ReadOnly);
+		QVERIFY(isOpen == true);
 		QVERIFY(filesize == f.size());
 		f.close();
 
-		Util::File::deleteFiles({fp.fileystemPath()});
+		Util::File::deleteFiles({filepath.fileystemPath()});
 	}
 }
 
 void FileHelperTest::splitDirectoriesTest()
 {
-	QStringList ret;
 	QStringList expected;
 
-	ret = Util::File::splitDirectories("/path/to/somewhere");
+	auto ret = Util::File::splitDirectories("/path/to/somewhere");
 	expected.clear();
 	expected << "path" << "to" << "somewhere";
 	QVERIFY(ret == expected);
@@ -288,58 +288,54 @@ void FileHelperTest::splitDirectoriesTest()
 
 void FileHelperTest::subDirAndSameFilenameTest()
 {
-	QString f1 = "/path/to/some/non/existing/dir/file.ogg";
-	QString f2 = "/path/to/some/non/existing/dir2/file.mp3";
+	const auto filenameOgg = "/path/to/some/non/existing/dir/file.ogg";
+	const auto filenameMp3 = "/path/to/some/non/existing/dir2/file.mp3";
 
-	QString d1 = "/path/to/some/non/existing/dir";
-	QString d2 = "/path/to/some/non/existing/dir/";
-	QString d3 = "/path/to/some/non/existing/dir/";
-	QString d4 = "/path/to/./some/non/existing/dir";
+	const auto dirVariantClean = "/path/to/some/non/existing/dir";
+	const auto dirVariantTrailingSlash = "/path/to/some/non/existing/dir/";
+	const auto dirVariantWithDot = "/path/to/./some/non/existing/dir";
+	const auto dirVariantWithDoubleDot = "/path/to/../to/some/non/existing/dir";
 
-	bool b;
-	b = Util::File::isSamePath(d1, d2);
+	auto b = Util::File::isSamePath(dirVariantClean, dirVariantTrailingSlash);
 	QVERIFY(b == true);
 
-	b = Util::File::isSamePath(d2, d3);
+	b = Util::File::isSamePath(dirVariantTrailingSlash, dirVariantWithDot);
 	QVERIFY(b == true);
 
-	b = Util::File::isSamePath(d3, d4);
+	b = Util::File::isSamePath(dirVariantClean, dirVariantWithDot);
 	QVERIFY(b == true);
 
-	b = Util::File::isSamePath(d1, d4);
+	b = Util::File::isSamePath(dirVariantClean, dirVariantWithDoubleDot);
 	QVERIFY(b == true);
 
-	b = Util::File::isSubdir(d1, d2);
+	b = Util::File::isSubdir(dirVariantClean, dirVariantTrailingSlash);
 	QVERIFY(b == false);
 
-	b = Util::File::isSubdir(d1, d4);
+	b = Util::File::isSubdir(dirVariantClean, dirVariantWithDot);
 	QVERIFY(b == false);
 
-	b = Util::File::isSubdir(f1, d1);
+	b = Util::File::isSubdir(filenameOgg, dirVariantClean);
 	QVERIFY(b == true);
 
-	b = Util::File::isSubdir(f1, d2);
+	b = Util::File::isSubdir(filenameOgg, dirVariantTrailingSlash);
 	QVERIFY(b == true);
 
-	b = Util::File::isSubdir(f1, d3);
-	QVERIFY(b == true);
-
-	b = Util::File::isSubdir(f2, d4);
+	b = Util::File::isSubdir(filenameMp3, dirVariantWithDot);
 	QVERIFY(b == false);
 
-	b = Util::File::isSubdir(f2, d2);
+	b = Util::File::isSubdir(filenameMp3, dirVariantTrailingSlash);
 	QVERIFY(b == false);
 
-	b = Util::File::isSubdir(f1, QDir::root().absolutePath());
+	b = Util::File::isSubdir(filenameOgg, QDir::root().absolutePath());
 	QVERIFY(b == true);
 
-	b = Util::File::isSubdir(d1, QDir::root().absolutePath());
+	b = Util::File::isSubdir(dirVariantClean, QDir::root().absolutePath());
 	QVERIFY(b == true);
 
-	b = Util::File::isSubdir(f1, "");
+	b = Util::File::isSubdir(filenameOgg, "");
 	QVERIFY(b == false);
 
-	b = Util::File::isSubdir(d1, "");
+	b = Util::File::isSubdir(dirVariantClean, "");
 	QVERIFY(b == false);
 }
 

@@ -96,7 +96,6 @@ void LibraryFilterTest::testFilterText()
 
 void LibraryFilterTest::testClear()
 {
-	const auto searchModeMask = (Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars);
 	{ // clear filter
 		auto filter = Filter();
 		filter.setFiltertext("searchBla1,search$BLupp2");
