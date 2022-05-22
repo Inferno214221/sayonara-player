@@ -2,30 +2,31 @@
 #include <QObject>
 #include "Utils/Language/Language.h"
 
-class LanguageKeyTest : public QObject
+class LanguageKeyTest :
+	public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
-private slots:
-    void test();
-
+	private slots:
+		void test();
 };
 
 void LanguageKeyTest::test()
 {
-    int max_key = int(Lang::NUMBER_OF_LANGUAGE_KEYS);
-    for(int key=0; key<max_key; key++)
-    {
-		bool ok;
-		Lang::get( (Lang::Term) key, &ok );
+	const auto maxKey = static_cast<int>(Lang::NUMBER_OF_LANGUAGE_KEYS);
+	for(auto key = 0; key < maxKey; key++)
+	{
+		auto ok = false;
+		Lang::get(static_cast<Lang::Term>(key), &ok);
 
 		QVERIFY(ok);
-    }
+	}
 
-    bool ok;
-    Lang::get((Lang::Term) max_key, &ok);
-    QVERIFY(!ok);
+	auto ok = false;
+	Lang::get(static_cast<Lang::Term>(maxKey), &ok);
+	QVERIFY(!ok);
 }
 
 QTEST_GUILESS_MAIN(LanguageKeyTest)
+
 #include "LanguageKeyTest.moc"

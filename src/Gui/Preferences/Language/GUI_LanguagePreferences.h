@@ -22,40 +22,39 @@
 #define GUI_LANGUAGE_PREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
+#include "Utils/Pimpl.h"
 
 UI_FWD(GUI_LanguagePreferences)
 
 class GUI_LanguagePreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
+	PIMPL(GUI_LanguagePreferences)
 	UI_CLASS(GUI_LanguagePreferences)
 
-public:
-	explicit GUI_LanguagePreferences(const QString& identifier);
-	~GUI_LanguagePreferences() override;
+	public:
+		explicit GUI_LanguagePreferences(const QString& identifier);
+		~GUI_LanguagePreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
-	void skinChanged() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
+		void skinChanged() override;
 
-	void showEvent(QShowEvent*) override;
+		void showEvent(QShowEvent*) override;
 
-private:
-	void refreshCombobox();
-	void downloadUpdate(const QString& languageCode);
+	private:
+		void refreshCombobox();
 
-private slots:
-	void checkForUpdateClicked();
-	void updateCheckFinished();
-	void importLanguageClicked();
-	void downloadFinished();
+	private slots: // NOLINT(readability-redundant-access-specifiers)
+		void checkForUpdateClicked();
+		void importLanguageClicked();
 };
 
-#endif // GUI_LanguagePreferences_H
+#endif // GUI_LANGUAGE_PREFERENCES_H

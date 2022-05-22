@@ -19,41 +19,57 @@
  */
 
 #include "GUI_LanguagePreferences.h"
+
 #include "Gui/Preferences/ui_GUI_LanguagePreferences.h"
 
+#include "Components/Preferences/LanguagePreferences.h"
+
 #include "Utils/Utils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Language/LanguageUtils.h"
 #include "Utils/Message/Message.h"
 
 #include "Gui/Utils/Style.h"
 
-#include <QFile>
 #include <QDir>
-#include <QRegExp>
-#include <QLocale>
-#include <QStringList>
 #include <QFileDialog>
 
-namespace Language = Util::Language;
-
-static QString getLanguageCode(QComboBox* combo)
+namespace
 {
-	return combo->currentData().toString();
+	QString getLanguageCode(QComboBox* combo)
+	{
+		return combo->currentData().toString();
+	}
 }
+
+struct GUI_LanguagePreferences::Private
+{
+	LanguagePreferences* languagePreferences;
+
+	explicit Private(QObject* parent) :
+		languagePreferences {new LanguagePreferences(parent)} {}
+};
 
 GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :
 	Preferences::Base(identifier)
-{}
+{
+	m = Pimpl::make<Private>(this);
+
+	connect(m->languagePreferences, &LanguagePreferences::sigInfo, this, [](const QString& info) {
+		Message::info(info);
+	});
+
+	connect(m->languagePreferences, &LanguagePreferences::sigWarning, this, [](const QString& warning) {
+		Message::warning(warning);
+	});
+}
 
 GUI_LanguagePreferences::~GUI_LanguagePreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -65,7 +81,6 @@ QString GUI_LanguagePreferences::actionName() const
 void GUI_LanguagePreferences::retranslate()
 {
 	ui->retranslateUi(this);
-
 	refreshCombobox();
 }
 
@@ -81,7 +96,7 @@ void GUI_LanguagePreferences::skinChanged()
 
 bool GUI_LanguagePreferences::commit()
 {
-	const QString languageCode = getLanguageCode(ui->comboLanguages);
+	const auto languageCode = getLanguageCode(ui->comboLanguages);
 	SetSetting(Set::Player_Language, languageCode);
 
 	return true;
@@ -95,54 +110,23 @@ void GUI_LanguagePreferences::revert()
 // typically a qm file looks like sayonara_lang_lc.qm
 void GUI_LanguagePreferences::refreshCombobox()
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
 	ui->comboLanguages->clear();
 
-	const QString playerLanguage = GetSetting(Set::Player_Language);
-	const QMap<QString, QLocale> locales = Util::Language::availableLanguages();
-
-	int englishIndex = -1;
-	int currentIndex = -1;
-	int i = 0;
-	for(auto it=locales.begin(); it != locales.end(); it++, i++)
+	const auto languageData = LanguagePreferences::getAllLanguages();
+	for(const auto& item: languageData.first)
 	{
-		const QString languageCode = it.key();
-		const QString iconPath = Language::getIconPath(languageCode);
-
-		const QLocale locale = it.value();
-
-		QString languageName = Util::stringToVeryFirstUpper(locale.nativeLanguageName().toCaseFolded());
-		if(languageCode.startsWith("en", Qt::CaseInsensitive)){
-			languageName = "English";
-			englishIndex = i;
-		}
-
-		ui->comboLanguages->addItem
-		(
-			QIcon(iconPath),
-			languageName,
-			languageCode
-		);
-
-		if(languageCode.compare(playerLanguage, Qt::CaseInsensitive) == 0){
-			currentIndex = i;
-		}
+		ui->comboLanguages->addItem(
+			QIcon(item.iconPath),
+			item.languageName,
+			item.languageCode);
 	}
 
-	if(currentIndex < 0) {
-		currentIndex = englishIndex;
-	}
-
-	if(currentIndex < 0) {
-		ui->comboLanguages->setCurrentIndex(0);
-	}
-
-	else {
-		ui->comboLanguages->setCurrentIndex(currentIndex);
-	}
+	ui->comboLanguages->setCurrentIndex(languageData.second);
 }
 
 void GUI_LanguagePreferences::initUi()
@@ -155,145 +139,33 @@ void GUI_LanguagePreferences::initUi()
 
 void GUI_LanguagePreferences::checkForUpdateClicked()
 {
-	auto* awa = new AsyncWebAccess(this);
-	const QString url = Util::Language::getChecksumHttpPath();
-
-	connect(awa, &AsyncWebAccess::sigFinished, this, &GUI_LanguagePreferences::updateCheckFinished);
-	awa->run(url);
-}
-
-void GUI_LanguagePreferences::updateCheckFinished()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	const QString data = QString::fromUtf8(awa->data());
-	bool hasError = awa->hasError();
-
-	awa->deleteLater();
-
-	if(hasError || data.isEmpty())
-	{
-		Message::warning(tr("Cannot check for language update"));
-		spLog(Log::Warning, this) << "Cannot download checksums " << awa->url();
-		return;
-	}
-
-	const QStringList lines = data.split("\n");
-	const QString currentLanguageCode = getLanguageCode(ui->comboLanguages);
-	const QString currentChecksum = Language::getChecksum(currentLanguageCode);
-
-	bool isUpdateAvailable = false;
-	for(const QString& line : lines)
-	{
-		const QStringList splitted = line.split(QRegExp("\\s+"));
-		if(splitted.size() != 2){
-			continue;
-		}
-
-		const QString languageCode = Language::extractLanguageCode(splitted[1]);
-		if(languageCode == currentLanguageCode)
-		{
-			const QString checksum = splitted[0];
-			isUpdateAvailable = (currentChecksum != checksum);
-
-			break;
-		}
-	}
-
-	if(!isUpdateAvailable)
-	{
-		spLog(Log::Info, this) << "No need to update language";
-		Message::info(tr("Language is up to date"));
-		return;
-	}
-
-	spLog(Log::Info, this) << "Language update available";
-	downloadUpdate(currentLanguageCode);
-}
-
-void GUI_LanguagePreferences::downloadUpdate(const QString& languageCode)
-{
-	const QString url = Language::getHttpPath(languageCode);
-
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, &GUI_LanguagePreferences::downloadFinished);
-	awa->run(url);
-}
-
-void GUI_LanguagePreferences::downloadFinished()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	QByteArray data	= awa->data();
-	bool hasError = awa->hasError();
-
-	awa->deleteLater();
-
-	if(hasError || data.isEmpty())
-	{
-		spLog(Log::Warning, this) << "Cannot download file from " << awa->url();
-		Message::warning(tr("Cannot fetch language update"));
-		return;
-	}
-
-	const QString languageCode = getLanguageCode(ui->comboLanguages);
-	const QString filepath = Language::getHomeTargetPath(languageCode);
-
-	QFile f(filepath);
-	f.open(QFile::WriteOnly);
-	bool b = f.write(data);
-	f.close();
-
-	if(b)
-	{
-		Message::info(tr("Language was updated successfully") + ".");
-		spLog(Log::Info, this) << "Language file written to " << filepath;
-
-		Util::Language::updateLanguageVersion(languageCode);
-
-		Settings::instance()->shout<Set::Player_Language>();
-	}
-
-	else
-	{
-		Message::warning(tr("Cannot fetch language update"));
-		spLog(Log::Warning, this) << "Could not write language file to " << filepath;
-	}
+	const auto languageCode = getLanguageCode(ui->comboLanguages);
+	m->languagePreferences->checkForUpdate(languageCode);
 }
 
 void GUI_LanguagePreferences::importLanguageClicked()
 {
-	const QString filename = QFileDialog::getOpenFileName
-	(
+	const auto filename = QFileDialog::getOpenFileName(
 		this,
 		Lang::get(Lang::ImportFiles),
 		QDir::homePath(),
-		"*.qm"
-	);
+		"*.qm");
 
-	if(filename.isEmpty()) {
-		return;
-	}
-
-	bool success = Language::importLanguageFile(filename);
-	if(!success)
+	const auto newLanguageCode = m->languagePreferences->importLanguage(filename);
+	if(!newLanguageCode.isEmpty())
 	{
-		Message::warning(tr("The language file could not be imported"));
-		return;
-	}
+		refreshCombobox();
 
-	const QString& newLanguageCode = Language::extractLanguageCode(filename);
-	Message::info(tr("The language file was imported successfully"));
-
-	refreshCombobox();
-
-	int index = ui->comboLanguages->findData(newLanguageCode);
-	if(index >= 0) {
-		ui->comboLanguages->setCurrentIndex(index);
+		const auto index = ui->comboLanguages->findData(newLanguageCode);
+		if(index >= 0)
+		{
+			ui->comboLanguages->setCurrentIndex(index);
+		}
 	}
 }
 
 void GUI_LanguagePreferences::showEvent(QShowEvent* e)
 {
 	Base::showEvent(e);
-
 	refreshCombobox();
 }

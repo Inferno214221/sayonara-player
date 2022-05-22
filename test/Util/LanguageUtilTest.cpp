@@ -8,173 +8,107 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
 
-#include <QStringList>
+#include <array>
+#include <utility>
+
+class LanguageUtilTest :
+	public Test::Base
+{
+	Q_OBJECT
+
+	public:
+		LanguageUtilTest() :
+			Test::Base("LanguageUtilTest") {}
+
+		~LanguageUtilTest() override = default;
+
+	private slots:
+		[[maybe_unused]] void basicPathTests();
+		[[maybe_unused]] void languageVersionTest();
+		[[maybe_unused]] void languageCodeTest();
+};
 
 using namespace Util;
 
-class LanguageUtilTest : public Test::Base
+[[maybe_unused]] void LanguageUtilTest::basicPathTests()
 {
-    Q_OBJECT
+	namespace L = Language;
 
-public:
-	LanguageUtilTest() :
-		Test::Base("LanguageUtilTest")
-	{}
+	const auto sharePath = Util::translationsSharePath();
+	const auto translationsPath = Util::translationsPath();
 
-	~LanguageUtilTest() override = default;
+	const auto testSets = std::array {
+		std::pair {L::getSharePath("ab_CD"), File::cleanFilename(sharePath + "/sayonara_lang_ab_CD.qm")},
+		std::pair {L::getFtpPath("ab_CD"), QString("ftp://sayonara-player.com/translation/sayonara_lang_ab_CD.qm")},
+		std::pair {L::getHttpPath("ab_CD"),
+		           QString("https://sayonara-player.com/files/translation/sayonara_lang_ab_CD.qm")
+		},
+		std::pair {L::getHomeTargetPath("ab_CD"), File::cleanFilename(translationsPath + "/sayonara_lang_ab_CD.qm")},
+		std::pair {L::getIconPath("ab_CD"), QString()},
+		std::pair {L::getSharePath("hallo"), QString()},
+		std::pair {L::getSharePath(""), QString()},
+		std::pair {L::getSharePath("en_GBS"), QString()},
+		std::pair {L::getSharePath("EN"), QString()},
+	};
 
-private slots:
-	void basic_path_tests();
-	void language_version_test();
-	void four_letter_test();
-	void similar_language_test();
-	void available_language_test();
-};
-
-void LanguageUtilTest::basic_path_tests()
-{
-	QString sp = Util::translationsSharePath();
-	QString hp = Util::translationsPath();
-
-	QString path;
-	QString expected;
-
-	path = Language::getSharePath("ab_CD");
-	expected = File::cleanFilename(sp + "/sayonara_lang_ab_CD.qm");
-	QVERIFY(path == expected);
-
-	path = Language::getFtpPath("ab_CD");
-	expected = QString("ftp://sayonara-player.com/translation/sayonara_lang_ab_CD.qm");
-	QVERIFY(path == expected);
-
-	path = Language::getHttpPath("ab_CD");
-	expected = QString("https://sayonara-player.com/files/translation/sayonara_lang_ab_CD.qm");
-	QVERIFY(path == expected);
-
-	path = Language::getHomeTargetPath("ab_CD");
-	expected = File::cleanFilename(hp + "/sayonara_lang_ab_CD.qm");
-	QVERIFY(path == expected);
-
-	path = Language::getIconPath("ab_CD");
-	expected = QString();
-	QVERIFY(path == expected);
-
-	path = Language::getSharePath("hallo");
-	QVERIFY(path.isEmpty());
-
-	path = Language::getSharePath("");
-	QVERIFY(path.isEmpty());
-
-	path = Language::getSharePath("en_GBS");
-	QVERIFY(path.isEmpty());
-
-	path = Language::getSharePath("EN");
-	QVERIFY(path.isEmpty());
+	for(const auto& [input, expected]: testSets)
+	{
+		QVERIFY(input == expected);
+	}
 }
 
-void LanguageUtilTest::language_version_test()
+[[maybe_unused]] void LanguageUtilTest::languageVersionTest()
 {
-	Settings* s = Settings::instance();
-	s->checkSettings();
+	using namespace Util;
+	auto* settings = Settings::instance();
+	settings->checkSettings();
 
-	QString current_version = SAYONARA_VERSION;
-	current_version.replace("2", "3");
-	current_version.replace("1", "2");
-	current_version.replace("0", "1");
+	auto currentVersion = QString {SAYONARA_VERSION};
+	currentVersion.replace("2", "3");
+	currentVersion.replace("1", "2");
+	currentVersion.replace("0", "1");
 
-	Language::setTestMode();
-
+	Language::setLanguageSettingFilename(Test::Base::tempPath("somefile.ini"));
 	Language::setLanguageVersion("fr_FR", "1.2.0");
-	Language::setLanguageVersion("de_DE", current_version);
+	Language::setLanguageVersion("de_DE", currentVersion);
 	Language::setLanguageVersion("pt_PT", "");
 	Language::setLanguageVersion("ab_CD", SAYONARA_VERSION);
 
-	bool outdated;
-	outdated = Language::isOutdated("fr_FR");
-	QVERIFY(outdated == true);
+	const auto testSets = std::array {
+		std::pair {"fr_FR", true},
+		std::pair {"de_DE", false},
+		std::pair {"pt_PT", true},
+		std::pair {"ab_CD", false},
+		std::pair {"", true}
+	};
 
-	outdated = Language::isOutdated("de_DE");
-	QVERIFY(outdated == false);
-
-	outdated = Language::isOutdated("pt_PT");
-	QVERIFY(outdated == true);
-
-	outdated = Language::isOutdated("ab_CD");
-	QVERIFY(outdated == false);
-
-	outdated = Language::isOutdated("");
-	QVERIFY(outdated == true);
+	for(const auto& [languageCode, result]: testSets)
+	{
+		QVERIFY(Language::isOutdated(languageCode) == result);
+	}
 }
 
-void LanguageUtilTest::four_letter_test()
+[[maybe_unused]] void LanguageUtilTest::languageCodeTest()
 {
-	QString expected;
-	QString four_letter;
+	const auto testSets = std::array {
+		std::pair {"blupp.ts", QString()},
+		std::pair {"sayonara_lang_de_DE.ts", QString("de_DE")},
+		std::pair {"sayonara_lang_de.ts", QString("de")},
+		std::pair {"asd;flkjasdsayonara_lang_de_DE.qm", QString("de_DE")},
+		std::pair {"sayonara_lang_de_DE.ISO-8859-15.ts", QString("de_DE.ISO-8859-15")},
+		std::pair {"sayonara_lang_zh_CN.GB2312.ts", QString("zh_CN.GB2312")},
+		std::pair {"sayonara_lang_zh_CN.GB2312.ts.qm", QString()},
+		std::pair {"sayonara_lang_zh_CN.GB2312-15.ts.qm", QString()},
+		std::pair {"asd;flkjasdsayonara_lang_de_DE.xz", QString()},
+		std::pair {"asd;flkjasdsayonara_lang_DE_DE.qm", QString()}
+	};
 
-	four_letter = Language::extractLanguageCode("blupp.ts");
-	expected = QString();
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("sayonara_lang_de_DE.ts");
-	expected = "de_DE";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("sayonara_lang_de.ts");
-	expected = "de";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_de_DE.qm");
-	expected = "de_DE";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("sayonara_lang_zh_CN.GB2312.ts");
-	expected = "zh_CN.GB2312";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("sayonara_lang_de_DE.ISO-8859-15.ts");
-	expected = "de_DE.ISO-8859-15";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("sayonara_lang_zh_CN.GB2312.ts.qm");
-	expected = "";
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_de_DE.xz");
-	expected = QString();
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("asd;flkjasdsayonara_lang_DE_DE.qm");
-	expected = QString();
-	QVERIFY(four_letter == expected);
-
-	four_letter = Language::extractLanguageCode("blupp.ts");
-	expected = QString();
-	QVERIFY(four_letter == expected);
-}
-
-void LanguageUtilTest::similar_language_test()
-{
-//	QString similar_language, four_letter;
-//	QString expected;
-
-//	similar_language = Language::get_similar_language_4("en_US");
-//	four_letter = Language::extract_four_letter(similar_language);
-//	expected = "en_GB";
-//	QVERIFY(four_letter == expected);
-//	QVERIFY(File::exists(similar_language));
-
-//	similar_language = Language::get_similar_language_4("fr_AL");
-//	four_letter = Language::extract_four_letter(similar_language);
-//	expected = "fr_FR";
-//	QVERIFY(four_letter == expected);
-//	QVERIFY(File::exists(similar_language));
-}
-
-void LanguageUtilTest::available_language_test()
-{
-//	QMap<QString, QLocale> loc = Lang::available_languages();
-//	QVERIFY(loc.isEmpty() == false);
+	for(const auto& [filename, expectedCode]: testSets)
+	{
+		QVERIFY(Language::extractLanguageCode(filename) == expectedCode);
+	}
 }
 
 QTEST_GUILESS_MAIN(LanguageUtilTest)
+
 #include "LanguageUtilTest.moc"
