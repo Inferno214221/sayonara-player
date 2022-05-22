@@ -231,7 +231,7 @@ QMenu::item:selected {
 
 QMenu::icon,
 QMenu::indicator {
-    position: absolute;
+    /* position: absolute; */
     left: 0.5em;
 }
 
