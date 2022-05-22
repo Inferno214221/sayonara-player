@@ -228,7 +228,7 @@ void SearchBar::setModes(const QList<Filter::Mode>& modes)
 	initContextMenu();
 }
 
-void SearchBar::setCurrentMode(Filter::Mode mode)
+void SearchBar::setCurrentMode(const Filter::Mode mode)
 {
 	m->modeManager.setCurrentMode(mode);
 
@@ -236,21 +236,16 @@ void SearchBar::setCurrentMode(Filter::Mode mode)
 	setPlaceholderText(placeholderText);
 }
 
-Filter SearchBar::updateFilter(const Filter& oldFilter) const
+Filter::Mode SearchBar::currentMode() const
 {
-	auto filter = oldFilter;
-
-	filter.setMode(m->modeManager.currentMode());
-	filter.setFiltertext(text(), GetSetting(Set::Lib_SearchMode));
-
-	return filter;
+	return m->modeManager.currentMode();
 }
 
 QList<QAction*> SearchBar::initModeActions(const QList<Filter::Mode>& modes)
 {
 	QList<QAction*> actions;
 
-	for(const auto& mode : modes)
+	for(const auto& mode: modes)
 	{
 		if(isValidMode(mode))
 		{
@@ -344,7 +339,7 @@ void SearchBar::languageChanged()
 	if(m->contextMenu)
 	{
 		const auto actions = m->contextMenu->actions();
-		for(auto* action : actions)
+		for(auto* action: actions)
 		{
 			refreshModeActionText(action);
 		}

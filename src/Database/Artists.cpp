@@ -26,6 +26,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 
 using DB::Artists;
@@ -187,7 +188,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 		.arg(filterWhereStatement)
 		.arg(getSearchGroupByStatement(artistIdField(), artistNameField()));
 
-	const auto searchFilters = filter.searchModeFiltertext(true);
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter : searchFilters)
 	{
 		auto query = Query(module());

@@ -31,6 +31,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Ranges.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Logger/Logger.h"
@@ -304,7 +305,7 @@ bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField,
 
 	const auto query = fetchQueryTracks(whereStatement);
 
-	const auto searchFilters = filter.searchModeFiltertext(true);
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter : searchFilters)
 	{
 		auto q = Query(module());
@@ -378,7 +379,7 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 	const auto whereStatement = DB::getFilterWhereStatement(filter, CisPlaceholder);
 	const auto query = fetchQueryTracks(whereStatement);
 
-	const auto searchFilters = filter.searchModeFiltertext(true);
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter : searchFilters)
 	{
 		auto q = Query(module());

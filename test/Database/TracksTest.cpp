@@ -54,7 +54,7 @@ namespace
 	Library::Filter createFulltextFilter(const QString& str)
 	{
 		Library::Filter filter;
-		filter.setFiltertext(str, SearchMode);
+		filter.setFiltertext(str);
 		filter.setMode(Library::Filter::Mode::Fulltext);
 
 		return filter;
@@ -242,7 +242,7 @@ void TracksTest::testSearchByFulltext()
 void TracksTest::testSearchByGenre()
 {
 	Library::Filter filter;
-	filter.setFiltertext("asiarivers", SearchMode);
+	filter.setFiltertext("asiarivers");
 	filter.setMode(Library::Filter::Mode::Genre);
 
 	auto* db = initDatabase();
@@ -257,7 +257,7 @@ void TracksTest::testSearchByGenre()
 void TracksTest::testSearchByFilepath()
 {
 	Library::Filter filter;
-	filter.setFiltertext("rivers", SearchMode);
+	filter.setFiltertext("rivers");
 	filter.setMode(Library::Filter::Mode::Filename);
 
 	auto* db = initDatabase();

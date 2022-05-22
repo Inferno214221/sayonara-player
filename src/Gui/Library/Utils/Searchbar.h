@@ -35,25 +35,26 @@ namespace Gui
 
 namespace Library
 {
-	class SearchBar : public Gui::WidgetTemplate<QLineEdit>
+	class SearchBar :
+		public Gui::WidgetTemplate<QLineEdit>
 	{
 		Q_OBJECT
 		PIMPL(SearchBar)
 
-		using Parent=Gui::WidgetTemplate<QLineEdit>;
+			using Parent = Gui::WidgetTemplate<QLineEdit>;
 
 		signals:
 			void sigCurrentModeChanged();
 
 		public:
-			SearchBar(QWidget* parent=nullptr);
+			SearchBar(QWidget* parent = nullptr);
 			~SearchBar() override;
 
 			void setModes(const QList<Filter::Mode>& modes);
 			void setCurrentMode(Filter::Mode mode);
+			Filter::Mode currentMode() const;
 
-			void setGenre(const QString& text, bool invalidGenreMode=false);
-			Filter updateFilter(const Filter& oldFilter) const;
+			void setGenre(const QString& text, bool invalidGenreMode = false);
 
 		private slots:
 			void currentTextChanged(const QString& text);

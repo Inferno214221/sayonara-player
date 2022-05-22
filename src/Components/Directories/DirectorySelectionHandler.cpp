@@ -187,7 +187,7 @@ LocalLibrary* DirectorySelectionHandler::libraryInstance() const
 void DirectorySelectionHandler::setSearchText(const QString& text)
 {
 	Library::Filter filter;
-	filter.setFiltertext(text, GetSetting(Set::Lib_SearchMode));
+	filter.setFiltertext(text);
 	filter.setMode(Library::Filter::Mode::Filename);
 
 	libraryInstance()->changeFilter(filter);

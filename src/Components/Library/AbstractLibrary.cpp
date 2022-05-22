@@ -64,10 +64,7 @@ struct AbstractLibrary::Private
 		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
 		loaded(false)
-	{
-		filter.setMode(Library::Filter::Fulltext);
-		filter.setFiltertext("", GetSetting(Set::Lib_SearchMode));
-	}
+	{}
 };
 
 AbstractLibrary::AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
@@ -464,29 +461,27 @@ Library::Filter AbstractLibrary::filter() const
 
 void AbstractLibrary::changeFilter(Library::Filter filter, bool force)
 {
-	const auto filtertext = filter.filtertext(false);
-
 	if(filter.mode() != Library::Filter::InvalidGenre)
 	{
-		if(filtertext.join("").size() < 3)
+		const auto filtertext = filter.filtertext(false);
+		const auto searchStringLength = GetSetting(Set::Lib_SearchStringLength);
+
+		if(filtertext.join("").size() < searchStringLength)
 		{
 			filter.clear();
 		}
 
 		else
 		{
-			const auto searchModeMask = GetSetting(Set::Lib_SearchMode);
-			filter.setFiltertext(filtertext.join(","), searchModeMask);
+			filter.setFiltertext(filtertext.join(","));
 		}
 	}
 
-	if(filter == m->filter)
+	if(!filter.isEqual(m->filter, GetSetting(Set::Lib_SearchStringLength)))
 	{
-		return;
+		fetchByFilter(filter, force);
+		emitAll();
 	}
-
-	fetchByFilter(filter, force);
-	emitAll();
 }
 
 void AbstractLibrary::selectedArtistsChanged(const IndexSet& indexes)
@@ -601,7 +596,7 @@ void AbstractLibrary::selectedTracksChanged(const IndexSet& indexes)
 
 void AbstractLibrary::fetchByFilter(Library::Filter filter, bool force)
 {
-	if((m->filter == filter) &&
+	if((m->filter.isEqual(filter, GetSetting(Set::Lib_SearchStringLength))) &&
 	   (m->selectedArtists.empty()) &&
 	   (m->selectedAlbums.empty()) &&
 	   !force)
@@ -700,10 +695,7 @@ Library::Sortings AbstractLibrary::sortorder() const
 	return m->sortorder;
 }
 
-void AbstractLibrary::importFiles(const QStringList& files)
-{
-	Q_UNUSED(files)
-}
+void AbstractLibrary::importFiles(const QStringList& /* files */) {}
 
 void AbstractLibrary::deleteCurrentTracks(Library::TrackDeletionMode mode)
 {

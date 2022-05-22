@@ -56,6 +56,14 @@ namespace
 			leSearch->setCurrentMode(Filter::Fulltext);
 		}
 	}
+
+	Library::Filter createFilter(SearchBar* searchBar)
+	{
+		auto filter = Library::Filter();
+		filter.setMode(searchBar->currentMode());
+		filter.setFiltertext(searchBar->text());
+		return filter;
+	}
 }
 
 struct GUI_AbstractLibrary::Private
@@ -114,9 +122,7 @@ void GUI_AbstractLibrary::queryLibrary()
 {
 	if(m->leSearch)
 	{
-		const auto oldFilter = m->library->filter();
-		const auto filter = m->leSearch->updateFilter(oldFilter);
-
+		const auto filter = createFilter(m->leSearch);
 		m->library->changeFilter(filter);
 	}
 }
@@ -215,7 +221,7 @@ void GUI_AbstractLibrary::liveSearchChanged()
 void GUI_AbstractLibrary::boldFontChanged()
 {
 	const auto allViews = this->allViews();
-	for(auto* view : allViews)
+	for(auto* view: allViews)
 	{
 		applyFontSetting(view);
 	}

@@ -42,7 +42,7 @@ class CissearchTest :
 
 			Library::Filter filter;
 			filter.setMode(Library::Filter::Mode::Genre);
-			filter.setFiltertext(searchString, this->mSMM);
+			filter.setFiltertext(searchString);
 
 			MetaDataList tracks;
 			libDb->getAllTracksBySearchString(filter, tracks);
@@ -75,46 +75,61 @@ void CissearchTest::uppercaseTest()
 void CissearchTest::diacrticTest()
 {
 	using Library::Utils::convertSearchstring;
-	const auto smm = Library::SearchMode::NoDiacriticChars;
 
-	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), smm) == convertSearchstring("string1a", smm));
-	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), smm) == convertSearchstring("striOng2", smm));
-	QVERIFY(convertSearchstring(QString::fromUtf8("strîArt3"), smm) == convertSearchstring("striArt3", smm));
+	const auto searchModeMask = Library::SearchMode::NoDiacriticChars;
+	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), searchModeMask) ==
+	        convertSearchstring("string1a", searchModeMask));
+	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), searchModeMask) ==
+	        convertSearchstring("striOng2", searchModeMask));
+	QVERIFY(convertSearchstring(QString::fromUtf8("strîArt3"), searchModeMask) ==
+	        convertSearchstring("striArt3", searchModeMask));
 
-	const auto smm2 = Library::SearchMode::None;
-	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), smm2) != convertSearchstring("string1a", smm2));
-	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), smm2) != convertSearchstring("striOng2", smm2));
-	QVERIFY(convertSearchstring(QString::fromUtf8("strîArt3"), smm2) != convertSearchstring("striArt3", smm2));
+	const auto searchModeMask2 = Library::SearchMode::None;
+	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), searchModeMask2) !=
+	        convertSearchstring("string1a", searchModeMask2));
+	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), searchModeMask2) !=
+	        convertSearchstring("striOng2", searchModeMask2));
+	QVERIFY(convertSearchstring(QString::fromUtf8("strîArt3"), searchModeMask2) !=
+	        convertSearchstring("striArt3", searchModeMask2));
 }
 
 void CissearchTest::specialCharsTest()
 {
 	using Library::Utils::convertSearchstring;
-	const auto smm = Library::SearchMode::NoSpecialChars;
+	const auto searchModeMask = Library::SearchMode::NoSpecialChars;
 
-	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), smm) == convertSearchstring("soap skin", smm));
-	QVERIFY(convertSearchstring(QString::fromUtf8("guns 'n' roses"), smm) == convertSearchstring("gunsnroses", smm));
+	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask) ==
+	        convertSearchstring("soap skin", searchModeMask));
+	QVERIFY(convertSearchstring(QString::fromUtf8("guns 'n' roses"), searchModeMask) ==
+	        convertSearchstring("gunsnroses", searchModeMask));
 	QVERIFY(
-		convertSearchstring(QString::fromUtf8("Billy Talent"), smm) == convertSearchstring("Billy      Talent", smm));
+		convertSearchstring(QString::fromUtf8("Billy Talent"), searchModeMask) ==
+		convertSearchstring("Billy      Talent", searchModeMask));
 
-	const auto smm2 = Library::SearchMode::None;
-	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), smm2) != convertSearchstring("soap skin", smm2));
+	const auto searchModeMask2 = Library::SearchMode::None;
+	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask2) !=
+	        convertSearchstring("soap skin", searchModeMask2));
 	QVERIFY(
-		convertSearchstring(QString::fromUtf8("guns 'n' roses"), smm2) != convertSearchstring("gunsnroses", smm2));
+		convertSearchstring(QString::fromUtf8("guns 'n' roses"), searchModeMask2) !=
+		convertSearchstring("gunsnroses", searchModeMask2));
 	QVERIFY(
-		convertSearchstring(QString::fromUtf8("Billy Talent"), smm2) != convertSearchstring("Billy      Talent", smm2));
+		convertSearchstring(QString::fromUtf8("Billy Talent"), searchModeMask2) !=
+		convertSearchstring("Billy      Talent", searchModeMask2));
 }
 
 void CissearchTest::fullMaskTest()
 {
 	using Library::Utils::convertSearchstring;
-	const Library::SearchModeMask smm = Library::SearchMode::NoDiacriticChars | Library::SearchMode::CaseInsensitve |
-	                                    Library::SearchMode::NoSpecialChars;
+	const auto searchModeMask = Library::SearchMode::NoDiacriticChars | Library::SearchMode::CaseInsensitve |
+	                            Library::SearchMode::NoSpecialChars;
 
-	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), smm) == convertSearchstring("söäp sKin", smm));
+	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask) ==
+	        convertSearchstring("söäp sKin", searchModeMask));
 	QVERIFY(
-		convertSearchstring(QString::fromUtf8("Güns    'n' röses"), smm) == convertSearchstring("guns n' roses", smm));
-	QVERIFY(convertSearchstring(QString::fromUtf8("Bîlly Tälent"), smm) == convertSearchstring("billytalent", smm));
+		convertSearchstring(QString::fromUtf8("Güns    'n' röses"), searchModeMask) ==
+		convertSearchstring("guns n' roses", searchModeMask));
+	QVERIFY(convertSearchstring(QString::fromUtf8("Bîlly Tälent"), searchModeMask) ==
+	        convertSearchstring("billytalent", searchModeMask));
 }
 
 void CissearchTest::genreListTest()

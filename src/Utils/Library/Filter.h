@@ -50,20 +50,17 @@ namespace Library
 			Filter(const Filter& other);
 			Filter& operator=(const Filter& other);
 
-			bool operator==(const Filter& other);
-
-			int count() const;
-
-			void setFiltertext(const QString& str, SearchModeMask search_mode);
-			QStringList filtertext(bool with_percent) const;
-			QStringList searchModeFiltertext(bool with_percent) const;
+			void setFiltertext(const QString& filterText);
+			QStringList filtertext(bool withPercent) const;
+			QStringList searchModeFiltertext(bool withPercent, SearchModeMask searchModeMask) const;
 
 			void setMode(Filter::Mode mode);
 			Filter::Mode mode() const;
 
 			void clear();
 			bool cleared() const;
-			bool isUseable() const;
+			bool isEqual(const Filter& other, int minimumSearchStringLength) const;
+			int count() const;
 
 			static QString filterModeName(Mode mode);
 	};

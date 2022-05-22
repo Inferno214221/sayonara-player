@@ -26,6 +26,7 @@
 #include "Utils/Library/Filter.h"
 #include "Utils/Utils.h"
 #include "Utils/Ranges.h"
+#include "Utils/Settings/Settings.h"
 
 using DB::Albums;
 using DB::Query;
@@ -278,7 +279,7 @@ bool Albums::getAllAlbumsByArtist(const IdList& artistIds, AlbumList& result, co
 
 	const auto query = getFetchQueryText(trackSearchView(), whereStatement);
 
-	const auto searchFilters = filter.searchModeFiltertext(true);
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter : searchFilters)
 	{
 		Query q(module());
@@ -299,7 +300,7 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	const auto whereStatement = DB::getFilterWhereStatement(filter, CisPlaceholder);
 	const auto query = getFetchQueryText(trackSearchView(), whereStatement);
 
-	const auto searchFilters = filter.searchModeFiltertext(true);
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter : searchFilters)
 	{
 		auto q = Query(module());
