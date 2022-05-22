@@ -120,6 +120,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_HeaderAutoResizeArtists>("lib_header_auto_resize_artists", true);
 	registerSetting<Set::Lib_HeaderAutoResizeAlbums>("lib_header_auto_resize_albums", true);
 	registerSetting<Set::Lib_HeaderAutoResizeTracks>("lib_header_auto_resize_tracks", true);
+	registerSetting<Set::Lib_SearchStringLength>("lib_search_string_length", 3);
 
 #ifdef Q_OS_WIN
 	registerSetting<Set::Lib_FontBold>("lib_font_bold", false);

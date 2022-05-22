@@ -6,11 +6,58 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>403</width>
-    <height>300</height>
+    <width>664</width>
+    <height>407</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="cbCaseInsensitive">
+     <property name="text">
+      <string>Case insensitive</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="cbNoSpecialChars">
+     <property name="toolTip">
+      <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
+     </property>
+     <property name="text">
+      <string>Ignore special characters</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="3" column="1">
+    <widget class="QLabel" name="label_3">
+     <property name="toolTip">
+      <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
+     </property>
+     <property name="text">
+      <string notr="true">é → e, ö → o</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="1">
     <widget class="QLabel" name="label_4">
      <property name="font">
@@ -21,13 +68,6 @@
      </property>
      <property name="text">
       <string>Example</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="cbCaseInsensitive">
-     <property name="text">
-      <string>Case insensitive</string>
      </property>
     </widget>
    </item>
@@ -54,30 +94,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="1">
-    <widget class="QLabel" name="label_3">
-     <property name="toolTip">
-      <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
-     </property>
-     <property name="text">
-      <string notr="true">é → e, ö → o</string>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="1">
     <widget class="QLabel" name="label">
      <property name="text">
       <string notr="true">A → a, a → a</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="0">
-    <widget class="QCheckBox" name="cbNoSpecialChars">
-     <property name="toolTip">
-      <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
-     </property>
-     <property name="text">
-      <string>Ignore special characters</string>
      </property>
     </widget>
    </item>
@@ -91,18 +111,25 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
+   <item row="5" column="0">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Minimum text length</string>
      </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <widget class="QSpinBox" name="sbSearchStringLength">
+     <property name="minimum">
+      <number>1</number>
      </property>
-    </spacer>
+     <property name="maximum">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>3</number>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

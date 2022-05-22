@@ -71,6 +71,7 @@ enum class SettingKey :
 	Lib_LastIndex,
 	Lib_AllLibraries,
 	Lib_UseViewClearButton,
+	Lib_SearchStringLength,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,
 	Lib_HeaderAutoResizeArtists,
@@ -273,6 +274,7 @@ INST(bool, Lib_DC_PlayImmediately)    /* when double clicked, play immediately *
 INST(bool, Lib_DD_DoNothing)            /* when drag dropped, insert tracks and do nothing */
 INST(bool, Lib_DD_PlayIfStoppedAndEmpty)    /* when drag dropped, play if playlist is empty and stopped */
 INST(int, Lib_SearchMode)            /* Search mode in library. See */
+INST(int, Lib_SearchStringLength)            /* minimum length of search string */
 INST(bool, Lib_AutoUpdate)            /* Automatic update of library */
 INST(bool, Lib_ShowAlbumArtists)        /* Show album artists instead of artists */
 INST(bool, Lib_ShowAlbumCovers)        /* Show album cover view */

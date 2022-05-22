@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_SearchPreferences.h"
 #include "Gui/Preferences/ui_GUI_SearchPreferences.h"
 
@@ -28,13 +26,14 @@
 #include "Utils/Settings/Settings.h"
 
 GUI_SearchPreferences::GUI_SearchPreferences(const QString& identifier) :
-	Preferences::Base (identifier)
-{}
+	Preferences::Base(identifier) {}
 
 GUI_SearchPreferences::~GUI_SearchPreferences()
 {
-	if(ui) {
-		delete ui; ui=nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -45,32 +44,37 @@ QString GUI_SearchPreferences::actionName() const
 
 bool GUI_SearchPreferences::commit()
 {
-	Library::SearchModeMask mask = 0;
+	auto searchModeMask = Library::SearchModeMask{0};
 
-	if(ui->cbCaseInsensitive->isChecked()){
-		mask |= Library::CaseInsensitve;
+	if(ui->cbCaseInsensitive->isChecked())
+	{
+		searchModeMask |= Library::CaseInsensitve;
 	}
 
-	if(ui->cbNoSpecialChars->isChecked()){
-		mask |= Library::NoSpecialChars;
+	if(ui->cbNoSpecialChars->isChecked())
+	{
+		searchModeMask |= Library::NoSpecialChars;
 	}
 
-	if(ui->cbNoAccents->isChecked()){
-		mask |= Library::NoDiacriticChars;
+	if(ui->cbNoAccents->isChecked())
+	{
+		searchModeMask |= Library::NoDiacriticChars;
 	}
 
-	SetSetting(Set::Lib_SearchMode, mask);
+	SetSetting(Set::Lib_SearchMode, searchModeMask);
+	SetSetting(Set::Lib_SearchStringLength, ui->sbSearchStringLength->value());
 
 	return true;
 }
 
 void GUI_SearchPreferences::revert()
 {
-	Library::SearchModeMask mask = GetSetting(Set::Lib_SearchMode);
+	const auto searchModeMask = GetSetting(Set::Lib_SearchMode);
 
-	ui->cbCaseInsensitive->setChecked(mask & Library::CaseInsensitve);
-	ui->cbNoSpecialChars->setChecked(mask & Library::NoSpecialChars);
-	ui->cbNoAccents->setChecked(mask & Library::NoDiacriticChars);
+	ui->cbCaseInsensitive->setChecked(searchModeMask & Library::CaseInsensitve);
+	ui->cbNoSpecialChars->setChecked(searchModeMask & Library::NoSpecialChars);
+	ui->cbNoAccents->setChecked(searchModeMask & Library::NoDiacriticChars);
+	ui->sbSearchStringLength->setValue(GetSetting(Set::Lib_SearchStringLength));
 }
 
 void GUI_SearchPreferences::initUi()
