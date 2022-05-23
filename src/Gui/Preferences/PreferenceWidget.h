@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PREFERENCEWIDGETINTERFACE_H
-#define PREFERENCEWIDGETINTERFACE_H
+#ifndef SAYONARA_PLAYER_PREFERENCEWIDGET_H
+#define SAYONARA_PLAYER_PREFERENCEWIDGET_H
 
 #include "Gui/Utils/GuiClass.h"
 #include "Gui/Utils/Widgets/Widget.h"
@@ -27,156 +27,53 @@
 
 namespace Preferences
 {
-	/**
-	 * @brief Abstract Interface you should use when creating a preferences item.
-	 *
-	 * For methods to be implemented see also PreferenceInterface.
-	 * If you wish to subclass, reimplement void get_action_name() and void init_ui().\n
-	 * In every function that makes use of the widgets call bool is_ui_initialized() first.\n
-	 * Call setup_parent(this) in init_ui() first.\n
-	 * If you wish to reimplement void language_changed(), call PreferenceWidgetInterface::language_changed at the end.
-	 * @ingroup Preferences
-	 */
 	class Base :
-			public Gui::Widget
+		public Gui::Widget
 	{
 		Q_OBJECT
 		PIMPL(Base)
 
-	public:
-		/**
-		 * @brief Standard constructor
-		 * @param parent
-		 */
-		explicit Base(const QString& identifier);
-		virtual ~Base() override;
+		public:
+			explicit Base(const QString& identifier);
+			~Base() override;
 
-		/**
-		 * @brief return the unique identifier
-		 * @return
-		 */
-		QString	identifier() const;
+			[[nodiscard]] virtual bool isUiInitialized() const final;
+			[[nodiscard]] virtual QAction* action() final;
 
-	private:
-		void setInitialized();
+			[[nodiscard]] virtual QString actionName() const = 0;
+			[[nodiscard]] QString identifier() const;
 
-	protected:
+			virtual bool commit() = 0;
+			virtual void revert() = 0;
+			virtual void initUi() = 0;
+			virtual void retranslate() = 0;
 
-		template<typename W, typename UiClass>
-		/**
-		 * @brief Sets up the Preference dialog. After this method, the dialog is "ready to use"\n
-		 * This method should be the first to be called when calling init_ui()
-		 * @param widget should always be "this"
-		 */
-		void setupParent(W* widget, UiClass** ui)
-		{
-			*ui = new UiClass();
-			(*ui)->setupUi(widget);
+			[[nodiscard]] virtual bool hasError() const;
+			[[nodiscard]] virtual QString errorString() const;
 
-			setInitialized();
+		protected:
+			template<typename W, typename UiClass>
+			void setupParent(W* widget, UiClass** ui)
+			{
+				*ui = new UiClass();
+				(*ui)->setupUi(widget);
 
-			widget->languageChanged();
+				setInitialized();
 
-			skinChanged();
-		}
+				widget->languageChanged();
 
-		/**
-		 * @brief automatically called when language has changed. When overriding this method.
-		 * Overriding this method should look like this:
-		 * void GUI_FontConfig::language_changed()\n
-		 *  {\n
-		 *		translate_action();\n\n
-		 *
-		 *		if(!is_ui_initialized()){\n
-		 * 			return; \n
-		 *		}\n\n
-		 *
-		 *		retranslateUi(this);\n
-		 *		PreferenceWidgetInterface::language_changed();\n
-		 *  }\n
-		 */
-		virtual void languageChanged() override final;
+				skinChanged();
+			}
 
+			void languageChanged() final;
+			void translationAction();
 
-		/**
-		 * @brief Sets the new translated action name
-		 */
-		void translationAction();
+			void showEvent(QShowEvent* e) override;
+			void closeEvent(QCloseEvent* e) override;
 
-
-	protected:
-
-		/**
-		 * @brief shows the widget and automatically calls init_ui()
-		 * @param e
-		 */
-		void showEvent(QShowEvent* e) override;
-		void closeEvent(QCloseEvent* e) override;
-
-	public:
-
-		/**
-		 * @brief checks if ui has already been initialized.
-		 * @return false, if the widget has never been activated before, true else
-		 */
-		virtual bool isUiInitialized() const final;
-
-
-		/**
-		 * @brief get action with translated text
-		 * @return
-		 */
-		virtual QAction* action() final;
-
-
-
-		/**
-		 * @brief has to be implemented and should return the translated action text
-		 * @return translated action name
-		 */
-		virtual QString actionName() const=0;
-
-
-		/**
-		 * @brief This method is called, when OK or apply is pressed. So all settings
-		 * should be written there
-		 */
-		virtual bool commit()=0;
-
-		/**
-		 * @brief This method is called, when cancel is clicked. So the gui should be
-		 * re-initialized when this method is called. This method should also be called
-		 * in the init_ui() method
-		 */
-		virtual void revert()=0;
-
-		/**
-		 * @brief call setup_parent(this) here.\n
-		 * initialize compoenents and connections here.\n
-		 * After calling setup_parent(this), the preference Dialog is ready to use, language_changed() is called automatically
-		 */
-		virtual void initUi()=0;
-
-
-		/**
-		 * @brief call the Qt retranslateUi method here
-		 */
-		virtual void retranslate()=0;
-
-		/**
-		 * @brief indicates if there was an error on the settings page like
-		 * an invalid expression or combination of settings
-		 * @return
-		 */
-		virtual bool hasError() const;
-
-		/**
-		 * @brief A closer description of the error
-		 * @return
-		 */
-		virtual QString errorString() const;
-
+		private:
+			void setInitialized();
 	};
 }
 
-#endif // PREFERENCEWIDGETINTERFACE_H
+#endif // SAYONARA_PLAYER_PREFERENCEWIDGET_H

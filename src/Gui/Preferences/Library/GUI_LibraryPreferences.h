@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GUI_LIBRARYPREFERENCES_H
-#define GUI_LIBRARYPREFERENCES_H
+#ifndef SAYONARA_PLAYER_GUI_LIBRARYPREFERENCES_H
+#define SAYONARA_PLAYER_GUI_LIBRARYPREFERENCES_H
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
@@ -45,7 +45,7 @@ class GUI_LibraryPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;
@@ -53,7 +53,7 @@ class GUI_LibraryPreferences :
 		void skinChanged() override;
 
 		void showEvent(QShowEvent* e) override;
-		QString errorString() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	private slots:
 		void newClicked();
@@ -64,10 +64,7 @@ class GUI_LibraryPreferences :
 		void downClicked();
 
 		void editDialogAccepted();
-		void selectedIndexChanged(const QModelIndex& idx);
-
-	private:
-		int currentRow() const;
+		void selectedIndexChanged(const QModelIndex& modelIndex);
 };
 
-#endif // GUI_LIBRARYPREFERENCES_H
+#endif // SAYONARA_PLAYER_GUI_LIBRARYPREFERENCES_H

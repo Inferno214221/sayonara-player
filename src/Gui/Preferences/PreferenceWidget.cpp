@@ -21,103 +21,89 @@
 #include "PreferenceWidget.h"
 #include "PreferenceAction.h"
 
-using Preferences::Base;
-using Preferences::Action;
+#include <utility>
 
-struct Base::Private
+namespace Preferences
 {
-	QString				identifier;
-	Action*				action=nullptr;
-	QByteArray			geometry;
-	bool				isInitialized;
+	struct Base::Private
+	{
+		QString identifier;
+		Action* action {nullptr};
+		QByteArray geometry;
+		bool isInitialized {false};
 
-	Private(const QString& identifier) :
-		identifier(identifier),
-		isInitialized(false)
-	{}
-};
+		explicit Private(QString identifier) :
+			identifier(std::move(identifier)) {}
+	};
 
-Base::Base(const QString& identifier) :
-	Gui::Widget(nullptr)
-{
-	m = Pimpl::make<Private>(identifier);
-}
-
-Base::~Base() = default;
-
-QString Base::identifier() const
-{
-	return m->identifier;
-}
-
-void Base::setInitialized()
-{
-	m->isInitialized = true;
-}
-
-void Base::languageChanged()
-{
-	translationAction();
-
-	if(!isUiInitialized()){
-		return;
+	Base::Base(const QString& identifier) :
+		Gui::Widget(nullptr)
+	{
+		m = Pimpl::make<Private>(identifier);
 	}
 
-	QString newName = actionName();
-	this->setWindowTitle(newName);
+	Base::~Base() = default;
 
-	retranslate();
-}
+	QString Base::identifier() const { return m->identifier; }
 
-void Base::translationAction()
-{
-	QString newName = this->actionName();
-	action()->setText(newName + "...");
-}
+	void Base::setInitialized() { m->isInitialized = true; }
 
-void Base::showEvent(QShowEvent* e)
-{
-	if(!isUiInitialized()){
-		initUi();
+	bool Base::isUiInitialized() const { return m->isInitialized; }
+
+	bool Base::hasError() const { return false; }
+
+	QString Base::errorString() const { return {}; }
+
+	void Base::languageChanged()
+	{
+		translationAction();
+
+		if(isUiInitialized())
+		{
+			const auto newName = actionName();
+			setWindowTitle(newName);
+			retranslate();
+		}
 	}
 
-	Gui::Widget::showEvent(e);
-
-	if(!m->geometry.isEmpty()){
-		this->restoreGeometry(m->geometry);
-	}
-}
-
-void Base::closeEvent(QCloseEvent* e)
-{
-	m->geometry = this->saveGeometry();
-	Gui::Widget::closeEvent(e);
-}
-
-bool Base::isUiInitialized() const
-{
-	return m->isInitialized;
-}
-
-QAction* Base::action()
-{
-	// action has to be initialized here, because pure
-	// virtual get_action_name should not be called from ctor
-	QString name = actionName();
-	if(!m->action){
-		m->action = new Action(name, this);
+	void Base::translationAction()
+	{
+		const auto newName = actionName();
+		action()->setText(newName + "...");
 	}
 
-	m->action->setText(name + "...");
-	return m->action;
-}
+	void Base::closeEvent(QCloseEvent* e)
+	{
+		m->geometry = this->saveGeometry();
+		Gui::Widget::closeEvent(e);
+	}
 
-bool Base::hasError() const
-{
-	return false;
-}
+	QAction* Base::action()
+	{
+		// action has to be initialized here, because pure
+		// virtual get_action_name should not be called from ctor
+		const auto name = actionName();
+		if(!m->action)
+		{
+			m->action = new Action(name, this);
+		}
 
-QString Base::errorString() const
-{
-	return QString();
-}
+		m->action->setText(name + "...");
+		return m->action;
+	}
+
+	void Base::showEvent(QShowEvent* e)
+	{
+		if(!isUiInitialized())
+		{
+			initUi();
+		}
+
+		Gui::Widget::showEvent(e);
+
+		if(!m->geometry.isEmpty())
+		{
+			restoreGeometry(m->geometry);
+		}
+	}
+} // namespace

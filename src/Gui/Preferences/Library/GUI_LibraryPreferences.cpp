@@ -23,24 +23,23 @@
 #include "Gui/Preferences/ui_GUI_LibraryPreferences.h"
 
 #include "Gui/Library/Utils/GUI_EditLibrary.h"
-
-#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/Icons.h"
 
-#include "Utils/Library/SearchMode.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/SearchMode.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
 
-#include <QShowEvent>
 #include <QItemSelectionModel>
+#include <QShowEvent>
 
 struct GUI_LibraryPreferences::Private
 {
 	Library::Manager* libraryManager;
 	LibraryListModel* model = nullptr;
 
-	Private(Library::Manager* libraryManager) :
+	explicit Private(Library::Manager* libraryManager) :
 		libraryManager {libraryManager} {}
 };
 
@@ -61,6 +60,11 @@ GUI_LibraryPreferences::~GUI_LibraryPreferences()
 
 void GUI_LibraryPreferences::initUi()
 {
+	if(isUiInitialized())
+	{
+		return;
+	}
+
 	setupParent(this, &ui);
 
 	m->model = new LibraryListModel(m->libraryManager, ui->lvLibs);
@@ -72,8 +76,8 @@ void GUI_LibraryPreferences::initUi()
 
 	ui->tab_widget->setCurrentIndex(0);
 
-	QItemSelectionModel* sel_model = ui->lvLibs->selectionModel();
-	connect(sel_model, &QItemSelectionModel::currentChanged, this, &GUI_LibraryPreferences::selectedIndexChanged);
+	auto* selectionModel = ui->lvLibs->selectionModel();
+	connect(selectionModel, &QItemSelectionModel::currentChanged, this, &GUI_LibraryPreferences::selectedIndexChanged);
 
 	connect(ui->btnNew, &QPushButton::clicked, this, &GUI_LibraryPreferences::newClicked);
 	connect(ui->btnEdit, &QPushButton::clicked, this, &GUI_LibraryPreferences::editClicked);
@@ -83,7 +87,7 @@ void GUI_LibraryPreferences::initUi()
 
 	revert();
 
-	selectedIndexChanged(m->model->index(currentRow()));
+	selectedIndexChanged(ui->lvLibs->currentIndex());
 }
 
 QString GUI_LibraryPreferences::actionName() const
@@ -141,7 +145,7 @@ void GUI_LibraryPreferences::skinChanged()
 void GUI_LibraryPreferences::showEvent(QShowEvent* e)
 {
 	Base::showEvent(e);
-	this->revert();
+	revert();
 }
 
 QString GUI_LibraryPreferences::errorString() const
@@ -149,131 +153,105 @@ QString GUI_LibraryPreferences::errorString() const
 	return tr("Cannot edit library");
 }
 
-int GUI_LibraryPreferences::currentRow() const
-{
-	return ui->lvLibs->selectionModel()->currentIndex().row();
-}
-
 void GUI_LibraryPreferences::newClicked()
 {
-	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(this);
-
-	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
-
-	edit_dialog->show();
+	auto* editDialog = new GUI_EditLibrary(this);
+	connect(editDialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
+	editDialog->show();
 }
 
 void GUI_LibraryPreferences::editClicked()
 {
-	int cur_row = currentRow();
-	if(cur_row < 0)
+	const auto modelIndex = ui->lvLibs->currentIndex();
+	if(modelIndex.isValid())
 	{
-		return;
+		const auto currentRow = modelIndex.row();
+		const auto name = m->model->name(currentRow);
+		const auto path = m->model->path(currentRow);
+
+		auto* editDialog = new GUI_EditLibrary(name, path, this);
+		connect(editDialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
+		editDialog->show();
 	}
-
-	QString name = m->model->name(cur_row);
-	QString path = m->model->path(cur_row);
-
-	GUI_EditLibrary* edit_dialog = new GUI_EditLibrary(name, path, this);
-
-	connect(edit_dialog, &GUI_EditLibrary::sigAccepted, this, &GUI_LibraryPreferences::editDialogAccepted);
-
-	edit_dialog->show();
 }
 
 void GUI_LibraryPreferences::deleteClicked()
 {
-	QModelIndex idx = ui->lvLibs->currentIndex();
-	if(!idx.isValid())
+	const auto modelIndex = ui->lvLibs->currentIndex();
+	if(modelIndex.isValid())
 	{
-		return;
+		m->model->removeRow(modelIndex.row());
 	}
-
-	m->model->removeRow(idx.row());
 }
 
 void GUI_LibraryPreferences::upClicked()
 {
-	int row = ui->lvLibs->currentIndex().row();
-
-	m->model->moveRow(row, row - 1);
-	ui->lvLibs->setCurrentIndex(m->model->index(row - 1));
+	const auto currentRow = ui->lvLibs->currentIndex().row();
+	m->model->moveRow(currentRow, currentRow - 1);
+	ui->lvLibs->setCurrentIndex(m->model->index(currentRow - 1));
 }
 
 void GUI_LibraryPreferences::downClicked()
 {
-	int row = ui->lvLibs->currentIndex().row();
-
-	m->model->moveRow(row, row + 1);
-	ui->lvLibs->setCurrentIndex(m->model->index(row + 1));
+	const auto currentRow = ui->lvLibs->currentIndex().row();
+	m->model->moveRow(currentRow, currentRow + 1);
+	ui->lvLibs->setCurrentIndex(m->model->index(currentRow + 1));
 }
 
 void GUI_LibraryPreferences::editDialogAccepted()
 {
-	auto* edit_dialog = static_cast<GUI_EditLibrary*>(sender());
+	auto* editDialog = dynamic_cast<GUI_EditLibrary*>(sender());
 
-	GUI_EditLibrary::EditMode edit_mode = edit_dialog->editMode();
+	const auto editMode = editDialog->editMode();
+	const auto name = editDialog->name();
+	const auto path = editDialog->path();
+	const auto currentRow = ui->lvLibs->currentIndex().row();
 
-	QString name = edit_dialog->name();
-	QString path = edit_dialog->path();
-
-	switch(edit_mode)
+	switch(editMode)
 	{
 		case GUI_EditLibrary::EditMode::New:
-		{
 			if(!name.isEmpty() && !path.isEmpty())
 			{
 				m->model->appendRow(name, path);
 			}
-
-		}
 			break;
 
 		case GUI_EditLibrary::EditMode::Edit:
-		{
-			if(!name.isEmpty())
+			if(!name.isEmpty() && editDialog->hasNameChanged())
 			{
-				if(edit_dialog->hasNameChanged())
-				{
-					m->model->renameRow(currentRow(), name);
-				}
+				m->model->renameRow(currentRow, name);
 			}
 
-			if(!path.isEmpty())
+			if(!path.isEmpty() && editDialog->hasPathChanged())
 			{
-				if(edit_dialog->hasPathChanged())
-				{
-					m->model->changePath(currentRow(), path);
-				}
+				m->model->changePath(currentRow, path);
 			}
-
-		}
 			break;
 
 		default:
 			break;
 	}
 
-	edit_dialog->deleteLater();
+	editDialog->deleteLater();
 }
 
-void GUI_LibraryPreferences::selectedIndexChanged(const QModelIndex& idx)
+void GUI_LibraryPreferences::selectedIndexChanged(const QModelIndex& modelIndex)
 {
-	int curentRow = idx.row();
-	int rowCount = ui->lvLibs->model()->rowCount();
+	const auto currentRow = modelIndex.row();
+	const auto rowCount = ui->lvLibs->model()->rowCount();
+	const auto isNotFirstRow = (currentRow > 0) && (currentRow < rowCount);
+	const auto isNotLastRow = (currentRow >= 0) && (currentRow < (rowCount - 1));
+	const auto isValidRow = (currentRow >= 0) && (currentRow < rowCount);
 
-	ui->btnUp->setDisabled(curentRow <= 0 || curentRow >= rowCount);
-	ui->btnDown->setDisabled(curentRow < 0 || curentRow >= rowCount - 1);
-	ui->btnDelete->setDisabled(curentRow < 0 || curentRow >= rowCount);
-	ui->btnEdit->setDisabled(curentRow < 0 || curentRow >= rowCount);
+	ui->btnUp->setEnabled(isNotFirstRow);
+	ui->btnDown->setEnabled(isNotLastRow);
+	ui->btnDelete->setEnabled(isValidRow);
+	ui->btnEdit->setEnabled(isValidRow);
+	ui->labCurrentPath->setVisible(isValidRow);
 
-	ui->labCurrentPath->setVisible(curentRow >= 0 || curentRow < rowCount);
-	if(curentRow < 0 || curentRow >= rowCount)
+	if(isValidRow)
 	{
-		return;
+		const auto path = m->model->path(currentRow);
+		ui->labCurrentPath->setText(path);
 	}
-
-	QString path = m->model->path(curentRow);
-	ui->labCurrentPath->setText(path);
 }
-

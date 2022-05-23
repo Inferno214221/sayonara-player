@@ -22,12 +22,13 @@
 #include "Components/LibraryManagement/LibraryManager.h"
 
 #include <QString>
+#include <utility>
 
 struct ChangeOperation::Private
 {
 	Library::Manager* libraryManager;
 
-	Private(Library::Manager* libraryManager) :
+	explicit Private(Library::Manager* libraryManager) :
 		libraryManager {libraryManager} {}
 };
 
@@ -45,14 +46,15 @@ Library::Manager* ChangeOperation::manager() const
 
 struct MoveOperation::Private
 {
-	int from, to;
+	int from;
+	int to;
 
-	Private(int from, int to) :
+	Private(const int from, const int to) :
 		from(from),
 		to(to) {}
 };
 
-MoveOperation::MoveOperation(Library::Manager* libraryManager, int from, int to) :
+MoveOperation::MoveOperation(Library::Manager* libraryManager, const int from, int to) :
 	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(from, to);
@@ -70,12 +72,12 @@ struct RenameOperation::Private
 	LibraryId id;
 	QString newName;
 
-	Private(LibraryId id, const QString& newName) :
+	Private(LibraryId id, QString newName) :
 		id(id),
-		newName(newName) {}
+		newName(std::move(newName)) {}
 };
 
-RenameOperation::RenameOperation(Library::Manager* libraryManager, LibraryId id, const QString& newName) :
+RenameOperation::RenameOperation(Library::Manager* libraryManager, const LibraryId id, const QString& newName) :
 	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(id, newName);
@@ -92,11 +94,11 @@ struct RemoveOperation::Private
 {
 	LibraryId id;
 
-	Private(LibraryId id) :
+	explicit Private(const LibraryId id) :
 		id(id) {}
 };
 
-RemoveOperation::RemoveOperation(Library::Manager* libraryManager, LibraryId id) :
+RemoveOperation::RemoveOperation(Library::Manager* libraryManager, const LibraryId id) :
 	ChangeOperation(libraryManager)
 {
 	m = Pimpl::make<Private>(id);
@@ -111,11 +113,12 @@ bool RemoveOperation::exec()
 
 struct AddOperation::Private
 {
-	QString name, path;
+	QString name;
+	QString path;
 
-	Private(const QString& name, const QString& path) :
-		name(name),
-		path(path) {}
+	Private(QString name, QString path) :
+		name(std::move(name)),
+		path(std::move(path)) {}
 };
 
 AddOperation::AddOperation(Library::Manager* libraryManager, const QString& name, const QString& path) :
@@ -136,9 +139,9 @@ struct ChangePathOperation::Private
 	LibraryId id;
 	QString newPath;
 
-	Private(LibraryId id, const QString& newPath) :
+	Private(const LibraryId id, QString newPath) :
 		id(id),
-		newPath(newPath) {}
+		newPath(std::move(newPath)) {}
 };
 
 ChangePathOperation::ChangePathOperation(Library::Manager* libraryManager, LibraryId id, const QString& newPath) :

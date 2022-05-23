@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef CHANGEOPERATIONS_H
-#define CHANGEOPERATIONS_H
+#ifndef SAYONARA_PLAYER_CHANGEOPERATIONS_H
+#define SAYONARA_PLAYER_CHANGEOPERATIONS_H
 
 #include "Utils/Pimpl.h"
 
@@ -32,11 +32,12 @@ class ChangeOperation
 {
 	PIMPL(ChangeOperation)
 	public:
-		ChangeOperation(Library::Manager* libraryManager);
+		explicit ChangeOperation(Library::Manager* libraryManager);
 		virtual ~ChangeOperation();
 		virtual bool exec() = 0;
 
-		Library::Manager* manager() const;
+	protected:
+		[[nodiscard]] Library::Manager* manager() const;
 };
 
 class MoveOperation :
@@ -46,7 +47,7 @@ class MoveOperation :
 
 	public:
 		MoveOperation(Library::Manager* libraryManager, int from, int to);
-		~MoveOperation();
+		~MoveOperation() override;
 
 		bool exec() override;
 };
@@ -58,7 +59,7 @@ class RenameOperation :
 
 	public:
 		RenameOperation(Library::Manager* libraryManager, LibraryId id, const QString& newName);
-		~RenameOperation();
+		~RenameOperation() override;
 
 		bool exec() override;
 };
@@ -70,7 +71,7 @@ class RemoveOperation :
 
 	public:
 		RemoveOperation(Library::Manager* libraryManager, LibraryId id);
-		~RemoveOperation();
+		~RemoveOperation() override;
 
 		bool exec() override;
 };
@@ -82,7 +83,7 @@ class AddOperation :
 
 	public:
 		AddOperation(Library::Manager* libraryManager, const QString& name, const QString& path);
-		~AddOperation();
+		~AddOperation() override;
 
 		bool exec() override;
 };
@@ -94,9 +95,9 @@ class ChangePathOperation :
 
 	public:
 		ChangePathOperation(Library::Manager* libraryManager, LibraryId id, const QString& newPath);
-		~ChangePathOperation();
+		~ChangePathOperation() override;
 
 		bool exec() override;
 };
 
-#endif // CHANGEOPERATIONS_H
+#endif // SAYONARA_PLAYER_CHANGEOPERATIONS_H

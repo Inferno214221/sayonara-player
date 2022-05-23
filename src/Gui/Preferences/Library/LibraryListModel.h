@@ -18,14 +18,14 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBRARYLISTMODEL_H
-#define LIBRARYLISTMODEL_H
+#ifndef SAYONARA_PLAYER_LIBRARYLISTMODEL_H
+#define SAYONARA_PLAYER_LIBRARYLISTMODEL_H
 
 #include <QAbstractListModel>
 #include "Utils/Pimpl.h"
 
-using LibName=QString;
-using LibPath=QString;
+using LibName = QString;
+using LibPath = QString;
 
 namespace Library
 {
@@ -33,32 +33,30 @@ namespace Library
 }
 
 class LibraryListModel :
-		public QAbstractListModel
+	public QAbstractListModel
 {
 	Q_OBJECT
 	PIMPL(LibraryListModel)
 
-public:
-	LibraryListModel(Library::Manager* libraryManager, QObject* parent=nullptr);
-	~LibraryListModel();
+	public:
+		explicit LibraryListModel(Library::Manager* libraryManager, QObject* parent = nullptr);
+		~LibraryListModel() override;
 
-public:
-	int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-	QVariant data(const QModelIndex& index, int role) const override;
+		// NOLINTNEXTLINE(google-default-arguments)
+		[[nodiscard]] int rowCount(const QModelIndex& index = QModelIndex()) const override;
+		[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
 
-	void appendRow(const LibName& name, const LibPath& path);
-	void renameRow(int row, const LibName& newName);
-	void changePath(int row, const LibPath& path);
-	void moveRow(int from, int to);
-	void removeRow(int row);
+		void appendRow(const LibName& name, const LibPath& path);
+		void renameRow(int row, const LibName& newName);
+		void changePath(int row, const LibPath& path);
+		void moveRow(int from, int to);
+		void removeRow(int row);
 
-	QStringList allNames() const;
-	QStringList allPaths() const;
-	QString name(int idx) const;
-	QString path(int idx) const;
+		[[nodiscard]] QString name(int idx) const;
+		[[nodiscard]] QString path(int idx) const;
 
-	void reset();
-	bool commit();
+		void reset();
+		bool commit();
 };
 
-#endif // LIBRARYLISTMODEL_H
+#endif // SAYONARA_PLAYER_LIBRARYLISTMODEL_H

@@ -38,7 +38,7 @@ struct LibraryListModel::Private
 	QList<Info> shownLibraryInfo;
 	QList<ChangeOperation*> operations;
 
-	Private(Library::Manager* libraryManager) :
+	explicit Private(Library::Manager* libraryManager) :
 		libraryManager {libraryManager},
 		libraryInfo {libraryManager->allLibraries()},
 		shownLibraryInfo(libraryInfo) {}
@@ -47,16 +47,6 @@ struct LibraryListModel::Private
 	{
 		libraryInfo = libraryManager->allLibraries();
 		shownLibraryInfo = libraryInfo;
-	}
-
-	void clearOperations()
-	{
-		for(auto* changeOperation : Algorithm::AsConst(operations))
-		{
-			delete changeOperation;
-		}
-
-		operations.clear();
 	}
 };
 
@@ -68,32 +58,29 @@ LibraryListModel::LibraryListModel(Library::Manager* libraryManager, QObject* pa
 
 LibraryListModel::~LibraryListModel() = default;
 
-int LibraryListModel::rowCount(const QModelIndex& parent) const
+// NOLINTNEXTLINE(google-default-arguments)
+int LibraryListModel::rowCount(const QModelIndex& /*parent*/) const
 {
-	Q_UNUSED(parent)
 	return m->shownLibraryInfo.size();
 }
 
 QVariant LibraryListModel::data(const QModelIndex& index, int role) const
 {
 	const auto row = index.row();
-
-	if(!Util::between(row, rowCount()))
+	if(Util::between(row, rowCount()))
 	{
-		return QVariant();
+		switch(role)
+		{
+			case Qt::DisplayRole:
+				return m->shownLibraryInfo[row].name();
+			case Qt::ToolTipRole:
+				return m->shownLibraryInfo[row].path();
+			default:
+				return {};
+		}
 	}
 
-	if(role == Qt::DisplayRole)
-	{
-		return m->shownLibraryInfo[row].name();
-	}
-
-	else if(role == Qt::ToolTipRole)
-	{
-		return m->shownLibraryInfo[row].path();
-	}
-
-	return QVariant();
+	return {};
 }
 
 void LibraryListModel::appendRow(const LibName& name, const LibPath& path)
@@ -128,15 +115,14 @@ void LibraryListModel::changePath(int row, const LibPath& path)
 
 void LibraryListModel::moveRow(int from, int to)
 {
-	if(!Util::between(from, m->shownLibraryInfo) || !Util::between(to, m->shownLibraryInfo))
+	if(Util::between(from, m->shownLibraryInfo) &&
+	   Util::between(to, m->shownLibraryInfo))
 	{
-		return;
+		m->operations << new MoveOperation(m->libraryManager, from, to);
+		m->shownLibraryInfo.move(from, to);
+
+		emit dataChanged(index(0), index(rowCount()));
 	}
-
-	m->operations << new MoveOperation(m->libraryManager, from, to);
-	m->shownLibraryInfo.move(from, to);
-
-	emit dataChanged(index(0), index(rowCount()));
 }
 
 void LibraryListModel::removeRow(int row)
@@ -150,28 +136,6 @@ void LibraryListModel::removeRow(int row)
 
 		emit dataChanged(index(0), index(rowCount()));
 	}
-}
-
-QStringList LibraryListModel::allNames() const
-{
-	QStringList names;
-
-	Util::Algorithm::transform(m->shownLibraryInfo, names, [](const auto& info) {
-		return info.name();
-	});
-
-	return names;
-}
-
-QStringList LibraryListModel::allPaths() const
-{
-	QStringList paths;
-
-	Util::Algorithm::transform(m->shownLibraryInfo, paths, [](const auto& info) {
-		return info.path();
-	});
-
-	return paths;
 }
 
 QString LibraryListModel::name(int idx) const
@@ -201,7 +165,7 @@ bool LibraryListModel::commit()
 		return true;
 	}
 
-	bool success = true;
+	auto success = true;
 	for(auto* changeOperation : Algorithm::AsConst(m->operations))
 	{
 		if(!changeOperation->exec())
