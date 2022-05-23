@@ -20,146 +20,134 @@
 
 #include "ArtistInfo.h"
 
+#include "Covers/CoverLocation.h"
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
-
-#include "Utils/Set.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
-#include "Utils/SimilarArtists/SimilarArtists.h"
 #include "Utils/MetaData/Artist.h"
-#include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/SimilarArtists/SimilarArtists.h"
 
-#include <QFile>
+#include <optional>
 
-namespace Algorithm=Util::Algorithm;
+namespace
+{
+	using AdditionalInfo = LibraryItemInfo::AdditionalInfo;
+	using ArtistSimilarity = std::pair<double, QString>;
+	using StringSet = Util::Set<QString>;
+
+	QList<ArtistSimilarity> convertSimilarArtistsToList(const QMap<QString, double>& similarArtists)
+	{
+		auto result = QList<ArtistSimilarity>();
+		for(auto it = similarArtists.cbegin(); it != similarArtists.cend(); it++)
+		{
+			result << std::make_pair(it.value(), it.key());
+		}
+
+		Util::Algorithm::sort(result, [](const auto& p1, const auto& p2) {
+			return (p2.first < p1.first);
+		});
+
+		return result;
+	}
+
+	AdditionalInfo calcSimilarArtistInfo(const QString& artistName)
+	{
+		const auto similarArtists = SimilarArtists::getSimilarArtists(artistName);
+		const auto similarArtistList = convertSimilarArtistsToList(similarArtists);
+
+		auto additionalInfo = AdditionalInfo();
+		additionalInfo << StringPair(Lang::get(Lang::SimilarArtists), QString()); // just a header
+
+		for(const auto& [similarity, name]: similarArtistList)
+		{
+			const auto iSimilarity = static_cast<int>(similarity * 100);
+			additionalInfo << StringPair {name, QString("%1%").arg(iSimilarity)};
+		}
+
+		return additionalInfo;
+	}
+
+	std::optional<Artist> getArtistFromDatabase(const ArtistId artistId, const DbId databaseId)
+	{
+		auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, databaseId);
+
+		auto artist = Artist {};
+		const auto success = libraryDatabase && libraryDatabase->getArtistByID(artistId, artist);
+
+		return success ? std::optional {artist} : std::nullopt;
+	}
+
+	Cover::Location calcCoverLocation(const StringSet& artists, const StringSet& albumArtists)
+	{
+		if(artists.size() == 1)
+		{
+			return Cover::Location::coverLocation(artists.first());
+		}
+
+		if(albumArtists.size() == 1)
+		{
+			return Cover::Location::coverLocation(albumArtists.first());
+		}
+
+		return Cover::Location::invalidLocation();
+	}
+
+	AdditionalInfo
+	calcAdditionalInfo(const DbId databaseId, const StringSet& albums, const IdSet& artistIds, const StringSet& artists)
+	{
+		auto additionalInfo = AdditionalInfo {};
+		const auto albumCountString = LibraryItemInfo::convertInfoKeyToString(InfoStrings::AlbumCount);
+		additionalInfo << StringPair(albumCountString, QString::number(albums.count()));
+
+		if(artistIds.size() == 1)
+		{
+			const auto artist = getArtistFromDatabase(artistIds.first(), databaseId);
+			if(artist.has_value())
+			{
+				additionalInfo << calcSimilarArtistInfo(artists.first());
+			}
+		}
+
+		else if(artists.size() > 1)
+		{
+			const auto artistCountString = LibraryItemInfo::convertInfoKeyToString(InfoStrings::ArtistCount);
+			additionalInfo << StringPair(artistCountString, QString::number(artists.count()));
+		}
+
+		return additionalInfo;
+	}
+}
 
 struct ArtistInfo::Private
 {
+	AdditionalInfo additionalInfo;
 	Cover::Location coverLocation;
-	DbId databaseId;
-
-	Private(DbId databaseId) :
-		databaseId(databaseId)
-	{}
+	QString header;
+	QString subheader;
 };
 
-ArtistInfo::ArtistInfo(const MetaDataList& tracks) :
-	MetaDataInfo(tracks)
+ArtistInfo::ArtistInfo(const MetaDataList& metaDataList) :
+	LibraryItemInfo(metaDataList),
+	m {Pimpl::make<Private>()}
 {
-	DbId databaseId = DbId(-1);
-	if(tracks.size() > 0){
-		databaseId = tracks.first().databaseId();
-	}
+	const auto databaseId = metaDataList.isEmpty()
+	                        ? DbId(-1)
+	                        : metaDataList.first().databaseId();
 
-	m = Pimpl::make<Private>(databaseId);
-
-	insertNumericInfoField(InfoStrings::nAlbums, albums().count());
-
-	mAdditionalInfo.clear();
-
-	if(artistIds().size() == 1)
-	{
-		Artist artist;
-		bool success;
-
-		ArtistId artistId = artistIds().first();
-
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
-
-		success = lib_db->getArtistByID(artistId, artist);
-
-		if(success)
-		{
-			mAdditionalInfo.clear();
-			calcSimilarArtists(artist);
-			// custom fields
-			const CustomFieldList custom_fields = artist.customFields();
-			if(!custom_fields.empty()){
-				mAdditionalInfo << StringPair(Lang::get(Lang::SimilarArtists), QString());
-			}
-
-			for(const CustomField& field : custom_fields)
-			{
-				QString name = field.displayName();
-				QString value = field.value();
-				if(value.isEmpty()){
-					continue;
-				}
-
-				mAdditionalInfo << StringPair(name, field.value());
-			}
-		}
-	}
-
-	else if(artists().size() > 1){
-		insertNumericInfoField(InfoStrings::nArtists, artists().count());
-	}
-
-	calcHeader();
-	calcSubheader();
-	calcCoverLocation();
+	m->header = calcArtistString();
+	m->subheader = QString();
+	m->coverLocation = calcCoverLocation(artists(), albumArtists());
+	m->additionalInfo = calcAdditionalInfo(databaseId, albums(), artistIds(), artists());
 }
 
-ArtistInfo::~ArtistInfo() {}
+ArtistInfo::~ArtistInfo() = default;
 
-void ArtistInfo::calcHeader()
-{
-	mHeader = calcArtistString();
-}
+Cover::Location ArtistInfo::coverLocation() const { return m->coverLocation; }
 
+QString ArtistInfo::header() const { return m->header; }
 
-void ArtistInfo::calcSimilarArtists(Artist& artist)
-{
-	using SimPair=QPair<double, QString>;
+QString ArtistInfo::subheader() const { return m->subheader; }
 
-	QList<SimPair> sim_list;
-	QMap<QString, double> sim_artists = SimilarArtists::getSimilarArtists(artist.name());
-
-	for(auto it=sim_artists.cbegin(); it != sim_artists.cend(); it++)
-	{
-		sim_list << SimPair(it.value(), it.key());
-	}
-
-	Algorithm::sort(sim_list, [](const SimPair& p1, const SimPair& p2){
-		return (p2.first < p1.first);
-	});
-
-	for(const SimPair& p : sim_list)
-	{
-		artist.addCustomField(p.second, p.second, QString("%1%").arg((int) (p.first * 100)));
-	}
-}
-
-
-void ArtistInfo::calcSubheader()
-{
-	mSubheader = "";
-}
-
-
-void ArtistInfo::calcCoverLocation()
-{
-	if( artists().size() == 1)
-	{
-		QString artist = artists().first();
-		m->coverLocation = Cover::Location::coverLocation(artist);
-	}
-
-	else if(albumArtists().size() == 1)
-	{
-		QString artist = albumArtists().first();
-		m->coverLocation = Cover::Location::coverLocation(artist);
-	}
-
-	else
-	{
-		m->coverLocation = Cover::Location::invalidLocation();
-	}
-}
-
-Cover::Location ArtistInfo::coverLocation() const
-{
-	return m->coverLocation;
-}
+AdditionalInfo ArtistInfo::additionalData() const { return m->additionalInfo; }

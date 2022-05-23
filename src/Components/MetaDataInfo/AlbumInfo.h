@@ -18,32 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ALBUMINFO_H
-#define ALBUMINFO_H
+#ifndef SAYONARA_PLAYER_ALBUMINFO_H
+#define SAYONARA_PLAYER_ALBUMINFO_H
 
 #include "MetaDataInfo.h"
 #include "Utils/Pimpl.h"
 
-/**
- * @brief The AlbumInfo class
- * @ingroup MetaDataHelper
- */
 class AlbumInfo :
-	public MetaDataInfo
+	public LibraryItemInfo
 {
 	PIMPL(AlbumInfo)
 
-private:
-	void calcCoverLocation() override;
-	void calcHeader() override;
-	void calcSubheader() override;
+	public:
+		explicit AlbumInfo(const MetaDataList& metaDataList);
+		~AlbumInfo() override;
 
-public:
-	explicit AlbumInfo(const MetaDataList& v_md);
-	~AlbumInfo() override;
-
-	Cover::Location coverLocation() const override;
+		[[nodiscard]] auto additionalData() const -> AdditionalInfo override;
+		[[nodiscard]] auto coverLocation() const -> Cover::Location override;
+		[[nodiscard]] auto header() const -> QString override;
+		[[nodiscard]] auto subheader() const -> QString override;
 };
 
-#endif // ALBUMINFO_H
+#endif // SAYONARA_PLAYER_ALBUMINFO_H
 

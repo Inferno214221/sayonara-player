@@ -21,166 +21,157 @@
 #include "AlbumInfo.h"
 #include "MetaDataInfo.h"
 
-#include "Database/LibraryDatabase.h"
+#include "Covers/CoverLocation.h"
 #include "Database/Connector.h"
-
-#include "Utils/Set.h"
+#include "Database/LibraryDatabase.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/Album.h"
-#include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QStringList>
 
-struct AlbumInfo::Private
+namespace
 {
-	DbId databaseId;
-	Cover::Location coverLocation;
+	using IdSet = Util::Set<Id>;
+	using StringSet = Util::Set<QString>;
+	using AdditionalInfo = LibraryItemInfo::AdditionalInfo;
 
-	Private(DbId databaseId) :
-		databaseId(databaseId)
-	{}
-};
-
-AlbumInfo::AlbumInfo(const MetaDataList& tracks) :
-	MetaDataInfo(tracks)
-{
-	DbId databaseId = DbId(-1);
-	if(tracks.size() > 0)
+	void insertSamplerInfo(const StringSet& artists, AdditionalInfo& infoFields)
 	{
-		databaseId = tracks.first().databaseId();
+		const auto samplerString = LibraryItemInfo::convertInfoKeyToString(InfoStrings::Sampler);
+		if(artists.size() > 1)
+		{
+			const auto isSamplerString = Lang::get(Lang::Yes).toLower();
+			infoFields << StringPair(samplerString, isSamplerString);
+		}
+
+		else if(artists.size() == 1)
+		{
+			const auto isSamplerString = Lang::get(Lang::No).toLower();
+			infoFields << StringPair(samplerString, isSamplerString);
+		}
 	}
 
-	m = Pimpl::make<Private>(databaseId);
-	QString str_sampler;
-
-	// clear, because it's from Metadata. We are not interested in
-	// rather fetch albums' additional data, if there's only one album
-	mAdditionalInfo.clear();
-
-	if(albums().size() > 1)
+	void insertAdditionalInfoFromAlbum(Id albumId, DB::LibraryDatabase* libraryDatabase, AdditionalInfo& additionalInfo)
 	{
-		insertNumericInfoField(InfoStrings::nAlbums, albums().count());
-	}
-
-	if(artists().size() > 1)
-	{
-		insertNumericInfoField(InfoStrings::nArtists, artists().count());
-	}
-
-	if(albums().size() == 1)
-	{
-		Album album;
-		bool success;
-
-		if(artists().size() > 1)
+		auto album = Album {};
+		if((libraryDatabase != nullptr) && libraryDatabase->getAlbumByID(albumId, album))
 		{
-			str_sampler = Lang::get(Lang::Yes).toLower();
-			mInfo.insert(InfoStrings::Sampler, str_sampler);
-		}
-
-		if(artists().size() == 1)
-		{
-			str_sampler = Lang::get(Lang::No).toLower();
-			mInfo.insert(InfoStrings::Sampler, str_sampler);
-		}
-
-		AlbumId albumId = albumIds().first();
-
-		DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
-		if(lib_db)
-		{
-			// BIG TODO FOR SOUNDCLOUD
-			success = lib_db->getAlbumByID(albumId, album);
-		}
-
-		else {
-			success = false;
-		}
-
-		if(success)
-		{
-			mAdditionalInfo.clear();
-			// custom fields
-			const CustomFieldList& custom_fields = album.customFields();
-			for(const CustomField& field : custom_fields)
+			const auto& customFields = album.customFields();
+			for(const auto& customField: customFields)
 			{
-				QString name = field.displayName();
-				QString value = field.value();
-				if(value.isEmpty()){
-					continue;
+				const auto name = customField.displayName();
+				const auto value = customField.value();
+				if(!value.isEmpty())
+				{
+					additionalInfo << StringPair(name, customField.value());
 				}
-
-				mAdditionalInfo << StringPair(name, field.value());
 			}
 		}
 	}
 
-	calcHeader();
-	calcSubheader();
-	calcCoverLocation();
-}
-
-AlbumInfo::~AlbumInfo() {}
-
-
-void AlbumInfo::calcHeader()
-{
-	mHeader = calcAlbumString();
-}
-
-void AlbumInfo::calcSubheader()
-{
-	mSubheader = Lang::get(Lang::By).toLower() + " " + calcArtistString();
-}
-
-void AlbumInfo::calcCoverLocation()
-{
-	if(albumIds().size() == 1)
+	AdditionalInfo
+	calcAdditionalData(const DbId databaseId, const IdSet& albumIds, const StringSet& albums, const StringSet& artists)
 	{
-		DB::LibraryDatabase* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, m->databaseId);
+		AdditionalInfo additionalInfo;
 
-		Album album;
-		bool success = libraryDatabase->getAlbumByID(albumIds().first(), album, true);
+		if(albums.size() > 1)
+		{
+			additionalInfo << StringPair(
+				LibraryItemInfo::convertInfoKeyToString(InfoStrings::AlbumCount),
+				QString::number(albums.count()));
+		}
+
+		if(artists.size() > 1)
+		{
+			additionalInfo << StringPair(
+				LibraryItemInfo::convertInfoKeyToString(InfoStrings::ArtistCount),
+				QString::number(artists.count()));
+		}
+
+		if(albums.size() == 1)
+		{
+			auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, databaseId);
+
+			insertSamplerInfo(artists, additionalInfo);
+			insertAdditionalInfoFromAlbum(albumIds.first(), libraryDatabase, additionalInfo);
+		}
+
+		return additionalInfo;
+	}
+
+	Cover::Location extractCoverLocationFromAlbum(const Id albumId, const StringSet& albums, const StringSet& artists,
+	                                              const StringSet& albumArtists, DB::LibraryDatabase* libraryDatabase)
+	{
+		auto album = Album {};
+		const auto success = libraryDatabase && libraryDatabase->getAlbumByID(albumId, album, true);
 		if(!success)
 		{
-			album.setId(albumIds().first());
-			album.setName(albums().first());
-			album.setArtists(artists().toList());
+			album.setId(albumId);
+			album.setName(albums.first());
+			album.setArtists(artists.toList());
 
-			if(albumArtists().size() > 0){
-				album.setAlbumArtist(albumArtists().first());
+			if(!albumArtists.isEmpty())
+			{
+				album.setAlbumArtist(albumArtists.first());
 			}
 
-			album.setDatabaseId(libraryDatabase->databaseId());
+			album.setDatabaseId(libraryDatabase ? libraryDatabase->databaseId() : DbId(-1));
 		}
 
-		m->coverLocation = Cover::Location::coverLocation(album);
+		return Cover::Location::coverLocation(album);
 	}
 
-	else if( albums().size() == 1)
+	Cover::Location
+	calcCoverLocation(DbId databaseId, const IdSet& albumIds, const StringSet& albums, const StringSet& artists,
+	                  const StringSet& albumArtists)
 	{
-		QString album = albums().first();
-
-		if(!albumArtists().isEmpty())
+		if(albumIds.size() == 1) // single library album
 		{
-			m->coverLocation = Cover::Location::coverLocation(album, albumArtists().toList());
+			auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, databaseId);
+			return extractCoverLocationFromAlbum(albumIds.first(), albums, artists, albumArtists, libraryDatabase);
 		}
 
-		else
+		if(albums.size() == 1) // single non-library album
 		{
-			m->coverLocation = Cover::Location::coverLocation(album, artists().toList());
+			const auto album = albums.first();
+			return albumArtists.isEmpty()
+			       ? Cover::Location::coverLocation(album, artists.toList())
+			       : Cover::Location::coverLocation(album, albumArtists.toList());
 		}
-	}
 
-	else
-	{
-		m->coverLocation = Cover::Location::invalidLocation();
+		return Cover::Location::invalidLocation();
 	}
 }
 
-Cover::Location AlbumInfo::coverLocation() const
+struct AlbumInfo::Private
 {
-	return m->coverLocation;
+	Cover::Location coverLocation;
+	AdditionalInfo additionalData;
+	QString header;
+	QString subheader;
+};
+
+AlbumInfo::AlbumInfo(const MetaDataList& metaDataList) :
+	LibraryItemInfo(metaDataList),
+	m {Pimpl::make<Private>()}
+{
+	const auto databaseId = metaDataList.isEmpty()
+	                        ? DbId(-1)
+	                        : metaDataList.first().databaseId();
+
+	m->additionalData = calcAdditionalData(databaseId, albumIds(), albums(), artists());
+	m->coverLocation = calcCoverLocation(databaseId, albumIds(), albums(), artists(), albumArtists());
+	m->header = calcAlbumString();
+	m->subheader = Lang::get(Lang::By).toLower() + " " + calcArtistString();
 }
 
+AlbumInfo::~AlbumInfo() = default;
+
+Cover::Location AlbumInfo::coverLocation() const { return m->coverLocation; }
+
+QString AlbumInfo::header() const { return m->header; }
+
+QString AlbumInfo::subheader() const { return m->subheader; }
+
+AdditionalInfo AlbumInfo::additionalData() const { return m->additionalData; }

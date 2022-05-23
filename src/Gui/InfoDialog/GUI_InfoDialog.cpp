@@ -52,15 +52,15 @@ namespace Algorithm = Util::Algorithm;
 
 namespace
 {
-	std::shared_ptr<MetaDataInfo>
+	std::shared_ptr<LibraryItemInfo>
 	getMetadataInfo(const MD::Interpretation& metadataInterpretation, const MetaDataList& tracks)
 	{
 		switch(metadataInterpretation)
 		{
 			case MD::Interpretation::Artists:
-				return std::shared_ptr<MetaDataInfo>(new ArtistInfo(tracks));
+				return std::make_shared<ArtistInfo>(tracks);
 			case MD::Interpretation::Albums:
-				return std::shared_ptr<MetaDataInfo>(new AlbumInfo(tracks));
+				return std::make_shared<AlbumInfo>(tracks);
 			case MD::Interpretation::None:
 			case MD::Interpretation::Tracks:
 			default:
@@ -78,7 +78,7 @@ struct GUI_InfoDialog::Private
 	MetaDataList tracks;
 	MD::Interpretation metadataInterpretation {MD::Interpretation::None};
 
-	MetaDataList localTracks() const
+	[[nodiscard]] MetaDataList localTracks() const
 	{
 		MetaDataList result;
 
@@ -198,7 +198,7 @@ void GUI_InfoDialog::prepareInfo(MD::Interpretation mdInterpretation)
 	ui->labTitle->setText(metadataInfo->header());
 	ui->labSubheader->setText(metadataInfo->subheader());
 
-	const auto infoMap = metadataInfo->infostringMap();
+	const auto infoMap = metadataInfo->additionalInfo();
 	prepareInfoTable(ui->tableInfo, infoMap);
 
 	const auto paths = metadataInfo->paths();
