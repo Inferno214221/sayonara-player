@@ -33,10 +33,8 @@ class PlayManager;
 class QTimer;
 
 class TrayIconContextMenu :
-		public Gui::WidgetTemplate<QMenu>
+	public Gui::WidgetTemplate<QMenu>
 {
-	friend class GUI_TrayIcon;
-
 	Q_OBJECT
 	PIMPL(TrayIconContextMenu)
 
@@ -44,13 +42,16 @@ class TrayIconContextMenu :
 		void sigShowClicked();
 		void sigCloseClicked();
 
-	private:
-		// all here called by GUI_TrayIcon
-		explicit TrayIconContextMenu(PlayManager* playManager, QWidget* parent=nullptr);
+	public:
+		TrayIconContextMenu(PlayManager* playManager, GUI_TrayIcon* parent);
 		~TrayIconContextMenu() override;
 
 		void setForwardEnabled(bool b);
 		void setDisplayNames();
+
+	protected:
+		void languageChanged() override;
+		void skinChanged() override;
 
 	private slots:
 		void playstateChanged(PlayState state);
@@ -58,55 +59,39 @@ class TrayIconContextMenu :
 
 		void muteClicked();
 		void currentSongClicked();
-
-	protected:
-		void languageChanged() override;
-		void skinChanged() override;
 };
 
-
-/**
-  * Small class to be used as tray icon
-  */
 class GUI_TrayIcon :
-		public QSystemTrayIcon,
-		public NotificationInterface
+	public QSystemTrayIcon,
+	public NotificationInterface
 {
 	Q_OBJECT
 	PIMPL(GUI_TrayIcon)
 
 	signals:
-		/**
-		  * this event is fired, if we have a mouse wheel event
-		  * @param delta bigger then 0 when mouse wheel has moved forward smaller when moved backwards
-		  */
 		void sigWheelChanged(int delta);
-		void sigHideClicked();
 		void sigCloseClicked();
 		void sigShowClicked();
 
 	public:
-		explicit GUI_TrayIcon(PlayManager* playManager, QObject* parent=nullptr);
+		explicit GUI_TrayIcon(PlayManager* playManager, QObject* parent = nullptr);
 		~GUI_TrayIcon() override;
 
 		bool event(QEvent* e) override;
 		[[maybe_unused]] void setForwardEnabled(bool b);
 
 		void notify(const MetaData& md) override;
-		void notify(const QString& title, const QString& message, const QString& image_path) override;
+		void notify(const QString& title, const QString& message, const QString& imagePath) override;
 
-		QString name() const override;
-		QString displayName() const override;
-
-	private:
-		void initContextMenu();
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
 
 	private slots:
 		void playstateChanged(PlayState state);
 		void showTrayIconChanged();
 
-	protected:
-		void languageChanged();
+	private: // NOLINT(readability-redundant-access-specifiers)
+		void initContextMenu();
 };
 
 #endif

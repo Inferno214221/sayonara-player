@@ -41,7 +41,6 @@ class DynamicPlaybackChecker;
 
 namespace PlayerPlugin
 {
-	class Handler;
 	class Base;
 }
 
@@ -68,7 +67,41 @@ class GUI_Player :
 		void registerPreferenceDialog(QAction* dialog_action);
 		void requestShutdown();
 
-	private:
+	protected:
+		void closeEvent(QCloseEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
+		bool event(QEvent* e) override;
+
+		// NOLINTNEXTLINE(google-default-arguments)
+		Message::Answer errorReceived(const QString& error, const QString& senderName = QString()) override;
+		// NOLINTNEXTLINE(google-default-arguments)
+		Message::Answer warningReceived(const QString& error, const QString& senderName = QString()) override;
+		// NOLINTNEXTLINE(google-default-arguments)
+		Message::Answer infoReceived(const QString& error, const QString& senderName = QString()) override;
+		// NOLINTNEXTLINE(google-default-arguments)
+		Message::Answer questionReceived(const QString& info, const QString& senderName = QString(),
+		                                 Message::QuestionType type = Message::QuestionType::YesNo) override;
+
+		void languageChanged() override;
+
+	private slots:
+		void playError(const QString& message);
+
+		void splitterMainMoved(int pos, int idx);
+		void splitterControlsMoved(int pos, int idx);
+
+		void currentLibraryChanged();
+
+		void minimize();
+		void reallyClose();
+
+		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
+
+		void pluginAdded(PlayerPlugin::Base* plugin);
+		void pluginActionTriggered(bool b);
+
+	private: // NOLINT(readability-redundant-access-specifiers)
+		void initLanguage();
 		void initTrayActions();
 		void initConnections();
 		void initLibrary();
@@ -87,36 +120,6 @@ class GUI_Player :
 		void addCurrentLibrary();
 		void removeCurrentLibrary();
 
-	private slots:
-		void playError(const QString& message);
-
-		void splitterMainMoved(int pos, int idx);
-		void splitterControlsMoved(int pos, int idx);
-
-		void currentLibraryChanged();
-
-		void minimize();
-		void reallyClose();
-
-		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
-
-		/* Plugins */
-		void pluginAdded(PlayerPlugin::Base* plugin);
-		void pluginActionTriggered(bool b);
-
-	protected:
-		void closeEvent(QCloseEvent* e) override;
-		void resizeEvent(QResizeEvent* e) override;
-		bool event(QEvent* e) override;
-
-		// Methods for other mudules to display info/warning/error
-		Message::Answer errorReceived(const QString& error, const QString& senderName = QString()) override;
-		Message::Answer warningReceived(const QString& error, const QString& senderName = QString()) override;
-		Message::Answer infoReceived(const QString& error, const QString& senderName = QString()) override;
-		Message::Answer questionReceived(const QString& info, const QString& senderName = QString(),
-		                                 Message::QuestionType type = Message::QuestionType::YesNo) override;
-
-		void languageChanged() override;
 };
 
 #endif // GUI_SIMPLEPLAYER_H

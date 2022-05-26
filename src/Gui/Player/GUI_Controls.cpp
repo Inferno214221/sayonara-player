@@ -22,17 +22,10 @@
 #include "Gui/Player/ui_GUI_Controls.h"
 
 GUI_Controls::GUI_Controls(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
-	GUI_ControlsBase(playManager, coverProvider, parent)
-{
-	ui = new Ui::GUI_Controls();
-	ui->setupUi(this);
-}
+	GUI_ControlsBase(playManager, coverProvider, parent),
+	ui(std::make_shared<Ui::GUI_Controls>()) {}
 
-GUI_Controls::~GUI_Controls()
-{
-	delete ui;
-	ui = nullptr;
-}
+GUI_Controls::~GUI_Controls() = default;
 
 QLabel* GUI_Controls::labSayonara() const { return ui->labSayonara; }
 
@@ -76,15 +69,6 @@ QPushButton* GUI_Controls::btnStop() const { return ui->btnStop; }
 
 Gui::CoverButton* GUI_Controls::btnCover() const { return ui->btnCover; }
 
-bool GUI_Controls::isExternResizeAllowed() const
-{
-	return false;
-}
+bool GUI_Controls::isExternResizeAllowed() const { return false; }
 
-void GUI_Controls::languageChanged()
-{
-	if(ui)
-	{
-		ui->retranslateUi(this);
-	}
-}
+void GUI_Controls::languageChanged() { ui->retranslateUi(this); }

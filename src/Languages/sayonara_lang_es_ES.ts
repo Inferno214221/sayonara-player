@@ -1176,7 +1176,7 @@
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation>Tamaño del buffer</translation>
+        <translation>Tamaño del logLines</translation>
     </message>
     <message>
         <location line="+7"/>

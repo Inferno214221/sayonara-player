@@ -34,8 +34,7 @@ struct GUI_ControlsNew::Private
 	PlayManager* playManager;
 
 	explicit Private(PlayManager* playManager) :
-		playManager{playManager}
-	{}
+		playManager {playManager} {}
 };
 
 GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
@@ -43,21 +42,19 @@ GUI_ControlsNew::GUI_ControlsNew(PlayManager* playManager, CoverDataProvider* co
 {
 	m = Pimpl::make<Private>(playManager);
 
-	ui = new Ui::GUI_ControlsNew();
+	ui = std::make_shared<Ui::GUI_ControlsNew>();
 	ui->setupUi(this);
 
-	ui->widgetRating->setMaximumHeight(static_cast<int>(this->fontMetrics().height() * 1.5));
-	ui->widgetRating->setMaximumWidth(ui->widgetRating->height() * 5);
+	constexpr const auto ScaleFactor = 1.5;
+	constexpr const auto MaxLines = 5;
+	ui->widgetRating->setMaximumHeight(static_cast<int>(this->fontMetrics().height() * ScaleFactor));
+	ui->widgetRating->setMaximumWidth(ui->widgetRating->height() * MaxLines);
 
 	ui->widgetRating->setMouseTrackable(false);
 	connect(ui->widgetRating, &RatingEditor::sigFinished, this, &GUI_ControlsNew::ratingChangedHere);
 }
 
-GUI_ControlsNew::~GUI_ControlsNew()
-{
-	delete ui;
-	ui = nullptr;
-}
+GUI_ControlsNew::~GUI_ControlsNew() = default;
 
 QLabel* GUI_ControlsNew::labSayonara() const { return ui->labSayonara; }
 
@@ -120,15 +117,9 @@ void GUI_ControlsNew::ratingChangedHere(bool save)
 	uto->setTrackRating(track, rating);
 }
 
-bool GUI_ControlsNew::isExternResizeAllowed() const
-{
-	return true;
-}
+bool GUI_ControlsNew::isExternResizeAllowed() const { return true; }
 
 void GUI_ControlsNew::languageChanged()
 {
-	if(ui)
-	{
-		ui->retranslateUi(this);
-	}
+	ui->retranslateUi(this);
 }

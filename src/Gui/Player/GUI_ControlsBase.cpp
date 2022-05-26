@@ -138,11 +138,6 @@ Gui::RatingEditor* GUI_ControlsBase::labRating() const
 	return nullptr;
 }
 
-QSize GUI_ControlsBase::buttonSize() const
-{
-	return btnCover()->size();
-}
-
 // new track
 void GUI_ControlsBase::currentTrackChanged(const MetaData& track)
 {

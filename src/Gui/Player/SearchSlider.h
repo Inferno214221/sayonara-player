@@ -39,10 +39,10 @@ namespace Gui
 			void sigSliderMoved(int);
 
 		public:
-			explicit SearchSlider(QWidget* parent = nullptr);
+			[[maybe_unused]] explicit SearchSlider(QWidget* parent = nullptr);
 			~SearchSlider() override;
 
-			bool isBusy() const;
+			[[nodiscard]] bool isBusy() const;
 
 		protected:
 			void mousePressEvent(QMouseEvent* e) override;

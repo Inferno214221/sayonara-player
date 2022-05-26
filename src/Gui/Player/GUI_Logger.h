@@ -42,33 +42,31 @@ class LogObject :
 		void sigNewLog(const QDateTime& t, Log logType, const QString& className, const QString& str);
 
 	public:
-		explicit LogObject(QObject* parent = nullptr);
+		[[maybe_unused]] explicit LogObject(QObject* parent = nullptr);
 		~LogObject() override;
 
 		void addLogLine(const LogEntry& le) override;
 };
 
-struct LogLine;
 class GUI_Logger :
 	public Gui::Dialog
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Logger)
+	UI_CLASS_SHARED_PTR(GUI_Logger)
 	PIMPL(GUI_Logger)
 
 	public:
 		explicit GUI_Logger(QWidget* parent = nullptr);
 		~GUI_Logger() override;
 
-		LogListener* logListener();
+		static LogListener* logListener();
 
 	private:
 		void initUi();
-		QString calcLogLine(const LogLine& log_line);
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void currentModuleChanged(const QString& module);
-		void logReady(const QDateTime& t, Log log_type, const QString& class_name, const QString& str);
+		void logReady(const QDateTime& dateTime, Log log_type, const QString& class_name, const QString& str);
 		void loglevelChanged(int index);
 		void saveClicked();
 

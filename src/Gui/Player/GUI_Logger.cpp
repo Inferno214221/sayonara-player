@@ -22,102 +22,95 @@
 #include "Gui/Player/ui_GUI_Logger.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Logger/LoggerUtils.h"
-#include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 
+#include <QDateTime>
+#include <QDir>
+#include <QFile>
+#include <QFileDialog>
 #include <QStringList>
 #include <QTextEdit>
-#include <QFileDialog>
-#include <QFile>
-#include <QDir>
-#include <QDateTime>
+#include <utility>
 
-namespace Algorithm = Util::Algorithm;
+Q_GLOBAL_STATIC(LogObject, logObject) // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-Q_GLOBAL_STATIC(LogObject, logObject)
-
-struct LogLine
+namespace
 {
-	QDateTime dateTime;
-	Log logType;
-	QString className;
-	QString str;
-
-	LogLine(const QDateTime& dateTime, Log logType, const QString& className, const QString& str) :
-		dateTime(dateTime),
-		logType(logType),
-		className(className),
-		str(str) {}
-
-	QString toString() const
+	struct LogLine
 	{
-		int logLevel = GetSetting(Set::Logger_Level);
-		QString logLine = "<table style=\"font-family: Monospace;\">";
-		QString htmlColor, typeStr;
-		switch(logType)
-		{
-			case Log::Info:
-				htmlColor = "#00AA00";
-				typeStr = "Info";
-				break;
-			case Log::Warning:
-				htmlColor = "#EE0000";
-				typeStr = "Warning";
-				break;
-			case Log::Error:
-				htmlColor = "#EE0000";
-				typeStr = "Error";
-				break;
-			case Log::Debug:
-				htmlColor = "#7A7A00";
-				typeStr = "Debug";
-				if(logLevel < 1)
-				{
-					return QString();
-				}
-				break;
-			case Log::Develop:
-				htmlColor = "#6A6A00";
-				typeStr = "Dev";
-				if(logLevel < 2)
-				{
-					return QString();
-				}
-				break;
-			case Log::Crazy:
-				htmlColor = "#5A5A00";
-				typeStr = "CrazyLog";
-				if(logLevel < 3)
-				{
-					return QString();
-				}
-				break;
-			default:
-				typeStr = "Debug";
-				break;
-		}
+		QDateTime dateTime;
+		Log logType;
+		QString className;
+		QString logData;
+	};
 
-		logLine += "<tr>";
-		logLine += "<td>[" + dateTime.toString("hh:mm:ss") + "." + QString::number(dateTime.time().msec()) + "]</td>";
-		logLine += "<td><div style=\"color: " + htmlColor + ";\">" + typeStr + ": </div></td>";
+	std::pair<QString, QString> formattingInfo(const Log logType)
+	{
+		using FormattingInfo = std::pair<QString, QString>;
+		const auto map = QMap<Log, FormattingInfo> {
+			{Log::Info,    std::make_pair("#00AA00", "Info")},
+			{Log::Warning, std::make_pair("#EE0000", "Warning")},
+			{Log::Debug,   std::make_pair("#7A7A00", "Debug")},
+			{Log::Develop, std::make_pair("#6A6A00", "Develop")},
+			{Log::Crazy,   std::make_pair("#5A5A00", "Verbose")}};
 
-		if(!className.isEmpty())
-		{
-			logLine += "<td><div style=\"color: #0000FF;\">" + className + "</div>:</td>";
-		}
-
-		logLine += "<td>" + str + "</td>";
-		logLine += "</tr>";
-		logLine += "</table>";
-
-		return logLine;
+		return map[logType];
 	}
-};
 
-LogObject::LogObject(QObject* parent) :
+	bool isLogLevelSufficientForType(const int logLevel, const Log logType)
+	{
+		return ((logLevel < 1) && (logType == Log::Debug)) ||
+		       ((logLevel < 2) && (logType == Log::Develop)) ||
+		       ((logLevel < 3) && (logType == Log::Develop));
+	}
+
+	QString formatLogLine(const LogLine& logLine)
+	{
+		if(logLine.logData.trimmed().isEmpty())
+		{
+			return {};
+		}
+
+		const auto [htmlColor, typeStr] = formattingInfo(logLine.logType);
+		const auto className = logLine.className.isEmpty()
+		                       ? "::"
+		                       : logLine.className;
+
+		constexpr const auto* LogLineTemplate = R"(
+<table style="font-family: Monospace;"><tr>
+<td>[%1]</td>
+<td><div style="color: %2;">%3:</div></td>
+<td><div style="color: #0000FF;">%4</div>:</td>
+<td>%5</td>
+</tr></table>)";
+
+		return QString(LogLineTemplate)
+			.arg(logLine.dateTime.toString("hh:mm:ss.zzz"))
+			.arg(htmlColor).arg(typeStr)
+			.arg(className)
+			.arg(logLine.logData);
+	}
+
+	void writeLogLineToTextEdit(const LogLine& logLine, QTextEdit* textEdit, const QString& module = QString())
+	{
+		if(module.isEmpty() || (module == logLine.className))
+		{
+			const auto formattedString = formatLogLine(logLine);
+			if(!formattedString.isEmpty())
+			{
+				textEdit->append(formattedString);
+			}
+		}
+	}
+}
+
+[[maybe_unused]] LogObject::LogObject(QObject* parent) :
 	QObject(parent),
 	LogListener() {}
 
@@ -130,8 +123,8 @@ void LogObject::addLogLine(const LogEntry& le)
 
 struct GUI_Logger::Private
 {
-	QList<LogLine> buffer;
-	QStringList modules;
+	QList<LogLine> logLines;
+	Util::Set<QString> modules;
 
 	Private()
 	{
@@ -145,17 +138,10 @@ GUI_Logger::GUI_Logger(QWidget* parent) :
 	m = Pimpl::make<Private>();
 	connect(logObject(), &LogObject::sigNewLog, this, &GUI_Logger::logReady, Qt::QueuedConnection);
 
-	Logger::registerLogListener(this->logListener());
+	Logger::registerLogListener(GUI_Logger::logListener());
 }
 
-GUI_Logger::~GUI_Logger()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_Logger::~GUI_Logger() = default;
 
 void GUI_Logger::initUi()
 {
@@ -164,7 +150,7 @@ void GUI_Logger::initUi()
 		return;
 	}
 
-	ui = new Ui::GUI_Logger;
+	ui = std::make_shared<Ui::GUI_Logger>();
 	ui->setupUi(this);
 
 	ui->comboLogLevel->addItem(Lang::get(Lang::Default));
@@ -172,12 +158,12 @@ void GUI_Logger::initUi()
 	ui->comboLogLevel->addItem("Develop");
 	ui->comboLogLevel->addItem("Crazy");
 
-	for(const LogLine& line : Algorithm::AsConst(m->buffer))
+	for(const auto& logLine: m->logLines)
 	{
-		ui->teLog->append(line.toString());
+		writeLogLineToTextEdit(logLine, ui->teLog);
 	}
 
-	for(const QString& module : m->modules)
+	for(const auto& module: m->modules)
 	{
 		ui->comboModules->addItem(module);
 	}
@@ -190,43 +176,13 @@ void GUI_Logger::initUi()
 	connect(ui->comboLogLevel, combo_current_index_changed_int, this, &GUI_Logger::loglevelChanged);
 }
 
-QString GUI_Logger::calcLogLine(const LogLine& logLine)
-{
-	m->buffer << logLine;
-
-	if(!m->modules.contains(logLine.className))
-	{
-		int i = 0;
-		for(; i < m->modules.size(); i++)
-		{
-			if(logLine.className < m->modules[i])
-			{
-
-				break;
-			}
-		}
-
-		m->modules.insert(i, logLine.className);
-
-		if(ui)
-		{
-			ui->comboModules->insertItem(i, logLine.className);
-		}
-	}
-
-	return logLine.toString();
-}
-
 void GUI_Logger::currentModuleChanged(const QString& module)
 {
 	ui->teLog->clear();
 
-	for(const LogLine& logLine : m->buffer)
+	for(const auto& logLine: m->logLines)
 	{
-		if((logLine.className == module) || module.isEmpty())
-		{
-			ui->teLog->append(logLine.toString());
-		}
+		writeLogLineToTextEdit(logLine, ui->teLog, module);
 	}
 }
 
@@ -235,14 +191,26 @@ LogListener* GUI_Logger::logListener()
 	return logObject();
 }
 
-void GUI_Logger::logReady(const QDateTime& t, Log logType, const QString& className, const QString& message)
+void
+GUI_Logger::logReady(const QDateTime& dateTime, const Log logType, const QString& className, const QString& logData)
 {
-	const LogLine logLine(t, logType, className, message);
-	const QString str = calcLogLine(logLine);
+	if(!isLogLevelSufficientForType(GetSetting(Set::Logger_Level), logType))
+	{
+		return;
+	}
+
+	const auto logLine = LogLine {dateTime, logType, className, logData};
+	m->logLines << logLine;
+	m->modules.insert(className);
 
 	if(ui)
 	{
-		ui->teLog->append(str);
+		if(ui->comboModules->findText(className) < 0)
+		{
+			ui->comboModules->addItem(className);
+		}
+
+		writeLogLineToTextEdit(logLine, ui->teLog);
 	}
 }
 
@@ -254,29 +222,19 @@ void GUI_Logger::loglevelChanged(int index)
 
 void GUI_Logger::saveClicked()
 {
-	const QString filename = QFileDialog::getSaveFileName
-		(
-			this,
-			Lang::get(Lang::SaveAs),
-			QDir::homePath(), "*.log"
-		);
+	const auto filename = QFileDialog::getSaveFileName(
+		this,
+		Lang::get(Lang::SaveAs),
+		QDir::homePath(), "*.log");
 
-	if(filename.isEmpty())
+	if(!filename.isEmpty())
 	{
-		return;
-	}
-
-	QFile f(filename);
-	bool isOpen = f.open(QFile::WriteOnly);
-	if(isOpen)
-	{
-		f.write(ui->teLog->toPlainText().toUtf8());
-		f.close();
-	}
-
-	else
-	{
-		Message::warning(tr("Cannot open file") + " " + filename);
+		const auto data = ui->teLog->toPlainText().toLocal8Bit();
+		const auto success = Util::File::writeFile(data, filename);
+		if(!success)
+		{
+			Message::warning(tr("Cannot open file") + " " + filename);
+		}
 	}
 }
 
@@ -286,15 +244,16 @@ void GUI_Logger::languageChanged()
 	{
 		ui->retranslateUi(this);
 		ui->labLogLevel->setText(Lang::get(Lang::LogLevel));
-		this->setWindowTitle(Lang::get(Lang::Logger));
+
+		setWindowTitle(Lang::get(Lang::Logger));
 	}
 }
 
 void GUI_Logger::showEvent(QShowEvent* e)
 {
 	initUi();
+
 	Dialog::showEvent(e);
 
 	ui->comboLogLevel->setCurrentIndex(GetSetting(Set::Logger_Level));
 }
-

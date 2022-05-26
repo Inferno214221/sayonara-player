@@ -64,10 +64,12 @@ class Menubar :
 		void initDonateLink();
 		void initConnections();
 		void styleChanged();
+		void initLanguages();
+		void initSkin();
 
 		QAction* changeCurrentLibrary(Library::AbstractContainer* library);
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void openDirClicked();
 		void openFilesClicked();
 		void shutdownClicked();

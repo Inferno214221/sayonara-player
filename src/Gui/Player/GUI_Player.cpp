@@ -113,7 +113,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 {
 	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, this);
 
-	languageChanged();
+	initLanguage();
 
 	ui = std::make_shared<Ui::GUI_Player>();
 	ui->setupUi(this);
@@ -157,8 +157,8 @@ GUI_Player::~GUI_Player()
 static int16_t getGeometryVersion(const QByteArray& geometry)
 {
 	auto dataStream = QDataStream(geometry);
-	int32_t ignoreThis;
-	int16_t ret;
+	int32_t ignoreThis = 0;
+	int16_t ret = 0;
 
 	dataStream >> ignoreThis >> ret;
 	return ret;
@@ -166,6 +166,8 @@ static int16_t getGeometryVersion(const QByteArray& geometry)
 
 void GUI_Player::initGeometry()
 {
+	constexpr const auto PercentOfScreen = 0.8F;
+
 	const auto geometry = GetSetting(Set::Player_Geometry);
 	if(!geometry.isEmpty())
 	{
@@ -176,7 +178,7 @@ void GUI_Player::initGeometry()
 		const auto dbGeometryVersion = getGeometryVersion(geometry);
 		if(ourGeometryVersion < dbGeometryVersion)
 		{
-			Gui::Util::placeInScreenCenter(this, 0.8f, 0.8f);
+			Gui::Util::placeInScreenCenter(this, PercentOfScreen, PercentOfScreen);
 		}
 
 		else
@@ -187,7 +189,7 @@ void GUI_Player::initGeometry()
 
 	else
 	{
-		Gui::Util::placeInScreenCenter(this, 0.8f, 0.8f);
+		Gui::Util::placeInScreenCenter(this, PercentOfScreen, PercentOfScreen);
 	}
 
 	if(GetSetting(Set::Player_StartInTray))
@@ -393,7 +395,8 @@ void GUI_Player::controlstyleChanged()
 
 	else
 	{
-		ui->splitterControls->setSizes({350, this->height() - 350});
+		constexpr const auto MinimumUpperWidgetSize = 350;
+		ui->splitterControls->setSizes({MinimumUpperWidgetSize, this->height() - MinimumUpperWidgetSize});
 	}
 }
 
@@ -541,7 +544,7 @@ void GUI_Player::checkControlSplitter()
 	}
 }
 
-void GUI_Player::languageChanged()
+void GUI_Player::initLanguage()
 {
 	const auto language = GetSetting(Set::Player_Language);
 	Translator::instance()->changeLanguage(this, language);
@@ -550,6 +553,11 @@ void GUI_Player::languageChanged()
 	{
 		ui->retranslateUi(this);
 	}
+}
+
+void GUI_Player::languageChanged()
+{
+	initLanguage();
 }
 
 void GUI_Player::minimize()

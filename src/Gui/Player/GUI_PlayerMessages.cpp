@@ -24,7 +24,7 @@
 
 static Message::Answer convertAnswer(int answer)
 {
-	auto button = QMessageBox::StandardButton(answer);
+	const auto button = QMessageBox::StandardButton(answer);
 	switch(button)
 	{
 		case QMessageBox::Ok:
@@ -45,13 +45,13 @@ static Message::Answer convertAnswer(int answer)
 	}
 }
 
-Message::Answer GUI_Player::errorReceived(const QString& error, const QString& sender_name)
+Message::Answer GUI_Player::errorReceived(const QString& error, const QString& senderName) // NOLINT(google-default-arguments)
 {
-	QString title = sender_name.isEmpty()
+	const auto title = senderName.isEmpty()
 	                ? Lang::get(Lang::Error) + ":"
-	                : sender_name + ": " + Lang::get(Lang::Error);
+	                : senderName + ": " + Lang::get(Lang::Error);
 
-	QMessageBox msgBox(this);
+	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
 	msgBox.setIcon(QMessageBox::Critical);
 	msgBox.setText(error);
@@ -61,13 +61,13 @@ Message::Answer GUI_Player::errorReceived(const QString& error, const QString& s
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& senderName)
+Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& senderName) // NOLINT(google-default-arguments)
 {
-	const QString title = senderName.isEmpty()
+	const auto title = senderName.isEmpty()
 	                ? Lang::get(Lang::Warning)
 	                : senderName + ": " + Lang::get(Lang::Warning);
 
-	QMessageBox msgBox(this);
+	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
 	msgBox.setIcon(QMessageBox::Warning);
 	msgBox.setText(warning);
@@ -77,13 +77,13 @@ Message::Answer GUI_Player::warningReceived(const QString& warning, const QStrin
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::infoReceived(const QString& info, const QString& senderName)
+Message::Answer GUI_Player::infoReceived(const QString& info, const QString& senderName) // NOLINT(google-default-arguments)
 {
-	const QString title = senderName.isEmpty()
+	const auto title = senderName.isEmpty()
 	                ? Lang::get(Lang::Info)
 	                : senderName + ": " + Lang::get(Lang::Info);
 
-	QMessageBox msgBox(this);
+	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
 	msgBox.setText(info);
 	msgBox.setIcon(QMessageBox::Information);
@@ -94,13 +94,13 @@ Message::Answer GUI_Player::infoReceived(const QString& info, const QString& sen
 }
 
 Message::Answer
-GUI_Player::questionReceived(const QString& question, const QString& senderName, Message::QuestionType type)
+GUI_Player::questionReceived(const QString& question, const QString& senderName, Message::QuestionType type) // NOLINT(google-default-arguments)
 {
-	const QString title = senderName.isEmpty()
+	const auto title = senderName.isEmpty()
 	                ? Lang::get(Lang::Info)
 	                : senderName + ": " + Lang::get(Lang::Info);
 
-	QMessageBox msgBox(this);
+	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
 	msgBox.setText(question);
 	msgBox.setIcon(QMessageBox::Question);

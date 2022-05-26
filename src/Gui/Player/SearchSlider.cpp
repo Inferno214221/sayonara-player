@@ -35,21 +35,25 @@ namespace
 {
 	int getDeltaFromModifier(const QFlags<Qt::KeyboardModifier>& modifiers)
 	{
+		constexpr const auto SmallStep = 5;
+		constexpr const auto StandardStep = 10;
+		constexpr const auto BigStep = 50;
+
 		if(modifiers & Qt::ShiftModifier)
 		{
-			return 10;
+			return StandardStep;
 		}
 
 		if(modifiers & Qt::AltModifier)
 		{
-			return 50;
+			return BigStep;
 		}
 
-		return 5;
+		return SmallStep;
 	}
 }
 
-SearchSlider::SearchSlider(QWidget* parent) :
+[[maybe_unused]] SearchSlider::SearchSlider(QWidget* parent) :
 	Gui::Slider(parent)
 {
 	setMouseTracking(true);

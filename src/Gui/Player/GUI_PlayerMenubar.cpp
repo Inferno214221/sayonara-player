@@ -94,25 +94,29 @@ struct Menubar::Private
 	QLabel* donateLabel = nullptr;
 
 	Private(PlaylistCreator* playlistCreator, Menubar* menubar) :
-		playlistCreator(playlistCreator)
+		playlistCreator(playlistCreator),
+		menuFile(new QMenu(menubar)),
+		menuView(new QMenu(menubar)),
+		menuPlugins(new QMenu(menubar)),
+		menuHelp(new QMenu(menubar)),
+		actionOpenFile(new QAction(menuFile)),
+		actionOpenDir(new QAction(menuFile)),
+		sepAfterOpen(menuFile->addSeparator()),
+		sepAfterPreferences(menuFile->addSeparator()),
+		actionShutdown(new QAction(menuFile)),
+		actionClose(new QAction(menuFile)),
+		actionViewLibrary(new QAction(menuView)),
+		actionDark(new QAction(menuView)),
+		actionBigCover(new QAction(menuView)),
+		actionFullscreen(new QAction(menuView)),
+		actionHelp(new QAction(menuHelp)),
+		actionAbout(new QAction(menuHelp)),
+		actionLogger(new QAction(menuHelp))
 	{
-		menuFile = new QMenu(menubar);
-		menuView = new QMenu(menubar);
-		menuPlugins = new QMenu(menubar);
-		menuHelp = new QMenu(menubar);
-
 		menubar->insertMenu(nullptr, menuFile);
 		menubar->insertMenu(nullptr, menuPlugins);
 		menubar->insertMenu(nullptr, menuView);
-		menuHelpAction = menubar->insertMenu(nullptr, menuHelp);
-
-		// file
-		actionOpenDir = new QAction(menuFile);
-		actionOpenFile = new QAction(menuFile);
-		sepAfterOpen = menuFile->addSeparator();
-		sepAfterPreferences = menuFile->addSeparator();
-		actionShutdown = new QAction(menuFile);
-		actionClose = new QAction(menuFile);
+		menuHelpAction = menubar->insertMenu(nullptr, menuHelp); // NOLINT(cppcoreguidelines-prefer-member-initializer)
 
 		menuFile->insertActions(
 			nullptr,
@@ -121,15 +125,9 @@ struct Menubar::Private
 				actionClose
 			});
 
-		// view
-		actionViewLibrary = new QAction(menuView);
 		actionViewLibrary->setCheckable(true);
-
-		actionDark = new QAction(menuView);
 		actionDark->setCheckable(true);
-		actionBigCover = new QAction(menuView);
 		actionBigCover->setCheckable(true);
-		actionFullscreen = new QAction(menuView);
 		actionFullscreen->setCheckable(true);
 
 		menuView->insertActions(
@@ -140,11 +138,6 @@ struct Menubar::Private
 				actionDark,
 				actionFullscreen
 			});
-
-		//help
-		actionHelp = new QAction(menuHelp);
-		actionAbout = new QAction(menuHelp);
-		actionLogger = new QAction(menuHelp);
 
 		menuHelp->insertActions(
 			nullptr,
@@ -180,8 +173,8 @@ Menubar::Menubar(PlaylistCreator* playlistCreator, QWidget* parent) :
 
 	initDonateLink();
 	initConnections();
-	languageChanged();
-	skinChanged();
+	initLanguages();
+	initSkin();
 	styleChanged();
 }
 
@@ -259,18 +252,18 @@ void Menubar::showLibraryMenu(bool b)
 		m->currentLibraryMenuAction->setVisible(b);
 	}
 }
-
-QString getLinkColor(QWidget* parent)
-{
-	if(!Style::isDark())
-	{
-		const auto palette = parent->palette();
-		const auto color = palette.windowText().color();
-		return color.name(QColor::NameFormat::HexRgb);
-	}
-
-	return "f3841a";
-}
+//
+//QString getLinkColor(QWidget* parent)
+//{
+//	if(!Style::isDark())
+//	{
+//		const auto palette = parent->palette();
+//		const auto color = palette.windowText().color();
+//		return color.name(QColor::NameFormat::HexRgb);
+//	}
+//
+//	return "f3841a";
+//}
 
 void Menubar::initDonateLink()
 {
@@ -285,7 +278,9 @@ void Menubar::initDonateLink()
 
 	auto* layout = new QHBoxLayout();
 	layout->setSpacing(0);
-	layout->addSpacerItem(new QSpacerItem(10, 10, QSizePolicy::MinimumExpanding));
+
+	constexpr const auto LayoutMargin = 10;
+	layout->addSpacerItem(new QSpacerItem(LayoutMargin, LayoutMargin, QSizePolicy::MinimumExpanding));
 	layout->addWidget(m->heartLabel);
 	layout->addWidget(m->donateLabel);
 
@@ -345,7 +340,7 @@ void Menubar::initConnections()
 	connect(playerPluginHandler, &PlayerPlugin::Handler::sigPluginAdded, this, &Menubar::pluginAdded);
 }
 
-void Menubar::languageChanged()
+void Menubar::initLanguages()
 {
 	m->menuFile->setTitle(Lang::get(Lang::File));
 	m->menuView->setTitle(tr("View"));
@@ -377,18 +372,22 @@ void Menubar::languageChanged()
 	}
 }
 
-void Menubar::skinChanged()
+void Menubar::languageChanged()
 {
-	{
-		using namespace Gui;
+	initLanguages();
+}
+
+
+void Menubar::initSkin()
+{
+
+	namespace Icons = Gui::Icons;
 		m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
 		m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
 		m->actionClose->setIcon(Icons::icon(Icons::Exit));
 		m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
 		m->actionAbout->setIcon(Icons::icon(Icons::Info));
-	}
 
-	{
 		const auto heartColor = QColor(243, 132, 26);
 		const auto textColor = (Style::isDark()) ? heartColor : QColor();
 
@@ -405,7 +404,11 @@ void Menubar::skinChanged()
 
 		m->heartLabel->setText(heartLink);
 		m->donateLabel->setText(sayonaraLink);
-	}
+}
+
+void Menubar::skinChanged()
+{
+	initSkin();
 }
 
 void Menubar::openDirClicked()
@@ -461,12 +464,12 @@ void Menubar::styleChanged()
 	m->actionDark->setChecked(Style::isDark());
 }
 
-void Menubar::skinToggled(bool b)
+void Menubar::skinToggled(bool b) // NOLINT(readability-convert-member-functions-to-static)
 {
 	Style::setDark(b);
 }
 
-void Menubar::bigCoverToggled(bool b)
+void Menubar::bigCoverToggled(bool b) // NOLINT(readability-convert-member-functions-to-static)
 {
 	SetSetting(Set::Player_ControlStyle, b ? 1 : 0);
 }
@@ -484,7 +487,7 @@ void Menubar::showFullscreenToggled(bool b)
 	SetSetting(Set::Player_Fullscreen, b);
 }
 
-void Menubar::helpClicked()
+void Menubar::helpClicked() // NOLINT(readability-convert-member-functions-to-static)
 {
 	const auto text =
 		QStringList
@@ -503,8 +506,11 @@ void Menubar::aboutClicked()
 {
 	const auto version = GetSetting(Set::Player_Version);
 
+	constexpr const auto IconSize = 150;
+	const auto pixmap = Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(IconSize, IconSize), true);
+
 	auto* aboutBox = new QMessageBox(this);
-	aboutBox->setIconPixmap(Gui::Util::pixmap("logo.png", Gui::Util::NoTheme, QSize(150, 150), true));
+	aboutBox->setIconPixmap(pixmap);
 	aboutBox->setStandardButtons(QMessageBox::Ok);
 	aboutBox->setWindowTitle(tr("About Sayonara"));
 	aboutBox->setText(
@@ -542,3 +548,4 @@ void Menubar::shortcutChanged([[maybe_unused]] ShortcutIdentifier identifier)
 	const auto shortcut = shortcutHandler->shortcut(ShortcutIdentifier::ViewLibrary);
 	m->actionViewLibrary->setShortcut(shortcut.sequence());
 }
+

@@ -51,19 +51,18 @@ struct TrayIconContextMenu::Private
 
 	Private(PlayManager* playManager, TrayIconContextMenu* parent) :
 		playManager(playManager),
-		bwdAction{new QAction(parent)},
-		closeAction{new QAction(parent)},
-		currentSongAction{new QAction(parent)},
-		fwdAction{new QAction(parent)},
-		muteAction{new QAction(parent)},
-		playAction{new QAction(parent)},
-		showAction{new QAction(parent)},
-		stopAction{new QAction(parent)}
-	{}
+		bwdAction {new QAction(parent)},
+		closeAction {new QAction(parent)},
+		currentSongAction {new QAction(parent)},
+		fwdAction {new QAction(parent)},
+		muteAction {new QAction(parent)},
+		playAction {new QAction(parent)},
+		showAction {new QAction(parent)},
+		stopAction {new QAction(parent)} {}
 };
 
-TrayIconContextMenu::TrayIconContextMenu(PlayManager* playManager, QWidget* parent) :
-	Gui::WidgetTemplate<QMenu>(parent)
+TrayIconContextMenu::TrayIconContextMenu(PlayManager* playManager, GUI_TrayIcon* /*parent*/) :
+	Gui::WidgetTemplate<QMenu>(nullptr)
 {
 	m = Pimpl::make<Private>(playManager, this);
 
@@ -195,14 +194,12 @@ struct GUI_TrayIcon::Private
 	TrayIconContextMenu* contextMenu = nullptr;
 	QTimer* timer = nullptr;
 
-	Private(PlayManager* playManager) :
-		playManager(playManager)
-	{}
+	explicit Private(PlayManager* playManager) :
+		playManager(playManager) {}
 };
 
 GUI_TrayIcon::GUI_TrayIcon(PlayManager* playManager, QObject* parent) :
-	QSystemTrayIcon(parent),
-	NotificationInterface()
+	QSystemTrayIcon(parent)
 {
 	m = Pimpl::make<Private>(playManager);
 
@@ -221,31 +218,25 @@ GUI_TrayIcon::~GUI_TrayIcon() = default;
 
 void GUI_TrayIcon::initContextMenu()
 {
-	if(m->contextMenu)
+	if(!m->contextMenu)
 	{
-		return;
+		m->contextMenu = new TrayIconContextMenu(m->playManager, this);
+
+		connect(m->contextMenu, &TrayIconContextMenu::sigCloseClicked, this, &GUI_TrayIcon::sigCloseClicked);
+		connect(m->contextMenu, &TrayIconContextMenu::sigShowClicked, this, &GUI_TrayIcon::sigShowClicked);
+
+		setContextMenu(m->contextMenu);
+		m->contextMenu->setDisplayNames();
 	}
-
-	m->contextMenu = new TrayIconContextMenu(m->playManager);
-
-	connect(m->contextMenu, &TrayIconContextMenu::sigCloseClicked, this, &GUI_TrayIcon::sigCloseClicked);
-	connect(m->contextMenu, &TrayIconContextMenu::sigShowClicked, this, &GUI_TrayIcon::sigShowClicked);
-
-	setContextMenu(m->contextMenu);
-	m->contextMenu->setDisplayNames();
 }
 
 bool GUI_TrayIcon::event(QEvent* e)
 {
 	if(e->type() == QEvent::Wheel)
 	{
-		auto* wheel_event = dynamic_cast<QWheelEvent*>(e);
-
-		if(wheel_event)
-		{
-			const auto delta = wheel_event->angleDelta().y();
-			emit sigWheelChanged(delta);
-		}
+		auto* wheelEvent = dynamic_cast<QWheelEvent*>(e);
+		const auto delta = wheelEvent->angleDelta().y();
+		emit sigWheelChanged(delta);
 	}
 
 	return QSystemTrayIcon::event(e);
@@ -253,56 +244,40 @@ bool GUI_TrayIcon::event(QEvent* e)
 
 void GUI_TrayIcon::notify(const MetaData& md)
 {
-	if(!isSystemTrayAvailable())
+	if(isSystemTrayAvailable())
 	{
-		return;
+		const auto timeout = GetSetting(Set::Notification_Timeout);
+		const auto message = QString("%1 %2 %3")
+			.arg(md.title())
+			.arg(Lang::get(Lang::By))
+			.arg(md.artist());
+
+		showMessage("Sayonara", message, QSystemTrayIcon::Information, timeout);
 	}
-
-	int timeout = GetSetting(Set::Notification_Timeout);
-
-	QString msg = md.title() + " " + Lang::get(Lang::By).space() + md.artist();
-
-	showMessage("Sayonara", msg, QSystemTrayIcon::Information, timeout);
 }
 
-void GUI_TrayIcon::notify(const QString& title, const QString& message, const QString& image_path)
+void GUI_TrayIcon::notify(const QString& title, const QString& message, const QString& /*imagePath*/)
 {
-	Q_UNUSED(image_path)
-
-	if(!isSystemTrayAvailable())
+	if(isSystemTrayAvailable())
 	{
-		return;
+		const auto timeout = GetSetting(Set::Notification_Timeout);
+		showMessage(title, message, QSystemTrayIcon::Information, timeout);
 	}
-
-	int timeout = GetSetting(Set::Notification_Timeout);
-
-	showMessage(title, message, QSystemTrayIcon::Information, timeout);
 }
 
 // dbus
-QString GUI_TrayIcon::name() const
-{
-	return "Standard";
-}
+QString GUI_TrayIcon::name() const { return "Standard"; }
 
-QString GUI_TrayIcon::displayName() const
-{
-	return Lang::get(Lang::Default);
-}
+QString GUI_TrayIcon::displayName() const { return Lang::get(Lang::Default); }
 
 void GUI_TrayIcon::playstateChanged(PlayState state)
 {
 	using namespace Gui;
+	const auto icon = (state == PlayState::Playing)
+	                  ? Icons::icon(Icons::Play, Icons::ForceSayonaraIcon)
+	                  : Icons::icon(Icons::Pause, Icons::ForceSayonaraIcon);
 
-	if(state == PlayState::Playing)
-	{
-		setIcon(Icons::icon(Icons::Play, Icons::ForceSayonaraIcon));
-	}
-
-	else
-	{
-		setIcon(Icons::icon(Icons::Pause, Icons::ForceSayonaraIcon));
-	}
+	setIcon(icon);
 }
 
 [[maybe_unused]] void GUI_TrayIcon::setForwardEnabled(bool b)
@@ -315,6 +290,6 @@ void GUI_TrayIcon::playstateChanged(PlayState state)
 
 void GUI_TrayIcon::showTrayIconChanged()
 {
-	bool show_tray_icon = GetSetting(Set::Player_ShowTrayIcon);
-	this->setVisible(show_tray_icon);
+	const auto showTrayIcon = GetSetting(Set::Player_ShowTrayIcon);
+	setVisible(showTrayIcon);
 }

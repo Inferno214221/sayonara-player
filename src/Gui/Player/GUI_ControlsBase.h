@@ -55,35 +55,34 @@ class GUI_ControlsBase :
 
 	public:
 		GUI_ControlsBase(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent = nullptr);
-		virtual ~GUI_ControlsBase() override;
+		~GUI_ControlsBase() override;
 		virtual void init();
 
-		virtual QLabel* labSayonara() const = 0;
-		virtual QLabel* labTitle() const = 0;
-		virtual QLabel* labVersion() const = 0;
-		virtual QLabel* labAlbum() const = 0;
-		virtual QLabel* labArtist() const = 0;
-		virtual QLabel* labWrittenBy() const = 0;
-		virtual QLabel* labBitrate() const = 0;
-		virtual QLabel* labFilesize() const = 0;
-		virtual QLabel* labCopyright() const = 0;
-		virtual QLabel* labCurrentTime() const = 0;
-		virtual QLabel* labMaxTime() const = 0;
-		virtual Gui::RatingEditor* labRating() const;
-		virtual QWidget* widgetDetails() const = 0;
+		[[nodiscard]] virtual QLabel* labSayonara() const = 0;
+		[[nodiscard]] virtual QLabel* labTitle() const = 0;
+		[[nodiscard]] virtual QLabel* labVersion() const = 0;
+		[[nodiscard]] virtual QLabel* labAlbum() const = 0;
+		[[nodiscard]] virtual QLabel* labArtist() const = 0;
+		[[nodiscard]] virtual QLabel* labWrittenBy() const = 0;
+		[[nodiscard]] virtual QLabel* labBitrate() const = 0;
+		[[nodiscard]] virtual QLabel* labFilesize() const = 0;
+		[[nodiscard]] virtual QLabel* labCopyright() const = 0;
+		[[nodiscard]] virtual QLabel* labCurrentTime() const = 0;
+		[[nodiscard]] virtual QLabel* labMaxTime() const = 0;
+		[[nodiscard]] virtual Gui::RatingEditor* labRating() const;
+		[[nodiscard]] virtual QWidget* widgetDetails() const = 0;
 
-		virtual Gui::SearchSlider* sliProgress() const = 0;
-		virtual Gui::SearchSlider* sliVolume() const = 0;
-		virtual QPushButton* btnMute() const = 0;
-		virtual QPushButton* btnPlay() const = 0;
-		virtual QPushButton* btnRecord() const = 0;
-		virtual QPushButton* btnPrevious() const = 0;
-		virtual QPushButton* btnNext() const = 0;
-		virtual QPushButton* btnStop() const = 0;
-		virtual Gui::CoverButton* btnCover() const = 0;
+		[[nodiscard]] virtual Gui::SearchSlider* sliProgress() const = 0;
+		[[nodiscard]] virtual Gui::SearchSlider* sliVolume() const = 0;
+		[[nodiscard]] virtual QPushButton* btnMute() const = 0;
+		[[nodiscard]] virtual QPushButton* btnPlay() const = 0;
+		[[nodiscard]] virtual QPushButton* btnRecord() const = 0;
+		[[nodiscard]] virtual QPushButton* btnPrevious() const = 0;
+		[[nodiscard]] virtual QPushButton* btnNext() const = 0;
+		[[nodiscard]] virtual QPushButton* btnStop() const = 0;
+		[[nodiscard]] virtual Gui::CoverButton* btnCover() const = 0;
 
-		virtual QSize buttonSize() const final;
-		virtual bool isExternResizeAllowed() const = 0;
+		[[nodiscard]] virtual bool isExternResizeAllowed() const = 0;
 
 	private:
 		QIcon icon(Gui::Icons::IconName name);
@@ -111,7 +110,7 @@ class GUI_ControlsBase :
 	public slots:
 		void changeVolumeByDelta(int val);
 		void setCoverData(const QByteArray& coverData, const QString& mimeType) override;
-		bool isActive() const override;
+		[[nodiscard]] bool isActive() const override;
 
 	private slots:
 		void playstateChanged(PlayState state);
@@ -139,8 +138,8 @@ class GUI_ControlsBase :
 		void streamRecorderActiveChanged();
 
 	protected:
-		MD::Interpretation metadataInterpretation() const override;
-		MetaDataList infoDialogData() const override;
+		[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+		[[nodiscard]] MetaDataList infoDialogData() const override;
         QWidget* getParentWidget() override;
 
 		void resizeEvent(QResizeEvent* e) override;
