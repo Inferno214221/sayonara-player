@@ -26,15 +26,21 @@
 #include <QUrl>
 #include <QList>
 
+namespace
+{
+	constexpr const auto EntriesPerPage = 200;
+	constexpr const auto MinimumEntrySize = 50;
+}
+
 struct StationSearcher::Private
 {
 	QList<RadioStation> foundStations;
 	QString searchstring;
-	int currentPageIndex{0};
-	int lastPageIndex{1};
-	StationSearcher::Mode mode{StationSearcher::NewSearch};
+	int currentPageIndex {0};
+	int lastPageIndex {1};
+	StationSearcher::Mode mode {StationSearcher::NewSearch};
 
-	QString url()
+	[[nodiscard]] QString url() const
 	{
 		if(mode == StationSearcher::Style)
 		{
@@ -42,28 +48,25 @@ struct StationSearcher::Private
 				.arg(searchstring);
 		}
 
-		else if(currentPageIndex == 0)
+		if(currentPageIndex == 0)
 		{
 			return QString("http://fmstream.org/index.php?s=%1&cm=0")
 				.arg(searchstring);
 		}
 
-		else
-		{
-			return QString("http://fmstream.org/index.php?s=%1&n=%2")
-				.arg(searchstring)
-				.arg(currentPageIndex);
-		}
+		return QString("http://fmstream.org/index.php?s=%1&n=%2")
+			.arg(searchstring)
+			.arg(currentPageIndex);
 	}
 
 	void increasePage()
 	{
-		currentPageIndex += 200;
+		currentPageIndex += EntriesPerPage;
 	}
 
 	void decreasePage()
 	{
-		currentPageIndex = std::max(0, currentPageIndex - 200);
+		currentPageIndex = std::max(0, currentPageIndex - EntriesPerPage);
 	}
 };
 
@@ -118,7 +121,8 @@ void StationSearcher::searchNext()
 
 bool StationSearcher::canSearchNext() const
 {
-	return (m->foundStations.size() > 50) && (m->currentPageIndex != m->lastPageIndex);
+	return (m->foundStations.size() > MinimumEntrySize) &&
+	       (m->currentPageIndex != m->lastPageIndex);
 }
 
 bool StationSearcher::canSearchPrevious() const
@@ -136,7 +140,6 @@ const QList<RadioStation>& StationSearcher::foundStations() const
 	return m->foundStations;
 }
 
-#include "Utils/Logger/Logger.h"
 void StationSearcher::searchFinished()
 {
 	auto* webClient = dynamic_cast<WebClient*>(sender());

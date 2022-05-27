@@ -13,7 +13,7 @@
 
 namespace
 {
-	constexpr const auto Port = 22444u;
+	constexpr const auto Port = 22444U;
 
 	constexpr const auto EndpointSuccess = "success";
 	constexpr const auto EndpointRedirect = "redirect";
@@ -26,6 +26,41 @@ namespace
 	{
 		return QString("http://127.0.0.1:%1/%2").arg(Port).arg(endpoint);
 	}
+
+	QByteArray createResponse(int httpStatusCode, const QString& httpStatusString, const QStringList& headerData,
+	                          const QString& data = QString())
+	{
+		const auto header = QString("HTTP/1.1 %1 %2")
+			.arg(httpStatusCode)
+			.arg(httpStatusString);
+
+		auto response = QStringList();
+		response += header;
+		response += QString("Content-Length: %1").arg(data.size());
+		response += headerData;
+		response += QString();
+		response += data;
+
+		return response.join("\r\n").toLocal8Bit();
+	}
+
+	void sendResponse(QTcpSocket* socket, int httpStatusCode, const QString& httpStatusString,
+	                  const QStringList& headerData,
+	                  const QString& data = QString())
+	{
+		const auto response = createResponse(httpStatusCode, httpStatusString, headerData, data);
+
+		// NOLINTNEXTLINE(readability-magic-numbers)
+		Util::sleepMs(Util::randomNumber(200, 1000));
+		socket->write(response);
+		socket->flush();
+	}
+
+	QByteArray parseRequest(const QByteArray& request)
+	{
+		QRegExp re("GET /?([a-zA-Z0-9]+).*");
+		return (re.indexIn(request) >= 0) ? re.cap(1).toLocal8Bit() : QByteArray();
+	}
 }
 
 class WebServer :
@@ -33,7 +68,7 @@ class WebServer :
 {
 	Q_OBJECT
 	public:
-		WebServer(QObject* parent) :
+		explicit WebServer(QObject* parent) :
 			mServer {std::make_shared<QTcpServer>(parent)}
 		{
 			connect(mServer.get(), &QTcpServer::newConnection,
@@ -41,7 +76,7 @@ class WebServer :
 			mServer->listen(QHostAddress::AnyIPv4, Port);
 		}
 
-		~WebServer()
+		~WebServer() override
 		{
 			mServer->close();
 			mServer->deleteLater();
@@ -51,7 +86,11 @@ class WebServer :
 
 		void socketDataAvailable()
 		{
-			auto* socket = static_cast<QTcpSocket*>(sender());
+			constexpr const auto ResponseOk = 200;
+			constexpr const auto ResponseRedirect = 301;
+			constexpr const auto ResponseNotFound = 404;
+
+			auto* socket = dynamic_cast<QTcpSocket*>(sender());
 
 			const auto request = socket->readAll();
 			const auto data = parseRequest(request);
@@ -62,14 +101,14 @@ class WebServer :
 					<< "Content-Type: text/html"
 					<< "Connection: Closed";
 
-				sendResponse(socket, 200, "OK", header, "success");
+				sendResponse(socket, ResponseOk, "OK", header, "success");
 			}
 
 			else if(data == EndpointRedirect)
 			{
 				const auto header = QStringList()
 					<< "Location: /success";
-				sendResponse(socket, 301, "Moved Permanently", header);
+				sendResponse(socket, ResponseRedirect, "Moved Permanently", header);
 			}
 
 			else if(data == EndpointStream)
@@ -78,12 +117,13 @@ class WebServer :
 					<< "Content-Type: audio/mpeg"
 					<< "Connection: keep-alive";
 
-				sendResponse(socket, 200, "OK", header, Util::randomString(1'000));
+				constexpr const auto StringLength = 1000;
+				sendResponse(socket, ResponseOk, "OK", header, Util::randomString(StringLength));
 			}
 
 			else if(data == EndpointNoData)
 			{
-				sendResponse(socket, 200, "OK", QStringList());
+				sendResponse(socket, ResponseOk, "OK", QStringList());
 			}
 
 			else if(data == EndpointTimeout)
@@ -105,52 +145,19 @@ class WebServer :
 					<< "Content-Type: text/html"
 					<< "Connection: close";
 
-				sendResponse(socket, 404, "Not Found", header);
+				sendResponse(socket, ResponseNotFound, "Not Found", header);
 			}
 		}
 
 		void newConnection()
 		{
-			if(auto socket = mServer->nextPendingConnection(); socket)
+			if(auto* socket = mServer->nextPendingConnection(); socket)
 			{
 				connect(socket, &QTcpSocket::readyRead, this, &WebServer::socketDataAvailable);
 			}
 		}
 
-	private:
-		void sendResponse(QTcpSocket* socket, int httpStatusCode, const QString& httpStatusString,
-		                  const QStringList& headerData,
-		                  const QString& data = QString())
-		{
-			const auto response = createResponse(httpStatusCode, httpStatusString, headerData, data);
-			Util::sleepMs(Util::randomNumber(200, 1000));
-			socket->write(response);
-			socket->flush();
-		}
-
-		QByteArray createResponse(int httpStatusCode, const QString& httpStatusString, const QStringList& headerData,
-		                          const QString& data = QString())
-		{
-			const auto header = QString("HTTP/1.1 %1 %2")
-				.arg(httpStatusCode)
-				.arg(httpStatusString);
-
-			auto response = QStringList();
-			response += header;
-			response += QString("Content-Length: %1").arg(data.size());
-			response += headerData;
-			response += QString();
-			response += data;
-
-			return response.join("\r\n").toLocal8Bit();
-		}
-
-		QByteArray parseRequest(const QByteArray& request)
-		{
-			QRegExp re("GET /?([a-zA-Z0-9]+).*");
-			return (re.indexIn(request) >= 0) ? re.cap(1).toLocal8Bit() : QByteArray();
-		}
-
+	private: // NOLINT(readability-redundant-access-specifiers)
 		std::shared_ptr<QTcpServer> mServer;
 };
 
@@ -164,16 +171,16 @@ class AsyncWebAccessTest :
 			Test::Base("AsyncWebAccessTest") {}
 
 	private slots:
-		void testSuccess();
-		void testNotFound();
-		void testRedirect();
-		void testStream();
-		void testNoData();
-		void testNoHttpData();
-		void testTimeout();
+		[[maybe_unused]] void testSuccess();
+		[[maybe_unused]] void testNotFound();
+		[[maybe_unused]] void testRedirect();
+		[[maybe_unused]] void testStream();
+		[[maybe_unused]] void testNoData();
+		[[maybe_unused]] void testNoHttpData();
+		[[maybe_unused]] void testTimeout();
 };
 
-void AsyncWebAccessTest::testSuccess()
+[[maybe_unused]] void AsyncWebAccessTest::testSuccess()
 {
 	WebServer webserver(this);
 	auto* webAccess = new WebClientImpl(this);
@@ -188,7 +195,7 @@ void AsyncWebAccessTest::testSuccess()
 	QVERIFY(webAccess->status() == WebClient::Status::GotData);
 }
 
-void AsyncWebAccessTest::testNotFound()
+[[maybe_unused]] void AsyncWebAccessTest::testNotFound()
 {
 	WebServer webserver(this);
 	auto webAccess = std::make_shared<WebClientImpl>(this);
@@ -203,7 +210,7 @@ void AsyncWebAccessTest::testNotFound()
 	QVERIFY(webAccess->status() == WebClient::Status::NotFound);
 }
 
-void AsyncWebAccessTest::testRedirect()
+[[maybe_unused]] void AsyncWebAccessTest::testRedirect()
 {
 	WebServer webserver(this);
 	auto webAccess = std::make_shared<WebClientImpl>(this);
@@ -218,7 +225,7 @@ void AsyncWebAccessTest::testRedirect()
 	QVERIFY(webAccess->status() == WebClient::Status::GotData);
 }
 
-void AsyncWebAccessTest::testStream()
+[[maybe_unused]] void AsyncWebAccessTest::testStream()
 {
 	WebServer webserver(this);
 	auto webAccess = std::make_shared<WebClientImpl>(this);
@@ -233,7 +240,7 @@ void AsyncWebAccessTest::testStream()
 	QVERIFY(webAccess->status() == WebClient::Status::AudioStream);
 }
 
-void AsyncWebAccessTest::testNoData()
+[[maybe_unused]] void AsyncWebAccessTest::testNoData()
 {
 	WebServer webserver(this);
 	auto webAccess = std::make_shared<WebClientImpl>(this);
@@ -248,7 +255,7 @@ void AsyncWebAccessTest::testNoData()
 	QVERIFY(webAccess->status() == WebClient::Status::NoData);
 }
 
-void AsyncWebAccessTest::testNoHttpData()
+[[maybe_unused]] void AsyncWebAccessTest::testNoHttpData()
 {
 	WebServer webserver(this);
 	auto webAccess = std::make_shared<WebClientImpl>(this);
@@ -263,7 +270,7 @@ void AsyncWebAccessTest::testNoHttpData()
 	QVERIFY(webAccess->status() == WebClient::Status::NoHttp);
 }
 
-void AsyncWebAccessTest::testTimeout()
+[[maybe_unused]] void AsyncWebAccessTest::testTimeout()
 {
 	WebServer webserver(this);
 	auto* webAccess = new WebClientImpl(this);

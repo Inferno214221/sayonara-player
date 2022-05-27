@@ -19,65 +19,57 @@
  */
 
 #include "IcyWebAccess.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Macros.h"
 
 #include <QTcpSocket>
 #include <QUrl>
 
+namespace
+{
+	constexpr const auto StandardPort = 80;
+
+	QString concatDirAndFilename(const QString& directory, const QString& filename)
+	{
+		auto ret = "/" + directory + "/" + filename;
+		return Util::File::cleanFilename(ret);
+	}
+
+	void closeTcpSocket(QTcpSocket* socket)
+	{
+		if(socket->isOpen())
+		{
+			socket->close();
+		}
+
+		socket->deleteLater();
+	}
+}
+
 struct IcyWebAccess::Private
 {
-		IcyWebAccess::Status status;
-		QTcpSocket* tcp=nullptr;
-		QString hostname;
-		QString directory;
-		QString filename;
-		int port;
-
-		Private()
-		{
-			status = IcyWebAccess::Status::Success;
-			port = 80;
-		}
-
-		void close_tcp()
-		{
-			if(tcp->isOpen()){
-				tcp->close();
-			}
-
-			tcp->deleteLater();
-		}
-
-		QString concat_dir_and_filename() const
-		{
-			QString ret = directory + "/" + filename;
-			while(ret.contains("//")){
-				ret.replace("//", "/");
-			}
-
-			if(!ret.startsWith("/")){
-				ret.prepend("/");
-			}
-
-			return ret;
-		}
+	IcyWebAccess::Status status {IcyWebAccess::Status::Success};
+	QTcpSocket* tcp {nullptr};
+	QString hostname;
+	QString directory;
+	QString filename;
+	int port {StandardPort};
 };
 
 IcyWebAccess::IcyWebAccess(QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>();
-
 }
 
-IcyWebAccess::~IcyWebAccess() {}
+IcyWebAccess::~IcyWebAccess() = default;
 
 void IcyWebAccess::check(const QUrl& url)
 {
 	m->tcp = new QTcpSocket(nullptr);
 	m->hostname = url.host(QUrl::PrettyDecoded);
-	m->port = url.port(80);
+	m->port = url.port(StandardPort);
 	m->directory = url.path();
 	m->filename = url.fileName();
 	m->status = IcyWebAccess::Status::NotExecuted;
@@ -85,21 +77,17 @@ void IcyWebAccess::check(const QUrl& url)
 	connect(m->tcp, &QTcpSocket::connected, this, &IcyWebAccess::connected);
 	connect(m->tcp, &QTcpSocket::disconnected, this, &IcyWebAccess::disconnected);
 	connect(m->tcp, &QTcpSocket::readyRead, this, &IcyWebAccess::dataAvailable);
+	connect(m->tcp, &QAbstractSocket::errorOccurred, this, &IcyWebAccess::errorReceived);
 
-	connect(m->tcp, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(errorReceived(QAbstractSocket::SocketError)));
-
-	m->tcp->connectToHost(m->hostname,
-						   m->port,
-						   QTcpSocket::ReadWrite,
-						   QAbstractSocket::AnyIPProtocol
-	);
+	m->tcp->connectToHost(m->hostname, m->port, QTcpSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
 
 	spLog(Log::Develop, this) << "Start ICY Request";
 }
 
 void IcyWebAccess::stop()
 {
-	if(m->tcp && m->tcp->isOpen() && m->tcp->isValid()){
+	if(m->tcp && m->tcp->isOpen() && m->tcp->isValid())
+	{
 		m->tcp->abort();
 		m->tcp->close();
 	}
@@ -110,71 +98,73 @@ IcyWebAccess::Status IcyWebAccess::status() const
 	return m->status;
 }
 
-
 void IcyWebAccess::connected()
 {
-	QString user_agent = QString("Sayonara/") + SAYONARA_VERSION;
-	QByteArray data(
-				"GET " + m->concat_dir_and_filename().toLocal8Bit() + " HTTP/1.1\r\n"
-				"User-Agent: " + user_agent.toLocal8Bit() + "\r\n"
-				"Connection: Keep-Alive\r\n"
-				"Accept-Encoding: gzip, deflate\r\n"
-				"Accept-Language: en-US,*\r\n"
-				"Host: " +
-				m->hostname.toLocal8Bit() + ":" +
-				QString::number(m->port).toLocal8Bit() + "\r\n\r\n"
-	);
+	const auto userAgent = QString("Sayonara/%1").arg(SAYONARA_VERSION);
+	const auto targetPath = concatDirAndFilename(m->directory, m->filename);
+	const auto header = QStringList {
+		QString("GET %1 HTTP/1.1").arg(targetPath),
+		QString("User-Agent: %1").arg(userAgent),
+		"Connection: Keep-Alive",
+		"Accept-Encoding: gzip, deflate",
+		"Accept-Language: en-US,*",
+		QString("Host: %1:%2").arg(m->hostname).arg(m->port),
+		"\r\n"
+	};
+
+	const auto data = header.join("\r\n").toLocal8Bit();
 
 	spLog(Log::Develop, this) << data;
 
-	int64_t bytes_written = m->tcp->write(data.data(), data.size());
-	if(bytes_written != data.size())
+	const auto bytesWritten = m->tcp->write(data.data(), data.size());
+	if(bytesWritten != data.size())
 	{
-		spLog(Log::Warning, this) << "Could only write " << bytes_written << " bytes";
+		spLog(Log::Warning, this) << "Could only write " << bytesWritten << " bytes";
 		m->status = IcyWebAccess::Status::WriteError;
 		emit sigFinished();
-		m->close_tcp();
+		closeTcpSocket(m->tcp);
 	}
 }
 
 void IcyWebAccess::disconnected()
 {
 	spLog(Log::Develop, this) << "Disconnected";
-	if(m->status == IcyWebAccess::Status::NotExecuted) {
+	if(m->status == IcyWebAccess::Status::NotExecuted)
+	{
 		m->status = IcyWebAccess::Status::OtherError;
 		emit sigFinished();
 	}
 
-	m->close_tcp();
+	closeTcpSocket(m->tcp);
 
 	sender()->deleteLater();
 }
 
-void IcyWebAccess::errorReceived(QAbstractSocket::SocketError socket_state)
+void IcyWebAccess::errorReceived(QAbstractSocket::SocketError /*socketState*/)
 {
-	Q_UNUSED(socket_state)
-
 	spLog(Log::Warning, this) << "Icy Webaccess Error: " << m->tcp->errorString();
 
 	m->status = IcyWebAccess::Status::OtherError;
-	m->close_tcp();
 
+	closeTcpSocket(m->tcp);
 	emit sigFinished();
 }
 
 void IcyWebAccess::dataAvailable()
 {
-	QByteArray arr = m->tcp->read(20);
-	if(arr.contains("ICY 200 OK")){
-		m->status = IcyWebAccess::Status::Success;
-	}
+	constexpr const auto BufferSize = 20;
 
-	else {
+	const auto arr = m->tcp->read(BufferSize);
+
+	m->status = arr.contains("ICY 200 OK")
+	            ? IcyWebAccess::Status::Success
+	            : IcyWebAccess::Status::WrongAnswer;
+
+	if(m->status == IcyWebAccess::Status::WrongAnswer)
+	{
 		spLog(Log::Warning, this) << "Icy Answer Error: " << arr;
-		m->status = IcyWebAccess::Status::WrongAnswer;
 	}
 
-	m->close_tcp();
-
+	closeTcpSocket(m->tcp);
 	emit sigFinished();
 }

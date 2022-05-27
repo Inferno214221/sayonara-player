@@ -36,14 +36,15 @@ class QByteArray;
 
 namespace LastFM
 {
-	class UrlParams : public QMap<QString, QString>
+	class UrlParams :
+		public QMap<QString, QString>
 	{
 		public:
-			UrlParams();
 			void appendSignature();
 	};
 
-	class WebAccess : public QObject
+	class WebAccess :
+		public QObject
 	{
 		Q_OBJECT
 
@@ -60,7 +61,6 @@ namespace LastFM
 			                             QByteArray& postData);
 
 		private:
-			QString parseErrorMessage(const QString& response);
 			bool checkError(const QByteArray& data);
 
 		private slots: // NOLINT(readability-redundant-access-specifiers)

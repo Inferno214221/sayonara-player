@@ -53,7 +53,10 @@ namespace
 
 	bool isValidPixmap(const QPixmap& pixmap)
 	{
-		return (!pixmap.isNull() && (pixmap.width() >= 50) && (pixmap.height() >= 50));
+		constexpr const auto MinimumPixmapSize = 50;
+		return !pixmap.isNull() &&
+		       (pixmap.width() >= MinimumPixmapSize) &&
+		       (pixmap.height() >= MinimumPixmapSize);
 	}
 
 	QPixmap extractPixmap(const WebClient* webAccess)
@@ -61,7 +64,8 @@ namespace
 		QPixmap pixmap;
 		if(webAccess->url().endsWith("svg", Qt::CaseInsensitive))
 		{
-			pixmap = QPixmap(1000, 1000);
+			constexpr const auto PixmapSize = 1000;
+			pixmap = QPixmap(PixmapSize, PixmapSize);
 			pixmap.fill(Qt::transparent);
 			auto painter = QPainter(&pixmap);
 			auto renderer = QSvgRenderer(webAccess->data());
@@ -69,12 +73,12 @@ namespace
 		}
 
 		return (pixmap.isNull())
-		       ? QPixmap::fromImage(webAccess->image())
+		       ? QPixmap::fromImage(QImage::fromData(webAccess->data()))
 		       : pixmap;
 	}
 
 	template<typename CallbackFunction>
-	void startWebRequest(WebCoverFetcher* fetchThread, const QString& address, QList<AsyncWebAccess*>& requestList,
+	void startWebRequest(WebCoverFetcher* fetchThread, const QString& address, QList<WebClient*>& requestList,
 	                     CallbackFunction function)
 	{
 		auto* request = new WebClientImpl(fetchThread);
@@ -136,7 +140,7 @@ void WebCoverFetcher::stop()
 		m->searchUrls.clear();
 		m->imageAddresses.clear();
 
-		for(auto* webRequest : m->runningRequests)
+		for(auto* webRequest: m->runningRequests)
 		{
 			webRequest->stop();
 			webRequest->deleteLater();

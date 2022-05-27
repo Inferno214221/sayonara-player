@@ -34,7 +34,28 @@
 #include <QCryptographicHash>
 #include <QByteArray>
 
-using namespace LastFM;
+namespace LastFM
+{
+	namespace
+	{
+		constexpr const auto Timeout = 10'000;
+
+		QString parseErrorMessage(const QString& response)
+		{
+			if(response.isEmpty())
+			{
+				return {};
+			}
+
+			constexpr const auto BufferSize = 100;
+			if(response.leftRef(BufferSize).contains(QStringLiteral("failed")))
+			{
+				return response;
+			}
+
+			return {};
+		}
+	}
 
 	void WebAccess::callUrl(const QString& url)
 	{
@@ -48,8 +69,8 @@ using namespace LastFM;
 		auto* webClient = new WebClientImpl(this);
 		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
 
-	QMap<QByteArray, QByteArray> header;
-	header["Content-Type"] = "application/x-www-form-urlencoded";
+		QMap<QByteArray, QByteArray> header;
+		header["Content-Type"] = "application/x-www-form-urlencoded";
 
 		webClient->setRawHeader(header);
 		webClient->runPost(url, post_data, Timeout);
@@ -73,68 +94,51 @@ using namespace LastFM;
 		emit sigFinished();
 	}
 
-QString WebAccess::createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
-                                 QByteArray& postData)
-{
-	postData.clear();
-
-	QStringList dataList;
-	for(auto it = signatureData.cbegin(); it != signatureData.cend(); it++)
+	QString WebAccess::createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
+	                                 QByteArray& postData)
 	{
-		auto item = QString("%1=%2")
-			.arg(it.key())
-			.arg(it.value());
+		postData.clear();
 
-		item.replace('&', "%26");
-		dataList << item;
+		QStringList dataList;
+		for(auto it = signatureData.cbegin(); it != signatureData.cend(); it++)
+		{
+			auto item = QString("%1=%2")
+				.arg(it.key())
+				.arg(it.value());
+
+			item.replace('&', "%26");
+			dataList << item;
+		}
+
+		postData = dataList.join('&').toUtf8();
+
+		return baseUrl;
 	}
 
-	postData = dataList.join('&').toUtf8();
-
-	return baseUrl;
-}
-
-bool WebAccess::checkError(const QByteArray& data)
-{
-	const auto errorString = parseErrorMessage(data);
-	if(!errorString.isEmpty())
+	bool WebAccess::checkError(const QByteArray& data)
 	{
-		emit sigError(errorString);
+		const auto errorString = parseErrorMessage(data);
+		if(!errorString.isEmpty())
+		{
+			emit sigError(errorString);
+		}
+
+		return (!errorString.isEmpty());
 	}
 
-	return (!errorString.isEmpty());
-}
-
-QString WebAccess::parseErrorMessage(const QString& response)
-{
-	if(response.isEmpty())
+	void UrlParams::appendSignature()
 	{
-		return QString();
+		QString signature;
+
+		for(auto it = this->cbegin(); it != this->cend(); it++)
+		{
+			signature += it.key();
+			signature += it.value();
+		}
+
+		signature += LFM_API_SECRET;
+
+		const auto hash = Util::calcHash(signature.toUtf8());
+		this->insert("api_sig", hash);
 	}
-
-	if(response.leftRef(100).contains(QStringLiteral("failed")))
-	{
-		return response;
-	}
-
-	return QString();
-}
-
-UrlParams::UrlParams() :
-	QMap<QString, QString>() {}
-
-void UrlParams::appendSignature()
-{
-	QString signature;
-
-	for(auto it = this->cbegin(); it != this->cend(); it++)
-	{
-		signature += it.key();
-		signature += it.value();
-	}
-
-	signature += LFM_API_SECRET;
-
-	const auto hash = Util::calcHash(signature.toUtf8());
-	this->insert("api_sig", hash);
 }

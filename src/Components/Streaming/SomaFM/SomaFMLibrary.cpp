@@ -51,7 +51,7 @@ void sortStations(QList<SomaFM::Station>& stations)
 			return true;
 		}
 
-		else if(!s1.isLoved() && s2.isLoved())
+		if(!s1.isLoved() && s2.isLoved())
 		{
 			return false;
 		}
@@ -70,15 +70,15 @@ struct SomaFM::Library::Private
 	PlaylistCreator* playlistCreator;
 
 	Private(PlaylistCreator* playlistCreator, QObject* parent) :
-		qsettings{new QSettings(Util::xdgConfigPath("somafm.ini"), QSettings::IniFormat, parent)},
-		playlistCreator {playlistCreator}
-	{}
+		qsettings {new QSettings(Util::xdgConfigPath("somafm.ini"), QSettings::IniFormat, parent)},
+		playlistCreator {playlistCreator} {}
 
 	~Private() = default;
 
-	int timeout() const
+	[[nodiscard]] int timeout() const
 	{
-		return qsettings->value("timeout", 5000).toInt();
+		constexpr const auto Timeout = 5'000;
+		return qsettings->value("timeout", Timeout).toInt();
 	}
 };
 
@@ -166,10 +166,9 @@ void SomaFM::Library::createPlaylistFromStation(int row)
 
 void SomaFM::Library::stationStreamsFetched(bool success)
 {
-	auto* parser = static_cast<StreamParser*>(sender());
-
 	if(success)
 	{
+		auto* parser = dynamic_cast<StreamParser*>(sender());
 		auto tracks = parser->tracks();
 		auto& station = m->stationMap[m->requestedStation];
 
@@ -204,10 +203,9 @@ bool SomaFM::Library::createPlaylistFromStreamlist(int idx)
 
 void SomaFM::Library::playlistContentFetched(bool success)
 {
-	auto* parser = static_cast<StreamParser*>(sender());
-
 	if(success)
 	{
+		auto* parser = dynamic_cast<StreamParser*>(sender());
 		auto tracks = parser->tracks();
 		auto& station = m->stationMap[m->requestedStation];
 

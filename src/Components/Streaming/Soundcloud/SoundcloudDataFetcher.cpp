@@ -131,7 +131,7 @@ namespace SC
 			const auto parser = JsonParser(webClient->data());
 			parser.parsePlaylists(m->artists, m->playlists, m->tracks);
 
-			auto emptyAlbum = Album{};
+			auto emptyAlbum = Album {};
 			emptyAlbum.setId(0);
 			m->playlists.appendUnique(AlbumList() << emptyAlbum);
 

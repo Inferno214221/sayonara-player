@@ -77,7 +77,9 @@ namespace SC
 			{
 				spLog(Log::Warning, this) << "Soundcloud token could not be obtained";
 
-				m->tokenRetryDuration = std::max(60'000, m->tokenRetryDuration + 1000);
+				constexpr const auto OneMinute = 60'000;
+				constexpr const auto OneSecond = 1'000;
+				m->tokenRetryDuration = std::max(OneMinute, m->tokenRetryDuration + OneSecond);
 
 				QTimer::singleShot(m->tokenRetryDuration, this, &TokenObserver::obtainToken);
 			}

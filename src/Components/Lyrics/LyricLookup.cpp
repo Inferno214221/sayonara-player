@@ -49,7 +49,7 @@ namespace
 	{
 		if(website.isEmpty())
 		{
-			return QString();
+			return {};
 		}
 
 		QString url;
@@ -125,6 +125,23 @@ namespace
 			.arg(serverName)
 			.arg(url);
 	}
+
+	QMap<QString, QString> getRegexConversions()
+	{
+		return {{"$", "\\$"},
+		        {"*", "\\*"},
+		        {"+", "\\+"},
+		        {"?", "\\?"},
+		        {"[", "\\["},
+		        {"]", "\\]"},
+		        {"(", "\\("},
+		        {")", "\\)"},
+		        {"{", "\\{"},
+		        {"}", "\\}"},
+		        {"^", "\\^"},
+		        {"|", "\\|"},
+		        {".", "\\."}};
+	}
 }
 
 struct LookupThread::Private
@@ -134,7 +151,6 @@ struct LookupThread::Private
 
 	QList<Server*> servers;
 	QString lyricsData;
-	QMap<QString, QString> regexConversions;
 	QString lyricHeader;
 
 	WebClient* currentWebClient {nullptr};
@@ -244,7 +260,7 @@ void LookupThread::contentFetched()
 	m->hasError = (!webClient->hasData() || webClient->hasError());
 	if(m->hasError)
 	{
-		m->lyricsData = tr("Cannot fetch lyrics from %1").arg(awa->url());
+		m->lyricsData = tr("Cannot fetch lyrics from %1").arg(webClient->url());
 	}
 
 	else if(webClient->data().isEmpty())
@@ -254,7 +270,7 @@ void LookupThread::contentFetched()
 
 	else
 	{
-		m->lyricsData = Lyrics::WebpageParser::parseWebpage(webClient->data(), m->regexConversions, server);
+		m->lyricsData = Lyrics::WebpageParser::parseWebpage(webClient->data(), getRegexConversions(), server);
 	}
 
 	webClient->deleteLater();
@@ -288,7 +304,7 @@ void LookupThread::initServerList()
 	// Don't speak
 
 	const auto servers = Lyrics::ServerJsonReader::parseJsonFile(":/lyrics/lyrics.json");
-	for(auto* server : servers)
+	for(auto* server: servers)
 	{
 		addServer(server, m->servers);
 	}
@@ -304,11 +320,11 @@ void LookupThread::initCustomServers()
 	const auto dir = QDir(lyricsPath);
 	const auto jsonFiles = dir.entryList(QStringList {"*.json"}, QDir::Files);
 
-	for(auto jsonFile : jsonFiles)
+	for(auto jsonFile: jsonFiles)
 	{
 		jsonFile.prepend(lyricsPath + "/");
 		auto servers = Lyrics::ServerJsonReader::parseJsonFile(jsonFile);
-		for(auto* server : servers)
+		for(auto* server: servers)
 		{
 			addServer(server, m->servers);
 		}

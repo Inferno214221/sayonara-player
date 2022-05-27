@@ -24,9 +24,10 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-using PlaylistFiles=QStringList;
+using PlaylistFiles = QStringList;
 
-class StreamParser : public QObject
+class StreamParser :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(StreamParser)
@@ -37,55 +38,29 @@ class StreamParser : public QObject
 		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		StreamParser(QObject* parent=nullptr);
-		~StreamParser();
+		explicit StreamParser(QObject* parent = nullptr);
+		~StreamParser() override;
 
-		void parse(const QString& stationName, const QString& stationUrl, int timeout=5000);
-		void parse(const QStringList& urls, int timeout=5000);
+		void parse(const QString& stationName, const QString& stationUrl,
+		           int timeout = 5000); // NOLINT(readability-magic-numbers)
+		void parse(const QStringList& urls, int timeout = 5000); // NOLINT(readability-magic-numbers)
 
 		void setCoverUrl(const QString& coverUrl);
 
 		void stop();
-		bool isStopped() const;
+		[[nodiscard]] bool isStopped() const;
 
-		MetaDataList tracks() const;
+		[[nodiscard]] MetaDataList tracks() const;
 
 	private slots:
 		void awaFinished();
 		void icyFinished();
 
-	private:
-		/**
-		 * @brief Parse content out of website data.
-		 * First, check if the data is podcast data.\n
-		 * Second, check if the data is a playlist file\n
-		 * Else, search for playlist files within the content.
-		 *
-		 * @param data Raw website data
-		 * @return list of tracks found in the website data
-		 */
+	private: // NOLINT(readability-redundant-access-specifiers)
+		[[nodiscard]] QPair<MetaDataList, PlaylistFiles> parseContent(const QByteArray& data) const;
+		[[nodiscard]] QPair<MetaDataList, PlaylistFiles> parseWebsite(const QByteArray& arr) const;
 
-		QPair<MetaDataList, PlaylistFiles> parseContent(const QByteArray& data) const;
-
-		/**
-		 * @brief Parse website for playlist files and streams
-		 * @param arr website data
-		 * @return metadata list of found streams and a list of urls with playlist files
-		 */
-		QPair<MetaDataList, PlaylistFiles> parseWebsite(const QByteArray& arr) const;
-
-		/**
-		 * @brief Sset up missing fields in metadata: album, artist, title and filepath\n
-		 * @param md reference to a MetaData structure
-		 * @param stream_url url used to fill album/artist/filepath
-		 */
-		void setMetadataTag(MetaData& md, const QString& streamUrl, const QString& coverUrl=QString()) const;
-
-		/**
-		 * @brief Parse the next Url in the queue. These urls may come from
-		 * parsed playlist files or by using parse_streams(const QStringList& urls)
-		 * @return
-		 */
+		void setMetadataTag(MetaData& metadata, const QString& streamUrl, const QString& coverUrl = QString()) const;
 		bool parseNextUrl();
 };
 

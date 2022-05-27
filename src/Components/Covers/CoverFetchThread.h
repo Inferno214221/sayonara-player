@@ -52,20 +52,20 @@ namespace Cover
 
 		public:
 			WebCoverFetcher() = delete;
-			WebCoverFetcher(QObject* parent, const Cover::Location& coverLocation, const int requestedCovers);
-			virtual ~WebCoverFetcher();
+			WebCoverFetcher(QObject* parent, const Cover::Location& coverLocation, int requestedCovers);
+			~WebCoverFetcher() override;
 
 			bool start();
 			void stop();
 
-			QString url(int idx) const;
-			QPixmap pixmap(int idx) const;
+			[[nodiscard]] QString url(int idx) const;
+			[[nodiscard]] QPixmap pixmap(int idx) const;
 
 		private slots:
 			void imageFetched();
 			void contentFetched();
 
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
 			bool processNextSearchUrl();
 			bool processNextImageUrl();
 			bool startNextRequest();

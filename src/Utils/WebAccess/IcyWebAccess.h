@@ -22,46 +22,43 @@
 #define ICYWEBACCESS_H
 
 #include "Utils/Pimpl.h"
-#include "AbstractWebAccess.h"
 
 #include <QObject>
 #include <QAbstractSocket>
 
 class QUrl;
 class IcyWebAccess :
-		public QObject,
-		public AbstractWebAccess
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(IcyWebAccess)
 
-public:
-	explicit IcyWebAccess(QObject* parent = nullptr);
-	~IcyWebAccess() override;
+	public:
+		explicit IcyWebAccess(QObject* parent = nullptr);
+		~IcyWebAccess() override;
 
-	enum class Status : uint8_t
-	{
-		WriteError=0,
-		WrongAnswer,
-		OtherError,
-		NotExecuted,
-		Success
-	};
+		enum class Status :
+			uint8_t
+		{
+			WriteError = 0,
+			WrongAnswer,
+			OtherError,
+			NotExecuted,
+			Success
+		};
 
-	IcyWebAccess::Status status() const;
-	void check(const QUrl& url);
-	void stop() override;
+		[[nodiscard]] IcyWebAccess::Status status() const;
+		void check(const QUrl& url);
+		void stop();
 
+	signals:
+		void sigFinished();
 
-signals:
-	void sigFinished();
-
-private slots:
-	void connected();
-	void disconnected();
-	void errorReceived(QAbstractSocket::SocketError socketState);
-	void dataAvailable();
-
+	private slots:
+		void connected();
+		void disconnected();
+		void errorReceived(QAbstractSocket::SocketError socketState);
+		void dataAvailable();
 };
 
 #endif // ICYWEBACCESS_H

@@ -140,7 +140,7 @@ bool StreamParser::parseNextUrl()
 	if(m->urls.isEmpty())
 	{
 		spLog(Log::Develop, this) << "No more urls to parse";
-		emit sigFinished( !m->tracks.empty());
+		emit sigFinished(!m->tracks.empty());
 		return false;
 	}
 
@@ -244,10 +244,10 @@ void StreamParser::icyFinished()
 	if(status == IcyWebAccess::Status::Success)
 	{
 		spLog(Log::Develop, this) << "Stream is icy stream";
-		MetaData md;
-		setMetadataTag(md, m->lastUrl, m->coverUrl);
+		auto metadata = MetaData {};
+		setMetadataTag(metadata, m->lastUrl, m->coverUrl);
 
-		m->tracks << md;
+		m->tracks << metadata;
 		m->tracks.removeDuplicates();
 	}
 
@@ -287,7 +287,7 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& 
 	{
 		for(auto& metadata: m->tracks)
 		{
-			setMetadataTag(md, m->lastUrl, m->coverUrl);
+			setMetadataTag(metadata, m->lastUrl, m->coverUrl);
 		}
 	}
 
