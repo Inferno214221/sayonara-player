@@ -1,7 +1,7 @@
 #include "test/Common/SayonaraTest.h"
 
 #include "Utils/Utils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 
 #include <QTcpSocket>
 #include <QTcpServer>
@@ -176,106 +176,106 @@ class AsyncWebAccessTest :
 void AsyncWebAccessTest::testSuccess()
 {
 	WebServer webserver(this);
-	auto* webAccess = new AsyncWebAccess(this);
+	auto* webAccess = new WebClientImpl(this);
 
-	QSignalSpy spy(webAccess, &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess, &WebClient::sigFinished);
 	webAccess->run(createUrl(EndpointSuccess));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data() == "success");
 	QVERIFY(webAccess->hasData());
 	QVERIFY(!webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::GotData);
+	QVERIFY(webAccess->status() == WebClient::Status::GotData);
 }
 
 void AsyncWebAccessTest::testNotFound()
 {
 	WebServer webserver(this);
-	auto webAccess = std::make_shared<AsyncWebAccess>(this);
+	auto webAccess = std::make_shared<WebClientImpl>(this);
 
-	QSignalSpy spy(webAccess.get(), &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess.get(), &WebClient::sigFinished);
 	webAccess->run(createUrl("foobar"));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data().isEmpty());
 	QVERIFY(!webAccess->hasData());
 	QVERIFY(webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::NotFound);
+	QVERIFY(webAccess->status() == WebClient::Status::NotFound);
 }
 
 void AsyncWebAccessTest::testRedirect()
 {
 	WebServer webserver(this);
-	auto webAccess = std::make_shared<AsyncWebAccess>(this);
+	auto webAccess = std::make_shared<WebClientImpl>(this);
 
-	QSignalSpy spy(webAccess.get(), &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess.get(), &WebClient::sigFinished);
 	webAccess->run(createUrl(EndpointRedirect));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data() == "success");
 	QVERIFY(webAccess->hasData());
 	QVERIFY(!webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::GotData);
+	QVERIFY(webAccess->status() == WebClient::Status::GotData);
 }
 
 void AsyncWebAccessTest::testStream()
 {
 	WebServer webserver(this);
-	auto webAccess = std::make_shared<AsyncWebAccess>(this);
+	auto webAccess = std::make_shared<WebClientImpl>(this);
 
-	QSignalSpy spy(webAccess.get(), &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess.get(), &WebClient::sigFinished);
 	webAccess->run(createUrl(EndpointStream));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data().isEmpty());
 	QVERIFY(!webAccess->hasData());
 	QVERIFY(!webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::AudioStream);
+	QVERIFY(webAccess->status() == WebClient::Status::AudioStream);
 }
 
 void AsyncWebAccessTest::testNoData()
 {
 	WebServer webserver(this);
-	auto webAccess = std::make_shared<AsyncWebAccess>(this);
+	auto webAccess = std::make_shared<WebClientImpl>(this);
 
-	QSignalSpy spy(webAccess.get(), &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess.get(), &WebClient::sigFinished);
 	webAccess->run(createUrl(EndpointNoData));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data().isEmpty());
 	QVERIFY(!webAccess->hasData());
 	QVERIFY(!webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::NoData);
+	QVERIFY(webAccess->status() == WebClient::Status::NoData);
 }
 
 void AsyncWebAccessTest::testNoHttpData()
 {
 	WebServer webserver(this);
-	auto webAccess = std::make_shared<AsyncWebAccess>(this);
+	auto webAccess = std::make_shared<WebClientImpl>(this);
 
-	QSignalSpy spy(webAccess.get(), &AsyncWebAccess::sigFinished);
+	QSignalSpy spy(webAccess.get(), &WebClient::sigFinished);
 	webAccess->run(createUrl(EndpointNoHttpData));
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data().isEmpty());
 	QVERIFY(!webAccess->hasData());
 	QVERIFY(!webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::NoHttp);
+	QVERIFY(webAccess->status() == WebClient::Status::NoHttp);
 }
 
 void AsyncWebAccessTest::testTimeout()
 {
 	WebServer webserver(this);
-	auto* webAccess = new AsyncWebAccess(this);
+	auto* webAccess = new WebClientImpl(this);
 
-	QSignalSpy spy(webAccess, &AsyncWebAccess::sigFinished);
-	webAccess->run(createUrl(EndpointTimeout), 2500);
+	QSignalSpy spy(webAccess, &WebClient::sigFinished);
+	webAccess->run(createUrl(EndpointTimeout), 2500); // NOLINT(readability-magic-numbers)
 	QVERIFY(spy.wait(5000));
 
 	QVERIFY(webAccess->data().isEmpty());
 	QVERIFY(!webAccess->hasData());
 	QVERIFY(webAccess->hasError());
-	QVERIFY(webAccess->status() == AsyncWebAccess::Status::Timeout);
+	QVERIFY(webAccess->status() == WebClient::Status::Timeout);
 }
 
 QTEST_GUILESS_MAIN(AsyncWebAccessTest)

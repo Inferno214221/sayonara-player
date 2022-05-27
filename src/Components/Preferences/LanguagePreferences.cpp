@@ -26,7 +26,7 @@
 #include "Utils/Language/LanguageUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 
 #include <QRegExp>
 #include <algorithm>
@@ -141,16 +141,16 @@ auto LanguagePreferences::getAllLanguages() -> std::pair<QList<LanguagePreferenc
 
 void LanguagePreferences::checkForUpdate(const QString& languageCode)
 {
-	auto* awa = new AsyncWebAccess(this);
+	auto* webClient = new WebClientImpl(this);
 	const auto url = Util::Language::getChecksumHttpPath();
 
-	connect(awa, &AsyncWebAccess::sigFinished, this, [this, awa, languageCode]() {
-		updateCheckFinished(awa, languageCode);
+	connect(webClient, &WebClient::sigFinished, this, [this, webClient, languageCode]() {
+		updateCheckFinished(webClient, languageCode);
 	});
-	awa->run(url);
+	webClient->run(url);
 }
 
-void LanguagePreferences::updateCheckFinished(AsyncWebAccess* awa, const QString& languageCode)
+void LanguagePreferences::updateCheckFinished(WebClient* awa, const QString& languageCode)
 {
 	const auto data = QString::fromUtf8(awa->data());
 	const auto hasError = awa->hasError();
@@ -180,14 +180,14 @@ void LanguagePreferences::downloadUpdate(const QString& languageCode)
 {
 	const auto url = Util::Language::getHttpPath(languageCode);
 
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, [this, awa, languageCode]() {
-		downloadFinished(awa, languageCode);
+	auto* webClient = new WebClientImpl(this);
+	connect(webClient, &WebClient::sigFinished, this, [this, webClient, languageCode]() {
+		downloadFinished(webClient, languageCode);
 	});
-	awa->run(url);
+	webClient->run(url);
 }
 
-void LanguagePreferences::downloadFinished(AsyncWebAccess* awa, const QString& languageCode)
+void LanguagePreferences::downloadFinished(WebClient* awa, const QString& languageCode)
 {
 	const auto data = awa->data();
 	const auto hasError = awa->hasError();

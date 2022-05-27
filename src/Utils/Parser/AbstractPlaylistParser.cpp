@@ -21,7 +21,7 @@
 #include "AbstractPlaylistParser.h"
 #include "PlaylistParser.h"
 #include "Utils/FileUtils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 

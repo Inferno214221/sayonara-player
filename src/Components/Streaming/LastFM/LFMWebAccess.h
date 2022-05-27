@@ -63,8 +63,8 @@ namespace LastFM
 			QString parseErrorMessage(const QString& response);
 			bool checkError(const QByteArray& data);
 
-		private slots:
-			void awaFinished();
+		private slots: // NOLINT(readability-redundant-access-specifiers)
+			void webClientFinished();
 	};
 }
 #endif /* WebAccess_H_ */

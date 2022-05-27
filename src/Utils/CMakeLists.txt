@@ -1,15 +1,5 @@
 project(sayonara_utils)
 
-set(CMAKE_AUTOMOC OFF)
-
-qt5_wrap_cpp(MOC_FILES
-	WebAccess/AsyncWebAccess.h
-	WebAccess/IcyWebAccess.h
-	Language/Language.h
-	Parser/StreamParser.h
-	Settings/SettingNotifier.h
-)
-
 pkg_check_modules(ZLIB REQUIRED zlib)
 include_directories(${ZLIB_INCLUDE_DIRS})
 link_directories(${TAGLIB_LIBRARY_DIRS})

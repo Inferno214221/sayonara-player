@@ -28,7 +28,7 @@
 
 #include "LFMGlobals.h"
 #include "LFMWebAccess.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Utils.h"
 
 #include <QCryptographicHash>
@@ -36,42 +36,42 @@
 
 using namespace LastFM;
 
-void WebAccess::callUrl(const QString& url)
-{
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, &WebAccess::awaFinished);
-	awa->run(url, 10000);
-}
+	void WebAccess::callUrl(const QString& url)
+	{
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
+		webClient->run(url, Timeout);
+	}
 
-void WebAccess::callPostUrl(const QString& url, const QByteArray& post_data)
-{
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, &WebAccess::awaFinished);
+	void WebAccess::callPostUrl(const QString& url, const QByteArray& post_data)
+	{
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
 
 	QMap<QByteArray, QByteArray> header;
 	header["Content-Type"] = "application/x-www-form-urlencoded";
 
-	awa->setRawHeader(header);
-	awa->runPost(url, post_data, 10000);
-}
-
-void WebAccess::awaFinished()
-{
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
-	if(awa->status() != AsyncWebAccess::Status::GotData)
-	{
-		emit sigError("Cannot get data");
+		webClient->setRawHeader(header);
+		webClient->runPost(url, post_data, Timeout);
 	}
 
-	const auto data = awa->data();
-	const auto error = checkError(data);
-	if(!error)
+	void WebAccess::webClientFinished()
 	{
-		emit sigResponse(data);
-	}
+		auto* webClient = dynamic_cast<WebClient*>(sender());
+		if(webClient->status() != WebClient::Status::GotData)
+		{
+			emit sigError("Cannot get data");
+		}
 
-	emit sigFinished();
-}
+		const auto data = webClient->data();
+		const auto error = checkError(data);
+		if(!error)
+		{
+			emit sigResponse(data);
+		}
+
+		emit sigFinished();
+	}
 
 QString WebAccess::createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
                                  QByteArray& postData)

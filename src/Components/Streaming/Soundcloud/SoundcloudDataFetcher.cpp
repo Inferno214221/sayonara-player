@@ -24,7 +24,7 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
@@ -74,11 +74,11 @@ namespace SC
 		m->playlists.clear();
 		m->tracks.clear();
 
-		auto* awa = new AsyncWebAccess(this);
-		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::artistsFetched);
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &DataFetcher::artistsFetched);
 
-		awa->setRawHeader(requestHeader());
-		awa->run(createLinkGetArtist(artistName));
+		webClient->setRawHeader(requestHeader());
+		webClient->run(createLinkGetArtist(artistName));
 	}
 
 	void DataFetcher::getArtist(int artistId)
@@ -88,25 +88,25 @@ namespace SC
 		m->playlists.clear();
 		m->tracks.clear();
 
-		auto* awa = new AsyncWebAccess(this);
-		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::artistsFetched);
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &DataFetcher::artistsFetched);
 
-		awa->setRawHeader(requestHeader());
-		awa->run(createLinkGetArtist(artistId));
+		webClient->setRawHeader(requestHeader());
+		webClient->run(createLinkGetArtist(artistId));
 	}
 
 	void DataFetcher::artistsFetched()
 	{
-		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-		if(awa->status() == AsyncWebAccess::Status::GotData)
+		auto* webClient = dynamic_cast<WebClient*>(sender());
+		if(webClient->status() == WebClient::Status::GotData)
 		{
-			const auto parser = JsonParser(awa->data());
+			const auto parser = JsonParser(webClient->data());
 			parser.parseArtists(m->artists);
 
 			emit sigArtistsFetched(m->artists);
 		}
 
-		awa->deleteLater();
+		webClient->deleteLater();
 	}
 
 	void DataFetcher::getTracksByArtist(int artistId)
@@ -116,44 +116,44 @@ namespace SC
 		m->playlists.clear();
 		m->tracks.clear();
 
-		auto* awa = new AsyncWebAccess(this);
-		connect(awa, &AsyncWebAccess::sigFinished, this, &DataFetcher::playlistsFetched);
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &DataFetcher::playlistsFetched);
 
-		awa->setRawHeader(requestHeader());
-		awa->run(createLinkGetPlaylists(artistId));
+		webClient->setRawHeader(requestHeader());
+		webClient->run(createLinkGetPlaylists(artistId));
 	}
 
 	void DataFetcher::playlistsFetched()
 	{
-		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-		if(awa->status() == AsyncWebAccess::Status::GotData)
+		auto* webClient = dynamic_cast<WebClient*>(sender());
+		if(webClient->status() == WebClient::Status::GotData)
 		{
-			const auto parser = JsonParser(awa->data());
+			const auto parser = JsonParser(webClient->data());
 			parser.parsePlaylists(m->artists, m->playlists, m->tracks);
 
 			auto emptyAlbum = Album{};
 			emptyAlbum.setId(0);
 			m->playlists.appendUnique(AlbumList() << emptyAlbum);
 
-			auto* awaTracks = new AsyncWebAccess(this);
-			connect(awaTracks, &AsyncWebAccess::sigFinished, this, &DataFetcher::tracksFetched);
+			auto* awaTracks = new WebClientImpl(this);
+			connect(awaTracks, &WebClient::sigFinished, this, &DataFetcher::tracksFetched);
 
 			awaTracks->setRawHeader(requestHeader());
 			awaTracks->run(createLinkGetTracks(m->artistId));
 		}
 
-		awa->deleteLater();
+		webClient->deleteLater();
 	}
 
 	void DataFetcher::tracksFetched()
 	{
-		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-		if(awa->status() == AsyncWebAccess::Status::GotData)
+		auto* webClient = dynamic_cast<WebClient*>(sender());
+		if(webClient->status() == WebClient::Status::GotData)
 		{
 			auto tracks = MetaDataList {};
 			auto artists = ArtistList {};
 
-			const auto parser = JsonParser(awa->data());
+			const auto parser = JsonParser(webClient->data());
 			parser.parseTracks(artists, tracks);
 
 			m->tracks.appendUnique(tracks);
@@ -164,6 +164,6 @@ namespace SC
 			emit sigExtArtistsFetched(m->artists);
 		}
 
-		awa->deleteLater();
+		webClient->deleteLater();
 	}
 }

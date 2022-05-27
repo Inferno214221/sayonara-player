@@ -34,7 +34,7 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/globals.h"
 
 #include <QPixmap>
@@ -56,7 +56,7 @@ namespace
 		return (!pixmap.isNull() && (pixmap.width() >= 50) && (pixmap.height() >= 50));
 	}
 
-	QPixmap extractPixmap(const AsyncWebAccess* webAccess)
+	QPixmap extractPixmap(const WebClient* webAccess)
 	{
 		QPixmap pixmap;
 		if(webAccess->url().endsWith("svg", Qt::CaseInsensitive))
@@ -77,19 +77,19 @@ namespace
 	void startWebRequest(WebCoverFetcher* fetchThread, const QString& address, QList<AsyncWebAccess*>& requestList,
 	                     CallbackFunction function)
 	{
-		auto* request = new AsyncWebAccess(fetchThread);
-		fetchThread->connect(request, &AsyncWebAccess::sigFinished, fetchThread, function);
+		auto* request = new WebClientImpl(fetchThread);
+		fetchThread->connect(request, &WebClient::sigFinished, fetchThread, function);
 
 		requestList << request;
 
-		request->setBehavior(AsyncWebAccess::Behavior::AsBrowser);
+		request->setMode(WebClient::Mode::AsBrowser);
 		request->run(address, Timeout);
 	}
 }
 
 struct WebCoverFetcher::Private
 {
-	QList<AsyncWebAccess*> runningRequests;
+	QList<WebClient*> runningRequests;
 	Cover::Fetcher::CoverFetcherPtr coverFetcher {nullptr};
 	Cover::Fetcher::Manager* coverFetchManager {Cover::Fetcher::Manager::instance()};
 
@@ -206,40 +206,40 @@ bool WebCoverFetcher::processNextImageUrl()
 
 void WebCoverFetcher::contentFetched()
 {
-	auto* webAccess = dynamic_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 
-	if(!m->stopped && (webAccess->status() == AsyncWebAccess::Status::GotData))
+	if(!m->stopped && (webClient->status() == WebClient::Status::GotData))
 	{
-		const auto websiteData = webAccess->data();
+		const auto websiteData = webClient->data();
 		m->imageAddresses = m->coverFetcher->parseAddresses(websiteData);
 	}
 
-	m->runningRequests.removeOne(webAccess);
-	webAccess->deleteLater();
+	m->runningRequests.removeOne(webClient);
+	webClient->deleteLater();
 
 	startNextRequest();
 }
 
 void WebCoverFetcher::imageFetched()
 {
-	auto* webAccess = dynamic_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 	if(!m->stopped)
 	{
-		if(webAccess->status() == AsyncWebAccess::Status::GotData)
+		if(webClient->status() == WebClient::Status::GotData)
 		{
-			const auto pixmap = extractPixmap(webAccess);
+			const auto pixmap = extractPixmap(webClient);
 			if(isValidPixmap(pixmap))
 			{
 				m->pixmaps << pixmap;
-				m->foundUrls << webAccess->url();
+				m->foundUrls << webClient->url();
 
 				emit sigCoverFound(m->pixmaps.count() - 1);
 			}
 		}
 	}
 
-	m->runningRequests.removeOne(webAccess);
-	webAccess->deleteLater();
+	m->runningRequests.removeOne(webClient);
+	webClient->deleteLater();
 
 	startNextRequest();
 }

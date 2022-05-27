@@ -24,7 +24,7 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/FileUtils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/WebAccess/IcyWebAccess.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/Parser/PodcastParser.h"
@@ -35,55 +35,51 @@
 #include <QDir>
 #include <QUrl>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
+
+namespace
+{
+	constexpr const auto MaxSizeUrls = 5000;
+	constexpr const auto MinimumUrlCharacters = 7;
+}
 
 struct StreamParser::Private
 {
 	// If an url leads me to some website content and I have to parse it
 	// and this Url is found again during parsing, it cannot be a stream
 	// and so, it cannot be a metadata object
-	QStringList		forbiddenUrls;
-	QString			stationName;
-	QString			lastUrl;
-	QString			coverUrl;
-	MetaDataList	tracks;
-	QStringList 	urls;
-	AsyncWebAccess* activeAwa=nullptr;
-	IcyWebAccess*	activeIcy=nullptr;
-	const int		MaxSizeUrls=5000;
-	int				timeout;
-	bool			stopped;
+	QStringList forbiddenUrls;
+	QString stationName;
+	QString lastUrl;
+	QString coverUrl;
+	MetaDataList tracks;
+	QStringList urls;
+	WebClient* activeWebClient {nullptr};
+	IcyWebAccess* activeIcy {nullptr};
+	int timeout {5'000}; // NOLINT(readability-magic-numbers)
+	bool stopped {false};
 
-	Private() :
-		timeout(5000),
-		stopped(false)
-	{}
-
-	bool isUrlForbidden(const QUrl& url) const
+	[[nodiscard]] bool isUrlForbidden(const QUrl& url) const
 	{
-		for(const QString& fu : forbiddenUrls)
-		{
-			const QUrl forbiddenUrl(fu);
-			const QString forbidden_host = forbiddenUrl.host();
+		constexpr const auto HttpPort = 80;
+		return Util::Algorithm::contains(forbiddenUrls, [&](const auto& forbiddenUrlString) {
+			const auto forbiddenUrl = QUrl(forbiddenUrlString);
+			const auto forbiddenHost = forbiddenUrl.host();
 
-			if ((forbidden_host.compare(url.host(), Qt::CaseInsensitive) == 0) &&
-				(forbiddenUrl.port(80) == url.port(80)) &&
-				(forbiddenUrl.path().compare(url.path()) == 0) &&
-				(forbiddenUrl.fileName().compare(url.path()) == 0))
-			{
-				return true;
-			}
-		}
-
-		return false;
+			return ((forbiddenHost.compare(url.host(), Qt::CaseInsensitive) == 0) &&
+			        (forbiddenUrl.port(HttpPort) == url.port(HttpPort)) &&
+			        (forbiddenUrl.path() == url.path()) &&
+			        (forbiddenUrl.fileName() == url.path()));
+		});
 	}
 
-	QString writePlaylistFile(const QByteArray& data) const
+	[[nodiscard]] QString writePlaylistFile(const QByteArray& data) const
 	{
-		QString extension = Util::File::getFileExtension(lastUrl);
-		QString filename = Util::tempPath("ParsedPlaylist");
+		const auto extension = Util::File::getFileExtension(lastUrl);
+		auto filename = Util::tempPath("ParsedPlaylist");
 
-		if(!extension.isEmpty()) {
+		if(!extension.isEmpty())
+		{
 			filename += "." + extension;
 		}
 
@@ -108,7 +104,7 @@ void StreamParser::parse(const QString& stationName, const QString& stationUrl, 
 	if(!stationUrl.isEmpty())
 	{
 		m->stationName = stationName;
-		QStringList urls{ stationUrl };
+		const auto urls = QStringList {stationUrl};
 		parse(urls, timeout);
 	}
 }
@@ -122,9 +118,9 @@ void StreamParser::parse(const QStringList& urls, int timeout)
 	m->urls = urls;
 	m->urls.removeDuplicates();
 
-	if(m->urls.size() > m->MaxSizeUrls)
+	if(m->urls.size() > MaxSizeUrls)
 	{
-		emit sigUrlCountExceeded(m->urls.size(), m->MaxSizeUrls);
+		emit sigUrlCountExceeded(m->urls.size(), MaxSizeUrls);
 	}
 
 	else
@@ -132,7 +128,6 @@ void StreamParser::parse(const QStringList& urls, int timeout)
 		parseNextUrl();
 	}
 }
-
 
 bool StreamParser::parseNextUrl()
 {
@@ -149,50 +144,50 @@ bool StreamParser::parseNextUrl()
 		return false;
 	}
 
-	m->activeAwa = new AsyncWebAccess(this);
-	m->activeAwa->setBehavior(AsyncWebAccess::Behavior::AsSayonara);
+	m->activeWebClient = new WebClientImpl(this);
+	m->activeWebClient->setMode(WebClient::Mode::AsSayonara);
 
-	connect(m->activeAwa, &AsyncWebAccess::sigFinished, this, &StreamParser::awaFinished);
+	connect(m->activeWebClient, &WebClient::sigFinished, this, &StreamParser::awaFinished);
 
 	const QString url = m->urls.takeFirst();
-	m->activeAwa->run(url, m->timeout);
+	m->activeWebClient->run(url, m->timeout);
 
 	return true;
 }
 
-
 void StreamParser::awaFinished()
 {
-	auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 
-	AsyncWebAccess::Status status = awa->status();
-	m->lastUrl = awa->url();
-	m->activeAwa = nullptr;
+	const auto status = webClient->status();
+	m->lastUrl = webClient->url();
+	m->activeWebClient = nullptr;
 
 	if(m->stopped)
 	{
-		awa->deleteLater();
+		webClient->deleteLater();
 		emit sigStopped();
 		return;
 	}
 
 	switch(status)
 	{
-		case AsyncWebAccess::Status::GotData:
+		case WebClient::Status::GotData:
 		{
 			m->forbiddenUrls << m->lastUrl;
 			spLog(Log::Develop, this) << "Got data. Try to parse content";
 
-			QPair<MetaDataList, PlaylistFiles> result = parseContent(awa->data());
+			const auto result = parseContent(webClient->data());
 
 			m->tracks << result.first;
 			m->urls << result.second;
 
 			m->tracks.removeDuplicates();
 			m->urls.removeDuplicates();
-		} break;
+		}
+			break;
 
-		case AsyncWebAccess::Status::NoHttp:
+		case WebClient::Status::NoHttp:
 		{
 			spLog(Log::Develop, this) << "No correct http was found. Maybe Icy?";
 
@@ -201,10 +196,11 @@ void StreamParser::awaFinished()
 			connect(iwa, &IcyWebAccess::sigFinished, this, &StreamParser::icyFinished);
 			iwa->check(QUrl(m->lastUrl));
 
-			awa->deleteLater();
-		} return;
+			webClient->deleteLater();
+		}
+			return;
 
-		case AsyncWebAccess::Status::AudioStream:
+		case WebClient::Status::AudioStream:
 		{
 			spLog(Log::Develop, this) << "Found audio stream";
 			MetaData md;
@@ -212,23 +208,25 @@ void StreamParser::awaFinished()
 
 			m->tracks << md;
 			m->tracks.removeDuplicates();
-		} break;
+		}
+			break;
 
 		default:
 			spLog(Log::Develop, this) << "Web Access finished: " << int(status);
 	}
 
-	awa->deleteLater();
+	webClient->deleteLater();
 
-	if(m->urls.size() > m->MaxSizeUrls){
-		emit sigUrlCountExceeded(m->urls.size(), m->MaxSizeUrls);
+	if(m->urls.size() > MaxSizeUrls)
+	{
+		emit sigUrlCountExceeded(m->urls.size(), MaxSizeUrls);
 	}
 
-	else {
+	else
+	{
 		parseNextUrl();
 	}
 }
-
 
 void StreamParser::icyFinished()
 {
@@ -236,7 +234,8 @@ void StreamParser::icyFinished()
 	IcyWebAccess::Status status = iwa->status();
 	m->activeIcy = nullptr;
 
-	if(m->stopped){
+	if(m->stopped)
+	{
 		iwa->deleteLater();
 		emit sigStopped();
 		return;
@@ -252,7 +251,8 @@ void StreamParser::icyFinished()
 		m->tracks.removeDuplicates();
 	}
 
-	else {
+	else
+	{
 		spLog(Log::Develop, this) << "Stream is no icy stream";
 	}
 
@@ -260,7 +260,6 @@ void StreamParser::icyFinished()
 
 	parseNextUrl();
 }
-
 
 QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& data) const
 {
@@ -286,7 +285,7 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& 
 
 	else
 	{
-		for(MetaData& md : m->tracks)
+		for(auto& metadata: m->tracks)
 		{
 			setMetadataTag(md, m->lastUrl, m->coverUrl);
 		}
@@ -297,30 +296,30 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseContent(const QByteArray& 
 
 QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& arr) const
 {
-	MetaDataList tracks;
-	QStringList playlistFiles;
+	auto tracks = MetaDataList {};
+	auto playlistFiles = QStringList {};
 
-	QStringList validExtensions;
+	auto validExtensions = QStringList {};
 	validExtensions << Util::soundfileExtensions(false);
 	validExtensions << Util::playlistExtensions(false);
 
-	const QString rePrefix = "(http[s]*://|\"/|'/)";
-	const QString rePath = "\\S+\\.(" + validExtensions.join("|") + ")";
-	const QString reString = "(" + rePrefix + rePath + ")";
+	const auto* rePrefix = "(http[s]*://|\"/|'/)";
+	const auto rePath = "\\S+\\.(" + validExtensions.join("|") + ")";
+	const auto reString = QString("(%1%2)").arg(rePrefix).arg(rePath);
 
-	QRegExp regExp(reString);
-	const QUrl parentUrl(m->lastUrl);
+	const auto regExp = QRegExp(reString);
+	const auto parentUrl = QUrl(m->lastUrl);
 
-	const QString website = QString::fromUtf8(arr);
-	int idx = regExp.indexIn(website);
+	const auto website = QString::fromUtf8(arr);
+	auto idx = regExp.indexIn(website);
 
-	QStringList foundUrls;
+	auto foundUrls = QStringList {};
 	while(idx >= 0)
 	{
-		const QStringList foundStrings = regExp.capturedTexts();
-		for(QString str : foundStrings)
+		const auto foundStrings = regExp.capturedTexts();
+		for(auto str: foundStrings)
 		{
-			if((str.size() > 7) && !m->isUrlForbidden(QUrl(str)))
+			if((str.size() > MinimumUrlCharacters) && !m->isUrlForbidden(QUrl(str)))
 			{
 				if(str.startsWith("\"") || str.startsWith("'"))
 				{
@@ -336,9 +335,9 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& 
 
 	foundUrls.removeDuplicates();
 
-	for(const QString& foundUrl : Algorithm::AsConst(foundUrls))
+	for(const auto& foundUrl: Algorithm::AsConst(foundUrls))
 	{
-		QUrl url(foundUrl);
+		auto url = QUrl(foundUrl);
 		if(url.isRelative())
 		{
 			url.setScheme(parentUrl.scheme());
@@ -368,19 +367,21 @@ QPair<MetaDataList, PlaylistFiles> StreamParser::parseWebsite(const QByteArray& 
 
 	spLog(Log::Develop, this) << "Found " << m->urls.size() << " playlists and " << tracks.size() << " streams";
 
-	return QPair<MetaDataList, PlaylistFiles>(tracks, playlistFiles);
+	return {tracks, playlistFiles};
 }
 
-void StreamParser::setMetadataTag(MetaData& md, const QString& streamUrl, const QString& coverUrl) const
+void StreamParser::setMetadataTag(MetaData& metadata, const QString& streamUrl, const QString& coverUrl) const
 {
-	md.setRadioStation(streamUrl, m->stationName);
+	metadata.setRadioStation(streamUrl, m->stationName);
 
-	if(md.filepath().trimmed().isEmpty()) {
-		md.setFilepath(streamUrl);
+	if(metadata.filepath().trimmed().isEmpty())
+	{
+		metadata.setFilepath(streamUrl);
 	}
 
-	if(!coverUrl.isEmpty()) {
-		md.setCoverDownloadUrls({coverUrl});
+	if(!coverUrl.isEmpty())
+	{
+		metadata.setCoverDownloadUrls({coverUrl});
 	}
 }
 
@@ -393,8 +394,9 @@ void StreamParser::setCoverUrl(const QString& coverUrl)
 {
 	m->coverUrl = coverUrl;
 
-	for(MetaData& md : m->tracks){
-		md.setCoverDownloadUrls({coverUrl});
+	for(auto& track: m->tracks)
+	{
+		track.setCoverDownloadUrls({coverUrl});
 	}
 }
 
@@ -402,16 +404,16 @@ void StreamParser::stop()
 {
 	m->stopped = true;
 
-	if(m->activeAwa)
+	if(m->activeWebClient)
 	{
-		AsyncWebAccess* awa = m->activeAwa;
-		m->activeAwa = nullptr;
-		awa->stop();
+		auto* webClient = m->activeWebClient;
+		m->activeWebClient = nullptr;
+		webClient->stop();
 	}
 
 	if(m->activeIcy)
 	{
-		IcyWebAccess* icy = m->activeIcy;
+		auto* icy = m->activeIcy;
 		m->activeIcy = nullptr;
 		icy->stop();
 	}

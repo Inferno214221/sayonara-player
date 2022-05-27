@@ -1,6 +1,6 @@
-/* AbstractWebAccess.h */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* WebClient.h */
+/*
+ * Copyright (C) 2011-2022 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -18,17 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include "WebClient.h"
 
+WebClient::WebClient(QObject* parent) :
+	QObject(parent) {}
 
-#ifndef ABSTRACTWEBACCESS_H
-#define ABSTRACTWEBACCESS_H
-
-class AbstractWebAccess
-{
-public:
-	virtual void stop()=0;
-
-};
-
-#endif // ABSTRACTWEBACCESS_H
-
+WebClient::~WebClient() = default;

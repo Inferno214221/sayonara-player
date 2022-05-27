@@ -26,7 +26,7 @@
 #include <QList>
 #include <utility>
 
-class AsyncWebAccess;
+class WebClient;
 
 class LanguagePreferences :
 	public QObject
@@ -54,8 +54,8 @@ class LanguagePreferences :
 		static std::pair<QList<LanguageData>, int> getAllLanguages();
 
 	private slots:
-		void downloadFinished(AsyncWebAccess* awa, const QString& languageCode);
-		void updateCheckFinished(AsyncWebAccess* awa, const QString& languageCode);
+		void downloadFinished(WebClient* awa, const QString& languageCode);
+		void updateCheckFinished(WebClient* awa, const QString& languageCode);
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		void downloadUpdate(const QString& languageCode);

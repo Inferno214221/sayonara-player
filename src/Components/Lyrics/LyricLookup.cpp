@@ -30,7 +30,7 @@
 #include "LyricWebpageParser.h"
 #include "LyricServerJsonWriter.h"
 
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/StandardPaths.h"
@@ -137,30 +137,9 @@ struct LookupThread::Private
 	QMap<QString, QString> regexConversions;
 	QString lyricHeader;
 
-	AsyncWebAccess* currentAwa;
-	int currentServerIndex;
-	bool hasError;
-
-	Private() :
-		currentAwa {nullptr},
-		currentServerIndex {-1},
-		hasError {false}
-	{
-		regexConversions =
-			{{"$", "\\$"},
-			 {"*", "\\*"},
-			 {"+", "\\+"},
-			 {"?", "\\?"},
-			 {"[", "\\["},
-			 {"]", "\\]"},
-			 {"(", "\\("},
-			 {")", "\\)"},
-			 {"{", "\\{"},
-			 {"}", "\\}"},
-			 {"^", "\\^"},
-			 {"|", "\\|"},
-			 {".", "\\."}};
-	}
+	WebClient* currentWebClient {nullptr};
+	int currentServerIndex {-1};
+	bool hasError {false};
 };
 
 LookupThread::LookupThread(QObject* parent) :
@@ -213,18 +192,18 @@ void LookupThread::startSearch(const QString& url)
 {
 	spLog(Log::Debug, this) << "Search Lyrics from " << url;
 
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, &LookupThread::searchFinished);
-	awa->run(url);
+	auto* webClient = new WebClientImpl(this);
+	connect(webClient, &WebClient::sigFinished, this, &LookupThread::searchFinished);
+	webClient->run(url);
 }
 
 void LookupThread::searchFinished()
 {
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 
 	auto* server = m->servers[m->currentServerIndex];
 
-	const auto data = awa->data();
+	const auto data = webClient->data();
 	const auto url = extractUrlFromSearchResults(server, QString::fromLocal8Bit(data));
 
 	if(!url.isEmpty())
@@ -235,12 +214,12 @@ void LookupThread::searchFinished()
 	else
 	{
 		spLog(Log::Debug, this) << "Search Lyrics not successful ";
-		m->lyricsData = tr("Cannot fetch lyrics from %1").arg(awa->url());
+		m->lyricsData = tr("Cannot fetch lyrics from %1").arg(webClient->url());
 		m->hasError = true;
 		emit sigFinished();
 	}
 
-	awa->deleteLater();
+	webClient->deleteLater();
 }
 
 void LookupThread::callWebsite(const QString& url)
@@ -249,45 +228,45 @@ void LookupThread::callWebsite(const QString& url)
 
 	spLog(Log::Debug, this) << "Fetch Lyrics from " << url;
 
-	m->currentAwa = new AsyncWebAccess(this);
-	connect(m->currentAwa, &AsyncWebAccess::sigFinished, this, &LookupThread::contentFetched);
-	m->currentAwa->run(url);
+	m->currentWebClient = new WebClientImpl(this);
+	connect(m->currentWebClient, &WebClient::sigFinished, this, &LookupThread::contentFetched);
+	m->currentWebClient->run(url);
 }
 
 void LookupThread::contentFetched()
 {
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 	auto* server = m->servers[m->currentServerIndex];
 
-	m->currentAwa = nullptr;
-	m->lyricHeader = getLyricHeader(m->artist, m->title, server->name(), awa->url());
+	m->currentWebClient = nullptr;
+	m->lyricHeader = getLyricHeader(m->artist, m->title, server->name(), webClient->url());
 
-	m->hasError = (!awa->hasData() || awa->hasError());
+	m->hasError = (!webClient->hasData() || webClient->hasError());
 	if(m->hasError)
 	{
 		m->lyricsData = tr("Cannot fetch lyrics from %1").arg(awa->url());
 	}
 
-	else if(awa->data().isEmpty())
+	else if(webClient->data().isEmpty())
 	{
-		m->lyricsData = tr("No lyrics found") + "<br />" + awa->url();
+		m->lyricsData = tr("No lyrics found") + "<br />" + webClient->url();
 	}
 
 	else
 	{
-		m->lyricsData = Lyrics::WebpageParser::parseWebpage(awa->data(), m->regexConversions, server);
+		m->lyricsData = Lyrics::WebpageParser::parseWebpage(webClient->data(), m->regexConversions, server);
 	}
 
-	awa->deleteLater();
+	webClient->deleteLater();
 	emit sigFinished();
 }
 
 void LookupThread::stop()
 {
-	if(m->currentAwa)
+	if(m->currentWebClient)
 	{
-		disconnect(m->currentAwa, &AsyncWebAccess::sigFinished, this, &LookupThread::contentFetched);
-		m->currentAwa->stop();
+		disconnect(m->currentWebClient, &WebClient::sigFinished, this, &LookupThread::contentFetched);
+		m->currentWebClient->stop();
 	}
 }
 

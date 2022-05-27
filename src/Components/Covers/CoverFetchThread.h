@@ -35,7 +35,6 @@
 #include <functional>
 
 class QImage;
-class AsyncWebAccess;
 
 namespace Cover
 {

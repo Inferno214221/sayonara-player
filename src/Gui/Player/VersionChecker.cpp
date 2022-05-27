@@ -21,7 +21,7 @@
 #include "VersionChecker.h"
 
 #include "Utils/Utils.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Settings/Settings.h"
@@ -31,27 +31,28 @@
 VersionChecker::VersionChecker(QObject* parent) :
 	QObject(parent)
 {
-	auto* awa = new AsyncWebAccess(this);
-	awa->run("http://sayonara-player.com/current_version");
-	connect(awa, &AsyncWebAccess::sigFinished, this, &VersionChecker::versionCheckFinished);
+	constexpr const auto* Url = "http://sayonara-player.com/current_version";
+	auto* webClient = new WebClientImpl(this);
+	webClient->run(Url);
+	connect(webClient, &WebClient::sigFinished, this, &VersionChecker::versionCheckFinished);
 }
 
 VersionChecker::~VersionChecker() = default;
 
 void VersionChecker::versionCheckFinished()
 {
-	auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-	if(!awa)
+	auto* webClient = dynamic_cast<WebClient*>(sender());
+	if(!webClient)
 	{
 		return;
 	}
 
-	const auto status = awa->status();
-	const auto data = awa->data();
+	const auto status = webClient->status();
+	const auto data = webClient->data();
 
-	awa->deleteLater();
+	webClient->deleteLater();
 
-	if(status != AsyncWebAccess::Status::GotData || data.isEmpty())
+	if(status != WebClient::Status::GotData || data.isEmpty())
 	{
 		return;
 	}

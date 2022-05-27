@@ -26,7 +26,7 @@
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/StandardPaths.h"
@@ -94,10 +94,10 @@ void SomaFM::Library::searchStations()
 {
 	emit sigLoadingStarted();
 
-	auto* awa = new AsyncWebAccess(this);
-	connect(awa, &AsyncWebAccess::sigFinished, this, &SomaFM::Library::websiteFetched);
+	auto* webClient = new WebClientImpl(this);
+	connect(webClient, &WebClient::sigFinished, this, &SomaFM::Library::websiteFetched);
 
-	awa->run("https://somafm.com/listen/", m->timeout());
+	webClient->run("https://somafm.com/listen/", m->timeout());
 }
 
 SomaFM::Station SomaFM::Library::station(const QString& name)
@@ -108,12 +108,12 @@ SomaFM::Station SomaFM::Library::station(const QString& name)
 
 void SomaFM::Library::websiteFetched()
 {
-	auto* awa = static_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 	QList<SomaFM::Station> stations;
 
-	if(awa->status() != AsyncWebAccess::Status::GotData)
+	if(webClient->status() != WebClient::Status::GotData)
 	{
-		awa->deleteLater();
+		webClient->deleteLater();
 
 		emit sigStationsLoaded(stations);
 		emit sigLoadingFinished();
@@ -121,7 +121,7 @@ void SomaFM::Library::websiteFetched()
 		return;
 	}
 
-	const auto content = QString::fromUtf8(awa->data());
+	const auto content = QString::fromUtf8(webClient->data());
 
 	auto re = QRegExp("<li\\s?(.+)</li>");
 	re.setMinimal(true);
@@ -148,7 +148,7 @@ void SomaFM::Library::websiteFetched()
 	emit sigStationsLoaded(stations);
 	emit sigLoadingFinished();
 
-	awa->deleteLater();
+	webClient->deleteLater();
 }
 
 void SomaFM::Library::createPlaylistFromStation(int row)

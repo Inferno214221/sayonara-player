@@ -23,7 +23,7 @@
 #include "SoundcloudWebAccess.h"
 
 #include "Utils/Logger/Logger.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QString>
@@ -49,18 +49,18 @@ namespace SC
 
 	void TokenObserver::obtainToken()
 	{
-		auto* awa = new AsyncWebAccess(this);
-		connect(awa, &AsyncWebAccess::sigFinished, this, &TokenObserver::tokenObtained);
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &TokenObserver::tokenObtained);
 
-		awa->run(createLinkObtainToken());
+		webClient->run(createLinkObtainToken());
 	}
 
 	void TokenObserver::tokenObtained()
 	{
-		auto* awa = dynamic_cast<AsyncWebAccess*>(sender());
-		if(awa->status() == AsyncWebAccess::Status::GotData)
+		auto* webClient = dynamic_cast<WebClient*>(sender());
+		if(webClient->status() == WebClient::Status::GotData)
 		{
-			const auto token = QString::fromLocal8Bit(awa->data());
+			const auto token = QString::fromLocal8Bit(webClient->data());
 			if(!token.isEmpty())
 			{
 				spLog(Log::Info, this) << "Soundcloud token obtained";
@@ -83,6 +83,6 @@ namespace SC
 			}
 		}
 
-		awa->deleteLater();
+		webClient->deleteLater();
 	}
 }

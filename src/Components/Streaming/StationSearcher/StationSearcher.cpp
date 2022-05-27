@@ -21,7 +21,7 @@
 #include "StationSearcher.h"
 #include "FMStreamParser.h"
 #include "RadioStation.h"
-#include "Utils/WebAccess/AsyncWebAccess.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 
 #include <QUrl>
 #include <QList>
@@ -77,9 +77,9 @@ StationSearcher::~StationSearcher() = default;
 
 void StationSearcher::startCall()
 {
-	auto* wa = new AsyncWebAccess(this);
-	connect(wa, &AsyncWebAccess::sigFinished, this, &StationSearcher::searchFinished);
-	wa->run(m->url());
+	auto* webClient = new WebClientImpl(this);
+	connect(webClient, &WebClient::sigFinished, this, &StationSearcher::searchFinished);
+	webClient->run(m->url());
 }
 
 void StationSearcher::searchStyle(const QString& style)
@@ -139,9 +139,9 @@ const QList<RadioStation>& StationSearcher::foundStations() const
 #include "Utils/Logger/Logger.h"
 void StationSearcher::searchFinished()
 {
-	auto* wa = static_cast<AsyncWebAccess*>(sender());
+	auto* webClient = dynamic_cast<WebClient*>(sender());
 
-	FMStreamParser parser(wa->data());
+	const auto parser = FMStreamParser(webClient->data());
 	auto stations = parser.stations();
 	if(stations.isEmpty())
 	{
@@ -154,7 +154,7 @@ void StationSearcher::searchFinished()
 		m->foundStations = std::move(stations);
 	}
 
-	wa->deleteLater();
+	webClient->deleteLater();
 
 	emit sigStationsFound();
 }
