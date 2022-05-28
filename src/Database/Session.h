@@ -31,21 +31,21 @@ class QDateTime;
 namespace DB
 {
 	class Session :
-			private DB::Module
+		private DB::Module
 	{
 		public:
 			Session(const QString& connectionName, DbId databaseId);
 			~Session();
 
 			::Session::EntryListMap getSessions(const QDateTime& dt_begin, const QDateTime& dt_end);
-			::Session::EntryList getSession(::Session::Id session_id);
+			// ::Session::EntryList getSession(::Session::Id session_id);
 			QList<::Session::Id> getSessionKeys();
 
 			::Session::Id createNewSession() const;
 			bool addTrack(::Session::Id session_id, const MetaData& md);
 
 			bool clear();
-			bool clearBefore(const QDateTime& datetime);
+			// bool clearBefore(const QDateTime& datetime);
 	};
 }
 

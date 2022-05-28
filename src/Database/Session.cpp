@@ -28,193 +28,171 @@
 #include <QDateTime>
 
 using DB::Module;
+using Session::EntryList;
+using Session::EntryListMap;
 
 DB::Session::Session(const QString& connectionName, DbId databaseId) :
-	Module(connectionName, databaseId)
-{}
+	Module(connectionName, databaseId) {}
 
 DB::Session::~Session() = default;
 
-::Session::EntryList DB::Session::getSession(::Session::Id session_id)
+/*EntryList DB::Session::getSession(::Session::Id session_id)
 {
-	const QStringList fields
-	{
+	const auto fields = QStringList {
 		"sessionID",
 		"date",
 		"trackID",
 		"title",
 		"artist",
-		"album",
+		"album"
 	};
 
-	DB::Query q = this->runQuery
-	(
+	auto q = runQuery(
 		QString("SELECT %1 FROM Sessions WHERE sessionID = :sessionId;").arg(fields.join(", ")),
 		{":sessionId", QVariant::fromValue<::Session::Id>(session_id)},
-		QString("Session: Cannot fetch session %1").arg(session_id)
-	);
+		QString("Session: Cannot fetch session %1").arg(session_id));
 
-	if(q.hasError())
+	auto ret = EntryList {};
+	while(!q.hasError() && q.next())
 	{
-		spLog(Log::Warning, this) << QString("Cannot fetch session %1").arg(session_id);
-		return ::Session::EntryList();
-	}
+		auto track = MetaData {};
+		track.setId(q.value(3).toInt());
+		track.setTitle(q.value(4).toString());
+		track.setArtist(q.value(5).toString());
+		track.setAlbum(q.value(6).toString());
 
-	::Session::EntryList ret;
-	while(q.next())
-	{
-		MetaData md;
-			md.setId(q.value(3).toInt());
-			md.setTitle(q.value(4).toString());
-			md.setArtist(q.value(5).toString());
-			md.setAlbum(q.value(6).toString());
+		auto entry = ::Session::Entry {};
+		entry.sessionId = q.value(1).value<::Session::Id>();
+		entry.timecode = q.value(2).value<::Session::Timecode>();
+		entry.track = std::move(track);
 
-		::Session::Entry entry;
-			entry.sessionId = q.value(1).value<::Session::Id>();
-			entry.timecode = q.value(2).value<::Session::Timecode>();
-			entry.md = md;
-
-		ret << entry;
+		ret << std::move(entry);
 	}
 
 	return ret;
-}
+}*/
 
 QList<Session::Id> DB::Session::getSessionKeys()
 {
-	QList<::Session::Id> ids;
-	DB::Query q = this->runQuery
-	(
-		QString("SELECT DISTINCT sessionID FROM Sessions;"),
-		QString("Session: Cannot fetch session keys")
-	);
+	auto ids = QList<::Session::Id> {};
+	auto query = this->runQuery(
+		"SELECT DISTINCT sessionID FROM Sessions;",
+		"Session: Cannot fetch session keys");
 
-	if(q.hasError()){
-		return ids;
-	}
-
-	while(q.next())
+	while(!query.hasError() && query.next())
 	{
-		ids << q.value(0).value<::Session::Id>();
+		ids << query.value(0).value<::Session::Id>();
 	}
 
 	return ids;
 }
 
-Session::Id DB::Session::createNewSession() const
+Session::Id DB::Session::createNewSession() const // NOLINT(readability-convert-member-functions-to-static)
 {
 	return ::Util::dateToInt(QDateTime::currentDateTime());
 }
 
-::Session::EntryListMap DB::Session::getSessions(const QDateTime& dt_begin, const QDateTime& dt_end)
+EntryListMap DB::Session::getSessions(const QDateTime& dt_begin, const QDateTime& dt_end)
 {
-	const QStringList fields
-	{
-		"sessions.sessionID",		// 0
-		"sessions.date",			// 1
-		"sessions.trackID",			// 2
-		"sessions.title",			// 3
-		"sessions.artist",			// 4
-		"sessions.album",			// 5
+	const auto fields = QStringList {
+		"sessions.sessionID",        // 0
+		"sessions.date",            // 1
+		"sessions.trackID",            // 2
+		"sessions.title",            // 3
+		"sessions.artist",            // 4
+		"sessions.album",            // 5
 
-		"tracks.title",				// 6
-		"tracks.filename",			// 7
-		"tracks.artistID",			// 8
-		"tracks.artistName",		// 9
-		"tracks.albumID",			// 10
-		"tracks.albumName",			// 11
-		"tracks.albumArtistID",		// 12
-		"tracks.albumArtistName",	// 13
-		"tracks.year",				// 14
-		"tracks.comment",			// 15
-		"tracks.trackNum",			// 16
-		"tracks.bitrate",			// 17
-		"tracks.length",			// 18
-		"tracks.genre",				// 19
-		"tracks.discnumber",		// 20
-		"tracks.filesize",			// 21
-		"tracks.trackLibraryID"		// 22
+		"tracks.title",                // 6
+		"tracks.filename",            // 7
+		"tracks.artistID",            // 8
+		"tracks.artistName",        // 9
+		"tracks.albumID",            // 10
+		"tracks.albumName",            // 11
+		"tracks.albumArtistID",        // 12
+		"tracks.albumArtistName",    // 13
+		"tracks.year",                // 14
+		"tracks.comment",            // 15
+		"tracks.trackNum",            // 16
+		"tracks.bitrate",            // 17
+		"tracks.length",            // 18
+		"tracks.genre",                // 19
+		"tracks.discnumber",        // 20
+		"tracks.filesize",            // 21
+		"tracks.trackLibraryID"// 22
 	};
 
-	::Session::Timecode min_timecode = Util::dateToInt(dt_begin);
-	::Session::Timecode max_timecode = Util::dateToInt(dt_end);
+	const auto minTimecode = (dt_begin.isNull())
+	                         ? static_cast<uint64_t>(0)
+	                         : Util::dateToInt(dt_begin);
 
-	if(dt_begin.isNull()) {
-		min_timecode = 0;
-	}
+	const auto maxTimecode = (dt_end.isNull())
+	                         ? Util::dateToInt(QDateTime::currentDateTime())
+	                         : Util::dateToInt(dt_end);
 
-	if(dt_end.isNull()){
-		max_timecode =  Util::dateToInt(QDateTime::currentDateTime());
-	}
-
-	QString query = QString
-	(
+	const auto queryText = QString(
 		"SELECT %1 FROM Sessions sessions "
 		"LEFT OUTER JOIN track_search_view tracks ON tracks.trackID = sessions.trackID "
 		"WHERE Sessions.date >= :minDate AND Sessions.date <= :maxDate; "
 	).arg(fields.join(", "));
 
-	DB::Query q(this);
-	q.prepare(query);
-	q.bindValue(":minDate", QVariant::fromValue<::Session::Timecode>(min_timecode));
-	q.bindValue(":maxDate", QVariant::fromValue<::Session::Timecode>(max_timecode));
-	q.exec();
+	auto query = runQuery(queryText,
+	                      {
+		                      {":minDate", QVariant::fromValue<::Session::Timecode>(minTimecode)},
+		                      {":maxDate", QVariant::fromValue<::Session::Timecode>(maxTimecode)}
+	                      }, "Session: Cannot fetch session");
 
-	if(q.hasError())
+	auto ret = EntryListMap {};
+
+	while(!query.hasError() && query.next())
 	{
-		spLog(Log::Error, this) << "Session: Cannot fetch sessions";
-		return ::Session::EntryListMap();
-	}
+		auto entry = ::Session::Entry {};
+		entry.sessionId = query.value(0).value<::Session::Id>();
+		entry.timecode = query.value(1).value<::Session::Timecode>();
 
-	::Session::EntryListMap ret;
+		entry.track.setId(query.value(2).toInt());
+		entry.track.setTitle(query.value(6).toString());
+		entry.track.setFilepath(query.value(7).toString());
+		entry.track.setArtistId(query.value(8).toInt());
+		entry.track.setArtist(query.value(9).toString());
+		entry.track.setAlbumId(query.value(10).toInt());
+		entry.track.setAlbum(query.value(11).toString());
+		entry.track.setAlbumArtist(query.value(13).toString(), query.value(12).toInt());
+		entry.track.setYear(query.value(14).value<Year>());
+		entry.track.setComment(query.value(15).toString());
+		entry.track.setTrackNumber(query.value(16).value<TrackNum>());
+		entry.track.setBitrate(query.value(17).value<Bitrate>());
+		entry.track.setDurationMs(query.value(18).value<MilliSeconds>());
+		entry.track.setGenres(query.value(19).toString().split(","));
+		entry.track.setDiscnumber(query.value(20).value<Disc>());
+		entry.track.setFilesize(query.value(21).value<Filesize>());
+		entry.track.setLibraryid(LibraryId(query.value(22).toInt()));
 
-	while(q.next())
-	{
-		::Session::Entry entry;
-			entry.sessionId = q.value(0).value<::Session::Id>();
-			entry.timecode = q.value(1).value<::Session::Timecode>();
+		if(entry.track.title().isEmpty())
+		{
+			entry.track.setTitle(query.value(3).toString());
+		}
 
-			entry.md.setId(q.value(2).toInt());
+		if(entry.track.artist().isEmpty())
+		{
+			entry.track.setArtist(query.value(4).toString());
+		}
 
-			entry.md.setTitle(q.value(6).toString());
-			entry.md.setFilepath(q.value(7).toString());
-			entry.md.setArtistId(q.value(8).toInt());
-			entry.md.setArtist(q.value(9).toString());
-			entry.md.setAlbumId(q.value(10).toInt());
-			entry.md.setAlbum(q.value(11).toString());
-			entry.md.setAlbumArtist(q.value(13).toString(), q.value(12).toInt());
-			entry.md.setYear(q.value(14).value<Year>());
-			entry.md.setComment(q.value(15).toString());
-			entry.md.setTrackNumber(q.value(16).value<TrackNum>());
-			entry.md.setBitrate(q.value(17).value<Bitrate>());
-			entry.md.setDurationMs(q.value(18).value<MilliSeconds>());
-			entry.md.setGenres(q.value(19).toString().split(","));
-			entry.md.setDiscnumber(q.value(20).value<Disc>());
-			entry.md.setFilesize(q.value(21).value<Filesize>());
-			entry.md.setLibraryid(LibraryId(q.value(22).toInt()));
+		if(entry.track.album().isEmpty())
+		{
+			entry.track.setAlbum(query.value(5).toString());
+		}
 
-			if(entry.md.title().isEmpty()) {
-				entry.md.setTitle(q.value(3).toString());
-			}
-
-			if(entry.md.artist().isEmpty()) {
-				entry.md.setArtist(q.value(4).toString());
-			}
-
-			if(entry.md.album().isEmpty()) {
-				entry.md.setAlbum(q.value(5).toString());
-			}
-
-		auto it = ret.find(entry.sessionId);
-		if(it != ret.end()){
-			it.value() << entry;
+		const auto it = ret.find(entry.sessionId);
+		if(it != ret.end())
+		{
+			it.value() << std::move(entry);
 		}
 
 		else
 		{
-			::Session::EntryList lst;
-			lst << entry;
-			ret.insert(entry.sessionId, lst);
+			const auto sessionId = entry.sessionId;
+			const auto entryList = EntryList() << std::move(entry);
+			ret.insert(sessionId, entryList);
 		}
 	}
 
@@ -223,46 +201,40 @@ Session::Id DB::Session::createNewSession() const
 
 bool DB::Session::addTrack(::Session::Id session_id, const MetaData& md)
 {
-	const ::Session::Timecode timecode = Util::dateToInt(QDateTime::currentDateTime());
-
-	const DB::Query q = this->insert
-	(
+	const auto timecode = Util::dateToInt(QDateTime::currentDateTime());
+	const auto query = insert(
 		"sessions",
 		{
 			{"sessionID", QVariant::fromValue<::Session::Id>(session_id)},
-			{"date", QVariant::fromValue<::Session::Timecode>(timecode)},
-			{"trackID", md.id()},
-			{"title", md.title()},
-			{"artist", md.artist()},
-			{"album", md.album()}
+			{"date",      QVariant::fromValue<::Session::Timecode>(timecode)},
+			{"trackID",   md.id()},
+			{"title",     md.title()},
+			{"artist",    md.artist()},
+			{"album",     md.album()}
 		},
-		"Session: Cannot insert track"
-	);
+		"Session: Cannot insert track");
 
-	return (!q.hasError());
+	return (!query.hasError());
 }
 
 bool DB::Session::clear()
 {
-	const DB::Query q = this->runQuery
-	(
+	const auto query = runQuery(
 		"DELETE FROM Sessions;",
-		"Session: Cannot clear sessions"
-	);
+		"Session: Cannot clear sessions");
 
-	return (!q.hasError());
+	return (!query.hasError());
 }
 
+/*
 bool DB::Session::clearBefore(const QDateTime& datetime)
 {
-	const ::Session::Timecode timecode = Util::dateToInt(datetime);
-
-	const DB::Query q = this->runQuery
-	(
+	const auto timecode = Util::dateToInt(datetime);
+	const auto query = runQuery(
 		"DELETE FROM Sessions WHERE date < :minDate;",
 		{":minDate", QVariant::fromValue<::Session::Timecode>(timecode)},
-		QString("Cannot clear before %1").arg(timecode)
-	);
+		QString("Cannot clear before %1").arg(timecode));
 
-	return (!q.hasError());
+	return (!query.hasError());
 }
+*/

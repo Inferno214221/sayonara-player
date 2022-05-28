@@ -57,10 +57,6 @@ class AbstractLibrary :
 		const MetaDataList& tracks() const;
 		const AlbumList& albums() const;
 		const ArtistList& artists() const;
-		/**
-		 * @brief current selected tracks
-		 * @return if no track is selected, return all tracks
-		 */
 		const MetaDataList& currentTracks() const;
 
 		const Util::Set<TrackID>& selectedTracks() const;
@@ -94,20 +90,12 @@ class AbstractLibrary :
 		void sigCurrentTrackChanged(int row);
 
 	public slots:
-
 		virtual void load();
 
 		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;
 
-		/**
-		 * @brief Clears all filters and searchstrings and fetches everything again
-		 */
 		virtual void refetch();
 
-		/**
-		 * @brief refetches everything from database as it is, keeping selected elements,
-		 * the user won't recognize anything at all
-		 */
 		virtual void refreshCurrentView();
 		void metadataChanged();
 		void albumsChanged();

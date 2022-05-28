@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LocalLibrary_H
-#define LocalLibrary_H
+#ifndef SAYONARA_PLAYER_LOCAL_LIBRARY_H
+#define SAYONARA_PLAYER_LOCAL_LIBRARY_H
 
 #include "AbstractLibrary.h"
 #include "Importer/LibraryImporter.h"
@@ -56,13 +56,11 @@ class LocalLibrary :
 		bool setLibraryPath(const QString& path);
 		bool setLibraryName(const QString& name);
 
-		Library::Info info() const;
+		[[nodiscard]] Library::Info info() const;
+		[[nodiscard]] Library::Importer* importer();
+		[[nodiscard]] bool isReloading() const override;
 
-		Library::Importer* importer();
-
-		bool isReloading() const override;
-
-	public slots:
+	public slots: // NOLINT(readability-redundant-access-specifiers)
 		void deleteTracks(const MetaDataList& tracks, Library::TrackDeletionMode answer) override;
 		void reloadLibrary(bool clear_first, Library::ReloadQuality quality) override;
 		void importFiles(const QStringList& files) override;
@@ -79,7 +77,7 @@ class LocalLibrary :
 		void getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const override;
 		void getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const override;
 
-		int getTrackCount() const override;
+		[[nodiscard]] int getTrackCount() const override;
 		void getAllTracks(MetaDataList& v_md) const override;
 		void getAllTracks(const QStringList& paths, MetaDataList& tracks) const override;
 		void getAllTracksByArtist(IdList artistIds, MetaDataList& tracks, Library::Filter filter) const override;
@@ -96,7 +94,7 @@ class LocalLibrary :
 		void refreshAlbums() override;
 		void refreshTracks() override;
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void reloadThreadNewBlock();
 		void reloadThreadFinished();
 		void searchModeChanged();
@@ -104,4 +102,4 @@ class LocalLibrary :
 		void importStatusChanged(Library::Importer::ImportStatus status);
 };
 
-#endif // LocalLibrary_H
+#endif // SAYONARA_PLAYER_LOCAL_LIBRARY_H

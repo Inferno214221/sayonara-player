@@ -6,9 +6,9 @@
 bool Session::Entry::operator==(const Session::Entry& other) const
 {
 	return
-			(sessionId == other.sessionId) &&
-			(timecode == other.timecode) &&
-			(md.title() == other.md.title());
+		(sessionId == other.sessionId) &&
+		(timecode == other.timecode) &&
+		(track.title() == other.track.title());
 }
 
 Session::Timecode Session::dayBegin(Session::Id id)

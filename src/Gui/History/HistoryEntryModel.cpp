@@ -12,7 +12,7 @@
 
 struct HistoryEntryModel::Private
 {
-	Session::Manager* session=nullptr;
+	Session::Manager* session = nullptr;
 	Session::EntryList history;
 	Session::Entry invalidEntry;
 
@@ -35,7 +35,7 @@ struct HistoryEntryModel::Private
 		const Session::EntryListMap map = session->historyForDay(dt);
 		const QList<Session::Timecode> keys = map.keys();
 
-		for(Session::Timecode t : keys)
+		for(Session::Timecode t: keys)
 		{
 			Session::EntryList lst = map[t];
 			Util::Algorithm::remove_duplicates(lst);
@@ -60,7 +60,8 @@ HistoryEntryModel::~HistoryEntryModel() = default;
 const Session::Entry& HistoryEntryModel::entry(int row) const
 {
 	int index = (m->history.size() - 1) - row;
-	if(index < 0 || index >= m->history.size()){
+	if(index < 0 || index >= m->history.size())
+	{
 		return m->invalidEntry;
 	}
 
@@ -81,7 +82,8 @@ int HistoryEntryModel::columnCount(const QModelIndex& parent) const
 
 QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
 {
-	if(role != Qt::DisplayRole){
+	if(role != Qt::DisplayRole)
+	{
 		return QVariant();
 	}
 
@@ -99,11 +101,11 @@ QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
 		}
 
 		case 1:
-			return e.md.title();
+			return e.track.title();
 		case 2:
-			return e.md.artist();
+			return e.track.artist();
 		case 3:
-			return e.md.album();
+			return e.track.album();
 		default:
 			return QVariant();
 	}
@@ -142,11 +144,13 @@ void HistoryEntryModel::historyChanged(Session::Id id)
 
 QVariant HistoryEntryModel::headerData(int section, Qt::Orientation orientation, int role) const
 {
-	if(orientation == Qt::Orientation::Vertical){
+	if(orientation == Qt::Orientation::Vertical)
+	{
 		return QVariant();
 	}
 
-	if(role != Qt::DisplayRole){
+	if(role != Qt::DisplayRole)
+	{
 		return QVariant();
 	}
 
@@ -170,7 +174,7 @@ Qt::ItemFlags HistoryEntryModel::flags(const QModelIndex& index) const
 	Qt::ItemFlags f = QAbstractTableModel::flags(index);
 
 	const auto& e = entry(index.row());
-	if(e.md.filepath().isEmpty())
+	if(e.track.filepath().isEmpty())
 	{
 		f &= ~(Qt::ItemIsEnabled);
 		f &= ~(Qt::ItemIsDragEnabled);
@@ -190,13 +194,13 @@ QMimeData* HistoryEntryModel::mimeData(const QModelIndexList& indexes) const
 
 	Util::Set<int> rows;
 	MetaDataList tracks;
-	for(const QModelIndex& index : indexes)
+	for(const QModelIndex& index: indexes)
 	{
 		const auto& e = entry(index.row());
 
 		if(e.timecode > 0 && !rows.contains(index.row()))
 		{
-			tracks << e.md;
+			tracks << e.track;
 			rows << index.row();
 		}
 	}

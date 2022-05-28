@@ -30,18 +30,13 @@
 using PlayerPlugin::Handler;
 using PlayerPlugin::Base;
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct Handler::Private
 {
-	QList<Base*>	plugins;
-	Base*			currentPlugin=nullptr;
-
-	bool			isShutdown;
-
-	Private() :
-		isShutdown(false)
-	{}
+	QList<Base*> plugins;
+	Base* currentPlugin = nullptr;
+	bool isShutdown {false};
 };
 
 Handler::Handler() :
@@ -58,16 +53,13 @@ void Handler::shutdown()
 {
 	m->isShutdown = true;
 
-	if(m->currentPlugin)
-	{
-		SetSetting(Set::Player_ShownPlugin, m->currentPlugin->name());
-	}
+	const auto currentPluginName = m->currentPlugin
+	                               ? m->currentPlugin->name()
+	                               : QString();
 
-	else {
-		SetSetting(Set::Player_ShownPlugin, QString());
-	}
+	SetSetting(Set::Player_ShownPlugin, currentPluginName);
 
-	for(Base* plugin : m->plugins)
+	for(auto* plugin: m->plugins)
 	{
 		plugin->close();
 		plugin->deleteLater();
@@ -76,24 +68,21 @@ void Handler::shutdown()
 	m->plugins.clear();
 }
 
-
 Base* Handler::findPlugin(const QString& name)
 {
-	for(Base* p : Algorithm::AsConst(m->plugins))
-	{
-		if(p->name().compare(name) == 0)
-		{
-			return p;
-		}
-	}
+	const auto it = Util::Algorithm::find(m->plugins, [&](const auto* plugin) {
+		return (plugin->name() == name);
+	});
 
-	return nullptr;
+	return (it == m->plugins.end())
+	       ? nullptr
+	       : *it;
 }
-
 
 void Handler::addPlugin(Base* plugin)
 {
-	if(!plugin){
+	if(!plugin)
+	{
 		return;
 	}
 
@@ -101,8 +90,8 @@ void Handler::addPlugin(Base* plugin)
 
 	connect(plugin, &Base::sigActionTriggered, this, &Handler::pluginActionTriggered);
 
-	QString last_plugin = GetSetting(Set::Player_ShownPlugin);
-	if(plugin->name() == last_plugin)
+	const auto lastPlugin = GetSetting(Set::Player_ShownPlugin);
+	if(plugin->name() == lastPlugin)
 	{
 		m->currentPlugin = plugin;
 		plugin->pluginAction()->setChecked(true);
@@ -113,24 +102,21 @@ void Handler::addPlugin(Base* plugin)
 
 void Handler::showPlugin(const QString& name)
 {
-	Base* plugin = findPlugin(name);
-	if(!plugin)
+	if(auto* plugin = findPlugin(name); plugin)
 	{
-		return;
+		m->currentPlugin = plugin;
+		m->currentPlugin->pluginAction()->trigger();
 	}
-
-	m->currentPlugin = plugin;
-	m->currentPlugin->pluginAction()->trigger();
 }
 
-void Handler::pluginActionTriggered(bool b)
+void Handler::pluginActionTriggered(const bool b)
 {
 	if(m->isShutdown)
 	{
 		return;
 	}
 
-	Base* plugin = static_cast<Base*>(sender());
+	auto* plugin = dynamic_cast<Base*>(sender());
 
 	if(b)
 	{
@@ -153,19 +139,13 @@ void Handler::pluginActionTriggered(bool b)
 
 void Handler::languageChanged()
 {
-	for(Base* p : Algorithm::AsConst(m->plugins))
+	for(auto* plugins: m->plugins)
 	{
-		p->languageChanged();
-		p->pluginAction()->setText(p->displayName());
+		plugins->languageChanged();
+		plugins->pluginAction()->setText(plugins->displayName());
 	}
 }
 
-QList<Base*> Handler::allPlugins() const
-{
-	return m->plugins;
-}
+QList<Base*> Handler::allPlugins() const { return m->plugins; }
 
-Base* Handler::currentPlugin() const
-{
-	return m->currentPlugin;
-}
+Base* Handler::currentPlugin() const { return m->currentPlugin; }

@@ -2,31 +2,31 @@
 #define SESSIONTYPES_H
 
 #include <QMap>
-#include <QList>
+#include <QVector>
 
 #include "Utils/typedefs.h"
 #include "Utils/MetaData/MetaData.h"
 
 namespace Session
 {
-	using Timecode=uint64_t;
-	using Id=Timecode;
+	using Timecode = uint64_t;
+	using Id = Timecode;
 
 	struct Entry
 	{
 		Session::Id sessionId;
 		Timecode timecode;
-		MetaData md;
+		MetaData track;
 
 		bool operator==(const Entry& other) const;
 	};
 
-	using EntryList=QList<Entry>;
-	using EntryListMap=QMap<Session::Id, EntryList>;
+	using EntryList = QVector<Entry>;
+	using EntryListMap = QMap<Session::Id, EntryList>;
 
-	Session::Timecode dayBegin(Session::Id id);
-	Session::Timecode dayEnd(Session::Id id);
-	Session::Timecode now();
+	Timecode dayBegin(Session::Id id);
+	Timecode dayEnd(Session::Id id);
+	Timecode now();
 }
 
 #endif // SESSIONTYPES_H

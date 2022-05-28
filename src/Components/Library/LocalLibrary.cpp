@@ -56,10 +56,9 @@ struct LocalLibrary::Private
 
 LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId,
                            LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
-	AbstractLibrary(playlistInteractor, parent)
+	AbstractLibrary(playlistInteractor, parent),
+	m {Pimpl::make<Private>(libraryManager, libraryId)}
 {
-	m = Pimpl::make<Private>(libraryManager, libraryId);
-
 	applyDatabaseFixes();
 
 	connect(libraryManager, &Library::Manager::sigRenamed, this, [&](const auto id) {
@@ -129,7 +128,7 @@ void LocalLibrary::showAlbumArtistsChanged()
 	const auto showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
 
 	const auto libraryDatabases = DB::Connector::instance()->libraryDatabases();
-	for(auto* libraryDatabase : libraryDatabases)
+	for(auto* libraryDatabase: libraryDatabases)
 	{
 		if(libraryDatabase->databaseId() == 0)
 		{

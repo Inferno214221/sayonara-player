@@ -70,7 +70,7 @@ namespace
 	QStringList createFileExtensionList(const QStringList& extensions, bool withAsterisk)
 	{
 		QStringList result;
-		for(const auto& extension : extensions)
+		for(const auto& extension: extensions)
 		{
 			if(withAsterisk)
 			{
@@ -292,11 +292,13 @@ QStringList Util::imageExtensions(bool withAsterisk)
 
 QString Util::easyTagFinder(const QString& tag, const QString& xmlDocument)
 {
-	if(tag.isEmpty()){
+	if(tag.isEmpty())
+	{
 		return QString();
 	}
 
-	if(xmlDocument.isEmpty()){
+	if(xmlDocument.isEmpty())
+	{
 		return QString();
 	}
 
@@ -347,8 +349,8 @@ void Util::sleepMs(uint64_t ms)
 int Util::randomNumber(int min, int max)
 {
 	return (min == max)
-		? min
-		: RandomGenerator().getNumber(min, max);
+	       ? min
+	       : RandomGenerator().getNumber(min, max);
 }
 
 QStringList Util::ipAddresses()
@@ -357,7 +359,7 @@ QStringList Util::ipAddresses()
 	QList<QHostAddress> host_list;
 	host_list = QNetworkInterface::allAddresses();
 
-	for(const QHostAddress& host : Algorithm::AsConst(host_list))
+	for(const QHostAddress& host: Algorithm::AsConst(host_list))
 	{
 		QString address = host.toString();
 		if(!address.startsWith("127") &&

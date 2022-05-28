@@ -29,14 +29,14 @@
 #include <QLocale>
 
 LanguageString::LanguageString(const QString& other) :
-	QString(other)
-{}
+	QString(other) {}
 
 LanguageString& LanguageString::operator=(const QString& other)
 {
 	QString::operator=(other);
 	return *this;
 }
+
 LanguageString& LanguageString::toFirstUpper()
 {
 	this->replace(0, 1, this->at(0).toUpper());
@@ -67,7 +67,8 @@ Lang::~Lang() = default;
 
 LanguageString Lang::get(Lang::Term term, bool* ok)
 {
-	if(ok){
+	if(ok)
+	{
 		*ok = true;
 	}
 
@@ -405,9 +406,9 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case ScanForFiles:
 			return l.tr("Scan for audio files");
 		case SearchNoun:
-			return l.tr("Search");			// the noun of search
+			return l.tr("Search");            // the noun of search
 		case SearchVerb:
-			return l.tr("Search");			// the verb of the searching process
+			return l.tr("Search");            // the verb of the searching process
 		case SearchNext:
 			return l.tr("Search next");
 		case SearchPrev:
@@ -433,8 +434,10 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Show Library");
 		case SimilarArtists:
 			return l.tr("Similar artists");
+		case SmartPlaylists:
+			return l.tr("Smart Playlists");
 		case SortBy:
-			return l.tr("Sort by");			// for example "sort by year"
+			return l.tr("Sort by");            // for example "sort by year"
 		case Stop:
 			return l.tr("Stop");
 		case Streams:
@@ -472,10 +475,10 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case UnknownPlaceholder:
 			return l.tr("Unknown placeholder");
 		case UnknownYear:
-			{
-				QString s = l.tr("Unknown year");
-				Q_UNUSED(s)
-			}
+		{
+			QString s = l.tr("Unknown year");
+			Q_UNUSED(s)
+		}
 			return LanguageString("-");
 
 		case Various:
@@ -505,17 +508,18 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case Zoom:
 			return l.tr("Zoom");
 		default:
-			if(ok){
+			if(ok)
+			{
 				*ok = false;
 			}
 			return QString();
 	}
 }
 
-
 LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 {
-	if(ok){
+	if(ok)
+	{
 		*ok = true;
 	}
 
@@ -524,42 +528,48 @@ LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 	switch(term)
 	{
 		case NrDirectories:
-			if(param == 0){
+			if(param == 0)
+			{
 				return l.tr("No directories");
 			}
 
 			return l.tr("%n directory(s)", "", param);
 
 		case NrFiles:
-			if(param == 0){
+			if(param == 0)
+			{
 				return l.tr("No files");
 			}
 
 			return l.tr("%n file(s)", "", param);
 
 		case NrPlaylists:
-			if(param == 0){
+			if(param == 0)
+			{
 				return l.tr("No playlists");
 			}
 
 			return l.tr("%n playlist(s)", "", param);
 
 		case NrTracks:
-			if(param == 0) {
+			if(param == 0)
+			{
 				return l.tr("No tracks");
 			}
 
 			return l.tr("%n track(s)", "", param);
 
 		case NrTracksFound:
-			if(param == 0) {
+			if(param == 0)
+			{
 				return l.tr("No tracks found");
 			}
 
 			return l.tr("%n track(s) found", "", param);
 
 		default:
-			if(ok) {
+			if(ok)
+			{
 				*ok = false;
 			}
 
