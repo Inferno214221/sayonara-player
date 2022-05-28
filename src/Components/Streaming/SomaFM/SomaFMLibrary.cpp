@@ -24,18 +24,17 @@
 #include "SomaFMStation.h"
 #include "SomaFMUtils.h"
 
-#include "Utils/Utils.h"
-#include "Utils/Algorithm.h"
-#include "Utils/WebAccess/WebClientImpl.h"
-#include "Utils/Parser/StreamParser.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/StandardPaths.h"
-
-#include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverFetchManager.h"
+#include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
-
 #include "Interfaces/PlaylistInterface.h"
+#include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/StreamParser.h"
+#include "Utils/StandardPaths.h"
+#include "Utils/Utils.h"
+#include "Utils/WebAccess/WebClientFactory.h"
+#include "Utils/WebAccess/WebClientImpl.h"
 
 #include <QMap>
 #include <QSettings>
@@ -157,7 +156,7 @@ void SomaFM::Library::createPlaylistFromStation(int row)
 
 	emit sigLoadingStarted();
 
-	auto* parser = new StreamParser(this);
+	auto* parser = new StreamParser(std::make_shared<WebClientFactory>(), this);
 	connect(parser, &StreamParser::sigFinished, this, &SomaFM::Library::stationStreamsFetched);
 
 	const auto& station = m->stationMap[m->requestedStation];
@@ -194,7 +193,7 @@ bool SomaFM::Library::createPlaylistFromStreamlist(int idx)
 
 	emit sigLoadingStarted();
 
-	auto* streamParser = new StreamParser(this);
+	auto* streamParser = new StreamParser(std::make_shared<WebClientFactory>(), this);
 	connect(streamParser, &StreamParser::sigFinished, this, &SomaFM::Library::playlistContentFetched);
 	streamParser->parse(station.name(), urls[idx], m->timeout());
 

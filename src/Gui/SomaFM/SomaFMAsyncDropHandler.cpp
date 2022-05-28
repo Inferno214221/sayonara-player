@@ -1,11 +1,12 @@
 #include "SomaFMAsyncDropHandler.h"
-#include "Components/Streaming/SomaFM/SomaFMUtils.h"
-#include "Components/Streaming/SomaFM/SomaFMStation.h"
+
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
-
-#include "Utils/Parser/StreamParser.h"
+#include "Components/Streaming/SomaFM/SomaFMStation.h"
+#include "Components/Streaming/SomaFM/SomaFMUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/StreamParser.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QUrl>
 
@@ -17,8 +18,7 @@ struct AsyncDropHandler::Private
 	Station station;
 
 	Private(const Station& station) :
-		station(station)
-	{}
+		station(station) {}
 };
 
 AsyncDropHandler::AsyncDropHandler(const SomaFM::Station& station, QObject* parent) :
@@ -33,7 +33,7 @@ void AsyncDropHandler::start()
 {
 	QStringList files = m->station.playlists();
 
-	auto* streamParser = new StreamParser();
+	auto* streamParser = new StreamParser(std::make_shared<WebClientFactory>());
 
 	const Cover::Location cl = m->station.coverLocation();
 	auto searchUrls = cl.searchUrls();

@@ -24,8 +24,8 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-using PlaylistFiles = QStringList;
-
+class WebClientFactory;
+class IcyWebAccess;
 class StreamParser :
 	public QObject
 {
@@ -38,11 +38,11 @@ class StreamParser :
 		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		explicit StreamParser(QObject* parent = nullptr);
+		explicit StreamParser(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent = nullptr);
 		~StreamParser() override;
 
-		void parse(const QString& stationName, const QString& stationUrl,
-		           int timeout = 5000); // NOLINT(readability-magic-numbers)
+		// NOLINTNEXTLINE(readability-magic-numbers)
+		void parse(const QString& stationName, const QString& stationUrl, int timeout = 5000);
 		void parse(const QStringList& urls, int timeout = 5000); // NOLINT(readability-magic-numbers)
 
 		void setCoverUrl(const QString& coverUrl);
@@ -53,15 +53,12 @@ class StreamParser :
 		[[nodiscard]] MetaDataList tracks() const;
 
 	private slots:
-		void awaFinished();
-		void icyFinished();
+		void webClientFinished();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
-		[[nodiscard]] QPair<MetaDataList, PlaylistFiles> parseContent(const QByteArray& data) const;
-		[[nodiscard]] QPair<MetaDataList, PlaylistFiles> parseWebsite(const QByteArray& arr) const;
-
-		void setMetadataTag(MetaData& metadata, const QString& streamUrl, const QString& coverUrl = QString()) const;
 		bool parseNextUrl();
+		void icyFinished(const QString& url, IcyWebAccess* icyWebAccess);
+
 };
 
 #endif

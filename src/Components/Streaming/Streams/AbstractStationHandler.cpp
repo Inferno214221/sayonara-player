@@ -20,13 +20,13 @@
 
 #include "AbstractStationHandler.h"
 
-#include "Interfaces/PlaylistInterface.h"
 #include "Components/Playlist/Playlist.h"
-
-#include "Utils/Parser/StreamParser.h"
-#include "Utils/MetaData/MetaDataList.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/StreamParser.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 struct AbstractStationHandler::Private
 {
@@ -49,8 +49,8 @@ AbstractStationHandler::~AbstractStationHandler() = default;
 void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tracks)
 {
 	const auto playlistName = GetSetting(Set::Stream_NewTab)
-		? station->name()
-		: QString{};
+	                          ? station->name()
+	                          : QString {};
 
 	const auto index = m->playlistCreator->createPlaylist(tracks, playlistName);
 
@@ -66,7 +66,7 @@ bool AbstractStationHandler::parseStation(StationPtr station)
 	}
 
 	m->parsedStation = station;
-	m->streamParser = new StreamParser(this);
+	m->streamParser = new StreamParser(std::make_shared<WebClientFactory>(), this);
 
 	connect(m->streamParser, &StreamParser::sigFinished, this, &AbstractStationHandler::parserFinished);
 	connect(m->streamParser, &StreamParser::sigUrlCountExceeded, this, &AbstractStationHandler::sigUrlCountExceeded);
