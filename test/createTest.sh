@@ -38,7 +38,7 @@ cat <<EOT >> ${FILENAME}
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
  
-#include "SayonaraTest.h"
+#include "Common/SayonaraTest.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
