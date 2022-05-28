@@ -69,7 +69,10 @@ namespace
 		track.setId(1);
 		track.setRadioStation("https://www.myradio.de", "Radio Station");
 		track.setFilepath("https://www.myradio.de/stream.mp3");
-		track.setCoverDownloadUrls({"www.from.the.internet.de", "www.from.google.de"});
+		track.setCoverDownloadUrls({"https://myimage.png",
+		                            "https://www.from.the.internet.de",
+		                            "https://www.from.google.de"
+		                           });
 		return track;
 	}
 
@@ -134,7 +137,7 @@ class CoverLocationTest :
 		~CoverLocationTest() override = default;
 
 	private:
-		void deleteAllFiles(const QString& dir=QString())
+		void deleteAllFiles(const QString& dir = QString())
 		{
 			auto list = QStringList {Util::coverDirectory()};
 			if(!dir.isEmpty())
@@ -156,6 +159,7 @@ class CoverLocationTest :
 		void testTrackWithCover();
 		void testTrackWithCoverFlag();
 		void testTrackWithLocalCover();
+		void testRadioStationDownloadUrls();
 		void testArtist();
 };
 
@@ -322,7 +326,6 @@ void CoverLocationTest::testAlbumWithTrackHint()
 	QVERIFY(coverLocation.searchTerm().contains(album.name()));
 }
 
-
 void CoverLocationTest::testAlbumWithTrackHintAndLocalCover()
 {
 	constexpr const auto Dir = "AlbumWithTrackHintAndLocalCover";
@@ -420,7 +423,6 @@ void CoverLocationTest::testTrackWithCover()
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
 }
 
-
 void CoverLocationTest::testTrackWithCoverFlag()
 {
 	constexpr const auto Dir = "TrackWithCoverFlag";
@@ -484,6 +486,23 @@ void CoverLocationTest::testTrackWithLocalCover()
 	QVERIFY(coverLocation.searchUrls().size() >= 2);
 	QVERIFY(coverLocation.searchTerm().contains(track.albumArtist()));
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
+}
+
+void CoverLocationTest::testRadioStationDownloadUrls()
+{
+	const auto track = createRadioTrack();
+	const auto coverLocation = Cover::Location::coverLocation(track);
+	const auto searchUrls = coverLocation.searchUrls();
+	const auto searchTerm = coverLocation.searchTerm();
+
+	QVERIFY(searchUrls.size() >= 3);
+	QVERIFY(searchUrls[0].identifier() == "direct");
+	QVERIFY(searchUrls[0].url() == "https://myimage.png");
+	QVERIFY(searchUrls[1].identifier() == "website");
+	QVERIFY(searchUrls[1].url() == "https://www.from.the.internet.de");
+	QVERIFY(searchUrls[2].identifier() == "website");
+	QVERIFY(searchUrls[2].url() == "https://www.from.google.de");
+	QVERIFY(searchTerm == "Radio Station");
 }
 
 void CoverLocationTest::testArtist()

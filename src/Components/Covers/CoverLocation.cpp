@@ -82,7 +82,7 @@ namespace
 	{
 		Util::Set<QString> result;
 
-		for(const auto& pathHint : localPathHints)
+		for(const auto& pathHint: localPathHints)
 		{
 			const auto path = extractPathFromPathHint(pathHint);
 			if(!path.isEmpty())
@@ -225,8 +225,8 @@ Location Location::coverLocation(const Album& album)
 
 		const auto hasPathHints = !album.pathHint().isEmpty();
 		const auto pathHints = (hasPathHints && !album.isSampler())
-			? (QStringList() << album.pathHint().first())
-			: album.pathHint();
+		                       ? (QStringList() << album.pathHint().first())
+		                       : album.pathHint();
 
 		const auto index = Util::Algorithm::indexOf(pathHints, [&](const auto& hint) {
 			return (checkLibraryItemForCover(album) || checkPathHintForCover(hint));
@@ -272,7 +272,8 @@ Location Location::coverLocation(const Artist& artist)
 	return location;
 }
 
-Location Location::coverLocationRadio(const QString& stationName, const QString& stationUrl)
+Location Location::coverLocationRadio(const QString& stationName, const QString& stationUrl,
+                                      const QStringList& coverDownloadUrls)
 {
 	if(stationName.trimmed().isEmpty())
 	{
@@ -281,10 +282,14 @@ Location Location::coverLocationRadio(const QString& stationName, const QString&
 
 	auto* fetchManager = Cover::Fetcher::Manager::instance();
 
+	const auto urls =
+		convertDownloadUrls(coverDownloadUrls) +
+		fetchManager->radioSearchAddresses(stationName, stationUrl);
+
 	Location location;
 	location.setValid(true);
 	location.setHash(QString("radio_%1").arg(Util::Covers::calcCoverToken(stationName, "")));
-	location.setSearchUrls(fetchManager->radioSearchAddresses(stationName, stationUrl));
+	location.setSearchUrls(urls);
 	location.setSearchTerm(stationName);
 	location.setIdentifier(QString("CL:By radio station: %1").arg(stationName));
 
@@ -294,7 +299,7 @@ Location Location::coverLocationRadio(const QString& stationName, const QString&
 Location Location::coverLocation(const MetaData& track)
 {
 	return (track.radioMode() == RadioMode::Station)
-	       ? coverLocationRadio(track.radioStationName(), track.filepath())
+	       ? coverLocationRadio(track.radioStationName(), track.filepath(), track.coverDownloadUrls())
 	       : Location::coverLocation(createAlbumFromTrack(track));
 }
 
@@ -402,7 +407,7 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 		return false;
 	}
 
-	auto[dir, filename] = Util::File::splitFilename(coverPath);
+	auto [dir, filename] = Util::File::splitFilename(coverPath);
 	const auto extension = Util::File::getFileExtension(coverPath);
 	if(extension.isEmpty())
 	{
