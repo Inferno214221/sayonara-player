@@ -43,11 +43,12 @@ namespace DB
 	class Shortcuts;
 	class Covers;
 	class Session;
+	class SmartPlaylists;
 
-	using LibraryDatabases=QList<LibraryDatabase*>;
+	using LibraryDatabases = QList<LibraryDatabase*>;
 
 	class Connector :
-			public Base
+		public Base
 	{
 		PIMPL(Connector)
 
@@ -64,28 +65,30 @@ namespace DB
 			Connector(const QString& sourceDirectory, const QString& targetDirectory, const QString& databseFilename);
 			~Connector() override;
 
-			static Connector*		instance();
-			static Connector*		instance_custom(QString sourceDirectory, QString targetDirectory, QString databseFilename);
+			static Connector* instance();
+			static Connector*
+			instance_custom(QString sourceDirectory, QString targetDirectory, QString databseFilename);
 
-			LibraryDatabases		libraryDatabases() const;
-			DB::LibraryDatabase*	libraryDatabase(LibraryId libraryId, DbId databaseId);
-			DB::LibraryDatabase*	registerLibraryDatabase(LibraryId libraryId);
-			void					deleteLibraryDatabase(LibraryId libraryId);
+			LibraryDatabases libraryDatabases() const;
+			DB::LibraryDatabase* libraryDatabase(LibraryId libraryId, DbId databaseId);
+			DB::LibraryDatabase* registerLibraryDatabase(LibraryId libraryId);
+			void deleteLibraryDatabase(LibraryId libraryId);
 
-			DB::Bookmarks*			bookmarkConnector();
-			DB::Equalizer*          equalizerConnector();
-			DB::Playlist*			playlistConnector();
-			DB::Podcasts*			podcastConnector();
-			DB::Streams*			streamConnector();
-			DB::VisualStyles*		visualStyleConnector();
-			DB::Settings*			settingsConnector();
-			DB::Shortcuts*			shortcutConnector();
-			DB::Covers*				coverConnector();
-			DB::Library*			libraryConnector();
-			DB::Session*			sessionConnector();
+			DB::Bookmarks* bookmarkConnector();
+			DB::Equalizer* equalizerConnector();
+			DB::Playlist* playlistConnector();
+			DB::Podcasts* podcastConnector();
+			DB::Streams* streamConnector();
+			DB::VisualStyles* visualStyleConnector();
+			DB::Settings* settingsConnector();
+			DB::Shortcuts* shortcutConnector();
+			DB::Covers* coverConnector();
+			DB::Library* libraryConnector();
+			DB::Session* sessionConnector();
+			DB::SmartPlaylists* smartPlaylistsConnector();
 
-			static int				highestDatabaseVersion();
-			int						oldDatabaseVersion() const;
+			static int highestDatabaseVersion();
+			int oldDatabaseVersion() const;
 	};
 }
 #endif // DatabaseConnector_H
