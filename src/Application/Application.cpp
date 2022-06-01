@@ -27,7 +27,9 @@
 #include "Application/LocalLibraryWatcher.h"
 
 #ifdef SAYONARA_WITH_DBUS
+
 #include "DBus/DBusHandler.h"
+
 #endif
 
 #include "Components/Bookmarks/Bookmarks.h"
@@ -163,6 +165,7 @@ struct Application::Private
 	Library::Manager* libraryManager;
 	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
+	SmartPlaylistManager* smartPlaylistManager = nullptr;
 	QElapsedTimer* timer;
 
 	GUI_Player* player = nullptr;
@@ -205,6 +208,7 @@ struct Application::Private
 		playlistLibraryInteractor = new Playlist::LibraryInteractor(playlistHandler, libraryManager);
 
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
+		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
 
 		Shutdown::instance()->registerPlaymanager(playManager);
 
@@ -219,6 +223,7 @@ struct Application::Private
 	~Private()
 	{
 		delete timer;
+		delete smartPlaylistManager;
 		delete dynamicPlaybackChecker;
 		delete playlistLibraryInteractor;
 		delete libraryManager;
