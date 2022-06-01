@@ -52,6 +52,7 @@
 #include "Components/Shutdown/Shutdown.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/SmartPlaylists/SmartPlaylistManager.h"
 
 #include "Interfaces/Notification/NotificationHandler.h"
 
@@ -80,6 +81,7 @@
 #include "Gui/Plugins/Engine/GUI_SpectrogramPainter.h"
 #include "Gui/Plugins/Stream/GUI_Stream.h"
 #include "Gui/Plugins/Stream/GUI_Podcasts.h"
+#include "Gui/Plugins/SmartPlaylists/GuiSmartPlaylists.h"
 
 #include "Gui/Preferences/Broadcast/GUI_BroadcastPreferences.h"
 #include "Gui/Preferences/Covers/GUI_CoverPreferences.h"
@@ -455,6 +457,7 @@ void Application::initPlugins()
 	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler));
 	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler));
 	playerPluginHandler->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
+	playerPluginHandler->addPlugin(new GuiSmartPlaylists(m->smartPlaylistManager));
 	playerPluginHandler->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
 	playerPluginHandler->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
 	playerPluginHandler->addPlugin(new GUI_Speed());

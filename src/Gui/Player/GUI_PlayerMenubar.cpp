@@ -291,12 +291,15 @@ void Menubar::initDonateLink()
 void Menubar::pluginAdded(PlayerPlugin::Base* plugin)
 {
 	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
-	const auto allPlugins = playerPluginHandler->allPlugins();
-
 	auto* action = plugin->pluginAction();
 
-	const auto keySequence = QKeySequence("Shift+F" + QString::number(allPlugins.size()));
-	action->setShortcut(keySequence);
+	const auto allPlugins = playerPluginHandler->allPlugins();
+	if(allPlugins.size() <= 12)
+	{
+		const auto keySequence = QKeySequence("Shift+F" + QString::number(allPlugins.size()));
+		action->setShortcut(keySequence);
+	}
+
 	action->setData(plugin->name());
 
 	m->menuPlugins->addAction(action);
@@ -377,33 +380,32 @@ void Menubar::languageChanged()
 	initLanguages();
 }
 
-
 void Menubar::initSkin()
 {
 
 	namespace Icons = Gui::Icons;
-		m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
-		m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
-		m->actionClose->setIcon(Icons::icon(Icons::Exit));
-		m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
-		m->actionAbout->setIcon(Icons::icon(Icons::Info));
+	m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
+	m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
+	m->actionClose->setIcon(Icons::icon(Icons::Exit));
+	m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
+	m->actionAbout->setIcon(Icons::icon(Icons::Info));
 
-		const auto heartColor = QColor(243, 132, 26);
-		const auto textColor = (Style::isDark()) ? heartColor : QColor();
+	const auto heartColor = QColor(243, 132, 26);
+	const auto textColor = (Style::isDark()) ? heartColor : QColor();
 
-		const auto heartLink = Util::createLink(
-			"❤ ",
-			heartColor,
-			false,
-			"https://sayonara-player.com/donations.php");
-		const auto sayonaraLink = Util::createLink(
-			"Sayonara",
-			textColor,
-			true,
-			"https://sayonara-player.com/donations.php");
+	const auto heartLink = Util::createLink(
+		"❤ ",
+		heartColor,
+		false,
+		"https://sayonara-player.com/donations.php");
+	const auto sayonaraLink = Util::createLink(
+		"Sayonara",
+		textColor,
+		true,
+		"https://sayonara-player.com/donations.php");
 
-		m->heartLabel->setText(heartLink);
-		m->donateLabel->setText(sayonaraLink);
+	m->heartLabel->setText(heartLink);
+	m->donateLabel->setText(sayonaraLink);
 }
 
 void Menubar::skinChanged()
