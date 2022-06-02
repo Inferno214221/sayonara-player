@@ -9,7 +9,8 @@
 #include "Utils/FileUtils.h"
 #include "Utils/Utils.h"
 
-class SettingsTest : public Test::Base
+class SettingsTest :
+	public Test::Base
 {
 	Q_OBJECT
 
@@ -34,7 +35,7 @@ void SettingsTest::testDatabaseVersion()
 	auto* settings = Settings::instance();
 	QVERIFY(settings->checkSettings());
 
-	auto dbVersion = QString{};
+	auto dbVersion = QString {};
 	db->settingsConnector()->loadSetting("version", dbVersion);
 
 	const auto oldDbVersion = db->oldDatabaseVersion();
@@ -42,9 +43,7 @@ void SettingsTest::testDatabaseVersion()
 
 	QVERIFY(oldDbVersion == maxDbVersion);
 	QVERIFY(dbVersion.toInt() == maxDbVersion);
-
 }
-
 
 void SettingsTest::testUndeployableKeysNotInDatabase()
 {
@@ -62,7 +61,7 @@ void SettingsTest::testUndeployableKeysNotInDatabase()
 	QVERIFY(keyCount == (maxKey - undeployableKeyCount));
 
 	{ // undeployable keys must not be in keys
-		for(const auto settingKey : undeployableKeys)
+		for(const auto settingKey: undeployableKeys)
 		{
 			QVERIFY(keys.contains(settingKey) == false);
 		}
@@ -76,7 +75,7 @@ void SettingsTest::testDefaultValues()
 	auto* settings = Settings::instance();
 
 	const auto abstractSettings = settings->settings();
-	for(auto* abstractSetting : abstractSettings)
+	for(auto* abstractSetting: abstractSettings)
 	{
 		if(undeployableKeys.contains(abstractSetting->getKey()))
 		{

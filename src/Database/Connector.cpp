@@ -336,12 +336,12 @@ int Connector::oldDatabaseVersion() const
 bool Connector::applyFixes()
 {
 	QString versionString;
-	int version;
-	bool success;
+
 	const int LatestVersion = highestDatabaseVersion();
 
-	success = settingsConnector()->loadSetting("version", versionString);
-	version = versionString.toInt(&success);
+	auto success = settingsConnector()->loadSetting("version", versionString);
+	const auto version = versionString.toInt(&success);
+	
 	m->oldDbVersion = version;
 
 	spLog(Log::Info, this)
