@@ -90,6 +90,7 @@ namespace Gui
 			void init(const QString& text);
 			bool checkAndInit(QKeyEvent* event);
 			QRect calcGeometry() const;
+			void notifyViewSearchDone();
 
 		protected:
 			void languageChanged() override;

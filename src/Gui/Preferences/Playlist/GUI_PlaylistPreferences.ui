@@ -157,6 +157,22 @@
          </layout>
         </widget>
        </item>
+       <item row="10" column="0">
+        <widget class="QGroupBox" name="gbSearch">
+         <property name="title">
+          <string>Search</string>
+         </property>
+         <layout class="QVBoxLayout" name="verticalLayout_4">
+          <item>
+           <widget class="QCheckBox" name="cbPlayTrackAfterSearch">
+            <property name="text">
+             <string>Play track after search</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
       </layout>
      </widget>
      <widget class="QWidget" name="tab_2">

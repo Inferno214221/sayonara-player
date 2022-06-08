@@ -153,6 +153,8 @@ bool GUI_PlaylistPreferences::commit()
 
 	SetSetting(Set::PL_JumpToCurrentTrack, ui->cbJumpToCurrentTrack->isChecked());
 
+	SetSetting(Set::PL_PlayTrackAfterSearch, ui->cbPlayTrackAfterSearch->isChecked());
+
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
 	{
@@ -195,6 +197,8 @@ void GUI_PlaylistPreferences::revert()
 	applyColorToButton(ui->btnCustomColorDark, QColor(GetSetting(Set::PL_CurrentTrackColorStringDark)), palette());
 
 	ui->cbJumpToCurrentTrack->setChecked(GetSetting(Set::PL_JumpToCurrentTrack));
+
+	ui->cbPlayTrackAfterSearch->setChecked(GetSetting(Set::PL_PlayTrackAfterSearch));
 }
 
 void GUI_PlaylistPreferences::initUi()

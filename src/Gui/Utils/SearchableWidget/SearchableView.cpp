@@ -287,3 +287,8 @@ bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)
 	m->minisearcher->init();
 	return m->minisearcher->handleKeyPress(e);
 }
+
+void SearchableViewInterface::searchDone()
+{
+	// do nothing
+}

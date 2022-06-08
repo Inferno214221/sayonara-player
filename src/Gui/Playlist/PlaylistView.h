@@ -91,6 +91,8 @@ namespace Playlist
 			bool viewportEvent(QEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* e) override;
 
+			void searchDone() override;
+
 		private slots:
 			void clear();
 			void refresh();

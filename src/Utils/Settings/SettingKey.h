@@ -123,6 +123,7 @@ enum class SettingKey :
 	PL_CurrentTrackCustomColorDark,
 	PL_CurrentTrackColorStringDark,
 	PL_JumpToCurrentTrack,
+	PL_PlayTrackAfterSearch,
 	Notification_Show,
 	Notification_Timeout,
 	Notification_Name,
@@ -344,6 +345,7 @@ INST(QString, PL_CurrentTrackColorStringStandard) /* custom color string in stan
 INST(bool, PL_CurrentTrackCustomColorDark) /* use custom color in dark theme */
 INST(QString, PL_CurrentTrackColorStringDark) /* custom color in dark theme */
 INST(bool, PL_JumpToCurrentTrack) /* jump to current track when track changes */
+INST(bool, PL_PlayTrackAfterSearch) /* play track after search is done */
 
 INST(bool, Notification_Show)            /* show notifications */
 INST(int, Notification_Timeout)        /* notification timeout */

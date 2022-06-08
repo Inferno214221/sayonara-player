@@ -254,6 +254,14 @@ QRect MiniSearcher::calcGeometry() const
 	return r;
 }
 
+void MiniSearcher::notifyViewSearchDone()
+{
+	if(this->parentWidget() && m->svi)
+	{
+		m->svi->searchDone();
+	}
+}
+
 bool MiniSearcher::handleKeyPress(QKeyEvent* e)
 {
 	bool wasInitialized = isVisible();
@@ -275,11 +283,19 @@ void MiniSearcher::keyPressEvent(QKeyEvent* event)
 	switch(key)
 	{
 		case Qt::Key_Escape:
+			if(this->isVisible())
+			{
+				reset();
+				event->accept();
+			}
+			break;
+
 		case Qt::Key_Enter:
 		case Qt::Key_Return:
 			if(this->isVisible())
 			{
 				reset();
+				notifyViewSearchDone();
 				event->accept();
 			}
 			break;

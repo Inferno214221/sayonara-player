@@ -91,6 +91,8 @@ protected:
 		void selectPreviousMatch(const QString& str);
 		bool isMinisearcherActive() const;
 
+		virtual void searchDone();
+
 	protected:
 		virtual void setSearchModel(SearchableModelInterface* model);
 		virtual QModelIndex matchIndex(const QString& str, SearchDirection direction) const;
@@ -125,6 +127,11 @@ class SearchableView :
 		int rowCount() const
 		{
 			return (View::model() == nullptr) ? 0 : View::model()->rowCount();
+		}
+
+		void searchDone()
+		{
+			// do nothing
 		}
 
 	protected:

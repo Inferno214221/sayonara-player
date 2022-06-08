@@ -590,4 +590,13 @@ namespace Playlist
 
 		this->setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
 	}
+
+	void View::searchDone()
+	{
+		if(GetSetting(Set::PL_PlayTrackAfterSearch) && (minimumSelectedItem(this) >= 0))
+		{
+			playSelectedTrack();
+		}
+
+	}
 }
