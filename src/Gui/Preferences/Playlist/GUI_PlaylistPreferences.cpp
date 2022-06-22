@@ -94,6 +94,7 @@ namespace
 			return ((betweenPercent != QStringLiteral("nr")) &&
 			        (betweenPercent != QStringLiteral("title")) &&
 			        (betweenPercent != QStringLiteral("artist")) &&
+			        (betweenPercent != QStringLiteral("filename")) &&
 			        (betweenPercent != QStringLiteral("album")));
 		});
 

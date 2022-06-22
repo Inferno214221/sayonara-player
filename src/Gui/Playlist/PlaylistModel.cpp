@@ -51,6 +51,7 @@
 #include "Utils/Settings/Settings.h"
 
 #include <QFont>
+#include <QFileInfo>
 #include <QUrl>
 #include <QHash>
 #include <QIcon>
@@ -63,6 +64,7 @@ namespace
 {
 	constexpr const auto AlbumSearchPrefix = '%';
 	constexpr const auto ArtistSearchPrefix = '$';
+	constexpr const auto FilenameSearchPrefix = '/';
 	constexpr const auto JumpPrefix = ':';
 
 	enum class PlaylistSearchMode
@@ -70,6 +72,7 @@ namespace
 			Artist,
 			Album,
 			Title,
+			Filename,
 			Jump
 	};
 
@@ -83,6 +86,13 @@ namespace
 		ret.replace(QStringLiteral("%nr%"), QString::number(md.trackNumber()));
 		ret.replace(QStringLiteral("%artist%"), md.artist());
 		ret.replace(QStringLiteral("%album%"), md.album());
+
+		if (entryLook.indexOf("%filename%") != -1)
+		{
+			QFileInfo fi(md.filepath());
+			const auto fileName = fi.fileName();
+			ret.replace(QStringLiteral("%filename%"), fileName);
+		}
 
 		return ret;
 	}
@@ -100,6 +110,11 @@ namespace
 		{
 			playlistSearchMode = PlaylistSearchMode::Album;
 			searchString.remove(AlbumSearchPrefix);
+		}
+		else if(searchString.startsWith(FilenameSearchPrefix))
+		{
+			playlistSearchMode = PlaylistSearchMode::Filename;
+			searchString.remove(FilenameSearchPrefix);
 		}
 		else if(searchString.startsWith(JumpPrefix))
 		{
@@ -121,6 +136,9 @@ namespace
 				break;
 			case PlaylistSearchMode::Album:
 				str = track.album();
+				break;
+			case PlaylistSearchMode::Filename:
+				str = QFileInfo(track.filepath()).fileName();
 				break;
 			default:
 				str = track.title();
@@ -461,6 +479,7 @@ ExtraTriggerMap Model::getExtraTriggers()
 
 	map.insert(ArtistSearchPrefix, Lang::get(Lang::Artist));
 	map.insert(AlbumSearchPrefix, Lang::get(Lang::Album));
+	map.insert(FilenameSearchPrefix, Lang::get(Lang::Filename));
 	map.insert(JumpPrefix, tr("Goto row"));
 
 	return map;
