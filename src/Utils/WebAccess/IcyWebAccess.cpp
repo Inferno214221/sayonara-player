@@ -77,7 +77,12 @@ void IcyWebAccess::check(const QUrl& url)
 	connect(m->tcp, &QTcpSocket::connected, this, &IcyWebAccess::connected);
 	connect(m->tcp, &QTcpSocket::disconnected, this, &IcyWebAccess::disconnected);
 	connect(m->tcp, &QTcpSocket::readyRead, this, &IcyWebAccess::dataAvailable);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 	connect(m->tcp, &QAbstractSocket::errorOccurred, this, &IcyWebAccess::errorReceived);
+#else
+	const auto signal = static_cast<void (QAbstractSocket::*) (QAbstractSocket::SocketError)>(&QAbstractSocket::error);
+	connect(m->tcp, signal, this, &IcyWebAccess::errorReceived);
+#endif
 
 	m->tcp->connectToHost(m->hostname, m->port, QTcpSocket::ReadWrite, QAbstractSocket::AnyIPProtocol);
 

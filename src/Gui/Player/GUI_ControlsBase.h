@@ -110,7 +110,6 @@ class GUI_ControlsBase :
 	public slots:
 		void changeVolumeByDelta(int val);
 		void setCoverData(const QByteArray& coverData, const QString& mimeType) override;
-		[[nodiscard]] bool isActive() const override;
 
 	private slots:
 		void playstateChanged(PlayState state);
@@ -138,9 +137,10 @@ class GUI_ControlsBase :
 		void streamRecorderActiveChanged();
 
 	protected:
+		[[nodiscard]] bool isActive() const override;
 		[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 		[[nodiscard]] MetaDataList infoDialogData() const override;
-        QWidget* getParentWidget() override;
+		QWidget* getParentWidget() override;
 
 		void resizeEvent(QResizeEvent* e) override;
 		void showEvent(QShowEvent* e) override;
