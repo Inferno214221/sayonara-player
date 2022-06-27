@@ -56,7 +56,7 @@ namespace
 	QList<AlbumId> getOriginalAlbumIds(const QList<Tagging::ChangeInformation>& changeInfos)
 	{
 		Util::Set<AlbumId> albumIds;
-		for(const auto& changeInfo : changeInfos)
+		for(const auto& changeInfo: changeInfos)
 		{
 			albumIds << changeInfo.originalMetadata().albumId();
 		}
@@ -176,7 +176,7 @@ void Editor::undo(int index)
 
 void Editor::undoAll()
 {
-	for(auto& changeInfo : m->changeInfo)
+	for(auto& changeInfo: m->changeInfo)
 	{
 		changeInfo.undo();
 	}
@@ -324,7 +324,7 @@ void Editor::startSameAlbumCrawler(const QString& filepath)
 {
 	using Directory::MetaDataScanner;
 
-	const auto[dir, filename] = Util::File::splitFilename(filepath);
+	const auto dir = Util::File::getParentDirectory(filepath);
 
 	auto* thread = new QThread();
 	auto* worker = new MetaDataScanner({dir}, true);
@@ -416,7 +416,7 @@ void Editor::commit()
 	auto progress = 0;
 	auto commitResult = CommitResult();
 
-	for(auto& changeInfo : m->changeInfo)
+	for(auto& changeInfo: m->changeInfo)
 	{
 		const auto& currentMetadata = changeInfo.currentMetadata();
 		const auto& originalMetadata = changeInfo.originalMetadata();

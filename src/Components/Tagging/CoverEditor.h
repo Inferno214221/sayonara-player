@@ -27,12 +27,13 @@ class QPixmap;
 namespace Cover
 {
 	class Location;
-};
+}
 
 namespace Tagging
 {
 	class Editor;
-	class CoverEditor : public QObject
+	class CoverEditor :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(CoverEditor)

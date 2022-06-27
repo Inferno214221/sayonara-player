@@ -57,7 +57,6 @@ namespace Gui
 		setDirectory(initialDirectory.isEmpty() ? QDir::homePath() : initialDirectory);
 		setFilter(QDir::Filter::Dirs);
 		setAcceptMode(QFileDialog::AcceptOpen);
-		setFileMode(QFileDialog::DirectoryOnly);
 		setOptions(directoryDialogOptions());
 
 		const auto locations =
