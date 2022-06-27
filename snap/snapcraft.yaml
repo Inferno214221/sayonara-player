@@ -41,7 +41,7 @@ apps:
     adapter: full
     command: usr/bin/sayonara
     desktop: usr/share/applications/com.sayonara-player.Sayonara.desktop
-    extensions: 
+    extensions:
       - kde-neon
     plugs:
       - audio-playback
@@ -73,10 +73,14 @@ parts:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
       - -DDISABLE_NATIVE_DIR_DIALOGS=1
+      - -DCMAKE_CXX_COMPILER=clang++-10
+      - -DCMAKE_EXE_LINKER_FLAGS=-fuse-ld=gold
     override-build: |
       snapcraftctl build
       sed -i 's|Icon=sayonara|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/sayonara.png|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/com.sayonara-player.Sayonara.desktop
     build-packages:
+      - binutils-gold
+      - clang-10
       - cmake
       - git
       - libgstreamer-plugins-bad1.0-dev
@@ -113,18 +117,18 @@ parts:
       - zlib1g
       - libslang2
 
-# This part removes all the files in this snap which already exist in
-# connected content and base snaps. Since these files will be available
-# at runtime from the content and base snaps, they do not need to be
-# included in this snap itself.
-#
-# More info: https://forum.snapcraft.io/t/reducing-the-size-of-desktop-snaps/17280#heading--cleanup-part
-#
+  # This part removes all the files in this snap which already exist in
+  # connected content and base snaps. Since these files will be available
+  # at runtime from the content and base snaps, they do not need to be
+  # included in this snap itself.
+  #
+  # More info: https://forum.snapcraft.io/t/reducing-the-size-of-desktop-snaps/17280#heading--cleanup-part
+  #
   cleanup:
-    after:  # Make this part run last; list all your other parts here
+    after: # Make this part run last; list all your other parts here
       - sayonara
     plugin: nil
-    build-snaps:  # List all content-snaps and base snaps you're using here
+    build-snaps: # List all content-snaps and base snaps you're using here
       - core18
       - gtk-common-themes
       - kde-frameworks-5-core18
