@@ -23,7 +23,10 @@
 
 GUI_Controls::GUI_Controls(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
 	GUI_ControlsBase(playManager, coverProvider, parent),
-	ui(std::make_shared<Ui::GUI_Controls>()) {}
+	ui(std::make_shared<Ui::GUI_Controls>())
+{
+	ui->setupUi(this);
+}
 
 GUI_Controls::~GUI_Controls() = default;
 
