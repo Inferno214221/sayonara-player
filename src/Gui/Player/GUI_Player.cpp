@@ -407,7 +407,7 @@ void GUI_Player::currentLibraryChanged()
 
 void GUI_Player::initLibrary()
 {
-	bool isVisible = GetSetting(Set::Lib_Show);
+	const auto isVisible = GetSetting(Set::Lib_Show);
 	ui->libraryWidget->setVisible(isVisible);
 
 	m->menubar->showLibraryMenu(isVisible);
@@ -415,11 +415,11 @@ void GUI_Player::initLibrary()
 	if(isVisible)
 	{
 		addCurrentLibrary();
-		QWidget* w = Library::PluginHandler::instance()->currentLibraryWidget();
-		if(w)
+		auto* libraryWidget = Library::PluginHandler::instance()->currentLibraryWidget();
+		if(libraryWidget)
 		{
-			w->show();
-			w->setFocus();
+			libraryWidget->show();
+			libraryWidget->setFocus();
 		}
 	}
 
@@ -433,13 +433,13 @@ void GUI_Player::initLibrary()
 void GUI_Player::showLibraryChanged()
 {
 	// we have to do this here because init_library will show/hide ui->library_widget
-	bool wasVisible = ui->libraryWidget->isVisible();
-	int oldLibraryWidth = ui->libraryWidget->width();
+	const auto wasVisible = ui->libraryWidget->isVisible();
+	const auto oldLibraryWidth = ui->libraryWidget->width();
 
 	initLibrary();
 
-	QSize playerSize = this->size();
-	QList<int> sizes = ui->splitter->sizes();
+	auto playerSize = size();
+	auto sizes = ui->splitter->sizes();
 
 	if(GetSetting(Set::Lib_Show))
 	{

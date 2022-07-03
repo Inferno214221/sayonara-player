@@ -43,8 +43,8 @@ namespace
 
 	void restoreActions(const ColumnActionPairList& columns, const QHeaderView* headerView)
 	{
-		auto i=0;
-		for(auto& [columnHeader, action] : columns)
+		auto i = 0;
+		for(auto& [columnHeader, action]: columns)
 		{
 			action->setCheckable(columnHeader->isSwitchable());
 			action->setChecked(!headerView->isSectionHidden(i));
@@ -62,7 +62,7 @@ struct HeaderView::Private
 	QByteArray initialState;
 	bool isInitialized {false};
 
-	Private(HeaderView* parent) :
+	explicit Private(HeaderView* parent) :
 		actionResize {new QAction(parent)},
 		actionAutoResize {new QAction(parent)}
 	{
@@ -91,7 +91,7 @@ void HeaderView::init(const ColumnHeaderList& columnHeaderList, const QByteArray
 
 	for(auto i = 0; i < columnHeaderList.size(); i++)
 	{
-		const auto columnHeader = columnHeaderList[i];
+		const auto& columnHeader = columnHeaderList[i];
 
 		// action
 		auto* action = new QAction(columnHeader->title());
@@ -140,7 +140,7 @@ void HeaderView::initializeView()
 		restoreActions(m->columns, this);
 	}
 
-	this->setMinimumSectionSize(25);
+	this->setMinimumSectionSize(25); // NOLINT(readability-magic-numbers)
 	this->setSectionResizeMode(QHeaderView::ResizeMode::Interactive);
 	this->setCascadingSectionResizes(false);
 	this->setSectionsClickable(true);

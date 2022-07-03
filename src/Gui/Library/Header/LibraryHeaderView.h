@@ -27,12 +27,8 @@
 
 namespace Library
 {
-	/**
-	 * @brief The HeaderView class
-	 * @ingroup GuiLibrary
-	 */
 	class HeaderView :
-			public Gui::HeaderView
+		public Gui::HeaderView
 	{
 		Q_OBJECT
 		PIMPL(HeaderView)
@@ -41,14 +37,15 @@ namespace Library
 			void sigAutoResizeToggled(bool b);
 
 		public:
-			HeaderView(Qt::Orientation orientation, QWidget* parent=nullptr);
-			virtual ~HeaderView() override;
+			HeaderView(Qt::Orientation orientation, QWidget* parent = nullptr);
+			~HeaderView() override;
 
-			void init(const ColumnHeaderList& columnHeaderList, const QByteArray& state, Library::SortOrder sortOrder, bool autoResizeState);
+			void init(const ColumnHeaderList& columnHeaderList, const QByteArray& state, Library::SortOrder sortOrder,
+			          bool autoResizeState);
 			void resizeColumnsAutomatically();
 
 			Library::SortOrder sortorder(int index, Qt::SortOrder sortOrder);
-			QString columnText(int index) const;
+			[[nodiscard]] QString columnText(int index) const;
 			void reloadColumnTexts();
 
 		protected:

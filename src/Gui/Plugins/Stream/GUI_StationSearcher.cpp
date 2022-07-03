@@ -77,13 +77,13 @@ namespace
 			return radioStation.home_url;
 		}
 
-		const auto index = Util::Algorithm::indexOf(radioStation.streams, [](const auto& stream){
+		const auto index = Util::Algorithm::indexOf(radioStation.streams, [](const auto& stream) {
 			return Util::File::isWWW(stream.url);
 		});
 
 		return (index < 0)
-			? QString()
-			: radioStation.streams[index].url;
+		       ? QString()
+		       : radioStation.streams[index].url;
 	}
 
 	MetaData convertStationToTrack(const RadioStation& radioStation)
@@ -117,7 +117,7 @@ namespace
 		tableWidget->horizontalHeader()->setStretchLastSection(true);
 		tableWidget->setEnabled(false);
 	}
-	
+
 	void clearTableWidget(QTableWidget* tableWidget)
 	{
 		tableWidget->clear();
@@ -144,7 +144,7 @@ namespace
 
 		const auto fm = tableWidget->fontMetrics();
 		auto row = 0;
-		for(const auto& station : stations)
+		for(const auto& station: stations)
 		{
 			auto* itemName = createTableWidgetItem(station.name, fm);
 			auto* itemLocation = createTableWidgetItem(station.location, fm);
@@ -163,7 +163,7 @@ namespace
 
 		tableWidget->resizeColumnsToContents();
 	}
-	
+
 	void populateStreamWidget(QTableWidget* tableWidget, const RadioStation& station, QObject* parent)
 	{
 		const auto fm = tableWidget->fontMetrics();
@@ -176,7 +176,7 @@ namespace
 		tableWidget->setEnabled(!station.streams.isEmpty());
 
 		auto row = 0;
-		for(const auto& radioUrl : station.streams)
+		for(const auto& radioUrl: station.streams)
 		{
 			auto* itemType = createTableWidgetItem(radioUrl.type, fm);
 			auto* itemBitrate = createTableWidgetItem(radioUrl.bitrate, fm);
@@ -200,7 +200,7 @@ namespace
 	std::optional<RadioStation> stationAt(const QList<RadioStation>& stations, int row)
 	{
 		return (Util::between(row, stations))
-		       ? std::optional{stations[row]}
+		       ? std::optional {stations[row]}
 		       : std::nullopt;
 	}
 
@@ -214,8 +214,7 @@ struct GUI_StationSearcher::Private
 
 	explicit Private(GUI_StationSearcher* parent) :
 		searcher(new StationSearcher(parent)),
-		mode(StationSearcher::NewSearch)
-	{}
+		mode(StationSearcher::NewSearch) {}
 };
 
 GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :

@@ -66,8 +66,7 @@ struct FileListView::Private
 
 FileListView::FileListView(QWidget* parent) :
 	SearchableTableView(parent),
-	Gui::Dragable(this)
-{}
+	Gui::Dragable(this) {}
 
 FileListView::~FileListView() = default;
 
@@ -127,7 +126,7 @@ QStringList FileListView::selectedPaths() const
 	const auto indexes = selectionModel()->selectedIndexes();
 
 	Util::Set<QString> selectedPaths;
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		const auto row = index.row();
 		if(row >= 0 && row <= paths.count())
@@ -136,7 +135,7 @@ QStringList FileListView::selectedPaths() const
 		}
 	}
 
-	return QStringList{selectedPaths.toList()};
+	return QStringList {selectedPaths.toList()};
 }
 
 void FileListView::setParentDirectory(const QString& dir)
@@ -145,17 +144,16 @@ void FileListView::setParentDirectory(const QString& dir)
 	m->model->setParentDirectory(dir);
 }
 
-QString FileListView::parentDirectory() const {	return m->model->parentDirectory(); }
+QString FileListView::parentDirectory() const { return m->model->parentDirectory(); }
 
 int FileListView::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
 ModelIndexRange FileListView::mapIndexToModelIndexes(int idx) const
 {
-	return ModelIndexRange
-		(
-			m->model->index(idx, 0),
-			m->model->index(idx, m->model->columnCount())
-		);
+	return {
+		m->model->index(idx, 0),
+		m->model->index(idx, m->model->columnCount())
+	};
 }
 
 void FileListView::renameFileClicked()
@@ -166,12 +164,9 @@ void FileListView::renameFileClicked()
 		return;
 	}
 
-	const auto path = paths.first();
-	auto[dir, file] = Util::File::splitFilename(path);
+	const auto& path = paths.first();
+	const auto dir = Util::File::getParentDirectory(path);
 	const auto extension = Util::File::getFileExtension(path);
-
-	const auto lastDot = file.lastIndexOf(".");
-	file = file.left(lastDot);
 
 	const auto inputText =
 		Gui::LineInputDialog::getRenameFilename(this, Lang::get(Lang::EnterNewName));
@@ -181,9 +176,9 @@ void FileListView::renameFileClicked()
 		return;
 	}
 
-	const auto newName = inputText.endsWith("." + extension) ?
-		QDir(dir).filePath(inputText) :
-		QDir(dir).filePath(inputText) + "." + extension;
+	const auto newName = inputText.endsWith("." + extension)
+	                     ? QDir(dir).filePath(inputText)
+	                     : QDir(dir).filePath(inputText) + "." + extension;
 
 	emit sigRenameRequested(path, newName);
 }
@@ -202,7 +197,7 @@ void FileListView::renameFileByTagClicked()
 			return;
 		}
 
-		for(const auto& file : files)
+		for(const auto& file: files)
 		{
 			emit sigRenameByExpressionRequested(file, expression);
 		}
@@ -211,16 +206,13 @@ void FileListView::renameFileByTagClicked()
 
 MD::Interpretation FileListView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-MetaDataList FileListView::infoDialogData() const {	return MetaDataList(); }
+MetaDataList FileListView::infoDialogData() const { return {}; }
 
 bool FileListView::hasMetadata() const { return false; }
 
 QStringList FileListView::pathlist() const { return this->selectedPaths(); }
 
-QWidget *FileListView::getParentWidget()
-{
-    return this;
-}
+QWidget* FileListView::getParentWidget() { return this; }
 
 void FileListView::contextMenuEvent(QContextMenuEvent* event)
 {
@@ -237,7 +229,10 @@ void FileListView::contextMenuEvent(QContextMenuEvent* event)
 	m->contextMenu->exec(pos);
 }
 
-void FileListView::dragEnterEvent(QDragEnterEvent* event) {	event->accept(); }
+void FileListView::dragEnterEvent(QDragEnterEvent* event)
+{
+	event->accept();
+}
 
 void FileListView::dragMoveEvent(QDragMoveEvent* event)
 {
@@ -273,7 +268,7 @@ void FileListView::dropEvent(QDropEvent* event)
 	const auto urls = mimeData->urls();
 
 	QStringList files;
-	for(const auto& url : urls)
+	for(const auto& url: urls)
 	{
 		const auto localFile = url.toLocalFile();
 		if(!localFile.isEmpty())
@@ -288,5 +283,5 @@ void FileListView::dropEvent(QDropEvent* event)
 void FileListView::skinChanged()
 {
 	const auto height = this->fontMetrics().height();
-	this->setIconSize(QSize{height, height});
+	setIconSize(QSize(height, height));
 }

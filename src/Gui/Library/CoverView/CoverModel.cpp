@@ -65,20 +65,12 @@ namespace
 			return true;
 		}
 
-		else
-		{
-			const auto hasMatchingArtist = Util::Algorithm::contains(album.artists(), [&](const auto& artist) {
-				const auto convertedArtist = Library::Utils::convertSearchstring(artist, searchMode);
-				return (convertedArtist.contains(substr));
-			});
+		const auto hasMatchingArtist = Util::Algorithm::contains(album.artists(), [&](const auto& artist) {
+			const auto convertedArtist = Library::Utils::convertSearchstring(artist, searchMode);
+			return (convertedArtist.contains(substr));
+		});
 
-			if(hasMatchingArtist)
-			{
-				return true;
-			}
-		}
-
-		return false;
+		return (hasMatchingArtist);
 	}
 }
 
@@ -139,7 +131,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 	const auto linearIndex = (index.row() * columnCount()) + index.column();
 	if(!index.isValid() || !Util::between(linearIndex, albums))
 	{
-		return QVariant();
+		return {};
 	}
 
 	const auto& album = albums[linearIndex];
@@ -214,7 +206,7 @@ void CoverModel::nextHash()
 		return;
 	}
 
-	const auto[hash, location] = m->coverThread->takeCurrentLookup();
+	const auto [hash, location] = m->coverThread->takeCurrentLookup();
 	if(!hash.isEmpty() && location.isValid())
 	{
 		auto* coverLookup = new Lookup(location, 1, nullptr);
@@ -271,10 +263,7 @@ QModelIndexList CoverModel::searchResults(const QString& substr)
 	return matchingIndexes;
 }
 
-int CoverModel::searchableColumn() const
-{
-	return 0;
-}
+int CoverModel::searchableColumn() const { return 0; }
 
 QString CoverModel::searchableString(int index) const
 {
@@ -323,25 +312,13 @@ Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 	return itemFlags;
 }
 
-const MetaDataList& Library::CoverModel::selectedMetadata() const
-{
-	return library()->tracks();
-}
+const MetaDataList& Library::CoverModel::selectedMetadata() const { return library()->tracks(); }
 
-const AlbumList& CoverModel::albums() const
-{
-	return library()->albums();
-}
+const AlbumList& CoverModel::albums() const { return library()->albums(); }
 
-QSize CoverModel::itemSize() const
-{
-	return m->itemSize;
-}
+QSize CoverModel::itemSize() const { return m->itemSize; }
 
-int CoverModel::zoom() const
-{
-	return m->zoom;
-}
+int CoverModel::zoom() const { return m->zoom; }
 
 static QSize calcItemSize(int zoom, const QFont& font)
 {
@@ -355,10 +332,10 @@ static QSize calcItemSize(int zoom, const QFont& font)
 
 	const auto height = itemWidth + textHeight;
 
-	return QSize(
+	return {
 		static_cast<int>(itemWidth),
 		static_cast<int>(height)
-	);
+	};
 }
 
 void CoverModel::setZoom(int zoom, const QSize& viewSize)

@@ -134,7 +134,7 @@ struct WebClientImpl::Private
 	WebClientImpl::Mode mode {WebClient::Mode::AsBrowser};
 	WebClientImpl::Status status {WebClientImpl::Status::NoError};
 
-	Private(WebClientImpl* parent) :
+	explicit Private(WebClientImpl* parent) :
 		stopper {new AbstractWebClientStopper(parent)},
 		networkAccessManager {new QNetworkAccessManager(parent)} {}
 };
@@ -248,7 +248,7 @@ void WebClientImpl::finished()
 
 void WebClientImpl::timeout()
 {
-	spLog(Log::Debug, this) << "Timeout reached";
+	spLog(Log::Debug, this) << "Timeout reached " << m->url;
 
 	m->status = WebClientImpl::Status::Timeout;
 	m->data.clear();
@@ -265,13 +265,13 @@ struct AbstractWebClientStopper::Private
 {
 	QTimer* timer;
 
-	Private(QObject* parent) :
+	explicit Private(QObject* parent) :
 		timer {new QTimer(parent)} {}
 };
 
 AbstractWebClientStopper::AbstractWebClientStopper(QObject* parent) :
 	QObject {parent},
-	m{Pimpl::make<Private>(this)}
+	m {Pimpl::make<Private>(this)}
 {
 	m->timer->setSingleShot(true);
 	connect(m->timer, &QTimer::timeout, this, &AbstractWebClientStopper::timeout);

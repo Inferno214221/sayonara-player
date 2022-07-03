@@ -50,18 +50,90 @@
 #include <QPixmap>
 #include <QThread>
 #include <QPixmapCache>
+#include <optional>
 
 using Directory::IconWorkerThread;
 using Directory::FileListModel;
-
-enum ColumnName
+namespace
 {
-	ColumnDecoration = 0,
-	ColumnName,
-	ColumnCount
-};
+	enum ColumnName
+	{
+		ColumnDecoration = 0,
+		ColumnName,
+		ColumnCount
+	};
 
-namespace Algorithm = Util::Algorithm;
+	template<typename Converter>
+	std::optional<bool> comparePaths(const QString& path1, const QString& path2, Converter&& converter)
+	{
+		const auto isAttribute1 = converter(path1);
+		const auto isAttribute2 = converter(path2);
+		if(isAttribute1 && isAttribute2)
+		{
+			return (path1.toLower() < path2.toLower());
+		}
+
+		if(isAttribute1)
+		{
+			return true;
+		}
+
+		if(isAttribute2)
+		{
+			return false;
+		}
+
+		return std::nullopt;
+	}
+
+	std::optional<bool> compareSoundFiles(const QString& path1, const QString& path2)
+	{
+		return comparePaths(path1, path2, [](const auto& path) {
+			return Util::File::isSoundFile(path);
+		});
+	}
+
+	std::optional<bool> comparePlaylistFiles(const QString& path1, const QString& path2)
+	{
+		return comparePaths(path1, path2, [](const auto& path) {
+			return Util::File::isPlaylistFile(path);
+		});
+	}
+
+	std::optional<bool> compareImageFiles(const QString& path1, const QString& path2)
+	{
+		return comparePaths(path1, path2, [](const auto& path) {
+			return Util::File::isImageFile(path);
+		});
+	}
+
+	QStringList sortFiles(QStringList files)
+	{
+		Util::Algorithm::sort(files, [](const auto& f1, const auto& f2) {
+			const auto isSoundfile = compareSoundFiles(f1, f2);
+			if(isSoundfile.has_value())
+			{
+				return isSoundfile.value();
+			}
+
+			const auto isPlaylistFile = comparePlaylistFiles(f1, f2);
+			if(isPlaylistFile.has_value())
+			{
+				return isPlaylistFile.value();
+			}
+
+			const auto isImageFile = compareImageFiles(f1, f2);
+			if(isImageFile.has_value())
+			{
+				return isImageFile.value();
+			}
+
+			return (f1.toLower() < f2.toLower());
+		});
+
+		return files;
+	}
+}
 
 struct IconWorkerThread::Private
 {
@@ -69,9 +141,9 @@ struct IconWorkerThread::Private
 	QPixmap pixmap;
 	QSize targetSize;
 
-	Private(const QSize& targetSize, const QString& filename) :
-		filename(filename),
-		targetSize(targetSize) {}
+	Private(const QSize& targetSize, QString filename) :
+		filename {std::move(filename)},
+		targetSize {targetSize} {}
 };
 
 struct FileListModel::Private
@@ -82,11 +154,8 @@ struct FileListModel::Private
 
 	LocalLibrary* localLibrary;
 
-	int iconSize;
-
-	Private(LocalLibrary* localLibrary) :
-		localLibrary(localLibrary),
-		iconSize(24) {}
+	explicit Private(LocalLibrary* localLibrary) :
+		localLibrary(localLibrary) {}
 
 	void calcFilesInLibrary(const QString& dir)
 	{
@@ -97,7 +166,7 @@ struct FileListModel::Private
 		auto* libraryDatabase = db->libraryDatabase(this->localLibrary->info().id(), 0);
 
 		libraryDatabase->getAllTracksByPaths({dir}, tracks);
-		for(const auto& track : tracks)
+		for(const auto& track: tracks)
 		{
 			filesInLibrary.insert(track.filepath());
 		}
@@ -121,7 +190,7 @@ void FileListModel::setParentDirectory(const QString& dir)
 
 	m->calcFilesInLibrary(dir);
 
-	QStringList extensions;
+	auto extensions = QStringList {};
 	extensions << Util::soundfileExtensions();
 	extensions << Util::playlistExtensions();
 	extensions << "*";
@@ -139,82 +208,18 @@ void FileListModel::setParentDirectory(const QString& dir)
 		endRemoveRows();
 	}
 
-	Algorithm::sort(m->files, [](const QString& f1, const QString& f2) {
-		const auto isSoundfile1 = Util::File::isSoundFile(f1);
-		const auto isSoundfile2 = Util::File::isSoundFile(f2);
-		if(isSoundfile1 && isSoundfile2)
-		{
-			return (f1.toLower() < f2.toLower());
-		}
+	m->files = sortFiles(m->files);
 
-		if(isSoundfile1 && !isSoundfile2)
-		{
-			return true;
-		}
-
-		if(!isSoundfile1 && isSoundfile2)
-		{
-			return false;
-		}
-
-		const auto isPlaylistfile1 = Util::File::isPlaylistFile(f1);
-		const auto isPlaylistfile2 = Util::File::isPlaylistFile(f2);
-		if(isPlaylistfile1 && isPlaylistfile2)
-		{
-			return (f1.toLower() < f2.toLower());
-		}
-
-		if(isPlaylistfile1 && !isPlaylistfile2)
-		{
-			return true;
-		}
-
-		if(!isPlaylistfile1 && isPlaylistfile2)
-		{
-			return false;
-		}
-
-		const auto isImagefile1 = Util::File::isImageFile(f1);
-		const auto isImagefile2 = Util::File::isImageFile(f2);
-		if(isImagefile1 && isImagefile2)
-		{
-			return (f1.toLower() < f2.toLower());
-		}
-
-		if(isImagefile1 && !isImagefile2)
-		{
-			return true;
-		}
-
-		if(!isImagefile1 && isImagefile2)
-		{
-			return false;
-		}
-
-		return (f1.toLower() < f2.toLower());
-	});
-
-	emit dataChanged
-		(
-			index(0, 0),
-			index(m->files.size() - 1, this->columnCount(QModelIndex()))
-		);
+	emit dataChanged(
+		index(0, 0),
+		index(m->files.size() - 1, this->columnCount(QModelIndex())));
 }
 
-LibraryId FileListModel::libraryId() const
-{
-	return m->localLibrary->info().id();
-}
+LibraryId FileListModel::libraryId() const { return m->localLibrary->info().id(); }
 
-QString FileListModel::parentDirectory() const
-{
-	return m->parentDirectory;
-}
+QString FileListModel::parentDirectory() const { return m->parentDirectory; }
 
-QStringList FileListModel::files() const
-{
-	return m->files;
-}
+QStringList FileListModel::files() const { return m->files; }
 
 QModelIndexList FileListModel::searchResults(const QString& substr)
 {
@@ -231,17 +236,9 @@ QModelIndexList FileListModel::searchResults(const QString& substr)
 	return ret;
 }
 
-int FileListModel::rowCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
-	return m->files.size();
-}
+int FileListModel::rowCount(const QModelIndex& /*parent*/) const { return m->files.size(); }
 
-int FileListModel::columnCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
-	return ColumnCount;
-}
+int FileListModel::columnCount(const QModelIndex& /*parent*/) const { return ColumnCount; }
 
 QVariant FileListModel::data(const QModelIndex& index, int role) const
 {
@@ -252,7 +249,7 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 
 	if(!Util::between(row, m->files))
 	{
-		return QVariant();
+		return {};
 	}
 
 	const auto& filename = m->files[row];
@@ -262,7 +259,7 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 		return File::getFilenameOfPath(filename);
 	}
 
-	else if((role == Qt::DecorationRole) && (col == ColumnDecoration))
+	if((role == Qt::DecorationRole) && (col == ColumnDecoration))
 	{
 		if(File::isSoundFile(filename))
 		{
@@ -300,12 +297,9 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 				return Gui::Icons::icon(Gui::Icons::ImageFile);
 			}
 
-			else
-			{
-				QIcon icon;
-				icon.addPixmap(pixmap);
-				return icon;
-			}
+			QIcon icon;
+			icon.addPixmap(pixmap);
+			return icon;
 		}
 	}
 
@@ -322,12 +316,12 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 		return filename;
 	}
 
-	return QVariant();
+	return {};
 }
 
 void FileListModel::pixmapFetched(const QString& path)
 {
-	auto* worker = static_cast<IconWorkerThread*>(sender());
+	auto* worker = dynamic_cast<IconWorkerThread*>(sender());
 
 	const auto pixmap = worker->pixmap();
 	if(!pixmap.isNull())
@@ -348,7 +342,7 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 			return QString();
 		}
 
-		else if(column == ColumnName)
+		if(column == ColumnName)
 		{
 			return Lang::get(Lang::Filename);
 		}
@@ -372,7 +366,7 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 	QList<QUrl> urls;
 	QStringList paths;
 
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		if(index.column() == ColumnName)
 		{

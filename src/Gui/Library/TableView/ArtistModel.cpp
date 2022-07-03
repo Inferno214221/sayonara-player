@@ -43,7 +43,7 @@
 using namespace Library;
 
 ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
-    ItemModel(+ColumnIndex::Artist::Count, parent, library) {}
+	ItemModel(+ColumnIndex::Artist::Count, parent, library) {}
 
 ArtistModel::~ArtistModel() = default;
 
@@ -67,13 +67,13 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid())
 	{
-		return QVariant();
+		return {};
 	}
 
-	const ArtistList& artists = library()->artists();
+	const auto& artists = library()->artists();
 	if(index.row() >= artists.count())
 	{
-		return QVariant();
+		return {};
 	}
 
 	const auto row = index.row();
@@ -84,16 +84,12 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		switch(columnIndex)
-		{
-			case ColumnIndex::Artist::Name:
-				return static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
-			default:
-				return static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
-		}
+		return (columnIndex == ColumnIndex::Artist::Name)
+		       ? static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter)
+		       : static_cast<int>(Qt::AlignRight | Qt::AlignVCenter);
 	}
 
-	else if(role == Qt::DisplayRole)
+	if(role == Qt::DisplayRole)
 	{
 		switch(columnIndex)
 		{
@@ -106,16 +102,11 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 				return QString::number(artist.songcount());
 
 			default:
-				return QVariant();
+				return {};
 		}
 	}
 
-	else if(role == Qt::SizeHintRole)
-	{
-		return QSize(1, Gui::Util::viewRowHeight());
-	}
-
-    return QVariant();
+	return {};
 }
 
 int ArtistModel::rowCount(const QModelIndex&) const
@@ -133,7 +124,7 @@ Qt::ItemFlags ArtistModel::flags(const QModelIndex& index) const
 Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
 {
 	Util::Set<int> rows;
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		rows.insert(index.row());
 	}

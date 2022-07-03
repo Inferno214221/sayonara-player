@@ -32,19 +32,17 @@ using namespace Library;
 
 struct TableView::Private
 {
-	HeaderView* header = nullptr;
+	HeaderView* header;
 
-	Private(TableView* tableView)
-	{
-		this->header = new HeaderView(Qt::Horizontal, tableView);
-		tableView->setHorizontalHeader(this->header);
-	}
+	Private(TableView* tableView) :
+		header {new HeaderView(Qt::Horizontal, tableView)} {}
 };
 
 TableView::TableView(QWidget* parent) :
-	Library::ItemView(parent)
+	Library::ItemView(parent),
+	m {Pimpl::make<Private>(this)}
 {
-	m = Pimpl::make<Private>(this);
+	setHorizontalHeader(m->header);
 }
 
 TableView::~TableView() = default;
@@ -56,7 +54,7 @@ void TableView::init(AbstractLibrary* library)
 	initView(library);
 
 	auto headers = columnHeaders();
-	Util::Algorithm::sort(headers, [](ColumnHeaderPtr p1, ColumnHeaderPtr p2) {
+	Util::Algorithm::sort(headers, [](const auto& p1, const auto& p2) {
 		return (p1->columnIndex() < p2->columnIndex());
 	});
 
@@ -74,14 +72,14 @@ void TableView::init(AbstractLibrary* library)
 void TableView::headerColumnsChanged(int /*oldCount*/, int /*newCount*/)
 {
 	const auto selectedIndexes = selectedItems();
-	for(const auto index : selectedIndexes)
+	for(const auto index: selectedIndexes)
 	{
-		this->selectRow(index);
+		selectRow(index);
 	}
 
 	setupColumnNames();
 
-	if(this->isVisible())
+	if(isVisible())
 	{
 		saveColumnHeaderState(m->header->saveState());
 	}
@@ -91,7 +89,7 @@ void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
 {
 	applySortorder(m->header->sortorder(index, qtSortorder));
 
-	if(this->isVisible())
+	if(isVisible())
 	{
 		saveColumnHeaderState(m->header->saveState());
 	}
@@ -99,7 +97,7 @@ void TableView::sortorderChanged(int index, Qt::SortOrder qtSortorder)
 
 void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newSize*/)
 {
-	if(this->isVisible())
+	if(isVisible())
 	{
 		saveColumnHeaderState(m->header->saveState());
 	}
@@ -109,7 +107,7 @@ void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /
 {
 	setupColumnNames();
 
-	if(this->isVisible())
+	if(isVisible())
 	{
 		saveColumnHeaderState(m->header->saveState());
 	}
@@ -141,13 +139,12 @@ void TableView::languageChanged()
 	setupColumnNames();
 }
 
-int TableView::mapModelIndexToIndex(const QModelIndex& idx) const
-{
-	return idx.row();
-}
+int TableView::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
 ModelIndexRange TableView::mapIndexToModelIndexes(int idx) const
 {
-	return ModelIndexRange(itemModel()->index(idx, 0),
-	                       itemModel()->index(idx, itemModel()->columnCount() - 1));
+	return {
+		itemModel()->index(idx, 0),
+		itemModel()->index(idx, itemModel()->columnCount() - 1)
+	};
 }

@@ -54,7 +54,7 @@ namespace Library
 		LocalLibrary* library = nullptr;
 		CoverModel* model = nullptr;
 
-		std::atomic_flag zoomLocked {0};
+		std::atomic_flag zoomLocked {false};
 	};
 
 	CoverView::CoverView(QWidget* parent) :
@@ -164,21 +164,18 @@ namespace Library
 
 	QList<ActionPair> CoverView::sortingActions()
 	{
-		static const auto result = QList<ActionPair>
-			{
-				ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
-				ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
-				ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
-				ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
-				ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
-				ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
-				ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
-				ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
-				ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
-				ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc)
-			};
-
-		return result;
+		return {
+			ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
+			ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
+			ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
+			ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
+			ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
+			ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
+			ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
+			ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
+			ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
+			ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc)
+		};
 	}
 
 	void CoverView::changeSortorder(Library::SortOrder so)
@@ -188,16 +185,14 @@ namespace Library
 
 	void CoverView::initContextMenu()
 	{
-		if(contextMenu())
+		if(!contextMenu())
 		{
-			return;
+			auto* contextMenu = new CoverViewContextMenu(this);
+			ItemView::initCustomContextMenu(contextMenu);
+
+			connect(contextMenu, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);
+			connect(contextMenu, &CoverViewContextMenu::sigSortingChanged, this, &CoverView::changeSortorder);
 		}
-
-		auto* contextMenu = new CoverViewContextMenu(this);
-		ItemView::initCustomContextMenu(contextMenu);
-
-		connect(contextMenu, &CoverViewContextMenu::sigZoomChanged, this, &CoverView::changeZoom);
-		connect(contextMenu, &CoverViewContextMenu::sigSortingChanged, this, &CoverView::changeSortorder);
 	}
 
 	void CoverView::reload()
@@ -230,20 +225,14 @@ namespace Library
 		return option;
 	}
 
-	int CoverView::sizeHintForColumn([[maybe_unused]] int column) const
+	int CoverView::sizeHintForColumn(int /*column*/) const
 	{
 		return m->model->itemSize().width();
 	}
 
-	bool CoverView::isMergeable() const
-	{
-		return true;
-	}
+	bool CoverView::isMergeable() const { return true; }
 
-	MD::Interpretation CoverView::metadataInterpretation() const
-	{
-		return MD::Interpretation::Albums;
-	}
+	MD::Interpretation CoverView::metadataInterpretation() const { return MD::Interpretation::Albums; }
 
 	int CoverView::mapModelIndexToIndex(const QModelIndex& idx) const
 	{
@@ -255,7 +244,10 @@ namespace Library
 		const auto row = idx / model()->columnCount();
 		const auto col = idx % model()->columnCount();
 
-		return ModelIndexRange(model()->index(row, col), model()->index(row, col));
+		return {
+			model()->index(row, col),
+			model()->index(row, col)
+		};
 	}
 
 	SelectionViewInterface::SelectionType CoverView::selectionType() const

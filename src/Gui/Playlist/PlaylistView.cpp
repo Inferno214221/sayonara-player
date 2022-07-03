@@ -596,6 +596,5 @@ namespace Playlist
 		{
 			playSelectedTrack();
 		}
-
 	}
 }

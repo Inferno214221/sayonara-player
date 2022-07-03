@@ -61,7 +61,7 @@ struct AlbumModel::Private
 };
 
 AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
-    ItemModel(+ColumnIndex::Album::Count, parent, library)
+	ItemModel(+ColumnIndex::Album::Count, parent, library)
 {
 	m = Pimpl::make<AlbumModel::Private>();
 
@@ -89,7 +89,7 @@ QString AlbumModel::searchableString(int row) const
 Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 {
 	Util::Set<int> rows;
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		rows.insert(index.row());
 	}
@@ -111,13 +111,13 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 {
 	if(!index.isValid())
 	{
-		return QVariant();
+		return {};
 	}
 
 	const auto& albums = library()->albums();
 	if(index.row() >= albums.count())
 	{
-		return QVariant();
+		return {};
 	}
 
 	const auto row = index.row();
@@ -133,7 +133,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		       : (+Qt::AlignVCenter | +Qt::AlignRight);
 	}
 
-	else if(role == Qt::ForegroundRole)
+	if(role == Qt::ForegroundRole)
 	{
 		if(col == ColumnIndex::Album::MultiDisc)
 		{
@@ -175,7 +175,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 			{
 				if(role == Qt::DisplayRole)
 				{
-					return QVariant();
+					return {};
 				}
 
 				const auto rating = (row == m->tempRating.first)
@@ -186,7 +186,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 			}
 
 			default:
-				return QVariant();
+				return {};
 		}
 	}
 

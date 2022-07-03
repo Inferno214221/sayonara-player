@@ -28,7 +28,9 @@
 
 namespace
 {
-	QPixmap extractPixmapFromIndex(const QModelIndex& index, const QSize& size, double scaleFactor)
+	constexpr const auto scaleFactor = 0.8;
+
+	QPixmap extractPixmapFromIndex(const QModelIndex& index, const QSize& size)
 	{
 		const auto variant = index.data(Qt::DecorationRole);
 		if(variant.canConvert<QPixmap>())
@@ -36,13 +38,13 @@ namespace
 			return variant.value<QPixmap>().scaled(size * scaleFactor, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
-		else if(variant.canConvert<QIcon>())
+		if(variant.canConvert<QIcon>())
 		{
 			const auto icon = variant.value<QIcon>();
 			return icon.pixmap(size * scaleFactor);
 		}
 
-		return QPixmap();
+		return {};
 	}
 
 	QRect getPixmapBoundingRectangle(const QPixmap& pixmap, const QRect& rect)
@@ -59,10 +61,7 @@ namespace
 
 struct Gui::StyledItemDelegate::Private
 {
-	int decorationColumn;
-
-	Private() :
-		decorationColumn(-1) {}
+	int decorationColumn {-1};
 };
 
 Gui::StyledItemDelegate::StyledItemDelegate(QObject* parent) :
@@ -104,7 +103,7 @@ Gui::StyledItemDelegate::paint(QPainter* painter, const QStyleOptionViewItem& op
 		painter->fillRect(option.rect, option.palette.highlight());
 	}
 
-	const auto pixmap = extractPixmapFromIndex(index, option.rect.size(), 0.8);
+	const auto pixmap = extractPixmapFromIndex(index, option.rect.size());
 	if(!pixmap.isNull())
 	{
 		const auto rect = getPixmapBoundingRectangle(pixmap, option.rect);

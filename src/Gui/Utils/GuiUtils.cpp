@@ -24,6 +24,7 @@
 #include "GuiUtils.h"
 
 #include <QApplication>
+#include <QCache>
 #include <QDesktopWidget>
 #include <QDirIterator>
 #include <QFontMetrics>
@@ -35,7 +36,6 @@
 #include <QScreen>
 #include <QSize>
 #include <QString>
-#include <QCache>
 
 #include <algorithm>
 
@@ -118,7 +118,7 @@ namespace
 	{
 		if(iconName.trimmed().isEmpty())
 		{
-			return QStringList();
+			return {};
 		}
 
 		QStringList paths;
@@ -153,7 +153,7 @@ namespace Gui
 		}
 
 		const auto paths = iconPaths(iconName, iconTheme);
-		for(const auto& path : paths)
+		for(const auto& path: paths)
 		{
 			const auto pixmap = QPixmap(path);
 			if(!pixmap.isNull())

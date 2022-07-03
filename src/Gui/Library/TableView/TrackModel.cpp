@@ -59,7 +59,7 @@ struct TrackModel::Private
 };
 
 TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
-    ItemModel(+ColumnIndex::Track::Count, parent, library)
+	ItemModel(+ColumnIndex::Track::Count, parent, library)
 {
 	m = Pimpl::make<Private>();
 
@@ -74,21 +74,16 @@ TrackModel::~TrackModel() = default;
 
 QVariant TrackModel::data(const QModelIndex& index, int role) const
 {
-	if(!index.isValid())
+	if(!index.isValid() || (index.row() >= library()->tracks().count()))
 	{
-		return QVariant();
-	}
-
-	if(index.row() >= library()->tracks().count())
-	{
-		return QVariant();
+		return {};
 	}
 
 	const auto indexColumn = ColumnIndex::Track(index.column());
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		const QMap<ColumnIndex::Track, Qt::AlignmentFlag> alignMap {
+		const auto alignMap = QMap<ColumnIndex::Track, Qt::AlignmentFlag> {
 			{ColumnIndex::Track::TrackNumber,  Qt::AlignRight},
 			{ColumnIndex::Track::Bitrate,      Qt::AlignRight},
 			{ColumnIndex::Track::Length,       Qt::AlignRight},
@@ -106,30 +101,29 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 		return QVariant::fromValue(static_cast<int>(Qt::AlignVCenter | alignment));
 	}
 
-	else if(role == Qt::DisplayRole || role == Qt::EditRole)
+	if(role == Qt::DisplayRole || role == Qt::EditRole)
 	{
 		const auto& track = library()->tracks().at(index.row());
 
 		switch(indexColumn)
 		{
 			case ColumnIndex::Track::TrackNumber:
-				return QVariant(track.trackNumber());
+				return track.trackNumber();
 
 			case ColumnIndex::Track::Title:
-				return QVariant(track.title());
+				return track.title();
 
 			case ColumnIndex::Track::Artist:
-				return QVariant(track.artist());
+				return track.artist();
 
 			case ColumnIndex::Track::Length:
-				return QVariant(::Util::msToString(track.durationMs(),
-				                                   "$He $M:$S"));
+				return ::Util::msToString(track.durationMs(), "$He $M:$S");
 
 			case ColumnIndex::Track::Album:
-				return QVariant(track.album());
+				return track.album();
 
 			case ColumnIndex::Track::Discnumber:
-				return QVariant(QString::number(track.discnumber()));
+				return QString::number(track.discnumber());
 
 			case ColumnIndex::Track::Year:
 				return (track.year() == 0) ?
@@ -169,7 +163,7 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 			{
 				if(role == Qt::DisplayRole)
 				{
-					return QVariant();
+					return {};
 				}
 
 				if(m->uto && m->uto->newRating(track.id()) != Rating::Last)
@@ -181,7 +175,7 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 			}
 
 			default:
-				return QVariant();
+				return {};
 		}
 	}
 
@@ -265,7 +259,7 @@ Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
 	const auto& tracks = library()->tracks();
 
 	Util::Set<int> rows;
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		const auto row = index.row();
 		if(Util::between(row, tracks))

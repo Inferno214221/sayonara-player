@@ -57,22 +57,15 @@ using Library::ContextMenu;
 
 struct ItemView::Private
 {
-	Gui::MergeMenu*		mergeMenu=nullptr;
-	ItemModel*			model=nullptr;
-	QPushButton*		buttonClearSelection=nullptr;
-	ContextMenu*		contextMenu=nullptr;
+	Gui::MergeMenu* mergeMenu = nullptr;
+	ItemModel* model = nullptr;
+	QPushButton* buttonClearSelection = nullptr;
+	ContextMenu* contextMenu = nullptr;
 
-	MD::Interpretation	type;
-	bool				currentlyFilling;
-	bool				useClearButton;
-
-	Private() :
-		type(MD::Interpretation::None),
-		currentlyFilling(false),
-		useClearButton(false)
-	{}
+	MD::Interpretation type {MD::Interpretation::None};
+	bool currentlyFilling {false};
+	bool useClearButton {false};
 };
-
 
 ItemView::ItemView(QWidget* parent) :
 	SearchableTableView(parent),
@@ -87,14 +80,19 @@ ItemView::ItemView(QWidget* parent) :
 
 	clearSelection();
 
-	Qt::ShortcutContext ctx = Qt::WidgetWithChildrenShortcut;
+	const auto slotMap = std::array {
+		std::pair {ShortcutIdentifier::PlayNewTab, SLOT(playNewTabClicked())},
+		std::pair {ShortcutIdentifier::PlayNext, SLOT(playNextClicked())},
+		std::pair {ShortcutIdentifier::Append, SLOT(appendClicked())},
+		std::pair {ShortcutIdentifier::AlbumArtists, SLOT(albumArtistsToggled())},
+		std::pair {ShortcutIdentifier::ReloadLibrary, SLOT(reloadClicked())}
+	};
 
-	auto* sch = ShortcutHandler::instance();
-	sch->shortcut(ShortcutIdentifier::PlayNewTab).connect(this, this, SLOT(playNewTabClicked()), ctx);
-	sch->shortcut(ShortcutIdentifier::PlayNext).connect(this, this, SLOT(playNextClicked()), ctx);
-	sch->shortcut(ShortcutIdentifier::Append).connect(this, this, SLOT(appendClicked()), ctx);
-	sch->shortcut(ShortcutIdentifier::AlbumArtists).connect(this, this, SLOT(albumArtistsToggled()), ctx);
-	sch->shortcut(ShortcutIdentifier::ReloadLibrary).connect(this, this, SLOT(reloadClicked()), ctx);
+	auto* shortcutHandler = ShortcutHandler::instance();
+	for(const auto& entry: slotMap)
+	{
+		shortcutHandler->shortcut(entry.first).connect(this, this, entry.second, Qt::WidgetWithChildrenShortcut);
+	}
 
 	new QShortcut(QKeySequence(Qt::Key_Return), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
 	new QShortcut(QKeySequence(Qt::Key_Enter), this, SLOT(playClicked()), nullptr, Qt::WidgetShortcut);
@@ -107,10 +105,7 @@ ItemView::~ItemView() = default;
 
 AbstractLibrary* ItemView::library() const { return nullptr; }
 
-ItemModel* ItemView::itemModel() const
-{
-	return m->model;
-}
+ItemModel* ItemView::itemModel() const { return m->model; }
 
 void ItemView::setItemModel(ItemModel* model)
 {
@@ -121,32 +116,26 @@ void ItemView::setItemModel(ItemModel* model)
 
 ContextMenu::Entries ItemView::contextMenuEntries() const
 {
-	ContextMenu::Entries entries =
-	(
-		ContextMenu::EntryPlay |
-		ContextMenu::EntryPlayNewTab |
-		ContextMenu::EntryInfo |
-		ContextMenu::EntryEdit |
-		ContextMenu::EntryDelete |
-		ContextMenu::EntryPlayNext |
-		ContextMenu::EntryAppend |
-		ContextMenu::EntryReload
-	);
-
-	return entries;
+	return (ContextMenu::EntryPlay |
+	        ContextMenu::EntryPlayNewTab |
+	        ContextMenu::EntryInfo |
+	        ContextMenu::EntryEdit |
+	        ContextMenu::EntryDelete |
+	        ContextMenu::EntryPlayNext |
+	        ContextMenu::EntryAppend |
+	        ContextMenu::EntryReload);
 }
 
-void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected )
+void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
 {
 	SearchableTableView::selectionChanged(selected, deselected);
 
 	showClearButton(!selected.empty());
 
-	if(m->currentlyFilling) {
-		return;
+	if(!m->currentlyFilling)
+	{
+		selectedItemsChanged(selectedItems());
 	}
-
-	selectedItemsChanged(selectedItems());
 }
 
 void ItemView::initContextMenu()
@@ -157,17 +146,14 @@ void ItemView::initContextMenu()
 // Right click stuff
 void ItemView::initCustomContextMenu(ContextMenu* menu)
 {
-	if(m->contextMenu){
+	if(m->contextMenu)
+	{
 		return;
 	}
 
-	if(menu) {
-		m->contextMenu = menu;
-	}
-
-	else {
-		m->contextMenu = new ContextMenu(this);
-	}
+	m->contextMenu = (menu != nullptr)
+	                 ? menu
+	                 : new ContextMenu(this);
 
 	if(!m->mergeMenu)
 	{
@@ -175,16 +161,15 @@ void ItemView::initCustomContextMenu(ContextMenu* menu)
 		connect(m->mergeMenu, &Gui::MergeMenu::sigMergeTriggered, this, &ItemView::mergeActionTriggered);
 	}
 
-	QAction* afterEditAction = m->contextMenu->actionAfter(ContextMenu::EntryEdit);
-
+	auto* afterEditAction = m->contextMenu->actionAfter(ContextMenu::EntryEdit);
 	if(afterEditAction)
 	{
 		m->contextMenu->insertAction(afterEditAction, m->mergeMenu->action());
 	}
 
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=](){ showEdit(); });
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=](){ showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=](){ showLyrics(); });
+	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=]() { showEdit(); });
+	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=]() { showInfo(); });
+	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=]() { showLyrics(); });
 	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &ItemView::deleteClicked);
 	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &ItemView::playClicked);
 	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &ItemView::playNextClicked);
@@ -200,10 +185,7 @@ void ItemView::initCustomContextMenu(ContextMenu* menu)
 	m->contextMenu->setExtensions(library()->extensions());
 }
 
-ContextMenu* ItemView::contextMenu() const
-{
-	return m->contextMenu;
-}
+ContextMenu* ItemView::contextMenu() const { return m->contextMenu; }
 
 void ItemView::showContextMenu(const QPoint& p)
 {
@@ -226,7 +208,7 @@ void ItemView::showClearButton(bool visible)
 	{
 		m->buttonClearSelection = new QPushButton(this);
 
-		connect(m->buttonClearSelection, &QPushButton::clicked, this, [=](){
+		connect(m->buttonClearSelection, &QPushButton::clicked, this, [=]() {
 			this->clearSelection();
 			m->buttonClearSelection->hide();
 		});
@@ -240,8 +222,8 @@ void ItemView::showClearButton(bool visible)
 	}
 
 	m->buttonClearSelection->setGeometry(
-			1, viewportHeight() - m->buttonClearSelection->height() - 2,
-			viewportWidth() - 2, m->buttonClearSelection->height()
+		1, viewportHeight() - m->buttonClearSelection->height() - 2,
+		viewportWidth() - 2, m->buttonClearSelection->height()
 	);
 
 	m->buttonClearSelection->setVisible(visible);
@@ -252,83 +234,68 @@ void ItemView::useClearButton(bool b)
 	m->useClearButton = b;
 	if(m->buttonClearSelection)
 	{
-		if(!b) {
-			m->buttonClearSelection->hide();
-		}
-		else {
-			m->buttonClearSelection->setVisible(this->selectedItems().count() > 0);
-		}
+		m->buttonClearSelection->setVisible(b && !selectedItems().isEmpty());
 	}
 }
 
-bool ItemView::isValidDragPosition(const QPoint &p) const
+bool ItemView::isValidDragPosition(const QPoint& p) const
 {
-	QModelIndex idx = this->indexAt(p);
-	return (idx.isValid() && (this->model()->flags(idx) & Qt::ItemFlag::ItemIsSelectable));
+	const auto modelIndex = this->indexAt(p);
+	return modelIndex.isValid() &&
+	       (model()->flags(modelIndex) & Qt::ItemFlag::ItemIsSelectable);
 }
 
-MetaDataList ItemView::infoDialogData() const
-{
-	return itemModel()->selectedMetadata();
-}
+MetaDataList ItemView::infoDialogData() const { return itemModel()->selectedMetadata(); }
 
-QWidget* ItemView::getParentWidget()
-{
-    return this;
-}
+QWidget* ItemView::getParentWidget() { return this; }
 
 void ItemView::mergeActionTriggered()
 {
-	Library::MergeData mergedata = m->mergeMenu->mergedata();
-
-	if(mergedata.isValid()){
+	if(const auto mergedata = m->mergeMenu->mergedata(); mergedata.isValid())
+	{
 		runMergeOperation(mergedata);
 	}
 }
 
-void ItemView::runMergeOperation(const Library::MergeData& md) { Q_UNUSED(md) }
+void ItemView::runMergeOperation(const Library::MergeData& /*md*/) {}
 
 void ItemView::playClicked() { emit sigPlayClicked(); }
-void ItemView::playNewTabClicked() {	emit sigPlayNewTabClicked(); }
+
+void ItemView::playNewTabClicked() { emit sigPlayNewTabClicked(); }
+
 void ItemView::playNextClicked() { emit sigPlayNextClicked(); }
+
 void ItemView::deleteClicked() { emit sigDeleteClicked(); }
+
 void ItemView::appendClicked() { emit sigAppendClicked(); }
+
 void ItemView::refreshClicked() { emit sigRefreshClicked(); }
+
 void ItemView::reloadClicked() { emit sigReloadClicked(); }
 
 void ItemView::albumArtistsToggled()
 {
-	bool b = GetSetting(Set::Lib_ShowAlbumArtists);
+	const auto b = GetSetting(Set::Lib_ShowAlbumArtists);
 	SetSetting(Set::Lib_ShowAlbumArtists, !b);
 }
 
 void ItemView::filterExtensionsTriggered(const QString& extension, bool b)
 {
-	AbstractLibrary* library = this->library();
-	if(!library) {
-		return;
+	auto* library = this->library();
+	if(library)
+	{
+		Gui::ExtensionSet extensions = library->extensions();
+		extensions.setEnabled(extension, b);
+		library->setExtensions(extensions);
 	}
-
-	Gui::ExtensionSet extensions = library->extensions();
-	extensions.setEnabled(extension, b);
-	library->setExtensions(extensions);
 }
 
 void ItemView::fill()
 {
-//	if(this->verticalHeader()->minimumSectionSize() < this->verticalHeader()->defaultSectionSize())
-//	{
-//		this->verticalHeader()->setMinimumSectionSize(this->verticalHeader()->defaultSectionSize());
-//	}
-
 	this->clearSelection();
 
 	int oldSize, newSize;
 	m->model->refreshData(&oldSize, &newSize);
-
-//	for(int i=oldSize; i<newSize; i++){
-//		this->resizeRowToContents(i);
-//	}
 }
 
 void ItemView::selectedItemsChanged(const IndexSet& indexes)
@@ -338,15 +305,16 @@ void ItemView::selectedItemsChanged(const IndexSet& indexes)
 
 void ItemView::importRequested(const QStringList& files)
 {
-	AbstractLibrary* lib = this->library();
-	if(lib){
-		lib->importFiles(files);
+	if(library())
+	{
+		library()->importFiles(files);
 	}
 }
 
 void ItemView::mousePressEvent(QMouseEvent* event)
 {
-	if(rowCount() == 0) {
+	if(rowCount() == 0)
+	{
 		return;
 	}
 
@@ -354,7 +322,8 @@ void ItemView::mousePressEvent(QMouseEvent* event)
 
 	if(event->button() == Qt::MiddleButton)
 	{
-		if(!this->selectedItems().isEmpty()){
+		if(!selectedItems().isEmpty())
+		{
 			playNewTabClicked();
 		}
 	}
@@ -367,24 +336,17 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		initContextMenu();
 	}
 
-	const QPoint pos = event->globalPos();
-	const IndexSet selections = selectedItems();
+	const auto globalPos = event->globalPos();
+	const auto selections = selectedItems();
 
-	if(metadataInterpretation() == MD::Interpretation::Tracks && selections.size() == 1)
-	{
-		m->contextMenu->showAction(ContextMenu::EntryLyrics, true);
-	}
-
-	else
-	{
-		m->contextMenu->showAction(ContextMenu::EntryLyrics, false);
-	}
+	const auto lyricsVisible = (metadataInterpretation() == MD::Interpretation::Tracks) && (selections.size() == 1);
+	m->contextMenu->showAction(ContextMenu::EntryLyrics, lyricsVisible);
 
 	if(isMergeable())
 	{
 		QMap<Id, QString> data;
 		auto* model = itemModel();
-		for(int selectedIndex : selections)
+		for(const auto& selectedIndex: selections)
 		{
 			const auto id = model->mapIndexToId(selectedIndex);
 			auto name = model->searchableString(selectedIndex);
@@ -394,45 +356,48 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		}
 
 		m->mergeMenu->setData(data);
-		m->mergeMenu->action()->setVisible( m->mergeMenu->isDataValid() );
+		m->mergeMenu->action()->setVisible(m->mergeMenu->isDataValid());
 	}
 
 	m->contextMenu->setExtensions(library()->extensions());
 	m->contextMenu->setSelectionCount(selections.count());
 
-	showContextMenu(pos);
+	showContextMenu(globalPos);
 	QTableView::contextMenuEvent(event);
 }
 
-void ItemView::dragEnterEvent(QDragEnterEvent* event) {	event->accept(); }
+void ItemView::dragEnterEvent(QDragEnterEvent* event) { event->accept(); }
+
 void ItemView::dragMoveEvent(QDragMoveEvent* event) { event->accept(); }
+
 void ItemView::dropEvent(QDropEvent* event)
 {
 	event->accept();
 
-	const QMimeData* mimedata = event->mimeData();
-	if(!mimedata) {
+	const auto* mimedata = event->mimeData();
+	if(!mimedata)
+	{
 		return;
 	}
 
-	QString text;
-
-	if(mimedata->hasText()){
-		text = mimedata->text();
-	}
+	const auto text = mimedata->hasText()
+	                  ? mimedata->text()
+	                  : QString {};
 
 	// extern drops
-	if( !mimedata->hasUrls() || text.compare("tracks", Qt::CaseInsensitive) == 0) {
+	if(!mimedata->hasUrls() || (text.toLower() == "tracks"))
+	{
 		return;
 	}
 
 	QStringList filelist;
-	const QList<QUrl> urls = mimedata->urls();
-	for(const QUrl& url : urls)
+	const auto urls = mimedata->urls();
+	for(const auto& url: urls)
 	{
-		QString path = url.path();
+		const auto path = url.path();
 
-		if(::Util::File::exists(path)) {
+		if(::Util::File::exists(path))
+		{
 			filelist << path;
 		}
 	}
@@ -444,18 +409,20 @@ void ItemView::resizeEvent(QResizeEvent* event)
 {
 	SearchableTableView::resizeEvent(event);
 
-	if(m->buttonClearSelection) {
+	if(m->buttonClearSelection)
+	{
 		showClearButton(m->buttonClearSelection->isVisible());
 	}
 }
 
 int ItemView::viewportHeight() const
 {
-	int h = SearchableTableView::viewportHeight();
+	const auto viewportHeight = SearchableTableView::viewportHeight();
 
-	if(m->buttonClearSelection && m->buttonClearSelection->isVisible()) {
-		return h - (m->buttonClearSelection->height() + 5);
+	if(m->buttonClearSelection && m->buttonClearSelection->isVisible())
+	{
+		return viewportHeight - (m->buttonClearSelection->height() + 5);
 	}
 
-	return h;
+	return viewportHeight;
 }
