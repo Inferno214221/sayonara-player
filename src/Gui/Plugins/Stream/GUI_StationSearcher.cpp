@@ -101,7 +101,8 @@ namespace
 		auto* item = new QTableWidgetItem(text);
 
 		const auto width = std::min(Gui::Util::textWidth(fm, text + "bla"), 250);
-		item->setSizeHint(QSize(width, Gui::Util::viewRowHeight()));
+		
+		item->setSizeHint({width, Gui::Util::viewRowHeight(fm)});
 		item->setToolTip(text);
 
 		return item;

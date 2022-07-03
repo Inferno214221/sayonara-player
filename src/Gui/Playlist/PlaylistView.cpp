@@ -497,7 +497,7 @@ namespace Playlist
 
 	void View::currentScannedFileChanged(const QString& currentFile)
 	{
-		const auto baseHeight = fontMetrics().height() + 3;
+		const auto baseHeight = Gui::Util::viewRowHeight(fontMetrics());
 		const auto offsetBottom = (m->progressbar->isVisible())
 		                          ? baseHeight + m->progressbar->height() + 2
 		                          : baseHeight;
@@ -569,9 +569,8 @@ namespace Playlist
 
 	void View::refresh()
 	{
-		const auto fm = this->fontMetrics();
-
-		const auto baseRowHeight = std::min(static_cast<int>(fm.height() * 1.6), fm.height() + 10);
+		const auto fm = fontMetrics();
+		const auto baseRowHeight = Gui::Util::viewRowHeight(fm);
 		const auto viewRowHeight = GetSetting(Set::PL_ShowRating)
 		                           ? baseRowHeight + fm.height()
 		                           : baseRowHeight;

@@ -20,12 +20,13 @@
 
 #include "TableView.h"
 
-#include "Gui/Library/ItemModel.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/LibraryHeaderView.h"
+#include "Gui/Library/ItemModel.h"
+#include "Gui/Utils/GuiUtils.h"
 
-#include "Utils/Set.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Set.h"
 
 using namespace Library;
 
@@ -50,6 +51,8 @@ TableView::~TableView() = default;
 
 void TableView::init(AbstractLibrary* library)
 {
+	verticalHeader()->setDefaultSectionSize(Gui::Util::viewRowHeight(fontMetrics()));
+
 	initView(library);
 
 	auto headers = columnHeaders();
@@ -58,9 +61,6 @@ void TableView::init(AbstractLibrary* library)
 	});
 
 	m->header->init(headers, columnHeaderState(), sortorder(), autoResizeState());
-
-	this->verticalHeader()->setResizeContentsPrecision(1);
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 
 	connect(m->header, &QHeaderView::sectionCountChanged, this, &TableView::headerColumnsChanged);
 	connect(m->header, &QHeaderView::sectionResized, this, &TableView::sectionResized);

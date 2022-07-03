@@ -289,8 +289,9 @@ namespace Gui
 		return textWidth(widget->fontMetrics(), text);
 	}
 
-	int Util::viewRowHeight()
+	int Util::viewRowHeight(const QFontMetrics& fontMetrics)
 	{
-		return -1;
+		constexpr const auto offset = 6;
+		return fontMetrics.height() + offset;
 	}
 }

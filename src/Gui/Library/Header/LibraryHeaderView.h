@@ -51,8 +51,6 @@ namespace Library
 			QString columnText(int index) const;
 			void reloadColumnTexts();
 
-			QSize sizeHint() const override;
-
 		protected:
 			void languageChanged() override;
 			void showEvent(QShowEvent* e) override;

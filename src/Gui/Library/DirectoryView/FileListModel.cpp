@@ -317,11 +317,6 @@ QVariant FileListModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole)
-	{
-		return QSize(0, Gui::Util::viewRowHeight());
-	}
-
 	else if(role == Qt::UserRole)
 	{
 		return filename;

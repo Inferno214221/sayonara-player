@@ -28,6 +28,7 @@
 
 #include "Gui/Library/Header/ActionPair.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
@@ -154,13 +155,11 @@ namespace Library
 
 	void CoverView::resizeSections()
 	{
-		if(itemModel()->rowCount() == 0)
+		if(itemModel()->rowCount() > 0)
 		{
-			return;
+			verticalHeader()->setDefaultSectionSize(m->model->itemSize().height());
+			horizontalHeader()->setDefaultSectionSize(m->model->itemSize().width());
 		}
-
-		verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-		horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	}
 
 	QList<ActionPair> CoverView::sortingActions()

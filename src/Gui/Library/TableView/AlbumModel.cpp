@@ -190,12 +190,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole)
-	{
-		return QSize(1, Gui::Util::viewRowHeight());
-	}
-
-	return QVariant();
+	return {};
 }
 
 bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int role)

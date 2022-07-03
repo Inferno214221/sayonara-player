@@ -82,11 +82,9 @@ Gui::StyledItemDelegate::~StyledItemDelegate() = default;
 QSize Gui::StyledItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
 {
 	const auto width = index.data(Qt::SizeHintRole).toSize().width();
-	const auto height = (Gui::Util::viewRowHeight() < 0)
-	                    ? option.fontMetrics.height() + 4
-	                    : Gui::Util::viewRowHeight();
+	const auto height = Gui::Util::viewRowHeight(option.fontMetrics);
 
-	return QSize(width, height);
+	return {width, height};
 }
 
 void

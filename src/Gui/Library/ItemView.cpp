@@ -440,16 +440,6 @@ void ItemView::dropEvent(QDropEvent* event)
 	importRequested(filelist);
 }
 
-void ItemView::changeEvent(QEvent* event)
-{
-	SearchableTableView::changeEvent(event);
-
-//	if(event->type() == QEvent::FontChange)
-//	{
-//		resizeRowsToContents();
-//	}
-}
-
 void ItemView::resizeEvent(QResizeEvent* event)
 {
 	SearchableTableView::resizeEvent(event);

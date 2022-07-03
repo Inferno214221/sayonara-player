@@ -185,12 +185,7 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Qt::SizeHintRole)
-	{
-		return QSize(1, Gui::Util::viewRowHeight());
-	}
-
-	return QVariant();
+	return {};
 }
 
 Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const

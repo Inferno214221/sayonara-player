@@ -23,32 +23,33 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
-#include "Utils/MetaData/MetaDataList.h"
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Gui/Utils/MimeData/MimeDataUtils.h"
+#include "Gui/Utils/PreferenceAction.h"
+
+#include "Interfaces/LibraryInfoAccessor.h"
+
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 
-#include "Gui/Utils/MimeData/CustomMimeData.h"
-#include "Gui/Utils/MimeData/MimeDataUtils.h"
-#include "Gui/Utils/Delegates/StyledItemDelegate.h"
-#include "Gui/Utils/InputDialog/LineInputDialog.h"
-#include "Gui/Utils/PreferenceAction.h"
-#include "Gui/Utils/Icons.h"
-
-#include "Interfaces/LibraryInfoAccessor.h"
-
+#include <QApplication>
 #include <QDir>
 #include <QDrag>
 #include <QDragEnterEvent>
 #include <QDragMoveEvent>
-#include <QPainter>
-#include <QMimeData>
-#include <QApplication>
-#include <QShortcut>
 #include <QHeaderView>
+#include <QMimeData>
+#include <QPainter>
+#include <QShortcut>
 
 using Directory::FileListView;
 
@@ -83,7 +84,7 @@ void FileListView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library:
 	this->horizontalHeader()->setSectionResizeMode(0, QHeaderView::Fixed);
 	this->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 
-	this->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	this->verticalHeader()->setDefaultSectionSize(Gui::Util::viewRowHeight(fontMetrics()));
 
 	{ // rename by pressing F2
 		auto* action = new QAction(this);

@@ -240,11 +240,6 @@ void HeaderView::resizeColumnsAutomatically()
 	}
 }
 
-QSize HeaderView::sizeHint() const
-{
-	return QSize(0, (fontMetrics().height() * 3) / 2);
-}
-
 void HeaderView::reloadColumnTexts()
 {
 	for(auto i = 0; i < m->columns.size(); i++)
