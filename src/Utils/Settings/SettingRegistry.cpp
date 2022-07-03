@@ -270,7 +270,6 @@ bool SettingRegistry::init()
 
 	registerSetting<SetNoDB::MP3enc_found>(true);
 	registerSetting<SetNoDB::Pitch_found>(true);
-	registerSetting<SetNoDB::Player_Quit>(false);
 	registerSetting<SetNoDB::Soundcloud_AuthToken>(QString());
 
 	SetSetting(Set::Player_Version, SAYONARA_VERSION);
@@ -296,7 +295,6 @@ QList<SettingKey> SettingRegistry::undeployableKeys()
 			SettingKey::Soundcloud_AuthToken,
 
 			SettingKey::MP3enc_found,
-			SettingKey::Pitch_found,
-			SettingKey::Player_Quit
+			SettingKey::Pitch_found
 		};
 }

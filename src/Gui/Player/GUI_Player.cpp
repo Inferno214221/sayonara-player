@@ -59,6 +59,8 @@
 
 namespace
 {
+	constexpr const auto ShutdownProperty = "shutdown";
+
 	QString extractTrackName(const MetaData& track)
 	{
 		const auto trimmedTitle = track.title().trimmed();
@@ -96,7 +98,6 @@ struct GUI_Player::Private
 	GUI_ControlsBase* controls {nullptr};
 	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
-	bool shutdownRequested {false};
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
 	        GUI_Player* parent) :
@@ -145,7 +146,6 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 
 	ListenSettingNoCall(Set::Player_Fullscreen, GUI_Player::fullscreenChanged);
 	ListenSettingNoCall(Set::Lib_Show, GUI_Player::showLibraryChanged);
-	ListenSettingNoCall(SetNoDB::Player_Quit, GUI_Player::reallyClose);
 	ListenSettingNoCall(Set::Player_ControlStyle, GUI_Player::controlstyleChanged);
 }
 
@@ -589,12 +589,16 @@ void GUI_Player::fullscreenChanged()
 void GUI_Player::reallyClose()
 {
 	spLog(Log::Info, this) << "closing player...";
-	Gui::MainWindow::close();
+
+	m->trayIcon->hide();
+	m->trayIcon->deleteLater();
+
+	emit sigClosed();
 }
 
 void GUI_Player::requestShutdown()
 {
-	m->shutdownRequested = true;
+	setProperty(ShutdownProperty, true);
 }
 
 void GUI_Player::resizeEvent(QResizeEvent* e)
@@ -605,13 +609,16 @@ void GUI_Player::resizeEvent(QResizeEvent* e)
 
 void GUI_Player::closeEvent(QCloseEvent* e)
 {
-	SetSetting(Set::Player_Geometry, this->saveGeometry());
-	SetSetting(Set::Player_Maximized, this->isMaximized());
-	SetSetting(Set::Player_Fullscreen, this->isFullScreen());
+	SetSetting(Set::Player_Geometry, saveGeometry());
+	SetSetting(Set::Player_Maximized, isMaximized());
+	SetSetting(Set::Player_Fullscreen, isFullScreen());
 	SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
 	SetSetting(Set::Player_SplitterControls, ui->splitterControls->saveState());
 
-	if(!m->shutdownRequested && GetSetting(Set::Player_Min2Tray) && !GetSetting(SetNoDB::Player_Quit))
+	const auto shutdown = property(ShutdownProperty);
+	const auto isShutdownRequested =
+		shutdown.isValid() && (shutdown.toBool() == true); // NOLINT(readability-simplify-boolean-expr)
+	if(GetSetting(Set::Player_Min2Tray) && !isShutdownRequested)
 	{
 		if(GetSetting(Set::Player_514Fix))
 		{
@@ -619,14 +626,12 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 			QApplication::processEvents();
 		}
 
-		this->hide();
+		hide();
 	}
 
 	else
 	{
-		m->trayIcon->hide();
-		Gui::MainWindow::closeEvent(e);
-		emit sigClosed();
+		reallyClose();
 	}
 }
 

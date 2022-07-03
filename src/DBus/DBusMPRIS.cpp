@@ -196,7 +196,7 @@ void DBusMPRIS::MediaPlayer2::SetFullscreen(bool b)
 
 void DBusMPRIS::MediaPlayer2::Quit()
 {
-	SetSetting(SetNoDB::Player_Quit, true);
+	m->player->setProperty("shutdown", true);
 	m->player->close();
 }
 
@@ -208,7 +208,6 @@ void DBusMPRIS::MediaPlayer2::Raise()
 
 	if(m->player->isMinimized())
 	{
-
 		QTimer::singleShot(200, [=]() {
 			m->player->showNormal();
 		});

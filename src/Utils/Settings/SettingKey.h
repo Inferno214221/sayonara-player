@@ -163,7 +163,6 @@ enum class SettingKey :
 	Broadcast_Port,
 	MP3enc_found,
 	Pitch_found,
-	Player_Quit,
 	Remote_Active,
 	Remote_Port,
 	Remote_Discoverable,
@@ -430,6 +429,5 @@ INST(int, Logger_Level)            /* Also log development: */
 INST_NO_DB(QString, Soundcloud_AuthToken)
 INST_NO_DB(bool, MP3enc_found)
 INST_NO_DB(bool, Pitch_found)
-INST_NO_DB(bool, Player_Quit)
 
 #endif // SETTINGKEY_H
