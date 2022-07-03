@@ -34,7 +34,7 @@ namespace
 {
 	QFileDialog::Options directoryDialogOptions()
 	{
-#ifdef DISABLE_NATIVE_DIR_DIALOGS
+#ifdef DISABLE_NATIVE_DIR_DIALOGS // snap
 		const auto forceNativeDialog = GetSetting(Set::Player_ForceNativeDirDialog);
 		if(!forceNativeDialog)
 		{
@@ -53,11 +53,13 @@ namespace Gui
 	                                   bool enableMultiSelection, QWidget* parent) :
 		QFileDialog(parent)
 	{
+		setOptions(directoryDialogOptions()); // should be set as early as possible
+
 		setWindowTitle(title.isEmpty() ? tr("Choose directory") : title);
 		setDirectory(initialDirectory.isEmpty() ? QDir::homePath() : initialDirectory);
-		setFilter(QDir::Filter::Dirs);
 		setAcceptMode(QFileDialog::AcceptOpen);
-		setOptions(directoryDialogOptions());
+		setFilter(QDir::Filter::Dirs); // only show dirs
+		setFileMode(QFileDialog::FileMode::Directory); // choose dirs when clicking "open"
 
 		const auto locations =
 			{
