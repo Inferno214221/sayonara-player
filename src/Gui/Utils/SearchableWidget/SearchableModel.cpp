@@ -21,15 +21,9 @@
 #include "SearchableModel.h"
 #include "Utils/Settings/Settings.h"
 
-SearchableModelInterface::SearchableModelInterface() {}
+SearchableModelInterface::SearchableModelInterface() = default;
 SearchableModelInterface::~SearchableModelInterface() = default;
 
-SearchableModelInterface::ExtraTriggerMap SearchableModelInterface::getExtraTriggers()
-{
-	return SearchableModelInterface::ExtraTriggerMap();
-}
+SearchableModelInterface::ExtraTriggerMap SearchableModelInterface::getExtraTriggers() { return {}; }
 
-Library::SearchModeMask SearchableModelInterface::searchMode() const
-{
-	return GetSetting(Set::Lib_SearchMode);
-}
+Library::SearchModeMask SearchableModelInterface::searchMode() const { return GetSetting(Set::Lib_SearchMode); }

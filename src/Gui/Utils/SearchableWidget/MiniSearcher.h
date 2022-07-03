@@ -36,12 +36,8 @@ class QHideEvent;
 
 namespace Gui
 {
-	/**
-	 * @brief Emits signals if tab was pressed or focus was lost
-	 * @ingroup Searchable
-	 */
 	class MiniSearchEventFilter :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 
@@ -56,49 +52,38 @@ namespace Gui
 			bool eventFilter(QObject* o, QEvent* e) override;
 	};
 
-
 	class MiniSearcher :
-			public Gui::WidgetTemplate<QFrame>
+		public Gui::WidgetTemplate<QFrame>
 	{
 		Q_OBJECT
 		PIMPL(MiniSearcher)
 
 		signals:
-			void sigReset();
 			void sigTextChanged(const QString&);
 			void sigFindNextRow();
 			void sigFindPrevRow();
 
 		public:
-			MiniSearcher(SearchableViewInterface* parent);
+			MiniSearcher(SearchableViewInterface* searchableView);
 			~MiniSearcher() override;
 
-			bool    handleKeyPress(QKeyEvent* e);
-			void    setExtraTriggers(const QMap<QChar, QString>& triggers);
-			QString currentText();
-			void    setNumberResults(int results);
+			bool handleKeyPress(QKeyEvent* e);
+			void setExtraTriggers(const QMap<QChar, QString>& triggers);
+			void setNumberResults(int results);
 
 		public slots:
 			void reset();
 
-		private slots:
-			void previousResult();
-			void nextResult();
-
-		private:
-			bool isInitiator(QKeyEvent* event) const;
-			void init(const QString& text);
-			bool checkAndInit(QKeyEvent* event);
-			QRect calcGeometry() const;
-			void notifyViewSearchDone();
-
 		protected:
 			void languageChanged() override;
-
 			void keyPressEvent(QKeyEvent* e) override;
 			void showEvent(QShowEvent* e) override;
-			void hideEvent(QHideEvent* e) override;
 			void focusOutEvent(QFocusEvent* e) override;
+
+		private:
+			void notifyViewSearchDone();
+			void previousResult();
+			void nextResult();
 	};
 }
 

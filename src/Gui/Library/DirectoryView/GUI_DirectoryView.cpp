@@ -25,6 +25,7 @@
 #include <QDesktopServices>
 #include <QItemSelectionModel>
 #include <QLabel>
+#include <QListView>
 #include <QTimer>
 
 using Directory::TreeView;

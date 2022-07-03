@@ -18,57 +18,46 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ABSTRACT_SEARCH_MODEL_H_
-#define ABSTRACT_SEARCH_MODEL_H_
+#ifndef GUI_SEARCHABLE_MODEL_H
+#define GUI_SEARCHABLE_MODEL_H
 
-#include <QAbstractTableModel>
-#include <QAbstractListModel>
-#include <QMap>
-#include <QString>
 #include "Utils/Library/SearchMode.h"
 
-// We need this for eventual disambiguation between the
-// table itself and this interface
-// in the Searchable View class
+#include <QAbstractListModel>
+#include <QAbstractTableModel>
+#include <QMap>
+#include <QString>
 
-/**
- * @brief The SearchableModelInterface class
- * @ingroup Searchable
- */
 class SearchableModelInterface
 {
-public:
-	using ExtraTriggerMap=QMap<QChar, QString>;
+	public:
+		using ExtraTriggerMap = QMap<QChar, QString>;
 
-	virtual ExtraTriggerMap getExtraTriggers();
-	virtual QModelIndexList searchResults(const QString& substr)=0;
+		virtual ExtraTriggerMap getExtraTriggers();
+		virtual QModelIndexList searchResults(const QString& substr) = 0;
 
-	virtual ::Library::SearchModeMask searchMode() const final;
+		virtual ::Library::SearchModeMask searchMode() const final;
 
-protected:
-	SearchableModelInterface();
-	virtual ~SearchableModelInterface();
+	protected:
+		SearchableModelInterface();
+		virtual ~SearchableModelInterface();
 };
 
-
-template <typename Model>
+template<typename Model>
 class SearchableModel :
 	public SearchableModelInterface,
 	public Model
 {
 	public:
-		SearchableModel(QObject* parent=nullptr) :
+		SearchableModel(QObject* parent = nullptr) :
 			SearchableModelInterface(),
-			Model(parent)
-		{}
+			Model(parent) {}
 
 		virtual ~SearchableModel() = default;
 
 		using Model::rowCount;
 };
 
+using SearchableTableModel = SearchableModel<QAbstractTableModel>;
 
-using SearchableTableModel=SearchableModel<QAbstractTableModel>;
-using SearchableListModel=SearchableModel<QAbstractListModel> ;
-
-#endif
+#endif // GUI_SEARCHABLE_MODEL_H

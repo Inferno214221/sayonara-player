@@ -23,37 +23,39 @@
 #include "MiniSearcher.h"
 
 #include "Utils/Library/SearchMode.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 
-#include <QListView>
 #include <QAbstractItemModel>
 #include <QKeyEvent>
+#include <QListView>
 #include <QMap>
-#include <QString>
 #include <QScrollBar>
+#include <QString>
 
 struct MiniSearcherViewConnector::Private
 {
-	QMap<QChar, QString>		triggerMap;
-	QString						currentSearchstring;
+	QMap<QChar, QString> triggerMap;
+	QString currentSearchstring;
 
-	Gui::MiniSearcher*			miniSearcher=nullptr;
-	SearchableViewInterface*	svi=nullptr;
+	Gui::MiniSearcher* miniSearcher {nullptr};
+	SearchableViewInterface* searchableView;
+
+	explicit Private(SearchableViewInterface* searchableView) :
+		searchableView {searchableView} {}
 };
 
-MiniSearcherViewConnector::MiniSearcherViewConnector(SearchableViewInterface* parent) :
-	QObject(parent->view())
+MiniSearcherViewConnector::MiniSearcherViewConnector(SearchableViewInterface* searchableView, QObject* parent) :
+	QObject(parent)
 {
-	m = Pimpl::make<Private>();
-	m->svi = parent;
+	m = Pimpl::make<Private>(searchableView);
 }
 
 MiniSearcherViewConnector::~MiniSearcherViewConnector() = default;
 
 void MiniSearcherViewConnector::init()
 {
-	m->miniSearcher = new Gui::MiniSearcher(m->svi);
+	m->miniSearcher = new Gui::MiniSearcher(m->searchableView);
 	m->miniSearcher->setExtraTriggers(m->triggerMap);
 
 	connect(m->miniSearcher, &Gui::MiniSearcher::sigTextChanged, this, &MiniSearcherViewConnector::lineEditChanged);
@@ -69,8 +71,8 @@ bool MiniSearcherViewConnector::isActive() const
 void MiniSearcherViewConnector::setExtraTriggers(const QMap<QChar, QString>& map)
 {
 	m->triggerMap = map;
-
-	if(m->miniSearcher){
+	if(m->miniSearcher)
+	{
 		m->miniSearcher->setExtraTriggers(map);
 	}
 }
@@ -82,61 +84,47 @@ bool MiniSearcherViewConnector::handleKeyPress(QKeyEvent* e)
 
 void MiniSearcherViewConnector::lineEditChanged(const QString& str)
 {
-	Library::SearchModeMask search_mode = GetSetting(Set::Lib_SearchMode);
-	m->currentSearchstring = Library::Utils::convertSearchstring(str, search_mode, m->triggerMap.keys());
+	const auto searchMode = GetSetting(Set::Lib_SearchMode);
+	m->currentSearchstring = Library::Utils::convertSearchstring(str, searchMode, m->triggerMap.keys());
 
-	int results = m->svi->setSearchstring(m->currentSearchstring);
-	m->miniSearcher->setNumberResults(results);
+	const auto resultCount = m->searchableView->setSearchstring(m->currentSearchstring);
+	m->miniSearcher->setNumberResults(resultCount);
 }
 
 void MiniSearcherViewConnector::selectNext()
 {
-	m->svi->selectNextMatch(m->currentSearchstring);
+	m->searchableView->selectNextMatch(m->currentSearchstring);
 }
 
 void MiniSearcherViewConnector::selectPrevious()
 {
-	m->svi->selectPreviousMatch(m->currentSearchstring);
+	m->searchableView->selectPreviousMatch(m->currentSearchstring);
 }
 
 struct SearchableViewInterface::Private :
-		public QObject
+	public QObject
 {
-	MiniSearcherViewConnector*	minisearcher=nullptr;
-	SearchableModelInterface*	searchModel=nullptr;
-	SearchableViewInterface*	searchView=nullptr;
-	QAbstractItemView*			view=nullptr;
+	SearchableModelInterface* searchModel {nullptr};
+	QAbstractItemView* view;
+	MiniSearcherViewConnector* miniSearcherViewConnector;
 
-	QModelIndexList				foundSearchIndexes;
-	int							currentSearchIndex;
-	int							currentIndex;
+	QModelIndexList foundSearchIndexes;
+	int currentSearchIndex {-1};
+	int currentIndex {-1};
 
-	Private(SearchableViewInterface* parent, QAbstractItemView* v) :
-		QObject(v),
-		searchView(parent),
-		view(v),
-		currentIndex(-1)
-	{}
+	explicit Private(SearchableViewInterface* searchableView, QAbstractItemView* view) :
+		QObject(view),
+		view {view},
+		miniSearcherViewConnector {new MiniSearcherViewConnector(searchableView, view)} {}
 };
 
 SearchableViewInterface::SearchableViewInterface(QAbstractItemView* view) :
 	SelectionViewInterface(view)
 {
 	m = Pimpl::make<Private>(this, view);
-
-	m->minisearcher = new MiniSearcherViewConnector(this);
 }
 
 SearchableViewInterface::~SearchableViewInterface() = default;
-
-bool SearchableViewInterface::isMinisearcherActive() const
-{
-	if(!m->searchModel){
-		return false;
-	}
-
-	return m->minisearcher->isActive();
-}
 
 int SearchableViewInterface::viewportHeight() const
 {
@@ -148,147 +136,115 @@ int SearchableViewInterface::viewportWidth() const
 	return m->view->viewport()->x() + m->view->viewport()->width();
 }
 
-QAbstractItemView* SearchableViewInterface::view() const
-{
-	return m->view;
-}
+QAbstractItemView* SearchableViewInterface::view() const { return m->view; }
 
 int SearchableViewInterface::setSearchstring(const QString& str)
 {
 	m->foundSearchIndexes = m->searchModel->searchResults(str);
 	m->currentSearchIndex = -1;
 
-	this->selectMatch(str, SearchDirection::First);
+	selectMatch(str, SearchDirection::First);
 
 	return m->foundSearchIndexes.size();
 }
 
 void SearchableViewInterface::selectNextMatch(const QString& str)
 {
-	this->selectMatch(str, SearchDirection::Next);
+	selectMatch(str, SearchDirection::Next);
 }
 
 void SearchableViewInterface::selectPreviousMatch(const QString& str)
 {
-	this->selectMatch(str, SearchDirection::Prev);
+	selectMatch(str, SearchDirection::Prev);
 }
 
 void SearchableViewInterface::setSearchModel(SearchableModelInterface* model)
 {
-	 m->searchModel = model;
-	 if(m->searchModel)
-	 {
-		 m->minisearcher->setExtraTriggers(m->searchModel->getExtraTriggers());
-	 }
+	m->searchModel = model;
+	if(m->searchModel)
+	{
+		m->miniSearcherViewConnector->setExtraTriggers(m->searchModel->getExtraTriggers());
+	}
 }
-
 
 QModelIndex SearchableViewInterface::matchIndex(const QString& str, SearchDirection direction) const
 {
-	QModelIndex idx;
-	if(str.isEmpty()) {
-		return QModelIndex();
-	}
-
-	if(!m->searchModel) {
-		return QModelIndex();
-	}
-
-	if(m->foundSearchIndexes.isEmpty())
+	if(str.isEmpty() ||
+	   !m->searchModel ||
+	   m->foundSearchIndexes.isEmpty())
 	{
-		return QModelIndex();
+		return {};
 	}
 
-	if(m->currentSearchIndex < 0 || m->currentSearchIndex >= m->foundSearchIndexes.size()){
-		m->currentSearchIndex = 0;
-	}
+	m->currentSearchIndex = std::max(0, m->currentSearchIndex);
+	m->currentSearchIndex = std::min(m->foundSearchIndexes.size() - 1, m->currentSearchIndex);
 
 	switch(direction)
 	{
 		case SearchDirection::First:
-			idx = m->foundSearchIndexes.first();
 			m->currentSearchIndex = 0;
 			break;
 
 		case SearchDirection::Next:
 			m->currentSearchIndex++;
-			if(m->currentSearchIndex >= m->foundSearchIndexes.count()){
+			if(m->currentSearchIndex >= m->foundSearchIndexes.count())
+			{
 				m->currentSearchIndex = 0;
 			}
-
-			idx = m->foundSearchIndexes.at(m->currentSearchIndex);
 			break;
 
 		case SearchDirection::Prev:
 			m->currentSearchIndex--;
-			if(m->currentSearchIndex < 0){
+			if(m->currentSearchIndex < 0)
+			{
 				m->currentSearchIndex = m->foundSearchIndexes.count() - 1;
 			}
-
-			idx = m->foundSearchIndexes.at(m->currentSearchIndex);
 			break;
 	}
 
-	return idx;
+	return m->foundSearchIndexes.at(m->currentSearchIndex);
 }
 
 void SearchableViewInterface::selectMatch(const QString& str, SearchDirection direction)
 {
-	QModelIndex idx = matchIndex(str, direction);
-	if(!idx.isValid())
+	const auto matchedIndex = matchIndex(str, direction);
+	if(!matchedIndex.isValid())
 	{
 		m->currentIndex = -1;
 		return;
 	}
 
-	m->currentIndex = mapModelIndexToIndex(idx);
-
-	IndexSet indexes(m->currentIndex);
+	m->currentIndex = mapModelIndexToIndex(matchedIndex);
 
 	switch(selectionType())
 	{
 		case SelectionViewInterface::SelectionType::Rows:
-			selectRows(indexes);
-			break;
-		case SelectionViewInterface::SelectionType::Columns:
-			selectColumns(indexes);
+			selectRows({m->currentIndex});
 			break;
 		case SelectionViewInterface::SelectionType::Items:
-			selectItems(indexes);
+			selectItems({m->currentIndex});
 			break;
 	}
 
-	m->view->setCurrentIndex(idx);
-
-	if(direction == SearchDirection::First){
-		m->view->scrollTo(idx, QListView::ScrollHint::PositionAtCenter);
-	}
-
-	else if(direction == SearchDirection::Next){
-		m->view->scrollTo(idx, QListView::ScrollHint::PositionAtCenter);
-	}
-
-	else if(direction == SearchDirection::Prev){
-		m->view->scrollTo(idx, QListView::ScrollHint::PositionAtCenter);
-	}
+	m->view->setCurrentIndex(matchedIndex);
+	m->view->scrollTo(matchedIndex, QListView::ScrollHint::PositionAtCenter);
 }
 
 bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)
 {
-	bool b = SelectionViewInterface::handleKeyPress(e);
-	if(b) {
+	const auto b = SelectionViewInterface::handleKeyPress(e);
+	if(b)
+	{
 		return true;
 	}
 
-	if(!m->searchModel) {
+	if(!m->searchModel)
+	{
 		return false;
 	}
 
-	m->minisearcher->init();
-	return m->minisearcher->handleKeyPress(e);
+	m->miniSearcherViewConnector->init();
+	return m->miniSearcherViewConnector->handleKeyPress(e);
 }
 
-void SearchableViewInterface::searchDone()
-{
-	// do nothing
-}
+void SearchableViewInterface::searchDone() {}

@@ -24,51 +24,40 @@
 #include "Utils/Pimpl.h"
 #include <QModelIndex>
 
-using ModelIndexRange=QPair<QModelIndex, QModelIndex>; // top left, bottom right
-using ModelIndexRanges=QList<ModelIndexRange>;
+using ModelIndexRange = QPair<QModelIndex, QModelIndex>; // top left, bottom right
 
 class QAbstractItemView;
 class QItemSelection;
 class QItemSelectionModel;
 class QKeyEvent;
 
-/**
- * @brief The SayonaraSelectionView class
- * @ingroup Searchable
- */
 class SelectionViewInterface
 {
 	PIMPL(SelectionViewInterface)
 
-public:
-	enum class SelectionType
-	{
-		Rows=0,
-		Columns,
-		Items
-	};
+	public:
+		enum class SelectionType
+		{
+			Rows = 0,
+			Items
+		};
 
-	virtual IndexSet selectedItems() const;
+		virtual ~SelectionViewInterface();
 
-protected:
-	SelectionViewInterface(QAbstractItemView* view);
-	virtual ~SelectionViewInterface();
+		[[nodiscard]] virtual IndexSet selectedItems() const;
+		
+	protected:
+		explicit SelectionViewInterface(QAbstractItemView* view);
 
-	void selectRows(const IndexSet& rows, int minimumColumn=-1, int maximumColumn=-1);
-	void selectColumns(const IndexSet& columns, int minimumRow=-1, int maximumRow=-1);
-	void selectItems(const IndexSet& indexes);
-	void selectAll();
+		void selectRows(const IndexSet& rows, int minimumColumn = -1, int maximumColumn = -1);
+		void selectItems(const IndexSet& indexes);
+		void selectAll();
 
-	virtual SelectionViewInterface::SelectionType selectionType() const;
+		[[nodiscard]] virtual SelectionViewInterface::SelectionType selectionType() const;
+		[[nodiscard]] virtual int mapModelIndexToIndex(const QModelIndex& idx) const = 0;
+		[[nodiscard]] virtual ModelIndexRange mapIndexToModelIndexes(int idx) const = 0;
 
-	virtual int mapModelIndexToIndex(const QModelIndex& idx) const=0;
-	virtual ModelIndexRange mapIndexToModelIndexes(int idx) const=0;
-
-	IndexSet mapModelIndexesToIndexes(const QModelIndexList& indexes) const;
-	ModelIndexRanges mapIndexesToModelIndexRanges(const IndexSet& indexes) const;
-
-protected:
-	virtual bool handleKeyPress(QKeyEvent* e);
+		virtual bool handleKeyPress(QKeyEvent* e);
 };
 
 #endif // SAYONARASELECTIONVIEW_H

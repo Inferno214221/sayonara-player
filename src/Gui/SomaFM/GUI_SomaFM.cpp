@@ -37,8 +37,9 @@
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverLookup.h"
 
-#include <QPixmap>
 #include <QItemDelegate>
+#include <QListView>
+#include <QPixmap>
 #include <QPushButton>
 
 using SomaFM::GUI_SomaFM;
@@ -203,7 +204,7 @@ void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 	const auto station = getStation(idx.row());
 	ui->labDescription->setText(station.description());
 
-	for(auto* stationButton : m->stationButtons)
+	for(auto* stationButton: m->stationButtons)
 	{
 		ui->verticalLayout->removeWidget(stationButton);
 		stationButton->deleteLater();
@@ -214,7 +215,7 @@ void GUI_SomaFM::stationIndexChanged(const QModelIndex& idx)
 	const auto playlists = station.playlists();
 
 	auto index = 0;
-	for(const auto& playlist : playlists)
+	for(const auto& playlist: playlists)
 	{
 		const auto text = station.urlTypeString(playlist);
 		const auto icon = Gui::Icons::icon(Gui::Icons::Play);
