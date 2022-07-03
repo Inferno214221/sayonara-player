@@ -69,8 +69,13 @@ MetaDataList SmartPlaylistByListeningDate::filterTracks(MetaDataList tracks)
 	auto* dbSession = dbConnector->sessionConnector();
 
 	auto entryListMap = dbSession->getSessions(
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 15, 0))
 		dateTo.startOfDay(),
 		dateFrom.endOfDay());
+#else
+	QDateTime(dateTo),
+	QDateTime(dateFrom).addDays(1).addSecs(-1));
+#endif
 
 	tracks.clear();
 
