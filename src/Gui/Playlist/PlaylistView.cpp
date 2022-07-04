@@ -112,6 +112,47 @@ namespace
 		const auto widthTime = Gui::Util::textWidth(fontMetrics, "1888:88");
 		return resizeSection(+Playlist::Model::ColumnName::Time, widthTime, horizontalHeader);
 	}
+
+	void setupContextMenuItems(Playlist::ContextMenu* contextMenu, Playlist::Model* model,
+	                           const Util::Set<int>& selectedItems)
+	{
+		using Playlist::ContextMenu;
+		auto entryMask = ContextMenu::Entries {ContextMenu::EntryNone};
+		if(model->rowCount() > 0)
+		{
+			entryMask |= (ContextMenu::EntryClear |
+			              ContextMenu::EntryRefresh |
+			              ContextMenu::EntryReverse |
+			              ContextMenu::EntryRandomize);
+
+			if(const auto selections = selectedItems; !selections.isEmpty())
+			{
+				entryMask |= (ContextMenu::EntryInfo |
+				              ContextMenu::EntryRemove);
+
+				if(selections.size() == 1)
+				{
+					const auto& selectedRow = *selections.begin();
+					const auto& track = model->metadata(selectedRow);
+
+					entryMask |= contextMenu->setTrack(track, (selectedRow == model->currentTrack()));
+				}
+
+				if(model->hasLocalMedia(selections))
+				{
+					entryMask |= (ContextMenu::EntryEdit |
+					              ContextMenu::EntryDelete);
+				}
+			}
+
+			if(model->currentTrack() >= 0)
+			{
+				entryMask |= ContextMenu::EntryCurrentTrack;
+			}
+		}
+
+		contextMenu->showActions(entryMask);
+	}
 }
 
 namespace Playlist
@@ -179,6 +220,9 @@ namespace Playlist
 		connect(m->model, &Model::sigBusyChanged, this, &View::playlistBusyChanged);
 		connect(m->model, &Model::sigCurrentScannedFileChanged, this, &View::currentScannedFileChanged);
 
+		initContextMenu();
+		setupContextMenuItems(m->contextMenu, m->model, selectedItems());
+
 		QTimer::singleShot(100, this, &View::jumpToCurrentTrack);
 	}
 
@@ -203,6 +247,7 @@ namespace Playlist
 
 		connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Model::refreshData);
 		connect(m->contextMenu, &ContextMenu::sigReverseTriggered, m->model, &Model::reverseTracks);
+		connect(m->contextMenu, &ContextMenu::sigRandomizeTriggered, m->model, &Model::randomizeTracks);
 		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [&]() { showEdit(); });
 		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [&]() { showInfo(); });
 		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [&]() { showLyrics(); });
@@ -379,47 +424,10 @@ namespace Playlist
 
 	void View::contextMenuEvent(QContextMenuEvent* e)
 	{
-		if(!m->contextMenu)
-		{
-			initContextMenu();
-		}
-
 		m->contextMenu->clearTrack();
 
-		ContextMenu::Entries entryMask = ContextMenu::EntryNone;
-		if(rowCount() > 0)
-		{
-			entryMask |= (ContextMenu::EntryClear |
-			              ContextMenu::EntryRefresh |
-			              ContextMenu::EntryReverse);
+		setupContextMenuItems(m->contextMenu, m->model, selectedItems());
 
-			if(const auto selections = selectedItems(); !selections.isEmpty())
-			{
-				entryMask |= (ContextMenu::EntryInfo |
-				              ContextMenu::EntryRemove);
-
-				if(selections.size() == 1)
-				{
-					const auto& selectedRow = *selections.begin();
-					const auto& track = m->model->metadata(selectedRow);
-
-					entryMask |= m->contextMenu->setTrack(track, (selectedRow == m->model->currentTrack()));
-				}
-
-				if(m->model->hasLocalMedia(selections))
-				{
-					entryMask |= (ContextMenu::EntryEdit |
-					              ContextMenu::EntryDelete);
-				}
-			}
-
-			if(m->model->currentTrack() >= 0)
-			{
-				entryMask |= ContextMenu::EntryCurrentTrack;
-			}
-		}
-
-		m->contextMenu->showActions(entryMask);
 		m->contextMenu->exec(e->globalPos());
 
 		SearchableTableView::contextMenuEvent(e);

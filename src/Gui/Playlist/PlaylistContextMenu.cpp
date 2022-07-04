@@ -58,24 +58,18 @@ struct ContextMenu::Private
 	QMenu* playlistModeMenu;
 	QAction* playlistModeAction;
 
-	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, ContextMenu* parent) :
-		ratingMenu {new QMenu(parent)},
-		bookmarksMenu {new BookmarksMenu(parent)},
-		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, parent)},
-		playlistModeAction {parent->addMenu(playlistModeMenu)}
+	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, ContextMenu* contextMenu) :
+		ratingMenu {new QMenu(contextMenu)},
+		bookmarksMenu {new BookmarksMenu(contextMenu)},
+		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, contextMenu)},
+		playlistModeAction {contextMenu->addMenu(playlistModeMenu)}
 	{
-		entryActionMap[EntryRating] = parent->addMenu(ratingMenu);
-		entryActionMap[EntryBookmarks] = parent->addMenu(bookmarksMenu);
-		entryActionMap[EntryCurrentTrack] = new QAction(parent);
-		entryActionMap[EntryFindInLibrary] = new QAction(parent);
-		entryActionMap[EntryReverse] = new QAction(parent);
-
-		parent->addActions
-			({
-				 entryActionMap[EntryReverse],
-				 entryActionMap[EntryCurrentTrack],
-				 entryActionMap[EntryFindInLibrary],
-			 });
+		entryActionMap[EntryRating] = contextMenu->addMenu(ratingMenu);
+		entryActionMap[EntryBookmarks] = contextMenu->addMenu(bookmarksMenu);
+		entryActionMap[EntryCurrentTrack] = contextMenu->addAction(QString());
+		entryActionMap[EntryFindInLibrary] = contextMenu->addAction(QString());
+		entryActionMap[EntryReverse] = contextMenu->addAction(QString());
+		entryActionMap[EntryRandomize] = contextMenu->addAction(QString());
 	}
 };
 
@@ -95,8 +89,22 @@ ContextMenu::ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget
 	connect(m->entryActionMap[EntryCurrentTrack], &QAction::triggered, this, &ContextMenu::sigJumpToCurrentTrack);
 	connect(m->entryActionMap[EntryFindInLibrary], &QAction::triggered, this, &ContextMenu::sigFindTrackTriggered);
 	connect(m->entryActionMap[EntryReverse], &QAction::triggered, this, &ContextMenu::sigReverseTriggered);
+	connect(m->entryActionMap[EntryRandomize], &QAction::triggered, this, &ContextMenu::sigRandomizeTriggered);
 
 	connect(m->bookmarksMenu, &BookmarksMenu::sigBookmarkPressed, this, &ContextMenu::bookmarkPressed);
+
+	m->entryActionMap[EntryCurrentTrack]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_J));
+	m->entryActionMap[EntryFindInLibrary]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_G));
+	m->entryActionMap[EntryRandomize]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R));
+	m->entryActionMap[EntryReverse]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_R));
+
+	parent->addActions( // make actions available through shortcut
+		{
+			m->entryActionMap[EntryReverse],
+			m->entryActionMap[EntryRandomize],
+			m->entryActionMap[EntryCurrentTrack],
+			m->entryActionMap[EntryFindInLibrary]
+		});
 
 	skinChanged();
 }
@@ -132,7 +140,7 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 void ContextMenu::setRating(Rating rating)
 {
 	const auto actions = m->ratingMenu->actions();
-	for(auto* action : actions)
+	for(auto* action: actions)
 	{
 		const auto data = action->data().value<Rating>();
 		action->setChecked(data == rating);
@@ -186,10 +194,13 @@ void ContextMenu::languageChanged()
 	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track") + QString("    "));
 	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library") + QString("    "));
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
+	m->entryActionMap[EntryRandomize]->setText(tr("Randomize playlist") + QString("    "));
 	m->playlistModeAction->setText(tr("Playlist mode"));
 
 	m->entryActionMap[EntryCurrentTrack]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_J));
 	m->entryActionMap[EntryFindInLibrary]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_G));
+	m->entryActionMap[EntryReverse]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_R));
+	m->entryActionMap[EntryRandomize]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R));
 }
 
 void ContextMenu::skinChanged()

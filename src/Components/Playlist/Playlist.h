@@ -84,6 +84,7 @@ namespace Playlist
 			bool isBusy() const;
 
 			void reverse();
+			void randomize();
 
 			const MetaData& track(int index) const;
 			const MetaDataList& tracks() const override;
@@ -98,7 +99,7 @@ namespace Playlist
 			IndexSet copyTracks(const IndexSet& indexes, int targetRow);
 
 			void findTrack(int index);
-			bool changeTrack(int index, MilliSeconds positionMs=0);
+			bool changeTrack(int index, MilliSeconds positionMs = 0);
 			bool wasChanged() const override;
 
 			void reloadFromDatabase();

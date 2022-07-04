@@ -44,6 +44,7 @@ namespace Playlist
 			void sigJumpToCurrentTrack();
 			void sigFindTrackTriggered();
 			void sigReverseTriggered();
+			void sigRandomizeTriggered();
 
 		public:
 			enum Entry
@@ -52,7 +53,8 @@ namespace Playlist
 				EntryBookmarks = (Library::ContextMenu::EntryLast << 2),
 				EntryCurrentTrack = (Library::ContextMenu::EntryLast << 3),
 				EntryFindInLibrary = (Library::ContextMenu::EntryLast << 4),
-				EntryReverse = (Library::ContextMenu::EntryLast << 5)
+				EntryReverse = (Library::ContextMenu::EntryLast << 5),
+				EntryRandomize = (Library::ContextMenu::EntryLast << 6)
 			};
 
 			ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent);

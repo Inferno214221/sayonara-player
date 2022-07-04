@@ -21,12 +21,13 @@
 #include "Playlist.h"
 #include "PlaylistStopBehavior.h"
 
-#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Set.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/RandomGenerator.h"
+#include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include "Interfaces/PlayManager.h"
 #include "Components/Tagging/ChangeNotifier.h"
@@ -423,6 +424,12 @@ namespace Playlist
 	void Playlist::reverse()
 	{
 		std::reverse(m->tracks.begin(), m->tracks.end());
+		setChanged(true);
+	}
+
+	void Playlist::randomize()
+	{
+		Util::Algorithm::shuffle(m->tracks);
 		setChanged(true);
 	}
 

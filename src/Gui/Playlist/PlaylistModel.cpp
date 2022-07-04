@@ -69,11 +69,11 @@ namespace
 
 	enum class PlaylistSearchMode
 	{
-			Artist,
-			Album,
-			Title,
-			Filename,
-			Jump
+		Artist,
+		Album,
+		Title,
+		Filename,
+		Jump
 	};
 
 	QString convertEntryLook(const QString& entryLook, const MetaData& md)
@@ -87,7 +87,7 @@ namespace
 		ret.replace(QStringLiteral("%artist%"), md.artist());
 		ret.replace(QStringLiteral("%album%"), md.album());
 
-		if (entryLook.indexOf("%filename%") != -1)
+		if(entryLook.indexOf("%filename%") != -1)
 		{
 			QFileInfo fi(md.filepath());
 			const auto fileName = fi.fileName();
@@ -374,7 +374,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	MetaDataList tracks;
 	tracks.reserve(indexes.size());
 
-	for(const auto idx : indexes)
+	for(const auto idx: indexes)
 	{
 		auto track = m->playlist->track(idx);
 		if(rating != track.rating())
@@ -418,6 +418,11 @@ void Model::reverseTracks()
 	m->playlist->reverse();
 }
 
+void Model::randomizeTracks()
+{
+	m->playlist->randomize();
+}
+
 int Model::currentTrack() const
 {
 	return m->playlist->currentTrackIndex();
@@ -447,7 +452,7 @@ MetaDataList Model::metadata(const IndexSet& rows) const
 
 QModelIndexList Model::searchResults(const QString& searchString)
 {
-	const auto[playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
+	const auto [playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
 
 	if(playlistSearchMode == PlaylistSearchMode::Jump)
 	{
@@ -493,7 +498,7 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 	}
 
 	Util::Set<int> rowSet;
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		rowSet << index.row();
 	}
@@ -506,7 +511,7 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 	MetaDataList tracks;
 	tracks.reserve(static_cast<MetaDataList::size_type>(rows.size()));
 
-	for(const auto row : Algorithm::AsConst(rows))
+	for(const auto row: Algorithm::AsConst(rows))
 	{
 		if(row < m->playlist->count())
 		{
@@ -639,7 +644,7 @@ void Playlist::Model::coverFound(const QPixmap& pixmap)
 		const auto& tracks = m->playlist->tracks();
 
 		auto row = 0;
-		for(const auto& track : tracks)
+		for(const auto& track: tracks)
 		{
 			const auto trackHash = getAlbumHashFromTrack(track);
 			if(trackHash == hash)

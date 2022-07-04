@@ -45,12 +45,12 @@ namespace Playlist
 	 * @ingroup GuiPlaylists
 	 */
 	class Model :
-			public SearchableTableModel
+		public SearchableTableModel
 	{
 		Q_OBJECT
 		PIMPL(Model)
 
-		using SearchableModelInterface::ExtraTriggerMap;
+			using SearchableModelInterface::ExtraTriggerMap;
 
 		signals:
 			void sigDataReady();
@@ -61,13 +61,13 @@ namespace Playlist
 		public:
 			enum StyleElement
 			{
-				Italic=0x2110,
-				Bold=0x212C
+				Italic = 0x2110,
+				Bold = 0x212C
 			};
 
 			enum ColumnName
 			{
-				TrackNumber=0,
+				TrackNumber = 0,
 				Cover,
 				Description,
 				Time,
@@ -76,10 +76,10 @@ namespace Playlist
 
 			enum Roles
 			{
-				RatingRole=Qt::UserRole + 1,
-				DragIndexRole=Qt::UserRole + 2,
-				EntryLookRole=Qt::UserRole + 3,
-				CurrentPlayingRole=Qt::UserRole + 4
+				RatingRole = Qt::UserRole + 1,
+				DragIndexRole = Qt::UserRole + 2,
+				EntryLookRole = Qt::UserRole + 3,
+				CurrentPlayingRole = Qt::UserRole + 4
 			};
 
 			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent);
@@ -100,7 +100,7 @@ namespace Playlist
 			void insertTracks(const MetaDataList& tracks, int row);
 			void insertTracks(const QStringList& files, int row);
 
-			int	currentTrack() const;
+			int currentTrack() const;
 
 			const MetaData& metadata(int row) const;
 			MetaDataList metadata(const IndexSet& rows) const;
@@ -108,23 +108,24 @@ namespace Playlist
 			bool hasLocalMedia(const IndexSet& rows) const;
 			void setDragIndex(int dragIndex);
 			void changeRating(const IndexSet& rows, Rating rating);
-			void changeTrack(int trackIndex, Seconds seconds=0);
+			void changeTrack(int trackIndex, Seconds seconds = 0);
 
 			void setBusy(bool b);
 
-			Qt::ItemFlags flags(const QModelIndex& index=QModelIndex()) const override;
-			QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
-			bool setData(const QModelIndex& index, const QVariant &value, int role) override;
-			int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-			int columnCount(const QModelIndex& parent=QModelIndex()) const override;
+			Qt::ItemFlags flags(const QModelIndex& index = QModelIndex()) const override;
+			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			bool setData(const QModelIndex& index, const QVariant& value, int role) override;
+			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
 			SearchableModelInterface::ExtraTriggerMap getExtraTriggers() override;
 			QMimeData* mimeData(const QModelIndexList& indexes) const override;
-			QModelIndexList	searchResults(const QString& searchString) override;
+			QModelIndexList searchResults(const QString& searchString) override;
 
 		public slots:
 			void refreshData();
 			void reverseTracks();
+			void randomizeTracks();
 
 		private slots:
 			void playlistChanged(int playlistIndex);
