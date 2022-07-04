@@ -25,14 +25,10 @@
 #include <algorithm>
 #include <random>
 
-/**
- * @brief The RandomGenerator class
- * @ingroup Helper
- */
 class RandomGenerator
 {
 	private:
-		PIMPL(RandomGenerator)
+	PIMPL(RandomGenerator)
 
 		RandomGenerator(const RandomGenerator& other);
 
@@ -40,17 +36,8 @@ class RandomGenerator
 		RandomGenerator();
 		~RandomGenerator();
 
-		/**
-		 * @brief create new seed
-		 */
 		void updateSeed();
 
-		/**
-		 * @brief get a random number
-		 * @param min minimum
-		 * @param max maximum
-		 * @return number between [minimum, maximum]
-		 */
 		int getNumber(int min, int max);
 
 		static int getRandomNumber(int min, int max);

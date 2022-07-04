@@ -24,6 +24,7 @@
 #include "SmartPlaylistByCreateDate.h"
 #include "SmartPlaylistByRelativeDate.h"
 #include "SmartPlaylistByListeningDate.h"
+#include "SmartPlaylistRandomTracks.h"
 
 #include "Components/Session/Session.h"
 
@@ -89,6 +90,11 @@ std::shared_ptr<SmartPlaylist> SmartPlaylists::create(const SmartPlaylistDatabas
 			return createFromType(SmartPlaylists::Type::LastPlayed, entry.id, params.first, params.second);
 		}
 
+		if(entry.classType == SmartPlaylistRandomTracks::ClassType)
+		{
+			return createFromType(SmartPlaylists::Type::RandomTracks, entry.id, params.first, params.second);
+		}
+
 		return nullptr;
 	}
 
@@ -115,6 +121,8 @@ SmartPlaylists::createFromType(const SmartPlaylists::Type field, const int id, c
 			return std::make_shared<SmartPlaylistByRelativeDate>(id, min, max);
 		case Type::LastPlayed:
 			return std::make_shared<SmartPlaylistByListeningDate>(id, min, max);
+		case Type::RandomTracks:
+			return std::make_shared<SmartPlaylistRandomTracks>(id, min, max);
 		default:
 			return nullptr;
 	}
