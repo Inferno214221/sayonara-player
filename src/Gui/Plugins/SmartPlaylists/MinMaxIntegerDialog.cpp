@@ -40,6 +40,8 @@ namespace
 {
 	struct Section
 	{
+		QWidget* widget {nullptr};
+		QLabel* label {nullptr};
 		InputField* inputField {nullptr};
 		QLayout* layout {nullptr};
 		StringValidator* stringValidator {nullptr};
@@ -73,20 +75,31 @@ namespace
 		return AllSmartPlaylists[type]->stringConverter()->intToUserString(i);
 	}
 
-	Section createSection(const QString& text, QWidget* parent)
+	Section createSection(QWidget* parent)
 	{
-		auto* lineEdit = new InputField(parent);
+		auto* widget = new QWidget(parent);
+		auto* lineEdit = new InputField(widget);
 		auto* layout = new QHBoxLayout();
 		auto* validator = new StringValidator(lineEdit);
+		auto* label = new QLabel(widget);
 
 		lineEdit->setValidator(validator);
 
-		layout->addWidget(new QLabel(text, parent));
+		layout->setContentsMargins(2, 2, 2, 2);
+		layout->addWidget(label);
 		layout->addItem(
 			new QSpacerItem(5, 5, QSizePolicy::Policy::MinimumExpanding)); // NOLINT(readability-magic-numbers)
 		layout->addWidget(lineEdit);
 
-		return {lineEdit, layout, validator};
+		widget->setSizePolicy(widget->sizePolicy().horizontalPolicy(), QSizePolicy::Policy::Maximum);
+		widget->setLayout(layout);
+
+		return {widget, label, lineEdit, layout, validator};
+	}
+
+	void setSectionVisible(const Section& section, const bool b)
+	{
+		section.widget->setVisible(b);
 	}
 
 	QLabel* createTitleLabel(const QString& title)
@@ -144,6 +157,20 @@ namespace
 		fillText(sections.first, type, smartPlaylist->minimumValue());
 		fillText(sections.second, type, smartPlaylist->maximumValue());
 
+		const auto isSingleValue = smartPlaylist->isSingleValue();
+		setSectionVisible(sections.second, !isSingleValue);
+
+		if(isSingleValue)
+		{
+			sections.first.label->setText(QObject::tr("Number of tracks"));
+		}
+
+		else
+		{
+			sections.first.label->setText(QObject::tr("From"));
+			sections.second.label->setText(QObject::tr("To"));
+		}
+
 		const auto stringConverter = smartPlaylist->stringConverter();
 		sections.first.stringValidator->setStringConverter(stringConverter);
 		sections.second.stringValidator->setStringConverter(stringConverter);
@@ -159,7 +186,7 @@ struct MinMaxIntegerDialog::Private
 
 	Private(const SmartPlaylists::Type type, QWidget* parent) :
 		type {type},
-		sections {createSection(QObject::tr("From"), parent), createSection(QObject::tr("To"), parent)} {}
+		sections {createSection(parent), createSection(parent)} {}
 };
 
 MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, QWidget* parent) :
@@ -203,8 +230,8 @@ void MinMaxIntegerDialog::fillLayout(QWidget* headerWidget)
 	layout()->addWidget(headerWidget);
 	layout()->addWidget(createLine(this));
 	layout()->addWidget(m->labelDescription);
-	layout()->addItem(m->sections.first.layout);
-	layout()->addItem(m->sections.second.layout);
+	layout()->addWidget(m->sections.first.widget);
+	layout()->addWidget(m->sections.second.widget);
 	layout()->addWidget(createLine(this));
 	layout()->addWidget(m->buttonBox);
 }
@@ -231,12 +258,18 @@ void MinMaxIntegerDialog::textChanged(const QString& /*text*/)
 
 int MinMaxIntegerDialog::fromValue() const
 {
-	return std::min(m->sections.first.inputField->data().value(), m->sections.second.inputField->data().value());
+	const auto value1 = m->sections.first.inputField->data().value();
+	const auto value2 = m->sections.second.inputField->data().value();
+
+	return (m->sections.second.widget->isHidden()) ? value1 : std::min(value1, value2);
 }
 
 int MinMaxIntegerDialog::toValue() const
 {
-	return std::max(m->sections.first.inputField->data().value(), m->sections.second.inputField->data().value());
+	const auto value1 = m->sections.first.inputField->data().value();
+	const auto value2 = m->sections.second.inputField->data().value();
+
+	return (m->sections.second.widget->isHidden()) ? value1 : std::max(value1, value2);
 }
 
 SmartPlaylists::Type MinMaxIntegerDialog::type() const { return m->type; }

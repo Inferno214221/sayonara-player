@@ -70,6 +70,8 @@ SmartPlaylists::InputFormat SmartPlaylist::inputFormat() const { return SmartPla
 
 bool SmartPlaylist::canFetchTracks() const { return false; }
 
+bool SmartPlaylist::isSingleValue() const { return false; }
+
 SmartPlaylists::StringConverterPtr SmartPlaylist::createConverter() const
 {
 	return std::make_shared<SmartPlaylists::StringConverter>();

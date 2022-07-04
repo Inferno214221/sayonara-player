@@ -78,6 +78,7 @@ class SmartPlaylist
 		[[nodiscard]] virtual SmartPlaylists::Type type() const = 0;
 		[[nodiscard]] virtual SmartPlaylists::InputFormat inputFormat() const;
 		[[nodiscard]] virtual bool canFetchTracks() const;
+		[[nodiscard]] virtual bool isSingleValue() const;
 
 		[[nodiscard]] SmartPlaylistDatabaseEntry toDatabaseEntry() const;
 
