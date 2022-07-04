@@ -19,10 +19,11 @@
  */
 
 #include "MinMaxIntegerDialog.h"
-#include "CalendarButton.h"
 #include "StringValidator.h"
+#include "InputField.h"
 
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
+#include "Components/SmartPlaylists/TimeSpan.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Widgets/WidgetTemplate.h"
 
@@ -39,9 +40,8 @@ namespace
 {
 	struct Section
 	{
-		QLineEdit* lineEdit {nullptr};
+		InputField* inputField {nullptr};
 		QLayout* layout {nullptr};
-		QPushButton* calendarButton {nullptr};
 		StringValidator* stringValidator {nullptr};
 	};
 
@@ -68,21 +68,15 @@ namespace
 		return frame;
 	}
 
-	std::optional<int> convert(const SmartPlaylists::Type type, const QString& str)
+	QString toUserString(const SmartPlaylists::Type type, const int i)
 	{
-		return AllSmartPlaylists[type]->stringConverter()->stringToInt(str);
-	}
-
-	QString convert(const SmartPlaylists::Type type, const int i)
-	{
-		return AllSmartPlaylists[type]->stringConverter()->intToString(i);
+		return AllSmartPlaylists[type]->stringConverter()->intToUserString(i);
 	}
 
 	Section createSection(const QString& text, QWidget* parent)
 	{
-		auto* lineEdit = new QLineEdit(parent);
+		auto* lineEdit = new InputField(parent);
 		auto* layout = new QHBoxLayout();
-		auto* calendarButton = new CalendarButton(lineEdit, parent);
 		auto* validator = new StringValidator(lineEdit);
 
 		lineEdit->setValidator(validator);
@@ -91,9 +85,8 @@ namespace
 		layout->addItem(
 			new QSpacerItem(5, 5, QSizePolicy::Policy::MinimumExpanding)); // NOLINT(readability-magic-numbers)
 		layout->addWidget(lineEdit);
-		layout->addWidget(calendarButton);
 
-		return {lineEdit, layout, calendarButton, validator};
+		return {lineEdit, layout, validator};
 	}
 
 	QLabel* createTitleLabel(const QString& title)
@@ -122,29 +115,25 @@ namespace
 	{
 		const auto& smartPlaylist = AllSmartPlaylists[type];
 		return QObject::tr("Between %1 and %2")
-			.arg(convert(type, smartPlaylist->minimumValue()))
-			.arg(convert(type, smartPlaylist->maximumValue()));
+			.arg(toUserString(type, smartPlaylist->minimumValue()))
+			.arg(toUserString(type, smartPlaylist->maximumValue()));
 	}
 
-	bool checkText(const QString& text, const SmartPlaylists::Type type)
+	bool checkText(InputField* lineEdit, const SmartPlaylists::Type type)
 	{
 		const auto& smartPlaylist = AllSmartPlaylists[type];
-		const auto value = convert(type, text);
-		return value.has_value() &&
-		       (value.value() >= smartPlaylist->minimumValue()) &&
-		       (value.value() <= smartPlaylist->maximumValue()) &&
-		       !text.isEmpty();
+		const auto data = lineEdit->data();
+
+		return data.has_value() &&
+		       (data.value() >= smartPlaylist->minimumValue()) &&
+		       (data.value() <= smartPlaylist->maximumValue());
 	}
 
-	void fillText(QLineEdit* lineEdit, const SmartPlaylists::Type type, const int value)
+	void fillText(const Section& section, const SmartPlaylists::Type type, const int value)
 	{
-		lineEdit->setText(convert(type, value));
-	}
-
-	void enableCalendar(const Section& section, const bool isCalendar)
-	{
-		section.calendarButton->setVisible(isCalendar);
-		section.lineEdit->setReadOnly(isCalendar);
+		section.inputField->setData(AllSmartPlaylists[type]->inputFormat(),
+		                            AllSmartPlaylists[type]->stringConverter(),
+		                            value);
 	}
 
 	void populate(const SmartPlaylists::Type type, QLabel* labDescription, const std::pair<Section, Section>& sections)
@@ -152,16 +141,12 @@ namespace
 		labDescription->setText(createDescription(type));
 
 		const auto& smartPlaylist = AllSmartPlaylists[type];
-		fillText(sections.first.lineEdit, type, smartPlaylist->minimumValue());
-		fillText(sections.second.lineEdit, type, smartPlaylist->maximumValue());
+		fillText(sections.first, type, smartPlaylist->minimumValue());
+		fillText(sections.second, type, smartPlaylist->maximumValue());
 
 		const auto stringConverter = smartPlaylist->stringConverter();
 		sections.first.stringValidator->setStringConverter(stringConverter);
 		sections.second.stringValidator->setStringConverter(stringConverter);
-
-		const auto isCalendar = (smartPlaylist->inputFormat() == SmartPlaylists::InputFormat::Calendar);
-		enableCalendar(sections.first, isCalendar);
-		enableCalendar(sections.second, isCalendar);
 	}
 }
 
@@ -184,8 +169,8 @@ MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, QWidge
 	setWindowTitle(Lang::get(Lang::SmartPlaylists));
 	setLayout(new QVBoxLayout());
 
-	connect(m->sections.first.lineEdit, &QLineEdit::textChanged, this, &MinMaxIntegerDialog::textChanged);
-	connect(m->sections.second.lineEdit, &QLineEdit::textChanged, this, &MinMaxIntegerDialog::textChanged);
+	connect(m->sections.first.inputField, &QLineEdit::textChanged, this, &MinMaxIntegerDialog::textChanged);
+	connect(m->sections.second.inputField, &QLineEdit::textChanged, this, &MinMaxIntegerDialog::textChanged);
 
 	connect(m->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(m->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -207,8 +192,8 @@ MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& s
 	auto* labelTitle = createTitleLabel(smartPlaylist->displayClassType());
 	fillLayout(labelTitle);
 
-	fillText(m->sections.first.lineEdit, m->type, smartPlaylist->from());
-	fillText(m->sections.second.lineEdit, m->type, smartPlaylist->to());
+	fillText(m->sections.first, m->type, smartPlaylist->from());
+	fillText(m->sections.second, m->type, smartPlaylist->to());
 }
 
 MinMaxIntegerDialog::~MinMaxIntegerDialog() = default;
@@ -234,8 +219,8 @@ void MinMaxIntegerDialog::currentIndexChanged(const int /*currentIndex*/)
 
 void MinMaxIntegerDialog::textChanged(const QString& /*text*/)
 {
-	auto* lineEdit = dynamic_cast<QLineEdit*>(sender());
-	const auto isValid = checkText(lineEdit->text(), m->type);
+	auto* lineEdit = dynamic_cast<InputField*>(sender());
+	const auto isValid = checkText(lineEdit, m->type);
 
 	const auto styleSheet = isValid ? QString() : QString("color: red;");
 	lineEdit->setStyleSheet(styleSheet);
@@ -246,16 +231,12 @@ void MinMaxIntegerDialog::textChanged(const QString& /*text*/)
 
 int MinMaxIntegerDialog::fromValue() const
 {
-	return std::min(
-		convert(m->type, m->sections.first.lineEdit->text()).value(),
-		convert(m->type, m->sections.second.lineEdit->text()).value());
+	return std::min(m->sections.first.inputField->data().value(), m->sections.second.inputField->data().value());
 }
 
 int MinMaxIntegerDialog::toValue() const
 {
-	return std::max(
-		convert(m->type, m->sections.first.lineEdit->text()).value(),
-		convert(m->type, m->sections.second.lineEdit->text()).value());
+	return std::max(m->sections.first.inputField->data().value(), m->sections.second.inputField->data().value());
 }
 
 SmartPlaylists::Type MinMaxIntegerDialog::type() const { return m->type; }

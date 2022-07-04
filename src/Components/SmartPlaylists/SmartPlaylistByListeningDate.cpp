@@ -35,13 +35,9 @@
 
 namespace
 {
-	constexpr const auto DaysPerYear = 365;
-	constexpr const auto DaysPerMonth = 30;
-	constexpr const auto MaxYears = 1;
-	constexpr const auto MaxMonths = 11;
-	constexpr const auto MaximumTimeSpan = DaysPerYear * MaxYears +
-	                                       DaysPerMonth * MaxMonths +
-	                                       DaysPerMonth - 1;
+	constexpr const auto DaysPerYear = 360;
+	constexpr const auto MaxYears = 10;
+	constexpr const auto MaximumTimeSpan = MaxYears * DaysPerYear;
 
 	QDate calculateRelativeDate(const int offset)
 	{
@@ -116,22 +112,22 @@ QString SmartPlaylistByListeningDate::name() const
 	const auto sc = stringConverter();
 	if(from() == to())
 	{
-		return QObject::tr("Last played: %1 ago").arg(sc->intToString(from()));
+		return QObject::tr("Last played: %1 ago").arg(sc->intToUserString(from()));
 	}
 
 	if(from() == 0)
 	{
-		return QObject::tr("Last played: Less than %1 ago").arg(sc->intToString(to()));
+		return QObject::tr("Last played: Less than %1 ago").arg(sc->intToUserString(to()));
 	}
 
 	if(to() == maximumValue())
 	{
-		return QObject::tr("Last played: More than %1 ago").arg(sc->intToString(from()));
+		return QObject::tr("Last played: More than %1 ago").arg(sc->intToUserString(from()));
 	}
 
 	return QObject::tr("Last played: Between %1 and %2 ago")
-		.arg(sc->intToString(from()))
-		.arg(sc->intToString(to()));
+		.arg(sc->intToUserString(from()))
+		.arg(sc->intToUserString(to()));
 }
 
 SmartPlaylists::Type SmartPlaylistByListeningDate::type() const { return SmartPlaylists::Type::LastPlayed; }
@@ -142,3 +138,8 @@ SmartPlaylists::StringConverterPtr SmartPlaylistByListeningDate::createConverter
 }
 
 bool SmartPlaylistByListeningDate::canFetchTracks() const { return true; }
+
+SmartPlaylists::InputFormat SmartPlaylistByListeningDate::inputFormat() const
+{
+	return SmartPlaylists::InputFormat::TimeSpan;
+}

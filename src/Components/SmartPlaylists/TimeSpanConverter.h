@@ -29,8 +29,7 @@ namespace SmartPlaylists
 		public StringConverter
 	{
 		public:
-			[[nodiscard]] QString intToString(int value) const override;
-			[[nodiscard]] std::optional<int> stringToInt(const QString& str) const override;
+			[[nodiscard]] QString intToUserString(int value) const override;
 	};
 }
 

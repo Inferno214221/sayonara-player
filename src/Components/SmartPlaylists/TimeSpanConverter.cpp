@@ -19,6 +19,7 @@
  */
 
 #include "TimeSpanConverter.h"
+#include "TimeSpan.h"
 
 #include <QDate>
 #include <QObject>
@@ -27,63 +28,8 @@
 
 namespace SmartPlaylists
 {
-	namespace
+	QString TimeSpanConverter::intToUserString(const int value) const
 	{
-		constexpr const auto DaysPerYear = 365;
-		constexpr const auto DaysPerMonth = 30;
-	}
-
-	QString TimeSpanConverter::intToString(int value) const
-	{
-		if(value == 0)
-		{
-			return {"0"};
-		}
-
-		auto result = QStringList();
-
-		if(const auto years = (value / DaysPerYear); years > 0)
-		{
-			result << QObject::tr("%ny", "", years);
-		}
-
-		if(const auto months = (value % DaysPerYear) / DaysPerMonth; months > 0)
-		{
-			result << QObject::tr("%nm", "", months);
-		}
-
-		if(const auto days = (value % DaysPerYear) % DaysPerMonth; days > 0)
-		{
-			result << QObject::tr("%nd", "", days);
-		}
-
-		return result.join(", ");
-	}
-
-	std::optional<int> TimeSpanConverter::stringToInt(const QString& str) const
-	{
-		if(str.isEmpty())
-		{
-			return std::nullopt;
-		}
-		
-		constexpr const auto* reText =
-			R"(^((\d)y,?\s*)?((\d+)m,?\s*)?((\d+)d?)?$)";
-
-		const auto re = QRegExp(reText);
-		if(const auto index = re.indexIn(str); index >= 0)
-		{
-			const auto yearStr = re.cap(2);
-			const auto monthStr = re.cap(4);
-			const auto dayStr = re.cap(6);
-			const auto capturedTexts = re.capturedTexts();
-			const auto result = yearStr.toInt() * DaysPerYear +
-			                    monthStr.toInt() * DaysPerMonth +
-			                    dayStr.toInt();
-
-			return result;
-		}
-
-		return StringConverter::stringToInt(str);
+		return timeSpanToString(timeSpanFromDays(value));
 	}
 }

@@ -42,6 +42,7 @@ class SmartPlaylistByRelativeDate :
 
 		MetaDataList filterTracks(MetaDataList tracks) override;
 		SmartPlaylists::StringConverterPtr createConverter() const override;
+		SmartPlaylists::InputFormat inputFormat() const override;
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTBYRELATIVEDATE_H

@@ -1,4 +1,4 @@
-/* CalendarButton.h */
+/* ${CLASS_NAME}.h */
 /*
  * Copyright (C) 2011-2022 Michael Lugmair
  *
@@ -17,26 +17,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_CALENDARBUTTON_H
-#define SAYONARA_PLAYER_CALENDARBUTTON_H
+#ifndef SAYONARA_PLAYER_TIMESPAN_H
+#define SAYONARA_PLAYER_TIMESPAN_H
 
-#include "Utils/Pimpl.h"
+class QString;
 
-#include <QPushButton>
-
-class QLineEdit;
-class CalendarButton :
-	public QPushButton
+namespace SmartPlaylists
 {
-	Q_OBJECT
-	PIMPL(CalendarButton)
+	struct TimeSpan
+	{
+		int years {0};
+		int months {0};
+		int days {0};
+	};
 
-	public:
-		CalendarButton(QLineEdit* lineEdit, QWidget* parent);
-		~CalendarButton() noexcept override;
+	QString timeSpanToString(const TimeSpan& timeSpan);
+	TimeSpan timeSpanFromDays(int days);
+	int timeSpanToDays(const TimeSpan& timeSpan);
+}
 
-	private slots:
-		void calendarActivated(const QDate& date);
-};
-
-#endif //SAYONARA_PLAYER_CALENDARBUTTON_H
+#endif //SAYONARA_PLAYER_TIMESPAN_H

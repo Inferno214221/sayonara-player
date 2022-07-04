@@ -28,6 +28,8 @@ namespace SmartPlaylists
 
 	QString StringConverter::intToString(const int value) const { return QString::number(value); }
 
+	QString StringConverter::intToUserString(const int value) const { return QString::number(value); }
+
 	std::optional<int> StringConverter::stringToInt(const QString& str) const
 	{
 		auto ok = false;

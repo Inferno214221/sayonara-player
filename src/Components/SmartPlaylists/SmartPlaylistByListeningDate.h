@@ -51,6 +51,7 @@ class SmartPlaylistByListeningDate :
 		std::shared_ptr<SmartPlaylists::StringConverter> createConverter() const override;
 
 		[[nodiscard]] bool canFetchTracks() const override;
+		SmartPlaylists::InputFormat inputFormat() const override;
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTBYLISTENINGDATE_H

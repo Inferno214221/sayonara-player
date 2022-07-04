@@ -31,14 +31,6 @@
 namespace
 {
 	using OptionalInt = std::optional<int>;
-
-	constexpr const auto DaysPerYear = 365;
-	constexpr const auto DaysPerMonth = 30;
-
-	auto tupleToInt(const int years, const int months, const int days)
-	{
-		return years * DaysPerYear + months * DaysPerMonth + days;
-	}
 }
 
 using namespace SmartPlaylists;
@@ -55,7 +47,6 @@ class ConverterTest :
 	private slots:
 		void testDateConverter();
 		void testStringConverter();
-		void testTimeSpanConverter();
 };
 
 void ConverterTest::testDateConverter()
@@ -107,45 +98,6 @@ void ConverterTest::testStringConverter()
 		std::make_pair(QString(), std::nullopt),
 		std::make_pair(QString("9876-54-32"), std::nullopt),
 		std::make_pair(QString("Invalid"), std::nullopt)
-	};
-
-	for(const auto& [value, expected]: testCasesStringToInt)
-	{
-		QVERIFY(converter.stringToInt(value) == expected);
-	}
-}
-
-void ConverterTest::testTimeSpanConverter()
-{
-	const auto converter = TimeSpanConverter();
-
-	const auto testCasesIntToString = std::array {
-		std::make_pair(tupleToInt(0, 0, 0), QString("0")),
-		std::make_pair(tupleToInt(2, 0, 0), QString("2y")),
-		std::make_pair(tupleToInt(0, 3, 0), QString("3m")),
-		std::make_pair(tupleToInt(0, 0, 4), QString("4d")),
-		std::make_pair(tupleToInt(2, 3, 0), QString("2y, 3m")),
-		std::make_pair(tupleToInt(0, 3, 4), QString("3m, 4d")),
-		std::make_pair(tupleToInt(2, 0, 4), QString("2y, 4d")),
-		std::make_pair(tupleToInt(2, 0, DaysPerYear * 2 + 1), QString("4y, 1d")),
-		std::make_pair(tupleToInt(0, 0, DaysPerMonth * 3 + 1), QString("3m, 1d")),
-		std::make_pair(tupleToInt(0, 25, 4), QString("2y, 24d")),
-	};
-
-	for(const auto& [value, expected]: testCasesIntToString)
-	{
-		QVERIFY(converter.intToString(value) == expected);
-	}
-
-	const auto testCasesStringToInt = std::array<std::pair<QString, OptionalInt>, 8> {
-		std::make_pair(QString(), std::nullopt),
-		std::make_pair(QString("3y, 2m, 1d"), 3 * DaysPerYear + 2 * DaysPerMonth + 1),
-		std::make_pair(QString("3y 2m 1d"), 3 * DaysPerYear + 2 * DaysPerMonth + 1),
-		std::make_pair(QString("3, 2, 1"), std::nullopt),
-		std::make_pair(QString("3 2 1"), std::nullopt),
-		std::make_pair(QString("2m, 365"), 1 * DaysPerYear + 2 * DaysPerMonth),
-		std::make_pair(QString("2m, 365x"), std::nullopt),
-		std::make_pair(QString("1y, 2y"), std::nullopt)
 	};
 
 	for(const auto& [value, expected]: testCasesStringToInt)

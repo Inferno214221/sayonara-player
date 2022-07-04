@@ -1,4 +1,4 @@
-/* StringConverter.h */
+/* InputField.h */
 /*
  * Copyright (C) 2011-2022 Michael Lugmair
  *
@@ -17,28 +17,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_STRINGCONVERTER_H
-#define SAYONARA_PLAYER_STRINGCONVERTER_H
+#ifndef SAYONARA_PLAYER_INPUTFIELD_H
+#define SAYONARA_PLAYER_INPUTFIELD_H
 
 #include "Utils/Pimpl.h"
 
-#include <memory>
+#include <QLineEdit>
 #include <optional>
 
-class QString;
 namespace SmartPlaylists
 {
-	class StringConverter
-	{
-		public:
-			virtual ~StringConverter();
-			[[nodiscard]] virtual QString intToString(int value) const;
-			[[nodiscard]] virtual QString intToUserString(int value) const;
-			[[nodiscard]] virtual std::optional<int> stringToInt(const QString& str) const;
-	};
+	enum class InputFormat;
+	class StringConverter;
+}
 
-	using StringConverterPtr = std::shared_ptr<StringConverter>;
+class InputField :
+	public QLineEdit
+{
+	Q_OBJECT
+	PIMPL(InputField)
 
-} // SmartPlaylists
+	public:
+		explicit InputField(QWidget* parent = nullptr);
+		~InputField() override;
 
-#endif //SAYONARA_PLAYER_STRINGCONVERTER_H
+		std::optional<int> data() const;
+		void setData(SmartPlaylists::InputFormat inputFormat, const std::shared_ptr<SmartPlaylists::StringConverter>& converter, const int value);
+
+	private slots:
+		void mousePressed(QMouseEvent* e);
+		void timeSpanAccepted();
+		void calendarAccepted(const QDate& date);
+
+	private:
+		using QLineEdit::setText;
+		using QLineEdit::text;
+};
+
+#endif //SAYONARA_PLAYER_INPUTFIELD_H

@@ -30,13 +30,8 @@
 
 namespace
 {
-	constexpr const auto DaysPerYear = 365;
-	constexpr const auto DaysPerMonth = 30;
-	constexpr const auto MaxYears = 9;
-	constexpr const auto MaxMonths = 11;
-	constexpr const auto MaximumTimeSpan = DaysPerYear * MaxYears +
-	                                       DaysPerMonth * MaxMonths +
-	                                       DaysPerMonth - 1;
+	constexpr const auto DaysPerYear = 360;
+	constexpr const auto MaxYears = 10;
 
 	bool isDateInsideRange(const MetaData& track, const int min, const int max)
 	{
@@ -61,7 +56,7 @@ SmartPlaylistByRelativeDate::~SmartPlaylistByRelativeDate() = default;
 
 int SmartPlaylistByRelativeDate::minimumValue() const { return 0; }
 
-int SmartPlaylistByRelativeDate::maximumValue() const { return MaximumTimeSpan; }
+int SmartPlaylistByRelativeDate::maximumValue() const { return MaxYears * DaysPerYear; }
 
 MetaDataList SmartPlaylistByRelativeDate::filterTracks(MetaDataList tracks)
 {
@@ -84,22 +79,22 @@ QString SmartPlaylistByRelativeDate::name() const
 	const auto sc = stringConverter();
 	if(from() == to())
 	{
-		return QObject::tr("%1 old").arg(sc->intToString(from()));
+		return QObject::tr("%1 old").arg(sc->intToUserString(from()));
 	}
 
 	if(from() == 0)
 	{
-		return QObject::tr("Less than %1 old").arg(sc->intToString(to()));
+		return QObject::tr("Less than %1 old").arg(sc->intToUserString(to()));
 	}
 
 	if(to() == maximumValue())
 	{
-		return QObject::tr("Older than %1").arg(sc->intToString(from()));
+		return QObject::tr("Older than %1").arg(sc->intToUserString(from()));
 	}
 
 	return QObject::tr("Between %1 and %2 old")
-		.arg(sc->intToString(from()))
-		.arg(sc->intToString(to()));
+		.arg(sc->intToUserString(from()))
+		.arg(sc->intToUserString(to()));
 }
 
 SmartPlaylists::Type SmartPlaylistByRelativeDate::type() const { return SmartPlaylists::Type::CreatedRelative; }
@@ -107,4 +102,9 @@ SmartPlaylists::Type SmartPlaylistByRelativeDate::type() const { return SmartPla
 SmartPlaylists::StringConverterPtr SmartPlaylistByRelativeDate::createConverter() const
 {
 	return std::make_shared<SmartPlaylists::TimeSpanConverter>();
+}
+
+SmartPlaylists::InputFormat SmartPlaylistByRelativeDate::inputFormat() const
+{
+	return SmartPlaylists::InputFormat::TimeSpan;
 }

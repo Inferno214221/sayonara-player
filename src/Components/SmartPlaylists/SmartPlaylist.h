@@ -45,7 +45,8 @@ namespace SmartPlaylists
 	enum class InputFormat
 	{
 		Text = 0,
-		Calendar
+		Calendar,
+		TimeSpan
 	};
 }
 

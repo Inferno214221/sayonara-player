@@ -21,6 +21,7 @@
 #include "DateConverter.h"
 
 #include <QDate>
+#include <QLocale>
 #include <QString>
 
 namespace SmartPlaylists
@@ -50,6 +51,12 @@ namespace SmartPlaylists
 	{
 		const auto date = intToDate(value);
 		return date.toString("yyyy-MM-dd");
+	}
+
+	QString DateConverter::intToUserString(const int value) const
+	{
+		const auto date = intToDate(value);
+		return date.toString(QLocale().dateFormat(QLocale::FormatType::ShortFormat));
 	}
 
 	std::optional<int> DateConverter::stringToInt(const QString& str) const

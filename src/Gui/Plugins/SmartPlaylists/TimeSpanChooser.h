@@ -1,4 +1,4 @@
-/* StringConverter.h */
+/* TimeSpanChooser.h */
 /*
  * Copyright (C) 2011-2022 Michael Lugmair
  *
@@ -17,28 +17,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_STRINGCONVERTER_H
-#define SAYONARA_PLAYER_STRINGCONVERTER_H
+#ifndef SAYONARA_PLAYER_TIMESPANCHOOSER_H
+#define SAYONARA_PLAYER_TIMESPANCHOOSER_H
 
 #include "Utils/Pimpl.h"
 
-#include <memory>
-#include <optional>
+#include "Components/SmartPlaylists/TimeSpan.h"
 
-class QString;
-namespace SmartPlaylists
+#include "Gui/Utils/Widgets/Dialog.h"
+
+class TimeSpanChooser :
+	public Gui::Dialog
 {
-	class StringConverter
-	{
-		public:
-			virtual ~StringConverter();
-			[[nodiscard]] virtual QString intToString(int value) const;
-			[[nodiscard]] virtual QString intToUserString(int value) const;
-			[[nodiscard]] virtual std::optional<int> stringToInt(const QString& str) const;
-	};
+	PIMPL(TimeSpanChooser)
 
-	using StringConverterPtr = std::shared_ptr<StringConverter>;
+	public:
+		TimeSpanChooser(const SmartPlaylists::TimeSpan& value, QWidget* parent);
+		~TimeSpanChooser() override;
 
-} // SmartPlaylists
+		int days() const;
+};
 
-#endif //SAYONARA_PLAYER_STRINGCONVERTER_H
+#endif //SAYONARA_PLAYER_TIMESPANCHOOSER_H
