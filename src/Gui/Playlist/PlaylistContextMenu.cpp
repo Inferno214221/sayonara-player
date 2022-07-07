@@ -37,17 +37,71 @@ using Playlist::ActionMenu;
 
 namespace
 {
-	ContextMenu::Entries analyzeTrack(const MetaData& track)
-	{
-		const auto isLibraryTrack = (track.id() >= 0);
-		const auto isLocalTrack = (track.radioMode() == RadioMode::Off);
+ContextMenu::Entries analyzeTrack(const MetaData& track)
+{
+	const auto isLibraryTrack = (track.id() >= 0);
+	const auto isLocalTrack = (track.radioMode() == RadioMode::Off);
 
-		return ((isLibraryTrack) ? ContextMenu::EntryBookmarks : 0) |
-		       ((isLibraryTrack) ? ContextMenu::EntryFindInLibrary : 0) |
-		       ((isLocalTrack) ? ContextMenu::EntryRating : 0) |
-		       ContextMenu::EntryLyrics;
-	}
+	return ((isLibraryTrack) ? ContextMenu::EntryBookmarks : 0) |
+	       ((isLibraryTrack) ? ContextMenu::EntryFindInLibrary : 0) |
+	       ((isLocalTrack) ? ContextMenu::EntryRating : 0) |
+	       ContextMenu::EntryLyrics;
 }
+
+QAction* initRatingAction(const Rating rating, QObject* parent)
+{
+	auto* action = new QAction(QString::number(static_cast<int>(rating)), parent);
+
+	action->setData(QVariant::fromValue(rating));
+	action->setCheckable(true);
+	action->setProperty("rating", QVariant::fromValue(rating));
+
+	return action;
+}
+
+void setRating(const Rating rating, QMenu* ratingMenu, QAction* ratingAction)
+{
+	const auto actions = ratingMenu->actions();
+	for(auto* action: actions)
+	{
+		const auto data = action->property("rating").value<Rating>();
+		action->setChecked(data == rating);
+	}
+
+	const auto ratingText = Lang::get(Lang::Rating);
+
+	const auto text = (rating != Rating::Zero && rating != Rating::Last)
+	                  ? QString("%1 (%2)").arg(ratingText).arg(+rating)
+	                  : static_cast<QString>(ratingText);
+
+	ratingAction->setText(text);
+	ratingAction->setProperty("rating", QVariant::fromValue(rating));
+}
+
+template<typename ContextMenuType, typename EntryType>
+void initShortcut(ContextMenuType* menu, QWidget* parentWidget, const EntryType entry, const QKeySequence& keySequence)
+{
+	auto* action = menu->action(entry);
+	action->setShortcut(keySequence);
+	parentWidget->addAction(action);
+}
+
+void
+configureShortcuts(ContextMenu* menu, QWidget* parent)
+{
+	initShortcut(menu, parent, ContextMenu::EntryCurrentTrack, {Qt::ControlModifier | Qt::Key_J});
+	initShortcut(menu, parent, ContextMenu::EntryFindInLibrary, {Qt::ControlModifier | Qt::Key_G});
+	initShortcut(menu, parent, ContextMenu::EntryRandomize, {Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R});
+	initShortcut(menu, parent, ContextMenu::EntryReverse, {Qt::ControlModifier | Qt::Key_R});
+
+	auto* libraryMenu = static_cast<Library::ContextMenu*>(menu);
+	initShortcut(libraryMenu, parent, Library::ContextMenu::EntryClear, {Qt::Key_Backspace});
+	initShortcut(libraryMenu, parent, Library::ContextMenu::EntryRemove, QKeySequence::Delete);
+	initShortcut(libraryMenu, parent, Library::ContextMenu::EntryDelete, {Qt::ShiftModifier + Qt::Key_Delete});
+	initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Return});
+	initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Enter});
+}
+}// namespace
 
 struct ContextMenu::Private
 {
@@ -61,15 +115,15 @@ struct ContextMenu::Private
 	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, ContextMenu* contextMenu) :
 		ratingMenu {new QMenu(contextMenu)},
 		bookmarksMenu {new BookmarksMenu(contextMenu)},
-		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, contextMenu)},
-		playlistModeAction {contextMenu->addMenu(playlistModeMenu)}
+		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, contextMenu)}
 	{
-		entryActionMap[EntryRating] = contextMenu->addMenu(ratingMenu);
-		entryActionMap[EntryBookmarks] = contextMenu->addMenu(bookmarksMenu);
 		entryActionMap[EntryCurrentTrack] = contextMenu->addAction(QString());
 		entryActionMap[EntryFindInLibrary] = contextMenu->addAction(QString());
 		entryActionMap[EntryReverse] = contextMenu->addAction(QString());
 		entryActionMap[EntryRandomize] = contextMenu->addAction(QString());
+		entryActionMap[EntryRating] = contextMenu->addMenu(ratingMenu);
+		entryActionMap[EntryBookmarks] = contextMenu->addMenu(bookmarksMenu);
+		playlistModeAction = contextMenu->addMenu(playlistModeMenu);
 	}
 };
 
@@ -86,26 +140,9 @@ ContextMenu::ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget
 
 	m->ratingMenu->addActions(ratingActions);
 
-	connect(m->entryActionMap[EntryCurrentTrack], &QAction::triggered, this, &ContextMenu::sigJumpToCurrentTrack);
-	connect(m->entryActionMap[EntryFindInLibrary], &QAction::triggered, this, &ContextMenu::sigFindTrackTriggered);
-	connect(m->entryActionMap[EntryReverse], &QAction::triggered, this, &ContextMenu::sigReverseTriggered);
-	connect(m->entryActionMap[EntryRandomize], &QAction::triggered, this, &ContextMenu::sigRandomizeTriggered);
+	connect(m->bookmarksMenu, &BookmarksMenu::sigBookmarkPressed, this, &ContextMenu::sigBookmarkTriggered);
 
-	connect(m->bookmarksMenu, &BookmarksMenu::sigBookmarkPressed, this, &ContextMenu::bookmarkPressed);
-
-	m->entryActionMap[EntryCurrentTrack]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_J));
-	m->entryActionMap[EntryFindInLibrary]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_G));
-	m->entryActionMap[EntryRandomize]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R));
-	m->entryActionMap[EntryReverse]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_R));
-
-	parent->addActions( // make actions available through shortcut
-		{
-			m->entryActionMap[EntryReverse],
-			m->entryActionMap[EntryRandomize],
-			m->entryActionMap[EntryCurrentTrack],
-			m->entryActionMap[EntryFindInLibrary]
-		});
-
+	configureShortcuts(this, parent);
 	skinChanged();
 }
 
@@ -137,30 +174,12 @@ void ContextMenu::showActions(ContextMenu::Entries entries)
 	}
 }
 
-void ContextMenu::setRating(Rating rating)
-{
-	const auto actions = m->ratingMenu->actions();
-	for(auto* action: actions)
-	{
-		const auto data = action->data().value<Rating>();
-		action->setChecked(data == rating);
-	}
-
-	const auto ratingText = Lang::get(Lang::Rating);
-
-	const auto text = (rating != Rating::Zero && rating != Rating::Last)
-	                  ? QString("%1 (%2)").arg(ratingText).arg(+rating)
-	                  : static_cast<QString>(ratingText);
-
-	m->entryActionMap[EntryRating]->setText(text);
-}
-
-ContextMenu::Entries ContextMenu::setTrack(const MetaData& track, bool isCurrentTrack)
+ContextMenu::Entries ContextMenu::setTrack(const MetaData& track, const bool isCurrentTrack)
 {
 	const auto isLibraryTrack = (track.id() >= 0);
 
 	m->bookmarksMenu->setTrack(track, (isCurrentTrack && isLibraryTrack));
-	setRating(track.rating());
+	setRating(track.rating(), m->ratingMenu, m->entryActionMap[EntryRating]);
 
 	return analyzeTrack(track);
 }
@@ -168,21 +187,7 @@ ContextMenu::Entries ContextMenu::setTrack(const MetaData& track, bool isCurrent
 void ContextMenu::clearTrack()
 {
 	m->bookmarksMenu->setTrack(MetaData(), false);
-	setRating(Rating::Last);
-}
-
-QAction* ContextMenu::initRatingAction(Rating rating, QObject* parent)
-{
-	auto* action = new QAction(QString::number(+rating), parent);
-
-	action->setData(QVariant::fromValue(rating));
-	action->setCheckable(true);
-
-	connect(action, &QAction::triggered, this, [&]([[maybe_unused]] const auto b) {
-		emit sigRatingChanged(rating);
-	});
-
-	return action;
+	setRating(Rating::Last, m->ratingMenu, m->entryActionMap[EntryRating]);
 }
 
 void ContextMenu::languageChanged()
@@ -191,16 +196,13 @@ void ContextMenu::languageChanged()
 
 	m->entryActionMap[EntryRating]->setText(Lang::get(Lang::Rating));
 	m->entryActionMap[EntryBookmarks]->setText(Lang::get(Lang::Bookmarks));
-	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track") + QString("    "));
-	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library") + QString("    "));
+	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track"));
+	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library"));
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
-	m->entryActionMap[EntryRandomize]->setText(tr("Randomize playlist") + QString("    "));
+	m->entryActionMap[EntryRandomize]->setText(tr("Randomize playlist"));
 	m->playlistModeAction->setText(tr("Playlist mode"));
 
-	m->entryActionMap[EntryCurrentTrack]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_J));
-	m->entryActionMap[EntryFindInLibrary]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_G));
-	m->entryActionMap[EntryReverse]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_R));
-	m->entryActionMap[EntryRandomize]->setShortcut(QKeySequence(Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R));
+	configureShortcuts(this, parentWidget());
 }
 
 void ContextMenu::skinChanged()
@@ -212,7 +214,9 @@ void ContextMenu::skinChanged()
 	m->entryActionMap[EntryFindInLibrary]->setIcon(Icons::icon(Icons::Search));
 }
 
-void ContextMenu::bookmarkPressed(Seconds timestamp)
+QAction* Playlist::ContextMenu::action(const ContextMenu::Entry entry) const
 {
-	emit sigBookmarkPressed(timestamp);
+	return m->entryActionMap.contains(entry)
+	       ? m->entryActionMap[entry]
+	       : nullptr;
 }

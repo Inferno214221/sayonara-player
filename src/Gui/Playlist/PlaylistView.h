@@ -45,20 +45,18 @@ class PlaylistCreator;
 
 namespace Playlist
 {
-	/**
-	 * @brief The PlaylistView class
-	 * @ingroup GuiPlaylists
-	 */
+	class ContextMenu;
 	class View :
-			public SearchableTableView,
-			public InfoDialogContainer,
-			private Gui::Dragable
+		public SearchableTableView,
+		public InfoDialogContainer,
+		private Gui::Dragable
 	{
 		Q_OBJECT
 		PIMPL(View)
 
 		public:
-			View(PlaylistCreator* playlistCreator, PlaylistPtr playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
+			View(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist,
+			     DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent = nullptr);
 			~View() override;
 
 			void dropEventFromOutside(QDropEvent* event);
@@ -70,22 +68,17 @@ namespace Playlist
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
 			MetaDataList infoDialogData() const override;
-            QWidget* getParentWidget() override;
+			QWidget* getParentWidget() override;
 
 			int mapModelIndexToIndex(const QModelIndex& idx) const override;
 			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
 			void skinChanged() override;
 
-			/**
-			 * @brief we start the drag action, all lines has to be cleared
-			 * @param the event
-			 */
 			void dragLeaveEvent(QDragLeaveEvent* event) override;
 			void dragEnterEvent(QDragEnterEvent* event) override;
 			void dragMoveEvent(QDragMoveEvent* event) override;
 			void dropEvent(QDropEvent* event) override;
-			void mousePressEvent(QMouseEvent* event) override;
 			void mouseDoubleClickEvent(QMouseEvent* event) override;
 			void keyPressEvent(QKeyEvent* event) override;
 			bool viewportEvent(QEvent* event) override;
@@ -97,10 +90,9 @@ namespace Playlist
 			void clear();
 			void refresh();
 			void asyncDropFinished();
-			void ratingChanged(Rating rating);
+			void ratingChanged();
 			void columnsChanged();
 			void showRatingChanged();
-			void findTrackTriggered();
 			void bookmarkTriggered(Seconds timestamp);
 			void moveSelectedRowsUp();
 			void moveSelectedRowsDown();
@@ -113,7 +105,6 @@ namespace Playlist
 
 		private:
 			void initContextMenu();
-			void initShortcuts();
 			void handleDrop(QDropEvent* event);
 	};
 }

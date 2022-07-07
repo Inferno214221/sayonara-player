@@ -28,10 +28,6 @@ class MetaData;
 
 namespace Playlist
 {
-	/**
-	 * @brief The PlaylistContextMenu class
-	 * @ingroup GuiPlaylists
-	 */
 	class ContextMenu :
 		public Library::ContextMenu
 	{
@@ -39,12 +35,7 @@ namespace Playlist
 		PIMPL(ContextMenu)
 
 		signals:
-			void sigRatingChanged(Rating rating);
-			void sigBookmarkPressed(Seconds timestamp);
-			void sigJumpToCurrentTrack();
-			void sigFindTrackTriggered();
-			void sigReverseTriggered();
-			void sigRandomizeTriggered();
+			void sigBookmarkTriggered(Seconds timestamp);
 
 		public:
 			enum Entry
@@ -62,16 +53,10 @@ namespace Playlist
 
 			ContextMenu::Entries entries() const override;
 			void showActions(ContextMenu::Entries entries) override;
+			QAction* action(ContextMenu::Entry entry) const;
 
 			ContextMenu::Entries setTrack(const MetaData& track, bool isCurrentTrack);
 			void clearTrack();
-
-		private:
-			void setRating(Rating rating);
-			QAction* initRatingAction(Rating rating, QObject* parent);
-
-		private slots:
-			void bookmarkPressed(Seconds timestamp);
 
 		protected:
 			void languageChanged() override;
