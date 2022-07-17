@@ -30,6 +30,7 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QDateTime>
+#include <QTimer>
 
 #include <array>
 #include <optional>
@@ -37,14 +38,16 @@
 namespace
 {
 	constexpr const auto InvalidTimeStamp {-1};
+	constexpr const auto VolumeDelta {5};
+	constexpr const auto RingbufferSize {3};
 
-	template<typename T, int MaxItemCount>
+	template<int MaxItemCount>
 	class RingBuffer
 	{
 		private:
 			size_t mCurrentIndex {0};
 			size_t mItemCount {0};
-			std::array<T, MaxItemCount> mData;
+			std::array<QString, MaxItemCount> mData;
 
 		public:
 			void clear()
@@ -53,23 +56,18 @@ namespace
 				mItemCount = 0;
 			}
 
-			void insert(const T& item)
+			void insert(const QString& item)
 			{
-				mData[mCurrentIndex] = item;
+				mData[mCurrentIndex] = item; // NOLINT(cppcoreguidelines-pro-bounds-constant-array-index)
 				mCurrentIndex = (mCurrentIndex + 1) % MaxItemCount;
 				mItemCount = std::min<size_t>(MaxItemCount, mItemCount + 1);
 			}
 
-			bool contains(const T& item) const
+			[[nodiscard]] bool contains(const QString& item) const
 			{
-				return Util::Algorithm::contains(mData, [&](const auto& element){
+				return Util::Algorithm::contains(mData, [&](const auto& element) {
 					return (element == item);
 				});
-			}
-
-			QStringList toString()
-			{
-				return QStringList() << mData[0] << mData[1] << mData[2];
 			}
 	};
 
@@ -89,7 +87,7 @@ namespace
 	MilliSeconds currentTimeToDuration()
 	{
 		const auto time = QTime::currentTime();
-		return (time.hour() * 60 + time.minute()) * 1000;
+		return (time.hour() * 60 + time.minute()) * 1000; // NOLINT(readability-magic-numbers)
 	}
 
 	MetaData prepareTrackForStreamHistory(MetaData track)
@@ -115,12 +113,28 @@ namespace
 		       GetSetting(Set::Engine_SR_Active) &&
 		       GetSetting(Set::Engine_SR_AutoRecord);
 	}
+
+	void startPaused(PlayManager* playManager)
+	{
+		if(GetSetting(Set::PL_StartPlayingWorkaround_Issue263))
+		{
+			playManager->play();
+			QTimer::singleShot(100, [playManager]() { // NOLINT(readability-magic-numbers)
+				playManager->pause();
+			});
+		}
+
+		else
+		{
+			playManager->pause();
+		}
+	}
 } // namespace
 
 struct PlayManagerImpl::Private
 {
 	MetaData currentTrack;
-	RingBuffer<QString, 3> ringBuffer;
+	RingBuffer<RingbufferSize> ringBuffer;
 	int currentTrackIndex {-1};
 	MilliSeconds positionMs {0};
 	std::optional<MilliSeconds> initialPositionMs;
@@ -137,7 +151,7 @@ struct PlayManagerImpl::Private
 		if(loadPlaylist && loadLastTrack)
 		{
 			initialPositionMs = rememberLastTime ?
-			                    (GetSetting(Set::Engine_CurTrackPos_s) * 1000) :
+			                    (GetSetting(Set::Engine_CurTrackPos_s) * 1000) : // NOLINT(readability-magic-numbers)
 			                    0;
 		}
 	}
@@ -288,7 +302,7 @@ void PlayManagerImpl::seekAbsoluteMs(MilliSeconds ms)
 void PlayManagerImpl::setCurrentPositionMs(MilliSeconds ms)
 {
 	const auto differenceMs = (ms - m->positionMs);
-	if((differenceMs > 0) && (differenceMs < 1000))
+	if((differenceMs > 0) && (differenceMs < 1000)) // NOLINT(readability-magic-numbers)
 	{
 		m->trackPlaytimeMs += differenceMs;
 	}
@@ -398,15 +412,23 @@ void PlayManagerImpl::setTrackReady()
 		const auto initialPositionMs = m->initialPositionMs.value();
 		if(initialPositionMs > 0)
 		{
+			// NOLINTNEXTLINE(readability-magic-numbers)
 			spLog(Log::Debug, this) << "Track ready, Start at " << (initialPositionMs / 1000) << " sec";
 			seekAbsoluteMs(initialPositionMs);
 		}
 
 		m->initialPositionMs.reset();
 
-		GetSetting(Set::PL_StartPlaying)
-		? play()
-		: pause();
+		const auto startPlaying = GetSetting(Set::PL_StartPlaying);
+		if(!startPlaying)
+		{
+			startPaused(this);
+		}
+
+		else
+		{
+			play();
+		}
 	}
 }
 
@@ -422,17 +444,17 @@ void PlayManagerImpl::buffering(int progress)
 
 void PlayManagerImpl::volumeUp()
 {
-	setVolume(GetSetting(Set::Engine_Vol) + 5);
+	setVolume(GetSetting(Set::Engine_Vol) + VolumeDelta);
 }
 
 void PlayManagerImpl::volumeDown()
 {
-	setVolume(GetSetting(Set::Engine_Vol) - 5);
+	setVolume(GetSetting(Set::Engine_Vol) - VolumeDelta);
 }
 
 void PlayManagerImpl::setVolume(int vol)
 {
-	vol = std::min(vol, 100);
+	vol = std::min(vol, 100); // NOLINT(readability-magic-numbers)
 	vol = std::max(vol, 0);
 	SetSetting(Set::Engine_Vol, vol);
 	emit sigVolumeChanged(vol);
@@ -482,10 +504,10 @@ void PlayManagerImpl::shutdown()
 
 void PlayManagerImpl::trackMetadataChanged()
 {
-	auto* changeNotifier = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 
 	const auto& changedMetadata = changeNotifier->changedMetadata();
-	for(const auto&[oldTrack, newTrack] : changedMetadata)
+	for(const auto& [oldTrack, newTrack]: changedMetadata)
 	{
 		const auto isSamePath = m->currentTrack.isEqual(oldTrack);
 		if(isSamePath)
@@ -498,7 +520,7 @@ void PlayManagerImpl::trackMetadataChanged()
 
 void PlayManagerImpl::tracksDeleted()
 {
-	auto* changeNotifier = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 
 	const auto& deletedTracks = changeNotifier->deletedMetadata();
 	if(deletedTracks.contains(m->currentTrack))

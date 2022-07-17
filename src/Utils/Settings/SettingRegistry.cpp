@@ -167,6 +167,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_LoadLastTrack>("load_last_track", true);
 	registerSetting<Set::PL_RememberTime>("remember_time", true);
 	registerSetting<Set::PL_StartPlaying>("start_playing", false);
+	registerSetting<Set::PL_StartPlayingWorkaround_Issue263>("start_playing_wa_263", false);
 	registerSetting<Set::PL_LastTrack>("last_track", -1);
 	registerSetting<Set::PL_LastTrackBeforeStop>("last_track_before_stop", -1);
 	registerSetting<Set::PL_LastPlaylist>("last_playlist", -1);
@@ -230,7 +231,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Broadcast_Port>("broadcast_port", 54054);
 
 	registerSetting<Set::Remote_Active>("remote_control_active", false);
-	registerSetting<Set::Remote_Port>("remote_control_port", 54055);
+	registerSetting<Set::Remote_Port>("remote_control_port", {54055});
 	registerSetting<Set::Remote_Discoverable>("remote_discoverable", false);
 	registerSetting<Set::Remote_DiscoverPort>("remote_discoverport", 54056);
 
@@ -238,7 +239,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Stream_ShowHistory>("stream_show_history", true);
 	registerSetting<Set::Stream_SearchWindowSize>("stream_search_window_size", QSize());
 
-	registerSetting<Set::Lyrics_Server>("lyrics_server", QString());
+	registerSetting<Set::Lyrics_Server>("lyrics_server", {});
 	registerSetting<Set::Lyrics_Zoom>("lyrics_zoom", 100);
 
 	registerSetting<Set::Cover_Server>("cover_server",
@@ -262,7 +263,7 @@ bool SettingRegistry::init()
 
 	registerSetting<Set::Speed_LastTab>("speed_last_tab", 0);
 
-	registerSetting<Set::InfoDialog_Size>("info_dialog_size", QSize());
+	registerSetting<Set::InfoDialog_Size>("info_dialog_size", {4, 3});
 	registerSetting<Set::AlternativeCovers_Size>("alternative_covers_size", QSize());
 
 	registerSetting<Set::Settings_Revision>("settings_version", 0);

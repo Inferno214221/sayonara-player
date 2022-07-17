@@ -26,8 +26,9 @@
 #include "Gui/Utils/Icons.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QColorDialog>
 #include <QPainter>
@@ -63,7 +64,7 @@ namespace
 		auto starCount = 0;
 		auto apostrophCount = 0;
 		auto percentCount = 0;
-		for(const auto& c : expr)
+		for(const auto& c: expr)
 		{
 			if(c == '\'')
 			{
@@ -151,10 +152,9 @@ bool GUI_PlaylistPreferences::commit()
 	const auto hasCustomColorDark = ui->cbCustomColorDark->isChecked();
 	SetSetting(Set::PL_CurrentTrackCustomColorDark, hasCustomColorDark);
 	SetSetting(Set::PL_CurrentTrackColorStringDark, hasCustomColorDark ? ui->btnCustomColorDark->text() : QString());
-
 	SetSetting(Set::PL_JumpToCurrentTrack, ui->cbJumpToCurrentTrack->isChecked());
-
 	SetSetting(Set::PL_PlayTrackAfterSearch, ui->cbPlayTrackAfterSearch->isChecked());
+	SetSetting(Set::PL_StartPlayingWorkaround_Issue263, ui->cb_startupPlaybackWorkaround263->isChecked());
 
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
@@ -198,8 +198,8 @@ void GUI_PlaylistPreferences::revert()
 	applyColorToButton(ui->btnCustomColorDark, QColor(GetSetting(Set::PL_CurrentTrackColorStringDark)), palette());
 
 	ui->cbJumpToCurrentTrack->setChecked(GetSetting(Set::PL_JumpToCurrentTrack));
-
 	ui->cbPlayTrackAfterSearch->setChecked(GetSetting(Set::PL_PlayTrackAfterSearch));
+	ui->cb_startupPlaybackWorkaround263->setChecked(GetSetting(Set::PL_StartPlayingWorkaround_Issue263));
 }
 
 void GUI_PlaylistPreferences::initUi()
@@ -212,6 +212,7 @@ void GUI_PlaylistPreferences::initUi()
 	setupParent(this, &ui);
 	ui->tabWidget->setCurrentIndex(0);
 	ui->leExpression->setStyleSheet("font-family: mono;");
+	ui->widgetTemplateHelp->setVisible(false);
 
 	revert();
 
@@ -227,8 +228,11 @@ void GUI_PlaylistPreferences::initUi()
 	connect(ui->btnCustomColorStandard, &QPushButton::clicked, this, &GUI_PlaylistPreferences::chooseColorClicked);
 	connect(ui->btnCustomColorDark, &QPushButton::clicked, this, &GUI_PlaylistPreferences::chooseColorClicked);
 
-	connect(ui->btnDefault, &QPushButton::clicked, this, [=]() {
+	connect(ui->btnDefault, &QPushButton::clicked, this, [&]() {
 		ui->leExpression->setText("*%title%* - %artist%");
+	});
+	connect(ui->btnTemplateHelp, &QPushButton::clicked, this, [&]() {
+		ui->widgetTemplateHelp->setVisible(!ui->widgetTemplateHelp->isVisible());
 	});
 }
 
@@ -246,6 +250,9 @@ void GUI_PlaylistPreferences::retranslate()
 	ui->labTitle->setText(Lang::get(Lang::Title));
 	ui->labTrackNumber->setText(Lang::get(Lang::TrackNo));
 	ui->btnDefault->setText(Lang::get(Lang::Default));
+
+	const auto workaroundText = tr("Fix startup playback issue") + " " + "(#263)";
+	ui->cb_startupPlaybackWorkaround263->setText(workaroundText);
 }
 
 void GUI_PlaylistPreferences::skinChanged()

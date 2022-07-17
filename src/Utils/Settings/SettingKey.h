@@ -118,6 +118,7 @@ enum class SettingKey :
 	PL_ShowBottomBar,
 	PL_ShowRating,
 	PL_StartPlaying,
+	PL_StartPlayingWorkaround_Issue263,
 	PL_CurrentTrackCustomColorStandard,
 	PL_CurrentTrackColorStringStandard,
 	PL_CurrentTrackCustomColorDark,
@@ -230,6 +231,11 @@ class SettingIdentifier
 		~SettingIdentifier();
 };
 
+namespace ns
+{
+	using LFM_Active = SettingIdentifier<bool, SettingKey::LFM_Active>;
+}
+
 #define INST_ABSTR(ns, type, settingkey) \
     namespace ns {    \
         using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; \
@@ -328,6 +334,7 @@ INST(bool, PL_LoadTemporaryPlaylists)        /* load temporary playlists on star
 INST(bool, PL_LoadLastTrack)            /* load last track on startup */
 INST(bool, PL_RememberTime)            /* remember time of last track */
 INST(bool, PL_StartPlaying)            /* start playing immediately when opening Sayonara */
+INST(bool, PL_StartPlayingWorkaround_Issue263) /* https://gitlab.com/luciocarreras/sayonara-player/-/issues/263 */
 INST(int, PL_LastTrack)                /* last track idx in playlist */
 INST(int, PL_LastTrackBeforeStop)        /* last track before stop */
 INST(int, PL_LastPlaylist)            /* last Playlist id, where LastTrack has been played */
