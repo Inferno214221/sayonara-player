@@ -161,7 +161,6 @@ bool SettingRegistry::init()
 	registerSetting<Set::Player_PublicId>("player_pub_id", QByteArray());
 	registerSetting<Set::Player_ForceNativeDirDialog>("player_native_dir_dialog", false);
 
-	registerSetting<Set::PL_Playlist>("playlist", QStringList());
 	registerSetting<Set::PL_LoadSavedPlaylists>("load_saved_playlists", false);
 	registerSetting<Set::PL_LoadTemporaryPlaylists>("load_temporary_playlists", true);
 	registerSetting<Set::PL_LoadLastTrack>("load_last_track", true);

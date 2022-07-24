@@ -28,172 +28,171 @@
 enum class SettingKey :
 	unsigned short
 {
-	LFM_Active = 0,
-	LFM_ScrobbleTimeSec,
-	LFM_Login,
-	LFM_Username,
-	LFM_Password,
-	LFM_Corrections,
-	LFM_ShowErrors,
-	LFM_SessionKey,
-	Eq_Last,
+	AlternativeCovers_Size = 0,
+	AudioConvert_NumberThreads,
+	AudioConvert_PreferredConverter,
+	AudioConvert_QualityLameCBR,
+	AudioConvert_QualityLameVBR,
+	AudioConvert_QualityOgg,
+	Broadcast_Active,
+	Broadcast_Port,
+	Broadcast_Prompt,
+	Cover_FetchFromWWW,
+	Cover_SaveToDB,
+	Cover_SaveToLibrary,
+	Cover_SaveToSayonaraDir,
+	Cover_Server,
+	Cover_StartSearch,
+	Cover_TemplatePath,
+	Dir_ShowTracks,
+	Dir_SplitterDirFile,
+	Dir_SplitterTracks,
+	Dir_TagToFilenameExpression,
+	Engine_AlsaDevice,
+	Engine_BufferSizeMS,
+	Engine_CovertTargetPath,
+	Engine_CrossFaderActive,
+	Engine_CrossFaderTime,
+	Engine_CurTrackPos_s,
+	Engine_Mute,
+	Engine_Name,
+	Engine_Pitch,
+	Engine_PreservePitch,
+	Engine_SR_Active,
+	Engine_SR_AutoRecord,
+	Engine_SR_Path,
+	Engine_SR_SessionPath,
+	Engine_SR_SessionPathTemplate,
+	Engine_SR_Warning,
+	Engine_ShowLevel,
+	Engine_ShowSpectrum,
+	Engine_Sink,
+	Engine_SoundFileExtensions,
+	Engine_SpectrumBins,
+	Engine_Speed,
+	Engine_SpeedActive,
+	Engine_Vol,
 	Eq_Gauss,
-	Lib_Show,
-	Lib_Path,
+	Eq_Last,
+	Icon_ForceInDarkTheme,
+	Icon_Theme,
+	InfoDialog_Size,
+	LFM_Active,
+	LFM_Corrections,
+	LFM_Login,
+	LFM_Password,
+	LFM_ScrobbleTimeSec,
+	LFM_SessionKey,
+	LFM_ShowErrors,
+	LFM_Username,
+	Level_Style,
+	Lib_AllLibraries,
+	Lib_AutoUpdate,
 	Lib_ColStateAlbums,
 	Lib_ColStateArtists,
 	Lib_ColStateTracks,
-	Lib_LiveSearch,
-	Lib_Sorting,
+	Lib_CoverOrigPMCache,
+	Lib_CoverScaledPMCache,
+	Lib_CoverShowArtist,
+	Lib_CoverShowUtils,
+	Lib_CoverZoom,
 	Lib_CurPlugin,
-	Lib_SplitterStateArtist,
-	Lib_SplitterStateTrack,
-	Lib_SplitterStateGenre,
-	Lib_SplitterStateDate,
-	Lib_OldWidth,
 	Lib_DC_DoNothing,
 	Lib_DC_PlayIfStopped,
 	Lib_DC_PlayImmediately,
 	Lib_DD_DoNothing,
 	Lib_DD_PlayIfStoppedAndEmpty,
+	Lib_FontBold,
+	Lib_GenreTree,
+	Lib_HeaderAutoResizeAlbums,
+	Lib_HeaderAutoResizeArtists,
+	Lib_HeaderAutoResizeTracks,
+	Lib_LastIndex,
+	Lib_LiveSearch,
+	Lib_OldWidth,
+	Lib_Path,
 	Lib_SearchMode,
-	Lib_AutoUpdate,
+	Lib_SearchStringLength,
+	Lib_Show,
 	Lib_ShowAlbumArtists,
 	Lib_ShowAlbumCovers,
-	Lib_ViewType,
-	Lib_FontBold,
-	Lib_CoverZoom,
-	Lib_CoverShowUtils,
-	Lib_CoverShowArtist,
-	Lib_CoverOrigPMCache,
-	Lib_CoverScaledPMCache,
-	Lib_GenreTree,
-	Lib_LastIndex,
-	Lib_AllLibraries,
-	Lib_UseViewClearButton,
-	Lib_SearchStringLength,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,
-	Lib_HeaderAutoResizeArtists,
-	Lib_HeaderAutoResizeAlbums,
-	Lib_HeaderAutoResizeTracks,
-	Dir_ShowTracks,
-	Dir_SplitterDirFile,
-	Dir_SplitterTracks,
-	Dir_TagToFilenameExpression,
-	Player_Version,
-	Player_Language,
-	Player_Style,
-	Player_FadingCover,
-	Player_ControlStyle,
-	Player_Geometry,
-	Player_Fullscreen,
-	Player_Maximized,
-	Player_ShownPlugin,
-	Player_OneInstance,
-	Player_Min2Tray,
-	Player_StartInTray,
-	Player_ShowTrayIcon,
-	Player_514Fix,
-	Player_NotifyNewVersion,
-	Player_SplitterState,
-	Player_SplitterControls,
-	Player_PrivId,
-	Player_PublicId,
-	Player_ForceNativeDirDialog,
+	Lib_Sorting,
+	Lib_SplitterStateArtist,
+	Lib_SplitterStateDate,
+	Lib_SplitterStateGenre,
+	Lib_SplitterStateTrack,
+	Lib_UseViewClearButton,
+	Lib_ViewType,
+	Logger_Level,
+	Lyrics_Server,
+	Lyrics_Zoom,
+	MP3enc_found,
+	Notification_Name,
+	Notification_Show,
+	Notification_Timeout,
+	PL_CurrentTrackColorStringDark,
+	PL_CurrentTrackColorStringStandard,
+	PL_CurrentTrackCustomColorDark,
+	PL_CurrentTrackCustomColorStandard,
 	PL_EntryLook,
+	PL_JumpToCurrentTrack,
+	PL_LastPlaylist,
 	PL_LastTrack,
 	PL_LastTrackBeforeStop,
-	PL_LastPlaylist,
 	PL_LoadLastTrack,
 	PL_LoadSavedPlaylists,
 	PL_LoadTemporaryPlaylists,
 	PL_Mode,
-	PL_Playlist,
+	PL_PlayTrackAfterSearch,
 	PL_RememberTime,
 	PL_RememberTrackAfterStop,
+	PL_ShowBottomBar,
 	PL_ShowClearButton,
 	PL_ShowCovers,
 	PL_ShowNumbers,
-	PL_ShowBottomBar,
 	PL_ShowRating,
 	PL_StartPlaying,
 	PL_StartPlayingWorkaround_Issue263,
-	PL_CurrentTrackCustomColorStandard,
-	PL_CurrentTrackColorStringStandard,
-	PL_CurrentTrackCustomColorDark,
-	PL_CurrentTrackColorStringDark,
-	PL_JumpToCurrentTrack,
-	PL_PlayTrackAfterSearch,
-	Notification_Show,
-	Notification_Timeout,
-	Notification_Name,
-	Engine_Name,
-	Engine_Vol,
-	Engine_Mute,
-	AudioConvert_NumberThreads,
-	AudioConvert_PreferredConverter,
-	AudioConvert_QualityLameVBR,
-	AudioConvert_QualityLameCBR,
-	AudioConvert_QualityOgg,
-	Engine_SoundFileExtensions,
-	Engine_CovertTargetPath,
-	Engine_SpectrumBins,
-	Engine_ShowSpectrum,
-	Engine_ShowLevel,
-	Engine_CurTrackPos_s,
-	Engine_CrossFaderActive,
-	Engine_CrossFaderTime,
-	Engine_Pitch,
-	Engine_PreservePitch,
-	Engine_Speed,
-	Engine_SpeedActive,
-	Engine_Sink,
-	Engine_AlsaDevice,
-	Engine_BufferSizeMS,
-	Engine_SR_Active,
-	Engine_SR_Warning,
-	Engine_SR_Path,
-	Engine_SR_SessionPath,
-	Engine_SR_SessionPathTemplate,
-	Engine_SR_AutoRecord,
-	Spectrum_Style,
-	Level_Style,
-	Broadcast_Active,
-	Broadcast_Prompt,
-	Broadcast_Port,
-	MP3enc_found,
 	Pitch_found,
-	Remote_Active,
-	Remote_Port,
-	Remote_Discoverable,
-	Remote_DiscoverPort,
-	Stream_NewTab,
-	Stream_ShowHistory,
-	Stream_SearchWindowSize,
-	Lyrics_Zoom,
-	Lyrics_Server,
-	Cover_Server,
-	Cover_FetchFromWWW,
-	Cover_SaveToDB,
-	Cover_StartSearch,
-	Cover_SaveToLibrary,
-	Cover_SaveToSayonaraDir,
-	Cover_TemplatePath,
-	Icon_Theme,
-	Icon_ForceInDarkTheme,
+	Player_514Fix,
+	Player_ControlStyle,
+	Player_FadingCover,
+	Player_ForceNativeDirDialog,
+	Player_Fullscreen,
+	Player_Geometry,
+	Player_Language,
+	Player_Maximized,
+	Player_Min2Tray,
+	Player_NotifyNewVersion,
+	Player_OneInstance,
+	Player_PrivId,
+	Player_PublicId,
+	Player_ShowTrayIcon,
+	Player_ShownPlugin,
+	Player_SplitterControls,
+	Player_SplitterState,
+	Player_StartInTray,
+	Player_Style,
+	Player_Version,
 	Proxy_Active,
-	Proxy_Username,
-	Proxy_Password,
 	Proxy_Hostname,
+	Proxy_Password,
 	Proxy_Port,
 	Proxy_SavePw,
-	Soundcloud_AuthToken,
-	Speed_LastTab,
-	InfoDialog_Size,
-	AlternativeCovers_Size,
-	Logger_Level,
+	Proxy_Username,
+	Remote_Active,
+	Remote_DiscoverPort,
+	Remote_Discoverable,
+	Remote_Port,
 	Settings_Revision,
+	Soundcloud_AuthToken,
+	Spectrum_Style,
+	Speed_LastTab,
+	Stream_NewTab,
+	Stream_SearchWindowSize,
+	Stream_ShowHistory,
 	Num_Setting_Keys
 };
 
@@ -220,221 +219,190 @@ namespace Library
 }
 
 template<typename DataType, SettingKey keyIndex>
-class SettingIdentifier
+struct SettingIdentifier
 {
-	public:
-		using Data = DataType;
-		const static SettingKey key = keyIndex;
+	using Data [[maybe_unused]] = DataType;
+	const static SettingKey key = keyIndex;
 
-	private:
-		SettingIdentifier() = delete;
-		~SettingIdentifier();
+	SettingIdentifier() = delete;
+	~SettingIdentifier() = delete;
 };
 
-namespace ns
-{
-	using LFM_Active = SettingIdentifier<bool, SettingKey::LFM_Active>;
+// NOLINTNEXTLINE(cppcoreguidelines-macro-usage)
+#define CreateSetting(settingkey, type); \
+    using settingkey = SettingIdentifier<type, SettingKey:: settingkey> // NOLINT(bugprone-macro-parentheses)
+
+namespace Set
+{   // persistent settings
+	CreateSetting(AlternativeCovers_Size, QSize); // Size of Alternative Cover Dialog
+	CreateSetting(AudioConvert_NumberThreads, int); // Number of threads
+	CreateSetting(AudioConvert_PreferredConverter, QString); // Preferred Converter: ogg, lame cbr, lame vbr
+	CreateSetting(AudioConvert_QualityLameCBR, int); // 64 - 320
+	CreateSetting(AudioConvert_QualityLameVBR, int); // Lame Quality for variable bitrate 1-10
+	CreateSetting(AudioConvert_QualityOgg, int); // 1 - 10
+	CreateSetting(Broadcast_Active, bool); // is broadcast active?
+	CreateSetting(Broadcast_Port, int); // broadcast port
+	CreateSetting(Broadcast_Prompt, bool); // prompt when new connection arrives?
+	CreateSetting(Cover_FetchFromWWW, bool); // Fetch covers from www
+	CreateSetting(Cover_SaveToDB, bool); // Save covers to DB
+	CreateSetting(Cover_SaveToLibrary, bool); // Save covers in library
+	CreateSetting(Cover_SaveToSayonaraDir, bool); // Save covers in library
+	CreateSetting(Cover_Server, QStringList); // Cover server
+	CreateSetting(Cover_StartSearch, bool); // start alternative cover search automatically
+	CreateSetting(Cover_TemplatePath, QString); // Name of cover file in library
+	CreateSetting(Dir_ShowTracks, bool); // show tracks panel in directory view
+	CreateSetting(Dir_SplitterDirFile, QByteArray); // Splitter state between dirs and files
+	CreateSetting(Dir_SplitterTracks, QByteArray); // Splitter between upper and track view
+	CreateSetting(Dir_TagToFilenameExpression, QString); // Last used expression when converting tags to filename
+	CreateSetting(Engine_AlsaDevice, QString); // Specific alsa device
+	CreateSetting(Engine_BufferSizeMS, int); // Buffer size for streaming
+	CreateSetting(Engine_CovertTargetPath, QString); // last convert path
+	CreateSetting(Engine_CrossFaderActive, bool); // crossfader, but not gapless active
+	CreateSetting(Engine_CrossFaderTime, int); // crossfader overlap time
+	CreateSetting(Engine_CurTrackPos_s, int); // position of track (used to load old position)
+	CreateSetting(Engine_Mute, bool); // Muted/unmuted
+	CreateSetting(Engine_Name, QString); // Deprecated: Engine name
+	CreateSetting(Engine_Pitch, int); // hertz of a
+	CreateSetting(Engine_PreservePitch, bool); // if yes, should pitch be preserved?
+	CreateSetting(Engine_SR_Active, bool); // Streamripper active
+	CreateSetting(Engine_SR_AutoRecord, bool); // streamripper automatic recording
+	CreateSetting(Engine_SR_Path, QString); // streamripper paths
+	CreateSetting(Engine_SR_SessionPath, bool); // create streamripper session path?
+	CreateSetting(Engine_SR_SessionPathTemplate, QString); // streamripper session path templat
+	CreateSetting(Engine_SR_Warning, bool); // streamripper warnings
+	CreateSetting(Engine_ShowLevel, bool); // show level
+	CreateSetting(Engine_ShowSpectrum, bool); // show spectrum
+	CreateSetting(Engine_Sink, QString); // Alsa, pulseaudio
+	CreateSetting(Engine_SoundFileExtensions, QStringList); // additional file extensions
+	CreateSetting(Engine_SpectrumBins, int); // number of spectrum bins
+	CreateSetting(Engine_Speed, float); // if yes, set speed
+	CreateSetting(Engine_SpeedActive, bool); // is speed control active?
+	CreateSetting(Engine_Vol, int); // Volume
+	CreateSetting(Eq_Gauss, bool); // do curve, when changing eq setting
+	CreateSetting(Eq_Last, int); // last equalizer index
+	CreateSetting(Icon_ForceInDarkTheme, bool); // Current icon theme
+	CreateSetting(Icon_Theme, QString); // Current icon theme
+	CreateSetting(InfoDialog_Size, QSize); // Size of Info Dialog
+	CreateSetting(LFM_Active, bool); // is lastFM active?
+	CreateSetting(LFM_Corrections, bool); // propose lfm corrections
+	CreateSetting(LFM_Login, StringPair); // deprecated: 2-Tupel, username, password
+	CreateSetting(LFM_Password, QString); // encrypted password
+	CreateSetting(LFM_ScrobbleTimeSec, int); // time in sec when to scrobble
+	CreateSetting(LFM_SessionKey, QString); // lfm session key
+	CreateSetting(LFM_ShowErrors, bool); // get error message, if there are lfm problems
+	CreateSetting(LFM_Username, QString); // usernam
+	CreateSetting(Level_Style, int); // index of level style
+	CreateSetting(Lib_AllLibraries, QList<Library::Info>); // deprecated
+	CreateSetting(Lib_AutoUpdate, bool); // Automatic update of library
+	CreateSetting(Lib_ColStateAlbums, QByteArray); // Header state of albums
+	CreateSetting(Lib_ColStateArtists, QByteArray); // Header state of artists
+	CreateSetting(Lib_ColStateTracks, QByteArray); // Header state of tracks
+	CreateSetting(Lib_CoverOrigPMCache, int); // Original sized pixmap cache
+	CreateSetting(Lib_CoverScaledPMCache, int); // Scaled sized pixmap cache
+	CreateSetting(Lib_CoverShowArtist, bool); // Show artist name in cover view
+	CreateSetting(Lib_CoverShowUtils, bool); // Show utils bar in cover view
+	CreateSetting(Lib_CoverZoom, int); // Zoom of album cover view
+	CreateSetting(Lib_CurPlugin, QString); // Current shown library plugin
+	CreateSetting(Lib_DC_DoNothing, bool); // when double clicked, create playlist and do nothin
+	CreateSetting(Lib_DC_PlayIfStopped, bool); // when double clicked, play if stopped
+	CreateSetting(Lib_DC_PlayImmediately, bool); // when double clicked, play immediately
+	CreateSetting(Lib_DD_DoNothing, bool); // when drag dropped, insert tracks and do nothing
+	CreateSetting(Lib_DD_PlayIfStoppedAndEmpty, bool); // when drag dropped, play if playlist is empty and stopped
+	CreateSetting(Lib_FontBold, bool); // bold fonts in library
+	CreateSetting(Lib_GenreTree, bool); // Show tree view of genres
+	CreateSetting(Lib_HeaderAutoResizeAlbums, bool); // resize columns automatically in albums
+	CreateSetting(Lib_HeaderAutoResizeArtists, bool); // resize columns automatically in artists
+	CreateSetting(Lib_HeaderAutoResizeTracks, bool); // resize columns automatically in tracks
+	CreateSetting(Lib_LastIndex, int); // Last selected library
+	CreateSetting(Lib_LiveSearch, bool); // library live search
+	CreateSetting(Lib_OldWidth, int); // Old library width when hiding library
+	CreateSetting(Lib_Path, QString); // deprecated
+	CreateSetting(Lib_SearchMode, int); // Search mode in library. See
+	CreateSetting(Lib_SearchStringLength, int); // minimum length of search string
+	CreateSetting(Lib_Show, bool); // show library
+	CreateSetting(Lib_ShowAlbumArtists, bool); // Show album artists instead of artists
+	CreateSetting(Lib_ShowAlbumCovers, bool); // Show album cover view
+	CreateSetting(Lib_ShowFilterExtBar, bool); // Show the file extension filter bar in track view
+	CreateSetting(Lib_SortIgnoreArtistArticle, bool); // ignore article for artist
+	CreateSetting(Lib_Sorting, Library::Sortings); // how to sort in lib
+	CreateSetting(Lib_SplitterStateArtist, QByteArray); // Splitter state between artists and albums
+	CreateSetting(Lib_SplitterStateDate, QByteArray); // Splitter state between tracks and genres
+	CreateSetting(Lib_SplitterStateGenre, QByteArray); // Splitter state between tracks and genres
+	CreateSetting(Lib_SplitterStateTrack, QByteArray); // Splitter state between artists and tracks
+	CreateSetting(Lib_UseViewClearButton, bool); // Show clear button in single view
+	CreateSetting(Lib_ViewType, Library::ViewType); // Standard view, CoverView, LibraryView
+	CreateSetting(Logger_Level, int); // Also log development:
+	CreateSetting(Lyrics_Server, QString); // Lyrics server
+	CreateSetting(Lyrics_Zoom, int); // Zoom factor in lyrics window
+	CreateSetting(Notification_Name, QString); // type of notifications: libnotify or empty for native baloons
+	CreateSetting(Notification_Show, bool); // show notifications
+	CreateSetting(Notification_Timeout, int); // notification timeout
+	CreateSetting(PL_CurrentTrackColorStringDark, QString); // custom color in dark theme
+	CreateSetting(PL_CurrentTrackColorStringStandard, QString); // custom color string in standard theme
+	CreateSetting(PL_CurrentTrackCustomColorDark, bool); // use custom color in dark theme
+	CreateSetting(PL_CurrentTrackCustomColorStandard, bool); // use custom color in standard theme
+	CreateSetting(PL_EntryLook, QString); // formatting of playlist entry
+	CreateSetting(PL_JumpToCurrentTrack, bool); // jump to current track when track changes
+	CreateSetting(PL_LastPlaylist, int); // last Playlist id, where LastTrack has been played
+	CreateSetting(PL_LastTrack, int); // last track idx in playlist
+	CreateSetting(PL_LastTrackBeforeStop, int); // last track before stop
+	CreateSetting(PL_LoadLastTrack, bool); // load last track on startup
+	CreateSetting(PL_LoadSavedPlaylists, bool); // load saved playlists on startup
+	CreateSetting(PL_LoadTemporaryPlaylists, bool); // load temporary playlists on startup
+	CreateSetting(PL_Mode, Playlist::Mode); // playlist mode: rep1, repAll, shuffle...
+	CreateSetting(PL_PlayTrackAfterSearch, bool); // play track after search is done
+	CreateSetting(PL_RememberTime, bool); // remember time of last track
+	CreateSetting(PL_RememberTrackAfterStop, bool); // when stop button is pressed, remember last track index
+	CreateSetting(PL_ShowBottomBar, bool); // Show bottom bar in playlist
+	CreateSetting(PL_ShowClearButton, bool); // show clear button in playlist
+	CreateSetting(PL_ShowCovers, bool); // Show covers in Playlist
+	CreateSetting(PL_ShowNumbers, bool); // show numbers in playlist
+	CreateSetting(PL_ShowRating, bool); // Show rating in playlist
+	CreateSetting(PL_StartPlaying, bool); // start playing immediately when opening Sayonara
+	CreateSetting(PL_StartPlayingWorkaround_Issue263,
+	              bool); // https://gitlab.com/luciocarreras/sayonara-player/-/issues/263
+	CreateSetting(Player_514Fix, bool); // https://bugs.archlinux.org/task/59451
+	CreateSetting(Player_ControlStyle, int); // Big cover or not
+	CreateSetting(Player_FadingCover, bool); // If cover buttons should fade
+	CreateSetting(Player_ForceNativeDirDialog, bool); // Under some environments, native dir dialog is disabled
+	CreateSetting(Player_Fullscreen, bool); // player fullscreen
+	CreateSetting(Player_Geometry, QByteArray); // player geometry
+	CreateSetting(Player_Language, QString); // language of player
+	CreateSetting(Player_Maximized, bool); // player maximized
+	CreateSetting(Player_Min2Tray, bool); // minimize Sayonara to tray
+	CreateSetting(Player_NotifyNewVersion, bool); // check for new version on startup
+	CreateSetting(Player_OneInstance, bool); // only one Sayonara instance is allowed
+	CreateSetting(Player_PrivId, QByteArray); // Unique identifier
+	CreateSetting(Player_PublicId, QByteArray); // Unique identifier
+	CreateSetting(Player_ShowTrayIcon, bool); // Show/hide the tray icon
+	CreateSetting(Player_ShownPlugin, QString); // current shown plugin in player, empty if none
+	CreateSetting(Player_SplitterControls, QByteArray); // Splitter state between controls and playlist
+	CreateSetting(Player_SplitterState, QByteArray); // spliter state between playlist and library
+	CreateSetting(Player_StartInTray, bool); // start in tray
+	CreateSetting(Player_Style, int); // dark or native: native = 0, dark = 1
+	CreateSetting(Player_Version, QString); // Version string of player
+	CreateSetting(Proxy_Active, bool); // Is proxy server active
+	CreateSetting(Proxy_Hostname, QString); // Proxy Hostname/IP Address
+	CreateSetting(Proxy_Password, QString); // Proxy Password
+	CreateSetting(Proxy_Port, int); // Proxy Port 3128
+	CreateSetting(Proxy_SavePw, bool); // Should password be saved
+	CreateSetting(Proxy_Username, QString); // Proxy Username
+	CreateSetting(Remote_Active, bool); // Remote control activated
+	CreateSetting(Remote_DiscoverPort, int); // UDP port for remote discovering
+	CreateSetting(Remote_Discoverable, bool); // broadcast is discoverable via UDP
+	CreateSetting(Remote_Port, int); // Remote control port
+	CreateSetting(Settings_Revision, int); // Version number of settings
+	CreateSetting(Spectrum_Style, int); // index of spectrum style
+	CreateSetting(Speed_LastTab, int); // Last tab selected int he speed/pitch plugin
+	CreateSetting(Stream_NewTab, bool); // Open Streams in new tab
+	CreateSetting(Stream_SearchWindowSize, QSize); // Size of the stream search dialog
+	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
 }
 
-#define INST_ABSTR(ns, type, settingkey) \
-    namespace ns {    \
-        using settingkey = SettingIdentifier<type, SettingKey:: settingkey>; \
-    }
-
-#define INST(type, settingkey)    INST_ABSTR(Set, type, settingkey)
-#define INST_NO_DB(type, settingkey) INST_ABSTR(SetNoDB, type, settingkey)
-
-/**
- * @brief Set namespace defines the setting: Which key and which type
- * @ingroup Settings
- */
-INST(bool, LFM_Active)                /* is lastFM active? */
-INST(int, LFM_ScrobbleTimeSec)    /* time in sec when to scrobble */
-INST(StringPair, LFM_Login)                /* deprecated: 2-Tupel, username, password */
-INST(QString, LFM_Username)            /* username*/
-INST(QString, LFM_Password)            /* encrypted password */
-
-INST(bool, LFM_Corrections)        /* propose lfm corrections */
-INST(bool, LFM_ShowErrors)            /* get error message, if there are lfm problems */
-INST(QString, LFM_SessionKey)            /* lfm session key */
-
-INST(int, Eq_Last)                /* last equalizer index */
-INST(bool, Eq_Gauss)                /* do curve, when changing eq setting */
-
-INST(bool, Lib_Show)                /* show library */
-INST(QString, Lib_Path)                    // deprecated
-INST(QByteArray, Lib_ColStateAlbums)
-INST(QByteArray, Lib_ColStateArtists)
-INST(QByteArray, Lib_ColStateTracks)
-INST(bool, Lib_LiveSearch)            /* library live search */
-INST(::Library::Sortings, Lib_Sorting)        /* how to sort in lib */
-INST(QString, Lib_CurPlugin)                /* Current shown library plugin */
-INST(QByteArray, Lib_SplitterStateArtist)    /* Splitter state between artists and albums */
-INST(QByteArray, Lib_SplitterStateTrack)    /* Splitter state between artists and tracks */
-INST(QByteArray, Lib_SplitterStateGenre)    /* Splitter state between tracks and genres */
-INST(QByteArray, Lib_SplitterStateDate)        /* Splitter state between tracks and genres */
-INST(int, Lib_OldWidth)                /* Old library width when hiding library */
-INST(bool, Lib_DC_DoNothing)            /* when double clicked, create playlist and do nothing*/
-INST(bool, Lib_DC_PlayIfStopped)        /* when double clicked, play if stopped */
-INST(bool, Lib_DC_PlayImmediately)    /* when double clicked, play immediately */
-INST(bool, Lib_DD_DoNothing)            /* when drag dropped, insert tracks and do nothing */
-INST(bool, Lib_DD_PlayIfStoppedAndEmpty)    /* when drag dropped, play if playlist is empty and stopped */
-INST(int, Lib_SearchMode)            /* Search mode in library. See */
-INST(int, Lib_SearchStringLength)            /* minimum length of search string */
-INST(bool, Lib_AutoUpdate)            /* Automatic update of library */
-INST(bool, Lib_ShowAlbumArtists)        /* Show album artists instead of artists */
-INST(bool, Lib_ShowAlbumCovers)        /* Show album cover view */
-INST(::Library::ViewType, Lib_ViewType)        /* Standard view, CoverView, LibraryView */
-INST(int, Lib_CoverZoom)                /* Zoom of album cover view */
-INST(int, Lib_CoverOrigPMCache)        /* Original sized pixmap cache */
-INST(int, Lib_CoverScaledPMCache)        /* Scaled sized pixmap cache */
-INST(bool, Lib_CoverShowUtils)        /* Show utils bar in cover view */
-INST(bool, Lib_CoverShowArtist)    /* Show artist name in cover view */
-INST(bool, Lib_GenreTree)                /* Show tree view of genres */
-INST(QList<::Library::Info>, Lib_AllLibraries)        // deprecated
-INST(int, Lib_LastIndex)                /* Last selected library */
-INST(bool, Lib_FontBold)               /* bold fonts in library */
-INST(bool, Lib_UseViewClearButton)    /* Show clear button in single view */
-INST(bool, Lib_ShowFilterExtBar) /* Show the file extension filter bar in track view */
-INST(bool, Lib_SortIgnoreArtistArticle) /* ignore article for artist */
-INST(bool, Lib_HeaderAutoResizeArtists) /* resize columns automatically in artists */
-INST(bool, Lib_HeaderAutoResizeAlbums) /* resize columns automatically in albums */
-INST(bool, Lib_HeaderAutoResizeTracks) /* resize columns automatically in tracks */
-
-INST(bool, Dir_ShowTracks)            /* show tracks panel in directory view */
-INST(QByteArray, Dir_SplitterDirFile)        /* Splitter state between dirs and files */
-INST(QByteArray, Dir_SplitterTracks)        /* Splitter between upper and track view */
-INST(QString, Dir_TagToFilenameExpression) /* Last used expression when converting tags to filename */
-
-INST(QString, Player_Version)            /* Version string of player */
-INST(QString, Player_Language)            /* language of player */
-INST(int, Player_Style)                /* dark or native: native = 0, dark = 1 */
-INST(int, Player_ControlStyle)        /* Big cover or not */
-INST(bool, Player_FadingCover)            /* If cover buttons should fade */
-INST(bool, Player_Fullscreen)            /* player fullscreen */
-INST(bool, Player_Maximized)            /* player maximized */
-INST(QByteArray, Player_Geometry)            /* player geometry */
-INST(QString, Player_ShownPlugin)            /* current shown plugin in player, empty if none */
-INST(bool, Player_OneInstance)            /* only one Sayonara instance is allowed */
-INST(bool, Player_Min2Tray)            /* minimize Sayonara to tray */
-INST(bool, Player_ShowTrayIcon)            /* Show/hide the tray icon */
-INST(bool, Player_StartInTray)            /* start in tray */
-INST(bool, Player_514Fix)                /* https://bugs.archlinux.org/task/59451 */
-INST(bool, Player_NotifyNewVersion)        /* check for new version on startup */
-INST(QByteArray, Player_SplitterState)            /* spliter state between playlist and library */
-//INST(RawShortcutMap,	Player_Shortcuts)			/* player shortcuts */
-INST(QByteArray, Player_SplitterControls)    /* Splitter state between controls and playlist */
-INST(QByteArray, Player_PrivId)                /* Unique identifier */
-INST(QByteArray, Player_PublicId)                /* Unique identifier */
-INST(bool, Player_ForceNativeDirDialog)       /* Under some environments, native dir dialog is disabled */
-INST(QStringList,
-     PL_Playlist)                /* old playlist: list of integers in case of library tracks, if no library track, filepath */
-INST(bool, PL_LoadSavedPlaylists)            /* load saved playlists on startup */
-INST(bool, PL_LoadTemporaryPlaylists)        /* load temporary playlists on startup */
-INST(bool, PL_LoadLastTrack)            /* load last track on startup */
-INST(bool, PL_RememberTime)            /* remember time of last track */
-INST(bool, PL_StartPlaying)            /* start playing immediately when opening Sayonara */
-INST(bool, PL_StartPlayingWorkaround_Issue263) /* https://gitlab.com/luciocarreras/sayonara-player/-/issues/263 */
-INST(int, PL_LastTrack)                /* last track idx in playlist */
-INST(int, PL_LastTrackBeforeStop)        /* last track before stop */
-INST(int, PL_LastPlaylist)            /* last Playlist id, where LastTrack has been played */
-INST(QString, PL_EntryLook)                /* formatting of playlist entry */
-INST(bool, PL_ShowClearButton)        /* show clear button in playlist */
-INST(Playlist::Mode, PL_Mode)                    /* playlist mode: rep1, repAll, shuffle... */
-INST(bool, PL_ShowNumbers)            /* show numbers in playlist */
-INST(bool, PL_ShowBottomBar)            /* Show bottom bar in playlist */
-INST(bool, PL_RememberTrackAfterStop)    /* when stop button is pressed, remember last track index */
-INST(bool, PL_ShowCovers)                /* Show covers in Playlist */
-INST(bool, PL_ShowRating)                /* Show rating in playlist */
-INST(bool, PL_CurrentTrackCustomColorStandard) /* use custom color in standard theme */
-INST(QString, PL_CurrentTrackColorStringStandard) /* custom color string in standard theme */
-INST(bool, PL_CurrentTrackCustomColorDark) /* use custom color in dark theme */
-INST(QString, PL_CurrentTrackColorStringDark) /* custom color in dark theme */
-INST(bool, PL_JumpToCurrentTrack) /* jump to current track when track changes */
-INST(bool, PL_PlayTrackAfterSearch) /* play track after search is done */
-
-INST(bool, Notification_Show)            /* show notifications */
-INST(int, Notification_Timeout)        /* notification timeout */
-INST(QString, Notification_Name)            /* type of notifications: libnotify or empty for native baloons :( */
-
-INST(int, AudioConvert_NumberThreads)    /* Number of threads */
-INST(QString, AudioConvert_PreferredConverter)        /* Preferred Converter: ogg, lame cbr, lame vbr */
-INST(int, AudioConvert_QualityLameVBR)    /* Lame Quality for variable bitrate 1-10 */
-INST(int, AudioConvert_QualityLameCBR)    /* 64 - 320 */
-INST(int, AudioConvert_QualityOgg)        /* 1 - 10 */
-
-INST(QString, Engine_Name)                /* Deprecated: Engine name */
-INST(QStringList, Engine_SoundFileExtensions) /* additional file extensions */
-INST(int, Engine_Vol)                    /* Volume */
-INST(bool, Engine_Mute)                /* Muted/unmuted */
-INST(int, Engine_CurTrackPos_s)        /* position of track (used to load old position) */
-INST(QString, Engine_CovertTargetPath)    /* last convert path */
-INST(int, Engine_SpectrumBins)        /* number of spectrum bins */
-INST(bool, Engine_ShowSpectrum)        /* show spectrum */
-INST(bool, Engine_ShowLevel)            /* show level */
-INST(bool, Engine_CrossFaderActive)    /* crossfader, but not gapless active */
-INST(int, Engine_CrossFaderTime)        /* crossfader overlap time */
-INST(int, Engine_Pitch)                /* hertz of a */
-INST(bool, Engine_SpeedActive)            /* is speed control active? */
-INST(float, Engine_Speed)                /* if yes, set speed */
-INST(bool, Engine_PreservePitch)        /* if yes, should pitch be preserved? */
-INST(QString, Engine_Sink)                /* Alsa, pulseaudio */
-INST(QString, Engine_AlsaDevice)            /* Specific alsa device */
-INST(int, Engine_BufferSizeMS)        /* Buffer size for streaming */
-
-INST(bool, Engine_SR_Active)            /* Streamripper active */
-INST(bool, Engine_SR_Warning)            /* streamripper warnings */
-INST(QString, Engine_SR_Path)                /* streamripper paths */
-INST(bool, Engine_SR_SessionPath)            /* create streamripper session path? */
-INST(QString, Engine_SR_SessionPathTemplate)    /* streamripper session path template*/
-INST(bool, Engine_SR_AutoRecord)            /* streamripper automatic recording */
-
-INST(int, Spectrum_Style)            /* index of spectrum style */
-INST(int, Level_Style)            /* index of level style */
-INST(bool, Broadcast_Active)        /* is broadcast active? */
-INST(bool, Broadcast_Prompt)        /* prompt when new connection arrives? */
-INST(int, Broadcast_Port)            /* broadcast port */
-
-INST(bool, Remote_Active)            /* Remote control activated */
-INST(int, Remote_Port)            /* Remote control port */
-INST(bool, Remote_Discoverable)    /* broadcast is discoverable via UDP */
-INST(int, Remote_DiscoverPort)    /* UDP port for remote discovering */
-
-INST(bool, Stream_NewTab)            /* Open Streams in new tab */
-INST(bool, Stream_ShowHistory)        /* Show history when playing streams */
-INST(QSize, Stream_SearchWindowSize)
-
-INST(int, Lyrics_Zoom)            /* Zoom factor in lyrics window */
-INST(QString, Lyrics_Server)            /* Lyrics server */
-
-INST(QStringList, Cover_Server)            /* Cover server */
-INST(bool, Cover_FetchFromWWW)        /* Fetch covers from www */
-INST(bool, Cover_SaveToDB)            /* Save covers to DB */
-INST(bool, Cover_StartSearch)        /* start alternative cover search automatically */
-INST(bool, Cover_SaveToLibrary)    /* Save covers in library */
-INST(bool, Cover_SaveToSayonaraDir) /* Save covers in library */
-INST(QString, Cover_TemplatePath)        /* Name of cover file in library */
-INST(QString, Icon_Theme)                /* Current icon theme */
-INST(bool, Icon_ForceInDarkTheme)    /* Current icon theme */
-
-INST(bool, Proxy_Active)            /* Is proxy server active */
-INST(QString, Proxy_Username)            /* Proxy Username */
-INST(QString, Proxy_Password)            /* Proxy Password */
-INST(QString, Proxy_Hostname)            /* Proxy Hostname/IP Address */
-INST(int, Proxy_Port)                /* Proxy Port 3128 */
-INST(bool, Proxy_SavePw)            /* Should password be saved */
-
-INST(int, Speed_LastTab)            /* Last tab selected int he speed/pitch plugin */
-
-INST(QSize, InfoDialog_Size)        /* Size of Info Dialog */
-INST(QSize, AlternativeCovers_Size) /* Size of Alternative Cover Dialog */
-
-INST(int, Settings_Revision)        /* Version number of settings */
-
-INST(int, Logger_Level)            /* Also log development: */
-
-INST_NO_DB(QString, Soundcloud_AuthToken)
-INST_NO_DB(bool, MP3enc_found)
-INST_NO_DB(bool, Pitch_found)
-
+namespace SetNoDB
+{   // non-persistent settings
+	CreateSetting(MP3enc_found, bool); // is mp3 encoder available?
+	CreateSetting(Pitch_found, bool); // is pitch element available?
+	CreateSetting(Soundcloud_AuthToken, QString); // soundcloud authentication token
+}
 #endif // SETTINGKEY_H
