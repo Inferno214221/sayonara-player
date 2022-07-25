@@ -20,6 +20,7 @@
 
 #include "MiniSearcher.h"
 #include "SearchableView.h"
+#include "Utils/GuiUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 
@@ -103,7 +104,7 @@ namespace Gui
 			searchableView {searchableView},
 			lineEdit {new QLineEdit(parent)},
 			label {new QLabel(parent)},
-			maxWidth {parent->fontMetrics().horizontalAdvance("18 good characters")}
+			maxWidth {Gui::Util::textWidth(parent->fontMetrics(), "18 good characters")}
 		{
 			lineEdit->setObjectName("MiniSearcherLineEdit");
 			lineEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
