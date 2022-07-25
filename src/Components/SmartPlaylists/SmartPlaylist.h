@@ -40,6 +40,7 @@ namespace SmartPlaylists
 		CreatedRelative,
 		LastPlayed,
 		RandomTracks,
+		RandomAlbums,
 		NumEntries
 	};
 
