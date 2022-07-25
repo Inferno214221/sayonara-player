@@ -35,100 +35,57 @@ namespace Gui
 
 namespace Library
 {
-	/**
-	 * @brief Context menu used for Library and playlist windows
-	 * @ingroup Gui
-	 * @ingroup Library
-	 */
 	class ContextMenu :
-			public Gui::WidgetTemplate<QMenu>
+		public Gui::WidgetTemplate<QMenu>
 	{
 		Q_OBJECT
 		PIMPL(ContextMenu)
 
 		signals:
-			void sigInfoClicked();
-			void sigEditClicked();
-			void sigLyricsClicked();
-			void sigRemoveClicked();
-			void sigDeleteClicked();
-			void sigPlayClicked();
-			void sigPlayNewTabClicked();
-			void sigPlayNextClicked();
-			void sigAppendClicked();
-			void sigRefreshClicked();
-			void sigClearClicked();
 			void sigFilterTriggered(const QString& extension, bool b);
-			void sigReloadClicked();
-
 
 		public:
-			/**
-			 * @brief This enum indicates which entries should be visible
-			 */
 			enum Entry
 			{
-				EntryNone			= 0,
-				EntryInfo			= (1<<0),
-				EntryEdit			= (1<<1),
-				EntryLyrics			= (1<<2),
-				EntryRemove			= (1<<3),
-				EntryDelete			= (1<<4),
-				EntryPlayNext		= (1<<5),
-				EntryAppend			= (1<<6),
-				EntryRefresh		= (1<<7),
-				EntryClear			= (1<<8),
-				EntryPlay			= (1<<9),
-				EntryPlayNewTab		= (1<<10),
-				EntryFilterExtension= (1<<11),
-				EntryReload			= (1<<12),
-				EntryLast			= (1<<13)
+				EntryNone = 0,
+				EntryInfo = (1 << 0),
+				EntryEdit = (1 << 1),
+				EntryLyrics = (1 << 2),
+				EntryRemove = (1 << 3),
+				EntryDelete = (1 << 4),
+				EntryPlayNext = (1 << 5),
+				EntryAppend = (1 << 6),
+				EntryRefresh = (1 << 7),
+				EntryClear = (1 << 8),
+				EntryPlay = (1 << 9),
+				EntryPlayNewTab = (1 << 10),
+				EntryFilterExtension = (1 << 11),
+				EntryReload = (1 << 12),
+				EntryViewType = (1 << 13),
+				EntryLast = (1 << 14)
 			};
 
-			using Entries=uint64_t;
+			using Entries = uint64_t;
 
+		public: // NOLINT(readability-redundant-access-specifiers)
+			explicit ContextMenu(QWidget* parent = nullptr);
+			~ContextMenu() override;
 
-		public:
-			explicit ContextMenu(QWidget* parent=nullptr);
-			virtual ~ContextMenu() override;
-
-			/**
-			 * @brief get all visible entries
-			 * @return all visible entries
-			 */
-			virtual ContextMenu::Entries entries() const;
-
-			/**
-			 * @brief show a specific amount of Entries
-			 * @param entries bitwise combination of Entry
-			 */
+			[[nodiscard]] virtual ContextMenu::Entries entries() const;
 			virtual void showActions(ContextMenu::Entries entries);
-
-			/**
-			 * @brief show/hide a specific Entry
-			 * @param The entry of interest
-			 * @param visible
-			 */
 			virtual void showAction(ContextMenu::Entry entry, bool visible);
-
-			/**
-			 * @brief show all possible entries
-			 */
 			virtual void showAll();
 
-			QAction* action(ContextMenu::Entry entry) const;
-			QAction* actionAfter(ContextMenu::Entry entry) const;
+			[[nodiscard]] QAction* action(ContextMenu::Entry entry) const;
+			[[nodiscard]] QAction* actionAfter(ContextMenu::Entry entry) const;
 
 			QAction* addPreferenceAction(Gui::PreferenceAction* action);
-			QAction* beforePreferenceAction() const;
-
-			void setActionShortcut(ContextMenu::Entry entry, const QString& shortcut);
+			[[nodiscard]] QAction* beforePreferenceAction() const;
 
 			void setExtensions(const Gui::ExtensionSet& extensions);
 			void setSelectionCount(int selectionSount);
 
-			QKeySequence shortcut(ContextMenu::Entry entry) const;
-
+			[[nodiscard]] QKeySequence shortcut(ContextMenu::Entry entry) const;
 
 		private slots:
 			void showFilterExtensionBarChanged();
@@ -136,8 +93,6 @@ namespace Library
 			void libraryViewTypeChanged();
 			void libraryViewTypeTriggered(bool b);
 			void shortcutChanged(ShortcutIdentifier identifier);
-			void skinTimerTimeout();
-
 
 		protected:
 			void skinChanged() override;

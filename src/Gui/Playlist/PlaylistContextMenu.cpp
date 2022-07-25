@@ -87,20 +87,18 @@ namespace
 		parentWidget->addAction(action);
 	}
 
-	void
-	configureShortcuts(ContextMenu* menu, QWidget* parent)
+	void configureShortcuts(ContextMenu* menu, QWidget* parent)
 	{
+		initShortcut(menu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Return});
+		initShortcut(menu, parent, Library::ContextMenu::EntryClear, {Qt::Key_Backspace});
+		initShortcut(menu, parent, Library::ContextMenu::EntryRemove, QKeySequence::Delete);
+		initShortcut(menu, parent, Library::ContextMenu::EntryDelete, {Qt::ShiftModifier + Qt::Key_Delete});
+
 		initShortcut(menu, parent, ContextMenu::EntryCurrentTrack, {Qt::ControlModifier | Qt::Key_J});
 		initShortcut(menu, parent, ContextMenu::EntryFindInLibrary, {Qt::ControlModifier | Qt::Key_G});
 		initShortcut(menu, parent, ContextMenu::EntryRandomize, {Qt::ControlModifier | Qt::ShiftModifier | Qt::Key_R});
 		initShortcut(menu, parent, ContextMenu::EntryReverse, {Qt::ControlModifier | Qt::Key_R});
 		initShortcut(menu, parent, ContextMenu::EntryJumpToNextAlbum, {Qt::ControlModifier | Qt::Key_N});
-
-		auto* libraryMenu = static_cast<Library::ContextMenu*>(menu);
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Return});
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryClear, {Qt::Key_Backspace});
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryRemove, QKeySequence::Delete);
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryDelete, {Qt::ShiftModifier + Qt::Key_Delete});
 	}
 }// namespace
 

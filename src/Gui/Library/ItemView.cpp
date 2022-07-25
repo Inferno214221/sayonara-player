@@ -123,7 +123,8 @@ ContextMenu::Entries ItemView::contextMenuEntries() const
 	        ContextMenu::EntryDelete |
 	        ContextMenu::EntryPlayNext |
 	        ContextMenu::EntryAppend |
-	        ContextMenu::EntryReload);
+	        ContextMenu::EntryReload |
+	        ContextMenu::EntryViewType);
 }
 
 void ItemView::selectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
@@ -166,18 +167,18 @@ void ItemView::initCustomContextMenu(ContextMenu* menu)
 	{
 		m->contextMenu->insertAction(afterEditAction, m->mergeMenu->action());
 	}
-
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=]() { showEdit(); });
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=]() { showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=]() { showLyrics(); });
-	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &ItemView::deleteClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &ItemView::playClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &ItemView::playNextClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &ItemView::playNewTabClicked);
-	connect(m->contextMenu, &ContextMenu::sigAppendClicked, this, &ItemView::appendClicked);
-	connect(m->contextMenu, &ContextMenu::sigRefreshClicked, this, &ItemView::refreshClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryEdit), &QAction::triggered, this, [&]() { showEdit(); });
+	connect(m->contextMenu->action(ContextMenu::EntryInfo), &QAction::triggered, this, [&]() { showInfo(); });
+	connect(m->contextMenu->action(ContextMenu::EntryLyrics), &QAction::triggered, this, [&]() { showLyrics(); });
+	connect(m->contextMenu->action(ContextMenu::EntryDelete), &QAction::triggered, this, &ItemView::deleteClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlay), &QAction::triggered, this, &ItemView::playClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNext), &QAction::triggered, this, &ItemView::playNextClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNewTab), &QAction::triggered,
+	        this, &ItemView::playNewTabClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryAppend), &QAction::triggered, this, &ItemView::appendClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryRefresh), &QAction::triggered, this, &ItemView::refreshClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryReload), &QAction::triggered, this, &ItemView::reloadClicked);
 	connect(m->contextMenu, &ContextMenu::sigFilterTriggered, this, &ItemView::filterExtensionsTriggered);
-	connect(m->contextMenu, &ContextMenu::sigReloadClicked, this, &ItemView::reloadClicked);
 
 	this->showContextMenuActions(contextMenuEntries());
 
@@ -279,7 +280,7 @@ void ItemView::albumArtistsToggled()
 	SetSetting(Set::Lib_ShowAlbumArtists, !b);
 }
 
-void ItemView::filterExtensionsTriggered(const QString& extension, bool b)
+void ItemView::filterExtensionsTriggered(const QString& extension, const bool b)
 {
 	auto* library = this->library();
 	if(library)

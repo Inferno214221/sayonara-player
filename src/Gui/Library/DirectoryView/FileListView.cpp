@@ -106,14 +106,18 @@ void FileListView::initContextMenu()
 
 	m->contextMenu = new ContextMenu(ContextMenu::Mode::File, m->libraryInfoAccessor, this);
 
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this]() { this->showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [this]() { this->showLyrics(); });
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this]() { this->showEdit(); });
-	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &FileListView::sigDeleteClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &FileListView::sigPlayClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &FileListView::sigPlayNewTabClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &FileListView::sigPlayNextClicked);
-	connect(m->contextMenu, &ContextMenu::sigAppendClicked, this, &FileListView::sigAppendClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryInfo), &QAction::triggered, this, [&]() { this->showInfo(); });
+	connect(m->contextMenu->action(ContextMenu::EntryLyrics), &QAction::triggered, this, [&]() { this->showLyrics(); });
+	connect(m->contextMenu->action(ContextMenu::EntryEdit), &QAction::triggered, this, [&]() { this->showEdit(); });
+	connect(m->contextMenu->action(ContextMenu::EntryDelete), &QAction::triggered,
+	        this, &FileListView::sigDeleteClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlay), &QAction::triggered, this, &FileListView::sigPlayClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNewTab), &QAction::triggered,
+	        this, &FileListView::sigPlayNewTabClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNext), &QAction::triggered,
+	        this, &FileListView::sigPlayNextClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryAppend), &QAction::triggered,
+	        this, &FileListView::sigAppendClicked);
 	connect(m->contextMenu, &ContextMenu::sigRenameClicked, this, &FileListView::renameFileClicked);
 	connect(m->contextMenu, &ContextMenu::sigRenameByTagClicked, this, &FileListView::renameFileByTagClicked);
 	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &FileListView::sigCopyToLibraryRequested);

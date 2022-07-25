@@ -20,163 +20,154 @@
 
 #include "LibraryContextMenu.h"
 
-#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
-#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
 #include "Utils/ExtensionSet.h"
-#include "Utils/Message/Message.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryNamespaces.h"
+#include "Utils/Message/Message.h"
+#include "Utils/Settings/Settings.h"
 
+#include <QActionGroup>
 #include <QMap>
 #include <QTimer>
+#include <optional>
 
 using Library::ContextMenu;
-namespace Algorithm=Util::Algorithm;
+
+namespace
+{
+	void setNewShortcut(QAction* action, const ShortcutIdentifier identifier)
+	{
+		auto* shortcutHandler = ShortcutHandler::instance();
+		action->setShortcut(shortcutHandler->shortcut(identifier).sequence());
+	}
+
+	struct ActionInfo
+	{
+		QAction* action;
+		ContextMenu::Entry entry;
+		Lang::Term term;
+		std::optional<Gui::Icons::IconName> icon;
+	};
+
+	void createActionInfo(QMap<ContextMenu::Entry, ActionInfo>& actions, const ContextMenu::Entry entry,
+	                      const Lang::Term term, const std::optional<Gui::Icons::IconName> icon, ContextMenu* parent)
+	{
+		actions.insert(entry, {new QAction(parent), entry, term, icon});
+	}
+
+	void initViewAction(QAction* action, QMenu* parentMenu, QActionGroup* actionGroup)
+	{
+		action->setCheckable(true);
+		parentMenu->addAction(action);
+		actionGroup->addAction(action);
+	}
+}
 
 struct ContextMenu::Private
 {
-	QMap<ContextMenu::Entry, QAction*> entryActionMap;
+	QMap<ContextMenu::Entry, ActionInfo> actions;
 
-	QMenu*		filetype_menu=nullptr;
+	QMenu* filetypeMenu;
+	QAction* filetypeMenuAction;
+	QAction* showFiletypeBarAction;
 
-	QAction*	infoAction=nullptr;
-	QAction*	lyricsAction=nullptr;
-	QAction*	editAction=nullptr;
-	QAction*	removeAction=nullptr;
-	QAction*	deleteAction=nullptr;
-	QAction*	playAction=nullptr;
-	QAction*	playNewTabAction=nullptr;
-	QAction*	playNextAction=nullptr;
-	QAction*	appendAction=nullptr;
-	QAction*	refreshAction=nullptr;
-	QAction*	reloadLibraryAction=nullptr;
-	QAction*	clearAction=nullptr;
-	QAction*	standardViewAction=nullptr;
-	QAction*	coverViewAction=nullptr;
-	QAction*	directoryViewAction=nullptr;
-	QAction*	filetypeAction=nullptr;
-	QAction*	showFiletypeBarAction=nullptr;
-	QAction*	preferenceSeparator=nullptr;
+	QMenu* viewTypeMenu;
+	QAction* viewTypeMenuAction;
+	QAction* standardViewAction;
+	QAction* coverViewAction;
+	QAction* directoryViewAction;
 
-	bool has_preferenceActions;
+	QAction* preferenceSeparator {nullptr};
 
-	Private() :
-		has_preferenceActions(false)
-	{}
+	explicit Private(ContextMenu* parent) :
+		filetypeMenu {new QMenu(parent)},
+		showFiletypeBarAction {new QAction(parent)},
+		viewTypeMenu {new QMenu(parent)},
+		standardViewAction {new QAction(parent)},
+		coverViewAction {new QAction(parent)},
+		directoryViewAction {new QAction(parent)}
+	{
+		using namespace Gui;
+		createActionInfo(actions, EntryInfo, Lang::Info, Icons::Info, parent);
+		createActionInfo(actions, EntryLyrics, Lang::Lyrics, Icons::Lyrics, parent);
+		createActionInfo(actions, EntryEdit, Lang::Edit, Icons::Edit, parent);
+		createActionInfo(actions, EntryRemove, Lang::Remove, Icons::Remove, parent);
+		createActionInfo(actions, EntryDelete, Lang::Delete, Icons::Delete, parent);
+		createActionInfo(actions, EntryPlay, Lang::Play, Icons::PlaySmall, parent);
+		createActionInfo(actions, EntryPlayNewTab, Lang::PlayInNewTab, Icons::PlaySmall, parent);
+		createActionInfo(actions, EntryPlayNext, Lang::PlayNext, Icons::PlaySmall, parent);
+		createActionInfo(actions, EntryAppend, Lang::Append, Icons::Append, parent);
+		createActionInfo(actions, EntryRefresh, Lang::Refresh, Icons::Undo, parent);
+		createActionInfo(actions, EntryReload, Lang::ReloadLibrary, Icons::Refresh, parent);
+		createActionInfo(actions, EntryClear, Lang::Clear, Icons::Clear, parent);
+
+		auto* actionGroup = new QActionGroup(parent);
+		initViewAction(standardViewAction, viewTypeMenu, actionGroup);
+		initViewAction(directoryViewAction, viewTypeMenu, actionGroup);
+		initViewAction(coverViewAction, viewTypeMenu, actionGroup);
+
+		viewTypeMenuAction = parent->addMenu(viewTypeMenu); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+		actions.insert(EntryViewType,
+		               {viewTypeMenuAction, EntryViewType, Lang::LibraryView, std::nullopt});
+
+		showFiletypeBarAction->setCheckable(true);
+		filetypeMenuAction = parent->addMenu(filetypeMenu); // NOLINT(cppcoreguidelines-prefer-member-initializer)
+		actions.insert(EntryFilterExtension,
+		               {filetypeMenuAction, EntryFilterExtension, Lang::Filetype, std::nullopt});
+	}
 };
-
-
-#include <QActionGroup>
 
 ContextMenu::ContextMenu(QWidget* parent) :
 	WidgetTemplate<QMenu>(parent)
 {
-	m = Pimpl::make<Private>();
-
-	m->infoAction		= new QAction(this);
-	m->lyricsAction		= new QAction(this);
-	m->editAction		= new QAction(this);
-	m->removeAction		= new QAction(this);
-	m->deleteAction		= new QAction(this);
-	m->playAction		= new QAction(this);
-	m->playNewTabAction = new QAction(this);
-	m->playNextAction	= new QAction(this);
-	m->appendAction		= new QAction(this);
-	m->refreshAction	= new QAction(this);
-	m->reloadLibraryAction = new QAction(this);
-	m->clearAction		= new QAction(this);
-
-	{
-		m->standardViewAction = new QAction(this);
-		m->standardViewAction->setCheckable(true);
-
-		m->coverViewAction = new QAction(this);
-		m->coverViewAction->setCheckable(true);
-
-		m->directoryViewAction = new QAction(this);
-		m->directoryViewAction->setCheckable(true);
-
-		auto* actionGroup = new QActionGroup(this);
-		actionGroup->addAction(m->standardViewAction);
-		actionGroup->addAction(m->coverViewAction);
-		actionGroup->addAction(m->directoryViewAction);
-	}
-
-	m->filetype_menu = new QMenu(this);
-	m->filetypeAction = this->addMenu(m->filetype_menu);
-	m->showFiletypeBarAction = new QAction(this);
-	m->showFiletypeBarAction->setCheckable(true);
+	m = Pimpl::make<Private>(this);
 
 	ListenSetting(Set::Lib_ViewType, ContextMenu::libraryViewTypeChanged);
 	ListenSetting(Set::Lib_ShowFilterExtBar, ContextMenu::showFilterExtensionBarChanged);
 
-	ShortcutHandler* sch = ShortcutHandler::instance();
-	connect(sch, &ShortcutHandler::sigShortcutChanged, this, &ContextMenu::shortcutChanged);
+	auto* shortcutHandler = ShortcutHandler::instance();
+	connect(shortcutHandler, &ShortcutHandler::sigShortcutChanged, this, &ContextMenu::shortcutChanged);
 
-	QList<QAction*> actions;
-	actions << m->playAction
-			<< m->playNewTabAction
-			<< m->playNextAction
-			<< m->appendAction
-			<< addSeparator()
+	const auto actions = QList<QAction*> {
+		m->actions[EntryPlay].action,
+		m->actions[EntryPlayNewTab].action,
+		m->actions[EntryPlayNext].action,
+		m->actions[EntryAppend].action,
+		addSeparator(),
+		m->actions[EntryInfo].action,
+		m->actions[EntryLyrics].action,
+		m->actions[EntryEdit].action,
+		m->actions[EntryFilterExtension].action,
+		addSeparator(),
+		m->actions[EntryReload].action,
+		m->actions[EntryRefresh].action,
+		m->actions[EntryRemove].action,
+		m->actions[EntryClear].action,
+		m->actions[EntryDelete].action,
+		addSeparator(),
+		m->actions[EntryViewType].action,
+		addSeparator()
+	};
 
-			<< m->infoAction
-			<< m->lyricsAction
-			<< m->editAction
-			<< m->filetypeAction
-			<< addSeparator()
+	m->preferenceSeparator = actions.last();
 
-			<< m->reloadLibraryAction
-			<< m->refreshAction
-			<< m->removeAction
-			<< m->clearAction
-			<< m->deleteAction
-			<< addSeparator()
+	addActions(actions);
+	parentWidget()->addActions(actions);
 
-			<< m->standardViewAction
-			<< m->coverViewAction
-			<< m->directoryViewAction
-	;
-
-	this->addActions(actions);
-
-	m->entryActionMap[EntryInfo]		= m->infoAction;
-	m->entryActionMap[EntryEdit]		= m->editAction;
-	m->entryActionMap[EntryLyrics]		= m->lyricsAction;
-	m->entryActionMap[EntryRemove]		= m->removeAction;
-	m->entryActionMap[EntryDelete]		= m->deleteAction;
-	m->entryActionMap[EntryPlay]		= m->playAction;
-	m->entryActionMap[EntryPlayNewTab]	= m->playNewTabAction;
-	m->entryActionMap[EntryPlayNext]	= m->playNextAction;
-	m->entryActionMap[EntryAppend]		= m->appendAction;
-	m->entryActionMap[EntryRefresh]		= m->refreshAction;
-	m->entryActionMap[EntryReload]		= m->reloadLibraryAction;
-	m->entryActionMap[EntryClear]		= m->clearAction;
-	m->entryActionMap[EntryFilterExtension] = m->filetypeAction;
-
-	for(QAction* action : Algorithm::AsConst(actions))
+	for(auto* action: actions)
 	{
 		action->setVisible(action->isSeparator());
 	}
 
-	connect(m->infoAction, &QAction::triggered, this, &ContextMenu::sigInfoClicked);
-	connect(m->lyricsAction, &QAction::triggered, this, &ContextMenu::sigLyricsClicked);
-	connect(m->editAction, &QAction::triggered, this, &ContextMenu::sigEditClicked);
-	connect(m->removeAction, &QAction::triggered, this, &ContextMenu::sigRemoveClicked);
-	connect(m->deleteAction, &QAction::triggered, this, &ContextMenu::sigDeleteClicked);
-	connect(m->playAction, &QAction::triggered, this, &ContextMenu::sigPlayClicked);
-	connect(m->playNewTabAction, &QAction::triggered, this, &ContextMenu::sigPlayNewTabClicked);
-	connect(m->playNextAction, &QAction::triggered, this, &ContextMenu::sigPlayNextClicked);
-	connect(m->appendAction, &QAction::triggered, this, &ContextMenu::sigAppendClicked);
-	connect(m->refreshAction, &QAction::triggered, this, &ContextMenu::sigRefreshClicked);
-	connect(m->reloadLibraryAction, &QAction::triggered, this, &ContextMenu::sigReloadClicked);
-	connect(m->clearAction, &QAction::triggered, this, &ContextMenu::sigClearClicked);
+	m->preferenceSeparator->setVisible(false);
+
 	connect(m->standardViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
 	connect(m->coverViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
 	connect(m->directoryViewAction, &QAction::triggered, this, &ContextMenu::libraryViewTypeTriggered);
@@ -187,107 +178,78 @@ ContextMenu::~ContextMenu() = default;
 
 void ContextMenu::languageChanged()
 {
-	m->infoAction->setText(Lang::get(Lang::Info));
-	m->lyricsAction->setText(Lang::get(Lang::Lyrics));
-	m->editAction->setText(Lang::get(Lang::Edit));
-	m->removeAction->setText(Lang::get(Lang::Remove));
-	m->deleteAction->setText(Lang::get(Lang::Delete));
-	m->playAction->setText(Lang::get(Lang::Play));
-	m->playNewTabAction->setText(tr("Play in new tab"));
-	m->playNextAction->setText(Lang::get(Lang::PlayNext));
-	m->appendAction->setText(Lang::get(Lang::Append));
-	m->refreshAction->setText(Lang::get(Lang::Refresh));
-	m->reloadLibraryAction->setText(Lang::get(Lang::ReloadLibrary));
-	m->clearAction->setText(Lang::get(Lang::Clear));
+	for(auto& actionInfo: m->actions)
+	{
+		actionInfo.action->setText(Lang::get(actionInfo.term));
+	}
+
 	m->standardViewAction->setText(tr("Standard view"));
 	m->coverViewAction->setText(tr("Cover view"));
 	m->directoryViewAction->setText(tr("Directory view"));
-	m->filetypeAction->setText(Lang::get(Lang::Filetype));
 	m->showFiletypeBarAction->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
-	m->playAction->setShortcut(QKeySequence(Qt::Key_Enter));
-	m->deleteAction->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
-	m->removeAction->setShortcut(QKeySequence(QKeySequence::Delete));
-	m->clearAction->setShortcut(QKeySequence(Qt::Key_Backspace));
+	m->actions[EntryPlay].action->setShortcut(QKeySequence(Qt::Key_Enter));
+	m->actions[EntryDelete].action->setShortcut(QKeySequence(Qt::ControlModifier | Qt::Key_Delete));
+	m->actions[EntryRemove].action->setShortcut(QKeySequence(QKeySequence::Delete));
+	m->actions[EntryClear].action->setShortcut(QKeySequence(Qt::Key_Backspace));
 
 	shortcutChanged(ShortcutIdentifier::Invalid);
 }
 
-
-void ContextMenu::shortcutChanged(ShortcutIdentifier identifier)
+void ContextMenu::shortcutChanged(const ShortcutIdentifier /*identifier*/)
 {
-	Q_UNUSED(identifier)
-	ShortcutHandler* sch = ShortcutHandler::instance();
-
-	m->playNewTabAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNewTab).sequence());
-	m->playNextAction->setShortcut(sch->shortcut(ShortcutIdentifier::PlayNext).sequence());
-	m->appendAction->setShortcut(sch->shortcut(ShortcutIdentifier::Append).sequence());
-	m->reloadLibraryAction->setShortcut(sch->shortcut(ShortcutIdentifier::ReloadLibrary).sequence());
+	setNewShortcut(m->actions[EntryPlayNewTab].action, ShortcutIdentifier::PlayNewTab);
+	setNewShortcut(m->actions[EntryPlayNext].action, ShortcutIdentifier::PlayNext);
+	setNewShortcut(m->actions[EntryAppend].action, ShortcutIdentifier::Append);
+	setNewShortcut(m->actions[EntryReload].action, ShortcutIdentifier::ReloadLibrary);
 }
 
 void ContextMenu::skinChanged()
 {
-	using namespace Gui;
-
-	QTimer::singleShot(100, this, &ContextMenu::skinTimerTimeout);
-}
-
-void ContextMenu::skinTimerTimeout()
-{
-	namespace Icons=Gui::Icons;
-
-	m->infoAction->setIcon(Icons::icon(Icons::Info));
-	m->lyricsAction->setIcon(Icons::icon(Icons::Lyrics));
-	m->editAction->setIcon(Icons::icon(Icons::Edit));
-	m->removeAction->setIcon(Icons::icon(Icons::Remove));
-	m->deleteAction->setIcon(Icons::icon(Icons::Delete));
-	m->playAction->setIcon(Icons::icon(Icons::PlaySmall));
-	m->playNewTabAction->setIcon(Icons::icon(Icons::PlaySmall));
-	m->playNextAction->setIcon(Icons::icon(Icons::PlaySmall));
-	m->appendAction->setIcon(Icons::icon(Icons::Append));
-	m->refreshAction->setIcon(Icons::icon(Icons::Undo));
-	m->reloadLibraryAction->setIcon(Icons::icon(Icons::Refresh));
-	m->clearAction->setIcon(Icons::icon(Icons::Clear));
+	QTimer::singleShot(100, this, [&]() { // NOLINT(readability-magic-numbers)
+		for(auto& action: m->actions)
+		{
+			if(action.icon.has_value())
+			{
+				action.action->setIcon(Gui::Icons::icon(action.icon.value()));
+			}
+		}
+	});
 }
 
 ContextMenu::Entries ContextMenu::entries() const
 {
-	ContextMenu::Entries entries = EntryNone;
-
-	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
+	auto entries = ContextMenu::Entries {EntryNone};
+	for(const auto& entry: m->actions)
 	{
-		QAction* action = it.value();
-		if(action->isVisible())
+		if(entry.action->isVisible())
 		{
-			ContextMenu::Entry entry = m->entryActionMap.key(action);
-			entries |= entry;
+			entries |= entry.entry;
 		}
 	}
 
 	return entries;
 }
 
-
-void ContextMenu::showActions(ContextMenu::Entries entries)
+void ContextMenu::showActions(const ContextMenu::Entries entries)
 {
-	for(auto it=m->entryActionMap.cbegin(); it != m->entryActionMap.cend(); it++)
+	for(const auto& entry: m->actions)
 	{
-		QAction* action = it.value();
-		Entry entry = m->entryActionMap.key(action);
-
-		bool isVisible = (entries & entry);
-		action->setVisible(isVisible);
+		const auto isVisible = (entries & entry.entry);
+		entry.action->setVisible(isVisible);
 	}
 }
 
-void ContextMenu::showAction(ContextMenu::Entry entry, bool visible)
+void ContextMenu::showAction(const ContextMenu::Entry entry, const bool visible)
 {
-	ContextMenu::Entries entries = this->entries();
-	if(visible){
+	auto entries = this->entries();
+	if(visible)
+	{
 		entries |= entry;
 	}
 
-	else{
+	else
+	{
 		entries &= ~(entry);
 	}
 
@@ -296,53 +258,37 @@ void ContextMenu::showAction(ContextMenu::Entry entry, bool visible)
 
 void ContextMenu::showAll()
 {
-	const QList<QAction*> actions = this->actions();
-	for(QAction* action : actions)
+	const auto actions = this->actions();
+	for(auto* action: actions)
 	{
 		action->setVisible(true);
 	}
 }
 
-QAction* ContextMenu::action(ContextMenu::Entry entry) const
+QAction* ContextMenu::action(const ContextMenu::Entry entry) const
 {
-	return m->entryActionMap[entry];
+	return m->actions[entry].action;
 }
 
-QAction* ContextMenu::actionAfter(ContextMenu::Entry entry) const
+QAction* ContextMenu::actionAfter(const ContextMenu::Entry entry) const
 {
-	QAction* a = action(entry);
-	if(!a){
+	auto* a = action(entry);
+	if(!a)
+	{
 		return nullptr;
 	}
 
-	QList<QAction*> actions = this->actions();
-	auto it = std::find(actions.begin(), actions.end(), a);
-
-	if(it == actions.end()){
-		return nullptr;
-	}
-
-	it++;
-	if(it == actions.end()) {
-		return nullptr;
-	}
-
-	return *it;
+	const auto actions = this->actions();
+	const auto index = actions.indexOf(a);
+	return (index + 1 < actions.count())
+	       ? actions[index + 1]
+	       : nullptr;
 }
 
 QAction* ContextMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
-	QList<QAction*> actions;
-
-	if(!m->has_preferenceActions){
-		m->preferenceSeparator = this->addSeparator();
-		actions << m->preferenceSeparator;
-	}
-
-	actions << action;
-
-	this->addActions(actions);
-	m->has_preferenceActions = true;
+	m->preferenceSeparator->setVisible(true);
+	addActions({action});
 
 	return action;
 }
@@ -352,87 +298,75 @@ QAction* ContextMenu::beforePreferenceAction() const
 	return m->preferenceSeparator;
 }
 
-void ContextMenu::setActionShortcut(ContextMenu::Entry entry, const QString& shortcut)
-{
-	QAction* action = this->action(entry);
-	if(action)
-	{
-		action->setShortcut(QKeySequence(shortcut));
-	}
-}
-
 void ContextMenu::setExtensions(const Gui::ExtensionSet& extensions)
 {
-	QMenu* fem = m->filetype_menu;
-	if(fem->isEmpty())
+	auto* filetypeMenu = m->filetypeMenu;
+	if(filetypeMenu->isEmpty())
 	{
-		fem->addActions({fem->addSeparator(), m->showFiletypeBarAction});
+		filetypeMenu->addActions({filetypeMenu->addSeparator(), m->showFiletypeBarAction});
 	}
 
-	while(fem->actions().count() > 2)
+	while(filetypeMenu->actions().count() > 2)
 	{
-		fem->removeAction(fem->actions().at(0));
+		filetypeMenu->removeAction(filetypeMenu->actions().at(0));
 	}
 
-	QAction* sep = fem->actions().at(fem->actions().count() - 2);
+	auto* sep = filetypeMenu->actions().at(filetypeMenu->actions().count() - 2);
 
-	const QStringList extensionList = extensions.extensions();
+	const auto extensionList = extensions.extensions();
 
-	for(const QString& ext : extensionList)
+	for(const auto& extension: extensionList)
 	{
-		QAction* a = new QAction(ext, fem);
-		a->setCheckable(true);
-		a->setChecked(extensions.isEnabled(ext));
-		a->setEnabled(extensionList.count() > 1);
+		auto* extensionAction = new QAction(extension, filetypeMenu);
+		extensionAction->setCheckable(true);
+		extensionAction->setChecked(extensions.isEnabled(extension));
+		extensionAction->setEnabled(extensionList.count() > 1);
 
-		connect(a, &QAction::triggered, this, [=](bool b){
-			emit sigFilterTriggered(a->text(), b);
+		connect(extensionAction, &QAction::triggered, this, [=](bool b) {
+			emit sigFilterTriggered(extensionAction->text(), b);
 		});
 
-		fem->insertAction(sep, a);
+		filetypeMenu->insertAction(sep, extensionAction);
 	}
 }
 
-void ContextMenu::setSelectionCount(int selectionCount)
+void ContextMenu::setSelectionCount(const int selectionCount)
 {
-	bool hasSelections = (selectionCount > 0);
-	for(auto it : m->entryActionMap)
+	for(auto& entry: m->actions)
 	{
-		it->setEnabled(hasSelections);
+		entry.action->setEnabled(selectionCount > 0);
 	}
 
-	m->entryActionMap[EntryReload]->setEnabled(true);
+	m->actions[EntryReload].action->setEnabled(true);
 }
 
 QKeySequence ContextMenu::shortcut(ContextMenu::Entry entry) const
 {
-	QAction* a = action(entry);
-	if(!a){
-		return QKeySequence();
-	}
-
-	return a->shortcut();
+	auto* a = action(entry);
+	return (a != nullptr)
+	       ? a->shortcut()
+	       : QKeySequence {};
 }
 
 void ContextMenu::libraryViewTypeChanged()
 {
-	Library::ViewType viewType = GetSetting(Set::Lib_ViewType);
+	const auto viewType = GetSetting(Set::Lib_ViewType);
 
 	m->standardViewAction->setChecked(viewType == Library::ViewType::Standard);
 	m->coverViewAction->setChecked(viewType == Library::ViewType::CoverView);
 	m->directoryViewAction->setChecked(viewType == Library::ViewType::FileView);
 }
 
-void ContextMenu::libraryViewTypeTriggered(bool b)
+void ContextMenu::libraryViewTypeTriggered(const bool /*b*/)
 {
-	Q_UNUSED(b)
-
-	Library::ViewType viewType = Library::ViewType::Standard;
-	if(m->coverViewAction->isChecked()) {
+	auto viewType = Library::ViewType::Standard;
+	if(m->coverViewAction->isChecked())
+	{
 		viewType = Library::ViewType::CoverView;
 	}
 
-	else if(m->directoryViewAction->isChecked()) {
+	else if(m->directoryViewAction->isChecked())
+	{
 		viewType = Library::ViewType::FileView;
 	}
 
@@ -444,17 +378,15 @@ void ContextMenu::showFilterExtensionBarChanged()
 	m->showFiletypeBarAction->setChecked(GetSetting(Set::Lib_ShowFilterExtBar));
 }
 
-void ContextMenu::showFilterExtensionBarTriggered(bool b)
+void
+ContextMenu::showFilterExtensionBarTriggered(const bool b) // NOLINT(readability-convert-member-functions-to-static)
 {
 	SetSetting(Set::Lib_ShowFilterExtBar, b);
 
 	if(b)
 	{
-		Message::info
-		(
+		Message::info(
 			tr("The toolbar is visible when there are tracks with differing file types listed in the track view"),
-			Lang::get(Lang::Filetype)
-		);
+			Lang::get(Lang::Filetype));
 	}
 }
-

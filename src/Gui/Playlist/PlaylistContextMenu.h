@@ -54,6 +54,8 @@ namespace Playlist
 
 			ContextMenu::Entries entries() const override;
 			void showActions(ContextMenu::Entries entries) override;
+
+			using Library::ContextMenu::action;
 			QAction* action(ContextMenu::Entry entry) const;
 
 			ContextMenu::Entries setTrack(const MetaData& track, bool isCurrentTrack);

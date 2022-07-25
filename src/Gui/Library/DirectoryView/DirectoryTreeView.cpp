@@ -117,11 +117,15 @@ void TreeView::initContextMenu()
 
 	m->contextMenu = new ContextMenu(ContextMenu::Mode::Dir, m->libraryInfoAccessor, this);
 
-	connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &TreeView::sigDeleteClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &TreeView::sigPlayClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNewTabClicked, this, &TreeView::sigPlayNewTabClicked);
-	connect(m->contextMenu, &ContextMenu::sigPlayNextClicked, this, &TreeView::sigPlayNextClicked);
-	connect(m->contextMenu, &ContextMenu::sigAppendClicked, this, &TreeView::sigAppendClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryDelete), &QAction::triggered, this, &TreeView::sigDeleteClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlay), &QAction::triggered, this, &TreeView::sigPlayClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNewTab), &QAction::triggered,
+	        this, &TreeView::sigPlayNewTabClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryPlayNext), &QAction::triggered,
+	        this, &TreeView::sigPlayNextClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryAppend), &QAction::triggered, this, &TreeView::sigAppendClicked);
+	connect(m->contextMenu->action(ContextMenu::EntryInfo), &QAction::triggered, this, [&]() { this->showInfo(); });
+	connect(m->contextMenu->action(ContextMenu::EntryEdit), &QAction::triggered, this, [&]() { this->showEdit(); });
 	connect(m->contextMenu, &ContextMenu::sigCreateDirectoryClicked, this, &TreeView::createDirectoryClicked);
 	connect(m->contextMenu, &ContextMenu::sigRenameClicked, this, &TreeView::renameDirectoryClicked);
 	connect(m->contextMenu, &ContextMenu::sigCollapseAllClicked, this, &TreeView::collapseAll);
@@ -129,8 +133,6 @@ void TreeView::initContextMenu()
 	connect(m->contextMenu, &ContextMenu::sigCopyToLibrary, this, &TreeView::sigCopyToLibraryRequested);
 	connect(m->contextMenu, &ContextMenu::sigMoveToLibrary, this, &TreeView::sigMoveToLibraryRequested);
 
-	connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [this]() { this->showInfo(); });
-	connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [this]() { this->showEdit(); });
 }
 
 QString TreeView::directoryName(const QModelIndex& index)
@@ -198,7 +200,7 @@ void TreeView::renameDirectoryClicked()
 void TreeView::viewInFileManagerClicked()
 {
 	const auto paths = this->selectedPaths();
-	for(const auto& path : paths)
+	for(const auto& path: paths)
 	{
 		const auto url = QUrl::fromLocalFile(path);
 		QDesktopServices::openUrl(url);
@@ -328,7 +330,7 @@ void TreeView::dropEvent(QDropEvent* event)
 		QStringList files;
 
 		const auto urls = mimedata->urls();
-		for(const auto& url : urls)
+		for(const auto& url: urls)
 		{
 			const auto localFile = url.toLocalFile();
 			if(!localFile.isEmpty())
@@ -350,7 +352,7 @@ void TreeView::handleSayonaraDrop(const Gui::CustomMimeData* cmd, const QString&
 	const auto urls = cmd->urls();
 	QStringList sourceFiles, sourceDirectories;
 
-	for(const auto& url : urls)
+	for(const auto& url: urls)
 	{
 		const auto localFilename = url.toLocalFile();
 		const auto localFile = (!localFilename.isEmpty())
@@ -448,18 +450,18 @@ void TreeView::setFilterTerm(const QString& filter) { m->model->setFilter(filter
 
 MD::Interpretation TreeView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-MetaDataList TreeView::infoDialogData() const {	return MetaDataList(); }
+MetaDataList TreeView::infoDialogData() const { return MetaDataList(); }
 
 bool TreeView::hasMetadata() const { return false; }
 
 QStringList TreeView::pathlist() const
 {
-    return this->selectedPaths();
+	return this->selectedPaths();
 }
 
-QWidget *TreeView::getParentWidget()
+QWidget* TreeView::getParentWidget()
 {
-    return this;
+	return this;
 }
 
 void TreeView::keyPressEvent(QKeyEvent* event)

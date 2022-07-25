@@ -604,17 +604,9 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 				 ContextMenu::EntryEdit)
 			);
 
-		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [=]() {
-			showEdit();
-		});
-
-		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [=]() {
-			showInfo();
-		});
-
-		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [=]() {
-			showLyrics();
-		});
+		connect(m->contextMenu->action(ContextMenu::EntryInfo), &QAction::triggered, this, [&]() { showInfo(); });
+		connect(m->contextMenu->action(ContextMenu::EntryEdit), &QAction::triggered, this, [&]() { showEdit(); });
+		connect(m->contextMenu->action(ContextMenu::EntryLyrics), &QAction::triggered, this, [&]() { showLyrics(); });
 
 		m->contextMenu->addPreferenceAction(new Gui::PlayerPreferencesAction(m->contextMenu));
 		m->contextMenu->addPreferenceAction(new Gui::CoverPreferenceAction(m->contextMenu));

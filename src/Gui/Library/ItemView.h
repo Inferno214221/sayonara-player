@@ -118,7 +118,7 @@ namespace Library
 			virtual bool isMergeable() const = 0;
 
 			MetaDataList infoDialogData() const override;
-            QWidget* getParentWidget() override;
+			QWidget* getParentWidget() override;
 
 			virtual void selectedItemsChanged(const IndexSet& indexes);
 			virtual void importRequested(const QStringList& files);

@@ -239,14 +239,21 @@ namespace Playlist
 		m->contextMenu = new ContextMenu(m->dynamicPlaybackChecker, this);
 		m->contextMenu->addPreferenceAction(new Gui::PlaylistPreferenceAction(m->contextMenu));
 
-		connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &View::playSelectedTrack);
-		connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Model::refreshData);
-		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [&]() { showEdit(); });
-		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [&]() { showInfo(); });
-		connect(m->contextMenu, &ContextMenu::sigLyricsClicked, this, [&]() { showLyrics(); });
-		connect(m->contextMenu, &ContextMenu::sigDeleteClicked, this, &View::deleteSelectedTracks);
-		connect(m->contextMenu, &ContextMenu::sigRemoveClicked, this, &View::removeSelectedRows);
-		connect(m->contextMenu, &ContextMenu::sigClearClicked, this, &View::clear);
+		connect(m->contextMenu->action(Library::ContextMenu::EntryPlay), &QAction::triggered,
+		        this, &View::playSelectedTrack);
+		connect(m->contextMenu->action(Library::ContextMenu::EntryRefresh), &QAction::triggered,
+		        m->model, &Model::refreshData);
+		connect(m->contextMenu->action(Library::ContextMenu::EntryEdit), &QAction::triggered,
+		        this, [&]() { showEdit(); });
+		connect(m->contextMenu->action(Library::ContextMenu::EntryInfo), &QAction::triggered,
+		        this, [&]() { showInfo(); });
+		connect(m->contextMenu->action(Library::ContextMenu::EntryLyrics), &QAction::triggered,
+		        this, [&]() { showLyrics(); });
+		connect(m->contextMenu->action(Library::ContextMenu::EntryDelete), &QAction::triggered,
+		        this, &View::deleteSelectedTracks);
+		connect(m->contextMenu->action(Library::ContextMenu::EntryRemove), &QAction::triggered,
+		        this, &View::removeSelectedRows);
+		connect(m->contextMenu->action(Library::ContextMenu::EntryClear), &QAction::triggered, this, &View::clear);
 		connect(m->contextMenu, &ContextMenu::sigBookmarkTriggered, this, &View::bookmarkTriggered);
 		connect(m->contextMenu->action(ContextMenu::EntryRating), &QAction::triggered, this, &View::ratingChanged);
 		connect(m->contextMenu->action(ContextMenu::EntryReverse), &QAction::triggered,
