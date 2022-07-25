@@ -97,11 +97,10 @@ namespace
 		initShortcut(menu, parent, ContextMenu::EntryJumpToNextAlbum, {Qt::ControlModifier | Qt::Key_N});
 
 		auto* libraryMenu = static_cast<Library::ContextMenu*>(menu);
+		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Return});
 		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryClear, {Qt::Key_Backspace});
 		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryRemove, QKeySequence::Delete);
 		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryDelete, {Qt::ShiftModifier + Qt::Key_Delete});
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Return});
-		initShortcut(libraryMenu, parent, Library::ContextMenu::EntryPlay, {Qt::Key_Enter});
 	}
 }// namespace
 
@@ -126,7 +125,7 @@ struct ContextMenu::Private
 		entryActionMap[EntryJumpToNextAlbum] = contextMenu->addAction(QString());
 		entryActionMap[EntryRating] = contextMenu->addMenu(ratingMenu);
 		entryActionMap[EntryBookmarks] = contextMenu->addMenu(bookmarksMenu);
-		playlistModeAction = contextMenu->addMenu(playlistModeMenu);
+		playlistModeAction = contextMenu->addMenu(playlistModeMenu); // NOLINT(cppcoreguidelines-prefer-member-initializer)
 	}
 };
 

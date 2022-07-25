@@ -128,7 +128,8 @@ namespace Playlist
 
 				if(!selectedItems.isEmpty())
 				{
-					entryMask |= (ContextMenu::EntryInfo |
+					entryMask |= (ContextMenu::EntryPlay |
+					              ContextMenu::EntryInfo |
 					              ContextMenu::EntryRemove);
 
 					if(selectedItems.size() == 1)
@@ -221,6 +222,10 @@ namespace Playlist
 		connect(m->model, &Model::sigBusyChanged, this, &View::playlistBusyChanged);
 		connect(m->model, &Model::sigCurrentScannedFileChanged, this, &View::currentScannedFileChanged);
 
+		connect(selectionModel(), &QItemSelectionModel::selectionChanged, this, [&]() {
+			setupContextMenuItems(m->contextMenu, m->model, selectedItems());
+		});
+
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, &View::moveSelectedRowsUp);
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, &View::moveSelectedRowsDown);
 
@@ -234,6 +239,7 @@ namespace Playlist
 		m->contextMenu = new ContextMenu(m->dynamicPlaybackChecker, this);
 		m->contextMenu->addPreferenceAction(new Gui::PlaylistPreferenceAction(m->contextMenu));
 
+		connect(m->contextMenu, &ContextMenu::sigPlayClicked, this, &View::playSelectedTrack);
 		connect(m->contextMenu, &ContextMenu::sigRefreshClicked, m->model, &Model::refreshData);
 		connect(m->contextMenu, &ContextMenu::sigEditClicked, this, [&]() { showEdit(); });
 		connect(m->contextMenu, &ContextMenu::sigInfoClicked, this, [&]() { showInfo(); });
@@ -574,7 +580,8 @@ namespace Playlist
 
 		resizeSection(static_cast<int>(Model::ColumnName::Description), viewportWidth, horizontalHeader());
 
-		this->setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
+		setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
+		setupContextMenuItems(m->contextMenu, m->model, selectedItems());
 	}
 
 	void View::searchDone()
