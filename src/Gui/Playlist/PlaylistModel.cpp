@@ -423,6 +423,11 @@ void Model::randomizeTracks()
 	m->playlist->randomize();
 }
 
+void Playlist::Model::jumpToNextAlbum()
+{
+	m->playlist->jumpToNextAlbum();
+}
+
 int Model::currentTrack() const
 {
 	return m->playlist->currentTrackIndex();

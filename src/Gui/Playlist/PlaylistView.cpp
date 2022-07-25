@@ -123,7 +123,8 @@ namespace Playlist
 				entryMask |= (ContextMenu::EntryClear |
 				              ContextMenu::EntryRefresh |
 				              ContextMenu::EntryReverse |
-				              ContextMenu::EntryRandomize);
+				              ContextMenu::EntryRandomize |
+				              ContextMenu::EntryJumpToNextAlbum);
 
 				if(!selectedItems.isEmpty())
 				{
@@ -254,6 +255,8 @@ namespace Playlist
 		connect(m->contextMenu->action(ContextMenu::EntryFindInLibrary), &QAction::triggered, this, [&]() {
 			m->model->findTrack(currentIndex().row());
 		});
+		connect(m->contextMenu->action(ContextMenu::EntryJumpToNextAlbum), &QAction::triggered,
+		        m->model, &Model::jumpToNextAlbum);
 	}
 
 	void View::gotoRow(int row)
@@ -426,6 +429,7 @@ namespace Playlist
 
 	void View::keyPressEvent(QKeyEvent* event)
 	{
+		//setupContextMenuItems(m->contextMenu, m->model, selectedItems());
 		event->setAccepted(false);
 		SearchableTableView::keyPressEvent(event);
 	}

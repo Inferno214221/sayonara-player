@@ -85,6 +85,7 @@ namespace Playlist
 
 			void reverse();
 			void randomize();
+			void jumpToNextAlbum();
 
 			const MetaData& track(int index) const;
 			const MetaDataList& tracks() const override;

@@ -126,6 +126,7 @@ namespace Playlist
 			void refreshData();
 			void reverseTracks();
 			void randomizeTracks();
+			void jumpToNextAlbum();
 
 		private slots:
 			void playlistChanged(int playlistIndex);

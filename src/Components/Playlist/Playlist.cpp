@@ -433,6 +433,29 @@ namespace Playlist
 		setChanged(true);
 	}
 
+	void Playlist::jumpToNextAlbum()
+	{
+		const auto currentIndex = currentTrackIndex();
+		if(currentIndex < 0)
+		{
+			next();
+		}
+		else
+		{
+			const auto& tracks = this->tracks();
+			const auto& currentTrack = tracks.at(currentIndex);
+			const auto albumId = currentTrack.albumId();
+			const auto it = std::find_if(tracks.begin() + currentIndex, tracks.end(), [&](const auto& track) {
+				return (track.albumId() != albumId);
+			});
+			if(it != tracks.end())
+			{
+				const auto index = std::distance(tracks.begin(), it);
+				changeTrack(index);
+			}
+		}
+	}
+
 	void Playlist::enableAll()
 	{
 		for(auto& track: m->tracks)
