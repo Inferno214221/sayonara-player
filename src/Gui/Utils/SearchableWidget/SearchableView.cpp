@@ -21,6 +21,7 @@
 #include "SearchableView.h"
 #include "SearchableModel.h"
 #include "MiniSearcher.h"
+#include "Utils/Algorithm.h"
 
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Set.h"
@@ -108,9 +109,8 @@ struct SearchableViewInterface::Private :
 	QAbstractItemView* view;
 	MiniSearcherViewConnector* miniSearcherViewConnector;
 
-	QModelIndexList foundSearchIndexes;
+	QList<int> searchIndexes;
 	int currentSearchIndex {-1};
-	int currentIndex {-1};
 
 	explicit Private(SearchableViewInterface* searchableView, QAbstractItemView* view) :
 		QObject(view),
@@ -140,12 +140,19 @@ QAbstractItemView* SearchableViewInterface::view() const { return m->view; }
 
 int SearchableViewInterface::setSearchstring(const QString& str)
 {
-	m->foundSearchIndexes = m->searchModel->searchResults(str);
+	m->searchIndexes.clear();
+
+	// the model does not know which colums are displayed.
+	const auto searchResults = m->searchModel->searchResults(str);
+	Util::Algorithm::transform(searchResults, m->searchIndexes, [&](const auto& modelIndex) {
+		return mapModelIndexToIndex(modelIndex);
+	});
+
 	m->currentSearchIndex = -1;
 
 	selectMatch(str, SearchDirection::First);
 
-	return m->foundSearchIndexes.size();
+	return m->searchIndexes.size();
 }
 
 void SearchableViewInterface::selectNextMatch(const QString& str)
@@ -167,17 +174,15 @@ void SearchableViewInterface::setSearchModel(SearchableModelInterface* model)
 	}
 }
 
-QModelIndex SearchableViewInterface::matchIndex(const QString& str, SearchDirection direction) const
+QModelIndex SearchableViewInterface::matchIndex(const QString& str, const SearchDirection direction) const
 {
-	if(str.isEmpty() ||
-	   !m->searchModel ||
-	   m->foundSearchIndexes.isEmpty())
+	if(str.isEmpty() || m->searchIndexes.isEmpty() || !m->searchModel)
 	{
 		return {};
 	}
 
 	m->currentSearchIndex = std::max(0, m->currentSearchIndex);
-	m->currentSearchIndex = std::min(m->foundSearchIndexes.size() - 1, m->currentSearchIndex);
+	m->currentSearchIndex = std::min(m->searchIndexes.size() - 1, m->currentSearchIndex);
 
 	switch(direction)
 	{
@@ -187,7 +192,7 @@ QModelIndex SearchableViewInterface::matchIndex(const QString& str, SearchDirect
 
 		case SearchDirection::Next:
 			m->currentSearchIndex++;
-			if(m->currentSearchIndex >= m->foundSearchIndexes.count())
+			if(m->currentSearchIndex >= m->searchIndexes.count())
 			{
 				m->currentSearchIndex = 0;
 			}
@@ -197,37 +202,40 @@ QModelIndex SearchableViewInterface::matchIndex(const QString& str, SearchDirect
 			m->currentSearchIndex--;
 			if(m->currentSearchIndex < 0)
 			{
-				m->currentSearchIndex = m->foundSearchIndexes.count() - 1;
+				m->currentSearchIndex = m->searchIndexes.count() - 1;
 			}
 			break;
 	}
 
-	return m->foundSearchIndexes.at(m->currentSearchIndex);
+	const auto linearIndex = m->searchIndexes[m->currentSearchIndex];
+	return mapIndexToModelIndexes(linearIndex).first;
 }
 
-void SearchableViewInterface::selectMatch(const QString& str, SearchDirection direction)
+void SearchableViewInterface::selectMatch(const QString& str, const SearchDirection direction)
 {
 	const auto matchedIndex = matchIndex(str, direction);
 	if(!matchedIndex.isValid())
 	{
-		m->currentIndex = -1;
 		return;
 	}
 
-	m->currentIndex = mapModelIndexToIndex(matchedIndex);
-
+	// matchedIndex may point to an invisible row/column combination (e.g. track number in playlist)
+	// most models are not aware if a column is currently set to invisible.
+	// Scrolling to an invisible index does not work. mapIndexToModelIndexes() covers this case.
+	const auto currentLinearIndex = mapModelIndexToIndex(matchedIndex);
+	const auto currentModelIndex = mapIndexToModelIndexes(currentLinearIndex).first;
 	switch(selectionType())
 	{
 		case SelectionViewInterface::SelectionType::Rows:
-			selectRows({m->currentIndex});
+			selectRows({currentLinearIndex});
 			break;
 		case SelectionViewInterface::SelectionType::Items:
-			selectItems({m->currentIndex});
+			selectItems({currentLinearIndex});
 			break;
 	}
 
-	m->view->setCurrentIndex(matchedIndex);
-	m->view->scrollTo(matchedIndex, QListView::ScrollHint::PositionAtCenter);
+	m->view->setCurrentIndex(currentModelIndex);
+	m->view->scrollTo(currentModelIndex, QListView::ScrollHint::PositionAtCenter);
 }
 
 bool SearchableViewInterface::handleKeyPress(QKeyEvent* e)

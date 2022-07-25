@@ -180,7 +180,6 @@ namespace Playlist
 			view->horizontalHeader()->hide();
 			view->horizontalHeader()->setMinimumSectionSize(10); // NOLINT(readability-magic-numbers)
 		}
-
 	} // namespace
 
 	struct View::Private
@@ -244,10 +243,8 @@ namespace Playlist
 		connect(m->contextMenu, &ContextMenu::sigClearClicked, this, &View::clear);
 		connect(m->contextMenu, &ContextMenu::sigBookmarkTriggered, this, &View::bookmarkTriggered);
 		connect(m->contextMenu->action(ContextMenu::EntryRating), &QAction::triggered, this, &View::ratingChanged);
-		connect(m->contextMenu->action(ContextMenu::EntryReverse),
-		        &QAction::triggered,
-		        m->model,
-		        &Model::reverseTracks);
+		connect(m->contextMenu->action(ContextMenu::EntryReverse), &QAction::triggered,
+		        m->model, &Model::reverseTracks);
 		connect(m->contextMenu->action(ContextMenu::EntryRandomize), &QAction::triggered,
 		        m->model, &Model::randomizeTracks);
 		connect(m->contextMenu->action(ContextMenu::EntryCurrentTrack), &QAction::triggered,
@@ -259,7 +256,7 @@ namespace Playlist
 		        m->model, &Model::jumpToNextAlbum);
 	}
 
-	void View::gotoRow(int row)
+	void View::gotoRow(const int row)
 	{
 		if(Util::between(row, rowCount()))
 		{
@@ -340,7 +337,10 @@ namespace Playlist
 
 	void View::playSelectedTrack()
 	{
-		m->model->changeTrack(minimumSelectedItem(this));
+		if(minimumSelectedItem(this) >= 0)
+		{
+			m->model->changeTrack(minimumSelectedItem(this));
+		}
 	}
 
 	void View::jumpToCurrentTrack()
@@ -429,7 +429,6 @@ namespace Playlist
 
 	void View::keyPressEvent(QKeyEvent* event)
 	{
-		//setupContextMenuItems(m->contextMenu, m->model, selectedItems());
 		event->setAccepted(false);
 		SearchableTableView::keyPressEvent(event);
 	}
@@ -501,11 +500,20 @@ namespace Playlist
 
 	int View::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
-	ModelIndexRange View::mapIndexToModelIndexes(int idx) const
+	ModelIndexRange View::mapIndexToModelIndexes(const int index) const
 	{
-		return {m->model->index(idx, 0),
-		        m->model->index(idx, m->model->columnCount() - 1)
-		};
+		auto minimumColumn = 0;
+		auto maximumColumn = m->model->columnCount() - 1;
+		while(isColumnHidden(minimumColumn))
+		{
+			minimumColumn++;
+		}
+		while(isColumnHidden(maximumColumn))
+		{
+			maximumColumn--;
+		}
+
+		return {m->model->index(index, minimumColumn), m->model->index(index, maximumColumn)};
 	}
 
 	bool View::viewportEvent(QEvent* event)
@@ -571,7 +579,7 @@ namespace Playlist
 
 	void View::searchDone()
 	{
-		if(GetSetting(Set::PL_PlayTrackAfterSearch) && (minimumSelectedItem(this) >= 0))
+		if(GetSetting(Set::PL_PlayTrackAfterSearch))
 		{
 			playSelectedTrack();
 		}

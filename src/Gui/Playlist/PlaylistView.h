@@ -62,16 +62,13 @@ namespace Playlist
 			void dropEventFromOutside(QDropEvent* event);
 			void removeSelectedRows();
 
-		public slots:
-			void gotoRow(int row);
-
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
 			MetaDataList infoDialogData() const override;
 			QWidget* getParentWidget() override;
 
 			int mapModelIndexToIndex(const QModelIndex& idx) const override;
-			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+			ModelIndexRange mapIndexToModelIndexes(int index) const override;
 
 			void skinChanged() override;
 
@@ -104,6 +101,7 @@ namespace Playlist
 			void deleteSelectedTracks();
 
 		private:
+			void gotoRow(int row);
 			void initContextMenu();
 			void handleDrop(QDropEvent* event);
 	};
