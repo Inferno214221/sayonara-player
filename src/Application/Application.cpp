@@ -177,10 +177,9 @@ struct Application::Private
 	RemoteControl* remoteControl = nullptr;
 	InstanceThread* instanceThread = nullptr;
 
-	bool shutdownTriggered;
+	bool shutdownTriggered {false};
 
-	Private(Application* app) :
-		shutdownTriggered {false}
+	Private(Application* app)
 	{
 		Util::initXdgPaths(QStringLiteral("sayonara"));
 
@@ -476,22 +475,6 @@ void Application::initSingleInstanceThread()
 	connect(m->instanceThread, &InstanceThread::sigCreatePlaylist, this, &Application::createPlaylist);
 
 	m->instanceThread->start();
-}
-
-void Application::sessionEndRequested([[maybe_unused]] QSessionManager& manager)
-{
-	shutdown();
-
-	if(m->db)
-	{
-		m->db->settingsConnector()->storeSettings();
-		m->db->closeDatabase();
-	}
-
-	if(m->player)
-	{
-		m->player->requestShutdown();
-	}
 }
 
 void Application::remoteControlActivated()

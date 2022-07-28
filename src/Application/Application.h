@@ -51,7 +51,6 @@ class Application :
 
 	private slots:
 		void remoteControlActivated();
-		void sessionEndRequested(QSessionManager& manager);
 		void createPlaylist();
 		void skinChanged();
 };
