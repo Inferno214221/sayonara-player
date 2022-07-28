@@ -38,7 +38,6 @@ class PlaylistAccessor;
 
 namespace DBusMPRIS
 {
-
 	class MediaPlayer2 :
 		public DBusAdaptor
 	{
@@ -153,7 +152,7 @@ namespace DBusMPRIS
 			void positionChanged(MilliSeconds pos_ms);
 			void volumeChanged(int volume);
 			void trackIndexChanged(int idx);
-			void trackChanged(const MetaData& md);
+			void trackChanged(const MetaData& track);
 			void playstateChanged(PlayState state);
 
 		signals:

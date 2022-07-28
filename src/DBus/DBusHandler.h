@@ -34,18 +34,19 @@ namespace DBusMPRIS
 }
 
 class DBusHandler :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(DBusHandler)
 
-public:
-	explicit DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor, QObject* parent=nullptr);
-	virtual ~DBusHandler();
+	public:
+		explicit DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
+		                     QObject* parent = nullptr);
+		virtual ~DBusHandler();
 
-private slots:
-	void serviceRegistered(const QString& serviceName);
-	void serviceUnregistered(const QString& serviceName);
+	private slots:
+		void serviceRegistered(const QString& serviceName);
+		void serviceUnregistered(const QString& serviceName);
 };
 
 #endif // DBUSHANDLER_H
