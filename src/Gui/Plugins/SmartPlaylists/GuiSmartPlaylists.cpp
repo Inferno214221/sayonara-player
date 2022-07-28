@@ -30,6 +30,8 @@
 
 namespace
 {
+	constexpr const auto Dice = "⚂";
+
 	void setupMenuButton(const int currentIndex, Gui::MenuToolButton* button)
 	{
 		const auto hasCurrentIndex = (currentIndex >= 0);
@@ -133,7 +135,7 @@ void GuiSmartPlaylists::newClicked()
 	if(status == MinMaxIntegerDialog::Accepted)
 	{
 		const auto smartPlaylist =
-			SmartPlaylists::createFromType(dialog->type(), -1, dialog->values());
+			SmartPlaylists::createFromType(dialog->type(), -1, dialog->values(), dialog->isRandomized());
 
 		m->smartPlaylistManager->insertPlaylist(smartPlaylist);
 	}
@@ -155,6 +157,7 @@ void GuiSmartPlaylists::editClicked()
 		{
 			smartPlaylist->setValue(i, values[i]);
 		}
+		smartPlaylist->setRandomized(dialog->isRandomized());
 
 		m->smartPlaylistManager->updatePlaylist(id, smartPlaylist);
 	}
@@ -178,7 +181,11 @@ void GuiSmartPlaylists::setupPlaylists()
 	const auto smartPlaylists = sortSmartPlaylists(m->smartPlaylistManager->smartPlaylists());
 	for(const auto& smartPlaylist: smartPlaylists)
 	{
-		ui->comboPlaylist->addItem(smartPlaylist->name(), smartPlaylist->id());
+		const auto name = smartPlaylist->isRandomized()
+		                  ? smartPlaylist->name() + " + " + Dice
+		                  : smartPlaylist->name();
+
+		ui->comboPlaylist->addItem(name, smartPlaylist->id());
 	}
 
 	const auto newIndex = ui->comboPlaylist->findData(currentId.id);

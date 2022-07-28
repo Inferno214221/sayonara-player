@@ -28,14 +28,16 @@ struct SmartPlaylist::Private
 	int id;
 	QList<int> values;
 	std::shared_ptr<SmartPlaylists::StringConverter> stringConverter {nullptr};
+	bool isRandomized;
 
-	Private(const int id, const QList<int>& values) :
+	Private(const int id, const QList<int>& values, const bool isRandomized) :
 		id {id},
-		values {values} {}
+		values {values},
+		isRandomized {isRandomized} {}
 };
 
-SmartPlaylist::SmartPlaylist(const int id, const QList<int>& values) :
-	m {Pimpl::make<Private>(id, values)} {}
+SmartPlaylist::SmartPlaylist(const int id, const QList<int>& values, const bool isRandomized) :
+	m {Pimpl::make<Private>(id, values, isRandomized)} {}
 
 SmartPlaylist::~SmartPlaylist() = default;
 
@@ -44,7 +46,8 @@ SmartPlaylistDatabaseEntry SmartPlaylist::toDatabaseEntry() const
 	return SmartPlaylistDatabaseEntry {
 		id(),
 		classType(),
-		attributesToString()
+		attributesToString(),
+		isRandomized()
 	};
 }
 
@@ -73,6 +76,12 @@ void SmartPlaylist::setValue(const int index, const int value)
 		m->values[index] = value;
 	}
 }
+
+bool SmartPlaylist::isRandomized() const { return (isRandomizable() && m->isRandomized); }
+
+void SmartPlaylist::setRandomized(const bool b) { m->isRandomized = b; }
+
+bool SmartPlaylist::isRandomizable() const { return true; }
 
 SmartPlaylists::InputFormat SmartPlaylist::inputFormat() const { return SmartPlaylists::InputFormat::Text; }
 

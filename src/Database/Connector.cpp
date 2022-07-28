@@ -56,7 +56,7 @@ namespace Algorithm = Util::Algorithm;
 
 int Connector::highestDatabaseVersion()
 {
-	return 30;  // NOLINT(readability-magic-numbers)
+	return 31;  // NOLINT(readability-magic-numbers)
 }
 
 struct Connector::Private
@@ -807,6 +807,15 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 		if(success)
 		{
 			settingsConnector()->storeSetting("version", 30); // NOLINT(readability-magic-numbers)
+		}
+	}
+
+	if(version < 31) // NOLINT(readability-magic-numbers)
+	{
+		const auto success = checkAndInsertColumn("SmartPlaylists", "isRandomized", "integer", "1");
+		if(success)
+		{
+			settingsConnector()->storeSetting("version", 31); // NOLINT(readability-magic-numbers)
 		}
 	}
 

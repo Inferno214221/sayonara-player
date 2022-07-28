@@ -50,8 +50,9 @@ namespace
 	}
 }
 
-SmartPlaylistByRelativeDate::SmartPlaylistByRelativeDate(const int id, const int value1, const int value2) :
-	SmartPlaylist {id, {value1, value2}} {}
+SmartPlaylistByRelativeDate::SmartPlaylistByRelativeDate(const int id, const int value1, const int value2,
+                                                         const bool isRandomized) :
+	SmartPlaylist {id, {value1, value2}, isRandomized} {}
 
 SmartPlaylistByRelativeDate::~SmartPlaylistByRelativeDate() = default;
 

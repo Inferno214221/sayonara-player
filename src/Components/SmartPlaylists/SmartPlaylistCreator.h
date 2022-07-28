@@ -32,7 +32,8 @@ struct SmartPlaylistDatabaseEntry;
 namespace SmartPlaylists
 {
 	std::shared_ptr<SmartPlaylist> create(const SmartPlaylistDatabaseEntry& entry);
-	std::shared_ptr<SmartPlaylist> createFromType(SmartPlaylists::Type field, int id, const QList<int>& values);
+	std::shared_ptr<SmartPlaylist>
+	createFromType(SmartPlaylists::Type field, int id, const QList<int>& values, bool isRandomized);
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTCREATOR_H

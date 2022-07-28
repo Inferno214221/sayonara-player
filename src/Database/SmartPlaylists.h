@@ -30,6 +30,7 @@ struct SmartPlaylistDatabaseEntry
 	int id {-1};
 	QString classType;
 	QString attributes;
+	bool isRandomized {true};
 };
 
 namespace DB

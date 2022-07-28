@@ -36,7 +36,7 @@ class SmartPlaylistByListeningDate :
 	public:
 		static constexpr const auto* ClassType = "last-played";
 
-		SmartPlaylistByListeningDate(int id, int value1, int value2);
+		SmartPlaylistByListeningDate(int id, int value1, int value2, bool isRandomized);
 		~SmartPlaylistByListeningDate() override;
 
 		[[nodiscard]] int minimumValue() const override;

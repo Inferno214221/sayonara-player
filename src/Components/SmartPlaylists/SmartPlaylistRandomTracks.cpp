@@ -28,7 +28,7 @@
 #include <QObject>
 
 SmartPlaylistRandomTracks::SmartPlaylistRandomTracks(const int id, const int count) :
-	SmartPlaylist(id, {count}) {}
+	SmartPlaylist(id, {count}, false) {}
 
 SmartPlaylistRandomTracks::~SmartPlaylistRandomTracks() = default;
 
@@ -57,3 +57,5 @@ MetaDataList SmartPlaylistRandomTracks::filterTracks(MetaDataList tracks)
 }
 
 QString SmartPlaylistRandomTracks::text(const int /*index*/) const { return QObject::tr("Number of tracks"); }
+
+bool SmartPlaylistRandomTracks::isRandomizable() const { return false; }

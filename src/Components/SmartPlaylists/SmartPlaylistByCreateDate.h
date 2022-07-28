@@ -28,7 +28,7 @@ class SmartPlaylistByCreateDate :
 	public:
 		static constexpr const auto ClassType = "track-create-date";
 
-		SmartPlaylistByCreateDate(int id, int value1, int value2);
+		SmartPlaylistByCreateDate(int id, int value1, int value2, bool isRandomized);
 		~SmartPlaylistByCreateDate() override;
 
 		[[nodiscard]] int minimumValue() const override;

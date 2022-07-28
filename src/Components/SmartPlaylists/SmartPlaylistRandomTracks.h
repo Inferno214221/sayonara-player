@@ -39,6 +39,7 @@ class SmartPlaylistRandomTracks :
 		[[nodiscard]] QString name() const override;
 		[[nodiscard]] QString text(int index) const override;
 		[[nodiscard]] SmartPlaylists::Type type() const override;
+		[[nodiscard]] bool isRandomizable() const override;
 
 		MetaDataList filterTracks(MetaDataList tracks) override;
 };

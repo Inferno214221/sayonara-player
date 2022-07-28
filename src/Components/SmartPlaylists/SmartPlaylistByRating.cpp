@@ -26,8 +26,9 @@
 
 #include <QObject>
 
-SmartPlaylistByRating::SmartPlaylistByRating(const int id, const int ratingFrom, const int ratingTo) :
-	SmartPlaylist(id, {ratingFrom, ratingTo}) {}
+SmartPlaylistByRating::SmartPlaylistByRating(const int id, const int ratingFrom, const int ratingTo,
+                                             const bool isRandomized) :
+	SmartPlaylist(id, {ratingFrom, ratingTo}, isRandomized) {}
 
 SmartPlaylistByRating::~SmartPlaylistByRating() = default;
 

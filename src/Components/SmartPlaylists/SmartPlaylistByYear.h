@@ -26,7 +26,7 @@ class SmartPlaylistByYear :
 	public SmartPlaylist
 {
 	public:
-		SmartPlaylistByYear(int id, int from, int to);
+		SmartPlaylistByYear(int id, int fromYear, int toYear, bool isRandomized);
 		~SmartPlaylistByYear() override;
 
 		static constexpr const auto ClassType = "track-year";

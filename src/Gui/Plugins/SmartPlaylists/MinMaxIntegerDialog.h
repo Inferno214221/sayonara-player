@@ -49,6 +49,7 @@ class MinMaxIntegerDialog :
 		~MinMaxIntegerDialog() override;
 
 		[[nodiscard]] QList<int> values() const;
+		[[nodiscard]] bool isRandomized() const;
 
 		[[nodiscard]] SmartPlaylists::Type type() const;
 

@@ -395,6 +395,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Sampler");
 		case Shuffle:
 			return l.tr("Shuffle");
+		case ShufflePlaylist:
+			return l.tr("Shuffle playlist");
 		case Shutdown:
 			return l.tr("Shutdown");
 		case Save:

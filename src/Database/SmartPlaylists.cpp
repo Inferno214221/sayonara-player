@@ -28,6 +28,7 @@ namespace DB
 		constexpr const auto IdField = "id";
 		constexpr const auto AttributesField = "attributes";
 		constexpr const auto ClassTypeField = "classType";
+		constexpr const auto RandomizedField = "isRandomized";
 	}
 
 	SmartPlaylists::SmartPlaylists(const QString& connectionName, const DbId databaseId) :
@@ -36,11 +37,12 @@ namespace DB
 	QList<SmartPlaylistDatabaseEntry> SmartPlaylists::getAllSmartPlaylists() const
 	{
 		const auto querytext = QString(
-			"SELECT %1, %2, %3 "
+			"SELECT %1, %2, %3, %4 "
 			"FROM SmartPlaylists")
 			.arg(IdField)
 			.arg(ClassTypeField)
-			.arg(AttributesField);
+			.arg(AttributesField)
+			.arg(RandomizedField);
 
 		auto query = runQuery(querytext, "Cannot fetch Smart Playlists");
 		if(query.hasError())
@@ -55,7 +57,8 @@ namespace DB
 			auto item = SmartPlaylistDatabaseEntry {
 				query.value(0).toInt(),
 				query.value(1).toString(),
-				query.value(2).toString()
+				query.value(2).toString(),
+				query.value(3).toBool()
 			};
 
 			result << std::move(item);
@@ -68,7 +71,8 @@ namespace DB
 	{
 		const auto query = insert("SmartPlaylists", {
 			{ClassTypeField,  smartPlaylistDatabaseEntry.classType},
-			{AttributesField, smartPlaylistDatabaseEntry.attributes}
+			{AttributesField, smartPlaylistDatabaseEntry.attributes},
+			{RandomizedField, smartPlaylistDatabaseEntry.isRandomized}
 		}, "Cannot insert into Smart Playlists");
 
 		return (!query.hasError())
@@ -80,7 +84,8 @@ namespace DB
 	{
 		const auto query = update("SmartPlaylists", {
 			                          {ClassTypeField,  smartPlaylistDatabaseEntry.classType},
-			                          {AttributesField, smartPlaylistDatabaseEntry.attributes}
+			                          {AttributesField, smartPlaylistDatabaseEntry.attributes},
+			                          {RandomizedField, smartPlaylistDatabaseEntry.isRandomized}
 		                          }, {IdField, id},
 		                          "Cannot update Smart Playlists");
 

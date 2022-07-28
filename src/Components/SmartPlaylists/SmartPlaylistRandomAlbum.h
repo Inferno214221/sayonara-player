@@ -28,7 +28,7 @@ class SmartPlaylistRandomAlbum :
 	public:
 		static constexpr const auto ClassType = "random-albums";
 
-		SmartPlaylistRandomAlbum(int id, int count);
+		SmartPlaylistRandomAlbum(int id, int count, bool isRandomized);
 		~SmartPlaylistRandomAlbum() override;
 
 		[[nodiscard]] int minimumValue() const override;

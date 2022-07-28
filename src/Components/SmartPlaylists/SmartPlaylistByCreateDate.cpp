@@ -35,13 +35,14 @@ namespace
 		const auto minimumValue = std::min(value1, value2);
 		const auto maximumValue = std::max(value1, value2);
 		const auto convertedTrackDate = static_cast<int>(trackDate / 1'000'000);
-		
+
 		return (convertedTrackDate >= minimumValue) && (convertedTrackDate <= maximumValue);
 	}
 }
 
-SmartPlaylistByCreateDate::SmartPlaylistByCreateDate(const int id, const int value1, const int value2) :
-	SmartPlaylist(id, {value1, value2}) {}
+SmartPlaylistByCreateDate::SmartPlaylistByCreateDate(const int id, const int value1, const int value2,
+                                                     const bool isRandomized) :
+	SmartPlaylist(id, {value1, value2}, isRandomized) {}
 
 SmartPlaylistByCreateDate::~SmartPlaylistByCreateDate() = default;
 

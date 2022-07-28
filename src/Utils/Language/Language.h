@@ -231,6 +231,7 @@ class Lang :
 			ShowCovers,
 			ShowLibrary,
 			Shuffle,
+			ShufflePlaylist,
 			Shutdown,
 			SimilarArtists,
 			SmartPlaylists,

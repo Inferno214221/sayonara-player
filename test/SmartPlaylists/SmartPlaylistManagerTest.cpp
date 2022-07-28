@@ -123,15 +123,15 @@ class SmartPlaylistManagerTest :
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 
 	const auto smartPlaylists = std::array {
-		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, 1},
-		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, 2}
+		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, false, 1},
+		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, true, 2}
 	};
 
 	QVERIFY(manager.smartPlaylists().count() == 0);
 
-	for(const auto& [type, values, expectedCount]: smartPlaylists)
+	for(const auto& [type, values, randomize, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values);
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, randomize);
 		manager.insertPlaylist(createdSmartPlaylist);
 
 		const auto allSmartPlaylists = manager.smartPlaylists();
@@ -141,6 +141,7 @@ class SmartPlaylistManagerTest :
 		QVERIFY(allSmartPlaylists.size() == expectedCount);
 		QVERIFY(smartPlaylist->name() == createdSmartPlaylist->name());
 		QVERIFY(smartPlaylist->id() >= 0);
+		QVERIFY(smartPlaylist->isRandomized() == createdSmartPlaylist->isRandomized());
 
 		for(auto i = 0; i < smartPlaylist->count(); i++)
 		{
@@ -151,6 +152,7 @@ class SmartPlaylistManagerTest :
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == manager.smartPlaylist(spid)->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == manager.smartPlaylist(spid)->name());
+		QVERIFY(newManager.smartPlaylist(spid)->isRandomized() == manager.smartPlaylist(spid)->isRandomized());
 	}
 
 	deleteAllPlaylists(manager);
@@ -161,13 +163,13 @@ void SmartPlaylistManagerTest::testEdit()
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 
 	const auto smartPlaylists = std::array {
-		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, 1},
-		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, 2}
+		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, true, 1},
+		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, false, 2}
 	};
 
-	for(const auto& [type, values, expectedCount]: smartPlaylists)
+	for(const auto& [type, values, isRandomized, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values);
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, isRandomized);
 		manager.insertPlaylist(createdSmartPlaylist);
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
@@ -179,11 +181,14 @@ void SmartPlaylistManagerTest::testEdit()
 		const auto oldName = smartPlaylist->name();
 		const auto oldId = smartPlaylist->id();
 		const auto oldValues = extractValues(smartPlaylist);
+		const auto wasRandomized = smartPlaylist->isRandomized();
 
 		for(auto i = 0; i < smartPlaylist->count(); i++)
 		{
 			smartPlaylist->setValue(i, values[i] + 1);
 		}
+
+		smartPlaylist->setRandomized(!smartPlaylist->isRandomized());
 
 		manager.updatePlaylist(spid, smartPlaylist);
 
@@ -192,6 +197,7 @@ void SmartPlaylistManagerTest::testEdit()
 		QVERIFY(manager.smartPlaylist(spid)->id() == oldId);
 		QVERIFY(manager.smartPlaylist(spid)->value(0) == oldValues[0] + 1);
 		QVERIFY(manager.smartPlaylist(spid)->value(1) == oldValues[1] + 1);
+		QVERIFY(manager.smartPlaylist(spid)->isRandomized() == !wasRandomized);
 
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
@@ -199,6 +205,7 @@ void SmartPlaylistManagerTest::testEdit()
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == smartPlaylist->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == smartPlaylist->name());
+		QVERIFY(newManager.smartPlaylist(spid)->isRandomized() == smartPlaylist->isRandomized());
 	}
 
 	deleteAllPlaylists(manager);
@@ -207,7 +214,7 @@ void SmartPlaylistManagerTest::testEdit()
 void SmartPlaylistManagerTest::testDelete()
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
-	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011);
+	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true);
 
 	QVERIFY(manager.smartPlaylists().count() == 0);
 	manager.insertPlaylist(smartPlaylist);
@@ -227,8 +234,8 @@ void SmartPlaylistManagerTest::testSelect()
 {
 	auto* playlistCreator = new PlaylistCreatorMock();
 	auto manager = SmartPlaylistManager(playlistCreator);
-	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011);
-	
+	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true);
+
 	manager.insertPlaylist(smartPlaylist);
 
 	const auto allSmartPlaylists = manager.smartPlaylists();

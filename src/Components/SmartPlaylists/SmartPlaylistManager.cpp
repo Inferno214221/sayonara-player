@@ -28,6 +28,7 @@
 #include "Database/SmartPlaylists.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/RandomGenerator.h"
 
 struct SmartPlaylistManager::Private
 {
@@ -84,7 +85,11 @@ void SmartPlaylistManager::selectPlaylist(const Spid& id)
 		libraryDatabase->getAllTracks(tracks);
 	}
 
-	const auto filteredTracks = smartPlaylist->filterTracks(std::move(tracks));
+	auto filteredTracks = smartPlaylist->filterTracks(std::move(tracks));
+	if(smartPlaylist->isRandomized())
+	{
+		Util::Algorithm::shuffle(filteredTracks);
+	}
 
 	m->playlistCreator->createPlaylist(filteredTracks, smartPlaylist->name(), true);
 }

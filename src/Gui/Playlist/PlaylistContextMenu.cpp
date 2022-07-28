@@ -199,7 +199,7 @@ void ContextMenu::languageChanged()
 	m->entryActionMap[EntryCurrentTrack]->setText(tr("Jump to current track"));
 	m->entryActionMap[EntryFindInLibrary]->setText(tr("Show track in library"));
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
-	m->entryActionMap[EntryRandomize]->setText(tr("Randomize playlist"));
+	m->entryActionMap[EntryRandomize]->setText(Lang::get(Lang::ShufflePlaylist));
 	m->entryActionMap[EntryJumpToNextAlbum]->setText(tr("Jump to next album"));
 	m->playlistModeAction->setText(tr("Playlist mode"));
 
