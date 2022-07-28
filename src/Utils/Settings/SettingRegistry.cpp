@@ -279,22 +279,21 @@ bool SettingRegistry::init()
 
 QList<SettingKey> SettingRegistry::undeployableKeys()
 {
-	return QList<SettingKey>
-		{
-			SettingKey::Player_Version,
-			SettingKey::Player_Language,
+	return QList<SettingKey> {
+		SettingKey::Player_Version,
+		SettingKey::Player_Language,
 
-			SettingKey::Player_PublicId,
-			SettingKey::Player_PrivId,
+		SettingKey::Player_PublicId,
+		SettingKey::Player_PrivId,
 
-			SettingKey::AudioConvert_NumberThreads,
+		SettingKey::AudioConvert_NumberThreads,
 
-			SettingKey::Engine_CovertTargetPath,
-			SettingKey::Engine_SR_Path,
+		SettingKey::Engine_CovertTargetPath,
+		SettingKey::Engine_SR_Path,
 
-			SettingKey::Soundcloud_AuthToken,
+		SettingKey::Soundcloud_AuthToken,
 
-			SettingKey::MP3enc_found,
-			SettingKey::Pitch_found
-		};
+		SettingKey::MP3enc_found,
+		SettingKey::Pitch_found
+	};
 }
