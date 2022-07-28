@@ -28,17 +28,19 @@ using Gui::Widget;
 using Gui::WidgetTemplate;
 
 Widget::Widget(QWidget* parent) :
-	WidgetTemplate<QWidget>(parent)
-{}
+	WidgetTemplate<QWidget>(parent) {}
 
 Widget::~Widget() {}
 
 Dialog* Widget::boxIntoDialog()
 {
-	if(!mBoxedDialog){
+	if(!mBoxedDialog)
+	{
 		mBoxedDialog = new Dialog(this->parentWidget());
-		QFormLayout* layout = new QFormLayout(mBoxedDialog);
+
+		auto* layout = new QFormLayout(mBoxedDialog);
 		layout->addWidget(this);
+
 		this->setParent(mBoxedDialog);
 	}
 
@@ -58,8 +60,7 @@ void Widget::closeEvent(QCloseEvent* e)
 }
 
 MainWindow::MainWindow(QWidget* parent) :
-	WidgetTemplate<QMainWindow>(parent)
-{}
+	WidgetTemplate<QMainWindow>(parent) {}
 
 MainWindow::~MainWindow() = default;
 
@@ -72,15 +73,17 @@ void MainWindow::raise()
 		this->activateWindow();
 	}
 
-	if(this->isHidden()) {
+	if(this->isHidden())
+	{
 		this->setHidden(false);
 	}
 
-	if(!this->isVisible()){
+	if(!this->isVisible())
+	{
 		this->setVisible(true);
 	}
 
-	Qt::WindowStates state = this->windowState();
+	const auto state = this->windowState();
 	if(state & Qt::WindowMinimized)
 	{
 		this->setWindowState(state & ~Qt::WindowMinimized);

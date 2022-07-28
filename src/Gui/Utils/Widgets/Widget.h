@@ -35,25 +35,25 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class Widget :
-			public Gui::WidgetTemplate<QWidget>
+		public Gui::WidgetTemplate<QWidget>
 	{
 		Q_OBJECT
 
-	signals:
-		void sigShown();
-		void sigClosed();
+		signals:
+			void sigShown();
+			void sigClosed();
 
-	public:
-		explicit Widget(QWidget* parent=nullptr);
-		virtual ~Widget() override;
+		public:
+			explicit Widget(QWidget* parent = nullptr);
+			virtual ~Widget() override;
 
-		Dialog* boxIntoDialog();
+			Dialog* boxIntoDialog();
 
-	protected:
-		Dialog* mBoxedDialog=nullptr;
+		protected:
+			Dialog* mBoxedDialog = nullptr;
 
-		virtual void showEvent(QShowEvent* e) override;
-		virtual void closeEvent(QCloseEvent* e) override;
+			virtual void showEvent(QShowEvent* e) override;
+			virtual void closeEvent(QCloseEvent* e) override;
 	};
 
 	/**
@@ -61,23 +61,23 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class MainWindow :
-			public Gui::WidgetTemplate<QMainWindow>
+		public Gui::WidgetTemplate<QMainWindow>
 	{
 		Q_OBJECT
 
-	signals:
-		void sigShown();
-		void sigClosed();
+		signals:
+			void sigShown();
+			void sigClosed();
 
-	public:
-		explicit MainWindow(QWidget* parent=nullptr);
-		virtual ~MainWindow() override;
+		public:
+			explicit MainWindow(QWidget* parent = nullptr);
+			virtual ~MainWindow() override;
 
-		void raise();
+			void raise();
 
-	protected:
-		virtual void showEvent(QShowEvent* e) override;
-		virtual void closeEvent(QCloseEvent* e) override;
+		protected:
+			virtual void showEvent(QShowEvent* e) override;
+			virtual void closeEvent(QCloseEvent* e) override;
 	};
 }
 
