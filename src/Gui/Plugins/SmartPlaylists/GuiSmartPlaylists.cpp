@@ -66,7 +66,8 @@ void GuiSmartPlaylists::selectedIndexChanged(const int index)
 {
 	if(index >= 0)
 	{
-		m->smartPlaylistManager->selectPlaylist(index);
+		const auto spid = Spid(ui->comboPlaylist->itemData(index).toInt());
+		m->smartPlaylistManager->selectPlaylist(spid);
 	}
 
 	setupMenuButton(ui->comboPlaylist->currentIndex(), ui->btnMenu);
@@ -115,7 +116,8 @@ void GuiSmartPlaylists::newClicked()
 
 void GuiSmartPlaylists::editClicked()
 {
-	const auto smartPlaylist = m->smartPlaylistManager->smartPlaylist(ui->comboPlaylist->currentIndex());
+	const auto id = Spid(ui->comboPlaylist->currentData().toInt());
+	const auto smartPlaylist = m->smartPlaylistManager->smartPlaylist(id);
 	auto* dialog = new MinMaxIntegerDialog(smartPlaylist, this);
 
 	const auto status = dialog->exec();
@@ -127,7 +129,7 @@ void GuiSmartPlaylists::editClicked()
 			smartPlaylist->setValue(i, values[i]);
 		}
 
-		m->smartPlaylistManager->updatePlaylist(ui->comboPlaylist->currentIndex(), smartPlaylist);
+		m->smartPlaylistManager->updatePlaylist(id, smartPlaylist);
 	}
 
 	dialog->deleteLater();
@@ -135,24 +137,24 @@ void GuiSmartPlaylists::editClicked()
 
 void GuiSmartPlaylists::deleteClicked()
 {
-	m->smartPlaylistManager->deletePlaylist(ui->comboPlaylist->currentIndex());
+	const auto id = Spid(ui->comboPlaylist->currentData().toInt());
+	m->smartPlaylistManager->deletePlaylist(id);
 }
 
 void GuiSmartPlaylists::setupPlaylists()
 {
+	const auto currentId = Spid(ui->comboPlaylist->currentData().toInt());
+
 	ui->comboPlaylist->blockSignals(true);
 	ui->comboPlaylist->clear();
 
-	const auto currentIndex = ui->comboPlaylist->currentIndex();
 	const auto smartPlaylists = m->smartPlaylistManager->smartPlaylists();
 	for(const auto& smartPlaylist: smartPlaylists)
 	{
-		ui->comboPlaylist->addItem(smartPlaylist->name());
+		ui->comboPlaylist->addItem(smartPlaylist->name(), smartPlaylist->id());
 	}
 
-	const auto newIndex = (currentIndex < ui->comboPlaylist->count())
-	                      ? currentIndex
-	                      : currentIndex - 1;
+	const auto newIndex = ui->comboPlaylist->findData(currentId.id);
 	if(newIndex >= 0)
 	{
 		ui->comboPlaylist->setCurrentIndex(newIndex);

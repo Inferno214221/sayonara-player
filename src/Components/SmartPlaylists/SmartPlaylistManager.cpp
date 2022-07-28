@@ -32,7 +32,7 @@
 struct SmartPlaylistManager::Private
 {
 	PlaylistCreator* playlistCreator;
-	QList<SmartPlaylistPtr> smartPlaylists;
+	std::map<Spid, SmartPlaylistPtr> smartPlaylists;
 
 	explicit Private(PlaylistCreator* playlistCreator) :
 		playlistCreator {playlistCreator}
@@ -44,7 +44,7 @@ struct SmartPlaylistManager::Private
 			const auto smartPlaylist = SmartPlaylists::create(entry);
 			if(smartPlaylist)
 			{
-				smartPlaylists << smartPlaylist;
+				smartPlaylists[Spid(smartPlaylist->id())] = smartPlaylist;
 			}
 		}
 	}
@@ -57,19 +57,25 @@ SmartPlaylistManager::SmartPlaylistManager(PlaylistCreator* playlistCreator)
 
 SmartPlaylistManager::~SmartPlaylistManager() = default;
 
-SmartPlaylistPtr SmartPlaylistManager::smartPlaylist(const int index) const
+SmartPlaylistPtr SmartPlaylistManager::smartPlaylist(const Spid& id) const
 {
-	return m->smartPlaylists[index];
+	return m->smartPlaylists[id];
 }
 
 QList<SmartPlaylistPtr> SmartPlaylistManager::smartPlaylists() const
 {
-	return m->smartPlaylists;
+	QList<SmartPlaylistPtr> smartPlaylists;
+	for(const auto& [key, value]: m->smartPlaylists)
+	{
+		smartPlaylists << value;
+	}
+
+	return smartPlaylists;
 }
 
-void SmartPlaylistManager::selectPlaylist(const int index)
+void SmartPlaylistManager::selectPlaylist(const Spid& id)
 {
-	const auto smartPlaylist = m->smartPlaylists[index];
+	const auto smartPlaylist = m->smartPlaylists[id];
 	auto tracks = MetaDataList {};
 
 	if(!smartPlaylist->canFetchTracks())
@@ -83,13 +89,13 @@ void SmartPlaylistManager::selectPlaylist(const int index)
 	m->playlistCreator->createPlaylist(filteredTracks, smartPlaylist->name(), true);
 }
 
-void SmartPlaylistManager::deletePlaylist(const int index)
+void SmartPlaylistManager::deletePlaylist(const Spid& id)
 {
 	auto* db = DB::Connector::instance()->smartPlaylistsConnector();
-	const auto success = db->deleteSmartPlaylist(m->smartPlaylists[index]->id());
+	const auto success = db->deleteSmartPlaylist(m->smartPlaylists[id]->id());
 	if(success)
 	{
-		m->smartPlaylists.removeAt(index);
+		m->smartPlaylists.erase(id);
 		emit sigPlaylistsChanged();
 	}
 }
@@ -101,19 +107,18 @@ void SmartPlaylistManager::insertPlaylist(const SmartPlaylistPtr& smartPlaylist)
 	if(id >= 0)
 	{
 		smartPlaylist->setId(id);
-		m->smartPlaylists.append(smartPlaylist);
+		m->smartPlaylists[Spid(smartPlaylist->id())] = smartPlaylist;
 		emit sigPlaylistsChanged();
 	}
 }
 
-void SmartPlaylistManager::updatePlaylist(const int index, const SmartPlaylistPtr& smartPlaylist)
+void SmartPlaylistManager::updatePlaylist(const Spid& id, const SmartPlaylistPtr& smartPlaylist)
 {
 	auto* db = DB::Connector::instance()->smartPlaylistsConnector();
-	const auto id = m->smartPlaylists[index]->id();
-	const auto success = db->updateSmartPlaylist(id, smartPlaylist->toDatabaseEntry());
+	const auto success = db->updateSmartPlaylist(id.id, smartPlaylist->toDatabaseEntry());
 	if(success)
 	{
-		m->smartPlaylists[index] = smartPlaylist;
+		m->smartPlaylists[id] = smartPlaylist;
 		emit sigPlaylistsChanged();
 	}
 }

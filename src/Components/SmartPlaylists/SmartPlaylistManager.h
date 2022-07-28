@@ -25,6 +25,18 @@
 #include <QList>
 #include <QObject>
 
+struct Spid
+{
+	int id;
+
+	explicit Spid(int id) :
+		id {id} {}
+
+	bool operator==(const Spid& other) const { return id == other.id; }
+};
+
+inline bool operator<(const Spid& spid1, const Spid& spid2) { return spid1.id < spid2.id; }
+
 class PlaylistCreator;
 class SmartPlaylist;
 using SmartPlaylistPtr = std::shared_ptr<SmartPlaylist>;
@@ -41,13 +53,13 @@ class SmartPlaylistManager :
 		explicit SmartPlaylistManager(PlaylistCreator* playlistCreator);
 		~SmartPlaylistManager() override;
 
-		[[nodiscard]] SmartPlaylistPtr smartPlaylist(int index) const;
+		[[nodiscard]] SmartPlaylistPtr smartPlaylist(const Spid& id) const;
 		[[nodiscard]] QList<SmartPlaylistPtr> smartPlaylists() const;
 
-		void selectPlaylist(int index);
-		void deletePlaylist(int index);
+		void selectPlaylist(const Spid& id);
+		void deletePlaylist(const Spid& id);
 		void insertPlaylist(const SmartPlaylistPtr& smartPlaylist);
-		void updatePlaylist(int index, const SmartPlaylistPtr& smartPlaylist);
+		void updatePlaylist(const Spid& id, const SmartPlaylistPtr& smartPlaylist);
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTMANAGER_H

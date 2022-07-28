@@ -21,6 +21,7 @@
 #include "Common/PlayManagerMock.h"
 
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
+#include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/SmartPlaylistByYear.h"
 #include "Components/SmartPlaylists/SmartPlaylistByRating.h"
 
@@ -28,7 +29,44 @@
 
 #include "Interfaces/PlaylistInterface.h"
 
+#include "Utils/Algorithm.h"
+
 // access working directory with Test::Base::tempPath("somefile.txt");
+
+namespace
+{
+	SmartPlaylistPtr playlistByType(const SmartPlaylists::Type type, const SmartPlaylistManager& manager)
+	{
+		const auto allSmartPlaylists = manager.smartPlaylists();
+		const auto index = Util::Algorithm::indexOf(allSmartPlaylists, [t = type](const auto& item) {
+			return (item->type() == t);
+		});
+
+		return allSmartPlaylists[index];
+	}
+
+	QList<int> extractValues(const std::shared_ptr<SmartPlaylist>& smartPlaylist)
+	{
+		auto values = QList<int> {};
+		for(auto i = 0; i < smartPlaylist->count(); i++)
+		{
+			values << smartPlaylist->value(i);
+		}
+
+		return values;
+	}
+
+	void deleteAllPlaylists(SmartPlaylistManager& manager)
+	{
+		const auto allSmartPlaylists = manager.smartPlaylists();
+		for(const auto& smartPlaylist: allSmartPlaylists)
+		{
+			manager.deletePlaylist(Spid(smartPlaylist->id()));
+		}
+
+		QVERIFY(manager.smartPlaylists().count() == 0);
+	}
+}
 
 class PlaylistCreatorMock :
 	public PlaylistCreator
@@ -83,67 +121,87 @@ class SmartPlaylistManagerTest :
 [[maybe_unused]] void SmartPlaylistManagerTest::testInsert()
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
-	auto smartPlaylist1 = std::make_shared<SmartPlaylistByYear>(-1, 2000, 2011);
-	auto smartPlaylist2 = std::make_shared<SmartPlaylistByRating>(-1, 1, 4);
+
+	const auto smartPlaylists = std::array {
+		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, 1},
+		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, 2}
+	};
 
 	QVERIFY(manager.smartPlaylists().count() == 0);
 
-	manager.insertPlaylist(smartPlaylist1);
-	manager.insertPlaylist(smartPlaylist2);
+	for(const auto& [type, values, expectedCount]: smartPlaylists)
+	{
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values);
+		manager.insertPlaylist(createdSmartPlaylist);
 
-	QVERIFY(manager.smartPlaylist(0)->name() == smartPlaylist1->name());
-	QVERIFY(manager.smartPlaylist(0)->id() >= 0);
-	QVERIFY(manager.smartPlaylist(0)->value(0) == 2000);
-	QVERIFY(manager.smartPlaylist(0)->value(1) == 2011);
+		const auto allSmartPlaylists = manager.smartPlaylists();
+		const auto smartPlaylist = playlistByType(type, manager);
+		const auto spid = Spid(smartPlaylist->id());
 
-	QVERIFY(manager.smartPlaylist(1)->name() == smartPlaylist2->name());
-	QVERIFY((manager.smartPlaylist(1)->id() > 0) && (manager.smartPlaylist(1)->id() != manager.smartPlaylist(0)->id()));
-	QVERIFY(manager.smartPlaylist(1)->value(0) == 1);
-	QVERIFY(manager.smartPlaylist(1)->value(1) == 4);
+		QVERIFY(allSmartPlaylists.size() == expectedCount);
+		QVERIFY(smartPlaylist->name() == createdSmartPlaylist->name());
+		QVERIFY(smartPlaylist->id() >= 0);
 
-	QVERIFY(manager.smartPlaylists().count() == 2);
+		for(auto i = 0; i < smartPlaylist->count(); i++)
+		{
+			QVERIFY(manager.smartPlaylist(spid)->value(i) == values[i]);
+		}
 
-	auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
-	QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
-	QVERIFY(newManager.smartPlaylist(0)->id() == manager.smartPlaylist(0)->id());
-	QVERIFY(newManager.smartPlaylist(1)->id() == manager.smartPlaylist(1)->id());
+		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
+		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
+		QVERIFY(newManager.smartPlaylist(spid)->id() == manager.smartPlaylist(spid)->id());
+		QVERIFY(newManager.smartPlaylist(spid)->name() == manager.smartPlaylist(spid)->name());
+	}
 
-	manager.deletePlaylist(0);
-	manager.deletePlaylist(0);
+	deleteAllPlaylists(manager);
 }
 
 void SmartPlaylistManagerTest::testEdit()
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 
-	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2002, 2011);
+	const auto smartPlaylists = std::array {
+		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, 1},
+		std::tuple {SmartPlaylists::Type::Rating, QList<int> {1, 4}, 2}
+	};
 
-	manager.insertPlaylist(smartPlaylist);
-	QVERIFY(manager.smartPlaylists().count() == 1);
+	for(const auto& [type, values, expectedCount]: smartPlaylists)
+	{
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values);
+		manager.insertPlaylist(createdSmartPlaylist);
+		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
-	const auto oldName = smartPlaylist->name();
-	const auto oldId = manager.smartPlaylist(0)->id();
+		const auto allSmartPlaylists = manager.smartPlaylists();
 
-	auto newSmartPlaylist = manager.smartPlaylist(0);
-	newSmartPlaylist->setValue(0, 2005);
-	newSmartPlaylist->setValue(1, 2015);
+		const auto smartPlaylist = playlistByType(type, manager);
+		const auto spid = Spid(smartPlaylist->id());
 
-	manager.updatePlaylist(0, newSmartPlaylist);
+		const auto oldName = smartPlaylist->name();
+		const auto oldId = smartPlaylist->id();
+		const auto oldValues = extractValues(smartPlaylist);
 
-	QVERIFY(manager.smartPlaylist(0)->name() != oldName);
-	QVERIFY(manager.smartPlaylist(0)->name() == newSmartPlaylist->name());
-	QVERIFY(manager.smartPlaylist(0)->id() == oldId);
-	QVERIFY(manager.smartPlaylist(0)->value(0) == 2005);
-	QVERIFY(manager.smartPlaylist(0)->value(1) == 2015);
+		for(auto i = 0; i < smartPlaylist->count(); i++)
+		{
+			smartPlaylist->setValue(i, values[i] + 1);
+		}
 
-	QVERIFY(manager.smartPlaylists().count() == 1);
+		manager.updatePlaylist(spid, smartPlaylist);
 
-	auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
-	QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
-	QVERIFY(newManager.smartPlaylist(0)->id() == manager.smartPlaylist(0)->id());
-	QVERIFY(newManager.smartPlaylist(0)->name() == manager.smartPlaylist(0)->name());
+		QVERIFY(manager.smartPlaylist(spid)->name() != oldName);
+		QVERIFY(manager.smartPlaylist(spid)->name() == smartPlaylist->name());
+		QVERIFY(manager.smartPlaylist(spid)->id() == oldId);
+		QVERIFY(manager.smartPlaylist(spid)->value(0) == oldValues[0] + 1);
+		QVERIFY(manager.smartPlaylist(spid)->value(1) == oldValues[1] + 1);
 
-	manager.deletePlaylist(0);
+		QVERIFY(manager.smartPlaylists().count() == expectedCount);
+
+		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
+		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
+		QVERIFY(newManager.smartPlaylist(spid)->id() == smartPlaylist->id());
+		QVERIFY(newManager.smartPlaylist(spid)->name() == smartPlaylist->name());
+	}
+
+	deleteAllPlaylists(manager);
 }
 
 void SmartPlaylistManagerTest::testDelete()
@@ -151,8 +209,13 @@ void SmartPlaylistManagerTest::testDelete()
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011);
 
+	QVERIFY(manager.smartPlaylists().count() == 0);
 	manager.insertPlaylist(smartPlaylist);
-	manager.deletePlaylist(0);
+	QVERIFY(manager.smartPlaylists().count() == 1);
+
+	const auto allSmartPlaylists = manager.smartPlaylists();
+	const auto spid = Spid(allSmartPlaylists[0]->id());
+	manager.deletePlaylist(spid);
 
 	QVERIFY(manager.smartPlaylists().isEmpty());
 
@@ -165,9 +228,12 @@ void SmartPlaylistManagerTest::testSelect()
 	auto* playlistCreator = new PlaylistCreatorMock();
 	auto manager = SmartPlaylistManager(playlistCreator);
 	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011);
-
+	
 	manager.insertPlaylist(smartPlaylist);
-	manager.selectPlaylist(0);
+
+	const auto allSmartPlaylists = manager.smartPlaylists();
+	const auto spid = Spid(allSmartPlaylists[0]->id());
+	manager.selectPlaylist(spid);
 
 	const auto playlists = playlistCreator->playlists();
 	QVERIFY(playlists.count() == 1);
