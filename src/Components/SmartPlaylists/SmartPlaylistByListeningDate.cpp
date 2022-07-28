@@ -47,8 +47,8 @@ namespace
 }
 
 SmartPlaylistByListeningDate::SmartPlaylistByListeningDate(
-	const int id, const int from, const int to) :
-	SmartPlaylist(id, from, to) {}
+	const int id, const int value1, const int value2) :
+	SmartPlaylist(id, {value1, value2}) {}
 
 SmartPlaylistByListeningDate::~SmartPlaylistByListeningDate() = default;
 
@@ -58,8 +58,8 @@ int SmartPlaylistByListeningDate::maximumValue() const { return MaximumTimeSpan;
 
 MetaDataList SmartPlaylistByListeningDate::filterTracks(MetaDataList tracks)
 {
-	const auto dateFrom = calculateRelativeDate(from());
-	const auto dateTo = calculateRelativeDate(to());
+	const auto dateFrom = calculateRelativeDate(std::min(value(0), value(1)));
+	const auto dateTo = calculateRelativeDate(std::max(value(0), value(1)));
 
 	auto* dbConnector = DB::Connector::instance();
 	auto* dbSession = dbConnector->sessionConnector();
@@ -104,30 +104,32 @@ QString SmartPlaylistByListeningDate::classType() const
 
 QString SmartPlaylistByListeningDate::displayClassType() const
 {
-	return QObject::tr("Days since last play time");
+	return QObject::tr("Last listened");
 }
 
 QString SmartPlaylistByListeningDate::name() const
 {
+	const auto from = std::min(value(0), value(1));
+	const auto to = std::max(value(0), value(1));
 	const auto sc = stringConverter();
-	if(from() == to())
+	if(from == to)
 	{
-		return QObject::tr("Last played: %1 ago").arg(sc->intToUserString(from()));
+		return QObject::tr("Last listened: exactly %1").arg(sc->intToUserString(from));
 	}
 
-	if(from() == 0)
+	if(from == 0)
 	{
-		return QObject::tr("Last played: Less than %1 ago").arg(sc->intToUserString(to()));
+		return QObject::tr("Last listened: ≤ %1").arg(sc->intToUserString(to));
 	}
 
-	if(to() == maximumValue())
+	if(to == maximumValue())
 	{
-		return QObject::tr("Last played: More than %1 ago").arg(sc->intToUserString(from()));
+		return QObject::tr("Last listened: ≥ %1").arg(sc->intToUserString(from));
 	}
 
-	return QObject::tr("Last played: Between %1 and %2 ago")
-		.arg(sc->intToUserString(from()))
-		.arg(sc->intToUserString(to()));
+	return QObject::tr("Last listened: %1 - %2")
+		.arg(sc->intToUserString(from))
+		.arg(sc->intToUserString(to));
 }
 
 SmartPlaylists::Type SmartPlaylistByListeningDate::type() const { return SmartPlaylists::Type::LastPlayed; }

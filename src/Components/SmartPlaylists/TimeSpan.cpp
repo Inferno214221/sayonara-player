@@ -56,7 +56,7 @@ namespace SmartPlaylists
 
 		if(newTimeSpan.days > 0)
 		{
-			result << QObject::tr("%n days(s)", "", newTimeSpan.days);
+			result << QObject::tr("%n day(s)", "", newTimeSpan.days);
 		}
 
 		return result.join(", ");

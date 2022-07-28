@@ -57,7 +57,7 @@ class SmartPlaylist
 	PIMPL(SmartPlaylist)
 
 	public:
-		SmartPlaylist(int id, int from, int to);
+		SmartPlaylist(int id, const QList<int>& values);
 		virtual ~SmartPlaylist();
 
 		[[nodiscard]] int id() const;
@@ -66,24 +66,21 @@ class SmartPlaylist
 		[[nodiscard]] virtual int minimumValue() const = 0;
 		[[nodiscard]] virtual int maximumValue() const = 0;
 
-		[[nodiscard]] int from() const;
-		void setFrom(int from);
-
-		[[nodiscard]] int to() const;
-		void setTo(int to);
+		[[nodiscard]] int count() const;
+		[[nodiscard]] int value(int index) const;
+		void setValue(int index, int value);
 
 		virtual MetaDataList filterTracks(MetaDataList tracks) = 0;
 
 		[[nodiscard]] virtual QString classType() const = 0;        // for database
 		[[nodiscard]] virtual QString displayClassType() const = 0; // for ui
 		[[nodiscard]] virtual QString name() const = 0;             // for plugin
+		[[nodiscard]] virtual QString text(int value) const;
 		[[nodiscard]] virtual SmartPlaylists::Type type() const = 0;
 		[[nodiscard]] virtual SmartPlaylists::InputFormat inputFormat() const;
 		[[nodiscard]] virtual bool canFetchTracks() const;
-		[[nodiscard]] virtual bool isSingleValue() const;
 
 		[[nodiscard]] SmartPlaylistDatabaseEntry toDatabaseEntry() const;
-
 		[[nodiscard]] virtual SmartPlaylists::StringConverterPtr stringConverter() const final;
 
 	protected:

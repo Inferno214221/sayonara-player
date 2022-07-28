@@ -29,7 +29,7 @@ class SmartPlaylistByRelativeDate :
 	public:
 		static constexpr const auto ClassType = "relative-create-date";
 
-		SmartPlaylistByRelativeDate(int id, int min, int max);
+		SmartPlaylistByRelativeDate(int id, int value1, int value2);
 		~SmartPlaylistByRelativeDate() override;
 
 		[[nodiscard]] int minimumValue() const override;

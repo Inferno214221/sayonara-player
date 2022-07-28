@@ -21,22 +21,21 @@
 #include "SmartPlaylist.h"
 
 #include "Database/SmartPlaylists.h"
+#include "Utils/Algorithm.h"
 
 struct SmartPlaylist::Private
 {
 	int id;
-	int from;
-	int to;
+	QList<int> values;
 	std::shared_ptr<SmartPlaylists::StringConverter> stringConverter {nullptr};
 
-	Private(const int id, const int from, const int to) :
+	Private(const int id, const QList<int>& values) :
 		id {id},
-		from {from},
-		to {to} {}
+		values {values} {}
 };
 
-SmartPlaylist::SmartPlaylist(const int id, const int from, const int to) :
-	m {Pimpl::make<Private>(id, from, to)} {}
+SmartPlaylist::SmartPlaylist(const int id, const QList<int>& values) :
+	m {Pimpl::make<Private>(id, values)} {}
 
 SmartPlaylist::~SmartPlaylist() = default;
 
@@ -51,26 +50,33 @@ SmartPlaylistDatabaseEntry SmartPlaylist::toDatabaseEntry() const
 
 QString SmartPlaylist::attributesToString() const
 {
-	return QString("%1,%2").arg(from()).arg(to());
+	auto valueStrings = QStringList {};
+	Util::Algorithm::transform(m->values, valueStrings, [](const auto value) {
+		return QString::number(value);
+	});
+
+	return valueStrings.join(',');
 }
 
 int SmartPlaylist::id() const { return m->id; }
 
 void SmartPlaylist::setId(const int id) { m->id = id; }
 
-int SmartPlaylist::from() const { return m->from; }
+int SmartPlaylist::count() const { return m->values.count(); }
 
-void SmartPlaylist::setFrom(const int from) { m->from = from; }
+int SmartPlaylist::value(const int index) const { return m->values[index]; }
 
-int SmartPlaylist::to() const { return m->to; }
-
-void SmartPlaylist::setTo(const int to) { m->to = to; }
+void SmartPlaylist::setValue(const int index, const int value)
+{
+	if(Util::between(index, m->values))
+	{
+		m->values[index] = value;
+	}
+}
 
 SmartPlaylists::InputFormat SmartPlaylist::inputFormat() const { return SmartPlaylists::InputFormat::Text; }
 
 bool SmartPlaylist::canFetchTracks() const { return false; }
-
-bool SmartPlaylist::isSingleValue() const { return false; }
 
 SmartPlaylists::StringConverterPtr SmartPlaylist::createConverter() const
 {
@@ -86,4 +92,11 @@ SmartPlaylists::StringConverterPtr SmartPlaylist::stringConverter() const
 
 	m->stringConverter = createConverter();
 	return m->stringConverter;
+}
+
+QString SmartPlaylist::text(const int value) const
+{
+	return (value == 0)
+	       ? QObject::tr("Between")
+	       : QObject::tr("and");
 }

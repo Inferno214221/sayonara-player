@@ -62,7 +62,7 @@ namespace
 		{
 			return {};
 		}
-		
+
 		auto tracks = MetaDataList {};
 
 		libraryDatabase->getAllTracksByAlbum(albumIds, tracks);
@@ -86,8 +86,8 @@ namespace
 	}
 }
 
-SmartPlaylistRandomAlbum::SmartPlaylistRandomAlbum(const int id, const int count, const int ignore) :
-	SmartPlaylist(id, count, ignore) {}
+SmartPlaylistRandomAlbum::SmartPlaylistRandomAlbum(const int id, const int count) :
+	SmartPlaylist(id, {count}) {}
 
 SmartPlaylistRandomAlbum::~SmartPlaylistRandomAlbum() = default;
 
@@ -108,7 +108,7 @@ MetaDataList SmartPlaylistRandomAlbum::filterTracks(MetaDataList /*tracks*/)
 	auto* dbConnector = DB::Connector::instance();
 	auto* libraryDatabase = dbConnector->libraryDatabase(-1, 0);
 
-	const auto albumIds = getRandomAlbums(from(), libraryDatabase);
+	const auto albumIds = getRandomAlbums(value(0), libraryDatabase);
 	return getTracksByAlbumIds(albumIds, libraryDatabase);
 }
 
@@ -116,10 +116,10 @@ QString SmartPlaylistRandomAlbum::classType() const { return SmartPlaylistRandom
 
 QString SmartPlaylistRandomAlbum::displayClassType() const { return QObject::tr("Random albums"); }
 
-QString SmartPlaylistRandomAlbum::name() const { return QObject::tr("%n random album(s)", "", from()); }
+QString SmartPlaylistRandomAlbum::name() const { return QObject::tr("%n random album(s)", "", value(0)); }
 
 SmartPlaylists::Type SmartPlaylistRandomAlbum::type() const { return SmartPlaylists::Type::RandomAlbums; }
 
-bool SmartPlaylistRandomAlbum::isSingleValue() const { return true; }
-
 bool SmartPlaylistRandomAlbum::canFetchTracks() const { return true; }
+
+QString SmartPlaylistRandomAlbum::text(int /*index*/) const { return QObject::tr("Number of albums"); }

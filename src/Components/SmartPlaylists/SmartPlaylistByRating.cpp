@@ -27,14 +27,14 @@
 #include <QObject>
 
 SmartPlaylistByRating::SmartPlaylistByRating(const int id, const int ratingFrom, const int ratingTo) :
-	SmartPlaylist(id, ratingFrom, ratingTo) {}
+	SmartPlaylist(id, {ratingFrom, ratingTo}) {}
 
 SmartPlaylistByRating::~SmartPlaylistByRating() = default;
 
 MetaDataList SmartPlaylistByRating::filterTracks(MetaDataList tracks)
 {
-	const auto minimumRating = static_cast<Rating>(from());
-	const auto maximumRating = static_cast<Rating>(to());
+	const auto minimumRating = static_cast<Rating>(std::min(value(0), value(1)));
+	const auto maximumRating = static_cast<Rating>(std::max(value(0), value(1)));
 
 	tracks.erase(std::remove_if(tracks.begin(), tracks.end(), [&](const auto& track) {
 		return (track.rating() < minimumRating) || (track.rating() > maximumRating);
@@ -45,27 +45,27 @@ MetaDataList SmartPlaylistByRating::filterTracks(MetaDataList tracks)
 
 QString SmartPlaylistByRating::name() const
 {
-	if(from() == to())
+	const auto from = std::min(value(0), value(1));
+	const auto to = std::max(value(0), value(1));
+	const auto nStars = QObject::tr("%1 star(s)", "", from);
+	if(from == to)
 	{
-		return QObject::tr("%1 stars")
-			.arg(from());
+		return nStars;
 	}
 
-	if((from() < maximumValue()) && (to() == maximumValue()))
+	if((from < maximumValue()) && (to == maximumValue()))
 	{
-		return QObject::tr("At least %1 stars")
-			.arg(from());
+		return QString("≥ %1").arg(from);
 	}
 
-	if(from() == minimumValue() && (to() > minimumValue()))
+	if(from == minimumValue() && (to > minimumValue()))
 	{
-		return QObject::tr("At most %1 stars")
-			.arg(to());
+		return QString("≤ %1").arg(to);
 	}
 
-	return QObject::tr("Between %1 and %2 stars")
-		.arg(from())
-		.arg(to());
+	return QObject::tr("%1 - %2 stars")
+		.arg(from)
+		.arg(to);
 }
 
 QString SmartPlaylistByRating::classType() const { return SmartPlaylistByRating::ClassType; }

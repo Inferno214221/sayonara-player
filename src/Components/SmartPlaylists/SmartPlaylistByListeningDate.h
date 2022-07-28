@@ -36,13 +36,14 @@ class SmartPlaylistByListeningDate :
 	public:
 		static constexpr const auto* ClassType = "last-played";
 
-		SmartPlaylistByListeningDate(int id, int from, int to);
+		SmartPlaylistByListeningDate(int id, int value1, int value2);
 		~SmartPlaylistByListeningDate() override;
 
 		[[nodiscard]] int minimumValue() const override;
 		[[nodiscard]] int maximumValue() const override;
 
 		[[nodiscard]] QString classType() const override;
+
 		[[nodiscard]] QString displayClassType() const override;
 		[[nodiscard]] QString name() const override;
 		[[nodiscard]] SmartPlaylists::Type type() const override;

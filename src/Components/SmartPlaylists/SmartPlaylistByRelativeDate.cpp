@@ -45,12 +45,13 @@ namespace
 		const auto minDate = today.addDays(-max);  // today - 14
 		const auto maxDate = today.addDays(-min);  // today - 120
 
-		return (date >= minDate) && (date <= maxDate);
+		return ((date >= minDate) && (date <= maxDate)) ||
+		       ((date <= minDate) && (date >= maxDate));
 	}
 }
 
-SmartPlaylistByRelativeDate::SmartPlaylistByRelativeDate(const int id, const int min, const int max) :
-	SmartPlaylist {id, min, max} {}
+SmartPlaylistByRelativeDate::SmartPlaylistByRelativeDate(const int id, const int value1, const int value2) :
+	SmartPlaylist {id, {value1, value2}} {}
 
 SmartPlaylistByRelativeDate::~SmartPlaylistByRelativeDate() = default;
 
@@ -61,7 +62,7 @@ int SmartPlaylistByRelativeDate::maximumValue() const { return MaxYears * DaysPe
 MetaDataList SmartPlaylistByRelativeDate::filterTracks(MetaDataList tracks)
 {
 	tracks.erase(std::remove_if(tracks.begin(), tracks.end(), [&](const auto& track) {
-		return !isDateInsideRange(track, from(), to());
+		return !isDateInsideRange(track, value(0), value(1));
 	}), tracks.end());
 
 	return tracks;
@@ -71,30 +72,33 @@ QString SmartPlaylistByRelativeDate::classType() const { return SmartPlaylistByR
 
 QString SmartPlaylistByRelativeDate::displayClassType() const
 {
-	return QObject::tr("Age of tracks in days");
+	return QObject::tr("Age of tracks");
 }
 
 QString SmartPlaylistByRelativeDate::name() const
 {
+	const auto from = std::min(value(0), value(1));
+	const auto to = std::max(value(0), value(1));
 	const auto sc = stringConverter();
-	if(from() == to())
+
+	if(from == to)
 	{
-		return QObject::tr("%1 old").arg(sc->intToUserString(from()));
+		return QObject::tr("%1 old").arg(sc->intToUserString(from));
 	}
 
-	if(from() == 0)
+	if(from == 0)
 	{
-		return QObject::tr("Less than %1 old").arg(sc->intToUserString(to()));
+		return QObject::tr("≤ %1 old").arg(sc->intToUserString(to));
 	}
 
-	if(to() == maximumValue())
+	if(to == maximumValue())
 	{
-		return QObject::tr("Older than %1").arg(sc->intToUserString(from()));
+		return QObject::tr("≥ %1 old").arg(sc->intToUserString(from));
 	}
 
-	return QObject::tr("Between %1 and %2 old")
-		.arg(sc->intToUserString(from()))
-		.arg(sc->intToUserString(to()));
+	return QObject::tr("%1 - %2 old")
+		.arg(sc->intToUserString(from))
+		.arg(sc->intToUserString(to));
 }
 
 SmartPlaylists::Type SmartPlaylistByRelativeDate::type() const { return SmartPlaylists::Type::CreatedRelative; }

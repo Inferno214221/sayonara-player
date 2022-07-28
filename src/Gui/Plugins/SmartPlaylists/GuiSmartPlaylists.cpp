@@ -105,7 +105,7 @@ void GuiSmartPlaylists::newClicked()
 	if(status == MinMaxIntegerDialog::Accepted)
 	{
 		const auto smartPlaylist =
-			SmartPlaylists::createFromType(dialog->type(), -1, dialog->fromValue(), dialog->toValue());
+			SmartPlaylists::createFromType(dialog->type(), -1, dialog->values());
 
 		m->smartPlaylistManager->insertPlaylist(smartPlaylist);
 	}
@@ -121,8 +121,11 @@ void GuiSmartPlaylists::editClicked()
 	const auto status = dialog->exec();
 	if(status == MinMaxIntegerDialog::Accepted)
 	{
-		smartPlaylist->setFrom(dialog->fromValue());
-		smartPlaylist->setTo(dialog->toValue());
+		const auto values = dialog->values();
+		for(int i = 0; i < values.count(); i++)
+		{
+			smartPlaylist->setValue(i, values[i]);
+		}
 
 		m->smartPlaylistManager->updatePlaylist(ui->comboPlaylist->currentIndex(), smartPlaylist);
 	}

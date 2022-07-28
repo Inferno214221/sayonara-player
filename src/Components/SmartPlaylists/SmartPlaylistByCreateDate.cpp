@@ -30,15 +30,18 @@
 
 namespace
 {
-	bool isTrackDateInRange(const uint64_t trackDate, const int from, const int to)
+	bool isTrackDateInRange(const uint64_t trackDate, const int value1, const int value2)
 	{
+		const auto minimumValue = std::min(value1, value2);
+		const auto maximumValue = std::max(value1, value2);
 		const auto convertedTrackDate = static_cast<int>(trackDate / 1'000'000);
-		return (convertedTrackDate >= from) && (convertedTrackDate <= to);
+		
+		return (convertedTrackDate >= minimumValue) && (convertedTrackDate <= maximumValue);
 	}
 }
 
-SmartPlaylistByCreateDate::SmartPlaylistByCreateDate(const int id, const int min, const int max) :
-	SmartPlaylist(id, min, max) {}
+SmartPlaylistByCreateDate::SmartPlaylistByCreateDate(const int id, const int value1, const int value2) :
+	SmartPlaylist(id, {value1, value2}) {}
 
 SmartPlaylistByCreateDate::~SmartPlaylistByCreateDate() = default;
 
@@ -55,7 +58,7 @@ int SmartPlaylistByCreateDate::maximumValue() const
 MetaDataList SmartPlaylistByCreateDate::filterTracks(MetaDataList tracks)
 {
 	tracks.erase(std::remove_if(tracks.begin(), tracks.end(), [&](const auto& track) {
-		return !isTrackDateInRange(track.createdDate(), from(), to());
+		return !isTrackDateInRange(track.createdDate(), value(0), value(1));
 	}), tracks.end());
 
 	return tracks;
@@ -68,8 +71,8 @@ QString SmartPlaylistByCreateDate::displayClassType() const { return Lang::get(L
 QString SmartPlaylistByCreateDate::name() const
 {
 	auto locale = QLocale();
-	const auto minDate = SmartPlaylists::intToDate(from());
-	const auto maxDate = SmartPlaylists::intToDate(to());
+	const auto minDate = SmartPlaylists::intToDate(value(0));
+	const auto maxDate = SmartPlaylists::intToDate(value(1));
 
 	const auto timeSpan = QObject::tr("%1 - %2")
 		.arg(locale.toString(minDate, QLocale::ShortFormat))

@@ -32,6 +32,11 @@ namespace SmartPlaylists
 	enum class Type;
 }
 
+namespace
+{
+	struct Section;
+}
+
 class MinMaxIntegerDialog :
 	public QDialog
 {
@@ -43,15 +48,15 @@ class MinMaxIntegerDialog :
 		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, QWidget* parent);
 		~MinMaxIntegerDialog() override;
 
-		[[nodiscard]] int fromValue() const;
-		[[nodiscard]] int toValue() const;
+		[[nodiscard]] QList<int> values() const;
 
 		[[nodiscard]] SmartPlaylists::Type type() const;
 
 	private:
 		MinMaxIntegerDialog(SmartPlaylists::Type type, QWidget* parent);
-		
+
 		void fillLayout(QWidget* headerWidget);
+		void connectTextFieldChanges(const QList<Section>& sections) const;
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void textChanged(const QString& text);

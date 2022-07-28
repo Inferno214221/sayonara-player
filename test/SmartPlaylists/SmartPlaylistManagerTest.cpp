@@ -93,13 +93,13 @@ class SmartPlaylistManagerTest :
 
 	QVERIFY(manager.smartPlaylist(0)->name() == smartPlaylist1->name());
 	QVERIFY(manager.smartPlaylist(0)->id() >= 0);
-	QVERIFY(manager.smartPlaylist(0)->from() == 2000);
-	QVERIFY(manager.smartPlaylist(0)->to() == 2011);
+	QVERIFY(manager.smartPlaylist(0)->value(0) == 2000);
+	QVERIFY(manager.smartPlaylist(0)->value(1) == 2011);
 
 	QVERIFY(manager.smartPlaylist(1)->name() == smartPlaylist2->name());
 	QVERIFY((manager.smartPlaylist(1)->id() > 0) && (manager.smartPlaylist(1)->id() != manager.smartPlaylist(0)->id()));
-	QVERIFY(manager.smartPlaylist(1)->from() == 1);
-	QVERIFY(manager.smartPlaylist(1)->to() == 4);
+	QVERIFY(manager.smartPlaylist(1)->value(0) == 1);
+	QVERIFY(manager.smartPlaylist(1)->value(1) == 4);
 
 	QVERIFY(manager.smartPlaylists().count() == 2);
 
@@ -115,6 +115,7 @@ class SmartPlaylistManagerTest :
 void SmartPlaylistManagerTest::testEdit()
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
+
 	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2002, 2011);
 
 	manager.insertPlaylist(smartPlaylist);
@@ -124,16 +125,16 @@ void SmartPlaylistManagerTest::testEdit()
 	const auto oldId = manager.smartPlaylist(0)->id();
 
 	auto newSmartPlaylist = manager.smartPlaylist(0);
-	newSmartPlaylist->setFrom(2005);
-	newSmartPlaylist->setTo(2015);
+	newSmartPlaylist->setValue(0, 2005);
+	newSmartPlaylist->setValue(1, 2015);
 
 	manager.updatePlaylist(0, newSmartPlaylist);
 
 	QVERIFY(manager.smartPlaylist(0)->name() != oldName);
 	QVERIFY(manager.smartPlaylist(0)->name() == newSmartPlaylist->name());
 	QVERIFY(manager.smartPlaylist(0)->id() == oldId);
-	QVERIFY(manager.smartPlaylist(0)->from() == 2005);
-	QVERIFY(manager.smartPlaylist(0)->to() == 2015);
+	QVERIFY(manager.smartPlaylist(0)->value(0) == 2005);
+	QVERIFY(manager.smartPlaylist(0)->value(1) == 2015);
 
 	QVERIFY(manager.smartPlaylists().count() == 1);
 

@@ -26,18 +26,21 @@
 #include <QDate>
 
 SmartPlaylistByYear::SmartPlaylistByYear(int id, int from, int to) :
-	SmartPlaylist(id, from, to) {}
+	SmartPlaylist(id, {from, to}) {}
 
 SmartPlaylistByYear::~SmartPlaylistByYear() = default;
 
-int SmartPlaylistByYear::minimumValue() const { return 1500; }
+int SmartPlaylistByYear::minimumValue() const { return 1500; } // NOLINT(readability-magic-numbers)
 
 int SmartPlaylistByYear::maximumValue() const { return QDate::currentDate().year(); }
 
 MetaDataList SmartPlaylistByYear::filterTracks(MetaDataList tracks)
 {
+	const auto minYear = std::min(value(0), value(1));
+	const auto maxYear = std::max(value(0), value(1));
+
 	tracks.erase(std::remove_if(tracks.begin(), tracks.end(), [&](const auto& track) {
-		return (track.year() < from()) || (track.year() > to());
+		return (track.year() <= minYear) || (track.year() >= maxYear);
 	}), tracks.end());
 
 	return tracks;
@@ -49,9 +52,11 @@ QString SmartPlaylistByYear::displayClassType() const { return Lang::get(Lang::Y
 
 QString SmartPlaylistByYear::name() const
 {
-	return (from() == to())
-	       ? QString::number(from())
-	       : QObject::tr("%1 - %2").arg(from()).arg(to());
+	const auto from = std::min(value(0), value(1));
+	const auto to = std::max(value(0), value(1));
+	return (from == to)
+	       ? QString::number(from)
+	       : QObject::tr("%1 - %2").arg(from).arg(to);
 }
 
 SmartPlaylists::Type SmartPlaylistByYear::type() const { return SmartPlaylists::Type::Year; }

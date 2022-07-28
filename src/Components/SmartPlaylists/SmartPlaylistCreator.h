@@ -24,6 +24,7 @@
 #include "SmartPlaylist.h"
 
 #include <QString>
+#include <QList>
 
 class SmartPlaylist;
 struct SmartPlaylistDatabaseEntry;
@@ -31,7 +32,7 @@ struct SmartPlaylistDatabaseEntry;
 namespace SmartPlaylists
 {
 	std::shared_ptr<SmartPlaylist> create(const SmartPlaylistDatabaseEntry& entry);
-	std::shared_ptr<SmartPlaylist> createFromType(SmartPlaylists::Type field, int id, int min, int max);
+	std::shared_ptr<SmartPlaylist> createFromType(SmartPlaylists::Type field, int id, const QList<int>& values);
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTCREATOR_H

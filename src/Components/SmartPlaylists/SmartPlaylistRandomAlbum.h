@@ -28,17 +28,17 @@ class SmartPlaylistRandomAlbum :
 	public:
 		static constexpr const auto ClassType = "random-albums";
 
-		SmartPlaylistRandomAlbum(int id, int count, int ignore);
+		SmartPlaylistRandomAlbum(int id, int count);
 		~SmartPlaylistRandomAlbum() override;
-		
+
 		[[nodiscard]] int minimumValue() const override;
 		[[nodiscard]] int maximumValue() const override;
 		MetaDataList filterTracks(MetaDataList tracks) override;
 		[[nodiscard]] QString classType() const override;
 		[[nodiscard]] QString displayClassType() const override;
 		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString text(int index) const override;
 		[[nodiscard]] SmartPlaylists::Type type() const override;
-		[[nodiscard]] bool isSingleValue() const override;
 		[[nodiscard]] bool canFetchTracks() const override;
 };
 
