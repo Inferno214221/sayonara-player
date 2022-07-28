@@ -23,8 +23,9 @@
 #include "MinMaxIntegerDialog.h"
 
 #include "Components/SmartPlaylists/SmartPlaylist.h"
-#include "Components/SmartPlaylists/SmartPlaylistManager.h"
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
+#include "Components/SmartPlaylists/SmartPlaylistManager.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 
 namespace
@@ -36,6 +37,32 @@ namespace
 		button->showAction(Gui::ContextMenu::EntryNew, true);
 		button->showAction(Gui::ContextMenu::EntryEdit, hasCurrentIndex);
 		button->showAction(Gui::ContextMenu::EntryDelete, hasCurrentIndex);
+	}
+
+	QList<std::shared_ptr<SmartPlaylist>> sortSmartPlaylists(QList<std::shared_ptr<SmartPlaylist>> smartPlaylists)
+	{
+		Util::Algorithm::sort(smartPlaylists, [](const auto& smartPlaylist1, const auto& smartPlaylist2) {
+			const auto type1 = smartPlaylist1->type();
+			const auto type2 = smartPlaylist2->type();
+			if(type1 != type2)
+			{
+				return type1 < type2;
+			}
+
+			for(auto i = 0; i < smartPlaylist1->count(); i++)
+			{
+				const auto value1 = smartPlaylist1->value(i);
+				const auto value2 = smartPlaylist2->value(i);
+				if(value1 != value2)
+				{
+					return value1 < value2;
+				}
+			}
+
+			return smartPlaylist1->id() < smartPlaylist2->id();
+		});
+
+		return smartPlaylists;
 	}
 }
 
@@ -148,7 +175,7 @@ void GuiSmartPlaylists::setupPlaylists()
 	ui->comboPlaylist->blockSignals(true);
 	ui->comboPlaylist->clear();
 
-	const auto smartPlaylists = m->smartPlaylistManager->smartPlaylists();
+	const auto smartPlaylists = sortSmartPlaylists(m->smartPlaylistManager->smartPlaylists());
 	for(const auto& smartPlaylist: smartPlaylists)
 	{
 		ui->comboPlaylist->addItem(smartPlaylist->name(), smartPlaylist->id());
