@@ -281,7 +281,7 @@ void GUI_Player::initConnections()
 	connect(ui->splitter, &QSplitter::splitterMoved, this, &GUI_Player::splitterMainMoved);
 	connect(ui->splitterControls, &QSplitter::splitterMoved, this, &GUI_Player::splitterControlsMoved);
 
-	connect(m->menubar, &Menubar::sigCloseClicked, this, &GUI_Player::reallyClose);
+	connect(m->menubar, &Menubar::sigCloseClicked, this, &GUI_Player::shutdown);
 	connect(m->menubar, &Menubar::sigLoggerClicked, m->logger.get(), &GUI_Logger::show);
 	connect(m->menubar, &Menubar::sigMinimizeClicked, this, &GUI_Player::minimize);
 
@@ -307,7 +307,7 @@ void GUI_Player::initTrayActions()
 {
 	auto* trayIcon = new GUI_TrayIcon(m->playManager, this);
 
-	connect(trayIcon, &GUI_TrayIcon::sigCloseClicked, this, &GUI_Player::reallyClose);
+	connect(trayIcon, &GUI_TrayIcon::sigCloseClicked, this, &GUI_Player::shutdown);
 	connect(trayIcon, &GUI_TrayIcon::sigShowClicked, this, &GUI_Player::raise);
 	connect(trayIcon, &GUI_TrayIcon::sigWheelChanged, m->controls, &GUI_ControlsBase::changeVolumeByDelta);
 	connect(trayIcon, &GUI_TrayIcon::activated, this, &GUI_Player::trayIconActivated);
@@ -586,25 +586,16 @@ void GUI_Player::fullscreenChanged()
 	}
 }
 
-void GUI_Player::reallyClose()
+void GUI_Player::shutdown()
 {
 	spLog(Log::Info, this) << "closing player...";
+
+	setProperty(ShutdownProperty, true);
 
 	m->trayIcon->hide();
 	m->trayIcon->deleteLater();
 
 	emit sigClosed();
-}
-
-void GUI_Player::requestShutdown()
-{
-	setProperty(ShutdownProperty, true);
-}
-
-void GUI_Player::resizeEvent(QResizeEvent* e)
-{
-	Gui::MainWindow::resizeEvent(e);
-	checkControlSplitter();
 }
 
 void GUI_Player::closeEvent(QCloseEvent* e)
@@ -615,9 +606,9 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 	SetSetting(Set::Player_SplitterState, ui->splitter->saveState());
 	SetSetting(Set::Player_SplitterControls, ui->splitterControls->saveState());
 
-	const auto shutdown = property(ShutdownProperty);
+	const auto shutdownProperty = property(ShutdownProperty);
 	const auto isShutdownRequested =
-		shutdown.isValid() && (shutdown.toBool() == true); // NOLINT(readability-simplify-boolean-expr)
+		shutdownProperty.isValid() && (shutdownProperty.toBool() == true); // NOLINT(readability-simplify-boolean-expr)
 	if(GetSetting(Set::Player_Min2Tray) && !isShutdownRequested)
 	{
 		if(GetSetting(Set::Player_514Fix))
@@ -631,8 +622,14 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 
 	else
 	{
-		reallyClose();
+		Gui::MainWindow::close();
 	}
+}
+
+void GUI_Player::resizeEvent(QResizeEvent* e)
+{
+	Gui::MainWindow::resizeEvent(e);
+	checkControlSplitter();
 }
 
 bool GUI_Player::event(QEvent* e)

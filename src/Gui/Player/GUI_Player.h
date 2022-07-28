@@ -65,7 +65,7 @@ class GUI_Player :
 		~GUI_Player() override;
 
 		void registerPreferenceDialog(QAction* dialog_action);
-		void requestShutdown();
+		void shutdown() override;
 
 	protected:
 		void closeEvent(QCloseEvent* e) override;
@@ -93,7 +93,6 @@ class GUI_Player :
 		void currentLibraryChanged();
 
 		void minimize();
-		void reallyClose();
 
 		void trayIconActivated(QSystemTrayIcon::ActivationReason reason);
 

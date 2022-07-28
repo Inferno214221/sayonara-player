@@ -74,6 +74,7 @@ namespace Gui
 			virtual ~MainWindow() override;
 
 			void raise();
+			virtual void shutdown() = 0;
 
 		protected:
 			virtual void showEvent(QShowEvent* e) override;
