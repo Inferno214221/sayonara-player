@@ -84,6 +84,7 @@ namespace
 	{
 		auto* action = menu->action(entry);
 		action->setShortcut(keySequence);
+		action->setShortcutContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
 		parentWidget->addAction(action);
 	}
 
