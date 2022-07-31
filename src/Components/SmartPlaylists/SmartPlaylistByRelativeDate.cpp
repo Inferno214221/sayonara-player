@@ -48,6 +48,11 @@ namespace
 		return ((date >= minDate) && (date <= maxDate)) ||
 		       ((date <= minDate) && (date >= maxDate));
 	}
+
+	QString oldString(const QString& value)
+	{
+		return QObject::tr("%1 old").arg(value);
+	}
 }
 
 SmartPlaylistByRelativeDate::SmartPlaylistByRelativeDate(const int id, const int value1, const int value2,
@@ -81,25 +86,31 @@ QString SmartPlaylistByRelativeDate::name() const
 	const auto from = std::min(value(0), value(1));
 	const auto to = std::max(value(0), value(1));
 	const auto sc = stringConverter();
+	const auto oldFromString = oldString(sc->intToUserString(from));
+	const auto oldToString = oldString(sc->intToUserString(to));
 
 	if(from == to)
 	{
-		return QObject::tr("%1 old").arg(sc->intToUserString(from));
+		return oldFromString;
 	}
 
 	if(from == 0)
 	{
-		return QObject::tr("≤ %1 old").arg(sc->intToUserString(to));
+		return QString("≤ %1")
+			.arg(oldToString);
 	}
 
 	if(to == maximumValue())
 	{
-		return QObject::tr("≥ %1 old").arg(sc->intToUserString(from));
+		return QString("≥ %1")
+			.arg(oldFromString);
 	}
 
-	return QObject::tr("%1 - %2 old")
+	const auto rangeString = QString("%1 - %2")
 		.arg(sc->intToUserString(from))
-		.arg(sc->intToUserString(to));
+		.arg(oldToString);
+
+	return oldString(rangeString);
 }
 
 SmartPlaylists::Type SmartPlaylistByRelativeDate::type() const { return SmartPlaylists::Type::CreatedRelative; }

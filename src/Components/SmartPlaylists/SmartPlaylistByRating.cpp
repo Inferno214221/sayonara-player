@@ -26,6 +26,14 @@
 
 #include <QObject>
 
+namespace
+{
+	QString starsTranslation(const int value)
+	{
+		return QObject::tr("%1 star(s)", "", value);
+	}
+}
+
 SmartPlaylistByRating::SmartPlaylistByRating(const int id, const int ratingFrom, const int ratingTo,
                                              const bool isRandomized) :
 	SmartPlaylist(id, {ratingFrom, ratingTo}, isRandomized) {}
@@ -48,25 +56,27 @@ QString SmartPlaylistByRating::name() const
 {
 	const auto from = std::min(value(0), value(1));
 	const auto to = std::max(value(0), value(1));
-	const auto nStars = QObject::tr("%1 star(s)", "", from);
+	const auto nStarsFrom = starsTranslation(from);
+	const auto nStarsTo = starsTranslation(to);
+
 	if(from == to)
 	{
-		return nStars;
+		return nStarsFrom;
 	}
 
 	if((from < maximumValue()) && (to == maximumValue()))
 	{
-		return QString("≥ %1").arg(from);
+		return QString("≥ %1").arg(nStarsFrom);
 	}
 
 	if(from == minimumValue() && (to > minimumValue()))
 	{
-		return QString("≤ %1").arg(to);
+		return QString("≤ %1").arg(nStarsTo);
 	}
 
-	return QObject::tr("%1 - %2 stars")
+	return QString("%1 - %2")
 		.arg(from)
-		.arg(to);
+		.arg(nStarsTo);
 }
 
 QString SmartPlaylistByRating::classType() const { return SmartPlaylistByRating::ClassType; }

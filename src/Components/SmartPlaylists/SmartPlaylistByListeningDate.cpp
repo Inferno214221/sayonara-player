@@ -114,20 +114,27 @@ QString SmartPlaylistByListeningDate::name() const
 	const auto sc = stringConverter();
 	if(from == to)
 	{
-		return QObject::tr("Last listened: exactly %1").arg(sc->intToUserString(from));
+		return QString("%1: %2")
+			.arg(displayClassType())
+			.arg(QObject::tr("exactly %1").arg(sc->intToUserString(from)));
 	}
 
 	if(from == 0)
 	{
-		return QObject::tr("Last listened: ≤ %1").arg(sc->intToUserString(to));
+		return QString("%1: ≤ %2")
+			.arg(displayClassType())
+			.arg(sc->intToUserString(to));
 	}
 
 	if(to == maximumValue())
 	{
-		return QObject::tr("Last listened: ≥ %1").arg(sc->intToUserString(from));
+		return QString("%1: ≥ %2")
+			.arg(displayClassType())
+			.arg(sc->intToUserString(from));
 	}
 
-	return QObject::tr("Last listened: %1 - %2")
+	return QString("%1: %2 - %3")
+		.arg(displayClassType())
 		.arg(sc->intToUserString(from))
 		.arg(sc->intToUserString(to));
 }
