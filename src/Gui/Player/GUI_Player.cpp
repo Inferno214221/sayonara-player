@@ -622,7 +622,7 @@ void GUI_Player::closeEvent(QCloseEvent* e)
 
 	else
 	{
-		Gui::MainWindow::close();
+		Gui::MainWindow::closeEvent(e);
 	}
 }
 
