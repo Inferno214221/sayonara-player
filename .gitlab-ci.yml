@@ -122,27 +122,12 @@ deploy-snap:
     - web
 
 
-# Languages
-## Create ts file
+## Upload ts to transifex
 package-language:
   stage: packaging
   script:
     - mkdir -p tx
     - /opt/qt/bin/lupdate -no-obsolete -no-sort -locations relative -source-language en -target-language en ./src -ts tx/sayonara_lang_en.ts
-  artifacts:
-    paths:
-      - tx/sayonara_lang_en.ts
-    expire_in: 2 days
-  only:
-    - branches
-    - tags
-
-## Upload ts to transifex
-deploy-language:
-  stage: deploy
-  dependencies:
-    - package-language
-  script:
     - cd tx
     - export TX_TOKEN="$TX_API_KEY"
     - tx init --token="$TX_API_KEY" --force --no-interactive
