@@ -105,7 +105,6 @@ auto LanguagePreferences::getAllLanguages() -> std::pair<QList<LanguagePreferenc
 	const auto playerLanguage = GetSetting(Set::Player_Language);
 	const auto locales = Util::Language::availableLanguages();
 
-	auto englishIndex = -1;
 	auto currentIndex = -1;
 	auto i = 0;
 	for(auto it = locales.begin(); it != locales.end(); it++, i++)
@@ -118,7 +117,10 @@ auto LanguagePreferences::getAllLanguages() -> std::pair<QList<LanguagePreferenc
 		if(languageCode.startsWith("en", Qt::CaseInsensitive))
 		{
 			languageName = "English";
-			englishIndex = i;
+			if(currentIndex == -1)
+			{
+				currentIndex = i;
+			}
 		}
 
 		languageData << LanguageData {
@@ -132,9 +134,6 @@ auto LanguagePreferences::getAllLanguages() -> std::pair<QList<LanguagePreferenc
 			currentIndex = i;
 		}
 	}
-
-	currentIndex = std::max(englishIndex, currentIndex);
-	currentIndex = std::max(0, currentIndex);
 
 	return std::make_pair(languageData, currentIndex);
 }

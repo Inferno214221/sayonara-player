@@ -115,6 +115,7 @@ void GUI_LanguagePreferences::refreshCombobox()
 		return;
 	}
 
+	ui->comboLanguages->blockSignals(true);
 	ui->comboLanguages->clear();
 
 	const auto languageData = LanguagePreferences::getAllLanguages();
@@ -127,6 +128,7 @@ void GUI_LanguagePreferences::refreshCombobox()
 	}
 
 	ui->comboLanguages->setCurrentIndex(languageData.second);
+	ui->comboLanguages->blockSignals(false);
 }
 
 void GUI_LanguagePreferences::initUi()
