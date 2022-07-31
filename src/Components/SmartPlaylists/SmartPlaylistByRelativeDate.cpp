@@ -106,11 +106,9 @@ QString SmartPlaylistByRelativeDate::name() const
 			.arg(oldFromString);
 	}
 
-	const auto rangeString = QString("%1 - %2")
+	return QString("%1 - %2")
 		.arg(sc->intToUserString(from))
 		.arg(oldToString);
-
-	return oldString(rangeString);
 }
 
 SmartPlaylists::Type SmartPlaylistByRelativeDate::type() const { return SmartPlaylists::Type::CreatedRelative; }

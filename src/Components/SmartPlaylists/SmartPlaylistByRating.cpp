@@ -30,7 +30,8 @@ namespace
 {
 	QString starsTranslation(const int value)
 	{
-		return QObject::tr("%1 star(s)", "", value);
+		const auto str = QObject::tr("%1 star(s)", "", value);
+		return str.arg(value);
 	}
 }
 
