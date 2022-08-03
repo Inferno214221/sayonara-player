@@ -29,7 +29,10 @@
 
 #include <QDateTime>
 
-static bool ignoreArticle = false;
+namespace
+{
+	bool ignoreArticle = false;
+}
 
 namespace
 {
@@ -198,9 +201,9 @@ namespace
 	bool TracksByFiletypeDesc(const MetaData& track1, const MetaData& track2)
 	{
 		return compareRev(track2,
-		               track1,
-		               TracksByArtistAsc,
-		               [](const auto& track) { return Util::File::getFileExtension(track.filepath()); });
+		                  track1,
+		                  TracksByArtistAsc,
+		                  [](const auto& track) { return Util::File::getFileExtension(track.filepath()); });
 	}
 
 	bool TracksByRatingAsc(const MetaData& track1, const MetaData& track2)
@@ -230,7 +233,10 @@ namespace
 
 	bool TracksByModifiedDateDesc(const MetaData& track1, const MetaData& track2)
 	{
-		return compareRev(track2, track1, TracksByAddedDateDesc, [](const auto& track) { return track.modifiedDate(); });
+		return compareRev(track2,
+		                  track1,
+		                  TracksByAddedDateDesc,
+		                  [](const auto& track) { return track.modifiedDate(); });
 	}
 
 	/*** Albums ***/

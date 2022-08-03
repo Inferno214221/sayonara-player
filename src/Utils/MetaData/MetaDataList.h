@@ -1,4 +1,4 @@
-	/* MetaDataList.h */
+/* MetaDataList.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -35,69 +35,69 @@
  */
 
 class MetaDataList :
-		public std::deque<MetaData>
+	public std::deque<MetaData>
 {
-	using Parent=std::deque<MetaData>;
+		using Parent = std::deque<MetaData>;
 
-public:
-	MetaDataList();
-	explicit MetaDataList(const MetaData& md);
+	public:
+		MetaDataList();
+		explicit MetaDataList(const MetaData& md);
 
-	MetaDataList(const MetaDataList&);
-	MetaDataList(MetaDataList&& other) noexcept;
+		MetaDataList(const MetaDataList&);
+		MetaDataList(MetaDataList&& other) noexcept;
 
-	MetaDataList& operator=(const MetaDataList& other);
-	MetaDataList& operator=(MetaDataList&& other) noexcept;
+		MetaDataList& operator=(const MetaDataList& other);
+		MetaDataList& operator=(MetaDataList&& other) noexcept;
 
-	~MetaDataList();
+		~MetaDataList();
 
-	bool contains(const MetaData& md) const;
-	MetaDataList& removeTrack(int idx);
-	MetaDataList& removeTracks(const IndexSet& rows);
-	MetaDataList& removeTracks(int first, int last);
-	MetaDataList& removeTracks(std::function<bool (const MetaData&)> attr);
+		bool contains(const MetaData& md) const;
+		MetaDataList& removeTrack(int idx);
+		MetaDataList& removeTracks(const IndexSet& rows);
+		MetaDataList& removeTracks(int first, int last);
+		MetaDataList& removeTracks(std::function<bool(const MetaData&)> attr);
 
-	MetaDataList& moveTracks(const IndexSet& indexes, int tgt_idx) noexcept;
-	MetaDataList& copyTracks(const IndexSet& indexes, int tgt_idx);
-	MetaDataList& insertTrack(const MetaData& md, int tgt_idx);
-	MetaDataList& insertTracks(const MetaDataList& v_md, int tgt_idx);
+		MetaDataList& moveTracks(const IndexSet& indexes, int tgt_idx) noexcept;
+		MetaDataList& copyTracks(const IndexSet& indexes, int tgt_idx);
+		MetaDataList& insertTrack(const MetaData& md, int tgt_idx);
+		MetaDataList& insertTracks(const MetaDataList& v_md, int tgt_idx);
 
-	IdxList findTracks(Id id) const;
-	IdxList findTracks(const QString& filepath) const;
+		IdxList findTracks(Id id) const;
+		IdxList findTracks(const QString& filepath) const;
 
-	QStringList toStringList() const;
+		QStringList toStringList() const;
 
-	MetaDataList& operator <<(const MetaDataList& v_md);
-	MetaDataList& operator <<(const MetaData& md);
-	MetaDataList& operator <<(MetaDataList&& v_md) noexcept;
-	MetaDataList& operator <<(MetaData&& md) noexcept;
+		MetaDataList& operator<<(const MetaDataList& v_md);
+		MetaDataList& operator<<(const MetaData& md);
+		MetaDataList& operator<<(MetaDataList&& v_md) noexcept;
+		MetaDataList& operator<<(MetaData&& md) noexcept;
 
-	const MetaData& operator[](int i) const;
-	MetaData& operator[](int i);
+		const MetaData& operator[](int i) const;
+		MetaData& operator[](int i);
 
-	MetaDataList& append(const MetaDataList& v_md);
-	MetaDataList& append(MetaDataList&& v_md) noexcept;
-	MetaDataList& append(const MetaData& md);
-	MetaDataList& append(MetaData&& md) noexcept;
+		MetaDataList& append(const MetaDataList& v_md);
+		MetaDataList& append(MetaDataList&& v_md) noexcept;
+		MetaDataList& append(const MetaData& md);
+		MetaDataList& append(MetaData&& md) noexcept;
 
-	QList<UniqueId> unique_ids() const;
+		QList<UniqueId> unique_ids() const;
 
-	bool contains(TrackID id) const;
-	QList<TrackID> trackIds() const;
-	void removeDuplicates();
-	MetaData takeAt(int idx);
-	bool isEmpty() const;
-	MetaDataList& appendUnique(const MetaDataList& other);
+		bool contains(TrackID id) const;
+		QList<TrackID> trackIds() const;
+		void removeDuplicates();
+		MetaData takeAt(int idx);
+		bool isEmpty() const;
+		MetaDataList& appendUnique(const MetaDataList& other);
 
-	const MetaData& first() const;
-	const MetaData& last() const;
+		const MetaData& first() const;
+		const MetaData& last() const;
 
-	int count() const;
+		int count() const;
 
-	void sort(Library::SortOrder so);
+		void sort(Library::SortOrder so);
 
-	void reserve(size_t items);
-	size_t capacity() const;
+		void reserve(size_t items);
+		size_t capacity() const;
 };
 
 #endif // METADATALIST_H

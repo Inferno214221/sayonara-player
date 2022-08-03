@@ -15,12 +15,11 @@ void SomaFM::Utils::mapStationToMetadata(const SomaFM::Station& station, MetaDat
 	const QList<Cover::Fetcher::Url> searchUrls = cl.searchUrls();
 
 	QStringList coverUrls;
-	Util::Algorithm::transform(searchUrls, coverUrls, [](auto url)
-	{
+	Util::Algorithm::transform(searchUrls, coverUrls, [](auto url) {
 		return url.url();
 	});
 
-	for(MetaData& md : tracks)
+	for(MetaData& md: tracks)
 	{
 		md.setCoverDownloadUrls(coverUrls);
 		md.addCustomField("cover-hash", "", cl.hash());
@@ -28,11 +27,13 @@ void SomaFM::Utils::mapStationToMetadata(const SomaFM::Station& station, MetaDat
 		const QString filepath = md.filepath();
 		md.setRadioStation(filepath, station.name());
 
-		if(filepath.toLower().contains("mp3")){
+		if(filepath.toLower().contains("mp3"))
+		{
 			md.setTitle(station.name() + " (mp3)");
 		}
 
-		else if(filepath.toLower().contains("aac")){
+		else if(filepath.toLower().contains("aac"))
+		{
 			md.setTitle(station.name() + " (aac)");
 		}
 	}

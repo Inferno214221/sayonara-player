@@ -38,7 +38,7 @@ struct Album::Private
 
 	std::list<HashValue> artistIndexes;
 	HashValue albumArtistIndex;
-	QStringList	pathHint;
+	QStringList pathHint;
 	HashValue albumIdx;
 
 	Private() :
@@ -47,8 +47,7 @@ struct Album::Private
 		songcount(0),
 		year(0),
 		rating(Rating::Zero),
-		isSampler(false)
-    {}
+		isSampler(false) {}
 
 	~Private() = default;
 
@@ -60,60 +59,60 @@ struct Album::Private
 	bool operator==(const Private& other) const
 	{
 		return
-		(
-			CMP(id) &&
-			CMP(durationSec) &&
-			CMP(songcount) &&
-			CMP(year) &&
-			CMP(rating) &&
-			CMP(isSampler) &&
-			CMP(discnumbers) &&
-			CMP(artistIndexes) &&
-			CMP(albumArtistIndex) &&
-			CMP(pathHint) &&
-			CMP(albumIdx)
-		);
+			(
+				CMP(id) &&
+				CMP(durationSec) &&
+				CMP(songcount) &&
+				CMP(year) &&
+				CMP(rating) &&
+				CMP(isSampler) &&
+				CMP(discnumbers) &&
+				CMP(artistIndexes) &&
+				CMP(albumArtistIndex) &&
+				CMP(pathHint) &&
+				CMP(albumIdx)
+			);
 	}
 };
 
 AlbumId Album::id() const
 {
-    return m->id;
+	return m->id;
 }
 
 void Album::setId(const AlbumId& id)
 {
-    m->id = id;
+	m->id = id;
 }
 
 Seconds Album::durationSec() const
 {
-    return m->durationSec;
+	return m->durationSec;
 }
 
 void Album::setDurationSec(const Seconds& sec)
 {
-    m->durationSec = sec;
+	m->durationSec = sec;
 }
 
 TrackNum Album::songcount() const
 {
-    return m->songcount;
+	return m->songcount;
 }
 
 void Album::setSongcount(const TrackNum& songcount)
 {
-    m->songcount = songcount;
+	m->songcount = songcount;
 }
 
 Year Album::year() const
 {
-    return m->year;
+	return m->year;
 }
 
 void Album::setYear(const Year& year)
 {
-    m->year = year;
+	m->year = year;
 }
 
 Disc Album::disccount() const
@@ -125,31 +124,31 @@ Disc Album::disccount() const
 
 Rating Album::rating() const
 {
-    return m->rating;
+	return m->rating;
 }
 
 void Album::setRating(const Rating& rating)
 {
-    m->rating = rating;
+	m->rating = rating;
 }
 
 bool Album::isSampler() const
 {
-    return (m->artistIndexes.size() > 1);
+	return (m->artistIndexes.size() > 1);
 }
 
 QList<Disc> Album::discnumbers() const
 {
-    return m->discnumbers;
+	return m->discnumbers;
 }
 
 void Album::setDiscnumbers(const QList<Disc>& discnumbers)
 {
-    m->discnumbers = discnumbers;
+	m->discnumbers = discnumbers;
 }
 
 Album::Album() :
-    LibraryItem()
+	LibraryItem()
 {
 	m = Pimpl::make<Private>();
 }
@@ -160,7 +159,7 @@ Album::Album(const Album& other) :
 	m = Pimpl::make<Private>(*(other.m));
 }
 
-Album::Album(Album&& other) noexcept  :
+Album::Album(Album&& other) noexcept :
 	LibraryItem(std::move(other))
 {
 	m = Pimpl::make<Private>(std::move(*(other.m)));
@@ -168,7 +167,7 @@ Album::Album(Album&& other) noexcept  :
 
 Album& Album::operator=(const Album& other)
 {
-	LibraryItem::operator =(other);
+	LibraryItem::operator=(other);
 	*m = *(other.m);
 
 	return *this;
@@ -176,7 +175,7 @@ Album& Album::operator=(const Album& other)
 
 Album& Album::operator=(Album&& other) noexcept
 {
-	LibraryItem::operator = (std::move(other));
+	LibraryItem::operator=(std::move(other));
 	*m = std::move(*(other.m));
 
 	return *this;
@@ -210,7 +209,7 @@ QStringList Album::artists() const
 {
 	QStringList lst;
 
-	for(const HashValue& v : m->artistIndexes)
+	for(const HashValue& v: m->artistIndexes)
 	{
 		lst << artistPool().value(v);
 	}
@@ -222,7 +221,7 @@ void Album::setArtists(const QStringList& artists)
 {
 	m->artistIndexes.clear();
 
-	for(const QString& artist : artists)
+	for(const QString& artist: artists)
 	{
 		HashValue hashed = qHash(artist);
 
@@ -270,10 +269,10 @@ QVariant Album::toVariant(const Album& album)
 	return var;
 }
 
-
-bool Album::fromVariant(const QVariant& v, Album& album) {
-	if( !v.canConvert<Album>() ) return false;
-	album =	v.value<Album>();
+bool Album::fromVariant(const QVariant& v, Album& album)
+{
+	if(!v.canConvert<Album>()) { return false; }
+	album = v.value<Album>();
 	return true;
 }
 
@@ -286,11 +285,12 @@ QString Album::toString() const
 	return str;
 }
 
-
 bool AlbumList::contains(AlbumId albumId) const
 {
-	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id() == albumId){
+	for(auto it = this->begin(); it != this->end(); it++)
+	{
+		if(it->id() == albumId)
+		{
 			return true;
 		}
 	}
@@ -303,7 +303,7 @@ int AlbumList::count() const
 	return int(this->size());
 }
 
-AlbumList& AlbumList::operator <<(const Album &album)
+AlbumList& AlbumList::operator<<(const Album& album)
 {
 	this->push_back(album);
 	return *this;
@@ -311,7 +311,8 @@ AlbumList& AlbumList::operator <<(const Album &album)
 
 Album AlbumList::first() const
 {
-	if(this->empty()){
+	if(this->empty())
+	{
 		return Album();
 	}
 
@@ -332,7 +333,8 @@ AlbumList& AlbumList::appendUnique(const AlbumList& other)
 {
 	for(auto it = other.begin(); it != other.end(); it++)
 	{
-		if(!this->contains(it->id())){
+		if(!this->contains(it->id()))
+		{
 			this->push_back(*it);
 		}
 	}

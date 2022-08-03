@@ -29,82 +29,63 @@
 #include <QMetaType>
 #include <deque>
 
-/**
- * @brief The Artist class
- * @ingroup MetaDataHelper
- */
 class Artist :
-		public LibraryItem
+	public LibraryItem
 {
 	PIMPL(Artist)
 
-public:
-	Artist();
-	Artist(const Artist& other);
-	Artist(Artist&& other) noexcept;
+	public:
+		Artist();
+		Artist(const Artist& other);
+		Artist(Artist&& other) noexcept;
 
-	Artist& operator=(const Artist& other);
-	Artist& operator=(Artist&& other) noexcept;
+		Artist& operator=(const Artist& other);
+		Artist& operator=(Artist&& other) noexcept;
 
-	~Artist();
+		~Artist();
 
-	QString name() const;
-	void setName(const QString& name);
+		QString name() const;
+		void setName(const QString& name);
 
-	static bool fromVariant(const QVariant& v, Artist& a);
-	static QVariant toVariant(const Artist& a);
-	void print() const ;
+		static bool fromVariant(const QVariant& v, Artist& a);
+		static QVariant toVariant(const Artist& a);
+		void print() const;
 
-	uint16_t albumcount() const;
-	void setAlbumcount(const uint16_t& value);
+		uint16_t albumcount() const;
+		void setAlbumcount(const uint16_t& value);
 
-	uint16_t songcount() const;
-	void setSongcount(const uint16_t& value);
+		uint16_t songcount() const;
+		void setSongcount(const uint16_t& value);
 
-	ArtistId id() const;
-	void setId(const ArtistId& value);
+		ArtistId id() const;
+		void setId(const ArtistId& value);
 };
-
 
 Q_DECLARE_METATYPE(Artist)
 
-/**
- * @brief ArtistList
- * @ingroup MetaDataHelper
- */
 class ArtistList :
-		public std::deque<Artist>
+	public std::deque<Artist>
 {
-	using Parent=std::deque<Artist>;
+		using Parent = std::deque<Artist>;
 
-public:
-	using Size=Parent::size_type;
+	public:
+		using Size = Parent::size_type;
 
-	ArtistList();
-	~ArtistList();
+		ArtistList();
+		~ArtistList();
 
-	/**
-	 * @brief extract the main artist out of the artist list
-	 * @param artists artist list
-	 * @return the name that appears more than 2/3 of all available artists
-	 */
-	static QString majorArtist(const QStringList& artists);
+		static QString majorArtist(const QStringList& artists);
 
-	/**
-	 * @brief extract the main artist out of the artist list
-	 * @param artists artist list
-	 * @return the name that appears more than 2/3 of all available artists
-	 */
-	QString majorArtist() const;
+		QString majorArtist() const;
 
-	Artist first() const;
-	bool contains(ArtistId artistId) const;
-	int count() const;
+		Artist first() const;
+		bool contains(ArtistId artistId) const;
+		int count() const;
 
-	ArtistList& operator <<(const Artist& artist);
-	ArtistList& appendUnique(const ArtistList& other);
+		ArtistList& operator<<(const Artist& artist);
+		ArtistList& appendUnique(const ArtistList& other);
 
-	void sort(Library::SortOrder so);
+		void sort(Library::SortOrder so);
 };
 
 #endif

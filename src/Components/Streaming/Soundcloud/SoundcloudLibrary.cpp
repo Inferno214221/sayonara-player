@@ -27,12 +27,13 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 
-#include "Utils/globals.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Set.h"
+#include "Utils/globals.h"
 #include "Utils/typedefs.h"
 
 #include <QHash>
@@ -47,7 +48,7 @@ namespace
 	{
 		QMap<QString, Element> result;
 
-		for(const auto& item : container)
+		for(const auto& item: container)
 		{
 			result[item.name()] = item;
 		}
@@ -58,7 +59,7 @@ namespace
 	template<typename Element, typename Inserter>
 	void insertMissingIntoDatabase(const std::deque<Element>& container, QMap<QString, Element>& map, Inserter&& fn)
 	{
-		for(auto item : container)
+		for(auto item: container)
 		{
 			if(!map.contains(item.name()))
 			{
@@ -73,12 +74,12 @@ namespace
 	                                  Library::SortOrder sortOrder)
 	{
 		MetaDataList result;
-		for(const auto id : ids)
+		for(const auto id: ids)
 		{
 			if(indexMap.contains(id))
 			{
 				const auto& indexes = indexMap[id];
-				for(const auto& index : indexes)
+				for(const auto& index: indexes)
 				{
 					if(Util::between(index, trackPool))
 					{
@@ -192,10 +193,10 @@ void SC::Library::getAllArtistsBySearchstring(::Library::Filter filter, ArtistLi
 	}
 
 	const auto filtertexts = filter.filtertext(false);
-	for(const auto& filtertext : filtertexts)
+	for(const auto& filtertext: filtertexts)
 	{
 		const auto artistIds = m->searchInformation.artistIds(filtertext);
-		for(const auto& artistId : artistIds)
+		for(const auto& artistId: artistIds)
 		{
 			const auto index = m->artistIdIndexMap[artistId];
 			auto artist = m->artists[static_cast<size_t>(index)];
@@ -226,7 +227,7 @@ void SC::Library::getAllAlbums(AlbumList& albums) const
 			m->albumNameIndexMap[album.name()].insert(i);
 
 			const auto artists = album.artists();
-			for(const auto& artist : artists)
+			for(const auto& artist: artists)
 			{
 				m->artistNameAlbumIndexMap[artist].insert(i);
 			}
@@ -244,13 +245,13 @@ void SC::Library::getAllAlbums(AlbumList& albums) const
 void
 SC::Library::getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, [[maybe_unused]] ::Library::Filter filter) const
 {
-	for(const auto artistId : artistIds)
+	for(const auto artistId: artistIds)
 	{
 		const auto index = m->artistIdIndexMap[artistId];
 		const auto& artist = m->artists[static_cast<size_t>(index)];
 
 		const auto indexes = m->artistNameAlbumIndexMap[artist.name()];
-		for(const auto& artistIndex : indexes)
+		for(const auto& artistIndex: indexes)
 		{
 			if(Util::between(index, m->albums))
 			{
@@ -275,10 +276,10 @@ void SC::Library::getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList
 	}
 
 	const auto filtertexts = filter.filtertext(false);
-	for(const auto& filtertext : filtertexts)
+	for(const auto& filtertext: filtertexts)
 	{
 		IntSet albumIds = m->searchInformation.albumIds(filtertext);
-		for(const auto& albumId : albumIds)
+		for(const auto& albumId: albumIds)
 		{
 			const auto index = m->albumIdIndexMap[albumId];
 			if(Util::between(index, m->albums) && !albums.contains(m->albums[index].id()))
@@ -350,10 +351,10 @@ void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataL
 	}
 
 	const auto filterTexts = filter.filtertext(false);
-	for(const auto& filterText : filterTexts)
+	for(const auto& filterText: filterTexts)
 	{
 		const auto trackIds = m->searchInformation.trackIds(filterText);
-		for(const auto trackId : trackIds)
+		for(const auto trackId: trackIds)
 		{
 			const auto index = m->trackIdIndexMap[trackId];
 			if(!tracks.contains(m->tracks[index].id()))
@@ -444,7 +445,7 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 	MetaDataList tracksCorrected;
 	tracksCorrected.reserve(tracks.size());
 
-	for(auto track : tracks)
+	for(auto track: tracks)
 	{
 		if(!artistMap.contains(track.artist()))
 		{
@@ -482,7 +483,7 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 
 void SC::Library::artistsFetched(const ArtistList& artists)
 {
-	for(const auto& artist : artists)
+	for(const auto& artist: artists)
 	{
 		spLog(Log::Debug, this) << "Artist " << artist.name() << " fetched";
 		if(artist.id() <= 0)
@@ -507,7 +508,7 @@ void SC::Library::tracksFetched(const MetaDataList& tracks)
 {
 	m->libraryDatabase->db().transaction();
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		spLog(Log::Info, this) << "Try to insert track " << track.title() << " (" << track.id() << ")";
 
@@ -531,7 +532,7 @@ void SC::Library::albumsFetched(const AlbumList& albums)
 {
 	m->libraryDatabase->db().transaction();
 
-	for(const auto& album : albums)
+	for(const auto& album: albums)
 	{
 		spLog(Log::Info, this) << "Try to insert album " << album.name() << " (" << album.id() << ")";
 		if(album.id() >= 0)

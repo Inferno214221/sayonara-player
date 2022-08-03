@@ -23,14 +23,10 @@
 
 namespace Library
 {
-	/**
-	 * @brief The SortOrder enum
-	 * @ingroup Helper
-	 * @ingroup Library
-	 */
-	enum class SortOrder : unsigned char
+	enum class SortOrder :
+		unsigned char
 	{
-		NoSorting=0,
+		NoSorting = 0,
 		ArtistNameAsc,
 		ArtistNameDesc,
 		ArtistTrackcountAsc,

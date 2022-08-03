@@ -32,87 +32,79 @@ class Album;
 
 Q_DECLARE_METATYPE(Album)
 
-/**
- * @brief The Album class
- * @ingroup MetaDataHelper
- */
 class Album :
-		public LibraryItem
+	public LibraryItem
 {
 	PIMPL(Album)
 
-public:
-	Album();
-	Album(const Album& other);
-	Album(Album&& other) noexcept ;
+	public:
+		Album();
+		Album(const Album& other);
+		Album(Album&& other) noexcept;
 
-	Album& operator=(const Album& other);
-	Album& operator=(Album&& other) noexcept;
-	bool operator==(const Album& other) const;
+		Album& operator=(const Album& other);
+		Album& operator=(Album&& other) noexcept;
+		bool operator==(const Album& other) const;
 
-	~Album();
+		~Album();
 
-	AlbumId id() const;
-	void setId(const AlbumId& id);
+		AlbumId id() const;
+		void setId(const AlbumId& id);
 
-	QString name() const;
-	void setName(const QString& name);
+		QString name() const;
+		void setName(const QString& name);
 
-	QStringList artists() const;
-	void setArtists(const QStringList& artists);
+		QStringList artists() const;
+		void setArtists(const QStringList& artists);
 
-	QString albumArtist() const;
-	void setAlbumArtist(const QString& albumArtist);
+		QString albumArtist() const;
+		void setAlbumArtist(const QString& albumArtist);
 
-	QStringList pathHint() const;
-	void setPathHint(const QStringList& paths);
+		QStringList pathHint() const;
+		void setPathHint(const QStringList& paths);
 
-	Seconds durationSec() const;
-	void setDurationSec(const Seconds& sec);
+		Seconds durationSec() const;
+		void setDurationSec(const Seconds& sec);
 
-	TrackNum songcount() const;
-	void setSongcount(const TrackNum& songs);
+		TrackNum songcount() const;
+		void setSongcount(const TrackNum& songs);
 
-	Year year() const;
-	void setYear(const Year& year);
+		Year year() const;
+		void setYear(const Year& year);
 
-	Disc disccount() const;
+		Disc disccount() const;
 
-	Rating rating() const;
-	void setRating(const Rating& rating);
+		Rating rating() const;
+		void setRating(const Rating& rating);
 
-	bool isSampler() const;
+		bool isSampler() const;
 
-	QList<Disc> discnumbers() const;
-	void setDiscnumbers(const QList<Disc>& discnumbers);
+		QList<Disc> discnumbers() const;
+		void setDiscnumbers(const QList<Disc>& discnumbers);
 
-	static QVariant toVariant(const Album& album);
-	static bool fromVariant(const QVariant& v, Album& album);
-	QString toString() const;
+		static QVariant toVariant(const Album& album);
+		static bool fromVariant(const QVariant& v, Album& album);
+		QString toString() const;
 };
 
-
-/**
- * @brief The AlbumList class
- * @ingroup MetaDataHelper
- */
-class AlbumList : public std::deque<Album>
+class AlbumList :
+	public std::deque<Album>
 {
-	using Parent=std::deque<Album>;
+		using Parent = std::deque<Album>;
 
-public:
-	bool contains(AlbumId albumId) const;
+	public:
+		bool contains(AlbumId albumId) const;
 
-	int count() const;
-	AlbumList& operator <<(const Album& album);
-	Album first() const;
-	Album& operator[](int idx);
-	const Album& operator[](int idx) const;
+		int count() const;
+		AlbumList& operator<<(const Album& album);
+		Album first() const;
+		Album& operator[](int idx);
+		const Album& operator[](int idx) const;
 
-	AlbumList& appendUnique(const AlbumList& other);
-	AlbumList& appendUnique(AlbumList&& other) noexcept;
+		AlbumList& appendUnique(const AlbumList& other);
+		AlbumList& appendUnique(AlbumList&& other) noexcept;
 
-	void sort(::Library::SortOrder so);
+		void sort(::Library::SortOrder so);
 };
 
 #endif //HEADER_ALBUM_H_

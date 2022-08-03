@@ -16,37 +16,36 @@ class LibraryDatabaseTest :
 {
 	Q_OBJECT
 
-private:
-	QStringList mAlbumNames;
-	DB::LibraryDatabase* mLibraryDatabase=nullptr;
+	private:
+		QStringList mAlbumNames;
+		DB::LibraryDatabase* mLibraryDatabase = nullptr;
 
-public:
-	LibraryDatabaseTest() :
-		Test::Base("LibraryDatabaseTest")
-	{}
+	public:
+		LibraryDatabaseTest() :
+			Test::Base("LibraryDatabaseTest") {}
 
-	~LibraryDatabaseTest() override = default;
+		~LibraryDatabaseTest() override = default;
 
-private:
-	DB::LibraryDatabase* initDatabase();
+	private:
+		DB::LibraryDatabase* initDatabase();
 
-private slots:
-	void testStore();
+	private slots:
+		void testStore();
 };
 
 static MetaDataList createTracks()
 {
 	MetaDataList tracks;
-	for(int i=0; i<100; i++)
+	for(int i = 0; i < 100; i++)
 	{
 		MetaData md;
 
-		md.setFilepath( QString("/path/to/file%1.mp3").arg(i) );
-		md.setArtist( QString("Artist%1").arg(i / 20) );
-		md.setAlbum( QString("Album%1").arg(i / 10) );
-		md.setTitle( QString("Title%1").arg(i) );
+		md.setFilepath(QString("/path/to/file%1.mp3").arg(i));
+		md.setArtist(QString("Artist%1").arg(i / 20));
+		md.setAlbum(QString("Album%1").arg(i / 10));
+		md.setTitle(QString("Title%1").arg(i));
 		md.setTrackNumber(i % 10);
-		md.setYear( 2000 + i / 20 );
+		md.setYear(2000 + i / 20);
 		md.setBitrate(Util::randomNumber(0, 320000));
 
 		tracks << md;
@@ -67,7 +66,6 @@ static MetaDataList createTracks()
 	return tracks;
 }
 
-#include "Utils/Logger/Logger.h"
 void LibraryDatabaseTest::testStore()
 {
 	const MetaDataList tracks = createTracks();
@@ -152,7 +150,6 @@ void LibraryDatabaseTest::testStore()
 	QVERIFY(albums.count() == 11);
 }
 
-
 DB::LibraryDatabase* LibraryDatabaseTest::initDatabase()
 {
 	if(mLibraryDatabase)
@@ -166,7 +163,6 @@ DB::LibraryDatabase* LibraryDatabaseTest::initDatabase()
 
 	return mLibraryDatabase;
 }
-
 
 QTEST_GUILESS_MAIN(LibraryDatabaseTest)
 

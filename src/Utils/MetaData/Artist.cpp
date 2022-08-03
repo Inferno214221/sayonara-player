@@ -36,8 +36,7 @@ struct Artist::Private
 	Private() :
 		id(-1),
 		albumcount(0),
-		songcount(0)
-	{}
+		songcount(0) {}
 
 	~Private() = default;
 
@@ -45,15 +44,13 @@ struct Artist::Private
 		CASSIGN(artistIndex),
 		CASSIGN(id),
 		CASSIGN(albumcount),
-		CASSIGN(songcount)
-	{}
+		CASSIGN(songcount) {}
 
 	Private(Private&& other) noexcept :
 		CMOVE(artistIndex),
 		CMOVE(id),
 		CMOVE(albumcount),
-		CMOVE(songcount)
-	{}
+		CMOVE(songcount) {}
 
 	Private& operator=(const Private& other)
 	{
@@ -124,24 +121,23 @@ Artist::Artist(Artist&& other) noexcept :
 	m = Pimpl::make<Private>(std::move(*(other.m)));
 }
 
-Artist& Artist::operator =(const Artist& other)
+Artist& Artist::operator=(const Artist& other)
 {
-	LibraryItem::operator =(other);
+	LibraryItem::operator=(other);
 
 	*m = *(other.m);
 
 	return *this;
 }
 
-Artist& Artist::operator =(Artist&& other) noexcept
+Artist& Artist::operator=(Artist&& other) noexcept
 {
-	LibraryItem::operator =( std::move(other) );
+	LibraryItem::operator=(std::move(other));
 
 	*m = std::move(*(other.m));
 
 	return *this;
 }
-
 
 Artist::~Artist() = default;
 
@@ -161,15 +157,16 @@ void Artist::setName(const QString& artist)
 	m->artistIndex = hashed;
 }
 
-QVariant Artist::toVariant(const Artist& artist) {
+QVariant Artist::toVariant(const Artist& artist)
+{
 	QVariant var;
 	var.setValue(artist);
 	return var;
 }
 
-
-bool Artist::fromVariant(const QVariant& v, Artist& artist) {
-	if( !v.canConvert<Artist>() ) return false;
+bool Artist::fromVariant(const QVariant& v, Artist& artist)
+{
+	if(!v.canConvert<Artist>()) { return false; }
 
 	artist = v.value<Artist>();
 	return true;
@@ -180,46 +177,48 @@ void Artist::print() const
 	spLog(Log::Info, this) << id() << ": " << name() << ": " << songcount() << " Songs, " << albumcount() << " Albums";
 }
 
-
 ArtistList::ArtistList() :
-	ArtistList::Parent()
-{}
+	ArtistList::Parent() {}
 
-ArtistList::~ArtistList()
-{}
+ArtistList::~ArtistList() {}
 
 QString ArtistList::majorArtist(const QStringList& artists)
 {
 	QHash<QString, int> map;
 	int n_artists = artists.size();
 
-	if(artists.isEmpty()) {
+	if(artists.isEmpty())
+	{
 		return "";
 	}
 
-	if(n_artists == 1){
+	if(n_artists == 1)
+	{
 		return artists.first().toLower().trimmed();
 	}
 
-	for(const QString& artist : artists)
+	for(const QString& artist: artists)
 	{
 		QString alower = artist.toLower().trimmed();
 
 		// count appearance of artist
-		if( !map.contains(alower) ) {
+		if(!map.contains(alower))
+		{
 			map.insert(alower, 1);
 		}
-		else {
+		else
+		{
 			map[alower] = map.value(alower) + 1;
 		};
 	}
 
 	// n_appearances have to be at least 2/3 of all appearances
 	const QList<QString> keys = map.keys();
-	for(const QString& artist : keys)
+	for(const QString& artist: keys)
 	{
 		int n_appearances = map.value(artist);
-		if(n_appearances * 3 > n_artists * 2) {
+		if(n_appearances * 3 > n_artists * 2)
+		{
 			return artist;
 		}
 	}
@@ -231,7 +230,8 @@ QString ArtistList::majorArtist() const
 {
 	QStringList lst;
 
-	for(auto it=this->begin(); it!=this->end(); it++){
+	for(auto it = this->begin(); it != this->end(); it++)
+	{
 		lst << it->name();
 	}
 
@@ -240,8 +240,10 @@ QString ArtistList::majorArtist() const
 
 bool ArtistList::contains(ArtistId artistId) const
 {
-	for(auto it=this->begin(); it!=this->end(); it++){
-		if(it->id() == artistId){
+	for(auto it = this->begin(); it != this->end(); it++)
+	{
+		if(it->id() == artistId)
+		{
 			return true;
 		}
 	}
@@ -254,7 +256,7 @@ int ArtistList::count() const
 	return int(this->size());
 }
 
-ArtistList& ArtistList::operator <<(const Artist& artist)
+ArtistList& ArtistList::operator<<(const Artist& artist)
 {
 	this->push_back(artist);
 	return *this;
@@ -262,7 +264,8 @@ ArtistList& ArtistList::operator <<(const Artist& artist)
 
 Artist ArtistList::first() const
 {
-	if(this->empty()){
+	if(this->empty())
+	{
 		return Artist();
 	}
 
@@ -281,7 +284,6 @@ ArtistList& ArtistList::appendUnique(const ArtistList& other)
 
 	return *this;
 }
-
 
 void ArtistList::sort(Library::SortOrder so)
 {

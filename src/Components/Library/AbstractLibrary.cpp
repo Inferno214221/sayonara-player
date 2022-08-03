@@ -63,8 +63,7 @@ struct AbstractLibrary::Private
 		playlistInteractor {playlistInteractor},
 		trackCount(0),
 		sortorder(GetSetting(Set::Lib_Sorting)),
-		loaded(false)
-	{}
+		loaded(false) {}
 };
 
 AbstractLibrary::AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
@@ -245,7 +244,7 @@ void AbstractLibrary::albumsChanged()
 	}
 
 	const auto changedAlbums = mdcn->changedAlbums();
-	for(const auto& albumPair : changedAlbums)
+	for(const auto& albumPair: changedAlbums)
 	{
 		const auto& oldAlbum = albumPair.first;
 		const auto& newAlbum = albumPair.second;
@@ -356,7 +355,7 @@ void AbstractLibrary::appendCurrentTracks()
 void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 {
 	Util::Set<ArtistId> selectedArtists;
-	for(auto idx : indexes)
+	for(auto idx: indexes)
 	{
 		const auto& artist = m->artists[static_cast<ArtistList::Size>(idx)];
 		selectedArtists.insert(artist.id());
@@ -502,7 +501,7 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreA
 {
 	Util::Set<AlbumId> selectedAlbums;
 
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		if(index < m->albums.count())
 		{
@@ -575,7 +574,7 @@ void AbstractLibrary::changeTrackSelection(const IndexSet& indexes)
 	m->selectedTracks.clear();
 	m->currentTracks.clear();
 
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		if(index < 0 || index >= tracks().count())
 		{
@@ -763,7 +762,7 @@ void AbstractLibrary::deleteTracksByIndex(const IndexSet& indexes, Library::Trac
 	MetaDataList tracksToDelete;
 	const auto& tracks = this->tracks();
 
-	for(const auto& index : indexes)
+	for(const auto& index: indexes)
 	{
 		tracksToDelete.push_back(tracks[index]);
 	}
@@ -776,7 +775,7 @@ void AbstractLibrary::prepareTracks()
 	m->extensions.clear();
 	m->filteredTracks.clear();
 
-	for(const auto& track : tracks())
+	for(const auto& track: tracks())
 	{
 		m->extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
 	}

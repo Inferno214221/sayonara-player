@@ -36,5 +36,4 @@ namespace MetaDataSorting
 	void setIgnoreArticle(bool b);
 }
 
-
 #endif // METADATASORTING_H
