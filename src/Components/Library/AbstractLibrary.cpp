@@ -357,7 +357,7 @@ void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 	Util::Set<ArtistId> selectedArtists;
 	for(auto idx: indexes)
 	{
-		const auto& artist = m->artists[static_cast<ArtistList::Size>(idx)];
+		const auto& artist = m->artists[static_cast<ArtistList::size_type>(idx)];
 		selectedArtists.insert(artist.id());
 	}
 

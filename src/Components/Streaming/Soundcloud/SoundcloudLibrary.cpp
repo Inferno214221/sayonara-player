@@ -27,6 +27,7 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Covers/CoverLocation.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
@@ -201,7 +202,11 @@ void SC::Library::getAllArtistsBySearchstring(::Library::Filter filter, ArtistLi
 			const auto index = m->artistIdIndexMap[artistId];
 			auto artist = m->artists[static_cast<size_t>(index)];
 
-			if(!artists.contains(artist.id()))
+			const auto contains = Util::Algorithm::contains(artists, [id = artist.id()](const auto& a) {
+				return (a.id() == id);
+			});
+
+			if(!contains)
 			{
 				const auto songCount = static_cast<uint16_t>(m->trackArtistIdIndexMap[artistId].count());
 				artist.setSongcount(songCount);
@@ -282,7 +287,11 @@ void SC::Library::getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList
 		for(const auto& albumId: albumIds)
 		{
 			const auto index = m->albumIdIndexMap[albumId];
-			if(Util::between(index, m->albums) && !albums.contains(m->albums[index].id()))
+			const auto contains = Util::Algorithm::contains(albums, [id = m->albums[index].id()](const auto& album) {
+				return album.id() == id;
+			});
+
+			if(Util::between(index, m->albums) && !contains)
 			{
 				albums << m->albums[index];
 			}

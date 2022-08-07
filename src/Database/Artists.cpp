@@ -141,7 +141,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const
 		return false;
 	}
 
-	artist = artists.first();
+	artist = artists[0];
 	return true;
 }
 
@@ -189,7 +189,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 		.arg(getSearchGroupByStatement(artistIdField(), artistNameField()));
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter : searchFilters)
+	for(const auto& searchFilter: searchFilters)
 	{
 		auto query = Query(module());
 		query.prepare(queryText);
@@ -248,7 +248,7 @@ void Artists::updateArtistCissearch()
 
 	module()->db().transaction();
 
-	for(const auto& artist : artists)
+	for(const auto& artist: artists)
 	{
 		const auto searchString = Library::Utils::convertSearchstring(artist.name());
 

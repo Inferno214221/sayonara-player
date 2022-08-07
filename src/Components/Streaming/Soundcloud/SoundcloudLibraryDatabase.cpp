@@ -31,7 +31,7 @@ namespace
 	{
 		const auto discnumberList = variant.toString().split(',');
 		auto discnumbers = Util::Set<Disc> {};
-		for(const auto& discNumber : discnumberList)
+		for(const auto& discNumber: discnumberList)
 		{
 			discnumbers << static_cast<Disc>(discNumber.toInt());
 		}
@@ -256,8 +256,6 @@ bool SC::LibraryDatabase::dbFetchArtists(Query& query, ArtistList& result) const
 
 		artist.setCoverDownloadUrls({query.value(5).toString()});
 		artist.setSongcount(query.value(7).value<uint16_t>());
-		const auto list = query.value(8).toString().split(',');
-		artist.setAlbumcount(uint16_t(list.size()));
 		artist.setDatabaseId(module()->databaseId());
 
 		result.push_back(std::move(artist));
@@ -445,7 +443,7 @@ bool SC::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 
 	module()->db().transaction();
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		spLog(Log::Debug, this) << "Looking for " << track.artist() << " and " << track.album();
 		if((track.albumId() == -1) || (track.artistId() == -1))

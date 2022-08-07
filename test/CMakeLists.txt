@@ -89,6 +89,7 @@ new_test(Tagging/TagFromPathTest.cpp)
 new_test(Tagging/TaggingTest.cpp Tagging/AbstractTaggingTest.cpp)
 new_test(Tagging/CoverEditTest.cpp Common/TestTracks.cpp)
 
+new_test(Util/AlbumClassTest.cpp)
 new_test(Util/UtilTest.cpp)
 new_test(Util/AsyncWebAccessTest.cpp)
 new_test(Util/CryptTest.cpp)

@@ -8,102 +8,127 @@
 #include <array>
 #include <utility>
 
-class MetaDataTest : public Test::Base
+namespace
+{
+	MetaData createTrack()
+	{
+		auto track = MetaData("/path/to/my/file.mp3");
+		track.setTitle("Title");
+		track.setArtist("Artist");
+		track.setAlbum("Album");
+		track.setDurationMs(100000); // NOLINT(readability-magic-numbers)
+		track.setFilesize(1234567); // NOLINT(readability-magic-numbers)
+		track.setId(5); // NOLINT(readability-magic-numbers)
+		track.setArtistId(6); // NOLINT(readability-magic-numbers)
+		track.setAlbumId(7); // NOLINT(readability-magic-numbers)
+		track.setBitrate(320000); // NOLINT(readability-magic-numbers)
+		track.setTrackNumber(17); // NOLINT(readability-magic-numbers)
+		track.setYear(2014); // NOLINT(readability-magic-numbers)
+		track.setExtern(true);
+		track.setDisabled(true);
+		track.setRating(Rating::Four);
+		track.setDiscnumber(2);
+		track.setDiscCount(5); // NOLINT(readability-magic-numbers)
+		track.setLibraryid(2);
+		track.setDisabled(true);
+
+		track.addGenre(Genre("Metal"));
+		track.addGenre(Genre("Rock"));
+		track.setAlbumArtist("Album artist", 14); // NOLINT(readability-magic-numbers)
+
+		return track;
+	}
+}
+
+class MetaDataTest :
+	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	MetaDataTest() :
-		Test::Base("MetaDataTest")
-	{}
+	public:
+		MetaDataTest() :
+			Test::Base("MetaDataTest") {}
 
-	~MetaDataTest() override = default;
+		~MetaDataTest() override = default;
 
-private slots:
-	void copy_test();
-	void genre_test();
-	void private_test();
-	void stream_test();
-	void move_test();
-	void setRadioStationTest();
+	private slots:
+		[[maybe_unused]] void copyTest();
+		[[maybe_unused]] void genreTest();
+		[[maybe_unused]] void privateTest();
+		[[maybe_unused]] void streamTest();
+		[[maybe_unused]] void moveTest();
+		[[maybe_unused]] void setRadioStationTest();
 };
 
-static MetaData create_md()
+[[maybe_unused]] void MetaDataTest::copyTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaData md("/path/to/my/file.mp3");
-	md.setTitle("Title");
-	md.setArtist("Artist");
-	md.setAlbum("Album");
-	md.setDurationMs(100000);
-	md.setFilesize(1234567);
-	md.setId(5);
-	md.setArtistId(6);
-	md.setAlbumId(7);
-	md.setBitrate(320000);
-	md.setTrackNumber(17);
-	md.setYear(2014);
-	md.setExtern(true);
-	md.setDisabled(true);
-	md.setRating(Rating::Four);
-	md.setDiscnumber(2);
-	md.setDiscCount(5);
-	md.setLibraryid(2);
-	md.setDisabled(true);
+	const auto track = createTrack();
 
-	md.addGenre(Genre("Metal"));
-	md.addGenre(Genre("Rock"));
-	md.setAlbumArtist("Album artist", 14);
+	const auto track2 = track; // NOLINT(performance-unnecessary-copy-initialization)
+	QVERIFY(track2.isEqual(createTrack()));
+	QVERIFY(track2.isEqualDeep(createTrack()));
+	QVERIFY(track2.uniqueId() != track.uniqueId());
 
-	return md;
+	const MetaData track3(track); // NOLINT(performance-unnecessary-copy-initialization)
+	QVERIFY(track3.isEqual(createTrack()));
+	QVERIFY(track3.isEqualDeep(createTrack()));
+	QVERIFY(track3.uniqueId() != track.uniqueId());
 }
 
-void MetaDataTest::copy_test()
+[[maybe_unused]] void MetaDataTest::moveTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaData md = create_md();
-	MetaData md2 = md;
-	{
-		QVERIFY(md2.isEqual(create_md()));
-		QVERIFY(md2.isEqualDeep(create_md()));
-		QVERIFY(md2.uniqueId() != md.uniqueId());
-	}
+	const auto originalTrack = createTrack();
 
-	MetaData md3(md2);
-	{
-		QVERIFY(md3.isEqual(create_md()));
-		QVERIFY(md3.isEqualDeep(create_md()));
-		QVERIFY(md3.uniqueId() != md2.uniqueId());
-	}
+	auto track = originalTrack;
+	auto uniqueId = track.uniqueId();
+
+	MetaData track2(std::move(track));
+	QVERIFY(track2.isEqualDeep(originalTrack));
+	QVERIFY(track2.uniqueId() == uniqueId);
+
+	track = originalTrack;
+	uniqueId = track.uniqueId();
+
+	const auto track3 = std::move(track);
+	QVERIFY(track3.isEqualDeep(originalTrack));
+	QVERIFY(track3.uniqueId() == uniqueId);
+
+	track = track3; // test reassignment
+	QVERIFY(track.isEqualDeep(originalTrack));
+	QVERIFY(track.uniqueId() != uniqueId);
 }
 
-void MetaDataTest::genre_test()
+[[maybe_unused]] void MetaDataTest::genreTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaData md = create_md();
-	QVERIFY( md.hasGenre(Genre("Metal")));
-	QVERIFY( md.hasGenre(Genre("Rock")));
+	const auto track = createTrack();
+	QVERIFY(track.hasGenre(Genre("Metal")));
+	QVERIFY(track.hasGenre(Genre("Rock")));
 }
 
-void MetaDataTest::private_test()
+[[maybe_unused]] void MetaDataTest::privateTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaData md = create_md();
-	QVERIFY( md.albumArtistId() == 14);
-	QVERIFY( md.albumArtist().compare("Album artist") == 0);
+	const auto track = createTrack();
+	QVERIFY(track.albumArtistId() == 14);
+	QVERIFY(track.albumArtist().compare("Album artist") == 0);
 }
 
-struct Result {
-	QString station;
-	QString stationName;
-};
-
-void MetaDataTest::stream_test()
+[[maybe_unused]] void MetaDataTest::streamTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	auto track = create_md();
+	auto track = createTrack();
 	QVERIFY(track.radioMode() == RadioMode::Off);
 
 	track.setFilepath("http://path.to/my/stream");
 	QVERIFY(track.radioMode() == RadioMode::Station);
 }
 
-void MetaDataTest::setRadioStationTest()
+struct Result
+{
+	QString station;
+	QString stationName;
+};
+
+[[maybe_unused]] void
+MetaDataTest::setRadioStationTest() // NOLINT(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 {
 	const auto testCases = std::array {
 		std::tuple {"", "", Result {"", ""}},
@@ -115,8 +140,8 @@ void MetaDataTest::setRadioStationTest()
 
 	for(const auto& testCase: testCases)
 	{
-		const auto&[url, stationName, result] = testCase;
-		const auto&[expectedStation, expectedStationName] = result;
+		const auto& [url, stationName, result] = testCase;
+		const auto& [expectedStation, expectedStationName] = result;
 
 		auto track = MetaData {};
 		track.setRadioStation(url, stationName);
@@ -133,25 +158,6 @@ void MetaDataTest::setRadioStationTest()
 	}
 }
 
-void MetaDataTest::move_test()
-{
-	MetaData md_orig = create_md();
-
-	MetaData md1 = md_orig;
-	UniqueId uid = md1.uniqueId();
-
-	// move md1 to md2
-	MetaData md2(std::move(md1));
-	QVERIFY(md2.isEqualDeep(md_orig));
-	QVERIFY(md2.uniqueId() == uid);
-
-	// move md2 to md3
-	MetaData md3 = std::move(md2);
-	QVERIFY(md3.isEqualDeep(md_orig));
-	QVERIFY(md3.uniqueId() == uid);
-}
-
 QTEST_GUILESS_MAIN(MetaDataTest)
 
 #include "MetaDataTest.moc"
-

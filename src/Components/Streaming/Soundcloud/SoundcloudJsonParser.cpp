@@ -48,9 +48,9 @@ namespace
 	enum class SCJsonItemType :
 		uint8_t
 	{
-			Track = 0,
-			Artist,
-			Playlist
+		Track = 0,
+		Artist,
+		Playlist
 	};
 
 	QString createLink(const QString& name, const QString& target)
@@ -349,7 +349,7 @@ namespace
 
 			auto artistNames = Util::Set<QString> {};
 
-			for(auto& trackArtistPair : trackArtistPairs)
+			for(auto& trackArtistPair: trackArtistPairs)
 			{
 				auto& track = trackArtistPair.first;
 				track.setAlbumArtist(albumArtist.name(), albumArtist.id());
@@ -467,13 +467,17 @@ bool JsonParser::parseTracks(ArtistList& artists, MetaDataList& tracks) const
 	}
 
 	auto trackArtistPairs = parseTrackArray(m->jsonDocument.array());
-	for(auto& trackArtistPair : trackArtistPairs)
+	for(auto& trackArtistPair: trackArtistPairs)
 	{
 		auto& track = trackArtistPair.first;
 		auto& artist = trackArtistPair.second;
 		assert(track.id() > 0);
 
-		if(!artists.contains(artist.id()))
+		const auto contains = Util::Algorithm::contains(artists, [id = artist.id()](const auto& a) {
+			return (a.id() == id);
+		});
+
+		if(!contains)
 		{
 			artists.push_back(std::move(artist));
 		}
@@ -505,17 +509,22 @@ bool JsonParser::parsePlaylists(ArtistList& artists, AlbumList& albums, MetaData
 		}
 	}
 
-	for(auto& albumTracksPair : albumTrackArray)
+	for(auto& albumTracksPair: albumTrackArray)
 	{
 		albums << albumTracksPair.first;
 
-		for(auto& trackArtistPair : albumTracksPair.second)
+		for(auto& trackArtistPair: albumTracksPair.second)
 		{
 			auto& track = trackArtistPair.first;
 			auto& artist = trackArtistPair.second;
 
 			tracks << std::move(track);
-			if(!artists.contains(artist.id()))
+
+			const auto contains = Util::Algorithm::contains(artists, [id = artist.id()](const auto& a) {
+				return (a.id() == id);
+			});
+
+			if(!contains)
 			{
 				artists.push_back(std::move(artist));
 			}

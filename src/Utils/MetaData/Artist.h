@@ -42,22 +42,15 @@ class Artist :
 		Artist& operator=(const Artist& other);
 		Artist& operator=(Artist&& other) noexcept;
 
-		~Artist();
+		~Artist() override;
 
-		QString name() const;
+		[[nodiscard]] QString name() const;
 		void setName(const QString& name);
 
-		static bool fromVariant(const QVariant& v, Artist& a);
-		static QVariant toVariant(const Artist& a);
-		void print() const;
-
-		uint16_t albumcount() const;
-		void setAlbumcount(const uint16_t& value);
-
-		uint16_t songcount() const;
+		[[nodiscard]] uint16_t songcount() const;
 		void setSongcount(const uint16_t& value);
 
-		ArtistId id() const;
+		[[nodiscard]] ArtistId id() const;
 		void setId(const ArtistId& value);
 };
 
@@ -66,24 +59,13 @@ Q_DECLARE_METATYPE(Artist)
 class ArtistList :
 	public std::deque<Artist>
 {
-		using Parent = std::deque<Artist>;
-
 	public:
-		using Size = Parent::size_type;
-
-		ArtistList();
-		~ArtistList();
-
-		static QString majorArtist(const QStringList& artists);
-
-		QString majorArtist() const;
-
-		Artist first() const;
-		bool contains(ArtistId artistId) const;
-		int count() const;
+		[[nodiscard]] int count() const;
 
 		ArtistList& operator<<(const Artist& artist);
 		ArtistList& appendUnique(const ArtistList& other);
+
+		static QString majorArtist(const QStringList& artists);
 };
 
 #endif

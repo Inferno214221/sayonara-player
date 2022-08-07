@@ -23,146 +23,73 @@
 
 #include <QVariant>
 #include <QStringList>
+
+#include <algorithm>
 #include <list>
+#include <unordered_set>
 
 struct Album::Private
 {
-	AlbumId id;
-	Seconds durationSec;
-	TrackNum songcount;
-	Year year;
-	Rating rating;
-	bool isSampler;
+	AlbumId id {-1};
+	Seconds durationSec {0};
+	TrackNum songcount {0};
+	Year year {0};
+	Rating rating {Rating::Zero};
 	QList<Disc> discnumbers;
 
 	std::list<HashValue> artistIndexes;
-	HashValue albumArtistIndex;
+	HashValue albumArtistIndex {0};
 	QStringList pathHint;
-	HashValue albumIdx;
-
-	Private() :
-		id(-1),
-		durationSec(0),
-		songcount(0),
-		year(0),
-		rating(Rating::Zero),
-		isSampler(false) {}
-
-	~Private() = default;
-
-	Private(const Private& other) = default;
-	Private(Private&& other) noexcept = default;
-	Private& operator=(const Private& other) = default;
-	Private& operator=(Private&& other) = default;
-
-	bool operator==(const Private& other) const
-	{
-		return
-			(
-				CMP(id) &&
-				CMP(durationSec) &&
-				CMP(songcount) &&
-				CMP(year) &&
-				CMP(rating) &&
-				CMP(isSampler) &&
-				CMP(discnumbers) &&
-				CMP(artistIndexes) &&
-				CMP(albumArtistIndex) &&
-				CMP(pathHint) &&
-				CMP(albumIdx)
-			);
-	}
+	HashValue albumIdx {0};
 };
 
-AlbumId Album::id() const
-{
-	return m->id;
-}
+AlbumId Album::id() const { return m->id; }
 
-void Album::setId(const AlbumId& id)
-{
-	m->id = id;
-}
+void Album::setId(const AlbumId& id) { m->id = id; }
 
-Seconds Album::durationSec() const
-{
-	return m->durationSec;
-}
+Seconds Album::durationSec() const { return m->durationSec; }
 
-void Album::setDurationSec(const Seconds& sec)
-{
-	m->durationSec = sec;
-}
+void Album::setDurationSec(const Seconds& sec) { m->durationSec = sec; }
 
-TrackNum Album::songcount() const
-{
-	return m->songcount;
-}
+TrackNum Album::songcount() const { return m->songcount; }
 
-void Album::setSongcount(const TrackNum& songcount)
-{
-	m->songcount = songcount;
-}
+void Album::setSongcount(const TrackNum& songcount) { m->songcount = songcount; }
 
-Year Album::year() const
-{
-	return m->year;
-}
+Year Album::year() const { return m->year; }
 
-void Album::setYear(const Year& year)
-{
-	m->year = year;
-}
+void Album::setYear(const Year& year) { m->year = year; }
 
 Disc Album::disccount() const
 {
-	QList<Disc> discs = m->discnumbers;
-	discs.erase(std::unique(discs.begin(), discs.end()));
-	return Disc(discs.count());
+	auto discs = std::unordered_set<Disc> {};
+	for(const auto& disc: m->discnumbers)
+	{
+		discs.insert(disc);
+	}
+
+	return static_cast<Disc>(discs.size());
 }
 
-Rating Album::rating() const
-{
-	return m->rating;
-}
+Rating Album::rating() const { return m->rating; }
 
-void Album::setRating(const Rating& rating)
-{
-	m->rating = rating;
-}
+void Album::setRating(const Rating& rating) { m->rating = rating; }
 
-bool Album::isSampler() const
-{
-	return (m->artistIndexes.size() > 1);
-}
+bool Album::isSampler() const { return (m->artistIndexes.size() > 1); }
 
-QList<Disc> Album::discnumbers() const
-{
-	return m->discnumbers;
-}
+QList<Disc> Album::discnumbers() const { return m->discnumbers; }
 
-void Album::setDiscnumbers(const QList<Disc>& discnumbers)
-{
-	m->discnumbers = discnumbers;
-}
+void Album::setDiscnumbers(const QList<Disc>& discnumbers) { m->discnumbers = discnumbers; }
 
 Album::Album() :
-	LibraryItem()
-{
-	m = Pimpl::make<Private>();
-}
+	m {Pimpl::make<Private>()} {}
 
 Album::Album(const Album& other) :
-	LibraryItem(other)
-{
-	m = Pimpl::make<Private>(*(other.m));
-}
+	LibraryItem(other),
+	m {Pimpl::make<Private>(*(other.m))} {}
 
 Album::Album(Album&& other) noexcept :
-	LibraryItem(std::move(other))
-{
-	m = Pimpl::make<Private>(std::move(*(other.m)));
-}
+	LibraryItem(std::move(other)),
+	m {Pimpl::make<Private>(std::move(*other.m))} {}
 
 Album& Album::operator=(const Album& other)
 {
@@ -175,27 +102,18 @@ Album& Album::operator=(const Album& other)
 Album& Album::operator=(Album&& other) noexcept
 {
 	LibraryItem::operator=(std::move(other));
-	*m = std::move(*(other.m));
+	*m = std::move(*other.m); // NOLINT(bugprone-use-after-move)
 
 	return *this;
 }
 
-bool Album::operator==(const Album& other) const
-{
-	return (*m == *(other.m));
-}
-
 Album::~Album() = default;
 
-QString Album::name() const
-{
-	return albumPool().value(m->albumIdx);
-}
+QString Album::name() const { return albumPool().value(m->albumIdx); }
 
 void Album::setName(const QString& name)
 {
-	HashValue hashed = qHash(name);
-
+	const auto hashed = qHash(name);
 	if(!albumPool().contains(hashed))
 	{
 		albumPool().insert(hashed, name);
@@ -208,9 +126,9 @@ QStringList Album::artists() const
 {
 	QStringList lst;
 
-	for(const HashValue& v: m->artistIndexes)
+	for(const auto& artistIndex: m->artistIndexes)
 	{
-		lst << artistPool().value(v);
+		lst << artistPool().value(artistIndex);
 	}
 
 	return lst;
@@ -220,10 +138,9 @@ void Album::setArtists(const QStringList& artists)
 {
 	m->artistIndexes.clear();
 
-	for(const QString& artist: artists)
+	for(const auto& artist: artists)
 	{
-		HashValue hashed = qHash(artist);
-
+		const auto hashed = qHash(artist);
 		if(!artistPool().contains(hashed))
 		{
 			artistPool().insert(hashed, artist);
@@ -233,15 +150,11 @@ void Album::setArtists(const QStringList& artists)
 	}
 }
 
-QString Album::albumArtist() const
-{
-	return artistPool().value(m->albumArtistIndex);
-}
+QString Album::albumArtist() const { return artistPool().value(m->albumArtistIndex); }
 
 void Album::setAlbumArtist(const QString& albumArtist)
 {
-	HashValue hashed = qHash(albumArtist);
-
+	const auto hashed = qHash(albumArtist);
 	if(!artistPool().contains(hashed))
 	{
 		artistPool().insert(hashed, albumArtist);
@@ -250,10 +163,7 @@ void Album::setAlbumArtist(const QString& albumArtist)
 	m->albumArtistIndex = hashed;
 }
 
-QStringList Album::pathHint() const
-{
-	return m->pathHint;
-}
+QStringList Album::pathHint() const { return m->pathHint; }
 
 void Album::setPathHint(const QStringList& paths)
 {
@@ -261,80 +171,30 @@ void Album::setPathHint(const QStringList& paths)
 	m->pathHint.removeDuplicates();
 }
 
-QVariant Album::toVariant(const Album& album)
-{
-	QVariant var;
-	var.setValue(album);
-	return var;
-}
-
-bool Album::fromVariant(const QVariant& v, Album& album)
-{
-	if(!v.canConvert<Album>()) { return false; }
-	album = v.value<Album>();
-	return true;
-}
-
-QString Album::toString() const
-{
-	QString str("Album: ");
-	str += name() + " by " + artists().join(",");
-	str += QString::number(m->songcount) + " Songs, " + QString::number(m->durationSec) + "sec";
-
-	return str;
-}
-
-bool AlbumList::contains(AlbumId albumId) const
-{
-	for(auto it = this->begin(); it != this->end(); it++)
-	{
-		if(it->id() == albumId)
-		{
-			return true;
-		}
-	}
-
-	return false;
-}
-
-int AlbumList::count() const
-{
-	return int(this->size());
-}
+int AlbumList::count() const { return static_cast<int>(size()); }
 
 AlbumList& AlbumList::operator<<(const Album& album)
 {
-	this->push_back(album);
+	push_back(album);
 	return *this;
 }
 
-Album AlbumList::first() const
-{
-	if(this->empty())
-	{
-		return Album();
-	}
+Album& AlbumList::operator[](const int idx) { return *(this->begin() + idx); }
 
-	return this->at(0);
-}
-
-Album& AlbumList::operator[](int idx)
-{
-	return *(this->begin() + idx);
-}
-
-const Album& AlbumList::operator[](int idx) const
-{
-	return *(this->begin() + idx);
-}
+const Album& AlbumList::operator[](const int idx) const { return *(this->begin() + idx); }
 
 AlbumList& AlbumList::appendUnique(const AlbumList& other)
 {
-	for(auto it = other.begin(); it != other.end(); it++)
+	for(const auto& otherAlbum: other)
 	{
-		if(!this->contains(it->id()))
+		const auto otherId = otherAlbum.id();
+		const auto contains = std::any_of(begin(), end(), [otherId](const auto& album) {
+			return album.id() == otherId;
+		});
+
+		if(!contains)
 		{
-			this->push_back(*it);
+			push_back(otherAlbum);
 		}
 	}
 

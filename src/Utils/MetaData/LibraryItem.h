@@ -24,11 +24,11 @@
 #include "Utils/Pimpl.h"
 #include <QHash>
 
-using HashValue=uint32_t;
-using UniqueId=uint64_t;
+using HashValue = uint32_t;
+using UniqueId = uint64_t;
 
 class CustomField;
-using CustomFieldList=QList<CustomField>;
+using CustomFieldList = QList<CustomField>;
 
 /**
  * @brief The CustomField class
@@ -41,21 +41,20 @@ class CustomField
 {
 	PIMPL(CustomField)
 
-public:
-	CustomField(const QString& id, const QString& displayName, const QString& value);
-	CustomField(const CustomField& other);
-	CustomField(CustomField&& other) noexcept;
+	public:
+		CustomField(const QString& id, const QString& displayName, const QString& value);
+		CustomField(const CustomField& other);
+		CustomField(CustomField&& other) noexcept;
 
-	CustomField& operator=(const CustomField& other);
-	CustomField& operator=(CustomField&& other) noexcept;
+		CustomField& operator=(const CustomField& other);
+		CustomField& operator=(CustomField&& other) noexcept;
 
-	~CustomField();
+		~CustomField();
 
-	QString id() const;
-	QString displayName() const;
-	QString value() const;
+		QString id() const;
+		QString displayName() const;
+		QString value() const;
 };
-
 
 /**
  * @brief The LibraryItem class
@@ -65,37 +64,35 @@ class LibraryItem
 {
 	PIMPL(LibraryItem)
 
-public:
-	LibraryItem();
-	LibraryItem(const LibraryItem& other);
-	LibraryItem(LibraryItem&& other) noexcept;
+	public:
+		LibraryItem();
+		LibraryItem(const LibraryItem& other);
+		LibraryItem(LibraryItem&& other) noexcept;
 
-	LibraryItem& operator=(const LibraryItem& other);
-	LibraryItem& operator=(LibraryItem&& other) noexcept;
+		LibraryItem& operator=(const LibraryItem& other);
+		LibraryItem& operator=(LibraryItem&& other) noexcept;
 
-	virtual ~LibraryItem();
+		virtual ~LibraryItem();
 
-	void addCustomField(const CustomField& field);
-	void addCustomField(const QString& id, const QString& displayName, const QString& value);
-	void replaceCustomField(const QString& id, const QString& displayName, const QString& value);
+		void addCustomField(const CustomField& field);
+		void addCustomField(const QString& id, const QString& displayName, const QString& value);
+		void replaceCustomField(const QString& id, const QString& displayName, const QString& value);
 
-	const CustomFieldList& customFields() const;
-	QString customField(const QString& id) const;
-	QString customField(int idx) const;
+		const CustomFieldList& customFields() const;
+		QString customField(const QString& id) const;
+		QString customField(int idx) const;
 
-	QStringList coverDownloadUrls() const;
-	void setCoverDownloadUrls(const QStringList& url);
+		QStringList coverDownloadUrls() const;
+		void setCoverDownloadUrls(const QStringList& url);
 
-	DbId databaseId() const;
-	void setDatabaseId(DbId id);
+		DbId databaseId() const;
+		void setDatabaseId(DbId id);
 
-	virtual void print() const;
+		UniqueId uniqueId() const;
 
-	UniqueId uniqueId() const;
-
-protected:
-	static QHash<HashValue, QString>& albumPool();
-	static QHash<HashValue, QString>& artistPool();
+	protected:
+		static QHash<HashValue, QString>& albumPool();
+		static QHash<HashValue, QString>& artistPool();
 };
 
 #endif

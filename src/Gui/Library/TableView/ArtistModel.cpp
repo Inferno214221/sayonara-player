@@ -51,7 +51,7 @@ Id ArtistModel::mapIndexToId(int row) const
 {
 	const auto& artists = library()->artists();
 	return Util::between(row, artists)
-	       ? artists[ArtistList::Size(row)].id()
+	       ? artists[static_cast<ArtistList::size_type>(row)].id()
 	       : -1;
 }
 
@@ -59,7 +59,7 @@ QString ArtistModel::searchableString(int row) const
 {
 	const auto& artists = library()->artists();
 	return Util::between(row, artists)
-	       ? artists[ArtistList::Size(row)].name()
+	       ? artists[static_cast<ArtistList::size_type>(row)].name()
 	       : QString();
 }
 
@@ -80,7 +80,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 	const auto col = index.column();
 	auto columnIndex = ColumnIndex::Artist(col);
 
-	const auto& artist = artists[ArtistList::Size(row)];
+	const auto& artist = artists[static_cast<ArtistList::size_type>(row)];
 
 	if(role == Qt::TextAlignmentRole)
 	{
@@ -135,7 +135,7 @@ Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
 	}
 
 	const auto& artists = library()->artists();
-	const auto row = static_cast<ArtistList::Size>(rows.first());
+	const auto row = static_cast<ArtistList::size_type>(rows.first());
 
 	return (Util::between(row, artists))
 	       ? Cover::Location::coverLocation(artists[row])

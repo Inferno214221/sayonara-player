@@ -44,65 +44,57 @@ class Album :
 
 		Album& operator=(const Album& other);
 		Album& operator=(Album&& other) noexcept;
-		bool operator==(const Album& other) const;
+		bool operator==(const Album& other) const = delete;
 
-		~Album();
+		~Album() override;
 
-		AlbumId id() const;
+		[[nodiscard]] AlbumId id() const;
 		void setId(const AlbumId& id);
 
-		QString name() const;
+		[[nodiscard]] QString name() const;
 		void setName(const QString& name);
 
-		QStringList artists() const;
+		[[nodiscard]] QStringList artists() const;
 		void setArtists(const QStringList& artists);
 
-		QString albumArtist() const;
+		[[nodiscard]] QString albumArtist() const;
 		void setAlbumArtist(const QString& albumArtist);
 
-		QStringList pathHint() const;
+		[[nodiscard]] QStringList pathHint() const;
 		void setPathHint(const QStringList& paths);
 
-		Seconds durationSec() const;
+		[[nodiscard]] Seconds durationSec() const;
 		void setDurationSec(const Seconds& sec);
 
-		TrackNum songcount() const;
+		[[nodiscard]] TrackNum songcount() const;
 		void setSongcount(const TrackNum& songs);
 
-		Year year() const;
+		[[nodiscard]] Year year() const;
 		void setYear(const Year& year);
 
-		Disc disccount() const;
+		[[nodiscard]] Disc disccount() const;
 
-		Rating rating() const;
+		[[nodiscard]] Rating rating() const;
 		void setRating(const Rating& rating);
 
-		bool isSampler() const;
+		[[nodiscard]] bool isSampler() const;
 
-		QList<Disc> discnumbers() const;
+		[[nodiscard]] QList<Disc> discnumbers() const;
 		void setDiscnumbers(const QList<Disc>& discnumbers);
-
-		static QVariant toVariant(const Album& album);
-		static bool fromVariant(const QVariant& v, Album& album);
-		QString toString() const;
 };
 
 class AlbumList :
 	public std::deque<Album>
 {
-		using Parent = std::deque<Album>;
-
 	public:
-		bool contains(AlbumId albumId) const;
+		[[nodiscard]] int count() const;
 
-		int count() const;
 		AlbumList& operator<<(const Album& album);
-		Album first() const;
+
 		Album& operator[](int idx);
 		const Album& operator[](int idx) const;
 
 		AlbumList& appendUnique(const AlbumList& other);
-		AlbumList& appendUnique(AlbumList&& other) noexcept;
 };
 
 #endif //HEADER_ALBUM_H_

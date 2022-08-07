@@ -68,12 +68,11 @@ struct GUI_ArtistSearch::Private
 	AlbumList albums;
 	ArtistList searchedArtists;
 	ArtistList chosenArtists;
-	ArtistId currentArtistSoundcloudId{-1};
+	ArtistId currentArtistSoundcloudId {-1};
 
 	Private(SC::Library* library, QWidget* parent) :
-		library{library},
-		fetcher{new SC::DataFetcher(parent)}
-	{}
+		library {library},
+		fetcher {new SC::DataFetcher(parent)} {}
 };
 
 GUI_ArtistSearch::GUI_ArtistSearch(SC::Library* library, QWidget* parent) :
@@ -99,7 +98,7 @@ void GUI_ArtistSearch::initUserInterface()
 	initListWidget(ui->lwArtists);
 	initListWidget(ui->lwPlaylists);
 
-	const auto filterTypes = QList<QEvent::Type>{QEvent::FocusIn, QEvent::FocusOut};
+	const auto filterTypes = QList<QEvent::Type> {QEvent::FocusIn, QEvent::FocusOut};
 	auto* focusFilter = new Gui::GenericFilter(filterTypes, ui->leSearch);
 	ui->leSearch->installEventFilter(focusFilter);
 	connect(focusFilter, &Gui::GenericFilter::sigEvent, this, &GUI_ArtistSearch::lineEditFocusEvent);
@@ -178,7 +177,7 @@ void GUI_ArtistSearch::artistSelected(int index)
 		return;
 	}
 
-	m->currentArtistSoundcloudId = m->searchedArtists[ArtistList::Size(index)].id();
+	m->currentArtistSoundcloudId = m->searchedArtists[static_cast<ArtistList::size_type>(index)].id();
 	m->chosenArtists.clear();
 
 	m->fetcher->getTracksByArtist(m->currentArtistSoundcloudId);
@@ -202,7 +201,7 @@ void GUI_ArtistSearch::artistsFetched(const ArtistList& artists)
 		ui->labArtistCount->setText(tr("Found %n artist(s)", "", artists.count()));
 
 		auto i = 0;
-		for(const auto& artist : artists)
+		for(const auto& artist: artists)
 		{
 			ui->lwArtists->addItem(new QListWidgetItem(standardIcon(), artist.name()));
 
@@ -229,7 +228,7 @@ void GUI_ArtistSearch::albumsFetched(const AlbumList& albums)
 	ui->lwPlaylists->clear();
 
 	auto i = 0;
-	for(const auto& album : albums)
+	for(const auto& album: albums)
 	{
 		if(album.id() > 0)
 		{
@@ -272,7 +271,7 @@ void GUI_ArtistSearch::tracksFetched(const MetaDataList& tracks)
 	m->tracks = tracks;
 	ui->lwTracks->clear();
 
-	for(const auto& track : m->tracks)
+	for(const auto& track: m->tracks)
 	{
 		ui->lwTracks->addItem(track.title());
 	}

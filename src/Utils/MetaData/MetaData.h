@@ -47,123 +47,114 @@ class MetaData :
 {
 	PIMPL(MetaData)
 
-public:
-	MetaData();
-	explicit MetaData (const QString& path);
-	MetaData(const MetaData& other);
-	MetaData(MetaData&& other) noexcept;
-	MetaData& operator=(const MetaData& md);
-	MetaData& operator=(MetaData&& md) noexcept;
+	public:
+		MetaData();
+		explicit MetaData(const QString& path);
+		MetaData(const MetaData& other);
+		MetaData(MetaData&& other) noexcept;
+		MetaData& operator=(const MetaData& md);
+		MetaData& operator=(MetaData&& md) noexcept;
 
-	~MetaData();
+		~MetaData();
 
-	QString title() const;
-	void setTitle(const QString& title);
+		QString title() const;
+		void setTitle(const QString& title);
 
-	QString artist() const;
-	void setArtist(const QString& artist);
-	ArtistId artistId() const;
-	void setArtistId(ArtistId id);
+		QString artist() const;
+		void setArtist(const QString& artist);
+		ArtistId artistId() const;
+		void setArtistId(ArtistId id);
 
-	QString album() const;
-	void setAlbum(const QString& album);
-	AlbumId albumId() const;
-	void setAlbumId(AlbumId id);
+		QString album() const;
+		void setAlbum(const QString& album);
+		AlbumId albumId() const;
+		void setAlbumId(AlbumId id);
 
-	const QString& comment() const;
-	void setComment(const QString& comment);
+		const QString& comment() const;
+		void setComment(const QString& comment);
 
-	QString filepath() const;
-	QString setFilepath(QString filepath, RadioMode mode=RadioMode::Undefined);
+		QString filepath() const;
+		QString setFilepath(const QString& filepath, RadioMode mode = RadioMode::Undefined);
 
-	ArtistId albumArtistId() const;
-	QString albumArtist() const;
-	bool hasAlbumArtist() const;
+		ArtistId albumArtistId() const;
+		QString albumArtist() const;
 
-	void setAlbumArtist(const QString& albumArtist, ArtistId id=-1);
-	void setAlbumArtistId(ArtistId id);
+		void setAlbumArtist(const QString& albumArtist, ArtistId id = -1);
+		void setAlbumArtistId(ArtistId id);
 
-	void setRadioStation(const QString& url, const QString& name=QString());
-	QString radioStation() const;
-	QString radioStationName() const;
+		void setRadioStation(const QString& url, const QString& name = QString());
+		QString radioStation() const;
+		QString radioStationName() const;
 
-	RadioMode radioMode() const;
-	void changeRadioMode(RadioMode mode);
+		RadioMode radioMode() const;
+		void changeRadioMode(RadioMode mode);
 
-	bool isValid() const;
+		bool isValid() const;
 
-	bool operator==(const MetaData& md) const;
-	bool operator!=(const MetaData& md) const;
-	bool isEqual(const MetaData& md) const;
-	bool isEqualDeep(const MetaData& md) const;
+		bool operator==(const MetaData& other) const;
+		bool operator!=(const MetaData& other) const;
+		bool isEqual(const MetaData& other) const;
+		bool isEqualDeep(const MetaData& md) const;
 
-	const Util::Set<GenreID>& genreIds() const;
-	Util::Set<Genre> genres() const;
-	bool hasGenre(const Genre& genre) const;
-	bool removeGenre(const Genre& genre);
-	bool addGenre(const Genre& genre);
-	void setGenres(const Util::Set<Genre>& genres);
-	void setGenres(const QStringList& genres);
+		const Util::Set<GenreID>& genreIds() const;
+		Util::Set<Genre> genres() const;
+		bool hasGenre(const Genre& genre) const;
+		bool removeGenre(const Genre& genre);
+		bool addGenre(const Genre& genre);
+		void setGenres(const Util::Set<Genre>& genres);
+		void setGenres(const QStringList& newGenres);
 
-	void setCreatedDate(uint64_t t);
-	uint64_t createdDate() const;
-	QDateTime createdDateTime() const;
+		void setCreatedDate(uint64_t t);
+		uint64_t createdDate() const;
+		QDateTime createdDateTime() const;
 
-	void setModifiedDate(uint64_t t);
-	uint64_t modifiedDate() const;
-	QDateTime modifiedDateTime() const;
+		void setModifiedDate(uint64_t t);
+		uint64_t modifiedDate() const;
+		QDateTime modifiedDateTime() const;
 
-	QString genresToString() const;
-	QStringList genresToList() const;
+		QString genresToString() const;
+		QStringList genresToList() const;
 
-	QString toString() const;
+		Disc discnumber() const;
+		void setDiscnumber(const Disc& value);
 
-	static QVariant toVariant(const MetaData& md);
-	static bool fromVariant(const QVariant& v, MetaData& md);
+		Disc discCount() const;
+		void setDiscCount(const Disc& value);
 
-	Disc discnumber() const;
-	void setDiscnumber(const Disc& value);
+		Bitrate bitrate() const;
+		void setBitrate(const Bitrate& value);
 
-	Disc discCount() const;
-	void setDiscCount(const Disc& value);
+		TrackNum trackNumber() const;
+		void setTrackNumber(const uint16_t& value);
 
-	Bitrate bitrate() const;
-	void setBitrate(const Bitrate& value);
+		Year year() const;
+		void setYear(const uint16_t& value);
 
-	TrackNum trackNumber() const;
-	void setTrackNumber(const uint16_t& value);
+		Filesize filesize() const;
+		void setFilesize(const Filesize& value);
 
-	Year year() const;
-	void setYear(const uint16_t& value);
+		Rating rating() const;
+		void setRating(const Rating& value);
 
-	Filesize filesize() const;
-	void setFilesize(const Filesize& value);
+		MilliSeconds durationMs() const;
+		void setDurationMs(const MilliSeconds& value);
 
-	Rating rating() const;
-	void setRating(const Rating& value);
+		bool isExtern() const;
+		void setExtern(bool value);
 
-	MilliSeconds durationMs() const;
-	void setDurationMs(const MilliSeconds& value);
+		bool isDisabled() const;
+		void setDisabled(bool value);
 
-	bool isExtern() const;
-	void setExtern(bool value);
+		LibraryId libraryId() const;
+		void setLibraryid(const LibraryId& value);
 
-	bool isDisabled() const;
-	void setDisabled(bool value);
-
-	LibraryId libraryId() const;
-	void setLibraryid(const LibraryId& value);
-
-	TrackID id() const;
-	void setId(const TrackID& value);
-
-private:
-	QHash<GenreID, Genre>& genrePool() const;
+		TrackID id() const;
+		void setId(const TrackID& value);
 };
 
 #ifndef MetaDataDeclared
 Q_DECLARE_METATYPE(MetaData)
-	#define MetaDataDeclared
+#define MetaDataDeclared
 #endif
 
 #endif /* METADATA_H_ */
