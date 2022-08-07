@@ -118,6 +118,7 @@ enum class SettingKey :
 	Lib_ShowAlbumCovers,
 	Lib_ShowFilterExtBar,
 	Lib_SortIgnoreArtistArticle,
+	Lib_SortModeMask,
 	Lib_Sorting,
 	Lib_SplitterStateArtist,
 	Lib_SplitterStateDate,
@@ -324,6 +325,7 @@ namespace Set
 	CreateSetting(Lib_ShowAlbumCovers, bool); // Show album cover view
 	CreateSetting(Lib_ShowFilterExtBar, bool); // Show the file extension filter bar in track view
 	CreateSetting(Lib_SortIgnoreArtistArticle, bool); // ignore article for artist
+	CreateSetting(Lib_SortModeMask, int); // additional attributes applied to sorting
 	CreateSetting(Lib_Sorting, Library::Sortings); // how to sort in lib
 	CreateSetting(Lib_SplitterStateArtist, QByteArray); // Splitter state between artists and albums
 	CreateSetting(Lib_SplitterStateDate, QByteArray); // Splitter state between tracks and genres

@@ -117,6 +117,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_UseViewClearButton>("lib_view_clear_button", false);
 	registerSetting<Set::Lib_ShowFilterExtBar>("lib_show_filter_ext_bar", true);
 	registerSetting<Set::Lib_SortIgnoreArtistArticle>("lib_ignore_artist_article", false);
+	registerSetting<Set::Lib_SortModeMask>("lib_sort_mode_mask", 0);
 	registerSetting<Set::Lib_HeaderAutoResizeArtists>("lib_header_auto_resize_artists", true);
 	registerSetting<Set::Lib_HeaderAutoResizeAlbums>("lib_header_auto_resize_albums", true);
 	registerSetting<Set::Lib_HeaderAutoResizeTracks>("lib_header_auto_resize_tracks", true);

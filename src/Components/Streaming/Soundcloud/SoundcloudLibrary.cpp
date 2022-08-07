@@ -34,6 +34,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/globals.h"
 #include "Utils/typedefs.h"
 
@@ -90,8 +91,7 @@ namespace
 			}
 		}
 
-		/// TODO: use setting here
-		MetaDataSorting::sortMetadata(result, sortOrder);
+		MetaDataSorting::sortMetadata(result, sortOrder, GetSetting(Set::Lib_SortModeMask));
 
 		return result;
 	}
@@ -333,7 +333,7 @@ void SC::Library::getAllTracks(MetaDataList& tracks) const
 		tracks = m->tracks;
 	}
 
-	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, {::Library::CaseInsensitve});
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, GetSetting(Set::Lib_SortModeMask));
 }
 
 void SC::Library::getAllTracksByArtist(IdList artistIds, MetaDataList& tracks,
@@ -374,7 +374,7 @@ void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataL
 		}
 	}
 
-	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, {::Library::CaseInsensitve});
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, GetSetting(Set::Lib_SortModeMask));
 }
 
 void SC::Library::getAllTracksByPath([[maybe_unused]] const QStringList& paths,

@@ -29,10 +29,26 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QItemSelectionModel>
 #include <QShowEvent>
+
+namespace
+{
+	MetaDataSorting::SortModeMask updateSortModeMask(QCheckBox* cb, const MetaDataSorting::SortMode sortMode,
+	                                                 MetaDataSorting::SortModeMask sortModeMask)
+	{
+		if(cb->isChecked())
+		{
+			sortModeMask |= +sortMode;
+		}
+
+		return sortModeMask;
+	}
+
+}
 
 struct GUI_LibraryPreferences::Private
 {
@@ -105,6 +121,15 @@ bool GUI_LibraryPreferences::commit()
 	SetSetting(Set::Lib_UseViewClearButton, ui->cbShowClearSelectionButton->isChecked());
 	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cbIgnoreArticle->isChecked());
 
+	using MetaDataSortMode = MetaDataSorting::SortMode;
+	auto sortModeMask = +MetaDataSorting::SortMode::None;
+	sortModeMask = updateSortModeMask(ui->cbIgnoreArticle, MetaDataSortMode::IgnoreArticle, sortModeMask);
+	sortModeMask = updateSortModeMask(ui->cbIgnoreSpecialChars, MetaDataSortMode::IgnoreSpecialChars, sortModeMask);
+	sortModeMask = updateSortModeMask(ui->cbIgnoreAccents, MetaDataSortMode::IgnoreDiacryticChars, sortModeMask);
+	sortModeMask = updateSortModeMask(ui->cbCaseInsensitive, MetaDataSortMode::CaseInsensitive, sortModeMask);
+
+	SetSetting(Set::Lib_SortModeMask, sortModeMask);
+
 	return m->model->commit();
 }
 
@@ -116,7 +141,19 @@ void GUI_LibraryPreferences::revert()
 	ui->rbDdDoNothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
 	ui->rbDdStartIfStopped->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
 	ui->cbShowClearSelectionButton->setChecked(GetSetting(Set::Lib_UseViewClearButton));
-	ui->cbIgnoreArticle->setChecked(GetSetting(Set::Lib_SortIgnoreArtistArticle));
+
+	using MetaDataSortMode = MetaDataSorting::SortMode;
+
+	const auto sortModeMask = GetSetting(Set::Lib_SortModeMask);
+	const auto ignoreArticle = sortModeMask & +MetaDataSortMode::IgnoreArticle;
+	const auto ignoreAccents = sortModeMask & +MetaDataSortMode::IgnoreDiacryticChars;
+	const auto caseInsensitive = sortModeMask & +MetaDataSortMode::CaseInsensitive;
+	const auto ignoreSpecialChars = sortModeMask & +MetaDataSortMode::IgnoreSpecialChars;
+
+	ui->cbIgnoreArticle->setChecked(ignoreArticle);
+	ui->cbCaseInsensitive->setChecked(caseInsensitive);
+	ui->cbIgnoreAccents->setChecked(ignoreAccents);
+	ui->cbIgnoreSpecialChars->setChecked(ignoreSpecialChars);
 
 	m->model->reset();
 }

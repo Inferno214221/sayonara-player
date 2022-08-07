@@ -86,8 +86,7 @@ AbstractLibrary::~AbstractLibrary() = default;
 
 void AbstractLibrary::load()
 {
-	/// TODO: Listen on new setting
-	// ListenSettingNoCall(Set::Lib_SortIgnoreArtistArticle, AbstractLibrary::ignoreArtistArticleChanged);
+	ListenSettingNoCall(Set::Lib_SortModeMask, AbstractLibrary::refreshCurrentView);
 
 	m->filter.clear();
 
@@ -776,8 +775,7 @@ void AbstractLibrary::prepareTracks()
 		m->extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
 	}
 
-	/// TODO: Use setting here
-	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks);
+	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks, GetSetting(Set::Lib_SortModeMask));
 }
 
 void AbstractLibrary::prepareAlbums()
@@ -788,11 +786,6 @@ void AbstractLibrary::prepareAlbums()
 void AbstractLibrary::prepareArtists()
 {
 	MetaDataSorting::sortArtists(m->artists, m->sortorder.so_artists, GetSetting(Set::Lib_SortModeMask));
-}
-
-void AbstractLibrary::ignoreArtistArticleChanged()
-{
-	refreshCurrentView();
 }
 
 Gui::ExtensionSet AbstractLibrary::extensions() const

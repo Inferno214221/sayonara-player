@@ -26,6 +26,7 @@
 #include "Utils/Crypt.h"
 #include "Utils/Utils.h"
 #include "Utils/Language/LanguageUtils.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 
 #include <array>
 
@@ -33,7 +34,7 @@ struct Settings::Private
 {
 	QString version;
 	std::array<AbstrSetting*, static_cast<int>(SettingKey::Num_Setting_Keys)> settings;
-	bool initialized{false};
+	bool initialized {false};
 
 	Private() // NOLINT
 	{
@@ -42,7 +43,7 @@ struct Settings::Private
 
 	~Private()
 	{
-		for(auto* setting : settings)
+		for(auto* setting: settings)
 		{
 			delete setting;
 		}
@@ -129,8 +130,8 @@ void Settings::applyFixes()
 	{
 		const auto showAlbumCovers = this->get<Set::Lib_ShowAlbumCovers>();
 		const auto coverViewType = (showAlbumCovers)
-			? ::Library::ViewType::CoverView
-			: ::Library::ViewType::Standard;
+		                           ? ::Library::ViewType::CoverView
+		                           : ::Library::ViewType::Standard;
 		this->set<Set::Lib_ViewType>(coverViewType);
 		this->set<Set::Settings_Revision>(3);
 	}
@@ -151,6 +152,18 @@ void Settings::applyFixes()
 		this->set<Set::Cover_TemplatePath>(path);
 
 		this->set<Set::Settings_Revision>(5);
+	}
+
+	if(settingsRevision < 6)
+	{
+		const auto ignoreArticleInSorting = get<Set::Lib_SortIgnoreArtistArticle>();
+		auto sortModeMask = get<Set::Lib_SortModeMask>();
+		if(ignoreArticleInSorting)
+		{
+			sortModeMask |= +MetaDataSorting::SortMode::IgnoreArticle;
+		}
+		set<Set::Lib_SortModeMask>(sortModeMask);
+		set<Set::Settings_Revision>(6);
 	}
 
 	if(get<Set::Player_PrivId>().isEmpty())

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>445</width>
-    <height>381</height>
+    <width>617</width>
+    <height>470</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
@@ -20,7 +20,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>0</number>
+      <number>2</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -201,6 +201,97 @@
        </item>
       </layout>
      </widget>
+     <widget class="QWidget" name="tabSorting">
+      <attribute name="title">
+       <string notr="true">Sorting</string>
+      </attribute>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QCheckBox" name="cbIgnoreArticle">
+         <property name="text">
+          <string>Ignore English article &quot;The&quot; in artist name</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <layout class="QGridLayout" name="gridLayout_4">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="cbCaseInsensitive">
+           <property name="text">
+            <string>Case Insensitive</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="0">
+          <widget class="QCheckBox" name="cbIgnoreSpecialChars">
+           <property name="text">
+            <string>Ignore special characters</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="0">
+          <widget class="QCheckBox" name="cbIgnoreAccents">
+           <property name="text">
+            <string>Ignore accents</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string notr="true">A → a, a → a</string>
+           </property>
+          </widget>
+         </item>
+         <item row="1" column="1">
+          <widget class="QLabel" name="label_3">
+           <property name="toolTip">
+            <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
+           </property>
+           <property name="text">
+            <string notr="true">don't → dont, R&amp;B → RB</string>
+           </property>
+          </widget>
+         </item>
+         <item row="2" column="1">
+          <widget class="QLabel" name="label_4">
+           <property name="toolTip">
+            <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
+           </property>
+           <property name="text">
+            <string notr="true">é → e, ö → o</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
+     </widget>
      <widget class="QWidget" name="tabOther">
       <attribute name="title">
        <string>Other</string>
@@ -213,7 +304,7 @@
          </property>
         </widget>
        </item>
-       <item row="2" column="0">
+       <item row="1" column="0">
         <spacer name="verticalSpacer_5">
          <property name="orientation">
           <enum>Qt::Vertical</enum>
@@ -225,13 +316,6 @@
           </size>
          </property>
         </spacer>
-       </item>
-       <item row="1" column="0">
-        <widget class="QCheckBox" name="cbIgnoreArticle">
-         <property name="text">
-          <string>Ignore English article &quot;The&quot; in artist name</string>
-         </property>
-        </widget>
        </item>
       </layout>
      </widget>
@@ -253,7 +337,6 @@
   <tabstop>rbDdDoNothing</tabstop>
   <tabstop>rbDdStartIfStopped</tabstop>
   <tabstop>cbShowClearSelectionButton</tabstop>
-  <tabstop>cbIgnoreArticle</tabstop>
  </tabstops>
  <resources/>
  <connections/>
