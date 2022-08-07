@@ -22,6 +22,9 @@
 #define METADATASORTING_H
 
 #include "Utils/Library/Sortorder.h"
+#include "Utils/globals.h"
+#include <cstdint>
+#include <type_traits>
 
 class MetaDataList;
 class AlbumList;
@@ -29,11 +32,21 @@ class ArtistList;
 
 namespace MetaDataSorting
 {
-	void sortMetadata(MetaDataList& tracks, Library::SortOrder sortOrder);
-	void sortAlbums(AlbumList& albums, Library::SortOrder sortOrder);
-	void sortArtists(ArtistList& artists, Library::SortOrder sortOrder);
+	enum class SortMode :
+		uint16_t
+	{
+		None = 0,
+		CaseInsensitive = (1 << 0),
+		IgnoreSpecialChars = (1 << 1),
+		IgnoreDiacryticChars = (1 << 2),
+		IgnoreArticle = (1 << 3)
+	};
 
-	void setIgnoreArticle(bool b);
+	using SortModeMask = std::underlying_type_t<SortMode>;
+
+	void sortMetadata(MetaDataList& tracks, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
+	void sortAlbums(AlbumList& albums, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
+	void sortArtists(ArtistList& artists, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
 }
 
 #endif // METADATASORTING_H

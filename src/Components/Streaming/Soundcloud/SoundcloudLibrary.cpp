@@ -90,6 +90,7 @@ namespace
 			}
 		}
 
+		/// TODO: use setting here
 		MetaDataSorting::sortMetadata(result, sortOrder);
 
 		return result;
@@ -332,7 +333,7 @@ void SC::Library::getAllTracks(MetaDataList& tracks) const
 		tracks = m->tracks;
 	}
 
-	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks);
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, {::Library::CaseInsensitve});
 }
 
 void SC::Library::getAllTracksByArtist(IdList artistIds, MetaDataList& tracks,
@@ -373,7 +374,7 @@ void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataL
 		}
 	}
 
-	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks);
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks, {::Library::CaseInsensitve});
 }
 
 void SC::Library::getAllTracksByPath([[maybe_unused]] const QStringList& paths,

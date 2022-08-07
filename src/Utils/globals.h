@@ -24,10 +24,10 @@
 #include <type_traits>
 
 #ifndef CAST_MACROS
-	#define scast(x, y) static_cast<x>(y)
-	#define dcast(x, y) dynamic_cast<x>(y)
-	#define rcast(x, y) reinterpret_cast<x>(y)
-	#define CAST_MACROS
+#define scast(x, y) static_cast<x>(y)
+#define dcast(x, y) dynamic_cast<x>(y)
+#define rcast(x, y) reinterpret_cast<x>(y)
+#define CAST_MACROS
 #endif
 
 #define DARK_BLUE(x) QString("<font color=#0000FF>") + x + QString("</font>")
@@ -40,7 +40,7 @@
 
 // name, target, dark, string
 #define LINK(n, t, d, s) if(d) s=QString("<a href=\"t\">)") + LIGHT_BLUE(n) + QString("</a>"); \
-						 else  s=QString("<a href=\"t\">)") + DARK_BLUE(n) + QString("</a>");
+                         else  s=QString("<a href=\"t\">)") + DARK_BLUE(n) + QString("</a>");
 
 #define SAYONARA_ORANGE_STR QString("#e8841a")
 #define SAYONARA_ORANGE_COL QColor(232, 132, 26)
@@ -49,19 +49,22 @@ namespace Util
 {
 	template<typename TINT, typename T>
 	typename std::enable_if<std::is_pointer<T>::value, bool>::type
-	between( TINT idx, const T& cont){
+	between(TINT idx, const T& cont)
+	{
 		return (idx >= 0 && idx < static_cast<TINT>(cont->size()));
 	}
 
 	template<typename TINT, typename T>
 	typename std::enable_if<std::is_class<T>::value, bool>::type
-	between( TINT idx, const T& cont){
+	between(TINT idx, const T& cont)
+	{
 		return (idx >= 0 && idx < static_cast<TINT>(cont.size()));
 	}
 
 	template<typename TINT>
 	typename std::enable_if<std::is_integral<TINT>::value, bool>::type
-	between( TINT idx, TINT max){
+	between(TINT idx, TINT max)
+	{
 		return (idx >= 0 && idx < max);
 	}
 
@@ -78,7 +81,7 @@ namespace Util
 
 template<typename T>
 typename std::enable_if<std::is_enum<T>::value, typename std::underlying_type<T>::type>::type
-operator+(T enumValue)
+constexpr operator+(T enumValue)
 {
 	return static_cast<typename std::underlying_type<T>::type>(enumValue);
 }

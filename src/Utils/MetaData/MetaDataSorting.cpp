@@ -26,477 +26,578 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Library/SearchMode.h"
 
 #include <QDateTime>
 
-namespace
-{
-	bool ignoreArticle = false;
-}
+using Library::SortOrder;
 
-namespace
+namespace MetaDataSorting
 {
-	template<typename Item, typename Fallback, typename Extractor>
-	bool compare(const Item& item1, const Item& item2, Fallback&& fallback, Extractor&& extractor)
+	namespace
 	{
-		const auto val1 = extractor(item1);
-		const auto val2 = extractor(item2);
-		if(val1 < val2)
+		template<typename Item, typename Fallback, typename Extractor>
+		bool compare(const Item& item1, const Item& item2, const SortModeMask sortMode, Fallback&& fallback,
+		             Extractor&& extractor)
 		{
-			return true;
+			const auto val1 = extractor(item1);
+			const auto val2 = extractor(item2);
+			if(val1 < val2)
+			{
+				return true;
+			}
+
+			if(val1 > val2)
+			{
+				return false;
+			}
+
+			return fallback(item1, item2, sortMode);
 		}
 
-		else if(val1 > val2)
+		template<typename Item, typename Fallback, typename Extractor>
+		bool compareRev(const Item& item1, const Item& item2, const SortModeMask sortMode, Fallback&& fallback,
+		                Extractor&& extractor)
 		{
-			return false;
+			const auto val1 = extractor(item1);
+			const auto val2 = extractor(item2);
+			if(val1 < val2)
+			{
+				return true;
+			}
+
+			if(val1 > val2)
+			{
+				return false;
+			}
+
+			return fallback(item2, item1, sortMode);
 		}
 
-		return fallback(item1, item2);
-	}
-
-	template<typename Item, typename Fallback, typename Extractor>
-	bool compareRev(const Item& item1, const Item& item2, Fallback&& fallback, Extractor&& extractor)
-	{
-		const auto val1 = extractor(item1);
-		const auto val2 = extractor(item2);
-		if(val1 < val2)
+		Library::SearchModeMask sortModeToSearchMode(const SortModeMask sortModeMask)
 		{
-			return true;
+			auto searchModeMask = Library::SearchModeMask {Library::SearchMode::None};
+			if(sortModeMask & +SortMode::CaseInsensitive)
+			{
+				searchModeMask |= +Library::SearchMode::CaseInsensitve;
+			}
+
+			if(sortModeMask & +SortMode::IgnoreDiacryticChars)
+			{
+				searchModeMask |= +Library::SearchMode::NoDiacriticChars;
+			}
+
+			if(sortModeMask & +SortMode::IgnoreSpecialChars)
+			{
+				searchModeMask |= +Library::SearchMode::NoSpecialChars;
+			}
+
+			return searchModeMask;
 		}
 
-		else if(val1 > val2)
+		QString convertString(QString str, const SortModeMask sortMode, const bool mayIgnoreArticle = false)
 		{
-			return false;
+			const auto searchModeMask = sortModeToSearchMode(sortMode);
+			if(mayIgnoreArticle && (sortMode & +SortMode::IgnoreArticle) && str.toLower().startsWith("the "))
+			{
+				str = str.right(str.size() - 4);
+			}
+
+			return Library::Utils::convertSearchstring(str, searchModeMask);
 		}
 
-		// pass the items in reverse order to the fallback
-		return fallback(item2, item1);
+		bool TracksByTitleAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			auto fallback = [&](const auto& t1, const auto& t2, const auto /*sm*/) {
+				return convertString(t1.filepath(), sortMode) < convertString(t2.filepath(), sortMode);
+			};
+
+			return compare(track1, track2, sortMode, std::move(fallback), [&](const auto& track) {
+				return convertString(track.title(), sortMode);
+			});
+		}
+
+		bool TracksByTitleDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			auto fallback = [&](const auto& t1, const auto& t2, const auto /*sm*/) {
+				return convertString(t1.filepath(), sortMode) < convertString(t2.filepath(), sortMode);
+			};
+
+			return compareRev(track2, track1, sortMode, std::move(fallback), [&](const auto& track) {
+				return convertString(track.title(), sortMode);
+			});
+		}
+
+		bool TracksByTrackNumAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByTitleAsc, [](const auto& track) {
+				return track.trackNumber();
+			});
+		}
+
+		bool TracksByTrackNumDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByTitleAsc, [](const auto& track) {
+				return track.trackNumber();
+			});
+		}
+
+		bool TracksByDiscnumberAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByTrackNumAsc, [](const auto& track) {
+				return track.discnumber();
+			});
+		}
+
+		bool TracksByDiscnumberDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByTrackNumAsc, [](const auto& track) {
+				return track.discnumber();
+			});
+		}
+
+		bool TracksByAlbumAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByDiscnumberAsc, [&](const auto& track) {
+				return convertString(track.album(), sortMode);
+			});
+		}
+
+		bool TracksByAlbumDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByAlbumAsc, [&](const auto& track) {
+				return convertString(track.album(), sortMode);
+			});
+		}
+
+		bool TracksByAlbumArtistAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByAlbumAsc, [&](const auto& track) {
+				return convertString(track.albumArtist(), sortMode, true);
+			});
+		}
+
+		bool TracksByAlbumArtistDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByAlbumAsc, [&](const auto& track) {
+				return convertString(track.albumArtist(), sortMode, true);
+			});
+		}
+
+		bool TracksByArtistAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByAlbumAsc, [&](const auto& track) {
+				return convertString(track.artist(), sortMode, true);
+			});
+		}
+
+		bool TracksByArtistDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByAlbumAsc, [&](const auto& track) {
+				return convertString(track.artist(), sortMode, true);
+			});
+		}
+
+		bool TracksByYearAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.year();
+			});
+		}
+
+		bool TracksByYearDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.year();
+			});
+		}
+
+		bool TracksByLengthAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.durationMs();
+			});
+		}
+
+		bool TracksByLengthDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.durationMs();
+			});
+		}
+
+		bool TracksByBitrateAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.bitrate();
+			});
+		}
+
+		bool TracksByBitrateDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.bitrate();
+			});
+		}
+
+		bool TracksByFilesizeAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.filesize();
+			});
+		}
+
+		bool TracksByFilesizeDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.filesize();
+			});
+		}
+
+		bool TracksByFiletypeAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return convertString(Util::File::getFileExtension(track.filepath()), +SortMode::CaseInsensitive);
+			});
+		}
+
+		bool TracksByFiletypeDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return convertString(Util::File::getFileExtension(track.filepath()), +SortMode::CaseInsensitive);
+			});
+		}
+
+		bool TracksByRatingAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.rating();
+			});
+		}
+
+		bool TracksByRatingDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.rating();
+			});
+		}
+
+		bool TracksByAddedDateAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.createdDate();
+			});
+		}
+
+		bool TracksByAddedDateDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByArtistAsc, [](const auto& track) {
+				return track.createdDate();
+			});
+		}
+
+		bool TracksByModifiedDateAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compare(track1, track2, sortMode, TracksByAddedDateAsc, [](const auto& track) {
+				return track.modifiedDate();
+			});
+		}
+
+		bool TracksByModifiedDateDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return compareRev(track2, track1, sortMode, TracksByAddedDateDesc, [](const auto& track) {
+				return track.modifiedDate();
+			});
+		}
+
+		/*** Albums ***/
+		bool AlbumByNameAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			auto fallback = [](const auto& a1, const auto& a2, const auto /*sm*/) {
+				return a1.id() < a2.id();
+			};
+
+			return compare(album1, album2, sortMode, fallback, [&](const auto& album) {
+				return convertString(album.name(), sortMode);
+			});
+		}
+
+		bool AlbumByNameDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			auto fallback = [](const auto& a1, const auto& a2, const auto /*sm*/) {
+				return a1.id() < a2.id();
+			};
+			return compareRev(album2, album1, sortMode, fallback, [&](const auto& album) {
+				return convertString(album.name(), sortMode);
+			});
+		}
+
+		bool AlbumByYearAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.year();
+			});
+		}
+
+		bool AlbumByYearDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.year();
+			});
+		}
+
+		bool AlbumByAlbumArtistAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [&](const auto& album) {
+				return convertString(album.albumArtist(), sortMode, true);
+			});
+		}
+
+		bool AlbumByAlbumArtistDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [&](const auto& album) {
+				return convertString(album.albumArtist(), sortMode, true);
+			});
+		}
+
+		bool AlbumByDurationAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.durationSec();
+			});
+		}
+
+		bool AlbumByDurationDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.durationSec();
+			});
+		}
+
+		bool AlbumBySongcountAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.songcount();
+			});
+		}
+
+		bool AlbumBySongcountDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.songcount();
+			});
+		}
+
+		bool AlbumByRatingAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.rating();
+			});
+		}
+
+		bool AlbumByRatingDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.rating();
+			});
+		}
+
+		/*** Artists ***/
+		bool ArtistByNameAsc(const Artist& artist1, const Artist& artist2, const SortModeMask sortMode)
+		{
+			auto fallback = [](const auto& a1, const auto a2, const auto /*sm*/) {
+				return (a1.id() < a2.id());
+			};
+
+			return compare(artist1, artist2, sortMode, fallback, [&](const auto& artist) {
+				return convertString(artist.name(), sortMode, true);
+			});
+		}
+
+		bool ArtistByNameDesc(const Artist& artist1, const Artist& artist2, const SortModeMask sortMode)
+		{
+			return ArtistByNameAsc(artist2, artist1, sortMode); // NOLINT(readability-suspicious-call-argument)
+		}
+
+		bool ArtistByTrackCountAsc(const Artist& artist1, const Artist& artist2, const SortModeMask sortMode)
+		{
+			return compare(artist1, artist2, sortMode, ArtistByNameAsc, [](const auto& artist) {
+				return artist.songcount();
+			});
+		}
+
+		bool ArtistByTrackCountDesc(const Artist& artist1, const Artist& artist2, const SortModeMask sortMode)
+		{
+			return compareRev(artist2, artist1, sortMode, ArtistByNameDesc, [](const auto& artist) {
+				return artist.songcount();
+			});
+		}
+
+		template<typename Container, typename FN>
+		void sort(Container& container, const SortModeMask sortMode, FN& fn)
+		{
+			Util::Algorithm::sort(container, [&](const auto& c1, const auto& c2) {
+				return fn(c1, c2, sortMode);
+			});
+		}
 	}
 
-	QString checkArticleInTitle(const QString& title)
+	void sortMetadata(MetaDataList& tracks, const Library::SortOrder sortOrder, const SortModeMask sortMode)
 	{
-		return (ignoreArticle && title.startsWith("the ", Qt::CaseInsensitive))
-		       ? title.right(title.size() - 4)
-		       : title;
+		switch(sortOrder)
+		{
+			case SortOrder::TrackNumAsc:
+				sort(tracks, sortMode, TracksByTrackNumAsc);
+				break;
+			case SortOrder::TrackNumDesc:
+				sort(tracks, sortMode, TracksByTrackNumDesc);
+				break;
+			case SortOrder::TrackTitleAsc:
+				sort(tracks, sortMode, TracksByTitleAsc);
+				break;
+			case SortOrder::TrackTitleDesc:
+				sort(tracks, sortMode, TracksByTitleDesc);
+				break;
+			case SortOrder::TrackAlbumAsc:
+				sort(tracks, sortMode, TracksByAlbumAsc);
+				break;
+			case SortOrder::TrackAlbumDesc:
+				sort(tracks, sortMode, TracksByAlbumDesc);
+				break;
+			case SortOrder::TrackArtistAsc:
+				sort(tracks, sortMode, TracksByArtistAsc);
+				break;
+			case SortOrder::TrackArtistDesc:
+				sort(tracks, sortMode, TracksByArtistDesc);
+				break;
+			case SortOrder::TrackAlbumArtistAsc:
+				sort(tracks, sortMode, TracksByAlbumArtistAsc);
+				break;
+			case SortOrder::TrackAlbumArtistDesc:
+				sort(tracks, sortMode, TracksByAlbumArtistDesc);
+				break;
+			case SortOrder::TrackYearAsc:
+				sort(tracks, sortMode, TracksByYearAsc);
+				break;
+			case SortOrder::TrackYearDesc:
+				sort(tracks, sortMode, TracksByYearDesc);
+				break;
+			case SortOrder::TrackLenghtAsc:
+				sort(tracks, sortMode, TracksByLengthAsc);
+				break;
+			case SortOrder::TrackLengthDesc:
+				sort(tracks, sortMode, TracksByLengthDesc);
+				break;
+			case SortOrder::TrackBitrateAsc:
+				sort(tracks, sortMode, TracksByBitrateAsc);
+				break;
+			case SortOrder::TrackBitrateDesc:
+				sort(tracks, sortMode, TracksByBitrateDesc);
+				break;
+			case SortOrder::TrackSizeAsc:
+				sort(tracks, sortMode, TracksByFilesizeAsc);
+				break;
+			case SortOrder::TrackSizeDesc:
+				sort(tracks, sortMode, TracksByFilesizeDesc);
+				break;
+			case SortOrder::TrackDiscnumberAsc:
+				sort(tracks, sortMode, TracksByDiscnumberAsc);
+				break;
+			case SortOrder::TrackDiscnumberDesc:
+				sort(tracks, sortMode, TracksByDiscnumberDesc);
+				break;
+			case SortOrder::TrackFiletypeAsc:
+				sort(tracks, sortMode, TracksByFiletypeAsc);
+				break;
+			case SortOrder::TrackFiletypeDesc:
+				sort(tracks, sortMode, TracksByFiletypeDesc);
+				break;
+			case SortOrder::TrackRatingAsc:
+				sort(tracks, sortMode, TracksByRatingAsc);
+				break;
+			case SortOrder::TrackRatingDesc:
+				sort(tracks, sortMode, TracksByRatingDesc);
+				break;
+			case SortOrder::TrackDateAddedAsc:
+				sort(tracks, sortMode, TracksByAddedDateAsc);
+				break;
+			case SortOrder::TrackDateAddedDesc:
+				sort(tracks, sortMode, TracksByAddedDateDesc);
+				break;
+			case SortOrder::TrackDateModifiedAsc:
+				sort(tracks, sortMode, TracksByModifiedDateAsc);
+				break;
+			case SortOrder::TrackDateModifiedDesc:
+				sort(tracks, sortMode, TracksByModifiedDateDesc);
+				break;
+			default:
+				break;
+		}
 	}
 
-	bool TracksByTitleAsc(const MetaData& track1, const MetaData& track2)
+	void sortAlbums(AlbumList& albums, Library::SortOrder so, const SortModeMask sortMode)
 	{
-		auto fallback = [](const auto& t1, const auto& t2) { return (t1.filepath() < t2.filepath()); };
-		return compare(track1, track2, std::move(fallback), [](const auto& track) { return track.title(); });
+		switch(so)
+		{
+			case SortOrder::ArtistNameAsc:
+				sort(albums, sortMode, AlbumByAlbumArtistAsc);
+				break;
+			case SortOrder::ArtistNameDesc:
+				sort(albums, sortMode, AlbumByAlbumArtistDesc);
+				break;
+			case SortOrder::AlbumNameAsc:
+				sort(albums, sortMode, AlbumByNameAsc);
+				break;
+			case SortOrder::AlbumNameDesc:
+				sort(albums, sortMode, AlbumByNameDesc);
+				break;
+			case SortOrder::AlbumDurationAsc:
+				sort(albums, sortMode, AlbumByDurationAsc);
+				break;
+			case SortOrder::AlbumDurationDesc:
+				sort(albums, sortMode, AlbumByDurationDesc);
+				break;
+			case SortOrder::AlbumRatingAsc:
+				sort(albums, sortMode, AlbumByRatingAsc);
+				break;
+			case SortOrder::AlbumRatingDesc:
+				sort(albums, sortMode, AlbumByRatingDesc);
+				break;
+			case SortOrder::AlbumTracksAsc:
+				sort(albums, sortMode, AlbumBySongcountAsc);
+				break;
+			case SortOrder::AlbumTracksDesc:
+				sort(albums, sortMode, AlbumBySongcountDesc);
+				break;
+			case SortOrder::AlbumYearAsc:
+				sort(albums, sortMode, AlbumByYearAsc);
+				break;
+			case SortOrder::AlbumYearDesc:
+				sort(albums, sortMode, AlbumByYearDesc);
+				break;
+			default:
+				break;
+		}
 	}
 
-	bool TracksByTitleDesc(const MetaData& track1, const MetaData& track2)
+	void sortArtists(ArtistList& artists, Library::SortOrder so, const SortModeMask sortMode)
 	{
-		auto fallback = [](const auto& t1, const auto& t2) { return (t1.filepath() < t2.filepath()); };
-		return compareRev(track2, track1, std::move(fallback), [](const auto& track) { return track.title(); });
+		switch(so)
+		{
+			case SortOrder::ArtistNameAsc:
+				sort(artists, sortMode, ArtistByNameAsc);
+				break;
+			case SortOrder::ArtistNameDesc:
+				sort(artists, sortMode, ArtistByNameDesc);
+				break;
+			case SortOrder::ArtistTrackcountAsc:
+				sort(artists, sortMode, ArtistByTrackCountAsc);
+				break;
+			case SortOrder::ArtistTrackcountDesc:
+				sort(artists, sortMode, ArtistByTrackCountDesc);
+				break;
+			default:
+				break;
+		}
 	}
-
-	bool TracksByTrackNumAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByTitleAsc, [](const auto& track) { return track.trackNumber(); });
-	}
-
-	bool TracksByTrackNumDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByTitleAsc, [](const auto& track) { return track.trackNumber(); });
-	}
-
-	bool TracksByDiscnumberAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByTrackNumAsc, [](const auto& track) { return track.discnumber(); });
-	}
-
-	bool TracksByDiscnumberDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByTrackNumAsc, [](const auto& track) { return track.discnumber(); });
-	}
-
-	bool TracksByAlbumAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByDiscnumberAsc, [](const auto& track) { return track.album(); });
-	}
-
-	bool TracksByAlbumDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByAlbumAsc, [](const auto& track) { return track.album(); });
-	}
-
-	bool TracksByAlbumArtistAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByAlbumAsc, [](const auto& track) {
-			return checkArticleInTitle(track.albumArtist());
-		});
-	}
-
-	bool TracksByAlbumArtistDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByAlbumAsc, [](const auto& track) {
-			return checkArticleInTitle(track.albumArtist());
-		});
-	}
-
-	bool TracksByArtistAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByAlbumAsc, [](const auto& track) {
-			return checkArticleInTitle(track.artist());
-		});
-	}
-
-	bool TracksByArtistDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByAlbumAsc, [](const auto& track) {
-			return checkArticleInTitle(track.artist());
-		});
-	}
-
-	bool TracksByYearAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.year(); });
-	}
-
-	bool TracksByYearDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.year(); });
-	}
-
-	bool TracksByLengthAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.durationMs(); });
-	}
-
-	bool TracksByLengthDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.durationMs(); });
-	}
-
-	bool TracksByBitrateAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.bitrate(); });
-	}
-
-	bool TracksByBitrateDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.bitrate(); });
-	}
-
-	bool TracksByFilesizeAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.filesize(); });
-	}
-
-	bool TracksByFilesizeDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.filesize(); });
-	}
-
-	bool TracksByFiletypeAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1,
-		               track2,
-		               TracksByArtistAsc,
-		               [](const auto& track) { return Util::File::getFileExtension(track.filepath()); });
-	}
-
-	bool TracksByFiletypeDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2,
-		                  track1,
-		                  TracksByArtistAsc,
-		                  [](const auto& track) { return Util::File::getFileExtension(track.filepath()); });
-	}
-
-	bool TracksByRatingAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.rating(); });
-	}
-
-	bool TracksByRatingDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.rating(); });
-	}
-
-	bool TracksByAddedDateAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByArtistAsc, [](const auto& track) { return track.createdDate(); });
-	}
-
-	bool TracksByAddedDateDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2, track1, TracksByArtistAsc, [](const auto& track) { return track.createdDate(); });
-	}
-
-	bool TracksByModifiedDateAsc(const MetaData& track1, const MetaData& track2)
-	{
-		return compare(track1, track2, TracksByAddedDateAsc, [](const auto& track) { return track.modifiedDate(); });
-	}
-
-	bool TracksByModifiedDateDesc(const MetaData& track1, const MetaData& track2)
-	{
-		return compareRev(track2,
-		                  track1,
-		                  TracksByAddedDateDesc,
-		                  [](const auto& track) { return track.modifiedDate(); });
-	}
-
-	/*** Albums ***/
-	bool AlbumByNameAsc(const Album& album1, const Album& album2)
-	{
-		auto fallback = [](const auto& a1, const auto& a2) { return a1.id() < a2.id(); };
-		return compare(album1, album2, fallback, [](const auto& album) { return album.name(); });
-	}
-
-	bool AlbumByNameDesc(const Album& album1, const Album& album2)
-	{
-		auto fallback = [](const auto& a1, const auto& a2) { return a1.id() < a2.id(); };
-		return compareRev(album2, album1, fallback, [](const auto& album) { return album.name(); });
-	}
-
-	bool AlbumByYearAsc(const Album& album1, const Album& album2)
-	{
-		return compare(album1, album2, AlbumByNameAsc, [](const auto& album) { return album.year(); });
-	}
-
-	bool AlbumByYearDesc(const Album& album1, const Album& album2)
-	{
-		return compareRev(album2, album1, AlbumByNameAsc, [](const auto& album) { return album.year(); });
-	}
-
-	bool AlbumByAlbumArtistAsc(const Album& album1, const Album& album2)
-	{
-		return compare(album1, album2, AlbumByNameAsc, [](const auto& album) {
-			return checkArticleInTitle(album.albumArtist());
-		});
-	}
-
-	bool AlbumByAlbumArtistDesc(const Album& album1, const Album& album2)
-	{
-		return compareRev(album2, album1, AlbumByNameAsc, [](const auto& album) {
-			return checkArticleInTitle(album.albumArtist());
-		});
-	}
-
-	bool AlbumByDurationAsc(const Album& album1, const Album& album2)
-	{
-		return compare(album1, album2, AlbumByNameAsc, [](const auto& album) { return album.durationSec(); });
-	}
-
-	bool AlbumByDurationDesc(const Album& album1, const Album& album2)
-	{
-		return compareRev(album2, album1, AlbumByNameAsc, [](const auto& album) { return album.durationSec(); });
-	}
-
-	bool AlbumBySongcountAsc(const Album& album1, const Album& album2)
-	{
-		return compare(album1, album2, AlbumByNameAsc, [](const auto& album) { return album.songcount(); });
-	}
-
-	bool AlbumBySongcountDesc(const Album& album1, const Album& album2)
-	{
-		return compareRev(album2, album1, AlbumByNameAsc, [](const auto& album) { return album.songcount(); });
-	}
-
-	bool AlbumByRatingAsc(const Album& album1, const Album& album2)
-	{
-		return compare(album1, album2, AlbumByNameAsc, [](const auto& album) { return album.rating(); });
-	}
-
-	bool AlbumByRatingDesc(const Album& album1, const Album& album2)
-	{
-		return compareRev(album2, album1, AlbumByNameAsc, [](const auto& album) { return album.rating(); });
-	}
-
-	/*** Artists ***/
-	bool ArtistByNameAsc(const Artist& artist1, const Artist& artist2)
-	{
-		auto fallback = [](const auto& a1, const auto a2) { return (a1.id() < a2.id()); };
-		return compare(artist1, artist2, fallback, [](const auto& artist) {
-			return checkArticleInTitle(artist.name());
-		});
-	}
-
-	bool ArtistByNameDesc(const Artist& artist1, const Artist& artist2)
-	{
-		return ArtistByNameAsc(artist2, artist1);
-	}
-
-	bool ArtistByTrackCountAsc(const Artist& artist1, const Artist& artist2)
-	{
-		return compare(artist1, artist2, ArtistByNameAsc, [](const auto& artist) { return artist.songcount(); });
-	}
-
-	bool ArtistByTrackCountDesc(const Artist& artist1, const Artist& artist2)
-	{
-		return compareRev(artist2, artist1, ArtistByNameDesc, [](const auto& artist) { return artist.songcount(); });
-	}
-}
-
-void MetaDataSorting::sortMetadata(MetaDataList& tracks, Library::SortOrder so)
-{
-	namespace Algorithm = Util::Algorithm;
-	using So = Library::SortOrder;
-	switch(so)
-	{
-		case So::TrackNumAsc:
-			Algorithm::sort(tracks, TracksByTrackNumAsc);
-			break;
-		case So::TrackNumDesc:
-			Algorithm::sort(tracks, TracksByTrackNumDesc);
-			break;
-		case So::TrackTitleAsc:
-			Algorithm::sort(tracks, TracksByTitleAsc);
-			break;
-		case So::TrackTitleDesc:
-			Algorithm::sort(tracks, TracksByTitleDesc);
-			break;
-		case So::TrackAlbumAsc:
-			Algorithm::sort(tracks, TracksByAlbumAsc);
-			break;
-		case So::TrackAlbumDesc:
-			Algorithm::sort(tracks, TracksByAlbumDesc);
-			break;
-		case So::TrackArtistAsc:
-			Algorithm::sort(tracks, TracksByArtistAsc);
-			break;
-		case So::TrackArtistDesc:
-			Algorithm::sort(tracks, TracksByArtistDesc);
-			break;
-		case So::TrackAlbumArtistAsc:
-			Algorithm::sort(tracks, TracksByAlbumArtistAsc);
-			break;
-		case So::TrackAlbumArtistDesc:
-			Algorithm::sort(tracks, TracksByAlbumArtistDesc);
-			break;
-		case So::TrackYearAsc:
-			Algorithm::sort(tracks, TracksByYearAsc);
-			break;
-		case So::TrackYearDesc:
-			Algorithm::sort(tracks, TracksByYearDesc);
-			break;
-		case So::TrackLenghtAsc:
-			Algorithm::sort(tracks, TracksByLengthAsc);
-			break;
-		case So::TrackLengthDesc:
-			Algorithm::sort(tracks, TracksByLengthDesc);
-			break;
-		case So::TrackBitrateAsc:
-			Algorithm::sort(tracks, TracksByBitrateAsc);
-			break;
-		case So::TrackBitrateDesc:
-			Algorithm::sort(tracks, TracksByBitrateDesc);
-			break;
-		case So::TrackSizeAsc:
-			Algorithm::sort(tracks, TracksByFilesizeAsc);
-			break;
-		case So::TrackSizeDesc:
-			Algorithm::sort(tracks, TracksByFilesizeDesc);
-			break;
-		case So::TrackDiscnumberAsc:
-			Algorithm::sort(tracks, TracksByDiscnumberAsc);
-			break;
-		case So::TrackDiscnumberDesc:
-			Algorithm::sort(tracks, TracksByDiscnumberDesc);
-			break;
-		case So::TrackFiletypeAsc:
-			Algorithm::sort(tracks, TracksByFiletypeAsc);
-			break;
-		case So::TrackFiletypeDesc:
-			Algorithm::sort(tracks, TracksByFiletypeDesc);
-			break;
-		case So::TrackRatingAsc:
-			Algorithm::sort(tracks, TracksByRatingAsc);
-			break;
-		case So::TrackRatingDesc:
-			Algorithm::sort(tracks, TracksByRatingDesc);
-			break;
-		case So::TrackDateAddedAsc:
-			Algorithm::sort(tracks, TracksByAddedDateAsc);
-			break;
-		case So::TrackDateAddedDesc:
-			Algorithm::sort(tracks, TracksByAddedDateDesc);
-			break;
-		case So::TrackDateModifiedAsc:
-			Algorithm::sort(tracks, TracksByModifiedDateAsc);
-			break;
-		case So::TrackDateModifiedDesc:
-			Algorithm::sort(tracks, TracksByModifiedDateDesc);
-			break;
-		default:
-			break;
-	}
-}
-
-void MetaDataSorting::sortAlbums(AlbumList& albums, Library::SortOrder so)
-{
-	namespace Algorithm = Util::Algorithm;
-	using So = Library::SortOrder;
-	switch(so)
-	{
-		case So::ArtistNameAsc:
-			Algorithm::sort(albums, AlbumByAlbumArtistAsc);
-			break;
-		case So::ArtistNameDesc:
-			Algorithm::sort(albums, AlbumByAlbumArtistDesc);
-			break;
-		case So::AlbumNameAsc:
-			Algorithm::sort(albums, AlbumByNameAsc);
-			break;
-		case So::AlbumNameDesc:
-			Algorithm::sort(albums, AlbumByNameDesc);
-			break;
-		case So::AlbumDurationAsc:
-			Algorithm::sort(albums, AlbumByDurationAsc);
-			break;
-		case So::AlbumDurationDesc:
-			Algorithm::sort(albums, AlbumByDurationDesc);
-			break;
-		case So::AlbumRatingAsc:
-			Algorithm::sort(albums, AlbumByRatingAsc);
-			break;
-		case So::AlbumRatingDesc:
-			Algorithm::sort(albums, AlbumByRatingDesc);
-			break;
-		case So::AlbumTracksAsc:
-			Algorithm::sort(albums, AlbumBySongcountAsc);
-			break;
-		case So::AlbumTracksDesc:
-			Algorithm::sort(albums, AlbumBySongcountDesc);
-			break;
-		case So::AlbumYearAsc:
-			Algorithm::sort(albums, AlbumByYearAsc);
-			break;
-		case So::AlbumYearDesc:
-			Algorithm::sort(albums, AlbumByYearDesc);
-			break;
-		default:
-			break;
-	}
-}
-
-void MetaDataSorting::sortArtists(ArtistList& artists, Library::SortOrder so)
-{
-	namespace Algorithm = Util::Algorithm;
-	using So = Library::SortOrder;
-	switch(so)
-	{
-		case So::ArtistNameAsc:
-			Algorithm::sort(artists, ArtistByNameAsc);
-			break;
-		case So::ArtistNameDesc:
-			Algorithm::sort(artists, ArtistByNameDesc);
-			break;
-		case So::ArtistTrackcountAsc:
-			Algorithm::sort(artists, ArtistByTrackCountAsc);
-			break;
-		case So::ArtistTrackcountDesc:
-			Algorithm::sort(artists, ArtistByTrackCountDesc);
-			break;
-		default:
-			break;
-	}
-}
-
-void MetaDataSorting::setIgnoreArticle(bool b)
-{
-	ignoreArticle = b;
 }

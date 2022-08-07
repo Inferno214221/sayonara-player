@@ -86,12 +86,8 @@ AbstractLibrary::~AbstractLibrary() = default;
 
 void AbstractLibrary::load()
 {
-	{ // init artist sorting mode
-		ListenSettingNoCall(Set::Lib_SortIgnoreArtistArticle, AbstractLibrary::ignoreArtistArticleChanged);
-
-		const auto b = GetSetting(Set::Lib_SortIgnoreArtistArticle);
-		MetaDataSorting::setIgnoreArticle(b);
-	}
+	/// TODO: Listen on new setting
+	// ListenSettingNoCall(Set::Lib_SortIgnoreArtistArticle, AbstractLibrary::ignoreArtistArticleChanged);
 
 	m->filter.clear();
 
@@ -780,6 +776,7 @@ void AbstractLibrary::prepareTracks()
 		m->extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
 	}
 
+	/// TODO: Use setting here
 	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks);
 }
 
@@ -795,9 +792,6 @@ void AbstractLibrary::prepareArtists()
 
 void AbstractLibrary::ignoreArtistArticleChanged()
 {
-	const auto ignoreArticle = GetSetting(Set::Lib_SortIgnoreArtistArticle);
-	MetaDataSorting::setIgnoreArticle(ignoreArticle);
-
 	refreshCurrentView();
 }
 
