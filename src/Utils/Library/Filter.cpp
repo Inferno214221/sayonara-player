@@ -134,7 +134,7 @@ namespace Library
 
 		for(const auto& filterText: filterTexts)
 		{
-			auto convertedFiltertext = Utils::convertSearchstring(filterText, searchModeMask);
+			auto convertedFiltertext = convertSearchstring(filterText, searchModeMask);
 			if(withPercent)
 			{
 				convertedFiltertext = wrapInPercent(std::move(convertedFiltertext));

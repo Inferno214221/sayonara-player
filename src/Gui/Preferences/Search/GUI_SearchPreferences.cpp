@@ -21,6 +21,7 @@
 #include "GUI_SearchPreferences.h"
 #include "Gui/Preferences/ui_GUI_SearchPreferences.h"
 
+#include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/Settings/Settings.h"
@@ -48,17 +49,17 @@ bool GUI_SearchPreferences::commit()
 
 	if(ui->cbCaseInsensitive->isChecked())
 	{
-		searchModeMask |= Library::CaseInsensitve;
+		searchModeMask |= +Library::SearchMode::CaseInsensitve;
 	}
 
 	if(ui->cbNoSpecialChars->isChecked())
 	{
-		searchModeMask |= Library::NoSpecialChars;
+		searchModeMask |= +Library::SearchMode::NoSpecialChars;
 	}
 
 	if(ui->cbNoAccents->isChecked())
 	{
-		searchModeMask |= Library::NoDiacriticChars;
+		searchModeMask |= +Library::SearchMode::NoDiacriticChars;
 	}
 
 	SetSetting(Set::Lib_SearchMode, searchModeMask);
@@ -71,9 +72,9 @@ void GUI_SearchPreferences::revert()
 {
 	const auto searchModeMask = GetSetting(Set::Lib_SearchMode);
 
-	ui->cbCaseInsensitive->setChecked(searchModeMask & Library::CaseInsensitve);
-	ui->cbNoSpecialChars->setChecked(searchModeMask & Library::NoSpecialChars);
-	ui->cbNoAccents->setChecked(searchModeMask & Library::NoDiacriticChars);
+	ui->cbCaseInsensitive->setChecked(searchModeMask & +Library::SearchMode::CaseInsensitve);
+	ui->cbNoSpecialChars->setChecked(searchModeMask & +Library::SearchMode::NoSpecialChars);
+	ui->cbNoAccents->setChecked(searchModeMask & +Library::SearchMode::NoDiacriticChars);
 	ui->sbSearchStringLength->setValue(GetSetting(Set::Lib_SearchStringLength));
 }
 

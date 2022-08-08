@@ -147,7 +147,7 @@ namespace
 				break;
 		}
 
-		return Library::Utils::convertSearchstring(str, searchMode);
+		return Library::convertSearchstring(str, searchMode);
 	}
 
 	int extractRowFromSearchstring(const QString& searchString, int maxRow)

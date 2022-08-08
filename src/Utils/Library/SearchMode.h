@@ -21,6 +21,8 @@
 #ifndef LIBRARYSEARCHMODE_H
 #define LIBRARYSEARCHMODE_H
 
+#include <type_traits>
+
 template<typename T>
 class QList;
 class QChar;
@@ -28,12 +30,8 @@ class QString;
 
 namespace Library
 {
-	/**
-	 * @brief The SearchMode enum
-	 * @ingroup Library
-	 * @ingroup Helper
-	 */
-	enum SearchMode
+	enum class SearchMode :
+		int
 	{
 		None = 0,
 		CaseInsensitve = (1 << 0),
@@ -42,36 +40,11 @@ namespace Library
 		SearchModeMaskSize = (1 << 3)
 	};
 
-	using SearchModeMask = int;
+	using SearchModeMask = std::underlying_type_t<SearchMode>;
 
-	namespace Utils
-	{
-
-		QString convertSearchstring(const QString& str);
-
-		/**
-		 * @brief Converts a user entered string into a cis-representation.
-		 * For example, diacrytic chars are replaced by latin ones, spaces are removed
-		 * and so on, so the resulting string can be searched for in the database
-		 * @ingroup Library
-		 * @ingroup Helper
-		 * @param str source string
-		 * @param mode combination of SearchMode values
-		 */
-		QString convertSearchstring(const QString& str, SearchModeMask mode);
-
-		/**
-		 * @brief Converts a user entered string into a cis-representation.
-		 * For example, diacrytic chars are replaced by latin ones, spaces are removed
-		 * and so on, so the resulting string can be searched for in the database
-		 * @ingroup Library
-		 * @ingroup Helper
-		 * @param str source string
-		 * @param mode combination of SearchMode values
-		 * @param ignored_chars chars that are not replaced within that method
-		 */
-		QString convertSearchstring(const QString& str, SearchModeMask mode, const QList<QChar>& ignored_chars);
-	}
+	QString convertSearchstring(const QString& str);
+	QString convertSearchstring(const QString& str, SearchModeMask mode);
+	QString convertSearchstring(const QString& str, SearchModeMask mode, const QList<QChar>& ignoredChars);
 }
 
 #endif // LIBRARYSEARCHMODE_H

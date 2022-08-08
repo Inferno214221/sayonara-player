@@ -21,6 +21,7 @@
 #include "SearchMode.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
+#include "Utils/globals.h"
 
 #include <QCache>
 #include <QMap>
@@ -32,7 +33,7 @@
 using DiacMap = QMap<QString, QString>;
 
 using ConvertCacheEntry = QCache<QString, QString>;
-using ConvertCache = std::array<ConvertCacheEntry, +Library::SearchModeMaskSize>;
+using ConvertCache = std::array<ConvertCacheEntry, +Library::SearchMode::SearchModeMaskSize>;
 
 Q_GLOBAL_STATIC(DiacMap, diacriticChars)
 Q_GLOBAL_STATIC(ConvertCache, convertCache)
@@ -112,97 +113,102 @@ namespace
 	}
 }
 
-QString Library::Utils::convertSearchstring(const QString& originalString, Library::SearchModeMask mode,
-                                            const QList<QChar>& ignoredChars)
+namespace Library
 {
-	if(mode == Library::SearchMode::None)
-	{
-		return originalString;
-	}
 
-	if(originalString.isEmpty())
+	QString
+	convertSearchstring(const QString& originalString, const SearchModeMask mode, const QList<QChar>& ignoredChars)
 	{
-		return ::Util::convertNotNull(originalString);
-	}
-
-	auto& qCache = convertCache->at(+mode);
-	if(qCache.contains(originalString))
-	{
-		return *(qCache[originalString]);
-	}
-
-	if(diacriticChars->isEmpty())
-	{
-		initDiacriticChars();
-	}
-
-	auto convertedString = originalString;
-	if(mode & Library::CaseInsensitve)
-	{
-		convertedString = originalString.toLower();
-	}
-
-	if(mode & Library::NoSpecialChars)
-	{
-		auto withoutSpecialChars = QString {};
-		for(const auto& c : convertedString)
+		if(mode == +SearchMode::None)
 		{
-			if(ignoredChars.contains(c) || c.isLetterOrNumber())
-			{
-				withoutSpecialChars.append(c);
-			}
+			return originalString;
 		}
 
-		convertedString = withoutSpecialChars;
-	}
-
-	if(mode & Library::NoDiacriticChars)
-	{
-		auto withoutDiacriticChars = QString {};
-
-		for(const auto& c : convertedString)
+		if(originalString.isEmpty())
 		{
-			const auto seq = QString(c);
-			if(diacriticChars->contains(seq))
+			return ::Util::convertNotNull(originalString);
+		}
+
+		auto& qCache = convertCache->at(+mode);
+		if(qCache.contains(originalString))
+		{
+			return *(qCache[originalString]);
+		}
+
+		if(diacriticChars->isEmpty())
+		{
+			initDiacriticChars();
+		}
+
+		auto convertedString = originalString;
+		if(mode & +SearchMode::CaseInsensitve)
+		{
+			convertedString = originalString.toLower();
+		}
+
+		if(mode & +SearchMode::NoSpecialChars)
+		{
+			auto withoutSpecialChars = QString {};
+			for(const auto& c: convertedString)
 			{
-				const auto& replacement = diacriticChars->value(seq);
-				if(mode & Library::CaseInsensitve)
+				if(ignoredChars.contains(c) || c.isLetterOrNumber())
 				{
-					withoutDiacriticChars.append(replacement.toLower());
+					withoutSpecialChars.append(c);
+				}
+			}
+
+			convertedString = withoutSpecialChars;
+		}
+
+		if(mode & +SearchMode::NoDiacriticChars)
+		{
+			auto withoutDiacriticChars = QString {};
+
+			for(const auto& c: convertedString)
+			{
+				const auto seq = QString(c);
+				if(diacriticChars->contains(seq))
+				{
+					const auto& replacement = diacriticChars->value(seq);
+					if(mode & +SearchMode::CaseInsensitve)
+					{
+						withoutDiacriticChars.append(replacement.toLower());
+					}
+
+					else
+					{
+						withoutDiacriticChars.append(replacement);
+					}
 				}
 
 				else
 				{
-					withoutDiacriticChars.append(replacement);
+					withoutDiacriticChars.append(c);
 				}
 			}
 
-			else
-			{
-				withoutDiacriticChars.append(c);
-			}
+			convertedString = withoutDiacriticChars;
 		}
 
-		convertedString = withoutDiacriticChars;
+		const auto result = ::Util::convertNotNull(convertedString).trimmed();
+
+		if(qCache.isEmpty())
+		{
+			qCache.setMaxCost(10000); // NOLINT(readability-magic-numbers)
+		}
+
+		qCache.insert(originalString, new QString(result));
+
+		return result;
 	}
 
-	const auto result = ::Util::convertNotNull(convertedString).trimmed();
-
-	if(qCache.isEmpty()){
-		qCache.setMaxCost(10000);
+	QString convertSearchstring(const QString& str, const SearchModeMask mode)
+	{
+		return convertSearchstring(str, mode, QList<QChar>());
 	}
 
-	qCache.insert(originalString, new QString(result));
-
-	return result;
-}
-
-QString Library::Utils::convertSearchstring(const QString& str, Library::SearchModeMask mode)
-{
-	return convertSearchstring(str, mode, QList<QChar>());
-}
-
-QString Library::Utils::convertSearchstring(const QString& str)
-{
-	return convertSearchstring(str, GetSetting(Set::Lib_SearchMode));
+	QString convertSearchstring(const QString& str)
+	{
+		return convertSearchstring(str, GetSetting(Set::Lib_SearchMode));
+	}
 }

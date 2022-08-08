@@ -62,19 +62,20 @@ class CissearchTest :
 
 [[maybe_unused]] void CissearchTest::uppercaseTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	using Library::Utils::convertSearchstring;
-	const auto searchModeMask = Library::SearchMode::CaseInsensitve;
+	using Library::convertSearchstring;
+	const auto searchModeMask = +Library::SearchMode::CaseInsensitve;
+
 	QVERIFY(convertSearchstring("ArTiSt", searchModeMask) == convertSearchstring("aRtIsT", searchModeMask));
 
-	const auto searchModeMask2 = Library::SearchMode::None;
+	const auto searchModeMask2 = +Library::SearchMode::None;
 	QVERIFY(convertSearchstring("ArTiSt", searchModeMask2) != convertSearchstring("aRtIsT", searchModeMask2));
 }
 
 [[maybe_unused]] void CissearchTest::diacrticTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	using Library::Utils::convertSearchstring;
+	using Library::convertSearchstring;
+	const auto searchModeMask = +Library::SearchMode::NoDiacriticChars;
 
-	const auto searchModeMask = Library::SearchMode::NoDiacriticChars;
 	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), searchModeMask) ==
 	        convertSearchstring("string1a", searchModeMask));
 	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), searchModeMask) ==
@@ -82,7 +83,7 @@ class CissearchTest :
 	QVERIFY(convertSearchstring(QString::fromUtf8("strîArt3"), searchModeMask) ==
 	        convertSearchstring("striArt3", searchModeMask));
 
-	const auto searchModeMask2 = Library::SearchMode::None;
+	const auto searchModeMask2 = +Library::SearchMode::None;
 	QVERIFY(convertSearchstring(QString::fromUtf8("string1ä"), searchModeMask2) !=
 	        convertSearchstring("string1a", searchModeMask2));
 	QVERIFY(convertSearchstring(QString::fromUtf8("striÖng2"), searchModeMask2) !=
@@ -93,8 +94,8 @@ class CissearchTest :
 
 [[maybe_unused]] void CissearchTest::specialCharsTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	using Library::Utils::convertSearchstring;
-	const auto searchModeMask = Library::SearchMode::NoSpecialChars;
+	using Library::convertSearchstring;
+	const auto searchModeMask = +Library::SearchMode::NoSpecialChars;
 
 	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask) ==
 	        convertSearchstring("soap skin", searchModeMask));
@@ -104,7 +105,7 @@ class CissearchTest :
 		convertSearchstring(QString::fromUtf8("Billy Talent"), searchModeMask) ==
 		convertSearchstring("Billy      Talent", searchModeMask));
 
-	const auto searchModeMask2 = Library::SearchMode::None;
+	const auto searchModeMask2 = +Library::SearchMode::None;
 	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask2) !=
 	        convertSearchstring("soap skin", searchModeMask2));
 	QVERIFY(
@@ -117,9 +118,10 @@ class CissearchTest :
 
 [[maybe_unused]] void CissearchTest::fullMaskTest() // NOLINT(readability-convert-member-functions-to-static)
 {
-	using Library::Utils::convertSearchstring;
-	const auto searchModeMask = Library::SearchMode::NoDiacriticChars | Library::SearchMode::CaseInsensitve |
-	                            Library::SearchMode::NoSpecialChars;
+	using Library::convertSearchstring;
+	const auto searchModeMask = +Library::SearchMode::NoDiacriticChars |
+	                            +Library::SearchMode::CaseInsensitve |
+	                            +Library::SearchMode::NoSpecialChars;
 
 	QVERIFY(convertSearchstring(QString::fromUtf8("soap&skin"), searchModeMask) ==
 	        convertSearchstring("söäp sKin", searchModeMask));
@@ -173,7 +175,7 @@ CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexi
 		const auto searchModeMask = 0;
 		updateSearchmode(searchModeMask);
 
-		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
+		const auto cis = Library::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1Pop,2poP,3Rock,4psy rock,5hip-hop,6Hip Hop");
 
 		auto c = searchByGenre("Hip Hop");
@@ -193,10 +195,10 @@ CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexi
 	}
 
 	{
-		const auto searchModeMask = Library::SearchMode::NoSpecialChars;
-		this->updateSearchmode(searchModeMask);
+		const auto searchModeMask = +Library::SearchMode::NoSpecialChars;
+		updateSearchmode(searchModeMask);
 
-		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
+		const auto cis = Library::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1Pop2poP3Rock4psyrock5hiphop6HipHop");
 
 		auto c = searchByGenre("Hip Hop");
@@ -216,10 +218,10 @@ CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexi
 	}
 
 	{
-		const auto searchModeMask = Library::SearchMode::CaseInsensitve;
-		this->updateSearchmode(searchModeMask);
+		const auto searchModeMask = +Library::SearchMode::CaseInsensitve;
+		updateSearchmode(searchModeMask);
 
-		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
+		const auto cis = Library::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1pop,2pop,3rock,4psy rock,5hip-hop,6hip hop");
 
 		auto c = searchByGenre("Hip Hop");
@@ -239,8 +241,9 @@ CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexi
 	}
 
 	{
-		const auto searchModeMask = Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars;
-		this->updateSearchmode(searchModeMask);
+		constexpr const auto searchModeMask = +Library::SearchMode::CaseInsensitve |
+		                                      +Library::SearchMode::NoSpecialChars;
+		updateSearchmode(searchModeMask);
 
 		const auto cis = Library::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1pop2pop3rock4psyrock5hiphop6hiphop");

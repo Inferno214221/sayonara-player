@@ -220,7 +220,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 		return id;
 	}
 
-	const auto searchString = Library::Utils::convertSearchstring(artist);
+	const auto searchString = Library::convertSearchstring(artist);
 
 	const auto bindings = QMap<QString, QVariant>
 		{
@@ -248,7 +248,7 @@ void Artists::updateArtistCissearch()
 
 	for(const auto& artist: artists)
 	{
-		const auto searchString = Library::Utils::convertSearchstring(artist.name());
+		const auto searchString = Library::convertSearchstring(artist.name());
 
 		module()->update(
 			"artists",

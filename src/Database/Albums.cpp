@@ -340,7 +340,7 @@ void Albums::updateAlbumCissearch()
 
 	for(const Album& album: albums)
 	{
-		const auto cissearch = Library::Utils::convertSearchstring(album.name());
+		const auto cissearch = Library::convertSearchstring(album.name());
 
 		module()->update(
 			"albums",
@@ -357,7 +357,7 @@ void Albums::updateAlbumCissearch()
 
 AlbumId Albums::insertAlbumIntoDatabase(const QString& name)
 {
-	const auto cissearch = Library::Utils::convertSearchstring(name);
+	const auto cissearch = Library::convertSearchstring(name);
 	const auto bindings = QMap<QString, QVariant>
 		{
 			{"name",      Util::convertNotNull(name)},

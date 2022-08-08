@@ -80,7 +80,7 @@ namespace MetaDataSorting
 
 		Library::SearchModeMask sortModeToSearchMode(const SortModeMask sortModeMask)
 		{
-			auto searchModeMask = Library::SearchModeMask {Library::SearchMode::None};
+			auto searchModeMask = +Library::SearchMode::None;
 			if(sortModeMask & +SortMode::CaseInsensitive)
 			{
 				searchModeMask |= +Library::SearchMode::CaseInsensitve;
@@ -109,7 +109,7 @@ namespace MetaDataSorting
 				str = str.right(str.size() - 4);
 			}
 
-			return Library::Utils::convertSearchstring(str, searchModeMask);
+			return Library::convertSearchstring(str, searchModeMask);
 		}
 
 		bool TracksByTitleAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)

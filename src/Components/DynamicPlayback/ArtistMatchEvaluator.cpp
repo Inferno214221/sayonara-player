@@ -51,11 +51,10 @@ namespace
 					return mNameMap[artistName];
 				}
 
-				const auto result =
-					Library::Utils::convertSearchstring(artistName,
-					                                    (Library::CaseInsensitve |
-					                                     Library::NoSpecialChars |
-					                                     Library::NoDiacriticChars));
+				const auto result = Library::convertSearchstring(artistName,
+				                                                 (+Library::SearchMode::CaseInsensitve |
+				                                                  +Library::SearchMode::NoSpecialChars |
+				                                                  +Library::SearchMode::NoDiacriticChars));
 
 				mNameMap[artistName] = result;
 				return result;

@@ -38,7 +38,7 @@
 #pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 namespace
 {
-	constexpr const auto SearchMode = (Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars);
+	constexpr const auto SearchMode = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
 
 	bool findTrack(const MetaData& track, const MetaDataList& tracks)
 	{

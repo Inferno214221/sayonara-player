@@ -152,7 +152,7 @@ QModelIndexList ItemModel::searchResults(const QString& substr)
 	QModelIndexList ret;
 	for(auto i = 0; i < len; i++)
 	{
-		const auto title = Library::Utils::convertSearchstring(searchableString(i), searchMode());
+		const auto title = Library::convertSearchstring(searchableString(i), searchMode());
 		if(title.contains(substr))
 		{
 			ret << index(i, searchableColumn());

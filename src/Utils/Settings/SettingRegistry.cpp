@@ -24,6 +24,7 @@
 #include "SettingRegistry.h"
 #include "Settings.h"
 
+#include "Utils/globals.h"
 #include "Utils/Macros.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/EqualizerSetting.h"
@@ -104,7 +105,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_DC_PlayImmediately>("lib_dc_play_immediately", false);
 	registerSetting<Set::Lib_DD_DoNothing>("lib_dd_do_nothing", true);
 	registerSetting<Set::Lib_DD_PlayIfStoppedAndEmpty>("lib_dd_play_if_stopped_and_empty", false);
-	registerSetting<Set::Lib_SearchMode>("lib_search_mode", static_cast<int>(Library::CaseInsensitve));
+	registerSetting<Set::Lib_SearchMode>("lib_search_mode", +Library::SearchMode::CaseInsensitve);
 	registerSetting<Set::Lib_AutoUpdate>("lib_auto_update", false);
 	registerSetting<Set::Lib_ShowAlbumArtists>("lib_show_album_artists", true);
 	registerSetting<Set::Lib_ShowAlbumCovers>("lib_show_album_covers", false);

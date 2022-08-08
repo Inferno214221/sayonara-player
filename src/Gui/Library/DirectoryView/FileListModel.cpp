@@ -353,10 +353,10 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 
 bool FileListModel::checkRowForSearchstring(int row, const QString& substr) const
 {
-	const auto convertedString = Library::Utils::convertSearchstring(substr, searchMode());
+	const auto convertedString = Library::convertSearchstring(substr, searchMode());
 	const auto filename = Util::File::getFilenameOfPath(m->files[row]);
 
-	const auto convertedFilepath = Library::Utils::convertSearchstring(filename, searchMode());
+	const auto convertedFilepath = Library::convertSearchstring(filename, searchMode());
 
 	return convertedFilepath.contains(convertedString);
 }

@@ -59,14 +59,14 @@ namespace
 
 	bool albumMatchesString(const Album& album, const QString& substr, ::Library::SearchModeMask searchMode)
 	{
-		const auto title = Library::Utils::convertSearchstring(album.name(), searchMode);
+		const auto title = Library::convertSearchstring(album.name(), searchMode);
 		if(title.contains(substr))
 		{
 			return true;
 		}
 
 		const auto hasMatchingArtist = Util::Algorithm::contains(album.artists(), [&](const auto& artist) {
-			const auto convertedArtist = Library::Utils::convertSearchstring(artist, searchMode);
+			const auto convertedArtist = Library::convertSearchstring(artist, searchMode);
 			return (convertedArtist.contains(substr));
 		});
 

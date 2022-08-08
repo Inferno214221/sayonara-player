@@ -86,7 +86,7 @@ bool MiniSearcherViewConnector::handleKeyPress(QKeyEvent* e)
 void MiniSearcherViewConnector::lineEditChanged(const QString& str)
 {
 	const auto searchMode = GetSetting(Set::Lib_SearchMode);
-	m->currentSearchstring = Library::Utils::convertSearchstring(str, searchMode, m->triggerMap.keys());
+	m->currentSearchstring = Library::convertSearchstring(str, searchMode, m->triggerMap.keys());
 
 	const auto resultCount = m->searchableView->setSearchstring(m->currentSearchstring);
 	m->miniSearcher->setNumberResults(resultCount);

@@ -48,7 +48,6 @@
 
 using DB::Tracks;
 using DB::Query;
-namespace LibraryUtils = ::Library::Utils;
 using ::Library::Filter;
 
 namespace
@@ -125,14 +124,14 @@ namespace
 			{QStringLiteral("albumID"),        albumId},
 			{QStringLiteral("artistID"),       artistId},
 			{QStringLiteral("bitrate"),        track.bitrate()},
-			{QStringLiteral("cissearch"),      LibraryUtils::convertSearchstring(track.title())},
+			{QStringLiteral("cissearch"),      Library::convertSearchstring(track.title())},
 			{QStringLiteral("comment"),        Util::convertNotNull(track.comment())},
 			{QStringLiteral("discnumber"),     track.discnumber()},
-			{QStringLiteral("filecissearch"),  LibraryUtils::convertSearchstring(track.filepath())},
+			{QStringLiteral("filecissearch"),  Library::convertSearchstring(track.filepath())},
 			{QStringLiteral("filename"),       Util::File::cleanFilename(track.filepath())},
 			{QStringLiteral("filesize"),       QVariant::fromValue(track.filesize())},
 			{QStringLiteral("genre"),          Util::convertNotNull(track.genresToString())},
-			{QStringLiteral("genreCissearch"), LibraryUtils::convertSearchstring(track.genresToString())},
+			{QStringLiteral("genreCissearch"), Library::convertSearchstring(track.genresToString())},
 			{QStringLiteral("length"),         QVariant::fromValue(track.durationMs())},
 			{QStringLiteral("libraryID"),      track.libraryId()},
 			{QStringLiteral("rating"),         QVariant(static_cast<int>(track.rating()))},
@@ -544,9 +543,9 @@ void Tracks::updateTrackCissearch()
 		module()->update(
 			"tracks",
 			{
-				{"cissearch",      LibraryUtils::convertSearchstring(track.title())},
-				{"fileCissearch",  LibraryUtils::convertSearchstring(track.filepath())},
-				{"genreCissearch", LibraryUtils::convertSearchstring(track.genresToString())}
+				{"cissearch",      ::Library::convertSearchstring(track.title())},
+				{"fileCissearch",  ::Library::convertSearchstring(track.filepath())},
+				{"genreCissearch", ::Library::convertSearchstring(track.genresToString())}
 			},
 			{"trackId", track.id()},
 			"Cannot update album cissearch");

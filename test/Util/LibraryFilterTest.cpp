@@ -1,5 +1,6 @@
 #include "test/Common/SayonaraTest.h"
 
+#include "Utils/globals.h"
 #include "Utils/Library/Filter.h"
 #include "Utils/Settings/Settings.h"
 
@@ -32,7 +33,7 @@ class LibraryFilterTest :
 void LibraryFilterTest::testConstructCopyCompare()
 {
 	constexpr const auto MinimumSearchStringLength = 3;
-	auto searchModeMask = (Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars);
+	auto searchModeMask = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
 	auto filter = Library::Filter();
 	{ // test standard constructor
 		QVERIFY(filter.mode() == Library::Filter::Fulltext);
@@ -76,7 +77,7 @@ void LibraryFilterTest::testConstructCopyCompare()
 
 void LibraryFilterTest::testFilterText()
 {
-	const auto searchModeMask = (Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars);
+	constexpr const auto searchModeMask = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
 
 	auto filter = Filter();
 	filter.setFiltertext("searchBla1,search$BLupp2");
