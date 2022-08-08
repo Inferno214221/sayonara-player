@@ -19,7 +19,6 @@
  */
 
 #include "Utils/MetaData/Album.h"
-#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Language/Language.h"
 
 #include <QVariant>
@@ -340,9 +339,4 @@ AlbumList& AlbumList::appendUnique(const AlbumList& other)
 	}
 
 	return *this;
-}
-
-void AlbumList::sort(::Library::SortOrder so)
-{
-	MetaDataSorting::sortAlbums(*this, so);
 }

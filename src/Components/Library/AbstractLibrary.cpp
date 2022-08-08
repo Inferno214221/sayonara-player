@@ -780,17 +780,17 @@ void AbstractLibrary::prepareTracks()
 		m->extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
 	}
 
-	m->tracks.sort(m->sortorder.so_tracks);
+	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks);
 }
 
 void AbstractLibrary::prepareAlbums()
 {
-	m->albums.sort(m->sortorder.so_albums);
+	MetaDataSorting::sortAlbums(m->albums, m->sortorder.so_albums, GetSetting(Set::Lib_SortModeMask));
 }
 
 void AbstractLibrary::prepareArtists()
 {
-	m->artists.sort(m->sortorder.so_artists);
+	MetaDataSorting::sortArtists(m->artists, m->sortorder.so_artists, GetSetting(Set::Lib_SortModeMask));
 }
 
 void AbstractLibrary::ignoreArtistArticleChanged()

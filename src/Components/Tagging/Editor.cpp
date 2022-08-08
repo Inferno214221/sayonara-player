@@ -41,6 +41,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Set.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
@@ -315,7 +316,7 @@ void Editor::loadEntireAlbum()
 
 		MetaDataList tracks;
 		libraryDatabase->getAllTracksByAlbum(IdList {albumId}, tracks, ::Library::Filter(), -1);
-		tracks.sort(::Library::SortOrder::TrackDiscnumberAsc);
+		MetaDataSorting::sortMetadata(tracks, ::Library::SortOrder::TrackDiscnumberAsc);
 		setMetadata(tracks);
 	}
 }

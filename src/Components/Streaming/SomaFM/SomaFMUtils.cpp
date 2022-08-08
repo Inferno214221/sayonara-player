@@ -6,6 +6,7 @@
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 
 #include <QString>
 
@@ -38,5 +39,5 @@ void SomaFM::Utils::mapStationToMetadata(const SomaFM::Station& station, MetaDat
 		}
 	}
 
-	tracks.sort(::Library::SortOrder::TrackTitleAsc);
+	MetaDataSorting::sortMetadata(tracks, ::Library::SortOrder::TrackTitleAsc);
 }

@@ -6,6 +6,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Utils.h"
 #include "Utils/FileUtils.h"
 
@@ -62,7 +63,7 @@ static MetaDataList createTracks()
 	// track[80-89]: artist4, album8
 	// track[90-99]: artist4, album9
 
-	tracks.sort(Library::SortOrder::TrackTitleAsc);
+	MetaDataSorting::sortMetadata(tracks, Library::SortOrder::TrackTitleAsc);
 	return tracks;
 }
 
@@ -85,8 +86,8 @@ void LibraryDatabaseTest::testStore()
 	QVERIFY(success == true);
 	QVERIFY(tempTracks.count() == tracks.count());
 
-	tempTracks.sort(Library::SortOrder::TrackTitleAsc);
-	for(int i=0; i<tracks.count(); i++)
+	MetaDataSorting::sortMetadata(tempTracks, Library::SortOrder::TrackTitleAsc);
+	for(int i = 0; i < tracks.count(); i++)
 	{
 		QVERIFY(tracks[i] == tempTracks[i]);
 	}

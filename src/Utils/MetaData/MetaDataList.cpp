@@ -19,7 +19,6 @@
  */
 
 #include "MetaDataList.h"
-#include "MetaDataSorting.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Set.h"
@@ -410,16 +409,6 @@ MetaData MetaDataList::takeAt(int idx)
 	this->erase(this->begin() + idx);
 
 	return md;
-}
-
-void MetaDataList::sort(Library::SortOrder so)
-{
-	if(so == Library::SortOrder::NoSorting)
-	{
-		return;
-	}
-
-	MetaDataSorting::sortMetadata(*this, so);
 }
 
 void MetaDataList::reserve(size_t items)

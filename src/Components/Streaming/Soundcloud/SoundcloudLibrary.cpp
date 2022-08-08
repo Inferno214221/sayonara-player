@@ -31,7 +31,7 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Set.h"
 #include "Utils/globals.h"
 #include "Utils/typedefs.h"
@@ -89,7 +89,7 @@ namespace
 			}
 		}
 
-		result.sort(sortOrder);
+		MetaDataSorting::sortMetadata(result, sortOrder);
 
 		return result;
 	}
@@ -177,7 +177,7 @@ void SC::Library::getAllArtists(ArtistList& artists) const
 		artists = m->artists;
 	}
 
-	artists.sort(sortorder().so_artists);
+	MetaDataSorting::sortArtists(artists, sortorder().so_artists, GetSetting(Set::Lib_SortModeMask));
 }
 
 void SC::Library::getAllArtistsBySearchstring(::Library::Filter filter, ArtistList& artists) const
@@ -210,7 +210,7 @@ void SC::Library::getAllArtistsBySearchstring(::Library::Filter filter, ArtistLi
 		}
 	}
 
-	artists.sort(sortorder().so_artists);
+	MetaDataSorting::sortArtists(artists, sortorder().so_artists, GetSetting(Set::Lib_SortModeMask));
 }
 
 void SC::Library::getAllAlbums(AlbumList& albums) const
@@ -239,7 +239,7 @@ void SC::Library::getAllAlbums(AlbumList& albums) const
 		albums = m->albums;
 	}
 
-	albums.sort(sortorder().so_albums);
+	MetaDataSorting::sortAlbums(albums, sortorder().so_albums, GetSetting(Set::Lib_SortModeMask));
 }
 
 void
@@ -260,7 +260,7 @@ SC::Library::getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, [[maybe_u
 		}
 	}
 
-	albums.sort(sortorder().so_albums);
+	MetaDataSorting::sortAlbums(albums, sortorder().so_albums, GetSetting(Set::Lib_SortModeMask));
 }
 
 void SC::Library::getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList& albums) const
@@ -289,7 +289,7 @@ void SC::Library::getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList
 		}
 	}
 
-	albums.sort(sortorder().so_albums);
+	MetaDataSorting::sortAlbums(albums, sortorder().so_albums, GetSetting(Set::Lib_SortModeMask));
 }
 
 int SC::Library::getTrackCount() const
@@ -323,7 +323,7 @@ void SC::Library::getAllTracks(MetaDataList& tracks) const
 		tracks = m->tracks;
 	}
 
-	tracks.sort(sortorder().so_tracks);
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks);
 }
 
 void SC::Library::getAllTracksByArtist(IdList artistIds, MetaDataList& tracks,
@@ -364,7 +364,7 @@ void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataL
 		}
 	}
 
-	tracks.sort(sortorder().so_tracks);
+	MetaDataSorting::sortMetadata(tracks, sortorder().so_tracks);
 }
 
 void SC::Library::getAllTracksByPath([[maybe_unused]] const QStringList& paths,

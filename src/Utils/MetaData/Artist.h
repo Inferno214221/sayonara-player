@@ -84,8 +84,6 @@ class ArtistList :
 
 		ArtistList& operator<<(const Artist& artist);
 		ArtistList& appendUnique(const ArtistList& other);
-
-		void sort(Library::SortOrder so);
 };
 
 #endif

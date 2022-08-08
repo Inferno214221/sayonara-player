@@ -103,8 +103,6 @@ class AlbumList :
 
 		AlbumList& appendUnique(const AlbumList& other);
 		AlbumList& appendUnique(AlbumList&& other) noexcept;
-
-		void sort(::Library::SortOrder so);
 };
 
 #endif //HEADER_ALBUM_H_

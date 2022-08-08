@@ -93,9 +93,7 @@ class MetaDataList :
 		const MetaData& last() const;
 
 		int count() const;
-
-		void sort(Library::SortOrder so);
-
+		
 		void reserve(size_t items);
 		size_t capacity() const;
 };

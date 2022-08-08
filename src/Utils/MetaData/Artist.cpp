@@ -19,7 +19,6 @@
  */
 
 #include "Utils/MetaData/Artist.h"
-#include "Utils/MetaData/MetaDataSorting.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
 
@@ -283,9 +282,4 @@ ArtistList& ArtistList::appendUnique(const ArtistList& other)
 	}
 
 	return *this;
-}
-
-void ArtistList::sort(Library::SortOrder so)
-{
-	MetaDataSorting::sortArtists(*this, so);
 }
