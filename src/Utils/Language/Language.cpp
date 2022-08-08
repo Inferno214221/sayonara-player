@@ -28,6 +28,9 @@
 #include <QStringList>
 #include <QLocale>
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+
 LanguageString::LanguageString(const QString& other) :
 	QString(other) {}
 
@@ -64,6 +67,9 @@ LanguageString& LanguageString::triplePt()
 Lang::Lang() = default;
 
 Lang::~Lang() = default;
+
+#pragma clang diagnostic push
+#pragma ide diagnostic ignored "readability-static-accessed-through-instance"
 
 LanguageString Lang::get(Lang::Term term, bool* ok)
 {
@@ -128,6 +134,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Cancel");
 		case CannotFindLame:
 			return l.tr("Cannot find Lame MP3 encoder");
+		case CaseInsensitive:
+			return l.tr("Case insensitive");
 		case Clear:
 			return l.tr("Clear");
 		case ClearSelection:
@@ -231,6 +239,10 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 		case HoursShort:
 			// short form of hours
 			return l.tr("h");
+		case IgnoreAccents:
+			return l.tr("Ignore accents");
+		case IgnoreSpecialChars:
+			return l.tr("Ignore special characters");
 		case ImportDir:
 			return l.tr("Import directory");
 		case ImportFiles:
@@ -407,10 +419,10 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Save to file");
 		case ScanForFiles:
 			return l.tr("Scan for audio files");
-		case SearchNoun:
-			return l.tr("Search");            // the noun of search
+		case SearchNoun: // NOLINT(bugprone-branch-clone)
+			return l.tr("Search");
 		case SearchVerb:
-			return l.tr("Search");            // the verb of the searching process
+			return l.tr("Search");
 		case SearchNext:
 			return l.tr("Search next");
 		case SearchPrev:
@@ -478,10 +490,9 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Unknown placeholder");
 		case UnknownYear:
 		{
-			QString s = l.tr("Unknown year");
-			Q_UNUSED(s)
+			[[maybe_unused]] const auto s = l.tr("Unknown year");
 		}
-			return LanguageString("-");
+			return {"-"};
 
 		case Various:
 			return l.tr("Various");
@@ -509,6 +520,8 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 			return l.tr("Yes");
 		case Zoom:
 			return l.tr("Zoom");
+		case NUMBER_OF_LANGUAGE_KEYS:
+			[[fallthrough]];
 		default:
 			if(ok)
 			{
@@ -578,3 +591,7 @@ LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 			return QString();
 	}
 }
+
+#pragma clang diagnostic pop // "readability-static-accessed-through-instance"
+
+#pragma clang diagnostic pop // "-Wunknown-pragmas"

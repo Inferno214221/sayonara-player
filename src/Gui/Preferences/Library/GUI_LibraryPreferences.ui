@@ -203,7 +203,7 @@
      </widget>
      <widget class="QWidget" name="tabSorting">
       <attribute name="title">
-       <string notr="true">Sorting</string>
+       <string>Sorting</string>
       </attribute>
       <layout class="QVBoxLayout" name="verticalLayout_3">
        <item>
@@ -230,21 +230,21 @@
          <item row="0" column="0">
           <widget class="QCheckBox" name="cbCaseInsensitive">
            <property name="text">
-            <string>Case Insensitive</string>
+            <string notr="true">Case Insensitive</string>
            </property>
           </widget>
          </item>
          <item row="1" column="0">
           <widget class="QCheckBox" name="cbIgnoreSpecialChars">
            <property name="text">
-            <string>Ignore special characters</string>
+            <string notr="true">Ignore special characters</string>
            </property>
           </widget>
          </item>
          <item row="2" column="0">
           <widget class="QCheckBox" name="cbIgnoreAccents">
            <property name="text">
-            <string>Ignore accents</string>
+            <string notr="true">Ignore accents</string>
            </property>
           </widget>
          </item>

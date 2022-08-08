@@ -14,7 +14,7 @@
    <item row="1" column="0">
     <widget class="QCheckBox" name="cbCaseInsensitive">
      <property name="text">
-      <string>Case insensitive</string>
+      <string notr="true">Case insensitive</string>
      </property>
     </widget>
    </item>
@@ -31,7 +31,7 @@
       <string notr="true">. ' &quot; &amp; ! $ + * / ( ) = - _ ; : , ? &lt; &gt;[ ] { } @ € white-spaces</string>
      </property>
      <property name="text">
-      <string>Ignore special characters</string>
+      <string notr="true">Ignore special characters</string>
      </property>
     </widget>
    </item>
@@ -90,7 +90,7 @@
       <string notr="true">Š Œ Ž š œ ž Ÿ¥ µ À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý ÿ</string>
      </property>
      <property name="text">
-      <string>Ignore accents</string>
+      <string notr="true">Ignore accents</string>
      </property>
     </widget>
    </item>

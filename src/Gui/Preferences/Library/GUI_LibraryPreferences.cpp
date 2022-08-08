@@ -167,6 +167,10 @@ void GUI_LibraryPreferences::retranslate()
 	ui->btnDelete->setText(Lang::get(Lang::Remove));
 	ui->btnDown->setText(Lang::get(Lang::MoveDown));
 	ui->btnUp->setText(Lang::get(Lang::MoveUp));
+
+	ui->cbCaseInsensitive->setText(Lang::get(Lang::CaseInsensitive));
+	ui->cbIgnoreAccents->setText(Lang::get(Lang::IgnoreAccents));
+	ui->cbIgnoreSpecialChars->setText(Lang::get(Lang::IgnoreSpecialChars));
 }
 
 void GUI_LibraryPreferences::skinChanged()

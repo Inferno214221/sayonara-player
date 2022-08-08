@@ -44,7 +44,7 @@ QString GUI_SearchPreferences::actionName() const
 
 bool GUI_SearchPreferences::commit()
 {
-	auto searchModeMask = Library::SearchModeMask{0};
+	auto searchModeMask = Library::SearchModeMask {0};
 
 	if(ui->cbCaseInsensitive->isChecked())
 	{
@@ -87,4 +87,8 @@ void GUI_SearchPreferences::initUi()
 void GUI_SearchPreferences::retranslate()
 {
 	ui->retranslateUi(this);
+
+	ui->cbCaseInsensitive->setText(Lang::get(Lang::CaseInsensitive));
+	ui->cbNoAccents->setText(Lang::get(Lang::IgnoreAccents));
+	ui->cbNoSpecialChars->setText(Lang::get(Lang::IgnoreSpecialChars));
 }
