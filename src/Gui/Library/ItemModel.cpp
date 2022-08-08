@@ -124,6 +124,7 @@ void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
 		insertRows(oldSize, newSize - oldSize);
 	}
 
+	// NOLINTNEXTLINE(readability-misleading-indentation)
 	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 }
 
@@ -145,7 +146,7 @@ QModelIndexList ItemModel::searchResults(const QString& substr)
 	const auto len = rowCount();
 	if(len == 0)
 	{
-		return QModelIndexList();
+		return {};
 	}
 
 	QModelIndexList ret;

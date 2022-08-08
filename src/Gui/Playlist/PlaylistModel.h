@@ -82,10 +82,10 @@ namespace Playlist
 				CurrentPlayingRole = Qt::UserRole + 4
 			};
 
-			explicit Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent);
+			explicit Model(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist, QObject* parent);
 			~Model() override;
 
-			int playlistIndex() const;
+			[[nodiscard]] int playlistIndex() const;
 
 			void clear();
 			void removeTracks(const IndexSet& rows);
@@ -100,29 +100,29 @@ namespace Playlist
 			void insertTracks(const MetaDataList& tracks, int row);
 			void insertTracks(const QStringList& files, int row);
 
-			int currentTrack() const;
+			[[nodiscard]] int currentTrack() const;
 
-			const MetaData& metadata(int row) const;
-			MetaDataList metadata(const IndexSet& rows) const;
+			[[nodiscard]] const MetaData& metadata(int row) const;
+			[[nodiscard]] MetaDataList metadata(const IndexSet& rows) const;
 
-			bool hasLocalMedia(const IndexSet& rows) const;
+			[[nodiscard]] bool hasLocalMedia(const IndexSet& rows) const;
 			void setDragIndex(int dragIndex);
 			void changeRating(const IndexSet& rows, Rating rating);
 			void changeTrack(int trackIndex, Seconds seconds = 0);
 
 			void setBusy(bool b);
 
-			Qt::ItemFlags flags(const QModelIndex& index = QModelIndex()) const override;
-			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index = QModelIndex()) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 			bool setData(const QModelIndex& index, const QVariant& value, int role) override;
-			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
 			SearchableModelInterface::ExtraTriggerMap getExtraTriggers() override;
-			QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
 			QModelIndexList searchResults(const QString& searchString) override;
 
-		public slots:
+		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void refreshData();
 			void reverseTracks();
 			void randomizeTracks();
@@ -136,7 +136,7 @@ namespace Playlist
 			void coverFound(const QPixmap& pixmap);
 			void coverLookupFinished(bool success);
 
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
 			void startCoverLookup(const MetaData& track) const;
 			void lookChanged();
 			void refreshPlaylist(int rowCount, int columnCount);

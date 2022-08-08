@@ -57,6 +57,8 @@
 #include <QIcon>
 #include <QPixmap>
 
+#include <utility>
+
 namespace Algorithm = Util::Algorithm;
 using Playlist::Model;
 
@@ -168,20 +170,18 @@ namespace
 struct Model::Private
 {
 	QHash<QString, QPixmap> coverLookupMap;
-	int oldRowCount;
-	int dragIndex;
+	int oldRowCount {0};
+	int dragIndex {-1};
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
 	PlaylistCreator* playlistCreator;
 
 	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlistArg) :
-		oldRowCount(0),
-		dragIndex(-1),
-		playlist(playlistArg),
+		playlist(std::move(playlistArg)),
 		playlistCreator {playlistCreator} {}
 };
 
-Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* parent) :
+Model::Model(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist, QObject* parent) :
 	SearchableTableModel(parent)
 {
 	m = Pimpl::make<Private>(playlistCreator, playlist);
@@ -191,7 +191,7 @@ Model::Model(PlaylistCreator* playlistCreator, PlaylistPtr playlist, QObject* pa
 	connect(m->playlist.get(), &Playlist::sigBusyChanged, this, &Model::sigBusyChanged);
 	connect(m->playlist.get(), &Playlist::sigCurrentScannedFileChanged, this, &Model::sigCurrentScannedFileChanged);
 
-	const auto coverChangeNotifier = Cover::ChangeNotfier::instance();
+	const auto* coverChangeNotifier = Cover::ChangeNotfier::instance();
 	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &Model::coversChanged);
 
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
@@ -212,7 +212,7 @@ int Model::columnCount([[maybe_unused]] const QModelIndex& parent) const
 	return static_cast<int>(ColumnName::NumColumns);
 }
 
-QVariant Model::data(const QModelIndex& index, int role) const
+QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readability-function-cognitive-complexity)
 {
 	const auto row = index.row();
 	const auto col = index.column();
@@ -220,7 +220,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 
 	if(!Util::between(row, m->playlist->count()))
 	{
-		return QVariant();
+		return {};
 	}
 
 	if(role == Qt::DisplayRole)
@@ -232,25 +232,23 @@ QVariant Model::data(const QModelIndex& index, int role) const
 			       : QString("%1.").arg(row + 1);
 		}
 
-		else if(col == ColumnName::Time)
+		if(col == ColumnName::Time)
 		{
 			auto durationMs = m->playlist->track(row).durationMs();
-			return (durationMs / 1000 <= 0)
+			return (durationMs / 1000 <= 0) // NOLINT(readability-magic-numbers)
 			       ? QVariant()
 			       : Util::msToString(durationMs, QStringLiteral("$M:$S"));
 		}
-
-		return QVariant();
 	}
 
-	else if(role == Qt::TextAlignmentRole)
+	if(role == Qt::TextAlignmentRole)
 	{
 		return (col == ColumnName::Description)
 		       ? QVariant(Qt::AlignLeft | Qt::AlignVCenter)
 		       : QVariant(Qt::AlignRight | Qt::AlignVCenter);
 	}
 
-	else if(role == Qt::DecorationRole)
+	if(role == Qt::DecorationRole)
 	{
 		if(col == ColumnName::Cover)
 		{
@@ -266,7 +264,7 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Model::EntryLookRole)
+	if(role == Model::EntryLookRole)
 	{
 		if(col == ColumnName::Description)
 		{
@@ -274,12 +272,12 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Model::DragIndexRole)
+	if(role == Model::DragIndexRole)
 	{
 		return (row == m->dragIndex);
 	}
 
-	else if((role == Model::RatingRole) || (role == Qt::EditRole))
+	if((role == Model::RatingRole) || (role == Qt::EditRole))
 	{
 		if(col == ColumnName::Description)
 		{
@@ -290,12 +288,12 @@ QVariant Model::data(const QModelIndex& index, int role) const
 		}
 	}
 
-	else if(role == Model::CurrentPlayingRole)
+	if(role == Model::CurrentPlayingRole)
 	{
 		return isCurrentTrack;
 	}
 
-	return QVariant();
+	return {};
 }
 
 bool Model::setData(const QModelIndex& index, const QVariant& value, int role)
@@ -435,7 +433,7 @@ int Model::currentTrack() const
 
 void Model::changeTrack(int trackIndex, Seconds seconds)
 {
-	m->playlist->changeTrack(trackIndex, seconds * 1000);
+	m->playlist->changeTrack(trackIndex, seconds * 1000); // NOLINT(readability-magic-numbers)
 }
 
 const MetaData& Model::metadata(int row) const
@@ -641,7 +639,7 @@ void Playlist::Model::setBusy(bool b)
 
 void Playlist::Model::coverFound(const QPixmap& pixmap)
 {
-	if(auto* coverLookup = static_cast<Cover::Lookup*>(sender()); coverLookup)
+	if(auto* coverLookup = dynamic_cast<Cover::Lookup*>(sender()); coverLookup)
 	{
 		const auto hash = coverLookup->userData<QString>();
 		m->coverLookupMap[hash] = pixmap;

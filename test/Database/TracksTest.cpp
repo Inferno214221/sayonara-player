@@ -33,6 +33,9 @@
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 namespace
 {
 	constexpr const auto SearchMode = (Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars);
@@ -91,7 +94,7 @@ class TracksTest :
 		void testInsertAndDelete();
 		void testRenameFilepath();
 
-	private:
+	private: // NOLINT(readability-redundant-access-specifiers)
 		DB::LibraryDatabase*
 		initDatabase(DB::LibraryDatabase::ArtistIDField artistIdField = DB::LibraryDatabase::ArtistIDField::ArtistID)
 		{
@@ -285,13 +288,13 @@ void TracksTest::testGetAllGenres()
 void TracksTest::testGetByPaths()
 {
 	QStringList paths;
-	for(int i = 0; i < 7; i++)
+	for(int i = 0; i < 7; i++) // NOLINT(readability-magic-numbers)
 	{
 		paths << m_testTracks[i].filepath();
 	}
 
 	QStringList incompletePaths;
-	for(int i = 8; i < 10; i++)
+	for(int i = 8; i < 10; i++) // NOLINT(readability-magic-numbers)
 	{
 		const auto path = m_testTracks[i].filepath();
 		incompletePaths << path.left(path.size() - 3);
@@ -315,7 +318,7 @@ void TracksTest::testGetByPaths()
 	}
 }
 
-void TracksTest::testInsertAndUpdate()
+void TracksTest::testInsertAndUpdate() // NOLINT(readability-function-cognitive-complexity)
 {
 	auto* db = initDatabase();
 
@@ -332,19 +335,18 @@ void TracksTest::testInsertAndUpdate()
 		QVERIFY(track.album() == "album");
 		QVERIFY(track.albumArtist() == "albumArtist");
 
-		track.setBitrate(128'000);
+		track.setBitrate(128'000); // NOLINT(readability-magic-numbers)
 		track.setComment("newComment");
-		track.setDiscnumber(5);
-		track.setFilesize(200'000);
+		track.setDiscnumber(5); // NOLINT(readability-magic-numbers)
+		track.setFilesize(200'000); // NOLINT(readability-magic-numbers)
 		track.setGenres(QStringList() << "newGenre1" << "newGenre2");
-		track.setDurationMs(200'000);
+		track.setDurationMs(200'000); // NOLINT(readability-magic-numbers)
 		track.setRating(Rating::One);
 		track.setTitle("newTitle");
 		track.setTrackNumber(2);
-		track.setYear(1994);
+		track.setYear(1994); // NOLINT(readability-magic-numbers)
 
-		const auto success = db->updateTrack(track);
-		QVERIFY(success);
+		QVERIFY(db->updateTrack(track));
 	}
 
 	{
@@ -419,3 +421,5 @@ void TracksTest::testRenameFilepath()
 QTEST_GUILESS_MAIN(TracksTest)
 
 #include "TracksTest.moc"
+
+#pragma clang diagnostic pop

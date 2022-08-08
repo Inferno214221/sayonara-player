@@ -31,7 +31,7 @@ namespace
 			return true;
 		}
 
-		else if(filtertext1 == filtertext2)
+		if(filtertext1 == filtertext2)
 		{
 			return true;
 		}
@@ -120,7 +120,7 @@ namespace Library
 
 			if(!filterText.isEmpty())
 			{
-				result << std::move(filterText);
+				result << filterText;
 			}
 		}
 
@@ -142,7 +142,7 @@ namespace Library
 
 			if(!convertedFiltertext.isEmpty())
 			{
-				result << std::move(convertedFiltertext);
+				result << convertedFiltertext;
 			}
 		}
 
@@ -200,7 +200,7 @@ namespace Library
 				return Lang::get(Lang::Genre);
 
 			default:
-				return QString();
+				return {};
 		}
 	}
 

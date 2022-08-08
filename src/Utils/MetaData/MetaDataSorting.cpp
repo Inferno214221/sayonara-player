@@ -74,6 +74,10 @@ namespace MetaDataSorting
 			return fallback(item2, item1, sortMode);
 		}
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
+
 		Library::SearchModeMask sortModeToSearchMode(const SortModeMask sortModeMask)
 		{
 			auto searchModeMask = Library::SearchModeMask {Library::SearchMode::None};
@@ -94,6 +98,8 @@ namespace MetaDataSorting
 
 			return searchModeMask;
 		}
+
+#pragma clang diagnostic pop
 
 		QString convertString(QString str, const SortModeMask sortMode, const bool mayIgnoreArticle = false)
 		{

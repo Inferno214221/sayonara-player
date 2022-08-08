@@ -18,6 +18,10 @@
  * along with module() program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "readability-magic-numbers"
+
 #include "Database/Tracks.h"
 #include "Database/Library.h"
 #include "Database/Query.h"
@@ -49,7 +53,7 @@ using ::Library::Filter;
 
 namespace
 {
-	static const auto CisPlaceholder = QStringLiteral(":cissearch");
+	constexpr const auto* CisPlaceholder = ":cissearch";
 
 	void dropTrackView(DB::Module* module, LibraryId libraryId, const QString& trackView)
 	{
@@ -510,7 +514,7 @@ Util::Set<Genre> Tracks::getAllGenres() const
 	auto q = module()->runQuery(query, "Cannot fetch genres");
 	if(q.hasError())
 	{
-		return Util::Set<Genre>();
+		return {};
 	}
 
 	Util::Set<Genre> genres;
@@ -656,3 +660,4 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, A
 	return (!q.hasError());
 }
 
+#pragma clang diagnostic pop

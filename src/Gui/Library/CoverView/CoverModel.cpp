@@ -55,7 +55,7 @@ using HashSet = Util::Set<Hash>;
 
 namespace
 {
-	std::mutex refreshMtx;
+	std::mutex refreshMtx; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 	bool albumMatchesString(const Album& album, const QString& substr, ::Library::SearchModeMask searchMode)
 	{
@@ -86,7 +86,7 @@ struct CoverModel::Private
 
 		int oldRowCount {0};
 		int oldColumnCount {0};
-		int maxColumns {10};
+		int maxColumns {10}; // NOLINT(readability-magic-numbers)
 		int zoom {GetSetting(Set::Lib_CoverZoom)};
 
 		explicit Private(QObject* parent) :

@@ -81,7 +81,7 @@ namespace
 		const auto created = Util::File::createDirectories(dir);
 		QVERIFY(created);
 
-		const auto source = ":/test/mp3test.mp3";
+		constexpr const auto* source = ":/test/mp3test.mp3";
 		const auto newName = QString("%1/%2").arg(dir, filename);
 		Util::File::deleteFiles({newName});
 
@@ -123,6 +123,17 @@ namespace
 		const auto copied = Util::File::copyFile(":/test/logo.png", dir, newName);
 		QVERIFY(copied);
 	}
+
+	void deleteAllFiles(const QString& dir = QString())
+	{
+		auto list = QStringList {Util::coverDirectory()};
+		if(!dir.isEmpty())
+		{
+			list << dir;
+		}
+
+		Util::File::deleteFiles(list);
+	}
 }
 
 class CoverLocationTest :
@@ -136,34 +147,24 @@ class CoverLocationTest :
 
 		~CoverLocationTest() override = default;
 
-	private:
-		void deleteAllFiles(const QString& dir = QString())
-		{
-			auto list = QStringList {Util::coverDirectory()};
-			if(!dir.isEmpty())
-			{
-				list << dir;
-			}
-
-			Util::File::deleteFiles(list);
-		}
-
 	private slots:
-		void testCopy();
-		void testInvalidLocation();
-		void testAlbumWithoutLocalCover();
-		void testAlbumWithLocalCover();
-		void testAlbumWithTrackHint();
-		void testAlbumWithTrackHintAndLocalCover();
-		void testTrackWithoutAnyCover();
-		void testTrackWithCover();
-		void testTrackWithCoverFlag();
-		void testTrackWithLocalCover();
-		void testRadioStationDownloadUrls();
-		void testArtist();
+		[[maybe_unused]] void testCopy();
+		[[maybe_unused]] void testInvalidLocation();
+		[[maybe_unused]] void testAlbumWithoutLocalCover();
+		[[maybe_unused]] void testAlbumWithLocalCover();
+		[[maybe_unused]] void testAlbumWithTrackHint();
+		[[maybe_unused]] void testAlbumWithTrackHintAndLocalCover();
+		[[maybe_unused]] void testTrackWithoutAnyCover();
+		[[maybe_unused]] void testTrackWithCover();
+		[[maybe_unused]] void testTrackWithCoverFlag();
+		[[maybe_unused]] void testTrackWithLocalCover();
+		[[maybe_unused]] void testRadioStationDownloadUrls();
+		[[maybe_unused]] void testArtist();
+		[[maybe_unused]] void testEqualAlbumAndTrackHash();
 };
 
-void CoverLocationTest::testCopy()
+[[maybe_unused]] void
+CoverLocationTest::testCopy() // NOLINT(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 {
 	auto cl1 = Location::coverLocation("AnAlbum", "AnArtist");
 	cl1.setSearchTerm("some search term");
@@ -213,7 +214,8 @@ void CoverLocationTest::testCopy()
 	QVERIFY(cl5.searchTerm() == cl1.searchTerm());
 }
 
-void CoverLocationTest::testInvalidLocation()
+[[maybe_unused]] void
+CoverLocationTest::testInvalidLocation() // NOLINT(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 {
 	const auto invalidLocation = Location::invalidLocation();
 
@@ -232,9 +234,10 @@ void CoverLocationTest::testInvalidLocation()
 	QVERIFY(invalidLocation.searchTerm().isEmpty());
 }
 
-void CoverLocationTest::testAlbumWithoutLocalCover()
+[[maybe_unused]] void
+CoverLocationTest::testAlbumWithoutLocalCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "AlbumWithoutLocalCover";
+	constexpr const auto* Dir = "AlbumWithoutLocalCover";
 	deleteAllFiles(tempPath(Dir));
 
 	const auto album = createAlbum(tempPath(Dir));
@@ -262,9 +265,9 @@ void CoverLocationTest::testAlbumWithoutLocalCover()
 	QVERIFY(coverLocation.searchTerm().contains(album.name()));
 }
 
-void CoverLocationTest::testAlbumWithLocalCover()
+[[maybe_unused]] void CoverLocationTest::testAlbumWithLocalCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "AlbumWithLocalCover";
+	constexpr const auto* Dir = "AlbumWithLocalCover";
 	deleteAllFiles(tempPath(Dir));
 
 	const auto album = createAlbum(tempPath(Dir));
@@ -293,9 +296,9 @@ void CoverLocationTest::testAlbumWithLocalCover()
 	QVERIFY(coverLocation.searchTerm().contains(album.name()));
 }
 
-void CoverLocationTest::testAlbumWithTrackHint()
+[[maybe_unused]] void CoverLocationTest::testAlbumWithTrackHint() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "AlbumWithTrackHint";
+	constexpr const auto* Dir = "AlbumWithTrackHint";
 	deleteAllFiles(tempPath(Dir));
 
 	createMP3(tempPath(Dir), "track.mp3", true);
@@ -326,9 +329,10 @@ void CoverLocationTest::testAlbumWithTrackHint()
 	QVERIFY(coverLocation.searchTerm().contains(album.name()));
 }
 
-void CoverLocationTest::testAlbumWithTrackHintAndLocalCover()
+[[maybe_unused]] void
+CoverLocationTest::testAlbumWithTrackHintAndLocalCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "AlbumWithTrackHintAndLocalCover";
+	constexpr const auto* Dir = "AlbumWithTrackHintAndLocalCover";
 	deleteAllFiles(tempPath(Dir));
 
 	createCoverFile(tempPath(Dir));
@@ -360,9 +364,9 @@ void CoverLocationTest::testAlbumWithTrackHintAndLocalCover()
 	QVERIFY(coverLocation.searchTerm().contains(album.name()));
 }
 
-void CoverLocationTest::testTrackWithoutAnyCover()
+[[maybe_unused]] void CoverLocationTest::testTrackWithoutAnyCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "TrackWithoutAnyCover";
+	constexpr const auto* Dir = "TrackWithoutAnyCover";
 	deleteAllFiles(tempPath(Dir));
 
 	const auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
@@ -390,9 +394,9 @@ void CoverLocationTest::testTrackWithoutAnyCover()
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
 }
 
-void CoverLocationTest::testTrackWithCover()
+[[maybe_unused]] void CoverLocationTest::testTrackWithCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "TrackWithCover";
+	constexpr const auto* Dir = "TrackWithCover";
 	deleteAllFiles(tempPath(Dir));
 
 	const auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
@@ -423,9 +427,9 @@ void CoverLocationTest::testTrackWithCover()
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
 }
 
-void CoverLocationTest::testTrackWithCoverFlag()
+[[maybe_unused]] void CoverLocationTest::testTrackWithCoverFlag() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "TrackWithCoverFlag";
+	constexpr const auto* Dir = "TrackWithCoverFlag";
 	deleteAllFiles(tempPath(Dir));
 
 	auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
@@ -455,9 +459,9 @@ void CoverLocationTest::testTrackWithCoverFlag()
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
 }
 
-void CoverLocationTest::testTrackWithLocalCover()
+[[maybe_unused]] void CoverLocationTest::testTrackWithLocalCover() // NOLINT(readability-function-cognitive-complexity)
 {
-	constexpr const auto Dir = "TrackWithLocalCover";
+	constexpr const auto* Dir = "TrackWithLocalCover";
 	deleteAllFiles(tempPath(Dir));
 
 	const auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
@@ -488,7 +492,8 @@ void CoverLocationTest::testTrackWithLocalCover()
 	QVERIFY(coverLocation.searchTerm().contains(track.album()));
 }
 
-void CoverLocationTest::testRadioStationDownloadUrls()
+[[maybe_unused]] void
+CoverLocationTest::testRadioStationDownloadUrls() // NOLINT(readability-convert-member-functions-to-static)
 {
 	const auto track = createRadioTrack();
 	const auto coverLocation = Cover::Location::coverLocation(track);
@@ -505,7 +510,8 @@ void CoverLocationTest::testRadioStationDownloadUrls()
 	QVERIFY(searchTerm == "Radio Station");
 }
 
-void CoverLocationTest::testArtist()
+[[maybe_unused]] void
+CoverLocationTest::testArtist() // NOLINT(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 {
 	deleteAllFiles();
 
@@ -530,6 +536,34 @@ void CoverLocationTest::testArtist()
 	QVERIFY(coverLocation.hasSearchUrls());
 	QVERIFY(coverLocation.searchUrls().size() >= 2);
 	QVERIFY(coverLocation.searchTerm() == artist.name());
+}
+
+[[maybe_unused]] void
+CoverLocationTest::testEqualAlbumAndTrackHash() // NOLINT(readability-convert-member-functions-to-static)
+{
+	constexpr const auto* AlbumName = "Halfway to Heaven";
+	constexpr const auto* ArtistName = "Europe";
+	auto album = Album {};
+	album.setArtists({ArtistName});
+	album.setName(AlbumName);
+
+	auto track = MetaData {};
+	track.setYear(1992); // NOLINT(readability-magic-numbers)
+	track.setArtist(ArtistName);
+	track.setTitle("The Final Countdown");
+	track.setAlbum(AlbumName);
+
+	const auto coverLocationAlbum = Cover::Location::coverLocation(album);
+	const auto coverLocationTrack = Cover::Location::coverLocation(track);
+
+	const auto hashAlbum = coverLocationAlbum.hash();
+	const auto hashPathAlbum = coverLocationAlbum.hashPath();
+
+	const auto hashTrack = coverLocationTrack.hash();
+	const auto hashPathTrack = coverLocationTrack.hashPath();
+
+	QVERIFY(hashAlbum == hashTrack);
+	QVERIFY(hashPathAlbum == hashPathTrack);
 }
 
 QTEST_MAIN(CoverLocationTest)

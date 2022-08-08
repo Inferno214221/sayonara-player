@@ -41,7 +41,7 @@ namespace DB
 
 			virtual bool dbFetchArtists(Query& q, ArtistList& result) const;
 
-			virtual ArtistId getArtistID(const QString& artist) const;
+			[[nodiscard]] virtual ArtistId getArtistID(const QString& artist) const;
 			virtual bool getArtistByID(ArtistId id, Artist& artist) const;
 			virtual bool getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const;
 
@@ -51,22 +51,22 @@ namespace DB
 			virtual bool deleteArtist(ArtistId id);
 
 			virtual ArtistId insertArtistIntoDatabase(const QString& artist);
-			virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
+			[[maybe_unused]] virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
 		protected:
-			virtual QString artistIdField() const = 0;
-			virtual QString artistNameField() const = 0;
-			virtual QString trackView() const = 0;
-			virtual QString trackSearchView() const = 0;
+			[[nodiscard]] virtual QString artistIdField() const = 0;
+			[[nodiscard]] virtual QString artistNameField() const = 0;
+			[[nodiscard]] virtual QString trackView() const = 0;
+			[[nodiscard]] virtual QString trackSearchView() const = 0;
 
 			virtual Module* module() = 0;
-			virtual const Module* module() const = 0;
+			[[nodiscard]] virtual const Module* module() const = 0;
 
 			virtual void updateArtistCissearch();
 			virtual void deleteAllArtists();
 
 		private:
-			virtual QString fetchQueryArtists(bool also_empty) const;
+			[[nodiscard]] virtual QString fetchQueryArtists(bool also_empty) const;
 	};
 }
 

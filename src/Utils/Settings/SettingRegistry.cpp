@@ -1,3 +1,6 @@
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "readability-magic-numbers"
 /* SettingRegistry.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
@@ -218,7 +221,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::Engine_Pitch>("engine_pitch", 440);
 	registerSetting<Set::Engine_PreservePitch>("engine_preserve_pitch", false);
 	registerSetting<Set::Engine_SpeedActive>("engine_speed_active", false);
-	registerSetting<Set::Engine_Speed>("engine_speed", 1.0f);
+	registerSetting<Set::Engine_Speed>("engine_speed", 1.0F);
 	registerSetting<Set::Engine_Sink>("engine_sink", QString("auto"));
 	registerSetting<Set::Engine_AlsaDevice>("engine_alsa_device", QString(""));
 	registerSetting<Set::Engine_BufferSizeMS>("engine_buffer_size_ms", 500);
@@ -298,3 +301,5 @@ QList<SettingKey> SettingRegistry::undeployableKeys()
 		SettingKey::Pitch_found
 	};
 }
+
+#pragma clang diagnostic pop

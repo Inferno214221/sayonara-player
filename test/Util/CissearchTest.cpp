@@ -11,6 +11,34 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
+namespace
+{
+	int searchByGenre(const QString& searchString)
+	{
+		auto* db = DB::Connector::instance();
+		DB::LibraryDatabase* libDb = db->libraryDatabase(0, 0);
+
+		Library::Filter filter;
+		filter.setMode(Library::Filter::Mode::Genre);
+		filter.setFiltertext(searchString);
+
+		MetaDataList tracks;
+		libDb->getAllTracksBySearchString(filter, tracks);
+
+		return tracks.count();
+	}
+
+	void updateSearchmode(const Library::SearchModeMask smm)
+	{
+		SetSetting(Set::Lib_SearchMode, smm);
+
+		auto* db = DB::Connector::instance();
+		auto* libDb = db->libraryDatabase(0, 0);
+
+		libDb->updateSearchMode();
+	}
+}
+
 class CissearchTest :
 	public Test::Base
 {
@@ -25,41 +53,14 @@ class CissearchTest :
 		}
 
 	private slots:
-		void uppercaseTest();
-		void diacrticTest();
-		void specialCharsTest();
-		void fullMaskTest();
-
-		void genreListTest();
-
-	private:
-		int searchByGenre(const QString& searchString)
-		{
-			auto* db = DB::Connector::instance();
-			DB::LibraryDatabase* libDb = db->libraryDatabase(0, 0);
-
-			Library::Filter filter;
-			filter.setMode(Library::Filter::Mode::Genre);
-			filter.setFiltertext(searchString);
-
-			MetaDataList tracks;
-			libDb->getAllTracksBySearchString(filter, tracks);
-
-			return tracks.count();
-		}
-
-		void updateSearchmode(const Library::SearchModeMask smm)
-		{
-			SetSetting(Set::Lib_SearchMode, smm);
-
-			auto* db = DB::Connector::instance();
-			auto* libDb = db->libraryDatabase(0, 0);
-
-			libDb->updateSearchMode();
-		}
+		[[maybe_unused]] void uppercaseTest();
+		[[maybe_unused]] void diacrticTest();
+		[[maybe_unused]] void specialCharsTest();
+		[[maybe_unused]] void fullMaskTest();
+		[[maybe_unused]] void genreListTest();
 };
 
-void CissearchTest::uppercaseTest()
+[[maybe_unused]] void CissearchTest::uppercaseTest() // NOLINT(readability-convert-member-functions-to-static)
 {
 	using Library::Utils::convertSearchstring;
 	const auto searchModeMask = Library::SearchMode::CaseInsensitve;
@@ -69,7 +70,7 @@ void CissearchTest::uppercaseTest()
 	QVERIFY(convertSearchstring("ArTiSt", searchModeMask2) != convertSearchstring("aRtIsT", searchModeMask2));
 }
 
-void CissearchTest::diacrticTest()
+[[maybe_unused]] void CissearchTest::diacrticTest() // NOLINT(readability-convert-member-functions-to-static)
 {
 	using Library::Utils::convertSearchstring;
 
@@ -90,7 +91,7 @@ void CissearchTest::diacrticTest()
 	        convertSearchstring("striArt3", searchModeMask2));
 }
 
-void CissearchTest::specialCharsTest()
+[[maybe_unused]] void CissearchTest::specialCharsTest() // NOLINT(readability-convert-member-functions-to-static)
 {
 	using Library::Utils::convertSearchstring;
 	const auto searchModeMask = Library::SearchMode::NoSpecialChars;
@@ -114,7 +115,7 @@ void CissearchTest::specialCharsTest()
 		convertSearchstring("Billy      Talent", searchModeMask2));
 }
 
-void CissearchTest::fullMaskTest()
+[[maybe_unused]] void CissearchTest::fullMaskTest() // NOLINT(readability-convert-member-functions-to-static)
 {
 	using Library::Utils::convertSearchstring;
 	const auto searchModeMask = Library::SearchMode::NoDiacriticChars | Library::SearchMode::CaseInsensitve |
@@ -129,7 +130,8 @@ void CissearchTest::fullMaskTest()
 	        convertSearchstring("billytalent", searchModeMask));
 }
 
-void CissearchTest::genreListTest()
+[[maybe_unused]] void
+CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
 	auto md = MetaData {};
 	md.setArtist("Artist");
@@ -169,25 +171,24 @@ void CissearchTest::genreListTest()
 
 	{
 		const auto searchModeMask = 0;
-		this->updateSearchmode(searchModeMask);
+		updateSearchmode(searchModeMask);
 
 		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1Pop,2poP,3Rock,4psy rock,5hip-hop,6Hip Hop");
 
-		int c;
-		c = this->searchByGenre("Hip Hop");
+		auto c = searchByGenre("Hip Hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("Hiphop");
+		c = searchByGenre("Hiphop");
 		QVERIFY(c == 0);
 
-		c = this->searchByGenre("hiphop");
+		c = searchByGenre("hiphop");
 		QVERIFY(c == 0);
 
-		c = this->searchByGenre("hip-hop");
+		c = searchByGenre("hip-hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip hop");
+		c = searchByGenre("hip hop");
 		QVERIFY(c == 0);
 	}
 
@@ -198,19 +199,19 @@ void CissearchTest::genreListTest()
 		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1Pop2poP3Rock4psyrock5hiphop6HipHop");
 
-		auto c = this->searchByGenre("Hip Hop");
+		auto c = searchByGenre("Hip Hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("Hiphop");
+		c = searchByGenre("Hiphop");
 		QVERIFY(c == 0);
 
-		c = this->searchByGenre("hiphop");
+		c = searchByGenre("hiphop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip-hop");
+		c = searchByGenre("hip-hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip Hop");
+		c = searchByGenre("hip Hop");
 		QVERIFY(c == 0);
 	}
 
@@ -221,19 +222,19 @@ void CissearchTest::genreListTest()
 		const auto cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1pop,2pop,3rock,4psy rock,5hip-hop,6hip hop");
 
-		auto c = this->searchByGenre("Hip Hop");
+		auto c = searchByGenre("Hip Hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("Hiphop");
+		c = searchByGenre("Hiphop");
 		QVERIFY(c == 0);
 
-		c = this->searchByGenre("hiphop");
+		c = searchByGenre("hiphop");
 		QVERIFY(c == 0);
 
-		c = this->searchByGenre("hip-hop");
+		c = searchByGenre("hip-hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip Hop");
+		c = searchByGenre("hip Hop");
 		QVERIFY(c == 1);
 	}
 
@@ -241,23 +242,22 @@ void CissearchTest::genreListTest()
 		const auto searchModeMask = Library::SearchMode::CaseInsensitve | Library::SearchMode::NoSpecialChars;
 		this->updateSearchmode(searchModeMask);
 
-		QString cis = Library::Utils::convertSearchstring(genreList.join(","), searchModeMask);
+		const auto cis = Library::convertSearchstring(genreList.join(","), searchModeMask);
 		QVERIFY(cis == "1pop2pop3rock4psyrock5hiphop6hiphop");
 
-		int c;
-		c = this->searchByGenre("Hip Hop");
+		auto c = searchByGenre("Hip Hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("Hiphop");
+		c = searchByGenre("Hiphop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hiphop");
+		c = searchByGenre("hiphop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip-hop");
+		c = searchByGenre("hip-hop");
 		QVERIFY(c == 1);
 
-		c = this->searchByGenre("hip Hop");
+		c = searchByGenre("hip Hop");
 		QVERIFY(c == 1);
 	}
 }

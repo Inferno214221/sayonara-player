@@ -83,12 +83,10 @@ QString Artists::fetchQueryArtists(bool alsoEmpty) const
 		.arg(joinType)
 		.arg(trackView());
 
-	const auto queryText = QString("SELECT %1 FROM artists %2 %3")
+	return QString("SELECT %1 FROM artists %2 %3")
 		.arg(joinedFields)
 		.arg(joinStatementArtist)
 		.arg(joinStatementAlbum);
-
-	return queryText;
 }
 
 bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
@@ -141,7 +139,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const
 		return false;
 	}
 
-	artist = artists[0];
+	artist = std::move(artists[0]);
 	return true;
 }
 
@@ -236,7 +234,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 	       : query.lastInsertId().toInt();
 }
 
-ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
+[[maybe_unused]] ArtistId Artists::insertArtistIntoDatabase(const Artist& artist)
 {
 	return insertArtistIntoDatabase(artist.name());
 }

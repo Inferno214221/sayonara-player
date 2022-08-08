@@ -5,6 +5,12 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
+#pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
+#pragma ide diagnostic ignored "readability-function-cognitive-complexity"
+
 using Library::Filter;
 
 class LibraryFilterTest :
@@ -97,7 +103,7 @@ void LibraryFilterTest::testFilterText()
 	QVERIFY(filtertextPercent[1] == "%search$BLupp2%");
 }
 
-void LibraryFilterTest::testClear()
+void LibraryFilterTest::testClear() // NOLINT(readability-convert-member-functions-to-static)
 {
 	{ // clear filter
 		auto filter = Filter();
@@ -121,7 +127,7 @@ void LibraryFilterTest::testClear()
 	}
 }
 
-void LibraryFilterTest::testFilterLength()
+void LibraryFilterTest::testFilterLength() // NOLINT(readability-convert-member-functions-to-static)
 {
 	auto filter1 = Filter();
 	auto filter2 = Filter();
@@ -149,3 +155,5 @@ void LibraryFilterTest::testFilterLength()
 QTEST_GUILESS_MAIN(LibraryFilterTest)
 
 #include "LibraryFilterTest.moc"
+
+#pragma clang diagnostic pop
