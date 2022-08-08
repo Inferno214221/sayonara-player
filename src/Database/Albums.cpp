@@ -42,7 +42,7 @@ namespace
 		auto discs = variant.toString().split(',');
 		discs.removeDuplicates();
 
-		for(const auto& disc : discs)
+		for(const auto& disc: discs)
 		{
 			result << static_cast<Disc>(disc.toInt());
 		}
@@ -280,7 +280,7 @@ bool Albums::getAllAlbumsByArtist(const IdList& artistIds, AlbumList& result, co
 	const auto query = getFetchQueryText(trackSearchView(), whereStatement);
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter : searchFilters)
+	for(const auto& searchFilter: searchFilters)
 	{
 		Query q(module());
 		q.prepare(query);
@@ -301,7 +301,7 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	const auto query = getFetchQueryText(trackSearchView(), whereStatement);
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter : searchFilters)
+	for(const auto& searchFilter: searchFilters)
 	{
 		auto q = Query(module());
 		q.prepare(query);
@@ -338,7 +338,7 @@ void Albums::updateAlbumCissearch()
 
 	module()->db().transaction();
 
-	for(const Album& album : albums)
+	for(const Album& album: albums)
 	{
 		const auto cissearch = Library::Utils::convertSearchstring(album.name());
 

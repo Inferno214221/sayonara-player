@@ -227,7 +227,7 @@ bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 
 bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& tracks) const
 {
-	for(const auto& path : paths)
+	for(const auto& path: paths)
 	{
 		auto track = getTrackByPath(path);
 		if(track.id() >= 0)
@@ -306,7 +306,7 @@ bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField,
 	const auto query = fetchQueryTracks(whereStatement);
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter : searchFilters)
+	for(const auto& searchFilter: searchFilters)
 	{
 		auto q = Query(module());
 		q.prepare(query);
@@ -380,7 +380,7 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 	const auto query = fetchQueryTracks(whereStatement);
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter : searchFilters)
+	for(const auto& searchFilter: searchFilters)
 	{
 		auto q = Query(module());
 		q.prepare(query);
@@ -466,7 +466,7 @@ bool Tracks::deleteInvalidTracks(const QString& libraryPath, MetaDataList& doubl
 	Util::Set<Id> toDelete;
 	int index = 0;
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		if(trackIndexMap.contains(track.filepath()))
 		{
@@ -519,7 +519,7 @@ Util::Set<Genre> Tracks::getAllGenres() const
 		const auto genre = q.value(0).toString();
 		const auto subgenres = genre.split(",");
 
-		for(const auto& subgenre : subgenres)
+		for(const auto& subgenre: subgenres)
 		{
 			genres.insert(Genre(subgenre));
 		}
@@ -535,7 +535,7 @@ void Tracks::updateTrackCissearch()
 
 	module()->db().transaction();
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		module()->update(
 			"tracks",
@@ -598,13 +598,13 @@ bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId targ
 	module()->db().transaction();
 
 	const auto originalPaths = paths.keys();
-	for(const auto& originalPath : originalPaths)
+	for(const auto& originalPath: originalPaths)
 	{
 		MetaDataList tracks;
 		getAllTracksByPaths({originalPath}, tracks);
 
 		const auto newPath = paths[originalPath];
-		for(const auto& track : tracks)
+		for(const auto& track: tracks)
 		{
 			const auto oldFilepath = track.filepath();
 			auto newFilepath = oldFilepath;

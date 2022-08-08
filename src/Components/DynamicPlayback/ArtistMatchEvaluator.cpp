@@ -109,7 +109,7 @@ namespace
 	{
 		ArtistLookupMap lookupMap;
 
-		for(const auto& artist : artists)
+		for(const auto& artist: artists)
 		{
 			const auto& transformedName = nameUnificator.unifyString(artist.name());
 			if(!lookupMap.contains(transformedName))
@@ -136,13 +136,13 @@ namespace
 		return createArtistLookupMap(artists);
 	}
 
-	QList<ArtistId>
-	filterAvailableArtists(const ArtistMatch& artistMatch, ArtistMatch::Quality quality, const ArtistLookupMap& lookupMap)
+	QList<ArtistId> filterAvailableArtists(const ArtistMatch& artistMatch, const ArtistMatch::Quality quality,
+	                                       const ArtistLookupMap& lookupMap)
 	{
 		QList<ArtistId> artistIds;
 
 		const auto entries = artistMatch.get(quality);
-		for(const auto& entry : entries)
+		for(const auto& entry: entries)
 		{
 			const auto name = nameUnificator.unifyString(entry.artist);
 			const auto artistIdList = lookupMap[name];

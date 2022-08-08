@@ -26,7 +26,6 @@ class QList;
 class QChar;
 class QString;
 
-
 namespace Library
 {
 	/**
@@ -36,11 +35,11 @@ namespace Library
 	 */
 	enum SearchMode
 	{
-		None                = 0,
-		CaseInsensitve		= (1<<0),
-		NoSpecialChars		= (1<<1),
-		NoDiacriticChars	= (1<<2),
-		SearchModeMaskSize  = (1<<3)
+		None = 0,
+		CaseInsensitve = (1 << 0),
+		NoSpecialChars = (1 << 1),
+		NoDiacriticChars = (1 << 2),
+		SearchModeMaskSize = (1 << 3)
 	};
 
 	using SearchModeMask = int;

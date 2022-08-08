@@ -7,19 +7,18 @@
 
 using Library::Filter;
 
-class LibraryFilterTest : 
-    public Test::Base
+class LibraryFilterTest :
+	public Test::Base
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        LibraryFilterTest() :
-            Test::Base("LibraryFilterTest")
-        {}
+	public:
+		LibraryFilterTest() :
+			Test::Base("LibraryFilterTest") {}
 
-    private slots:
-        void testConstructCopyCompare();
-        void testFilterText();
+	private slots:
+		void testConstructCopyCompare();
+		void testFilterText();
 		void testClear();
 		void testFilterLength();
 };
@@ -44,9 +43,11 @@ void LibraryFilterTest::testConstructCopyCompare()
 		QVERIFY(filter2.isEqual(filter, MinimumSearchStringLength));
 		QVERIFY(filter2.mode() == filter.mode());
 		QVERIFY(filter2.cleared() == filter.cleared());
-		QVERIFY(filter2.searchModeFiltertext(false, searchModeMask) == filter.searchModeFiltertext(false, searchModeMask));
+		QVERIFY(
+			filter2.searchModeFiltertext(false, searchModeMask) == filter.searchModeFiltertext(false, searchModeMask));
 		QVERIFY(filter2.filtertext(false) == filter.searchModeFiltertext(false, searchModeMask));
-		QVERIFY(filter2.searchModeFiltertext(true, searchModeMask) == filter.searchModeFiltertext(true, searchModeMask));
+		QVERIFY(
+			filter2.searchModeFiltertext(true, searchModeMask) == filter.searchModeFiltertext(true, searchModeMask));
 		QVERIFY(filter2.filtertext(true) == filter.searchModeFiltertext(true, searchModeMask));
 		QVERIFY(filter2.count() == filter.count());
 	}
@@ -57,9 +58,11 @@ void LibraryFilterTest::testConstructCopyCompare()
 		QVERIFY(filter2.isEqual(filter, MinimumSearchStringLength));
 		QVERIFY(filter2.mode() == filter.mode());
 		QVERIFY(filter2.cleared() == filter.cleared());
-		QVERIFY(filter2.searchModeFiltertext(false, searchModeMask) == filter.searchModeFiltertext(false, searchModeMask));
+		QVERIFY(
+			filter2.searchModeFiltertext(false, searchModeMask) == filter.searchModeFiltertext(false, searchModeMask));
 		QVERIFY(filter2.filtertext(false) == filter.searchModeFiltertext(false, searchModeMask));
-		QVERIFY(filter2.searchModeFiltertext(true, searchModeMask) == filter.searchModeFiltertext(true, searchModeMask));
+		QVERIFY(
+			filter2.searchModeFiltertext(true, searchModeMask) == filter.searchModeFiltertext(true, searchModeMask));
 		QVERIFY(filter2.filtertext(true) == filter.searchModeFiltertext(true, searchModeMask));
 		QVERIFY(filter2.count() == filter.count());
 	}
@@ -144,4 +147,5 @@ void LibraryFilterTest::testFilterLength()
 }
 
 QTEST_GUILESS_MAIN(LibraryFilterTest)
+
 #include "LibraryFilterTest.moc"

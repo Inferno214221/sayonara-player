@@ -25,26 +25,21 @@ using Library::MergeData;
 
 struct MergeData::Private
 {
-	Util::Set<Id>	source_ids;
-	Id				target_id;
-	LibraryId		libraryId;
+	Util::Set<Id> sourceIds;
+	Id targetId;
+	LibraryId libraryId;
 
-	Private(const Util::Set<Id>& source_ids, Id target_id, LibraryId libraryId) :
-		source_ids(source_ids),
-		target_id(target_id),
-		libraryId(libraryId)
-	{}
+	Private(const Util::Set<Id>& sourceIds, const Id targetId, const LibraryId libraryId) :
+		sourceIds(sourceIds),
+		targetId(targetId),
+		libraryId(libraryId) {}
 };
 
-MergeData::MergeData(const Util::Set<Id>& source_ids, Id target_id, LibraryId libraryId)
-{
-	m = Pimpl::make<Private>(source_ids, target_id, libraryId);
-}
+MergeData::MergeData(const Util::Set<Id>& sourceIds, const Id target_id, const LibraryId libraryId) :
+	m {Pimpl::make<Private>(sourceIds, target_id, libraryId)} {}
 
-MergeData::MergeData(const MergeData& other)
-{
-	m = Pimpl::make<Private>(other.sourceIds(), other.targetId(), other.libraryId());
-}
+MergeData::MergeData(const MergeData& other) :
+	m {Pimpl::make<Private>(other.sourceIds(), other.targetId(), other.libraryId())} {}
 
 MergeData::~MergeData() = default;
 
@@ -59,17 +54,8 @@ bool MergeData::isValid() const
 	return ((targetId() >= 0) && (sourceIds().count() >= 2) && !(sourceIds().contains(-1)));
 }
 
-Util::Set<Id> MergeData::sourceIds() const
-{
-	return m->source_ids;
-}
+Util::Set<Id> MergeData::sourceIds() const { return m->sourceIds; }
 
-Id MergeData::targetId() const
-{
-	return m->target_id;
-}
+Id MergeData::targetId() const { return m->targetId; }
 
-LibraryId MergeData::libraryId() const
-{
-	return m->libraryId;
-}
+LibraryId MergeData::libraryId() const { return m->libraryId; }

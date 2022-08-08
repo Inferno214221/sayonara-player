@@ -29,50 +29,21 @@
 
 namespace Library
 {
-	/**
-	 * @brief Changes all metadata containing one of the source ids and replaces
-	 * it with the target id. For example, 3 different artists are merged into one
-	 * @ingroup Library
-	 * @ingroup Helper
-	 */
 	class MergeData
 	{
 		PIMPL(MergeData)
 
 		public:
-
-			/**
-			 * @brief Merges source_ids into target_id
-			 * @param source ids
-			 * @param target ids
-			 * @param libraryId, can be -1
-			 */
 			MergeData(const Util::Set<Id>& sourceIds, Id targetId, LibraryId libraryId);
 			MergeData(const MergeData& other);
 			~MergeData();
 
 			MergeData& operator=(const MergeData& other);
 
-			/**
-			 * @brief target_id >= 0, source_ids.size() > 1, source_ids >= 0
-			 * @return
-			 */
-			bool			isValid() const;
-
-			/**
-			 * @brief getter for source_ids. See constructor
-			 */
-			Util::Set<Id>	sourceIds() const;
-
-			/**
-			 * @brief getter for target_id. See constructor
-			 */
-			Id				targetId() const;
-
-			/**
-			 * @brief getter for library_d. See constructor
-			 */
-			LibraryId		libraryId() const;
+			[[nodiscard]] bool isValid() const;
+			[[nodiscard]] Util::Set<Id> sourceIds() const;
+			[[nodiscard]] Id targetId() const;
+			[[nodiscard]] LibraryId libraryId() const;
 	};
 }
 

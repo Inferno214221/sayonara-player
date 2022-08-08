@@ -85,7 +85,7 @@ namespace
 
 		return std::nullopt;
 	}
-
+	
 	std::optional<bool> compareSoundFiles(const QString& path1, const QString& path2)
 	{
 		return comparePaths(path1, path2, [](const auto& path) {
