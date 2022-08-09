@@ -18,7 +18,7 @@ build-sayonara:
     untracked: true
     expire_in: 1 day
   only:
-    - branches
+    - merge_requests
     - tags
 
 
@@ -37,7 +37,7 @@ test-sayonara:
     untracked: true
     expire_in: 2 days
   only:
-    - branches
+    - merge_requests
     - tags
 
 
@@ -74,6 +74,8 @@ package-appimage:
     paths:
       - build/*.AppImage
     expire_in: 1 day
+  only:
+    - merge_requests
 
 
 # Snap
@@ -83,9 +85,12 @@ package-snap:
   stage: packaging
   tags:
     - luke-1
-  variables:
-    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 1G
   script:
+    - export LC_ALL=C.UTF-8
+    - export LANG=C.UTF-8
+    - export SNAP_ARCH=amd64
+    - export SNAPCRAFT_BUILD_INFO=1
+    - export SNAPCRAFT_SETUP_CORE=1
     - apt-get update -qq
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
@@ -110,8 +115,6 @@ deploy-snap:
     - package-snap
   tags:
     - luke-1
-  variables:
-    SNAPCRAFT_BUILD_ENVIRONMENT_MEMORY: 1G
   script:
     - echo $SNAPCRAFT_LOGIN | base64 --decode --ignore-garbage > snapcraft.login
     - snapcraft login --with snapcraft.login
