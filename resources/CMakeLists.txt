@@ -1,6 +1,9 @@
 project(say_resources)
 
 configure_file(version.in ${CMAKE_BINARY_DIR}/version @ONLY)
+configure_file(com.sayonara-player.Sayonara.appdata.xml.in
+               ${CMAKE_CURRENT_BINARY_DIR}/com.sayonara-player.Sayonara.appdata.xml
+               @ONLY)
 
 # manpage
 find_program(GZIP_BINARY
@@ -38,7 +41,7 @@ endif ()
 
 install(FILES "com.sayonara-player.Sayonara.desktop"
         DESTINATION share/applications)
-install(FILES "sayonara.appdata.xml"
+install(FILES "${CMAKE_CURRENT_BINARY_DIR}/com.sayonara-player.Sayonara.appdata.xml"
         DESTINATION share/metainfo)
 install(DIRECTORY "logos/"
         DESTINATION share/icons/hicolor)

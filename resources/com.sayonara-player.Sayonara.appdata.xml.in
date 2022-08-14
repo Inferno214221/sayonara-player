@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2015 Martin Gansser <martinkg@fedoraproject.org> -->
+<!-- Check this file with appstream-util validate com.sayonara-player.Sayonara.appdata.xml -->
+	<component type="desktop">
+		<id>com.sayonara-player.Sayonara</id>
+		<metadata_license>CC0</metadata_license>
+		<project_license>GPL-3.0+</project_license>
+		<launchable type="desktop-id">com.sayonara-player.Sayonara.desktop</launchable>
+		<name>Sayonara</name>
+		<developer_name>Michael Lugmair</developer_name>
+		<update_contact>sayonara-player_at_posteo.org</update_contact>
+		<summary>A fast and powerful audio player and library manager</summary>
+		<releases>
+			<release version="@SAYONARA_VERSION@" date="2022-01-01">
+				<description>See release notes on https://sayonara-player.com/changelog</description>
+				<issues>
+					<issue url="https://gitlab.com/luciocarreras/sayonara-player">Search or file in issue reports at Gitlab</issue>
+				</issues>
+			</release>
+		</releases>
+		<content_rating type="oars-1.0" />
+		<description>
+			<p>Sayonara's goals are intuitive usability, speed and low resource consumption.</p>
+			<p>It holds a lot of features like many supported music and playlist formats, optional but powerful media library organized as cover, directory or table view, tabbed playlists and a lot of plugins. For managing your audio files, Sayonara also holds a sophisticated metadata/tag editor.</p>
+			<p>It's also possible to manage your web radio and podcasts.</p>
+			<p>Info for snap users: There is currently a snap-related issue regarding the directory chooser. So the native directory dialog has been disabled for snap packages because of issues with KDE. If you want to use a native dialog, you can set it in the settings menu Force native dialogs.</p>
+		</description>
+		<screenshots>
+			<screenshot type="default">
+				<image>https://sayonara-player.com/media/images/appdata/sayonara-appdata-01.png</image>
+			</screenshot>
+			<screenshot>
+				<image>https://sayonara-player.com/media/images/appdata/sayonara-appdata-02.png</image>
+			</screenshot>
+			<screenshot>
+				<image>https://sayonara-player.com/media/images/appdata/sayonara-appdata-03.png</image>
+			</screenshot>
+			<screenshot>
+				<image>https://sayonara-player.com/media/images/appdata/sayonara-appdata-04.png</image>
+			</screenshot>
+		</screenshots>
+		<url type="homepage">https://sayonara-player.com</url>
+		<url type="bugtracker">https://gitlab.com/luciocarreras/sayonara-player</url>
+		<url type="translate">https://www.transifex.com/sayonara/sayonara-player</url>
+		<url type="donation">https://sayonara-player.com/donations.php</url>
+		<kudos>
+			<kudo>HiDpiIcon</kudo>
+			<kudo>ModernToolkit</kudo>
+			<kudo>Notifications</kudo>
+		</kudos>
+		<keywords>
+			<keyword>sayonara</keyword>
+			<keyword>audio</keyword>
+			<keyword>music</keyword>
+			<keyword>player</keyword>
+			<keyword>tag</keyword>
+			<keyword>library</keyword>
+		</keywords>
+	</component>
+

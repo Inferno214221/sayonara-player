@@ -61,7 +61,7 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/*.appdata
 %{_bindir}/%{name}-query
 %{_datadir}/applications/com.sayonara-player.Sayonara.desktop
 %{_datadir}/icons/hicolor/*/apps/%{name}.png
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_datadir}/metainfo/com.sayonara-player.Sayonara.appdata.xml
 %dir %{_datadir}/%{name}
 %dir %{_datadir}/%{name}/translations
 %dir %{_datadir}/%{name}/translations/icons
