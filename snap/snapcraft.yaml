@@ -34,7 +34,8 @@ description: |
   File -> Preferences -> User Interface -> Force native dialogs.
   It usually doesn't work in the KDE environment.
 confinement: strict
-base: core18
+base: core20
+compression: lzo
 
 apps:
   sayonara:
@@ -45,6 +46,8 @@ apps:
       - kde-neon
     plugs:
       - audio-playback
+      - desktop
+      - desktop-legacy
       - home
       - network
       - network-bind
@@ -58,6 +61,8 @@ apps:
     environment:
       # Use XDG-PORTALS, icon theme and open/save file dialogs.
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
+      GIO_EXTRA_MODULES: $SNAP/kf5/usr/lib/x86_64-linux-gnu/gio/modules
+      XDG_DATA_DIRS: $SNAP/usr/share/glib-2.0/schemas:$XDG_DATA_DIRS
 
 layout:
   /usr/share/sayonara:
@@ -69,7 +74,7 @@ parts:
     source-type: git
     source-commit: enter-source-commit-here
     plugin: cmake
-    configflags:
+    cmake-parameters:
       - -DCMAKE_BUILD_TYPE=Release
       - -DCMAKE_INSTALL_PREFIX=/usr
       - -DDISABLE_NATIVE_DIR_DIALOGS=1
@@ -78,6 +83,9 @@ parts:
     override-build: |
       snapcraftctl build
       sed -i 's|Icon=sayonara|Icon=${SNAP}/usr/share/icons/hicolor/256x256/apps/sayonara.png|g' $SNAPCRAFT_PART_INSTALL/usr/share/applications/com.sayonara-player.Sayonara.desktop
+    build-snaps:
+      - kde-frameworks-5-qt-5-15-3-core20
+      - kde-frameworks-5-qt-5-15-3-core20-sdk
     build-packages:
       - binutils-gold
       - clang-10
@@ -85,37 +93,35 @@ parts:
       - git
       - libgstreamer-plugins-bad1.0-dev
       - libgstreamer-plugins-base1.0-dev
+      - libgstreamer-plugins-good1.0-dev
       - libgstreamer1.0-dev
       - libtag1-dev
       - pkg-config
-      - qtbase5-dev
-      - qttools5-dev
-      - qttools5-dev-tools
-      - libqt5svg5-dev
       - zlib1g-dev
     stage-packages:
       - libgpm2 # requred by gstreamer autoaudiosink
       - freeglut3
       - ffmpeg
+      - glib-networking
+      - gsettings-desktop-schemas
       - gstreamer1.0-plugins-bad
       - gstreamer1.0-plugins-base
       - gstreamer1.0-plugins-good
       - gstreamer1.0-plugins-ugly
       - gstreamer1.0-libav
-      - libqt5sql5-sqlite
       - libgcc1
       - libglib2.0-0
-      - libgstreamer-plugins-base1.0-0
       - libgstreamer1.0-0
-      - libqt5core5a
-      - libqt5dbus5
-      - libqt5network5
-      - libqt5sql5
-      - libqt5widgets5
-      - libqt5xml5
+      - libgstreamer-plugins-bad1.0-0
+      - libgstreamer-plugins-base1.0-0
+      - libgstreamer-plugins-good1.0-0
       - libstdc++6
       - zlib1g
       - libslang2
+    override-prime: |
+      snapcraftctl prime
+      $SNAPCRAFT_PRIME/usr/lib/$SNAPCRAFT_ARCH_TRIPLET/glib-2.0/glib-compile-schemas --targetdir $SNAPCRAFT_PRIME/usr/share/glib-2.0/schemas $SNAPCRAFT_PRIME/usr/share/glib-2.0/schemas
+
 
   # This part removes all the files in this snap which already exist in
   # connected content and base snaps. Since these files will be available
@@ -129,11 +135,11 @@ parts:
       - sayonara
     plugin: nil
     build-snaps: # List all content-snaps and base snaps you're using here
-      - core18
+      - core20
       - gtk-common-themes
-      - kde-frameworks-5-core18
+      - kde-frameworks-5-qt-5-15-3-core20
     override-prime: |
       set -eux
-      for snap in "core18" "gtk-common-themes" "kde-frameworks-5-core18"; do  # List all content-snaps and base snaps you're using here
-          cd "/snap/$snap/current" && find . -type f,l -exec rm -f "$SNAPCRAFT_PRIME/{}" \;
+      for snap in "core20" "gtk-common-themes" "kde-frameworks-5-qt-5-15-3-core20" ; do  # List all content-snaps and base snaps you're using here
+          cd "/snap/$snap/current" && find . -type f,l -exec rm -rf "$SNAPCRAFT_PRIME/{}" \;
       done

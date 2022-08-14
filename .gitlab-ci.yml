@@ -81,7 +81,7 @@ package-appimage:
 # Snap
 ## Package Snap
 package-snap:
-  image: tschlaeppi/sayonara-snapcraft:core18
+  image: registry.gitlab.com/luciocarreras/sayonara-player:core20
   stage: packaging
   tags:
     - luke-1
@@ -95,7 +95,7 @@ package-snap:
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
     - ./snap/local/Set-SnapVersion.sh
-    - snapcraft --destructive-mode
+    - snapcraft --destructive-mode --enable-experimental-extensions
   artifacts:
     when: always
     paths:
@@ -109,7 +109,7 @@ package-snap:
 
 # Deploy Snap
 deploy-snap:
-  image: tschlaeppi/sayonara-snapcraft:core18
+  image: registry.gitlab.com/luciocarreras/sayonara-player:core20
   stage: deploy
   dependencies:
     - package-snap
