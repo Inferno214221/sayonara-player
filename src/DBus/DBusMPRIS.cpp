@@ -40,6 +40,82 @@
 #include <QUrl>
 #include <QTimer>
 
+namespace
+{
+	QString checkString(const QString& str, const Lang::Term fallback)
+	{
+		return str.isEmpty() ? Lang::get(fallback) : str;
+	}
+
+	QString getPlaybackStatusString(const PlayState playState)
+	{
+		switch(playState)
+		{
+			case PlayState::Stopped:
+				return "Stopped";
+			case PlayState::Playing:
+				return "Playing";
+			case PlayState::Paused:
+				return "Paused";
+			default:
+				return "Stopped";
+		}
+	}
+
+	QDBusObjectPath createObjectPath(Id trackId)
+	{
+		if(trackId < 0)
+		{
+			trackId = RandomGenerator::getRandomNumber(5000, 10000); // NOLINT(readability-magic-numbers);
+		}
+
+		return QDBusObjectPath {QString("/org/sayonara/track%1").arg(trackId)};
+	}
+
+	constexpr const auto LoopStatusNone = "None";
+	constexpr const auto LoopStatusTrack = "Track";
+	constexpr const auto LoopStatusPlaylist = "Playlist";
+
+	PlaylistMode loopStatusToPlaylistMode(const QString& loopStatus)
+	{
+		auto playlistMode = GetSetting(Set::PL_Mode);
+		if(loopStatus == LoopStatusNone)
+		{
+			playlistMode.setRep1(false);
+			playlistMode.setRepAll(false);
+		}
+
+		else if(loopStatus == LoopStatusTrack)
+		{
+			playlistMode.setRepAll(false);
+			playlistMode.setRep1(true);
+		}
+
+		else if(loopStatus == LoopStatusPlaylist)
+		{
+			playlistMode.setRep1(false);
+			playlistMode.setRepAll(true);
+		}
+
+		return playlistMode;
+	}
+
+	QString playlistModeToLoopStatus(const PlaylistMode& playlistMode)
+	{
+		if(PlaylistMode::isActiveAndEnabled(playlistMode.rep1()))
+		{
+			return LoopStatusTrack;
+		}
+
+		if(PlaylistMode::isActiveAndEnabled(playlistMode.repAll()))
+		{
+			return LoopStatusPlaylist;
+		}
+
+		return LoopStatusNone;
+	}
+}
+
 struct DBusMPRIS::MediaPlayer2::Private
 {
 	PlayManager* playManager;
@@ -189,7 +265,10 @@ void DBusMPRIS::MediaPlayer2::Raise()
 
 QString DBusMPRIS::MediaPlayer2::PlaybackStatus() { return m->playbackStatus; }
 
-QString DBusMPRIS::MediaPlayer2::LoopStatus() { return "None"; }
+QString DBusMPRIS::MediaPlayer2::LoopStatus() // NOLINT(readability-convert-member-functions-to-static)
+{
+	return playlistModeToLoopStatus(GetSetting(Set::PL_Mode));
+}
 
 double DBusMPRIS::MediaPlayer2::Rate() { return 1.0; }
 
@@ -357,7 +436,12 @@ void DBusMPRIS::MediaPlayer2::SetPosition(const QDBusObjectPath& /*trackId*/, ql
 
 void DBusMPRIS::MediaPlayer2::OpenUri(const QString& /*uri*/) {}
 
-void DBusMPRIS::MediaPlayer2::SetLoopStatus(QString /*status*/) {}
+void DBusMPRIS::MediaPlayer2::SetLoopStatus(const QString loopStatus) // NOLINT(performance-unnecessary-value-param)
+{
+	const auto playlistMode = loopStatusToPlaylistMode(loopStatus);
+	SetSetting(Set::PL_Mode, playlistMode);
+	createMessage("LoopStatus", playlistModeToLoopStatus(playlistMode));
+}
 
 void DBusMPRIS::MediaPlayer2::SetRate(double /*rate*/) {}
 
