@@ -42,6 +42,18 @@
 
 namespace
 {
+	constexpr const auto PropertyCanGoNext = "CanGoNext";
+	constexpr const auto PropertyCanGoPrevious = "CanGoPrevious";
+	constexpr const auto PropertyCanPause = "CanPause";
+	constexpr const auto PropertyCanPlay = "CanPlay";
+	constexpr const auto PropertyCanSeek = "CanSeek";
+	constexpr const auto PropertyDesktopEntry = "DesktopEntry";
+	constexpr const auto PropertyLoopStatus = "LoopStatus";
+	constexpr const auto PropertyMetadata = "Metadata";
+	constexpr const auto PropertyPlaybackStatus = "PlaybackStatus";
+	constexpr const auto PropertyShuffle = "Shuffle";
+	constexpr const auto PropertyVolume = "Volume";
+
 	QString checkString(const QString& str, const Lang::Term fallback)
 	{
 		return str.isEmpty() ? Lang::get(fallback) : str;
@@ -186,7 +198,7 @@ void DBusMPRIS::MediaPlayer2::init()
 		spLog(Log::Info, this) << serviceName() << " registered";
 
 		QDBusConnection::sessionBus().registerObject(objectPath(), this);
-		createMessage("DesktopEntry", QString("sayonara"));
+		createMessage(PropertyDesktopEntry, QString("sayonara"));
 	}
 
 	isInitialized = true;
@@ -392,7 +404,7 @@ void DBusMPRIS::MediaPlayer2::SetLoopStatus(const QString loopStatus) // NOLINT(
 {
 	const auto playlistMode = loopStatusToPlaylistMode(loopStatus);
 	SetSetting(Set::PL_Mode, playlistMode);
-	createMessage("LoopStatus", playlistModeToLoopStatus(playlistMode));
+	createMessage(PropertyLoopStatus, playlistModeToLoopStatus(playlistMode));
 }
 
 void DBusMPRIS::MediaPlayer2::SetRate(const double /*rate*/) {}
@@ -405,7 +417,7 @@ void DBusMPRIS::MediaPlayer2::SetShuffle(const bool shuffle) // NOLINT(readabili
 	playlistMode.setShuffle(shuffle);
 	SetSetting(Set::PL_Mode, playlistMode);
 
-	createMessage("Shuffle", PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()));
+	createMessage(PropertyShuffle, PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()));
 }
 
 void DBusMPRIS::MediaPlayer2::SetVolume(const double volume)
@@ -423,7 +435,7 @@ void DBusMPRIS::MediaPlayer2::volumeChanged(const int volume)
 	init();
 
 	m->volume = (volume / 100.0);
-	createMessage("Volume", m->volume);
+	createMessage(PropertyVolume, m->volume);
 }
 
 void DBusMPRIS::MediaPlayer2::positionChanged(const MilliSeconds pos)
@@ -446,8 +458,8 @@ void DBusMPRIS::MediaPlayer2::trackIndexChanged(const int /*idx*/)
 {
 	init();
 
-	createMessage("CanGoNext", CanGoNext());
-	createMessage("CanGoPrevious", CanGoPrevious());
+	createMessage(PropertyCanGoNext, CanGoNext());
+	createMessage(PropertyCanGoPrevious, CanGoPrevious());
 }
 
 void DBusMPRIS::MediaPlayer2::trackChanged(const MetaData& track)
@@ -457,8 +469,8 @@ void DBusMPRIS::MediaPlayer2::trackChanged(const MetaData& track)
 
 	init();
 
-	createMessage("Metadata", Metadata());
-	createMessage("CanSeek", CanSeek());
+	createMessage(PropertyMetadata, Metadata());
+	createMessage(PropertyCanSeek, CanSeek());
 }
 
 void DBusMPRIS::MediaPlayer2::trackMetadataChanged()
@@ -475,7 +487,7 @@ void DBusMPRIS::MediaPlayer2::playstateChanged(const PlayState state)
 	                       ? playlist->count() > 0
 	                       : false;
 
-	createMessage("CanPlay", hasTracks && (state != PlayState::Playing));
-	createMessage("CanPause", (state == PlayState::Playing));
-	createMessage("PlaybackStatus", getPlaybackStatusString(state));
+	createMessage(PropertyCanPlay, hasTracks && (state != PlayState::Playing));
+	createMessage(PropertyCanPause, (state == PlayState::Playing));
+	createMessage(PropertyPlaybackStatus, getPlaybackStatusString(state));
 }
