@@ -272,7 +272,11 @@ QString DBusMPRIS::MediaPlayer2::LoopStatus() // NOLINT(readability-convert-memb
 
 double DBusMPRIS::MediaPlayer2::Rate() { return 1.0; }
 
-bool DBusMPRIS::MediaPlayer2::Shuffle() { return false; }
+bool DBusMPRIS::MediaPlayer2::Shuffle() // NOLINT(readability-convert-member-functions-to-static)
+{
+	const auto playlistMode = GetSetting(Set::PL_Mode);
+	return PlaylistMode::isActiveAndEnabled(playlistMode.shuffle());
+}
 
 QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 {
@@ -452,6 +456,8 @@ void DBusMPRIS::MediaPlayer2::SetShuffle(bool shuffle)
 	auto playlistMode = GetSetting(Set::PL_Mode);
 	playlistMode.setShuffle(shuffle);
 	SetSetting(Set::PL_Mode, playlistMode);
+
+	createMessage("Shuffle", PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()));
 }
 
 void DBusMPRIS::MediaPlayer2::SetVolume(double volume)
