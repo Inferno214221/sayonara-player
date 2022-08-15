@@ -154,9 +154,6 @@ namespace DBusMPRIS
 			void trackChanged(const MetaData& track);
 			void playstateChanged(PlayState state);
 
-		private slots:
-			void trackMetadataChanged();
-
 		private: // NOLINT(readability-redundant-access-specifiers)
 			void init();
 	};
