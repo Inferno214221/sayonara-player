@@ -44,13 +44,16 @@ namespace DBusMPRIS
 		Q_OBJECT
 		PIMPL(MediaPlayer2)
 
+		signals:
+			void Seeked(qlonglong position);
+
 		public:
 			explicit MediaPlayer2(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
 			                      QObject* parent = nullptr);
-			~MediaPlayer2();
+			~MediaPlayer2() override;
 
 			Q_PROPERTY(bool CanQuit READ CanQuit CONSTANT)
-			bool CanQuit() const;
+			[[nodiscard]] bool CanQuit() const;
 
 			Q_PROPERTY(bool CanRaise READ CanRaise CONSTANT)
 			bool CanRaise();
@@ -77,13 +80,9 @@ namespace DBusMPRIS
 			bool Fullscreen();
 			void SetFullscreen(bool b);
 
-			void Raise();
-			void Quit();
+			[[maybe_unused]] void Raise();
+			[[maybe_unused]] void Quit();
 
-		private:
-			void init();
-
-		public:
 			Q_PROPERTY(QString PlaybackStatus READ PlaybackStatus)
 			QString PlaybackStatus();
 
@@ -108,12 +107,12 @@ namespace DBusMPRIS
 			Q_PROPERTY(double Volume READ Volume WRITE SetVolume)
 			double Volume();
 			void SetVolume(double volume);
-			void IncreaseVolume();
-			void DecreaseVolume();
+			[[maybe_unused]] void IncreaseVolume();
+			[[maybe_unused]] void DecreaseVolume();
 
 			Q_PROPERTY(qlonglong Position READ Position)
 			qlonglong Position();
-			void SetPosition(const QDBusObjectPath& trackId, qlonglong position);
+			[[maybe_unused]] void SetPosition(const QDBusObjectPath& trackId, qlonglong position);
 
 			Q_PROPERTY(double MinimumRate READ MinimumRate)
 			double MinimumRate();
@@ -140,28 +139,26 @@ namespace DBusMPRIS
 			bool CanControl();
 
 			void Next();
-			void Previous();
-			void Pause();
-			void PlayPause();
+			[[maybe_unused]] void Previous();
+			[[maybe_unused]] void Pause();
+			[[maybe_unused]] void PlayPause();
 			void Stop();
 			void Play();
-			void Seek(qlonglong offset);
-			void OpenUri(const QString& uri);
+			[[maybe_unused]] void Seek(qlonglong offset);
+			[[maybe_unused]] void OpenUri(const QString& uri);
 
-		public slots:
+		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void positionChanged(MilliSeconds pos_ms);
 			void volumeChanged(int volume);
 			void trackIndexChanged(int idx);
 			void trackChanged(const MetaData& track);
 			void playstateChanged(PlayState state);
 
-		signals:
-			void Seeked(qlonglong position);
-			void sigRaise();
-
 		private slots:
 			void trackMetadataChanged();
 
+		private: // NOLINT(readability-redundant-access-specifiers)
+			void init();
 	};
 } // end namespace DBusMPRIS
 
