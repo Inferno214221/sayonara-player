@@ -123,7 +123,6 @@ struct DBusMPRIS::MediaPlayer2::Private
 	PlaylistAccessor* playlistAccessor;
 
 	QString coverPath {Util::Filepath(Cover::Location::invalidPath()).fileystemPath()};
-	QString playbackStatus {"Stopped"};
 
 	MetaData track;
 	MicroSeconds pos;
@@ -263,7 +262,7 @@ void DBusMPRIS::MediaPlayer2::Raise()
 
 /*** mpris.mediaplayer2.player ***/
 
-QString DBusMPRIS::MediaPlayer2::PlaybackStatus() { return m->playbackStatus; }
+QString DBusMPRIS::MediaPlayer2::PlaybackStatus() { return getPlaybackStatusString(m->playManager->playstate()); }
 
 QString DBusMPRIS::MediaPlayer2::LoopStatus() // NOLINT(readability-convert-member-functions-to-static)
 {
@@ -422,11 +421,7 @@ void DBusMPRIS::MediaPlayer2::PlayPause() { m->playManager->playPause(); }
 
 void DBusMPRIS::MediaPlayer2::Stop() { m->playManager->stop(); }
 
-void DBusMPRIS::MediaPlayer2::Play()
-{
-	m->playbackStatus = "Playing";
-	m->playManager->play();
-}
+void DBusMPRIS::MediaPlayer2::Play() { m->playManager->play(); }
 
 void DBusMPRIS::MediaPlayer2::Seek(qlonglong offset)
 {
@@ -538,23 +533,12 @@ void DBusMPRIS::MediaPlayer2::playstateChanged(const PlayState state)
 		init();
 	}
 
-	switch(state)
-	{
-		case PlayState::Stopped:
-			playbackStatus = "Stopped";
-			break;
-		case PlayState::Playing:
-			playbackStatus = "Playing";
-			break;
-		case PlayState::Paused:
-			playbackStatus = "Paused";
-			break;
-		default:
-			playbackStatus = "Stopped";
-			break;
-	}
+	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
+	const auto hasTracks = (playlist != nullptr)
+	                       ? playlist->count() > 0
+	                       : false;
 
-	m->playbackStatus = playbackStatus;
-
-	createMessage("PlaybackStatus", playbackStatus);
+	createMessage("CanPlay", hasTracks && (state != PlayState::Playing));
+	createMessage("CanPause", (state == PlayState::Playing));
+	createMessage("PlaybackStatus", getPlaybackStatusString(state));
 }
