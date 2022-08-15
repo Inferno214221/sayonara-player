@@ -54,6 +54,23 @@ namespace
 	constexpr const auto PropertyShuffle = "Shuffle";
 	constexpr const auto PropertyVolume = "Volume";
 
+	struct TemporarilyDisableRep1
+	{
+		PlaylistMode originalPlaylistMode {GetSetting(Set::PL_Mode)};
+
+		TemporarilyDisableRep1()
+		{
+			auto playlistMode = originalPlaylistMode;
+			playlistMode.setRep1(false);
+			SetSetting(Set::PL_Mode, playlistMode);
+		}
+
+		~TemporarilyDisableRep1()
+		{
+			SetSetting(Set::PL_Mode, originalPlaylistMode);
+		}
+	};
+
 	QString checkString(const QString& str, const Lang::Term fallback)
 	{
 		return str.isEmpty() ? Lang::get(fallback) : str;
@@ -311,7 +328,12 @@ bool DBusMPRIS::MediaPlayer2::CanSeek()
 	return track.durationMs() > 0;
 }
 
-void DBusMPRIS::MediaPlayer2::Next() { m->playManager->next(); }
+void DBusMPRIS::MediaPlayer2::Next()
+{
+	[[maybe_unused]] const auto disableRep1 = TemporarilyDisableRep1 {};
+
+	m->playManager->next();
+}
 
 [[maybe_unused]] void DBusMPRIS::MediaPlayer2::Previous() { m->playManager->previous(); }
 
