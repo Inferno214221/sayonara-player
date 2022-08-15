@@ -321,7 +321,11 @@ bool DBusMPRIS::MediaPlayer2::CanPlay() { return true; }
 
 bool DBusMPRIS::MediaPlayer2::CanPause() { return true; }
 
-bool DBusMPRIS::MediaPlayer2::CanSeek() { return (m->playManager->currentTrack().durationMs() > 0); }
+bool DBusMPRIS::MediaPlayer2::CanSeek()
+{
+	const auto& track = m->playManager->currentTrack();
+	return track.durationMs() > 0;
+}
 
 bool DBusMPRIS::MediaPlayer2::CanControl() { return true; }
 
