@@ -5,10 +5,10 @@ set -e
 
 RUNTIME=$(readlink -f $(dirname "$0"))
 
-export LD_LIBRARY_PATH=$(readlink -f "$RUNTIME/usr/lib"):$LD_LIBRARY_PATH
-export GST_PLUGIN_SYSTEM_PATH=$(readlink -f "$RUNTIME/usr/lib/gstreamer-1.0")
-export GST_PLUGIN_SCANNER=$(readlink -f "$RUNTIME/usr/lib/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner")
-export SAYONARA_SHARE_DIR=$(readlink -f "$RUNTIME/usr/share/sayonara")
+export LD_LIBRARY_PATH=$RUNTIME/usr/lib:$LD_LIBRARY_PATH
+export GST_PLUGIN_SYSTEM_PATH=$RUNTIME/usr/lib/gstreamer-1.0
+export GST_PLUGIN_SCANNER=$RUNTIME/usr/lib/gstreamer1.0/gstreamer-1.0/gst-plugin-scanner
+export SAYONARA_SHARE_DIR=$RUNTIME/usr/share/sayonara
 
 case "${XDG_CURRENT_DESKTOP}" in
     *GNOME*|*gnome*|*XFCE*)
