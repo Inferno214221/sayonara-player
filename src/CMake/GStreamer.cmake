@@ -82,3 +82,19 @@ foreach(GST_LIB ${GSTREAMER_PLUGIN_LIBRARY_NAMES})
 endforeach()
 
 message("GStreamer.cmake: Found ${GSTREAMER_PLUGIN_LIBRARIES}")
+
+# compile glib schemas
+pkg_get_variable(GLIB_COMPILE_SCHEMAS gio-2.0 glib_compile_schemas)
+set(GLIB_SCHEMA_DIR /usr/share/glib-2.0/schemas)
+execute_process(COMMAND ${GLIB_COMPILE_SCHEMAS} --targetdir ${CMAKE_BINARY_DIR} ${GLIB_SCHEMA_DIR})
+
+# specify paths for necessary gio files
+set(GLIB_SCHEMA ${CMAKE_BINARY_DIR}/gschemas.compiled)
+pkg_get_variable(GIO_MODULE_DIR gio-2.0 giomoduledir)
+pkg_get_variable(GIO_QUERYMODULES gio-2.0 gio_querymodules)
+
+# in bionic the variable gio_querymodules does not exist
+if (NOT GIO_QUERYMODULES)
+	get_filename_component(GLIB_BINARY_DIR ${GLIB_COMPILE_SCHEMAS} DIRECTORY)
+	set(GIO_QUERYMODULES ${GLIB_BINARY_DIR}/gio-querymodules)
+endif()

@@ -32,10 +32,6 @@ else()
 	message("Compiling without Cotire")
 endif()
 
-if(WIN32)
-	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
-endif()
-
 pkg_check_modules(GLIB glib-2.0 REQUIRED)
 pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
 pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
@@ -43,6 +39,12 @@ pkg_check_modules(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
 pkg_check_modules(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
 pkg_check_modules(ZLIB REQUIRED zlib REQUIRED)
 pkg_check_modules(TAGLIB REQUIRED taglib REQUIRED)
+
+if(WIN32)
+	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
+elseif(GSTREAMER_PLUGIN_LIBRARIES)
+	pkg_check_modules(GIO gio-2.0 REQUIRED)
+endif()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -91,10 +93,12 @@ else()
 	set(WIN32 0)
 endif()
 
-# check libexecinfo for non-glibc systems
-if(WIN32)
+if(GIO_LIBRARY_DIRS)
 	link_directories(${GIO_LIBRARY_DIRS})
-else()
+endif()
+
+# check libexecinfo for non-glibc systems
+if(NOT WIN32)
 	include(CheckSymbolExists)
 	message("Checking if backtrace symbol present")
 	check_symbol_exists(backtrace execinfo.h backtrace_exists)
@@ -172,6 +176,11 @@ endif()
 
 if(GSTREAMER_PLUGIN_LIBRARIES)
 	message("Will install gstreamer plugins")
-	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION lib/gstreamer-1.0)
-	install(FILES ${GSTREAMER_PLUGIN_SCANNER} DESTINATION lib/gstreamer1.0/gstreamer-1.0)
+
+	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer-1.0)
+	install(FILES ${GSTREAMER_PLUGIN_SCANNER} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer1.0/gstreamer-1.0)
+	install(DIRECTORY ${GLIB_SCHEMA_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/)
+	install(FILES ${GLIB_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas/)
+	install(DIRECTORY ${GIO_MODULE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gio/)
+	install(FILES ${GIO_QUERYMODULES} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
 endif()
