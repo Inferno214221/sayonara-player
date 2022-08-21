@@ -118,8 +118,8 @@ void GUI_LanguagePreferences::refreshCombobox()
 	ui->comboLanguages->blockSignals(true);
 	ui->comboLanguages->clear();
 
-	const auto languageData = LanguagePreferences::getAllLanguages();
-	for(const auto& item: languageData.first)
+	const auto [languageItems, currentLanguageIndex] = LanguagePreferences::getAllLanguages();
+	for(const auto& item: languageItems)
 	{
 		ui->comboLanguages->addItem(
 			QIcon(item.iconPath),
@@ -127,7 +127,7 @@ void GUI_LanguagePreferences::refreshCombobox()
 			item.languageCode);
 	}
 
-	ui->comboLanguages->setCurrentIndex(languageData.second);
+	ui->comboLanguages->setCurrentIndex(currentLanguageIndex);
 	ui->comboLanguages->blockSignals(false);
 }
 

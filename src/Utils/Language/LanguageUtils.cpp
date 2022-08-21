@@ -110,13 +110,6 @@ namespace Util::Language
 		       : QString {};
 	}
 
-	QString getFtpPath(const QString& languageCode)
-	{
-		return checkLanguageCode(languageCode)
-		       ? QString("ftp://sayonara-player.com/translation/sayonara_lang_%1.qm").arg(languageCode)
-		       : QString {};
-	}
-
 	QString getHttpPath(const QString& languageCode)
 	{
 		return checkLanguageCode(languageCode)
@@ -341,7 +334,7 @@ namespace Util::Language
 
 	QString convertOldLanguage(const QString& oldLanguageName)
 	{
-		constexpr const auto FallbackLanguageCode = "en";
+		constexpr const auto* FallbackLanguageCode = "en";
 		const auto languages = availableLanguages().keys();
 		const auto languageCode = extractLanguageCode(oldLanguageName);
 		if(languageCode.size() != 2)

@@ -39,7 +39,6 @@ using namespace Util;
 
 	const auto testSets = std::array {
 		std::pair {L::getSharePath("ab_CD"), File::cleanFilename(sharePath + "/sayonara_lang_ab_CD.qm")},
-		std::pair {L::getFtpPath("ab_CD"), QString("ftp://sayonara-player.com/translation/sayonara_lang_ab_CD.qm")},
 		std::pair {L::getHttpPath("ab_CD"),
 		           QString("https://sayonara-player.com/files/translation/sayonara_lang_ab_CD.qm")
 		},

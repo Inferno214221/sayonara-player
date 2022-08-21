@@ -34,8 +34,6 @@ namespace Util::Language
 {
 	QString getSharePath(const QString& fourLetter);
 
-	QString getFtpPath(const QString& fourLetter);
-
 	QString getHttpPath(const QString& fourLetter);
 
 	QString getChecksumHttpPath();
