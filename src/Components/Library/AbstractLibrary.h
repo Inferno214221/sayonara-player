@@ -28,9 +28,6 @@
 
 #include <QFile>
 
-#define prepare_tracks_for_playlist_files static_cast<void (AbstractLibrary::*) (const QStringList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
-#define prepare_tracks_for_playlistIdxs static_cast<void (AbstractLibrary::*) (const IdxList&)>(&AbstractLibrary::psl_prepare_tracks_for_playlist)
-
 class Genre;
 namespace Gui
 {
@@ -47,35 +44,36 @@ class AbstractLibrary :
 
 	public:
 		explicit AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
-		virtual ~AbstractLibrary();
+		~AbstractLibrary() override;
 
-		Library::Sortings sortorder() const;
-		Library::Filter filter() const;
+		[[nodiscard]] Library::Sortings sortorder() const;
+		[[nodiscard]] Library::Filter filter() const;
 		// calls fetch_by_filter and emits
 		void changeFilter(Library::Filter, bool force = false);
 
-		const MetaDataList& tracks() const;
-		const AlbumList& albums() const;
-		const ArtistList& artists() const;
-		const MetaDataList& currentTracks() const;
+		[[nodiscard]] const MetaDataList& tracks() const;
+		[[nodiscard]] const AlbumList& albums() const;
+		[[nodiscard]] const ArtistList& artists() const;
+		[[nodiscard]] const MetaDataList& currentTracks() const;
 
-		const Util::Set<TrackID>& selectedTracks() const;
-		const Util::Set<AlbumId>& selectedAlbums() const;
-		const Util::Set<ArtistId>& selectedArtists() const;
+		[[nodiscard]] const Util::Set<AlbumId>& selectedAlbums() const;
+		[[nodiscard]] const Util::Set<ArtistId>& selectedArtists() const;
 
 		// emits new tracks, very similar to psl_selected_albums_changed
 		void changeCurrentDisc(Disc track);
 
-		bool isLoaded() const;
+		[[nodiscard]] bool isLoaded() const;
 
 		void setExtensions(const Gui::ExtensionSet& extensions);
-		Gui::ExtensionSet extensions() const;
+		[[nodiscard]] Gui::ExtensionSet extensions() const;
 
-		virtual bool isReloading() const;
-		virtual bool isEmpty() const;
+		[[nodiscard]] virtual bool isReloading() const;
+		[[nodiscard]] virtual bool isEmpty() const;
 
 	signals:
-		void sigTrackMimedataAvailable();
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-pragmas"
+#pragma ide diagnostic ignored "NotImplementedFunctions"
 		void sigAllTracksLoaded();
 		void sigAllAlbumsLoaded();
 		void sigAllArtistsLoaded();
@@ -84,10 +82,10 @@ class AbstractLibrary :
 		void sigReloadingLibraryFinished();
 
 		void sigDeleteAnswer(QString);
-		void sigImportDialogRequested();
 
 		void sigCurrentAlbumChanged(int row);
 		void sigCurrentTrackChanged(int row);
+#pragma clang diagnostic pop
 
 	public slots:
 		virtual void load();
@@ -121,17 +119,15 @@ class AbstractLibrary :
 		virtual void appendCurrentTracks();
 
 		/* a searchfilter has been entered, nothing is emitted */
-		virtual void fetchByFilter(Library::Filter filter, bool force);
+		virtual void fetchByFilter(const Library::Filter& filter, bool force);
 		virtual void fetchTracksByPath(const QStringList& paths);
 
-		virtual void deleteTracks(const MetaDataList& v_md, Library::TrackDeletionMode mode) = 0;
-		virtual void deleteTracksByIndex(const IndexSet& indexes, Library::TrackDeletionMode mode);
+		virtual void deleteTracks(const MetaDataList& tracks, Library::TrackDeletionMode mode) = 0;
 
 		virtual void deleteFetchedTracks(Library::TrackDeletionMode mode);
 		virtual void deleteCurrentTracks(Library::TrackDeletionMode mode);
 		virtual void deleteAllTracks();
 
-		//virtual void insert_tracks(const MetaDataList& v_md);
 		virtual void importFiles(const QStringList& files);
 
 		virtual void changeTrackSortorder(Library::SortOrder sortOrder);
@@ -155,13 +151,13 @@ class AbstractLibrary :
 		virtual void getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, Library::Filter filter) const = 0;
 		virtual void getAllAlbumsBySearchstring(Library::Filter filter, AlbumList& albums) const = 0;
 
-		virtual int getTrackCount() const = 0;
-		virtual void getAllTracks(MetaDataList& v_md) const = 0;
-		virtual void getAllTracks(const QStringList& paths, MetaDataList& v_md) const = 0;
-		virtual void getAllTracksByArtist(IdList artistIds, MetaDataList& v_md, Library::Filter filter) const = 0;
-		virtual void getAllTracksByAlbum(IdList albumIds, MetaDataList& v_md, Library::Filter filter) const = 0;
-		virtual void getAllTracksBySearchstring(Library::Filter filter, MetaDataList& v_md) const = 0;
-		virtual void getAllTracksByPath(const QStringList& paths, MetaDataList& v_md) const = 0;
+		[[nodiscard]] virtual int getTrackCount() const = 0;
+		virtual void getAllTracks(MetaDataList& tracks) const = 0;
+		virtual void getAllTracks(const QStringList& paths, MetaDataList& tracks) const = 0;
+		virtual void getAllTracksByArtist(IdList artistIds, MetaDataList& tracks, Library::Filter filter) const = 0;
+		virtual void getAllTracksByAlbum(IdList albumIds, MetaDataList& tracks, Library::Filter filter) const = 0;
+		virtual void getAllTracksBySearchstring(Library::Filter filter, MetaDataList& tracks) const = 0;
+		virtual void getAllTracksByPath(const QStringList& paths, MetaDataList& tracks) const = 0;
 
 		virtual void getTrackById(TrackID trackId, MetaData& md) const = 0;
 		virtual void getAlbumById(AlbumId albumId, Album& album) const = 0;
@@ -172,8 +168,6 @@ class AbstractLibrary :
 		void prepareArtists();
 
 	private:
-		void tagEditCommit();
-
 		void changeTrackSelection(const IndexSet& indexes);
 		void changeArtistSelection(const IndexSet& indexes);
 		void changeAlbumSelection(const IndexSet& indexes, bool ignore_artists = false);

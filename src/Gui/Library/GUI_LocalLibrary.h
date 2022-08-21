@@ -39,11 +39,9 @@ namespace Library
 {
 	class Manager;
 
-	enum class ViewType : quint8;
-	/**
-	 * @brief The GUI_LocalLibrary class
-	 * @ingroup GuiLibrary
-	 */
+	enum class ViewType :
+		quint8;
+
 	class GUI_LocalLibrary :
 		public GUI_AbstractLibrary
 	{
@@ -55,20 +53,20 @@ namespace Library
 			explicit GUI_LocalLibrary(LibraryId id, Library::Manager* libraryManager, QWidget* parent = nullptr);
 			~GUI_LocalLibrary() override;
 
-			QMenu* menu() const;
-			QFrame* headerFrame() const;
+			[[nodiscard]] QMenu* menu() const;
+			[[nodiscard]] QFrame* headerFrame() const;
 
 		protected:
-			bool hasSelections() const override;
+			[[nodiscard]] bool hasSelections() const override;
 			void showEvent(QShowEvent* e) override;
 
-			TableView* lvArtist() const override;
-			TableView* lvAlbum() const override;
-			TableView* lvTracks() const override;
-			QList<QAbstractItemView*> allViews() const override;
+			[[nodiscard]] TableView* lvArtist() const override;
+			[[nodiscard]] TableView* lvAlbum() const override;
+			[[nodiscard]] TableView* lvTracks() const override;
+			[[nodiscard]] QList<QAbstractItemView*> allViews() const override;
 
-			SearchBar* leSearch() const override;
-			QList<Filter::Mode> searchOptions() const override;
+			[[nodiscard]] SearchBar* leSearch() const override;
+			[[nodiscard]] QList<Filter::Mode> searchOptions() const override;
 
 			void queryLibrary() override;
 
@@ -76,11 +74,12 @@ namespace Library
 			void skinChanged() override;
 
 		private:
+			void initCoverView();
 			void checkViewState();
 			void checkMainSplitterStatus();
 			void checkFileExtensionBar();
 
-		private slots:
+		private slots: // NOLINT(readability-redundant-access-specifiers)
 			void tracksLoaded();
 			void switchViewType();
 			void selectNextViewType();

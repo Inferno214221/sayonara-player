@@ -50,7 +50,7 @@ namespace
 	{
 		QMap<QString, Element> result;
 
-		for(const auto& item: container)
+		for([[maybe_unused]] const auto& item: container)
 		{
 			result[item.name()] = item;
 		}
@@ -61,11 +61,11 @@ namespace
 	template<typename Element, typename Inserter>
 	void insertMissingIntoDatabase(const std::deque<Element>& container, QMap<QString, Element>& map, Inserter&& fn)
 	{
-		for(auto item: container)
+		for([[maybe_unused]] auto item: container)
 		{
 			if(!map.contains(item.name()))
 			{
-				const auto id = fn(item);
+				[[maybe_unused]] const auto id = fn(item);
 				item.setId(id);
 				map.insert(item.name(), std::move(item));
 			}
@@ -383,12 +383,6 @@ void SC::Library::getAllTracksByPath([[maybe_unused]] const QStringList& paths,
 void SC::Library::updateTrack(const MetaData& track)
 {
 	m->libraryDatabase->updateTrack(track);
-	refetch();
-}
-
-void SC::Library::updateAlbum(const Album& album)
-{
-	m->libraryDatabase->updateAlbum(album);
 	refetch();
 }
 

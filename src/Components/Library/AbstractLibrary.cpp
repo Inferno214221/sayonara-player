@@ -53,34 +53,17 @@ struct AbstractLibrary::Private
 
 	Gui::ExtensionSet extensions;
 
-	int trackCount;
-
-	Library::Sortings sortorder;
+	Library::Sortings sortorder {GetSetting(Set::Lib_Sorting)};
 	Library::Filter filter;
-	bool loaded;
+	bool loaded {false};
 
-	Private(LibraryPlaylistInteractor* playlistInteractor) :
-		playlistInteractor {playlistInteractor},
-		trackCount(0),
-		sortorder(GetSetting(Set::Lib_Sorting)),
-		loaded(false) {}
+	explicit Private(LibraryPlaylistInteractor* playlistInteractor) :
+		playlistInteractor {playlistInteractor} {}
 };
 
 AbstractLibrary::AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(playlistInteractor);
-
-	auto* mdcn = Tagging::ChangeNotifier::instance();
-	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged,
-	        this, &AbstractLibrary::metadataChanged);
-
-	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted,
-	        this, &AbstractLibrary::metadataChanged);
-
-	connect(mdcn, &Tagging::ChangeNotifier::sigAlbumsChanged,
-	        this, &AbstractLibrary::albumsChanged);
-}
+	QObject(parent),
+	m {Pimpl::make<Private>(playlistInteractor)} {}
 
 AbstractLibrary::~AbstractLibrary() = default;
 
@@ -187,7 +170,7 @@ void AbstractLibrary::refreshCurrentView()
 
 void AbstractLibrary::metadataChanged()
 {
-	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 	const auto& changedTracks = mdcn->changedMetadata();
 
 	QHash<TrackID, int> idRowMap;
@@ -200,11 +183,8 @@ void AbstractLibrary::metadataChanged()
 	}
 
 	auto needsRefresh = false;
-	for(auto it = changedTracks.begin(); it != changedTracks.end(); it++)
+	for(const auto& [oldTrack, newTrack]: changedTracks)
 	{
-		const auto& oldTrack = it->first;
-		const auto& newTrack = it->second;
-
 		needsRefresh =
 			(oldTrack.artist() != newTrack.artist()) ||
 			(oldTrack.albumArtist() != newTrack.albumArtist()) ||
@@ -227,7 +207,7 @@ void AbstractLibrary::metadataChanged()
 
 void AbstractLibrary::albumsChanged()
 {
-	auto* mdcn = static_cast<Tagging::ChangeNotifier*>(sender());
+	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 
 	QHash<AlbumId, int> idRowMap;
 	{ // build lookup tree
@@ -291,19 +271,13 @@ void AbstractLibrary::findTrack(TrackID id)
 		m->selectedAlbums.clear();
 	}
 
-	m->tracks.emplace_back(std::move(track));
+	Artist artist;
+	getArtistById(track.artistId(), artist);
+	m->artists.push_back(std::move(artist));
 
-	{ // artist
-		Artist artist;
-		getArtistById(track.artistId(), artist);
-		m->artists.emplace_back(std::move(artist));
-	}
-
-	{ // album
-		Album album;
-		getAlbumById(track.albumId(), album);
-		m->albums.emplace_back(album);
-	}
+	Album album;
+	getAlbumById(track.albumId(), album);
+	m->albums.push_back(std::move(album));
 
 	getAllTracksByAlbum({track.albumId()}, m->tracks, Library::Filter());
 	m->selectedTracks << track.id();
@@ -431,11 +405,6 @@ void AbstractLibrary::changeCurrentDisc(Disc disc)
 
 	prepareTracks();
 	emit sigAllTracksLoaded();
-}
-
-const IdSet& AbstractLibrary::selectedTracks() const
-{
-	return m->selectedTracks;
 }
 
 const IdSet& AbstractLibrary::selectedAlbums() const
@@ -588,7 +557,7 @@ void AbstractLibrary::selectedTracksChanged(const IndexSet& indexes)
 	changeTrackSelection(indexes);
 }
 
-void AbstractLibrary::fetchByFilter(Library::Filter filter, bool force)
+void AbstractLibrary::fetchByFilter(const Library::Filter& filter, bool force)
 {
 	if((m->filter.isEqual(filter, GetSetting(Set::Lib_SearchStringLength))) &&
 	   (m->selectedArtists.empty()) &&
@@ -726,11 +695,11 @@ void AbstractLibrary::deleteTracks(const MetaDataList& tracks, Library::TrackDel
 	                       : Lang::get(Lang::Entries);
 	QString answerString;
 
-	auto failCount = 0;
+	auto failCount = 0UL;
 	if(mode == Library::TrackDeletionMode::AlsoFiles)
 	{
 		failCount = std::count_if(tracks.begin(), tracks.end(), [](const auto& track) {
-			return (QFile(track.filepath()).remove() == false);
+			return !QFile(track.filepath()).remove();
 		});
 	}
 
@@ -745,24 +714,6 @@ void AbstractLibrary::deleteTracks(const MetaDataList& tracks, Library::TrackDel
 	Tagging::ChangeNotifier::instance()->deleteMetadata(tracks);
 
 	refreshCurrentView();
-}
-
-void AbstractLibrary::deleteTracksByIndex(const IndexSet& indexes, Library::TrackDeletionMode mode)
-{
-	if(mode == Library::TrackDeletionMode::None || indexes.isEmpty())
-	{
-		return;
-	}
-
-	MetaDataList tracksToDelete;
-	const auto& tracks = this->tracks();
-
-	for(const auto& index: indexes)
-	{
-		tracksToDelete.push_back(tracks[index]);
-	}
-
-	deleteTracks(tracksToDelete, mode);
 }
 
 void AbstractLibrary::prepareTracks()
@@ -800,7 +751,7 @@ bool AbstractLibrary::isReloading() const
 
 bool AbstractLibrary::isEmpty() const
 {
-	return m->tracks.isEmpty() && (m->trackCount == 0);
+	return m->tracks.isEmpty() && (getTrackCount() == 0);
 }
 
 void AbstractLibrary::setExtensions(const Gui::ExtensionSet& extensions)

@@ -39,21 +39,12 @@ namespace SC
 		Q_OBJECT
 		PIMPL(Library)
 
-		signals:
-			// called, when webservice returns artists/albums/tracks
-			void sigArtistsFound(const ArtistList& artists);
-			void sigAlbumsFound(const AlbumList& albums);
-			void sigTracksFound(const MetaDataList& tracks);
-
 		public:
 			explicit Library(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 			~Library() override;
 
 			void load() override;
-			void searchArtist(const QString& artistName);
-			void fetchTracksByArtist(int64_t artistSoundcloudId);
-			void fetchPlaylistsByArtist(int64_t artistSoundcloudId);
-			//void	insert_tracks(const MetaDataList& tracks) override;
+
 			void insertTracks(const MetaDataList& tracks, const ArtistList& artists, const AlbumList& albums);
 			void getTrackById(TrackID trackId, MetaData& track) const override;
 			void getAlbumById(AlbumId albumId, Album& album) const override;
@@ -67,7 +58,7 @@ namespace SC
 			void getAllAlbumsByArtist(IdList artistIds, AlbumList& albums, ::Library::Filter filter) const override;
 			void getAllAlbumsBySearchstring(::Library::Filter filter, AlbumList& albums) const override;
 
-			int getTrackCount() const override;
+			[[nodiscard]] int getTrackCount() const override;
 			void getAllTracks(const QStringList& paths, MetaDataList& tracks) const override;
 			void getAllTracks(MetaDataList& tracks) const override;
 			void getAllTracksByArtist(IdList artistIds, MetaDataList& tracks, ::Library::Filter filter) const override;
@@ -76,12 +67,9 @@ namespace SC
 			void getAllTracksByPath(const QStringList& paths, MetaDataList& tracks) const override;
 
 			void updateTrack(const MetaData& track);
-			void updateAlbum(const Album& album);
 			void deleteTracks(const MetaDataList& tracks, ::Library::TrackDeletionMode mode) override;
 
 			void refetch() override;
-
-			void applyArtistAndAlbumToMetadata();
 
 		private slots:
 			void artistsFetched(const ArtistList& artists);

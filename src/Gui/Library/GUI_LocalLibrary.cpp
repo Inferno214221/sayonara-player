@@ -84,7 +84,7 @@ namespace
 			return ReloadWidgetIndex::NoDirView;
 		}
 
-		else if(isLibraryEmpty)
+		if(isLibraryEmpty)
 		{
 			return ReloadWidgetIndex::ReloadView;
 		}
@@ -288,7 +288,7 @@ void GUI_LocalLibrary::progressChanged(const QString& type, int progress)
 {
 	checkViewState();
 
-	ui->pbProgress->setMaximum((progress > 0) ? 100 : 0);
+	ui->pbProgress->setMaximum((progress > 0) ? 100 : 0); // NOLINT(readability-magic-numbers)
 	ui->pbProgress->setValue(progress);
 	ui->labProgress->setText
 		(
@@ -421,21 +421,26 @@ void GUI_LocalLibrary::splitterGenreMoved([[maybe_unused]] int pos, [[maybe_unus
 	SetSetting(Set::Lib_SplitterStateGenre, data);
 }
 
+void GUI_LocalLibrary::initCoverView()
+{
+	if(!ui->coverView->isInitialized())
+	{
+		ui->coverView->init(m->library);
+		connect(ui->coverView, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
+		connect(ui->coverView,
+		        &GUI_CoverView::sigReloadClicked,
+		        this,
+		        &GUI_LocalLibrary::reloadLibraryRequested);
+	}
+}
+
 void GUI_LocalLibrary::switchViewType()
 {
 	const auto viewType = GetSetting(Set::Lib_ViewType);
 	switch(viewType)
 	{
 		case Library::ViewType::CoverView:
-			if(!ui->coverView->isInitialized())
-			{
-				ui->coverView->init(m->library);
-				connect(ui->coverView, &GUI_CoverView::sigDeleteClicked, this, &GUI_LocalLibrary::itemDeleteClicked);
-				connect(ui->coverView,
-				        &GUI_CoverView::sigReloadClicked,
-				        this,
-				        &GUI_LocalLibrary::reloadLibraryRequested);
-			}
+			initCoverView();
 
 			if(m->library->isLoaded() && (!m->library->selectedArtists().isEmpty()))
 			{
@@ -458,7 +463,7 @@ void GUI_LocalLibrary::switchViewType()
 	ui->swViewType->setFocus();
 }
 
-void GUI_LocalLibrary::selectNextViewType()
+void GUI_LocalLibrary::selectNextViewType() // NOLINT(readability-convert-member-functions-to-static)
 {
 	auto viewType = static_cast<int>(GetSetting(Set::Lib_ViewType));
 	viewType = (viewType + 1) % 3;

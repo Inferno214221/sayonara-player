@@ -35,9 +35,9 @@ using SC::GUI_ArtistSearch;
 
 struct SC::GUI_Library::Private
 {
-	GUI_ArtistSearch*	artistSearch=nullptr;
-	QMenu*              libraryMenu=nullptr;
-	QAction*			actionAddArtist=nullptr;
+	GUI_ArtistSearch* artistSearch = nullptr;
+	QMenu* libraryMenu = nullptr;
+	QAction* actionAddArtist = nullptr;
 };
 
 using SC::GUI_Library;
@@ -68,7 +68,8 @@ GUI_Library::~GUI_Library()
 {
 	if(ui)
 	{
-		delete ui; ui = nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -87,15 +88,14 @@ QList<::Library::Filter::Mode> GUI_Library::searchOptions() const
 	return {::Library::Filter::Fulltext};
 }
 
-Library::TrackDeletionMode GUI_Library::showDeleteDialog(int trackCount)
+Library::TrackDeletionMode GUI_Library::showDeleteDialog(int /*trackCount*/)
 {
-	Q_UNUSED(trackCount)
 	return ::Library::TrackDeletionMode::OnlyLibrary;
 }
 
 void GUI_Library::btnAddClicked()
 {
-    m->artistSearch->resizeRelative(this, 1.0, QSize(800, 600));
+	m->artistSearch->resizeRelative(this, 1.0, QSize(800, 600));
 	m->artistSearch->show();
 }
 
