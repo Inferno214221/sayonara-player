@@ -81,7 +81,6 @@ QString GUI_LanguagePreferences::actionName() const
 void GUI_LanguagePreferences::retranslate()
 {
 	ui->retranslateUi(this);
-	refreshCombobox();
 }
 
 void GUI_LanguagePreferences::skinChanged()

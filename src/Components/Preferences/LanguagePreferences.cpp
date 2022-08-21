@@ -71,6 +71,11 @@ namespace
 		return true;
 	}
 
+	bool isCurrentLanguage(const QString& languageCode)
+	{
+		return languageCode.toLower() == GetSetting(Set::Player_Language).toLower();
+	}
+
 	bool replaceLanguageFile(const QString& languageCode, const QByteArray& data)
 	{
 		const auto filepath = Util::Language::getHomeTargetPath(languageCode);
@@ -81,7 +86,11 @@ namespace
 
 			Util::Language::updateLanguageVersion(languageCode);
 
-			Settings::instance()->shout<Set::Player_Language>();
+			if(isCurrentLanguage(languageCode))
+			{
+				spLog(Log::Debug, ClassName) << "Notify player about language update for " << languageCode;
+				Settings::instance()->shout<Set::Player_Language>();
+			}
 		}
 
 		else
