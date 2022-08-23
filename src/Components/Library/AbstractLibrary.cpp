@@ -85,15 +85,16 @@ AbstractLibrary::AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, 
 
 AbstractLibrary::~AbstractLibrary() = default;
 
-void AbstractLibrary::load()
+void AbstractLibrary::init()
 {
-	ListenSettingNoCall(Set::Lib_SortModeMask, AbstractLibrary::refreshCurrentView);
+	if(!isLoaded())
+	{
+		ListenSettingNoCall(Set::Lib_SortModeMask, AbstractLibrary::refreshCurrentView);
 
-	m->filter.clear();
+		initLibraryImpl();
+		refetch();
+	}
 
-	refetch();
-
-	m->trackCount = getTrackCount();
 	m->loaded = true;
 }
 
@@ -715,4 +716,3 @@ void AbstractLibrary::setExtensions(const Gui::ExtensionSet& extensions)
 
 	emit sigAllTracksLoaded();
 }
-

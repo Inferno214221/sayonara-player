@@ -42,15 +42,17 @@ namespace SC
 		public:
 			explicit Library(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 			~Library() override;
-
-			void load() override;
-
+			
 			void insertTracks(const MetaDataList& tracks, const ArtistList& artists, const AlbumList& albums);
 			void getTrackById(TrackID trackId, MetaData& track) const override;
 			void getAlbumById(AlbumId albumId, Album& album) const override;
 			void getArtistById(ArtistId artistId, Artist& artist) const override;
 
+			void refetch() override;
+
 		protected:
+			virtual void initLibraryImpl() override;
+
 			void getAllArtists(ArtistList& artists) const override;
 			void getAllArtistsBySearchstring(::Library::Filter filter, ArtistList& artists) const override;
 
@@ -68,8 +70,6 @@ namespace SC
 
 			void updateTrack(const MetaData& track);
 			void deleteTracks(const MetaDataList& tracks, ::Library::TrackDeletionMode mode) override;
-
-			void refetch() override;
 
 		private slots:
 			void artistsFetched(const ArtistList& artists);

@@ -46,6 +46,8 @@ class AbstractLibrary :
 		explicit AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 		~AbstractLibrary() override;
 
+		virtual void init();
+
 		[[nodiscard]] Library::Sortings sortorder() const;
 		[[nodiscard]] Library::Filter filter() const;
 		// calls fetch_by_filter and emits
@@ -88,8 +90,6 @@ class AbstractLibrary :
 #pragma clang diagnostic pop
 
 	public slots:
-		virtual void load();
-
 		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;
 
 		virtual void refetch();
@@ -140,6 +140,7 @@ class AbstractLibrary :
 
 	protected:
 		/* Emit 3 signals with shown artists, shown album, shown tracks */
+		virtual void initLibraryImpl() = 0;
 		virtual void emitAll();
 
 		virtual void getAllArtists(ArtistList& artists) const = 0;

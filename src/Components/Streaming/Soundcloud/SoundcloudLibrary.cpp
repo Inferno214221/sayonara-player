@@ -151,10 +151,8 @@ SC::Library::Library(LibraryPlaylistInteractor* playlistInteractor, QObject* par
 
 SC::Library::~Library() = default;
 
-void SC::Library::load()
+void SC::Library::initLibraryImpl()
 {
-	AbstractLibrary::load();
-
 	ArtistList artists;
 	getAllArtists(artists);
 }

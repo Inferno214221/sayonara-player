@@ -508,7 +508,10 @@ void GUI_LocalLibrary::showEvent(QShowEvent* e)
 	}
 
 	checkViewState();
-	m->library->load();
+	if(!m->library->isLoaded())
+	{
+		m->library->init();
+	}
 }
 
 void GUI_LocalLibrary::languageChanged()

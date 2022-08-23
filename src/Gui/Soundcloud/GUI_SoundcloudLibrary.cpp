@@ -61,7 +61,7 @@ GUI_Library::GUI_Library(Library* library, QWidget* parent) :
 	connect(m->actionAddArtist, &QAction::triggered, this, &GUI_Library::btnAddClicked);
 	connect(ui->tv_artists, &SC::ArtistView::sigAddArtistTriggered, this, &GUI_Library::btnAddClicked);
 
-	library->load();
+	library->refetch();
 }
 
 GUI_Library::~GUI_Library()
@@ -95,7 +95,7 @@ Library::TrackDeletionMode GUI_Library::showDeleteDialog(int /*trackCount*/)
 
 void GUI_Library::btnAddClicked()
 {
-	m->artistSearch->resizeRelative(this, 1.0, QSize(800, 600));
+	m->artistSearch->resizeRelative(this, 1.0, QSize(800, 600)); // NOLINT(readability-magic-numbers)
 	m->artistSearch->show();
 }
 

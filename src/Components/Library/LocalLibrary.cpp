@@ -97,6 +97,19 @@ LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId
 
 LocalLibrary::~LocalLibrary() = default;
 
+void LocalLibrary::initLibraryImpl()
+{
+	auto* mdcn = Tagging::ChangeNotifier::instance();
+	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged,
+	        this, &LocalLibrary::metadataChanged);
+
+	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted,
+	        this, &LocalLibrary::metadataChanged);
+
+	connect(mdcn, &Tagging::ChangeNotifier::sigAlbumsChanged,
+	        this, &LocalLibrary::albumsChanged);
+}
+
 void LocalLibrary::metadataChanged()
 {
 	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
@@ -172,7 +185,7 @@ void LocalLibrary::reloadLibrary(bool clearFirst, Library::ReloadQuality quality
 
 void LocalLibrary::reloadThreadFinished()
 {
-	load();
+	refetch();
 
 	emit sigReloadingLibrary(QString(), -1);
 	emit sigReloadingLibraryFinished();
