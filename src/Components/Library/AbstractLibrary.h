@@ -95,8 +95,6 @@ class AbstractLibrary :
 		virtual void refetch();
 
 		virtual void refreshCurrentView();
-		void metadataChanged();
-		void albumsChanged();
 
 		virtual void findTrack(TrackID id);
 
@@ -162,6 +160,9 @@ class AbstractLibrary :
 		virtual void getTrackById(TrackID trackId, MetaData& md) const = 0;
 		virtual void getAlbumById(AlbumId albumId, Album& album) const = 0;
 		virtual void getArtistById(ArtistId artistId, Artist& artist) const = 0;
+
+		void replaceAlbum(int index, const Album& album);
+		void replaceTrack(int index, const MetaData& track);
 
 		void prepareTracks();
 		void prepareAlbums();

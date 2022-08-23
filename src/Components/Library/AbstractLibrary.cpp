@@ -168,72 +168,6 @@ void AbstractLibrary::refreshCurrentView()
 	}
 }
 
-void AbstractLibrary::metadataChanged()
-{
-	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
-	const auto& changedTracks = mdcn->changedMetadata();
-
-	QHash<TrackID, int> idRowMap;
-	{ // build lookup tree
-		int i = 0;
-		for(auto it = m->tracks.begin(); it != m->tracks.end(); it++, i++)
-		{
-			idRowMap[it->id()] = i;
-		}
-	}
-
-	auto needsRefresh = false;
-	for(const auto& [oldTrack, newTrack]: changedTracks)
-	{
-		needsRefresh =
-			(oldTrack.artist() != newTrack.artist()) ||
-			(oldTrack.albumArtist() != newTrack.albumArtist()) ||
-			(oldTrack.album() != newTrack.album());
-
-		if(idRowMap.contains(oldTrack.id()))
-		{
-			const auto row = idRowMap[oldTrack.id()];
-			m->tracks[row] = newTrack;
-
-			emit sigCurrentTrackChanged(row);
-		}
-	}
-
-	if(needsRefresh)
-	{
-		refreshCurrentView();
-	}
-}
-
-void AbstractLibrary::albumsChanged()
-{
-	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
-
-	QHash<AlbumId, int> idRowMap;
-	{ // build lookup tree
-		auto i = 0;
-		for(auto it = m->albums.begin(); it != m->albums.end(); it++, i++)
-		{
-			idRowMap[it->id()] = i;
-		}
-	}
-
-	const auto changedAlbums = mdcn->changedAlbums();
-	for(const auto& albumPair: changedAlbums)
-	{
-		const auto& oldAlbum = albumPair.first;
-		const auto& newAlbum = albumPair.second;
-
-		if(idRowMap.contains(oldAlbum.id()))
-		{
-			const auto row = idRowMap[oldAlbum.id()];
-			m->albums[row] = newAlbum;
-
-			emit sigCurrentAlbumChanged(row);
-		}
-	}
-}
-
 void AbstractLibrary::findTrack(TrackID id)
 {
 	MetaData track;
@@ -714,6 +648,24 @@ void AbstractLibrary::deleteTracks(const MetaDataList& tracks, Library::TrackDel
 	Tagging::ChangeNotifier::instance()->deleteMetadata(tracks);
 
 	refreshCurrentView();
+}
+
+void AbstractLibrary::replaceAlbum(const int index, const Album& album)
+{
+	if(Util::between(index, m->albums))
+	{
+		m->albums[index] = album;
+		emit sigCurrentAlbumChanged(index);
+	}
+}
+
+void AbstractLibrary::replaceTrack(const int index, const MetaData& track)
+{
+	if(Util::between(index, m->tracks))
+	{
+		m->tracks[index] = track;
+		emit sigCurrentTrackChanged(index);
+	}
 }
 
 void AbstractLibrary::prepareTracks()

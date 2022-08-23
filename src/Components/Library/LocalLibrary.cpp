@@ -23,6 +23,7 @@
 #include "Threads/ReloadThread.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Tagging/ChangeNotifier.h"
 
 #include "Database/Connector.h"
 #include "Database/Library.h"
@@ -38,6 +39,21 @@
 #include "Utils/Logger/Logger.h"
 
 #include <QTime>
+
+namespace
+{
+	template<typename T>
+	QHash<Id, int> createIdRowMap(const T& items)
+	{
+		auto idRowMap = QHash<Id, int> {};
+		for(auto it = items.begin(); it != items.end(); it++)
+		{
+			idRowMap[it->id()] = std::distance(items.begin(), it);
+		}
+
+		return idRowMap;
+	}
+}
 
 struct LocalLibrary::Private
 {
@@ -80,6 +96,54 @@ LocalLibrary::LocalLibrary(Library::Manager* libraryManager, LibraryId libraryId
 }
 
 LocalLibrary::~LocalLibrary() = default;
+
+void LocalLibrary::metadataChanged()
+{
+	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
+
+	const auto& changedTracks = mdcn->changedMetadata();
+	const auto idRowMap = createIdRowMap(tracks());
+
+	auto needsRefresh = false;
+	for(const auto& [oldTrack, newTrack]: changedTracks)
+	{
+		needsRefresh |=
+			(oldTrack.albumArtistId() != newTrack.albumArtistId()) ||
+			(oldTrack.albumId() != newTrack.albumId()) ||
+			(oldTrack.artistId() != newTrack.artistId()) ||
+			(oldTrack.album() != newTrack.album()) ||
+			(oldTrack.albumArtist() != newTrack.albumArtist()) ||
+			(oldTrack.artist() != newTrack.artist());
+
+		if(idRowMap.contains(oldTrack.id()))
+		{
+			const auto row = idRowMap[oldTrack.id()];
+			replaceTrack(row, newTrack);
+		}
+	}
+
+	if(needsRefresh)
+	{
+		refreshCurrentView();
+	}
+}
+
+void LocalLibrary::albumsChanged()
+{
+	auto* mdcn = dynamic_cast<Tagging::ChangeNotifier*>(sender());
+
+	const auto& changedAlbums = mdcn->changedAlbums();
+	const auto idRowMap = createIdRowMap(albums());
+
+	for(const auto& [oldAlbum, newAlbum]: changedAlbums)
+	{
+		if(idRowMap.contains(oldAlbum.id()))
+		{
+			const auto row = idRowMap[oldAlbum.id()];
+			replaceAlbum(row, newAlbum);
+		}
+	}
+}
 
 void LocalLibrary::applyDatabaseFixes() {}
 

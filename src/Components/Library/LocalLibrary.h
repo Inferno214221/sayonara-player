@@ -66,6 +66,9 @@ class LocalLibrary :
 		void importFiles(const QStringList& files) override;
 		void importFilesTo(const QStringList& files, const QString& targetDirectory);
 
+	protected:
+		void initLibraryImpl() override;
+
 	private:
 		void applyDatabaseFixes();
 		void initReloadThread();
@@ -100,6 +103,8 @@ class LocalLibrary :
 		void searchModeChanged();
 		void showAlbumArtistsChanged();
 		void importStatusChanged(Library::Importer::ImportStatus status);
+		void metadataChanged();
+		void albumsChanged();
 };
 
 #endif // SAYONARA_PLAYER_LOCAL_LIBRARY_H
