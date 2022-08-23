@@ -38,6 +38,24 @@
 
 #include <QHash>
 
+namespace
+{
+	template<typename T>
+	IndexSet restoreSelectedIndexes(const T& items, const IdSet& oldSelections)
+	{
+		auto newSelections = IndexSet {};
+		for(auto it = items.begin(); it != items.end(); it++)
+		{
+			if(oldSelections.contains(it->id()))
+			{
+				newSelections.insert(std::distance(items.begin(), it));
+			}
+		}
+
+		return newSelections;
+	}
+}
+
 struct AbstractLibrary::Private
 {
 	LibraryPlaylistInteractor* playlistInteractor;
@@ -117,8 +135,6 @@ void AbstractLibrary::refreshCurrentView()
 {
 	/* Waring! Sorting after each fetch is important here! */
 	/* Do not call emit_stuff() in order to avoid double sorting */
-	IndexSet selectedArtistIndexes, selectedAlbumIndexes, selectedTrackIndexes;
-
 	const auto selectedArtists = std::move(m->selectedArtists);
 	const auto selectedAlbums = std::move(m->selectedAlbums);
 	const auto selectedTracks = std::move(m->selectedTracks);
@@ -126,37 +142,15 @@ void AbstractLibrary::refreshCurrentView()
 	fetchByFilter(m->filter, true);
 
 	prepareArtists();
-	for(int i = 0; i < m->artists.count(); i++)
-	{
-		if(selectedArtists.contains(m->artists[i].id()))
-		{
-			selectedArtistIndexes.insert(i);
-		}
-	}
-
+	const auto selectedArtistIndexes = restoreSelectedIndexes(artists(), selectedArtists);
 	changeArtistSelection(selectedArtistIndexes);
 
 	prepareAlbums();
-	for(auto i = 0; i < m->albums.count(); i++)
-	{
-		if(selectedAlbums.contains(m->albums[i].id()))
-		{
-			selectedAlbumIndexes.insert(i);
-		}
-	}
-
+	const auto selectedAlbumIndexes = restoreSelectedIndexes(albums(), selectedAlbums);
 	changeAlbumSelection(selectedAlbumIndexes);
 
 	prepareTracks();
-
-	const auto& tracks = this->tracks();
-	for(auto i = 0; i < tracks.count(); i++)
-	{
-		if(selectedTracks.contains(tracks[i].id()))
-		{
-			selectedTrackIndexes.insert(i);
-		}
-	}
+	const auto selectedTrackIndexes = restoreSelectedIndexes(tracks(), selectedTracks);
 
 	emit sigAllAlbumsLoaded();
 	emit sigAllArtistsLoaded();
