@@ -106,6 +106,7 @@ void LocalLibrary::initLibraryImpl()
 	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted,
 	        this, &LocalLibrary::metadataChanged);
 
+	// rating
 	connect(mdcn, &Tagging::ChangeNotifier::sigAlbumsChanged,
 	        this, &LocalLibrary::albumsChanged);
 }
@@ -120,7 +121,7 @@ void LocalLibrary::metadataChanged()
 	auto needsRefresh = false;
 	for(const auto& [oldTrack, newTrack]: changedTracks)
 	{
-		needsRefresh |=
+		needsRefresh = needsRefresh ||
 			(oldTrack.albumArtistId() != newTrack.albumArtistId()) ||
 			(oldTrack.albumId() != newTrack.albumId()) ||
 			(oldTrack.artistId() != newTrack.artistId()) ||

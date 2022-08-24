@@ -31,15 +31,16 @@
 namespace DB
 {
 	class LibraryDatabase :
-			public DB::Albums,
-			public DB::Artists,
-			public DB::Tracks,
-			public DB::Module
+		public DB::Albums,
+		public DB::Artists,
+		public DB::Tracks,
+		public DB::Module
 	{
 		PIMPL(LibraryDatabase)
 
 		public:
-			enum class ArtistIDField : uint8_t
+			enum class ArtistIDField :
+				uint8_t
 			{
 				AlbumArtistID,
 				ArtistID
@@ -63,6 +64,9 @@ namespace DB
 
 			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
 			bool fixEmptyAlbums();
+
+			using Albums::deleteAllAlbums;
+			using Artists::deleteAllArtists;
 
 		protected:
 			Module* module() override;

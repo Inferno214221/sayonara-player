@@ -54,6 +54,17 @@ namespace
 
 		return newSelections;
 	}
+
+	Gui::ExtensionSet extractExtensions(const MetaDataList& tracks)
+	{
+		Gui::ExtensionSet extensions;
+		for(const auto& track: tracks)
+		{
+			extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
+		}
+
+		return extensions;
+	}
 }
 
 struct AbstractLibrary::Private
@@ -231,7 +242,6 @@ void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool cr
 
 void AbstractLibrary::playNextFetchedTracks()
 {
-
 	m->playlistInteractor->insertAfterCurrentTrack(tracks());
 }
 
@@ -429,19 +439,16 @@ void AbstractLibrary::changeAlbumSelection(const IndexSet& indexes, bool ignoreA
 		}
 	}
 
-		// only album is selected
 	else if(!m->selectedAlbums.isEmpty())
 	{
 		getAllTracksByAlbum(m->selectedAlbums.toList(), m->tracks, m->filter);
 	}
 
-		// neither album nor artist, but searchstring
 	else if(!m->filter.cleared())
 	{
 		getAllTracksBySearchstring(m->filter, m->tracks);
 	}
 
-		// no album, no artist, no searchstring
 	else
 	{
 		getAllTracks(m->tracks);
@@ -665,13 +672,8 @@ void AbstractLibrary::replaceTrack(const int index, const MetaData& track)
 
 void AbstractLibrary::prepareTracks()
 {
-	m->extensions.clear();
 	m->filteredTracks.clear();
-
-	for(const auto& track: tracks())
-	{
-		m->extensions.addExtension(Util::File::getFileExtension(track.filepath()), false);
-	}
+	m->extensions = extractExtensions(tracks());
 
 	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks, GetSetting(Set::Lib_SortModeMask));
 }
