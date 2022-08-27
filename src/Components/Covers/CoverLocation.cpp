@@ -65,37 +65,23 @@ namespace
 		return result;
 	}
 
-	QString extractPathFromPathHint(const QString& pathHint)
+	QStringList extractLocalPathDirectories(const QStringList& localPathHints)
 	{
-		const auto fileInfo = QFileInfo(pathHint);
-		if(fileInfo.isFile())
+		for(const auto& pathHint :localPathHints)
 		{
-			return Util::File::getParentDirectory(pathHint);
-		}
-
-		return (fileInfo.isDir())
-		       ? pathHint
-		       : QString {};
-	}
-
-	QStringList extractLocalPathDirectories(const QStringList& localPathHints, int maxItems)
-	{
-		Util::Set<QString> result;
-
-		for(const auto& pathHint: localPathHints)
-		{
-			const auto path = extractPathFromPathHint(pathHint);
-			if(!path.isEmpty())
+			const auto fileInfo = QFileInfo(pathHint);
+			if(fileInfo.isFile())
 			{
-				result << path;
-				if(result.count() == maxItems)
-				{
-					break;
-				}
+				return {Util::File::getParentDirectory(pathHint)};
+			}
+
+			if(fileInfo.isDir())
+			{
+				return {pathHint};
 			}
 		}
 
-		return QStringList(result.toList());;
+		return {};
 	}
 
 	bool checkAlbumForCoverHint(const Album& album)
@@ -104,15 +90,10 @@ namespace
 		       !album.pathHint().isEmpty();
 	}
 
-	bool checkPathHintForCover(const QString& pathHint)
-	{
-		return Util::File::isFile(pathHint) && Tagging::hasCover(pathHint);
-	}
-
 	int checkPathHintsForCover(const QStringList& pathHints)
 	{ // usually path hints are tracks
-		return Util::Algorithm::indexOf(pathHints, [&](const auto& hint) {
-			return checkPathHintForCover(hint);
+		return Util::Algorithm::indexOf(pathHints, [&](const auto& pathHint) {
+			return Util::File::isFile(pathHint) && Tagging::hasCover(pathHint);
 		});
 	}
 
@@ -126,12 +107,12 @@ namespace
 		const auto hasCoverHint = checkAlbumForCoverHint(album);
 		const auto pathHints = album.isSampler() ? album.pathHint() : onlyKeepFirst(album.pathHint());
 		const auto index = hasCoverHint
-			? (pathHints.size() - 1)
-			: checkPathHintsForCover(pathHints);
+		                   ? (pathHints.size() - 1)
+		                   : checkPathHintsForCover(pathHints);
 
 		return (index >= 0)
-			? pathHints[index]
-			: QString{};
+		       ? pathHints[index]
+		       : QString {};
 	}
 
 	Album createAlbumFromTrack(const MetaData& track)
@@ -470,7 +451,7 @@ QString Location::localPath() const
 
 QString Location::localPathDir() const
 {
-	const auto parentDirectories = extractLocalPathDirectories(localPathHints(), 1);
+	const auto parentDirectories = extractLocalPathDirectories(localPathHints());
 	return (!parentDirectories.isEmpty())
 	       ? parentDirectories.first()
 	       : QString {};
