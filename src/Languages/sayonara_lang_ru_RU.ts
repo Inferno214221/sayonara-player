@@ -750,7 +750,7 @@
     <message>
         <location line="+18"/>
         <source>Sorting</source>
-        <translation type="unfinished"/>
+        <translation>Сортировка</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -895,7 +895,7 @@
     <message>
         <location line="+6"/>
         <source>Visible items</source>
-        <translation type="unfinished"/>
+        <translation>Видимые элементы</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -936,7 +936,7 @@
         <location line="+50"/>
         <location line="+6"/>
         <source>Row style</source>
-        <translation type="unfinished"/>
+        <translation>Формат строки</translation>
     </message>
     <message>
         <location line="+18"/>
@@ -962,12 +962,12 @@
         <location line="+34"/>
         <location line="+6"/>
         <source>Workarounds</source>
-        <translation type="unfinished"/>
+        <translation>Обходные пути</translation>
     </message>
     <message>
         <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+254"/>
         <source>Fix startup playback issue</source>
-        <translation type="unfinished"/>
+        <translation>Исправить проблему с воспроизведением при запуске</translation>
     </message>
     <message>
         <location line="+14"/>
@@ -1474,7 +1474,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+738"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+643"/>
         <source>All %1 could be removed</source>
         <translation>Все %1 удалены</translation>
     </message>
@@ -1537,7 +1537,7 @@
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+161"/>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
         <source>Cannot check for language update</source>
         <translation>Невозможно проверить обновления языка</translation>
     </message>
@@ -1577,88 +1577,88 @@
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+109"/>
         <source>Between</source>
-        <translation type="unfinished"/>
+        <translation>Между</translation>
     </message>
     <message>
         <location line="+1"/>
         <source>and</source>
-        <translation type="unfinished"/>
+        <translation>и</translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByCreateDate.cpp" line="+78"/>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+59"/>
         <source>%1 - %2</source>
-        <translation type="unfinished"/>
+        <translation>%1-%2</translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByListeningDate.cpp" line="+107"/>
         <source>Last listened</source>
-        <translation type="unfinished"/>
+        <translation>Последние прослушанные</translation>
     </message>
     <message>
         <location line="+12"/>
         <source>exactly %1</source>
-        <translation type="unfinished"/>
+        <translation>точно %1</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRating.cpp" line="+33"/>
         <source>%1 star(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%1 звезда</numerusform><numerusform>%1 звезды</numerusform><numerusform>%1 звезды</numerusform><numerusform>%1 звезды</numerusform></translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRelativeDate.cpp" line="+54"/>
         <source>%1 old</source>
-        <translation type="unfinished"/>
+        <translation>%1 лет</translation>
     </message>
     <message>
         <location line="+27"/>
         <source>Age of tracks</source>
-        <translation type="unfinished"/>
+        <translation>Возраст треков</translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+117"/>
         <source>Random albums</source>
-        <translation type="unfinished"/>
+        <translation>Рандомные альбомы</translation>
     </message>
     <message numerus="yes">
         <location line="+2"/>
         <source>%n random album(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n рандомный альбом</numerusform><numerusform>%n рандомных альбомов</numerusform><numerusform>%n рандомных альбомов</numerusform><numerusform>%n рандомных альбомов</numerusform></translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Number of albums</source>
-        <translation type="unfinished"/>
+        <translation>Номер альбомов</translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomTracks.cpp" line="+41"/>
         <source>Random tracks</source>
-        <translation type="unfinished"/>
+        <translation>Рандомные треки</translation>
     </message>
     <message numerus="yes">
         <location line="+2"/>
         <source>%n random track(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n рандомный трек</numerusform><numerusform>%n рандомных треков</numerusform><numerusform>%n рандомных треков</numerusform><numerusform>%n рандомных треков</numerusform></translation>
     </message>
     <message>
         <location line="+16"/>
         <source>Number of tracks</source>
-        <translation type="unfinished"/>
+        <translation>Номер треков</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Components/SmartPlaylists/TimeSpan.cpp" line="+49"/>
         <source>%n year(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform><numerusform>%n лет</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+5"/>
         <source>%n month(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n месяц</numerusform><numerusform>%n месяцев</numerusform><numerusform>%n месяцев</numerusform><numerusform>%n месяцев</numerusform></translation>
     </message>
     <message numerus="yes">
         <location line="+5"/>
         <source>%n day(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+        <translation><numerusform>%n день</numerusform><numerusform>%n дней</numerusform><numerusform>%n дней</numerusform><numerusform>%n дней</numerusform></translation>
     </message>
     <message>
         <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+125"/>
@@ -1685,7 +1685,7 @@
     <message>
         <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+123"/>
         <source>Between %1 and %2</source>
-        <translation type="unfinished"/>
+        <translation>Между %1 и %2</translation>
     </message>
     <message>
         <location filename="../src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+73"/>
@@ -2114,7 +2114,7 @@
     <message>
         <location line="+3"/>
         <source>Jump to next album</source>
-        <translation type="unfinished"/>
+        <translation>Перейти к следующему альбому</translation>
     </message>
     <message>
         <location line="+1"/>
@@ -2270,7 +2270,7 @@
     <message>
         <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
         <source>Create time span</source>
-        <translation type="unfinished"/>
+        <translation>Создать временной интервал</translation>
     </message>
 </context>
 <context>
@@ -3257,7 +3257,7 @@
     <message>
         <location line="+2"/>
         <source>Shuffle playlist</source>
-        <translation type="unfinished"/>
+        <translation>Смешанный список воспроизведения</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3353,7 +3353,7 @@
     <message>
         <location line="+2"/>
         <source>Smart Playlists</source>
-        <translation type="unfinished"/>
+        <translation>Смарт плейлисты</translation>
     </message>
     <message>
         <location line="+2"/>

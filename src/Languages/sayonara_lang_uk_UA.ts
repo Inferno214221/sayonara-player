@@ -750,7 +750,7 @@
     <message>
         <location line="+18"/>
         <source>Sorting</source>
-        <translation type="unfinished"/>
+        <translation>Сортування</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1474,7 +1474,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+738"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+643"/>
         <source>All %1 could be removed</source>
         <translation>Всі %1 видалені</translation>
     </message>
@@ -1537,7 +1537,7 @@
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+161"/>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
         <source>Cannot check for language update</source>
         <translation>Неможливо перевірити на оновлення мови</translation>
     </message>
@@ -1598,12 +1598,12 @@
     <message>
         <location line="+12"/>
         <source>exactly %1</source>
-        <translation type="unfinished"/>
+        <translation>точно %1</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRating.cpp" line="+33"/>
         <source>%1 star(s)</source>
-        <translation><numerusform>%1 зір(ок)</numerusform><numerusform>%1 зір(ок)</numerusform><numerusform>%1 зір(ок)</numerusform><numerusform>%1 зір(ок)</numerusform></translation>
+        <translation><numerusform>%1 зірка</numerusform><numerusform>%1 зірок</numerusform><numerusform>%1 зірок</numerusform><numerusform>%1 зірок</numerusform></translation>
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRelativeDate.cpp" line="+54"/>
@@ -1618,12 +1618,12 @@
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+117"/>
         <source>Random albums</source>
-        <translation>Випадкові альбоми</translation>
+        <translation>Рандомні альбоми</translation>
     </message>
     <message numerus="yes">
         <location line="+2"/>
         <source>%n random album(s)</source>
-        <translation><numerusform>%н випадковий альбом</numerusform><numerusform>%н випадкових альбом(ів)</numerusform><numerusform>%н випадкових альбом(ів)</numerusform><numerusform>%н випадкових альбом(ів)</numerusform></translation>
+        <translation><numerusform>%п рандомний альбом</numerusform><numerusform>%п рандомних альбомів</numerusform><numerusform>%п рандомних альбомів</numerusform><numerusform>%п рандомних альбомів</numerusform></translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1633,12 +1633,12 @@
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomTracks.cpp" line="+41"/>
         <source>Random tracks</source>
-        <translation>Випадкові треки</translation>
+        <translation>Рандомні треки</translation>
     </message>
     <message numerus="yes">
         <location line="+2"/>
         <source>%n random track(s)</source>
-        <translation><numerusform>%н випадковий трек</numerusform><numerusform>%н випадков(их) трек(ів)</numerusform><numerusform>%н випадков(их) трек(ів)</numerusform><numerusform>%н випадков(их) трек(ів)</numerusform></translation>
+        <translation><numerusform>%п рандомний трек</numerusform><numerusform>%п рандомних треків</numerusform><numerusform>%п рандомних треків</numerusform><numerusform>%п рандомних треків</numerusform></translation>
     </message>
     <message>
         <location line="+16"/>

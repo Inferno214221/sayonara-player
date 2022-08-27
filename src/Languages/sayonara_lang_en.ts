@@ -750,7 +750,7 @@
     <message>
         <location line="+18"/>
         <source>Sorting</source>
-        <translation type="unfinished"/>
+        <translation>Sorting</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1474,7 +1474,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+738"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+643"/>
         <source>All %1 could be removed</source>
         <translation>All %1 could be removed</translation>
     </message>
@@ -1537,7 +1537,7 @@
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+161"/>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
         <source>Cannot check for language update</source>
         <translation>Cannot check for language update</translation>
     </message>
@@ -1598,7 +1598,7 @@
     <message>
         <location line="+12"/>
         <source>exactly %1</source>
-        <translation type="unfinished"/>
+        <translation>exactly %1</translation>
     </message>
     <message numerus="yes">
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRating.cpp" line="+33"/>

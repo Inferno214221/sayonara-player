@@ -750,7 +750,7 @@
     <message>
         <location line="+18"/>
         <source>Sorting</source>
-        <translation type="unfinished"/>
+        <translation>Sortierung</translation>
     </message>
     <message>
         <location line="+6"/>
@@ -1474,7 +1474,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+738"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+643"/>
         <source>All %1 could be removed</source>
         <translation>Alle %1 konnten gelöscht werden</translation>
     </message>
@@ -1537,7 +1537,7 @@
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+161"/>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
         <source>Cannot check for language update</source>
         <translation>Aktualisierung kann nicht überprüft werden</translation>
     </message>
