@@ -252,8 +252,8 @@ Location Location::coverLocation(const Album& album)
 			location.setHash(QString("poorly-tagged-album-%1").arg(token));
 		}
 
-		location.setAudioFileSource(coverHintPath, location.hashPath());
 		location.setValid(true);
+		location.setAudioFileSource(coverHintPath, location.hashPath());
 	}
 
 	const auto searchUrls = convertDownloadUrls(album.coverDownloadUrls()) + location.searchUrls();

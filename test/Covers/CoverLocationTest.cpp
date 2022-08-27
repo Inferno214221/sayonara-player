@@ -161,6 +161,8 @@ class CoverLocationTest :
 		[[maybe_unused]] void testRadioStationDownloadUrls();
 		[[maybe_unused]] void testArtist();
 		[[maybe_unused]] void testEqualAlbumAndTrackHash();
+		[[maybe_unused]] void testCoverLocationValidityForPoorlyTaggedTracks();
+		[[maybe_unused]] void testCoverLocationWithCoverHint();
 };
 
 [[maybe_unused]] void
@@ -564,6 +566,83 @@ CoverLocationTest::testEqualAlbumAndTrackHash() // NOLINT(readability-convert-me
 
 	QVERIFY(hashAlbum == hashTrack);
 	QVERIFY(hashPathAlbum == hashPathTrack);
+}
+
+[[maybe_unused]] void
+CoverLocationTest::testCoverLocationValidityForPoorlyTaggedTracks()
+{
+	constexpr const auto* Dir = "PoorlyTaggedTrack";
+
+	struct TestCase { // NOLINT(cppcoreguidelines-pro-type-member-init)
+		bool coverInTag;
+		QStringList coverDownloadUrls;
+		bool expectedValid;
+	};
+
+	const auto testCases = {
+		TestCase{false, {}, false},
+		TestCase{true, {}, true},
+		TestCase{false, {"https://coverPage.com/getCover"}, true},
+		TestCase{true, {"https://coverPage.com/getCover"}, true}
+	};
+
+	for(const auto& [coverInTag, coverDownloadUrls, isValid] : testCases)
+	{
+		createMP3(tempPath(Dir), "track.mp3", coverInTag);
+		auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
+		track.setArtist(QString());
+		track.setAlbum(QString());
+		track.setAlbumArtist(QString());
+		track.setCoverDownloadUrls(coverDownloadUrls);
+
+		Tagging::Utils::setMetaDataOfFile(track);
+
+		const auto coverLocation = Cover::Location::coverLocation(track);
+		QVERIFY(coverLocation.isValid() == isValid);
+		QVERIFY(coverLocation.hashPath().isEmpty() == !isValid);
+		QVERIFY(coverLocation.audioFileSource().isEmpty() == !coverInTag);
+	}
+}
+
+[[maybe_unused]] void CoverLocationTest::testCoverLocationWithCoverHint()
+{
+	constexpr const auto* Dir = "PoorlyTaggedTrack2";
+
+	struct TestCase {
+		bool coverInTag;
+		bool hasCoverHint;
+		bool expectedValid;
+	};
+
+	constexpr const auto testCases = std::array{
+		TestCase{false, false, false},
+		TestCase{false, true, true},
+		TestCase{true, false, true},
+		TestCase{true, true, true}
+	};
+
+	for(const auto& [coverInTag, hasCoverHint, isValid] : testCases)
+	{
+		QVERIFY(isValid == (coverInTag || hasCoverHint));
+
+		createMP3(tempPath(Dir), "track.mp3", coverInTag);
+		auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
+		track.setArtist(QString());
+		track.setAlbum(QString());
+		track.setAlbumArtist(QString());
+		track.setCoverDownloadUrls({});
+		if(hasCoverHint)
+		{
+			track.addCustomField("has-album-art", QString(), "1");
+		}
+
+		Tagging::Utils::setMetaDataOfFile(track);
+
+		const auto coverLocation = Cover::Location::coverLocation(track);
+		QVERIFY(coverLocation.isValid() == isValid);
+		QVERIFY(coverLocation.hashPath().isEmpty() == !isValid);
+		QVERIFY(coverLocation.audioFileSource().isEmpty() == (!hasCoverHint && !coverInTag));
+	}
 }
 
 QTEST_MAIN(CoverLocationTest)
