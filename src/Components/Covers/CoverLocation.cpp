@@ -98,6 +98,42 @@ namespace
 		return QStringList(result.toList());;
 	}
 
+	bool checkAlbumForCoverHint(const Album& album)
+	{
+		return (album.customField("has-album-art").toInt() != 0) &&
+		       !album.pathHint().isEmpty();
+	}
+
+	bool checkPathHintForCover(const QString& pathHint)
+	{
+		return Util::File::isFile(pathHint) && Tagging::hasCover(pathHint);
+	}
+
+	int checkPathHintsForCover(const QStringList& pathHints)
+	{ // usually path hints are tracks
+		return Util::Algorithm::indexOf(pathHints, [&](const auto& hint) {
+			return checkPathHintForCover(hint);
+		});
+	}
+
+	QStringList onlyKeepFirst(QStringList list)
+	{
+		return list.isEmpty() ? list : QStringList {list.first()};
+	}
+
+	QString getCoverHintForAlbum(const Album& album)
+	{
+		const auto hasCoverHint = checkAlbumForCoverHint(album);
+		const auto pathHints = album.isSampler() ? album.pathHint() : onlyKeepFirst(album.pathHint());
+		const auto index = hasCoverHint
+			? (pathHints.size() - 1)
+			: checkPathHintsForCover(pathHints);
+
+		return (index >= 0)
+			? pathHints[index]
+			: QString{};
+	}
+
 	Album createAlbumFromTrack(const MetaData& track)
 	{
 		Album album;
@@ -112,18 +148,6 @@ namespace
 		album.addCustomField("has-album-art", QString(), track.customField("has-album-art"));
 
 		return album;
-	}
-
-	bool checkPathHintForCover(const QString& pathHint)
-	{
-		return (Util::File::isFile(pathHint))
-		       ? Tagging::hasCover(pathHint)
-		       : false;
-	}
-
-	bool checkLibraryItemForCover(const LibraryItem& libraryItem)
-	{
-		return (libraryItem.customField("has-album-art").toInt() != 0);
 	}
 
 	bool saveToAudioFileTarget(const QString& audioFileSource, const QString& audioFileTarget)
@@ -217,25 +241,28 @@ Location Location::coverLocation(const Album& album)
 	                ? Location::coverLocation(album.name(), album.albumArtist())
 	                : Location::coverLocation(album.name(), album.artists());
 
-	if(location.isValid())
+	location.setLocalPathHints(album.pathHint());
+
+	const auto coverHintPath = getCoverHintForAlbum(album);
+	if(!coverHintPath.isEmpty())
 	{
-		const auto searchUrls = convertDownloadUrls(album.coverDownloadUrls()) + location.searchUrls();
-		location.setSearchUrls(searchUrls);
-		location.setLocalPathHints(album.pathHint());
-
-		const auto hasPathHints = !album.pathHint().isEmpty();
-		const auto pathHints = (hasPathHints && !album.isSampler())
-		                       ? (QStringList() << album.pathHint().first())
-		                       : album.pathHint();
-
-		const auto index = Util::Algorithm::indexOf(pathHints, [&](const auto& hint) {
-			return (checkLibraryItemForCover(album) || checkPathHintForCover(hint));
-		});
-
-		if(index >= 0)
-		{
-			location.setAudioFileSource(album.pathHint()[index], location.hashPath());
+		if(!location.isValid())
+		{ // poorly tagged, but path hints -> we need a hash
+			const auto token = Util::Covers::calcCoverToken(coverHintPath, {});
+			location.setHash(QString("poorly-tagged-album-%1").arg(token));
 		}
+
+		location.setAudioFileSource(coverHintPath, location.hashPath());
+		location.setValid(true);
+	}
+
+	const auto searchUrls = convertDownloadUrls(album.coverDownloadUrls()) + location.searchUrls();
+	location.setSearchUrls(searchUrls);
+	if(!location.isValid() && !searchUrls.isEmpty())
+	{ // poorly tagged, no path hints, but search urls -> we need a hash
+		const auto token = Util::Covers::calcCoverToken(searchUrls.first().url(), {});
+		location.setHash(QString("only-search-urls-available-%1").arg(token));
+		location.setValid(true);
 	}
 
 	return location;
@@ -407,7 +434,7 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 		return false;
 	}
 
-	auto [dir, filename] = Util::File::splitFilename(coverPath);
+	auto[dir, filename] = Util::File::splitFilename(coverPath);
 	const auto extension = Util::File::getFileExtension(coverPath);
 	if(extension.isEmpty())
 	{
