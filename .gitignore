@@ -13,5 +13,6 @@ doxygen/html*
 *.autosave
 .idea
 parts/
-
-
+prime/
+stage/
+*.snap
