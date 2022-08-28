@@ -3,7 +3,7 @@ FROM ubuntu:focal
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
   apt-get dist-upgrade --yes && \
-  apt-get install --yes curl sudo jq squashfs-tools tzdata
+  apt-get install --yes curl sudo jq squashfs-tools tzdata patch
 
 # Core
 RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core' | jq '.download_url' -r) --output core.snap && \
@@ -25,13 +25,13 @@ RUN curl -L https://api.snapcraft.io/api/v1/snaps/download/vMTKRaLjnOJQetI78Hjnt
 RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/gtk-common-themes' | jq '.download_url' -r) --output gtk-common-themes.snap && \
   mkdir -p /snap/gtk-common-themes && unsquashfs -d /snap/gtk-common-themes/current gtk-common-themes.snap && rm gtk-common-themes.snap
 
-# kde-frameworks-5-qt-5-15-3-core20
-RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-qt-5-15-3-core20' | jq '.download_url' -r) --output kde-frameworks-5-qt-5-15-3-core20.snap && \
-  mkdir -p /snap/kde-frameworks-5-qt-5-15-3-core20 && unsquashfs -d /snap/kde-frameworks-5-qt-5-15-3-core20/current kde-frameworks-5-qt-5-15-3-core20.snap && rm kde-frameworks-5-qt-5-15-3-core20.snap
+# kde-frameworks-5-91-qt-5-15-3-core20
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-91-qt-5-15-3-core20' | jq '.download_url' -r) --output kde-frameworks-5-91-qt-5-15-3-core20.snap && \
+  mkdir -p /snap/kde-frameworks-5-91-qt-5-15-3-core20 && unsquashfs -d /snap/kde-frameworks-5-91-qt-5-15-3-core20/current kde-frameworks-5-91-qt-5-15-3-core20.snap && rm kde-frameworks-5-91-qt-5-15-3-core20.snap
 
-# kde-frameworks-5-qt-5-15-3-core20-sdk
-RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-qt-5-15-3-core20-sdk' | jq '.download_url' -r) --output kde-frameworks-5-qt-5-15-3-core20-sdk.snap && \
-  mkdir -p /snap/kde-frameworks-5-qt-5-15-3-core20-sdk && unsquashfs -d /snap/kde-frameworks-5-qt-5-15-3-core20-sdk/current kde-frameworks-5-qt-5-15-3-core20-sdk.snap && rm kde-frameworks-5-qt-5-15-3-core20-sdk.snap
+# kde-frameworks-5-91-qt-5-15-3-core20-sdk
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-91-qt-5-15-3-core20-sdk' | jq '.download_url' -r) --output kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && \
+  mkdir -p /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk && unsquashfs -d /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk/current kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && rm kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap
 
 RUN apt remove --yes --purge curl jq squashfs-tools && \
   apt-get autoclean --yes && \

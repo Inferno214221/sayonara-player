@@ -91,8 +91,7 @@ package-snap:
     - export SNAP_ARCH=amd64
     - export SNAPCRAFT_BUILD_INFO=1
     - export SNAPCRAFT_SETUP_CORE=1
-    - apt-get update -qq
-    - apt-get install -y -qq git
+    - apt update -qq && apt install -y -qq git
     - echo $(snapcraft --version)
     - snapcraft --destructive-mode --enable-experimental-extensions
   artifacts:
