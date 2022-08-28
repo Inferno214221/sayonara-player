@@ -11,7 +11,7 @@
 		<update_contact>sayonara-player_at_posteo.org</update_contact>
 		<summary>A fast and powerful audio player and library manager</summary>
 		<releases>
-			<release version="@SAYONARA_VERSION@" date="2022-01-01">
+			<release version="@SAYONARA_FULL_VERSION@" date="@APPSTREAM_BUILD_DATE@">
 				<description>See release notes on https://sayonara-player.com/changelog</description>
 				<issues>
 					<issue url="https://gitlab.com/luciocarreras/sayonara-player">Search or file in issue reports at Gitlab</issue>

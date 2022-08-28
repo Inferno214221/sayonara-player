@@ -11,7 +11,7 @@ build-sayonara:
   stage: build
   script: 
     - mkdir -p build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt
+    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
     - make -j`nproc`
     - make install DESTDIR=AppDir
   artifacts:
@@ -94,8 +94,6 @@ package-snap:
     - apt-get update -qq
     - apt-get install -y -qq git
     - echo $(snapcraft --version)
-    - ls -l ./snap/local/
-    - ./snap/local/set-snap-version.sh
     - snapcraft --destructive-mode --enable-experimental-extensions
   artifacts:
     when: always

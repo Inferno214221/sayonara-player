@@ -1,5 +1,6 @@
 project(say_resources)
 
+string(TIMESTAMP APPSTREAM_BUILD_DATE "%Y-%m-%d")
 configure_file(version.in ${CMAKE_BINARY_DIR}/version @ONLY)
 configure_file(com.sayonara-player.Sayonara.appdata.xml.in
                ${CMAKE_CURRENT_BINARY_DIR}/com.sayonara-player.Sayonara.appdata.xml
