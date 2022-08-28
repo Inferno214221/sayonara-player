@@ -17,8 +17,8 @@ RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/sna
 RUN  curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core20' | jq '.download_url' -r) --output core20.snap && \
   mkdir -p /snap/core20 && unsquashfs -d /snap/core20/current core20.snap && rm core20.snap
 
-# Old snapcraft version (others can't find python modules)
-RUN curl -L https://api.snapcraft.io/api/v1/snaps/download/vMTKRaLjnOJQetI78HjntT37VuoyssFE_6751.snap --output snapcraft.snap && \
+# Snapcraft
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/snapcraft' | jq '.download_url' -r) --output snapcraft.snap && \
   mkdir -p /snap/snapcraft && unsquashfs -d /snap/snapcraft/current snapcraft.snap && rm snapcraft.snap
 
 # gtk-common-themes
@@ -33,7 +33,12 @@ RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/sna
 RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-91-qt-5-15-3-core20-sdk' | jq '.download_url' -r) --output kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && \
   mkdir -p /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk && unsquashfs -d /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk/current kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && rm kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap
 
-RUN apt remove --yes --purge curl jq squashfs-tools && \
+# Patch snapcraftctl script to use python environment
+COPY ./snapcraft-core20.patch /tmp/snapcraft-core20.patch
+RUN patch -b -i /tmp/snapcraft-core20.patch /snap/snapcraft/current/bin/scriptlet-bin/snapcraftctl
+
+# Cleanup unused packages
+RUN apt remove --yes --purge curl jq squashfs-tools patch && \
   apt-get autoclean --yes && \
   apt-get clean --yes
 
@@ -54,3 +59,6 @@ ENV PATH="/snap/bin:$PATH"
 ENV SNAP="/snap/snapcraft/current"
 ENV SNAP_NAME="snapcraft"
 ENV SNAP_ARCH="amd64"
+ENV SNAPRAFT_BUILD_INFO=1
+ENV SNAPCRAFT_SETUP_CORE=1
+ENV PYTHONPATH="$SNAP/lib/python3.8/site-packages"
