@@ -21,6 +21,7 @@ RUN	apt-get update -qq && \
 	apt-get install -y --no-install-recommends \
 	make \
 	coreutils \
+	curl \
 	clang-12 \
 	git \
 	gstreamer1.0-alsa \

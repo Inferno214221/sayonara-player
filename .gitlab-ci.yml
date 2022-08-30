@@ -123,6 +123,17 @@ deploy-snap:
     - tags
 
 
+# PPA
+deploy-ppa:
+  stage: deploy
+  dependencies:
+    - build-sayonara
+  script:
+    - "curl -X POST --fail -F token=${PPA_TOKEN} -F ref=${PPA_REF_NAME} https://gitlab.com/api/v4/projects/${PPA_PROJECT}/trigger/pipeline"
+  only:
+    - master
+
+
 ## Upload ts to transifex
 package-language:
   stage: packaging
