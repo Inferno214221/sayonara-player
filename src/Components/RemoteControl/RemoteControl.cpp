@@ -22,14 +22,13 @@
 #include "RemoteControl/UDPSocket.h"
 
 #include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverLookup.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Interfaces/PlayManager.h"
-#include "Components/Covers/CoverLookup.h"
-
-#include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaDataList.h"
+#include "PlayManager/PlayManager.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
 
 #include <QPixmap>

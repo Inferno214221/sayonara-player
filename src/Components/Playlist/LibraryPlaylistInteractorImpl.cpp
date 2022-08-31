@@ -20,13 +20,11 @@
 
 #include "Playlist/LibraryPlaylistInteractorImpl.h"
 
-#include "Interfaces/PlayManager.h"
-
-#include "Playlist/PlaylistHandler.h"
+#include "PlayManager/PlayManager.h"
 #include "Playlist/Playlist.h"
-
-#include "Utils/Settings/Settings.h"
+#include "Playlist/PlaylistHandler.h"
 #include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Settings/Settings.h"
 
 namespace
 {

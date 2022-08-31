@@ -21,15 +21,14 @@
 #include "EngineHandler.h"
 #include "Engine.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Interfaces/CoverDataProvider.h"
-#include "Interfaces/PlayManager.h"
 #include "Interfaces/Engine/AudioDataReceiver.h"
 #include "Interfaces/Engine/CoverDataReceiver.h"
-
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/MetaData/MetaData.h"
 #include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaData.h"
 
 #include <QString>
 #include <QByteArray>

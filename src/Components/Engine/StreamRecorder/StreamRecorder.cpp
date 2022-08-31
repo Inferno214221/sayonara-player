@@ -19,17 +19,17 @@
  */
 
 #include "StreamRecorder.h"
-#include "Interfaces/PlayManager.h"
 
-#include "Utils/Utils.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Parser/M3UParser.h"
-#include "Utils/Tagging/Tagging.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/M3UParser.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
+#include "Utils/Tagging/Tagging.h"
+#include "Utils/Utils.h"
 
 #include <QDir>
 #include <QFile>

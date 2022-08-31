@@ -25,11 +25,10 @@
 #include "StreamDataSender.h"
 #include "StreamHttpParser.h"
 
-#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Interfaces/AudioDataProvider.h"
-
-#include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaData.h"
 
 #include <QTcpSocket>
 

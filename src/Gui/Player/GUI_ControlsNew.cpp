@@ -21,10 +21,8 @@
 #include "GUI_ControlsNew.h"
 #include "Gui/Player/ui_GUI_ControlsNew.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/Tagging/UserTaggingOperations.h"
-
-#include "Interfaces/PlayManager.h"
-
 #include "Utils/MetaData/MetaDataList.h"
 
 using Gui::RatingEditor;

@@ -18,16 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PlayManagerImpl.h"
+#include "PlayManager.h"
+
 #include "Components/Tagging/ChangeNotifier.h"
-
 #include "Interfaces/Notification/NotificationHandler.h"
-
 #include "Utils/Algorithm.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QDateTime>
 #include <QTimer>
@@ -131,400 +130,399 @@ namespace
 	}
 } // namespace
 
-struct PlayManagerImpl::Private
+class PlayManagerImpl :
+	public PlayManager
 {
-	MetaData currentTrack;
-	RingBuffer<RingbufferSize> ringBuffer;
-	int currentTrackIndex {-1};
-	MilliSeconds positionMs {0};
-	std::optional<MilliSeconds> initialPositionMs;
-	MilliSeconds trackPlaytimeMs {0};
-	PlayState playstate {PlayState::FirstStartup};
-
-	Private()
-	{
-		const auto loadPlaylist = (GetSetting(Set::PL_LoadSavedPlaylists) ||
-		                           GetSetting(Set::PL_LoadTemporaryPlaylists));
-		const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
-		const auto rememberLastTime = GetSetting(Set::PL_RememberTime);
-
-		if(loadPlaylist && loadLastTrack)
+	public:
+		explicit PlayManagerImpl(QObject* parent) :
+			PlayManager(parent)
 		{
-			initialPositionMs = rememberLastTime ?
-			                    (GetSetting(Set::Engine_CurTrackPos_s) * 1000) : // NOLINT(readability-magic-numbers)
-			                    0;
-		}
-	}
+			const auto loadPlaylist = (GetSetting(Set::PL_LoadSavedPlaylists) ||
+			                           GetSetting(Set::PL_LoadTemporaryPlaylists));
+			const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
+			const auto rememberLastTime = GetSetting(Set::PL_RememberTime);
 
-	void reset()
-	{
-		currentTrack = MetaData();
-		ringBuffer.clear();
-		currentTrackIndex = -1;
-		positionMs = 0;
-		trackPlaytimeMs = 0;
-		initialPositionMs.reset();
-		playstate = PlayState::Stopped;
-	}
-};
-
-PlayManagerImpl::PlayManagerImpl(QObject* parent) :
-	PlayManager(parent)
-{
-	m = Pimpl::make<Private>();
-
-	auto* mdcn = Tagging::ChangeNotifier::instance();
-	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &PlayManagerImpl::trackMetadataChanged);
-	connect(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &PlayManagerImpl::tracksDeleted);
-}
-
-PlayManagerImpl::~PlayManagerImpl() = default;
-
-PlayState PlayManagerImpl::playstate() const
-{
-	return m->playstate;
-}
-
-MilliSeconds PlayManagerImpl::currentPositionMs() const
-{
-	return m->positionMs;
-}
-
-MilliSeconds PlayManagerImpl::currentTrackPlaytimeMs() const
-{
-	return m->trackPlaytimeMs;
-}
-
-MilliSeconds PlayManagerImpl::initialPositionMs() const
-{
-	return m->initialPositionMs.has_value()
-	       ? m->initialPositionMs.value()
-	       : InvalidTimeStamp;
-}
-
-MilliSeconds PlayManagerImpl::durationMs() const
-{
-	return m->currentTrack.durationMs();
-}
-
-Bitrate PlayManagerImpl::bitrate() const
-{
-	return m->currentTrack.bitrate();
-}
-
-const MetaData& PlayManagerImpl::currentTrack() const
-{
-	return m->currentTrack;
-}
-
-int PlayManagerImpl::volume() const
-{
-	return GetSetting(Set::Engine_Vol);
-}
-
-bool PlayManagerImpl::isMuted() const
-{
-	return GetSetting(Set::Engine_Mute);
-}
-
-void PlayManagerImpl::play()
-{
-	m->playstate = PlayState::Playing;
-	emit sigPlaystateChanged(m->playstate);
-}
-
-void PlayManagerImpl::wakeUp()
-{
-	emit sigWakeup();
-}
-
-void PlayManagerImpl::playPause()
-{
-	if(m->playstate == PlayState::Playing)
-	{
-		pause();
-	}
-
-	else if(m->playstate == PlayState::Stopped)
-	{
-		wakeUp();
-	}
-
-	else
-	{
-		play();
-	}
-}
-
-void PlayManagerImpl::pause()
-{
-	m->playstate = PlayState::Paused;
-	emit sigPlaystateChanged(m->playstate);
-}
-
-void PlayManagerImpl::previous()
-{
-	emit sigPrevious();
-}
-
-void PlayManagerImpl::next()
-{
-	emit sigNext();
-}
-
-void PlayManagerImpl::stop()
-{
-	m->reset();
-
-	emit sigPlaystateChanged(m->playstate);
-}
-
-void PlayManagerImpl::record(bool b)
-{
-	emit sigRecording(b && GetSetting(SetNoDB::MP3enc_found));
-}
-
-void PlayManagerImpl::seekRelative(double percent)
-{
-	emit sigSeekedRelative(percent);
-}
-
-void PlayManagerImpl::seekRelativeMs(MilliSeconds ms)
-{
-	emit sigSeekedRelativeMs(ms);
-}
-
-void PlayManagerImpl::seekAbsoluteMs(MilliSeconds ms)
-{
-	emit sigSeekedAbsoluteMs(ms);
-}
-
-void PlayManagerImpl::setCurrentPositionMs(MilliSeconds ms)
-{
-	const auto differenceMs = (ms - m->positionMs);
-	if((differenceMs > 0) && (differenceMs < 1000)) // NOLINT(readability-magic-numbers)
-	{
-		m->trackPlaytimeMs += differenceMs;
-	}
-
-	m->positionMs = ms;
-
-	SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m->positionMs / 1000));
-
-	emit sigPositionChangedMs(ms);
-}
-
-void PlayManagerImpl::changeCurrentTrack(const MetaData& track, int trackIdx)
-{
-	const auto isFirstStartup = (m->playstate == PlayState::FirstStartup);
-	const auto oldTrackHash = getTrackHash(m->currentTrack);
-
-	m->currentTrack = track;
-	m->positionMs = 0;
-	m->trackPlaytimeMs = 0;
-	m->currentTrackIndex = trackIdx;
-	m->ringBuffer.clear();
-
-	if(m->currentTrack.radioMode() == RadioMode::Station)
-	{
-		const auto trackHash = getTrackHash(m->currentTrack);
-		m->ringBuffer.insert(trackHash);
-	}
-
-	if(!oldTrackHash.isEmpty() && (oldTrackHash != getTrackHash(m->currentTrack)))
-	{
-		m->initialPositionMs.reset();
-	}
-
-	// play or stop
-	if(m->currentTrackIndex >= 0)
-	{
-		emit sigCurrentTrackChanged(m->currentTrack);
-		emit sigTrackIndexChanged(m->currentTrackIndex);
-
-		if(!isFirstStartup)
-		{
-			play();
-
-			if(isStreamRecordableTrack(track))
+			if(loadPlaylist && loadLastTrack)
 			{
-				record(true);
+				m_initialPositionMs = rememberLastTime
+				                      ? (GetSetting(Set::Engine_CurTrackPos_s) * 1000) // NOLINT(readability-magic-numbers)
+				                      : 0;
+			}
+
+			auto* mdcn = Tagging::ChangeNotifier::instance();
+			connect(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &PlayManagerImpl::trackMetadataChanged);
+			connect(mdcn, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &PlayManagerImpl::tracksDeleted);
+		}
+
+		~PlayManagerImpl() override = default;
+
+		[[nodiscard]] PlayState playstate() const override
+		{
+			return m_playstate;
+		}
+
+		[[nodiscard]] MilliSeconds currentPositionMs() const override
+		{
+			return m_positionMs;
+		}
+
+		[[nodiscard]] MilliSeconds currentTrackPlaytimeMs() const override
+		{
+			return m_trackPlaytimeMs;
+		}
+
+		[[nodiscard]] MilliSeconds initialPositionMs() const override
+		{
+			return m_initialPositionMs.has_value()
+			       ? m_initialPositionMs.value()
+			       : InvalidTimeStamp;
+		}
+
+		[[nodiscard]] MilliSeconds durationMs() const override
+		{
+			return m_currentTrack.durationMs();
+		}
+
+		[[nodiscard]] Bitrate bitrate() const override
+		{
+			return m_currentTrack.bitrate();
+		}
+
+		[[nodiscard]] const MetaData& currentTrack() const override
+		{
+			return m_currentTrack;
+		}
+
+		[[nodiscard]] int volume() const override
+		{
+			return GetSetting(Set::Engine_Vol);
+		}
+
+		[[nodiscard]] bool isMuted() const override
+		{
+			return GetSetting(Set::Engine_Mute);
+		}
+
+		void play() override
+		{
+			m_playstate = PlayState::Playing;
+			emit sigPlaystateChanged(m_playstate);
+		}
+
+		void wakeUp() override
+		{
+			emit sigWakeup();
+		}
+
+		void playPause() override
+		{
+			if(m_playstate == PlayState::Playing)
+			{
+				pause();
+			}
+
+			else if(m_playstate == PlayState::Stopped)
+			{
+				wakeUp();
+			}
+
+			else
+			{
+				play();
 			}
 		}
-	}
 
-	else
-	{
-		spLog(Log::Info, this) << "Playlist finished";
-
-		emit sigPlaylistFinished();
-		stop();
-	}
-
-	if(!isFirstStartup)
-	{
-		// save last track
-		const auto currentIndex = (track.databaseId() == 0) ? m->currentTrackIndex : -1;
-		SetSetting(Set::PL_LastTrack, currentIndex);
-	}
-
-	// show notification
-	if((m->currentTrackIndex > -1) && (!m->currentTrack.filepath().isEmpty()))
-	{
-		showNotification(m->currentTrack);
-	}
-}
-
-void PlayManagerImpl::changeCurrentMetadata(const MetaData& newMetadata)
-{
-	if(isTrackValidPodcast(m->currentTrack))
-	{
-		return;
-	}
-
-	auto oldMetadata = std::move(m->currentTrack);
-	m->currentTrack = newMetadata;
-
-	if(m->currentTrack.radioMode() == RadioMode::Station)
-	{
-		const auto trackHash = getTrackHash(m->currentTrack);
-		const auto ignoreNewTrack = m->ringBuffer.contains(trackHash);
-		if(!ignoreNewTrack)
+		void pause() override
 		{
-			m->trackPlaytimeMs = 0;
-
-			oldMetadata = prepareTrackForStreamHistory(std::move(oldMetadata));
-
-			emit sigStreamFinished(oldMetadata);
-			showNotification(m->currentTrack);
+			m_playstate = PlayState::Paused;
+			emit sigPlaystateChanged(m_playstate);
 		}
 
-		m->ringBuffer.insert(trackHash);
-	}
-
-	emit sigCurrentMetadataChanged();
-}
-
-void PlayManagerImpl::setTrackReady()
-{
-	if(m->initialPositionMs)
-	{
-		const auto initialPositionMs = m->initialPositionMs.value();
-		if(initialPositionMs > 0)
+		void previous() override
 		{
-			// NOLINTNEXTLINE(readability-magic-numbers)
-			spLog(Log::Debug, this) << "Track ready, Start at " << (initialPositionMs / 1000) << " sec";
-			seekAbsoluteMs(initialPositionMs);
+			emit sigPrevious();
 		}
 
-		m->initialPositionMs.reset();
-
-		const auto startPlaying = GetSetting(Set::PL_StartPlaying);
-		if(!startPlaying)
+		void next() override
 		{
-			startPaused(this);
+			emit sigNext();
 		}
 
-		else
+		void stop() override
 		{
-			play();
+			reset();
+
+			emit sigPlaystateChanged(m_playstate);
 		}
-	}
-}
 
-void PlayManagerImpl::setTrackFinished()
-{
-	next();
-}
-
-void PlayManagerImpl::buffering(int progress)
-{
-	emit sigBuffering(progress);
-}
-
-void PlayManagerImpl::volumeUp()
-{
-	setVolume(GetSetting(Set::Engine_Vol) + VolumeDelta);
-}
-
-void PlayManagerImpl::volumeDown()
-{
-	setVolume(GetSetting(Set::Engine_Vol) - VolumeDelta);
-}
-
-void PlayManagerImpl::setVolume(int vol)
-{
-	vol = std::min(vol, 100); // NOLINT(readability-magic-numbers)
-	vol = std::max(vol, 0);
-	SetSetting(Set::Engine_Vol, vol);
-	emit sigVolumeChanged(vol);
-}
-
-void PlayManagerImpl::setMute(bool b)
-{
-	SetSetting(Set::Engine_Mute, b);
-	emit sigMuteChanged(b);
-}
-
-void PlayManagerImpl::toggleMute()
-{
-	setMute(!GetSetting(Set::Engine_Mute));
-}
-
-void PlayManagerImpl::error(const QString& message)
-{
-	emit sigError(message);
-}
-
-void PlayManagerImpl::changeDuration(MilliSeconds ms)
-{
-	m->currentTrack.setDurationMs(ms);
-	emit sigDurationChangedMs();
-}
-
-void PlayManagerImpl::changeBitrate(Bitrate br)
-{
-	m->currentTrack.setBitrate(br);
-	emit sigBitrateChanged();
-}
-
-void PlayManagerImpl::shutdown()
-{
-	if(m->playstate == PlayState::Stopped)
-	{
-		SetSetting(Set::PL_LastTrack, -1);
-		SetSetting(Set::Engine_CurTrackPos_s, 0);
-	}
-
-	else
-	{
-		SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m->positionMs / 1000));
-	}
-}
-
-void PlayManagerImpl::trackMetadataChanged()
-{
-	auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
-
-	const auto& changedMetadata = changeNotifier->changedMetadata();
-	for(const auto& [oldTrack, newTrack]: changedMetadata)
-	{
-		const auto isSamePath = m->currentTrack.isEqual(oldTrack);
-		if(isSamePath)
+		void record(const bool b) override
 		{
-			this->changeCurrentMetadata(newTrack);
-			return;
+			emit sigRecording(b && GetSetting(SetNoDB::MP3enc_found));
 		}
-	}
-}
 
-void PlayManagerImpl::tracksDeleted()
-{
-	auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
+		void seekRelative(const double percent) override
+		{
+			emit sigSeekedRelative(percent);
+		}
 
-	const auto& deletedTracks = changeNotifier->deletedMetadata();
-	if(deletedTracks.contains(m->currentTrack))
-	{
-		stop();
-	}
-}
+		void seekRelativeMs(const MilliSeconds ms) override
+		{
+			emit sigSeekedRelativeMs(ms);
+		}
+
+		void seekAbsoluteMs(const MilliSeconds ms) override
+		{
+			emit sigSeekedAbsoluteMs(ms);
+		}
+
+		void setCurrentPositionMs(const MilliSeconds ms) override
+		{
+			const auto differenceMs = (ms - m_positionMs);
+			if((differenceMs > 0) && (differenceMs < 1000)) // NOLINT(readability-magic-numbers)
+			{
+				m_trackPlaytimeMs += differenceMs;
+			}
+
+			m_positionMs = ms;
+
+			SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m_positionMs / 1000));
+
+			emit sigPositionChangedMs(ms);
+		}
+
+		void changeCurrentTrack(const MetaData& track, const int trackIdx) override
+		{
+			const auto isFirstStartup = (m_playstate == PlayState::FirstStartup);
+			const auto oldTrackHash = getTrackHash(m_currentTrack);
+
+			m_currentTrack = track;
+			m_positionMs = 0;
+			m_trackPlaytimeMs = 0;
+			m_currentTrackIndex = trackIdx;
+			m_ringBuffer.clear();
+
+			if(m_currentTrack.radioMode() == RadioMode::Station)
+			{
+				const auto trackHash = getTrackHash(m_currentTrack);
+				m_ringBuffer.insert(trackHash);
+			}
+
+			if(!oldTrackHash.isEmpty() && (oldTrackHash != getTrackHash(m_currentTrack)))
+			{
+				m_initialPositionMs.reset();
+			}
+
+			// play or stop
+			if(m_currentTrackIndex >= 0)
+			{
+				emit sigCurrentTrackChanged(m_currentTrack);
+				emit sigTrackIndexChanged(m_currentTrackIndex);
+
+				if(!isFirstStartup)
+				{
+					play();
+
+					if(isStreamRecordableTrack(track))
+					{
+						record(true);
+					}
+				}
+			}
+
+			else
+			{
+				spLog(Log::Info, this) << "Playlist finished";
+
+				emit sigPlaylistFinished();
+				stop();
+			}
+
+			if(!isFirstStartup)
+			{
+				// save last track
+				const auto currentIndex = (track.databaseId() == 0) ? m_currentTrackIndex : -1;
+				SetSetting(Set::PL_LastTrack, currentIndex);
+			}
+
+			// show notification
+			if((m_currentTrackIndex > -1) && (!m_currentTrack.filepath().isEmpty()))
+			{
+				showNotification(m_currentTrack);
+			}
+		}
+
+		void changeCurrentMetadata(const MetaData& newMetadata) override
+		{
+			if(isTrackValidPodcast(m_currentTrack))
+			{
+				return;
+			}
+
+			auto oldMetadata = std::move(m_currentTrack);
+			m_currentTrack = newMetadata;
+
+			if(m_currentTrack.radioMode() == RadioMode::Station)
+			{
+				const auto trackHash = getTrackHash(m_currentTrack);
+				const auto ignoreNewTrack = m_ringBuffer.contains(trackHash);
+				if(!ignoreNewTrack)
+				{
+					m_trackPlaytimeMs = 0;
+
+					oldMetadata = prepareTrackForStreamHistory(std::move(oldMetadata));
+
+					emit sigStreamFinished(oldMetadata);
+					showNotification(m_currentTrack);
+				}
+
+				m_ringBuffer.insert(trackHash);
+			}
+
+			emit sigCurrentMetadataChanged();
+		}
+
+		void setTrackReady() override
+		{
+			if(m_initialPositionMs)
+			{
+				const auto initialPositionMs = m_initialPositionMs.value();
+				if(initialPositionMs > 0)
+				{
+					// NOLINTNEXTLINE(readability-magic-numbers)
+					spLog(Log::Debug, this) << "Track ready, Start at " << (initialPositionMs / 1000) << " sec";
+					seekAbsoluteMs(initialPositionMs);
+				}
+
+				m_initialPositionMs.reset();
+
+				const auto startPlaying = GetSetting(Set::PL_StartPlaying);
+				if(!startPlaying)
+				{
+					startPaused(this);
+				}
+
+				else
+				{
+					play();
+				}
+			}
+		}
+
+		void setTrackFinished() override
+		{
+			next();
+		}
+
+		void buffering(const int progress) override
+		{
+			emit sigBuffering(progress);
+		}
+
+		void volumeUp() override
+		{
+			setVolume(volume() + VolumeDelta);
+		}
+
+		void volumeDown() override
+		{
+			setVolume(volume() - VolumeDelta);
+		}
+
+		void setVolume(int vol) override
+		{
+			vol = std::min(vol, 100); // NOLINT(readability-magic-numbers)
+			vol = std::max(vol, 0);
+			SetSetting(Set::Engine_Vol, vol);
+			emit sigVolumeChanged(vol);
+		}
+
+		void setMute(const bool b) override
+		{
+			SetSetting(Set::Engine_Mute, b);
+			emit sigMuteChanged(b);
+		}
+
+		void toggleMute() override
+		{
+			setMute(!GetSetting(Set::Engine_Mute));
+		}
+
+		void error(const QString& message) override
+		{
+			emit sigError(message);
+		}
+
+		void changeDuration(const MilliSeconds ms) override
+		{
+			m_currentTrack.setDurationMs(ms);
+			emit sigDurationChangedMs();
+		}
+
+		void changeBitrate(const Bitrate br) override
+		{
+			m_currentTrack.setBitrate(br);
+			emit sigBitrateChanged();
+		}
+
+		void shutdown() override
+		{
+			if(m_playstate == PlayState::Stopped)
+			{
+				SetSetting(Set::PL_LastTrack, -1);
+				SetSetting(Set::Engine_CurTrackPos_s, 0);
+			}
+
+			else
+			{
+				SetSetting(Set::Engine_CurTrackPos_s, static_cast<int>(m_positionMs / 1000));
+			}
+		}
+
+		void trackMetadataChanged()
+		{
+			auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
+
+			const auto& changedMetadata = changeNotifier->changedMetadata();
+			const auto& it = Util::Algorithm::find(changedMetadata, [&](const auto& pair){
+				return pair.first.isEqual(m_currentTrack);
+			});
+
+			if(it != changedMetadata.end())
+			{
+				changeCurrentMetadata(it->second);
+			}
+		}
+
+		void tracksDeleted()
+		{
+			auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
+
+			const auto& deletedTracks = changeNotifier->deletedMetadata();
+			if(deletedTracks.contains(m_currentTrack))
+			{
+				stop();
+			}
+		}
+
+	private:
+		void reset()
+		{
+			m_currentTrack = MetaData();
+			m_ringBuffer.clear();
+			m_currentTrackIndex = -1;
+			m_positionMs = 0;
+			m_trackPlaytimeMs = 0;
+			m_initialPositionMs.reset();
+			m_playstate = PlayState::Stopped;
+		}
+
+		MetaData m_currentTrack;
+		RingBuffer<RingbufferSize> m_ringBuffer;
+		int m_currentTrackIndex {-1};
+		MilliSeconds m_positionMs {0};
+		std::optional<MilliSeconds> m_initialPositionMs;
+		MilliSeconds m_trackPlaytimeMs {0};
+		PlayState m_playstate {PlayState::FirstStartup};
+};
+
+PlayManager* PlayManager::create(QObject* parent) { return new PlayManagerImpl(parent); }

@@ -2,12 +2,12 @@
 #include "test/Common/PlayManagerMock.h"
 #include "test/Common/PlaylistMocks.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "Interfaces/PlayManager.h"
 #include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QSignalSpy>
 

@@ -32,18 +32,16 @@
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
-
 #include "Interfaces/Notification/NotificationHandler.h"
-#include "Interfaces/PlayManager.h"
-
 #include "Utils/Algorithm.h"
-#include "Utils/RandomGenerator.h"
-#include "Utils/Playlist/PlaylistMode.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Crypt.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/RandomGenerator.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QUrl>
 #include <QTimer>

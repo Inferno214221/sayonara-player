@@ -2,26 +2,23 @@
 #include "SearchSlider.h"
 #include "Interfaces/CoverDataProvider.h"
 
+#include "Components/Covers/CoverLocation.h"
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/Tagging/ChangeNotifier.h"
 #include "Gui/Covers/CoverButton.h"
-
+#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/Style.h"
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
-#include "Gui/Utils/PreferenceAction.h"
-#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Gui/Utils/Widgets/RatingLabel.h"
+#include "Gui/Utils/Style.h"
 #include "Gui/Utils/Widgets/FloatingLabel.h"
-
-#include "Interfaces/PlayManager.h"
-#include "Components/Covers/CoverLocation.h"
-#include "Components/Tagging/ChangeNotifier.h"
-
+#include "Gui/Utils/Widgets/RatingLabel.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QToolTip>
 #include <QImage>

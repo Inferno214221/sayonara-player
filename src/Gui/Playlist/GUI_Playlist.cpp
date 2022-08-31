@@ -27,26 +27,23 @@
 #include "PlaylistView.h"
 #include "PlaylistActionMenu.h"
 
-#include "Gui/Playlist/ui_GUI_Playlist.h"
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistHandler.h"
 #include "Gui/Library/Utils/GUI_DeleteDialog.h"
+#include "Gui/Playlist/ui_GUI_Playlist.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
-
-#include "Utils/Utils.h"
+#include "Interfaces/DynamicPlayback.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/M3UParser.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Language/Language.h"
+#include "Utils/Utils.h"
 #include "Utils/globals.h"
-#include "Utils/Message/Message.h"
-#include "Utils/Parser/M3UParser.h"
-
-#include "Interfaces/PlayManager.h"
-#include "Interfaces/DynamicPlayback.h"
-
-#include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistHandler.h"
 
 #include <QTabBar>
 #include <QShortcut>

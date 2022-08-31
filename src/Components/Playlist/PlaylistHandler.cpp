@@ -28,14 +28,13 @@
 #include "PlaylistChangeNotifier.h"
 #include "PlaylistFromPathCreator.h"
 
-#include "Interfaces/PlayManager.h"
-
+#include "PlayManager/PlayManager.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Set.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
+#include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 
 #include <cassert>
 

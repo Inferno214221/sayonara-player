@@ -20,7 +20,7 @@
 #ifndef SAYONARA_PLAYER_PLAYMANAGERMOCK_H
 #define SAYONARA_PLAYER_PLAYMANAGERMOCK_H
 
-#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Utils/MetaData/MetaData.h"
 
 class PlayManagerMock : public PlayManager

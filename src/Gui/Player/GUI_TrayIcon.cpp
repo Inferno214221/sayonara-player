@@ -22,7 +22,7 @@
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
 
-#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManager.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"

@@ -23,11 +23,10 @@
 #include "Bookmarks.h"
 #include "BookmarkStorage.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Utils/Algorithm.h"
-#include "Utils/globals.h"
 #include "Utils/MetaData/MetaData.h"
-
-#include "Interfaces/PlayManager.h"
+#include "Utils/globals.h"
 
 namespace
 {

@@ -27,29 +27,25 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
-#include "Interfaces/CoverDataProvider.h"
-#include "Interfaces/DynamicPlayback.h"
-#include "Interfaces/PlaylistInterface.h"
-#include "Interfaces/PlayManager.h"
-
-#include "Components/Playlist/PlaylistHandler.h"
-#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
-
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistHandler.h"
 #include "Gui/Covers/CoverButton.h"
 #include "Gui/Player/ui_GUI_Player.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
-
-#include "Utils/FileUtils.h"
-#include "Utils/Message/Message.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Language/Language.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaData.h"
-
-#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/EventFilter.h"
+#include "Gui/Utils/GuiUtils.h"
+#include "Interfaces/CoverDataProvider.h"
+#include "Interfaces/DynamicPlayback.h"
+#include "Interfaces/PlaylistInterface.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QApplication>
 #include <QAction>

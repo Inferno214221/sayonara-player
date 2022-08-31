@@ -20,17 +20,16 @@
 
 #include "StreamServer.h"
 
-#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Interfaces/AudioDataProvider.h"
-
-#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
-#include "Utils/MetaData/MetaData.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Settings/SettingNotifier.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/Settings/SettingNotifier.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QHostAddress>
 #include <QTcpServer>

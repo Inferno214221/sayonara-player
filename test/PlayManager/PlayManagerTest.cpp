@@ -19,7 +19,7 @@
 
 #include "test/Common/SayonaraTest.h"
 
-#include "Components/PlayManager/PlayManagerImpl.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
@@ -78,7 +78,7 @@ void PlayManagerTest::testRadioHistory()
 {
 	qRegisterMetaType<MetaData>();
 	SetSetting(Set::Stream_ShowHistory, true);
-	PlayManager* playManager = new PlayManagerImpl(nullptr);
+	auto* playManager = PlayManager::create(nullptr);
 
 	const auto title1 = QStringLiteral("title1");
 	const auto title2 = QStringLiteral("some other title");
@@ -130,7 +130,7 @@ void PlayManagerTest::testCurrentTrack()
 	track.setTitle("Title");
 	track.setFilepath("/path/to/file.mp3");
 
-	PlayManager* playManager = new PlayManagerImpl(nullptr);
+	auto* playManager = PlayManager::create(nullptr);
 	playManager->changeCurrentTrack(track, 0);
 
 	QVERIFY(playManager->currentTrack().filepath() == track.filepath());

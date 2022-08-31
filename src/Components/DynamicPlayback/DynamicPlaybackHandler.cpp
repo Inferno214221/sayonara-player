@@ -22,14 +22,11 @@
 #include "ArtistMatch.h"
 #include "ArtistMatchEvaluator.h"
 
-#include "Interfaces/PlaylistInterface.h"
-
-#include "Interfaces/PlayManager.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
-
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
-
+#include "Interfaces/PlaylistInterface.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"

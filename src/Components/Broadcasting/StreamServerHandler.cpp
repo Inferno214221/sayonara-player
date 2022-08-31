@@ -21,8 +21,8 @@
 #include "StreamServerHandler.h"
 #include "StreamServer.h"
 
+#include "Components/PlayManager/PlayManager.h"
 #include "Interfaces/AudioDataProvider.h"
-#include "Interfaces/PlayManager.h"
 
 struct StreamServerHandler::Private
 {

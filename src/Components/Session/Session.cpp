@@ -20,18 +20,16 @@
 
 #include "Session.h"
 
-#include "Interfaces/PlayManager.h"
-
+#include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
-#include "Database/Session.h"
 #include "Database/LibraryDatabase.h"
-
-#include "Utils/MetaData/MetaData.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
-#include "Utils/Set.h"
+#include "Database/Session.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Utils.h"
 
 #include <limits>
 

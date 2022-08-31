@@ -21,7 +21,12 @@
 #ifndef PLAY_MANAGER_H
 #define PLAY_MANAGER_H
 
+#include "Utils/typedefs.h"
+
 #include <QObject>
+#include <memory>
+
+class MetaData;
 
 class PlayManager :
 	public QObject
@@ -52,6 +57,7 @@ class PlayManager :
 		void sigError(const QString& message);
 
 	public:
+		static PlayManager* create(QObject* parent);
 		~PlayManager() override = default;
 
 		[[nodiscard]] virtual PlayState playstate() const = 0;
@@ -92,8 +98,9 @@ class PlayManager :
 		virtual void error(const QString& message) = 0;
 		virtual void shutdown() = 0;
 
-	private:
-		static PlayManager* create();
+	protected:
+		explicit PlayManager(QObject* parent = 0) :
+			QObject(parent) {}
 };
 
 #endif

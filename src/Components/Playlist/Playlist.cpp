@@ -21,19 +21,17 @@
 #include "Playlist.h"
 #include "PlaylistStopBehavior.h"
 
+#include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistShuffleHistory.h"
+#include "Components/Tagging/ChangeNotifier.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
-
-#include "Interfaces/PlayManager.h"
-#include "Components/Tagging/ChangeNotifier.h"
-#include "Components/Playlist/PlaylistShuffleHistory.h"
-
-#include "Utils/Logger/Logger.h"
 
 #include <QMultiHash>
 
