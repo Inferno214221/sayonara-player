@@ -29,28 +29,19 @@ Depends: gstreamer1.0-plugins-bad,
          ${shlibs:Depends}
 Suggests:
          python3-pydbus
-Description: Small and lightweight music player.
- Sayonara is as a lightweight and fast library manager and music player.
- It holds a lot of features like
+Description: A fast and powerful audio player and library manager.
  Many supported music and playlist formats
- Media library with search function
- Directory view
- External device support
- Genre organization
- Playlist view organized by tabs
- (Dynamic) playback
- Equalizer
- Metadata editor (including tags from path)
+ Media library with search function and tag editor
+ Display directories, covers and/or meta data.
+ Genre organization in tree
+ Playlist view organized in tabs
+ Smart and dynamic plsylists
  Lyrics
- Shutdown function
- MP3 Converter
+ Equalizer
  Customizable spectrum analyzer and level meter
- Last.FM radio and scrobbling
- Soundcloud support
- Internet streams
- Stream recorder
- Podcasts
- Radio Broadcasting
- Multimedia key support
- Desktop integration (DBus Mpris2 compatible)
- 2 skins
+ Audio converter
+ Last.FM, Soma.fm and soundcloud support radio and scrobbling
+ Internet streams, podcasts and record function
+ Broadcasting
+ Multimedia keys and Mpris 2 support
+ Shutdown function
