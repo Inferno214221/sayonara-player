@@ -30,8 +30,6 @@ class MetaData;
 
 namespace Playlist
 {
-	class Handler;
-
 	class LibraryInteractor :
 		public QObject
 	{
@@ -39,15 +37,11 @@ namespace Playlist
 		PIMPL(LibraryInteractor)
 
 		public:
-			LibraryInteractor(Handler* playlistHandler, LibraryInfoAccessor* libraryInfoAccessor);
+			LibraryInteractor(LibraryInfoAccessor* libraryInfoAccessor);
 			~LibraryInteractor();
 
-		private slots:
-			void findTrackRequested(const MetaData& track);
-			void deleteTracksReqeuested(const MetaDataList& tracks);
-
-		private:
-			void initPlaylistConnections(PlaylistPtr playlist);
+			void findTrack(const MetaData& track);
+			void deleteTracks(const MetaDataList& tracks);
 	};
 }
 

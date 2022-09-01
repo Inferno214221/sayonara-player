@@ -19,8 +19,6 @@
  */
 #include "PlaylistLibraryInteractor.h"
 
-#include "Components/Playlist/PlaylistHandler.h"
-#include "Components/Playlist/Playlist.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Interfaces/LibraryInfoAccessor.h"
@@ -34,39 +32,25 @@
 
 #include <unordered_map>
 
-using Playlist::Handler;
 using Playlist::LibraryInteractor;
 
 struct LibraryInteractor::Private
 {
-	Handler* playlistHandler;
 	LibraryInfoAccessor* libraryInfoAccessor;
 
-	Private(Handler* playlistHandler, LibraryInfoAccessor* libraryInfoAccessor) :
-		playlistHandler {playlistHandler},
+	Private(LibraryInfoAccessor* libraryInfoAccessor) :
 		libraryInfoAccessor {libraryInfoAccessor} {}
 };
 
-LibraryInteractor::LibraryInteractor(Handler* playlistHandler, LibraryInfoAccessor* libraryInfoAccessor) :
+LibraryInteractor::LibraryInteractor(LibraryInfoAccessor* libraryInfoAccessor) :
 	QObject(nullptr)
 {
-	m = Pimpl::make<Private>(playlistHandler, libraryInfoAccessor);
-
-	connect(playlistHandler, &Handler::sigNewPlaylistAdded, this, [&](const auto index){
-		auto playlist = m->playlistHandler->playlist(index);
-		initPlaylistConnections(playlist);
-	});
-
-	for(int i=0; i<playlistHandler->count(); i++)
-	{
-		auto playlist = m->playlistHandler->playlist(i);
-		initPlaylistConnections(playlist);
-	}
+	m = Pimpl::make<Private>(libraryInfoAccessor);
 }
 
 LibraryInteractor::~LibraryInteractor() = default;
 
-void LibraryInteractor::findTrackRequested(const MetaData& track)
+void LibraryInteractor::findTrack(const MetaData& track)
 {
 	if(track.libraryId() >= 0 && track.id() >= 0)
 	{
@@ -75,7 +59,7 @@ void LibraryInteractor::findTrackRequested(const MetaData& track)
 	}
 }
 
-void LibraryInteractor::deleteTracksReqeuested(const MetaDataList& tracks)
+void LibraryInteractor::deleteTracks(const MetaDataList& tracks)
 {
 	std::unordered_map<LibraryId, MetaDataList> libraryMap;
 
@@ -91,7 +75,6 @@ void LibraryInteractor::deleteTracksReqeuested(const MetaDataList& tracks)
 			auto* localLibrary = m->libraryInfoAccessor->libraryInstance(libraryId);
 			if(localLibrary)
 			{
-
 				localLibrary->deleteTracks(tracks, Library::TrackDeletionMode::AlsoFiles);
 			}
 		}
@@ -105,12 +88,4 @@ void LibraryInteractor::deleteTracksReqeuested(const MetaDataList& tracks)
 			Util::File::deleteFiles(paths);
 		}
 	}
-}
-
-void LibraryInteractor::initPlaylistConnections(PlaylistPtr playlist)
-{
-	auto ptr = playlist.get();
-
-	connect(ptr, &Playlist::sigFindTrackRequested, this, &LibraryInteractor::findTrackRequested);
-	connect(ptr, &Playlist::sigDeleteFilesRequested, this, &LibraryInteractor::deleteTracksReqeuested);
 }

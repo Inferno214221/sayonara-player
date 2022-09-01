@@ -47,9 +47,6 @@ namespace Playlist
 			friend class Handler;
 
 		signals:
-			void sigFindTrackRequested(const MetaData& track);
-			void sigDeleteFilesRequested(const MetaDataList& tracks);
-
 			void sigItemsChanged(int index);
 			void sigTrackChanged(int oldIndex, int newIndex);
 			void sigBusyChanged(bool b);
@@ -81,15 +78,16 @@ namespace Playlist
 
 			const MetaDataList& tracks() const override;
 
-			void findTrack(int index);
 			bool changeTrack(int index, MilliSeconds positionMs = 0);
-			bool wasChanged() const override;
 
-			void reloadFromDatabase();
-			void deleteTracks(const IndexSet& indexes);
+			void resetChangedStatus();
+			bool wasChanged() const override;
 
 			using Modificator = std::function<MetaDataList(MetaDataList)>;
 			void modifyTracks(Modificator&& modificator);
+
+		protected:
+			void setChanged(bool b) override;
 
 		private slots:
 			void metadataChanged();
@@ -101,7 +99,6 @@ namespace Playlist
 		private:
 			void replaceTrack(int index, const MetaData& track);
 			void setCurrentTrack(int index);
-			void setChanged(bool b) override;
 	};
 }
 

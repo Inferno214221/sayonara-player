@@ -198,7 +198,7 @@ struct Application::Private
 		libraryPlaylistInteractor = new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
 		libraryManager = new Library::Manager(libraryPlaylistInteractor);
 
-		playlistLibraryInteractor = new Playlist::LibraryInteractor(playlistHandler, libraryManager);
+		playlistLibraryInteractor = new Playlist::LibraryInteractor(libraryManager);
 
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
@@ -371,7 +371,9 @@ void Application::initPlayer(bool force_show)
 	m->player = new GUI_Player(m->playManager,
 	                           m->playlistHandler,
 	                           m->engine,
-	                           m->dynamicPlaybackChecker);
+	                           m->dynamicPlaybackChecker,
+	                           m->libraryManager,
+	                           nullptr);
 
 	m->player->setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
 

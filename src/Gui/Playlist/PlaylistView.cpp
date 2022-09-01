@@ -191,18 +191,18 @@ namespace Playlist
 		Gui::ProgressBar* progressbar;
 		QLabel* currentFileLabel;
 
-		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, View* view) :
+		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor, View* view) :
 			dynamicPlaybackChecker(dynamicPlaybackChecker),
-			model(new Model(playlist, view)),
+			model(new Model(playlist, libraryAccessor, view)),
 			progressbar(new Gui::ProgressBar(view)),
 			currentFileLabel(new QLabel(view)) {}
 	};
 
-	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
+	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
 		SearchableTableView(parent),
 		Gui::Dragable(this)
 	{
-		m = Pimpl::make<Private>(playlist, dynamicPlaybackChecker, this);
+		m = Pimpl::make<Private>(playlist, dynamicPlaybackChecker, libraryAccessor, this);
 
 		initView(this, m->model, new Delegate(this), playlist->index());
 

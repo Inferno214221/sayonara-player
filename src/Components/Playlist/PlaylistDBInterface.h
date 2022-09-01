@@ -30,6 +30,7 @@ class CustomPlaylist;
 
 namespace Playlist
 {
+	class Playlist;
 	class DBInterface
 	{
 		PIMPL(DBInterface)
@@ -52,14 +53,14 @@ namespace Playlist
 			Util::SaveAsAnswer rename(const QString& newName);
 			bool deletePlaylist();
 
-			[[nodiscard]] MetaDataList fetchTracksFromDatabase() const;
-
-			[[nodiscard]] virtual const MetaDataList& tracks() const = 0;
 			virtual void setChanged(bool b) = 0;
 			[[nodiscard]] virtual bool wasChanged() const = 0;
+
+			[[nodiscard]] virtual const MetaDataList& tracks() const = 0;
 	};
 
 	QString requestNewDatabaseName(QString prefix);
+	void reloadFromDatabase(Playlist& playlist);
 }
 
 #endif // PLAYLISTDBINTERFACE_H

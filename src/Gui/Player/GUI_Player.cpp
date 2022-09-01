@@ -104,7 +104,8 @@ struct GUI_Player::Private
 };
 
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
-                       DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent) :
+                       DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor,
+                       QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
@@ -115,7 +116,7 @@ GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHand
 	ui = std::make_shared<Ui::GUI_Player>();
 	ui->setupUi(this);
 	ui->retranslateUi(this);
-	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker);
+	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker, libraryAccessor);
 
 	ui->pluginWidget->setVisible(false);
 

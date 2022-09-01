@@ -52,6 +52,37 @@ namespace Playlist
 
 			return result;
 		}
+
+		int getNextTrackIndex(const int currentTrackIndex, const int trackCount, const PlaylistMode& playlistMode,
+		                      const ShuffleHistory& shuffleHistory)
+		{
+			const auto rep1 = PlaylistMode::isActiveAndEnabled(playlistMode.rep1());
+			const auto shuffle = PlaylistMode::isActiveAndEnabled(playlistMode.shuffle());
+			const auto repAll = (PlaylistMode::isActiveAndEnabled(playlistMode.repAll()));
+			const auto isLastTrack = (currentTrackIndex == trackCount - 1);
+
+			if((currentTrackIndex == -1) && !shuffle)
+			{
+				return 0;
+			}
+
+			if(rep1)
+			{
+				return currentTrackIndex;
+			}
+
+			if(shuffle)
+			{
+				return shuffleHistory.nextTrackIndex(repAll);
+			}
+
+			if(isLastTrack)
+			{
+				return repAll ? 0 : -1;
+			}
+
+			return currentTrackIndex + 1;
+		}
 	}
 
 	struct Playlist::Private
@@ -98,14 +129,6 @@ namespace Playlist
 
 	Playlist::~Playlist() = default;
 
-	void Playlist::findTrack(int idx)
-	{
-		if(Util::between(idx, m->tracks))
-		{
-			emit sigFindTrackRequested(m->tracks[idx]);
-		}
-	}
-
 	bool Playlist::changeTrack(int index, const MilliSeconds positionMs)
 	{
 		const auto oldIndex = currentTrackIndex();
@@ -144,8 +167,7 @@ namespace Playlist
 	void Playlist::metadataDeleted()
 	{
 		const auto deletedTracks = m->metadataChangeNotifier->deletedMetadata();
-
-		auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [&](const auto& track) {
+		const auto it = std::remove_if(m->tracks.begin(), m->tracks.end(), [&](const auto& track) {
 			return Util::Algorithm::contains(deletedTracks, [&](const auto& tmpTrack) {
 				return (track.isEqual(tmpTrack));
 			});
@@ -236,7 +258,7 @@ namespace Playlist
 		if(currentTrack >= 0)
 		{
 			m->stopBehavior.setTrackIndexBeforeStop(currentTrack);
-			setCurrentTrack(-1);
+			m->playingUniqueId = 0;
 		}
 
 		emit sigTrackChanged(currentTrack, -1);
@@ -258,7 +280,8 @@ namespace Playlist
 
 	void Playlist::bwd()
 	{
-		if(m->playManager->currentPositionMs() > 2000)
+		constexpr const auto minimalOffset = 2000;
+		if(m->playManager->currentPositionMs() > minimalOffset)
 		{
 			m->playManager->seekAbsoluteMs(0);
 			return;
@@ -289,38 +312,9 @@ namespace Playlist
 			return;
 		}
 
-		const auto rep1 = PlaylistMode::isActiveAndEnabled(m->playlistMode.rep1());
-		const auto shuffle = PlaylistMode::isActiveAndEnabled(m->playlistMode.shuffle());
-		const auto repAll = (PlaylistMode::isActiveAndEnabled(m->playlistMode.repAll()));
-		const auto isLastTrack = (currentTrackIndex() == m->tracks.count() - 1);
-
-		int trackIndex;
-		if((currentTrackIndex() == -1) && !shuffle)
-		{
-			trackIndex = 0;
-		}
-
-		else if(rep1)
-		{
-			trackIndex = currentTrackIndex();
-		}
-
-		else if(shuffle)
-		{
-			trackIndex = m->shuffleHistory.nextTrackIndex(repAll);
-		}
-
-		else if(isLastTrack)
-		{
-			trackIndex = repAll ? 0 : -1;
-		}
-
-		else
-		{
-			trackIndex = currentTrackIndex() + 1;
-		}
-
-		changeTrack(trackIndex);
+		const auto nextIndex =
+			getNextTrackIndex(currentTrackIndex(), m->tracks.count(), m->playlistMode, m->shuffleHistory);
+		changeTrack(nextIndex);
 	}
 
 	bool Playlist::wakeUp()
@@ -420,32 +414,6 @@ namespace Playlist
 	}
 
 	const MetaDataList& Playlist::tracks() const { return m->tracks; }
-
-	void Playlist::reloadFromDatabase()
-	{
-		if(!this->isBusy())
-		{
-			const auto tracks = this->fetchTracksFromDatabase();
-			m->tracks.clear();
-			createPlaylist(tracks);
-			setChanged(false);
-		}
-	}
-
-	void Playlist::deleteTracks(const IndexSet& indexes)
-	{
-		MetaDataList tracksToDelete;
-
-		for(const auto& index: indexes)
-		{
-			if(Util::between(index, m->tracks))
-			{
-				tracksToDelete << m->tracks[index];
-			}
-		}
-
-		emit sigDeleteFilesRequested(tracksToDelete);
-	}
 
 	void Playlist::modifyTracks(Modificator&& modificator)
 	{

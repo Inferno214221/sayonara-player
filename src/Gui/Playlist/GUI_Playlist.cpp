@@ -51,6 +51,7 @@
 #include <QShortcut>
 
 using Playlist::Handler;
+using Playlist::LibraryInteractor;
 using Playlist::View;
 using Playlist::TabWidget;
 
@@ -156,20 +157,22 @@ struct GUI_Playlist::Private
 	Handler* playlistHandler;
 	PlayManager* playManager;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
+	LibraryInfoAccessor* libraryAccessor;
 
-	Private(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker) :
+	Private(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor) :
 		playlistHandler(playlistHandler),
 		playManager(playManager),
-		dynamicPlaybackChecker(dynamicPlaybackChecker) {}
+		dynamicPlaybackChecker(dynamicPlaybackChecker),
+		libraryAccessor(libraryAccessor){}
 };
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	Widget(parent) {}
 
 void
-GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker)
+GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor)
 {
-	m = Pimpl::make<Private>(playlistHandler, playManager, dynamicPlaybackChecker);
+	m = Pimpl::make<Private>(playlistHandler, playManager, dynamicPlaybackChecker, libraryAccessor);
 
 	ui = std::make_shared<Ui::PlaylistWindow>();
 	ui->setupUi(this);
@@ -362,7 +365,7 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
 		const auto playlistName = playlist->name();
-		auto* view = new View(playlist, m->dynamicPlaybackChecker, ui->twPlaylists);
+		auto* view = new View(playlist, m->dynamicPlaybackChecker, m->libraryAccessor, ui->twPlaylists);
 
 		const auto tabIndex = ui->twPlaylists->insertTab(playlistIndex, view, playlistName);
 
@@ -447,7 +450,7 @@ void GUI_Playlist::tabResetClicked(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		playlist->reloadFromDatabase();
+		Playlist::reloadFromDatabase(*playlist);
 	}
 }
 

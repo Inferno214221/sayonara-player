@@ -20,6 +20,7 @@
 
 #include "PlaylistDBInterface.h"
 #include "PlaylistChangeNotifier.h"
+#include "Playlist.h"
 
 #include "Database/Connector.h"
 #include "Database/Playlist.h"
@@ -206,12 +207,6 @@ namespace Playlist
 		}
 
 		return success;
-	}
-
-	MetaDataList DBInterface::fetchTracksFromDatabase() const
-	{
-		const auto playlist = m->playlistConnector->getPlaylistById(id(), true);
-		return playlist.tracks();
 	}
 
 	int DBInterface::id() const { return m->id; }

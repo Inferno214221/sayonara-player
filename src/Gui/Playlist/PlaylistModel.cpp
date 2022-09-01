@@ -33,6 +33,7 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistLibraryInteractor.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Playlist/PlaylistModifiers.h"
 #include "Components/Tagging/UserTaggingOperations.h"
@@ -173,15 +174,17 @@ struct Model::Private
 	int dragIndex {-1};
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
+	std::shared_ptr<LibraryInteractor> libraryInteractor;
 
-	Private(PlaylistPtr playlistArg) :
-		playlist(std::move(playlistArg)) {}
+	Private(PlaylistPtr playlistArg, LibraryInfoAccessor* libraryAccessor) :
+		playlist(std::move(playlistArg)),
+		libraryInteractor{std::make_shared<LibraryInteractor>(libraryAccessor)} {}
 };
 
-Model::Model(const PlaylistPtr& playlist, QObject* parent) :
+Model::Model(const PlaylistPtr& playlist, LibraryInfoAccessor* libraryAccessor, QObject* parent) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<Private>(playlist);
+	m = Pimpl::make<Private>(playlist, libraryAccessor);
 
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
@@ -629,9 +632,13 @@ void Playlist::Model::deleteTracks(const IndexSet& rows)
 	m->playlist->deleteTracks(rows);
 }
 
-void Playlist::Model::findTrack(int index)
+void Playlist::Model::findTrack(const int index)
 {
-	m->playlist->findTrack(index);
+	const auto& tracks = m->playlist->tracks();
+	if(Util::between(index, tracks))
+	{
+		m->libraryInteractor->findTrack(tracks[index]);
+	}
 }
 
 int Playlist::Model::playlistIndex() const

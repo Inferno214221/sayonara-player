@@ -41,6 +41,7 @@
 
 class QPoint;
 class DynamicPlaybackChecker;
+class LibraryInfoAccessor;
 
 namespace Playlist
 {
@@ -55,7 +56,7 @@ namespace Playlist
 
 		public:
 			View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
-			     QWidget* parent = nullptr);
+			     LibraryInfoAccessor* libraryAccessor, QWidget* parent);
 			~View() override;
 
 			void dropEventFromOutside(QDropEvent* event);
