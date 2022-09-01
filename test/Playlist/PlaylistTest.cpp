@@ -56,37 +56,36 @@ void PlaylistTest::jumpTest()
 	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
 
 	auto playlist = Playlist::Playlist(1, "Hallo", m_playManager);
-	auto currentTrack = Playlist::currentTrack(playlist);
 	QVERIFY(playlist.changeTrack(0) == false);
 	QVERIFY(playlist.index() == 1);
 	QVERIFY(runningTime(playlist) == 0);
 	QVERIFY(playlist.currentTrackIndex() == -1);
-	QVERIFY(!currentTrack.has_value());
+	QVERIFY(playlist.tracks().isEmpty());
 
 	playlist.createPlaylist(tracks);
-	currentTrack = Playlist::currentTrack(playlist);
-	QVERIFY(playlist.tracks().size() == 100);
-	QVERIFY(playlist.currentTrackIndex() == -1);
-	QVERIFY(!currentTrack.has_value());
+	{
+		QVERIFY(playlist.tracks().size() == 100);
+		QVERIFY(playlist.currentTrackIndex() == -1);
+		QVERIFY(playlist.tracks().count() == tracks.count());
+	}
 
 	const auto success = playlist.changeTrack(40);
-	QVERIFY(success);
-
-	currentTrack = Playlist::currentTrack(playlist);
-	QVERIFY(playlist.currentTrackIndex() == 40);
-	QVERIFY(currentTrack.has_value());
-	QVERIFY(currentTrack->id() == 40);
+	{
+		QVERIFY(success);
+		QVERIFY(playlist.currentTrackIndex() == 40);
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(tracks[40].id() == 40);
+	}
 
 	playlist.fwd();
-	currentTrack = Playlist::currentTrack(playlist);
-	QVERIFY(playlist.currentTrackIndex() == 41);
-	QVERIFY(currentTrack.has_value());
-	QVERIFY(currentTrack->id() == 41);
+	{
+		QVERIFY(playlist.currentTrackIndex() == 41);
+	}
 
 	playlist.stop();
-	currentTrack = Playlist::currentTrack(playlist);
-	QVERIFY(playlist.currentTrackIndex() == -1);
-	QVERIFY(!currentTrack.has_value());
+	{
+		QVERIFY(playlist.currentTrackIndex() == -1);
+	}
 }
 
 void PlaylistTest::modifyTest()

@@ -132,12 +132,13 @@ namespace Playlist
 					              ContextMenu::EntryInfo |
 					              ContextMenu::EntryRemove);
 
-					if(selectedItems.size() == 1)
+					const auto firstSelectedRow = *selectedItems.begin();
+					if((selectedItems.size() == 1) && (firstSelectedRow < model->rowCount()))
 					{
-						const auto& selectedRow = *selectedItems.begin();
-						const auto& track = model->metadata(selectedRow);
+						const auto tracks = model->metadata(selectedItems);
+						const auto& track = tracks[0];
 
-						entryMask |= contextMenu->setTrack(track, (selectedRow == model->currentTrack()));
+						entryMask |= contextMenu->setTrack(track, (firstSelectedRow == model->currentTrack()));
 					}
 
 					if(model->hasLocalMedia(selectedItems))

@@ -61,7 +61,7 @@ namespace Playlist
 
 			int createPlaylist(const MetaDataList& tracks);
 
-			virtual int currentTrackIndex() const;
+			int currentTrackIndex() const;
 
 			int index() const;
 			void setIndex(int idx);
@@ -79,9 +79,7 @@ namespace Playlist
 			void setBusy(bool b);
 			bool isBusy() const;
 
-			const MetaData& track(int index) const;
 			const MetaDataList& tracks() const override;
-			void replaceTrack(int index, const MetaData& track);
 
 			void findTrack(int index);
 			bool changeTrack(int index, MilliSeconds positionMs = 0);
@@ -101,6 +99,7 @@ namespace Playlist
 			void durationChanged();
 
 		private:
+			void replaceTrack(int index, const MetaData& track);
 			void setCurrentTrack(int index);
 			void setChanged(bool b) override;
 	};

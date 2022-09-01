@@ -87,9 +87,11 @@ namespace
 			return false;
 		}
 
-		for(auto i = 0; i < ::Playlist::count(*playlist); i++)
+		const auto& tracks = playlist->tracks();
+		for(auto i = 0; i < tracks.count(); i++)
 		{
-			if(playlist->track(i).filepath() != paths[i])
+			const auto& track = tracks[i];
+			if(track.filepath() != paths[i])
 			{
 				return false;
 			}
@@ -216,10 +218,9 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithSingleDir()
 
 	wait(&externTracksPlaylistGenerator);
 	auto playlistFiles = QStringList {};
-	for(auto i = 0; i < Playlist::count(*playlist); i++)
-	{
-		playlistFiles << playlist->track(i).filepath();
-	}
+	Util::Algorithm::transform(playlist->tracks(), playlistFiles, [](const auto& track){
+		return track.filepath();
+	});
 
 	playlistFiles.sort();
 

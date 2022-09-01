@@ -102,7 +102,6 @@ namespace Playlist
 
 			[[nodiscard]] int currentTrack() const;
 
-			[[nodiscard]] const MetaData& metadata(int row) const;
 			[[nodiscard]] MetaDataList metadata(const IndexSet& rows) const;
 
 			[[nodiscard]] bool hasLocalMedia(const IndexSet& rows) const;

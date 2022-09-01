@@ -421,14 +421,6 @@ namespace Playlist
 
 	const MetaDataList& Playlist::tracks() const { return m->tracks; }
 
-	const MetaData& Playlist::track(int index) const
-	{
-		static const auto dummyTrack = MetaData {};
-		return (Util::between(index, m->tracks))
-		       ? m->tracks[index]
-		       : dummyTrack;
-	}
-
 	void Playlist::reloadFromDatabase()
 	{
 		if(!this->isBusy())
@@ -461,3 +453,4 @@ namespace Playlist
 		setChanged(true);
 	}
 }
+

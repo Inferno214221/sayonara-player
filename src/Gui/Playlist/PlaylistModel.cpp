@@ -70,11 +70,11 @@ namespace
 
 	enum class PlaylistSearchMode
 	{
-		Artist,
-		Album,
-		Title,
-		Filename,
-		Jump
+			Artist,
+			Album,
+			Title,
+			Filename,
+			Jump
 	};
 
 	QString convertEntryLook(const QString& entryLook, const MetaData& md)
@@ -222,6 +222,9 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 		return {};
 	}
 
+	const auto& tracks = m->playlist->tracks();
+	const auto& track = tracks[row];
+
 	if(role == Qt::DisplayRole)
 	{
 		if(col == ColumnName::TrackNumber)
@@ -233,7 +236,7 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 
 		if(col == ColumnName::Time)
 		{
-			auto durationMs = m->playlist->track(row).durationMs();
+			auto durationMs = track.durationMs();
 			return (durationMs / 1000 <= 0) // NOLINT(readability-magic-numbers)
 			       ? QVariant()
 			       : Util::msToString(durationMs, QStringLiteral("$M:$S"));
@@ -251,7 +254,6 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 	{
 		if(col == ColumnName::Cover)
 		{
-			const auto& track = m->playlist->track(row);
 			const auto hash = getAlbumHashFromTrack(track);
 			if(!m->coverLookupMap.contains(hash))
 			{
@@ -267,7 +269,7 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 	{
 		if(col == ColumnName::Description)
 		{
-			return convertEntryLook(GetSetting(Set::PL_EntryLook), m->playlist->track(row));
+			return convertEntryLook(GetSetting(Set::PL_EntryLook), track);
 		}
 	}
 
@@ -280,9 +282,8 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 	{
 		if(col == ColumnName::Description)
 		{
-			const auto& track = m->playlist->track(row);
 			return (track.radioMode() == RadioMode::Off)
-			       ? QVariant::fromValue(metadata(row).rating())
+			       ? QVariant::fromValue(track.rating())
 			       : QVariant::fromValue(Rating::Last);
 		}
 	}
@@ -315,7 +316,8 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 	}
 
 	const auto row = index.row();
-	if(!Util::between(row, ::Playlist::count(*m->playlist)) || metadata(row).isDisabled())
+	const auto& tracks = m->playlist->tracks();
+	if(!Util::between(row, tracks) || tracks[row].isDisabled())
 	{
 		return Qt::NoItemFlags;
 	}
@@ -368,34 +370,32 @@ IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
 
 void Model::changeRating(const IndexSet& indexes, Rating rating)
 {
-	MetaDataList tracks;
-	tracks.reserve(indexes.size());
+	const auto& playlistTracks = m->playlist->tracks();
+
+	auto modifiedTracks = MetaDataList {};
+	modifiedTracks.reserve(indexes.size());
 
 	for(const auto idx: indexes)
 	{
-		auto track = m->playlist->track(idx);
-		if(rating != track.rating())
+		if(Util::between(idx, playlistTracks))
 		{
-			tracks << track;
-			track.setRating(rating);
+			auto track = playlistTracks[idx];
+			if(rating != track.rating())
+			{
+				modifiedTracks << track;
+			}
+		}
+	}
 
-			m->playlist->replaceTrack(idx, track);
+	if(!modifiedTracks.isEmpty())
+	{
+		if(!m->uto)
+		{
+			m->uto = new Tagging::UserOperations(-1, this);
 		}
 
-		emit dataChanged(index(idx, 0), index(idx, int(ColumnName::Description)));
+		m->uto->setTrackRating(modifiedTracks, rating);
 	}
-
-	if(tracks.isEmpty())
-	{
-		return;
-	}
-
-	if(!m->uto)
-	{
-		m->uto = new Tagging::UserOperations(-1, this);
-	}
-
-	m->uto->setTrackRating(tracks, rating);
 }
 
 void Model::insertTracks(const MetaDataList& tracks, int row)
@@ -430,14 +430,9 @@ int Model::currentTrack() const
 	return m->playlist->currentTrackIndex();
 }
 
-void Model::changeTrack(int trackIndex, Seconds seconds)
+void Model::changeTrack(const int trackIndex, const Seconds seconds)
 {
 	m->playlist->changeTrack(trackIndex, seconds * 1000); // NOLINT(readability-magic-numbers)
-}
-
-const MetaData& Model::metadata(int row) const
-{
-	return m->playlist->track(row);
 }
 
 MetaDataList Model::metadata(const IndexSet& rows) const
@@ -445,16 +440,21 @@ MetaDataList Model::metadata(const IndexSet& rows) const
 	MetaDataList tracks;
 	tracks.reserve(rows.size());
 
-	Util::Algorithm::transform(rows, tracks, [this](int row) {
-		return m->playlist->track(row);
-	});
+	const auto& playlistTracks = m->playlist->tracks();
+	for(const auto row: rows)
+	{
+		if(Util::between(row, playlistTracks))
+		{
+			tracks << playlistTracks[row];
+		}
+	}
 
 	return tracks;
 }
 
 QModelIndexList Model::searchResults(const QString& searchString)
 {
-	const auto [playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
+	const auto[playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
 
 	if(playlistSearchMode == PlaylistSearchMode::Jump)
 	{
@@ -464,9 +464,10 @@ QModelIndexList Model::searchResults(const QString& searchString)
 		       : QModelIndexList {QModelIndex {}};
 	}
 
+	const auto& tracks = m->playlist->tracks();
 	for(auto i = 0; i < rowCount(); i++)
 	{
-		const auto& track = m->playlist->track(i);
+		const auto& track = tracks[i];
 		const auto searchKey = calculateSearchKey(track, playlistSearchMode, searchMode());
 
 		if(searchKey.contains(cleanedSearchString))
@@ -492,17 +493,16 @@ ExtraTriggerMap Model::getExtraTriggers()
 	return map;
 }
 
-QMimeData* Model::mimeData(const QModelIndexList& indexes) const
+QList<int> toSortedList(const QModelIndexList& indexes, const int maxRow)
 {
-	if(indexes.isEmpty())
-	{
-		return nullptr;
-	}
-
 	Util::Set<int> rowSet;
 	for(const auto& index: indexes)
 	{
-		rowSet << index.row();
+		const auto row = index.row();
+		if(Util::between(row, maxRow))
+		{
+			rowSet << index.row();
+		}
 	}
 
 	auto rows = rowSet.toList();
@@ -510,15 +510,25 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 		return (row1 < row2);
 	});
 
-	MetaDataList tracks;
-	tracks.reserve(static_cast<MetaDataList::size_type>(rows.size()));
+	return rows;
+}
 
-	for(const auto row: Algorithm::AsConst(rows))
+QMimeData* Model::mimeData(const QModelIndexList& indexes) const
+{
+	if(indexes.isEmpty())
 	{
-		if(row < ::Playlist::count(*m->playlist))
-		{
-			tracks << m->playlist->track(row);
-		}
+		return nullptr;
+	}
+
+	const auto& playlistTracks = m->playlist->tracks();
+	const auto rows = toSortedList(indexes, playlistTracks.count());
+
+	MetaDataList tracks;
+	tracks.reserve(static_cast<MetaDataList::size_type>(playlistTracks.count()));
+
+	for(const auto row: rows)
+	{
+		tracks << playlistTracks[row];
 	}
 
 	if(tracks.empty())
