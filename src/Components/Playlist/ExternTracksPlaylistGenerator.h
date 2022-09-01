@@ -29,7 +29,6 @@
 
 class QStringList;
 class MetaDataList;
-class PlaylistCreator;
 
 class ExternTracksPlaylistGenerator :
 	public QObject
@@ -38,7 +37,7 @@ class ExternTracksPlaylistGenerator :
 	PIMPL(ExternTracksPlaylistGenerator)
 
 	public:
-		ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist);
+		ExternTracksPlaylistGenerator(const PlaylistPtr& playlist);
 		~ExternTracksPlaylistGenerator() override;
 
 		void addPaths(const QStringList& paths);

@@ -362,7 +362,7 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
 		const auto playlistName = playlist->name();
-		auto* view = new View(m->playlistHandler, playlist, m->dynamicPlaybackChecker, ui->twPlaylists);
+		auto* view = new View(playlist, m->dynamicPlaybackChecker, ui->twPlaylists);
 
 		const auto tabIndex = ui->twPlaylists->insertTab(playlistIndex, view, playlistName);
 

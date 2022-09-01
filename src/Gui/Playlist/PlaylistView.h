@@ -41,7 +41,6 @@
 
 class QPoint;
 class DynamicPlaybackChecker;
-class PlaylistCreator;
 
 namespace Playlist
 {
@@ -55,8 +54,8 @@ namespace Playlist
 		PIMPL(View)
 
 		public:
-			View(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist,
-			     DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent = nullptr);
+			View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
+			     QWidget* parent = nullptr);
 			~View() override;
 
 			void dropEventFromOutside(QDropEvent* event);

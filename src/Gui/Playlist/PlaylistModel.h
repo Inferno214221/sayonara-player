@@ -35,7 +35,6 @@
 #include "Utils/Pimpl.h"
 
 class CustomMimeData;
-class PlaylistCreator;
 class QPixmap;
 
 namespace Playlist
@@ -82,7 +81,7 @@ namespace Playlist
 				CurrentPlayingRole = Qt::UserRole + 4
 			};
 
-			explicit Model(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist, QObject* parent);
+			Model(const PlaylistPtr& playlist, QObject* parent);
 			~Model() override;
 
 			[[nodiscard]] int playlistIndex() const;

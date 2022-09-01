@@ -30,33 +30,19 @@
 #include <QStringList>
 #include <QThread>
 
-namespace
-{
-	PlaylistPtr addNewPlaylist(PlaylistCreator* playlistCreator)
-	{
-		const auto name = playlistCreator->requestNewPlaylistName();
-		auto index = playlistCreator->createPlaylist(MetaDataList(), name, true);
-
-		return playlistCreator->playlist(index);
-	}
-}
-
 struct ExternTracksPlaylistGenerator::Private
 {
-	PlaylistCreator* playlistCreator;
 	PlaylistPtr playlist;
 	int targetRowIndex;
 
-	Private(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist) :
-		playlistCreator {playlistCreator},
-		playlist(playlist ? playlist : addNewPlaylist(playlistCreator)),
+	Private(const PlaylistPtr& playlist) :
+		playlist{playlist},
 		targetRowIndex {-1} {}
 };
 
-ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(PlaylistCreator* playlistCreator,
-                                                             const PlaylistPtr& playlist)
+ExternTracksPlaylistGenerator::ExternTracksPlaylistGenerator(const PlaylistPtr& playlist)
 {
-	m = Pimpl::make<Private>(playlistCreator, playlist);
+	m = Pimpl::make<Private>(playlist);
 }
 
 ExternTracksPlaylistGenerator::~ExternTracksPlaylistGenerator() = default;

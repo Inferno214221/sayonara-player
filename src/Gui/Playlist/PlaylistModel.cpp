@@ -173,17 +173,15 @@ struct Model::Private
 	int dragIndex {-1};
 	PlaylistPtr playlist;
 	Tagging::UserOperations* uto = nullptr;
-	PlaylistCreator* playlistCreator;
 
-	Private(PlaylistCreator* playlistCreator, PlaylistPtr playlistArg) :
-		playlist(std::move(playlistArg)),
-		playlistCreator {playlistCreator} {}
+	Private(PlaylistPtr playlistArg) :
+		playlist(std::move(playlistArg)) {}
 };
 
-Model::Model(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist, QObject* parent) :
+Model::Model(const PlaylistPtr& playlist, QObject* parent) :
 	SearchableTableModel(parent)
 {
-	m = Pimpl::make<Private>(playlistCreator, playlist);
+	m = Pimpl::make<Private>(playlist);
 
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
@@ -405,7 +403,7 @@ void Model::insertTracks(const MetaDataList& tracks, int row)
 
 void Model::insertTracks(const QStringList& files, int row)
 {
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlistCreator, m->playlist);
+	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlist);
 	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->insertPaths(files, row);
 }
@@ -695,4 +693,3 @@ void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
 		sender()->deleteLater();
 	}
 }
-

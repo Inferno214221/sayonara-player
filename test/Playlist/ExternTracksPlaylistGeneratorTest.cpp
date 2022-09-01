@@ -136,7 +136,7 @@ void ExternTracksPlaylistGeneratorTest::testInsertFiles()
 		pathList << m_pathTrackMap[i].first;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlistCreator, playlist);
+	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
 	externTracksPlaylistGenerator.insertPaths(pathList, 2);
 
 	wait(&externTracksPlaylistGenerator);
@@ -163,7 +163,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFiles()
 		pathList << filepath;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlistCreator, playlist);
+	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
 	externTracksPlaylistGenerator.addPaths(pathList);
 
 	wait(&externTracksPlaylistGenerator);
@@ -186,7 +186,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithAppend()
 		pathList << filepath;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlistCreator, playlist);
+	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
 	externTracksPlaylistGenerator.addPaths(pathList);
 
 	wait(&externTracksPlaylistGenerator);
@@ -213,7 +213,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithSingleDir()
 
 	pathList.sort();
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlistCreator, playlist);
+	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
 	externTracksPlaylistGenerator.addPaths({Test::Base::tempPath()});
 
 	wait(&externTracksPlaylistGenerator);
@@ -247,7 +247,7 @@ void ExternTracksPlaylistGeneratorTest::testWithPlaylistFile()
 	const auto playlistFilename = Test::Base::tempPath("bla.m3u");
 	M3UParser::saveM3UPlaylist(playlistFilename, tracks, false);
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlistCreator, playlist);
+	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
 	externTracksPlaylistGenerator.addPaths({playlistFilename});
 
 	wait(&externTracksPlaylistGenerator);

@@ -86,7 +86,7 @@ int PlaylistFromPathCreator::createSinglePlaylist(const QStringList& paths, cons
 	const auto index = m->playlistCreator->createPlaylist(MetaDataList {}, name, temporary);
 
 	auto* playlistGenerator =
-		new ExternTracksPlaylistGenerator(m->playlistCreator, m->playlistCreator->playlist(index));
+		new ExternTracksPlaylistGenerator(m->playlistCreator->playlist(index));
 
 	connect(playlistGenerator,
 	        &ExternTracksPlaylistGenerator::sigFinished,
