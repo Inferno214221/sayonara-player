@@ -27,28 +27,27 @@
  */
 
 #include "PlaylistModel.h"
+
+#include "Components/Covers/CoverChangeNotifier.h"
+#include "Components/Covers/CoverLocation.h"
+#include "Components/Covers/CoverLookup.h"
+#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Components/Tagging/UserTaggingOperations.h"
-#include "Components/Covers/CoverLocation.h"
-#include "Components/Covers/CoverChangeNotifier.h"
-#include "Components/Covers/CoverLookup.h"
-
-#include "Interfaces/PlaylistInterface.h"
-
-#include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/Icons.h"
-
-#include "Utils/Utils.h"
+#include "Gui/Utils/MimeData/CustomMimeData.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
-#include "Utils/Set.h"
-#include "Utils/globals.h"
-
 #include "Utils/Language/Language.h"
 #include "Utils/Library/SearchMode.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+#include "Utils/globals.h"
 
 #include <QFont>
 #include <QFileInfo>
@@ -197,14 +196,14 @@ Model::Model(PlaylistCreator* playlistCreator, const PlaylistPtr& playlist, QObj
 	ListenSettingNoCall(Set::PL_EntryLook, Model::lookChanged);
 
 	// don't call virtual methods here
-	refreshPlaylist(m->playlist->count(), static_cast<int>(ColumnName::NumColumns));
+	refreshPlaylist(::Playlist::count(*m->playlist), static_cast<int>(ColumnName::NumColumns));
 }
 
 Model::~Model() = default;
 
 int Model::rowCount([[maybe_unused]] const QModelIndex& parent) const
 {
-	return m->playlist->count();
+	return ::Playlist::count(*m->playlist);
 }
 
 int Model::columnCount([[maybe_unused]] const QModelIndex& parent) const
@@ -218,7 +217,7 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 	const auto col = index.column();
 	const auto isCurrentTrack = (row == m->playlist->currentTrackIndex());
 
-	if(!Util::between(row, m->playlist->count()))
+	if(!Util::between(row, ::Playlist::count(*m->playlist)))
 	{
 		return {};
 	}
@@ -316,7 +315,7 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 	}
 
 	const auto row = index.row();
-	if(!Util::between(row, m->playlist->count()) || metadata(row).isDisabled())
+	if(!Util::between(row, ::Playlist::count(*m->playlist)) || metadata(row).isDisabled())
 	{
 		return Qt::NoItemFlags;
 	}
@@ -329,17 +328,17 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 
 void Model::clear()
 {
-	m->playlist->clear();
+	::Playlist::clear(*m->playlist);
 }
 
 void Model::removeTracks(const IndexSet& indexes)
 {
-	m->playlist->removeTracks(indexes);
+	::Playlist::removeTracks(*m->playlist, indexes);
 }
 
-IndexSet Model::moveTracks(const IndexSet& indexes, int target_index)
+IndexSet Model::moveTracks(const IndexSet& indexes, int targetIndex)
 {
-	return m->playlist->moveTracks(indexes, target_index);
+	return ::Playlist::moveTracks(*m->playlist, indexes, targetIndex);
 }
 
 IndexSet Model::moveTracksUp(const IndexSet& indexes)
@@ -364,7 +363,7 @@ IndexSet Model::moveTracksDown(const IndexSet& indexes)
 
 IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
 {
-	return m->playlist->copyTracks(indexes, target_index);
+	return ::Playlist::copyTracks(*m->playlist, indexes, target_index);
 }
 
 void Model::changeRating(const IndexSet& indexes, Rating rating)
@@ -401,7 +400,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 
 void Model::insertTracks(const MetaDataList& tracks, int row)
 {
-	m->playlist->insertTracks(tracks, row);
+	::Playlist::insertTracks(*m->playlist, tracks, row);
 }
 
 void Model::insertTracks(const QStringList& files, int row)
@@ -413,17 +412,17 @@ void Model::insertTracks(const QStringList& files, int row)
 
 void Model::reverseTracks()
 {
-	m->playlist->reverse();
+	::Playlist::reverse(*m->playlist);
 }
 
 void Model::randomizeTracks()
 {
-	m->playlist->randomize();
+	::Playlist::randomize(*m->playlist);
 }
 
 void Playlist::Model::jumpToNextAlbum()
 {
-	m->playlist->jumpToNextAlbum();
+	::Playlist::jumpToNextAlbum(*m->playlist);
 }
 
 int Model::currentTrack() const
@@ -516,7 +515,7 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 
 	for(const auto row: Algorithm::AsConst(rows))
 	{
-		if(row < m->playlist->count())
+		if(row < ::Playlist::count(*m->playlist))
 		{
 			tracks << m->playlist->track(row);
 		}
@@ -561,7 +560,7 @@ void Model::setDragIndex(int dragIndex)
 void Model::refreshData()
 {
 	m->coverLookupMap.clear();
-	m->playlist->enableAll();
+	::Playlist::enableAll(*m->playlist);
 }
 
 void Model::lookChanged()
@@ -599,18 +598,18 @@ void Model::playlistChanged([[maybe_unused]] int playlistIndex)
 {
 	if(playlistIndex == m->playlist->index())
 	{
-		refreshPlaylist(m->playlist->count(), columnCount());
+		refreshPlaylist(::Playlist::count(*m->playlist), columnCount());
 	}
 }
 
 void Model::currentTrackChanged(int oldIndex, int newIndex)
 {
-	if(Util::between(oldIndex, m->playlist->count()))
+	if(Util::between(oldIndex, ::Playlist::count(*m->playlist)))
 	{
 		emit dataChanged(index(oldIndex, 0), index(oldIndex, columnCount() - 1));
 	}
 
-	if(Util::between(newIndex, m->playlist->count()))
+	if(Util::between(newIndex, ::Playlist::count(*m->playlist)))
 	{
 		emit dataChanged(index(newIndex, 0), index(newIndex, columnCount() - 1));
 		emit sigCurrentTrackChanged(newIndex);

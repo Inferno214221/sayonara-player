@@ -19,10 +19,11 @@
  */
 
 #include "Playlist.h"
+#include "PlaylistModifiers.h"
+#include "PlaylistShuffleHistory.h"
 #include "PlaylistStopBehavior.h"
 
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/PlaylistShuffleHistory.h"
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
@@ -97,51 +98,6 @@ namespace Playlist
 
 	Playlist::~Playlist() = default;
 
-	void Playlist::clear()
-	{
-		if(!m->tracks.isEmpty())
-		{
-			m->tracks.clear();
-			setChanged(true);
-		}
-	}
-
-	IndexSet Playlist::moveTracks(const IndexSet& indexes, int targetRow)
-	{
-		m->tracks.moveTracks(indexes, targetRow);
-
-		const auto lineCountBeforeTarget = Util::Algorithm::count(indexes, [&](const auto index) {
-			return (index < targetRow);
-		});
-
-		IndexSet newTrackPositions;
-		for(auto i = targetRow; i < targetRow + indexes.count(); i++)
-		{
-			newTrackPositions.insert(i - lineCountBeforeTarget);
-		}
-
-		setChanged(true);
-
-		return newTrackPositions;
-	}
-
-	IndexSet Playlist::copyTracks(const IndexSet& indexes, int targetRow)
-	{
-		m->tracks.copyTracks(indexes, targetRow);
-
-		setChanged(true);
-
-		IndexSet newTrackPositions;
-		for(auto i = 0; i < indexes.count(); i++)
-		{
-			newTrackPositions.insert(targetRow + i);
-		}
-
-		setChanged(true);
-
-		return newTrackPositions;
-	}
-
 	void Playlist::findTrack(int idx)
 	{
 		if(Util::between(idx, m->tracks))
@@ -150,39 +106,7 @@ namespace Playlist
 		}
 	}
 
-	void Playlist::removeTracks(const IndexSet& indexes)
-	{
-		m->tracks.removeTracks(indexes);
-		setChanged(true);
-	}
-
-	void Playlist::insertTracks(const MetaDataList& tracks, int targetIndex)
-	{
-		m->tracks.insertTracks(tracks, targetIndex);
-		setChanged(true);
-	}
-
-	void Playlist::appendTracks(const MetaDataList& tracks)
-	{
-		if(isBusy())
-		{
-			return;
-		}
-
-		const auto oldTrackCount = m->tracks.count();
-
-		m->tracks.append(tracks);
-
-		for(auto it = m->tracks.begin() + oldTrackCount; it != m->tracks.end(); it++)
-		{
-			const auto isEnabled = Util::File::checkFile(it->filepath()) && !it->isDisabled();
-			it->setDisabled(!isEnabled);
-		}
-
-		setChanged(true);
-	}
-
-	bool Playlist::changeTrack(int index, MilliSeconds positionMs)
+	bool Playlist::changeTrack(int index, const MilliSeconds positionMs)
 	{
 		const auto oldIndex = currentTrackIndex();
 		m->stopBehavior.setTrackIndexBeforeStop(-1);
@@ -273,7 +197,7 @@ namespace Playlist
 		}
 	}
 
-	void Playlist::replaceTrack(int index, const MetaData& track)
+	void Playlist::replaceTrack(const int index, const MetaData& track)
 	{
 		if(!Util::between(index, m->tracks) || (m->tracks[index].isDisabled()))
 		{
@@ -402,66 +326,9 @@ namespace Playlist
 	bool Playlist::wakeUp()
 	{
 		const auto index = m->stopBehavior.trackIndexBeforeStop();
-		return (Util::between(index, count()))
+		return (Util::between(index, count(*this)))
 		       ? changeTrack(index)
 		       : false; // NOLINT
-
-	}
-
-	void Playlist::setBusy(bool busy)
-	{
-		m->busy = busy;
-		emit sigBusyChanged(busy);
-	}
-
-	bool Playlist::isBusy() const
-	{
-		return m->busy;
-	}
-
-	void Playlist::reverse()
-	{
-		std::reverse(m->tracks.begin(), m->tracks.end());
-		setChanged(true);
-	}
-
-	void Playlist::randomize()
-	{
-		Util::Algorithm::shuffle(m->tracks);
-		setChanged(true);
-	}
-
-	void Playlist::jumpToNextAlbum()
-	{
-		const auto currentIndex = currentTrackIndex();
-		if(currentIndex < 0)
-		{
-			next();
-		}
-		else
-		{
-			const auto& tracks = this->tracks();
-			const auto& currentTrack = tracks.at(currentIndex);
-			const auto albumId = currentTrack.albumId();
-			const auto it = std::find_if(tracks.begin() + currentIndex, tracks.end(), [&](const auto& track) {
-				return (track.albumId() != albumId);
-			});
-			if(it != tracks.end())
-			{
-				const auto index = std::distance(tracks.begin(), it);
-				changeTrack(index);
-			}
-		}
-	}
-
-	void Playlist::enableAll()
-	{
-		for(auto& track: m->tracks)
-		{
-			track.setDisabled(false);
-		}
-
-		setChanged(true);
 	}
 
 	int Playlist::createPlaylist(const MetaDataList& tracks)
@@ -474,21 +341,16 @@ namespace Playlist
 		}
 
 		m->tracks << tracks;
-
 		setChanged(true);
 
 		return m->tracks.count();
 	}
 
-	int Playlist::index() const
-	{
-		return m->playlistIndex;
-	}
+	int Playlist::index() const { return m->playlistIndex; }
 
-	void Playlist::setIndex(int idx)
-	{
-		m->playlistIndex = idx;
-	}
+	void Playlist::setIndex(int idx) { m->playlistIndex = idx; }
+
+	PlaylistMode Playlist::mode() const { return m->playlistMode; }
 
 	void Playlist::setMode(const PlaylistMode& mode)
 	{
@@ -500,22 +362,12 @@ namespace Playlist
 		m->playlistMode = mode;
 	}
 
-	PlaylistMode Playlist::mode() const
-	{
-		return m->playlistMode;
-	}
+	bool Playlist::isBusy() const { return m->busy; }
 
-	MilliSeconds Playlist::runningTime() const
+	void Playlist::setBusy(bool busy)
 	{
-		const auto durationMs =
-			std::accumulate(m->tracks.begin(),
-			                m->tracks.end(),
-			                0,
-			                [](const auto timeMs, const auto& track) {
-				                return timeMs + track.durationMs();
-			                });
-
-		return durationMs;
+		m->busy = busy;
+		emit sigBusyChanged(busy);
 	}
 
 	int Playlist::currentTrackIndex() const
@@ -530,35 +382,7 @@ namespace Playlist
 		});
 	}
 
-	bool Playlist::currentTrack(MetaData& track) const
-	{
-		const auto trackIndex = currentTrackIndex();
-		if(!Util::between(trackIndex, m->tracks))
-		{
-			return false;
-		}
-
-		track = m->tracks[trackIndex];
-		return true;
-	}
-
-	int Playlist::currentTrackWithoutDisabled() const
-	{
-		if(!Util::between(currentTrackIndex(), m->tracks) ||
-		   m->tracks[currentTrackIndex()].isDisabled())
-		{
-			return -1;
-		}
-
-		const auto disabled =
-			std::count_if(m->tracks.begin(), m->tracks.begin() + currentTrackIndex(), [](const auto& track) {
-				return track.isDisabled();
-			});
-
-		return std::max(currentTrackIndex() - static_cast<int>(disabled), -1);
-	}
-
-	void Playlist::setCurrentTrack(int index)
+	void Playlist::setCurrentTrack(const int index)
 	{
 		if(!Util::between(index, m->tracks))
 		{
@@ -575,12 +399,9 @@ namespace Playlist
 		}
 	}
 
-	int Playlist::count() const
-	{
-		return m->tracks.count();
-	}
+	bool Playlist::wasChanged() const { return m->playlistChanged; }
 
-	void Playlist::setChanged(bool b)
+	void Playlist::setChanged(const bool b)
 	{
 		m->stopBehavior.restoreTrackBeforeStop();
 		m->playlistChanged = b;
@@ -588,9 +409,9 @@ namespace Playlist
 		emit sigItemsChanged(m->playlistIndex);
 	}
 
-	bool Playlist::wasChanged() const
+	void Playlist::resetChangedStatus()
 	{
-		return m->playlistChanged;
+		setChanged(false);
 	}
 
 	void Playlist::settingPlaylistModeChanged()
@@ -598,10 +419,7 @@ namespace Playlist
 		setMode(GetSetting(Set::PL_Mode));
 	}
 
-	const MetaDataList& Playlist::tracks() const
-	{
-		return m->tracks;
-	}
+	const MetaDataList& Playlist::tracks() const { return m->tracks; }
 
 	const MetaData& Playlist::track(int index) const
 	{
@@ -616,7 +434,7 @@ namespace Playlist
 		if(!this->isBusy())
 		{
 			const auto tracks = this->fetchTracksFromDatabase();
-			clear();
+			m->tracks.clear();
 			createPlaylist(tracks);
 			setChanged(false);
 		}
@@ -624,15 +442,22 @@ namespace Playlist
 
 	void Playlist::deleteTracks(const IndexSet& indexes)
 	{
-		MetaDataList tracks;
+		MetaDataList tracksToDelete;
+
 		for(const auto& index: indexes)
 		{
 			if(Util::between(index, m->tracks))
 			{
-				tracks << m->tracks[index];
+				tracksToDelete << m->tracks[index];
 			}
 		}
 
-		emit sigDeleteFilesRequested(tracks);
+		emit sigDeleteFilesRequested(tracksToDelete);
+	}
+
+	void Playlist::modifyTracks(Modificator&& modificator)
+	{
+		m->tracks = modificator(std::move(m->tracks));
+		setChanged(true);
 	}
 }

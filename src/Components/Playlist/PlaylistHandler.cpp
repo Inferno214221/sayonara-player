@@ -22,12 +22,13 @@
  */
 
 #include "PlaylistHandler.h"
+
 #include "Playlist.h"
-#include "PlaylistLoader.h"
-#include "PlaylistSaver.h"
 #include "PlaylistChangeNotifier.h"
 #include "PlaylistFromPathCreator.h"
-
+#include "PlaylistLoader.h"
+#include "PlaylistModifiers.h"
+#include "PlaylistSaver.h"
 #include "PlayManager/PlayManager.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
@@ -62,7 +63,7 @@ struct Handler::Private
 			return;
 		}
 
-		for(const auto& playlist : playlists)
+		for(const auto& playlist: playlists)
 		{
 			handler->createPlaylist(playlist);
 		}
@@ -167,7 +168,7 @@ int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
 int Handler::createPlaylist(const QStringList& paths, const QString& name, bool temporary)
 {
 	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [playlistFromPathCreator](int){
+	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [playlistFromPathCreator](int) {
 		playlistFromPathCreator->deleteLater();
 	});
 
@@ -183,17 +184,19 @@ int Handler::createPlaylist(const QStringList& paths, const QString& name, bool 
 int Handler::createCommandLinePlaylist(const QStringList& paths)
 {
 	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [&, playlistFromPathCreator](auto firstIndex){
-		if(m->playManager->initialPositionMs() > 0)
-		{
-			m->playManager->stop();
-		}
+	connect(playlistFromPathCreator,
+	        &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+	        [&, playlistFromPathCreator](auto firstIndex) {
+		        if(m->playManager->initialPositionMs() > 0)
+		        {
+			        m->playManager->stop();
+		        }
 
-		m->playManager->setCurrentPositionMs(0);
-		playlist(firstIndex)->setCurrentTrack(0);
-		setCurrentIndex(firstIndex);
-		playlistFromPathCreator->deleteLater();
-	});
+		        m->playManager->setCurrentPositionMs(0);
+		        playlist(firstIndex)->setCurrentTrack(0);
+		        setCurrentIndex(firstIndex);
+		        playlistFromPathCreator->deleteLater();
+	        });
 
 	playlistFromPathCreator->createPlaylists(paths, requestNewPlaylistName(), true);
 
@@ -218,7 +221,7 @@ void Handler::playstateChanged(PlayState state)
 
 	else if(state == PlayState::Stopped)
 	{
-		for(auto playlist : m->playlists)
+		for(auto playlist: m->playlists)
 		{
 			playlist->stop();
 		}
@@ -256,7 +259,7 @@ void Handler::trackChanged([[maybe_unused]] int oldIndex, [[maybe_unused]] int n
 	auto* playlist = static_cast<Playlist*>(sender());
 	if(playlist->currentTrackIndex() >= 0)
 	{
-		for(auto playlistPtr : m->playlists)
+		for(auto playlistPtr: m->playlists)
 		{
 			if(playlist->index() != playlistPtr->index())
 			{
@@ -328,7 +331,7 @@ void Handler::closePlaylist(int playlistIndex)
 
 	m->playlists.removeAt(playlistIndex);
 
-	for(auto remaningPlaylist : m->playlists)
+	for(auto remaningPlaylist: m->playlists)
 	{
 		if((remaningPlaylist->index() >= playlistIndex) &&
 		   (remaningPlaylist->index() > 0))
@@ -349,7 +352,7 @@ void Handler::closePlaylist(int playlistIndex)
 
 	const auto activePlaylist = this->activePlaylist();
 	const auto lastPlaylistId = (activePlaylist) ? activePlaylist->id() : -1;
-	const auto lastTrack = (activePlaylist) ? activePlaylist->currentTrackWithoutDisabled() : -1;
+	const auto lastTrack = (activePlaylist) ? currentTrackWithoutDisabled(*activePlaylist) : -1;
 
 	SetSetting(Set::PL_LastTrack, lastTrack);
 	SetSetting(Set::PL_LastPlaylist, lastPlaylistId);
@@ -410,6 +413,6 @@ void Handler::wwwTrackFinished(const MetaData& track)
 	if(GetSetting(Set::Stream_ShowHistory))
 	{
 		auto playlist = activePlaylist();
-		playlist->insertTracks(MetaDataList {track}, playlist->currentTrackIndex());
+		::Playlist::insertTracks(*playlist, MetaDataList {track}, playlist->currentTrackIndex());
 	}
 }

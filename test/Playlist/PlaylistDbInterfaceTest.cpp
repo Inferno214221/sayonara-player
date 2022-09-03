@@ -23,12 +23,13 @@
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistChangeNotifier.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Database/Connector.h"
 #include "Database/Playlist.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Playlist/CustomPlaylist.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Playlist/CustomPlaylist.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QSignalSpy>
 
@@ -87,7 +88,7 @@ class PlaylistDbInterfaceTest :
 	public:
 		PlaylistDbInterfaceTest() :
 			Test::Base("PlaylistDbInterfaceTest"),
-			m_playlistConnector{DB::Connector::instance()->playlistConnector()}
+			m_playlistConnector {DB::Connector::instance()->playlistConnector()}
 		{
 			SetSetting(Set::PL_LoadSavedPlaylists, true);
 			SetSetting(Set::PL_LoadTemporaryPlaylists, true);
@@ -349,7 +350,7 @@ void PlaylistDbInterfaceTest::testWithTracks()
 
 	{
 		const auto track = Test::createTrack(0, "title", "artist", "album");
-		playlist.appendTracks(MetaDataList {track});
+		::Playlist::appendTracks(playlist, MetaDataList {track});
 
 		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), true);
 		QVERIFY(!isEqual(playlist, dbPlaylist));

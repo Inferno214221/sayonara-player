@@ -17,48 +17,53 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "PlaylistSaver.h"
 #include "Playlist.h"
+#include "PlaylistModifiers.h"
 
 #include "Utils/Settings/Settings.h"
 
-void Playlist::saveCurrentPlaylists(const QList<PlaylistPtr>& playlists)
+namespace Playlist
 {
-	SetSetting(Set::PL_LastPlaylist, -1);
-	SetSetting(Set::PL_LastTrack, -1);
-
-	for(auto playlist : playlists)
+	void saveCurrentPlaylists(const QList<PlaylistPtr>& playlists)
 	{
-		const auto isTemporary = playlist->isTemporary();
-		const auto isActive = (playlist->currentTrackIndex() >= 0);
+		SetSetting(Set::PL_LastPlaylist, -1);
+		SetSetting(Set::PL_LastTrack, -1);
 
-		if(isActive)
+		for(auto playlist: playlists)
 		{
-			SetSetting(Set::PL_LastPlaylist, playlist->id());
-			SetSetting(Set::PL_LastTrack, playlist->currentTrackWithoutDisabled());
-		}
+			const auto isTemporary = playlist->isTemporary();
+			const auto isActive = (playlist->currentTrackIndex() >= 0);
 
-		if(GetSetting(Set::PL_LoadTemporaryPlaylists))
-		{
-			const auto wasChanged = playlist->wasChanged();
-			if(isTemporary && wasChanged)
+			if(isActive)
 			{
-				playlist->save();
+				SetSetting(Set::PL_LastPlaylist, playlist->id());
+				SetSetting(Set::PL_LastTrack, currentTrackWithoutDisabled(*playlist));
 			}
-		}
 
-		else // delete temporary playlists
-		{
-			if(isTemporary)
+			if(GetSetting(Set::PL_LoadTemporaryPlaylists))
 			{
-				if(GetSetting(Set::PL_LoadLastTrack) && isActive)
+				const auto wasChanged = playlist->wasChanged();
+				if(isTemporary && wasChanged)
 				{
 					playlist->save();
 				}
+			}
 
-				else
+			else // delete temporary playlists
+			{
+				if(isTemporary)
 				{
-					playlist->deletePlaylist();
+					if(GetSetting(Set::PL_LoadLastTrack) && isActive)
+					{
+						playlist->save();
+					}
+
+					else
+					{
+						playlist->deletePlaylist();
+					}
 				}
 			}
 		}

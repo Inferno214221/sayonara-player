@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "DynamicPlaybackHandler.h"
 #include "LfmSimilarArtistFetcher.h"
 #include "ArtistMatch.h"
@@ -24,6 +25,7 @@
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 #include "Interfaces/PlaylistInterface.h"
@@ -45,7 +47,7 @@ namespace
 	void appendTrack(PlaylistAccessor* playlistAccessor, const MetaData& track)
 	{
 		auto activePlaylist = playlistAccessor->activePlaylist();
-		activePlaylist->appendTracks(MetaDataList{track});
+		Playlist::appendTracks(*activePlaylist, MetaDataList {track});
 	}
 
 	QMap<ArtistId, MetaDataList>
@@ -58,7 +60,7 @@ namespace
 		libraryDatabase->getAllTracks(tracks);
 
 		QMap<ArtistId, MetaDataList> result;
-		for(auto& track : tracks)
+		for(auto& track: tracks)
 		{
 			if(!artistIds.contains(track.artistId()) &&
 			   !artistIds.contains(track.albumArtistId()))
@@ -74,7 +76,7 @@ namespace
 			result[track.albumArtistId()].push_back(std::move(track));
 		}
 
-		for(auto key : result.keys())
+		for(auto key: result.keys())
 		{
 			Util::Algorithm::shuffle(result[key]);
 		}
@@ -88,7 +90,7 @@ namespace
 
 		auto playlist = playlistAccessor->activePlaylist();
 
-		for(const auto& track : playlist->tracks())
+		for(const auto& track: playlist->tracks())
 		{
 			if((track.artistId() < 0) && (track.albumArtistId() < 0))
 			{
@@ -107,7 +109,7 @@ namespace
 
 	MetaData findTrackNotInPlaylist(const MetaDataList& tracks, const Util::Set<QString>& playlistFilepaths)
 	{
-		for(const auto& track : tracks)
+		for(const auto& track: tracks)
 		{
 			const auto contains = playlistFilepaths.contains(track.filepath());
 			if(!contains && Util::File::exists(track.filepath()))
@@ -128,7 +130,7 @@ struct Handler::Private
 	QTimer* timer;
 
 	Private(PlaylistAccessor* playlistAccessor) :
-		currentLibraryId{-1},
+		currentLibraryId {-1},
 		playlistAccessor(playlistAccessor),
 		timer(new QTimer())
 	{
@@ -191,7 +193,7 @@ void Handler::similarArtistsAvailable()
 	const auto artistTrackMap = getCandidateTracks(m->currentLibraryId, artistIds);
 	const auto playlistFilepaths = getPlaylistFilepaths(m->playlistAccessor, artistIds);
 
-	for(const auto& artistId : artistIds)
+	for(const auto& artistId: artistIds)
 	{
 		const auto track = findTrackNotInPlaylist(artistTrackMap[artistId], playlistFilepaths);
 		if(track.isValid())

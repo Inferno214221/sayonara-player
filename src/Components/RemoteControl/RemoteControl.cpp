@@ -25,7 +25,8 @@
 #include "Components/Covers/CoverLookup.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
-#include "PlayManager/PlayManager.h"
+#include "Components/Playlist/PlaylistModifiers.h"
+#include "Components/PlayManager/PlayManager.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
@@ -102,7 +103,7 @@ namespace
 	void insertJsonPlaylist(QJsonArray& jsonArray, Playlist::Handler* playlistHandler)
 	{
 		const auto playlist = playlistHandler->activePlaylist();
-		for(const auto& track : playlist->tracks())
+		for(const auto& track: playlist->tracks())
 		{
 			QJsonObject obj;
 
@@ -195,7 +196,7 @@ struct RemoteControl::Private
 	PlayManager* playManager;
 	QTimer* volumeTimer;
 	RemoteUDPSocket* udp;
-	bool initialized{false};
+	bool initialized {false};
 
 	Private(RemoteControl* parent, Playlist::Handler* playlistHandler, PlayManager* playManager) :
 		playlistHandler(playlistHandler),
@@ -410,7 +411,7 @@ void RemoteControl::changeTrack(int trackIndex)
 	trackIndex--;
 
 	auto playlist = m->playlistHandler->activePlaylist();
-	if(trackIndex < playlist->count())
+	if(trackIndex < Playlist::count(*playlist))
 	{
 		playlist->changeTrack(trackIndex);
 	}

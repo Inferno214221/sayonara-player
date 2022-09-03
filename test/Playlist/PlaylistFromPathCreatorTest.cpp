@@ -23,6 +23,7 @@
 
 #include "Components/Playlist/PlaylistFromPathCreator.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -118,7 +119,7 @@ void PlaylistFromPathCreatorTest::testSinglePlaylist()
 
 	auto pathList = QStringList {};
 
-	for(const auto&[filepath, track]: m_pathTrackMap)
+	for(const auto& [filepath, track]: m_pathTrackMap)
 	{
 		pathList << filepath;
 	}
@@ -129,7 +130,9 @@ void PlaylistFromPathCreatorTest::testSinglePlaylist()
 	wait(&playlistFromPathCreator);
 
 	QVERIFY(playlistCreator.count() == 1);
-	QVERIFY(playlistCreator.playlists()[0]->count() == m_pathTrackMap.count());
+
+	const auto playlist = playlistCreator.playlists()[0];
+	QVERIFY(Playlist::count(*playlist) == m_pathTrackMap.count());
 }
 
 void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
@@ -140,7 +143,7 @@ void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
 	auto pathList = QStringList {};
 	auto tracks = MetaDataList {};
 
-	for(const auto&[filepath, track]: m_pathTrackMap)
+	for(const auto& [filepath, track]: m_pathTrackMap)
 	{
 		pathList << filepath;
 		tracks << track;
@@ -155,8 +158,9 @@ void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
 
 	wait(&playlistFromPathCreator);
 
+	const auto playlist = playlistCreator.playlists()[1];
 	QVERIFY(playlistCreator.count() == 2);
-	QVERIFY(playlistCreator.playlists()[1]->count() == 5);
+	QVERIFY(Playlist::count(*playlist) == 5);
 }
 
 void PlaylistFromPathCreatorTest::wait(PlaylistFromPathCreator* creator)

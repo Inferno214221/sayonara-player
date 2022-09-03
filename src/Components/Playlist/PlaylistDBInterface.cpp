@@ -248,4 +248,19 @@ namespace Playlist
 
 		return QString();
 	}
+
+	void reloadFromDatabase(Playlist& playlist)
+	{
+		if(!playlist.isBusy())
+		{
+			playlist.modifyTracks([&](const auto /* tracks */) {
+				auto* playlistConnector = DB::Connector::instance()->playlistConnector();
+				const auto p = playlistConnector->getPlaylistById(playlist.id(), true);
+				return p.tracks();
+			});
+
+			playlist.resetChangedStatus();
+		}
+	}
 }
+

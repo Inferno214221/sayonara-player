@@ -23,8 +23,9 @@
 #include "DBus/org_mpris_media_player2_player_adaptor.h"
 
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Playlist/Playlist.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Utils/Filepath.h"
 #include "Utils/Language/Language.h"
@@ -306,15 +307,15 @@ bool DBusMPRIS::MediaPlayer2::CanGoNext()
 	const auto isShuffleOrRepeat = PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()) ||
 	                               PlaylistMode::isActiveAndEnabled(playlistMode.repAll());
 
-	return (isShuffleOrRepeat && playlist->count() > 0) ||
-	       (playlist->currentTrackIndex() < playlist->count() - 1);
+	return (isShuffleOrRepeat && Playlist::count(*playlist) > 0) ||
+	       (playlist->currentTrackIndex() < Playlist::count(*playlist) - 1);
 }
 
 bool DBusMPRIS::MediaPlayer2::CanGoPrevious()
 {
 	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
 	return (playlist != nullptr)
-	       ? (playlist->currentTrackIndex() > 0) && (playlist->count() > 1)
+	       ? (playlist->currentTrackIndex() > 0) && (Playlist::count(*playlist) > 1)
 	       : false;
 }
 
@@ -453,7 +454,7 @@ void DBusMPRIS::MediaPlayer2::playstateChanged(const PlayState state)
 
 	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
 	const auto hasTracks = (playlist != nullptr)
-	                       ? playlist->count() > 0
+	                       ? Playlist::count(*playlist) > 0
 	                       : false;
 
 	createMessage(PropertyCanPlay, hasTracks && (state != PlayState::Playing));

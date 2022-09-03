@@ -17,8 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "PlaylistShuffleHistory.h"
-#include "Components/Playlist/Playlist.h"
+#include "Playlist.h"
+#include "PlaylistModifiers.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
@@ -109,7 +111,7 @@ namespace Playlist
 			m->shuffleHistory.clear();
 		}
 
-		if(m->shuffleHistory.isEmpty() && m->playlist->count() > 1)
+		if(m->shuffleHistory.isEmpty() && ::Playlist::count(*m->playlist) > 1)
 		{
 			return Util::randomNumber(1, static_cast<int>(tracks.size() - 1));
 		}

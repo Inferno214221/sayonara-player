@@ -23,6 +23,7 @@
 #include "test/Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -140,7 +141,7 @@ std::pair<Playlist::Playlist*, QList<int>> PlaylistShuffleTest::prepareRepeatTes
 void PlaylistShuffleTest::testWithRepAll()
 {
 	auto* playlist = prepareRepeatTest(true).first;
-	for(int i = 0; i < playlist->count() * 3; i++)
+	for(int i = 0; i < Playlist::count(*playlist) * 3; i++)
 	{
 		playlist->next();
 		QVERIFY(playlist->currentTrackIndex() >= 0);
@@ -156,7 +157,7 @@ void PlaylistShuffleTest::testWithoutRepAll()
 
 void PlaylistShuffleTest::testBackward()
 {
-	auto[playlist, playedTracks] = prepareRepeatTest(false);
+	auto [playlist, playedTracks] = prepareRepeatTest(false);
 	const auto count = playedTracks.count();
 	QVERIFY(playlist->currentTrackIndex() == playedTracks.last());
 

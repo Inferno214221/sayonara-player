@@ -30,6 +30,8 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/PlaylistLibraryInteractor.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Gui/Library/Utils/GUI_DeleteDialog.h"
 #include "Gui/Playlist/ui_GUI_Playlist.h"
 #include "Gui/Utils/GuiUtils.h"
@@ -80,8 +82,8 @@ namespace
 
 	void calcTotalTimeLabel(PlaylistPtr playlist, QLabel* labTotalTime)
 	{
-		const auto durationMs = (playlist) ? playlist->runningTime() : MilliSeconds {0};
-		const auto rows = (playlist) ? playlist->count() : 0;
+		const auto durationMs = (playlist) ? ::Playlist::runningTime(*playlist) : MilliSeconds {0};
+		const auto rows = (playlist) ? ::Playlist::count(*playlist) : 0;
 
 		auto playlistString = (rows > 0)
 		                      ? Lang::getWithNumber(Lang::NrTracks, rows)
@@ -107,11 +109,12 @@ namespace
 
 		const auto saveEnabled = (!playlist->isTemporary());
 		const auto saveAsEnabled = true;
-		const auto saveToFileEnabled = (playlist->count() > 0);
+		const auto count = ::Playlist::count(*playlist);
+		const auto saveToFileEnabled = (count > 0);
 		const auto deleteEnabled = (!playlist->isTemporary());
 		const auto resetEnabled = (!playlist->isTemporary() && playlist->wasChanged());
 		const auto closeEnabled = (tabWidget->count() > 2);
-		const auto clearEnabled = (playlist->count() > 0);
+		const auto clearEnabled = (count > 0);
 
 		auto entries = Playlist::MenuEntries {MenuEntry::None};
 
@@ -233,7 +236,7 @@ void GUI_Playlist::initToolButton()
 {
 	auto* menu = new Playlist::ActionMenu(m->dynamicPlaybackChecker, this);
 	const auto actions = menu->actions();
-	for(auto* action : actions)
+	for(auto* action: actions)
 	{
 		ui->toolButton->registerAction(action);
 	}
@@ -245,7 +248,7 @@ void GUI_Playlist::clearButtonPressed(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		playlist->clear();
+		Playlist::clear(*playlist);
 	}
 }
 
@@ -269,12 +272,12 @@ void GUI_Playlist::tabMetadataDropped(int playlistIndex, const MetaDataList& tra
 	{
 		if(originTab == playlistIndex)
 		{
-			playlist->insertTracks(tracks, 0);
+			Playlist::insertTracks(*playlist, tracks, 0);
 		}
 
 		else
 		{
-			playlist->appendTracks(tracks);
+			Playlist::appendTracks(*playlist, tracks);
 		}
 	}
 }

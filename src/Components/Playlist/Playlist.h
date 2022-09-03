@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef PLAYLIST_H
-#define PLAYLIST_H
+#ifndef SAYONARA_COMPONENTS_PLAYLIST
+#define SAYONARA_COMPONENTS_PLAYLIST
 
 #include "PlaylistDBInterface.h"
 
@@ -29,8 +29,11 @@
 #include "Utils/Pimpl.h"
 
 #include <QObject>
+#include <functional>
+#include <optional>
 
 class PlayManager;
+class MetaDataList;
 
 namespace Playlist
 {
@@ -59,19 +62,12 @@ namespace Playlist
 			int createPlaylist(const MetaDataList& tracks);
 
 			virtual int currentTrackIndex() const;
-			bool currentTrack(MetaData& track) const;
-			int currentTrackWithoutDisabled() const;
 
 			int index() const;
 			void setIndex(int idx);
 
 			Mode mode() const;
 			void setMode(const Mode& mode);
-
-			MilliSeconds runningTime() const;
-			int count() const;
-
-			void enableAll();
 
 			void play();
 			void stop();
@@ -83,21 +79,9 @@ namespace Playlist
 			void setBusy(bool b);
 			bool isBusy() const;
 
-			void reverse();
-			void randomize();
-			void jumpToNextAlbum();
-
 			const MetaData& track(int index) const;
 			const MetaDataList& tracks() const override;
-
-			void insertTracks(const MetaDataList& tracks, int targetRow);
-			void appendTracks(const MetaDataList& tracks);
-			void removeTracks(const IndexSet& indexes);
-			void replaceTrack(int idx, const MetaData& track);
-			void clear();
-
-			IndexSet moveTracks(const IndexSet& indexes, int targetRow);
-			IndexSet copyTracks(const IndexSet& indexes, int targetRow);
+			void replaceTrack(int index, const MetaData& track);
 
 			void findTrack(int index);
 			bool changeTrack(int index, MilliSeconds positionMs = 0);
@@ -106,18 +90,20 @@ namespace Playlist
 			void reloadFromDatabase();
 			void deleteTracks(const IndexSet& indexes);
 
-		public slots:
-			void metadataDeleted();
-			void metadataChanged();
-			void currentMetadataChanged();
-			void durationChanged();
+			using Modificator = std::function<MetaDataList(MetaDataList)>;
+			void modifyTracks(Modificator&& modificator);
 
 		private slots:
+			void metadataChanged();
+			void metadataDeleted();
 			void settingPlaylistModeChanged();
+			void currentMetadataChanged();
+			void durationChanged();
 
 		private:
 			void setCurrentTrack(int index);
 			void setChanged(bool b) override;
 	};
 }
-#endif // PLAYLIST_H
+
+#endif // SAYONARA_COMPONENTS_PLAYLIST

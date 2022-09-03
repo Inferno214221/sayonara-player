@@ -18,11 +18,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Playlist/LibraryPlaylistInteractorImpl.h"
+#include "LibraryPlaylistInteractorImpl.h"
 
 #include "PlayManager/PlayManager.h"
-#include "Playlist/Playlist.h"
-#include "Playlist/PlaylistHandler.h"
+#include "Playlist.h"
+#include "PlaylistHandler.h"
+#include "PlaylistModifiers.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
 
@@ -99,12 +100,11 @@ void LibraryPlaylistInteractorImpl::createPlaylist(const MetaDataList& tracks, b
 
 void LibraryPlaylistInteractorImpl::append(const MetaDataList& tracks)
 {
-	auto playlist = m->playlistHandler->activePlaylist();
-	playlist->appendTracks(tracks);
+	Playlist::appendTracks(*m->playlistHandler->activePlaylist(), tracks);
 }
 
 void LibraryPlaylistInteractorImpl::insertAfterCurrentTrack(const MetaDataList& tracks)
 {
 	auto playlist = m->playlistHandler->activePlaylist();
-	playlist->insertTracks(tracks, playlist->currentTrackIndex() + 1);
+	Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1);
 }

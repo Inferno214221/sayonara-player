@@ -19,13 +19,13 @@
  */
 
 #include "ExternTracksPlaylistGenerator.h"
-#include "Components/Directories/MetaDataScanner.h"
-#include "Interfaces/PlaylistInterface.h"
-#include "Playlist.h"
 
+#include "Components/Directories/MetaDataScanner.h"
+#include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Utils/Algorithm.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QStringList>
 #include <QThread>
@@ -75,10 +75,10 @@ void ExternTracksPlaylistGenerator::addPaths(const QStringList& paths)
 	const auto mode = m->playlist->mode();
 	if(!Playlist::Mode::isActiveAndEnabled(mode.append()))
 	{
-		m->playlist->clear();
+		Playlist::clear(*m->playlist);
 	}
 
-	insertPaths(paths, m->playlist->count());
+	insertPaths(paths, Playlist::count(*m->playlist));
 }
 
 void ExternTracksPlaylistGenerator::scanFiles(const QStringList& paths)
@@ -116,18 +116,18 @@ void ExternTracksPlaylistGenerator::filesScanned()
 
 	if(m->targetRowIndex < 0)
 	{
-		m->playlist->clear();
-		m->playlist->insertTracks(tracks, 0);
+		Playlist::clear(*m->playlist);
+		Playlist::insertTracks(*m->playlist, tracks, 0);
 	}
 
-	else if(m->targetRowIndex >= m->playlist->count())
+	else if(m->targetRowIndex >= Playlist::count(*m->playlist))
 	{
-		m->playlist->appendTracks(tracks);
+		Playlist::appendTracks(*m->playlist, tracks);
 	}
 
 	else
 	{
-		m->playlist->insertTracks(tracks, m->targetRowIndex);
+		Playlist::insertTracks(*m->playlist, tracks, m->targetRowIndex);
 	}
 
 	emit sigFinished(); // NOLINT(readability-misleading-indentation)

@@ -4,6 +4,8 @@
 #include "test/Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
+#include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
@@ -46,46 +48,45 @@ class PlaylistTest :
 		void modifyTest();
 		void insertTest();
 		void trackIndexWithoutDisabledTest();
+		void uniqueIdTest();
 };
 
 void PlaylistTest::jumpTest()
 {
-	bool success;
-	MetaData track;
 	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
 
-	auto* playlist = new PL(1, "Hallo", m_playManager);
-	success = playlist->currentTrack(track);
-	QVERIFY(playlist->changeTrack(0) == false);
-	QVERIFY(playlist->index() == 1);
-	QVERIFY(playlist->runningTime() == 0);
-	QVERIFY(playlist->currentTrackIndex() == -1);
-	QVERIFY(success == false);
+	auto playlist = Playlist::Playlist(1, "Hallo", m_playManager);
+	auto currentTrack = Playlist::currentTrack(playlist);
+	QVERIFY(playlist.changeTrack(0) == false);
+	QVERIFY(playlist.index() == 1);
+	QVERIFY(runningTime(playlist) == 0);
+	QVERIFY(playlist.currentTrackIndex() == -1);
+	QVERIFY(!currentTrack.has_value());
 
-	playlist->createPlaylist(tracks);
-	success = playlist->currentTrack(track);
-	QVERIFY(playlist->tracks().size() == 100);
-	QVERIFY(playlist->currentTrackIndex() == -1);
-	QVERIFY(success == false);
+	playlist.createPlaylist(tracks);
+	currentTrack = Playlist::currentTrack(playlist);
+	QVERIFY(playlist.tracks().size() == 100);
+	QVERIFY(playlist.currentTrackIndex() == -1);
+	QVERIFY(!currentTrack.has_value());
 
-	success = playlist->changeTrack(40);
-	QVERIFY(success == true);
+	const auto success = playlist.changeTrack(40);
+	QVERIFY(success);
 
-	success = playlist->currentTrack(track);
-	QVERIFY(playlist->currentTrackIndex() == 40);
-	QVERIFY(success == true);
-	QVERIFY(track.id() == 40);
+	currentTrack = Playlist::currentTrack(playlist);
+	QVERIFY(playlist.currentTrackIndex() == 40);
+	QVERIFY(currentTrack.has_value());
+	QVERIFY(currentTrack->id() == 40);
 
-	playlist->fwd();
-	success = playlist->currentTrack(track);
-	QVERIFY(playlist->currentTrackIndex() == 41);
-	QVERIFY(success == true);
-	QVERIFY(track.id() == 41);
+	playlist.fwd();
+	currentTrack = Playlist::currentTrack(playlist);
+	QVERIFY(playlist.currentTrackIndex() == 41);
+	QVERIFY(currentTrack.has_value());
+	QVERIFY(currentTrack->id() == 41);
 
-	playlist->stop();
-	success = playlist->currentTrack(track);
-	QVERIFY(playlist->currentTrackIndex() == -1);
-	QVERIFY(success == false);
+	playlist.stop();
+	currentTrack = Playlist::currentTrack(playlist);
+	QVERIFY(playlist.currentTrackIndex() == -1);
+	QVERIFY(!currentTrack.has_value());
 }
 
 void PlaylistTest::modifyTest()
@@ -93,14 +94,14 @@ void PlaylistTest::modifyTest()
 	auto tracks = Test::Playlist::createTrackList(0, 100);
 	int currentIndex;
 
-	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
-	pl->createPlaylist(tracks);
-	const auto& plTracks = pl->tracks();
+	auto playlist = PL(1, "Hallo", m_playManager);
+	playlist.createPlaylist(tracks);
+	const auto& plTracks = playlist.tracks();
 
 	auto uniqueIds = plTracks.unique_ids();
 
-	pl->changeTrack(50);
-	QVERIFY(pl->currentTrackIndex() == 50);
+	playlist.changeTrack(50);
+	QVERIFY(playlist.currentTrackIndex() == 50);
 
 	IndexSet indexes;
 	{ // move indices before cur track
@@ -111,8 +112,8 @@ void PlaylistTest::modifyTest()
 			indexes << 4;
 		}
 
-		pl->moveTracks(indexes, 75);
-		currentIndex = pl->currentTrackIndex();
+		Playlist::moveTracks(playlist, indexes, 75);
+		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 46);
 	}
 
@@ -125,8 +126,8 @@ void PlaylistTest::modifyTest()
 			indexes << 6;        // new 9
 		}
 
-		pl->moveTracks(indexes, 10);
-		currentIndex = pl->currentTrackIndex();
+		Playlist::moveTracks(playlist, indexes, 10);
+		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 11);
 	}
 
@@ -137,8 +138,8 @@ void PlaylistTest::modifyTest()
 			indexes << 12;        // new 19
 		}
 
-		pl->moveTracks(indexes, 20);
-		currentIndex = pl->currentTrackIndex();
+		Playlist::moveTracks(playlist, indexes, 20);
+		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 18);
 	}
 
@@ -160,8 +161,8 @@ void PlaylistTest::modifyTest()
 			indexes << 4;
 		}
 
-		pl->removeTracks(indexes);
-		currentIndex = pl->currentTrackIndex();
+		Playlist::removeTracks(playlist, indexes);
+		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 14);
 	}
 
@@ -176,40 +177,40 @@ void PlaylistTest::modifyTest()
 		}
 	}
 
-	pl->removeTracks(indexes);
-	currentIndex = pl->currentTrackIndex();
+	Playlist::removeTracks(playlist, indexes);
+	currentIndex = playlist.currentTrackIndex();
 	QVERIFY(currentIndex == -1);
 }
 
 void PlaylistTest::insertTest()
 {
-	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
-	pl->createPlaylist(MetaDataList());
+	auto playlist = PL(1, "Hallo", m_playManager);
+	playlist.createPlaylist(MetaDataList());
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(0, 3);
-		pl->insertTracks(tracks, 20);
+		Playlist::insertTracks(playlist, tracks, 20);
 
-		const auto playlistTracks = pl->tracks();
-		QVERIFY(pl->count() == 3);
-		QVERIFY(pl->count() == playlistTracks.count());
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(Playlist::count(playlist) == 3);
+		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
 		for(int i = 0; i < playlistTracks.count(); i++)
 		{
 			QVERIFY(playlistTracks[i].id() == i);
 		}
 
-		pl->clear();
-		QVERIFY(pl->count() == 0);
+		Playlist::clear(playlist);
+		QVERIFY(Playlist::count(playlist) == 0);
 	}
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(0, 3);
-		pl->insertTracks(tracks, -1);
+		Playlist::insertTracks(playlist, tracks, -1);
 
-		const auto playlistTracks = pl->tracks();
-		QVERIFY(pl->count() == 3);
-		QVERIFY(pl->count() == playlistTracks.count());
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(Playlist::count(playlist) == 3);
+		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
 		for(int i = 0; i < playlistTracks.count(); i++)
 		{
@@ -219,33 +220,33 @@ void PlaylistTest::insertTest()
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(3, 4);
-		pl->insertTracks(tracks, -1);
+		Playlist::insertTracks(playlist, tracks, -1);
 
-		const auto playlistTracks = pl->tracks();
-		QVERIFY(pl->count() == 4);
-		QVERIFY(pl->count() == playlistTracks.count());
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(Playlist::count(playlist) == 4);
+		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
 		QVERIFY(playlistTracks.first().id() == 3);
 	}
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(4, 5);
-		pl->insertTracks(tracks, 3);
+		Playlist::insertTracks(playlist, tracks, 3);
 
-		const auto playlistTracks = pl->tracks();
-		QVERIFY(pl->count() == 5);
-		QVERIFY(pl->count() == playlistTracks.count());
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(Playlist::count(playlist) == 5);
+		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
 		QVERIFY(playlistTracks[3].id() == 4);
 	}
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(5, 6);
-		pl->insertTracks(tracks, pl->count());
+		Playlist::insertTracks(playlist, tracks, Playlist::count(playlist));
 
-		const auto playlistTracks = pl->tracks();
-		QVERIFY(pl->count() == 6);
-		QVERIFY(pl->count() == playlistTracks.count());
+		const auto playlistTracks = playlist.tracks();
+		QVERIFY(Playlist::count(playlist) == 6);
+		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
 		QVERIFY(playlistTracks.last().id() == 5);
 	}
@@ -255,12 +256,12 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 {
 	{ // empty playlist
 		auto playlist = PL(1, "Hallo", m_playManager);
-		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == -1);
 	}
 
 	{ // non-active playlist
 		auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
-		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(*playlist) == -1);
 	}
 
 	{ // test all enabled
@@ -268,23 +269,23 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 		playlist->changeTrack(4);
 
 		QVERIFY(playlist->currentTrackIndex() == 4);
-		QVERIFY(playlist->currentTrackWithoutDisabled() == 4);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(*playlist) == 4);
 	}
 
 	{ // test invalid index
 		auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
 
 		playlist->changeTrack(-1);
-		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(*playlist) == -1);
 
 		playlist->changeTrack(100);
-		QVERIFY(playlist->currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(*playlist) == -1);
 	}
 
 	{ // all disabled except current index
 		const auto currentIndex = 4;
 		auto tracks = Test::Playlist::createTrackList(0, 10);
-		for(auto& track : tracks)
+		for(auto& track: tracks)
 		{
 			track.setDisabled(true);
 		}
@@ -294,7 +295,7 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 		auto playlist = PL(1, "Hallo", m_playManager);
 		playlist.createPlaylist(tracks);
 		playlist.changeTrack(currentIndex);
-		QVERIFY(playlist.currentTrackWithoutDisabled() == 0);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == 0);
 	}
 
 	{ // all enabled except current index
@@ -307,7 +308,7 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 		playlist.createPlaylist(tracks);
 
 		playlist.changeTrack(currentIndex);
-		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == -1);
 	}
 
 	{ // test some disabled
@@ -322,11 +323,33 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 		playlist.createPlaylist(tracks);
 
 		playlist.changeTrack(4);
-		QVERIFY(playlist.currentTrackWithoutDisabled() == -1);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == -1);
 
 		playlist.changeTrack(5);
-		QVERIFY(playlist.currentTrackWithoutDisabled() == 2);
+		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == 2);
 	}
+}
+
+void PlaylistTest::uniqueIdTest()
+{
+	auto playlist = createPlaylist(1, 0, 10, "hallo", m_playManager);
+
+	auto uniqueIds = QList<UniqueId> {};
+	Util::Algorithm::transform(playlist->tracks(), uniqueIds, [](const MetaData& track) {
+		return track.uniqueId();
+	});
+
+	Playlist::reverse(*playlist);
+
+	auto newUniqueIds = QList<UniqueId> {};
+	Util::Algorithm::transform(playlist->tracks(), newUniqueIds, [](const auto& track) {
+		return track.uniqueId();
+	});
+
+	QVERIFY(uniqueIds != newUniqueIds);
+	std::reverse(uniqueIds.begin(), uniqueIds.end());
+
+	QVERIFY(uniqueIds == newUniqueIds);
 }
 
 QTEST_GUILESS_MAIN(PlaylistTest)

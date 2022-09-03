@@ -21,13 +21,14 @@
 #include "test/Common/PlayManagerMock.h"
 #include "test/Playlist/PlaylistTestUtils.h"
 
-#include "Interfaces/PlaylistInterface.h"
-#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
-
+#include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
+#include "Interfaces/PlaylistInterface.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/M3UParser.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QStringList>
 #include <QSignalSpy>
@@ -50,7 +51,7 @@ namespace
 					tracks << pathTrackMap[i].second;
 				}
 
-				m_playlist->appendTracks(tracks);
+				Playlist::appendTracks(*m_playlist, tracks);
 			}
 
 			~PlaylistCreatorMock() override = default;
@@ -81,12 +82,12 @@ namespace
 
 	bool checkPlayList(const PlaylistPtr& playlist, const QStringList& paths)
 	{
-		if(playlist->count() != paths.count())
+		if(::Playlist::count(*playlist) != paths.count())
 		{
 			return false;
 		}
 
-		for(auto i = 0; i < playlist->count(); i++)
+		for(auto i = 0; i < ::Playlist::count(*playlist); i++)
 		{
 			if(playlist->track(i).filepath() != paths[i])
 			{
@@ -155,7 +156,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFiles()
 	auto playlist = playlistCreator->playlist(0);
 	auto pathList = QStringList {};
 
-	for(const auto&[filepath, metadata]: m_pathTrackMap)
+	for(const auto& [filepath, metadata]: m_pathTrackMap)
 	{
 		pathList << filepath;
 	}
@@ -178,7 +179,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithAppend()
 	mode.setAppend(Playlist::Mode::On);
 	playlist->setMode(mode);
 
-	for(const auto&[filepath, metadata]: m_pathTrackMap)
+	for(const auto& [filepath, metadata]: m_pathTrackMap)
 	{
 		pathList << filepath;
 	}
@@ -203,7 +204,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithSingleDir()
 	auto playlist = playlistCreator->playlist(0);
 	auto pathList = QStringList {};
 
-	for(const auto&[filepath, metadata]: m_pathTrackMap)
+	for(const auto& [filepath, metadata]: m_pathTrackMap)
 	{
 		pathList << filepath;
 	}
@@ -215,7 +216,7 @@ void ExternTracksPlaylistGeneratorTest::testAddFilesWithSingleDir()
 
 	wait(&externTracksPlaylistGenerator);
 	auto playlistFiles = QStringList {};
-	for(auto i = 0; i < playlist->count(); i++)
+	for(auto i = 0; i < Playlist::count(*playlist); i++)
 	{
 		playlistFiles << playlist->track(i).filepath();
 	}
@@ -232,7 +233,7 @@ void ExternTracksPlaylistGeneratorTest::testWithPlaylistFile()
 	auto pathList = QStringList {};
 	auto tracks = MetaDataList {};
 
-	for(const auto&[filepath, track]: m_pathTrackMap)
+	for(const auto& [filepath, track]: m_pathTrackMap)
 	{
 		pathList << filepath;
 		tracks << track;

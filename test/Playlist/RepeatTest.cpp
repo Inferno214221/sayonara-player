@@ -23,8 +23,10 @@
 #include "Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Settings/Settings.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
@@ -32,12 +34,13 @@ namespace
 {
 	::Playlist::Playlist* createPlaylist(Playlist::Mode mode)
 	{
+		SetSetting(Set::PL_Mode, mode);
+
 		const auto tracks = Test::Playlist::createTrackList(0, 10);
 		QList<int> indexes;
 		auto playManager = new PlayManagerMock();
 		auto* pl = new Playlist::Playlist(1, "Hallo", playManager);
 
-		pl->setMode(mode);
 		pl->createPlaylist(tracks);
 
 		return pl;
@@ -65,7 +68,7 @@ void RepeatTest::noRepeatAllTest()
 	mode.setRepAll(Playlist::Mode::State::Off);
 
 	auto* playlist = createPlaylist(mode);
-	for(auto i = 0; i < playlist->count(); i++)
+	for(auto i = 0; i < Playlist::count(*playlist); i++)
 	{
 		playlist->next();
 		QVERIFY(playlist->currentTrackIndex() >= 0);
@@ -81,7 +84,7 @@ void RepeatTest::repeatAllTest()
 	mode.setRepAll(Playlist::Mode::State::On);
 
 	auto* playlist = createPlaylist(mode);
-	for(auto i = 0; i < playlist->count() * 3; i++)
+	for(auto i = 0; i < Playlist::count(*playlist) * 3; i++)
 	{
 		playlist->next();
 		QVERIFY(playlist->currentTrackIndex() >= 0);

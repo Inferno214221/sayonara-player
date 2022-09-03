@@ -93,7 +93,7 @@ namespace Playlist
 
 			void findTrack(int index);
 
-			IndexSet moveTracks(const IndexSet& rows, int target_index);
+			IndexSet moveTracks(const IndexSet& rows, int targetIndex);
 			IndexSet moveTracksUp(const IndexSet& rows);
 			IndexSet moveTracksDown(const IndexSet& rows);
 			IndexSet copyTracks(const IndexSet& rows, int target_index);
