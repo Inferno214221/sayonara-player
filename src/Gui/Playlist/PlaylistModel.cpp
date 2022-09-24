@@ -34,7 +34,6 @@
 #include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistLibraryInteractor.h"
-#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
 #include "Components/Playlist/PlaylistModifiers.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Gui/Utils/Icons.h"
@@ -71,11 +70,11 @@ namespace
 
 	enum class PlaylistSearchMode
 	{
-			Artist,
-			Album,
-			Title,
-			Filename,
-			Jump
+		Artist,
+		Album,
+		Title,
+		Filename,
+		Jump
 	};
 
 	QString convertEntryLook(const QString& entryLook, const MetaData& md)
@@ -178,7 +177,7 @@ struct Model::Private
 
 	Private(PlaylistPtr playlistArg, LibraryInfoAccessor* libraryAccessor) :
 		playlist(std::move(playlistArg)),
-		libraryInteractor{std::make_shared<LibraryInteractor>(libraryAccessor)} {}
+		libraryInteractor {std::make_shared<LibraryInteractor>(libraryAccessor)} {}
 };
 
 Model::Model(const PlaylistPtr& playlist, LibraryInfoAccessor* libraryAccessor, QObject* parent) :
@@ -455,7 +454,7 @@ MetaDataList Model::metadata(const IndexSet& rows) const
 
 QModelIndexList Model::searchResults(const QString& searchString)
 {
-	const auto[playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
+	const auto [playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
 
 	if(playlistSearchMode == PlaylistSearchMode::Jump)
 	{
@@ -629,7 +628,18 @@ void Model::currentTrackChanged(int oldIndex, int newIndex)
 
 void Playlist::Model::deleteTracks(const IndexSet& rows)
 {
-	m->playlist->deleteTracks(rows);
+	auto tracks = MetaDataList {};
+	const auto& playlistTracks = m->playlist->tracks();
+	for(const auto& row: rows)
+	{
+		if(Util::between(row, playlistTracks))
+		{
+			tracks << playlistTracks[row];
+		}
+	}
+
+	::Playlist::removeTracks(*m->playlist, rows);
+	m->libraryInteractor->deleteTracks(tracks);
 }
 
 void Playlist::Model::findTrack(const int index)
