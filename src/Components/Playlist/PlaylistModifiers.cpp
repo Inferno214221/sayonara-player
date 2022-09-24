@@ -26,6 +26,8 @@
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/MetaData/MetaDataSorting.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Set.h"
 
@@ -43,6 +45,14 @@ namespace Playlist
 	{
 		playlist.modifyTracks([](auto tracks) {
 			Util::Algorithm::shuffle(tracks);
+			return tracks;
+		});
+	}
+
+	void sortTracks(Playlist& playlist, const ::Library::SortOrder sortOrder)
+	{
+		playlist.modifyTracks([&](auto tracks) {
+			MetaDataSorting::sortMetadata(tracks, sortOrder, GetSetting(Set::Lib_SortModeMask));
 			return tracks;
 		});
 	}

@@ -22,6 +22,7 @@
 #define SAYONARA_PLAYER_PLAYLISTMODIFIERS_H
 
 #include "Utils/typedefs.h"
+#include "Utils/Library/Sortorder.h"
 
 class MetaDataList;
 
@@ -31,6 +32,8 @@ namespace Playlist
 
 	void reverse(Playlist& playlist);
 	void randomize(Playlist& playlist);
+	void sortTracks(Playlist& playlist, Library::SortOrder sortOrder);
+
 	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow);
 	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, int targetRow);
 	void insertTracks(Playlist& playlist, const MetaDataList& tracks, int targetRow);
