@@ -112,24 +112,26 @@ namespace MetaDataSorting
 			return Library::convertSearchstring(str, searchModeMask);
 		}
 
+		bool TracksByFilepathAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return convertString(track1.filepath(), sortMode) < convertString(track2.filepath(), sortMode);
+		}
+
+		bool TracksByFilepathDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
+		{
+			return convertString(track2.filepath(), sortMode) < convertString(track1.filepath(), sortMode);
+		}
+
 		bool TracksByTitleAsc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
 		{
-			auto fallback = [&](const auto& t1, const auto& t2, const auto /*sm*/) {
-				return convertString(t1.filepath(), sortMode) < convertString(t2.filepath(), sortMode);
-			};
-
-			return compare(track1, track2, sortMode, std::move(fallback), [&](const auto& track) {
+			return compare(track1, track2, sortMode, TracksByFilepathAsc, [&](const auto& track) {
 				return convertString(track.title(), sortMode);
 			});
 		}
 
 		bool TracksByTitleDesc(const MetaData& track1, const MetaData& track2, const SortModeMask sortMode)
 		{
-			auto fallback = [&](const auto& t1, const auto& t2, const auto /*sm*/) {
-				return convertString(t1.filepath(), sortMode) < convertString(t2.filepath(), sortMode);
-			};
-
-			return compareRev(track2, track1, sortMode, std::move(fallback), [&](const auto& track) {
+			return compareRev(track2, track1, sortMode, TracksByFilepathAsc, [&](const auto& track) {
 				return convertString(track.title(), sortMode);
 			});
 		}
@@ -511,6 +513,12 @@ namespace MetaDataSorting
 				break;
 			case SortOrder::TrackDiscnumberDesc:
 				sort(tracks, sortMode, TracksByDiscnumberDesc);
+				break;
+			case SortOrder::TrackFilenameAsc:
+				sort(tracks, sortMode, TracksByFilepathAsc);
+				break;
+			case SortOrder::TrackFilenameDesc:
+				sort(tracks, sortMode, TracksByFilepathDesc);
 				break;
 			case SortOrder::TrackFiletypeAsc:
 				sort(tracks, sortMode, TracksByFiletypeAsc);
