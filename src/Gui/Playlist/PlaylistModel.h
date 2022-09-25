@@ -31,8 +31,9 @@
 
 #include "Gui/Utils/SearchableWidget/SearchableModel.h"
 
-#include "Utils/Playlist/PlaylistFwd.h"
+#include "Utils/Library/Sortorder.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Playlist/PlaylistFwd.h"
 
 class LibraryInfoAccessor;
 class CustomMimeData;
@@ -125,6 +126,7 @@ namespace Playlist
 			void refreshData();
 			void reverseTracks();
 			void randomizeTracks();
+			void sortTracks(Library::SortOrder sortorder);
 			void jumpToNextAlbum();
 
 		private slots:

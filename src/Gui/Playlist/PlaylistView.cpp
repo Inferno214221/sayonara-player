@@ -123,6 +123,7 @@ namespace Playlist
 				              ContextMenu::EntryRefresh |
 				              ContextMenu::EntryReverse |
 				              ContextMenu::EntryRandomize |
+				              ContextMenu::EntrySort |
 				              ContextMenu::EntryJumpToNextAlbum);
 
 				if(!selectedItems.isEmpty())
@@ -191,14 +192,16 @@ namespace Playlist
 		Gui::ProgressBar* progressbar;
 		QLabel* currentFileLabel;
 
-		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor, View* view) :
+		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
+		        LibraryInfoAccessor* libraryAccessor, View* view) :
 			dynamicPlaybackChecker(dynamicPlaybackChecker),
 			model(new Model(playlist, libraryAccessor, view)),
 			progressbar(new Gui::ProgressBar(view)),
 			currentFileLabel(new QLabel(view)) {}
 	};
 
-	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
+	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
+	           LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
 		SearchableTableView(parent),
 		Gui::Dragable(this)
 	{
@@ -253,6 +256,7 @@ namespace Playlist
 		        this, &View::removeSelectedRows);
 		connect(m->contextMenu->action(Library::ContextMenu::EntryClear), &QAction::triggered, this, &View::clear);
 		connect(m->contextMenu, &ContextMenu::sigBookmarkTriggered, this, &View::bookmarkTriggered);
+		connect(m->contextMenu, &ContextMenu::sigSortingTriggered, this, &View::sortingTriggered);
 		connect(m->contextMenu->action(ContextMenu::EntryRating), &QAction::triggered, this, &View::ratingChanged);
 		connect(m->contextMenu->action(ContextMenu::EntryReverse), &QAction::triggered,
 		        m->model, &Model::reverseTracks);
@@ -371,6 +375,11 @@ namespace Playlist
 	void View::bookmarkTriggered(Seconds timestamp)
 	{
 		m->model->changeTrack(currentIndex().row(), timestamp);
+	}
+
+	void View::sortingTriggered(const Library::SortOrder sortOrder)
+	{
+		m->model->sortTracks(sortOrder);
 	}
 
 	void View::removeSelectedRows()

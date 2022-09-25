@@ -22,6 +22,7 @@
 #define PLAYLISTCONTEXTMENU_H
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Utils/Library/Sortorder.h"
 
 class DynamicPlaybackChecker;
 class MetaData;
@@ -36,6 +37,7 @@ namespace Playlist
 
 		signals:
 			void sigBookmarkTriggered(Seconds timestamp);
+			void sigSortingTriggered(Library::SortOrder sortOrder);
 
 		public:
 			enum Entry
@@ -45,8 +47,9 @@ namespace Playlist
 				EntryCurrentTrack = (Library::ContextMenu::EntryLast << 3),
 				EntryFindInLibrary = (Library::ContextMenu::EntryLast << 4),
 				EntryJumpToNextAlbum = (Library::ContextMenu::EntryLast << 5),
-				EntryReverse = (Library::ContextMenu::EntryLast << 6),
-				EntryRandomize = (Library::ContextMenu::EntryLast << 7)
+				EntrySort = (Library::ContextMenu::EntryLast << 6),
+				EntryReverse = (Library::ContextMenu::EntryLast << 7),
+				EntryRandomize = (Library::ContextMenu::EntryLast << 8)
 			};
 
 			ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent);

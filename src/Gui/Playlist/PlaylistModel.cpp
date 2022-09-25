@@ -420,6 +420,11 @@ void Model::randomizeTracks()
 	::Playlist::randomize(*m->playlist);
 }
 
+void Model::sortTracks(Library::SortOrder sortOrder)
+{
+	::Playlist::sortTracks(*m->playlist, sortOrder);
+}
+
 void Playlist::Model::jumpToNextAlbum()
 {
 	::Playlist::jumpToNextAlbum(*m->playlist);

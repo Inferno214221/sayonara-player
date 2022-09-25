@@ -22,14 +22,13 @@
 #include "PlaylistBookmarksMenu.h"
 
 #include "Gui/Playlist/PlaylistActionMenu.h"
+#include "Gui/Playlist/SortingMenu.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Widgets/RatingLabel.h"
-
 #include "Interfaces/DynamicPlayback.h"
-
-#include "Utils/globals.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/globals.h"
 
 using Playlist::ContextMenu;
 using Playlist::BookmarksMenu;
@@ -111,17 +110,22 @@ struct ContextMenu::Private
 	BookmarksMenu* bookmarksMenu;
 	QMenu* playlistModeMenu;
 	QAction* playlistModeAction;
+	SortingMenu* sortingMenu;
 
 	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, ContextMenu* contextMenu) :
 		ratingMenu {new QMenu(contextMenu)},
 		bookmarksMenu {new BookmarksMenu(contextMenu)},
-		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, contextMenu)}
+		playlistModeMenu {new ActionMenu(dynamicPlaybackChecker, contextMenu)},
+		sortingMenu {new SortingMenu(contextMenu)}
 	{
-		entryActionMap[EntryCurrentTrack] = contextMenu->addAction(QString());
-		entryActionMap[EntryFindInLibrary] = contextMenu->addAction(QString());
+		entryActionMap[EntrySort] = contextMenu->addMenu(sortingMenu);
 		entryActionMap[EntryReverse] = contextMenu->addAction(QString());
 		entryActionMap[EntryRandomize] = contextMenu->addAction(QString());
+		contextMenu->addSeparator();
+		entryActionMap[EntryCurrentTrack] = contextMenu->addAction(QString());
 		entryActionMap[EntryJumpToNextAlbum] = contextMenu->addAction(QString());
+		entryActionMap[EntryFindInLibrary] = contextMenu->addAction(QString());
+		contextMenu->addSeparator();
 		entryActionMap[EntryRating] = contextMenu->addMenu(ratingMenu);
 		entryActionMap[EntryBookmarks] = contextMenu->addMenu(bookmarksMenu);
 		playlistModeAction = contextMenu->addMenu(playlistModeMenu); // NOLINT(cppcoreguidelines-prefer-member-initializer)
@@ -142,6 +146,7 @@ ContextMenu::ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget
 	m->ratingMenu->addActions(ratingActions);
 
 	connect(m->bookmarksMenu, &BookmarksMenu::sigBookmarkPressed, this, &ContextMenu::sigBookmarkTriggered);
+	connect(m->sortingMenu, &SortingMenu::sigSortingTriggered, this, &ContextMenu::sigSortingTriggered);
 
 	configureShortcuts(this, parent);
 	skinChanged();
@@ -202,6 +207,7 @@ void ContextMenu::languageChanged()
 	m->entryActionMap[EntryReverse]->setText(Lang::get(Lang::ReverseOrder));
 	m->entryActionMap[EntryRandomize]->setText(Lang::get(Lang::ShufflePlaylist));
 	m->entryActionMap[EntryJumpToNextAlbum]->setText(tr("Jump to next album"));
+	m->entryActionMap[EntrySort]->setText(Lang::get(Lang::SortBy));
 	m->playlistModeAction->setText(tr("Playlist mode"));
 
 	configureShortcuts(this, parentWidget());

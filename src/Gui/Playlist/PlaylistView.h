@@ -29,15 +29,14 @@
 #ifndef PLAYLISTVIEW_H_
 #define PLAYLISTVIEW_H_
 
+#include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
 #include "Gui/Utils/Widgets/Dragable.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
-
-#include "Gui/InfoDialog/InfoDialogContainer.h"
-
-#include "Utils/Playlist/PlaylistFwd.h"
+#include "Utils/Library/Sortorder.h"
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
+#include "Utils/Playlist/PlaylistFwd.h"
 
 class QPoint;
 class DynamicPlaybackChecker;
@@ -91,6 +90,7 @@ namespace Playlist
 			void columnsChanged();
 			void showRatingChanged();
 			void bookmarkTriggered(Seconds timestamp);
+			void sortingTriggered(Library::SortOrder sortOrder);
 			void moveSelectedRowsUp();
 			void moveSelectedRowsDown();
 			void playSelectedTrack();
