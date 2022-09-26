@@ -25,6 +25,7 @@ class MimeDataTest :
 
 	private slots:
 		void testMetadata();
+		void testEmptyMetadata();
 		void testDirsNonUrl();
 		void testDirsUrl();
 		void testDragSource();
@@ -54,6 +55,23 @@ void MimeDataTest::testMetadata()
 	{
 		QVERIFY(Util::File::isUrl(url.toString()));
 	}
+}
+
+void MimeDataTest::testEmptyMetadata()
+{
+	auto mimeData = Gui::CustomMimeData(this);
+
+	const auto url = QUrl("file:///path/to/somewhere.mp3");
+	mimeData.setUrls({url});
+
+	MetaDataList tracks;
+	mimeData.setMetadata(tracks);
+
+	QVERIFY(!mimeData.hasMetadata());
+	QVERIFY(mimeData.metadata().size() == 0);
+
+	QVERIFY(mimeData.hasUrls());
+	QVERIFY(mimeData.urls().size() == 1);
 }
 
 void MimeDataTest::testDirsNonUrl()

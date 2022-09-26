@@ -53,12 +53,13 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 {
 	m->tracks = tracks;
 
-	QList<QUrl> urls;
+	auto urls = this->urls();
 	for(const auto& track : tracks)
 	{
+		const auto url = QUrl::fromLocalFile(track.filepath());
 		if(!Util::File::isWWW(track.filepath()))
 		{
-			urls << QUrl::fromLocalFile(track.filepath());
+			urls << url;
 		}
 	}
 	setUrls(urls);
