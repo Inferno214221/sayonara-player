@@ -21,7 +21,6 @@
 #include "CustomMimeData.h"
 
 #include "Gui/Utils/MimeData/DragDropAsyncHandler.h"
-
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -39,9 +38,8 @@ struct CustomMimeData::Private
 	AsyncDropHandler* asyncDropHandler {nullptr};
 	int playlistSourceIndex {-1};
 
-	Private(const QObject* dragSource) :
-	dragSource{dragSource}
-	{}
+	explicit Private(const QObject* dragSource) :
+		dragSource {dragSource} {}
 };
 
 CustomMimeData::CustomMimeData(const QObject* dragSource)
@@ -63,14 +61,10 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 			urls << QUrl::fromLocalFile(track.filepath());
 		}
 	}
+	setUrls(urls);
 
-	this->setUrls(urls);
-
-	const auto text = (tracks.isEmpty())
-	                  ? "No tracks"
-	                  : "tracks";
-
-	this->setText(text);
+	const auto* text = (tracks.isEmpty()) ? "No tracks" : "tracks";
+	setText(text);
 }
 
 const MetaDataList& CustomMimeData::metadata() const

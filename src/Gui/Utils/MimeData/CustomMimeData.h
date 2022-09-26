@@ -25,32 +25,30 @@
 
 #include <QMimeData>
 
-#include <any>
-
 namespace Gui
 {
 	class AsyncDropHandler;
-
-	class CustomMimeData : public QMimeData
+	class CustomMimeData :
+		public QMimeData
 	{
 		PIMPL(CustomMimeData)
 
 		public:
 			explicit CustomMimeData(const QObject* dragSource = nullptr);
-			virtual ~CustomMimeData() override;
+			~CustomMimeData() override;
 
-			void setMetadata(const MetaDataList& v_md);
-			const MetaDataList& metadata() const;
-			bool hasMetadata() const;
+			void setMetadata(const MetaDataList& tracks);
+			[[nodiscard]] const MetaDataList& metadata() const;
+			[[nodiscard]] bool hasMetadata() const;
 
 			void setPlaylistSourceIndex(int playlistIndex);
-			int playlistSourceIndex() const;
+			[[nodiscard]] int playlistSourceIndex() const;
 
-			QString coverUrl() const;
+			[[nodiscard]] QString coverUrl() const;
 			void setCoverUrl(const QString& url);
 
 			void setAsyncDropHandler(Gui::AsyncDropHandler* handler);
-			Gui::AsyncDropHandler* asyncDropHandler() const;
+			[[nodiscard]] Gui::AsyncDropHandler* asyncDropHandler() const;
 
 			bool hasDragSource(const QObject* classInstance) const;
 	};

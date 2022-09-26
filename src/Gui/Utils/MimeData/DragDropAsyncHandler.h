@@ -18,12 +18,11 @@ namespace Gui
 
 		public:
 			explicit AsyncDropHandler(QObject* parent=nullptr);
-			virtual ~AsyncDropHandler();
+			~AsyncDropHandler() override;
 
 			void setTargetIndex(int index);
-			int targetIndex() const;
-
-			virtual MetaDataList tracks() const;
+			[[nodiscard]] int targetIndex() const;
+			[[nodiscard]] virtual MetaDataList tracks() const;
 
 		protected:
 			void setTracks(const MetaDataList& tracks);
