@@ -29,7 +29,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>3</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
@@ -91,13 +91,6 @@
                </widget>
               </item>
               <item>
-               <widget class="Line" name="line_3">
-                <property name="orientation">
-                 <enum>Qt::Horizontal</enum>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QCheckBox" name="cbStartPlaying">
                 <property name="text">
                  <string>Start playing</string>
@@ -122,57 +115,54 @@
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="groupBox_2">
+            <widget class="QGroupBox" name="gbFilesystemPlaylistName">
              <property name="title">
-              <string>Stop behaviour</string>
+              <string>Start up from file manager</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_2">
-              <property name="topMargin">
-               <number>6</number>
-              </property>
-              <property name="bottomMargin">
-               <number>6</number>
-              </property>
+             <layout class="QVBoxLayout" name="verticalLayout_12">
               <item>
-               <widget class="QCheckBox" name="cbRememberAfterStop">
+               <widget class="QCheckBox" name="cbCreateFileystemPlaylist">
                 <property name="text">
-                 <string>Load last track after pressing stop</string>
+                 <string>Use special playlist when starting Sayonara from file manager</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_2">
+                <item>
+                 <widget class="QCheckBox" name="cbChooseFilesystemPlaylistName">
+                  <property name="text">
+                   <string>Playlist name</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QLineEdit" name="leFilesystemPlaylistName"/>
+                </item>
+               </layout>
               </item>
              </layout>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="gbCurrentTrack">
-             <property name="title">
-              <string>Current track</string>
+            <widget class="QCheckBox" name="cbRememberAfterStop">
+             <property name="text">
+              <string>Load last track after resuming from stopped state</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_3">
-              <item>
-               <widget class="QCheckBox" name="cbJumpToCurrentTrack">
-                <property name="text">
-                 <string>Jump to current track when track changes</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
             </widget>
            </item>
            <item>
-            <widget class="QGroupBox" name="gbSearch">
-             <property name="title">
-              <string>Search</string>
+            <widget class="QCheckBox" name="cbPlayTrackAfterSearch">
+             <property name="text">
+              <string>Play track when pressing &quot;Enter&quot; in search field</string>
              </property>
-             <layout class="QVBoxLayout" name="verticalLayout_4">
-              <item>
-               <widget class="QCheckBox" name="cbPlayTrackAfterSearch">
-                <property name="text">
-                 <string>Play track after search</string>
-                </property>
-               </widget>
-              </item>
-             </layout>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbJumpToCurrentTrack">
+             <property name="text">
+              <string>Jump to current track in list when track changes</string>
+             </property>
             </widget>
            </item>
            <item>
@@ -522,7 +512,6 @@
  <tabstops>
   <tabstop>cbLoadTemporaryPlaylists</tabstop>
   <tabstop>cbLoadSavedPlaylists</tabstop>
-  <tabstop>cbRememberAfterStop</tabstop>
  </tabstops>
  <resources/>
  <connections/>

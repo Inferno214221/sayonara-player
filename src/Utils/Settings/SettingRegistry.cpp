@@ -191,6 +191,9 @@ bool SettingRegistry::init()
 	                                                     QString("#6f91cc"));
 	registerSetting<Set::PL_JumpToCurrentTrack>("playlist_jump_to_current_track", true);
 	registerSetting<Set::PL_PlayTrackAfterSearch>("playlist_play_track_after_search", false);
+	registerSetting<Set::PL_SpecifyFileystemPlaylistName>("playlist_specify_filesystem_playlist_name", false);
+	registerSetting<Set::PL_FilesystemPlaylistName>("playlist_filesystem_playlist_name", {});
+	registerSetting<Set::PL_CreateFilesystemPlaylist>("playlist_create_filesystem_playlist", true);
 
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000);

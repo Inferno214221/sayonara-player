@@ -156,6 +156,12 @@ bool GUI_PlaylistPreferences::commit()
 	SetSetting(Set::PL_PlayTrackAfterSearch, ui->cbPlayTrackAfterSearch->isChecked());
 	SetSetting(Set::PL_StartPlayingWorkaround_Issue263, ui->cb_startupPlaybackWorkaround263->isChecked());
 
+	SetSetting(Set::PL_CreateFilesystemPlaylist, ui->cbCreateFileystemPlaylist->isChecked());
+	SetSetting(Set::PL_FilesystemPlaylistName, ui->leFilesystemPlaylistName->text());
+	SetSetting(Set::PL_SpecifyFileystemPlaylistName,
+	           ui->cbChooseFilesystemPlaylistName->isVisible() &&
+	           ui->cbChooseFilesystemPlaylistName->isChecked());
+
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
 	{
@@ -200,6 +206,12 @@ void GUI_PlaylistPreferences::revert()
 	ui->cbJumpToCurrentTrack->setChecked(GetSetting(Set::PL_JumpToCurrentTrack));
 	ui->cbPlayTrackAfterSearch->setChecked(GetSetting(Set::PL_PlayTrackAfterSearch));
 	ui->cb_startupPlaybackWorkaround263->setChecked(GetSetting(Set::PL_StartPlayingWorkaround_Issue263));
+
+	ui->cbCreateFileystemPlaylist->setChecked(GetSetting(Set::PL_CreateFilesystemPlaylist));
+	ui->cbChooseFilesystemPlaylistName->setVisible(ui->cbCreateFileystemPlaylist->isChecked());
+	ui->cbChooseFilesystemPlaylistName->setChecked(GetSetting(Set::PL_SpecifyFileystemPlaylistName));
+	ui->leFilesystemPlaylistName->setVisible(ui->cbChooseFilesystemPlaylistName->isChecked());
+	ui->leFilesystemPlaylistName->setText(GetSetting(Set::PL_FilesystemPlaylistName));
 }
 
 void GUI_PlaylistPreferences::initUi()
@@ -234,6 +246,15 @@ void GUI_PlaylistPreferences::initUi()
 	connect(ui->btnTemplateHelp, &QPushButton::clicked, this, [&]() {
 		ui->widgetTemplateHelp->setVisible(!ui->widgetTemplateHelp->isVisible());
 	});
+
+	connect(ui->cbChooseFilesystemPlaylistName, &QCheckBox::toggled,
+	        ui->leFilesystemPlaylistName, &QWidget::setVisible);
+	connect(ui->cbCreateFileystemPlaylist, &QCheckBox::toggled, this, [&](const auto b) {
+		ui->cbChooseFilesystemPlaylistName->setVisible(b);
+		ui->leFilesystemPlaylistName->setVisible(
+			ui->cbChooseFilesystemPlaylistName->isVisible() &&
+			ui->cbChooseFilesystemPlaylistName->isChecked());
+	});
 }
 
 QString GUI_PlaylistPreferences::actionName() const
@@ -250,6 +271,7 @@ void GUI_PlaylistPreferences::retranslate()
 	ui->labTitle->setText(Lang::get(Lang::Title));
 	ui->labTrackNumber->setText(Lang::get(Lang::TrackNo));
 	ui->btnDefault->setText(Lang::get(Lang::Default));
+	ui->leFilesystemPlaylistName->setPlaceholderText(Lang::get(Lang::Files));
 
 	const auto workaroundText = tr("Fix startup playback issue") + " " + "(#263)";
 	ui->cb_startupPlaybackWorkaround263->setText(workaroundText);

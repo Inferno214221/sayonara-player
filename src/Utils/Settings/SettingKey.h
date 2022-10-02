@@ -133,11 +133,13 @@ enum class SettingKey :
 	Notification_Name,
 	Notification_Show,
 	Notification_Timeout,
+	PL_CreateFilesystemPlaylist,
 	PL_CurrentTrackColorStringDark,
 	PL_CurrentTrackColorStringStandard,
 	PL_CurrentTrackCustomColorDark,
 	PL_CurrentTrackCustomColorStandard,
 	PL_EntryLook,
+	PL_FilesystemPlaylistName,
 	PL_JumpToCurrentTrack,
 	PL_LastPlaylist,
 	PL_LastTrack,
@@ -154,6 +156,7 @@ enum class SettingKey :
 	PL_ShowCovers,
 	PL_ShowNumbers,
 	PL_ShowRating,
+	PL_SpecifyFileystemPlaylistName,
 	PL_StartPlaying,
 	PL_StartPlayingWorkaround_Issue263,
 	Pitch_found,
@@ -350,7 +353,10 @@ namespace Set
 	CreateSetting(PL_LastTrackBeforeStop, int); // last track before stop
 	CreateSetting(PL_LoadLastTrack, bool); // load last track on startup
 	CreateSetting(PL_LoadSavedPlaylists, bool); // load saved playlists on startup
-	CreateSetting(PL_LoadTemporaryPlaylists, bool); // load temporary playlists on startup
+	CreateSetting(PL_LoadTemporaryPlaylists, bool); // load temporary playlists on startus
+	CreateSetting(PL_CreateFilesystemPlaylist, bool); // create an extra playlist when loading files from file system
+	CreateSetting(PL_SpecifyFileystemPlaylistName, bool); // when creating playlist from files, choose special name
+	CreateSetting(PL_FilesystemPlaylistName, QString); // name of the file system playlist
 	CreateSetting(PL_Mode, Playlist::Mode); // playlist mode: rep1, repAll, shuffle...
 	CreateSetting(PL_PlayTrackAfterSearch, bool); // play track after search is done
 	CreateSetting(PL_RememberTime, bool); // remember time of last track
