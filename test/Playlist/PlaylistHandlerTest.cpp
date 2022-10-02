@@ -15,32 +15,32 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class PlaylistHandlerTest : 
-    public Test::Base
+class PlaylistHandlerTest :
+	public Test::Base
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        PlaylistHandlerTest() :
-            Test::Base("PlaylistHandlerTest"),
-            m_playManager(new PlayManagerMock())
-        {}
+	public:
+		PlaylistHandlerTest() :
+			Test::Base("PlaylistHandlerTest"),
+			m_playManager(new PlayManagerMock()) {}
 
 	private:
 		PlayManager* m_playManager;
 
 		std::shared_ptr<Playlist::Handler> createHandler()
 		{
-    	    return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>());
+			return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>());
 		}
 
-    private slots:
-        void createTest();
-        void closeTest();
-        void currentIndexTest();
-        void activeIndexTest();
-        void createPlaylistFromFiles();
-        void createCommandLinePlaylist();
+	private slots:
+		void createTest();
+		void closeTest();
+		void currentIndexTest();
+		void activeIndexTest();
+		void createPlaylistFromFiles();
+		void createCommandLinePlaylistSettings();
+		void createCommandLinePlaylist();
 };
 
 void PlaylistHandlerTest::createTest()
@@ -81,7 +81,7 @@ void PlaylistHandlerTest::closeTest()
 	QVERIFY(plh->playlist(0)->index() == 0);
 	QVERIFY(plh->activeIndex() == 0);
 
-	for(int i=0; i<50; i++)
+	for(int i = 0; i < 50; i++)
 	{
 		plh->closePlaylist(0);
 		QVERIFY(plh->count() == 1);
@@ -133,13 +133,13 @@ void PlaylistHandlerTest::activeIndexTest()
 	QVERIFY(plh->activeIndex() == 1); // two playlists
 
 	MetaDataList tracks;
-	for(int i=0; i<10; i++)
+	for(int i = 0; i < 10; i++)
 	{
 		// file must exist
 		const auto filename = Test::Base::tempPath(QString("file%1.mp3").arg(i));
-		Util::File::writeFile(QByteArray{}, filename);
+		Util::File::writeFile(QByteArray {}, filename);
 
-		tracks << MetaData{filename};
+		tracks << MetaData {filename};
 	}
 
 	auto index = plh->createPlaylist(tracks, "new-playlist"); // index = 2
@@ -171,8 +171,8 @@ void PlaylistHandlerTest::createPlaylistFromFiles()
 	QVERIFY(spy.count() == 3);
 	QVERIFY(plh->count() == 4);
 
-	const auto names = QStringList{"path2", "path3", "Test"};
-	auto playlistNames = QStringList{
+	const auto names = QStringList {"path2", "path3", "Test"};
+	auto playlistNames = QStringList {
 		plh->playlist(1)->name(),
 		plh->playlist(2)->name(),
 		plh->playlist(3)->name()
@@ -180,6 +180,43 @@ void PlaylistHandlerTest::createPlaylistFromFiles()
 
 	playlistNames.sort(Qt::CaseInsensitive);
 	QVERIFY(names == playlistNames);
+}
+
+#include "Utils/Settings/Settings.h"
+
+void PlaylistHandlerTest::createCommandLinePlaylistSettings()
+{
+	struct TestCase
+	{
+		bool createExtraPlaylist {false};
+		bool setPlaylistName {false};
+		QString playlistName;
+		int callCount {0};
+		int expectedPlaylists {0};
+	};
+
+	const auto testCases = {
+		TestCase {false, false, QString {}, 3, 4},
+		TestCase {true, false, QString {}, 3, 2},
+		TestCase {true, true, "Extra", 3, 2}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		SetSetting(Set::PL_CreateFilesystemPlaylist, testCase.createExtraPlaylist);
+		SetSetting(Set::PL_SpecifyFileystemPlaylistName, testCase.setPlaylistName);
+		SetSetting(Set::PL_FilesystemPlaylistName, testCase.playlistName);
+
+		auto plh = createHandler();
+		const auto paths = QStringList() << "path1.mp3" << "path2.mp3";
+
+		for(int i = 0; i < testCase.callCount; i++)
+		{
+			plh->createCommandLinePlaylist(paths);
+		}
+
+		QVERIFY(plh->count() == testCase.expectedPlaylists);
+	}
 }
 
 void PlaylistHandlerTest::createCommandLinePlaylist()
@@ -199,4 +236,5 @@ void PlaylistHandlerTest::createCommandLinePlaylist()
 }
 
 QTEST_GUILESS_MAIN(PlaylistHandlerTest)
+
 #include "PlaylistHandlerTest.moc"

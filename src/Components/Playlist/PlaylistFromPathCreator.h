@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #ifndef SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H
 #define SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H
 
@@ -48,5 +49,10 @@ class PlaylistFromPathCreator :
 	private:
 		int createSinglePlaylist(const QStringList& paths, const QString& name, bool temporary);
 };
+
+namespace Playlist
+{
+	QString filesystemPlaylistName();
+}
 
 #endif //SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H

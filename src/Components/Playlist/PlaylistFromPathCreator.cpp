@@ -17,11 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "PlaylistFromPathCreator.h"
 #include "ExternTracksPlaylistGenerator.h"
 
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QStringList>
 #include <atomic>
@@ -107,7 +110,8 @@ int PlaylistFromPathCreator::createPlaylists(const QStringList& paths, const QSt
 	QList<int> createdPlaylists;
 	if(!splittedPaths.standardPaths.isEmpty())
 	{
-		createdPlaylists << createSinglePlaylist(splittedPaths.standardPaths, name, temporary);
+		createdPlaylists
+			<< createSinglePlaylist(splittedPaths.standardPaths, name, temporary);
 	}
 
 	for(const auto& playlistFile: splittedPaths.playlistFiles)
@@ -132,4 +136,19 @@ void PlaylistFromPathCreator::generatorFinished()
 	{
 		emit sigAllPlaylistsCreated(m->firstIndex);
 	}
+}
+
+QString Playlist::filesystemPlaylistName()
+{
+	const auto createExtraPlaylist = GetSetting(Set::PL_CreateFilesystemPlaylist);
+	if(!createExtraPlaylist)
+	{
+		return {};
+	}
+
+	const auto specifyPlaylistName = GetSetting(Set::PL_SpecifyFileystemPlaylistName);
+	const auto specialPLaylistName = GetSetting(Set::PL_FilesystemPlaylistName);
+	return (specialPLaylistName.trimmed().isEmpty() || specifyPlaylistName)
+	       ? Lang::get(Lang::Files)
+	       : specialPLaylistName;
 }

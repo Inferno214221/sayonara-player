@@ -46,11 +46,10 @@ struct Handler::Private
 {
 	QList<PlaylistPtr> playlists;
 	PlayManager* playManager;
-	int currentPlaylistIndex;
+	int currentPlaylistIndex {-1};
 
 	Private(PlayManager* playManager) :
-		playManager {playManager},
-		currentPlaylistIndex {-1} {}
+		playManager {playManager} {}
 
 	void initPlaylists(Handler* handler, std::shared_ptr<::Playlist::Loader> playlistLoader)
 	{
@@ -198,7 +197,12 @@ int Handler::createCommandLinePlaylist(const QStringList& paths)
 		        playlistFromPathCreator->deleteLater();
 	        });
 
-	playlistFromPathCreator->createPlaylists(paths, requestNewPlaylistName(), true);
+	const auto filesystemPlaylistName = ::Playlist::filesystemPlaylistName();
+	const auto playlistName = filesystemPlaylistName.isEmpty()
+	                          ? requestNewPlaylistName()
+	                          : filesystemPlaylistName;
+
+	playlistFromPathCreator->createPlaylists(paths, playlistName, true);
 
 	return m->currentPlaylistIndex;
 }
