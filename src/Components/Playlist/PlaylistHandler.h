@@ -58,8 +58,8 @@ namespace Playlist
 		PIMPL(Handler)
 
 		public:
-			Handler(PlayManager* playManager, std::shared_ptr<::Playlist::Loader> playlistLoader);
-			~Handler();
+			Handler(PlayManager* playManager, const std::shared_ptr<::Playlist::Loader>& playlistLoader);
+			~Handler() override;
 
 			/**
 			 * @brief Call this before the program stops.
@@ -71,7 +71,7 @@ namespace Playlist
 			 * @brief Returns number of playlists
 			 * @return
 			 */
-			int count() const override;
+			[[nodiscard]] int count() const override;
 
 			/**
 			 * @brief get specific playlist at given index
@@ -81,10 +81,10 @@ namespace Playlist
 			PlaylistPtr playlist(int playlistIndex) override;
 			PlaylistPtr playlistById(int playlistId) override;
 
-			int activeIndex() const override;
+			[[nodiscard]] int activeIndex() const override;
 			PlaylistPtr activePlaylist() override;
 
-			int currentIndex() const override;
+			[[nodiscard]] int currentIndex() const override;
 			void setCurrentIndex(int playlistIndex) override;
 
 			/**
@@ -94,7 +94,7 @@ namespace Playlist
 			 * @param The prefix is a localized "New" by default.
 			 * @return playlist name
 			 */
-			QString requestNewPlaylistName(const QString& prefix = QString()) const override;
+			[[nodiscard]] QString requestNewPlaylistName(const QString& prefix = QString()) const override;
 
 			/**
 			 * @brief create a new playlist
@@ -133,7 +133,7 @@ namespace Playlist
 			 */
 			int createEmptyPlaylist(bool override = false) override;
 
-		public slots:
+		public slots: // NOLINT(readability-redundant-access-specifiers)
 			/**
 			 * @brief close playlist
 			 * @param playlistIndex playlist index
@@ -142,9 +142,9 @@ namespace Playlist
 
 		private:
 			int addNewPlaylist(const QString& name, bool editable);
-			int exists(const QString& name) const;
+			[[nodiscard]] int exists(const QString& name) const;
 
-		private slots:
+		private slots: // NOLINT(readability-redundant-access-specifiers)
 			void trackChanged(int oldIndex, int newIndex);
 			void previous();
 			void next();

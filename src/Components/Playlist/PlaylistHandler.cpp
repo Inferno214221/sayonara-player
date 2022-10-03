@@ -42,27 +42,40 @@
 using Playlist::Handler;
 using Playlist::Loader;
 
+namespace
+{
+	void resetLastPlayedTrack(PlayManager* playManager)
+	{
+		if(playManager->initialPositionMs() > 0)
+		{
+			playManager->stop();
+		}
+
+		playManager->setCurrentPositionMs(0);
+	}
+}
+
 struct Handler::Private
 {
 	QList<PlaylistPtr> playlists;
 	PlayManager* playManager;
 	int currentPlaylistIndex {-1};
 
-	Private(PlayManager* playManager) :
+	explicit Private(PlayManager* playManager) :
 		playManager {playManager} {}
 
-	void initPlaylists(Handler* handler, std::shared_ptr<::Playlist::Loader> playlistLoader)
+	void initPlaylists(Handler* handler, const std::shared_ptr<::Playlist::Loader>& playlistLoader) const
 	{
 		spLog(Log::Debug, this) << "Loading playlists...";
 
-		const auto& playlists = playlistLoader->playlists();
-		if(playlists.isEmpty())
+		const auto& loadedPlaylistst = playlistLoader->playlists();
+		if(loadedPlaylistst.isEmpty())
 		{
 			handler->createEmptyPlaylist();
 			return;
 		}
 
-		for(const auto& playlist: playlists)
+		for(const auto& playlist: loadedPlaylistst)
 		{
 			handler->createPlaylist(playlist);
 		}
@@ -71,7 +84,7 @@ struct Handler::Private
 		const auto currentIndex = std::max(0, lastIndex);
 		handler->setCurrentIndex(currentIndex);
 
-		auto lastTrackIndex = playlistLoader->getLastTrackIndex();
+		const auto lastTrackIndex = playlistLoader->getLastTrackIndex();
 		if(lastTrackIndex >= 0)
 		{
 			auto lastPlaylist = handler->playlist(currentIndex);
@@ -85,8 +98,7 @@ struct Handler::Private
 	}
 };
 
-Handler::Handler(PlayManager* playManager, std::shared_ptr<::Playlist::Loader> playlistLoader) :
-	QObject(),
+Handler::Handler(PlayManager* playManager, const std::shared_ptr<::Playlist::Loader>& playlistLoader) :
 	PlaylistCreator()
 {
 	m = Pimpl::make<Private>(playManager);
@@ -113,7 +125,7 @@ void Handler::shutdown()
 	m->currentPlaylistIndex = -1;
 }
 
-int Handler::addNewPlaylist(const QString& name, bool temporary)
+int Handler::addNewPlaylist(const QString& name, const bool temporary)
 {
 	const auto index = exists(name);
 	if(index >= 0)
@@ -134,7 +146,7 @@ int Handler::addNewPlaylist(const QString& name, bool temporary)
 	return playlist->index();
 }
 
-int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, bool temporary)
+int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, const bool temporary)
 {
 	const auto index = addNewPlaylist(name, temporary);
 
@@ -153,21 +165,22 @@ int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, boo
 	return m->currentPlaylistIndex;
 }
 
-int Handler::createPlaylist(const CustomPlaylist& customPlaylist)
+int Handler::createPlaylist(const CustomPlaylist& playlist)
 {
-	const auto index = createPlaylist(customPlaylist.tracks(), customPlaylist.name(), customPlaylist.isTemporary());
+	const auto index = createPlaylist(playlist.tracks(), playlist.name(), playlist.isTemporary());
 
-	auto& playlist = m->playlists[index];
-	playlist->setId(customPlaylist.id());
-	playlist->setChanged(false);
+	auto& createdPlaylist = m->playlists[index];
+	createdPlaylist->setId(playlist.id());
+	createdPlaylist->setChanged(false);
 
 	return m->currentPlaylistIndex;
 }
 
-int Handler::createPlaylist(const QStringList& paths, const QString& name, bool temporary)
+int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary)
 {
 	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, [playlistFromPathCreator](int) {
+	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, 
+			this, [playlistFromPathCreator](const int /* index */) {
 		playlistFromPathCreator->deleteLater();
 	});
 
@@ -183,44 +196,35 @@ int Handler::createPlaylist(const QStringList& paths, const QString& name, bool 
 int Handler::createCommandLinePlaylist(const QStringList& paths)
 {
 	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator,
-	        &PlaylistFromPathCreator::sigAllPlaylistsCreated,
-	        [&, playlistFromPathCreator](auto firstIndex) {
-		        if(m->playManager->initialPositionMs() > 0)
-		        {
-			        m->playManager->stop();
-		        }
+	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+	        this, [&, playlistFromPathCreator](const auto firstIndex) {
+			resetLastPlayedTrack(m->playManager);
+			playlist(firstIndex)->setCurrentTrack(0);
+			setCurrentIndex(firstIndex);
+			if((firstIndex == 1) && playlist(0)->tracks().isEmpty())
+			{
+				closePlaylist(0);
+			}
+			playlistFromPathCreator->deleteLater();
+		});
 
-		        m->playManager->setCurrentPositionMs(0);
-		        playlist(firstIndex)->setCurrentTrack(0);
-		        setCurrentIndex(firstIndex);
-		        if((firstIndex == 1) && playlist(0)->tracks().isEmpty())
-		        {
-			        closePlaylist(0);
-		        }
-		        playlistFromPathCreator->deleteLater();
-	        });
-
-	const auto filesystemPlaylistName = ::Playlist::filesystemPlaylistName();
-	const auto playlistName = filesystemPlaylistName.isEmpty()
+	const auto maybeName = ::Playlist::filesystemPlaylistName();
+	const auto playlistName = maybeName.isEmpty()
 	                          ? requestNewPlaylistName()
-	                          : filesystemPlaylistName;
+	                          : maybeName;
 
 	playlistFromPathCreator->createPlaylists(paths, playlistName, true);
 
 	return m->currentPlaylistIndex;
 }
 
-int Handler::createEmptyPlaylist(bool override)
+int Handler::createEmptyPlaylist(const bool overwrite)
 {
-	const auto name = (override)
-	                  ? QString()
-	                  : requestNewPlaylistName();
-
+	const auto name = overwrite ? QString() : requestNewPlaylistName();
 	return createPlaylist(MetaDataList(), name, true);
 }
 
-void Handler::playstateChanged(PlayState state)
+void Handler::playstateChanged(const PlayState state)
 {
 	if(state == PlayState::Playing)
 	{
@@ -229,7 +233,7 @@ void Handler::playstateChanged(PlayState state)
 
 	else if(state == PlayState::Stopped)
 	{
-		for(auto playlist: m->playlists)
+		for(auto& playlist: m->playlists)
 		{
 			playlist->stop();
 		}
@@ -262,12 +266,12 @@ void Handler::wakeUp()
 	next();
 }
 
-void Handler::trackChanged([[maybe_unused]] int oldIndex, [[maybe_unused]] int newIndex)
+void Handler::trackChanged(const int /*oldIndex*/, const int /*newIndex*/)
 {
-	auto* playlist = static_cast<Playlist*>(sender());
+	auto* playlist = dynamic_cast<Playlist*>(sender());
 	if(playlist->currentTrackIndex() >= 0)
 	{
-		for(auto playlistPtr: m->playlists)
+		for(const auto& playlistPtr: m->playlists)
 		{
 			if(playlist->index() != playlistPtr->index())
 			{
@@ -297,10 +301,7 @@ int Handler::activeIndex() const
 	return 0;
 }
 
-int Handler::currentIndex() const
-{
-	return m->currentPlaylistIndex;
-}
+int Handler::currentIndex() const {	return m->currentPlaylistIndex; }
 
 void Handler::setCurrentIndex(int playlistIndex)
 {
@@ -314,32 +315,25 @@ void Handler::setCurrentIndex(int playlistIndex)
 	}
 }
 
-PlaylistPtr Handler::activePlaylist()
-{
-	return m->playlists[activeIndex()];
-}
+PlaylistPtr Handler::activePlaylist() {	return m->playlists[activeIndex()]; }
 
-int Handler::count() const
-{
-	return m->playlists.size();
-}
+int Handler::count() const { return m->playlists.size(); }
 
 QString Handler::requestNewPlaylistName(const QString& prefix) const
 {
 	return ::Playlist::requestNewDatabaseName(prefix);
 }
 
-void Handler::closePlaylist(int playlistIndex)
+void Handler::closePlaylist(const int playlistIndex)
 {
-	auto playlist = this->playlist(playlistIndex);
-	if(playlist && playlist->isTemporary())
+	if(auto playlist = this->playlist(playlistIndex); playlist && playlist->isTemporary())
 	{
 		playlist->deletePlaylist();
 	}
 
 	m->playlists.removeAt(playlistIndex);
 
-	for(auto remaningPlaylist: m->playlists)
+	for(const auto& remaningPlaylist: m->playlists)
 	{
 		if((remaningPlaylist->index() >= playlistIndex) &&
 		   (remaningPlaylist->index() > 0))
@@ -368,17 +362,16 @@ void Handler::closePlaylist(int playlistIndex)
 	emit sigPlaylistClosed(playlistIndex);
 }
 
-PlaylistPtr Handler::playlist(int playlistIndex)
+PlaylistPtr Handler::playlist(const int playlistIndex)
 {
 	return (Util::between(playlistIndex, m->playlists.count()))
 	       ? m->playlists[playlistIndex]
 	       : nullptr;
 }
 
-PlaylistPtr Handler::playlistById(int playlistId)
+PlaylistPtr Handler::playlistById(const int playlistId)
 {
-	const auto index =
-		Util::Algorithm::indexOf(m->playlists, [&](const auto playlist) {
+	const auto index = Util::Algorithm::indexOf(m->playlists, [&](const auto playlist) {
 			return (playlist->id() == playlistId);
 		});
 
@@ -392,24 +385,22 @@ int Handler::exists(const QString& name) const
 		return m->currentPlaylistIndex;
 	}
 
-	return Util::Algorithm::indexOf(m->playlists, [&name](PlaylistPtr pl) {
-		return (pl->name().compare(name, Qt::CaseInsensitive) == 0);
+	return Util::Algorithm::indexOf(m->playlists, [&](const auto& playlist) {
+		return (playlist->name().toLower() == name.toLower());
 	});
 }
 
-void Handler::playlistRenamed(int id, const QString& /*oldName*/, const QString& /*newName*/)
+void Handler::playlistRenamed(const int id, const QString& /*oldName*/, const QString& /*newName*/)
 {
-	const auto playlist = playlistById(id);
-	if(playlist)
+	if(const auto playlist = playlistById(id); playlist)
 	{
 		emit sigPlaylistNameChanged(playlist->index());
 	}
 }
 
-void Handler::playlistDeleted(int id)
+void Handler::playlistDeleted(const int id)
 {
-	auto playlist = playlistById(id);
-	if(playlist)
+	if(auto playlist = playlistById(id); playlist)
 	{
 		playlist->setTemporary(true);
 		playlist->setChanged(false);
