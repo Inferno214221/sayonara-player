@@ -26,8 +26,8 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#ifndef PLAYLISTHANDLER_H_
-#define PLAYLISTHANDLER_H_
+#ifndef SAYONARA_PLAYLISTHANDLER_H
+#define SAYONARA_PLAYLISTHANDLER_H
 
 #include "PlaylistDBInterface.h"
 
@@ -45,10 +45,6 @@ class PlayManager;
 namespace Playlist
 {
 	class Loader;
-	/**
-	 * @brief Global handler for playlists
-	 * @ingroup Playlists
-	 */
 	class Handler :
 		public QObject,
 		public PlaylistCreator,
@@ -61,23 +57,10 @@ namespace Playlist
 			Handler(PlayManager* playManager, const std::shared_ptr<::Playlist::Loader>& playlistLoader);
 			~Handler() override;
 
-			/**
-			 * @brief Call this before the program stops.
-			 * Singletons and Destructors don't work out so well
-			 */
 			void shutdown();
 
-			/**
-			 * @brief Returns number of playlists
-			 * @return
-			 */
 			[[nodiscard]] int count() const override;
 
-			/**
-			 * @brief get specific playlist at given index
-			 * @param playlistIndex playlist index
-			 * @return read only pointer object to a playlist, may be nullptr
-			 */
 			PlaylistPtr playlist(int playlistIndex) override;
 			PlaylistPtr playlistById(int playlistId) override;
 
@@ -87,57 +70,20 @@ namespace Playlist
 			[[nodiscard]] int currentIndex() const override;
 			void setCurrentIndex(int playlistIndex) override;
 
-			/**
-			 * @brief Request a new name for the playlist (usually New %1 is returned).
-			 * If the prefix differs, instead of New, the prefix is chosen.
-			 * E.g. "File system 2" for tracks added by the file manager
-			 * @param The prefix is a localized "New" by default.
-			 * @return playlist name
-			 */
 			[[nodiscard]] QString requestNewPlaylistName(const QString& prefix = QString()) const override;
 
-			/**
-			 * @brief create a new playlist
-			 * @param tracks track list
-			 * @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @param temporary is the playlist temporary or persistent?
-			 * @param type deprecated
-			 * @return new playlist index
-			 */
 			int
 			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
 
-			/**
-			 * @brief create a new playlist (overloaded)
-			 * @param pathlist paths, may contain files or directories
-			* @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @param temporary is the playlist temporary or persistent?
-			 * @param type deprecated
-			 * @return new playlist index
-			 */
 			int
 			createPlaylist(const QStringList& paths, const QString& name = QString(), bool temporary = true) override;
 
-			/**
-			 * @brief create a new playlist (overloaded)
-			 * @param customPlaylist a CustomPlaylist object fetched from database
-			 * @return new playlist index
-			 */
 			int createPlaylist(const CustomPlaylist& playlist) override;
 			int createCommandLinePlaylist(const QStringList& pathList) override;
 
-			/**
-			 * @brief create a new empty playlist
-			 * @param name new playlist name. If no name given, current playlist will be overwritten
-			 * @return new playlist index
-			 */
 			int createEmptyPlaylist(bool override = false) override;
 
 		public slots: // NOLINT(readability-redundant-access-specifiers)
-			/**
-			 * @brief close playlist
-			 * @param playlistIndex playlist index
-			 */
 			void closePlaylist(int playlistIndex);
 
 		private:
@@ -155,34 +101,13 @@ namespace Playlist
 			void playlistDeleted(int id);
 
 		signals:
-			/**
-			 * @brief emitted when new playlist has been added
-			 * @param playlistIndex reference to new playlist
-			 */
 			void sigNewPlaylistAdded(int playlistIndex);
-
-			/**
-			 * @brief emitted when playlist name has changed
-			 * @param playlistIndex index of playlist
-			 */
 			void sigPlaylistNameChanged(int playlistIndex);
-
-			/**
-			 * @brief emitted when tracks were added/removed or have changed
-			 * @param playlistIndex playlist index
-			 */
 			void sigCurrentPlaylistChanged(int playlistIndex);
 			void sigActivePlaylistChanged(int playlistIndex);
-
-			/**
-			 * @brief emitted when a track deletion was triggered over the Ui
-			 * @param tracks which tracks should be deleted
-			 * @param deletion_mode
-			 */
 			void sigTrackDeletionRequested(const MetaDataList& tracks, Library::TrackDeletionMode deletion_mode);
-
 			void sigPlaylistClosed(int playlistIndex);
 	};
 }
 
-#endif /* PLAYLISTHANDLER_H_ */
+#endif /* SAYONARA_PLAYLISTHANDLER_H */
