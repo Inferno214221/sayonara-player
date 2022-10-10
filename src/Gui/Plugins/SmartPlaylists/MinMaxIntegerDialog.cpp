@@ -24,8 +24,10 @@
 
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/TimeSpan.h"
+#include "Interfaces/LibraryInfoAccessor.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/Widgets/WidgetTemplate.h"
 
 #include <QCheckBox>
@@ -167,8 +169,23 @@ namespace
 		return sections;
 	}
 
+	void populateLibraryComboBox(LibraryInfoAccessor* libraryManager, QComboBox* comboBox)
+	{
+		comboBox->clear();
+		comboBox->addItem(QObject::tr("All libraries"), -1);
+
+		const auto libraryInfos = libraryManager->allLibraries();
+		for(const auto& libraryInfo : libraryInfos)
+		{
+			const auto iLibraryId = static_cast<int>(libraryInfo.id());
+			comboBox->addItem(libraryInfo.name(), QVariant::fromValue(iLibraryId));
+		}
+
+		comboBox->setCurrentIndex(0);
+	}
+
 	void populate(const SmartPlaylists::Type type, QLabel* labDescription, QCheckBox* cbShuffle,
-	              const QList<Section>& sections)
+	              QComboBox* comboLibraries, const QList<Section>& sections)
 	{
 		const auto description = createDescription(type);
 		labDescription->setText(description);
@@ -184,6 +201,7 @@ namespace
 		}
 
 		cbShuffle->setVisible(smartPlaylist->isRandomizable());
+		comboLibraries->setVisible(smartPlaylist->needsLibraryId());
 	}
 }
 
@@ -193,6 +211,8 @@ struct MinMaxIntegerDialog::Private
 	QLabel* labelDescription {new QLabel()};
 	QWidget* sectionWidget {new QWidget()};
 	QCheckBox* cbShuffle {new QCheckBox(Lang::get(Lang::ShufflePlaylist))};
+	QComboBox* comboLibraries {new QComboBox()};
+
 	QList<Section> sections;
 	QDialogButtonBox* buttonBox {new QDialogButtonBox({QDialogButtonBox::Ok | QDialogButtonBox::Cancel})};
 
@@ -204,7 +224,8 @@ struct MinMaxIntegerDialog::Private
 	}
 };
 
-MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, QWidget* parent) :
+MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, LibraryInfoAccessor* libraryManager,
+                                         QWidget* parent) :
 	QDialog(parent),
 	m {Pimpl::make<Private>(type)}
 {
@@ -215,23 +236,27 @@ MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, QWidge
 	connect(m->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(m->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
 
-	populate(m->type, m->labelDescription, m->cbShuffle, m->sections);
+	populate(m->type, m->labelDescription, m->cbShuffle, m->comboLibraries, m->sections);
+	populateLibraryComboBox(libraryManager, m->comboLibraries);
 }
 
-MinMaxIntegerDialog::MinMaxIntegerDialog(QWidget* parent) :
-	MinMaxIntegerDialog(static_cast<SmartPlaylists::Type>(0), parent)
+MinMaxIntegerDialog::MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager, QWidget* parent) :
+	MinMaxIntegerDialog(static_cast<SmartPlaylists::Type>(0), libraryManager, parent)
 {
+	const auto smartPlaylist = createDummySmartPlaylist(m->type);
+
 	auto* comboBox = createTypeCombobox(m->type);
 	connect(comboBox, combo_activated_int, this, &MinMaxIntegerDialog::currentIndexChanged);
 	fillLayout(comboBox);
 
-	const auto smartPlaylist = createDummySmartPlaylist(m->type);
 	m->cbShuffle->setChecked(smartPlaylist->isRandomized());
 	m->cbShuffle->setVisible(smartPlaylist->isRandomizable());
+	m->comboLibraries->setVisible(smartPlaylist->needsLibraryId());
 }
 
-MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, QWidget* parent) :
-	MinMaxIntegerDialog(smartPlaylist->type(), parent)
+MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist,
+                                         LibraryInfoAccessor* libraryManager, QWidget* parent) :
+	MinMaxIntegerDialog(smartPlaylist->type(), libraryManager, parent)
 {
 	auto* labelTitle = createTitleLabel(smartPlaylist->displayClassType());
 	fillLayout(labelTitle);
@@ -243,6 +268,8 @@ MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& s
 
 	m->cbShuffle->setChecked(smartPlaylist->isRandomized());
 	m->cbShuffle->setVisible(smartPlaylist->isRandomizable());
+	m->comboLibraries->setVisible(smartPlaylist->needsLibraryId());
+	m->comboLibraries->setCurrentIndex(m->comboLibraries->findData(smartPlaylist->libraryId()));
 }
 
 MinMaxIntegerDialog::~MinMaxIntegerDialog() = default;
@@ -250,6 +277,8 @@ MinMaxIntegerDialog::~MinMaxIntegerDialog() = default;
 void MinMaxIntegerDialog::fillLayout(QWidget* headerWidget)
 {
 	layout()->addWidget(headerWidget);
+	layout()->addWidget(createLine(this));
+	layout()->addWidget(m->comboLibraries);
 	layout()->addWidget(createLine(this));
 	layout()->addWidget(m->labelDescription);
 	layout()->addWidget(m->sectionWidget);
@@ -275,7 +304,7 @@ void MinMaxIntegerDialog::currentIndexChanged(const int /*currentIndex*/)
 	m->sections = createSections(m->type, m->sectionWidget);
 	connectTextFieldChanges(m->sections);
 
-	populate(m->type, m->labelDescription, m->cbShuffle, m->sections);
+	populate(m->type, m->labelDescription, m->cbShuffle, m->comboLibraries, m->sections);
 }
 
 void MinMaxIntegerDialog::textChanged(const QString& /*text*/)
@@ -302,3 +331,9 @@ QList<int> MinMaxIntegerDialog::values() const
 bool MinMaxIntegerDialog::isRandomized() const { return m->cbShuffle->isChecked(); }
 
 SmartPlaylists::Type MinMaxIntegerDialog::type() const { return m->type; }
+
+LibraryId MinMaxIntegerDialog::libraryId() const
+{
+	const auto libraryId = m->comboLibraries->currentData().toInt();
+	return static_cast<LibraryId>(libraryId);
+}

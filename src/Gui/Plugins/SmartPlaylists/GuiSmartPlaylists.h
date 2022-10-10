@@ -30,6 +30,8 @@
 UI_FWD(GuiSmartPlaylists)
 
 class SmartPlaylistManager;
+class LibraryInfoAccessor;
+
 class GuiSmartPlaylists :
 	public PlayerPlugin::Base
 {
@@ -38,7 +40,8 @@ class GuiSmartPlaylists :
 	UI_CLASS(GuiSmartPlaylists)
 
 	public:
-		explicit GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, QWidget* parent = nullptr);
+		GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager,
+		                  QWidget* parent = nullptr);
 		~GuiSmartPlaylists() noexcept override;
 
 		[[nodiscard]] QString name() const override;
@@ -54,7 +57,6 @@ class GuiSmartPlaylists :
 	private: // NOLINT(readability-redundant-access-specifiers)
 		void retranslate() override;
 		void initUi() override;
-
 };
 
 #endif //SAYONARA_PLAYER_GUISMARTPLAYLISTS_H

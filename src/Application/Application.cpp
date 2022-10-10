@@ -450,7 +450,7 @@ void Application::initPlugins()
 	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler));
 	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler));
 	playerPluginHandler->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
-	playerPluginHandler->addPlugin(new GuiSmartPlaylists(m->smartPlaylistManager));
+	playerPluginHandler->addPlugin(new GuiSmartPlaylists(m->smartPlaylistManager, m->libraryManager));
 	playerPluginHandler->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));
 	playerPluginHandler->addPlugin(new GUI_Bookmarks(new Bookmarks(m->playManager)));
 	playerPluginHandler->addPlugin(new GUI_Speed());

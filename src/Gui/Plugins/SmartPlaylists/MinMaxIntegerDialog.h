@@ -37,6 +37,8 @@ namespace
 	struct Section;
 }
 
+class LibraryInfoAccessor;
+
 class MinMaxIntegerDialog :
 	public QDialog
 {
@@ -44,17 +46,19 @@ class MinMaxIntegerDialog :
 	PIMPL(MinMaxIntegerDialog)
 
 	public:
-		explicit MinMaxIntegerDialog(QWidget* parent);
-		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, QWidget* parent);
+		explicit MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager,		                             QWidget* parent);
+		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, LibraryInfoAccessor* libraryManager,
+		                    QWidget* parent);
 		~MinMaxIntegerDialog() override;
 
 		[[nodiscard]] QList<int> values() const;
 		[[nodiscard]] bool isRandomized() const;
 
 		[[nodiscard]] SmartPlaylists::Type type() const;
+		[[nodiscard]] LibraryId libraryId() const;
 
 	private:
-		MinMaxIntegerDialog(SmartPlaylists::Type type, QWidget* parent);
+		MinMaxIntegerDialog(SmartPlaylists::Type type, LibraryInfoAccessor* librarymanager, QWidget* parent);
 
 		void fillLayout(QWidget* headerWidget);
 		void connectTextFieldChanges(const QList<Section>& sections) const;

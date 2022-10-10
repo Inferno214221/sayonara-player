@@ -25,8 +25,10 @@
 #include "Components/SmartPlaylists/SmartPlaylist.h"
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
+#include "Interfaces/LibraryInfoAccessor.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/LibraryInfo.h"
 
 namespace
 {
@@ -66,20 +68,38 @@ namespace
 
 		return smartPlaylists;
 	}
+
+	QString getSmartPlaylistDescription(const SmartPlaylistPtr& smartPlaylist, LibraryInfoAccessor* libraryManager)
+	{
+		const auto libraryId = smartPlaylist->libraryId();
+		const auto libraryInfo = libraryManager->libraryInfo(libraryId);
+		const auto libraryName = libraryInfo.name();
+
+		const auto name = smartPlaylist->isRandomized()
+		                  ? smartPlaylist->name() + " + " + Dice
+		                  : smartPlaylist->name();
+
+		return (libraryId == -1) || (libraryManager->count() == 1)
+		       ? name
+		       : QString("%1: %2").arg(libraryName, name);
+	}
 }
 
 struct GuiSmartPlaylists::Private
 {
 	SmartPlaylistManager* smartPlaylistManager;
+	LibraryInfoAccessor* libraryManager;
 
-	explicit Private(SmartPlaylistManager* smartPlaylistManager) :
-		smartPlaylistManager {smartPlaylistManager} {}
+	Private(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager) :
+		smartPlaylistManager {smartPlaylistManager},
+		libraryManager {libraryManager} {}
 };
 
-GuiSmartPlaylists::GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, QWidget* parent) :
+GuiSmartPlaylists::GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager,
+                                     QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {
-	m = Pimpl::make<Private>(smartPlaylistManager);
+	m = Pimpl::make<Private>(smartPlaylistManager, libraryManager);
 }
 
 GuiSmartPlaylists::~GuiSmartPlaylists() noexcept
@@ -129,7 +149,7 @@ void GuiSmartPlaylists::initUi()
 
 void GuiSmartPlaylists::newClicked()
 {
-	auto* dialog = new MinMaxIntegerDialog(this);
+	auto* dialog = new MinMaxIntegerDialog(m->libraryManager, this);
 
 	const auto status = dialog->exec();
 	if(status == MinMaxIntegerDialog::Accepted)
@@ -138,7 +158,7 @@ void GuiSmartPlaylists::newClicked()
 		                                                          -1,
 		                                                          dialog->values(),
 		                                                          dialog->isRandomized(),
-		                                                          -1);
+		                                                          dialog->libraryId());
 		m->smartPlaylistManager->insertPlaylist(smartPlaylist);
 	}
 
@@ -148,8 +168,8 @@ void GuiSmartPlaylists::newClicked()
 void GuiSmartPlaylists::editClicked()
 {
 	const auto id = Spid(ui->comboPlaylist->currentData().toInt());
-	const auto smartPlaylist = m->smartPlaylistManager->smartPlaylist(id);
-	auto* dialog = new MinMaxIntegerDialog(smartPlaylist, this);
+	auto smartPlaylist = m->smartPlaylistManager->smartPlaylist(id);
+	auto* dialog = new MinMaxIntegerDialog(smartPlaylist, m->libraryManager, this);
 
 	const auto status = dialog->exec();
 	if(status == MinMaxIntegerDialog::Accepted)
@@ -159,7 +179,9 @@ void GuiSmartPlaylists::editClicked()
 		{
 			smartPlaylist->setValue(i, values[i]);
 		}
+
 		smartPlaylist->setRandomized(dialog->isRandomized());
+		smartPlaylist->setLibraryId(dialog->libraryId());
 
 		m->smartPlaylistManager->updatePlaylist(id, smartPlaylist);
 	}
@@ -183,10 +205,7 @@ void GuiSmartPlaylists::setupPlaylists()
 	const auto smartPlaylists = sortSmartPlaylists(m->smartPlaylistManager->smartPlaylists());
 	for(const auto& smartPlaylist: smartPlaylists)
 	{
-		const auto name = smartPlaylist->isRandomized()
-		                  ? smartPlaylist->name() + " + " + Dice
-		                  : smartPlaylist->name();
-
+		const auto name = getSmartPlaylistDescription(smartPlaylist, m->libraryManager);
 		ui->comboPlaylist->addItem(name, smartPlaylist->id());
 	}
 
