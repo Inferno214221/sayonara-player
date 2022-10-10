@@ -46,7 +46,7 @@ class MinMaxIntegerDialog :
 	PIMPL(MinMaxIntegerDialog)
 
 	public:
-		explicit MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager,		                             QWidget* parent);
+		MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager, QWidget* parent);
 		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, LibraryInfoAccessor* libraryManager,
 		                    QWidget* parent);
 		~MinMaxIntegerDialog() override;
@@ -58,9 +58,16 @@ class MinMaxIntegerDialog :
 		[[nodiscard]] LibraryId libraryId() const;
 
 	private:
-		MinMaxIntegerDialog(SmartPlaylists::Type type, LibraryInfoAccessor* librarymanager, QWidget* parent);
+		enum EditMode
+		{
+			New = 0,
+			Edit
+		};
 
-		void fillLayout(QWidget* headerWidget);
+		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, LibraryInfoAccessor* librarymanager,
+		                    EditMode editMode, QWidget* parent);
+
+		void fillLayout(int libraryCount);
 		void connectTextFieldChanges(const QList<Section>& sections) const;
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)

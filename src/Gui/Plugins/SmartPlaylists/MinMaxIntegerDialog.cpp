@@ -24,6 +24,7 @@
 
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/TimeSpan.h"
+#include "Gui/Utils/GuiUtils.h"
 #include "Interfaces/LibraryInfoAccessor.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
@@ -44,10 +45,8 @@ namespace
 {
 	struct Section
 	{
-		QWidget* widget {nullptr};
 		QLabel* label {nullptr};
 		InputField* inputField {nullptr};
-		QLayout* layout {nullptr};
 		StringValidator* stringValidator {nullptr};
 	};
 
@@ -72,36 +71,18 @@ namespace
 		return smartPlaylist->stringConverter()->intToUserString(i);
 	}
 
-	Section createSection(QWidget* parent)
+	Section createSection(const int row, QWidget* parent, QGridLayout* gridLayout)
 	{
-		auto* widget = new QWidget(parent);
-		auto* lineEdit = new InputField(widget);
-		auto* layout = new QHBoxLayout();
+		auto* label = new QLabel(parent);
+		auto* lineEdit = new InputField(parent);
 		auto* validator = new StringValidator(lineEdit);
-		auto* label = new QLabel(widget);
 
 		lineEdit->setValidator(validator);
 
-		layout->setContentsMargins(2, 2, 2, 2);
-		layout->addWidget(label);
-		layout->addItem(
-			new QSpacerItem(100, 5, QSizePolicy::Policy::Expanding)); // NOLINT(readability-magic-numbers)
-		layout->addWidget(lineEdit);
+		gridLayout->addWidget(label, row, 0);
+		gridLayout->addWidget(lineEdit, row, 1);
 
-		widget->setSizePolicy(widget->sizePolicy().horizontalPolicy(), QSizePolicy::Policy::Maximum);
-		widget->setLayout(layout);
-
-		return {widget, label, lineEdit, layout, validator};
-	}
-
-	QLabel* createTitleLabel(const QString& title)
-	{
-		auto* label = new QLabel(title);
-		auto font = label->font();
-		font.setBold(true);
-		label->setFont(font);
-
-		return label;
+		return {label, lineEdit, validator};
 	}
 
 	QComboBox* createTypeCombobox(const SmartPlaylists::Type preselectedType)
@@ -136,35 +117,45 @@ namespace
 		       (data.value() <= smartPlaylist->maximumValue());
 	}
 
-	void fillText(const Section& section, const SmartPlaylists::Type type, const int value)
+	void fillText(const Section& section, const std::shared_ptr<SmartPlaylist>& smartPlaylist, const int index)
 	{
-		const auto smartPlaylist = createDummySmartPlaylist(type);
+		const auto value = smartPlaylist->value(index);
 		section.inputField->setData(smartPlaylist->inputFormat(), smartPlaylist->stringConverter(), value);
+	}
+
+	QGridLayout* createGridLayout()
+	{
+		auto* gridLayout = new QGridLayout();
+
+		gridLayout->setVerticalSpacing(5); // NOLINT(readability-magic-numbers)
+		gridLayout->setColumnStretch(0, 2);
+		gridLayout->setColumnStretch(1, 3);
+
+		return gridLayout;
 	}
 
 	QWidget* replaceSectionWidget(QWidget* oldWidget, QLayout* layout)
 	{
 		auto* sectionWidget = new QWidget();
-		sectionWidget->setLayout(new QVBoxLayout());
+		sectionWidget->setLayout(createGridLayout());
 		layout->replaceWidget(oldWidget, sectionWidget);
 		oldWidget->deleteLater();
 
 		return sectionWidget;
 	}
 
-	QList<Section> createSections(const SmartPlaylists::Type type, QWidget* parent)
+	QList<Section> createSections(const SmartPlaylists::Type type, QWidget* sectionWidget, QGridLayout* gridLayout)
 	{
 		auto sections = QList<Section> {};
 		const auto smartPlaylist = createDummySmartPlaylist(type);
 		for(int i = 0; i < smartPlaylist->count(); i++)
 		{
-			const auto section = createSection(parent);
+			const auto section = createSection(i, sectionWidget, gridLayout);
 			sections << section;
-			parent->layout()->addWidget(section.widget);
 		}
 
-		parent->layout()->addItem(
-			new QSpacerItem(1, 1, QSizePolicy::Policy::Minimum, QSizePolicy::Policy::MinimumExpanding));
+		gridLayout->addItem(new QSpacerItem(1, 1, QSizePolicy::Minimum, QSizePolicy::MinimumExpanding),
+		                    smartPlaylist->count(), 0);
 
 		return sections;
 	}
@@ -175,9 +166,9 @@ namespace
 		comboBox->addItem(QObject::tr("All libraries"), -1);
 
 		const auto libraryInfos = libraryManager->allLibraries();
-		for(const auto& libraryInfo : libraryInfos)
+		for(const auto& libraryInfo: libraryInfos)
 		{
-			const auto iLibraryId = static_cast<int>(libraryInfo.id());
+			const auto iLibraryId = static_cast<int>(libraryInfo.id()); // NOLINT(cert-str34-c)
 			comboBox->addItem(libraryInfo.name(), QVariant::fromValue(iLibraryId));
 		}
 
@@ -185,7 +176,7 @@ namespace
 	}
 
 	void populate(const SmartPlaylists::Type type, QLabel* labDescription, QCheckBox* cbShuffle,
-	              QComboBox* comboLibraries, const QList<Section>& sections)
+	              const QList<Section>& sections)
 	{
 		const auto description = createDescription(type);
 		labDescription->setText(description);
@@ -195,13 +186,12 @@ namespace
 
 		for(int i = 0; i < smartPlaylist->count(); i++)
 		{
-			fillText(sections[i], type, smartPlaylist->value(i));
+			fillText(sections[i], smartPlaylist, i);
 			sections[i].label->setText(smartPlaylist->text(i));
 			sections[i].stringValidator->setStringConverter(stringConverter);
 		}
 
 		cbShuffle->setVisible(smartPlaylist->isRandomizable());
-		comboLibraries->setVisible(smartPlaylist->needsLibraryId());
 	}
 }
 
@@ -211,74 +201,87 @@ struct MinMaxIntegerDialog::Private
 	QLabel* labelDescription {new QLabel()};
 	QWidget* sectionWidget {new QWidget()};
 	QCheckBox* cbShuffle {new QCheckBox(Lang::get(Lang::ShufflePlaylist))};
+	QComboBox* comboType;
 	QComboBox* comboLibraries {new QComboBox()};
 
 	QList<Section> sections;
 	QDialogButtonBox* buttonBox {new QDialogButtonBox({QDialogButtonBox::Ok | QDialogButtonBox::Cancel})};
 
 	explicit Private(const SmartPlaylists::Type type) :
-		type {type}
+		type {type},
+		comboType {createTypeCombobox(type)}
 	{
-		sectionWidget->setLayout(new QVBoxLayout());
-		sections = createSections(type, sectionWidget);
+		auto* gridLayout = createGridLayout();
+
+		sections = createSections(type, sectionWidget, gridLayout);
+		sectionWidget->setLayout(gridLayout);
 	}
 };
 
-MinMaxIntegerDialog::MinMaxIntegerDialog(const SmartPlaylists::Type type, LibraryInfoAccessor* libraryManager,
+MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist,
+                                         LibraryInfoAccessor* libraryManager, const EditMode editMode,
                                          QWidget* parent) :
 	QDialog(parent),
-	m {Pimpl::make<Private>(type)}
+	m {Pimpl::make<Private>(smartPlaylist->type())}
 {
 	setWindowTitle(Lang::get(Lang::SmartPlaylists));
 	setLayout(new QVBoxLayout());
+	setMinimumWidth(Gui::Util::textWidth(this, "Hallo") * 12); // NOLINT(readability-magic-numbers)
 
 	connectTextFieldChanges(m->sections);
 	connect(m->buttonBox, &QDialogButtonBox::accepted, this, &QDialog::accept);
 	connect(m->buttonBox, &QDialogButtonBox::rejected, this, &QDialog::reject);
+	connect(m->comboType, combo_activated_int, this, &MinMaxIntegerDialog::currentIndexChanged);
 
-	populate(m->type, m->labelDescription, m->cbShuffle, m->comboLibraries, m->sections);
+	populate(m->type, m->labelDescription, m->cbShuffle, m->sections);
 	populateLibraryComboBox(libraryManager, m->comboLibraries);
+
+	fillLayout(libraryManager->count());
+
+	m->comboType->setEnabled(editMode == EditMode::New);
+	m->cbShuffle->setChecked(smartPlaylist->isRandomized());
+	m->cbShuffle->setVisible(smartPlaylist->isRandomizable());
+	m->comboLibraries->setCurrentIndex(m->comboLibraries->findData(smartPlaylist->libraryId()));
 }
 
 MinMaxIntegerDialog::MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager, QWidget* parent) :
-	MinMaxIntegerDialog(static_cast<SmartPlaylists::Type>(0), libraryManager, parent)
-{
-	const auto smartPlaylist = createDummySmartPlaylist(m->type);
-
-	auto* comboBox = createTypeCombobox(m->type);
-	connect(comboBox, combo_activated_int, this, &MinMaxIntegerDialog::currentIndexChanged);
-	fillLayout(comboBox);
-
-	m->cbShuffle->setChecked(smartPlaylist->isRandomized());
-	m->cbShuffle->setVisible(smartPlaylist->isRandomizable());
-	m->comboLibraries->setVisible(smartPlaylist->needsLibraryId());
-}
+	MinMaxIntegerDialog(createDummySmartPlaylist(SmartPlaylists::Type::Rating), libraryManager, EditMode::New,
+	                    parent) {}
 
 MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist,
                                          LibraryInfoAccessor* libraryManager, QWidget* parent) :
-	MinMaxIntegerDialog(smartPlaylist->type(), libraryManager, parent)
+	MinMaxIntegerDialog(smartPlaylist, libraryManager, EditMode::Edit, parent)
 {
-	auto* labelTitle = createTitleLabel(smartPlaylist->displayClassType());
-	fillLayout(labelTitle);
-
 	for(int i = 0; i < smartPlaylist->count(); i++)
 	{
-		fillText(m->sections[i], m->type, smartPlaylist->value(i));
+		fillText(m->sections[i], smartPlaylist, i);
 	}
-
-	m->cbShuffle->setChecked(smartPlaylist->isRandomized());
-	m->cbShuffle->setVisible(smartPlaylist->isRandomizable());
-	m->comboLibraries->setVisible(smartPlaylist->needsLibraryId());
-	m->comboLibraries->setCurrentIndex(m->comboLibraries->findData(smartPlaylist->libraryId()));
 }
 
 MinMaxIntegerDialog::~MinMaxIntegerDialog() = default;
 
-void MinMaxIntegerDialog::fillLayout(QWidget* headerWidget)
+QWidget* createLabel(const QString& l, QWidget* parent)
 {
-	layout()->addWidget(headerWidget);
-	layout()->addWidget(createLine(this));
-	layout()->addWidget(m->comboLibraries);
+	auto* label = new QLabel(l, parent);
+	label->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::Preferred);
+	return label;
+}
+
+void MinMaxIntegerDialog::fillLayout(const int libraryCount)
+{
+	auto* gridWidget = new QWidget(this);
+	auto* gridLayout = createGridLayout();
+
+	gridLayout->addWidget(createLabel(tr("Category"), this), 0, 0);
+	gridLayout->addWidget(m->comboType, 0, 1);
+	if(libraryCount > 1)
+	{
+		gridLayout->addWidget(createLabel(Lang::get(Lang::Library), this), 1, 0);
+		gridLayout->addWidget(m->comboLibraries, 1, 1);
+	}
+	gridWidget->setLayout(gridLayout);
+
+	layout()->addWidget(gridWidget);
 	layout()->addWidget(createLine(this));
 	layout()->addWidget(m->labelDescription);
 	layout()->addWidget(m->sectionWidget);
@@ -301,10 +304,12 @@ void MinMaxIntegerDialog::currentIndexChanged(const int /*currentIndex*/)
 	m->type = static_cast<SmartPlaylists::Type>(comboBox->currentData().toInt());
 
 	m->sectionWidget = replaceSectionWidget(m->sectionWidget, layout());
-	m->sections = createSections(m->type, m->sectionWidget);
+
+	auto* gridLayout = dynamic_cast<QGridLayout*>(m->sectionWidget->layout());
+	m->sections = createSections(m->type, m->sectionWidget, gridLayout);
 	connectTextFieldChanges(m->sections);
 
-	populate(m->type, m->labelDescription, m->cbShuffle, m->comboLibraries, m->sections);
+	populate(m->type, m->labelDescription, m->cbShuffle, m->sections);
 }
 
 void MinMaxIntegerDialog::textChanged(const QString& /*text*/)
