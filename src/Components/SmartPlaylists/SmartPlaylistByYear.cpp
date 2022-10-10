@@ -25,8 +25,9 @@
 
 #include <QDate>
 
-SmartPlaylistByYear::SmartPlaylistByYear(int id, const int fromYear, const int toYear, const bool isRandomized) :
-	SmartPlaylist(id, {fromYear, toYear}, isRandomized) {}
+SmartPlaylistByYear::SmartPlaylistByYear(const int id, const int fromYear, const int toYear, const bool isRandomized,
+                                         const LibraryId libraryId) :
+	SmartPlaylist(id, {fromYear, toYear}, isRandomized, libraryId) {}
 
 SmartPlaylistByYear::~SmartPlaylistByYear() = default;
 

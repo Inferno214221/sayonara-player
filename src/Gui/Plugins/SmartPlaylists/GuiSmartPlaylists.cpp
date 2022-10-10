@@ -134,9 +134,11 @@ void GuiSmartPlaylists::newClicked()
 	const auto status = dialog->exec();
 	if(status == MinMaxIntegerDialog::Accepted)
 	{
-		const auto smartPlaylist =
-			SmartPlaylists::createFromType(dialog->type(), -1, dialog->values(), dialog->isRandomized());
-
+		const auto smartPlaylist = SmartPlaylists::createFromType(dialog->type(),
+		                                                          -1,
+		                                                          dialog->values(),
+		                                                          dialog->isRandomized(),
+		                                                          -1);
 		m->smartPlaylistManager->insertPlaylist(smartPlaylist);
 	}
 

@@ -66,7 +66,7 @@ SmartPlaylistPtr SmartPlaylistManager::smartPlaylist(const Spid& id) const
 QList<SmartPlaylistPtr> SmartPlaylistManager::smartPlaylists() const
 {
 	QList<SmartPlaylistPtr> smartPlaylists;
-	for(const auto& [key, value]: m->smartPlaylists)
+	for(const auto&[key, value]: m->smartPlaylists)
 	{
 		smartPlaylists << value;
 	}
@@ -81,7 +81,7 @@ void SmartPlaylistManager::selectPlaylist(const Spid& id)
 
 	if(!smartPlaylist->canFetchTracks())
 	{
-		const auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(-1, 0);
+		const auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(smartPlaylist->libraryId(), 0);
 		libraryDatabase->getAllTracks(tracks);
 	}
 

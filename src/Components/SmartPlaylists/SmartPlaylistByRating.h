@@ -28,7 +28,7 @@ class SmartPlaylistByRating :
 	public:
 		static constexpr const auto ClassType = "star-rating";
 
-		SmartPlaylistByRating(int id, int ratingFrom, int ratingTo, bool isRandomized);
+		SmartPlaylistByRating(int id, int ratingFrom, int ratingTo, bool isRandomized, LibraryId libraryId);
 		~SmartPlaylistByRating() override;
 
 		[[nodiscard]] int minimumValue() const override;

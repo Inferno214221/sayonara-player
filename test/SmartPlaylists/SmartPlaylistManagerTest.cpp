@@ -35,6 +35,8 @@
 
 namespace
 {
+	constexpr const LibraryId libraryId = -1;
+
 	SmartPlaylistPtr playlistByType(const SmartPlaylists::Type type, const SmartPlaylistManager& manager)
 	{
 		const auto allSmartPlaylists = manager.smartPlaylists();
@@ -136,7 +138,7 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 
 	for(const auto& [type, values, randomize, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, randomize);
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, randomize, libraryId);
 		manager.insertPlaylist(createdSmartPlaylist);
 
 		const auto allSmartPlaylists = manager.smartPlaylists();
@@ -175,7 +177,7 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 	for(const auto& [type, values, isRandomized, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, isRandomized);
+		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, isRandomized, libraryId);
 		manager.insertPlaylist(createdSmartPlaylist);
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
@@ -221,7 +223,7 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 	auto smartPlaylist =
-		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true); // NOLINT(readability-magic-numbers)
+		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId); // NOLINT(readability-magic-numbers)
 
 	QVERIFY(manager.smartPlaylists().count() == 0);
 	manager.insertPlaylist(smartPlaylist);
@@ -242,7 +244,7 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 	auto* playlistCreator = new PlaylistCreatorMock();
 	auto manager = SmartPlaylistManager(playlistCreator);
 	auto smartPlaylist =
-		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true); // NOLINT(readability-magic-numbers)
+		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId); // NOLINT(readability-magic-numbers)
 
 	manager.insertPlaylist(smartPlaylist);
 

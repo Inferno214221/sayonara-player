@@ -36,8 +36,8 @@ namespace
 }
 
 SmartPlaylistByRating::SmartPlaylistByRating(const int id, const int ratingFrom, const int ratingTo,
-                                             const bool isRandomized) :
-	SmartPlaylist(id, {ratingFrom, ratingTo}, isRandomized) {}
+                                             const bool isRandomized, const LibraryId libraryId) :
+	SmartPlaylist(id, {ratingFrom, ratingTo}, isRandomized, libraryId) {}
 
 SmartPlaylistByRating::~SmartPlaylistByRating() = default;
 

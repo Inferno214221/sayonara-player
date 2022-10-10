@@ -46,9 +46,9 @@ namespace
 	}
 }
 
-SmartPlaylistByListeningDate::SmartPlaylistByListeningDate(
-	const int id, const int value1, const int value2, const bool isRandomized) :
-	SmartPlaylist(id, {value1, value2}, isRandomized) {}
+SmartPlaylistByListeningDate::SmartPlaylistByListeningDate(const int id, const int value1, const int value2,
+                                                           const bool isRandomized, const LibraryId libraryId) :
+	SmartPlaylist(id, {value1, value2}, isRandomized, libraryId) {}
 
 SmartPlaylistByListeningDate::~SmartPlaylistByListeningDate() = default;
 
@@ -86,7 +86,7 @@ MetaDataList SmartPlaylistByListeningDate::filterTracks(MetaDataList tracks)
 				continue;
 			}
 
-			if(!Util::File::isWWW(filepath) && Util::File::exists(filepath))
+			if(!Util::File::isWWW(filepath) && Util::File::exists(filepath) && (entry.track.libraryId() == libraryId()))
 			{
 				processedFilepaths << filepath;
 				tracks.push_back(std::move(entry.track));

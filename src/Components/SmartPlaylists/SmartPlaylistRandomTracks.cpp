@@ -27,8 +27,8 @@
 
 #include <QObject>
 
-SmartPlaylistRandomTracks::SmartPlaylistRandomTracks(const int id, const int count) :
-	SmartPlaylist(id, {count}, false) {}
+SmartPlaylistRandomTracks::SmartPlaylistRandomTracks(const int id, const int count, const LibraryId libraryId) :
+	SmartPlaylist(id, {count}, false, libraryId) {}
 
 SmartPlaylistRandomTracks::~SmartPlaylistRandomTracks() = default;
 

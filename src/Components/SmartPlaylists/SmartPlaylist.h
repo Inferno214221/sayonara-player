@@ -57,7 +57,7 @@ class SmartPlaylist
 	PIMPL(SmartPlaylist)
 
 	public:
-		SmartPlaylist(int id, const QList<int>& values, bool isRandomized);
+		SmartPlaylist(int id, const QList<int>& values, bool isRandomized, LibraryId libraryId);
 		virtual ~SmartPlaylist();
 
 		[[nodiscard]] int id() const;
@@ -73,6 +73,9 @@ class SmartPlaylist
 		[[nodiscard]] bool isRandomized() const;
 		void setRandomized(bool b);
 		[[nodiscard]] virtual bool isRandomizable() const;
+
+		[[nodiscard]] LibraryId libraryId() const;
+		void setLibraryId(LibraryId libraryId);
 
 		virtual MetaDataList filterTracks(MetaDataList tracks) = 0;
 

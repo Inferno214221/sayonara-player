@@ -29,15 +29,18 @@ struct SmartPlaylist::Private
 	QList<int> values;
 	std::shared_ptr<SmartPlaylists::StringConverter> stringConverter {nullptr};
 	bool isRandomized;
+	LibraryId libraryId;
 
-	Private(const int id, const QList<int>& values, const bool isRandomized) :
+	Private(const int id, const QList<int>& values, const bool isRandomized, const LibraryId libraryId) :
 		id {id},
 		values {values},
-		isRandomized {isRandomized} {}
+		isRandomized {isRandomized},
+		libraryId {libraryId} {}
 };
 
-SmartPlaylist::SmartPlaylist(const int id, const QList<int>& values, const bool isRandomized) :
-	m {Pimpl::make<Private>(id, values, isRandomized)} {}
+SmartPlaylist::SmartPlaylist(const int id, const QList<int>& values, const bool isRandomized,
+                             const LibraryId libraryId) :
+	m {Pimpl::make<Private>(id, values, isRandomized, libraryId)} {}
 
 SmartPlaylist::~SmartPlaylist() = default;
 
@@ -47,7 +50,8 @@ SmartPlaylistDatabaseEntry SmartPlaylist::toDatabaseEntry() const
 		id(),
 		classType(),
 		attributesToString(),
-		isRandomized()
+		isRandomized(),
+		libraryId()
 	};
 }
 
@@ -82,6 +86,10 @@ bool SmartPlaylist::isRandomized() const { return (isRandomizable() && m->isRand
 void SmartPlaylist::setRandomized(const bool b) { m->isRandomized = b; }
 
 bool SmartPlaylist::isRandomizable() const { return true; }
+
+[[nodiscard]] LibraryId SmartPlaylist::libraryId() const { return m->libraryId; }
+
+void SmartPlaylist::setLibraryId(const LibraryId libraryId) { m->libraryId = libraryId; }
 
 SmartPlaylists::InputFormat SmartPlaylist::inputFormat() const { return SmartPlaylists::InputFormat::Text; }
 

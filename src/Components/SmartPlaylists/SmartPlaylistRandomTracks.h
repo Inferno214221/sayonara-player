@@ -28,7 +28,7 @@ class SmartPlaylistRandomTracks :
 	public:
 		static constexpr const auto ClassType = "random-tracks";
 
-		SmartPlaylistRandomTracks(int id, int count);
+		SmartPlaylistRandomTracks(int id, int count, LibraryId libraryId);
 		~SmartPlaylistRandomTracks() override;
 
 		[[nodiscard]] int minimumValue() const override;

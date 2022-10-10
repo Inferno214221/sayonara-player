@@ -33,7 +33,8 @@ namespace SmartPlaylists
 {
 	std::shared_ptr<SmartPlaylist> create(const SmartPlaylistDatabaseEntry& entry);
 	std::shared_ptr<SmartPlaylist>
-	createFromType(SmartPlaylists::Type field, int id, const QList<int>& values, bool isRandomized);
+	createFromType(SmartPlaylists::Type field, int id, const QList<int>& values, bool isRandomized,
+	               LibraryId libraryId);
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTCREATOR_H

@@ -29,6 +29,7 @@ namespace DB
 		constexpr const auto AttributesField = "attributes";
 		constexpr const auto ClassTypeField = "classType";
 		constexpr const auto RandomizedField = "isRandomized";
+		constexpr const auto LibraryIdField = "libraryId";
 	}
 
 	SmartPlaylists::SmartPlaylists(const QString& connectionName, const DbId databaseId) :
@@ -37,12 +38,13 @@ namespace DB
 	QList<SmartPlaylistDatabaseEntry> SmartPlaylists::getAllSmartPlaylists() const
 	{
 		const auto querytext = QString(
-			"SELECT %1, %2, %3, %4 "
+			"SELECT %1, %2, %3, %4, %5 "
 			"FROM SmartPlaylists")
 			.arg(IdField)
 			.arg(ClassTypeField)
 			.arg(AttributesField)
-			.arg(RandomizedField);
+			.arg(RandomizedField)
+			.arg(LibraryIdField);
 
 		auto query = runQuery(querytext, "Cannot fetch Smart Playlists");
 		if(query.hasError())
@@ -58,7 +60,8 @@ namespace DB
 				query.value(0).toInt(),
 				query.value(1).toString(),
 				query.value(2).toString(),
-				query.value(3).toBool()
+				query.value(3).toBool(),
+				static_cast<LibraryId>(query.value(4).toInt())
 			};
 
 			result << std::move(item);
@@ -72,7 +75,8 @@ namespace DB
 		const auto query = insert("SmartPlaylists", {
 			{ClassTypeField,  smartPlaylistDatabaseEntry.classType},
 			{AttributesField, smartPlaylistDatabaseEntry.attributes},
-			{RandomizedField, smartPlaylistDatabaseEntry.isRandomized}
+			{RandomizedField, smartPlaylistDatabaseEntry.isRandomized},
+			{LibraryIdField,  smartPlaylistDatabaseEntry.libraryId}
 		}, "Cannot insert into Smart Playlists");
 
 		return (!query.hasError())
@@ -85,7 +89,8 @@ namespace DB
 		const auto query = update("SmartPlaylists", {
 			                          {ClassTypeField,  smartPlaylistDatabaseEntry.classType},
 			                          {AttributesField, smartPlaylistDatabaseEntry.attributes},
-			                          {RandomizedField, smartPlaylistDatabaseEntry.isRandomized}
+			                          {RandomizedField, smartPlaylistDatabaseEntry.isRandomized},
+			                          {LibraryIdField,  smartPlaylistDatabaseEntry.libraryId}
 		                          }, {IdField, id},
 		                          "Cannot update Smart Playlists");
 

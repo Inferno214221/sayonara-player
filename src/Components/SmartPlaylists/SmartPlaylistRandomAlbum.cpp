@@ -86,8 +86,9 @@ namespace
 	}
 }
 
-SmartPlaylistRandomAlbum::SmartPlaylistRandomAlbum(const int id, const int count, const bool isRandomized) :
-	SmartPlaylist(id, {count}, isRandomized) {}
+SmartPlaylistRandomAlbum::SmartPlaylistRandomAlbum(const int id, const int count, const bool isRandomized,
+                                                   const LibraryId libraryId) :
+	SmartPlaylist(id, {count}, isRandomized, libraryId) {}
 
 SmartPlaylistRandomAlbum::~SmartPlaylistRandomAlbum() = default;
 
