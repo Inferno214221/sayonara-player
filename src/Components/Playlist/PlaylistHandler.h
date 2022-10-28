@@ -115,16 +115,16 @@ namespace Playlist
 			 * @param type deprecated
 			 * @return new playlist index
 			 */
-			int createPlaylist(const QStringList& pathList, const QString& name = QString(),
-			                   bool temporary = true) override;
-			int createCommandLinePlaylist(const QStringList& pathList) override;
+			int
+			createPlaylist(const QStringList& paths, const QString& name = QString(), bool temporary = true) override;
 
 			/**
 			 * @brief create a new playlist (overloaded)
 			 * @param customPlaylist a CustomPlaylist object fetched from database
 			 * @return new playlist index
 			 */
-			int createPlaylist(const CustomPlaylist& customPlaylist) override;
+			int createPlaylist(const CustomPlaylist& playlist) override;
+			int createCommandLinePlaylist(const QStringList& pathList) override;
 
 			/**
 			 * @brief create a new empty playlist

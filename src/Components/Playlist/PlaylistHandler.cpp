@@ -39,159 +39,158 @@
 
 #include <cassert>
 
-using Playlist::Handler;
-using Playlist::Loader;
-
-namespace
+namespace Playlist
 {
-	void resetLastPlayedTrack(PlayManager* playManager)
+	namespace
 	{
-		if(playManager->initialPositionMs() > 0)
+		void resetLastPlayedTrack(PlayManager* playManager)
 		{
-			playManager->stop();
-		}
+			if(playManager->initialPositionMs() > 0)
+			{
+				playManager->stop();
+			}
 
-		playManager->setCurrentPositionMs(0);
-	}
-}
-
-struct Handler::Private
-{
-	QList<PlaylistPtr> playlists;
-	PlayManager* playManager;
-	int currentPlaylistIndex {-1};
-
-	explicit Private(PlayManager* playManager) :
-		playManager {playManager} {}
-
-	void initPlaylists(Handler* handler, const std::shared_ptr<::Playlist::Loader>& playlistLoader) const
-	{
-		spLog(Log::Debug, this) << "Loading playlists...";
-
-		const auto& loadedPlaylistst = playlistLoader->playlists();
-		if(loadedPlaylistst.isEmpty())
-		{
-			handler->createEmptyPlaylist();
-			return;
-		}
-
-		for(const auto& playlist: loadedPlaylistst)
-		{
-			handler->createPlaylist(playlist);
-		}
-
-		const auto lastIndex = playlistLoader->getLastPlaylistIndex();
-		const auto currentIndex = std::max(0, lastIndex);
-		handler->setCurrentIndex(currentIndex);
-
-		const auto lastTrackIndex = playlistLoader->getLastTrackIndex();
-		if(lastTrackIndex >= 0)
-		{
-			auto lastPlaylist = handler->playlist(currentIndex);
-			lastPlaylist->setCurrentTrack(lastTrackIndex);
-		}
-
-		else
-		{
-			this->playManager->stop();
-		}
-	}
-};
-
-Handler::Handler(PlayManager* playManager, const std::shared_ptr<::Playlist::Loader>& playlistLoader) :
-	PlaylistCreator()
-{
-	m = Pimpl::make<Private>(playManager);
-	m->initPlaylists(this, playlistLoader);
-
-	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
-	connect(m->playManager, &PlayManager::sigNext, this, &Handler::next);
-	connect(m->playManager, &PlayManager::sigWakeup, this, &Handler::wakeUp);
-	connect(m->playManager, &PlayManager::sigPrevious, this, &Handler::previous);
-	connect(m->playManager, &PlayManager::sigStreamFinished, this, &Handler::wwwTrackFinished);
-
-	auto* playlistChangeNotifier = PlaylistChangeNotifier::instance();
-	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
-	connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
-}
-
-Handler::~Handler() = default;
-
-void Handler::shutdown()
-{
-	::Playlist::saveCurrentPlaylists(m->playlists);
-
-	m->playlists.clear();
-	m->currentPlaylistIndex = -1;
-}
-
-int Handler::addNewPlaylist(const QString& name, const bool temporary)
-{
-	const auto index = exists(name);
-	if(index >= 0)
-	{
-		return index;
-	}
-
-	auto playlist = std::make_shared<Playlist>(m->playlists.count(), name, m->playManager);
-	playlist->setTemporary(temporary);
-
-	m->playlists.push_back(playlist);
-
-	emit sigNewPlaylistAdded(m->playlists.count() - 1);
-	emit sigActivePlaylistChanged(activeIndex());
-
-	connect(playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Handler::trackChanged);
-
-	return playlist->index();
-}
-
-int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, const bool temporary)
-{
-	const auto index = addNewPlaylist(name, temporary);
-
-	auto& playlist = m->playlists[index];
-	if(!playlist->isBusy())
-	{
-		playlist->createPlaylist(tracks);
-		playlist->setTemporary(playlist->isTemporary() && temporary);
-		if(playlist->isTemporary())
-		{
-			playlist->save();
+			playManager->setCurrentPositionMs(0);
 		}
 	}
 
-	setCurrentIndex(index);
-	return m->currentPlaylistIndex;
-}
-
-int Handler::createPlaylist(const CustomPlaylist& playlist)
-{
-	const auto index = createPlaylist(playlist.tracks(), playlist.name(), playlist.isTemporary());
-
-	auto& createdPlaylist = m->playlists[index];
-	createdPlaylist->setId(playlist.id());
-	createdPlaylist->setChanged(false);
-
-	return m->currentPlaylistIndex;
-}
-
-int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary)
-{
-	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated, 
-			this, [playlistFromPathCreator](const int /* index */) {
-		playlistFromPathCreator->deleteLater();
-	});
-
-	const auto index = playlistFromPathCreator->createPlaylists(paths, name, temporary);
-	if(index >= 0)
+	struct Handler::Private
 	{
+		QList<PlaylistPtr> playlists;
+		PlayManager* playManager;
+		int currentPlaylistIndex {-1};
+
+		explicit Private(PlayManager* playManager) :
+			playManager {playManager} {}
+
+		void initPlaylists(Handler* handler, const std::shared_ptr<Loader>& playlistLoader) const
+		{
+			spLog(Log::Debug, this) << "Loading playlists...";
+
+			const auto& loadedPlaylistst = playlistLoader->playlists();
+			if(loadedPlaylistst.isEmpty())
+			{
+				handler->createEmptyPlaylist();
+				return;
+			}
+
+			for(const auto& playlist: loadedPlaylistst)
+			{
+				handler->createPlaylist(playlist);
+			}
+
+			const auto lastIndex = playlistLoader->getLastPlaylistIndex();
+			const auto currentIndex = std::max(0, lastIndex);
+			handler->setCurrentIndex(currentIndex);
+
+			const auto lastTrackIndex = playlistLoader->getLastTrackIndex();
+			if(lastTrackIndex >= 0)
+			{
+				auto lastPlaylist = handler->playlist(currentIndex);
+				lastPlaylist->setCurrentTrack(lastTrackIndex);
+			}
+
+			else
+			{
+				this->playManager->stop();
+			}
+		}
+	};
+
+	Handler::Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader) :
+		PlaylistCreator()
+	{
+		m = Pimpl::make<Private>(playManager);
+		m->initPlaylists(this, playlistLoader);
+
+		connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
+		connect(m->playManager, &PlayManager::sigNext, this, &Handler::next);
+		connect(m->playManager, &PlayManager::sigWakeup, this, &Handler::wakeUp);
+		connect(m->playManager, &PlayManager::sigPrevious, this, &Handler::previous);
+		connect(m->playManager, &PlayManager::sigStreamFinished, this, &Handler::wwwTrackFinished);
+
+		auto* playlistChangeNotifier = PlaylistChangeNotifier::instance();
+		connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
+		connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
+	}
+
+	Handler::~Handler() = default;
+
+	void Handler::shutdown()
+	{
+		saveCurrentPlaylists(m->playlists);
+
+		m->playlists.clear();
+		m->currentPlaylistIndex = -1;
+	}
+
+	int Handler::addNewPlaylist(const QString& name, const bool temporary)
+	{
+		const auto index = exists(name);
+		if(index >= 0)
+		{
+			return index;
+		}
+
+		auto playlist = std::make_shared<Playlist>(m->playlists.count(), name, m->playManager);
+		playlist->setTemporary(temporary);
+
+		m->playlists.push_back(playlist);
+
+		emit sigNewPlaylistAdded(m->playlists.count() - 1);
+		emit sigActivePlaylistChanged(activeIndex());
+
+		connect(playlist.get(), &Playlist::sigTrackChanged, this, &Handler::trackChanged);
+
+		return playlist->index();
+	}
+
+	int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, const bool temporary)
+	{
+		const auto index = addNewPlaylist(name, temporary);
+
+		auto& playlist = m->playlists[index];
+		if(!playlist->isBusy())
+		{
+			playlist->createPlaylist(tracks);
+			playlist->setTemporary(playlist->isTemporary() && temporary);
+			if(playlist->isTemporary())
+			{
+				playlist->save();
+			}
+		}
+
 		setCurrentIndex(index);
+		return m->currentPlaylistIndex;
 	}
 
-	return m->currentPlaylistIndex;
-}
+	int Handler::createPlaylist(const CustomPlaylist& playlist)
+	{
+		const auto index = createPlaylist(playlist.tracks(), playlist.name(), playlist.isTemporary());
+
+		auto& createdPlaylist = m->playlists[index];
+		createdPlaylist->setId(playlist.id());
+		createdPlaylist->setChanged(false);
+
+		return m->currentPlaylistIndex;
+	}
+
+	int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary)
+	{
+		auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
+		connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+		        this, [playlistFromPathCreator](const int /* index */) {
+				playlistFromPathCreator->deleteLater();
+			});
+
+		const auto index = playlistFromPathCreator->createPlaylists(paths, name, temporary);
+		if(index >= 0)
+		{
+			setCurrentIndex(index);
+		}
+
+		return m->currentPlaylistIndex;
+	}
 
 int Handler::createCommandLinePlaylist(const QStringList& paths)
 {
@@ -208,210 +207,211 @@ int Handler::createCommandLinePlaylist(const QStringList& paths)
 			playlistFromPathCreator->deleteLater();
 		});
 
-	const auto maybeName = ::Playlist::filesystemPlaylistName();
-	const auto playlistName = maybeName.isEmpty()
-	                          ? requestNewPlaylistName()
-	                          : maybeName;
+		const auto maybeName = filesystemPlaylistName();
+		const auto playlistName = maybeName.isEmpty()
+		                          ? requestNewPlaylistName()
+		                          : maybeName;
 
-	playlistFromPathCreator->createPlaylists(paths, playlistName, true);
+		playlistFromPathCreator->createPlaylists(paths, playlistName, true);
 
-	return m->currentPlaylistIndex;
-}
-
-int Handler::createEmptyPlaylist(const bool overwrite)
-{
-	const auto name = overwrite ? QString() : requestNewPlaylistName();
-	return createPlaylist(MetaDataList(), name, true);
-}
-
-void Handler::playstateChanged(const PlayState state)
-{
-	if(state == PlayState::Playing)
-	{
-		activePlaylist()->play();
+		return m->currentPlaylistIndex;
 	}
 
-	else if(state == PlayState::Stopped)
+	int Handler::createEmptyPlaylist(const bool override)
 	{
-		for(auto& playlist: m->playlists)
+		const auto name = override ? QString() : requestNewPlaylistName();
+		return createPlaylist(MetaDataList(), name, true);
+	}
+
+	void Handler::playstateChanged(const PlayState state)
+	{
+		if(state == PlayState::Playing)
 		{
-			playlist->stop();
+			activePlaylist()->play();
 		}
-	}
-}
 
-void Handler::next()
-{
-	auto playlist = activePlaylist();
-	playlist->next();
-	if(playlist->currentTrackIndex() < 0)
-	{
-		m->playManager->stop();
-	}
-}
-
-void Handler::previous()
-{
-	activePlaylist()->bwd();
-}
-
-void Handler::wakeUp()
-{
-	const auto restoreTrackAfterStop = GetSetting(Set::PL_RememberTrackAfterStop);
-	if(restoreTrackAfterStop && activePlaylist()->wakeUp())
-	{
-		return;
-	}
-
-	next();
-}
-
-void Handler::trackChanged(const int /*oldIndex*/, const int /*newIndex*/)
-{
-	auto* playlist = dynamic_cast<Playlist*>(sender());
-	if(playlist->currentTrackIndex() >= 0)
-	{
-		for(const auto& playlistPtr: m->playlists)
+		else if(state == PlayState::Stopped)
 		{
-			if(playlist->index() != playlistPtr->index())
+			for(auto& playlist: m->playlists)
 			{
-				playlistPtr->stop();
+				playlist->stop();
 			}
 		}
 	}
-}
 
-int Handler::activeIndex() const
-{
-	const auto index = Util::Algorithm::indexOf(m->playlists, [](const auto& playlist) {
-		return (playlist->currentTrackIndex() >= 0);
-	});
-
-	if(Util::between(index, m->playlists))
+	void Handler::next()
 	{
-		return index;
-	}
-
-	if(Util::between(currentIndex(), m->playlists))
-	{
-		return currentIndex();
-	}
-
-	assert(count() > 0);
-	return 0;
-}
-
-int Handler::currentIndex() const {	return m->currentPlaylistIndex; }
-
-void Handler::setCurrentIndex(int playlistIndex)
-{
-	if(Util::between(playlistIndex, m->playlists))
-	{
-		if(m->currentPlaylistIndex != playlistIndex)
+		auto playlist = activePlaylist();
+		playlist->next();
+		if(playlist->currentTrackIndex() < 0)
 		{
-			m->currentPlaylistIndex = playlistIndex;
-			emit sigCurrentPlaylistChanged(playlistIndex);
-		}
-	}
-}
-
-PlaylistPtr Handler::activePlaylist() {	return m->playlists[activeIndex()]; }
-
-int Handler::count() const { return m->playlists.size(); }
-
-QString Handler::requestNewPlaylistName(const QString& prefix) const
-{
-	return ::Playlist::requestNewDatabaseName(prefix);
-}
-
-void Handler::closePlaylist(const int playlistIndex)
-{
-	if(auto playlist = this->playlist(playlistIndex); playlist && playlist->isTemporary())
-	{
-		playlist->deletePlaylist();
-	}
-
-	m->playlists.removeAt(playlistIndex);
-
-	for(const auto& remaningPlaylist: m->playlists)
-	{
-		if((remaningPlaylist->index() >= playlistIndex) &&
-		   (remaningPlaylist->index() > 0))
-		{
-			remaningPlaylist->setIndex(remaningPlaylist->index() - 1);
+			m->playManager->stop();
 		}
 	}
 
-	if(m->playlists.isEmpty())
+	void Handler::previous()
 	{
-		addNewPlaylist(this->requestNewPlaylistName(), true);
+		activePlaylist()->bwd();
 	}
 
-	if(m->currentPlaylistIndex >= m->playlists.count())
+	void Handler::wakeUp()
 	{
-		setCurrentIndex(m->currentPlaylistIndex - 1);
+		const auto restoreTrackAfterStop = GetSetting(Set::PL_RememberTrackAfterStop);
+		if(restoreTrackAfterStop && activePlaylist()->wakeUp())
+		{
+			return;
+		}
+
+		next();
 	}
 
-	const auto activePlaylist = this->activePlaylist();
-	const auto lastPlaylistId = (activePlaylist) ? activePlaylist->id() : -1;
-	const auto lastTrack = (activePlaylist) ? currentTrackWithoutDisabled(*activePlaylist) : -1;
+	void Handler::trackChanged(const int /*oldIndex*/, const int /*newIndex*/)
+	{
+		auto* playlist = dynamic_cast<Playlist*>(sender());
+		if(playlist->currentTrackIndex() >= 0)
+		{
+			for(const auto& playlistPtr: m->playlists)
+			{
+				if(playlist->index() != playlistPtr->index())
+				{
+					playlistPtr->stop();
+				}
+			}
+		}
+	}
 
-	SetSetting(Set::PL_LastTrack, lastTrack);
-	SetSetting(Set::PL_LastPlaylist, lastPlaylistId);
-
-	emit sigPlaylistClosed(playlistIndex);
-}
-
-PlaylistPtr Handler::playlist(const int playlistIndex)
-{
-	return (Util::between(playlistIndex, m->playlists.count()))
-	       ? m->playlists[playlistIndex]
-	       : nullptr;
-}
-
-PlaylistPtr Handler::playlistById(const int playlistId)
-{
-	const auto index = Util::Algorithm::indexOf(m->playlists, [&](const auto playlist) {
-			return (playlist->id() == playlistId);
+	int Handler::activeIndex() const
+	{
+		const auto index = Util::Algorithm::indexOf(m->playlists, [](const auto& playlist) {
+			return (playlist->currentTrackIndex() >= 0);
 		});
 
-	return playlist(index);
-}
+		if(Util::between(index, m->playlists))
+		{
+			return index;
+		}
 
-int Handler::exists(const QString& name) const
-{
-	if(name.isEmpty() && Util::between(m->currentPlaylistIndex, m->playlists))
+		if(Util::between(currentIndex(), m->playlists))
+		{
+			return currentIndex();
+		}
+
+		assert(count() > 0);
+		return 0;
+	}
+
+	int Handler::currentIndex() const
 	{
 		return m->currentPlaylistIndex;
 	}
 
-	return Util::Algorithm::indexOf(m->playlists, [&](const auto& playlist) {
-		return (playlist->name().toLower() == name.toLower());
-	});
-}
-
-void Handler::playlistRenamed(const int id, const QString& /*oldName*/, const QString& /*newName*/)
-{
-	if(const auto playlist = playlistById(id); playlist)
+	void Handler::setCurrentIndex(int playlistIndex)
 	{
-		emit sigPlaylistNameChanged(playlist->index());
+		if(Util::between(playlistIndex, m->playlists))
+		{
+			if(m->currentPlaylistIndex != playlistIndex)
+			{
+				m->currentPlaylistIndex = playlistIndex;
+				emit sigCurrentPlaylistChanged(playlistIndex);
+			}
+		}
 	}
-}
 
-void Handler::playlistDeleted(const int id)
-{
-	if(auto playlist = playlistById(id); playlist)
+	PlaylistPtr Handler::activePlaylist() { return m->playlists[activeIndex()]; }
+
+	int Handler::count() const { return m->playlists.size(); }
+
+	QString Handler::requestNewPlaylistName(const QString& prefix) const { return requestNewDatabaseName(prefix); }
+
+	void Handler::closePlaylist(const int playlistIndex)
 	{
-		playlist->setTemporary(true);
-		playlist->setChanged(false);
+		if(auto playlist = this->playlist(playlistIndex); playlist && playlist->isTemporary())
+		{
+			playlist->deletePlaylist();
+		}
+
+		m->playlists.removeAt(playlistIndex);
+
+		for(const auto& remaningPlaylist: m->playlists)
+		{
+			if((remaningPlaylist->index() >= playlistIndex) &&
+			   (remaningPlaylist->index() > 0))
+			{
+				remaningPlaylist->setIndex(remaningPlaylist->index() - 1);
+			}
+		}
+
+		if(m->playlists.isEmpty())
+		{
+			addNewPlaylist(this->requestNewPlaylistName(), true);
+		}
+
+		if(m->currentPlaylistIndex >= m->playlists.count())
+		{
+			setCurrentIndex(m->currentPlaylistIndex - 1);
+		}
+
+		const auto activePlaylist = this->activePlaylist();
+		const auto lastPlaylistId = (activePlaylist) ? activePlaylist->id() : -1;
+		const auto lastTrack = (activePlaylist) ? currentTrackWithoutDisabled(*activePlaylist) : -1;
+
+		SetSetting(Set::PL_LastTrack, lastTrack);
+		SetSetting(Set::PL_LastPlaylist, lastPlaylistId);
+
+		emit sigPlaylistClosed(playlistIndex);
 	}
-}
 
-void Handler::wwwTrackFinished(const MetaData& track)
-{
-	if(GetSetting(Set::Stream_ShowHistory))
+	PlaylistPtr Handler::playlist(const int playlistIndex)
 	{
-		auto playlist = activePlaylist();
-		::Playlist::insertTracks(*playlist, MetaDataList {track}, playlist->currentTrackIndex());
+		return Util::between(playlistIndex, m->playlists.count())
+		       ? m->playlists[playlistIndex]
+		       : nullptr;
+	}
+
+	PlaylistPtr Handler::playlistById(const int playlistId)
+	{
+		const auto index = Util::Algorithm::indexOf(m->playlists, [&](const auto playlist) {
+			return (playlist->id() == playlistId);
+		});
+
+		return playlist(index);
+	}
+
+	int Handler::exists(const QString& name) const
+	{
+		if(name.isEmpty() && Util::between(m->currentPlaylistIndex, m->playlists))
+		{
+			return m->currentPlaylistIndex;
+		}
+
+		return Util::Algorithm::indexOf(m->playlists, [&](const auto& playlist) {
+			return (playlist->name().toLower() == name.toLower());
+		});
+	}
+
+	void Handler::playlistRenamed(const int id, const QString& /*oldName*/, const QString& /*newName*/)
+	{
+		if(const auto playlist = playlistById(id); playlist)
+		{
+			emit sigPlaylistNameChanged(playlist->index());
+		}
+	}
+
+	void Handler::playlistDeleted(const int id)
+	{
+		if(auto playlist = playlistById(id); playlist)
+		{
+			playlist->setTemporary(true);
+			playlist->setChanged(false);
+		}
+	}
+
+	void Handler::wwwTrackFinished(const MetaData& track)
+	{
+		if(GetSetting(Set::Stream_ShowHistory))
+		{
+			auto playlist = activePlaylist();
+			insertTracks(*playlist, MetaDataList {track}, playlist->currentTrackIndex());
+		}
 	}
 }
