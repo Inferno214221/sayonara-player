@@ -194,6 +194,10 @@ int Handler::createCommandLinePlaylist(const QStringList& paths)
 		        m->playManager->setCurrentPositionMs(0);
 		        playlist(firstIndex)->setCurrentTrack(0);
 		        setCurrentIndex(firstIndex);
+		        if((firstIndex == 1) && playlist(0)->tracks().isEmpty())
+		        {
+			        closePlaylist(0);
+		        }
 		        playlistFromPathCreator->deleteLater();
 	        });
 
