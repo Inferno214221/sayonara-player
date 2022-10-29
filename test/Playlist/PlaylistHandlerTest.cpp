@@ -33,17 +33,17 @@ class PlaylistHandlerTest :
 			return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>());
 		}
 
-	private slots:
-		void createTest();
-		void closeTest();
-		void currentIndexTest();
-		void activeIndexTest();
-		void createPlaylistFromFiles();
-		void createCommandLinePlaylistSettings();
-		void createCommandLinePlaylist();
+	private slots: // NOLINT(readability-redundant-access-specifiers)
+		[[maybe_unused]] void createTest();
+		[[maybe_unused]] void closeTest();
+		[[maybe_unused]] void currentIndexTest();
+		[[maybe_unused]] void activeIndexTest();
+		[[maybe_unused]] void createPlaylistFromFiles();
+		[[maybe_unused]] void createCommandLinePlaylistSettings();
+		[[maybe_unused]] void createCommandLinePlaylist();
 };
 
-void PlaylistHandlerTest::createTest()
+[[maybe_unused]] void PlaylistHandlerTest::createTest() // NOLINT(readability-function-cognitive-complexity)
 {
 	auto plh = createHandler();
 	QVERIFY(plh->count() == 1);
@@ -67,7 +67,7 @@ void PlaylistHandlerTest::createTest()
 	plh->shutdown();
 }
 
-void PlaylistHandlerTest::closeTest()
+[[maybe_unused]] void PlaylistHandlerTest::closeTest() // NOLINT(readability-function-cognitive-complexity)
 {
 	auto plh = createHandler();
 	plh->createEmptyPlaylist(false);
@@ -81,7 +81,8 @@ void PlaylistHandlerTest::closeTest()
 	QVERIFY(plh->playlist(0)->index() == 0);
 	QVERIFY(plh->activeIndex() == 0);
 
-	for(int i = 0; i < 50; i++)
+	constexpr const auto MaxPlaylistCount = 50;
+	for(auto i = 0; i < MaxPlaylistCount; i++)
 	{
 		plh->closePlaylist(0);
 		QVERIFY(plh->count() == 1);
@@ -90,12 +91,12 @@ void PlaylistHandlerTest::closeTest()
 	}
 }
 
-void PlaylistHandlerTest::currentIndexTest()
+[[maybe_unused]] void PlaylistHandlerTest::currentIndexTest()
 {
 	auto plh = createHandler();
 
 	QVERIFY(plh->currentIndex() == 0); // one playlist
-	plh->setCurrentIndex(20);
+	plh->setCurrentIndex(20); // NOLINT(readability-magic-numbers)
 	QVERIFY(plh->currentIndex() == 0);
 
 	plh->createEmptyPlaylist(false); // two playlists
@@ -104,21 +105,25 @@ void PlaylistHandlerTest::currentIndexTest()
 	plh->createEmptyPlaylist(false); // three playlists
 	QVERIFY(plh->currentIndex() == 2);
 
-	plh->setCurrentIndex(5); // invalid current index
+	constexpr const auto InvalidIndex = 5;
+	plh->setCurrentIndex(InvalidIndex);
 	QVERIFY(plh->currentIndex() == 2);
 
-	plh->setCurrentIndex(0); // valid current index
+	constexpr const auto ValidCurrentIndex = 0;
+	plh->setCurrentIndex(ValidCurrentIndex);
 	QVERIFY(plh->currentIndex() == 0);
 
-	plh->setCurrentIndex(2);
-	plh->closePlaylist(2); // delete current index pl
+	constexpr const auto NewCurrentIndex = 2;
+	plh->setCurrentIndex(NewCurrentIndex);
+	plh->closePlaylist(NewCurrentIndex);
 	QVERIFY(plh->currentIndex() == 1);
 
-	plh->closePlaylist(0); // delete last playlist
+	constexpr const auto LastPlaylistIndex = 0;
+	plh->closePlaylist(LastPlaylistIndex);
 	QVERIFY(plh->currentIndex() == 0);
 }
 
-void PlaylistHandlerTest::activeIndexTest()
+[[maybe_unused]] void PlaylistHandlerTest::activeIndexTest() // NOLINT(readability-function-cognitive-complexity)
 {
 	auto plh = createHandler();
 	QVERIFY(plh->activeIndex() == 0); // one playlist
@@ -133,7 +138,8 @@ void PlaylistHandlerTest::activeIndexTest()
 	QVERIFY(plh->activeIndex() == 1); // two playlists
 
 	MetaDataList tracks;
-	for(int i = 0; i < 10; i++)
+	constexpr const auto TrackCount = 10;
+	for(int i = 0; i < TrackCount; i++)
 	{
 		// file must exist
 		const auto filename = Test::Base::tempPath(QString("file%1.mp3").arg(i));
@@ -159,7 +165,7 @@ void PlaylistHandlerTest::activeIndexTest()
 	QVERIFY(plh->activeIndex() == plh->currentIndex());
 }
 
-void PlaylistHandlerTest::createPlaylistFromFiles()
+[[maybe_unused]] void PlaylistHandlerTest::createPlaylistFromFiles()
 {
 	const auto paths = QStringList() << "path2.m3u" << "path1.mp3" << "path3.pls";
 	auto plh = createHandler();
@@ -182,9 +188,7 @@ void PlaylistHandlerTest::createPlaylistFromFiles()
 	QVERIFY(names == playlistNames);
 }
 
-#include "Utils/Settings/Settings.h"
-
-void PlaylistHandlerTest::createCommandLinePlaylistSettings()
+[[maybe_unused]] void PlaylistHandlerTest::createCommandLinePlaylistSettings()
 {
 	struct TestCase
 	{
@@ -219,7 +223,7 @@ void PlaylistHandlerTest::createCommandLinePlaylistSettings()
 	}
 }
 
-void PlaylistHandlerTest::createCommandLinePlaylist()
+[[maybe_unused]] void PlaylistHandlerTest::createCommandLinePlaylist()
 {
 	auto plh = createHandler();
 

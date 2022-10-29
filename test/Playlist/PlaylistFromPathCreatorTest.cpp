@@ -104,18 +104,18 @@ class PlaylistFromPathCreatorTest :
 			m_pathTrackMap {Test::Playlist::createTrackFiles(Test::Base::tempPath())} {}
 
 	private slots:
-		void testSinglePlaylist();
-		void testPlaylistWithPlaylistFile();
+		[[maybe_unused]] void testSinglePlaylist();
+		[[maybe_unused]] void testPlaylistWithPlaylistFile();
 
-	private:
+	private: // NOLINT(readability-redundant-access-specifiers)
 		static void wait(PlaylistFromPathCreator* creator);
 		const Test::Playlist::PathTrackMap m_pathTrackMap;
 };
 
-void PlaylistFromPathCreatorTest::testSinglePlaylist()
+[[maybe_unused]] void PlaylistFromPathCreatorTest::testSinglePlaylist()
 {
 	auto playlistCreator = PlaylistCreatorMock();
-	auto playlistFromPathCreator = PlaylistFromPathCreator(&playlistCreator);
+	auto* playlistFromPathCreator = PlaylistFromPathCreator::create(&playlistCreator);
 
 	auto pathList = QStringList {};
 
@@ -124,10 +124,9 @@ void PlaylistFromPathCreatorTest::testSinglePlaylist()
 		pathList << filepath;
 	}
 
-	const auto playlistName = "Some Playlist";
-	playlistFromPathCreator.createPlaylists({Test::Base::tempPath()}, playlistName, true);
+	playlistFromPathCreator->createPlaylists({Test::Base::tempPath()}, "Some Playlist", true);
 
-	wait(&playlistFromPathCreator);
+	wait(playlistFromPathCreator);
 
 	QVERIFY(playlistCreator.count() == 1);
 
@@ -135,10 +134,10 @@ void PlaylistFromPathCreatorTest::testSinglePlaylist()
 	QVERIFY(Playlist::count(*playlist) == m_pathTrackMap.count());
 }
 
-void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
+[[maybe_unused]] void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
 {
 	auto playlistCreator = PlaylistCreatorMock();
-	auto playlistFromPathCreator = PlaylistFromPathCreator(&playlistCreator);
+	auto* playlistFromPathCreator = PlaylistFromPathCreator::create(&playlistCreator);
 
 	auto pathList = QStringList {};
 	auto tracks = MetaDataList {};
@@ -149,21 +148,22 @@ void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
 		tracks << track;
 	}
 
-	tracks.removeTracks(5, tracks.count() - 1);
+	constexpr const auto indexToRemove = 5;
+	tracks.removeTracks(indexToRemove, tracks.count() - 1);
 
 	M3UParser::saveM3UPlaylist(Test::Base::tempPath("bla.m3u"), tracks, false);
 
-	const auto playlistName = "Some Playlist";
-	playlistFromPathCreator.createPlaylists({pathList.first(), Test::Base::tempPath("bla.m3u")}, playlistName, true);
+	const auto paths = QStringList {pathList.first(), Test::Base::tempPath("bla.m3u")};
+	playlistFromPathCreator->createPlaylists(paths, "Some Playlist", true);
 
-	wait(&playlistFromPathCreator);
+	wait(playlistFromPathCreator);
 
 	const auto playlist = playlistCreator.playlists()[1];
 	QVERIFY(playlistCreator.count() == 2);
 	QVERIFY(Playlist::count(*playlist) == 5);
 }
 
-void PlaylistFromPathCreatorTest::wait(PlaylistFromPathCreator* creator)
+[[maybe_unused]] void PlaylistFromPathCreatorTest::wait(PlaylistFromPathCreator* creator)
 {
 	auto spy = QSignalSpy(creator, &PlaylistFromPathCreator::sigAllPlaylistsCreated);
 

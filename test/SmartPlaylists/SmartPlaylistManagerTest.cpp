@@ -118,7 +118,8 @@ class SmartPlaylistManagerTest :
 		[[maybe_unused]] void testSelect();
 };
 
-[[maybe_unused]] void SmartPlaylistManagerTest::testInsert()
+[[maybe_unused]] void
+SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 
@@ -158,7 +159,8 @@ class SmartPlaylistManagerTest :
 	deleteAllPlaylists(manager);
 }
 
-void SmartPlaylistManagerTest::testEdit()
+[[maybe_unused]] void
+SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
 
@@ -211,10 +213,11 @@ void SmartPlaylistManagerTest::testEdit()
 	deleteAllPlaylists(manager);
 }
 
-void SmartPlaylistManagerTest::testDelete()
+[[maybe_unused]] void SmartPlaylistManagerTest::testDelete() // NOLINT(readability-convert-member-functions-to-static)
 {
 	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
-	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true);
+	auto smartPlaylist =
+		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true); // NOLINT(readability-magic-numbers)
 
 	QVERIFY(manager.smartPlaylists().count() == 0);
 	manager.insertPlaylist(smartPlaylist);
@@ -230,11 +233,12 @@ void SmartPlaylistManagerTest::testDelete()
 	QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 }
 
-void SmartPlaylistManagerTest::testSelect()
+[[maybe_unused]] void SmartPlaylistManagerTest::testSelect() // NOLINT(readability-convert-member-functions-to-static)
 {
 	auto* playlistCreator = new PlaylistCreatorMock();
 	auto manager = SmartPlaylistManager(playlistCreator);
-	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true);
+	auto smartPlaylist =
+		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true); // NOLINT(readability-magic-numbers)
 
 	manager.insertPlaylist(smartPlaylist);
 
