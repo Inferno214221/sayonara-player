@@ -67,13 +67,20 @@ namespace
 			                   bool /*temporary*/) override { throw std::bad_function_call {}; }
 
 			int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-			                   bool /*temporary*/) override { throw std::bad_function_call {}; }
+			                   bool /*temporary*/, Playlist::PlaylistFromPathCreator* /*creator*/) override
+			{
+				throw std::bad_function_call {};
+			}
 
 			int createPlaylist(const CustomPlaylist& /*customPlaylist*/) override { throw std::bad_function_call {}; }
 
 			int createEmptyPlaylist(bool /*override*/) override { throw std::bad_function_call {}; }
 
-			int createCommandLinePlaylist(const QStringList& /*pathList*/) override { throw std::bad_function_call {}; }
+			int createCommandLinePlaylist(const QStringList& /*pathList*/,
+			                              Playlist::PlaylistFromPathCreator* /*creator*/) override
+			{
+				throw std::bad_function_call {};
+			}
 
 		private:
 			PlayManagerMock m_playManager;
@@ -220,7 +227,7 @@ class ExternTracksPlaylistGeneratorTest :
 
 	wait(&externTracksPlaylistGenerator);
 	auto playlistFiles = QStringList {};
-	Util::Algorithm::transform(playlist->tracks(), playlistFiles, [](const auto& track){
+	Util::Algorithm::transform(playlist->tracks(), playlistFiles, [](const auto& track) {
 		return track.filepath();
 	});
 

@@ -66,89 +66,94 @@ namespace
 	}
 }
 
-struct PlaylistFromPathCreator::Private
+namespace Playlist
 {
-	PlaylistCreator* playlistCreator;
-	std::atomic<int> playlistCount {0};
-	int firstIndex {-1};
-
-	explicit Private(PlaylistCreator* playlistCreator) :
-		playlistCreator {playlistCreator} {}
-};
-
-PlaylistFromPathCreator::PlaylistFromPathCreator(PlaylistCreator* playlistCreator) :
-	QObject {}
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
-
-PlaylistFromPathCreator::~PlaylistFromPathCreator() = default;
-
-int PlaylistFromPathCreator::createSinglePlaylist(const QStringList& paths, const QString& name, bool temporary)
-{
-	const auto index = m->playlistCreator->createPlaylist(MetaDataList {}, name, temporary);
-
-	auto* playlistGenerator =
-		new ExternTracksPlaylistGenerator(m->playlistCreator->playlist(index));
-
-	connect(playlistGenerator,
-	        &ExternTracksPlaylistGenerator::sigFinished,
-	        this,
-	        &PlaylistFromPathCreator::generatorFinished);
-	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
-
-	playlistGenerator->addPaths(paths);
-
-	return index;
-}
-
-int PlaylistFromPathCreator::createPlaylists(const QStringList& paths, const QString& name, bool temporary)
-{
-	const auto splittedPaths = splitPathlist(paths);
-	m->playlistCount = splittedPaths.standardPaths.count() + splittedPaths.playlistFiles.count();
-
-	QList<int> createdPlaylists;
-	if(!splittedPaths.standardPaths.isEmpty())
+	class PlaylistFromPathCreatorImpl :
+		public PlaylistFromPathCreator
 	{
-		createdPlaylists
-			<< createSinglePlaylist(splittedPaths.standardPaths, name, temporary);
+		Q_OBJECT
+
+		public:
+			explicit PlaylistFromPathCreatorImpl(PlaylistCreator* playlistCreator) :
+				m_playlistCreator {playlistCreator} {}
+
+			~PlaylistFromPathCreatorImpl() override = default;
+
+			int createPlaylists(const QStringList& paths, const QString& name, bool temporary) override
+			{
+				const auto splittedPaths = splitPathlist(paths);
+				m_playlistCount = splittedPaths.standardPaths.count() + splittedPaths.playlistFiles.count();
+
+				QList<int> createdPlaylists;
+				if(!splittedPaths.standardPaths.isEmpty())
+				{
+					createdPlaylists
+						<< createSinglePlaylist(splittedPaths.standardPaths, name, temporary);
+				}
+
+				for(const auto& playlistFile: splittedPaths.playlistFiles)
+				{
+					const auto playlistName = getPureFilename(playlistFile);
+					const auto playlistFiles = QStringList() << playlistFile;
+
+					createdPlaylists << createSinglePlaylist(playlistFiles, playlistName, true);
+				}
+
+				m_firstIndex = createdPlaylists.isEmpty()
+				               ? -1
+				               : createdPlaylists[0];
+
+				return m_firstIndex;
+			}
+
+		private: // NOLINT(readability-redundant-access-specifiers)
+			int createSinglePlaylist(const QStringList& paths, const QString& name, const bool temporary)
+			{
+				const auto index = m_playlistCreator->createPlaylist(MetaDataList {}, name, temporary);
+
+				auto* playlistGenerator =
+					new ExternTracksPlaylistGenerator(m_playlistCreator->playlist(index));
+
+				connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, this, [&]() {
+					if((--m_playlistCount) == 0)
+					{
+						emit sigAllPlaylistsCreated(m_firstIndex);
+					}
+				});
+
+				connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished,
+				        playlistGenerator, &QObject::deleteLater);
+
+				playlistGenerator->addPaths(paths);
+
+				return index;
+			}
+
+			PlaylistCreator* m_playlistCreator;
+			std::atomic<int> m_playlistCount {0};
+			int m_firstIndex {-1};
+
+	};
+
+	PlaylistFromPathCreator* PlaylistFromPathCreator::create(PlaylistCreator* playlistCreator)
+	{
+		return new PlaylistFromPathCreatorImpl(playlistCreator);
 	}
 
-	for(const auto& playlistFile: splittedPaths.playlistFiles)
+	QString filesystemPlaylistName()
 	{
-		const auto playlistName = getPureFilename(playlistFile);
-		const auto playlistFiles = QStringList() << playlistFile;
+		const auto createExtraPlaylist = GetSetting(Set::PL_CreateFilesystemPlaylist);
+		if(!createExtraPlaylist)
+		{
+			return {};
+		}
 
-		createdPlaylists << createSinglePlaylist(playlistFiles, playlistName, true);
-	}
-
-	m->firstIndex = createdPlaylists.isEmpty()
-	                ? -1
-	                : createdPlaylists[0];
-
-	return m->firstIndex;
-}
-
-void PlaylistFromPathCreator::generatorFinished()
-{
-	m->playlistCount--;
-	if(m->playlistCount == 0)
-	{
-		emit sigAllPlaylistsCreated(m->firstIndex);
+		const auto specifyPlaylistName = GetSetting(Set::PL_SpecifyFileystemPlaylistName);
+		const auto specialPLaylistName = GetSetting(Set::PL_FilesystemPlaylistName);
+		return (specialPLaylistName.trimmed().isEmpty() || specifyPlaylistName)
+		       ? Lang::get(Lang::Files)
+		       : specialPLaylistName;
 	}
 }
 
-QString Playlist::filesystemPlaylistName()
-{
-	const auto createExtraPlaylist = GetSetting(Set::PL_CreateFilesystemPlaylist);
-	if(!createExtraPlaylist)
-	{
-		return {};
-	}
-
-	const auto specifyPlaylistName = GetSetting(Set::PL_SpecifyFileystemPlaylistName);
-	const auto specialPLaylistName = GetSetting(Set::PL_FilesystemPlaylistName);
-	return (specialPLaylistName.trimmed().isEmpty() || specifyPlaylistName)
-	       ? Lang::get(Lang::Files)
-	       : specialPLaylistName;
-}
+#include "PlaylistFromPathCreator.moc"

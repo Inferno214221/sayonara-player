@@ -37,6 +37,8 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
+using Playlist::PlaylistFromPathCreator;
+
 class PlaylistCreatorMock :
 	public PlaylistCreator
 {
@@ -69,14 +71,21 @@ class PlaylistCreatorMock :
 
 		PlaylistPtr playlistById(int /*playlistId*/) override { throw std::bad_function_call {}; }
 
-		int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-		                   bool /*temporary*/) override { throw std::bad_function_call {}; }
+		int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/, bool /*temporary*/,
+		                   PlaylistFromPathCreator* /*creator*/) override
+		{
+			throw std::bad_function_call {};
+		}
 
 		int createPlaylist(const CustomPlaylist& /*customPlaylist*/) override { throw std::bad_function_call {}; }
 
 		int createEmptyPlaylist(bool /*override*/) override { throw std::bad_function_call {}; }
 
-		int createCommandLinePlaylist(const QStringList& /*pathList*/) override { throw std::bad_function_call {}; }
+		int createCommandLinePlaylist(const QStringList& /*pathList*/,
+		                              PlaylistFromPathCreator* /*creator*/) override
+		{
+			throw std::bad_function_call {};
+		}
 
 		[[nodiscard]] int count() const
 		{

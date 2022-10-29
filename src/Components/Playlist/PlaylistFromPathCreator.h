@@ -27,31 +27,23 @@
 #include <QObject>
 
 class QStringList;
-struct SplittedPaths;
-class PlaylistFromPathCreator :
-	public QObject
-{
-	Q_OBJECT
-	PIMPL(PlaylistFromPathCreator)
-
-	signals:
-		void sigAllPlaylistsCreated(int firstIndex);
-
-	public:
-		explicit PlaylistFromPathCreator(PlaylistCreator* playlistCreator);
-		~PlaylistFromPathCreator();
-
-		int createPlaylists(const QStringList& paths, const QString& name, bool temporary);
-
-	private slots:
-		void generatorFinished();
-
-	private:
-		int createSinglePlaylist(const QStringList& paths, const QString& name, bool temporary);
-};
 
 namespace Playlist
 {
+	class PlaylistFromPathCreator :
+		public QObject
+	{
+		Q_OBJECT
+
+		signals:
+			void sigAllPlaylistsCreated(int firstIndex);
+
+		public:
+			static PlaylistFromPathCreator* create(PlaylistCreator* playlistCreator);
+
+			virtual int createPlaylists(const QStringList& paths, const QString& name, bool temporary) = 0;
+	};
+
 	QString filesystemPlaylistName();
 }
 

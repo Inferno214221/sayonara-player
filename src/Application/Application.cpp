@@ -384,7 +384,7 @@ void Application::initPlaylist(const QStringList& filesToPlay)
 {
 	if(!filesToPlay.isEmpty())
 	{
-		m->playlistHandler->createCommandLinePlaylist(filesToPlay);
+		m->playlistHandler->createCommandLinePlaylist(filesToPlay, nullptr);
 	}
 }
 
@@ -485,7 +485,7 @@ void Application::createPlaylist()
 	if(instanceThread)
 	{
 		const auto paths = instanceThread->paths();
-		m->playlistHandler->createCommandLinePlaylist(paths);
+		m->playlistHandler->createCommandLinePlaylist(paths, nullptr);
 	}
 }
 

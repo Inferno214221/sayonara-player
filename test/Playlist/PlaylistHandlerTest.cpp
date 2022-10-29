@@ -1,19 +1,52 @@
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/PlayManagerMock.h"
 #include "test/Common/PlaylistMocks.h"
+#include "test/Common/TestTracks.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistFromPathCreator.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QSignalSpy>
 
 #include <memory>
+#include <utility>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
+
+namespace
+{
+	class PlaylistFromPathCreatorMock :
+		public Playlist::PlaylistFromPathCreator
+	{
+		public:
+			PlaylistFromPathCreatorMock(PlaylistCreator* creator, MetaDataList tracks) :
+				m_creator {creator},
+				m_tracks {std::move(tracks)} {}
+
+			int createPlaylists(const QStringList& /*paths*/, const QString& name, bool temporary) override
+			{
+				const auto index = m_creator->createPlaylist(m_tracks, name, temporary);
+				emit sigAllPlaylistsCreated(index);
+
+				return index;
+			}
+
+		private:
+			PlaylistCreator* m_creator;
+			MetaDataList m_tracks;
+	};
+
+	Playlist::PlaylistFromPathCreator* makePlaylistFromPathCreator(PlaylistCreator* creator, const MetaDataList& tracks)
+	{
+		return new PlaylistFromPathCreatorMock(creator, tracks);
+	}
+}
 
 class PlaylistHandlerTest :
 	public Test::Base
@@ -41,6 +74,7 @@ class PlaylistHandlerTest :
 		[[maybe_unused]] void createPlaylistFromFiles();
 		[[maybe_unused]] void createCommandLinePlaylistSettings();
 		[[maybe_unused]] void createCommandLinePlaylist();
+		[[maybe_unused]] void testEmptyPlaylistDeletion();
 };
 
 [[maybe_unused]] void PlaylistHandlerTest::createTest() // NOLINT(readability-function-cognitive-complexity)
@@ -200,9 +234,9 @@ class PlaylistHandlerTest :
 	};
 
 	const auto testCases = {
-		TestCase {false, false, QString {}, 3, 4},
-		TestCase {true, false, QString {}, 3, 2},
-		TestCase {true, true, "Extra", 3, 2}
+		TestCase {false, false, QString {}, 3, 3},
+		TestCase {true, false, QString {}, 3, 1},
+		TestCase {true, true, "Extra", 3, 1}
 	};
 
 	for(const auto& testCase: testCases)
@@ -212,11 +246,10 @@ class PlaylistHandlerTest :
 		SetSetting(Set::PL_FilesystemPlaylistName, testCase.playlistName);
 
 		auto plh = createHandler();
-		const auto paths = QStringList() << "path1.mp3" << "path2.mp3";
 
 		for(int i = 0; i < testCase.callCount; i++)
 		{
-			plh->createCommandLinePlaylist(paths);
+			plh->createCommandLinePlaylist({}, makePlaylistFromPathCreator(plh.get(), Test::createTracks()));
 		}
 
 		QVERIFY(plh->count() == testCase.expectedPlaylists);
@@ -234,9 +267,31 @@ class PlaylistHandlerTest :
 
 	auto spy = QSignalSpy(plh.get(), &Playlist::Handler::sigNewPlaylistAdded);
 	const auto paths = QStringList() << "path2.m3u" << "path1.mp3" << "path3.pls";
-	plh->createCommandLinePlaylist(paths);
+	plh->createCommandLinePlaylist(paths, nullptr);
 	QVERIFY(spy.count() == 3);
 	QVERIFY(plh->count() == 6);
+}
+
+[[maybe_unused]] void PlaylistHandlerTest::testEmptyPlaylistDeletion()
+{
+	auto plh = createHandler();
+
+	QVERIFY(plh->count() == 1);
+	const auto firstPlaylist = plh->playlist(0);
+	QVERIFY(firstPlaylist->tracks().isEmpty());
+
+	const auto playlistName = firstPlaylist->name();
+	const auto playlistId = firstPlaylist->id();
+	const auto tracks = Test::createTracks();
+
+	const auto index = plh->createCommandLinePlaylist({}, makePlaylistFromPathCreator(plh.get(), tracks));
+	const auto newPlaylist = plh->playlist(index);
+
+	QVERIFY(plh->count() == 1);
+	QVERIFY(index == 0);
+	QVERIFY(newPlaylist->name() != playlistName);
+	QVERIFY(newPlaylist->id() != playlistId);
+	QVERIFY(newPlaylist->tracks().count() == tracks.count());
 }
 
 QTEST_GUILESS_MAIN(PlaylistHandlerTest)

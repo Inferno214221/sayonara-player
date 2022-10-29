@@ -52,6 +52,14 @@ namespace Playlist
 
 			playManager->setCurrentPositionMs(0);
 		}
+
+		bool isPlaylistOnlyValidPlaylist(PlaylistAccessor* playlistAccessor, const int index)
+		{
+			return (index == 1) &&
+			       (playlistAccessor->count() == 2) &&
+			       (playlistAccessor->playlist(0)->tracks().isEmpty()) &&
+			       (playlistAccessor->playlist(0)->isTemporary());
+		}
 	}
 
 	struct Handler::Private
@@ -175,9 +183,14 @@ namespace Playlist
 		return m->currentPlaylistIndex;
 	}
 
-	int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary)
+	int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary,
+	                            PlaylistFromPathCreator* playlistFromPathCreator)
 	{
-		auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
+		if(!playlistFromPathCreator)
+		{
+			playlistFromPathCreator = PlaylistFromPathCreator::create(this);
+		}
+
 		connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
 		        this, [playlistFromPathCreator](const int /* index */) {
 				playlistFromPathCreator->deleteLater();
@@ -192,20 +205,24 @@ namespace Playlist
 		return m->currentPlaylistIndex;
 	}
 
-int Handler::createCommandLinePlaylist(const QStringList& paths)
-{
-	auto* playlistFromPathCreator = new PlaylistFromPathCreator(this);
-	connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
-	        this, [&, playlistFromPathCreator](const auto firstIndex) {
-			resetLastPlayedTrack(m->playManager);
-			playlist(firstIndex)->setCurrentTrack(0);
-			setCurrentIndex(firstIndex);
-			if((firstIndex == 1) && playlist(0)->tracks().isEmpty())
-			{
-				closePlaylist(0);
-			}
-			playlistFromPathCreator->deleteLater();
-		});
+	int Handler::createCommandLinePlaylist(const QStringList& paths, PlaylistFromPathCreator* playlistFromPathCreator)
+	{
+		if(!playlistFromPathCreator)
+		{
+			playlistFromPathCreator = PlaylistFromPathCreator::create(this);
+		}
+
+		connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+		        this, [&, playlistFromPathCreator](const auto firstIndex) {
+				resetLastPlayedTrack(m->playManager);
+				playlist(firstIndex)->setCurrentTrack(0);
+				setCurrentIndex(firstIndex);
+				if(isPlaylistOnlyValidPlaylist(this, firstIndex))
+				{
+					closePlaylist(0);
+				}
+				playlistFromPathCreator->deleteLater();
+			});
 
 		const auto maybeName = filesystemPlaylistName();
 		const auto playlistName = maybeName.isEmpty()
