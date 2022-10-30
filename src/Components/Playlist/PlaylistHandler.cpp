@@ -126,6 +126,14 @@ namespace Playlist
 
 	void Handler::shutdown()
 	{
+		for(auto i = count() - 1; i >= 0; i--)
+		{
+			if(playlist(i)->tracks().isEmpty())
+			{
+				closePlaylist(i);
+			}
+		}
+
 		saveCurrentPlaylists(m->playlists);
 
 		m->playlists.clear();

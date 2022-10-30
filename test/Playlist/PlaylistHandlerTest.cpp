@@ -4,9 +4,10 @@
 #include "test/Common/TestTracks.h"
 
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/LocalPathPlaylistCreator.h"
+#include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
+#include "Components/Playlist/PlaylistModifiers.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -47,6 +48,24 @@ namespace
 	{
 		return new PlaylistFromPathCreatorMock(creator, tracks);
 	}
+
+	void distributeTracksOnPlaylists(std::shared_ptr<Playlist::Handler>& plh, const int playlistCount)
+	{
+		const auto tracks = Test::createTracks();
+		for(auto i = 0; i < playlistCount - 1; i++)
+		{
+			plh->createEmptyPlaylist();
+		}
+
+		auto i = 0;
+		for(const auto& track: tracks)
+		{
+			auto& playlist = *plh->playlist(i);
+			Playlist::appendTracks(playlist, MetaDataList {track});
+
+			i = (i + 1) % playlistCount;
+		}
+	}
 }
 
 class PlaylistHandlerTest :
@@ -76,6 +95,7 @@ class PlaylistHandlerTest :
 		[[maybe_unused]] void createCommandLinePlaylistSettings();
 		[[maybe_unused]] void createCommandLinePlaylist();
 		[[maybe_unused]] void testEmptyPlaylistDeletion();
+		[[maybe_unused]] void testEmptyPlaylistsDeletedOnShutdown();
 };
 
 [[maybe_unused]] void PlaylistHandlerTest::createTest() // NOLINT(readability-function-cognitive-complexity)
@@ -293,6 +313,27 @@ class PlaylistHandlerTest :
 	QVERIFY(newPlaylist->name() != playlistName);
 	QVERIFY(newPlaylist->id() != playlistId);
 	QVERIFY(newPlaylist->tracks().count() == tracks.count());
+}
+
+[[maybe_unused]] void PlaylistHandlerTest::testEmptyPlaylistsDeletedOnShutdown()
+{
+	constexpr const auto PlaylistCount = 5;
+
+	auto plh = createHandler();
+
+	distributeTracksOnPlaylists(plh, PlaylistCount);
+
+	QVERIFY(plh->count() == PlaylistCount);
+
+	Playlist::clear(*plh->playlist(0));
+	Playlist::clear(*plh->playlist(2));
+	Playlist::clear(*plh->playlist(4));
+
+	auto spy = QSignalSpy(plh.get(), &Playlist::Handler::sigPlaylistClosed);
+
+	plh->shutdown();
+
+	QVERIFY(spy.count() == 3);
 }
 
 QTEST_GUILESS_MAIN(PlaylistHandlerTest)
