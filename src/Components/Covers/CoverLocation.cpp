@@ -430,7 +430,7 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 
 QString Location::localPath() const
 {
-	if(Util::File::isFile(hashPath()))
+	if(const auto isFoundInHomeDir = Util::File::isFile(hashPath()); isFoundInHomeDir)
 	{
 		return hashPath();
 	}
@@ -439,7 +439,7 @@ QString Location::localPath() const
 	if(Util::File::exists(localDir))
 	{
 		const auto localPaths = Cover::LocalSearcher::coverPathsFromPathHint(localDir);
-		if(!localPaths.isEmpty())
+		if(!localPaths.isEmpty() && !hashPath().isEmpty())
 		{
 			Util::File::createSymlink(localPaths.first(), hashPath());
 			return hashPath();
