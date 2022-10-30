@@ -56,10 +56,10 @@ namespace Playlist
 	{
 		m = Pimpl::make<Private>(playlistCreator);
 
-		auto* pcn = PlaylistChangeNotifier::instance();
-		connect(pcn, &PlaylistChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
-		connect(pcn, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);
-		connect(pcn, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Chooser::playlistDeleted);
+		auto* pcn = ChangeNotifier::instance();
+		connect(pcn, &ChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
+		connect(pcn, &ChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);
+		connect(pcn, &ChangeNotifier::sigPlaylistDeleted, this, &Chooser::playlistDeleted);
 	}
 
 	Chooser::~Chooser() = default;
@@ -85,7 +85,7 @@ namespace Playlist
 
 		auto nameExists = false;
 		QString oldName;
-		for(const auto& playlist : m->playlists)
+		for(const auto& playlist: m->playlists)
 		{
 			if(playlist.name() == newName)
 			{
@@ -107,7 +107,7 @@ namespace Playlist
 		const auto success = m->playlistConnector->renamePlaylist(id, newName);
 		if(success)
 		{
-			PlaylistChangeNotifier::instance()->renamePlaylist(id, oldName, newName);
+			ChangeNotifier::instance()->renamePlaylist(id, oldName, newName);
 			return SaveAsAnswer::Success;
 		}
 
@@ -120,7 +120,7 @@ namespace Playlist
 		const auto success = m->playlistConnector->updatePlaylist(id, playlist.name(), true);
 		if(success)
 		{
-			PlaylistChangeNotifier::instance()->deletePlaylist(id);
+			ChangeNotifier::instance()->deletePlaylist(id);
 		}
 
 		return success;

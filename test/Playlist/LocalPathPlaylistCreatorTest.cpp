@@ -21,7 +21,7 @@
 #include "test/Common/PlayManagerMock.h"
 #include "test/Playlist/PlaylistTestUtils.h"
 
-#include "Components/Playlist/PlaylistFromPathCreator.h"
+#include "Components/Playlist/LocalPathPlaylistCreator.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
 #include "Interfaces/PlaylistInterface.h"
@@ -37,7 +37,7 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-using Playlist::PlaylistFromPathCreator;
+using Playlist::LocalPathPlaylistCreator;
 
 class PlaylistCreatorMock :
 	public PlaylistCreator
@@ -72,7 +72,7 @@ class PlaylistCreatorMock :
 		PlaylistPtr playlistById(int /*playlistId*/) override { throw std::bad_function_call {}; }
 
 		int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/, bool /*temporary*/,
-		                   PlaylistFromPathCreator* /*creator*/) override
+		                   LocalPathPlaylistCreator* /*creator*/) override
 		{
 			throw std::bad_function_call {};
 		}
@@ -82,7 +82,7 @@ class PlaylistCreatorMock :
 		int createEmptyPlaylist(bool /*override*/) override { throw std::bad_function_call {}; }
 
 		int createCommandLinePlaylist(const QStringList& /*pathList*/,
-		                              PlaylistFromPathCreator* /*creator*/) override
+		                              LocalPathPlaylistCreator* /*creator*/) override
 		{
 			throw std::bad_function_call {};
 		}
@@ -102,13 +102,13 @@ class PlaylistCreatorMock :
 		QList<PlaylistPtr> m_playlists;
 };
 
-class PlaylistFromPathCreatorTest :
+class LocalPathPlaylistCreatorTest :
 	public Test::Base
 {
 	Q_OBJECT
 
 	public:
-		PlaylistFromPathCreatorTest() :
+		LocalPathPlaylistCreatorTest() :
 			Test::Base("PlaylistFromPathCreatorTest"),
 			m_pathTrackMap {Test::Playlist::createTrackFiles(Test::Base::tempPath())} {}
 
@@ -117,14 +117,14 @@ class PlaylistFromPathCreatorTest :
 		[[maybe_unused]] void testPlaylistWithPlaylistFile();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
-		static void wait(PlaylistFromPathCreator* creator);
+		static void wait(LocalPathPlaylistCreator* creator);
 		const Test::Playlist::PathTrackMap m_pathTrackMap;
 };
 
-[[maybe_unused]] void PlaylistFromPathCreatorTest::testSinglePlaylist()
+[[maybe_unused]] void LocalPathPlaylistCreatorTest::testSinglePlaylist()
 {
 	auto playlistCreator = PlaylistCreatorMock();
-	auto* playlistFromPathCreator = PlaylistFromPathCreator::create(&playlistCreator);
+	auto* playlistFromPathCreator = LocalPathPlaylistCreator::create(&playlistCreator);
 
 	auto pathList = QStringList {};
 
@@ -143,10 +143,10 @@ class PlaylistFromPathCreatorTest :
 	QVERIFY(Playlist::count(*playlist) == m_pathTrackMap.count());
 }
 
-[[maybe_unused]] void PlaylistFromPathCreatorTest::testPlaylistWithPlaylistFile()
+[[maybe_unused]] void LocalPathPlaylistCreatorTest::testPlaylistWithPlaylistFile()
 {
 	auto playlistCreator = PlaylistCreatorMock();
-	auto* playlistFromPathCreator = PlaylistFromPathCreator::create(&playlistCreator);
+	auto* playlistFromPathCreator = LocalPathPlaylistCreator::create(&playlistCreator);
 
 	auto pathList = QStringList {};
 	auto tracks = MetaDataList {};
@@ -172,14 +172,14 @@ class PlaylistFromPathCreatorTest :
 	QVERIFY(Playlist::count(*playlist) == 5);
 }
 
-[[maybe_unused]] void PlaylistFromPathCreatorTest::wait(PlaylistFromPathCreator* creator)
+[[maybe_unused]] void LocalPathPlaylistCreatorTest::wait(LocalPathPlaylistCreator* creator)
 {
-	auto spy = QSignalSpy(creator, &PlaylistFromPathCreator::sigAllPlaylistsCreated);
+	auto spy = QSignalSpy(creator, &LocalPathPlaylistCreator::sigAllPlaylistsCreated);
 
 	QVERIFY(spy.wait(1000000));
 	QCOMPARE(spy.count(), 1);
 }
 
-QTEST_GUILESS_MAIN(PlaylistFromPathCreatorTest)
+QTEST_GUILESS_MAIN(LocalPathPlaylistCreatorTest)
 
-#include "PlaylistFromPathCreatorTest.moc"
+#include "LocalPathPlaylistCreatorTest.moc"

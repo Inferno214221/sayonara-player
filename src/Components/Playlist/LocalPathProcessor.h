@@ -30,25 +30,28 @@
 class QStringList;
 class MetaDataList;
 
-class ExternTracksPlaylistGenerator :
-	public QObject
+namespace Playlist
 {
-	Q_OBJECT
-	PIMPL(ExternTracksPlaylistGenerator)
+	class LocalPathProcessor :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(LocalPathProcessor)
 
-	public:
-		explicit ExternTracksPlaylistGenerator(const PlaylistPtr& playlist);
-		~ExternTracksPlaylistGenerator() override;
+		public:
+			explicit LocalPathProcessor(const PlaylistPtr& playlist);
+			~LocalPathProcessor() override;
 
-		void addPaths(const QStringList& paths);
-		void insertPaths(const QStringList& paths, int targetRowIndex);
+			void addPaths(const QStringList& paths);
+			void insertPaths(const QStringList& paths, int targetRowIndex);
 
-	signals:
-		void sigFinished();
+		signals:
+			void sigFinished();
 
-	private slots:
-		void scanFiles(const QStringList& paths);
-		void filesScanned();
-};
+		private slots:
+			void scanFiles(const QStringList& paths);
+			void filesScanned();
+	};
+}
 
 #endif // EXTERNTRACKSPLAYLISTGENERATOR_H

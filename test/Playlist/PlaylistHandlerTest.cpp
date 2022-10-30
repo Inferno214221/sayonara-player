@@ -5,7 +5,7 @@
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
-#include "Components/Playlist/PlaylistFromPathCreator.h"
+#include "Components/Playlist/LocalPathPlaylistCreator.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
@@ -22,7 +22,7 @@
 namespace
 {
 	class PlaylistFromPathCreatorMock :
-		public Playlist::PlaylistFromPathCreator
+		public Playlist::LocalPathPlaylistCreator
 	{
 		public:
 			PlaylistFromPathCreatorMock(PlaylistCreator* creator, MetaDataList tracks) :
@@ -42,7 +42,8 @@ namespace
 			MetaDataList m_tracks;
 	};
 
-	Playlist::PlaylistFromPathCreator* makePlaylistFromPathCreator(PlaylistCreator* creator, const MetaDataList& tracks)
+	Playlist::LocalPathPlaylistCreator*
+	makePlaylistFromPathCreator(PlaylistCreator* creator, const MetaDataList& tracks)
 	{
 		return new PlaylistFromPathCreatorMock(creator, tracks);
 	}

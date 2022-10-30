@@ -88,14 +88,14 @@ class PlaylistCreatorMock :
 		}
 
 		int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-		                   bool /*temporary*/, Playlist::PlaylistFromPathCreator* /*creator*/) override { return 0; }
+		                   bool /*temporary*/, Playlist::LocalPathPlaylistCreator* /*creator*/) override { return 0; }
 
 		int createPlaylist(const CustomPlaylist& /*customPlaylist*/) override { return 0; }
 
 		int createEmptyPlaylist(bool /*override*/) override { return 0; }
 
 		int createCommandLinePlaylist(const QStringList& /*pathList*/,
-		                              Playlist::PlaylistFromPathCreator* /*creator*/) override
+		                              Playlist::LocalPathPlaylistCreator* /*creator*/) override
 		{
 			return 0;
 		}

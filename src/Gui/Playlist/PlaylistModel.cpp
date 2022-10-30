@@ -31,7 +31,7 @@
 #include "Components/Covers/CoverChangeNotifier.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/CoverLookup.h"
-#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
+#include "Components/Playlist/LocalPathProcessor.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistLibraryInteractor.h"
 #include "Components/Playlist/PlaylistModifiers.h"
@@ -405,8 +405,8 @@ void Model::insertTracks(const MetaDataList& tracks, int row)
 
 void Model::insertTracks(const QStringList& files, int row)
 {
-	auto* playlistGenerator = new ExternTracksPlaylistGenerator(m->playlist);
-	connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, playlistGenerator, &QObject::deleteLater);
+	auto* playlistGenerator = new LocalPathProcessor(m->playlist);
+	connect(playlistGenerator, &LocalPathProcessor::sigFinished, playlistGenerator, &QObject::deleteLater);
 	playlistGenerator->insertPaths(files, row);
 }
 

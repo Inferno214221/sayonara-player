@@ -25,7 +25,7 @@
 
 #include "Playlist.h"
 #include "PlaylistChangeNotifier.h"
-#include "PlaylistFromPathCreator.h"
+#include "LocalPathPlaylistCreator.h"
 #include "PlaylistLoader.h"
 #include "PlaylistModifiers.h"
 #include "PlaylistSaver.h"
@@ -117,9 +117,9 @@ namespace Playlist
 		connect(m->playManager, &PlayManager::sigPrevious, this, &Handler::previous);
 		connect(m->playManager, &PlayManager::sigStreamFinished, this, &Handler::wwwTrackFinished);
 
-		auto* playlistChangeNotifier = PlaylistChangeNotifier::instance();
-		connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
-		connect(playlistChangeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
+		auto* playlistChangeNotifier = ChangeNotifier::instance();
+		connect(playlistChangeNotifier, &ChangeNotifier::sigPlaylistRenamed, this, &Handler::playlistRenamed);
+		connect(playlistChangeNotifier, &ChangeNotifier::sigPlaylistDeleted, this, &Handler::playlistDeleted);
 	}
 
 	Handler::~Handler() = default;
@@ -184,14 +184,14 @@ namespace Playlist
 	}
 
 	int Handler::createPlaylist(const QStringList& paths, const QString& name, const bool temporary,
-	                            PlaylistFromPathCreator* playlistFromPathCreator)
+	                            LocalPathPlaylistCreator* playlistFromPathCreator)
 	{
 		if(!playlistFromPathCreator)
 		{
-			playlistFromPathCreator = PlaylistFromPathCreator::create(this);
+			playlistFromPathCreator = LocalPathPlaylistCreator::create(this);
 		}
 
-		connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+		connect(playlistFromPathCreator, &LocalPathPlaylistCreator::sigAllPlaylistsCreated,
 		        this, [playlistFromPathCreator](const int /* index */) {
 				playlistFromPathCreator->deleteLater();
 			});
@@ -205,14 +205,14 @@ namespace Playlist
 		return m->currentPlaylistIndex;
 	}
 
-	int Handler::createCommandLinePlaylist(const QStringList& paths, PlaylistFromPathCreator* playlistFromPathCreator)
+	int Handler::createCommandLinePlaylist(const QStringList& paths, LocalPathPlaylistCreator* playlistFromPathCreator)
 	{
 		if(!playlistFromPathCreator)
 		{
-			playlistFromPathCreator = PlaylistFromPathCreator::create(this);
+			playlistFromPathCreator = LocalPathPlaylistCreator::create(this);
 		}
 
-		connect(playlistFromPathCreator, &PlaylistFromPathCreator::sigAllPlaylistsCreated,
+		connect(playlistFromPathCreator, &LocalPathPlaylistCreator::sigAllPlaylistsCreated,
 		        this, [&, playlistFromPathCreator](const auto firstIndex) {
 				resetLastPlayedTrack(m->playManager);
 				playlist(firstIndex)->setCurrentTrack(0);

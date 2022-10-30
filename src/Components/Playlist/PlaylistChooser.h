@@ -32,11 +32,6 @@ class PlaylistCreator;
 
 namespace Playlist
 {
-	/**
-	 * @brief The Chooser class is used to select playlists out of
-	 * all saved playlists
-	 * @ingroup Playlist
-	 */
 	class Chooser :
 		public QObject
 	{
@@ -48,10 +43,10 @@ namespace Playlist
 
 		public:
 			Chooser(PlaylistCreator* playlistCreator, QObject* parent);
-			~Chooser();
+			~Chooser() override;
 
 			void loadSinglePlaylist(int id);
-			int findPlaylist(const QString& playlist) const;
+			[[nodiscard]] int findPlaylist(const QString& playlist) const;
 
 			const QList<CustomPlaylist>& playlists();
 

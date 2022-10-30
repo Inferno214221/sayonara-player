@@ -110,7 +110,7 @@ namespace Playlist
 
 	struct DBInterface::Private
 	{
-		PlaylistChangeNotifier* playlistChangeNotifier {PlaylistChangeNotifier::instance()};
+		ChangeNotifier* playlistChangeNotifier {ChangeNotifier::instance()};
 		DB::Playlist* playlistConnector {DB::Connector::instance()->playlistConnector()};
 
 		QString name;
@@ -162,7 +162,7 @@ namespace Playlist
 
 		if(success)
 		{
-			PlaylistChangeNotifier::instance()->addPlaylist(id(), name());
+			ChangeNotifier::instance()->addPlaylist(id(), name());
 			updatePlaylistTracks(this, m->playlistConnector);
 		}
 

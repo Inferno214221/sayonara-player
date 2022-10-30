@@ -68,8 +68,8 @@ new_test(Playlist/PlaylistFileTest.cpp Playlist/PlaylistTestUtils.cpp Common/Tes
 new_test(Playlist/PlaylistHandlerTest.cpp Common/TestTracks.cpp)
 new_test(Playlist/PlaylistDbInterfaceTest.cpp Common/TestTracks.cpp)
 new_test(Playlist/PlaylistShuffleTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
-new_test(Playlist/ExternTracksPlaylistGeneratorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
-new_test(Playlist/PlaylistFromPathCreatorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
+new_test(Playlist/LocalPathProcessorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
+new_test(Playlist/LocalPathPlaylistCreatorTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
 new_test(Playlist/RepeatTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
 
 new_test(PlayManager/PlayManagerTest.cpp)

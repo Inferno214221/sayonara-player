@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H
-#define SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H
+#ifndef SAYONARA_PLAYER_LOCALPATHPLAYLISTCREATOR_H
+#define SAYONARA_PLAYER_LOCALPATHPLAYLISTCREATOR_H
 
 #include "Interfaces/PlaylistInterface.h"
 #include "Utils/Pimpl.h"
@@ -30,7 +30,7 @@ class QStringList;
 
 namespace Playlist
 {
-	class PlaylistFromPathCreator :
+	class LocalPathPlaylistCreator :
 		public QObject
 	{
 		Q_OBJECT
@@ -39,7 +39,7 @@ namespace Playlist
 			void sigAllPlaylistsCreated(int firstIndex);
 
 		public:
-			static PlaylistFromPathCreator* create(PlaylistCreator* playlistCreator);
+			static LocalPathPlaylistCreator* create(PlaylistCreator* playlistCreator);
 
 			virtual int createPlaylists(const QStringList& paths, const QString& name, bool temporary) = 0;
 	};
@@ -47,4 +47,4 @@ namespace Playlist
 	QString filesystemPlaylistName();
 }
 
-#endif //SAYONARA_PLAYER_PLAYLISTFROMPATHCREATOR_H
+#endif //SAYONARA_PLAYER_LOCALPATHPLAYLISTCREATOR_H

@@ -18,26 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "PlaylistChangeNotifier.h"
 
-PlaylistChangeNotifier::PlaylistChangeNotifier() : QObject()
-{}
-
-PlaylistChangeNotifier::~PlaylistChangeNotifier() = default;
-
-void PlaylistChangeNotifier::deletePlaylist(int id)
+namespace Playlist
 {
-	emit sigPlaylistDeleted(id);
-}
+	ChangeNotifier::ChangeNotifier() = default;
 
-void PlaylistChangeNotifier::addPlaylist(int id, const QString& name)
-{
-	emit sigPlaylistAdded(id, name);
-}
+	ChangeNotifier::~ChangeNotifier() = default;
 
-void PlaylistChangeNotifier::renamePlaylist(int id, const QString& old_name, const QString& new_name)
-{
-	emit sigPlaylistRenamed(id, old_name, new_name);
+	void ChangeNotifier::deletePlaylist(int id)
+	{
+		emit sigPlaylistDeleted(id);
+	}
+
+	void ChangeNotifier::addPlaylist(int id, const QString& name)
+	{
+		emit sigPlaylistAdded(id, name);
+	}
+
+	void ChangeNotifier::renamePlaylist(int id, const QString& old_name, const QString& new_name)
+	{
+		emit sigPlaylistRenamed(id, old_name, new_name);
+	}
 }

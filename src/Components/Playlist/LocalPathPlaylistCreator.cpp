@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "PlaylistFromPathCreator.h"
-#include "ExternTracksPlaylistGenerator.h"
+#include "LocalPathPlaylistCreator.h"
+#include "LocalPathProcessor.h"
 
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -68,16 +68,16 @@ namespace
 
 namespace Playlist
 {
-	class PlaylistFromPathCreatorImpl :
-		public PlaylistFromPathCreator
+	class LocalPathPlaylistCreatorImpl :
+		public LocalPathPlaylistCreator
 	{
 		Q_OBJECT
 
 		public:
-			explicit PlaylistFromPathCreatorImpl(PlaylistCreator* playlistCreator) :
+			explicit LocalPathPlaylistCreatorImpl(PlaylistCreator* playlistCreator) :
 				m_playlistCreator {playlistCreator} {}
 
-			~PlaylistFromPathCreatorImpl() override = default;
+			~LocalPathPlaylistCreatorImpl() override = default;
 
 			int createPlaylists(const QStringList& paths, const QString& name, bool temporary) override
 			{
@@ -112,16 +112,16 @@ namespace Playlist
 				const auto index = m_playlistCreator->createPlaylist(MetaDataList {}, name, temporary);
 
 				auto* playlistGenerator =
-					new ExternTracksPlaylistGenerator(m_playlistCreator->playlist(index));
+					new LocalPathProcessor(m_playlistCreator->playlist(index));
 
-				connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished, this, [&]() {
+				connect(playlistGenerator, &LocalPathProcessor::sigFinished, this, [&]() {
 					if((--m_playlistCount) == 0)
 					{
 						emit sigAllPlaylistsCreated(m_firstIndex);
 					}
 				});
 
-				connect(playlistGenerator, &ExternTracksPlaylistGenerator::sigFinished,
+				connect(playlistGenerator, &LocalPathProcessor::sigFinished,
 				        playlistGenerator, &QObject::deleteLater);
 
 				playlistGenerator->addPaths(paths);
@@ -135,9 +135,9 @@ namespace Playlist
 
 	};
 
-	PlaylistFromPathCreator* PlaylistFromPathCreator::create(PlaylistCreator* playlistCreator)
+	LocalPathPlaylistCreator* LocalPathPlaylistCreator::create(PlaylistCreator* playlistCreator)
 	{
-		return new PlaylistFromPathCreatorImpl(playlistCreator);
+		return new LocalPathPlaylistCreatorImpl(playlistCreator);
 	}
 
 	QString filesystemPlaylistName()
@@ -156,4 +156,4 @@ namespace Playlist
 	}
 }
 
-#include "PlaylistFromPathCreator.moc"
+#include "LocalPathPlaylistCreator.moc"

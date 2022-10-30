@@ -21,7 +21,7 @@
 #include "test/Common/PlayManagerMock.h"
 #include "test/Playlist/PlaylistTestUtils.h"
 
-#include "Components/Playlist/ExternTracksPlaylistGenerator.h"
+#include "Components/Playlist/LocalPathProcessor.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
 #include "Interfaces/PlaylistInterface.h"
@@ -67,7 +67,7 @@ namespace
 			                   bool /*temporary*/) override { throw std::bad_function_call {}; }
 
 			int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-			                   bool /*temporary*/, Playlist::PlaylistFromPathCreator* /*creator*/) override
+			                   bool /*temporary*/, Playlist::LocalPathPlaylistCreator* /*creator*/) override
 			{
 				throw std::bad_function_call {};
 			}
@@ -77,7 +77,7 @@ namespace
 			int createEmptyPlaylist(bool /*override*/) override { throw std::bad_function_call {}; }
 
 			int createCommandLinePlaylist(const QStringList& /*pathList*/,
-			                              Playlist::PlaylistFromPathCreator* /*creator*/) override
+			                              Playlist::LocalPathPlaylistCreator* /*creator*/) override
 			{
 				throw std::bad_function_call {};
 			}
@@ -110,13 +110,13 @@ namespace
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class ExternTracksPlaylistGeneratorTest :
+class LocalPathProcessorTest :
 	public Test::Base
 {
 	Q_OBJECT
 
 	public:
-		ExternTracksPlaylistGeneratorTest() :
+		LocalPathProcessorTest() :
 			Test::Base("ExternTracksPlaylistGeneratorTest"),
 			m_pathTrackMap {Test::Playlist::createTrackFiles(Test::Base::tempPath())} {}
 
@@ -128,14 +128,14 @@ class ExternTracksPlaylistGeneratorTest :
 		[[maybe_unused]] void testWithPlaylistFile();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
-		static void wait(ExternTracksPlaylistGenerator* generator);
+		static void wait(Playlist::LocalPathProcessor* generator);
 		const Test::Playlist::PathTrackMap m_pathTrackMap;
 };
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::testInsertFiles()
+[[maybe_unused]] void LocalPathProcessorTest::testInsertFiles()
 {
 	constexpr const auto TrackCount = 5;
-	
+
 	auto* playlistCreator = new PlaylistCreatorMock(m_pathTrackMap, TrackCount);
 	auto playlist = playlistCreator->playlist(0);
 	auto pathList = QStringList {};
@@ -145,7 +145,7 @@ class ExternTracksPlaylistGeneratorTest :
 		pathList << m_pathTrackMap[i].first;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
+	auto externTracksPlaylistGenerator = Playlist::LocalPathProcessor(playlist);
 	externTracksPlaylistGenerator.insertPaths(pathList, 2);
 
 	wait(&externTracksPlaylistGenerator);
@@ -161,7 +161,7 @@ class ExternTracksPlaylistGeneratorTest :
 	QVERIFY(checkPlayList(playlist, expectedPaths));
 }
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::testAddFiles()
+[[maybe_unused]] void LocalPathProcessorTest::testAddFiles()
 {
 	auto* playlistCreator = new PlaylistCreatorMock(m_pathTrackMap, 0);
 	auto playlist = playlistCreator->playlist(0);
@@ -172,7 +172,7 @@ class ExternTracksPlaylistGeneratorTest :
 		pathList << filepath;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
+	auto externTracksPlaylistGenerator = Playlist::LocalPathProcessor(playlist);
 	externTracksPlaylistGenerator.addPaths(pathList);
 
 	wait(&externTracksPlaylistGenerator);
@@ -180,7 +180,7 @@ class ExternTracksPlaylistGeneratorTest :
 	QVERIFY(checkPlayList(playlist, pathList));
 }
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::testAddFilesWithAppend()
+[[maybe_unused]] void LocalPathProcessorTest::testAddFilesWithAppend()
 {
 	auto* playlistCreator = new PlaylistCreatorMock(m_pathTrackMap, 3);
 	auto playlist = playlistCreator->playlist(0);
@@ -195,7 +195,7 @@ class ExternTracksPlaylistGeneratorTest :
 		pathList << filepath;
 	}
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
+	auto externTracksPlaylistGenerator = Playlist::LocalPathProcessor(playlist);
 	externTracksPlaylistGenerator.addPaths(pathList);
 
 	wait(&externTracksPlaylistGenerator);
@@ -209,7 +209,7 @@ class ExternTracksPlaylistGeneratorTest :
 	QVERIFY(checkPlayList(playlist, expectedPaths));
 }
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::testAddFilesWithSingleDir()
+[[maybe_unused]] void LocalPathProcessorTest::testAddFilesWithSingleDir()
 {
 	auto* playlistCreator = new PlaylistCreatorMock(m_pathTrackMap, 3);
 	auto playlist = playlistCreator->playlist(0);
@@ -222,7 +222,7 @@ class ExternTracksPlaylistGeneratorTest :
 
 	pathList.sort();
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
+	auto externTracksPlaylistGenerator = Playlist::LocalPathProcessor(playlist);
 	externTracksPlaylistGenerator.addPaths({Test::Base::tempPath()});
 
 	wait(&externTracksPlaylistGenerator);
@@ -236,7 +236,7 @@ class ExternTracksPlaylistGeneratorTest :
 	QVERIFY(pathList == playlistFiles);
 }
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::testWithPlaylistFile()
+[[maybe_unused]] void LocalPathProcessorTest::testWithPlaylistFile()
 {
 	auto* playlistCreator = new PlaylistCreatorMock(m_pathTrackMap, 3);
 	auto playlist = playlistCreator->playlist(0);
@@ -256,7 +256,7 @@ class ExternTracksPlaylistGeneratorTest :
 	const auto playlistFilename = Test::Base::tempPath("bla.m3u");
 	M3UParser::saveM3UPlaylist(playlistFilename, tracks, false);
 
-	auto externTracksPlaylistGenerator = ExternTracksPlaylistGenerator(playlist);
+	auto externTracksPlaylistGenerator = Playlist::LocalPathProcessor(playlist);
 	externTracksPlaylistGenerator.addPaths({playlistFilename});
 
 	wait(&externTracksPlaylistGenerator);
@@ -265,14 +265,14 @@ class ExternTracksPlaylistGeneratorTest :
 	QVERIFY(checkPlayList(playlist, pathList));
 }
 
-[[maybe_unused]] void ExternTracksPlaylistGeneratorTest::wait(ExternTracksPlaylistGenerator* generator)
+[[maybe_unused]] void LocalPathProcessorTest::wait(Playlist::LocalPathProcessor* generator)
 {
-	auto spy = QSignalSpy(generator, &ExternTracksPlaylistGenerator::sigFinished);
+	auto spy = QSignalSpy(generator, &Playlist::LocalPathProcessor::sigFinished);
 
 	QVERIFY(spy.wait(1000));
 	QCOMPARE(spy.count(), 1);
 }
 
-QTEST_GUILESS_MAIN(ExternTracksPlaylistGeneratorTest)
+QTEST_GUILESS_MAIN(LocalPathProcessorTest)
 
-#include "ExternTracksPlaylistGeneratorTest.moc"
+#include "LocalPathProcessorTest.moc"

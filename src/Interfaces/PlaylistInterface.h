@@ -27,7 +27,7 @@
 namespace Playlist
 {
 	class Playlist;
-	class PlaylistFromPathCreator;
+	class LocalPathPlaylistCreator;
 }
 
 class CustomPlaylist;
@@ -67,11 +67,11 @@ class PlaylistCreator
 		createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) = 0;
 		virtual int
 		createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true,
-		               Playlist::PlaylistFromPathCreator* playlistFromPathCreator = nullptr) = 0;
+		               Playlist::LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) = 0;
 		virtual int createPlaylist(const CustomPlaylist& customPlaylist) = 0;
 		virtual int createEmptyPlaylist(bool override = false) = 0;
 		virtual int createCommandLinePlaylist(const QStringList& pathList,
-		                                      Playlist::PlaylistFromPathCreator* playlistFromPathCreator) = 0;
+		                                      Playlist::LocalPathPlaylistCreator* playlistFromPathCreator) = 0;
 };
 
 #endif //SAYONARA_PLAYER_PLAYLISTINTERFACE_H

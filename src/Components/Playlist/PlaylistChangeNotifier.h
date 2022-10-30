@@ -26,20 +26,24 @@
 #include "Utils/Singleton.h"
 #include <QObject>
 
-class PlaylistChangeNotifier : public QObject
+namespace Playlist
 {
-	Q_OBJECT
-	SINGLETON(PlaylistChangeNotifier)
+	class ChangeNotifier :
+		public QObject
+	{
+		Q_OBJECT
+			SINGLETON(ChangeNotifier)
 
-	signals:
-		void sigPlaylistRenamed(int id, const QString& oldName, const QString& newName);
-		void sigPlaylistAdded(int id, const QString& name);
-		void sigPlaylistDeleted(int id);
+		signals:
+			void sigPlaylistRenamed(int id, const QString& oldName, const QString& newName);
+			void sigPlaylistAdded(int id, const QString& name);
+			void sigPlaylistDeleted(int id);
 
-	public:
-		void deletePlaylist(int id);
-		void addPlaylist(int id, const QString& name);
-		void renamePlaylist(int id, const QString& oldName, const QString& newName);
-};
+		public:
+			void deletePlaylist(int id);
+			void addPlaylist(int id, const QString& name);
+			void renamePlaylist(int id, const QString& oldName, const QString& newName);
+	};
+}
 
 #endif // PLAYLISTCHANGENOTIFIER_H

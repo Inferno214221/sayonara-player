@@ -44,7 +44,7 @@ class PlayManager;
 
 namespace Playlist
 {
-	class PlaylistFromPathCreator;
+	class LocalPathPlaylistCreator;
 	class Loader;
 	class Handler :
 		public QObject,
@@ -77,11 +77,11 @@ namespace Playlist
 			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
 
 			int createPlaylist(const QStringList& paths, const QString& name = QString(), bool temporary = true,
-			                   PlaylistFromPathCreator* playlistFromPathCreator = nullptr) override;
+			                   LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) override;
 
 			int createPlaylist(const CustomPlaylist& playlist) override;
 			int createCommandLinePlaylist(const QStringList& pathList,
-			                              PlaylistFromPathCreator* playlistFromPathCreator) override;
+			                              LocalPathPlaylistCreator* playlistFromPathCreator) override;
 
 			int createEmptyPlaylist(bool override = false) override;
 

@@ -35,50 +35,46 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-using namespace ::Playlist;
 
-namespace Playlist
+namespace
 {
-	namespace
+	::Playlist::Playlist createTestPlaylist(int index, const QString& name)
 	{
-		Playlist createPlaylist(int index, const QString& name)
+		return ::Playlist::Playlist(index, name, new PlayManagerMock());
+	}
+
+	template<typename A, typename B, typename Comparator>
+	bool isEqual(const A& a, const B& b, Comparator comp)
+	{
+		const auto& tracks1 = a.tracks();
+		const auto& tracks2 = b.tracks();
+		if(tracks1.count() != tracks2.count())
 		{
-			return Playlist(index, name, new PlayManagerMock());
+			return false;
 		}
 
-		template<typename A, typename B, typename Comparator>
-		bool isEqual(const A& a, const B& b, Comparator comp)
-		{
-			const auto tracks1 = a.tracks();
-			const auto tracks2 = b.tracks();
-			if(tracks1.count() != tracks2.count())
-			{
-				return false;
-			}
+		const auto tracksEqual =
+			std::equal(tracks1.begin(), tracks1.end(), tracks2.begin(), [](const auto& track1, const auto& track2) {
+				return (track1.isEqual(track2));
+			});
 
-			const auto tracksEqual =
-				std::equal(tracks1.begin(), tracks1.end(), tracks2.begin(), [](const auto& track1, const auto& track2) {
-					return (track1.isEqual(track2));
-				});
+		return comp(a, b) && tracksEqual;
+	}
 
-			return comp(a, b) && tracksEqual;
-		}
+	template<typename A, typename B>
+	bool isEqual(const A& a, const B& b)
+	{
+		auto comparator = [](const auto& a, const auto& b) {
+			return (
+				(a.id() == b.id()) &&
+				(a.name() == b.name()) &&
+				(a.isTemporary() == b.isTemporary())
+			);
+		};
 
-		template<typename A, typename B>
-		bool isEqual(const A& a, const B& b)
-		{
-			auto comparator = [](const auto& a, const auto& b) {
-				return (
-					(a.id() == b.id()) &&
-					(a.name() == b.name()) &&
-					(a.isTemporary() == b.isTemporary())
-				);
-			};
-
-			return isEqual(a, b, comparator);
-		}
-	} // namespace
-} // namespace Playlist
+		return isEqual(a, b, comparator);
+	}
+} // namespace
 
 class PlaylistDbInterfaceTest :
 	public Test::Base
@@ -109,7 +105,7 @@ class PlaylistDbInterfaceTest :
 void PlaylistDbInterfaceTest::testInsertAndRename()
 {
 	const auto originalName = QStringLiteral("one");
-	auto playlist = createPlaylist(0, originalName);
+	auto playlist = createTestPlaylist(0, originalName);
 
 	QVERIFY(playlist.id() < 0);
 	QVERIFY(playlist.name() == originalName);
@@ -138,7 +134,7 @@ void PlaylistDbInterfaceTest::testInsertAndRename()
 
 	{ // rename other playlist to same name
 		const auto otherPlaylistName = QStringLiteral("one bla 2");
-		auto otherPlaylist = createPlaylist(0, otherPlaylistName);
+		auto otherPlaylist = createTestPlaylist(0, otherPlaylistName);
 		QVERIFY(otherPlaylist.save() == Util::SaveAsAnswer::Success);
 
 		const auto answer = otherPlaylist.rename(playlist.name());
@@ -151,7 +147,7 @@ void PlaylistDbInterfaceTest::testInsertAndRename()
 
 	{ // rename playlist which isn't saved yet
 		const auto otherPlaylistName = QStringLiteral("one bla 3");
-		auto otherPlaylist = createPlaylist(0, otherPlaylistName);
+		auto otherPlaylist = createTestPlaylist(0, otherPlaylistName);
 		const auto answer = otherPlaylist.rename("some name");
 		QVERIFY(answer == Util::SaveAsAnswer::OtherError);
 		QVERIFY(otherPlaylist.id() < 0);
@@ -163,7 +159,7 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAs()
 {
 	const auto name = QStringLiteral("two");
 	const auto newName = QStringLiteral("two renamed");
-	auto playlist = createPlaylist(2, name);
+	auto playlist = createTestPlaylist(2, name);
 
 	{ // save playlist
 		const auto answer = playlist.saveAs(newName);
@@ -198,8 +194,8 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAs()
 
 void PlaylistDbInterfaceTest::testInsertAndSaveAsInvalidName()
 {
-	auto playlist = createPlaylist(3, "three");
-	auto otherPlaylist = createPlaylist(4, "four");
+	auto playlist = createTestPlaylist(3, "three");
+	auto otherPlaylist = createTestPlaylist(4, "four");
 	{ // save playlist
 		const auto answer = playlist.save();
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -232,7 +228,7 @@ void PlaylistDbInterfaceTest::testInsertAndSaveAsInvalidName()
 
 void PlaylistDbInterfaceTest::testDeletion()
 {
-	auto playlist = createPlaylist(5, "five");
+	auto playlist = createTestPlaylist(5, "five");
 	{ // save playlist
 		const auto answer = playlist.save();
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -262,10 +258,11 @@ void PlaylistDbInterfaceTest::testDeletion()
 
 void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 {
-	auto playlist = createPlaylist(6, "six");
+	using Playlist::ChangeNotifier;
+	auto playlist = createTestPlaylist(6, "six");
 	{ // save temporary playlist
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistAdded);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistAdded);
 
 		const auto answer = playlist.save();
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -274,8 +271,8 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 
 	{ // rename temporary playlist
 		const auto oldName = playlist.name();
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistRenamed);
 
 		const auto answer = playlist.rename("six new");
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -287,8 +284,8 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 
 	{ // delete temporary playlist
 		const auto id = playlist.id();
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistDeleted);
 
 		const auto success = playlist.deletePlaylist();
 		QVERIFY(success);
@@ -297,8 +294,8 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 	}
 
 	{ // save permanent playlist
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistAdded);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistAdded);
 
 		const auto answer = playlist.saveAs(playlist.name());
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -309,8 +306,8 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 
 	{ // rename permanent playlist
 		const auto oldName = playlist.name();
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistRenamed);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistRenamed);
 
 		const auto answer = playlist.rename("six new");
 		QVERIFY(answer == Util::SaveAsAnswer::Success);
@@ -322,8 +319,8 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 
 	{ // delete permanent playlist
 		const auto id = playlist.id();
-		auto* changeNotifier = PlaylistChangeNotifier::instance();
-		auto spy = QSignalSpy(changeNotifier, &PlaylistChangeNotifier::sigPlaylistDeleted);
+		auto* changeNotifier = ChangeNotifier::instance();
+		auto spy = QSignalSpy(changeNotifier, &ChangeNotifier::sigPlaylistDeleted);
 
 		const auto success = playlist.deletePlaylist();
 		QVERIFY(success);
@@ -335,7 +332,7 @@ void PlaylistDbInterfaceTest::testPlaylistChangeNotifier()
 void PlaylistDbInterfaceTest::testWithTracks()
 {
 	const auto tracks = Test::createTracks();
-	auto playlist = createPlaylist(7, "seven");
+	auto playlist = createTestPlaylist(7, "seven");
 	playlist.createPlaylist(tracks);
 
 	{
