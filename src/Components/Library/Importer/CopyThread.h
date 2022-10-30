@@ -30,12 +30,8 @@ namespace Library
 {
 	class ImportCache;
 
-	/**
-	 * @brief The CopyThread class
-	 * @ingroup Library
-	 */
 	class CopyThread :
-			public QThread
+		public QThread
 	{
 		Q_OBJECT
 		PIMPL(CopyThread)
@@ -44,13 +40,14 @@ namespace Library
 			void sigProgress(int);
 
 		public:
-			enum class Mode : uint8_t
+			enum class Mode :
+				uint8_t
 			{
-				Copy=0,
+				Copy = 0,
 				Rollback
 			};
 
-			CopyThread(const QString& targetDirectory, ImportCachePtr cache, QObject* parent=nullptr);
+			CopyThread(const QString& targetDirectory, ImportCachePtr cache, QObject* parent = nullptr);
 			virtual ~CopyThread();
 
 			void cancel();
@@ -64,14 +61,6 @@ namespace Library
 		private:
 			void clear();
 			void run();
-
-			/**
-			 * @brief Copies tracks to file system.
-			 * Example: i want to import /home/user/dir\n
-			 * my music library is in /home/user/Music\n
-			 * i will type "chosen" into entry field\n
-			 * i expect a directory /home/user/Music/chosen/dir in my music library
-			 */
 			void copy();
 			void rollback();
 			void emitPercent();

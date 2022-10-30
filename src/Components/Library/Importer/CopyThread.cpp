@@ -29,23 +29,23 @@
 #include <QFile>
 #include <QDir>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 using Library::CopyThread;
 
 struct CopyThread::Private
 {
-	MetaDataList	tracks;
-	QString			targetDir;
-	QStringList		copiedFiles;
-	bool			cancelled;
+	MetaDataList tracks;
+	QString targetDir;
+	QStringList copiedFiles;
+	bool cancelled;
 
-	ImportCachePtr		cache=nullptr;
-	CopyThread::Mode	mode;
+	ImportCachePtr cache = nullptr;
+	CopyThread::Mode mode;
 
-	Private(ImportCachePtr c) : cache(c) {}
+	Private(ImportCachePtr c) :
+		cache(c) {}
 };
-
 
 CopyThread::CopyThread(const QString& targetDir, ImportCachePtr cache, QObject* parent) :
 	QThread(parent)
@@ -78,20 +78,23 @@ void CopyThread::copy()
 
 	const QStringList files = m->cache->files();
 
-	for(const QString& filename : files)
+	for(const QString& filename: files)
 	{
-		if(m->cancelled){
+		if(m->cancelled)
+		{
 			return;
 		}
 
 		const QString targetFilename = m->cache->targetFilename(filename, m->targetDir);
-		if(targetFilename.isEmpty()){
+		if(targetFilename.isEmpty())
+		{
 			continue;
 		}
 
 		const QString targetDir = Util::File::getParentDirectory(targetFilename);
 		bool success = Util::File::createDirectories(targetDir);
-		if(!success){
+		if(!success)
+		{
 			continue;
 		}
 
@@ -103,7 +106,8 @@ void CopyThread::copy()
 		}
 
 		success = QFile::copy(filename, targetFilename);
-		if(!success) {
+		if(!success)
+		{
 			spLog(Log::Warning, this) << "Copy error";
 			continue;
 		}
@@ -140,36 +144,23 @@ void CopyThread::rollback()
 void CopyThread::run()
 {
 	m->cancelled = false;
-	if(m->mode == Mode::Copy){
+	if(m->mode == Mode::Copy)
+	{
 		copy();
 	}
 
-	else if(m->mode == Mode::Rollback){
+	else if(m->mode == Mode::Rollback)
+	{
 		rollback();
 	}
 }
 
-void CopyThread::cancel()
-{
-	m->cancelled = true;
-}
+void CopyThread::cancel() { m->cancelled = true; }
 
-MetaDataList CopyThread::copiedMetadata() const
-{
-	return m->tracks;
-}
+MetaDataList CopyThread::copiedMetadata() const { return m->tracks; }
 
-bool CopyThread::wasCancelled() const
-{
-	return m->cancelled;
-}
+bool CopyThread::wasCancelled() const { return m->cancelled; }
 
-int CopyThread::copiedFileCount() const
-{
-	return m->copiedFiles.count();
-}
+int CopyThread::copiedFileCount() const { return m->copiedFiles.count(); }
 
-void CopyThread::setMode(CopyThread::Mode mode)
-{
-	m->mode = mode;
-}
+void CopyThread::setMode(CopyThread::Mode mode) { m->mode = mode; }

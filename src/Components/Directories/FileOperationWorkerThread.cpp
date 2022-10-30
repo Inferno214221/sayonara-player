@@ -84,7 +84,7 @@ void FileMoveThread::run()
 {
 	QMap<QString, QString> resultPair;
 
-	for(const QString& sourceFile : m->sourceFiles)
+	for(const QString& sourceFile: m->sourceFiles)
 	{
 		bool success = false;
 		QString newName;
@@ -134,7 +134,7 @@ FileCopyThread::~FileCopyThread() = default;
 
 void FileCopyThread::run()
 {
-	for(const auto& sourceFile : m->sourceFiles)
+	for(const auto& sourceFile: m->sourceFiles)
 	{
 		QString newName;
 
@@ -194,13 +194,13 @@ struct FileOperationThread::Private
 	Private(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles, const QStringList& targetFiles) :
 		libraryInfoAccessor {libraryInfoAccessor}
 	{
-		for(const auto& sourceFile : sourceFiles)
+		for(const auto& sourceFile: sourceFiles)
 		{
 			const auto info = libraryInfoAccessor->libraryInfoByPath(sourceFile);
 			this->sourceIds << info.id();
 		}
 
-		for(const auto& targetFile : targetFiles)
+		for(const auto& targetFile: targetFiles)
 		{
 			const auto info = libraryInfoAccessor->libraryInfoByPath(targetFile);
 			this->targetIds << info.id();

@@ -74,8 +74,7 @@ namespace LastFM
 
 		connect(m->scrobbleTimer, &QTimer::timeout, this, &Base::scrobble);
 		connect(m->trackChangedTimer, &QTimer::timeout, this, &Base::trackChangedTimerTimedOut);
-		connect(m->playManager, &PlayManager::sigCurrentTrackChanged,
-		        this, &Base::currentTrackChanged);
+		connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &Base::currentTrackChanged);
 
 		ListenSetting(Set::LFM_Active, Base::activeChanged);
 	}

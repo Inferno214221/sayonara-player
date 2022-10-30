@@ -40,22 +40,22 @@ namespace Engine
 	 * @ingroup Engine
 	 */
 	class Handler :
-			public QObject,
-			public CoverDataProvider,
-			public LevelDataProvider,
-			public SpectrumDataProvider,
-			public RawAudioDataProvider,
-			public SoundModifier
+		public QObject,
+		public CoverDataProvider,
+		public LevelDataProvider,
+		public SpectrumDataProvider,
+		public RawAudioDataProvider,
+		public SoundModifier
 	{
 		Q_OBJECT
 		PIMPL(Handler)
 
 		public:
-			Handler(PlayManager* playManager);
-			virtual ~Handler();
+			explicit Handler(PlayManager* playManager);
+			~Handler() override;
 
 			void shutdown();
-			bool isValid() const;
+			[[nodiscard]] bool isValid() const;
 
 			void registerLevelReceiver(LevelDataReceiver* receiver) override;
 			void unregisterLevelReceiver(LevelDataReceiver* levelReceiver) override;
@@ -79,7 +79,7 @@ namespace Engine
 			void spectrumChanged();
 			void levelChanged();
 
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
 			void reloadReceivers();
 			void setAudioData(const QByteArray& data) override;
 			void setLevelData(float left, float right) override;

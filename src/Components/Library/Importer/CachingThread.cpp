@@ -96,7 +96,7 @@ CachingThread::scanArchive(const QString& tempDir, const QString& binary, const 
 	}
 
 	const auto entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-	for(const auto& entry : entries)
+	for(const auto& entry: entries)
 	{
 		const auto filename = dir.absoluteFilePath(entry);
 		if(Util::File::isDir(filename))
@@ -166,7 +166,7 @@ bool CachingThread::scanTgzArchive(const QString& tgz)
 
 void CachingThread::scanDirectory(const QString& dir)
 {
-	const auto files = DirectoryReader::scanFilesRecursively(dir, QStringList{"*"});
+	const auto files = DirectoryReader::scanFilesRecursively(dir, QStringList {"*"});
 
 	spLog(Log::Crazy, this) << "Found " << files.size() << " files";
 
@@ -184,7 +184,7 @@ void CachingThread::scanDirectory(const QString& dir)
 		upperDir.cdUp();
 	}
 
-	for(const auto& file : files)
+	for(const auto& file: files)
 	{
 		addFile(file, upperDir.absolutePath());
 	}
@@ -205,7 +205,7 @@ void CachingThread::run()
 
 	spLog(Log::Develop, this) << "Read files";
 
-	for(const auto& filename : Algorithm::AsConst(m->sourceFiles))
+	for(const auto& filename: Algorithm::AsConst(m->sourceFiles))
 	{
 		if(m->cancelled)
 		{
@@ -263,32 +263,14 @@ void CachingThread::metadataChanged()
 	m->cache->changeMetadata(cn->changedMetadata());
 }
 
-QStringList CachingThread::temporaryFiles() const
-{
-	return m->archiveDirectories;
-}
+QStringList CachingThread::temporaryFiles() const { return m->archiveDirectories; }
 
-int CachingThread::cachedFileCount() const
-{
-	return m->cache->count();
-}
+int CachingThread::cachedFileCount() const { return m->cache->count(); }
 
-int CachingThread::soundfileCount() const
-{
-	return m->cache->soundFileCount();
-}
+int CachingThread::soundfileCount() const { return m->cache->soundFileCount(); }
 
-Library::ImportCachePtr CachingThread::cache() const
-{
-	return m->cache;
-}
+Library::ImportCachePtr CachingThread::cache() const { return m->cache; }
 
-void CachingThread::cancel()
-{
-	m->cancelled = true;
-}
+void CachingThread::cancel() { m->cancelled = true; }
 
-bool CachingThread::isCancelled() const
-{
-	return m->cancelled;
-}
+bool CachingThread::isCancelled() const { return m->cancelled; }

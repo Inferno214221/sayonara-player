@@ -46,27 +46,25 @@ namespace Library
 			ImportCache(const ImportCache& other);
 			ImportCache& operator=(const ImportCache& other);
 
-			void			clear();
+			void clear();
 
-			void			addFile(const QString& filename);
-			void			addFile(const QString& filename, const QString& parentDirectory);
+			void addFile(const QString& filename);
+			void addFile(const QString& filename, const QString& parentDirectory);
 
-			QStringList		files() const;
-			MetaDataList	soundfiles() const;
-			int				count() const;
-			int				soundFileCount() const;
+			QStringList files() const;
+			MetaDataList soundfiles() const;
+			int count() const;
+			int soundFileCount() const;
 
-			QString			targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
-			MetaData		metadata(const QString& filename) const;
-			void			changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks);
+			QString targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
+			MetaData metadata(const QString& filename) const;
+			void changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks);
 
 		private:
-			void			addSoundfile(const QString& filename);
+			void addSoundfile(const QString& filename);
 	};
 
-	using ImportCachePtr=std::shared_ptr<ImportCache>;
+	using ImportCachePtr = std::shared_ptr<ImportCache>;
 }
-
-
 
 #endif // IMPORTCACHE_H

@@ -426,7 +426,12 @@ QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
 void DBusMPRIS::MediaPlayer2::trackChanged(const MetaData& track)
 {
 	m->track = track;
-	m->coverPath = Util::Filepath(Cover::Location::coverLocation(track).preferredPath()).fileystemPath();
+
+	const auto coverLocation = Cover::Location::coverLocation(track);
+	const auto preferredPath = coverLocation.preferredPath();
+	const auto filepath = Util::Filepath(preferredPath);
+
+	m->coverPath = filepath.fileystemPath();
 
 	init();
 

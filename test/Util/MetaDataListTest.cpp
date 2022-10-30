@@ -7,29 +7,28 @@
 
 #include <algorithm>
 
-class MetaDataListTest : public Test::Base
+class MetaDataListTest :
+	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	MetaDataListTest() :
-		Test::Base("MetaDataListTest")
-	{}
+	public:
+		MetaDataListTest() :
+			Test::Base("MetaDataListTest") {}
 
-	~MetaDataListTest() override = default;
+		~MetaDataListTest() override = default;
 
-private slots:
-	void insert_test();
-	void remove_test();
-	void move_test();
-	void remove_duplicate_test();
-	void append_unique_test();
+	private slots:
+		void insert_test();
+		void remove_test();
+		void move_test();
+		void append_unique_test();
 };
 
 static MetaDataList create_v_md(int min, int max)
 {
 	MetaDataList v_md;
-	for(int i=min; i<max; i++)
+	for(int i = min; i < max; i++)
 	{
 		MetaData md;
 		md.setId(i);
@@ -50,32 +49,34 @@ void MetaDataListTest::insert_test()
 
 	int insert_idx = 8;
 
-	QList<UniqueId> unique_ids = inserted_md.unique_ids();
+	QList<UniqueId> unique_ids = Util::uniqueIds(inserted_md);
 	QList<UniqueId> unique_ids2;
 
 	v_md.insertTracks(inserted_md, insert_idx);
 	QVERIFY(v_md.size() == v_md_orig.size() + inserted_md.size());
 
 	QList<int> expected_ids;
-	for(int i=0; i<insert_idx; i++) {
+	for(int i = 0; i < insert_idx; i++)
+	{
 		expected_ids << v_md[i].id();
 	}
 
-	for(int i=0; i<inserted_md.count(); i++) {
+	for(int i = 0; i < inserted_md.count(); i++)
+	{
 		expected_ids << inserted_md[i].id();
 		unique_ids2 << v_md[i + insert_idx].uniqueId();
 	}
 
 	QVERIFY(unique_ids != unique_ids2);
 
-	for(int i=insert_idx; i<v_md_orig.count(); i++)
+	for(int i = insert_idx; i < v_md_orig.count(); i++)
 	{
 		expected_ids << v_md_orig[i].id();
 	}
 
 	QVERIFY(v_md.count() == expected_ids.size());
 
-	for(int i=0; i<v_md.count(); i++)
+	for(int i = 0; i < v_md.count(); i++)
 	{
 		QVERIFY(v_md[i].id() == expected_ids[i]);
 	}
@@ -92,7 +93,6 @@ void MetaDataListTest::insert_test()
 	}
 }
 
-
 void MetaDataListTest::remove_test()
 {
 	MetaDataList v_md = create_v_md(0, 100);
@@ -102,7 +102,8 @@ void MetaDataListTest::remove_test()
 	int remove_end = 30;
 
 	IndexSet remove_indexes;
-	for(int i=remove_start; i<remove_end; i++){
+	for(int i = remove_start; i < remove_end; i++)
+	{
 		remove_indexes << i;
 	}
 
@@ -110,14 +111,15 @@ void MetaDataListTest::remove_test()
 
 	QVERIFY(v_md.size() == (old_size - remove_indexes.size()));
 
-	for(int i=0; i<v_md.count(); i++)
+	for(int i = 0; i < v_md.count(); i++)
 	{
-		if(i<remove_start)
+		if(i < remove_start)
 		{
 			QVERIFY(v_md[i].id() == i);
 		}
 
-		else {
+		else
+		{
 			QVERIFY(v_md[i].id() == (i + remove_indexes.count()));
 		}
 	}
@@ -142,7 +144,8 @@ void MetaDataListTest::remove_test()
 		v_md_invalid.removeTrack(0);
 		QVERIFY(v_md_invalid.size() == 1);
 
-		MetaData md; md.setFilepath("Somestuff.mp3");
+		MetaData md;
+		md.setFilepath("Somestuff.mp3");
 		v_md_invalid << md;
 		QVERIFY(v_md_invalid.size() == 2);
 
@@ -168,7 +171,7 @@ void MetaDataListTest::move_test()
 {
 	const MetaDataList v_md_orig = create_v_md(0, 10);
 	MetaDataList v_md = v_md_orig;
-	QList<UniqueId> unique_ids = v_md.unique_ids();
+	QList<UniqueId> unique_ids = Util::uniqueIds(v_md);
 	QList<UniqueId> unique_ids2;
 
 	IndexSet move_indexes;
@@ -182,7 +185,7 @@ void MetaDataListTest::move_test()
 		};
 
 		v_md.moveTracks(move_indexes, 1);
-		unique_ids2 = v_md.unique_ids();
+		unique_ids2 = Util::uniqueIds(v_md);
 		QVERIFY(unique_ids != unique_ids2);
 
 		std::sort(unique_ids.begin(), unique_ids.end());
@@ -191,12 +194,12 @@ void MetaDataListTest::move_test()
 		QVERIFY(unique_ids == unique_ids2);
 
 		QList<int> expected_ids
-		{
-			0, 3, 4, 5, 1, 2, 6, 7, 8, 9
-		};
+			{
+				0, 3, 4, 5, 1, 2, 6, 7, 8, 9
+			};
 
 		QVERIFY(expected_ids.count() == v_md.count());
-		for(int i=0; i<expected_ids.count(); i++)
+		for(int i = 0; i < expected_ids.count(); i++)
 		{
 			QVERIFY(expected_ids[i] == v_md[i].id());
 		}
@@ -212,19 +215,18 @@ void MetaDataListTest::move_test()
 
 		v_md.moveTracks(move_indexes, 6);
 
-		unique_ids2 = v_md.unique_ids();
+		unique_ids2 = Util::uniqueIds(v_md);
 		QVERIFY(unique_ids == unique_ids2);
 
-		for(int i=0; i<v_md.count(); i++)
+		for(int i = 0; i < v_md.count(); i++)
 		{
 			QVERIFY(i == v_md[i].id());
 		}
 	}
 
-
 	{ // move behind last index
 		v_md = v_md_orig;
-		unique_ids = v_md.unique_ids();
+		unique_ids = Util::uniqueIds(v_md);
 		move_indexes.clear();
 		{
 			move_indexes << 1 << 2 << 3;
@@ -232,18 +234,18 @@ void MetaDataListTest::move_test()
 
 		v_md.moveTracks(move_indexes, 11);
 
-		unique_ids2 = v_md.unique_ids();
+		unique_ids2 = Util::uniqueIds(v_md);
 
 		std::sort(unique_ids.begin(), unique_ids.end());
 		std::sort(unique_ids2.begin(), unique_ids2.end());
 		QVERIFY(unique_ids == unique_ids2);
 
 		QList<int> expected_ids
-		{
-			0, 4, 5, 6, 7, 8, 9, 1, 2, 3
-		};
+			{
+				0, 4, 5, 6, 7, 8, 9, 1, 2, 3
+			};
 
-		for(int i=0; i<expected_ids.count(); i++)
+		for(int i = 0; i < expected_ids.count(); i++)
 		{
 			QVERIFY(expected_ids[i] == v_md[i].id());
 		}
@@ -258,11 +260,11 @@ void MetaDataListTest::move_test()
 
 		v_md.moveTracks(move_indexes, -4);
 		QList<int> expected_ids
-		{
-			4, 7, 8, 0, 1, 2, 3, 5, 6, 9
-		};
+			{
+				4, 7, 8, 0, 1, 2, 3, 5, 6, 9
+			};
 
-		for(int i=0; i<expected_ids.count(); i++)
+		for(int i = 0; i < expected_ids.count(); i++)
 		{
 			QVERIFY(expected_ids[i] == v_md[i].id());
 		}
@@ -357,13 +359,13 @@ void MetaDataListTest::append_unique_test()
 	MetaDataList v_md_orig = create_v_md(0, 100);
 	MetaDataList v_md = v_md_orig;
 	MetaDataList v_md2 = create_v_md(70, 170);
-	for(MetaData& md : v_md)
+	for(MetaData& md: v_md)
 	{
 		QString p = QString("/some/path/%1.mp3").arg(md.id());
 		md.setFilepath(p);
 	}
 
-	for(MetaData& md : v_md2)
+	for(MetaData& md: v_md2)
 	{
 		QString p = QString("/some/path/%1.mp3").arg(md.id());
 		md.setFilepath(p);
@@ -372,7 +374,7 @@ void MetaDataListTest::append_unique_test()
 	v_md.appendUnique(v_md2);
 
 	QVERIFY(v_md.size() == v_md_orig.size() + 70);
-	for(int i=0; i<v_md.count(); i++)
+	for(int i = 0; i < v_md.count(); i++)
 	{
 		QVERIFY(v_md[i].id() == i);
 	}

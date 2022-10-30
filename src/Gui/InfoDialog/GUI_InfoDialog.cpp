@@ -144,7 +144,7 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 
 	int maxSize = 0;
 	int row = 0;
-	for(const auto& stringPair : data)
+	for(const auto& stringPair: data)
 	{
 		auto* item1 = new QTableWidgetItem(stringPair.first);
 
@@ -172,7 +172,7 @@ static void preparePaths(QListWidget* pathListWidget, const QStringList& paths)
 	pathListWidget->setEditTriggers(QListView::NoEditTriggers);
 	pathListWidget->setTextElideMode(Qt::TextElideMode::ElideLeft);
 
-	for(const auto& path : paths)
+	for(const auto& path: paths)
 	{
 		auto* label = new QLabel(pathListWidget);
 		label->setText(path);

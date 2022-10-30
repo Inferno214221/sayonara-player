@@ -122,12 +122,12 @@ void LocalLibrary::metadataChanged()
 	for(const auto& [oldTrack, newTrack]: changedTracks)
 	{
 		needsRefresh = needsRefresh ||
-			(oldTrack.albumArtistId() != newTrack.albumArtistId()) ||
-			(oldTrack.albumId() != newTrack.albumId()) ||
-			(oldTrack.artistId() != newTrack.artistId()) ||
-			(oldTrack.album() != newTrack.album()) ||
-			(oldTrack.albumArtist() != newTrack.albumArtist()) ||
-			(oldTrack.artist() != newTrack.artist());
+		               (oldTrack.albumArtistId() != newTrack.albumArtistId()) ||
+		               (oldTrack.albumId() != newTrack.albumId()) ||
+		               (oldTrack.artistId() != newTrack.artistId()) ||
+		               (oldTrack.album() != newTrack.album()) ||
+		               (oldTrack.albumArtist() != newTrack.albumArtist()) ||
+		               (oldTrack.artist() != newTrack.artist());
 
 		if(idRowMap.contains(oldTrack.id()))
 		{

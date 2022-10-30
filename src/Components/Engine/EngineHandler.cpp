@@ -61,8 +61,7 @@ struct Handler::Private
 	Engine* engine;
 
 	Private(Handler* engineHandler, PlayManager* playManager) :
-		engine(new Engine(playManager, engineHandler))
-	{}
+		engine(new Engine(playManager, engineHandler)) {}
 };
 
 Handler::Handler(PlayManager* playManager) :
@@ -71,25 +70,14 @@ Handler::Handler(PlayManager* playManager) :
 {
 	m = Pimpl::make<Private>(this, playManager);
 
-	connect(playManager, &PlayManager::sigPlaystateChanged,
-	        this, &Handler::playstateChanged);
-
-	connect(playManager, &PlayManager::sigCurrentTrackChanged,
-	        this, [=](const MetaData& md) {
-			m->engine->changeTrack(md);
-		});
-
-	connect(playManager, &PlayManager::sigSeekedAbsoluteMs,
-	        m->engine, &Engine::jumpAbsMs);
-
-	connect(playManager, &PlayManager::sigSeekedRelative,
-	        m->engine, &Engine::jumpRel);
-
-	connect(playManager, &PlayManager::sigSeekedRelativeMs,
-	        m->engine, &Engine::jumpRelMs);
-
-	connect(playManager, &PlayManager::sigRecording,
-	        m->engine, &Engine::setStreamRecorderRecording);
+	connect(playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
+	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, [=](const auto& track) {
+		m->engine->changeTrack(track);
+	});
+	connect(playManager, &PlayManager::sigSeekedAbsoluteMs, m->engine, &Engine::jumpAbsMs);
+	connect(playManager, &PlayManager::sigSeekedRelative, m->engine, &Engine::jumpRel);
+	connect(playManager, &PlayManager::sigSeekedRelativeMs, m->engine, &Engine::jumpRelMs);
+	connect(playManager, &PlayManager::sigRecording, m->engine, &Engine::setStreamRecorderRecording);
 
 	const auto& currentTrack = playManager->currentTrack();
 	if(!currentTrack.filepath().isEmpty())
@@ -157,8 +145,6 @@ void Handler::playstateChanged(PlayState state)
 	}
 }
 
-
-
 void Handler::registerSpectrumReceiver(SpectrumDataReceiver* receiver)
 {
 	m->spectrumReceivers.insert(receiver);
@@ -172,7 +158,7 @@ void Engine::Handler::unregisterSpectrumReceiver(SpectrumDataReceiver* spectrumR
 
 void Engine::Handler::setSpectrumData(const std::vector<float>& spectrum)
 {
-	for(auto* receiver : m->spectrumReceivers)
+	for(auto* receiver: m->spectrumReceivers)
 	{
 		if(receiver->isActive())
 		{
@@ -191,8 +177,6 @@ void Handler::spectrumActiveChanged(bool /*b*/)
 	reloadReceivers();
 }
 
-
-
 void Handler::registerLevelReceiver(LevelDataReceiver* receiver)
 {
 	m->levelReceivers.insert(receiver);
@@ -204,10 +188,9 @@ void Engine::Handler::unregisterLevelReceiver(LevelDataReceiver* levelReceiver)
 	unregisterReceiver(levelReceiver, m->levelReceivers);
 }
 
-
 void Engine::Handler::setLevelData(float left, float right)
 {
-	for(auto* receiver : m->levelReceivers)
+	for(auto* receiver: m->levelReceivers)
 	{
 		if(receiver->isActive())
 		{
@@ -226,8 +209,6 @@ void Handler::levelActiveChanged(bool /*b*/)
 {
 	reloadReceivers();
 }
-
-
 
 void Handler::reloadReceivers()
 {
@@ -262,7 +243,7 @@ void Engine::Handler::unregisterCoverReceiver(CoverDataReceiver* coverDataReceiv
 
 void Engine::Handler::setCoverData(const QByteArray& imageData, const QString& mimeData)
 {
-	for(auto* receiver : m->coverReceivers)
+	for(auto* receiver: m->coverReceivers)
 	{
 		if(receiver->isActive())
 		{
@@ -285,7 +266,7 @@ void Engine::Handler::unregisterAudioDataReceiver(RawAudioDataReceiver* receiver
 
 void Engine::Handler::setAudioData(const QByteArray& data)
 {
-	for(auto* receiver : Algorithm::AsConst(m->rawSoundReceiver))
+	for(auto* receiver: Algorithm::AsConst(m->rawSoundReceiver))
 	{
 		receiver->writeAudioData(data);
 	}

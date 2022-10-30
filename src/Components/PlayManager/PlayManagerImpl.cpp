@@ -144,9 +144,9 @@ class PlayManagerImpl :
 
 			if(loadPlaylist && loadLastTrack)
 			{
-				m_initialPositionMs = rememberLastTime
-				                      ? (GetSetting(Set::Engine_CurTrackPos_s) * 1000) // NOLINT(readability-magic-numbers)
-				                      : 0;
+				// NOLINTNEXTLINE(readability-magic-numbers)
+				m_initialPositionMs = rememberLastTime ? (GetSetting(Set::Engine_CurTrackPos_s) * 1000)
+				                                       : 0;
 			}
 
 			auto* mdcn = Tagging::ChangeNotifier::instance();
@@ -483,7 +483,7 @@ class PlayManagerImpl :
 			auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 
 			const auto& changedMetadata = changeNotifier->changedMetadata();
-			const auto& it = Util::Algorithm::find(changedMetadata, [&](const auto& pair){
+			const auto& it = Util::Algorithm::find(changedMetadata, [&](const auto& pair) {
 				return pair.first.isEqual(m_currentTrack);
 			});
 

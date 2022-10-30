@@ -67,7 +67,7 @@ namespace
 
 	QStringList extractLocalPathDirectories(const QStringList& localPathHints)
 	{
-		for(const auto& pathHint :localPathHints)
+		for(const auto& pathHint: localPathHints)
 		{
 			const auto fileInfo = QFileInfo(pathHint);
 			if(fileInfo.isFile())
@@ -190,7 +190,7 @@ Location& Location::operator=(Location&& other) noexcept
 
 QString Location::invalidPath() { return ":/Icons/logo.png"; }
 
-Location Location::invalidLocation() { return Location(); }
+Location Location::invalidLocation() { return {}; }
 
 Location Location::coverLocation(const QString& albumName, const QString& artistName)
 {
@@ -415,7 +415,7 @@ bool Location::setAudioFileSource(const QString& audioFilepath, const QString& c
 		return false;
 	}
 
-	auto[dir, filename] = Util::File::splitFilename(coverPath);
+	auto [dir, filename] = Util::File::splitFilename(coverPath);
 	const auto extension = Util::File::getFileExtension(coverPath);
 	if(extension.isEmpty())
 	{

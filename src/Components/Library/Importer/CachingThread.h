@@ -29,30 +29,26 @@
 namespace Library
 {
 	class ImportCache;
-	/**
-	 * @brief The CachingThread class
-	 * @ingroup Library
-	 */
+
 	class CachingThread :
-			public QThread
+		public QThread
 	{
 		Q_OBJECT
 		PIMPL(CachingThread)
 
 		signals:
-			void			sigCachedFilesChanged();
+			void sigCachedFilesChanged();
 
 		public:
-			explicit CachingThread(const QStringList& fileList, const QString& libraryPath, QObject* parent=nullptr);
+			explicit CachingThread(const QStringList& fileList, const QString& libraryPath, QObject* parent = nullptr);
 			~CachingThread() override;
 
-			Library::ImportCachePtr	cache() const;
-			void			cancel();
-			bool			isCancelled() const;
-			QStringList		temporaryFiles() const;
-			int				cachedFileCount() const;
-			int				soundfileCount() const;
-
+			Library::ImportCachePtr cache() const;
+			void cancel();
+			bool isCancelled() const;
+			QStringList temporaryFiles() const;
+			int cachedFileCount() const;
+			int soundfileCount() const;
 
 		private:
 			void run() override;
@@ -61,16 +57,14 @@ namespace Library
 			bool scanRarArchive(const QString& rarFile);
 			bool scanZipArchive(const QString& zipFile);
 			bool scanTgzArchive(const QString& tgz);
-			void addFile(const QString& filename, const QString& relativeDir=QString());
+			void addFile(const QString& filename, const QString& relativeDir = QString());
 
 			QString createTempDirectory();
-			bool scanArchive
-			(
+			bool scanArchive(
 				const QString& tempDirectory,
 				const QString& binary,
 				const QStringList& args,
-				const QList<int>& successCodes=QList<int>{0}
-			);
+				const QList<int>& successCodes = QList<int> {0});
 
 		private slots:
 			void metadataChanged();
