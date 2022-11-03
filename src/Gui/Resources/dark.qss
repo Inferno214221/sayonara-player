@@ -300,7 +300,7 @@ QLineEdit,
 QSpinBox,
 QTextEdit,
 QPlainTextEdit {
-    min-width: 10em;
+    min-width: 5em;
 }
 
 QComboBox:hover,
