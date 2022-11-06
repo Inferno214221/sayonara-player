@@ -33,9 +33,6 @@
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
 namespace
 {
 	constexpr const auto SearchMode = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
@@ -78,21 +75,21 @@ class TracksTest :
 		}
 
 	private slots:
-		void testGetAllTracks();
-		void testFetchByArtist();
-		void testFetchByArtistWithFilter();
-		void testFetchByAlbumArtist();
-		void testFetchByAlbumArtistWithFilter();
-		void testFetchByAlbum();
-		void testFetchByAlbumWithFilter();
-		void testSearchByFulltext();
-		void testSearchByGenre();
-		void testSearchByFilepath();
-		void testGetAllGenres();
-		void testGetByPaths();
-		void testInsertAndUpdate();
-		void testInsertAndDelete();
-		void testRenameFilepath();
+		[[maybe_unused]] void testGetAllTracks();
+		[[maybe_unused]] void testFetchByAlbumArtist();
+		[[maybe_unused]] void testFetchByAlbumArtistWithFilter();
+		[[maybe_unused]] void testFetchByArtist();
+		[[maybe_unused]] void testFetchByArtistWithFilter();
+		[[maybe_unused]] void testFetchByAlbum();
+		[[maybe_unused]] void testFetchByAlbumWithFilter();
+		[[maybe_unused]] void testSearchByFulltext();
+		[[maybe_unused]] void testSearchByGenre();
+		[[maybe_unused]] void testSearchByFilepath();
+		[[maybe_unused]] void testGetAllGenres();
+		[[maybe_unused]] void testGetByPaths();
+		[[maybe_unused]] void testInsertAndUpdate();
+		[[maybe_unused]] void testInsertAndDelete();
+		[[maybe_unused]] void testRenameFilepath();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		DB::LibraryDatabase*
@@ -118,7 +115,7 @@ class TracksTest :
 		MetaDataList m_testTracks;
 };
 
-void TracksTest::testGetAllTracks()
+[[maybe_unused]] void TracksTest::testGetAllTracks()
 {
 	auto* db = initDatabase();
 	MetaDataList tracks;
@@ -128,7 +125,7 @@ void TracksTest::testGetAllTracks()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByAlbumArtist()
+[[maybe_unused]] void TracksTest::testFetchByAlbumArtist()
 {
 	auto* db = initDatabase(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
 
@@ -140,7 +137,7 @@ void TracksTest::testFetchByAlbumArtist()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByAlbumArtistWithFilter()
+[[maybe_unused]] void TracksTest::testFetchByAlbumArtistWithFilter()
 {
 	auto* db = initDatabase(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
 
@@ -154,7 +151,7 @@ void TracksTest::testFetchByAlbumArtistWithFilter()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByArtist()
+[[maybe_unused]] void TracksTest::testFetchByArtist()
 {
 	auto* db = initDatabase();
 
@@ -166,7 +163,7 @@ void TracksTest::testFetchByArtist()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByArtistWithFilter()
+[[maybe_unused]] void TracksTest::testFetchByArtistWithFilter()
 {
 	auto* db = initDatabase();
 
@@ -180,7 +177,7 @@ void TracksTest::testFetchByArtistWithFilter()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByAlbum()
+[[maybe_unused]] void TracksTest::testFetchByAlbum()
 {
 	auto* db = initDatabase();
 
@@ -192,7 +189,7 @@ void TracksTest::testFetchByAlbum()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testFetchByAlbumWithFilter()
+[[maybe_unused]] void TracksTest::testFetchByAlbumWithFilter()
 {
 	auto* db = initDatabase();
 
@@ -206,7 +203,7 @@ void TracksTest::testFetchByAlbumWithFilter()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testSearchByFulltext()
+[[maybe_unused]] void TracksTest::testSearchByFulltext()
 {
 	{ // by album "African Countries"
 		auto* db = initDatabase();
@@ -242,7 +239,7 @@ void TracksTest::testSearchByFulltext()
 	}
 }
 
-void TracksTest::testSearchByGenre()
+[[maybe_unused]] void TracksTest::testSearchByGenre()
 {
 	Library::Filter filter;
 	filter.setFiltertext("asiarivers");
@@ -257,7 +254,7 @@ void TracksTest::testSearchByGenre()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testSearchByFilepath()
+[[maybe_unused]] void TracksTest::testSearchByFilepath()
 {
 	Library::Filter filter;
 	filter.setFiltertext("rivers");
@@ -272,7 +269,7 @@ void TracksTest::testSearchByFilepath()
 	QVERIFY(isSubset(tracks, m_testTracks));
 }
 
-void TracksTest::testGetAllGenres()
+[[maybe_unused]] void TracksTest::testGetAllGenres()
 {
 	auto* db = initDatabase();
 
@@ -285,7 +282,7 @@ void TracksTest::testGetAllGenres()
 	QVERIFY(genres.size() == (artists.size() + albums.size()));
 }
 
-void TracksTest::testGetByPaths()
+[[maybe_unused]] void TracksTest::testGetByPaths()
 {
 	QStringList paths;
 	for(int i = 0; i < 7; i++) // NOLINT(readability-magic-numbers)
@@ -318,7 +315,7 @@ void TracksTest::testGetByPaths()
 	}
 }
 
-void TracksTest::testInsertAndUpdate() // NOLINT(readability-function-cognitive-complexity)
+[[maybe_unused]] void TracksTest::testInsertAndUpdate() // NOLINT(readability-function-cognitive-complexity)
 {
 	auto* db = initDatabase();
 
@@ -367,7 +364,7 @@ void TracksTest::testInsertAndUpdate() // NOLINT(readability-function-cognitive-
 	}
 }
 
-void TracksTest::testInsertAndDelete()
+[[maybe_unused]] void TracksTest::testInsertAndDelete()
 {
 	auto* db = initDatabase();
 
@@ -391,7 +388,7 @@ void TracksTest::testInsertAndDelete()
 	}
 }
 
-void TracksTest::testRenameFilepath()
+[[maybe_unused]] void TracksTest::testRenameFilepath()
 {
 	auto* db = initDatabase();
 
@@ -421,5 +418,3 @@ void TracksTest::testRenameFilepath()
 QTEST_GUILESS_MAIN(TracksTest)
 
 #include "TracksTest.moc"
-
-#pragma clang diagnostic pop

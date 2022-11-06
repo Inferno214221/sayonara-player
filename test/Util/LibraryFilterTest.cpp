@@ -6,12 +6,6 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "OCUnusedGlobalDeclarationInspection"
-#pragma ide diagnostic ignored "readability-convert-member-functions-to-static"
-#pragma ide diagnostic ignored "readability-function-cognitive-complexity"
-
 using Library::Filter;
 
 class LibraryFilterTest :
@@ -24,13 +18,14 @@ class LibraryFilterTest :
 			Test::Base("LibraryFilterTest") {}
 
 	private slots:
-		void testConstructCopyCompare();
-		void testFilterText();
-		void testClear();
-		void testFilterLength();
+		[[maybe_unused]] void testConstructCopyCompare();
+		[[maybe_unused]] void testFilterText();
+		[[maybe_unused]] void testClear();
+		[[maybe_unused]] void testFilterLength();
 };
 
-void LibraryFilterTest::testConstructCopyCompare()
+// NOLINTNEXTLINE(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
+[[maybe_unused]] void LibraryFilterTest::testConstructCopyCompare()
 {
 	constexpr const auto MinimumSearchStringLength = 3;
 	auto searchModeMask = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
@@ -75,7 +70,8 @@ void LibraryFilterTest::testConstructCopyCompare()
 	}
 }
 
-void LibraryFilterTest::testFilterText()
+// NOLINTNEXTLINE(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
+[[maybe_unused]] void LibraryFilterTest::testFilterText()
 {
 	constexpr const auto searchModeMask = (+Library::SearchMode::CaseInsensitve | +Library::SearchMode::NoSpecialChars);
 
@@ -104,7 +100,7 @@ void LibraryFilterTest::testFilterText()
 	QVERIFY(filtertextPercent[1] == "%search$BLupp2%");
 }
 
-void LibraryFilterTest::testClear() // NOLINT(readability-convert-member-functions-to-static)
+[[maybe_unused]] void LibraryFilterTest::testClear() // NOLINT(readability-convert-member-functions-to-static)
 {
 	{ // clear filter
 		auto filter = Filter();
@@ -128,7 +124,7 @@ void LibraryFilterTest::testClear() // NOLINT(readability-convert-member-functio
 	}
 }
 
-void LibraryFilterTest::testFilterLength() // NOLINT(readability-convert-member-functions-to-static)
+[[maybe_unused]] void LibraryFilterTest::testFilterLength() // NOLINT(readability-convert-member-functions-to-static)
 {
 	auto filter1 = Filter();
 	auto filter2 = Filter();
@@ -156,5 +152,3 @@ void LibraryFilterTest::testFilterLength() // NOLINT(readability-convert-member-
 QTEST_GUILESS_MAIN(LibraryFilterTest)
 
 #include "LibraryFilterTest.moc"
-
-#pragma clang diagnostic pop

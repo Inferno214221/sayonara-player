@@ -18,10 +18,6 @@
  * along with module() program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "readability-magic-numbers"
-
 #include "Database/Tracks.h"
 #include "Database/Library.h"
 #include "Database/Query.h"
@@ -204,21 +200,21 @@ bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 		track.setDurationMs(q.value(2).toInt());
 		track.setYear(q.value(3).value<Year>());
 		track.setBitrate(q.value(4).value<Bitrate>());
-		track.setFilepath(q.value(5).toString());
-		track.setFilesize(q.value(6).value<Filesize>());
-		track.setTrackNumber(q.value(7).value<TrackNum>());
-		track.setGenres(q.value(8).toString().split(","));
-		track.setDiscnumber(q.value(9).value<Disc>());
-		track.setRating(q.value(10).value<Rating>());
-		track.setAlbumId(q.value(11).toInt());
-		track.setArtistId(q.value(12).toInt());
-		track.setComment(q.value(14).toString());
-		track.setCreatedDate(q.value(15).value<uint64_t>());
-		track.setModifiedDate(q.value(16).value<uint64_t>());
-		track.setLibraryid(q.value(17).value<LibraryId>());
-		track.setAlbum(q.value(18).toString().trimmed());
-		track.setArtist(q.value(20).toString().trimmed());
-		track.setAlbumArtist(q.value(21).toString(), q.value(13).toInt());
+		track.setFilepath(q.value(5).toString()); // NOLINT(readability-magic-numbers)
+		track.setFilesize(q.value(6).value<Filesize>()); // NOLINT(readability-magic-numbers)
+		track.setTrackNumber(q.value(7).value<TrackNum>()); // NOLINT(readability-magic-numbers)
+		track.setGenres(q.value(8).toString().split(",")); // NOLINT(readability-magic-numbers)
+		track.setDiscnumber(q.value(9).value<Disc>()); // NOLINT(readability-magic-numbers)
+		track.setRating(q.value(10).value<Rating>()); // NOLINT(readability-magic-numbers)
+		track.setAlbumId(q.value(11).toInt()); // NOLINT(readability-magic-numbers)
+		track.setArtistId(q.value(12).toInt()); // NOLINT(readability-magic-numbers)
+		track.setComment(q.value(14).toString()); // NOLINT(readability-magic-numbers)
+		track.setCreatedDate(q.value(15).value<uint64_t>()); // NOLINT(readability-magic-numbers)
+		track.setModifiedDate(q.value(16).value<uint64_t>()); // NOLINT(readability-magic-numbers)
+		track.setLibraryid(q.value(17).value<LibraryId>()); // NOLINT(readability-magic-numbers)
+		track.setAlbum(q.value(18).toString().trimmed()); // NOLINT(readability-magic-numbers)
+		track.setArtist(q.value(20).toString().trimmed()); // NOLINT(readability-magic-numbers)
+		track.setAlbumArtist(q.value(21).toString(), q.value(13).toInt()); // NOLINT(readability-magic-numbers)
 
 		track.setDatabaseId(module()->databaseId());
 
@@ -658,5 +654,3 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, A
 
 	return (!q.hasError());
 }
-
-#pragma clang diagnostic pop

@@ -28,9 +28,6 @@
 #include <QStringList>
 #include <QLocale>
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-
 LanguageString::LanguageString(const QString& other) :
 	QString(other) {}
 
@@ -68,458 +65,454 @@ Lang::Lang() = default;
 
 Lang::~Lang() = default;
 
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "readability-static-accessed-through-instance"
-
-LanguageString Lang::get(Lang::Term term, bool* ok)
+LanguageString Lang::get(const Lang::Term term, bool* ok)
 {
 	if(ok)
 	{
 		*ok = true;
 	}
 
-	Lang l;
 	switch(term)
 	{
 		case About:
-			return l.tr("About");
+			return QObject::tr("About");
 		case Action:
-			return l.tr("Action");
+			return QObject::tr("Action");
 		case Actions:
-			return l.tr("Actions");
+			return QObject::tr("Actions");
 		case Activate:
-			return l.tr("Activate");
+			return QObject::tr("Activate");
 		case Active:
-			return l.tr("Active");
+			return QObject::tr("Active");
 		case Add:
-			return l.tr("Add");
+			return QObject::tr("Add");
 		case AddArtist:
-			return l.tr("Add artist");
+			return QObject::tr("Add artist");
 		case AddTab:
-			return l.tr("Add tab");
+			return QObject::tr("Add tab");
 		case Album:
-			return l.tr("Album");
+			return QObject::tr("Album");
 		case AlbumArtist:
-			return l.tr("Album artist");
+			return QObject::tr("Album artist");
 		case AlbumArtists:
-			return l.tr("Album artists");
+			return QObject::tr("Album artists");
 		case Albums:
-			return l.tr("Albums");
+			return QObject::tr("Albums");
 		case All:
-			return l.tr("All");
+			return QObject::tr("All");
 		case Append:
-			return l.tr("Append");
+			return QObject::tr("Append");
 		case Application:
-			return l.tr("Application");
+			return QObject::tr("Application");
 		case Apply:
-			return l.tr("Apply");
+			return QObject::tr("Apply");
 		case Artist:
-			return l.tr("Artist");
+			return QObject::tr("Artist");
 		case Artists:
-			return l.tr("Artists");
+			return QObject::tr("Artists");
 		case Ascending:
-			return l.tr("Ascending");
+			return QObject::tr("Ascending");
 		case Automatic:
-			return l.tr("Automatic");
+			return QObject::tr("Automatic");
 		case Bitrate:
-			return l.tr("Bitrate");
+			return QObject::tr("Bitrate");
 		case Bookmarks:
-			return l.tr("Bookmarks");
+			return QObject::tr("Bookmarks");
 		case Broadcast:
-			return l.tr("Broadcast");
+			return QObject::tr("Broadcast");
 		case By:
 			// "Beat it" by "Michael Jackson"
-			return l.tr("by");
+			return QObject::tr("by");
 		case Cancel:
-			return l.tr("Cancel");
+			return QObject::tr("Cancel");
 		case CannotFindLame:
-			return l.tr("Cannot find Lame MP3 encoder");
+			return QObject::tr("Cannot find Lame MP3 encoder");
 		case CaseInsensitive:
-			return l.tr("Case insensitive");
+			return QObject::tr("Case insensitive");
 		case Clear:
-			return l.tr("Clear");
+			return QObject::tr("Clear");
 		case ClearSelection:
-			return l.tr("Clear selection");
+			return QObject::tr("Clear selection");
 		case Close:
-			return l.tr("Close");
+			return QObject::tr("Close");
 		case CloseOthers:
-			return l.tr("Close others");
+			return QObject::tr("Close others");
 		case CloseTab:
-			return l.tr("Close tab");
+			return QObject::tr("Close tab");
 		case Comment:
-			return l.tr("Comment");
+			return QObject::tr("Comment");
 		case Continue:
-			return l.tr("Continue");
+			return QObject::tr("Continue");
 		case Covers:
-			return l.tr("Covers");
+			return QObject::tr("Covers");
 		case Created:
-			return l.tr("Created");
+			return QObject::tr("Created");
 		case CreateDirectory:
-			return l.tr("Create new directory");
+			return QObject::tr("Create new directory");
 		case CreateNewLibrary:
-			return l.tr("Create a new library");
+			return QObject::tr("Create a new library");
 		case DarkMode:
-			return l.tr("Dark Mode");
+			return QObject::tr("Dark Mode");
 		case Date:
-			return l.tr("Date");
+			return QObject::tr("Date");
 		case Days:
-			return l.tr("Days");
+			return QObject::tr("Days");
 		case DaysShort:
 			// short form of day
-			return l.tr("d");
+			return QObject::tr("d");
 		case Default:
-			return l.tr("Default");
+			return QObject::tr("Default");
 		case Delete:
-			return l.tr("Delete");
+			return QObject::tr("Delete");
 		case Descending:
-			return l.tr("Descending");
+			return QObject::tr("Descending");
 		case Directory:
-			return l.tr("Directory");
+			return QObject::tr("Directory");
 		case Directories:
-			return l.tr("Directories");
+			return QObject::tr("Directories");
 		case Disc:
-			return l.tr("Disc");
+			return QObject::tr("Disc");
 		case Duration:
-			return l.tr("Duration");
+			return QObject::tr("Duration");
 		case DurationShort:
 			// short form of duration
-			return l.tr("Dur.");
+			return QObject::tr("Dur.");
 		case DynamicPlayback:
-			return l.tr("Dynamic playback");
+			return QObject::tr("Dynamic playback");
 		case Edit:
-			return l.tr("Edit");
+			return QObject::tr("Edit");
 		case EmptyInput:
-			return l.tr("Empty input");
+			return QObject::tr("Empty input");
 		case EnterName:
-			return l.tr("Enter name");
+			return QObject::tr("Enter name");
 		case EnterNewName:
-			return l.tr("Please enter new name");
+			return QObject::tr("Please enter new name");
 		case EnterUrl:
-			return l.tr("Enter URL");
+			return QObject::tr("Enter URL");
 		case Entry:
-			return l.tr("Entry");
+			return QObject::tr("Entry");
 		case Entries:
-			return l.tr("Entries");
+			return QObject::tr("Entries");
 		case Error:
-			return l.tr("Error");
+			return QObject::tr("Error");
 		case Fast:
-			return l.tr("Fast");
+			return QObject::tr("Fast");
 		case File:
-			return l.tr("File");
+			return QObject::tr("File");
 		case Filename:
-			return l.tr("Filename");
+			return QObject::tr("Filename");
 		case Files:
-			return l.tr("Files");
+			return QObject::tr("Files");
 		case Filesize:
-			return l.tr("Filesize");
+			return QObject::tr("Filesize");
 		case Filetype:
-			return l.tr("File type");
+			return QObject::tr("File type");
 		case Filter:
-			return l.tr("Filter");
+			return QObject::tr("Filter");
 		case First:
-			return l.tr("1st");
+			return QObject::tr("1st");
 		case Font:
-			return l.tr("Font");
+			return QObject::tr("Font");
 		case Fonts:
-			return l.tr("Fonts");
+			return QObject::tr("Fonts");
 		case Fulltext:
-			return l.tr("Fulltext");
+			return QObject::tr("Fulltext");
 		case GaplessPlayback:
-			return l.tr("Gapless playback");
+			return QObject::tr("Gapless playback");
 		case GB:
-			return l.tr("GB");
+			return QObject::tr("GB");
 		case Genre:
-			return l.tr("Genre");
+			return QObject::tr("Genre");
 		case Genres:
-			return l.tr("Genres");
+			return QObject::tr("Genres");
 		case Hide:
-			return l.tr("Hide");
+			return QObject::tr("Hide");
 		case Hours:
-			return l.tr("Hours");
+			return QObject::tr("Hours");
 		case HoursShort:
 			// short form of hours
-			return l.tr("h");
+			return QObject::tr("h");
 		case IgnoreAccents:
-			return l.tr("Ignore accents");
+			return QObject::tr("Ignore accents");
 		case IgnoreSpecialChars:
-			return l.tr("Ignore special characters");
+			return QObject::tr("Ignore special characters");
 		case ImportDir:
-			return l.tr("Import directory");
+			return QObject::tr("Import directory");
 		case ImportFiles:
-			return l.tr("Import files");
+			return QObject::tr("Import files");
 		case Inactive:
-			return l.tr("Inactive");
+			return QObject::tr("Inactive");
 		case Info:
-			return l.tr("Info");
+			return QObject::tr("Info");
 		case Loading:
-			return l.tr("Loading");
+			return QObject::tr("Loading");
 		case LoadingArg:
-			return l.tr("Loading %1");
+			return QObject::tr("Loading %1");
 		case InvalidChars:
-			return l.tr("Invalid characters");
+			return QObject::tr("Invalid characters");
 		case KB:
-			return l.tr("KB");
+			return QObject::tr("KB");
 		case Key_Find:
-			return l.tr("Ctrl+f");
+			return QObject::tr("Ctrl+f");
 		case Key_Delete:
-			return l.tr("Delete");
+			return QObject::tr("Delete");
 		case Key_Escape:
-			return l.tr("Esc");
+			return QObject::tr("Esc");
 		case Key_Control:
-			return l.tr("Ctrl");
+			return QObject::tr("Ctrl");
 		case Key_Alt:
-			return l.tr("Alt");
+			return QObject::tr("Alt");
 		case Key_Shift:
-			return l.tr("Shift");
+			return QObject::tr("Shift");
 		case Key_Backspace:
-			return l.tr("Backspace");
+			return QObject::tr("Backspace");
 		case Key_Tab:
-			return l.tr("Tab");
+			return QObject::tr("Tab");
 		case Library:
-			return l.tr("Library");
+			return QObject::tr("Library");
 		case LibraryPath:
-			return l.tr("Library path");
+			return QObject::tr("Library path");
 		case LibraryView:
-			return l.tr("Library view type");
+			return QObject::tr("Library view type");
 		case Listen:
-			return l.tr("Listen");
+			return QObject::tr("Listen");
 		case LiveSearch:
-			return l.tr("Live Search");
+			return QObject::tr("Live Search");
 		case Logger:
-			return l.tr("Logger");
+			return QObject::tr("Logger");
 		case LogLevel:
-			return l.tr("Log level");
+			return QObject::tr("Log level");
 		case Lyrics:
-			return l.tr("Lyrics");
+			return QObject::tr("Lyrics");
 		case MB:
-			return l.tr("MB");
+			return QObject::tr("MB");
 		case Menu:
-			return l.tr("Menu");
+			return QObject::tr("Menu");
 		case Minimize:
-			return l.tr("Minimize");
+			return QObject::tr("Minimize");
 		case Minutes:
-			return l.tr("Minutes");
+			return QObject::tr("Minutes");
 		case MinutesShort:
 			// short form of minutes
-			return l.tr("m");
+			return QObject::tr("m");
 		case Missing:
-			return l.tr("Missing");
+			return QObject::tr("Missing");
 		case Modified:
-			return l.tr("Modified");
+			return QObject::tr("Modified");
 		case Months:
-			return l.tr("Months");
+			return QObject::tr("Months");
 		case MuteOn:
-			return l.tr("Mute");
+			return QObject::tr("Mute");
 		case MuteOff:
-			return l.tr("Mute off");
+			return QObject::tr("Mute off");
 		case Name:
-			return l.tr("Name");
+			return QObject::tr("Name");
 		case New:
-			return l.tr("New");
+			return QObject::tr("New");
 		case NextPage:
-			return l.tr("Next page");
+			return QObject::tr("Next page");
 		case NextTrack:
-			return l.tr("Next track");
+			return QObject::tr("Next track");
 		case No:
-			return l.tr("No");
+			return QObject::tr("No");
 		case NoAlbums:
-			return l.tr("No albums");
+			return QObject::tr("No albums");
 		case NumTracks:
-			return l.tr("Tracks");
+			return QObject::tr("Tracks");
 		case MoveDown:
-			return l.tr("Move down");
+			return QObject::tr("Move down");
 		case MoveUp:
-			return l.tr("Move up");
+			return QObject::tr("Move up");
 		case OK:
-			return l.tr("OK");
+			return QObject::tr("OK");
 		case On:
 			// 5th track on "Thriller"
-			return l.tr("on");
+			return QObject::tr("on");
 		case Open:
-			return l.tr("Open");
+			return QObject::tr("Open");
 		case OpenDir:
-			return l.tr("Open directory");
+			return QObject::tr("Open directory");
 		case OpenFile:
-			return l.tr("Open file");
+			return QObject::tr("Open file");
 		case Or:
-			return l.tr("or");
+			return QObject::tr("or");
 		case Overwrite:
-			return l.tr("Overwrite");
+			return QObject::tr("Overwrite");
 		case Pause:
-			return l.tr("Pause");
+			return QObject::tr("Pause");
 		case Play:
-			return l.tr("Play");
+			return QObject::tr("Play");
 		case PlayingTime:
-			return l.tr("Playing time");
+			return QObject::tr("Playing time");
 		case PlayInNewTab:
-			return l.tr("Play in new tab");
+			return QObject::tr("Play in new tab");
 		case Playlist:
-			return l.tr("Playlist");
+			return QObject::tr("Playlist");
 		case Playlists:
-			return l.tr("Playlists");
+			return QObject::tr("Playlists");
 		case PlayNext:
-			return l.tr("Play next");
+			return QObject::tr("Play next");
 		case PlayPause:
-			return l.tr("Play/Pause");
+			return QObject::tr("Play/Pause");
 		case Plugin:
-			return l.tr("Plugin");
+			return QObject::tr("Plugin");
 		case Podcasts:
-			return l.tr("Podcasts");
+			return QObject::tr("Podcasts");
 		case Preferences:
-			return l.tr("Preferences");
+			return QObject::tr("Preferences");
 		case PreviousPage:
-			return l.tr("Previous page");
+			return QObject::tr("Previous page");
 		case PreviousTrack:
-			return l.tr("Previous track");
+			return QObject::tr("Previous track");
 		case PurchaseUrl:
-			return l.tr("Purchase Url");
+			return QObject::tr("Purchase Url");
 		case Quit:
-			return l.tr("Quit");
+			return QObject::tr("Quit");
 		case Radio:
-			return l.tr("Radio");
+			return QObject::tr("Radio");
 		case RadioStation:
-			return l.tr("Radio Station");
+			return QObject::tr("Radio Station");
 		case Rating:
-			return l.tr("Rating");
+			return QObject::tr("Rating");
 		case Really:
-			return l.tr("Really");
+			return QObject::tr("Really");
 		case Refresh:
-			return l.tr("Refresh");
+			return QObject::tr("Refresh");
 		case ReloadLibrary:
-			return l.tr("Reload Library");
+			return QObject::tr("Reload Library");
 		case Remove:
-			return l.tr("Remove");
+			return QObject::tr("Remove");
 		case Rename:
-			return l.tr("Rename");
+			return QObject::tr("Rename");
 		case Repeat1:
-			return l.tr("Repeat 1");
+			return QObject::tr("Repeat 1");
 		case RepeatAll:
-			return l.tr("Repeat all");
+			return QObject::tr("Repeat all");
 		case Replace:
-			return l.tr("Replace");
+			return QObject::tr("Replace");
 		case Reset:
-			return l.tr("Reset");
+			return QObject::tr("Reset");
 		case Retry:
-			return l.tr("Retry");
+			return QObject::tr("Retry");
 		case ReverseOrder:
-			return l.tr("Reverse order");
+			return QObject::tr("Reverse order");
 		case Sampler:
-			return l.tr("Sampler");
+			return QObject::tr("Sampler");
 		case Shuffle:
-			return l.tr("Shuffle");
+			return QObject::tr("Shuffle");
 		case ShufflePlaylist:
-			return l.tr("Shuffle playlist");
+			return QObject::tr("Shuffle playlist");
 		case Shutdown:
-			return l.tr("Shutdown");
+			return QObject::tr("Shutdown");
 		case Save:
-			return l.tr("Save");
+			return QObject::tr("Save");
 		case SaveAs:
-			return l.tr("Save as");
+			return QObject::tr("Save as");
 		case SaveToFile:
-			return l.tr("Save to file");
+			return QObject::tr("Save to file");
 		case ScanForFiles:
-			return l.tr("Scan for audio files");
+			return QObject::tr("Scan for audio files");
 		case SearchNoun: // NOLINT(bugprone-branch-clone)
-			return l.tr("Search");
+			return QObject::tr("Search");
 		case SearchVerb:
-			return l.tr("Search");
+			return QObject::tr("Search");
 		case SearchNext:
-			return l.tr("Search next");
+			return QObject::tr("Search next");
 		case SearchPrev:
-			return l.tr("Search previous");
+			return QObject::tr("Search previous");
 		case Second:
-			return l.tr("2nd");
+			return QObject::tr("2nd");
 		case Seconds:
-			return l.tr("Seconds");
+			return QObject::tr("Seconds");
 		case SecondsShort:
 			// short form of seconds
-			return l.tr("s");
+			return QObject::tr("s");
 		case SeekBackward:
-			return l.tr("Seek backward");
+			return QObject::tr("Seek backward");
 		case SeekForward:
-			return l.tr("Seek forward");
+			return QObject::tr("Seek forward");
 		case Show:
-			return l.tr("Show");
+			return QObject::tr("Show");
 		case ShowAlbumArtists:
-			return l.tr("Show Album Artists");
+			return QObject::tr("Show Album Artists");
 		case ShowCovers:
-			return l.tr("Show Covers");
+			return QObject::tr("Show Covers");
 		case ShowLibrary:
-			return l.tr("Show Library");
+			return QObject::tr("Show Library");
 		case SimilarArtists:
-			return l.tr("Similar artists");
+			return QObject::tr("Similar artists");
 		case SmartPlaylists:
-			return l.tr("Smart Playlists");
+			return QObject::tr("Smart Playlists");
 		case SortBy:
-			return l.tr("Sort by");            // for example "sort by year"
+			return QObject::tr("Sort by");            // for example "sort by year"
 		case Stop:
-			return l.tr("Stop");
+			return QObject::tr("Stop");
 		case Streams:
-			return l.tr("Streams");
+			return QObject::tr("Streams");
 		case StreamUrl:
-			return l.tr("Stream URL");
+			return QObject::tr("Stream URL");
 		case Success:
-			return l.tr("Success");
+			return QObject::tr("Success");
 		case Th:
-			return l.tr("th");
+			return QObject::tr("th");
 		case Third:
-			return l.tr("3rd");
+			return QObject::tr("3rd");
 		case Title:
-			return l.tr("Title");
+			return QObject::tr("Title");
 		case Track:
-			return l.tr("Track");
+			return QObject::tr("Track");
 		case TrackNo:
-			return l.tr("Track number");
+			return QObject::tr("Track number");
 		case TrackOn:
-			return l.tr("track on");
+			return QObject::tr("track on");
 		case Tracks:
-			return l.tr("Tracks");
+			return QObject::tr("Tracks");
 		case Tree:
-			return l.tr("Tree");
+			return QObject::tr("Tree");
 		case Undo:
-			return l.tr("Undo");
+			return QObject::tr("Undo");
 		case UnknownAlbum:
-			return l.tr("Unknown album");
+			return QObject::tr("Unknown album");
 		case UnknownArtist:
-			return l.tr("Unknown artist");
+			return QObject::tr("Unknown artist");
 		case UnknownTitle:
-			return l.tr("Unknown title");
+			return QObject::tr("Unknown title");
 		case UnknownGenre:
-			return l.tr("Unknown genre");
+			return QObject::tr("Unknown genre");
 		case UnknownPlaceholder:
-			return l.tr("Unknown placeholder");
+			return QObject::tr("Unknown placeholder");
 		case UnknownYear:
 		{
-			[[maybe_unused]] const auto s = l.tr("Unknown year");
+			[[maybe_unused]] const auto s = QObject::tr("Unknown year");
 		}
 			return {"-"};
 
 		case Various:
-			return l.tr("Various");
+			return QObject::tr("Various");
 		case VariousAlbums:
-			return l.tr("Various albums");
+			return QObject::tr("Various albums");
 		case VariousArtists:
-			return l.tr("Various artists");
+			return QObject::tr("Various artists");
 		case VariousTracks:
-			return l.tr("Various tracks");
+			return QObject::tr("Various tracks");
 		case Version:
-			return l.tr("Version");
+			return QObject::tr("Version");
 		case VolumeDown:
-			return l.tr("Volume down");
+			return QObject::tr("Volume down");
 		case VolumeUp:
-			return l.tr("Volume up");
+			return QObject::tr("Volume up");
 		case Warning:
-			return l.tr("Warning");
+			return QObject::tr("Warning");
 		case Weeks:
-			return l.tr("Weeks");
+			return QObject::tr("Weeks");
 		case Year:
-			return l.tr("Year");
+			return QObject::tr("Year");
 		case Years:
-			return l.tr("Years");
+			return QObject::tr("Years");
 		case Yes:
-			return l.tr("Yes");
+			return QObject::tr("Yes");
 		case Zoom:
-			return l.tr("Zoom");
+			return QObject::tr("Zoom");
 		case NUMBER_OF_LANGUAGE_KEYS:
 			[[fallthrough]];
 		default:
@@ -531,56 +524,39 @@ LanguageString Lang::get(Lang::Term term, bool* ok)
 	}
 }
 
-LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
+LanguageString Lang::getWithNumber(const TermNr term, const int param, bool* ok)
 {
 	if(ok)
 	{
 		*ok = true;
 	}
 
-	Lang l;
-
 	switch(term)
 	{
 		case NrDirectories:
-			if(param == 0)
-			{
-				return l.tr("No directories");
-			}
-
-			return l.tr("%n directory(s)", "", param);
+			return (param == 0)
+			       ? QObject::tr("No directories")
+			       : QObject::tr("%n directory(s)", "", param);
 
 		case NrFiles:
-			if(param == 0)
-			{
-				return l.tr("No files");
-			}
-
-			return l.tr("%n file(s)", "", param);
+			return (param == 0)
+			       ? QObject::tr("No files")
+			       : QObject::tr("%n file(s)", "", param);
 
 		case NrPlaylists:
-			if(param == 0)
-			{
-				return l.tr("No playlists");
-			}
-
-			return l.tr("%n playlist(s)", "", param);
+			return (param == 0)
+			       ? QObject::tr("No playlists")
+			       : QObject::tr("%n playlist(s)", "", param);
 
 		case NrTracks:
-			if(param == 0)
-			{
-				return l.tr("No tracks");
-			}
-
-			return l.tr("%n track(s)", "", param);
+			return (param == 0)
+			       ? QObject::tr("No tracks")
+			       : QObject::tr("%n track(s)", "", param);
 
 		case NrTracksFound:
-			if(param == 0)
-			{
-				return l.tr("No tracks found");
-			}
-
-			return l.tr("%n track(s) found", "", param);
+			return (param == 0)
+			       ? QObject::tr("No tracks found")
+			       : QObject::tr("%n track(s) found", "", param);
 
 		default:
 			if(ok)
@@ -588,10 +564,6 @@ LanguageString Lang::getWithNumber(TermNr term, int param, bool* ok)
 				*ok = false;
 			}
 
-			return QString();
+			return QString {};
 	}
 }
-
-#pragma clang diagnostic pop // "readability-static-accessed-through-instance"
-
-#pragma clang diagnostic pop // "-Wunknown-pragmas"

@@ -73,9 +73,6 @@ class AbstractLibrary :
 		[[nodiscard]] virtual bool isEmpty() const;
 
 	signals:
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "NotImplementedFunctions"
 		void sigAllTracksLoaded();
 		void sigAllAlbumsLoaded();
 		void sigAllArtistsLoaded();
@@ -87,7 +84,6 @@ class AbstractLibrary :
 
 		void sigCurrentAlbumChanged(int row);
 		void sigCurrentTrackChanged(int row);
-#pragma clang diagnostic pop
 
 	public slots:
 		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;

@@ -74,10 +74,6 @@ namespace MetaDataSorting
 			return fallback(item2, item1, sortMode);
 		}
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunknown-pragmas"
-#pragma ide diagnostic ignored "UnreachableCallsOfFunction"
-
 		Library::SearchModeMask sortModeToSearchMode(const SortModeMask sortModeMask)
 		{
 			auto searchModeMask = +Library::SearchMode::None;
@@ -99,9 +95,12 @@ namespace MetaDataSorting
 			return searchModeMask;
 		}
 
-#pragma clang diagnostic pop
+		QString convertString(const QString& str, const SortModeMask sortMode)
+		{
+			return Library::convertSearchstring(str, sortModeToSearchMode(sortMode));
+		}
 
-		QString convertString(QString str, const SortModeMask sortMode, const bool mayIgnoreArticle = false)
+		QString convertString(QString str, const SortModeMask sortMode, const bool mayIgnoreArticle)
 		{
 			const auto searchModeMask = sortModeToSearchMode(sortMode);
 			if(mayIgnoreArticle && (sortMode & +SortMode::IgnoreArticle) && str.toLower().startsWith("the "))
