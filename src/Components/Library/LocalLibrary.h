@@ -96,7 +96,6 @@ class LocalLibrary :
 		void refreshTracks() override;
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
-		void reloadThreadNewBlock();
 		void reloadThreadFinished();
 		void searchModeChanged();
 		void showAlbumArtistsChanged();

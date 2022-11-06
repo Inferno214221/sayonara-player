@@ -33,39 +33,48 @@
 #include "Utils/Pimpl.h"
 
 #include <QThread>
-#include <QDir>
+#include <QHash>
+
+class QDir;
+class MetaData;
+namespace DB
+{
+	class LibraryDatabase;
+}
+
+namespace Tagging
+{
+	class TagReader;
+}
 
 namespace Library
 {
+	class ReloadThreadFileScanner;
 	class ReloadThread :
-			public QThread
+		public QThread
 	{
 		Q_OBJECT
 		PIMPL(ReloadThread)
 
-	signals:
-		void sigReloadingLibrary(const QString& message, int progress);
-		void sigNewBlockSaved();
+		signals:
+			void sigReloadingLibrary(const QString& message, int progress);
+			void sigNewBlockSaved();
 
-	public:
-		explicit ReloadThread(QObject* parent);
-		~ReloadThread() override;
+		public:
+			ReloadThread(ReloadThreadFileScanner* fileScanner, const std::shared_ptr<Tagging::TagReader>& tagReader,
+			             QObject* parent);
+			~ReloadThread() override;
 
-		void pause();
-		void goon();
-		void stop();
-		bool isRunning() const;
-		void setQuality(ReloadQuality quality);
-		void setLibrary(LibraryId id, const QString& libraryPath);
+			void stop();
+			void setQuality(ReloadQuality quality);
+			void setLibrary(LibraryId id, const QString& libraryPath);
 
-	protected:
-		virtual void run() override;
+		protected:
+			void run() override;
 
-	private:
-		bool			getAndSaveAllFiles(const QHash<QString, MetaData>& pathMetadataMap);
-		QStringList		getFilesRecursive(QDir base_dir);
-		QStringList		filterValidFiles(const QDir& dir, const QStringList& filesInDir);
-		void			storeMetadataBlock(const MetaDataList& v_md);
+		private:
+			void cleanupLibrary(const MetaDataList& orphanedTracks, DB::LibraryDatabase* libraryDatabase);
+			bool reloadLibrary(const QHash<QString, MetaData>& pathTrackMap, DB::LibraryDatabase* libraryDatabase);
 	};
 }
 

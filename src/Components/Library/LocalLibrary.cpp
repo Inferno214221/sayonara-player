@@ -36,6 +36,7 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include <QTime>
 
@@ -228,13 +229,6 @@ void LocalLibrary::importStatusChanged(Library::Importer::ImportStatus status)
 	}
 }
 
-void LocalLibrary::reloadThreadNewBlock()
-{
-	m->reloadThread->pause();
-	refreshCurrentView();
-	m->reloadThread->goon();
-}
-
 void LocalLibrary::getAllArtists(ArtistList& artists) const
 {
 	m->libraryDatabase->getAllArtists(artists, false);
@@ -317,13 +311,13 @@ void LocalLibrary::initReloadThread()
 {
 	if(!m->reloadThread)
 	{
-		m->reloadThread = new Library::ReloadThread(this);
+		m->reloadThread =
+			new Library::ReloadThread(Library::ReloadThreadFileScanner::create(), Tagging::TagReader::create(), this);
 
 		connect(m->reloadThread, &Library::ReloadThread::sigReloadingLibrary,
 		        this, &LocalLibrary::sigReloadingLibrary);
 
-		connect(m->reloadThread, &Library::ReloadThread::sigNewBlockSaved,
-		        this, &LocalLibrary::reloadThreadNewBlock);
+		connect(m->reloadThread, &Library::ReloadThread::sigNewBlockSaved, this, &LocalLibrary::refreshCurrentView);
 
 		connect(m->reloadThread, &Library::ReloadThread::finished,
 		        this, &LocalLibrary::reloadThreadFinished);

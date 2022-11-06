@@ -26,412 +26,325 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#define N_FILES_TO_STORE 500
-
 #include "ReloadThread.h"
+#include "ReloadThreadFileScanner.h"
 
 #include "Components/Covers/CoverLocation.h"
-
 #include "Database/Connector.h"
+#include "Database/CoverConnector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
-#include "Database/CoverConnector.h"
-
-#include "Utils/Tagging/Tagging.h"
-#include "Utils/Tagging/TaggingCover.h"
-#include "Utils/Utils.h"
-#include "Utils/DirectoryReader.h"
-#include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/MetaData/Genre.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/Genre.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Utils.h"
+
+#include <QDir>
 
 #include <utility>
 
-using Library::ReloadThread;
-namespace FileUtils = ::Util::File;
-
-struct ReloadThread::Private
+namespace
 {
-	QString libraryPath;
-	MetaDataList tracks;
-	Library::ReloadQuality quality;
-	LibraryId libraryId;
-
-	bool paused;
-	bool running;
-	bool mayRun;
-
-	Private() :
-		quality(Library::ReloadQuality::Fast),
-		libraryId(-1),
-		paused(false),
-		running(false),
-		mayRun(true) {}
-};
-
-ReloadThread::ReloadThread(QObject* parent) :
-	QThread(parent)
-{
-	m = Pimpl::make<Private>();
-	m->libraryPath = GetSetting(Set::Lib_Path);
-}
-
-ReloadThread::~ReloadThread()
-{
-	this->stop();
-	while(this->isRunning())
+	using PathTrackMap = QHash<QString, MetaData>;
+	using Library::ReloadThread;
+	struct LibraryAnalytics
 	{
-		::Util::sleepMs(50);
-	}
-}
+		PathTrackMap trackMap;
+		MetaDataList orphanedTracks;
+	};
 
-static
-bool compare_md(const MetaData& md1, const MetaData& md2)
-{
-	if(md1.genreIds().count() != md2.genreIds().count())
+	constexpr const auto NumFilesToStoreAtOnce = 500;
+	constexpr const auto ClassName = "Library::ReloadThread";
+
+	using OnProgressChanged = std::function<void(int, int, QString)>; // index, count, message
+
+	bool compareGenres(const Util::Set<GenreID>& genres1, const Util::Set<GenreID>& genres2)
 	{
-		return false;
+		return std::equal(genres1.begin(), genres1.end(), genres2.begin(), genres2.end());
 	}
 
-	auto it1 = md1.genreIds().begin();
-	auto it2 = md2.genreIds().begin();
-
-	int count = md1.genreIds().count();
-
-	for(int i = count - 1; i >= 0; i--, it1++, it2++)
+	bool tracksAreEqual(const MetaData& track1, const MetaData& track2)
 	{
-		if(*it1 != *it2)
+		return (compareGenres(track1.genreIds(), track2.genreIds())) &&
+		       (track1.title() == track2.title()) &&
+		       (track1.album() == track2.album()) &&
+		       (track1.artist() == track2.artist()) &&
+		       (track1.year() == track2.year()) &&
+		       (track1.rating() == track2.rating()) &&
+		       (track1.discnumber() == track2.discnumber()) &&
+		       (track1.trackNumber() == track2.trackNumber()) &&
+		       (track1.albumArtist() == track2.albumArtist()) &&
+		       (track1.albumArtistId() == track2.albumArtistId());
+	}
+
+	LibraryAnalytics analyzeLibrary(DB::LibraryDatabase* libraryDatabase, Library::ReloadThreadFileScanner* fileScanner)
+	{
+		auto tracks = MetaDataList {};
+		libraryDatabase->getAllTracks(tracks);
+
+		auto libraryAnalytics = LibraryAnalytics {};
+		for(auto& track: tracks)
 		{
-			return false;
-		}
-	}
-
-	return (md1.title() == md2.title() &&
-	        md1.album() == md2.album() &&
-	        md1.artist() == md2.artist() &&
-	        md1.year() == md2.year() &&
-	        md1.rating() == md2.rating() &&
-	        md1.discnumber() == md2.discnumber() &&
-	        md1.trackNumber() == md2.trackNumber() &&
-	        md1.albumArtist() == md2.albumArtist() &&
-	        md1.albumArtistId() == md2.albumArtistId()
-	);
-}
-
-bool ReloadThread::getAndSaveAllFiles(const QHash<QString, MetaData>& pathMetadataMap)
-{
-	const QString libraryPath = m->libraryPath;
-	if(libraryPath.isEmpty() || !FileUtils::exists(libraryPath))
-	{
-		return false;
-	}
-
-	auto* db = DB::Connector::instance();
-	DB::Library* libraryDatabase = db->libraryConnector();
-
-	QDir dir(libraryPath);
-
-	MetaDataList tracksToStore;
-
-	spLog(Log::Develop, this) << "Scanning Library path: " << dir.absolutePath() << "...";
-	QStringList files = getFilesRecursive(dir);
-	spLog(Log::Develop, this) << "  Found " << files.size() << " files (Not all of them are soundfiles)";
-
-	int fileCount = files.size();
-	int currentFileIndex = 0;
-
-	for(const QString& filepath: files)
-	{
-		if(!m->mayRun)
-		{
-			return false;
-		}
-
-		bool fileWasRead = false;
-		MetaData md(filepath);
-		md.setLibraryid(m->libraryId);
-
-		const MetaData& md_lib = pathMetadataMap[filepath];
-
-		int progress = (currentFileIndex++ * 100) / fileCount;
-		emit sigReloadingLibrary(Lang::get(Lang::ReloadLibrary).triplePt(), progress);
-
-		if(md_lib.id() >= 0) // found in library
-		{
-			if(m->quality == Library::ReloadQuality::Fast)
+			if(!fileScanner->checkFile(track.filepath()))
 			{
-				continue;
+				libraryAnalytics.orphanedTracks.push_back(std::move(track));
 			}
 
-			// fetch some metadata and check if we have the same data already in library in the next step
-			fileWasRead = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Dirty);
-			if(!fileWasRead)
+			else
 			{
-				continue;
-			}
-
-			// file is already in library
-			if(md_lib.durationMs() > 1000 && md_lib.durationMs() < 3600000 && compare_md(md, md_lib))
-			{
-				continue;
+				libraryAnalytics.trackMap[track.filepath()] = track;
 			}
 		}
 
-		fileWasRead = Tagging::Utils::getMetaDataOfFile(md, Tagging::Quality::Quality);
-		if(fileWasRead)
-		{
-			tracksToStore << md;
+		return libraryAnalytics;
+	}
 
-			if(tracksToStore.size() >= N_FILES_TO_STORE)
-			{
-				storeMetadataBlock(tracksToStore);
-				tracksToStore.clear();
-			}
+	MetaData tryReadTrack(const QString& filepath, const LibraryId libraryId, const Tagging::TagReaderPtr& tagReader)
+	{
+		if(auto track = tagReader->readMetadata(filepath); track.has_value())
+		{
+			track->setLibraryid(libraryId);
+			return track.value();
+		}
+
+		return {};
+	}
+
+	MetaData checkLibraryTrack(const MetaData& track, const LibraryId libraryId, const Library::ReloadQuality quality,
+	                           const Tagging::TagReaderPtr& tagReader)
+	{
+		assert(track.libraryId() >= 0);
+		if(quality == Library::ReloadQuality::Fast)
+		{
+			return {};
+		}
+
+		const auto metadata = tryReadTrack(track.filepath(), libraryId, tagReader);
+		return !tracksAreEqual(metadata, track) ? metadata : MetaData {};
+	}
+
+	void deleteDoubleTracks(DB::LibraryDatabase* libraryDatabase, const QString& libraryPath, const bool& mayRun)
+	{
+		auto tracksToUpdate = MetaDataList {};
+		libraryDatabase->deleteInvalidTracks(libraryPath, tracksToUpdate);
+		if(mayRun)
+		{
+			libraryDatabase->storeMetadata(tracksToUpdate);
 		}
 	}
 
-	storeMetadataBlock(tracksToStore);
-	tracksToStore.clear();
-
-	spLog(Log::Develop, this) << "Updating album artists... ";
-	libraryDatabase->addAlbumArtists();
-
-	spLog(Log::Develop, this) << "Create indexes... ";
-	libraryDatabase->createIndexes();
-
-	spLog(Log::Develop, this) << "Clean up... ";
-
-	return true;
-}
-
-void ReloadThread::storeMetadataBlock(const MetaDataList& v_md)
-{
-	using StringSet = ::Util::Set<QString>;
-
-	auto* db = DB::Connector::instance();
-	DB::Covers* coverDatabase = db->coverConnector();
-	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->libraryId, db->databaseId());
-
+	QString storeCover(const MetaData& track, const Util::Set<QString>& allHashes, DB::Covers* coverDatabase)
 	{
-		spLog(Log::Develop, this) << N_FILES_TO_STORE << " tracks reached. Commit chunk to DB";
-		bool success = libraryDatabase->storeMetadata(v_md);
-		spLog(Log::Develop, this) << "  Success? " << success;
-	}
-
-	{
-		QString status = tr("Looking for covers");
-		spLog(Log::Develop, this) << "Adding Covers...";
-
-		StringSet all_hashes = coverDatabase->getAllHashes();
-
-		db->transaction();
-
-		int idx = 0;
-		for(const MetaData& md: v_md)
+		const auto coverLocation = Cover::Location::coverLocation(track);
+		if(!coverLocation.isValid())
 		{
-			int progress = ((idx++) * 100) / v_md.count();
-			emit sigReloadingLibrary(status, progress);
+			return {};
+		}
 
-			Cover::Location cl = Cover::Location::coverLocation(md);
-			if(!cl.isValid())
+		auto hash = coverLocation.hash(); // not const because of automatic move on return
+		if(!hash.isEmpty() && !allHashes.contains(hash))
+		{
+			const auto preferredPath = coverLocation.preferredPath();
+			if(QFile::exists(preferredPath))
 			{
-				continue;
-			}
-
-			const QString hash = cl.hash();
-			if(!all_hashes.contains(hash))
-			{
-				const QPixmap cover(cl.preferredPath());
+				const auto cover = QPixmap {preferredPath};
 				if(!cover.isNull())
 				{
 					coverDatabase->insertCover(hash, cover);
-					all_hashes.insert(hash);
+					return hash;
 				}
+			}
+		}
+
+		return {};
+	}
+
+	void storeCovers(const MetaDataList& tracks)
+	{
+		auto* db = DB::Connector::instance();
+		db->transaction();
+
+		auto* coverDatabase = db->coverConnector();
+		auto allHashes = coverDatabase->getAllHashes();
+		for(const auto& track: tracks)
+		{
+			const auto hash = storeCover(track, allHashes, coverDatabase);
+			if(!hash.isEmpty())
+			{
+				allHashes.insert(hash);
 			}
 		}
 
 		db->commit();
 	}
-}
 
-QStringList ReloadThread::getFilesRecursive(QDir baseDirectory)
-{
-	QStringList ret;
+	void finalizeReloading(DB::Library* dbLibrary)
 	{
-		spLog(Log::Crazy, this) << "Reading all files from " << baseDirectory.absolutePath();
-		QString parent_dir, pure_dir_name;
-		FileUtils::splitFilename(baseDirectory.absolutePath(), parent_dir, pure_dir_name);
+		spLog(Log::Develop, ClassName) << "Updating album artists... ";
+		dbLibrary->addAlbumArtists();
 
-		QString message = tr("Reading files") + ": " + pure_dir_name;
-		emit sigReloadingLibrary(message, 0);
+		spLog(Log::Develop, ClassName) << "Create indexes... ";
+		dbLibrary->createIndexes();
+
+		spLog(Log::Develop, ClassName) << "Clean up... ";
 	}
 
-	QStringList soundfileExtensions = ::Util::soundfileExtensions();
-	QStringList subDirectories = baseDirectory.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-	spLog(Log::Crazy, this) << "  Found " << subDirectories.size() << " subdirectories";
-
-	for(const QString& dir: subDirectories)
+	void storeMetadataBlock(const MetaDataList& tracks, DB::LibraryDatabase* libraryDatabase)
 	{
-		bool success = baseDirectory.cd(dir);
+		libraryDatabase->storeMetadata(tracks);
+		storeCovers(tracks);
+	}
 
-		if(!success)
+	MetaDataList appendScannedTrack(MetaData track, MetaDataList metadataBlock, DB::LibraryDatabase* libraryDatabase)
+	{
+		if(track.isValid())
 		{
-			continue;
+			metadataBlock << std::move(track);
+
+			if(metadataBlock.size() >= NumFilesToStoreAtOnce)
+			{
+				storeMetadataBlock(metadataBlock, libraryDatabase);
+				metadataBlock.clear();
+			}
 		}
 
-		spLog(Log::Crazy, this) << "  Jump into subdir " << baseDirectory.absolutePath();
-		ret << getFilesRecursive(baseDirectory);
-
-		baseDirectory.cdUp();
+		return metadataBlock;
 	}
 
-	QStringList subFiles = baseDirectory.entryList(soundfileExtensions, QDir::Files);
-	spLog(Log::Crazy, this) << "  Found " << subFiles.size() << " audio files in " << baseDirectory.absolutePath();
-	if(subFiles.isEmpty())
+	void storeScannedFiles(const QStringList& files, const PathTrackMap& libraryTrackMap,
+	                       DB::LibraryDatabase* libraryDatabase, const Library::ReloadQuality quality,
+	                       const bool& mayRun, const Tagging::TagReaderPtr& tagReader,
+	                       const OnProgressChanged& callback)
 	{
-		return ret;
-	}
-
-	QStringList validSubFiles = filterValidFiles(baseDirectory, subFiles);
-	spLog(Log::Crazy, this) << "  " << validSubFiles.size() << " of them are valid.";
-
-	ret << validSubFiles;
-
-	return ret;
-}
-
-QStringList ReloadThread::filterValidFiles(const QDir& baseDir, const QStringList& sub_files)
-{
-	QStringList lst;
-	for(const QString& filename: sub_files)
-	{
-		QString absolutePath = baseDir.absoluteFilePath(filename);
-		QFileInfo info(absolutePath);
-
-		if(!info.exists())
+		const auto libraryId = libraryDatabase->libraryId();
+		auto tracksToStore = MetaDataList {};
+		auto currentIndex = 0;
+		for(const auto& filepath: files)
 		{
-			spLog(Log::Warning, this) << "File " << absolutePath << " does not exist. Skipping...";
-			continue;
+			if(!mayRun)
+			{
+				return;
+			}
+
+			callback(currentIndex++, files.count(), filepath);
+
+			auto trackToStore = libraryTrackMap.contains(filepath)
+			                    ? checkLibraryTrack(libraryTrackMap[filepath], libraryId, quality, tagReader)
+			                    : tryReadTrack(filepath, libraryId, tagReader);
+
+			tracksToStore = appendScannedTrack(std::move(trackToStore), std::move(tracksToStore), libraryDatabase);
 		}
 
-		if(!info.isFile())
+		storeMetadataBlock(tracksToStore, libraryDatabase);
+	}
+}
+
+namespace Library
+{
+	struct ReloadThread::Private
+	{
+		ReloadThreadFileScanner* fileScanner;
+		Tagging::TagReaderPtr tagReader;
+		QString libraryPath {GetSetting(Set::Lib_Path)};
+		ReloadQuality quality {ReloadQuality::Fast};
+		LibraryId libraryId {-1};
+		bool mayRun {true};
+
+		explicit Private(ReloadThreadFileScanner* fileScanner, Tagging::TagReaderPtr tagReader) :
+			fileScanner {fileScanner},
+			tagReader {std::move(tagReader)} {}
+
+		~Private()
 		{
-			spLog(Log::Warning, this) << "Error: File " << absolutePath << " is not a file. Skipping...";
-			continue;
+			delete fileScanner;
 		}
+	};
 
-		lst << absolutePath;
+	ReloadThread::ReloadThread(ReloadThreadFileScanner* fileScanner, const Tagging::TagReaderPtr& tagReader,
+	                           QObject* parent) :
+		QThread(parent),
+		m {Pimpl::make<Private>(fileScanner, tagReader)}
+	{
+		connect(m->fileScanner, &ReloadThreadFileScanner::sigCurrentDirectoryChanged, this,
+		        [&](const auto& currentDir) { emit sigReloadingLibrary(currentDir, 0); });
 	}
 
-	return lst;
-}
-
-void ReloadThread::pause()
-{
-	m->paused = true;
-}
-
-void ReloadThread::goon()
-{
-	m->paused = false;
-}
-
-void ReloadThread::stop()
-{
-	m->mayRun = false;
-}
-
-bool ReloadThread::isRunning() const
-{
-	return m->running;
-}
-
-void ReloadThread::setQuality(Library::ReloadQuality quality)
-{
-	m->quality = quality;
-}
-
-void ReloadThread::run()
-{
-	if(m->libraryPath.isEmpty())
+	ReloadThread::~ReloadThread()
 	{
-		spLog(Log::Warning, this) << "No Library path given";
-		return;
-	}
-
-	if(m->running)
-	{
-		return;
-	}
-
-	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->libraryId, 0);
-
-	m->mayRun = true;
-	m->running = true;
-	m->paused = false;
-
-	MetaDataList tracks, tracksToDelete, tracksToUpdate;
-	QHash<QString, MetaData> v_md_map;
-
-	emit sigReloadingLibrary(tr("Deleting orphaned tracks") + "...", 0);
-
-	libraryDatabase->deleteInvalidTracks(m->libraryPath, tracksToUpdate);
-	if(!m->mayRun)
-	{
-		return;
-	}
-
-	libraryDatabase->storeMetadata(tracksToUpdate);
-	if(!m->mayRun)
-	{
-		return;
-	}
-
-	libraryDatabase->getAllTracks(tracks);
-
-	spLog(Log::Debug, this) << "Have " << tracks.size() << " tracks already in library";
-
-	// find orphaned tracks in library && delete them
-	for(const MetaData& md: tracks)
-	{
-		if(!FileUtils::checkFile(md.filepath()))
+		stop();
+		while(isRunning())
 		{
-			tracksToDelete << std::move(md);
+			constexpr const auto ShutdownTimeout = 50;
+			::Util::sleepMs(ShutdownTimeout);
 		}
+	}
 
-		else
+	void ReloadThread::run()
+	{
+		if(m->libraryPath.isEmpty() || !m->fileScanner->exists(m->libraryPath))
 		{
-			v_md_map[md.filepath()] = md;
-		}
-
-		if(!m->mayRun)
-		{
+			spLog(Log::Warning, this) << "No valid library path given";
 			return;
 		}
+
+		m->mayRun = true;
+
+		auto* db = DB::Connector::instance();
+		auto* libraryDatabase = db->libraryDatabase(m->libraryId, db->databaseId());
+
+		emit sigReloadingLibrary(QObject::tr("Analyzing library") + "...", 0);
+		const auto libraryAnalytics = analyzeLibrary(libraryDatabase, m->fileScanner);
+
+		spLog(Log::Debug, ClassName) << libraryAnalytics.trackMap.count() << " tracks already in library";
+		spLog(Log::Debug, ClassName) << libraryAnalytics.orphanedTracks.size() << " of them are not on disk anymore";
+
+		if(m->mayRun)
+		{
+			cleanupLibrary(libraryAnalytics.orphanedTracks, libraryDatabase);
+		}
+
+		if(m->mayRun)
+		{
+			reloadLibrary(libraryAnalytics.trackMap, libraryDatabase);
+		}
+
+		finalizeReloading(db->libraryConnector());
 	}
 
-	spLog(Log::Debug, this) << "  " << tracksToDelete.size() << " of them are not on disk anymore";
-	libraryDatabase->deleteTracks(Util::trackIds(tracksToDelete));
-
-	if(!m->mayRun)
+	void ReloadThread::cleanupLibrary(const MetaDataList& orphanedTracks, DB::LibraryDatabase* libraryDatabase)
 	{
-		return;
+		emit sigReloadingLibrary(tr("Deleting double tracks") + "...", 0);
+		deleteDoubleTracks(libraryDatabase, m->libraryPath, m->mayRun);
+		if(m->mayRun)
+		{
+			emit sigReloadingLibrary(tr("Deleting orphaned tracks") + "...", 0);
+			libraryDatabase->deleteTracks(Util::trackIds(orphanedTracks));
+		}
 	}
 
-	getAndSaveAllFiles(v_md_map);
+	bool ReloadThread::reloadLibrary(const PathTrackMap& pathTrackMap, DB::LibraryDatabase* libraryDatabase)
+	{
+		auto progressCallback = [&](const auto index, const auto count, const auto& message) {
+			emit sigReloadingLibrary(message, (index * 100) / count); // NOLINT(readability-magic-numbers)
+		};
 
-	m->paused = false;
-	m->running = false;
+		const auto files = m->fileScanner->getFilesRecursive({m->libraryPath});
+		storeScannedFiles(files, pathTrackMap, libraryDatabase, m->quality, m->mayRun, m->tagReader, progressCallback);
+
+		return true;
+	}
+
+	void ReloadThread::setLibrary(const LibraryId libraryId, const QString& libraryPath)
+	{
+		m->libraryPath = libraryPath;
+		m->libraryId = libraryId;
+	}
+
+	void ReloadThread::stop() { m->mayRun = false; }
+
+	void ReloadThread::setQuality(const Library::ReloadQuality quality) { m->quality = quality; }
 }
-
-void ReloadThread::setLibrary(LibraryId libraryId, const QString& libraryPath)
-{
-	m->libraryPath = libraryPath;
-	m->libraryId = libraryId;
-}
-

@@ -64,6 +64,8 @@ new_test(History/HistoryTest.cpp Common/TestTracks.cpp)
 
 new_test(Library/ImportCacheTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
+new_test(Library/LocalLibraryTest.cpp)
+new_test(Library/ReloadThreadTest.cpp Common/TestTracks.cpp)
 new_test(Lyrics/LyricsLogicTest.cpp)
 
 new_test(Playlist/PlaylistTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTracks.cpp)
@@ -116,5 +118,5 @@ new_test(Util/Ranges.cpp)
 new_test(Util/StreamParserTest.cpp)
 new_test(SmartPlaylists/ConverterTest.cpp)
 new_test(SmartPlaylists/SmartPlaylistManagerTest.cpp)
-new_test(Library/LocalLibraryTest.cpp)
+
 new_test(Database/ArtistTest.cpp)
