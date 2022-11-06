@@ -60,7 +60,7 @@ class MetaDataListTest :
 		[[maybe_unused]] void testInsert();
 		[[maybe_unused]] void testMoveTracks();
 		[[maybe_unused]] void testCopyTracks();
-		[[maybe_unused]] static void testRemoveByIndexSet();
+		[[maybe_unused]] void testRemoveByIndexSet();
 		[[maybe_unused]] void testRemoveByIndexRange();
 		[[maybe_unused]] void testAppendUnique();
 		[[maybe_unused]] void testPushBack();
