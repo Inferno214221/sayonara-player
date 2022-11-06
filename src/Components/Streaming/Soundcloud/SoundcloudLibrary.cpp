@@ -365,7 +365,11 @@ void SC::Library::getAllTracksBySearchstring(::Library::Filter filter, MetaDataL
 		for(const auto trackId: trackIds)
 		{
 			const auto index = m->trackIdIndexMap[trackId];
-			if(!tracks.contains(m->tracks[index].id()))
+			const auto contains = Util::Algorithm::contains(tracks, [id = m->tracks[index].id()](const auto& track) {
+				return id == track.id();
+			});
+
+			if(!contains)
 			{
 				tracks << m->tracks[index];
 			}
@@ -386,7 +390,7 @@ void SC::Library::updateTrack(const MetaData& track)
 
 void SC::Library::deleteTracks(const MetaDataList& tracks, [[maybe_unused]] ::Library::TrackDeletionMode mode)
 {
-	m->libraryDatabase->deleteTracks(tracks.trackIds());
+	m->libraryDatabase->deleteTracks(Util::trackIds(tracks));
 	refetch();
 }
 
@@ -445,8 +449,6 @@ void SC::Library::insertTracks(const MetaDataList& tracks, const ArtistList& art
 	});
 
 	MetaDataList tracksCorrected;
-	tracksCorrected.reserve(tracks.size());
-
 	for(auto track: tracks)
 	{
 		if(!artistMap.contains(track.artist()))

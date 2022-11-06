@@ -119,7 +119,7 @@ namespace Playlist
 		const auto oldTrackCount = count(playlist);
 
 		playlist.modifyTracks([&](auto tracks) {
-			tracks.append(newTracks);
+			tracks << newTracks;
 			std::for_each(tracks.begin() + oldTrackCount, tracks.end(), [](auto& track) {
 				const auto isDisabled = track.isDisabled() || !Util::File::checkFile(track.filepath());
 				track.setDisabled(isDisabled);

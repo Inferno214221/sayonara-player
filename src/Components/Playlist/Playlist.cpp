@@ -83,6 +83,25 @@ namespace Playlist
 
 			return currentTrackIndex + 1;
 		}
+
+		QList<int> findTracks(const MetaDataList& tracks, const QString& path)
+		{
+			if(path.isEmpty())
+			{
+				return {};
+			}
+
+			QList<int> ret;
+			for(auto it = tracks.begin(); it != tracks.end(); it++)
+			{
+				if(it->filepath() == path)
+				{
+					ret << static_cast<int>(std::distance(tracks.begin(), it));
+				}
+			}
+
+			return ret;
+		}
 	}
 
 	struct Playlist::Private
@@ -197,19 +216,18 @@ namespace Playlist
 
 	void Playlist::currentMetadataChanged()
 	{
-		const auto track = m->playManager->currentTrack();
-
-		const auto indexList = m->tracks.findTracks(track.filepath());
+		const auto currentTrack = m->playManager->currentTrack();
+		const auto indexList = findTracks(m->tracks, currentTrack.filepath());
 		for(const auto index: indexList)
 		{
-			replaceTrack(index, track);
+			replaceTrack(index, currentTrack);
 		}
 	}
 
 	void Playlist::durationChanged()
 	{
 		const auto currentTrack = m->playManager->currentTrack();
-		const auto indexList = m->tracks.findTracks(currentTrack.filepath());
+		const auto indexList = findTracks(m->tracks, currentTrack.filepath());
 
 		for(const auto index: indexList)
 		{

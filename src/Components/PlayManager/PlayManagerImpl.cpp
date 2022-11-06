@@ -498,7 +498,11 @@ class PlayManagerImpl :
 			auto* changeNotifier = dynamic_cast<Tagging::ChangeNotifier*>(sender());
 
 			const auto& deletedTracks = changeNotifier->deletedMetadata();
-			if(deletedTracks.contains(m_currentTrack))
+			const auto containsCurrentTrack = Util::Algorithm::contains(deletedTracks, [&](const auto& track) {
+				return m_currentTrack.filepath() == track.filepath();
+			});
+
+			if(containsCurrentTrack)
 			{
 				stop();
 			}

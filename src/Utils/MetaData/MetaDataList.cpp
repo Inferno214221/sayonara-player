@@ -27,135 +27,112 @@
 
 #include <QStringList>
 
-#include <assert.h>
-
-const MetaData& MetaDataList::operator[](int i) const
+namespace
 {
-	return *(this->cbegin() + i);
+	int ensureBetween(const int index, const int minimum, const int maximum)
+	{
+		return std::max(std::min(index, maximum), minimum);
+	}
 }
 
-MetaData& MetaDataList::operator[](int i)
+MetaDataList::MetaDataList() = default;
+
+MetaDataList::MetaDataList(const MetaData& track) :
+	MetaDataList()
 {
-	return *(this->begin() + i);
+	push_back(track);
 }
 
-MetaDataList::MetaDataList() :
-	MetaDataList::Parent() {}
+MetaDataList::MetaDataList(const MetaDataList& other) = default;
 
-MetaDataList::MetaDataList(const MetaData& md) :
-	MetaDataList::Parent()
-{
-	append(md);
-}
-
-MetaDataList::MetaDataList(const MetaDataList& other) :
-	MetaDataList::Parent()
-{
-	this->resize(other.size());
-	std::copy(other.begin(), other.end(), this->begin());
-}
-
-MetaDataList::MetaDataList(MetaDataList&& other) noexcept :
-	MetaDataList::Parent()
-{
-	this->resize(other.size());
-	std::move(other.begin(), other.end(), this->begin());
-}
+MetaDataList::MetaDataList(MetaDataList&& other) noexcept = default;
 
 MetaDataList::~MetaDataList() = default;
 
 MetaDataList& MetaDataList::operator=(const MetaDataList& other)
 {
-	this->resize(other.size());
-	std::copy(other.begin(), other.end(), this->begin());
-
-	return (*this);
+	clear();
+	std::copy(other.begin(), other.end(), std::back_inserter(*this));
+	return *this;
 }
 
 MetaDataList& MetaDataList::operator=(MetaDataList&& other) noexcept
 {
-	this->resize(other.size());
-	std::move(other.begin(), other.end(), this->begin());
-
-	return (*this);
-}
-
-MetaDataList& MetaDataList::insertTrack(const MetaData& md, int tgt_idx)
-{
-	if(tgt_idx >= this->count())
-	{
-		return this->append(md);
-	}
-
-	tgt_idx = std::max(tgt_idx, 0);
-
-	MetaDataList v_md {md};
-	return insertTracks(v_md, tgt_idx);
-}
-
-MetaDataList& MetaDataList::insertTracks(const MetaDataList& v_md, int tgt_idx)
-{
-	if(tgt_idx >= this->count())
-	{
-		return this->append(v_md);
-	}
-
-	tgt_idx = std::max(tgt_idx, 0);
-
-	std::copy(v_md.begin(), v_md.end(), std::inserter(*this, this->begin() + tgt_idx));
-
+	clear();
+	std::move(other.begin(), other.end(), std::back_inserter(*this));
 	return *this;
 }
 
-MetaDataList& MetaDataList::copyTracks(const IndexSet& indexes, int tgt_idx)
+void MetaDataList::insertTracks(const MetaDataList& tracks, const int targetIndex)
 {
-	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->count() - 1));
-
-	MetaDataList tracks;
-	tracks.reserve(indexes.size());
-
-	for(int idx: indexes)
+	if(targetIndex >= count())
 	{
-		tracks << this->at(size_t(idx));
+		std::copy(tracks.begin(), tracks.end(), std::back_inserter(*this));
 	}
 
-	return insertTracks(tracks, tgt_idx);
+	else
+	{
+		const auto it = begin() + std::max(targetIndex, 0);
+		std::copy(tracks.begin(), tracks.end(), std::inserter(*this, it));
+	}
 }
 
-MetaDataList& MetaDataList::moveTracks(const IndexSet& indexes, int tgt_idx) noexcept
+void MetaDataList::copyTracks(const IndexSet& indexes, int targetIndex)
 {
-	tgt_idx = std::max<int>(0, std::min<int>(tgt_idx, this->count()));
+	if(isEmpty())
+	{
+		return;
+	}
+
+	targetIndex = ensureBetween(targetIndex, 0, count() - 1);
+
+	MetaDataList tracks;
+	for(const auto index: indexes)
+	{
+		if(Util::between(index, *this))
+		{
+			tracks << at(static_cast<size_t>(index));
+		}
+	}
+
+	insertTracks(tracks, targetIndex);
+}
+
+void MetaDataList::moveTracks(const IndexSet& indexes, int targetIndex) noexcept
+{
+	if(isEmpty())
+	{
+		return;
+	}
+
+	targetIndex = ensureBetween(targetIndex, 0, count() - 1);
 
 	MetaDataList tracksToMove;
-	tracksToMove.reserve(indexes.size());
 	MetaDataList tracksBeforeTgt;
-	tracksBeforeTgt.reserve(size());
 	MetaDataList tracksAfterTgt;
-	tracksAfterTgt.reserve(size());
 
-	int i = 0;
-
-	for(auto it = this->begin(); it != this->end(); it++, i++)
+	auto i = 0;
+	for(auto it = begin(); it != end(); it++, i++)
 	{
-		MetaData& md = *it;
+		auto& track = *it;
 
 		if(indexes.contains(i))
 		{
-			tracksToMove << std::move(md);
+			tracksToMove << std::move(track);
 		}
 
-		else if(i < tgt_idx)
+		else if(i < targetIndex)
 		{
-			tracksBeforeTgt << std::move(md);
+			tracksBeforeTgt << std::move(track);
 		}
 
 		else
 		{
-			tracksAfterTgt << std::move(md);
+			tracksAfterTgt << std::move(track);
 		}
 	}
 
-	auto it = this->begin();
+	auto it = begin();
 	std::move(tracksBeforeTgt.begin(), tracksBeforeTgt.end(), it);
 	it += tracksBeforeTgt.count();
 
@@ -163,271 +140,103 @@ MetaDataList& MetaDataList::moveTracks(const IndexSet& indexes, int tgt_idx) noe
 	it += tracksToMove.count();
 
 	std::move(tracksAfterTgt.begin(), tracksAfterTgt.end(), it);
-
-	return *this;
 }
 
-MetaDataList& MetaDataList::removeTrack(int idx)
+void MetaDataList::removeTracks(int first, int last)
 {
-	return removeTracks(idx, idx);
-}
-
-MetaDataList& MetaDataList::removeTracks(int first, int last)
-{
-	if(!Util::between(first, this) ||
-	   !Util::between(last, this))
+	if(!isEmpty())
 	{
-		return *this;
+		first = std::max(first, 0);
+		last = std::min(count() - 1, last);
+
+		erase(begin() + first, begin() + last + 1);
 	}
-
-	this->erase(this->begin() + first, this->begin() + last + 1);
-
-	return *this;
 }
 
-MetaDataList& MetaDataList::removeTracks(std::function<bool(const MetaData&)> attr)
+void MetaDataList::removeTracks(std::function<bool(const MetaData&)>&& attr)
 {
-	this->erase(std::remove_if(this->begin(), this->end(), attr), this->end());
-	return *this;
+	if(!isEmpty())
+	{
+		erase(std::remove_if(begin(), end(), attr), end());
+	}
 }
 
-MetaDataList& MetaDataList::removeTracks(const IndexSet& indexes)
+void MetaDataList::removeTracks(const IndexSet& indexes)
 {
 	for(auto it = indexes.rbegin(); it != indexes.rend(); it++)
 	{
 		if(Util::between(*it, *this))
 		{
-			this->erase(this->begin() + *it);
+			erase(begin() + *it);
 		}
 	}
+}
 
+MetaDataList& MetaDataList::operator<<(const MetaDataList& tracks)
+{
+	std::copy(tracks.begin(), tracks.end(), std::back_inserter(*this));
 	return *this;
 }
 
-bool MetaDataList::contains(const MetaData& md) const
+MetaDataList& MetaDataList::operator<<(MetaDataList&& tracks) noexcept
 {
-	auto it = std::find_if(this->begin(), this->end(), [&md](const MetaData& md_tmp) {
-		return md.isEqual(md_tmp);
-	});
+	const auto oldEnd = end();
+	resize(size() + tracks.size());
 
-	return (it != this->end());
-}
-
-QList<int> MetaDataList::findTracks(Id id) const
-{
-	IdxList ret;
-
-	if(id == -1)
-	{
-		return ret;
-	}
-
-	int idx = 0;
-	for(auto it = this->begin(); it != this->end(); it++, idx++)
-	{
-		if(it->id() == id)
-		{
-			ret << idx;
-		}
-	}
-
-	return ret;
-}
-
-QList<int> MetaDataList::findTracks(const QString& path) const
-{
-	QList<int> ret;
-
-	if(path.isEmpty())
-	{
-		return ret;
-	}
-
-#ifdef Q_OS_UNIX
-	Qt::CaseSensitivity sensitivity = Qt::CaseSensitive;
-#else
-	Qt::CaseSensitivity sensitivity = Qt::CaseInsensitive;
-#endif
-
-	int idx = 0;
-	for(auto it = this->begin(); it != this->end(); it++, idx++)
-	{
-		if(it->filepath().compare(path, sensitivity) == 0)
-		{
-			ret << idx;
-		}
-	}
-
-	return ret;
-}
-
-QStringList MetaDataList::toStringList() const
-{
-	QStringList lst;
-
-	auto lambda = [&lst](const MetaData& md) {
-		if(md.id() >= 0)
-		{
-			lst << QString::number(md.id());
-		}
-		else
-		{
-			lst << md.filepath();
-		}
-	};
-
-	std::for_each(this->begin(), this->end(), lambda);
-
-	return lst;
-}
-
-MetaDataList& MetaDataList::operator<<(const MetaDataList& v_md)
-{
-	return append(v_md);
-}
-
-MetaDataList& MetaDataList::operator<<(const MetaData& md)
-{
-	return append(md);
-}
-
-MetaDataList& MetaDataList::operator<<(MetaDataList&& v_md) noexcept
-{
-	return append(std::move(v_md));
-}
-
-MetaDataList& MetaDataList::operator<<(MetaData&& md) noexcept
-{
-	return append(std::move(md));
-}
-
-MetaDataList& MetaDataList::append(const MetaDataList& v_md)
-{
-	auto old_size = this->size();
-	resize(old_size + v_md.size());
-
-	std::copy
-		(
-			v_md.begin(),
-			v_md.end(),
-			this->begin() + old_size
-		);
-
+	std::move(tracks.begin(), tracks.end(), oldEnd);
 	return *this;
 }
 
-MetaDataList& MetaDataList::append(MetaDataList&& v_md) noexcept
+MetaDataList& MetaDataList::operator<<(const MetaData& track)
 {
-	auto old_size = this->size();
-	resize(old_size + v_md.size());
-
-	std::move(v_md.begin(), v_md.end(), this->begin() + old_size);
+	push_back(track);
 	return *this;
 }
 
-MetaDataList& MetaDataList::append(const MetaData& md)
+MetaDataList& MetaDataList::operator<<(MetaData&& track) noexcept
 {
-	push_back(md);
+	push_back(std::move(track));
 	return *this;
 }
 
-MetaDataList& MetaDataList::append(MetaData&& md) noexcept
+void MetaDataList::appendUnique(const MetaDataList& other)
 {
-	resize(this->size() + 1);
-	auto it = this->begin() + this->size() - 1;
-	*it = std::move(md);
-
-	return *this;
-}
-
-QList<UniqueId> MetaDataList::unique_ids() const
-{
-	QList<UniqueId> ret;
-	for(auto it = this->begin(); it != this->end(); it++)
-	{
-		ret << it->uniqueId();
-	}
-
-	return ret;
-}
-
-bool MetaDataList::contains(TrackID id) const
-{
-	auto it = std::find_if(this->begin(), this->end(), [&id](const MetaData& md) {
-		return (id == md.id());
-	});
-
-	return (it != this->end());
-}
-
-void MetaDataList::removeDuplicates()
-{
-	for(auto it = this->begin(); it != this->end(); it++)
-	{
-		auto rit = std::remove_if(std::next(it), this->end(), [it](const MetaData& md) {
-			return (it->filepath().compare(md.filepath()) == 0);
-		});
-
-		this->erase(rit, this->end());
-	}
-}
-
-bool MetaDataList::isEmpty() const
-{
-	return this->empty();
-}
-
-MetaDataList& MetaDataList::appendUnique(const MetaDataList& other)
-{
-	std::copy_if(other.begin(), other.end(), std::back_inserter(*this), [=](const MetaData& md) {
-		return std::none_of(this->begin(), this->end(), [&md](const MetaData& md2) {
-			return (md.filepath().compare(md2.filepath()) == 0);
+	std::copy_if(other.begin(), other.end(), std::back_inserter(*this), [&](const auto& newTrack) {
+		return std::none_of(begin(), end(), [&](const auto& ownTrack) {
+			return ownTrack.isEqual(newTrack);
 		});
 	});
-
-	return *this;
 }
 
-const MetaData& MetaDataList::first() const
+int MetaDataList::count() const { return static_cast<int>(Parent::size()); }
+
+bool MetaDataList::isEmpty() const { return empty(); }
+
+const MetaData& MetaDataList::operator[](int i) const { return at(i); }
+
+MetaData& MetaDataList::operator[](int i) { return at(i); }
+
+/*** free functions ***/
+
+namespace Util
 {
-	return *(this->begin());
-}
+	QList<TrackID> trackIds(const MetaDataList& tracks)
+	{
+		QList<TrackID> trackIds;
+		Util::Algorithm::transform(tracks, trackIds, [](const auto& track) {
+			return track.id();
+		});
 
-const MetaData& MetaDataList::last() const
-{
-	return *(std::prev(this->end()));
-}
+		return trackIds;
+	}
 
-int MetaDataList::count() const
-{
-	return int(MetaDataList::Parent::size());
-}
+	QList<UniqueId> uniqueIds(const MetaDataList& tracks)
+	{
+		auto result = QList<UniqueId> {};
+		Util::Algorithm::transform(tracks, result, [](const auto& track) {
+			return track.uniqueId();
+		});
 
-MetaData MetaDataList::takeAt(int idx)
-{
-	MetaData md(std::move(this->at(size_t(idx))));
-	this->erase(this->begin() + idx);
-
-	return md;
-}
-
-void MetaDataList::reserve(size_t items)
-{
-	Q_UNUSED(items)
-}
-
-size_t MetaDataList::capacity() const
-{
-	return 0;
-}
-
-QList<TrackID> MetaDataList::trackIds() const
-{
-	QList<TrackID> trackIds;
-
-	Util::Algorithm::transform(*this, trackIds, [](const auto& track) {
-		return track.id();
-	});
-
-	return trackIds;
+		return result;
+	}
 }

@@ -373,8 +373,6 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	const auto& playlistTracks = m->playlist->tracks();
 
 	auto modifiedTracks = MetaDataList {};
-	modifiedTracks.reserve(indexes.size());
-
 	for(const auto idx: indexes)
 	{
 		if(Util::between(idx, playlistTracks))
@@ -443,7 +441,6 @@ void Model::changeTrack(const int trackIndex, const Seconds seconds)
 MetaDataList Model::metadata(const IndexSet& rows) const
 {
 	MetaDataList tracks;
-	tracks.reserve(rows.size());
 
 	const auto& playlistTracks = m->playlist->tracks();
 	for(const auto row: rows)
@@ -529,8 +526,6 @@ QMimeData* Model::mimeData(const QModelIndexList& indexes) const
 	const auto rows = toSortedList(indexes, playlistTracks.count());
 
 	MetaDataList tracks;
-	tracks.reserve(static_cast<MetaDataList::size_type>(playlistTracks.count()));
-
 	for(const auto row: rows)
 	{
 		tracks << playlistTracks[row];

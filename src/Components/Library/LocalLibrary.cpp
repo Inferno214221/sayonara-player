@@ -333,7 +333,7 @@ void LocalLibrary::initReloadThread()
 
 void LocalLibrary::deleteTracks(const MetaDataList& tracks, Library::TrackDeletionMode mode)
 {
-	m->libraryDatabase->deleteTracks(tracks.trackIds());
+	m->libraryDatabase->deleteTracks(Util::trackIds(tracks));
 	AbstractLibrary::deleteTracks(tracks, mode);
 }
 

@@ -256,6 +256,20 @@ namespace
 
 		return icyWebAccess;
 	}
+
+	MetaDataList removeDuplicates(MetaDataList tracks)
+	{
+		for(auto it = tracks.begin(); it != tracks.end(); it++)
+		{
+			auto rit = std::remove_if(std::next(it), tracks.end(), [filepath = it->filepath()](const auto& track) {
+				return (filepath == track.filepath());
+			});
+
+			tracks.erase(rit, tracks.end());
+		}
+
+		return tracks;
+	}
 }
 
 struct StreamParser::Private
@@ -353,9 +367,7 @@ void StreamParser::webClientFinished()
 			spLog(Log::Develop, this) << "Got data. Try to parse content";
 
 			auto [tracks, urls] = parseContent(url, data, m->coverUrl, m->stationName, m->forbiddenUrls);
-			m->tracks << std::move(tracks);
-			m->tracks.removeDuplicates();
-
+			m->tracks = removeDuplicates(std::move(tracks));
 			m->urls << urls;
 			m->urls.removeDuplicates();
 		}
@@ -378,7 +390,7 @@ void StreamParser::webClientFinished()
 			spLog(Log::Develop, this) << "Found audio stream";
 
 			m->tracks << setMetadataTag(MetaData {}, m->stationName, url, m->coverUrl);
-			m->tracks.removeDuplicates();
+			m->tracks = removeDuplicates(std::move(m->tracks));
 		}
 			break;
 
@@ -405,7 +417,7 @@ void StreamParser::icyFinished(const QString& url, IcyWebAccess* icyWebAccess)
 		spLog(Log::Develop, this) << "Stream is icy stream";
 
 		m->tracks << setMetadataTag(MetaData {}, m->stationName, url, m->coverUrl);
-		m->tracks.removeDuplicates();
+		m->tracks = removeDuplicates(std::move(m->tracks));
 	}
 
 	else

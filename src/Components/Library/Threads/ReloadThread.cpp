@@ -416,7 +416,7 @@ void ReloadThread::run()
 	}
 
 	spLog(Log::Debug, this) << "  " << tracksToDelete.size() << " of them are not on disk anymore";
-	libraryDatabase->deleteTracks(tracksToDelete.trackIds());
+	libraryDatabase->deleteTracks(Util::trackIds(tracksToDelete));
 
 	if(!m->mayRun)
 	{

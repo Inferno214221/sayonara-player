@@ -29,11 +29,6 @@
 #include <deque>
 #include <functional>
 
-/**
- * @brief The MetaDataList class
- * @ingroup MetaDataHelper
- */
-
 class MetaDataList :
 	public std::deque<MetaData>
 {
@@ -51,51 +46,31 @@ class MetaDataList :
 
 		~MetaDataList();
 
-		bool contains(const MetaData& md) const;
-		MetaDataList& removeTrack(int idx);
-		MetaDataList& removeTracks(const IndexSet& rows);
-		MetaDataList& removeTracks(int first, int last);
-		MetaDataList& removeTracks(std::function<bool(const MetaData&)> attr);
+		void removeTracks(const IndexSet& rows);
+		void removeTracks(int first, int last);
+		void removeTracks(std::function<bool(const MetaData&)>&& attr);
 
-		MetaDataList& moveTracks(const IndexSet& indexes, int tgt_idx) noexcept;
-		MetaDataList& copyTracks(const IndexSet& indexes, int tgt_idx);
-		MetaDataList& insertTrack(const MetaData& md, int tgt_idx);
-		MetaDataList& insertTracks(const MetaDataList& v_md, int tgt_idx);
+		void moveTracks(const IndexSet& indexes, int targetIndex) noexcept;
+		void copyTracks(const IndexSet& indexes, int targetIndex);
+		void insertTracks(const MetaDataList& tracks, int targetIndex);
+		void appendUnique(const MetaDataList& newTrack);
 
-		IdxList findTracks(Id id) const;
-		IdxList findTracks(const QString& filepath) const;
-
-		QStringList toStringList() const;
-
-		MetaDataList& operator<<(const MetaDataList& v_md);
-		MetaDataList& operator<<(const MetaData& md);
-		MetaDataList& operator<<(MetaDataList&& v_md) noexcept;
-		MetaDataList& operator<<(MetaData&& md) noexcept;
+		MetaDataList& operator<<(const MetaDataList& tracks);
+		MetaDataList& operator<<(const MetaData& track);
+		MetaDataList& operator<<(MetaDataList&& tracks) noexcept;
+		MetaDataList& operator<<(MetaData&& track) noexcept;
 
 		const MetaData& operator[](int i) const;
 		MetaData& operator[](int i);
 
-		MetaDataList& append(const MetaDataList& v_md);
-		MetaDataList& append(MetaDataList&& v_md) noexcept;
-		MetaDataList& append(const MetaData& md);
-		MetaDataList& append(MetaData&& md) noexcept;
-
-		QList<UniqueId> unique_ids() const;
-
-		bool contains(TrackID id) const;
-		QList<TrackID> trackIds() const;
-		void removeDuplicates();
-		MetaData takeAt(int idx);
-		bool isEmpty() const;
-		MetaDataList& appendUnique(const MetaDataList& other);
-
-		const MetaData& first() const;
-		const MetaData& last() const;
-
-		int count() const;
-		
-		void reserve(size_t items);
-		size_t capacity() const;
+		[[nodiscard]] int count() const;
+		[[nodiscard]] bool isEmpty() const;
 };
+
+namespace Util
+{
+	QList<TrackID> trackIds(const MetaDataList& tracks);
+	QList<UniqueId> uniqueIds(const MetaDataList& tracks);
+}
 
 #endif // METADATALIST_H

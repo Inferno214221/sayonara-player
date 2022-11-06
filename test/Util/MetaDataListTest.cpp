@@ -7,6 +7,43 @@
 
 #include <algorithm>
 
+namespace
+{
+	MetaDataList createTracks(const int min, const int max)
+	{
+		auto tracks = MetaDataList {};
+		for(auto i = min; i < max; i++)
+		{
+			auto track = MetaData {};
+			track.setId(i);
+			track.setFilepath(QString("/path/to/%1.mp3").arg(i));
+
+			tracks << std::move(track);
+		}
+
+		return tracks;
+	}
+
+	IndexSet listToSet(const QList<int>& list)
+	{
+		auto result = IndexSet {};
+		for(const auto item: list)
+		{
+			result << item;
+		}
+
+		return result;
+	}
+
+	bool uniqueIdsAreEqual(QList<UniqueId> lst1, QList<UniqueId> lst2)
+	{
+		std::sort(lst1.begin(), lst1.end());
+		std::sort(lst2.begin(), lst2.end());
+
+		return lst1 == lst2;
+	}
+}
+
 class MetaDataListTest :
 	public Test::Base
 {
@@ -19,364 +56,225 @@ class MetaDataListTest :
 		~MetaDataListTest() override = default;
 
 	private slots:
-		void insert_test();
-		void remove_test();
-		void move_test();
-		void append_unique_test();
+		[[maybe_unused]] void testCopyAndAssignment();
+		[[maybe_unused]] void testInsert();
+		[[maybe_unused]] void testMoveTracks();
+		[[maybe_unused]] void testCopyTracks();
+		[[maybe_unused]] static void testRemoveByIndexSet();
+		[[maybe_unused]] void testRemoveByIndexRange();
+		[[maybe_unused]] void testAppendUnique();
 };
 
-static MetaDataList create_v_md(int min, int max)
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void MetaDataListTest::testCopyAndAssignment()
 {
-	MetaDataList v_md;
-	for(int i = min; i < max; i++)
-	{
-		MetaData md;
-		md.setId(i);
+	constexpr const auto MaxIndex = 8;
+	{ // copy constructor
+		const auto originalTracks = createTracks(0, MaxIndex);
+		const auto originalUniqueIds = Util::uniqueIds(originalTracks);
+		const auto originalTrackIds = Util::trackIds(originalTracks);
 
-		v_md << md;
+		const auto tracks = MetaDataList(originalTracks);
+		QVERIFY(originalUniqueIds != Util::uniqueIds(tracks));
+		QVERIFY(originalTrackIds == Util::trackIds(tracks));
 	}
 
-	return v_md;
-}
+	{ // copy assignment
+		const auto originalTracks = createTracks(0, MaxIndex);
+		const auto originalUniqueIds = Util::uniqueIds(originalTracks);
+		const auto originalTrackIds = Util::trackIds(originalTracks);
 
-void MetaDataListTest::insert_test()
-{
-	MetaDataList v_md_orig = create_v_md(0, 53);
-	MetaDataList inserted_md = create_v_md(100, 105);
-	MetaDataList v_md = v_md_orig;
-
-	QVERIFY(v_md.size() == v_md_orig.size());
-
-	int insert_idx = 8;
-
-	QList<UniqueId> unique_ids = Util::uniqueIds(inserted_md);
-	QList<UniqueId> unique_ids2;
-
-	v_md.insertTracks(inserted_md, insert_idx);
-	QVERIFY(v_md.size() == v_md_orig.size() + inserted_md.size());
-
-	QList<int> expected_ids;
-	for(int i = 0; i < insert_idx; i++)
-	{
-		expected_ids << v_md[i].id();
+		const auto tracks = originalTracks; // NOLINT(performance-unnecessary-copy-initialization)
+		QVERIFY(originalUniqueIds != Util::uniqueIds(tracks));
+		QVERIFY(originalTrackIds == Util::trackIds(tracks));
 	}
 
-	for(int i = 0; i < inserted_md.count(); i++)
-	{
-		expected_ids << inserted_md[i].id();
-		unique_ids2 << v_md[i + insert_idx].uniqueId();
+	{ // move constructor
+		auto originalTracks = createTracks(0, MaxIndex);
+		const auto originalUniqueIds = Util::uniqueIds(originalTracks);
+		const auto originalTrackIds = Util::trackIds(originalTracks);
+
+		const auto tracks = MetaDataList(std::move(originalTracks));
+		QVERIFY(originalUniqueIds == Util::uniqueIds(tracks));
+		QVERIFY(originalTrackIds == Util::trackIds(tracks));
 	}
 
-	QVERIFY(unique_ids != unique_ids2);
+	{ // move assignment
+		auto originalTracks = createTracks(0, MaxIndex);
+		const auto originalUniqueIds = Util::uniqueIds(originalTracks);
+		const auto originalTrackIds = Util::trackIds(originalTracks);
 
-	for(int i = insert_idx; i < v_md_orig.count(); i++)
-	{
-		expected_ids << v_md_orig[i].id();
-	}
-
-	QVERIFY(v_md.count() == expected_ids.size());
-
-	for(int i = 0; i < v_md.count(); i++)
-	{
-		QVERIFY(v_md[i].id() == expected_ids[i]);
-	}
-
-	{ // some invalid index tests
-		MetaDataList v_md_invalid;
-		MetaData md;
-		v_md_invalid.insertTrack(md, 4);
-		QVERIFY(v_md_invalid.size() == 1);
-
-		v_md_invalid.clear();
-		v_md_invalid.insertTrack(md, -1);
-		QVERIFY(v_md_invalid.size() == 1);
+		const auto tracks = std::move(originalTracks);
+		QVERIFY(originalUniqueIds == Util::uniqueIds(tracks));
+		QVERIFY(originalTrackIds == Util::trackIds(tracks));
 	}
 }
 
-void MetaDataListTest::remove_test()
+[[maybe_unused]] void MetaDataListTest::testInsert() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaDataList v_md = create_v_md(0, 100);
-	auto old_size = v_md.size();
-
-	int remove_start = 15;
-	int remove_end = 30;
-
-	IndexSet remove_indexes;
-	for(int i = remove_start; i < remove_end; i++)
+	struct TestCase
 	{
-		remove_indexes << i;
-	}
+		MetaDataList originalTracks;
+		MetaDataList tracksToInsert;
+		int insertIndex;
+		QList<int> expctedIds;
+	};
 
-	v_md.removeTracks(remove_indexes);
+	const auto testCases = {
+		TestCase {createTracks(0, 8), createTracks(100, 103), 0, {100, 101, 102, 0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), createTracks(100, 103), 5, {0, 1, 2, 3, 4, 100, 101, 102, 5, 6, 7}},
+		TestCase {createTracks(0, 8), createTracks(100, 103), 8, {0, 1, 2, 3, 4, 5, 6, 7, 100, 101, 102}},
+		TestCase {createTracks(0, 8), createTracks(100, 103), -3, {100, 101, 102, 0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), {}, 3, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {{}, createTracks(100, 103), 5, {100, 101, 102}},
+	};
 
-	QVERIFY(v_md.size() == (old_size - remove_indexes.size()));
-
-	for(int i = 0; i < v_md.count(); i++)
+	for(const auto& testCase: testCases)
 	{
-		if(i < remove_start)
-		{
-			QVERIFY(v_md[i].id() == i);
-		}
-
-		else
-		{
-			QVERIFY(v_md[i].id() == (i + remove_indexes.count()));
-		}
-	}
-
-	{ // some invalid index tests
-		MetaDataList v_md_invalid;
-		v_md_invalid.removeTrack(3);
-		QVERIFY(v_md_invalid.size() == 0);
-
-		// insert two tracks
-		MetaDataList md_insert;
-		md_insert << MetaData() << MetaData();
-		v_md_invalid << md_insert;
-
-		// remove tracks with invalid indexes
-		QVERIFY(v_md_invalid.size() == 2);
-		v_md_invalid.removeTrack(-1);
-		v_md_invalid.removeTrack(2);
-
-		// remove track with real index
-		QVERIFY(v_md_invalid.size() == 2);
-		v_md_invalid.removeTrack(0);
-		QVERIFY(v_md_invalid.size() == 1);
-
-		MetaData md;
-		md.setFilepath("Somestuff.mp3");
-		v_md_invalid << md;
-		QVERIFY(v_md_invalid.size() == 2);
-
-		IndexSet idxs;
-		{
-			idxs << 2 << -1 << 4;
-		}
-
-		v_md_invalid.removeTracks(idxs);
-		QVERIFY(v_md_invalid.size() == 2);
-
-		idxs.clear();
-		{
-			idxs << 0 << -1 << 4;
-		}
-
-		v_md_invalid.removeTracks(idxs);
-		QVERIFY(v_md_invalid.size() == 1);
+		auto tracks = testCase.originalTracks;
+		tracks.insertTracks(testCase.tracksToInsert, testCase.insertIndex);
+		QVERIFY(testCase.expctedIds == Util::trackIds(tracks));
 	}
 }
 
-void MetaDataListTest::move_test()
+[[maybe_unused]] void MetaDataListTest::testRemoveByIndexSet() // NOLINT(readability-convert-member-functions-to-static)
 {
-	const MetaDataList v_md_orig = create_v_md(0, 10);
-	MetaDataList v_md = v_md_orig;
-	QList<UniqueId> unique_ids = Util::uniqueIds(v_md);
-	QList<UniqueId> unique_ids2;
+	struct TestCase
+	{
+		MetaDataList originalTracks;
+		IndexSet indexesToDelete;
+		QList<int> expctedIds;
+	};
 
-	IndexSet move_indexes;
+	const auto testCases = {
+		TestCase {createTracks(0, 8), listToSet({0, 1, 2, 3, 4, 5, 6, 7}), {}},
+		TestCase {createTracks(0, 8), listToSet({0, 2, 4, 6}), {1, 3, 5, 7}},
+		TestCase {createTracks(0, 8), listToSet({-1, -2, -3, 9, 10, 11}), {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {{}, listToSet({-1, -2, -3, 9, 10, 11}), {}},
+	};
 
-	{ // move some items
-
-		// O, O, O, X, X, X, O, O, O, O
-		// O, X, X, X, O, O, O, O, O, O
-		{
-			move_indexes << 3 << 4 << 5;
-		};
-
-		v_md.moveTracks(move_indexes, 1);
-		unique_ids2 = Util::uniqueIds(v_md);
-		QVERIFY(unique_ids != unique_ids2);
-
-		std::sort(unique_ids.begin(), unique_ids.end());
-		std::sort(unique_ids2.begin(), unique_ids2.end());
-
-		QVERIFY(unique_ids == unique_ids2);
-
-		QList<int> expected_ids
-			{
-				0, 3, 4, 5, 1, 2, 6, 7, 8, 9
-			};
-
-		QVERIFY(expected_ids.count() == v_md.count());
-		for(int i = 0; i < expected_ids.count(); i++)
-		{
-			QVERIFY(expected_ids[i] == v_md[i].id());
-		}
-	}
-
-	{ // and back again
-		// O, X, X, X, O, O, O, O, O, O
-		// O, O, O, X, X, X, O, O, O, O
-		move_indexes.clear();
-		{
-			move_indexes << 1 << 2 << 3;
-		};
-
-		v_md.moveTracks(move_indexes, 6);
-
-		unique_ids2 = Util::uniqueIds(v_md);
-		QVERIFY(unique_ids == unique_ids2);
-
-		for(int i = 0; i < v_md.count(); i++)
-		{
-			QVERIFY(i == v_md[i].id());
-		}
-	}
-
-	{ // move behind last index
-		v_md = v_md_orig;
-		unique_ids = Util::uniqueIds(v_md);
-		move_indexes.clear();
-		{
-			move_indexes << 1 << 2 << 3;
-		};
-
-		v_md.moveTracks(move_indexes, 11);
-
-		unique_ids2 = Util::uniqueIds(v_md);
-
-		std::sort(unique_ids.begin(), unique_ids.end());
-		std::sort(unique_ids2.begin(), unique_ids2.end());
-		QVERIFY(unique_ids == unique_ids2);
-
-		QList<int> expected_ids
-			{
-				0, 4, 5, 6, 7, 8, 9, 1, 2, 3
-			};
-
-		for(int i = 0; i < expected_ids.count(); i++)
-		{
-			QVERIFY(expected_ids[i] == v_md[i].id());
-		}
-	}
-
-	{ // move before first index
-		v_md = v_md_orig;
-		move_indexes.clear();
-		{
-			move_indexes << 4 << 7 << 8;
-		};
-
-		v_md.moveTracks(move_indexes, -4);
-		QList<int> expected_ids
-			{
-				4, 7, 8, 0, 1, 2, 3, 5, 6, 9
-			};
-
-		for(int i = 0; i < expected_ids.count(); i++)
-		{
-			QVERIFY(expected_ids[i] == v_md[i].id());
-		}
+	for(const auto& testCase: testCases)
+	{
+		auto tracks = testCase.originalTracks;
+		tracks.removeTracks(testCase.indexesToDelete);
+		QVERIFY(testCase.expctedIds == Util::trackIds(tracks));
 	}
 }
 
-void MetaDataListTest::remove_duplicate_test()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void MetaDataListTest::testRemoveByIndexRange()
 {
-	MetaDataList v_md_orig = create_v_md(0, 100);
-
-	{ // % 10
-		MetaDataList v_md = v_md_orig;
-		for(int i=0; i<v_md.count(); i++)
-		{
-			QString p = QString("/some/path/%1.mp3").arg(i % 10);
-			v_md[i].setFilepath(p);
-		}
-
-		v_md.removeDuplicates();
-		QVERIFY(v_md.size() == 10);
-
-		for(int i=0; i<v_md.count(); i++)
-		{
-			int id = v_md[i].id();
-			QVERIFY(id == i);
-		}
-	}
-	{ // / 3
-		MetaDataList v_md = v_md_orig;
-		for(int i=0; i<v_md.count(); i++)
-		{
-			QString p = QString("/some/path/%1.mp3").arg(i / 3);
-			v_md[i].setFilepath(p);
-		}
-
-		v_md.removeDuplicates();
-		QVERIFY(v_md.size() == (v_md_orig.size() + 2) / 3);
-
-		for(int i=0; i<v_md.count(); i++)
-		{
-			int id = v_md[i].id();
-			QVERIFY(id == i * 3);
-		}
-	}
-
-	{ // % 99
-		MetaDataList v_md = v_md_orig;
-		for(int i=0; i<v_md.count(); i++)
-		{
-			QString p = QString("/some/path/%1.mp3").arg(i % 99);
-			v_md[i].setFilepath(p);
-		}
-
-		v_md.removeDuplicates();
-		QVERIFY(v_md.size() == 99);
-
-		for(int i=0; i<v_md.count(); i++)
-		{
-			int id = v_md[i].id();
-			QVERIFY(id == i);
-		}
-	}
-
-
-	{ // all the same
-		MetaDataList v_md = v_md_orig;
-		for(int i=0; i<v_md.count(); i++)
-		{
-			QString p = QString("/some/path/hallo.mp3");
-			v_md[i].setFilepath(p);
-		}
-
-		v_md.removeDuplicates();
-		QVERIFY(v_md.size() == 1);
-	}
-
+	struct TestCase
 	{
-		MetaDataList v_md = v_md_orig;
-		for(int i=0; i<v_md.count(); i++)
-		{
-			QString p = QString("/some/path/%1.mp3").arg(i);
-			v_md[i].setFilepath(p);
-		}
+		MetaDataList originalTracks;
+		std::pair<int, int> rangeToDelete;
+		QList<int> expctedIds;
+	};
 
-		v_md.removeDuplicates();
-		QVERIFY(v_md.size() == v_md_orig.size());
+	const auto testCases = {
+		TestCase {createTracks(0, 8), {0, 7}, {}},
+		TestCase {createTracks(0, 8), {0, 4}, {5, 6, 7}},
+		TestCase {createTracks(0, 8), {-5, 4}, {5, 6, 7}},
+		TestCase {createTracks(0, 8), {5, 8}, {0, 1, 2, 3, 4}},
+		TestCase {createTracks(0, 8), {5, 20}, {0, 1, 2, 3, 4}},
+		TestCase {{},
+		          {0, 4},
+		          {}}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks = testCase.originalTracks;
+		tracks.removeTracks(testCase.rangeToDelete.first, testCase.rangeToDelete.second);
+		QVERIFY(testCase.expctedIds == Util::trackIds(tracks));
 	}
 }
 
-void MetaDataListTest::append_unique_test()
+[[maybe_unused]] void MetaDataListTest::testAppendUnique() // NOLINT(readability-convert-member-functions-to-static)
 {
-	MetaDataList v_md_orig = create_v_md(0, 100);
-	MetaDataList v_md = v_md_orig;
-	MetaDataList v_md2 = create_v_md(70, 170);
-	for(MetaData& md: v_md)
+	struct TestCase
 	{
-		QString p = QString("/some/path/%1.mp3").arg(md.id());
-		md.setFilepath(p);
+		MetaDataList tracks;
+		MetaDataList tracksToAdd;
+		QList<int> expectedIds;
+	};
+
+	const auto testCases = {
+		TestCase {createTracks(0, 4), createTracks(10, 14), {0, 1, 2, 3, 10, 11, 12, 13}},
+		TestCase {createTracks(0, 4), createTracks(2, 8), {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 4), createTracks(0, 4), {0, 1, 2, 3}},
+		TestCase {{}, createTracks(0, 4), {0, 1, 2, 3}}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks = testCase.tracks;
+		tracks.appendUnique(testCase.tracksToAdd);
+
+		QVERIFY(Util::trackIds(tracks) == testCase.expectedIds);
 	}
+}
 
-	for(MetaData& md: v_md2)
+[[maybe_unused]] void MetaDataListTest::testMoveTracks() // NOLINT(readability-convert-member-functions-to-static)
+{
+	struct TestCase
 	{
-		QString p = QString("/some/path/%1.mp3").arg(md.id());
-		md.setFilepath(p);
+		MetaDataList tracks;
+		IndexSet indexes;
+		int targetIndex;
+		QList<int> expectedIds;
+	};
+
+	const auto testCases = {
+		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 0, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 5, {3, 4, 0, 1, 2, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({2, 4, 6}), 3, {0, 1, 2, 4, 6, 3, 5, 7}},
+		TestCase {createTracks(0, 8), listToSet({5, 6, 7}), 1, {0, 5, 6, 7, 1, 2, 3, 4}},
+		TestCase {createTracks(0, 8), listToSet({1, 3, 7}), 4, {0, 2, 1, 3, 7, 4, 5, 6}},
+		TestCase {createTracks(0, 8), listToSet({-1, 4, 10}), 2, {0, 1, 4, 2, 3, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({}), 2, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {{}, listToSet({0, 1, 2}), 2, {}}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks = testCase.tracks;
+		const auto uniqueIds = Util::uniqueIds(tracks);
+		tracks.moveTracks(testCase.indexes, testCase.targetIndex);
+
+		QVERIFY(Util::trackIds(tracks) == testCase.expectedIds);
+		QVERIFY(uniqueIdsAreEqual(Util::uniqueIds(tracks), uniqueIds));
 	}
+}
 
-	v_md.appendUnique(v_md2);
-
-	QVERIFY(v_md.size() == v_md_orig.size() + 70);
-	for(int i = 0; i < v_md.count(); i++)
+[[maybe_unused]] void MetaDataListTest::testCopyTracks() // NOLINT(readability-convert-member-functions-to-static)
+{
+	struct TestCase
 	{
-		QVERIFY(v_md[i].id() == i);
+		MetaDataList tracks;
+		IndexSet indexes;
+		int targetIndex;
+		QList<int> expectedIds;
+	};
+
+	const auto testCases = {
+		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 0, {0, 1, 2, 0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 5, {0, 1, 2, 3, 4, 0, 1, 2, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({2, 4, 6}), 3, {0, 1, 2, 2, 4, 6, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({5, 6, 7}), 1, {0, 5, 6, 7, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({1, 3, 7}), 4, {0, 1, 2, 3, 1, 3, 7, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), listToSet({-1, 4, 10}), 2, {0, 1, 4, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, 8), {}, 2, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {{}, listToSet({0, 1, 2}), 2, {}}
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks = testCase.tracks;
+		const auto uniqueIds = Util::uniqueIds(tracks);
+		tracks.copyTracks(testCase.indexes, testCase.targetIndex);
+
+		QVERIFY(Util::trackIds(tracks) == testCase.expectedIds);
 	}
 }
 
