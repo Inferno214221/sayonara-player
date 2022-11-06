@@ -86,7 +86,7 @@ class StreamParserTest :
 
 	QVERIFY(spy.count() == 1);
 	QVERIFY(streamParser.tracks().size() == 1);
-	const auto track = streamParser.tracks().first();
+	const auto track = streamParser.tracks()[0];
 
 	QVERIFY(track.filepath() == "https://path/to/track.mp3");
 	QVERIFY(track.radioMode() == RadioMode::Station);
@@ -112,7 +112,7 @@ class StreamParserTest :
 	spy.wait(SpyTimeout);
 
 	QVERIFY(streamParser.tracks().size() == 1);
-	const auto track = streamParser.tracks().first();
+	const auto track = streamParser.tracks()[0];
 
 	const auto expectedPath = QString("%1/path/to/relativeTrack.mp3").arg(stationUrl);
 	QVERIFY(track.filepath().toLower() == expectedPath.toLower());

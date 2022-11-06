@@ -100,10 +100,10 @@ void LibraryDatabaseTest::testStore()
 	libraryDb->getAllArtists(artists, true);
 	QVERIFY(artists.count() == 5);
 
-	MetaData md1 = tracks.first();
+	MetaData md1 = tracks[0];
 	md1.setArtist("Some new Artist");
 
-	MetaData md2 = tracks.first();
+	MetaData md2 = tracks[0];
 	md2.setArtist("");
 	md2.setAlbum("");
 	md2.setFilepath("/a/completely/different/path.mp3");

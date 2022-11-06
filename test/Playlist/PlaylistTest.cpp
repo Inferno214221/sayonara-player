@@ -225,7 +225,7 @@ void PlaylistTest::insertTest()
 		QVERIFY(Playlist::count(playlist) == 4);
 		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
-		QVERIFY(playlistTracks.first().id() == 3);
+		QVERIFY(playlistTracks[0].id() == 3);
 	}
 
 	{
@@ -247,7 +247,8 @@ void PlaylistTest::insertTest()
 		QVERIFY(Playlist::count(playlist) == 6);
 		QVERIFY(Playlist::count(playlist) == playlistTracks.count());
 
-		QVERIFY(playlistTracks.last().id() == 5);
+		const auto lastIndex = playlistTracks.count() - 1;
+		QVERIFY(playlistTracks[lastIndex].id() == 5);
 	}
 }
 

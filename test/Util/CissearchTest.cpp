@@ -165,7 +165,7 @@ CissearchTest::genreListTest() // NOLINT(readability-function-cognitive-complexi
 		MetaDataList tracksTmp;
 		libDb->getAllTracks(tracksTmp);
 		QVERIFY(tracksTmp.size() == 1);
-		QVERIFY(tracksTmp.first().title() == "Title");
+		QVERIFY(tracksTmp[0].title() == "Title");
 	}
 
 	auto genreList = md.genresToList();

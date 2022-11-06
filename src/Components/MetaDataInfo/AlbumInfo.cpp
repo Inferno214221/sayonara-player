@@ -158,7 +158,7 @@ AlbumInfo::AlbumInfo(const MetaDataList& metaDataList) :
 {
 	const auto databaseId = metaDataList.isEmpty()
 	                        ? DbId(-1)
-	                        : metaDataList.first().databaseId();
+	                        : metaDataList[0].databaseId();
 
 	m->additionalData = calcAdditionalData(databaseId, albumIds(), albums(), artists());
 	m->coverLocation = calcCoverLocation(databaseId, albumIds(), albums(), artists(), albumArtists());

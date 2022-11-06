@@ -382,7 +382,7 @@ void GUI_InfoDialog::showLyricsTab()
 	initLyrics();
 	ui->tabWidget->setCurrentWidget(m->uiLyrics);
 
-	m->uiLyrics->setTrack(m->tracks.first());
+	m->uiLyrics->setTrack(m->tracks[0]);
 	m->uiLyrics->show();
 }
 

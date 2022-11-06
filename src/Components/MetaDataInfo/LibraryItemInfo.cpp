@@ -248,7 +248,7 @@ struct LibraryItemInfo::Private
 		tracksInfo.tracksCount = metaDataList.count();
 		if(metaDataList.size() == 1)
 		{
-			tracksInfo.tracknum = metaDataList.first().trackNumber();
+			tracksInfo.tracknum = metaDataList[0].trackNumber();
 		}
 
 		for(const auto& metadata: metaDataList)

@@ -67,14 +67,14 @@ namespace
 	QString calcHeader(const MetaDataList& tracks)
 	{
 		return (tracks.size() == 1)
-		       ? tracks.first().title()
+		       ? tracks[0].title()
 		       : Lang::get(Lang::VariousTracks);
 	}
 
 	QString calcSubheader(const MetaDataList& metaDataList, const QString& artistString, const QString& albumString)
 	{
 		const auto trackNumber = (metaDataList.size() == 1)
-		                         ? metaDataList.first().trackNumber()
+		                         ? metaDataList[0].trackNumber()
 		                         : 0;
 
 		const auto onString = (trackNumber > 0)
@@ -92,7 +92,7 @@ namespace
 	{
 		if(tracks.size() == 1)
 		{
-			return Cover::Location::coverLocation(tracks.first());
+			return Cover::Location::coverLocation(tracks[0]);
 		}
 
 		if(albumIds.size() == 1)
@@ -101,7 +101,7 @@ namespace
 			album.setId(albumIds.first());
 			album.setName(albums.first());
 			album.setArtists(artists.toList());
-			album.setDatabaseId(tracks.first().databaseId());
+			album.setDatabaseId(tracks[0].databaseId());
 			if(!albumArtists.isEmpty())
 			{
 				album.setAlbumArtist(albumArtists.first());

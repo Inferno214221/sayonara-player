@@ -134,7 +134,7 @@ ArtistInfo::ArtistInfo(const MetaDataList& metaDataList) :
 {
 	const auto databaseId = metaDataList.isEmpty()
 	                        ? DbId(-1)
-	                        : metaDataList.first().databaseId();
+	                        : metaDataList[0].databaseId();
 
 	m->header = calcArtistString();
 	m->subheader = QString();
