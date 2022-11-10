@@ -18,19 +18,35 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DIRECTORY_READER
-#define DIRECTORY_READER
+#ifndef SAYONARA_DIRECTORY_READER
+#define SAYONARA_DIRECTORY_READER
 
 #include <QStringList>
 
+#include <memory>
+
 class QDir;
 class MetaDataList;
-namespace DirectoryReader
+namespace Util
 {
-	[[nodiscard]] QStringList scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters = QStringList());
-	[[nodiscard]] QStringList
-	scanFilesRecursively(const QDir& baseDirOrig, const QStringList& nameFilters = QStringList());
-	[[nodiscard]] MetaDataList scanMetadata(const QStringList& fileList);
+	class DirectoryReader
+	{
+		public:
+			DirectoryReader();
+			virtual ~DirectoryReader() noexcept;
+
+			[[nodiscard]] virtual QStringList
+			scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters = QStringList()) = 0;
+
+			[[nodiscard]] virtual QStringList
+			scanFilesRecursively(const QDir& baseDirOrig, const QStringList& nameFilters = QStringList()) = 0;
+
+			[[nodiscard]] virtual MetaDataList scanMetadata(const QStringList& fileList) = 0;
+
+			static std::shared_ptr<DirectoryReader> create();
+	};
+
+	using DirectoryReaderPtr = std::shared_ptr<DirectoryReader>;
 }
 
-#endif
+#endif // SAYONARA_DIRECTORY_READER

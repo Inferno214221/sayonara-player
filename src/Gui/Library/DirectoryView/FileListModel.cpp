@@ -85,7 +85,7 @@ namespace
 
 		return std::nullopt;
 	}
-	
+
 	std::optional<bool> compareSoundFiles(const QString& path1, const QString& path2)
 	{
 		return comparePaths(path1, path2, [](const auto& path) {
@@ -195,7 +195,8 @@ void FileListModel::setParentDirectory(const QString& dir)
 	extensions << Util::playlistExtensions();
 	extensions << "*";
 
-	m->files = DirectoryReader::scanFilesInDirectory(QDir(dir), extensions);
+	auto directoryReader = Util::DirectoryReader::create();
+	m->files = directoryReader->scanFilesInDirectory(QDir(dir), extensions);
 	if(m->files.size() > oldRowcount)
 	{
 		beginInsertRows(QModelIndex(), oldRowcount, m->files.size());

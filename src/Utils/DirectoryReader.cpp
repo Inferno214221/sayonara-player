@@ -48,7 +48,7 @@ namespace
 		MetaDataList tracks;
 		libraryDatabase->getMultipleTracksByPath(soundFiles, tracks);
 
-		for(auto& track : tracks)
+		for(auto& track: tracks)
 		{
 			auto filepath = track.filepath();
 			result.emplace(std::move(filepath), std::move(track));
@@ -60,10 +60,8 @@ namespace
 	MetaDataList getTrackListWithTrackMap(const QStringList& soundFiles, TrackMap trackMap)
 	{
 		MetaDataList tracks;
-		for(const auto& soundFile : soundFiles)
+		for(const auto& soundFile: soundFiles)
 		{
-			MetaData track;
-
 			const auto contains = (trackMap.find(soundFile) != trackMap.end());
 			if(contains)
 			{
@@ -72,7 +70,7 @@ namespace
 
 			else
 			{
-				auto track = MetaData{soundFile};
+				auto track = MetaData {soundFile};
 				const auto hasTags = Tagging::Utils::getMetaDataOfFile(track);
 				if(!hasTags)
 				{
@@ -93,24 +91,21 @@ namespace
 	{
 		const auto tracks = PlaylistParser::parsePlaylist(playlistFile, false);
 
-		auto paths = QStringList{};
-		Util::Algorithm::transform(tracks, paths, [](const auto& track){
+		auto paths = QStringList {};
+		Util::Algorithm::transform(tracks, paths, [](const auto& track) {
 			return track.filepath();
 		});
 
 		auto filepathTrackMap = createLibraryTrackMap(paths);
 		return getTrackListWithTrackMap(paths, std::move(filepathTrackMap));
 	}
-}
 
-namespace DirectoryReader
-{
-	QStringList scanFilesInDirectory(const QDir& dir, const QStringList& nameFilter)
+	QStringList scanFilesInDirectory(const QDir& dir, const QStringList& nameFilter = {})
 	{
 		QStringList result;
 
 		const auto fileList = dir.entryList(nameFilter, QDir::Filters(QDir::Files | QDir::NoDotAndDotDot));
-		for(const auto& filename : fileList)
+		for(const auto& filename: fileList)
 		{
 			result << dir.absoluteFilePath(filename);
 		}
@@ -118,10 +113,36 @@ namespace DirectoryReader
 		return result;
 	}
 
+	// NOLINTNEXTLINE(misc-no-recursion)
+	QStringList scanFilesRecursively(const QDir& originalDirectory, const QStringList& nameFilter = {})
+	{
+		if(originalDirectory.canonicalPath().isEmpty())
+		{
+			return {};
+		}
+
+		auto dir = originalDirectory;
+		const auto dirNames = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+
+		QStringList result;
+		for(const auto& dirName: dirNames)
+		{
+			if(!dirName.isEmpty() && dir.cd(dirName))
+			{
+				result << scanFilesRecursively(dir, nameFilter);
+				dir.cdUp();
+			}
+		}
+
+		result << scanFilesInDirectory(dir, nameFilter);
+
+		return result;
+	}
+
 	MetaDataList scanMetadata(const QStringList& fileList)
 	{
 		QStringList soundFiles, playlistFiles;
-		for(const auto& filename : fileList)
+		for(const auto& filename: fileList)
 		{
 			if(!Util::File::exists(filename))
 			{
@@ -134,7 +155,7 @@ namespace DirectoryReader
 				dir.cd(filename);
 
 				const auto files = scanFilesRecursively(dir);
-				for(const auto& file : files)
+				for(const auto& file: files)
 				{
 					if(Util::File::isSoundFile(file))
 					{
@@ -157,7 +178,7 @@ namespace DirectoryReader
 		auto filepathTrackMap = createLibraryTrackMap(soundFiles);
 		auto tracks = getTrackListWithTrackMap(soundFiles, std::move(filepathTrackMap));
 
-		for(const auto& playlistFile : playlistFiles)
+		for(const auto& playlistFile: playlistFiles)
 		{
 			tracks << getTracksFromPlaylistFile(playlistFile);
 		}
@@ -165,28 +186,36 @@ namespace DirectoryReader
 		return tracks;
 	}
 
-	QStringList scanFilesRecursively(const QDir& originalDirectory, const QStringList& nameFilter)
+	class DirectoryReaderImpl :
+		public Util::DirectoryReader
 	{
-		if(originalDirectory.canonicalPath().isEmpty())
-		{
-			return QStringList();
-		}
+		public:
+			~DirectoryReaderImpl() noexcept override = default;
 
-		auto dir = originalDirectory;
-		const auto dirNames = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
-
-		QStringList result;
-		for(const auto& dirName : dirNames)
-		{
-			if(!dirName.isEmpty() && dir.cd(dirName))
+			QStringList scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters) override
 			{
-				result << scanFilesRecursively(dir, nameFilter);
-				dir.cdUp();
+				return ::scanFilesInDirectory(baseDir, nameFilters);
 			}
-		}
 
-		result << scanFilesInDirectory(dir, nameFilter);
+			QStringList scanFilesRecursively(const QDir& baseDir, const QStringList& nameFilters) override
+			{
+				return ::scanFilesRecursively(baseDir, nameFilters);
+			}
 
-		return result;
+			MetaDataList scanMetadata(const QStringList& files) override
+			{
+				return ::scanMetadata(files);
+			}
+	};
+}
+
+namespace Util
+{
+	DirectoryReader::DirectoryReader() = default;
+	DirectoryReader::~DirectoryReader() noexcept = default;
+
+	std::shared_ptr<DirectoryReader> DirectoryReader::create()
+	{
+		return std::make_shared<DirectoryReaderImpl>();
 	}
 }

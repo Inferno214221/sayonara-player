@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
- 
+
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/TestTracks.h"
 
@@ -61,7 +61,7 @@ namespace
 	{
 		QString newName;
 
-		auto success = Util::File::copyFile(":/test/mp3test.mp3",  path, newName);
+		auto success = Util::File::copyFile(":/test/mp3test.mp3", path, newName);
 		if(!success)
 		{
 			throw "could not create mp3 file";
@@ -75,7 +75,7 @@ namespace
 	{
 		QString newName;
 
-		auto success = Util::File::copyFile(":/test/oggtest.ogg",  path, newName);
+		auto success = Util::File::copyFile(":/test/oggtest.ogg", path, newName);
 		if(!success)
 		{
 			throw "could not create ogg file";
@@ -106,7 +106,7 @@ namespace
 		names << createOggFile(QString("%1/path/to/another").arg(basePath));
 		names << createOggFile(QString("%1/path/to/another/dir").arg(basePath));
 
-		for(int i=0; i<names.size(); i++)
+		for(int i = 0; i < names.size(); i++)
 		{
 			auto track = tracks[i];
 			track.setFilepath(names[i]);
@@ -122,22 +122,22 @@ namespace
 	}
 }
 
-class DirectoryReaderTest : 
-    public Test::Base
+class DirectoryReaderTest :
+	public Test::Base
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        DirectoryReaderTest() :
-            Test::Base("DirectoryReaderTest")
-        {
-	        m_names = createTrackFiles(Test::Base::tempPath());
-        }
+	public:
+		DirectoryReaderTest() :
+			Test::Base("DirectoryReaderTest")
+		{
+			m_names = createTrackFiles(Test::Base::tempPath());
+		}
 
-    private slots:
-        void testScanFilesInDirectory();
-        void testScanRecursively();
-        void testScanMetadata();
+	private slots:
+		void testScanFilesInDirectory();
+		void testScanRecursively();
+		void testScanMetadata();
 
 	private:
 		QStringList m_names;
@@ -145,11 +145,12 @@ class DirectoryReaderTest :
 
 void DirectoryReaderTest::testScanFilesInDirectory()
 {
+	const auto directoryReader = Util::DirectoryReader::create();
 	const auto baseDir = Test::Base::tempPath();
 
 	{
 		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = DirectoryReader::scanFilesInDirectory(dir);
+		const auto files = directoryReader->scanFilesInDirectory(dir);
 		QVERIFY(files.count() == 2);
 
 		const auto hasMp3 = Util::Algorithm::contains(files, [](const auto& filename) {
@@ -165,51 +166,52 @@ void DirectoryReaderTest::testScanFilesInDirectory()
 
 	{
 		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = DirectoryReader::scanFilesInDirectory(dir, QStringList() << "*.mp3");
+		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.mp3");
 		QVERIFY(files.count() == 1);
 		QVERIFY(files[0] == QString("%1/mp3test.mp3").arg(dir));
 	}
 
 	{
 		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = DirectoryReader::scanFilesInDirectory(dir, QStringList() << "*.ogg");
+		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.ogg");
 		QVERIFY(files.count() == 1);
 		QVERIFY(files[0] == QString("%1/oggtest.ogg").arg(dir));
 	}
 
 	{
 		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = DirectoryReader::scanFilesInDirectory(dir, QStringList() << "*.m4a");
+		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.m4a");
 		QVERIFY(files.count() == 0);
 	}
 }
 
 void DirectoryReaderTest::testScanRecursively()
 {
+	const auto directoryReader = Util::DirectoryReader::create();
 	const auto baseDir = Test::Base::tempPath();
 
 	{ // there's some db file in the directory, so files > m_names
-		const auto files = DirectoryReader::scanFilesRecursively(baseDir);
+		const auto files = directoryReader->scanFilesRecursively(baseDir);
 		QVERIFY(files.count() > m_names.count());
-		for(const auto& name : m_names)
+		for(const auto& name: m_names)
 		{
 			QVERIFY(files.contains(name));
 		}
 	}
 
 	{
-		const auto files = DirectoryReader::scanFilesRecursively(baseDir, QStringList() << "*.mp3" << "*.ogg");
+		const auto files = directoryReader->scanFilesRecursively(baseDir, QStringList() << "*.mp3" << "*.ogg");
 		QVERIFY(files.count() == m_names.count());
-		for(const auto& name : m_names)
+		for(const auto& name: m_names)
 		{
 			QVERIFY(files.contains(name));
 		}
 	}
 
 	{
-		const auto files = DirectoryReader::scanFilesRecursively(baseDir, QStringList() << "*.ogg");
+		const auto files = directoryReader->scanFilesRecursively(baseDir, QStringList() << "*.ogg");
 		QVERIFY(files.count() == 6);
-		for(const auto& file : files)
+		for(const auto& file: files)
 		{
 			QVERIFY(m_names.contains(file));
 		}
@@ -218,16 +220,18 @@ void DirectoryReaderTest::testScanRecursively()
 
 void DirectoryReaderTest::testScanMetadata()
 {
-	const auto tracks = DirectoryReader::scanMetadata(m_names);
+	const auto directoryReader = Util::DirectoryReader::create();
+	const auto tracks = directoryReader->scanMetadata(m_names);
 	const auto generatedTracks = Test::createTracks();
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
-		Util::Algorithm::contains(generatedTracks, [&](const auto& generatedTrack){
+		Util::Algorithm::contains(generatedTracks, [&](const auto& generatedTrack) {
 			return (track.title() == generatedTrack.title());
 		});
 	}
 }
 
 QTEST_GUILESS_MAIN(DirectoryReaderTest)
+
 #include "DirectoryReaderTest.moc"

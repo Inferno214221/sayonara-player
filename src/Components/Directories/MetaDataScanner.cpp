@@ -18,8 +18,8 @@ struct MetaDataScanner::Private
 
 	bool recursive;
 
-	Private(const QStringList& files, bool recursive) :
-		files(files),
+	Private(QStringList files, bool recursive) :
+		files(std::move(files)),
 		recursive(recursive) {}
 };
 
@@ -36,23 +36,24 @@ MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObje
 
 void MetaDataScanner::start()
 {
+	const auto directoryReader = Util::DirectoryReader::create();
 	if(!m->recursive)
 	{
 		m->tracks.clear();
 
 		const auto extensions = QStringList() << Util::soundfileExtensions();
-		for(const auto& path : m->files)
+		for(const auto& path: m->files)
 		{
 			emit sigCurrentProcessedPathChanged(path);
 
-			const auto files = DirectoryReader::scanFilesInDirectory(QDir(path), extensions);
-			m->tracks << DirectoryReader::scanMetadata(files);
+			const auto files = directoryReader->scanFilesInDirectory(QDir(path), extensions);
+			m->tracks << directoryReader->scanMetadata(files);
 		}
 	}
 
 	else
 	{
-		m->tracks = DirectoryReader::scanMetadata(m->files);
+		m->tracks = directoryReader->scanMetadata(m->files);
 	}
 
 	emit sigFinished();
