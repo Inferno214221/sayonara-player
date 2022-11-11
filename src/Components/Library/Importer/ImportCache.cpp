@@ -24,51 +24,37 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TagReader.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QHash>
 #include <QString>
 #include <QStringList>
+#include <utility>
 
 using Library::ImportCache;
 
 struct ImportCache::Private
 {
-	QString					libraryPath;
-	MetaDataList			tracks;
-	QHash<QString, int>		pathIndexMap;
-	QHash<QString, QString>	pathTargetMap;
-	QStringList				files;
+	QString libraryPath;
+	Tagging::TagReaderPtr tagReader;
+	MetaDataList tracks;
+	QHash<QString, int> pathIndexMap;
+	QHash<QString, QString> pathTargetMap;
+	QStringList files;
 
-	Private(const QString& library_path) :
-		libraryPath(library_path)
-	{}
+	Private(QString libraryPath, Tagging::TagReaderPtr tagReader) :
+		libraryPath(std::move(libraryPath)),
+		tagReader(std::move(tagReader)) {}
 
-	Private(const Private& other) :
-		CASSIGN(libraryPath),
-		CASSIGN(tracks),
-		CASSIGN(pathIndexMap),
-		CASSIGN(pathTargetMap),
-		CASSIGN(files)
-	{}
-
-	Private& operator=(const Private& other)
-	{
-		ASSIGN(libraryPath);
-		ASSIGN(tracks);
-		ASSIGN(pathIndexMap);
-		ASSIGN(pathTargetMap);
-		ASSIGN(files);
-
-		return *this;
-	}
+	Private(const Private& other) = default;
+	Private& operator=(const Private& other) = default;
 };
 
-ImportCache::ImportCache(const QString& libraryPath)
+ImportCache::ImportCache(const QString& libraryPath, const Tagging::TagReaderPtr& tagReader)
 {
-	m = Pimpl::make<Private>(libraryPath);
+	m = Pimpl::make<Private>(libraryPath, tagReader);
 }
 
 ImportCache::ImportCache(const ImportCache& other)
@@ -81,7 +67,6 @@ ImportCache::~ImportCache() = default;
 ImportCache& ImportCache::operator=(const ImportCache& other)
 {
 	*m = *(other.m);
-
 	return *this;
 }
 
@@ -94,18 +79,12 @@ void ImportCache::clear()
 
 void ImportCache::addSoundfile(const QString& filename)
 {
-	MetaData md(filename);
-	bool success = Tagging::Utils::getMetaDataOfFile(md);
-	if(success)
+	const auto track = m->tagReader->readMetadata(filename);
+	if(track.has_value())
 	{
-		m->tracks << md;
-		m->pathIndexMap[md.filepath()] = m->tracks.count() - 1;
+		m->tracks << track.value();
+		m->pathIndexMap[track->filepath()] = m->tracks.count() - 1;
 	}
-}
-
-void ImportCache::addFile(const QString& filename)
-{
-	addFile(filename, QString());
 }
 
 void ImportCache::addFile(const QString& filename, const QString& parentDirectory)
@@ -117,26 +96,29 @@ void ImportCache::addFile(const QString& filename, const QString& parentDirector
 	const QString absoluteFilename = Util::File::cleanFilename(filename);
 	const QString absoluteParentDir = Util::File::cleanFilename(parentDirectory);
 
-	if(absoluteFilename.isEmpty()) {
+	if(absoluteFilename.isEmpty())
+	{
 		return;
 	}
 
 	QString remainder;
 	if(!parentDirectory.isEmpty())
 	{
-		if(	(Util::File::isSamePath(absoluteFilename, absoluteParentDir)) ||
-			(!Util::File::isSubdir(absoluteFilename, absoluteParentDir)) )
+		if((Util::File::isSamePath(absoluteFilename, absoluteParentDir)) ||
+		   (!Util::File::isSubdir(absoluteFilename, absoluteParentDir)))
 		{
 			return;
 		}
 
 		remainder = filename.right(filename.size() - absoluteParentDir.size());
-		while(remainder.startsWith('/') || remainder.startsWith('\\')) {
+		while(remainder.startsWith('/') || remainder.startsWith('\\'))
+		{
 			remainder.remove(0, 1);
 		}
 	}
 
-	else {
+	else
+	{
 		remainder = Util::File::getFilenameOfPath(filename);
 	}
 
@@ -149,38 +131,26 @@ void ImportCache::addFile(const QString& filename, const QString& parentDirector
 	}
 }
 
-QStringList ImportCache::files() const
-{
-	return m->files;
-}
+QStringList ImportCache::files() const { return m->files; }
 
-MetaDataList ImportCache::soundfiles() const
-{
-	return m->tracks;
-}
+MetaDataList ImportCache::soundfiles() const { return m->tracks; }
 
-int ImportCache::count() const
-{
-	return m->files.count();
-}
+int ImportCache::count() const { return m->files.count(); }
 
-int ImportCache::soundFileCount() const
-{
-	return m->tracks.count();
-}
+int ImportCache::soundFileCount() const { return m->tracks.count(); }
 
 QString ImportCache::targetFilename(const QString& src_filename, const QString& targetDirectoryectory) const
 {
-	if(m->libraryPath.isEmpty()){
-		return QString();
+	if(m->libraryPath.isEmpty())
+	{
+		return {};
 	}
 
-	QString original_path = Util::File::cleanFilename(src_filename);
-
-	QString path = QString("%1/%2/%3")
-				.arg(m->libraryPath)
-				.arg(targetDirectoryectory)
-				.arg(m->pathTargetMap[original_path]);
+	const auto originalPath = Util::File::cleanFilename(src_filename);
+	const auto path = QString("%1/%2/%3")
+		.arg(m->libraryPath)
+		.arg(targetDirectoryectory)
+		.arg(m->pathTargetMap[originalPath]);
 
 	return Util::File::cleanFilename(path);
 }
@@ -189,23 +159,24 @@ MetaData ImportCache::metadata(const QString& filename) const
 {
 	if(!m->pathIndexMap.contains(filename))
 	{
-		spLog(Log::Warning, this) << filename  << " is no valid audio file";
-		return MetaData();
+		spLog(Log::Warning, this) << filename << " is no valid audio file";
+		return {};
 	}
 
-	int index = m->pathIndexMap[filename];
+	const auto index = m->pathIndexMap[filename];
 	return m->tracks[index];
 }
 
 void ImportCache::changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks)
 {
-	for(const auto& trackPair : changedTracks)
+	for(const auto& trackPair: changedTracks)
 	{
-		int index = Util::Algorithm::indexOf(m->tracks, [&trackPair](const MetaData& cachedTrack) {
+		const auto index = Util::Algorithm::indexOf(m->tracks, [&trackPair](const auto& cachedTrack) {
 			return Util::File::isSamePath(trackPair.first.filepath(), cachedTrack.filepath());
 		});
 
-		if(index >= 0) {
+		if(index >= 0)
+		{
 			m->tracks[index] = trackPair.second;
 		}
 	}

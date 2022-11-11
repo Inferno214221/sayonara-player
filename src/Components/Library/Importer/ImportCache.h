@@ -29,18 +29,19 @@
 class MetaData;
 class MetaDataList;
 
+namespace Tagging
+{
+	class TagReader;
+}
+
 namespace Library
 {
-	/**
-	 * @brief The ImportCache class
-	 * @ingroup Library
-	 */
 	class ImportCache
 	{
 		PIMPL(ImportCache)
 
 		public:
-			explicit ImportCache(const QString& libraryPath);
+			ImportCache(const QString& libraryPath, const std::shared_ptr<Tagging::TagReader>& tagReader);
 			virtual ~ImportCache();
 
 			ImportCache(const ImportCache& other);
@@ -48,16 +49,15 @@ namespace Library
 
 			void clear();
 
-			void addFile(const QString& filename);
 			void addFile(const QString& filename, const QString& parentDirectory);
 
-			QStringList files() const;
-			MetaDataList soundfiles() const;
-			int count() const;
-			int soundFileCount() const;
+			[[nodiscard]] QStringList files() const;
+			[[nodiscard]] MetaDataList soundfiles() const;
+			[[nodiscard]] int count() const;
+			[[nodiscard]] int soundFileCount() const;
 
-			QString targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
-			MetaData metadata(const QString& filename) const;
+			[[nodiscard]] QString targetFilename(const QString& srcFilename, const QString& targetDirectory) const;
+			[[nodiscard]] MetaData metadata(const QString& filename) const;
 			void changeMetadata(const QList<QPair<MetaData, MetaData>>& changedTracks);
 
 		private:

@@ -1,4 +1,4 @@
-/* ImportCachingThread.cpp */
+/* ImportImportCacher.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -20,257 +20,213 @@
 
 #include "CachingThread.h"
 
-#include "Components/Tagging/ChangeNotifier.h"
-
 #include "Utils/Algorithm.h"
+#include "Utils/ArchiveExtractor.h"
 #include "Utils/DirectoryReader.h"
-#include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/StandardPaths.h"
+#include "Utils/Tagging/TagReader.h"
 #include "Utils/Utils.h"
 
 #include <QDir>
-#include <QProcess>
 
-using Library::CachingThread;
-
-namespace Algorithm = Util::Algorithm;
-
-struct CachingThread::Private
+namespace
 {
-	QStringList archiveDirectories;
-	QStringList sourceFiles;
+	constexpr const auto* ClassName = "ImportCacher";
 
-	ImportCachePtr cache = nullptr;
-
-	int progress;
-	bool cancelled;
-
-	Private(const QStringList& sourceFiles, const QString& libraryPath) :
-		sourceFiles(sourceFiles),
-		progress(0),
-		cancelled(false)
+	QString createTempDirectory(const Util::FileSystemPtr& fileSystem)
 	{
-		cache = std::make_shared<ImportCache>(libraryPath);
-	}
-};
+		constexpr const auto StringSize = 16;
+		auto tempDirectory = QString("%1/%2")
+			.arg(Util::tempPath("import"))
+			.arg(Util::randomString(StringSize));
 
-CachingThread::CachingThread(const QStringList& sourceFiles, const QString& libraryPath,
-                             QObject* parent) :
-	QThread(parent)
-{
-	m = Pimpl::make<CachingThread::Private>(sourceFiles, libraryPath);
-	connect(Tagging::ChangeNotifier::instance(),
-	        &Tagging::ChangeNotifier::sigMetadataChanged,
-	        this,
-	        &CachingThread::metadataChanged);
-}
-
-CachingThread::~CachingThread() = default;
-
-bool
-CachingThread::scanArchive(const QString& tempDir, const QString& binary, const QStringList& args,
-                           const QList<int>& successCodes)
-{
-#ifndef Q_OS_UNIX
-	return false;
-#endif
-
-	QDir dir(tempDir);
-	int ret = QProcess::execute(binary, args);
-	if(ret < 0)
-	{
-		spLog(Log::Error, this) << binary << " not found or crashed";
-	}
-
-	else if(!successCodes.contains(ret))
-	{
-		spLog(Log::Error, this) << binary << " exited with error " << ret;
-		return false;
-	}
-
-	else if(ret > 0)
-	{
-		spLog(Log::Warning, this) << binary << " exited with warning " << ret;
-	}
-
-	const auto entries = dir.entryList(QDir::Dirs | QDir::Files | QDir::NoDotAndDotDot);
-	for(const auto& entry: entries)
-	{
-		const auto filename = dir.absoluteFilePath(entry);
-		if(Util::File::isDir(filename))
+		const auto success = fileSystem->createDirectories(tempDirectory);
+		if(!success)
 		{
-			scanDirectory(filename);
+			spLog(Log::Warning, ClassName) << "Cannot create temp directory " << tempDirectory;
+			return {};
 		}
 
-		else if(Util::File::isFile(filename))
-		{
-			addFile(filename, tempDir);
-		}
+		return tempDirectory;
 	}
 
-	return true;
-}
-
-QString CachingThread::createTempDirectory()
-{
-	const auto tempDirectory = QString("%1/%2")
-		.arg(Util::tempPath("import"))
-		.arg(Util::randomString(16));
-
-	const auto success = Util::File::createDirectories(tempDirectory);
-	if(!success)
+	Library::ImportCacher::CacheResult
+	initCacheResult(const QString& libraryPath, const Tagging::TagReaderPtr& tagReader)
 	{
-		spLog(Log::Warning, this) << "Cannot create temp directory " << tempDirectory;
-		return QString();
+		return {
+			std::make_shared<Library::ImportCache>(libraryPath, tagReader), QStringList {}
+		};
 	}
 
-	m->archiveDirectories << tempDirectory;
-
-	return tempDirectory;
-}
-
-bool CachingThread::scanRarArchive(const QString& rarFile)
-{
-#ifndef Q_OS_UNIX
-	return false;
-#endif
-
-	const auto tempDirectory = createTempDirectory();
-	return scanArchive(tempDirectory, "rar", {"x", rarFile, tempDirectory});
-}
-
-bool CachingThread::scanZipArchive(const QString& zipFile)
-{
-#ifndef Q_OS_UNIX
-	return false;
-#endif
-
-	const auto tempDirectory = createTempDirectory();
-	return scanArchive(tempDirectory,
-	                   "unzip",
-	                   {zipFile, "-d", tempDirectory},
-	                   QList<int> {0, 1, 2});
-}
-
-bool CachingThread::scanTgzArchive(const QString& tgz)
-{
-#ifndef Q_OS_UNIX
-	return false;
-#endif
-
-	const auto tempDirectory = createTempDirectory();
-	return scanArchive(tempDirectory, "tar", {"xzf", tgz, "-C", tempDirectory});
-}
-
-void CachingThread::scanDirectory(const QString& dir)
-{
-	const auto files = DirectoryReader::scanFilesRecursively(dir, QStringList {"*"});
-
-	spLog(Log::Crazy, this) << "Found " << files.size() << " files";
-
-	QDir upperDir(dir);
+	class ImportCacherImpl :
+		public Library::ImportCacher
 	{
-		// Example:
-		// dir = /dir/we/want/to/import
-		// files:
-		//	/dir/we/want/to/import/file1
-		//	/dir/we/want/to/import/file2
-		//	/dir/we/want/to/import/deeper/file1
-		// -> cache:
-		// we want the 'import' directory in the target
-		// directory, too and not only its contents
-		upperDir.cdUp();
-	}
+		public:
+			ImportCacherImpl(QStringList sourceFiles,
+			                 const QString& libraryPath,
+			                 const Tagging::TagReaderPtr& tagReader,
+			                 Util::ArchiveExtractorPtr archiveExtractor,
+			                 Util::DirectoryReaderPtr directoryReader,
+			                 Util::FileSystemPtr fileSystem,
+			                 QObject* parent) :
+				ImportCacher(parent),
+				m_sourceFiles {std::move(sourceFiles)},
+				m_cacheResult {initCacheResult(libraryPath, tagReader)},
+				m_archiveExtractor {std::move(archiveExtractor)},
+				m_directoryReader {std::move(directoryReader)},
+				m_fileSystem(std::move(fileSystem)) {}
 
-	for(const auto& file: files)
-	{
-		addFile(file, upperDir.absolutePath());
-	}
-}
+			~ImportCacherImpl() override = default;
 
-void CachingThread::addFile(const QString& file, const QString& relativeDir)
-{
-	m->cache->addFile(file, relativeDir);
-	emit sigCachedFilesChanged();
-}
+		protected:
+			[[nodiscard]] ImportCacher::CacheResult cacheResult() const override { return m_cacheResult; }
 
-void CachingThread::run()
-{
-	m->cache->clear();
-	m->progress = 0;
-
-	emit sigCachedFilesChanged();
-
-	spLog(Log::Develop, this) << "Read files";
-
-	for(const auto& filename: Algorithm::AsConst(m->sourceFiles))
-	{
-		if(m->cancelled)
-		{
-			m->cache->clear();
-			return;
-		}
-
-		if(Util::File::isDir(filename))
-		{
-			scanDirectory(filename);
-		}
-
-		else if(Util::File::isFile(filename))
-		{
-			const QString extension = Util::File::getFileExtension(filename);
-			if(extension.compare("rar", Qt::CaseInsensitive) == 0)
+			void cacheFiles() override
 			{
-				const auto success = scanRarArchive(filename);
-				if(!success)
+				m_cacheResult.cache->clear();
+				spLog(Log::Develop, this) << "Read files";
+				scanRootFiles();
+
+				if(isCancelled())
 				{
-					spLog(Log::Warning, this) << "Cannot scan rar";
+					m_cacheResult.cache->clear();
 				}
 			}
 
-			else if(extension.compare("zip", Qt::CaseInsensitive) == 0)
+		private:
+			void scanRootFiles()
 			{
-				const auto success = scanZipArchive(filename);
-				if(!success)
+				for(const auto& filename: m_sourceFiles)
 				{
-					spLog(Log::Warning, this) << "Cannot scan zip";
+					if(isCancelled())
+					{
+						return;
+					}
+
+					scanRootFile(filename);
 				}
 			}
 
-			else if((extension.compare("tar.gz", Qt::CaseInsensitive) == 0) ||
-			        (extension.compare("tgz", Qt::CaseInsensitive) == 0))
+			void scanRootFile(const QString& filename)
 			{
-				bool success = scanTgzArchive(filename);
-				if(!success)
+				if(m_fileSystem->isDir(filename))
 				{
-					spLog(Log::Warning, this) << "Cannot scan zip";
+					scanDirectory(filename);
+				}
+
+				else if(m_fileSystem->isFile(filename))
+				{
+					if(m_archiveExtractor->isSupportedArchive(filename))
+					{
+						cacheArchive(filename);
+					}
+
+					else
+					{
+						addFile(filename);
+					}
+				}
+
+				emit sigCachedFilesChanged(); // NOLINT(readability-misleading-indentation)
+			}
+
+			void addFile(const QString& file, const QString& relativeDir = QString())
+			{
+				m_cacheResult.cache->addFile(file, relativeDir);
+				emit sigCachedFilesChanged();
+			}
+
+			void scanDirectory(const QString& dir)
+			{
+				const auto files = m_directoryReader->scanFilesRecursively(dir, QStringList {"*"});
+
+				spLog(Log::Debug, this) << "Found " << files.size() << " files";
+
+				auto upperDir = QDir(dir);
+				{
+					// Example:
+					// dir = /dir/we/want/to/import
+					// files:
+					//	/dir/we/want/to/import/file1
+					//	/dir/we/want/to/import/file2
+					//	/dir/we/want/to/import/deeper/file1
+					// -> cache:
+					// we want the 'import' directory in the target
+					// directory, too and not only its contents
+					upperDir.cdUp();
+				}
+
+				for(const auto& file: files)
+				{
+					addFile(file, upperDir.absolutePath());
 				}
 			}
 
-			else
+			void cacheArchive(const QString& archiveName)
 			{
-				addFile(filename);
+				const auto tempDirectory = createTempDirectory(m_fileSystem);
+				m_cacheResult.temporaryFiles << tempDirectory;
+
+				auto dir = QDir {tempDirectory};
+
+				const auto extractedFiles = m_archiveExtractor->extractArchive(archiveName, tempDirectory);
+				for(const auto& extractedFile: extractedFiles)
+				{
+					const auto filename = dir.absoluteFilePath(extractedFile);
+					if(m_fileSystem->isDir(filename))
+					{
+						scanDirectory(filename);
+					}
+
+					else if(m_fileSystem->isFile(filename))
+					{
+						addFile(filename, tempDirectory);
+					}
+				}
 			}
-		}
-	}
+
+			QStringList m_sourceFiles;
+			Library::ImportCacher::CacheResult m_cacheResult;
+			Util::ArchiveExtractorPtr m_archiveExtractor;
+			Util::DirectoryReaderPtr m_directoryReader;
+			Util::FileSystemPtr m_fileSystem;
+	};
 }
 
-void CachingThread::metadataChanged()
+namespace Library
 {
-	auto* cn = Tagging::ChangeNotifier::instance();
-	m->cache->changeMetadata(cn->changedMetadata());
+	struct ImportCacher::Private
+	{
+		bool cancelled {false};
+	};
+
+	ImportCacher::ImportCacher(QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>()} {}
+
+	ImportCacher::~ImportCacher() noexcept = default;
+
+	ImportCacher* ImportCacher::create(const QStringList& fileList,
+	                                   const QString& libraryPath,
+	                                   const Tagging::TagReaderPtr& tagReader,
+	                                   const Util::ArchiveExtractorPtr& archiveExtractor,
+	                                   const Util::DirectoryReaderPtr& directoryReader,
+	                                   const Util::FileSystemPtr& fileSystem,
+	                                   QObject* parent)
+	{
+		return new ImportCacherImpl(fileList,
+		                            libraryPath,
+		                            tagReader,
+		                            archiveExtractor,
+		                            directoryReader,
+		                            fileSystem,
+		                            parent);
+	}
+
+	void ImportCacher::cancel() { m->cancelled = true; }
+
+	bool ImportCacher::isCancelled() const { return m->cancelled; }
 }
-
-QStringList CachingThread::temporaryFiles() const { return m->archiveDirectories; }
-
-int CachingThread::cachedFileCount() const { return m->cache->count(); }
-
-int CachingThread::soundfileCount() const { return m->cache->soundFileCount(); }
-
-Library::ImportCachePtr CachingThread::cache() const { return m->cache; }
-
-void CachingThread::cancel() { m->cancelled = true; }
-
-bool CachingThread::isCancelled() const { return m->cancelled; }

@@ -1,41 +1,41 @@
 #include "test/Common/SayonaraTest.h"
 
 #include "Components/Library/Importer/ImportCache.h"
+#include "Utils/Tagging/TagReader.h"
 
-class ImportCacheTest : public
-	Test::Base
+class ImportCacheTest :
+	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	ImportCacheTest() :
-		Test::Base("ImportCacheTest")
-	{}
+	public:
+		ImportCacheTest() :
+			Test::Base("ImportCacheTest") {}
 
-private slots:
-	void test();
+	private slots:
+		void test();
 };
-
 
 void ImportCacheTest::test()
 {
 	const QString libraryPath("/path/to/my/library");
 	const QStringList paths
-	{
-		"/some/path/to/be/imported/cover.jpg",
-		"/some/path/to/be/imported/subfolder/playlist.pls"
-	};
+		{
+			"/some/path/to/be/imported/cover.jpg",
+			"/some/path/to/be/imported/subfolder/playlist.pls"
+		};
 
-	Library::ImportCache cache1(libraryPath);
-	Library::ImportCache cache2(libraryPath);
-	Library::ImportCache cache3(libraryPath);
+	const auto tagReader = Tagging::TagReader::create();
+	Library::ImportCache cache1(libraryPath, tagReader);
+	Library::ImportCache cache2(libraryPath, tagReader);
+	Library::ImportCache cache3(libraryPath, tagReader);
 
-	for(const QString& path : paths)
+	for(const QString& path: paths)
 	{
 		cache1.addFile(path, "/some/path/to/be/imported");
 	}
 
-	for(const QString& path : paths)
+	for(const QString& path: paths)
 	{
 		cache2.addFile(path, "/some/path/to");
 	}

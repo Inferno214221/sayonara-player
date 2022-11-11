@@ -21,53 +21,62 @@
 #ifndef IMPORTFOLDERTHREAD_H
 #define IMPORTFOLDERTHREAD_H
 
-#include <QThread>
-
 #include "ImportCache.h"
 #include "Utils/Pimpl.h"
+
+#include <QObject>
+
+namespace Util
+{
+	class ArchiveExtractor;
+	class DirectoryReader;
+	class FileSystem;
+}
+
+namespace Tagging
+{
+	class TagReader;
+}
 
 namespace Library
 {
 	class ImportCache;
-
-	class CachingThread :
-		public QThread
+	class ImportCacher :
+		public QObject
 	{
 		Q_OBJECT
-		PIMPL(CachingThread)
+		PIMPL(ImportCacher)
 
 		signals:
 			void sigCachedFilesChanged();
 
 		public:
-			explicit CachingThread(const QStringList& fileList, const QString& libraryPath, QObject* parent = nullptr);
-			~CachingThread() override;
+			struct CacheResult
+			{
+				Library::ImportCachePtr cache {nullptr};
+				QStringList temporaryFiles;
+			};
 
-			Library::ImportCachePtr cache() const;
+			~ImportCacher() noexcept override;
+
+			static ImportCacher* create(const QStringList& fileList,
+			                            const QString& libraryPath,
+			                            const std::shared_ptr<Tagging::TagReader>& tagReader,
+			                            const std::shared_ptr<Util::ArchiveExtractor>& archiveExtractor,
+			                            const std::shared_ptr<Util::DirectoryReader>& directoryReader,
+			                            const std::shared_ptr<Util::FileSystem>& fileSystem,
+			                            QObject* parent = nullptr);
+
+			[[nodiscard]] virtual CacheResult cacheResult() const = 0;
+
 			void cancel();
-			bool isCancelled() const;
-			QStringList temporaryFiles() const;
-			int cachedFileCount() const;
-			int soundfileCount() const;
+			[[nodiscard]] bool isCancelled() const;
 
-		private:
-			void run() override;
+		public slots: // NOLINT(readability-redundant-access-specifiers)
+			virtual void cacheFiles() = 0;
 
-			void scanDirectory(const QString& dir);
-			bool scanRarArchive(const QString& rarFile);
-			bool scanZipArchive(const QString& zipFile);
-			bool scanTgzArchive(const QString& tgz);
-			void addFile(const QString& filename, const QString& relativeDir = QString());
-
-			QString createTempDirectory();
-			bool scanArchive(
-				const QString& tempDirectory,
-				const QString& binary,
-				const QStringList& args,
-				const QList<int>& successCodes = QList<int> {0});
-
-		private slots:
-			void metadataChanged();
+		protected:
+			explicit ImportCacher(QObject* parent);
 	};
 }
 

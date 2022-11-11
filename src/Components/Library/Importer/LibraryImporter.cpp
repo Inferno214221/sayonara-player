@@ -26,11 +26,15 @@
 
 #include "Components/Tagging/ChangeNotifier.h"
 
+#include "Utils/ArchiveExtractor.h"
+#include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Message/Message.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -86,7 +90,7 @@ void Importer::importFiles(const QStringList& files, const QString& targetDir)
 {
 	QStringList filesToBeImported;
 
-	for(const auto& file : files)
+	for(const auto& file: files)
 	{
 		const auto info = m->library->info();
 
@@ -112,7 +116,13 @@ void Importer::importFiles(const QStringList& files, const QString& targetDir)
 		emit sigTargetDirectoryChanged(targetDir);
 	}
 
-	auto* thread = new CachingThread(filesToBeImported, m->library->info().path());
+	const auto fileSystem = Util::FileSystem::create();
+	auto* thread = CachingThread::create(filesToBeImported,
+	                                     m->library->info().path(),
+	                                     Tagging::TagReader::create(),
+	                                     Util::ArchiveExtractor::create(),
+	                                     Util::DirectoryReader::create(fileSystem),
+	                                     fileSystem);
 	connect(thread, &CachingThread::finished, this, &Importer::cachingThreadFinished);
 	connect(thread, &CachingThread::sigCachedFilesChanged, this, &Importer::sigCachedFilesChanged);
 	connect(thread, &CachingThread::destroyed, this, [=]() {
@@ -129,8 +139,9 @@ void Importer::cachingThreadFinished()
 	MetaDataList tracks;
 	auto* thread = static_cast<CachingThread*>(sender());
 
-	m->temporaryFiles << thread->temporaryFiles();
-	m->importCache = thread->cache();
+	const auto cachingResult = thread->cacheResult();
+	m->temporaryFiles << cachingResult.temporaryFiles;
+	m->importCache = cachingResult.cache;
 
 	if(!m->importCache)
 	{
@@ -159,12 +170,7 @@ void Importer::cachingThreadFinished()
 
 int Importer::cachedFileCount() const
 {
-	if(!m->importCache)
-	{
-		return 0;
-	}
-
-	return m->importCache->soundfiles().count();
+	return m->importCache ? m->importCache->soundfiles().count() : 0;
 }
 
 // fired if ok was clicked in dialog
@@ -174,8 +180,8 @@ void Importer::acceptImport(const QString& targetDir)
 
 	auto* copy_thread = new CopyThread(targetDir, m->importCache, this);
 	connect(copy_thread, &CopyThread::sigProgress, this, &Importer::sigProgress);
-	connect(copy_thread, &CopyThread::finished, this, &Importer::copyThreadFinished);
-	connect(copy_thread, &CachingThread::destroyed, this, [=]() {
+	connect(copy_thread, &QThread::finished, this, &Importer::copyThreadFinished);
+	connect(copy_thread, &QThread::destroyed, this, [=]() {
 		m->copyThread = nullptr;
 	});
 

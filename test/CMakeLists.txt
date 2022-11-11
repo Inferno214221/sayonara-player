@@ -120,3 +120,4 @@ new_test(SmartPlaylists/ConverterTest.cpp)
 new_test(SmartPlaylists/SmartPlaylistManagerTest.cpp)
 
 new_test(Database/ArtistTest.cpp)
+new_test(Library/CacheThreadTest.cpp)
