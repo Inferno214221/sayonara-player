@@ -25,6 +25,7 @@
 
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -116,6 +117,7 @@ namespace
 	// NOLINTNEXTLINE(misc-no-recursion)
 	QStringList scanFilesRecursively(const QDir& originalDirectory, const QStringList& nameFilter = {})
 	{
+		const auto b = originalDirectory.absolutePath();
 		if(originalDirectory.canonicalPath().isEmpty())
 		{
 			return {};
@@ -139,17 +141,17 @@ namespace
 		return result;
 	}
 
-	MetaDataList scanMetadata(const QStringList& fileList)
+	MetaDataList scanMetadata(const QStringList& fileList, const Util::FileSystemPtr& fileSystem)
 	{
 		QStringList soundFiles, playlistFiles;
 		for(const auto& filename: fileList)
 		{
-			if(!Util::File::exists(filename))
+			if(!fileSystem->exists(filename))
 			{
 				continue;
 			}
 
-			if(Util::File::isDir(filename))
+			if(fileSystem->isDir(filename))
 			{
 				QDir dir(filename);
 				dir.cd(filename);
@@ -190,6 +192,9 @@ namespace
 		public Util::DirectoryReader
 	{
 		public:
+			DirectoryReaderImpl(const Util::FileSystemPtr& fileSystem) :
+				m_fileSystem {fileSystem} {}
+
 			~DirectoryReaderImpl() noexcept override = default;
 
 			QStringList scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters) override
@@ -204,8 +209,11 @@ namespace
 
 			MetaDataList scanMetadata(const QStringList& files) override
 			{
-				return ::scanMetadata(files);
+				return ::scanMetadata(files, m_fileSystem);
 			}
+
+		private:
+			Util::FileSystemPtr m_fileSystem;
 	};
 }
 
@@ -214,8 +222,8 @@ namespace Util
 	DirectoryReader::DirectoryReader() = default;
 	DirectoryReader::~DirectoryReader() noexcept = default;
 
-	std::shared_ptr<DirectoryReader> DirectoryReader::create()
+	std::shared_ptr<DirectoryReader> DirectoryReader::create(const FileSystemPtr& fileSystem)
 	{
-		return std::make_shared<DirectoryReaderImpl>();
+		return std::make_shared<DirectoryReaderImpl>(fileSystem);
 	}
 }

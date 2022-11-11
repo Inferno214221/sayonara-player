@@ -22,6 +22,7 @@
 
 #include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Algorithm.h"
@@ -145,7 +146,8 @@ class DirectoryReaderTest :
 
 void DirectoryReaderTest::testScanFilesInDirectory()
 {
-	const auto directoryReader = Util::DirectoryReader::create();
+	const auto fileSystem = Util::FileSystem::create();
+	const auto directoryReader = Util::DirectoryReader::create(fileSystem);
 	const auto baseDir = Test::Base::tempPath();
 
 	{
@@ -187,7 +189,8 @@ void DirectoryReaderTest::testScanFilesInDirectory()
 
 void DirectoryReaderTest::testScanRecursively()
 {
-	const auto directoryReader = Util::DirectoryReader::create();
+	auto filesystem = Util::FileSystem::create();
+	auto directoryReader = Util::DirectoryReader::create(filesystem);
 	const auto baseDir = Test::Base::tempPath();
 
 	{ // there's some db file in the directory, so files > m_names
@@ -220,7 +223,8 @@ void DirectoryReaderTest::testScanRecursively()
 
 void DirectoryReaderTest::testScanMetadata()
 {
-	const auto directoryReader = Util::DirectoryReader::create();
+	auto filesystem = Util::FileSystem::create();
+	const auto directoryReader = Util::DirectoryReader::create(filesystem);
 	const auto tracks = directoryReader->scanMetadata(m_names);
 	const auto generatedTracks = Test::createTracks();
 

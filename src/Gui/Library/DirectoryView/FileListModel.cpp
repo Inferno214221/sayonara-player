@@ -29,6 +29,7 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileSystem.h"
 #include "Utils/DirectoryReader.h"
 #include "Utils/Language/Language.h"
 #include "Utils/FileUtils.h"
@@ -195,7 +196,8 @@ void FileListModel::setParentDirectory(const QString& dir)
 	extensions << Util::playlistExtensions();
 	extensions << "*";
 
-	auto directoryReader = Util::DirectoryReader::create();
+	const auto fileSystem = Util::FileSystem::create();
+	auto directoryReader = Util::DirectoryReader::create(fileSystem);
 	m->files = directoryReader->scanFilesInDirectory(QDir(dir), extensions);
 	if(m->files.size() > oldRowcount)
 	{

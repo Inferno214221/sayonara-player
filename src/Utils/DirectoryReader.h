@@ -29,6 +29,7 @@ class QDir;
 class MetaDataList;
 namespace Util
 {
+	class FileSystem;
 	class DirectoryReader
 	{
 		public:
@@ -43,7 +44,7 @@ namespace Util
 
 			[[nodiscard]] virtual MetaDataList scanMetadata(const QStringList& fileList) = 0;
 
-			static std::shared_ptr<DirectoryReader> create();
+			static std::shared_ptr<DirectoryReader> create(const std::shared_ptr<FileSystem>& fileSystem);
 	};
 
 	using DirectoryReaderPtr = std::shared_ptr<DirectoryReader>;

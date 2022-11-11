@@ -19,8 +19,6 @@
  */
 
 #include "LocalLibrary.h"
-#include "Importer/LibraryImporter.h"
-#include "Threads/ReloadThread.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Playlist/LibraryPlaylistInteractor.h"
@@ -28,6 +26,10 @@
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
+#include "Importer/LibraryImporter.h"
+#include "Threads/ReloadThread.h"
+#include "Threads/ReloadThreadFileScanner.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Album.h"
@@ -351,7 +353,7 @@ void LocalLibrary::importFilesTo(const QStringList& files, const QString& target
 	{
 		if(!m->libraryImporter)
 		{
-			m->libraryImporter = new Library::Importer(this);
+			m->libraryImporter = new Library::Importer(this, Util::FileSystem::create());
 			connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &LocalLibrary::importStatusChanged);
 		}
 

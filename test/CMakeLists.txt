@@ -47,6 +47,8 @@ qt5_add_resources(RESOURCES_RCC
 
 new_test(AudioConverter/AudioConverterTest.cpp)
 
+new_test(Common/FileSystemTest.cpp)
+
 new_test(Covers/CoverLocationTest.cpp)
 new_test(Covers/CoverFetchManagerTest.cpp)
 
