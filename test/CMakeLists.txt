@@ -63,6 +63,7 @@ new_test(Equalizer/EqualizerTest.cpp)
 new_test(History/HistoryTest.cpp Common/TestTracks.cpp)
 
 new_test(Library/ImportCacheTest.cpp)
+new_test(Library/CopyThreadTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
 new_test(Library/LocalLibraryTest.cpp)
 new_test(Library/ReloadThreadTest.cpp Common/TestTracks.cpp)

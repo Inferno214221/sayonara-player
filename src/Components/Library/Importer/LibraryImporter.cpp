@@ -178,15 +178,15 @@ void Importer::acceptImport(const QString& targetDir)
 {
 	emitStatus(ImportStatus::Importing);
 
-	auto* copy_thread = new CopyThread(targetDir, m->importCache, this);
-	connect(copy_thread, &CopyThread::sigProgress, this, &Importer::sigProgress);
-	connect(copy_thread, &QThread::finished, this, &Importer::copyThreadFinished);
-	connect(copy_thread, &QThread::destroyed, this, [=]() {
+	auto* copyThread = new CopyThread(targetDir, m->importCache, Util::FileSystem::create(), this);
+	connect(copyThread, &CopyThread::sigProgress, this, &Importer::sigProgress);
+	connect(copyThread, &QThread::finished, this, &Importer::copyThreadFinished);
+	connect(copyThread, &QThread::destroyed, this, [=]() {
 		m->copyThread = nullptr;
 	});
 
-	m->copyThread = copy_thread;
-	copy_thread->start();
+	m->copyThread = copyThread;
+	copyThread->start();
 }
 
 void Importer::copyThreadFinished()

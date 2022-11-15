@@ -23,13 +23,16 @@
 
 #include <QThread>
 
-#include "ImportCache.h"
 #include "Utils/Pimpl.h"
+
+namespace Util
+{
+	class FileSystem;
+}
 
 namespace Library
 {
 	class ImportCache;
-
 	class CopyThread :
 		public QThread
 	{
@@ -37,7 +40,7 @@ namespace Library
 		PIMPL(CopyThread)
 
 		signals:
-			void sigProgress(int);
+			void sigProgress(int progress);
 
 		public:
 			enum class Mode :
@@ -47,7 +50,11 @@ namespace Library
 				Rollback
 			};
 
-			CopyThread(const QString& targetDirectory, ImportCachePtr cache, QObject* parent = nullptr);
+			CopyThread(const QString& targetDirectory,
+			           const std::shared_ptr<ImportCache>& cache,
+			           const std::shared_ptr<Util::FileSystem>& fileSystem,
+			           QObject* parent = nullptr);
+
 			virtual ~CopyThread();
 
 			void cancel();
@@ -58,9 +65,10 @@ namespace Library
 
 			void setMode(CopyThread::Mode mode);
 
+		protected:
+			void run() override;
+
 		private:
-			void clear();
-			void run();
 			void copy();
 			void rollback();
 			void emitPercent();

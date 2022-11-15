@@ -19,10 +19,12 @@
  */
 
 #include "CopyThread.h"
+#include "Components/Library/Importer/ImportCache.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Logger/Logger.h"
 
@@ -31,96 +33,106 @@
 
 namespace Algorithm = Util::Algorithm;
 
+namespace
+{
+	constexpr const auto* ClassName = "Library::CopyThread";
+
+	bool copyFile(const QString& filename, const QString& targetFilename, const Util::FileSystemPtr& fileSystem)
+	{
+		spLog(Log::Debug, ClassName) << "copy " << filename << " to \n\t" << targetFilename;
+
+		if(fileSystem->exists(targetFilename))
+		{
+			spLog(Log::Info, ClassName) << "Overwrite " << targetFilename;
+			fileSystem->deleteFiles({targetFilename});
+		}
+
+		const auto success = fileSystem->copyFile(filename, targetFilename);
+		if(!success)
+		{
+			spLog(Log::Warning, ClassName) << "Copy error";
+		}
+
+		return success;
+	}
+
+	MetaDataList appendCacheTrack(MetaData cacheTrack, const QString& targetFilename, MetaDataList copiedTracks)
+	{
+		if(cacheTrack.isValid())
+		{
+			spLog(Log::Debug, ClassName) << "Set new filename: " << targetFilename;
+			cacheTrack.setFilepath(targetFilename);
+			copiedTracks << std::move(cacheTrack);
+		}
+
+		return copiedTracks;
+	}
+
+	QStringList extractFilepaths(const MetaDataList& tracks)
+	{
+		QStringList result;
+		Util::Algorithm::transform(tracks, result, [](const auto& track) {
+			return track.filepath();
+		});
+
+		return result;
+	}
+}
+
 using Library::CopyThread;
 
 struct CopyThread::Private
 {
+	ImportCachePtr importCache;
+	Util::FileSystemPtr fileSystem;
 	MetaDataList tracks;
 	QString targetDir;
-	QStringList copiedFiles;
-	bool cancelled;
+	CopyThread::Mode mode {CopyThread::Mode::Copy};
+	bool cancelled {false};
 
-	ImportCachePtr cache = nullptr;
-	CopyThread::Mode mode;
-
-	Private(ImportCachePtr c) :
-		cache(c) {}
+	Private(ImportCachePtr importCache, Util::FileSystemPtr fileSystem, QString targetDir) :
+		importCache {std::move(importCache)},
+		fileSystem {std::move(fileSystem)},
+		targetDir {std::move(targetDir)} {}
 };
 
-CopyThread::CopyThread(const QString& targetDir, ImportCachePtr cache, QObject* parent) :
-	QThread(parent)
-{
-	m = Pimpl::make<CopyThread::Private>(cache);
-	m->targetDir = targetDir;
-
-	clear();
-}
+CopyThread::CopyThread(const QString& targetDir, const ImportCachePtr& importCache,
+                       const Util::FileSystemPtr& fileSystem, QObject* parent) :
+	QThread(parent),
+	m {Pimpl::make<Private>(importCache, fileSystem, targetDir)} {}
 
 CopyThread::~CopyThread() = default;
 
-void CopyThread::clear()
-{
-	m->tracks.clear();
-	m->mode = Mode::Copy;
-	m->copiedFiles.clear();
-	m->cancelled = false;
-}
-
 void CopyThread::emitPercent()
 {
-	int percent = (m->copiedFiles.size() * 100000) / m->cache->count();
-	emit sigProgress(percent / 1000);
+	const auto percent = (m->tracks.count() * 100) / m->importCache->count();
+	emit sigProgress(percent);
 }
 
 void CopyThread::copy()
 {
-	clear();
+	m->tracks.clear();
 
-	const QStringList files = m->cache->files();
-
-	for(const QString& filename: files)
+	const auto files = m->importCache->files();
+	for(const auto& filename: files)
 	{
 		if(m->cancelled)
 		{
 			return;
 		}
 
-		const QString targetFilename = m->cache->targetFilename(filename, m->targetDir);
+		const auto targetFilename = m->importCache->targetFilename(filename, m->targetDir);
 		if(targetFilename.isEmpty())
 		{
 			continue;
 		}
 
-		const QString targetDir = Util::File::getParentDirectory(targetFilename);
-		bool success = Util::File::createDirectories(targetDir);
-		if(!success)
+		if(!copyFile(filename, targetFilename, m->fileSystem))
 		{
 			continue;
 		}
 
-		spLog(Log::Debug, this) << "copy " << filename << " to \n\t" << targetFilename;
-		if(Util::File::exists(targetFilename))
-		{
-			spLog(Log::Info, this) << "Overwrite " << targetFilename;
-			Util::File::deleteFiles({targetFilename});
-		}
-
-		success = QFile::copy(filename, targetFilename);
-		if(!success)
-		{
-			spLog(Log::Warning, this) << "Copy error";
-			continue;
-		}
-
-		m->copiedFiles << targetFilename;
-
-		MetaData md(m->cache->metadata(filename));
-		if(!md.filepath().isEmpty())
-		{
-			spLog(Log::Debug, this) << "Set new filename: " << targetFilename;
-			md.setFilepath(targetFilename);
-			m->tracks << md;
-		}
+		m->tracks = appendCacheTrack(m->importCache->metadata(filename), targetFilename, std::move(m->tracks));
 
 		emitPercent();
 	}
@@ -128,22 +140,18 @@ void CopyThread::copy()
 
 void CopyThread::rollback()
 {
-	int n_operations = m->copiedFiles.count();
-	while(m->copiedFiles.size() > 0)
+	auto copiedPaths = extractFilepaths(m->tracks);
+	while(copiedPaths.count() > 0)
 	{
-		QString filename = m->copiedFiles.takeLast();
-		QFile file(filename);
-		file.remove();
+		const auto filename = copiedPaths.takeLast();
+		m->fileSystem->deleteFiles({filename});
 
-		int percent = (m->copiedFiles.size() * 100000) / n_operations;
-
-		emit sigProgress(percent / 1000);
+		emitPercent();
 	}
 }
 
 void CopyThread::run()
 {
-	m->cancelled = false;
 	if(m->mode == Mode::Copy)
 	{
 		copy();
@@ -153,6 +161,8 @@ void CopyThread::run()
 	{
 		rollback();
 	}
+
+	m->cancelled = false;
 }
 
 void CopyThread::cancel() { m->cancelled = true; }
@@ -161,6 +171,6 @@ MetaDataList CopyThread::copiedMetadata() const { return m->tracks; }
 
 bool CopyThread::wasCancelled() const { return m->cancelled; }
 
-int CopyThread::copiedFileCount() const { return m->copiedFiles.count(); }
+int CopyThread::copiedFileCount() const { return m->tracks.count(); }
 
 void CopyThread::setMode(CopyThread::Mode mode) { m->mode = mode; }
