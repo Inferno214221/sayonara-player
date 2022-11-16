@@ -37,28 +37,30 @@
 
 struct GUI_ImportDialog::Private
 {
-	Library::Importer* importer = nullptr;
-	GUI_TagEdit* tagEditor = nullptr;
-	LocalLibrary* library = nullptr;
+	LocalLibrary* library;
+	std::shared_ptr<GUI_TagEdit> tagEditor;
+
+	Private(LocalLibrary* library, QWidget* parent) :
+		library {library},
+		tagEditor {std::make_shared<GUI_TagEdit>(parent)}
+	{
+		tagEditor->hide();
+	}
 };
 
 GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copyEnabled, QWidget* parent) :
-	Dialog(parent)
+	Dialog(parent),
+	m {Pimpl::make<Private>(library, this)},
+	ui {std::make_shared<Ui::GUI_ImportDialog>()}
 {
-	m = Pimpl::make<Private>();
-	ui = new Ui::GUI_ImportDialog();
 	ui->setupUi(this);
 
-	m->library = library;
-	m->tagEditor = new GUI_TagEdit(this);
-	m->tagEditor->hide();
-	m->importer = m->library->importer();
-
-	connect(m->importer, &Library::Importer::sigMetadataCached, this, &GUI_ImportDialog::setMetadata);
-	connect(m->importer, &Library::Importer::sigStatusChanged, this, &GUI_ImportDialog::setStatus);
-	connect(m->importer, &Library::Importer::sigProgress, this, &GUI_ImportDialog::setProgress);
-	connect(m->importer, &Library::Importer::sigCachedFilesChanged, this, &GUI_ImportDialog::cachedFilesChanged);
-	connect(m->importer, &Library::Importer::sigTriggered, this, &GUI_ImportDialog::show);
+	auto* importer = m->library->importer();
+	connect(importer, &Library::Importer::sigMetadataCached, this, &GUI_ImportDialog::setMetadata);
+	connect(importer, &Library::Importer::sigStatusChanged, this, &GUI_ImportDialog::setStatus);
+	connect(importer, &Library::Importer::sigProgress, this, &GUI_ImportDialog::setProgress);
+	connect(importer, &Library::Importer::sigCachedFilesChanged, this, &GUI_ImportDialog::cachedFilesChanged);
+	connect(importer, &Library::Importer::sigTriggered, this, &GUI_ImportDialog::show);
 
 	ui->labTargetPath->setText(library->info().path());
 	ui->labTargetPath->setVisible(copyEnabled);
@@ -77,28 +79,21 @@ GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copyEnabled, QWid
 	setModal(true);
 }
 
-GUI_ImportDialog::~GUI_ImportDialog()
-{
-	delete ui;
-	ui = nullptr;
-}
+GUI_ImportDialog::~GUI_ImportDialog() = default;
 
-void GUI_ImportDialog::setTargetDirectory(const QString& targetDirectory)
+void GUI_ImportDialog::setTargetDirectory(QString targetDirectory)
 {
-	auto subdir = targetDirectory;
-	subdir.remove(m->library->info().path() + "/");
-
-	ui->leDirectory->setText(subdir);
+	const auto& libraryPrefix = m->library->info().path();
+	targetDirectory.remove(libraryPrefix + "/");;
+	ui->leDirectory->setText(targetDirectory);
 }
 
 void GUI_ImportDialog::setMetadata(const MetaDataList& tracks)
 {
 	if(!tracks.isEmpty())
 	{
-		ui->labStatus->setText
-			(
-				Lang::getWithNumber(Lang::NrTracksFound, tracks.count())
-			);
+		const auto numTracksFound = Lang::getWithNumber(Lang::NrTracksFound, tracks.count());
+		ui->labStatus->setText(numTracksFound);
 	}
 
 	m->tagEditor->setMetadata(tracks);
@@ -125,7 +120,7 @@ void GUI_ImportDialog::setStatus(Library::Importer::ImportStatus status)
 
 		case Status::CachingFinished:
 		{
-			int cachedFileCount = m->importer->cachedFileCount();
+			int cachedFileCount = m->library->importer()->cachedFileCount();
 			ui->labStatus->setText(Lang::getWithNumber(Lang::NrTracksFound, cachedFileCount));
 		}
 			break;
@@ -161,47 +156,40 @@ void GUI_ImportDialog::setStatus(Library::Importer::ImportStatus status)
 
 void GUI_ImportDialog::setProgress(int val)
 {
-	if(val >= 100)
+	if(val >= 100) // NOLINT(readability-magic-numbers)
 	{
 		val = 0;
 	}
 
 	ui->pbProgress->setValue(val);
-
 	emit sigProgress(val);
 }
 
 void GUI_ImportDialog::cachedFilesChanged()
 {
-	int count = m->importer->cachedFileCount();
-	QString text = Lang::getWithNumber(Lang::NrTracksFound, count);
+	const auto count = m->library->importer()->cachedFileCount();
+	const auto text = Lang::getWithNumber(Lang::NrTracksFound, count);
 
 	ui->labStatus->setText(text);
 }
 
-QAbstractButton* GUI_ImportDialog::btnOk()
-{
-	return ui->buttonBox->button(QDialogButtonBox::Ok);
-}
+QAbstractButton* GUI_ImportDialog::btnOk() { return ui->buttonBox->button(QDialogButtonBox::Ok); }
 
-QAbstractButton* GUI_ImportDialog::btnCancel()
-{
-	return ui->buttonBox->button(QDialogButtonBox::Cancel);
-}
+QAbstractButton* GUI_ImportDialog::btnCancel() { return ui->buttonBox->button(QDialogButtonBox::Cancel); }
 
 void GUI_ImportDialog::accept()
 {
 	const auto targetDirectory = ui->leDirectory->text();
-	m->importer->acceptImport(targetDirectory);
+	m->library->importer()->acceptImport(targetDirectory);
 }
 
 void GUI_ImportDialog::reject()
 {
-	m->importer->reset();
+	m->library->importer()->reset();
 
 	using Status = Library::Importer::ImportStatus;
-	if((m->importer->status() != Status::Rollback) &&
-	   (m->importer->status() != Status::Importing))
+	if((m->library->importer()->status() != Status::Rollback) &&
+	   (m->library->importer()->status() != Status::Importing))
 	{
 		close();
 	}
@@ -232,12 +220,13 @@ void GUI_ImportDialog::chooseDirectory()
 
 void GUI_ImportDialog::editPressed()
 {
-	Dialog* dialog = m->tagEditor->boxIntoDialog();
+	auto* dialog = m->tagEditor->boxIntoDialog();
 
-	connect(m->tagEditor, &GUI_TagEdit::sigCancelled, dialog, &Dialog::reject);
-	connect(m->tagEditor, &GUI_TagEdit::sigOkClicked, dialog, &Dialog::accept);
+	connect(m->tagEditor.get(), &GUI_TagEdit::sigCancelled, dialog, &Dialog::reject);
+	connect(m->tagEditor.get(), &GUI_TagEdit::sigOkClicked, dialog, &Dialog::accept);
 
 	m->tagEditor->show();
+
 	dialog->exec();
 }
 
@@ -246,5 +235,5 @@ void GUI_ImportDialog::showEvent(QShowEvent* e)
 	Dialog::showEvent(e);
 	ui->labTargetPath->setText(m->library->info().path());
 
-	this->setStatus(m->importer->status());
+	setStatus(m->library->importer()->status());
 }

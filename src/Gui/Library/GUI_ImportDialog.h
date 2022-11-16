@@ -34,8 +34,8 @@ class GUI_ImportDialog :
 	public Gui::Dialog
 {
 	Q_OBJECT
-	UI_CLASS(GUI_ImportDialog)
 	PIMPL(GUI_ImportDialog)
+	UI_CLASS_SHARED_PTR(GUI_ImportDialog)
 
 	signals:
 		void sigProgress(int);
@@ -44,7 +44,7 @@ class GUI_ImportDialog :
 		GUI_ImportDialog(LocalLibrary* library, bool copy_enabled, QWidget* parent);
 		~GUI_ImportDialog() override;
 
-		void setTargetDirectory(const QString& targetDirectory);
+		void setTargetDirectory(QString targetDirectory);
 
 	private slots:
 		void accept() override;

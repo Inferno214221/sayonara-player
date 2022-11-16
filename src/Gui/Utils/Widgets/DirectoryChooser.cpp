@@ -45,6 +45,46 @@ namespace
 
 		return static_cast<QFileDialog::Options>(QFileDialog::Option::ShowDirsOnly);
 	}
+
+	void setupSidebarUrls(QFileDialog* fileDialog)
+	{
+		constexpr const auto locations = std::array {
+			QStandardPaths::HomeLocation,
+			QStandardPaths::DesktopLocation,
+			QStandardPaths::DownloadLocation,
+			QStandardPaths::MusicLocation,
+			QStandardPaths::TempLocation
+		};
+
+		auto sidebarUrls = fileDialog->sidebarUrls();
+		for(const auto& location: locations)
+		{
+			const auto standardLocations = QStandardPaths::standardLocations(location);
+			for(const auto& standardLocation: standardLocations)
+			{
+				const auto url = QUrl::fromLocalFile(standardLocation);
+				if(!sidebarUrls.contains(url))
+				{
+					sidebarUrls << url;
+				}
+			}
+		}
+
+		fileDialog->setSidebarUrls(sidebarUrls);
+	}
+
+	void enableMultiSelectionInWidget(QFileDialog* dialog)
+	{
+		if(auto* listView = dialog->findChild<QListView*>("listView"); listView)
+		{
+			listView->setSelectionMode(QAbstractItemView::MultiSelection);
+		}
+
+		if(auto* treeView = dialog->findChild<QTreeView*>(); treeView)
+		{
+			treeView->setSelectionMode(QAbstractItemView::MultiSelection);
+		}
+	}
 }
 
 namespace Gui
@@ -61,70 +101,39 @@ namespace Gui
 		setFilter(QDir::Filter::Dirs); // only show dirs
 		setFileMode(QFileDialog::FileMode::Directory); // choose dirs when clicking "open"
 
-		const auto locations =
-			{
-				QStandardPaths::HomeLocation,
-				QStandardPaths::DesktopLocation,
-				QStandardPaths::DownloadLocation,
-				QStandardPaths::MusicLocation,
-				QStandardPaths::TempLocation
-			};
-
-		auto sidebarUrls = this->sidebarUrls();
-		for(const auto& location: locations)
-		{
-			const auto standardLocations = QStandardPaths::standardLocations(location);
-			for(const auto& standardLocation: standardLocations)
-			{
-				const auto url = QUrl::fromLocalFile(standardLocation);
-				if(!sidebarUrls.contains(url))
-				{
-					sidebarUrls << url;
-				}
-			}
-		}
-
-		this->setSidebarUrls(sidebarUrls);
-
 		if(enableMultiSelection)
 		{
 			setOption(QFileDialog::DontUseNativeDialog, true);
-			if(auto* listView = this->findChild<QListView*>("listView"); listView)
-			{
-				listView->setSelectionMode(QAbstractItemView::MultiSelection);
-
-				auto* treeView = this->findChild<QTreeView*>();
-				if(treeView)
-				{
-					treeView->setSelectionMode(QAbstractItemView::MultiSelection);
-				}
-			}
+			enableMultiSelectionInWidget(this);
 		}
+
+		setupSidebarUrls(this);
 	}
 
 	DirectoryChooser::~DirectoryChooser() = default;
 
-	QString
-	DirectoryChooser::getDirectory(const QString& title, const QString& initialDirectory, bool resolveSymlinks,
-	                               QWidget* parent)
+	QString DirectoryChooser::getDirectory(const QString& title,
+	                                       const QString& initialDirectory,
+	                                       const bool resolveSymlinks,
+	                                       QWidget* parent)
 	{
 		auto directoryChooser = DirectoryChooser(title, initialDirectory, false, parent);
 		directoryChooser.setOption(QFileDialog::DontResolveSymlinks, !resolveSymlinks);
 
 		const auto ret = directoryChooser.exec();
-		return ((ret == QFileDialog::Accepted) && (!directoryChooser.selectedFiles().isEmpty()))
+		return ((ret == QFileDialog::Accepted) && !directoryChooser.selectedFiles().isEmpty())
 		       ? directoryChooser.selectedFiles()[0]
 		       : QString {};
 	}
 
-	QStringList
-	DirectoryChooser::getDirectories(const QString& title, const QString& initialDirectory, QWidget* parent)
+	QStringList DirectoryChooser::getDirectories(const QString& title, const QString& initialDirectory, QWidget* parent)
 	{
 		auto directoryChooser = DirectoryChooser(title, initialDirectory, true, parent);
 
 		const auto ret = directoryChooser.exec();
-		return (ret == QFileDialog::Accepted)
+		return (ret == QFileDialog::Accepted) && !directoryChooser.selectedFiles().isEmpty()
 		       ? directoryChooser.selectedFiles()
 		       : QStringList {};
 	}
+
 }
