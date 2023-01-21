@@ -46,10 +46,12 @@ namespace Dbus
 			SessionManager& operator=(const SessionManager& other) = delete;
 			SessionManager& operator=(SessionManager&& other) = delete;
 
+			[[nodiscard]] bool canInhibit() const;
+
 		private slots:
 			void playstateChanged(PlayState playState);
 			void inhibitSettingChanged();
-
+			
 		private: // NOLINT(readability-redundant-access-specifiers)
 			void inhibit();
 			void uninhibit();

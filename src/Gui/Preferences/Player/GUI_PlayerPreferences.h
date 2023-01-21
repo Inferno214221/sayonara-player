@@ -26,28 +26,29 @@
 UI_FWD(GUI_PlayerPreferences)
 
 class GUI_PlayerPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
+	PIMPL(GUI_PlayerPreferences)
 	UI_CLASS(GUI_PlayerPreferences)
 
-public:
-	explicit GUI_PlayerPreferences(const QString& identifier);
-	~GUI_PlayerPreferences() override;
+	public:
+		GUI_PlayerPreferences(const QString& identifier, bool canInhibitIdle);
+		~GUI_PlayerPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 
-	void logLevelChanged();
+		void logLevelChanged();
 
-private slots:
-	void showTrayIconToggled(bool b);
+	private slots:
+		void showTrayIconToggled(bool b);
 };
 
 #endif // GUI_PLAYERPREFERENCES_H

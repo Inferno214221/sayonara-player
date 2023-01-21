@@ -44,15 +44,21 @@ namespace Dbus
 
 		explicit Private(PlayManager* playManager, QObject* parent) :
 			playManager {playManager},
-			interface {std::make_shared<Interface>(ServiceName, ObjectPath, QDBusConnection::sessionBus(), parent)} {}
+			interface {
+				std::make_shared<Interface>(
+					ServiceName, ObjectPath, QDBusConnection::sessionBus(), parent)
+			} {}
 	};
 
 	SessionManager::SessionManager(PlayManager* playManager) :
 		QObject {playManager},
 		m {Pimpl::make<Private>(playManager, this)}
 	{
-		connect(playManager, &PlayManager::sigPlaystateChanged, this, &SessionManager::playstateChanged);
-		playstateChanged(playManager->playstate());
+		if(canInhibit())
+		{
+			connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &SessionManager::playstateChanged);
+			ListenSetting(Set::InhibitIdle, SessionManager::inhibitSettingChanged);
+		}
 	}
 
 	SessionManager::~SessionManager() noexcept
@@ -86,6 +92,11 @@ namespace Dbus
 			m->interface->Uninhibit(m->cookie);
 			m->cookie = 0U;
 		}
+	}
+
+	bool SessionManager::canInhibit() const
+	{
+		return m->interface->isValid();
 	}
 
 	void SessionManager::playstateChanged(const PlayState playState)

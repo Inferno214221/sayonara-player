@@ -40,6 +40,7 @@ class Application :
 		bool init(const QStringList& filesToPlay, bool forceShow);
 
 	private:
+		struct DbusServices;
 		void initSingleInstanceThread();
 		void initPreferences();
 		void initLibraries();

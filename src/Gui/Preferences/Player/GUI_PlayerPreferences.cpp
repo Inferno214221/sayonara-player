@@ -23,8 +23,17 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-GUI_PlayerPreferences::GUI_PlayerPreferences(const QString& identifier) :
-	Base(identifier) {}
+struct GUI_PlayerPreferences::Private
+{
+	bool canInhibitIdle {false};
+
+	explicit Private(const bool canInhibitIdle) :
+		canInhibitIdle {canInhibitIdle} {}
+};
+
+GUI_PlayerPreferences::GUI_PlayerPreferences(const QString& identifier, const bool canInhibitIdle) :
+	Base(identifier),
+	m {Pimpl::make<Private>(canInhibitIdle)} {}
 
 GUI_PlayerPreferences::~GUI_PlayerPreferences()
 {
@@ -40,6 +49,7 @@ void GUI_PlayerPreferences::initUi()
 	setupParent(this, &ui);
 
 	ui->widgetWarning->setVisible(false);
+	ui->cbInhibit->setVisible(m->canInhibitIdle);
 
 	ui->cbLogger->addItem(Lang::get(Lang::Default));
 	ui->cbLogger->addItem("Debug");

@@ -163,6 +163,7 @@ struct Application::Private
 	QElapsedTimer* timer;
 
 	GUI_Player* player = nullptr;
+	Dbus::SessionManager* dbusSessionManager = nullptr;
 	DynamicPlayback::Handler* dynamicPlaybackHandler = nullptr;
 	Library::LocalLibraryWatcher* localLibraryWatcher = nullptr;
 	RemoteControl* remoteControl = nullptr;
@@ -376,7 +377,7 @@ void Application::initDbusServices()
 	new Dbus::Mpris::MediaPlayer2(m->player, m->playManager, m->playlistHandler);
 	new Dbus::MediaKeysInterfaceGnome(m->playManager);
 	new Dbus::MediaKeysInterfaceMate(m->playManager);
-	new Dbus::SessionManager(m->playManager);
+	m->dbusSessionManager = new Dbus::SessionManager(m->playManager);
 }
 
 void Application::initPlaylist(const QStringList& filesToPlay)
@@ -393,7 +394,8 @@ void Application::initPreferences()
 
 	auto* preferences = new GUI_PreferenceDialog(m->player);
 
-	preferences->registerPreferenceDialog(new GUI_PlayerPreferences("application"));
+	const auto canInhibit = m->dbusSessionManager->canInhibit();
+	preferences->registerPreferenceDialog(new GUI_PlayerPreferences("application", canInhibit));
 	preferences->registerPreferenceDialog(new GUI_LanguagePreferences("language"));
 	preferences->registerPreferenceDialog(new GUI_UiPreferences("user-interface"));
 	preferences->registerPreferenceDialog(new GUI_ShortcutPreferences("shortcuts"));
