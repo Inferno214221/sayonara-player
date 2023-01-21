@@ -51,6 +51,7 @@
 #include "DBus/DBusMediaKeysInterfaceGnome.h"
 #include "DBus/DBusMediaKeysInterfaceMate.h"
 #include "DBus/DBusNotifications.h"
+#include "DBus/DBusSessionManager.h"
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 #include "Gui/History/HistoryContainer.h"
@@ -375,6 +376,7 @@ void Application::initDbusServices()
 	new Dbus::Mpris::MediaPlayer2(m->player, m->playManager, m->playlistHandler);
 	new Dbus::MediaKeysInterfaceGnome(m->playManager);
 	new Dbus::MediaKeysInterfaceMate(m->playManager);
+	new Dbus::SessionManager(m->playManager);
 }
 
 void Application::initPlaylist(const QStringList& filesToPlay)

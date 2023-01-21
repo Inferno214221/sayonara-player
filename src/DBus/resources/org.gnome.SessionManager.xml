@@ -1,0 +1,16 @@
+<!DOCTYPE node PUBLIC "-//freedesktop//DTD D-BUS Object Introspection 1.0//EN"
+        "http://www.freedesktop.org/standards/dbus/1.0/introspect.dtd">
+<node>
+    <interface name="org.gnome.SessionManager">
+        <method name="Inhibit">
+            <arg name="name" type="s" direction="in"/>
+            <arg name="xwinid" type="u" direction="in"/>
+            <arg name="reason" type="s" direction="in"/>
+            <arg name="mask" type="u" direction="in"/>
+            <arg name="cookie" type="u" direction="out"/>
+        </method>
+        <method name="Uninhibit">
+            <arg name="cookie" type="u" direction="in"/>
+        </method>
+    </interface>
+</node>

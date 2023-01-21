@@ -36,6 +36,11 @@ qt5_add_dbus_interface(DBUS_SOURCES
 	gnome_settings_daemon
 )
 
+qt5_add_dbus_interface(DBUS_SOURCES 
+	${CMAKE_CURRENT_SOURCE_DIR}/resources/org.gnome.SessionManager.xml
+	SessionManager
+)
+
 add_library(${PROJECT_NAME} STATIC ${DBUS_SOURCES} ${DBUS_HEADERS})
 target_link_libraries(${PROJECT_NAME}
 	sayonara_gui
