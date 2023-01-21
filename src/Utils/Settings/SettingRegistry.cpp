@@ -271,6 +271,7 @@ bool SettingRegistry::init()
 
 	registerSetting<Set::Settings_Revision>("settings_version", 0);
 	registerSetting<Set::Logger_Level>("logger_level", 0);
+	registerSetting<Set::InhibitIdle>("inhibit_idle", true);
 
 	registerSetting<SetNoDB::MP3enc_found>(true);
 	registerSetting<SetNoDB::Pitch_found>(true);

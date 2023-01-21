@@ -23,7 +23,6 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-
 GUI_PlayerPreferences::GUI_PlayerPreferences(const QString& identifier) :
 	Base(identifier) {}
 
@@ -31,7 +30,8 @@ GUI_PlayerPreferences::~GUI_PlayerPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -67,32 +67,31 @@ bool GUI_PlayerPreferences::commit()
 	SetSetting(Set::Player_ShowTrayIcon, ui->cbShowTrayIcon->isChecked());
 	SetSetting(Set::Player_NotifyNewVersion, ui->cbUpdateNotifications->isChecked());
 	SetSetting(Set::Logger_Level, ui->cbLogger->currentIndex());
+	SetSetting(Set::InhibitIdle, ui->cbInhibit->isChecked());
 
 	return true;
 }
 
 void GUI_PlayerPreferences::revert()
 {
-	bool showTrayIcon = GetSetting(Set::Player_ShowTrayIcon);
+	const auto showTrayIcon = GetSetting(Set::Player_ShowTrayIcon);
 
 	ui->cbStartInTray->setChecked(GetSetting(Set::Player_StartInTray));
 	ui->cbCloseToTray->setChecked(GetSetting(Set::Player_Min2Tray));
 	ui->cbUpdateNotifications->setChecked(GetSetting(Set::Player_NotifyNewVersion));
 	ui->cbShowTrayIcon->setChecked(GetSetting(Set::Player_ShowTrayIcon));
 	ui->cbLogger->setCurrentIndex(GetSetting(Set::Logger_Level));
+	ui->cbInhibit->setChecked(GetSetting(Set::InhibitIdle));
 
 	showTrayIconToggled(showTrayIcon);
 }
 
-void GUI_PlayerPreferences::showTrayIconToggled(bool b)
+void GUI_PlayerPreferences::showTrayIconToggled(bool /* b */)
 {
-	Q_UNUSED(b)
-
-	bool showWarning =
-	(
-		(!ui->cbShowTrayIcon->isChecked()) &&
-		(ui->cbStartInTray->isChecked() || ui->cbCloseToTray->isChecked())
-	);
+	const auto showTrayIcon = ui->cbShowTrayIcon->isChecked();
+	const auto startInTray = ui->cbStartInTray->isChecked();
+	const auto closeToTray = ui->cbCloseToTray->isChecked();
+	const auto showWarning = !showTrayIcon && (startInTray || closeToTray);
 
 	ui->widgetWarning->setVisible(showWarning);
 }
@@ -104,7 +103,7 @@ void GUI_PlayerPreferences::retranslate()
 	ui->labLogger->setText(Lang::get(Lang::LogLevel));
 	ui->cbLogger->setItemText(0, Lang::get(Lang::Default));
 
-	QString text =
+	const auto text =
 		tr("This might cause Sayonara not to show up again.") + " " +
 		tr("In this case use the '--show' option at the next startup.");
 
@@ -116,8 +115,9 @@ void GUI_PlayerPreferences::logLevelChanged()
 {
 	if(ui)
 	{
-		int level = GetSetting(Set::Logger_Level);
-		if(level != ui->cbLogger->currentIndex()){
+		const auto level = GetSetting(Set::Logger_Level);
+		if(level != ui->cbLogger->currentIndex())
+		{
 			ui->cbLogger->setCurrentIndex(level);
 		}
 	}

@@ -77,6 +77,7 @@ enum class SettingKey :
 	Icon_ForceInDarkTheme,
 	Icon_Theme,
 	InfoDialog_Size,
+	InhibitIdle,
 	LFM_Active,
 	LFM_Corrections,
 	LFM_Login,
@@ -287,6 +288,7 @@ namespace Set
 	CreateSetting(Icon_ForceInDarkTheme, bool); // Current icon theme
 	CreateSetting(Icon_Theme, QString); // Current icon theme
 	CreateSetting(InfoDialog_Size, QSize); // Size of Info Dialog
+	CreateSetting(InhibitIdle, bool); // Avoid suspend/hibernate while playing music
 	CreateSetting(LFM_Active, bool); // is lastFM active?
 	CreateSetting(LFM_Corrections, bool); // propose lfm corrections
 	CreateSetting(LFM_Login, StringPair); // deprecated: 2-Tupel, username, password
