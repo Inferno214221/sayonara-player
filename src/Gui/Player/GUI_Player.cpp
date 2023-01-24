@@ -96,27 +96,27 @@ struct GUI_Player::Private
 	PlayManager* playManager;
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
-	        GUI_Player* parent) :
-		menubar {new Menubar(playlistCreator, parent)},
+	        Shutdown* shutdown, GUI_Player* parent) :
+		menubar {new Menubar(shutdown, playlistCreator, parent)},
 		logger {std::make_shared<GUI_Logger>(parent)},
 		coverProvider {coverProvider},
 		playManager {playManager} {}
 };
 
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
-                       DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor,
-                       QWidget* parent) :
+                       Shutdown* shutdown, DynamicPlaybackChecker* dynamicPlaybackChecker,
+                       LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, this);
+	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, shutdown, this);
 
 	initLanguage();
 
 	ui = std::make_shared<Ui::GUI_Player>();
 	ui->setupUi(this);
 	ui->retranslateUi(this);
-	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker, libraryAccessor);
+	ui->playlistWidget->init(playlistHandler, playManager, dynamicPlaybackChecker, shutdown, libraryAccessor);
 
 	ui->pluginWidget->setVisible(false);
 

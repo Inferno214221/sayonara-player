@@ -160,6 +160,7 @@ struct Application::Private
 	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	SmartPlaylistManager* smartPlaylistManager = nullptr;
+	Shutdown* shutdown;
 	QElapsedTimer* timer;
 
 	GUI_Player* player = nullptr;
@@ -203,7 +204,7 @@ struct Application::Private
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
 
-		Shutdown::instance()->registerPlaymanager(playManager);
+		shutdown = Shutdown::create(playManager);
 
 		Gui::Icons::setDefaultSystemTheme(QIcon::themeName());
 
@@ -371,6 +372,7 @@ void Application::initPlayer(bool force_show)
 	m->player = new GUI_Player(m->playManager,
 	                           m->playlistHandler,
 	                           m->engine,
+	                           m->shutdown,
 	                           m->dynamicPlaybackChecker,
 	                           m->libraryManager,
 	                           nullptr);

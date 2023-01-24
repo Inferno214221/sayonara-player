@@ -33,11 +33,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-#ifdef SAYONARA_WITH_SHUTDOWN
-
 #include "Gui/Shutdown/GUI_Shutdown.h"
-
-#endif
 
 #include <QFile>
 #include <QHBoxLayout>
@@ -59,12 +55,8 @@ namespace
 struct BottomBar::Private
 {
 	Playlist::Mode plm;
-
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
-
-#ifdef SAYONARA_WITH_SHUTDOWN
-	Shutdown* shutdown {Shutdown::instance()};
-#endif
+	Shutdown* shutdown;
 
 	BottomBarButton* btnRep1;
 	BottomBarButton* btnRepall;
@@ -74,9 +66,10 @@ struct BottomBar::Private
 	BottomBarButton* btnGapless;
 	BottomBarButton* btnShutdown;
 
-	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, BottomBar* parent) :
+	Private(DynamicPlaybackChecker* dynamicPlaybackChecker, Shutdown* shutdown, BottomBar* parent) :
 		plm {GetSetting(Set::PL_Mode)},
 		dynamicPlaybackChecker {dynamicPlaybackChecker},
+		shutdown {shutdown},
 		btnRep1 {createButton(parent, Icons::Repeat1)},
 		btnRepall {createButton(parent, Icons::RepeatAll)},
 		btnAppend {createButton(parent, Icons::Append)},
@@ -104,9 +97,9 @@ BottomBar::BottomBar(QWidget* parent) :
 
 BottomBar::~BottomBar() = default;
 
-void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker)
+void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker, Shutdown* shutdown)
 {
-	m = Pimpl::make<Private>(dynamicPlaybackChecker, this);
+	m = Pimpl::make<Private>(dynamicPlaybackChecker, shutdown, this);
 
 	using namespace Gui;
 
@@ -126,7 +119,7 @@ void BottomBar::init(DynamicPlaybackChecker* dynamicPlaybackChecker)
 	layout->setSpacing(5);
 
 	const auto buttons = m->buttons();
-	for(auto* button : buttons)
+	for(auto* button: buttons)
 	{
 		button->setCheckable(true);
 		button->setFlat(false);
@@ -243,7 +236,7 @@ void BottomBar::checkDynamicPlayButton()
 	const auto tooltip = (!m->dynamicPlaybackChecker->isDynamicPlaybackPossible())
 	                     ? QString("%1\n%2")
 		                     .arg(Lang::get(Lang::DynamicPlayback)
-		                     .arg(tr("Please set library path first")))
+			                          .arg(tr("Please set library path first")))
 	                     : (Lang::get(Lang::DynamicPlayback));
 	//@formatter:on
 
@@ -271,7 +264,7 @@ void BottomBar::skinChanged()
 	width = std::max(29, width);
 
 	const auto buttons = m->buttons();
-	for(auto* button : buttons)
+	for(auto* button: buttons)
 	{
 		button->setFixedSize(QSize {width, width});
 	}
@@ -289,30 +282,25 @@ void BottomBar::resizeEvent(QResizeEvent* e)
 	skinChanged();
 }
 
-#ifdef SAYONARA_WITH_SHUTDOWN
-
 void BottomBar::shutdownClicked()
 {
 	const auto answer = Message::question_yn(tr("Cancel shutdown?"));
 	if(answer == Message::Answer::Yes)
 	{
-		Shutdown::instance()->stop();
+		m->shutdown->stop();
 	}
 }
 
 void BottomBar::shutdownStarted([[maybe_unused]] MilliSeconds time2go)
 {
-	const auto b = Shutdown::instance()->is_running();
+	const auto b = m->shutdown->isRunning();
 	m->btnShutdown->setVisible(b);
 	m->btnShutdown->setChecked(b);
 }
 
 void BottomBar::shutdownClosed()
 {
-	const auto b = Shutdown::instance()->is_running();
+	const auto b = m->shutdown->isRunning();
 	m->btnShutdown->setVisible(b);
 	m->btnShutdown->setChecked(b);
 }
-
-#endif
-

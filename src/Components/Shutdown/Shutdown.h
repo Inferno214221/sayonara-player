@@ -22,42 +22,28 @@
 #define SHUTDOWN_H
 
 #include "Utils/Macros.h"
-#ifdef SAYONARA_WITH_SHUTDOWN
-
-#include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
 
 class PlayManager;
-/**
- * @brief The Shutdown class
- * @ingroup Helper
- */
-class Shutdown : public QObject
+class Shutdown :
+	public QObject
 {
 	Q_OBJECT
-	SINGLETON_QOBJECT(Shutdown)
-	PIMPL(Shutdown)
 
-signals:
-	void sigTimeToGoChanged(MilliSeconds ms);
-	void sigStarted(MilliSeconds ms);
-	void sigStopped();
+	signals:
+		void sigTimeToGoChanged(MilliSeconds ms);
+		void sigStarted(MilliSeconds ms);
+		void sigStopped();
 
-private slots:
-	void timeout();
-	void countdownTimeout();
-	void playlistFinished();
+	public:
+		static Shutdown* create(PlayManager* playManager);
 
-public:
-	void registerPlaymanager(PlayManager* playManager);
-	bool is_running() const;
-	void stop();
-	void shutdown(MilliSeconds ms=0);
-	void shutdownAfterSessionEnd();
+		[[nodiscard]] virtual bool isRunning() const = 0;
+		virtual void stop() = 0;
+		virtual void shutdown(MilliSeconds ms = 0) = 0;
+		virtual void shutdownAfterSessionEnd() = 0;
 };
-
-#endif // SAYONARA_WITH_SHUTDOWN
 
 #endif // SHUTDOWN_H

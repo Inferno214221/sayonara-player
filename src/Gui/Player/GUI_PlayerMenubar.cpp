@@ -59,6 +59,7 @@
 
 struct Menubar::Private
 {
+	Shutdown* shutdown;
 	PlaylistCreator* playlistCreator;
 	QMenu* menuFile = nullptr;
 	QMenu* menuView = nullptr;
@@ -93,7 +94,8 @@ struct Menubar::Private
 	QLabel* heartLabel = nullptr;
 	QLabel* donateLabel = nullptr;
 
-	Private(PlaylistCreator* playlistCreator, Menubar* menubar) :
+	Private(Shutdown* shutdown, PlaylistCreator* playlistCreator, Menubar* menubar) :
+		shutdown {shutdown},
 		playlistCreator(playlistCreator),
 		menuFile(new QMenu(menubar)),
 		menuView(new QMenu(menubar)),
@@ -147,10 +149,10 @@ struct Menubar::Private
 	}
 };
 
-Menubar::Menubar(PlaylistCreator* playlistCreator, QWidget* parent) :
+Menubar::Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, QWidget* parent) :
 	Gui::WidgetTemplate<QMenuBar>(parent)
 {
-	m = Pimpl::make<Private>(playlistCreator, this);
+	m = Pimpl::make<Private>(shutdown, playlistCreator, this);
 
 	m->actionViewLibrary->setChecked(GetSetting(Set::Lib_Show));
 	m->actionViewLibrary->setText(Lang::get(Lang::Library));
@@ -165,11 +167,7 @@ Menubar::Menubar(PlaylistCreator* playlistCreator, QWidget* parent) :
 	m->actionFullscreen->setShortcut(QKeySequence("F11"));
 	m->actionFullscreen->setChecked(GetSetting(Set::Player_Fullscreen));
 
-#ifdef SAYONARA_WITH_SHUTDOWN
 	m->actionShutdown->setVisible(true);
-#else
-	m->action_shutdown->setVisible(false);
-#endif
 
 	initDonateLink();
 	initConnections();
@@ -446,7 +444,7 @@ void Menubar::openFilesClicked()
 
 void Menubar::shutdownClicked()
 {
-	auto* gui = new GUI_Shutdown(this);
+	auto* gui = new GUI_Shutdown(m->shutdown, this);
 	gui->exec();
 }
 

@@ -23,21 +23,22 @@
 
 #include "Gui/Utils/Widgets/Dialog.h"
 #include "Gui/Utils/GuiClass.h"
+#include "Utils/Pimpl.h"
 #include "Utils/Macros.h"
-
-#ifdef SAYONARA_WITH_SHUTDOWN
 
 UI_FWD(GUI_Shutdown)
 
+class Shutdown;
 class GUI_Shutdown :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Shutdown)
+	PIMPL(GUI_Shutdown)
+	UI_CLASS_SHARED_PTR(GUI_Shutdown)
 
 	public:
-		explicit GUI_Shutdown(QWidget* parent=nullptr);
-		~GUI_Shutdown() override;
+		explicit GUI_Shutdown(Shutdown* shutdown, QWidget* parent = nullptr);
+		~GUI_Shutdown() noexcept override;
 
 	private slots:
 		void accepted();
@@ -48,7 +49,5 @@ class GUI_Shutdown :
 	protected:
 		void skinChanged() override;
 };
-
-#endif // SAYONARA_WITH_SHUTDOWN
 
 #endif // GUI_SHUTDOWN_H

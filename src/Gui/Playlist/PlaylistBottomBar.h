@@ -26,22 +26,15 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Macros.h"
 
-#ifdef SAYONARA_WITH_SHUTDOWN
-	class GUI_Shutdown;
-#endif
-
+class GUI_Shutdown;
 class DynamicPlaybackChecker;
 
 namespace Playlist
 {
 	class Mode;
 
-	/**
-	 * @brief The GUI_PlaylistBottomBar class
-	 * @ingroup GuiPlaylists
-	 */
 	class BottomBar :
-			public Gui::Widget
+		public Gui::Widget
 	{
 		Q_OBJECT
 		PIMPL(BottomBar)
@@ -51,10 +44,10 @@ namespace Playlist
 			void sigPlaylistModeChanged(const ::Playlist::Mode& mode);
 
 		public:
-			BottomBar(QWidget* parent=nullptr);
+			explicit BottomBar(QWidget* parent = nullptr);
 			~BottomBar() override;
 
-			void init(DynamicPlaybackChecker* dynamicPlaybackChecker);
+			void init(DynamicPlaybackChecker* dynamicPlaybackChecker, Shutdown* shutdown);
 
 			void checkDynamicPlayButton();
 
@@ -67,11 +60,9 @@ namespace Playlist
 			void changePlaylistMode();
 			void playlistModeSettingChanged();
 
-		#ifdef SAYONARA_WITH_SHUTDOWN
 			void shutdownClicked();
 			void shutdownStarted(MilliSeconds time2go);
 			void shutdownClosed();
-		#endif
 
 		protected:
 			void languageChanged() override;

@@ -159,24 +159,26 @@ struct GUI_Playlist::Private
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	LibraryInfoAccessor* libraryAccessor;
 
-	Private(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor) :
+	Private(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker,
+	        LibraryInfoAccessor* libraryAccessor) :
 		playlistHandler(playlistHandler),
 		playManager(playManager),
 		dynamicPlaybackChecker(dynamicPlaybackChecker),
-		libraryAccessor(libraryAccessor){}
+		libraryAccessor(libraryAccessor) {}
 };
 
 GUI_Playlist::GUI_Playlist(QWidget* parent) :
 	Widget(parent) {}
 
 void
-GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor)
+GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker,
+                   Shutdown* shutdown, LibraryInfoAccessor* libraryAccessor)
 {
 	m = Pimpl::make<Private>(playlistHandler, playManager, dynamicPlaybackChecker, libraryAccessor);
 
 	ui = std::make_shared<Ui::PlaylistWindow>();
 	ui->setupUi(this);
-	ui->bottomBar->init(dynamicPlaybackChecker);
+	ui->bottomBar->init(dynamicPlaybackChecker, shutdown);
 
 	setAcceptDrops(true);
 

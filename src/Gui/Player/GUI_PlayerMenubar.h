@@ -37,8 +37,8 @@ namespace PlayerPlugin
 	class Base;
 }
 
+class Shutdown;
 class PlaylistCreator;
-
 class Menubar :
 	public Gui::WidgetTemplate<QMenuBar>
 {
@@ -51,7 +51,7 @@ class Menubar :
 		void sigLoggerClicked();
 
 	public:
-		explicit Menubar(PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
+		explicit Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
 		~Menubar() override;
 
 		void insertPreferenceAction(QAction* action);

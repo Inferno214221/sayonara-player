@@ -26,12 +26,19 @@
 
 #include "Components/Shutdown/Shutdown.h"
 
-#ifdef SAYONARA_WITH_SHUTDOWN
-
-GUI_Shutdown::GUI_Shutdown(QWidget* parent):
-	Gui::Dialog(parent)
+struct GUI_Shutdown::Private
 {
-	ui = new Ui::GUI_Shutdown();
+	Shutdown* shutdown;
+
+	explicit Private(Shutdown* shutdown) :
+		shutdown {shutdown} {}
+};
+
+GUI_Shutdown::GUI_Shutdown(Shutdown* shutdown, QWidget* parent) :
+	Gui::Dialog(parent),
+	m {Pimpl::make<Private>(shutdown)},
+	ui {std::make_shared<Ui::GUI_Shutdown>()}
+{
 	ui->setupUi(this);
 
 	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_Shutdown::accepted);
@@ -40,27 +47,24 @@ GUI_Shutdown::GUI_Shutdown(QWidget* parent):
 	connect(ui->rb_after_minutes, &QRadioButton::clicked, this, &GUI_Shutdown::afterTimespanClicked);
 }
 
-GUI_Shutdown::~GUI_Shutdown()
-{
-	delete ui; ui=nullptr;
-}
+GUI_Shutdown::~GUI_Shutdown() noexcept = default;
 
 void GUI_Shutdown::skinChanged()
 {
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Shutdown, ui->lab_icon->size()));
 }
 
-
 void GUI_Shutdown::accepted()
 {
 	if(ui->sb_minutes->isEnabled())
 	{
 		MilliSeconds msec = ui->sb_minutes->value() * 60 * 1000;
-		Shutdown::instance()->shutdown(msec);
+		m->shutdown->shutdown(msec);
 	}
 
-	else {
-		Shutdown::instance()->shutdownAfterSessionEnd();
+	else
+	{
+		m->shutdown->shutdownAfterSessionEnd();
 	}
 
 	close();
@@ -72,18 +76,14 @@ void GUI_Shutdown::rejected()
 	emit sigClosed();
 }
 
-void GUI_Shutdown::afterPlaylistFinishedClicked(bool b)
+void GUI_Shutdown::afterPlaylistFinishedClicked(bool /*b*/)
 {
-	Q_UNUSED(b)
 	ui->rb_after_minutes->setChecked(false);
 	ui->sb_minutes->setEnabled(false);
 }
 
-void GUI_Shutdown::afterTimespanClicked(bool b)
+void GUI_Shutdown::afterTimespanClicked(bool /*b*/)
 {
-	Q_UNUSED(b)
 	ui->rb_after_minutes->setChecked(false);
 	ui->sb_minutes->setEnabled(true);
 }
-
-#endif // SAYONARA_WITH_SHUTDOWN

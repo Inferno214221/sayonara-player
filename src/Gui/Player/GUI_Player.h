@@ -39,7 +39,7 @@ UI_FWD(GUI_Player)
 class CoverDataProvider;
 class DynamicPlaybackChecker;
 class LibraryInfoAccessor;
-
+class Shutdown;
 namespace PlayerPlugin
 {
 	class Base;
@@ -62,8 +62,8 @@ class GUI_Player :
 
 	public:
 		GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
-		           DynamicPlaybackChecker* dynamicPlaybackChecker, LibraryInfoAccessor* libraryAccessor,
-		           QWidget* parent);
+		           Shutdown* shutdown, DynamicPlaybackChecker* dynamicPlaybackChecker,
+		           LibraryInfoAccessor* libraryAccessor, QWidget* parent);
 		~GUI_Player() override;
 
 		void registerPreferenceDialog(QAction* dialog_action);
