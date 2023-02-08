@@ -1,31 +1,9 @@
 project(sayonara_dbus)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-set(CMAKE_AUTOMOC OFF)
 
-set(DBUS_SOURCES
-	DBusAdaptor.cpp
-	DBusHandler.cpp
-	DBusMPRIS.cpp
-	DBusMediaKeysInterface.cpp
-	DBusMediaKeysInterfaceGnome.cpp
-	DBusMediaKeysInterfaceMate.cpp
-	DBusNotifications.cpp
-)
-
-set(DBUS_HEADERS
-	DBusAdaptor.h
-	DBusHandler.h
-	DBusMediaKeysInterfaceGnome.h
-	DBusMediaKeysInterface.h
-	DBusMediaKeysInterfaceMate.h
-	DBusMPRIS.h
-	DBusNotifications.h
-)
-
-qt5_wrap_cpp(DBUS_SOURCES
-	${DBUS_HEADERS}
-)
+file(GLOB_RECURSE DBUS_SOURCES . *.cpp)
+file(GLOB_RECURSE DBUS_HEADERS . *.h)
 
 qt5_add_dbus_adaptor(DBUS_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/resources/org.mpris.MediaPlayer2.xml
