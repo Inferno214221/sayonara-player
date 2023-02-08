@@ -18,33 +18,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef DBUSADAPTOR_H
 #define DBUSADAPTOR_H
 
-#include <QObject>
 #include "Utils/Pimpl.h"
 
-using QStrRef=const QString&;
+#include <QObject>
 
-class DBusAdaptor :
-		public QObject
+namespace Dbus
 {
-	Q_OBJECT
-	PIMPL(DBusAdaptor)
+	class Adapator :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(Adapator)
 
-	protected:
-		DBusAdaptor(QStrRef objectPath, QStrRef serviceName, QStrRef dbusService, QStrRef dbusInterface, QObject* parent=nullptr);
-		virtual ~DBusAdaptor();
+		public:
+			~Adapator() override;
 
-		void createMessage(QString name, QVariant val);
+		protected:
+			Adapator(const QString& objectPath, const QString& serviceName, const QString& dbusService,
+			         const QString& dbusInterface, QObject* parent = nullptr);
 
-		QString objectPath() const;
-		QString serviceName() const;
-		QString dbusService() const;
-		QString dbusInterface() const;
-};
+			void createMessage(const QString& name, const QVariant& val);
 
-
+			[[nodiscard]] QString objectPath() const;
+			[[nodiscard]] QString serviceName() const;
+	};
+}
 #endif // DBUSADAPTOR_H

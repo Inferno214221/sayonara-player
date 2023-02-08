@@ -23,20 +23,23 @@
 
 #include "DBusMediaKeysInterface.h"
 
-class DBusMediaKeysInterfaceGnome : public DBusMediaKeysInterface
+namespace Dbus
 {
-	Q_OBJECT
-	PIMPL(DBusMediaKeysInterfaceGnome)
+	class MediaKeysInterfaceGnome :
+		public MediaKeysInterface
+	{
+		Q_OBJECT
+		PIMPL(MediaKeysInterfaceGnome)
 
-	public:
-		explicit DBusMediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent=nullptr);
-		~DBusMediaKeysInterfaceGnome() override;
+		public:
+			explicit MediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent = nullptr);
+			~MediaKeysInterfaceGnome() override;
 
-	protected:
-		QString serviceName() const override;
-		QDBusPendingReply<> grabMediaKeyReply() override;
-		void connectMediaKeys() override;
-};
-
+		protected:
+			QString serviceName() const override;
+			QDBusPendingReply<> grabMediaKeyReply() override;
+			void connectMediaKeys() override;
+	};
+}
 
 #endif // DBUSMEDIAKEYSINTERFACEGNOME_H

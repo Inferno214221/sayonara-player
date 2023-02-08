@@ -23,15 +23,8 @@
 
 #include "Application/Application.h"
 #include "Application/InstanceThread.h"
-#include "Application/MetaTypeRegistry.h"
 #include "Application/LocalLibraryWatcher.h"
-
-#ifdef SAYONARA_WITH_DBUS
-
-#include "DBus/DBusHandler.h"
-
-#endif
-
+#include "Application/MetaTypeRegistry.h"
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackCheckerImpl.h"
@@ -54,6 +47,10 @@
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
+#include "DBus/DBusMPRIS.h"
+#include "DBus/DBusMediaKeysInterfaceGnome.h"
+#include "DBus/DBusMediaKeysInterfaceMate.h"
+#include "DBus/DBusNotifications.h"
 #include "Database/Connector.h"
 #include "Database/Settings.h"
 #include "Gui/History/HistoryContainer.h"
@@ -165,7 +162,6 @@ struct Application::Private
 	QElapsedTimer* timer;
 
 	GUI_Player* player = nullptr;
-	DBusHandler* dbusHandler = nullptr;
 	DynamicPlayback::Handler* dynamicPlaybackHandler = nullptr;
 	Library::LocalLibraryWatcher* localLibraryWatcher = nullptr;
 	RemoteControl* remoteControl = nullptr;
@@ -276,11 +272,6 @@ Application::~Application()
 
 	delete m->localLibraryWatcher;
 	delete m->dynamicPlaybackHandler;
-	if(m->dbusHandler)
-	{
-		delete m->dbusHandler;
-	}
-
 	delete m->player;
 }
 
@@ -316,13 +307,7 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 	}
 
 	initPlayer(forceShow);
-
-#ifdef SAYONARA_WITH_DBUS
-	{
-		measure("DBUS")
-		m->dbusHandler = new DBusHandler(m->player, m->playManager, m->playlistHandler, m->notificationHandler, this);
-	}
-#endif
+	initDbusServices();
 
 	{
 		ListenSetting(Set::Remote_Active, Application::remoteControlActivated);
@@ -382,6 +367,14 @@ void Application::initPlayer(bool force_show)
 	m->player->setWindowIcon(Gui::Icons::icon(Gui::Icons::Logo));
 
 	connect(m->player, &GUI_Player::sigClosed, this, &QCoreApplication::quit);
+}
+
+void Application::initDbusServices()
+{
+	new Dbus::Notifications(m->notificationHandler);
+	new Dbus::Mpris::MediaPlayer2(m->player, m->playManager, m->playlistHandler);
+	new Dbus::MediaKeysInterfaceGnome(m->playManager);
+	new Dbus::MediaKeysInterfaceMate(m->playManager);
 }
 
 void Application::initPlaylist(const QStringList& filesToPlay)

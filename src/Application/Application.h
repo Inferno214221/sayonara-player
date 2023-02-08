@@ -46,6 +46,7 @@ class Application :
 		void initPlugins();
 		void initPlayer(bool force_show);
 		void initPlaylist(const QStringList& filesToPlay);
+		void initDbusServices();
 
 		void shutdown();
 

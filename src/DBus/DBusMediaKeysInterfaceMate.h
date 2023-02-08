@@ -23,20 +23,23 @@
 
 #include "DBusMediaKeysInterface.h"
 
-class DBusMediaKeysInterfaceMate : public DBusMediaKeysInterface
+namespace Dbus
 {
-	Q_OBJECT
-	PIMPL(DBusMediaKeysInterfaceMate)
+	class MediaKeysInterfaceMate :
+		public MediaKeysInterface
+	{
+		Q_OBJECT
+		PIMPL(MediaKeysInterfaceMate)
 
-	public:
-		explicit DBusMediaKeysInterfaceMate(PlayManager* playManager, QObject* parent=nullptr);
-		~DBusMediaKeysInterfaceMate() override;
+		public:
+			explicit MediaKeysInterfaceMate(PlayManager* playManager, QObject* parent = nullptr);
+			~MediaKeysInterfaceMate() override;
 
-	protected:
-		QString serviceName() const override;
-		QDBusPendingReply<> grabMediaKeyReply() override;
-		void connectMediaKeys() override;
-};
-
+		protected:
+			QString serviceName() const override;
+			QDBusPendingReply<> grabMediaKeyReply() override;
+			void connectMediaKeys() override;
+	};
+}
 
 #endif // DBUSMEDIAKEYSINTERFACEMATE_H

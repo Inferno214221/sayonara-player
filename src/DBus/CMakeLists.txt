@@ -30,7 +30,7 @@ qt5_wrap_cpp(DBUS_SOURCES
 qt5_add_dbus_adaptor(DBUS_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/resources/org.mpris.MediaPlayer2.xml
 	${CMAKE_SOURCE_DIR}/src/DBus/DBusMPRIS.h
-	DBusMPRIS::MediaPlayer2
+	Dbus::Mpris::MediaPlayer2
 	org_mpris_media_player2_adaptor
 	OrgMprisMediaPlayer2Adaptor
 )
@@ -38,7 +38,7 @@ qt5_add_dbus_adaptor(DBUS_SOURCES
 qt5_add_dbus_adaptor(DBUS_SOURCES
 	${CMAKE_CURRENT_SOURCE_DIR}/resources/org.mpris.MediaPlayer2.Player.xml
 	${CMAKE_SOURCE_DIR}/src/DBus/DBusMPRIS.h
-	DBusMPRIS::MediaPlayer2
+	Dbus::Mpris::MediaPlayer2
 	org_mpris_media_player2_player_adaptor
 	OrgMprisMediaPlayer2PlayerAdaptor
 )

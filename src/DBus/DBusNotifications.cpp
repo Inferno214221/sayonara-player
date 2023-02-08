@@ -40,7 +40,7 @@ namespace
 	{
 		constexpr const auto* InstanceName = "DBusNotifications";
 
-		auto interface = QDBusConnection::sessionBus().interface();
+		auto* interface = QDBusConnection::sessionBus().interface();
 		interface->startService(serviceName);
 
 		const auto success = interface->isServiceRegistered(serviceName);
@@ -58,65 +58,63 @@ namespace
 	}
 }
 
-struct DBusNotifications::Private
+namespace Dbus
 {
-	OrgFreedesktopNotificationsInterface interface;
-	uint id {100};
-	bool started;
-
-	Private(QObject* parent) :
-		interface {serviceName, objectPath, QDBusConnection::sessionBus(), parent},
-		started {startNotificationService()} {}
-};
-
-DBusNotifications::DBusNotifications(NotificationHandler* notificationHandler, QObject* parent) :
-	QObject(parent),
-	Notificator("DBus", notificationHandler),
-	m {Pimpl::make<Private>(this)} {}
-
-DBusNotifications::~DBusNotifications() = default;
-
-void DBusNotifications::notify(const QString& title, const QString& text, const QString& imagePath)
-{
-	if(m->started)
+	struct Notifications::Private
 	{
-		const auto desktopFile = Util::Filepath {":/Desktop/com.sayonara-player.Sayonara.desktop"};
-		const auto map = QVariantMap {
-			{"action-icons",   false},
-			{"desktop-entry",  desktopFile.fileystemPath()},
-			{"resident",       false},
-			{"sound-file",     QString {}},
-			{"sound-name",     QString {}},
-			{"suppress-sound", true},
-			{"transient",      false},
-			{"urgency",        1}
-		};
+		OrgFreedesktopNotificationsInterface interface;
+		uint id {100}; // NOLINT(readability-magic-numbers)
+		bool started;
 
-		QDBusPendingReply<uint> reply =
-			m->interface.Notify(appName,
-			                    m->id,
-			                    Util::Filepath(imagePath).fileystemPath(),
-			                    title,
-			                    text,
-			                    {},
-			                    map,
-			                    GetSetting(Set::Notification_Timeout));
+		explicit Private(QObject* parent) :
+			interface {serviceName, objectPath, QDBusConnection::sessionBus(), parent},
+			started {startNotificationService()} {}
+	};
 
-		m->id = reply.value();
-	}
-}
+	Notifications::Notifications(NotificationHandler* notificationHandler, QObject* parent) :
+		QObject(parent),
+		Notificator("DBus", notificationHandler),
+		m {Pimpl::make<Private>(this)} {}
 
-void DBusNotifications::notify(const MetaData& track)
-{
-	if(m->started)
+	Notifications::~Notifications() = default;
+
+	void Notifications::notify(const QString& title, const QString& text, const QString& imagePath)
 	{
-		const auto active = GetSetting(Set::Notification_Show);
-		if(active)
+		if(m->started)
 		{
-			const auto coverLocation = Cover::Location::coverLocation(track);
-			const auto coverPath = Util::Filepath(coverLocation.preferredPath()).fileystemPath();
+			const auto desktopFile = Util::Filepath {":/Desktop/com.sayonara-player.Sayonara.desktop"};
 
-			notify(track.title(), track.artist(), coverPath);
+			const auto map = QVariantMap {
+				{"action-icons",   false},
+				{"desktop-entry",  desktopFile.fileystemPath()},
+				{"resident",       false},
+				{"sound-file",     QString {}},
+				{"sound-name",     QString {}},
+				{"suppress-sound", true},
+				{"transient",      false},
+				{"urgency",        1}
+			};
+
+			const auto cleanImagePath = Util::Filepath(imagePath).fileystemPath();
+			const auto timeout = GetSetting(Set::Notification_Timeout);
+			QDBusPendingReply<uint> reply =
+				m->interface.Notify(appName, m->id, cleanImagePath, title, text, {}, map, timeout);
+
+			m->id = reply.value();
+		}
+	}
+
+	void Notifications::notify(const MetaData& track)
+	{
+		if(m->started)
+		{
+			if(GetSetting(Set::Notification_Show))
+			{
+				const auto coverLocation = Cover::Location::coverLocation(track);
+				const auto coverPath = Util::Filepath(coverLocation.preferredPath()).fileystemPath();
+
+				notify(track.title(), track.artist(), coverPath);
+			}
 		}
 	}
 }

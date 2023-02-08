@@ -1,4 +1,4 @@
-/* DBusAdaptor.cpp */
+/* Adapator.cpp */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -27,62 +27,51 @@
 #include <QStringList>
 #include <QUrl>
 #include <QStringRef>
+#include <utility>
 
-struct DBusAdaptor::Private
+namespace Dbus
 {
-	QString		objectPath;
-	QString		serviceName;
-	QString		dbusService;
-	QString		dbusInterface;
+	struct Adapator::Private
+	{
+		QString objectPath;
+		QString serviceName;
+		QString dbusService;
+		QString dbusInterface;
 
-	Private(QStrRef objectPath, QStrRef serviceName, QStrRef dbusService, QStrRef dbusInterface) :
-		objectPath(objectPath),
-		serviceName(serviceName),
-		dbusService(dbusService),
-		dbusInterface(dbusInterface)
-	{}
-};
+		Private(QString objectPath, QString serviceName, QString dbusService, QString dbusInterface) :
+			objectPath(std::move(objectPath)),
+			serviceName(std::move(serviceName)),
+			dbusService(std::move(dbusService)),
+			dbusInterface(std::move(dbusInterface)) {}
 
-DBusAdaptor::DBusAdaptor(QStrRef objectPath, QStrRef serviceName, QStrRef dbusService, QStrRef dbusInterface, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(objectPath, serviceName, dbusService, dbusInterface);
-}
+	};
 
-DBusAdaptor::~DBusAdaptor() = default;
+	Adapator::Adapator(const QString& objectPath, const QString& serviceName, const QString& dbusService,
+	                   const QString& dbusInterface, QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(objectPath, serviceName, dbusService, dbusInterface)} {}
 
-void DBusAdaptor::createMessage(QString name, QVariant val)
-{
-	QDBusMessage sig;
-	QVariantMap map;
-	QVariantList args;
+	Adapator::~Adapator() = default;
 
-	map.insert(name, val);
-	args << m->dbusService << map << QStringList();
+	void Adapator::createMessage(const QString& name, const QVariant& val)
+	{
+		const auto map = QVariantMap {
+			{name, val}
+		};
 
-	// path, interface, name
-	sig = QDBusMessage::createSignal(m->objectPath, m->dbusInterface, "PropertiesChanged");
-	sig.setArguments(args);
+		const auto args = QVariantList {
+			m->dbusService,
+			map,
+			QStringList {}
+		};
 
-	QDBusConnection::sessionBus().send(sig);
-}
+		auto sig = QDBusMessage::createSignal(m->objectPath, m->dbusInterface, "PropertiesChanged");
+		sig.setArguments(args);
 
-QString DBusAdaptor::objectPath() const
-{
-	return m->objectPath;
-}
+		QDBusConnection::sessionBus().send(sig);
+	}
 
-QString DBusAdaptor::serviceName() const
-{
-	return m->serviceName;
-}
+	QString Adapator::objectPath() const { return m->objectPath; }
 
-QString DBusAdaptor::dbusService() const
-{
-	return m->dbusService;
-}
-
-QString DBusAdaptor::dbusInterface() const
-{
-	return m->dbusInterface;
+	QString Adapator::serviceName() const { return m->serviceName; }
 }

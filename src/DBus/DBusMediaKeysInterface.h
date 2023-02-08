@@ -28,28 +28,29 @@
 
 class PlayManager;
 
-class DBusMediaKeysInterface :
-		public QObject
+namespace Dbus
 {
-	Q_OBJECT
-	PIMPL(DBusMediaKeysInterface)
+	class MediaKeysInterface :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(MediaKeysInterface)
 
-public:
-	explicit DBusMediaKeysInterface(PlayManager* playManager, QObject* parent=nullptr);
-	virtual ~DBusMediaKeysInterface();
+		public:
+			explicit MediaKeysInterface(PlayManager* playManager, QObject* parent = nullptr);
+			~MediaKeysInterface() override;
 
-	void init();
+			void init();
 
-protected:
-	bool initialized() const;
+		protected:
+			[[nodiscard]] virtual QString serviceName() const = 0;
+			virtual QDBusPendingReply<> grabMediaKeyReply() = 0;
+			virtual void connectMediaKeys() = 0;
 
-	virtual QString serviceName() const=0;
-	virtual QDBusPendingReply<> grabMediaKeyReply()=0;
-	virtual void connectMediaKeys()=0;
-
-protected slots:
-	virtual void mediaKeyPressed(const QString& appName, const QString& key);
-	virtual void registerFinished(QDBusPendingCallWatcher* watcher);
-};
+		protected slots:
+			virtual void mediaKeyPressed(const QString& appName, const QString& key);
+			virtual void registerFinished(QDBusPendingCallWatcher* watcher);
+	};
+}
 
 #endif // DBUSMEDIAKEYSINTERFACE_H

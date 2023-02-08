@@ -146,370 +146,378 @@ namespace
 	}
 }
 
-struct DBusMPRIS::MediaPlayer2::Private
+namespace Dbus::Mpris
 {
-	PlayManager* playManager;
-	QMainWindow* player;
-	PlaylistAccessor* playlistAccessor;
+	struct MediaPlayer2::Private
+	{
+		PlayManager* playManager;
+		QMainWindow* player;
+		PlaylistAccessor* playlistAccessor;
 
-	QString coverPath {Util::Filepath(Cover::Location::invalidPath()).fileystemPath()};
+		QString coverPath {Util::Filepath(Cover::Location::invalidPath()).fileystemPath()};
 
-	MetaData track;
-	MicroSeconds pos;
-	double volume {GetSetting(Set::Engine_Vol) / 100.0};
+		MetaData track;
+		MicroSeconds pos;
+		double volume {GetSetting(Set::Engine_Vol) / 100.0};
 
-	Private(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor) :
-		playManager(playManager),
-		player(player),
-		playlistAccessor(playlistAccessor),
-		pos(playManager->currentPositionMs() * 1000) {} // NOLINT(readability-magic-numbers)
-};
+		Private(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor) :
+			playManager(playManager),
+			player(player),
+			playlistAccessor(playlistAccessor),
+			pos(playManager->currentPositionMs() * 1000) {} // NOLINT(readability-magic-numbers)
+	};
 
-DBusMPRIS::MediaPlayer2::MediaPlayer2(QMainWindow* player, PlayManager* playManager,
-                                      PlaylistAccessor* playlistAccessor,
-                                      QObject* parent) :
-	DBusAdaptor("/org/mpris/MediaPlayer2",
-	            "org.mpris.MediaPlayer2.sayonara",
-	            "org.mpris.MediaPlayer2.Player",
-	            "org.freedesktop.DBus.Properties",
-	            parent)
-{
-	m = Pimpl::make<Private>(player, playManager, playlistAccessor);
+	MediaPlayer2::MediaPlayer2(QMainWindow* player, PlayManager* playManager,
+	                           PlaylistAccessor* playlistAccessor) :
+		Adapator("/org/mpris/MediaPlayer2",
+		         "org.mpris.MediaPlayer2.sayonara",
+		         "org.mpris.MediaPlayer2.Player",
+		         "org.freedesktop.DBus.Properties",
+		         player),
+		m{Pimpl::make<Private>(player, playManager, playlistAccessor)}
+	{
+		connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &MediaPlayer2::playstateChanged);
+		connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &MediaPlayer2::trackChanged);
+		connect(m->playManager, &PlayManager::sigTrackIndexChanged, this, &MediaPlayer2::trackIndexChanged);
+		connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &MediaPlayer2::positionChanged);
+		connect(m->playManager, &PlayManager::sigVolumeChanged, this, &MediaPlayer2::volumeChanged);
+		connect(m->playManager, &PlayManager::sigCurrentMetadataChanged, this, [&]() {
+			trackChanged(m->playManager->currentTrack());
+		});
 
-	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &DBusMPRIS::MediaPlayer2::playstateChanged);
-	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &DBusMPRIS::MediaPlayer2::trackChanged);
-	connect(m->playManager, &PlayManager::sigTrackIndexChanged, this, &DBusMPRIS::MediaPlayer2::trackIndexChanged);
-	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &DBusMPRIS::MediaPlayer2::positionChanged);
-	connect(m->playManager, &PlayManager::sigVolumeChanged, this, &DBusMPRIS::MediaPlayer2::volumeChanged);
-	connect(m->playManager, &PlayManager::sigCurrentMetadataChanged, this, [&]() {
 		trackChanged(m->playManager->currentTrack());
-	});
-
-	trackChanged(m->playManager->currentTrack());
-}
-
-DBusMPRIS::MediaPlayer2::~MediaPlayer2()
-{
-	QDBusConnection::sessionBus().unregisterObject(objectPath());
-	QDBusConnection::sessionBus().unregisterService(serviceName());
-}
-
-void DBusMPRIS::MediaPlayer2::init()
-{
-	static auto isInitialized = false;
-	if(isInitialized)
-	{
-		return;
 	}
 
-	new OrgMprisMediaPlayer2Adaptor(this);
-	new OrgMprisMediaPlayer2PlayerAdaptor(this);
-
-	if(!QDBusConnection::sessionBus().registerService(serviceName()))
+	MediaPlayer2::~MediaPlayer2()
 	{
-		spLog(Log::Warning, this) << "Failed to register " << serviceName() << " on the session bus";
+		QDBusConnection::sessionBus().unregisterObject(objectPath());
+		QDBusConnection::sessionBus().unregisterService(serviceName());
 	}
 
-	else
+	void MediaPlayer2::init()
 	{
-		spLog(Log::Info, this) << serviceName() << " registered";
+		static auto isInitialized = false;
+		if(isInitialized)
+		{
+			return;
+		}
 
-		QDBusConnection::sessionBus().registerObject(objectPath(), this);
-		createMessage(PropertyDesktopEntry, QString("sayonara"));
+		new OrgMprisMediaPlayer2Adaptor(this);
+		new OrgMprisMediaPlayer2PlayerAdaptor(this);
+
+		if(!QDBusConnection::sessionBus().registerService(serviceName()))
+		{
+			spLog(Log::Warning, this) << "Failed to register " << serviceName() << " on the session bus";
+		}
+
+		else
+		{
+			spLog(Log::Info, this) << serviceName() << " registered";
+
+			QDBusConnection::sessionBus().registerObject(objectPath(), this);
+			createMessage(PropertyDesktopEntry, QString("sayonara"));
+		}
+
+		isInitialized = true;
 	}
 
-	isInitialized = true;
-}
+	bool
+	MediaPlayer2::CanQuit() const { return true; } // NOLINT(readability-convert-member-functions-to-static)
 
-bool DBusMPRIS::MediaPlayer2::CanQuit() const { return true; } // NOLINT(readability-convert-member-functions-to-static)
+	bool MediaPlayer2::CanRaise() { return true; } // NOLINT(readability-convert-member-functions-to-static)
 
-bool DBusMPRIS::MediaPlayer2::CanRaise() { return true; } // NOLINT(readability-convert-member-functions-to-static)
+	bool
+	MediaPlayer2::HasTrackList() { return false; } // NOLINT(readability-convert-member-functions-to-static)
 
-bool DBusMPRIS::MediaPlayer2::HasTrackList() { return false; } // NOLINT(readability-convert-member-functions-to-static)
+	QString
+	MediaPlayer2::Identity() { return "Sayonara Player"; } // NOLINT(readability-convert-member-functions-to-static)
 
-QString
-DBusMPRIS::MediaPlayer2::Identity() { return "Sayonara Player"; } // NOLINT(readability-convert-member-functions-to-static)
+	QString
+	MediaPlayer2::DesktopEntry() { return "com.sayonara-player.Sayonara"; } // NOLINT(readability-convert-member-functions-to-static)
 
-QString
-DBusMPRIS::MediaPlayer2::DesktopEntry() { return "com.sayonara-player.Sayonara"; } // NOLINT(readability-convert-member-functions-to-static)
-
-QStringList DBusMPRIS::MediaPlayer2::SupportedUriSchemes() // NOLINT(readability-convert-member-functions-to-static)
-{
-	return {
-		"file",
-		"http",
-		"cdda",
-		"smb",
-		"sftp"
-	};
-}
-
-QStringList DBusMPRIS::MediaPlayer2::SupportedMimeTypes() // NOLINT(readability-convert-member-functions-to-static)
-{
-	return {
-		"audio/mpeg"
-		"audio/ogg"
-	};
-}
-
-bool
-DBusMPRIS::MediaPlayer2::CanSetFullscreen() { return true; } // NOLINT(readability-convert-member-functions-to-static)
-
-bool
-DBusMPRIS::MediaPlayer2::Fullscreen() { return GetSetting(Set::Player_Fullscreen); } // NOLINT(readability-convert-member-functions-to-static)
-
-void DBusMPRIS::MediaPlayer2::SetFullscreen(bool b)// NOLINT(readability-convert-member-functions-to-static)
-{
-	SetSetting(Set::Player_Fullscreen, b);
-}
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::Quit()
-{
-	m->player->setProperty("shutdown", true);
-	m->player->close();
-}
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::Raise()
-{
-	spLog(Log::Debug, this) << "Raise";
-
-	constexpr const auto Timeout = 200;
-
-	const auto geometry = GetSetting(Set::Player_Geometry);
-	if(m->player->isMinimized())
+	QStringList MediaPlayer2::SupportedUriSchemes() // NOLINT(readability-convert-member-functions-to-static)
 	{
-		QTimer::singleShot(Timeout, [=]() {
-			m->player->showNormal();
-		});
+		return {
+			"file",
+			"http",
+			"cdda",
+			"smb",
+			"sftp"
+		};
 	}
-	else
+
+	QStringList MediaPlayer2::SupportedMimeTypes() // NOLINT(readability-convert-member-functions-to-static)
 	{
-		QTimer::singleShot(Timeout, [=]() {
-			m->player->restoreGeometry(geometry);
-			m->player->showNormal();
-		});
+		return {
+			"audio/mpeg"
+			"audio/ogg"
+		};
 	}
-}
+
+	bool
+	MediaPlayer2::CanSetFullscreen() { return true; } // NOLINT(readability-convert-member-functions-to-static)
+
+	bool
+	MediaPlayer2::Fullscreen() { return GetSetting(Set::Player_Fullscreen); } // NOLINT(readability-convert-member-functions-to-static)
+
+	void MediaPlayer2::SetFullscreen(bool b)// NOLINT(readability-convert-member-functions-to-static)
+	{
+		SetSetting(Set::Player_Fullscreen, b);
+	}
+
+	[[maybe_unused]] void MediaPlayer2::Quit()
+	{
+		m->player->setProperty("shutdown", true);
+		m->player->close();
+	}
+
+	[[maybe_unused]] void MediaPlayer2::Raise()
+	{
+		spLog(Log::Debug, this) << "Raise";
+
+		constexpr const auto Timeout = 200;
+
+		const auto geometry = GetSetting(Set::Player_Geometry);
+		if(m->player->isMinimized())
+		{
+			QTimer::singleShot(Timeout, [=]() {
+				m->player->showNormal();
+			});
+		}
+		else
+		{
+			QTimer::singleShot(Timeout, [=]() {
+				m->player->restoreGeometry(geometry);
+				m->player->showNormal();
+			});
+		}
+	}
 
 /*** mpris.mediaplayer2.player ***/
 
-bool DBusMPRIS::MediaPlayer2::CanControl() { return true; } // NOLINT(readability-convert-member-functions-to-static)
+	bool
+	MediaPlayer2::CanControl() { return true; } // NOLINT(readability-convert-member-functions-to-static)
 
-bool DBusMPRIS::MediaPlayer2::CanGoNext()
-{
-	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
-	if(!playlist)
+	bool MediaPlayer2::CanGoNext()
 	{
-		return false;
+		const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
+		if(!playlist)
+		{
+			return false;
+		}
+
+		const auto playlistMode = playlist->mode();
+		const auto isShuffleOrRepeat = PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()) ||
+		                               PlaylistMode::isActiveAndEnabled(playlistMode.repAll());
+
+		return (isShuffleOrRepeat && Playlist::count(*playlist) > 0) ||
+		       (playlist->currentTrackIndex() < Playlist::count(*playlist) - 1);
 	}
 
-	const auto playlistMode = playlist->mode();
-	const auto isShuffleOrRepeat = PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()) ||
-	                               PlaylistMode::isActiveAndEnabled(playlistMode.repAll());
-
-	return (isShuffleOrRepeat && Playlist::count(*playlist) > 0) ||
-	       (playlist->currentTrackIndex() < Playlist::count(*playlist) - 1);
-}
-
-bool DBusMPRIS::MediaPlayer2::CanGoPrevious()
-{
-	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
-	return (playlist != nullptr)
-	       ? (playlist->currentTrackIndex() > 0) && (Playlist::count(*playlist) > 1)
-	       : false;
-}
-
-bool DBusMPRIS::MediaPlayer2::CanPause() { return true; } // NOLINT(readability-convert-member-functions-to-static)
-
-bool DBusMPRIS::MediaPlayer2::CanPlay() { return true; } // NOLINT(readability-convert-member-functions-to-static)
-
-bool DBusMPRIS::MediaPlayer2::CanSeek()
-{
-	const auto& track = m->playManager->currentTrack();
-	return track.durationMs() > 0;
-}
-
-void DBusMPRIS::MediaPlayer2::Next()
-{
-	[[maybe_unused]] const auto disableRep1 = TemporarilyDisableRep1 {};
-
-	m->playManager->next();
-}
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::Previous() { m->playManager->previous(); }
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::Pause() { m->playManager->pause(); }
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::PlayPause() { m->playManager->playPause(); }
-
-void DBusMPRIS::MediaPlayer2::Stop() { m->playManager->stop(); }
-
-void DBusMPRIS::MediaPlayer2::Play() { m->playManager->play(); }
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::Seek(const qlonglong offset)
-{
-	m->playManager->seekRelativeMs(offset / 1000); // NOLINT(readability-magic-numbers)
-}
-
-qlonglong DBusMPRIS::MediaPlayer2::Position() { return m->pos; }
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::SetPosition(const QDBusObjectPath& /*trackId*/, const qlonglong position)
-{
-	m->playManager->seekAbsoluteMs(position / 1000); // NOLINT(readability-magic-numbers)
-}
-
-void DBusMPRIS::MediaPlayer2::positionChanged(const MilliSeconds pos)
-{
-	init();
-
-	const auto newPosition = static_cast<MicroSeconds>(pos * 1000);
-	const auto difference = newPosition - m->pos;
-
-	constexpr const auto OneSecond = 1'000'000;
-	if(difference < 0 || difference > OneSecond)
+	bool MediaPlayer2::CanGoPrevious()
 	{
-		emit Seeked(newPosition);
+		const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
+		return (playlist != nullptr)
+		       ? (playlist->currentTrackIndex() > 0) && (Playlist::count(*playlist) > 1)
+		       : false;
 	}
 
-	m->pos = newPosition;
-}
+	bool MediaPlayer2::CanPause() { return true; } // NOLINT(readability-convert-member-functions-to-static)
 
-void DBusMPRIS::MediaPlayer2::trackIndexChanged(const int /*idx*/)
-{
-	init();
+	bool MediaPlayer2::CanPlay() { return true; } // NOLINT(readability-convert-member-functions-to-static)
 
-	createMessage(PropertyCanGoNext, CanGoNext());
-	createMessage(PropertyCanGoPrevious, CanGoPrevious());
-}
-
-QVariantMap DBusMPRIS::MediaPlayer2::Metadata()
-{
-	auto map = QVariantMap {};
-
-	map["mpris:artUrl"] = QUrl::fromLocalFile(m->coverPath).toString();
-	map["mpris:length"] = QVariant::fromValue<qlonglong>(
-		m->track.durationMs() * 1000); // NOLINT(readability-magic-numbers)
-	map["mpris:trackid"] = QVariant::fromValue(createObjectPath(m->track.id()));
-
-	map["xesam:album"] = checkString(m->track.album(), Lang::UnknownAlbum);
-	map["xesam:albumArtist"] = checkString(m->track.albumArtist(), Lang::UnknownArtist);
-	map["xesam:artist"] = QStringList({checkString(m->track.artist(), Lang::UnknownArtist)});
-
-	if(!m->track.comment().isEmpty())
+	bool MediaPlayer2::CanSeek()
 	{
-		map["xesam:comment"] = m->track.comment();
+		const auto& track = m->playManager->currentTrack();
+		return track.durationMs() > 0;
 	}
 
-	if(m->track.createdDateTime().isValid())
+	void MediaPlayer2::Next()
 	{
-		map["contentCreated"] = m->track.createdDateTime().toString(Qt::ISODate);
+		[[maybe_unused]] const auto disableRep1 = TemporarilyDisableRep1 {};
+
+		m->playManager->next();
 	}
 
-	map["xesam:discNumber"] = static_cast<int>(m->track.discnumber());
+	[[maybe_unused]] void MediaPlayer2::Previous() { m->playManager->previous(); }
 
-	if(!m->track.genres().isEmpty())
+	[[maybe_unused]] void MediaPlayer2::Pause() { m->playManager->pause(); }
+
+	[[maybe_unused]] void MediaPlayer2::PlayPause() { m->playManager->playPause(); }
+
+	void MediaPlayer2::Stop() { m->playManager->stop(); }
+
+	void MediaPlayer2::Play() { m->playManager->play(); }
+
+	[[maybe_unused]] void MediaPlayer2::Seek(const qlonglong offset)
 	{
-		map["xesam:genre"] = m->track.genresToList().join(", ");
+		m->playManager->seekRelativeMs(offset / 1000); // NOLINT(readability-magic-numbers)
 	}
 
-	map["xesam:trackNumber"] = static_cast<int>(m->track.trackNumber());
-	map["xesam:title"] = checkString(m->track.title(), Lang::UnknownTitle);
-	map["xesam:userRating"] = (static_cast<int>(m->track.rating()) / 5.0); // NOLINT(readability-magic-numbers)
+	qlonglong MediaPlayer2::Position() { return m->pos; }
 
-	map["sayonara:year"] = static_cast<int>(m->track.year());
-	map["sayonara:bitrate"] = static_cast<int>(m->track.bitrate());
-	map["sayonara:filesize"] = QVariant::fromValue<int>(static_cast<int>(m->track.filesize()));
+	[[maybe_unused]] void
+	MediaPlayer2::SetPosition(const QDBusObjectPath& /*trackId*/, const qlonglong position)
+	{
+		m->playManager->seekAbsoluteMs(position / 1000); // NOLINT(readability-magic-numbers)
+	}
 
-	return map;
+	void MediaPlayer2::positionChanged(const MilliSeconds pos)
+	{
+		init();
+
+		const auto newPosition = static_cast<MicroSeconds>(pos * 1000);
+		const auto difference = newPosition - m->pos;
+
+		constexpr const auto OneSecond = 1'000'000;
+		if(difference < 0 || difference > OneSecond)
+		{
+			emit Seeked(newPosition);
+		}
+
+		m->pos = newPosition;
+	}
+
+	void MediaPlayer2::trackIndexChanged(const int /*idx*/)
+	{
+		init();
+
+		createMessage(PropertyCanGoNext, CanGoNext());
+		createMessage(PropertyCanGoPrevious, CanGoPrevious());
+	}
+
+	QVariantMap MediaPlayer2::Metadata()
+	{
+		auto map = QVariantMap {};
+
+		map["mpris:artUrl"] = QUrl::fromLocalFile(m->coverPath).toString();
+		map["mpris:length"] = QVariant::fromValue<qlonglong>(
+			m->track.durationMs() * 1000); // NOLINT(readability-magic-numbers)
+		map["mpris:trackid"] = QVariant::fromValue(createObjectPath(m->track.id()));
+
+		map["xesam:album"] = checkString(m->track.album(), Lang::UnknownAlbum);
+		map["xesam:albumArtist"] = checkString(m->track.albumArtist(), Lang::UnknownArtist);
+		map["xesam:artist"] = QStringList({checkString(m->track.artist(), Lang::UnknownArtist)});
+
+		if(!m->track.comment().isEmpty())
+		{
+			map["xesam:comment"] = m->track.comment();
+		}
+
+		if(m->track.createdDateTime().isValid())
+		{
+			map["contentCreated"] = m->track.createdDateTime().toString(Qt::ISODate);
+		}
+
+		map["xesam:discNumber"] = static_cast<int>(m->track.discnumber());
+
+		if(!m->track.genres().isEmpty())
+		{
+			map["xesam:genre"] = m->track.genresToList().join(", ");
+		}
+
+		map["xesam:trackNumber"] = static_cast<int>(m->track.trackNumber());
+		map["xesam:title"] = checkString(m->track.title(), Lang::UnknownTitle);
+		map["xesam:userRating"] = (static_cast<int>(m->track.rating()) / 5.0); // NOLINT(readability-magic-numbers)
+
+		map["sayonara:year"] = static_cast<int>(m->track.year());
+		map["sayonara:bitrate"] = static_cast<int>(m->track.bitrate());
+		map["sayonara:filesize"] = QVariant::fromValue<int>(static_cast<int>(m->track.filesize()));
+
+		return map;
+	}
+
+	void MediaPlayer2::trackChanged(const MetaData& track)
+	{
+		m->track = track;
+
+		const auto coverLocation = Cover::Location::coverLocation(track);
+		const auto preferredPath = coverLocation.preferredPath();
+		const auto filepath = Util::Filepath(preferredPath);
+
+		m->coverPath = filepath.fileystemPath();
+
+		init();
+
+		createMessage(PropertyMetadata, Metadata());
+		createMessage(PropertyCanSeek, CanSeek());
+	}
+
+	QString MediaPlayer2::LoopStatus() // NOLINT(readability-convert-member-functions-to-static)
+	{
+		return playlistModeToLoopStatus(GetSetting(Set::PL_Mode));
+	}
+
+	void MediaPlayer2::SetLoopStatus(const QString loopStatus) // NOLINT(performance-unnecessary-value-param)
+	{
+		const auto playlistMode = loopStatusToPlaylistMode(loopStatus);
+		SetSetting(Set::PL_Mode, playlistMode);
+		createMessage(PropertyLoopStatus, playlistModeToLoopStatus(playlistMode));
+	}
+
+	QString MediaPlayer2::PlaybackStatus() { return getPlaybackStatusString(m->playManager->playstate()); }
+
+	void MediaPlayer2::playstateChanged(const PlayState state)
+	{
+		init();
+
+		const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
+		const auto hasTracks = (playlist != nullptr)
+		                       ? Playlist::count(*playlist) > 0
+		                       : false;
+
+		createMessage(PropertyCanPlay, hasTracks && (state != PlayState::Playing));
+		createMessage(PropertyCanPause, (state == PlayState::Playing));
+		createMessage(PropertyPlaybackStatus, PlaybackStatus());
+	}
+
+	bool MediaPlayer2::Shuffle() // NOLINT(readability-convert-member-functions-to-static)
+	{
+		const auto playlistMode = GetSetting(Set::PL_Mode);
+		return PlaylistMode::isActiveAndEnabled(playlistMode.shuffle());
+	}
+
+	void
+	MediaPlayer2::SetShuffle(const bool shuffle) // NOLINT(readability-convert-member-functions-to-static)
+	{
+		auto playlistMode = GetSetting(Set::PL_Mode);
+		playlistMode.setShuffle(shuffle);
+		SetSetting(Set::PL_Mode, playlistMode);
+
+		createMessage(PropertyShuffle, PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()));
+	}
+
+	double MediaPlayer2::Volume() { return m->volume; }
+
+	void MediaPlayer2::SetVolume(const double volume)
+	{
+		m->playManager->setVolume(static_cast<int>(volume * 100)); // NOLINT(readability-magic-numbers)
+		m->volume = volume;
+	}
+
+	[[maybe_unused]] void MediaPlayer2::IncreaseVolume() { m->playManager->volumeUp(); }
+
+	[[maybe_unused]] void MediaPlayer2::DecreaseVolume() { m->playManager->volumeDown(); }
+
+	void MediaPlayer2::volumeChanged(const int volume)
+	{
+		init();
+
+		m->volume = (volume / 100.0);
+		createMessage(PropertyVolume, m->volume);
+	}
+
+	int MediaPlayer2::Rating() { return static_cast<int>(m->track.rating()); }
+
+	double
+	MediaPlayer2::MinimumRate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
+
+	double
+	MediaPlayer2::MaximumRate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
+
+	double MediaPlayer2::Rate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
+
+	void MediaPlayer2::SetRate(const double /*rate*/) {}
+
+	[[maybe_unused]] void MediaPlayer2::OpenUri(const QString& /*uri*/) {}
 }
-
-void DBusMPRIS::MediaPlayer2::trackChanged(const MetaData& track)
-{
-	m->track = track;
-
-	const auto coverLocation = Cover::Location::coverLocation(track);
-	const auto preferredPath = coverLocation.preferredPath();
-	const auto filepath = Util::Filepath(preferredPath);
-
-	m->coverPath = filepath.fileystemPath();
-
-	init();
-
-	createMessage(PropertyMetadata, Metadata());
-	createMessage(PropertyCanSeek, CanSeek());
-}
-
-QString DBusMPRIS::MediaPlayer2::LoopStatus() // NOLINT(readability-convert-member-functions-to-static)
-{
-	return playlistModeToLoopStatus(GetSetting(Set::PL_Mode));
-}
-
-void DBusMPRIS::MediaPlayer2::SetLoopStatus(const QString loopStatus) // NOLINT(performance-unnecessary-value-param)
-{
-	const auto playlistMode = loopStatusToPlaylistMode(loopStatus);
-	SetSetting(Set::PL_Mode, playlistMode);
-	createMessage(PropertyLoopStatus, playlistModeToLoopStatus(playlistMode));
-}
-
-QString DBusMPRIS::MediaPlayer2::PlaybackStatus() { return getPlaybackStatusString(m->playManager->playstate()); }
-
-void DBusMPRIS::MediaPlayer2::playstateChanged(const PlayState state)
-{
-	init();
-
-	const auto playlist = m->playlistAccessor->playlist(m->playlistAccessor->currentIndex());
-	const auto hasTracks = (playlist != nullptr)
-	                       ? Playlist::count(*playlist) > 0
-	                       : false;
-
-	createMessage(PropertyCanPlay, hasTracks && (state != PlayState::Playing));
-	createMessage(PropertyCanPause, (state == PlayState::Playing));
-	createMessage(PropertyPlaybackStatus, PlaybackStatus());
-}
-
-bool DBusMPRIS::MediaPlayer2::Shuffle() // NOLINT(readability-convert-member-functions-to-static)
-{
-	const auto playlistMode = GetSetting(Set::PL_Mode);
-	return PlaylistMode::isActiveAndEnabled(playlistMode.shuffle());
-}
-
-void DBusMPRIS::MediaPlayer2::SetShuffle(const bool shuffle) // NOLINT(readability-convert-member-functions-to-static)
-{
-	auto playlistMode = GetSetting(Set::PL_Mode);
-	playlistMode.setShuffle(shuffle);
-	SetSetting(Set::PL_Mode, playlistMode);
-
-	createMessage(PropertyShuffle, PlaylistMode::isActiveAndEnabled(playlistMode.shuffle()));
-}
-
-double DBusMPRIS::MediaPlayer2::Volume() { return m->volume; }
-
-void DBusMPRIS::MediaPlayer2::SetVolume(const double volume)
-{
-	m->playManager->setVolume(static_cast<int>(volume * 100)); // NOLINT(readability-magic-numbers)
-	m->volume = volume;
-}
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::IncreaseVolume() { m->playManager->volumeUp(); }
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::DecreaseVolume() { m->playManager->volumeDown(); }
-
-void DBusMPRIS::MediaPlayer2::volumeChanged(const int volume)
-{
-	init();
-
-	m->volume = (volume / 100.0);
-	createMessage(PropertyVolume, m->volume);
-}
-
-int DBusMPRIS::MediaPlayer2::Rating() { return static_cast<int>(m->track.rating()); }
-
-double DBusMPRIS::MediaPlayer2::MinimumRate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
-
-double DBusMPRIS::MediaPlayer2::MaximumRate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
-
-double DBusMPRIS::MediaPlayer2::Rate() { return 1.0; } // NOLINT(readability-convert-member-functions-to-static)
-
-void DBusMPRIS::MediaPlayer2::SetRate(const double /*rate*/) {}
-
-[[maybe_unused]] void DBusMPRIS::MediaPlayer2::OpenUri(const QString& /*uri*/) {}

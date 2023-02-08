@@ -22,47 +22,48 @@
 #include "DBus/mate_settings_daemon.h"
 #include "Utils/Logger/Logger.h"
 
-struct DBusMediaKeysInterfaceMate::Private
+namespace
 {
-	OrgMateSettingsDaemonMediaKeysInterface* mediaKeyInterface=nullptr;
-
-	Private(DBusMediaKeysInterface* parent)
-	{
-		mediaKeyInterface = new OrgMateSettingsDaemonMediaKeysInterface(
-				"org.mate.SettingsDaemon",
-				"/org/mate/SettingsDaemon/MediaKeys",
-				QDBusConnection::sessionBus(),
-				parent);
-	}
+	constexpr const auto* service = "org.mate.SettingsDaemon";
+	constexpr const auto* objectPath = "/org/mate/SettingsDaemon/MediaKeys";
 };
 
-DBusMediaKeysInterfaceMate::DBusMediaKeysInterfaceMate(PlayManager* playManager, QObject* parent) :
-	DBusMediaKeysInterface(playManager, parent)
+namespace Dbus
 {
-	m = Pimpl::make<Private>(this);
+	struct MediaKeysInterfaceMate::Private
+	{
+		OrgMateSettingsDaemonMediaKeysInterface mediaKeyInterface;
 
-	init();
+		explicit Private(MediaKeysInterfaceMate* parent) :
+			mediaKeyInterface {service, objectPath, QDBusConnection::sessionBus(), parent} {}
+	};
+
+	MediaKeysInterfaceMate::MediaKeysInterfaceMate(PlayManager* playManager, QObject* parent) :
+		MediaKeysInterface(playManager, parent)
+	{
+		m = Pimpl::make<Private>(this);
+
+		init();
+	}
+
+	MediaKeysInterfaceMate::~MediaKeysInterfaceMate() = default;
+
+	QString MediaKeysInterfaceMate::serviceName() const
+	{
+		return service;
+	}
+
+	QDBusPendingReply<> MediaKeysInterfaceMate::grabMediaKeyReply()
+	{
+		return m->mediaKeyInterface.GrabMediaPlayerKeys("sayonara", 0);
+	}
+
+	void MediaKeysInterfaceMate::connectMediaKeys()
+	{
+		connect(&m->mediaKeyInterface,
+		        &OrgMateSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
+		        this,
+		        &MediaKeysInterfaceMate::mediaKeyPressed
+		);
+	}
 }
-
-DBusMediaKeysInterfaceMate::~DBusMediaKeysInterfaceMate() {}
-
-QString DBusMediaKeysInterfaceMate::serviceName() const
-{
-	return QString("org.mate.SettingsDaemon");
-}
-
-QDBusPendingReply<> DBusMediaKeysInterfaceMate::grabMediaKeyReply()
-{
-	return m->mediaKeyInterface->GrabMediaPlayerKeys("sayonara", 0);
-}
-
-void DBusMediaKeysInterfaceMate::connectMediaKeys()
-{
-	connect( m->mediaKeyInterface,
-			 &OrgMateSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
-			 this,
-			 &DBusMediaKeysInterfaceMate::mediaKeyPressed
-	);
-}
-
-

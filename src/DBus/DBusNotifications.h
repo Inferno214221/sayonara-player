@@ -25,19 +25,22 @@
 #include "Utils/Pimpl.h"
 
 class NotificationHandler;
-class DBusNotifications :
-	public QObject,
-	public Notificator
+namespace Dbus
 {
-	Q_OBJECT
-	PIMPL(DBusNotifications)
+	class Notifications :
+		public QObject,
+		public Notificator
+	{
+		Q_OBJECT
+		PIMPL(Notifications)
 
-	public:
-		explicit DBusNotifications(NotificationHandler* notificationHandler, QObject* parent = nullptr);
-		virtual ~DBusNotifications() override;
+		public:
+			explicit Notifications(NotificationHandler* notificationHandler, QObject* parent = nullptr);
+			~Notifications() override;
 
-		void notify(const MetaData& track) override;
-		void notify(const QString& title, const QString& text, const QString& imagePath) override;
-};
+			void notify(const MetaData& track) override;
+			void notify(const QString& title, const QString& text, const QString& imagePath) override;
+	};
+}
 
 #endif // DBUSNOTIFICATIONS_H

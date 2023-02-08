@@ -36,10 +36,10 @@ class QMainWindow;
 class PlayManager;
 class PlaylistAccessor;
 
-namespace DBusMPRIS
+namespace Dbus::Mpris
 {
 	class MediaPlayer2 :
-		public DBusAdaptor
+		public Adapator
 	{
 		Q_OBJECT
 		PIMPL(MediaPlayer2)
@@ -48,8 +48,7 @@ namespace DBusMPRIS
 			void Seeked(qlonglong position);
 
 		public:
-			explicit MediaPlayer2(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
-			                      QObject* parent = nullptr);
+			MediaPlayer2(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor);
 			~MediaPlayer2() override;
 
 			Q_PROPERTY(bool CanQuit READ CanQuit CONSTANT)
@@ -157,6 +156,6 @@ namespace DBusMPRIS
 		private: // NOLINT(readability-redundant-access-specifiers)
 			void init();
 	};
-} // end namespace DBusMPRIS
+} // end namespace Dbus::MPRIS
 
 #endif // DBUS_MPRIS_H

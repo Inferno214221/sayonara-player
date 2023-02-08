@@ -22,46 +22,48 @@
 #include "DBus/gnome_settings_daemon.h"
 #include "Utils/Logger/Logger.h"
 
-struct DBusMediaKeysInterfaceGnome::Private
+namespace
 {
-	OrgGnomeSettingsDaemonMediaKeysInterface* mediaKeyInterface=0;
-
-	Private(DBusMediaKeysInterface* parent)
-	{
-		mediaKeyInterface = new OrgGnomeSettingsDaemonMediaKeysInterface(
-				"org.gnome.SettingsDaemon",
-				"/org/gnome/SettingsDaemon/MediaKeys",
-				QDBusConnection::sessionBus(),
-				parent);
-	}
+	constexpr const auto* service = "org.gnome.SettingsDaemon";
+	constexpr const auto* objectPath = "/org/gnome/SettingsDaemon/MediaKeys";
 };
 
-DBusMediaKeysInterfaceGnome::DBusMediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent) :
-	DBusMediaKeysInterface(playManager, parent)
+namespace Dbus
 {
-	m = Pimpl::make<Private>(this);
+	struct MediaKeysInterfaceGnome::Private
+	{
+		OrgGnomeSettingsDaemonMediaKeysInterface mediaKeyInterface;
 
-	init();
+		explicit Private(MediaKeysInterfaceGnome* parent) :
+			mediaKeyInterface {service, objectPath, QDBusConnection::sessionBus(), parent} {}
+	};
+
+	MediaKeysInterfaceGnome::MediaKeysInterfaceGnome(PlayManager* playManager, QObject* parent) :
+		MediaKeysInterface(playManager, parent)
+	{
+		m = Pimpl::make<Private>(this);
+
+		init();
+	}
+
+	MediaKeysInterfaceGnome::~MediaKeysInterfaceGnome() = default;
+
+	QString MediaKeysInterfaceGnome::serviceName() const
+	{
+		return QString("org.gnome.SettingsDaemon");
+	}
+
+	QDBusPendingReply<> MediaKeysInterfaceGnome::grabMediaKeyReply()
+	{
+		return m->mediaKeyInterface.GrabMediaPlayerKeys("sayonara", 0);
+	}
+
+	void MediaKeysInterfaceGnome::connectMediaKeys()
+	{
+		connect(&m->mediaKeyInterface,
+		        &OrgGnomeSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
+		        this,
+		        &MediaKeysInterfaceGnome::mediaKeyPressed
+		);
+	}
 }
-
-DBusMediaKeysInterfaceGnome::~DBusMediaKeysInterfaceGnome() {}
-
-QString DBusMediaKeysInterfaceGnome::serviceName() const
-{
-	return QString("org.gnome.SettingsDaemon");
-}
-
-QDBusPendingReply<> DBusMediaKeysInterfaceGnome::grabMediaKeyReply()
-{
-	return m->mediaKeyInterface->GrabMediaPlayerKeys("sayonara", 0);
-}
-
-void DBusMediaKeysInterfaceGnome::connectMediaKeys()
-{
-	connect( m->mediaKeyInterface,
-			 &OrgGnomeSettingsDaemonMediaKeysInterface::MediaPlayerKeyPressed,
-			 this,
-			 &DBusMediaKeysInterfaceGnome::mediaKeyPressed
-	);
-}
-
