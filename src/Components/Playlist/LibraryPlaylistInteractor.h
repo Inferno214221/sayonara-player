@@ -1,4 +1,4 @@
-/* ${CLASS_NAME}.h */
+/* LibraryPlaylistInteractorImpl.h */
 /*
  * Copyright (C) 2011-2021 Michael Lugmair
  *
@@ -22,6 +22,11 @@
 
 class MetaDataList;
 class QStringList;
+namespace Playlist
+{
+	class Handler;
+}
+class PlayManager;
 
 class LibraryPlaylistInteractor
 {
@@ -32,7 +37,8 @@ class LibraryPlaylistInteractor
 		virtual void createPlaylist(const MetaDataList& tracks, bool createNewPlaylist) = 0;
 		virtual void append(const MetaDataList& tracks) = 0;
 		virtual void insertAfterCurrentTrack(const MetaDataList& tracks) = 0;
-};
 
+		static LibraryPlaylistInteractor* create(Playlist::Handler* playlistHandler, PlayManager* playManager);
+};
 
 #endif //SAYONARA_PLAYER_LIBRARYPLAYLISTINTERACTOR_H

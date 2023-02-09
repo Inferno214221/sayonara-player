@@ -23,10 +23,9 @@
 #include "SoundcloudLibraryContainer.h"
 #include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
 
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
 #include "Components/Streaming/Soundcloud/SoundcloudTokenObserver.h"
-
-#include "Interfaces/LibraryPlaylistInteractor.h"
 
 #include <QIcon>
 #include <QThread>

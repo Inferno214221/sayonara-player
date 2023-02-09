@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "LibraryPlaylistInteractorImpl.h"
+#include "LibraryPlaylistInteractor.h"
 
 #include "PlayManager/PlayManager.h"
 #include "Playlist.h"
@@ -66,45 +66,50 @@ namespace
 			}
 		}
 	}
+
+	class LibraryPlaylistInteractorImpl :
+		public LibraryPlaylistInteractor
+	{
+		public:
+
+			LibraryPlaylistInteractorImpl(Playlist::Handler* playlistHandler,
+			                              PlayManager* playManager) :
+				m_playlistHandler {playlistHandler},
+				m_playManager {playManager} {}
+
+			~LibraryPlaylistInteractorImpl() noexcept override = default;
+
+			void createPlaylist(const QStringList& tracks, bool createNewPlaylist) override
+			{
+				createPlaylistFromList(tracks, createNewPlaylist, m_playlistHandler);
+				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistHandler);
+			}
+
+			void createPlaylist(const MetaDataList& tracks, bool createNewPlaylist) override
+			{
+				createPlaylistFromList(tracks, createNewPlaylist, m_playlistHandler);
+				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistHandler);
+			}
+
+			void append(const MetaDataList& tracks) override
+			{
+				Playlist::appendTracks(*m_playlistHandler->activePlaylist(), tracks);
+			}
+
+			void insertAfterCurrentTrack(const MetaDataList& tracks) override
+			{
+				auto playlist = m_playlistHandler->activePlaylist();
+				Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1);
+			}
+
+		private:
+			Playlist::Handler* m_playlistHandler;
+			PlayManager* m_playManager;
+	};
 }
 
-struct LibraryPlaylistInteractorImpl::Private
+LibraryPlaylistInteractor*
+LibraryPlaylistInteractor::create(Playlist::Handler* playlistHandler, PlayManager* playManager)
 {
-	Playlist::Handler* playlistHandler;
-	PlayManager* playManager;
-
-	Private(Playlist::Handler* playlistHandler, PlayManager* playManager) :
-		playlistHandler {playlistHandler},
-		playManager {playManager} {}
-};
-
-LibraryPlaylistInteractorImpl::LibraryPlaylistInteractorImpl(Playlist::Handler* playlistHandler,
-                                                             PlayManager* playManager)
-{
-	m = Pimpl::make<Private>(playlistHandler, playManager);
-}
-
-LibraryPlaylistInteractorImpl::~LibraryPlaylistInteractorImpl() noexcept = default;
-
-void LibraryPlaylistInteractorImpl::createPlaylist(const QStringList& tracks, bool createNewPlaylist)
-{
-	createPlaylistFromList(tracks, createNewPlaylist, m->playlistHandler);
-	applyPlaylistActionAfterDoubleClick(m->playManager, m->playlistHandler);
-}
-
-void LibraryPlaylistInteractorImpl::createPlaylist(const MetaDataList& tracks, bool createNewPlaylist)
-{
-	createPlaylistFromList(tracks, createNewPlaylist, m->playlistHandler);
-	applyPlaylistActionAfterDoubleClick(m->playManager, m->playlistHandler);
-}
-
-void LibraryPlaylistInteractorImpl::append(const MetaDataList& tracks)
-{
-	Playlist::appendTracks(*m->playlistHandler->activePlaylist(), tracks);
-}
-
-void LibraryPlaylistInteractorImpl::insertAfterCurrentTrack(const MetaDataList& tracks)
-{
-	auto playlist = m->playlistHandler->activePlaylist();
-	Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1);
+	return new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
 }

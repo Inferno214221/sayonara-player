@@ -19,17 +19,18 @@
 
 #include "Common/SayonaraTest.h"
 
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/MetaData/Album.h"
-#include "Utils/MetaData/Artist.h"
+#include "Components/Library/LocalLibrary.h"
+#include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
+#include "Components/Tagging/ChangeNotifier.h"
 #include "Database/Albums.h"
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 #include "Utils/Algorithm.h"
-#include "Components/Library/LocalLibrary.h"
-#include "Components/LibraryManagement/LibraryManager.h"
-#include "Interfaces/LibraryPlaylistInteractor.h"
-#include "Components/Tagging/ChangeNotifier.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/MetaDataList.h"
+
 #include <QString>
 #include <QSignalSpy>
 

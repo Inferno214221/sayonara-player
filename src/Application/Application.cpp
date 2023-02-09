@@ -35,7 +35,7 @@
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/Notification/NotificationHandler.h"
 #include "Components/PlayManager/PlayManager.h"
-#include "Components/Playlist/LibraryPlaylistInteractorImpl.h"
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistChooser.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -193,7 +193,7 @@ struct Application::Private
 		sessionManager = new Session::Manager(playManager);
 
 		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
-		libraryPlaylistInteractor = new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
+		libraryPlaylistInteractor = LibraryPlaylistInteractor::create(playlistHandler, playManager);
 		libraryManager = new Library::Manager(libraryPlaylistInteractor);
 
 		playlistLibraryInteractor = new Playlist::LibraryInteractor(libraryManager);

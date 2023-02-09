@@ -21,19 +21,16 @@
 #include "LibraryManager.h"
 
 #include "Components/Library/LocalLibrary.h"
-
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
-
-#include "Interfaces/LibraryPlaylistInteractor.h"
-
-#include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QDir>
 #include <QMap>
@@ -51,7 +48,7 @@ namespace
 {
 	constexpr const auto InvalidLibraryId = -5;
 
-	Library::Info getLibraryInfo(const QList<Info>& libraries, std::function<bool (const Library::Info&)> function)
+	Library::Info getLibraryInfo(const QList<Info>& libraries, std::function<bool(const Library::Info&)> function)
 	{
 		const auto it = Algorithm::find(libraries, function);
 		return (it != libraries.end())
@@ -72,7 +69,7 @@ namespace
 			return false;
 		}
 
-		for(const auto& info : libraries)
+		for(const auto& info: libraries)
 		{
 			if(info.id() != libraryId)
 			{
@@ -94,7 +91,7 @@ namespace
 			return false;
 		}
 
-		return !Util::Algorithm::contains(libraries, [&](const auto& info){
+		return !Util::Algorithm::contains(libraries, [&](const auto& info) {
 			return (info.name() == name);
 		});
 	}
@@ -368,7 +365,7 @@ Info Manager::libraryInfo(LibraryId id) const
 
 Library::Info Manager::libraryInfoByPath(const QString& path) const
 {
-	return getLibraryInfo(m->libraries, [&](const auto& info){
+	return getLibraryInfo(m->libraries, [&](const auto& info) {
 		return (isSubPath(info.path(), path));
 	});
 }
@@ -386,8 +383,8 @@ LocalLibrary* Manager::libraryInstance(LibraryId id)
 	});
 
 	auto* localLibrary = (exists && m->libraryMap.contains(id))
-		? m->libraryMap[id]
-		: new LocalLibrary(this, id, m->playlistInteractor);
+	                     ? m->libraryMap[id]
+	                     : new LocalLibrary(this, id, m->playlistInteractor);
 
 	if(!m->libraryMap.contains(id))
 	{

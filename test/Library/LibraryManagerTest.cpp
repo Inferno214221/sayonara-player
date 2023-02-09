@@ -1,7 +1,7 @@
 #include "test/Common/SayonaraTest.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
-#include "Interfaces/LibraryPlaylistInteractor.h"
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/FileUtils.h"
 
@@ -10,7 +10,8 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class LibraryPlaylistInteractorStub : public LibraryPlaylistInteractor
+class LibraryPlaylistInteractorStub :
+	public LibraryPlaylistInteractor
 {
 	public:
 		~LibraryPlaylistInteractorStub() override = default;
@@ -52,7 +53,7 @@ class LibraryManagerTest :
 		void removeAllLibraries(Library::Manager* manager)
 		{
 			auto allLibraries = manager->allLibraries();
-			for(const auto& library : allLibraries)
+			for(const auto& library: allLibraries)
 			{
 				manager->removeLibrary(library.id());
 			}

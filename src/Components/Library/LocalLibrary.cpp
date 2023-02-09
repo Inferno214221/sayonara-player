@@ -23,20 +23,17 @@
 #include "Threads/ReloadThread.h"
 
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Components/Tagging/ChangeNotifier.h"
-
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
-
-#include "Interfaces/LibraryPlaylistInteractor.h"
-
+#include "Utils/Library/LibraryInfo.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Library/LibraryInfo.h"
-#include "Utils/Logger/Logger.h"
 
 #include <QTime>
 

@@ -20,10 +20,8 @@
 
 #include "AbstractLibrary.h"
 
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Components/Tagging/ChangeNotifier.h"
-
-#include "Interfaces/LibraryPlaylistInteractor.h"
-
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
