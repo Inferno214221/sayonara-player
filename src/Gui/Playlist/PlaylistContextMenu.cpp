@@ -21,11 +21,11 @@
 #include "PlaylistContextMenu.h"
 #include "PlaylistBookmarksMenu.h"
 
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Gui/Playlist/PlaylistActionMenu.h"
 #include "Gui/Playlist/SortingMenu.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Widgets/RatingLabel.h"
-#include "Interfaces/DynamicPlayback.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/globals.h"

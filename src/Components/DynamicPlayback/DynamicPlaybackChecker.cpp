@@ -17,29 +17,35 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "DynamicPlaybackCheckerImpl.h"
+#include "DynamicPlaybackChecker.h"
 #include "Interfaces/LibraryInfoAccessor.h"
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QList>
 
-struct DynamicPlaybackCheckerImpl::Private
+namespace
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	class DynamicPlaybackCheckerImpl :
+		public DynamicPlaybackChecker
+	{
+		public:
+			DynamicPlaybackCheckerImpl(LibraryInfoAccessor* libraryInfoAccessor) :
+				m_libraryInfoAccessor {libraryInfoAccessor} {}
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor) :
-		libraryInfoAccessor{libraryInfoAccessor}
-	{}
-};
+			~DynamicPlaybackCheckerImpl() override = default;
 
-DynamicPlaybackCheckerImpl::DynamicPlaybackCheckerImpl(LibraryInfoAccessor* libraryInfoAccessor)
-{
-	m = Pimpl::make<Private>(libraryInfoAccessor);
+			bool isDynamicPlaybackPossible() const override
+			{
+				return (!m_libraryInfoAccessor->allLibraries().isEmpty());
+			}
+
+		private:
+			LibraryInfoAccessor* m_libraryInfoAccessor;
+	};
 }
 
-DynamicPlaybackCheckerImpl::~DynamicPlaybackCheckerImpl() = default;
-
-bool DynamicPlaybackCheckerImpl::isDynamicPlaybackPossible() const
+DynamicPlaybackChecker* DynamicPlaybackChecker::create(LibraryInfoAccessor* libraryInfoAccessor)
 {
-	return (!m->libraryInfoAccessor->allLibraries().isEmpty());
+	return new DynamicPlaybackCheckerImpl(libraryInfoAccessor);
 }
+

@@ -27,7 +27,7 @@
 #include "Application/MetaTypeRegistry.h"
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
-#include "Components/DynamicPlayback/DynamicPlaybackCheckerImpl.h"
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/Equalizer/Equalizer.h"
@@ -198,7 +198,7 @@ struct Application::Private
 
 		playlistLibraryInteractor = new Playlist::LibraryInteractor(libraryManager);
 
-		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
+		dynamicPlaybackChecker = DynamicPlaybackChecker::create(libraryManager);
 		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
 
 		shutdown = Shutdown::create(playManager, notificationHandler);

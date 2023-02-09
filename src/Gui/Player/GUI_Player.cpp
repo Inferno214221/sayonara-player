@@ -27,6 +27,7 @@
 #include "VersionChecker.h"
 #include "Translator.h"
 
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Components/LibraryManagement/AbstractLibraryContainer.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/PlayManager/PlayManager.h"
@@ -38,7 +39,6 @@
 #include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Interfaces/CoverDataProvider.h"
-#include "Interfaces/DynamicPlayback.h"
 #include "Interfaces/PlaylistInterface.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"

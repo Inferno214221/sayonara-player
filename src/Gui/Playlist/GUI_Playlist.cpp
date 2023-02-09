@@ -27,6 +27,7 @@
 #include "PlaylistView.h"
 #include "PlaylistActionMenu.h"
 
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -37,7 +38,6 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
-#include "Interfaces/DynamicPlayback.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 #include "Utils/MetaData/MetaDataList.h"

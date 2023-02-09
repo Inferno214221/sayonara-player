@@ -20,15 +20,13 @@
 
 #include "PlaylistActionMenu.h"
 
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
 #include "Gui/Utils/PreferenceAction.h"
-
-#include "Interfaces/DynamicPlayback.h"
-
-#include "Utils/Playlist/PlaylistMode.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Playlist/PlaylistMode.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QList>
 #include <QAction>
@@ -79,7 +77,7 @@ ActionMenu::ActionMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* 
 	m->actionGapless = new QAction(this);
 
 	const auto actions = m->actions();
-	for(auto* action : actions)
+	for(auto* action: actions)
 	{
 		action->setCheckable(true);
 	}

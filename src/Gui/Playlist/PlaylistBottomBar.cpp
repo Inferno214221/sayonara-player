@@ -21,19 +21,16 @@
 #include "PlaylistBottomBarButton.h"
 #include "PlaylistActionMenu.h"
 
+#include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
-#include "Gui/Utils/Icons.h"
+#include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Gui/Utils/GuiUtils.h"
-
-#include "Interfaces/DynamicPlayback.h"
-
+#include "Gui/Utils/Icons.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Macros.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
-
-#include "Gui/Shutdown/GUI_Shutdown.h"
 
 #include <QFile>
 #include <QHBoxLayout>

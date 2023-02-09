@@ -1,4 +1,4 @@
-/* ${CLASS_NAME}.h */
+/* DynamicPlaybackCheckerImpl.h */
 /*
  * Copyright (C) 2011-2021 Michael Lugmair
  *
@@ -17,14 +17,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef SAYONARA_PLAYER_DYNAMICPLAYBACK_H
-#define SAYONARA_PLAYER_DYNAMICPLAYBACK_H
+#ifndef SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H
+#define SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H
+
+class LibraryInfoAccessor;
 
 class DynamicPlaybackChecker
 {
 	public:
 		virtual ~DynamicPlaybackChecker() = default;
 		virtual bool isDynamicPlaybackPossible() const = 0;
+
+		static DynamicPlaybackChecker* create(LibraryInfoAccessor* libraryInfoAccessor);
 };
 
-#endif //SAYONARA_PLAYER_DYNAMICPLAYBACK_H
+#endif //SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H
