@@ -21,16 +21,9 @@
 #ifndef METATYPEREGISTRY_H
 #define METATYPEREGISTRY_H
 
-#include <QObject>
-
-class MetaTypeRegistry :
-	public QObject
+namespace Util
 {
-	Q_OBJECT
-
-	public:
-		MetaTypeRegistry(QObject* parent = nullptr);
-		~MetaTypeRegistry();
-};
+	void registerMetaTypes();
+}
 
 #endif // METATYPEREGISTRY_H

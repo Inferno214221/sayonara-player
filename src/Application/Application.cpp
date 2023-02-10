@@ -97,6 +97,7 @@
 #include "Gui/Utils/Style.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MeasureApp.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
@@ -109,32 +110,23 @@
 
 namespace
 {
-	class MeasureApp
+	void initializeSettings()
 	{
-		public:
-			MeasureApp(const QString& component, QElapsedTimer* t) :
-				mTime(t),
-				mComponent(component)
-			{
-				mStart = mTime->elapsed();
-				spLog(Log::Debug, this) << "Init " << mComponent << ": " << mStart << "ms";
-			}
+		auto* db = DB::Connector::instance();
+		db->settingsConnector()->loadSettings();
 
-			~MeasureApp()
-			{
-				int end = mTime->elapsed();
-				spLog(Log::Debug, this) << "Init " << mComponent << " finished: " << end << "ms (" << end - mStart
-				                        << "ms)";
-			}
+		auto* settings = Settings::instance();
+		if(!settings->checkSettings())
+		{
+			spLog(Log::Error, "SettingInitializer") << "Cannot initialize settings";
+			throw std::runtime_error {"Cannot initialize settings"};
+		}
 
-		private:
-			QElapsedTimer* mTime;
-			QString mComponent;
-			int mStart;
-	};
+		settings->applyFixes();
+	}
 }
 
-static void initResources()
+static void initResources() // must be static for some reason
 {
 	Q_INIT_RESOURCE(Broadcasting);
 	Q_INIT_RESOURCE(Database);
@@ -143,12 +135,8 @@ static void initResources()
 	Q_INIT_RESOURCE(Resources);
 }
 
-#define measure(c) MeasureApp mt(c, m->timer); Q_UNUSED(mt);
-
 struct Application::Private
 {
-	MetaTypeRegistry* metatypeRegistry;
-	DB::Connector* db;
 	NotificationHandler* notificationHandler;
 	PlayManager* playManager;
 	Engine::Handler* engine;
@@ -158,65 +146,44 @@ struct Application::Private
 	Library::Manager* libraryManager;
 	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
-	SmartPlaylistManager* smartPlaylistManager = nullptr;
+	DynamicPlayback::Handler* dynamicPlaybackHandler;
+	SmartPlaylistManager* smartPlaylistManager;
 	Shutdown* shutdown;
 	QElapsedTimer* timer;
 
-	GUI_Player* player = nullptr;
-	Dbus::SessionManager* dbusSessionManager = nullptr;
-	DynamicPlayback::Handler* dynamicPlaybackHandler = nullptr;
-	Library::LocalLibraryWatcher* localLibraryWatcher = nullptr;
-	RemoteControl* remoteControl = nullptr;
-	InstanceThread* instanceThread = nullptr;
+	GUI_Player* player {nullptr};
+	Dbus::SessionManager* dbusSessionManager {nullptr};
+	Library::LocalLibraryWatcher* localLibraryWatcher {nullptr};
+	RemoteControl* remoteControl {nullptr};
+	InstanceThread* instanceThread {nullptr};
 
 	bool shutdownTriggered {false};
 
-	Private(Application* app)
+	explicit Private(Application* app) :
+		notificationHandler {NotificationHandler::create(app)},
+		playManager {PlayManager::create(notificationHandler, app)},
+		engine {new Engine::Handler(playManager)},
+		sessionManager {new Session::Manager(playManager)},
+		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
+		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playManager)},
+		libraryManager {Library::Manager::create(libraryPlaylistInteractor)},
+		playlistLibraryInteractor {new Playlist::LibraryInteractor(libraryManager)},
+		dynamicPlaybackChecker {DynamicPlaybackChecker::create(libraryManager)},
+		dynamicPlaybackHandler {new DynamicPlayback::Handler(playManager, playlistHandler, playManager)},
+		smartPlaylistManager {new SmartPlaylistManager(playlistHandler)},
+		shutdown {Shutdown::create(playManager, notificationHandler)},
+		timer {Util::startMeasure()}
 	{
-		Util::initXdgPaths(QStringLiteral("sayonara"));
-
-		metatypeRegistry = new MetaTypeRegistry();
-
-		/* Tell the settings manager which settings are necessary */
-		db = DB::Connector::instance();
-		db->settingsConnector()->loadSettings();
-
-		auto* settings = Settings::instance();
-		if(!settings->checkSettings())
-		{
-			spLog(Log::Error, this) << "Cannot initialize settings";
-			return;
-		}
-
-		settings->applyFixes();
-		notificationHandler = NotificationHandler::create(app);
-		playManager = PlayManager::create(notificationHandler, app);
-		engine = new Engine::Handler(playManager);
-		sessionManager = new Session::Manager(playManager);
-
-		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
-		libraryPlaylistInteractor = LibraryPlaylistInteractor::create(playlistHandler, playManager);
-		libraryManager = Library::Manager::create(libraryPlaylistInteractor);
-
-		playlistLibraryInteractor = new Playlist::LibraryInteractor(libraryManager);
-
-		dynamicPlaybackChecker = DynamicPlaybackChecker::create(libraryManager);
-		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
-
-		shutdown = Shutdown::create(playManager, notificationHandler);
-
 		Gui::Icons::setDefaultSystemTheme(QIcon::themeName());
-
 		initResources();
-
-		timer = new QElapsedTimer();
-		timer->start();
 	}
 
 	~Private()
 	{
 		delete timer;
+		delete shutdown;
 		delete smartPlaylistManager;
+		delete dynamicPlaybackHandler;
 		delete dynamicPlaybackChecker;
 		delete playlistLibraryInteractor;
 		delete libraryManager;
@@ -225,21 +192,21 @@ struct Application::Private
 		delete sessionManager;
 		delete engine;
 		delete playManager;
+		delete notificationHandler;
 
-		if(db)
-		{
-			db->settingsConnector()->storeSettings();
-			db->closeDatabase();
-			db = nullptr;
-		}
-
-		delete metatypeRegistry;
+		auto* db = DB::Connector::instance();
+		db->settingsConnector()->storeSettings();
+		db->closeDatabase();
 	}
 };
 
 Application::Application(int& argc, char** argv) :
 	QApplication(argc, argv)
 {
+	Util::initXdgPaths(QStringLiteral("sayonara"));
+	Util::registerMetaTypes();
+	initializeSettings();
+
 	m = Pimpl::make<Private>(this);
 
 	QApplication::setQuitOnLastWindowClosed(false);
@@ -261,19 +228,14 @@ Application::~Application()
 		m->instanceThread->stop();
 		while(m->instanceThread->isRunning())
 		{
-			Util::sleepMs(100);
+			Util::sleepMs(100); // NOLINT(readability-magic-numbers)
 		}
 
 		m->instanceThread = nullptr;
 	}
 
-	if(m->remoteControl)
-	{
-		delete m->remoteControl;
-	}
-
+	delete m->remoteControl;
 	delete m->localLibraryWatcher;
-	delete m->dynamicPlaybackHandler;
 	delete m->player;
 }
 
@@ -291,29 +253,18 @@ void Application::shutdown()
 
 bool Application::init(const QStringList& filesToPlay, bool forceShow)
 {
-	DB::Connector::instance();
+	SetSetting(Set::Player_Version, QString(SAYONARA_VERSION));
 
-	{
-		measure("Settings")
-		SetSetting(Set::Player_Version, QString(SAYONARA_VERSION));
-	}
-
-	{
-		measure("Theme")
+	Util::measure("Theme", m->timer, []() {
 		Gui::Icons::changeTheme();
-	}
+	});
 
-	{
-		measure("Proxy")
-		Proxy::init();
-	}
+	Proxy::init();
 
 	initPlayer(forceShow);
 	initDbusServices();
 
-	{
-		ListenSetting(Set::Remote_Active, Application::remoteControlActivated);
-	}
+	ListenSetting(Set::Remote_Active, Application::remoteControlActivated);
 
 	if(GetSetting(Set::Notification_Show))
 	{
@@ -322,8 +273,6 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 		                               QString(":/Icons/logo.png")
 		);
 	}
-
-	m->dynamicPlaybackHandler = new DynamicPlayback::Handler(m->playManager, m->playlistHandler, this);
 
 	initLibraries();
 	initPlugins();
@@ -348,11 +297,11 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 	return true;
 }
 
-void Application::initPlayer(bool force_show)
+void Application::initPlayer(const bool forceShow)
 {
-	measure("Player")
+	[[maybe_unused]] auto measureApp = Util::MeasureApp("Player", m->timer);
 
-	if(force_show)
+	if(forceShow)
 	{
 		SetSetting(Set::Player_StartInTray, false);
 	}
@@ -373,6 +322,8 @@ void Application::initPlayer(bool force_show)
 
 void Application::initDbusServices()
 {
+	[[maybe_unused]] auto measureApp = Util::MeasureApp("Dbus services", m->timer);
+
 	new Dbus::Notifications(m->notificationHandler);
 	new Dbus::Mpris::MediaPlayer2(m->player, m->playManager, m->playlistHandler);
 	new Dbus::MediaKeysInterfaceGnome(m->playManager);
@@ -390,7 +341,7 @@ void Application::initPlaylist(const QStringList& filesToPlay)
 
 void Application::initPreferences()
 {
-	measure("Preferences")
+	[[maybe_unused]] auto measureApp = Util::MeasureApp("Preferences", m->timer);
 
 	auto* preferences = new GUI_PreferenceDialog(m->player);
 
@@ -426,7 +377,7 @@ void Application::initPreferences()
 
 void Application::initLibraries()
 {
-	measure("Libraries")
+	[[maybe_unused]] auto measureApp = Util::MeasureApp("Libraries", m->timer);
 
 	m->localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, this);
 
@@ -445,7 +396,7 @@ void Application::initLibraries()
 
 void Application::initPlugins()
 {
-	measure("Plugins")
+	[[maybe_unused]] auto measureApp = Util::MeasureApp("Plugins", m->timer);
 
 	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
 
@@ -462,8 +413,6 @@ void Application::initPlugins()
 	playerPluginHandler->addPlugin(new GUI_Broadcast(m->playManager, m->engine));
 	playerPluginHandler->addPlugin(new GUI_Crossfader());
 	playerPluginHandler->addPlugin(new GUI_SpectrogramPainter(m->playManager));
-
-	spLog(Log::Debug, this) << "Plugins finished: " << m->timer->elapsed() << "ms";
 }
 
 void Application::initSingleInstanceThread()

@@ -31,43 +31,43 @@
 
 #include "Components/Covers/CoverLocation.h"
 
-MetaTypeRegistry::MetaTypeRegistry(QObject* parent) :
-	QObject(parent)
+namespace Util
 {
-	qRegisterMetaType<StringPair>("StringPair");
-	qRegisterMetaType<IntList>("IntList");
-	qRegisterMetaType<IdList>("IDList");
-	qRegisterMetaType<IdxList>("IdxList");
-	//qRegisterMetaType<BoolList>("BoolList");
-	qRegisterMetaType<ArtistId>("ArtistID");
-	qRegisterMetaType<AlbumId>("AlbumID");
-	qRegisterMetaType<TrackID>("TrackID");
-	qRegisterMetaType<Id>("ID");
-	qRegisterMetaType<IntSet>("IntSet");
-	qRegisterMetaType<IndexSet>("IndexSet");
-	qRegisterMetaType<IdSet>("IDSet");
+	void registerMetaTypes()
+	{
+		qRegisterMetaType<StringPair>("StringPair");
+		qRegisterMetaType<IntList>("IntList");
+		qRegisterMetaType<IdList>("IDList");
+		qRegisterMetaType<IdxList>("IdxList");
+		//qRegisterMetaType<BoolList>("BoolList");
+		qRegisterMetaType<ArtistId>("ArtistID");
+		qRegisterMetaType<AlbumId>("AlbumID");
+		qRegisterMetaType<TrackID>("TrackID");
+		qRegisterMetaType<Id>("ID");
+		qRegisterMetaType<IntSet>("IntSet");
+		qRegisterMetaType<IndexSet>("IndexSet");
+		qRegisterMetaType<IdSet>("IDSet");
 
-	qRegisterMetaType<MetaData>("MetaData");
-	qRegisterMetaType<MetaDataList>("MetaDataList");
-	qRegisterMetaType<Album>("Album");
-	qRegisterMetaType<AlbumList>("AlbumList");
-	qRegisterMetaType<Artist>("Artist");
-	qRegisterMetaType<ArtistList>("ArtistList");
-	qRegisterMetaType<Genre>("Genre");
-	qRegisterMetaType<Rating>("Rating");
+		qRegisterMetaType<MetaData>("MetaData");
+		qRegisterMetaType<MetaDataList>("MetaDataList");
+		qRegisterMetaType<Album>("Album");
+		qRegisterMetaType<AlbumList>("AlbumList");
+		qRegisterMetaType<Artist>("Artist");
+		qRegisterMetaType<ArtistList>("ArtistList");
+		qRegisterMetaType<Genre>("Genre");
+		qRegisterMetaType<Rating>("Rating");
 
-	qRegisterMetaType<Log>("Log");
-	qRegisterMetaType<Cover::Location>("Cover::Location");
+		qRegisterMetaType<Log>("Log");
+		qRegisterMetaType<Cover::Location>("Cover::Location");
 
-	qRegisterMetaType<uint64_t>("uint64_t");
-	qRegisterMetaType<uint32_t>("uint32_t");
+		qRegisterMetaType<uint64_t>("uint64_t");
+		qRegisterMetaType<uint32_t>("uint32_t");
 
-	qRegisterMetaType<int64_t>("int64_t");
-	qRegisterMetaType<int32_t>("int32_t");
+		qRegisterMetaType<int64_t>("int64_t");
+		qRegisterMetaType<int32_t>("int32_t");
 
-	qRegisterMetaType<Util::Set<int>>("Util::Set<int>");
+		qRegisterMetaType<Util::Set<int>>("Util::Set<int>");
 
-	qRegisterMetaType<Seconds>("TimestampSec");
+		qRegisterMetaType<Seconds>("TimestampSec");
+	}
 }
-
-MetaTypeRegistry::~MetaTypeRegistry() = default;
