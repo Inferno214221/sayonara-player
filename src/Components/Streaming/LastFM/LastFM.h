@@ -36,12 +36,10 @@
 class PlayManager;
 class NotificationHandler;
 
-// singleton base LastFM API class
-// signals and slots are handled by the adapter class
 namespace LastFM
 {
 	class Base :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Base)
@@ -56,15 +54,9 @@ namespace LastFM
 			void login(const QString& username, const QString& password);
 			bool isLoggedIn();
 
-		private:
-			bool initTrackChangeThread();
-			void getSimilarArtists(const QString& artist);
-			bool updateTrack(const MetaData& md);
-
 		private slots:
 			void activeChanged();
 			void loginThreadFinished(bool success);
-			//void similarArtistsFetched(const IdList& playlistTrack);
 			void currentTrackChanged(const MetaData& track);
 
 			void scrobble();

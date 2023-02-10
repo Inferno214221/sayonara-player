@@ -57,7 +57,7 @@ namespace LastFM
 		NotificationHandler* notificationHandler;
 		QTimer* scrobbleTimer {new QTimer()};
 		QTimer* trackChangedTimer {new QTimer()};
-		TrackChangedThread* trackChangeThread = nullptr;
+		TrackChangedThread* trackChangeThread;
 		bool loggedIn {false};
 
 		Private(PlayManager* playManager, NotificationHandler* notificationHandler, QObject* parent) :
