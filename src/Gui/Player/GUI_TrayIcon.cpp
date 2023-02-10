@@ -267,10 +267,10 @@ void GUI_TrayIcon::notify(const QString& title, const QString& message, const QS
 	}
 }
 
-// dbus
-QString GUI_TrayIcon::name() const { return "Standard"; }
-
-QString GUI_TrayIcon::displayName() const { return Lang::get(Lang::Default); }
+QString GUI_TrayIcon::displayName() const
+{
+	return Lang::get(Lang::Default);
+}
 
 void GUI_TrayIcon::playstateChanged(PlayState state)
 {

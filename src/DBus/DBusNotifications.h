@@ -26,8 +26,8 @@
 
 class NotificationHandler;
 class DBusNotifications :
-		public QObject,
-		public NotificationInterface
+	public QObject,
+	public Notificator
 {
 	Q_OBJECT
 	PIMPL(DBusNotifications)
@@ -36,10 +36,8 @@ class DBusNotifications :
 		explicit DBusNotifications(NotificationHandler* notificationHandler, QObject* parent = nullptr);
 		virtual ~DBusNotifications() override;
 
-	void notify(const MetaData& md) override;
-	void notify(const QString& title, const QString& text, const QString& imagePath) override;
-
-	QString name() const override;
+		void notify(const MetaData& track) override;
+		void notify(const QString& title, const QString& text, const QString& imagePath) override;
 };
 
 #endif // DBUSNOTIFICATIONS_H

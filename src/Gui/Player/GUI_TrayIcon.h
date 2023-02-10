@@ -64,7 +64,7 @@ class TrayIconContextMenu :
 
 class GUI_TrayIcon :
 	public QSystemTrayIcon,
-	public NotificationInterface
+	public Notificator
 {
 	Q_OBJECT
 	PIMPL(GUI_TrayIcon)
@@ -84,7 +84,6 @@ class GUI_TrayIcon :
 		void notify(const MetaData& md) override;
 		void notify(const QString& title, const QString& message, const QString& imagePath) override;
 
-		[[nodiscard]] QString name() const override;
 		[[nodiscard]] QString displayName() const override;
 
 	private slots:

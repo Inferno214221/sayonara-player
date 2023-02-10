@@ -30,92 +30,93 @@
 
 #include <QDir>
 
+namespace
+{
+	constexpr const auto* appName = "Sayonara Player";
+	constexpr const auto* serviceName = "org.freedesktop.Notifications";
+	constexpr const auto* objectPath = "/org/freedesktop/Notifications";
+
+	bool startNotificationService()
+	{
+		constexpr const auto* InstanceName = "DBusNotifications";
+
+		auto interface = QDBusConnection::sessionBus().interface();
+		interface->startService(serviceName);
+
+		const auto success = interface->isServiceRegistered(serviceName);
+		if(!success)
+		{
+			spLog(Log::Warning, InstanceName) << serviceName << " not registered";
+		}
+
+		else
+		{
+			spLog(Log::Debug, InstanceName) << " registered";
+		}
+
+		return success;
+	}
+}
+
 struct DBusNotifications::Private
 {
-	OrgFreedesktopNotificationsInterface* interface=nullptr;
-	MetaData					md;
-	uint						id;
-	Cover::Location				cl;
-	QMap<QString, QString>		resource_file_map; // map resource file image paths to real paths
+	OrgFreedesktopNotificationsInterface interface;
+	uint id {100};
+	bool started;
 
-	Private() : id(100) {}
+	Private(QObject* parent) :
+		interface {serviceName, objectPath, QDBusConnection::sessionBus(), parent},
+		started {startNotificationService()} {}
 };
 
 DBusNotifications::DBusNotifications(NotificationHandler* notificationHandler, QObject* parent) :
 	QObject(parent),
-	NotificationInterface()
-{
-	m = Pimpl::make<Private>();
-
-	QString service_name = "org.freedesktop.Notifications";
-	m->interface = new OrgFreedesktopNotificationsInterface(
-				QString(service_name),
-				QString("/org/freedesktop/Notifications"),
-				QDBusConnection::sessionBus(),
-				parent
-	);
-
-	QDBusConnection bus = QDBusConnection::sessionBus();
-	QDBusConnectionInterface* dbus_interface = bus.interface();
-	dbus_interface->startService(service_name);
-
-	if (!dbus_interface->isServiceRegistered(service_name)) {
-		spLog(Log::Warning, this) << service_name << " not registered";
-	}
-
-	else {
-		spLog(Log::Info, this) << " registered";
-	}
-
-	NotificationHandler::instance()->registerNotificator(this);
-}
+	Notificator("DBus", notificationHandler),
+	m {Pimpl::make<Private>(this)} {}
 
 DBusNotifications::~DBusNotifications() = default;
 
-void DBusNotifications::notify(const QString& title, const QString& text, const QString& image_path)
+void DBusNotifications::notify(const QString& title, const QString& text, const QString& imagePath)
 {
-	Util::Filepath desktop_file(":/Desktop/com.sayonara-player.Sayonara.desktop");
+	if(m->started)
+	{
+		const auto desktopFile = Util::Filepath {":/Desktop/com.sayonara-player.Sayonara.desktop"};
+		const auto map = QVariantMap {
+			{"action-icons",   false},
+			{"desktop-entry",  desktopFile.fileystemPath()},
+			{"resident",       false},
+			{"sound-file",     QString {}},
+			{"sound-name",     QString {}},
+			{"suppress-sound", true},
+			{"transient",      false},
+			{"urgency",        1}
+		};
 
-	QVariantMap map;
-	map.insert("action-icons", false);
-	map.insert("desktop-entry", desktop_file.fileystemPath());
-	map.insert("resident", false);
-	map.insert("sound-file", QString());
-	map.insert("sound-name", QString());
-	map.insert("suppress-sound", true);
-	map.insert("transient", false);
-	map.insert("urgency", 1);
+		QDBusPendingReply<uint> reply =
+			m->interface.Notify(appName,
+			                    m->id,
+			                    Util::Filepath(imagePath).fileystemPath(),
+			                    title,
+			                    text,
+			                    {},
+			                    map,
+			                    GetSetting(Set::Notification_Timeout));
 
-	QDBusPendingReply<uint> reply =
-	m->interface->Notify("Sayonara Player",
-	   m->id,
-	   Util::Filepath(image_path).fileystemPath(),
-	   title,
-	   text,
-	   QStringList(),
-	   map,
-	   GetSetting(Set::Notification_Timeout)
-	);
-
-	m->id = reply.value();
-}
-
-QString DBusNotifications::name() const
-{
-	return "DBus";
-}
-
-void DBusNotifications::notify(const MetaData& md)
-{
-	m->md = md;
-
-	bool active = GetSetting(Set::Notification_Show);
-	if(!active){
-		return;
+		m->id = reply.value();
 	}
+}
 
-	m->cl = Cover::Location::coverLocation(md);
-	QString path = Util::Filepath(m->cl.preferredPath()).fileystemPath();
+void DBusNotifications::notify(const MetaData& track)
+{
+	if(m->started)
+	{
+		const auto active = GetSetting(Set::Notification_Show);
+		if(active)
+		{
+			const auto coverLocation = Cover::Location::coverLocation(track);
+			const auto coverPath = Util::Filepath(coverLocation.preferredPath()).fileystemPath();
 
-	notify(m->md.title(), m->md.artist(), path);
+			notify(track.title(), track.artist(), coverPath);
+		}
+	}
 }
