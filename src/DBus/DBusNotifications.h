@@ -21,7 +21,7 @@
 #define DBUSNOTIFICATIONS_H
 
 #include "DBus/Notifications.h"
-#include "Interfaces/Notification/NotificationHandler.h"
+#include "Components/Notification/NotificationHandler.h"
 #include "Utils/Pimpl.h"
 
 class DBusNotifications :

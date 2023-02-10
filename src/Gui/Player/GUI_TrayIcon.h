@@ -21,7 +21,7 @@
 #ifndef GUI_TRAYICON_H
 #define GUI_TRAYICON_H
 
-#include "Interfaces/Notification/NotificationHandler.h"
+#include "Components/Notification/NotificationHandler.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 

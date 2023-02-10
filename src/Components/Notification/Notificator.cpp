@@ -17,13 +17,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "NotificationInterface.h"
+#include "Notificator.h"
+#include "NotificationHandler.h"
 
-NotificationInterface::NotificationInterface() {}
-
-NotificationInterface::~NotificationInterface() {}
-
-QString NotificationInterface::displayName() const
+struct Notificator::Private
 {
-	return name();
+	QString identifier;
+
+	Private(const QString& identifier) :
+		identifier {identifier} {}
+};
+
+Notificator::Notificator(const QString& identifier, NotificationHandler* notificationHandler) :
+	m {Pimpl::make<Private>(identifier)}
+{
+	notificationHandler->registerNotificator(this);
 }
+
+Notificator::~Notificator() = default;
+
+QString Notificator::identifier() const { return m->identifier; }
+
+QString Notificator::displayName() const { return identifier(); }

@@ -27,10 +27,10 @@
 
 #include "Components/Shutdown/Shutdown.h"
 
+#include "Components/Notification/NotificationHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
 #include "Database/Settings.h"
-#include "Interfaces/Notification/NotificationHandler.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Utils.h"

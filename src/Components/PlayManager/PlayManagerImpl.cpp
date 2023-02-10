@@ -20,8 +20,8 @@
 
 #include "PlayManager.h"
 
+#include "Components/Notification/NotificationHandler.h"
 #include "Components/Tagging/ChangeNotifier.h"
-#include "Interfaces/Notification/NotificationHandler.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"

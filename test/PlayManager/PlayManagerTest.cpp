@@ -23,6 +23,7 @@
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
 #include "Components/Playlist/PlaylistLoader.h"
+#include "Components/Notification/NotificationHandler.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/Settings/Settings.h"

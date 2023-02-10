@@ -32,9 +32,9 @@
 #include "LFMLoginThread.h"
 #include "LFMWebAccess.h"
 
+#include "Components/Notification/NotificationHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Database/Connector.h"
-#include "Interfaces/Notification/NotificationHandler.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Crypt.h"
 #include "Utils/Logger/Logger.h"

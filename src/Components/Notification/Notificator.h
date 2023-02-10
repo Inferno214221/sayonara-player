@@ -20,45 +20,25 @@
 #ifndef ABSTRACTNOTIFICATOR_H
 #define ABSTRACTNOTIFICATOR_H
 
-#include <QString>
 #include "Utils/Pimpl.h"
-/**
- * @brief The NotificationInterface class
- * @ingroup Interfaces
- */
+
+#include <QString>
+
 class MetaData;
-class NotificationInterface
+class NotificationHandler;
+class Notificator
 {
+	PIMPL(Notificator)
+
 	public:
-		/**
-		 * @brief Constructor
-		 * @param name appearing in GUI_Notifications
-		 */
-		explicit NotificationInterface();
-		virtual ~NotificationInterface();
+		Notificator(const QString& identifier, NotificationHandler* notificationHandler);
+		virtual ~Notificator();
 
-		/**
-		 * @brief notify when Metadata has been changed
-		 * @param md
-		 */
-		virtual void notify(const MetaData& md)=0;
+		virtual void notify(const MetaData& track) = 0;
+		virtual void notify(const QString& title, const QString& message, const QString& imagePath = QString()) = 0;
 
-		/**
-		 * @brief show standard notification
-		 * @param title Notification title
-		 * @param message Notification message
-		 * @param image_path Notification image
-		 */
-		virtual void notify(const QString& title, const QString& message, const QString& imagePath=QString())=0;
-
-		/**
-		 * @brief get name of notification interface
-		 * @return
-		 */
-		virtual QString name() const=0;
-		virtual QString displayName() const;
+		[[nodiscard]] QString identifier() const;
+		[[nodiscard]] virtual QString displayName() const;
 };
-
-using NotificatonList=QList<NotificationInterface*>;
 
 #endif // ABSTRACTNOTIFICATOR_H

@@ -20,48 +20,31 @@
 #ifndef NOTIFICATIONHANDLER_H
 #define NOTIFICATIONHANDLER_H
 
-#include "NotificationInterface.h"
-#include "Utils/Singleton.h"
-#include "Utils/Pimpl.h"
+#include "Notificator.h"
 
 #include <QObject>
 
-class DummyNotificator : public NotificationInterface
-{
-	public:
-		explicit DummyNotificator();
-		virtual ~DummyNotificator() override;
-
-		virtual void notify(const MetaData& md) override;
-		virtual void notify(const QString& title, const QString& message, const QString& imagePath) override;
-
-		QString name() const override;
-};
-
 class NotificationHandler :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
-	SINGLETON_QOBJECT(NotificationHandler)
-	PIMPL(NotificationHandler)
 
 	signals:
-		// emitted when some AbstractNotifcator registered itself
 		void sigNotificationsChanged();
 
-	private:
-		NotificationInterface* get() const;
-
 	public:
-		void registerNotificator(NotificationInterface* notificator);
-		void notificatorChanged(const QString& name);
+		using QObject::QObject;
 
-		int currentIndex() const;
+		virtual void registerNotificator(Notificator* notificator) = 0;
+		virtual void changeCurrentNotificator(const QString& name) = 0;
 
-		NotificatonList notificators() const;
+		[[nodiscard]] virtual QList<Notificator*> notificators() const = 0;
+		[[nodiscard]] virtual Notificator* currentNotificator() const = 0;
 
-		virtual void notify(const MetaData& md);
-		virtual void notify(const QString& title, const QString& message, const QString& imagePath=QString());
+		virtual void notify(const MetaData& track) = 0;
+		virtual void notify(const QString& title, const QString& message, const QString& imagePath = QString()) = 0;
+
+		static NotificationHandler* create(QObject* parent);
 };
 
 #endif // NOTIFICATIONHANDLER_H
