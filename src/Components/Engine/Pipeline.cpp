@@ -58,7 +58,10 @@ struct Pipeline::Private
 	GstElement* equalizer = nullptr;
 	GstElement* tee = nullptr;
 
-	GstElement*			positionElement=nullptr;
+	GstElement* playbackBin = nullptr;
+	GstElement* playbackQueue = nullptr;
+	GstElement* playbackVolume = nullptr;
+	GstElement* playbackSink = nullptr;
 
 	StreamRecorderBin* streamRecorder = nullptr;
 	BroadcastBin* broadcaster = nullptr;
@@ -138,9 +141,8 @@ bool Pipeline::init(Engine* engine)
 	}
 
 	m->pipeline = gst_pipeline_new(m->name.toStdString().c_str());
-	m->positionElement = m->pipeline;
-
-	if(!EngineUtils::testAndError(m->pipeline, "Engine: Pipeline sucks")){
+	if(!EngineUtils::testAndError(m->pipeline, "Engine: Pipeline sucks"))
+	{
 		return false;
 	}
 
@@ -476,7 +478,7 @@ bool Pipeline::hasElement(GstElement* e) const
 
 GstElement* Pipeline::positionElement() const
 {
-	return m->positionElement;
+	return m->pipeline;
 }
 
 GstElement* Pipeline::pitchElement() const
