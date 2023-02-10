@@ -32,12 +32,15 @@ namespace SmartPlaylists
 	enum class Type;
 }
 
+namespace Library
+{
+	class InfoAccessor;
+}
+
 namespace
 {
 	struct Section;
 }
-
-class LibraryInfoAccessor;
 
 class MinMaxIntegerDialog :
 	public QDialog
@@ -46,8 +49,8 @@ class MinMaxIntegerDialog :
 	PIMPL(MinMaxIntegerDialog)
 
 	public:
-		MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager, QWidget* parent);
-		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, LibraryInfoAccessor* libraryManager,
+		MinMaxIntegerDialog(Library::InfoAccessor* libraryManager, QWidget* parent);
+		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, Library::InfoAccessor* libraryManager,
 		                    QWidget* parent);
 		~MinMaxIntegerDialog() override;
 
@@ -64,7 +67,7 @@ class MinMaxIntegerDialog :
 			Edit
 		};
 
-		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, LibraryInfoAccessor* librarymanager,
+		MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist, Library::InfoAccessor* librarymanager,
 		                    EditMode editMode, QWidget* parent);
 
 		void fillLayout(int libraryCount);

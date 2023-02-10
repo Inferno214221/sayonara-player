@@ -23,7 +23,10 @@
 
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
 
 namespace Directory
 {
@@ -32,7 +35,7 @@ namespace Directory
 	 * @ingroup GuiDirectories
 	 */
 	class ContextMenu :
-			public Library::ContextMenu
+		public Library::ContextMenu
 	{
 		Q_OBJECT
 		PIMPL(ContextMenu)
@@ -49,25 +52,25 @@ namespace Directory
 		public:
 			enum Mode
 			{
-				Dir=0,
+				Dir = 0,
 				File
 			};
 
 			enum Entry
 			{
-				EntryCreateDir		= Library::ContextMenu::EntryLast,
-				EntryRename			= Library::ContextMenu::EntryLast << 1,
-				EntryRenameByTag	= Library::ContextMenu::EntryLast << 2,
-				EntryCollapseAll	= Library::ContextMenu::EntryLast << 3,
-				EntryMoveToLib		= Library::ContextMenu::EntryLast << 4,
-				EntryCopyToLib		= Library::ContextMenu::EntryLast << 5,
-				EntryViewInFM		= Library::ContextMenu::EntryLast << 6
+				EntryCreateDir = Library::ContextMenu::EntryLast,
+				EntryRename = Library::ContextMenu::EntryLast << 1,
+				EntryRenameByTag = Library::ContextMenu::EntryLast << 2,
+				EntryCollapseAll = Library::ContextMenu::EntryLast << 3,
+				EntryMoveToLib = Library::ContextMenu::EntryLast << 4,
+				EntryCopyToLib = Library::ContextMenu::EntryLast << 5,
+				EntryViewInFM = Library::ContextMenu::EntryLast << 6
 			};
 
-			ContextMenu(Mode mode, LibraryInfoAccessor* libraryInfoAccessor, QWidget* parent);
+			ContextMenu(Mode mode, Library::InfoAccessor* libraryInfoAccessor, QWidget* parent);
 			~ContextMenu() override;
 
-			void refresh(int count=0);
+			void refresh(int count = 0);
 
 			ContextMenu::Entries entries() const override;
 			void showActions(ContextMenu::Entries entries) override;

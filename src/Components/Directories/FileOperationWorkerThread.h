@@ -4,7 +4,10 @@
 #include <QThread>
 #include "Utils/Pimpl.h"
 
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
 
 class FileOperationThread :
 	public QThread
@@ -23,9 +26,9 @@ class FileOperationThread :
 		QList<LibraryId> targetIds() const;
 
 	protected:
-		FileOperationThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		FileOperationThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
 		                    const QStringList& targetFiles, QObject* parent);
-		LibraryInfoAccessor* libraryInfoAccessor();
+		Library::InfoAccessor* libraryInfoAccessor();
 };
 
 class FileMoveThread :
@@ -35,7 +38,7 @@ class FileMoveThread :
 	PIMPL(FileMoveThread)
 
 	public:
-		FileMoveThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		FileMoveThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
 		               const QString& targetDir, QObject* parent);
 		~FileMoveThread() override;
 
@@ -50,7 +53,7 @@ class FileCopyThread :
 	PIMPL(FileCopyThread)
 
 	public:
-		FileCopyThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+		FileCopyThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
 		               const QString& targetDir, QObject* parent);
 		~FileCopyThread() override;
 
@@ -65,7 +68,8 @@ class FileRenameThread :
 	PIMPL(FileRenameThread)
 
 	public:
-		FileRenameThread(LibraryInfoAccessor* libraryInfoAccessor, const QString& sourceFile, const QString& targetFile,
+		FileRenameThread(Library::InfoAccessor* libraryInfoAccessor, const QString& sourceFile,
+		                 const QString& targetFile,
 		                 QObject* parent);
 		~FileRenameThread() override;
 
@@ -80,7 +84,7 @@ class FileDeleteThread :
 	PIMPL(FileDeleteThread)
 
 	public:
-		FileDeleteThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourcePaths, QObject* parent);
+		FileDeleteThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourcePaths, QObject* parent);
 		~FileDeleteThread() override;
 
 	protected:

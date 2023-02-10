@@ -25,7 +25,7 @@
 #include "Components/SmartPlaylists/SmartPlaylist.h"
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
-#include "Interfaces/LibraryInfoAccessor.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -69,7 +69,7 @@ namespace
 		return smartPlaylists;
 	}
 
-	QString getSmartPlaylistDescription(const SmartPlaylistPtr& smartPlaylist, LibraryInfoAccessor* libraryManager)
+	QString getSmartPlaylistDescription(const SmartPlaylistPtr& smartPlaylist, Library::InfoAccessor* libraryManager)
 	{
 		const auto libraryId = smartPlaylist->libraryId();
 		const auto libraryInfo = libraryManager->libraryInfo(libraryId);
@@ -88,14 +88,14 @@ namespace
 struct GuiSmartPlaylists::Private
 {
 	SmartPlaylistManager* smartPlaylistManager;
-	LibraryInfoAccessor* libraryManager;
+	Library::InfoAccessor* libraryManager;
 
-	Private(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager) :
+	Private(SmartPlaylistManager* smartPlaylistManager, Library::InfoAccessor* libraryManager) :
 		smartPlaylistManager {smartPlaylistManager},
 		libraryManager {libraryManager} {}
 };
 
-GuiSmartPlaylists::GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager,
+GuiSmartPlaylists::GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, Library::InfoAccessor* libraryManager,
                                      QWidget* parent) :
 	PlayerPlugin::Base(parent)
 {

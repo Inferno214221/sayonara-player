@@ -21,31 +21,29 @@
 #include "FileOperations.h"
 #include "FileOperationWorkerThread.h"
 
-#include "Interfaces/LibraryInfoAccessor.h"
 #include "Components/Library/LocalLibrary.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/Tagging/ChangeNotifier.h"
-
-#include "Database/LibraryDatabase.h"
 #include "Database/Connector.h"
-
-#include "Utils/Utils.h"
+#include "Database/LibraryDatabase.h"
 #include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Utils.h"
 
 #include <QStringList>
 
 struct FileOperations::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor) :
+	Private(Library::InfoAccessor* libraryInfoAccessor) :
 		libraryInfoAccessor {libraryInfoAccessor} {}
 };
 
-FileOperations::FileOperations(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
+FileOperations::FileOperations(Library::InfoAccessor* libraryInfoAccessor, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor);
@@ -53,9 +51,9 @@ FileOperations::FileOperations(LibraryInfoAccessor* libraryInfoAccessor, QObject
 
 FileOperations::~FileOperations() = default;
 
-static void refreshLibraries(LibraryInfoAccessor* libraryInfoAccessor, const QList<LibraryId>& libraries)
+static void refreshLibraries(Library::InfoAccessor* libraryInfoAccessor, const QList<LibraryId>& libraries)
 {
-	for(const auto& id : libraries)
+	for(const auto& id: libraries)
 	{
 		auto* library = libraryInfoAccessor->libraryInstance(id);
 		if(library)
@@ -179,7 +177,7 @@ static QString incrementFilename(const QString& filename)
 		return filename;
 	}
 
-	auto[dir, pureFilename] = Util::File::splitFilename(filename);
+	auto [dir, pureFilename] = Util::File::splitFilename(filename);
 	const auto extension = Util::File::getFileExtension(filename);
 
 	for(int i = 1; i < 1000; i++)

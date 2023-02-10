@@ -20,13 +20,11 @@
 #include "PlaylistLibraryInteractor.h"
 
 #include "Components/Library/LocalLibrary.h"
-
-#include "Interfaces/LibraryInfoAccessor.h"
-
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QStringList>
 
@@ -36,13 +34,13 @@ using Playlist::LibraryInteractor;
 
 struct LibraryInteractor::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor) :
+	Private(Library::InfoAccessor* libraryInfoAccessor) :
 		libraryInfoAccessor {libraryInfoAccessor} {}
 };
 
-LibraryInteractor::LibraryInteractor(LibraryInfoAccessor* libraryInfoAccessor) :
+LibraryInteractor::LibraryInteractor(Library::InfoAccessor* libraryInfoAccessor) :
 	QObject(nullptr)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor);
@@ -63,12 +61,12 @@ void LibraryInteractor::deleteTracks(const MetaDataList& tracks)
 {
 	std::unordered_map<LibraryId, MetaDataList> libraryMap;
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		libraryMap[track.libraryId()].push_back(track);
 	}
 
-	for(const auto&[libraryId, tracks] : libraryMap)
+	for(const auto& [libraryId, tracks]: libraryMap)
 	{
 		if(libraryId >= 0)
 		{
@@ -79,9 +77,10 @@ void LibraryInteractor::deleteTracks(const MetaDataList& tracks)
 			}
 		}
 
-		else {
+		else
+		{
 			QStringList paths;
-			Util::Algorithm::transform(tracks, paths, [](const auto& track){
+			Util::Algorithm::transform(tracks, paths, [](const auto& track) {
 				return track.filepath();
 			});
 

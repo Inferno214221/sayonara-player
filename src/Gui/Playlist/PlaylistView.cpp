@@ -193,7 +193,7 @@ namespace Playlist
 		QLabel* currentFileLabel;
 
 		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
-		        LibraryInfoAccessor* libraryAccessor, View* view) :
+		        Library::InfoAccessor* libraryAccessor, View* view) :
 			dynamicPlaybackChecker(dynamicPlaybackChecker),
 			model(new Model(playlist, libraryAccessor, view)),
 			progressbar(new Gui::ProgressBar(view)),
@@ -201,7 +201,7 @@ namespace Playlist
 	};
 
 	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
-	           LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
+	           Library::InfoAccessor* libraryAccessor, QWidget* parent) :
 		SearchableTableView(parent),
 		Gui::Dragable(this)
 	{

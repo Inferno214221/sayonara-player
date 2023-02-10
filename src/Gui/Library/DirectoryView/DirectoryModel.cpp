@@ -3,17 +3,14 @@
 
 #include "Components/Covers/LocalCoverSearcher.h"
 #include "Components/Library/LocalLibrary.h"
-
-#include "Interfaces/LibraryInfoAccessor.h"
-
-#include "Utils/Algorithm.h"
-#include "Utils/FileUtils.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Library/LibraryInfo.h"
-#include "Utils/MetaData/MetaDataList.h"
-
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
+#include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
+#include "Utils/Library/LibraryInfo.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QFileSystemModel>
 #include <QTimer>
@@ -23,14 +20,14 @@ using Directory::Model;
 
 struct Model::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 	QFileSystemModel* model = nullptr;
 	QTimer* filterTimer = nullptr;
 	QString filter;
 
 	LibraryId libraryId;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
+	Private(Library::InfoAccessor* libraryInfoAccessor, QObject* parent) :
 		libraryInfoAccessor {libraryInfoAccessor},
 		model {new QFileSystemModel(parent)},
 		libraryId(-1)
@@ -40,7 +37,7 @@ struct Model::Private
 	}
 };
 
-Model::Model(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent) :
+Model::Model(Library::InfoAccessor* libraryInfoAccessor, QObject* parent) :
 	QSortFilterProxyModel(parent)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor, parent);
@@ -149,7 +146,7 @@ QMimeData* Directory::Model::mimeData(const QModelIndexList& indexes) const
 {
 	QStringList paths;
 	QList<QUrl> urls;
-	for(const QModelIndex& index : indexes)
+	for(const QModelIndex& index: indexes)
 	{
 		const auto path = this->filePath(index);
 		paths << path;

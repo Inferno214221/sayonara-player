@@ -157,10 +157,10 @@ struct GUI_Playlist::Private
 	Handler* playlistHandler;
 	PlayManager* playManager;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
-	LibraryInfoAccessor* libraryAccessor;
+	Library::InfoAccessor* libraryAccessor;
 
 	Private(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker,
-	        LibraryInfoAccessor* libraryAccessor) :
+	        Library::InfoAccessor* libraryAccessor) :
 		playlistHandler(playlistHandler),
 		playManager(playManager),
 		dynamicPlaybackChecker(dynamicPlaybackChecker),
@@ -172,7 +172,7 @@ GUI_Playlist::GUI_Playlist(QWidget* parent) :
 
 void
 GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPlaybackChecker* dynamicPlaybackChecker,
-                   Shutdown* shutdown, LibraryInfoAccessor* libraryAccessor)
+                   Shutdown* shutdown, Library::InfoAccessor* libraryAccessor)
 {
 	m = Pimpl::make<Private>(playlistHandler, playManager, dynamicPlaybackChecker, libraryAccessor);
 

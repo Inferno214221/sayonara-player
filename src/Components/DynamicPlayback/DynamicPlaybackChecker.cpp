@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #include "DynamicPlaybackChecker.h"
-#include "Interfaces/LibraryInfoAccessor.h"
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QList>
@@ -29,7 +29,7 @@ namespace
 		public DynamicPlaybackChecker
 	{
 		public:
-			DynamicPlaybackCheckerImpl(LibraryInfoAccessor* libraryInfoAccessor) :
+			DynamicPlaybackCheckerImpl(Library::InfoAccessor* libraryInfoAccessor) :
 				m_libraryInfoAccessor {libraryInfoAccessor} {}
 
 			~DynamicPlaybackCheckerImpl() override = default;
@@ -40,11 +40,11 @@ namespace
 			}
 
 		private:
-			LibraryInfoAccessor* m_libraryInfoAccessor;
+			Library::InfoAccessor* m_libraryInfoAccessor;
 	};
 }
 
-DynamicPlaybackChecker* DynamicPlaybackChecker::create(LibraryInfoAccessor* libraryInfoAccessor)
+DynamicPlaybackChecker* DynamicPlaybackChecker::create(Library::InfoAccessor* libraryInfoAccessor)
 {
 	return new DynamicPlaybackCheckerImpl(libraryInfoAccessor);
 }

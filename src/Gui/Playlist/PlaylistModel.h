@@ -35,7 +35,10 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
 class CustomMimeData;
 class QPixmap;
 
@@ -83,7 +86,7 @@ namespace Playlist
 				CurrentPlayingRole = Qt::UserRole + 4
 			};
 
-			Model(const PlaylistPtr& playlist, LibraryInfoAccessor* libraryInfoAccessor, QObject* parent);
+			Model(const PlaylistPtr& playlist, Library::InfoAccessor* libraryInfoAccessor, QObject* parent);
 			~Model() override;
 
 			[[nodiscard]] int playlistIndex() const;

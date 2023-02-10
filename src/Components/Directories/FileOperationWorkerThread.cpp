@@ -1,16 +1,14 @@
 #include "FileOperationWorkerThread.h"
 
-#include "Interfaces/LibraryInfoAccessor.h"
 #include "Components/Library/LocalLibrary.h"
-
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
-
-#include "Utils/Set.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
 
 #include <QFileInfo>
 
@@ -26,7 +24,7 @@ struct FileRenameThread::Private
 		targetFile(targetFile) {}
 };
 
-FileRenameThread::FileRenameThread(LibraryInfoAccessor* libraryInfoAccessor, const QString& sourceFile,
+FileRenameThread::FileRenameThread(Library::InfoAccessor* libraryInfoAccessor, const QString& sourceFile,
                                    const QString& targetFile, QObject* parent) :
 	FileOperationThread(libraryInfoAccessor, QStringList {sourceFile}, QStringList {targetFile}, parent)
 {
@@ -71,7 +69,7 @@ struct FileMoveThread::Private
 		targetDir(targetDir) {}
 };
 
-FileMoveThread::FileMoveThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+FileMoveThread::FileMoveThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                const QString& targetDir, QObject* parent) :
 	FileOperationThread(libraryInfoAccessor, sourceFiles, QStringList {targetDir}, parent)
 {
@@ -123,7 +121,7 @@ struct FileCopyThread::Private
 		targetDir(targetDir) {}
 };
 
-FileCopyThread::FileCopyThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+FileCopyThread::FileCopyThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                const QString& targetDir, QObject* parent) :
 	FileOperationThread(libraryInfoAccessor, sourceFiles, QStringList {targetDir}, parent)
 {
@@ -163,7 +161,7 @@ struct FileDeleteThread::Private
 		paths(paths) {}
 };
 
-FileDeleteThread::FileDeleteThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& paths,
+FileDeleteThread::FileDeleteThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& paths,
                                    QObject* parent) :
 	FileOperationThread(libraryInfoAccessor, paths, QStringList(), parent)
 {
@@ -189,9 +187,10 @@ struct FileOperationThread::Private
 	Util::Set<LibraryId> sourceIds;
 	Util::Set<LibraryId> targetIds;
 
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles, const QStringList& targetFiles) :
+	Private(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+	        const QStringList& targetFiles) :
 		libraryInfoAccessor {libraryInfoAccessor}
 	{
 		for(const auto& sourceFile: sourceFiles)
@@ -211,7 +210,7 @@ struct FileOperationThread::Private
 	}
 };
 
-FileOperationThread::FileOperationThread(LibraryInfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
+FileOperationThread::FileOperationThread(Library::InfoAccessor* libraryInfoAccessor, const QStringList& sourceFiles,
                                          const QStringList& targetFiles,
                                          QObject* parent) :
 	QThread(parent)
@@ -231,7 +230,7 @@ QList<LibraryId> FileOperationThread::targetIds() const
 	return m->targetIds.toList();
 }
 
-LibraryInfoAccessor* FileOperationThread::libraryInfoAccessor()
+Library::InfoAccessor* FileOperationThread::libraryInfoAccessor()
 {
 	return m->libraryInfoAccessor;
 }

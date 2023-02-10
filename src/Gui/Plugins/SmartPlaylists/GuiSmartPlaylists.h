@@ -30,7 +30,11 @@
 UI_FWD(GuiSmartPlaylists)
 
 class SmartPlaylistManager;
-class LibraryInfoAccessor;
+
+namespace Library
+{
+	class InfoAccessor;
+}
 
 class GuiSmartPlaylists :
 	public PlayerPlugin::Base
@@ -40,7 +44,7 @@ class GuiSmartPlaylists :
 	UI_CLASS(GuiSmartPlaylists)
 
 	public:
-		GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, LibraryInfoAccessor* libraryManager,
+		GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, Library::InfoAccessor* libraryManager,
 		                  QWidget* parent = nullptr);
 		~GuiSmartPlaylists() noexcept override;
 

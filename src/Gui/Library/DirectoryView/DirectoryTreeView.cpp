@@ -22,22 +22,20 @@
 #include "DirectoryModel.h"
 #include "DirectoryContextMenu.h"
 
-#include "Interfaces/LibraryInfoAccessor.h"
-
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
-#include "Gui/Utils/PreferenceAction.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/InputDialog/LineInputDialog.h"
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
-#include "Gui/Utils/InputDialog/LineInputDialog.h"
-#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/PreferenceAction.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Library/LibraryInfo.h"
-#include "Utils/FileUtils.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/LibraryInfo.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QDir>
 #include <QUrl>
@@ -53,7 +51,7 @@ using Directory::TreeView;
 
 struct TreeView::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 	Directory::Model* model;
 	Directory::ContextMenu* contextMenu = nullptr;
 	Gui::ProgressBar* progressBar = nullptr;
@@ -61,7 +59,7 @@ struct TreeView::Private
 	QTimer* dragTimer;
 	QModelIndex dragTargetIndex;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor, TreeView* parent) :
+	Private(Library::InfoAccessor* libraryInfoAccessor, TreeView* parent) :
 		libraryInfoAccessor {libraryInfoAccessor},
 		model {new Directory::Model(libraryInfoAccessor, parent)},
 		dragTimer {new QTimer {parent}}
@@ -84,7 +82,7 @@ TreeView::TreeView(QWidget* parent) :
 
 TreeView::~TreeView() = default;
 
-void TreeView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info)
+void TreeView::init(Library::InfoAccessor* libraryInfoAccessor, const Library::Info& info)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor, this);
 

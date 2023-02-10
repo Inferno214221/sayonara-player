@@ -125,11 +125,10 @@ namespace
 		};
 
 		auto* libraryPlaylistInteractor = new LibraryPlaylistInteractorMock();
-		auto libraryManager =
-			std::shared_ptr<Library::Manager>(new Library::Manager(libraryPlaylistInteractor), deleter);
+		auto* libraryManager = Library::Manager::create(libraryPlaylistInteractor);
 		libraryManager->addLibrary("Test Library", path);
 
-		return libraryManager;
+		return std::shared_ptr<Library::Manager>(libraryManager, deleter);
 	}
 
 	MetaData changeArtist(MetaData track, const Artist& artist)

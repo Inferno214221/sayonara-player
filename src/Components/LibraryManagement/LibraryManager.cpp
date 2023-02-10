@@ -37,23 +37,18 @@
 #include <QObject>
 #include <QString>
 
-namespace File = ::Util::File;
-namespace Algorithm = Util::Algorithm;
-
-using Library::Manager;
-using Library::Info;
-using OrderMap = QMap<LibraryId, int>;
-
 namespace
 {
+	using Library::Manager;
+	using Library::Info;
+	using OrderMap = QMap<LibraryId, int>;
+
 	constexpr const auto InvalidLibraryId = -5;
 
-	Library::Info getLibraryInfo(const QList<Info>& libraries, std::function<bool(const Library::Info&)> function)
+	Library::Info getLibraryInfo(const QList<Info>& libraries, std::function<bool(const Library::Info&)>&& function)
 	{
-		const auto it = Algorithm::find(libraries, function);
-		return (it != libraries.end())
-		       ? *it :
-		       Info();
+		const auto it = Util::Algorithm::find(libraries, function);
+		return (it != libraries.end()) ? *it : Info {};
 	}
 
 	bool isSubPath(const QString& subPath, const QString& fullPath)
@@ -69,7 +64,7 @@ namespace
 			return false;
 		}
 
-		for(const auto& info: libraries)
+		for(const auto& info: libraries) // NOLINT(readability-use-anyofallof)
 		{
 			if(info.id() != libraryId)
 			{
@@ -104,7 +99,7 @@ namespace
 			});
 
 		return (it != libraries.end())
-		       ? it->id() + 1
+		       ? it->id() + 1 // NOLINT(bugprone-narrowing-conversions,cppcoreguidelines-narrowing-conversions)
 		       : 0;
 	}
 
@@ -154,242 +149,241 @@ namespace
 
 		return libraries;
 	}
+
+	class LibraryManagerImpl :
+		public Library::Manager
+	{
+		public:
+			explicit LibraryManagerImpl(LibraryPlaylistInteractor* playlistInteractor) :
+				m_playlistInteractor {playlistInteractor},
+				m_database {DB::Connector::instance()},
+				m_libraryConnector {m_database->libraryConnector()},
+				m_genericLibrary {new LocalLibrary(this, -1, m_playlistInteractor)}
+			{
+				reset();
+			}
+
+			~LibraryManagerImpl() override = default;
+
+			LibraryId addLibrary(const QString& name, const QString& path) override
+			{
+				if(!checkNewPath(path, m_libraries) || !checkNewName(name, m_libraries))
+				{
+					return -1;
+				}
+
+				const auto id = getNextId(m_libraries);
+				m_libraries << Info(name, path, id);
+
+				auto* libraryDatabase = m_database->registerLibraryDatabase(id);
+				libraryDatabase->deleteAllTracks(false); // maybe some corpses from earlier days
+
+				const auto inserted = m_libraryConnector->insertLibrary(id, name, path, 0);
+				if(inserted)
+				{
+					const auto orderMap = createOrderMap(m_libraries);
+					const auto reordered = m_libraryConnector->reorderLibraries(orderMap);
+					if(reordered)
+					{
+						emit sigAdded(id);
+						return id;
+					}
+				}
+
+				return -1;
+			}
+
+			bool renameLibrary(LibraryId id, const QString& newName) override
+			{
+				if(!checkNewName(newName, m_libraries))
+				{
+					spLog(Log::Warning, this) << "Cannot rename library: Name already exists";
+					return false;
+				}
+
+				auto it = Util::Algorithm::find(m_libraries, [&](const auto& info) {
+					return (info.id() == id);
+				});
+
+				if(it == m_libraries.end())
+				{
+					spLog(Log::Warning, this) << "Cannot rename library: Cannot find id";
+					return false;
+				}
+
+				auto newInfo = Info(newName, it->path(), it->id());
+				const auto edited = m_libraryConnector->editLibrary(newInfo.id(), newInfo.name(), newInfo.path());
+				if(!edited)
+				{
+					spLog(Log::Warning, this) << "Cannot rename library: Database error";
+					return false;
+				}
+
+				*it = newInfo;
+				emit sigRenamed(id);
+
+				return true;
+			}
+
+			bool removeLibrary(LibraryId id) override
+			{
+				const auto exists = (Util::Algorithm::contains(m_libraries, [&](const auto& info) {
+					return (info.id() == id);
+				}));
+
+				m_libraryConnector->removeLibrary(id);
+				m_database->deleteLibraryDatabase(id);
+				m_libraries = refetchLibraries(m_libraries);
+
+				emit sigRemoved(id);
+
+				auto* localLibrary = m_libraryMap.take(id);
+				delete localLibrary;
+
+				return exists;
+			}
+
+			bool moveLibrary(int from, int to) override
+			{
+				if(!Util::between(from, count()) || !Util::between(to, count()))
+				{
+					return false;
+				}
+
+				const auto id = m_libraries[from].id();
+
+				m_libraries.move(from, to);
+				m_libraries = refetchLibraries(m_libraries);
+
+				emit sigMoved(id, from, to);
+
+				return (!m_libraries.isEmpty());
+			}
+
+			bool changeLibraryPath(LibraryId id, const QString& newPath) override
+			{
+				if(!checkNewPath(newPath, m_libraries, id))
+				{
+					return false;
+				}
+
+				const auto it = Util::Algorithm::find(m_libraries, [&](const auto& info) {
+					return (id == info.id());
+				});
+
+				if(it == m_libraries.end())
+				{
+					return false;
+				}
+
+				const auto oldInfo = *it;
+				*it = Info(oldInfo.name(), newPath, oldInfo.id());
+
+				auto* libraryDatabase = m_database->libraryDatabase(id, m_database->databaseId());
+				if(libraryDatabase->libraryId() >= 0)
+				{
+					libraryDatabase->deleteAllTracks(false);
+				}
+
+				if(m_libraryMap.contains(id))
+				{
+					auto* localLibrary = m_libraryMap.value(id);
+					localLibrary->refetch();
+				}
+
+				const auto success = m_libraryConnector->editLibrary(oldInfo.id(), oldInfo.name(), newPath);
+				if(success)
+				{
+					emit sigPathChanged(id);
+				}
+
+				spLog(Log::Warning, this) << "Library path changed: " << success;
+
+				return success;
+			}
+
+			[[nodiscard]] QList<Info> allLibraries() const override { return m_libraries; }
+
+			[[nodiscard]] int count() const override { return m_libraries.size(); }
+
+			[[nodiscard]] Info libraryInfo(LibraryId id) const override
+			{
+				return getLibraryInfo(m_libraries, [&](const auto& info) {
+					return (info.id() == id);
+				});
+			}
+
+			[[nodiscard]] Info libraryInfoByPath(const QString& path) const override
+			{
+				return getLibraryInfo(m_libraries, [&](const auto& info) {
+					return (isSubPath(info.path(), path));
+				});
+			}
+
+			LocalLibrary* libraryInstance(LibraryId id) override
+			{
+				if(id == -1)
+				{
+					return m_genericLibrary;
+				}
+
+				const auto exists = Util::Algorithm::contains(m_libraries, [&](const auto& info) {
+					return (info.id() == id);
+				});
+
+				auto* localLibrary = (exists && m_libraryMap.contains(id))
+				                     ? m_libraryMap[id]
+				                     : new LocalLibrary(this, id, m_playlistInteractor);
+
+				if(!m_libraryMap.contains(id))
+				{
+					m_libraryMap[id] = localLibrary;
+				}
+
+				return localLibrary;
+			}
+
+		private:
+			void reset()
+			{
+				m_libraries = m_libraryConnector->getAllLibraries();
+				if(m_libraries.isEmpty())
+				{
+					m_libraries = getLegacyLibraries(m_libraryConnector);
+				}
+
+				for(int i = m_libraries.size() - 1; i >= 0; i--)
+				{
+					if(m_libraries[i].valid())
+					{
+						m_database->registerLibraryDatabase(m_libraries[i].id());
+					}
+					else
+					{
+						m_libraries.removeAt(i);
+					}
+				}
+			}
+
+			QMap<LibraryId, LocalLibrary*> m_libraryMap;
+			QList<Info> m_libraries;
+			LibraryPlaylistInteractor* m_playlistInteractor;
+			DB::Connector* m_database;
+			DB::Library* m_libraryConnector;
+			LocalLibrary* m_genericLibrary;
+	};
 }
 
-struct Manager::Private
+namespace Library
 {
-	public:
-		QMap<LibraryId, LocalLibrary*> libraryMap;
-		QList<Info> libraries;
-		LibraryPlaylistInteractor* playlistInteractor;
-		DB::Connector* database;
-		DB::Library* libraryConnector;
-
-		Private(LibraryPlaylistInteractor* playlistInteractor) :
-			playlistInteractor {playlistInteractor},
-			database {DB::Connector::instance()},
-			libraryConnector {database->libraryConnector()} {}
-};
-
-Manager::Manager(LibraryPlaylistInteractor* playlistInteractor) :
-	QObject()
-{
-	m = Pimpl::make<Private>(playlistInteractor);
-	reset();
-}
-
-Manager::~Manager() = default;
-
-void Manager::reset()
-{
-	m->libraries = m->libraryConnector->getAllLibraries();
-	if(m->libraries.isEmpty())
+	Manager* Manager::create(LibraryPlaylistInteractor* playlistInteractor)
 	{
-		m->libraries = getLegacyLibraries(m->libraryConnector);
+		return new LibraryManagerImpl(playlistInteractor);
 	}
 
-	for(int i = m->libraries.size() - 1; i >= 0; i--)
+	QString Manager::requestLibraryName(const QString& path)
 	{
-		if(m->libraries[i].valid())
-		{
-			m->database->registerLibraryDatabase(m->libraries[i].id());
-		}
-		else
-		{
-			m->libraries.removeAt(i);
-		}
+		return Util::stringToFirstUpper(QDir(path).dirName());
 	}
 }
 
-LibraryId Manager::addLibrary(const QString& name, const QString& path)
-{
-	if(!checkNewPath(path, m->libraries) || !checkNewName(name, m->libraries))
-	{
-		return -1;
-	}
-
-	const auto id = getNextId(m->libraries);
-	m->libraries << Info(name, path, id);
-
-	auto* libraryDatabase = m->database->registerLibraryDatabase(id);
-	libraryDatabase->deleteAllTracks(false); // maybe some corpses from earlier days
-
-	const auto inserted = m->libraryConnector->insertLibrary(id, name, path, 0);
-	if(inserted)
-	{
-		const auto orderMap = createOrderMap(m->libraries);
-		const auto reordered = m->libraryConnector->reorderLibraries(orderMap);
-		if(reordered)
-		{
-			emit sigAdded(id);
-			return id;
-		}
-	}
-
-	return -1;
-}
-
-bool Manager::renameLibrary(LibraryId id, const QString& newName)
-{
-	if(!checkNewName(newName, m->libraries))
-	{
-		spLog(Log::Warning, this) << "Cannot rename library: Name already exists";
-		return false;
-	}
-
-	auto it = Util::Algorithm::find(m->libraries, [&](const auto& info) {
-		return (info.id() == id);
-	});
-
-	if(it == m->libraries.end())
-	{
-		spLog(Log::Warning, this) << "Cannot rename library: Cannot find id";
-		return false;
-	}
-
-	auto newInfo = Info(newName, it->path(), it->id());
-	const auto edited = m->libraryConnector->editLibrary(newInfo.id(), newInfo.name(), newInfo.path());
-	if(!edited)
-	{
-		spLog(Log::Warning, this) << "Cannot rename library: Database error";
-		return false;
-	}
-
-	*it = std::move(newInfo);
-	emit sigRenamed(id);
-
-	return true;
-}
-
-bool Manager::removeLibrary(LibraryId id)
-{
-	const auto exists = (Util::Algorithm::contains(m->libraries, [&](const auto& info) {
-		return (info.id() == id);
-	}));
-
-	m->libraryConnector->removeLibrary(id);
-	m->database->deleteLibraryDatabase(id);
-	m->libraries = refetchLibraries(m->libraries);
-
-	emit sigRemoved(id);
-
-	auto* localLibrary = m->libraryMap.take(id);
-	if(localLibrary)
-	{
-		delete localLibrary;
-	}
-
-	return exists;
-}
-
-bool Manager::moveLibrary(int from, int to)
-{
-	if(!Util::between(from, count()) || !Util::between(to, count()))
-	{
-		return false;
-	}
-
-	const auto id = m->libraries[from].id();
-
-	m->libraries.move(from, to);
-	m->libraries = refetchLibraries(m->libraries);
-
-	emit sigMoved(id, from, to);
-
-	return (!m->libraries.isEmpty());
-}
-
-bool Manager::changeLibraryPath(LibraryId id, const QString& newPath)
-{
-	if(!checkNewPath(newPath, m->libraries, id))
-	{
-		return false;
-	}
-
-	const auto it = Algorithm::find(m->libraries, [&](const auto& info) {
-		return (id == info.id());
-	});
-
-	if(it == m->libraries.end())
-	{
-		return false;
-	}
-
-	const auto oldInfo = std::move(*it);
-	*it = Info(oldInfo.name(), newPath, oldInfo.id());
-
-	auto* libraryDatabase = m->database->libraryDatabase(id, m->database->databaseId());
-	if(libraryDatabase->libraryId() >= 0)
-	{
-		libraryDatabase->deleteAllTracks(false);
-	}
-
-	if(m->libraryMap.contains(id))
-	{
-		auto* localLibrary = m->libraryMap.value(id);
-		localLibrary->refetch();
-	}
-
-	const auto success = m->libraryConnector->editLibrary(oldInfo.id(), oldInfo.name(), newPath);
-	if(success)
-	{
-		emit sigPathChanged(id);
-	}
-
-	spLog(Log::Warning, this) << "Library path changed: " << success;
-
-	return success;
-}
-
-QString Manager::requestLibraryName(const QString& path)
-{
-	return Util::stringToFirstUpper(QDir(path).dirName());
-}
-
-QList<Info> Manager::allLibraries() const
-{
-	return m->libraries;
-}
-
-int Manager::count() const
-{
-	return m->libraries.size();
-}
-
-Info Manager::libraryInfo(LibraryId id) const
-{
-	return getLibraryInfo(m->libraries, [&](const auto& info) {
-		return (info.id() == id);
-	});
-}
-
-Library::Info Manager::libraryInfoByPath(const QString& path) const
-{
-	return getLibraryInfo(m->libraries, [&](const auto& info) {
-		return (isSubPath(info.path(), path));
-	});
-}
-
-LocalLibrary* Manager::libraryInstance(LibraryId id)
-{
-	if(id == -1)
-	{
-		static auto* genericLibrary = new LocalLibrary(this, -1, m->playlistInteractor);
-		return genericLibrary;
-	}
-
-	const auto exists = Util::Algorithm::contains(m->libraries, [&](const auto& info) {
-		return (info.id() == id);
-	});
-
-	auto* localLibrary = (exists && m->libraryMap.contains(id))
-	                     ? m->libraryMap[id]
-	                     : new LocalLibrary(this, id, m->playlistInteractor);
-
-	if(!m->libraryMap.contains(id))
-	{
-		m->libraryMap[id] = localLibrary;
-	}
-
-	return localLibrary;
-}

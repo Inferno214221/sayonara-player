@@ -45,9 +45,8 @@ namespace Gui
 namespace Library
 {
 	class Info;
+	class InfoAccessor;
 }
-
-class LibraryInfoAccessor;
 
 namespace Directory
 {
@@ -88,7 +87,7 @@ namespace Directory
 			explicit TreeView(QWidget* parent = nullptr);
 			~TreeView() override;
 
-			void init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info);
+			void init(Library::InfoAccessor* libraryInfoAccessor, const Library::Info& info);
 
 			QString directoryName(const QModelIndex& index);
 
@@ -103,9 +102,9 @@ namespace Directory
 		private:
 			enum class DropAction
 			{
-					Copy,
-					Move,
-					Cancel
+				Copy,
+				Move,
+				Cancel
 			};
 
 			void initContextMenu();
@@ -136,7 +135,7 @@ namespace Directory
 			MetaDataList infoDialogData() const override;
 			bool hasMetadata() const override;
 			QStringList pathlist() const override;
-            QWidget* getParentWidget() override;
+			QWidget* getParentWidget() override;
 	};
 }
 

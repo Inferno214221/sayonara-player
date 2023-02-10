@@ -108,7 +108,7 @@ struct GUI_Player::Private
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
                        Shutdown* shutdown, NotificationHandler* notificationHandler,
                        DynamicPlaybackChecker* dynamicPlaybackChecker,
-                       LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
+                       Library::InfoAccessor* libraryAccessor, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {

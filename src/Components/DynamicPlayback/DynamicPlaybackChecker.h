@@ -20,7 +20,10 @@
 #ifndef SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H
 #define SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H
 
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
 
 class DynamicPlaybackChecker
 {
@@ -28,7 +31,7 @@ class DynamicPlaybackChecker
 		virtual ~DynamicPlaybackChecker() = default;
 		virtual bool isDynamicPlaybackPossible() const = 0;
 
-		static DynamicPlaybackChecker* create(LibraryInfoAccessor* libraryInfoAccessor);
+		static DynamicPlaybackChecker* create(Library::InfoAccessor* libraryInfoAccessor);
 };
 
 #endif //SAYONARA_PLAYER_DYNAMICPLAYBACKCHECKER_H

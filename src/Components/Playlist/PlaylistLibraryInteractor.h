@@ -25,8 +25,12 @@
 
 #include <QObject>
 
-class LibraryInfoAccessor;
 class MetaData;
+
+namespace Library
+{
+	class InfoAccessor;
+}
 
 namespace Playlist
 {
@@ -37,7 +41,7 @@ namespace Playlist
 		PIMPL(LibraryInteractor)
 
 		public:
-			LibraryInteractor(LibraryInfoAccessor* libraryInfoAccessor);
+			LibraryInteractor(Library::InfoAccessor* libraryInfoAccessor);
 			~LibraryInteractor();
 
 			void findTrack(const MetaData& track);

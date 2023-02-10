@@ -175,12 +175,12 @@ struct Model::Private
 	Tagging::UserOperations* uto = nullptr;
 	std::shared_ptr<LibraryInteractor> libraryInteractor;
 
-	Private(PlaylistPtr playlistArg, LibraryInfoAccessor* libraryAccessor) :
+	Private(PlaylistPtr playlistArg, Library::InfoAccessor* libraryAccessor) :
 		playlist(std::move(playlistArg)),
 		libraryInteractor {std::make_shared<LibraryInteractor>(libraryAccessor)} {}
 };
 
-Model::Model(const PlaylistPtr& playlist, LibraryInfoAccessor* libraryAccessor, QObject* parent) :
+Model::Model(const PlaylistPtr& playlist, Library::InfoAccessor* libraryAccessor, QObject* parent) :
 	SearchableTableModel(parent)
 {
 	m = Pimpl::make<Private>(playlist, libraryAccessor);

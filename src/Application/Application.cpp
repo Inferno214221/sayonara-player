@@ -194,7 +194,7 @@ struct Application::Private
 
 		playlistHandler = new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>());
 		libraryPlaylistInteractor = LibraryPlaylistInteractor::create(playlistHandler, playManager);
-		libraryManager = new Library::Manager(libraryPlaylistInteractor);
+		libraryManager = Library::Manager::create(libraryPlaylistInteractor);
 
 		playlistLibraryInteractor = new Playlist::LibraryInteractor(libraryManager);
 

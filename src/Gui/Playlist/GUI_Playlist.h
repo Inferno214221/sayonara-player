@@ -47,7 +47,10 @@ namespace Playlist
 class PlayManager;
 class DynamicPlaybackChecker;
 class Shutdown;
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
 
 UI_FWD(PlaylistWindow)
 
@@ -63,7 +66,7 @@ class GUI_Playlist :
 
 		void init(Playlist::Handler* playlistHandler, PlayManager* playManager,
 		          DynamicPlaybackChecker* dynamicPlaybackChecker, Shutdown* shutdown,
-		          LibraryInfoAccessor* libraryAccessor);
+		          Library::InfoAccessor* libraryAccessor);
 
 	private:
 		void initToolButton();

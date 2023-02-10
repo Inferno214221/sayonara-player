@@ -44,10 +44,9 @@ class LibraryManagerTest :
 			};
 
 			auto* libraryPlaylistInteractor = new LibraryPlaylistInteractorStub();
-			auto libraryManager =
-				std::shared_ptr<Library::Manager>(new Library::Manager(libraryPlaylistInteractor), deleter);
-
-			return libraryManager;
+			auto* libraryManager = Library::Manager::create(libraryPlaylistInteractor);
+			
+			return std::shared_ptr<Library::Manager>(libraryManager, deleter);
 		}
 
 		void removeAllLibraries(Library::Manager* manager)

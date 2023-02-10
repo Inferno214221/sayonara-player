@@ -23,6 +23,7 @@
 #include "DirectoryContextMenu.h"
 #include "GUI_FileExpressionDialog.h"
 
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
@@ -30,9 +31,6 @@
 #include "Gui/Utils/MimeData/CustomMimeData.h"
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/PreferenceAction.h"
-
-#include "Interfaces/LibraryInfoAccessor.h"
-
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -55,11 +53,11 @@ using Directory::FileListView;
 
 struct FileListView::Private
 {
-	LibraryInfoAccessor* libraryInfoAccessor;
+	Library::InfoAccessor* libraryInfoAccessor;
 	FileListModel* model;
 	ContextMenu* contextMenu = nullptr;
 
-	Private(LibraryInfoAccessor* libraryInfoAccessor, LibraryId libraryId, FileListView* parent) :
+	Private(Library::InfoAccessor* libraryInfoAccessor, LibraryId libraryId, FileListView* parent) :
 		libraryInfoAccessor {libraryInfoAccessor},
 		model {new FileListModel {libraryInfoAccessor->libraryInstance(libraryId), parent}} {}
 };
@@ -70,7 +68,7 @@ FileListView::FileListView(QWidget* parent) :
 
 FileListView::~FileListView() = default;
 
-void FileListView::init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info)
+void FileListView::init(Library::InfoAccessor* libraryInfoAccessor, const Library::Info& info)
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor, info.id(), this);
 

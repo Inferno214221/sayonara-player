@@ -26,7 +26,11 @@
 #include <QObject>
 #include <QStringList>
 
-class LibraryInfoAccessor;
+namespace Library
+{
+	class InfoAccessor;
+}
+
 class FileOperations :
 	public QObject
 {
@@ -38,7 +42,7 @@ class FileOperations :
 		void sigStarted();
 
 	public:
-		explicit FileOperations(LibraryInfoAccessor* libraryInfoAccessor, QObject* parent=nullptr);
+		explicit FileOperations(Library::InfoAccessor* libraryInfoAccessor, QObject* parent = nullptr);
 		~FileOperations() override;
 
 		bool renamePath(const QString& path, const QString& newName);

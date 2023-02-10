@@ -20,11 +20,9 @@
 
 #include "DirectoryContextMenu.h"
 
-#include "Interfaces/LibraryInfoAccessor.h"
-
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
-
 #include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryInfo.h"
 
@@ -34,31 +32,31 @@ using Directory::ContextMenu;
 
 struct ContextMenu::Private
 {
-	QAction*	actionCreateDirectory=nullptr;
-	QAction*	actionRename=nullptr;
-	QAction*	actionRenameByTag=nullptr;
-	QAction*	actionCollapseAll=nullptr;
-	QAction*	actionViewInFileManager=nullptr;
+	QAction* actionCreateDirectory = nullptr;
+	QAction* actionRename = nullptr;
+	QAction* actionRenameByTag = nullptr;
+	QAction* actionCollapseAll = nullptr;
+	QAction* actionViewInFileManager = nullptr;
 
 	QMap<ContextMenu::Entry, QAction*> entryActionMap;
 
-	QMenu*		menuMoveToLibrary=nullptr;
-	QAction*	actionMoveToLibrary=nullptr;
+	QMenu* menuMoveToLibrary = nullptr;
+	QAction* actionMoveToLibrary = nullptr;
 
-	QMenu*		menuCopyToLibrary=nullptr;
-	QAction*	actionCopyToLibrary=nullptr;
+	QMenu* menuCopyToLibrary = nullptr;
+	QAction* actionCopyToLibrary = nullptr;
 
 	QList<QAction*> libraryMoveActions, libraryCopyActions;
 
 	ContextMenu::Mode mode;
 
-	Private(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInfoAccessor, ContextMenu* parent) :
+	Private(ContextMenu::Mode mode, Library::InfoAccessor* libraryInfoAccessor, ContextMenu* parent) :
 		mode(mode)
 	{
 		actionCreateDirectory = new QAction(parent);
 		actionRename = new QAction(parent);
-		actionRenameByTag =	new QAction(parent);
-		actionCollapseAll =	new QAction(parent);
+		actionRenameByTag = new QAction(parent);
+		actionCollapseAll = new QAction(parent);
 		actionViewInFileManager = new QAction(parent);
 
 		{ // init copy/move to library menus
@@ -67,7 +65,7 @@ struct ContextMenu::Private
 			menuCopyToLibrary = new QMenu(parent);
 			menuMoveToLibrary = new QMenu(parent);
 
-			for(const Library::Info& info : libraries)
+			for(const Library::Info& info: libraries)
 			{
 				QAction* action1 = menuCopyToLibrary->addAction(info.name());
 				QAction* action2 = menuMoveToLibrary->addAction(info.name());
@@ -84,46 +82,46 @@ struct ContextMenu::Private
 		}
 
 		entryActionMap =
-		{
-			{EntryCreateDir, actionCreateDirectory},
-			{EntryRename, actionRename},
-			{EntryRenameByTag, actionRenameByTag},
-			{EntryCollapseAll, actionCollapseAll},
-			{EntryMoveToLib, actionMoveToLibrary},
-			{EntryCopyToLib, actionCopyToLibrary},
-			{EntryViewInFM, actionViewInFileManager}
-		};
+			{
+				{EntryCreateDir,   actionCreateDirectory},
+				{EntryRename,      actionRename},
+				{EntryRenameByTag, actionRenameByTag},
+				{EntryCollapseAll, actionCollapseAll},
+				{EntryMoveToLib,   actionMoveToLibrary},
+				{EntryCopyToLib,   actionCopyToLibrary},
+				{EntryViewInFM,    actionViewInFileManager}
+			};
 	}
 };
 
-ContextMenu::ContextMenu(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInfoAccessor, QWidget* parent) :
+ContextMenu::ContextMenu(ContextMenu::Mode mode, Library::InfoAccessor* libraryInfoAccessor, QWidget* parent) :
 	Library::ContextMenu(parent)
 {
 	m = Pimpl::make<Private>(mode, libraryInfoAccessor, this);
 
 	this->showActions
-	(
-		(Library::ContextMenu::EntryPlay |
-		Library::ContextMenu::EntryPlayNewTab |
-		Library::ContextMenu::EntryDelete |
-		Library::ContextMenu::EntryInfo |
-		Library::ContextMenu::EntryEdit |
-		Library::ContextMenu::EntryLyrics |
-		Library::ContextMenu::EntryAppend |
-		Library::ContextMenu::EntryPlayNext)
-	);
+		(
+			(Library::ContextMenu::EntryPlay |
+			 Library::ContextMenu::EntryPlayNewTab |
+			 Library::ContextMenu::EntryDelete |
+			 Library::ContextMenu::EntryInfo |
+			 Library::ContextMenu::EntryEdit |
+			 Library::ContextMenu::EntryLyrics |
+			 Library::ContextMenu::EntryAppend |
+			 Library::ContextMenu::EntryPlayNext)
+		);
 
-	QAction* action	= this->action(Library::ContextMenu::EntryDelete);
+	QAction* action = this->action(Library::ContextMenu::EntryDelete);
 	if(action)
 	{
 		this->insertActions
-		(
-			action,
-			{
-				this->addSeparator(),
-				m->actionCreateDirectory, m->actionRename, m->actionRenameByTag,
-			}
-		);
+			(
+				action,
+				{
+					this->addSeparator(),
+					m->actionCreateDirectory, m->actionRename, m->actionRenameByTag,
+				}
+			);
 	}
 
 	connect(m->actionCreateDirectory, &QAction::triggered, this, &ContextMenu::sigCreateDirectoryClicked);
@@ -132,12 +130,12 @@ ContextMenu::ContextMenu(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInf
 	connect(m->actionCollapseAll, &QAction::triggered, this, &ContextMenu::sigCollapseAllClicked);
 	connect(m->actionViewInFileManager, &QAction::triggered, this, &ContextMenu::sigViewInFileManagerClicked);
 
-	for(QAction* action : m->libraryMoveActions)
+	for(QAction* action: m->libraryMoveActions)
 	{
 		connect(action, &QAction::triggered, this, &ContextMenu::libraryMoveActionTriggered);
 	}
 
-	for(QAction* action : m->libraryCopyActions)
+	for(QAction* action: m->libraryCopyActions)
 	{
 		connect(action, &QAction::triggered, this, &ContextMenu::libraryCopyActionTriggered);
 	}
@@ -145,17 +143,17 @@ ContextMenu::ContextMenu(ContextMenu::Mode mode, LibraryInfoAccessor* libraryInf
 	action = this->addPreferenceAction(new Gui::LibraryPreferenceAction(this));
 
 	this->insertActions
-	(
-		action,
-		{
-			m->actionViewInFileManager,
-			m->actionCollapseAll,
-			this->addSeparator(),
-			m->actionMoveToLibrary,
-			m->actionCopyToLibrary,
-			this->addSeparator()
-		}
-	);
+		(
+			action,
+			{
+				m->actionViewInFileManager,
+				m->actionCollapseAll,
+				this->addSeparator(),
+				m->actionMoveToLibrary,
+				m->actionCopyToLibrary,
+				this->addSeparator()
+			}
+		);
 
 	switch(mode)
 	{
@@ -194,16 +192,16 @@ void ContextMenu::refresh(int count)
 	else
 	{
 		this->showActions
-		(
-			Library::ContextMenu::EntryPlay |
-			Library::ContextMenu::EntryPlayNewTab |
-			Library::ContextMenu::EntryDelete |
-			Library::ContextMenu::EntryInfo |
-			Library::ContextMenu::EntryEdit |
-			Library::ContextMenu::EntryLyrics |
-			Library::ContextMenu::EntryAppend |
-			Library::ContextMenu::EntryPlayNext
-		);
+			(
+				Library::ContextMenu::EntryPlay |
+				Library::ContextMenu::EntryPlayNewTab |
+				Library::ContextMenu::EntryDelete |
+				Library::ContextMenu::EntryInfo |
+				Library::ContextMenu::EntryEdit |
+				Library::ContextMenu::EntryLyrics |
+				Library::ContextMenu::EntryAppend |
+				Library::ContextMenu::EntryPlayNext
+			);
 
 		switch(m->mode)
 		{
@@ -238,9 +236,10 @@ void ContextMenu::refresh(int count)
 Library::ContextMenu::Entries ContextMenu::entries() const
 {
 	auto entries = Library::ContextMenu::entries();
-	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
+	for(auto it = m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
-		if(it.value()->isVisible()){
+		if(it.value()->isVisible())
+		{
 			entries |= it.key();
 		}
 	}
@@ -252,7 +251,7 @@ void ContextMenu::showActions(Library::ContextMenu::Entries entries)
 {
 	Library::ContextMenu::showActions(entries);
 
-	for(auto it=m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
+	for(auto it = m->entryActionMap.begin(); it != m->entryActionMap.end(); it++)
 	{
 		ContextMenu::Entry entry = it.key();
 		QAction* action = it.value();

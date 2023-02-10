@@ -21,10 +21,7 @@
 #ifndef LIBRARYMANAGER_H
 #define LIBRARYMANAGER_H
 
-#include "Interfaces/LibraryInfoAccessor.h"
-
-#include "Utils/Singleton.h"
-#include "Utils/Pimpl.h"
+#include "Utils/typedefs.h"
 
 #include <QObject>
 
@@ -34,14 +31,24 @@ class LibraryPlaylistInteractor;
 namespace Library
 {
 	class Info;
+
+	class InfoAccessor
+	{
+		public:
+			virtual ~InfoAccessor() = default;
+
+			[[nodiscard]] virtual QList<Info> allLibraries() const = 0;
+			[[nodiscard]] virtual Info libraryInfo(LibraryId id) const = 0;
+			[[nodiscard]] virtual Info libraryInfoByPath(const QString& path) const = 0;
+			[[nodiscard]] virtual int count() const = 0;
+			[[nodiscard]] virtual LocalLibrary* libraryInstance(LibraryId id) = 0;
+	};
+
 	class Manager :
 		public QObject,
-		public LibraryInfoAccessor
+		public InfoAccessor
 	{
 		Q_OBJECT
-		PIMPL(Manager)
-
-			friend class LocalLibrary;
 
 		signals:
 			void sigPathChanged(LibraryId id);
@@ -51,25 +58,16 @@ namespace Library
 			void sigRemoved(LibraryId id);
 
 		public:
-			Manager(LibraryPlaylistInteractor* playlistInteractor);
-			~Manager() override;
+			~Manager() override = default;
 
-			LibraryId addLibrary(const QString& name, const QString& path);
-			bool renameLibrary(LibraryId id, const QString& newName);
-			bool removeLibrary(LibraryId id);
-			bool moveLibrary(int old_row, int new_row);
-			bool changeLibraryPath(LibraryId id, const QString& newPath);
-
-			QList<Info> allLibraries() const override;
-			Info libraryInfo(LibraryId id) const override;
-			Info libraryInfoByPath(const QString& path) const override;
-			int count() const override;
-			LocalLibrary* libraryInstance(LibraryId id) override;
+			virtual LibraryId addLibrary(const QString& name, const QString& path) = 0;
+			virtual bool renameLibrary(LibraryId id, const QString& newName) = 0;
+			virtual bool removeLibrary(LibraryId id) = 0;
+			virtual bool moveLibrary(int oldRow, int newRow) = 0;
+			virtual bool changeLibraryPath(LibraryId id, const QString& newPath) = 0;
 
 			static QString requestLibraryName(const QString& path);
-
-		private:
-			void reset();
+			static Manager* create(LibraryPlaylistInteractor* playlistInteractor);
 	};
 }
 

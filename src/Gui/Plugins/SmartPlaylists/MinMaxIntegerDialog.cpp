@@ -22,10 +22,10 @@
 #include "StringValidator.h"
 #include "InputField.h"
 
+#include "Components/LibraryManagement/LibraryManager.h"
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
 #include "Components/SmartPlaylists/TimeSpan.h"
 #include "Gui/Utils/GuiUtils.h"
-#include "Interfaces/LibraryInfoAccessor.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/LibraryInfo.h"
@@ -160,7 +160,7 @@ namespace
 		return sections;
 	}
 
-	void populateLibraryComboBox(LibraryInfoAccessor* libraryManager, QComboBox* comboBox)
+	void populateLibraryComboBox(Library::InfoAccessor* libraryManager, QComboBox* comboBox)
 	{
 		comboBox->clear();
 		comboBox->addItem(QObject::tr("All libraries"), -1);
@@ -219,7 +219,7 @@ struct MinMaxIntegerDialog::Private
 };
 
 MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist,
-                                         LibraryInfoAccessor* libraryManager, const EditMode editMode,
+                                         Library::InfoAccessor* libraryManager, const EditMode editMode,
                                          QWidget* parent) :
 	QDialog(parent),
 	m {Pimpl::make<Private>(smartPlaylist->type())}
@@ -244,12 +244,12 @@ MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& s
 	m->comboLibraries->setCurrentIndex(m->comboLibraries->findData(smartPlaylist->libraryId()));
 }
 
-MinMaxIntegerDialog::MinMaxIntegerDialog(LibraryInfoAccessor* libraryManager, QWidget* parent) :
+MinMaxIntegerDialog::MinMaxIntegerDialog(Library::InfoAccessor* libraryManager, QWidget* parent) :
 	MinMaxIntegerDialog(createDummySmartPlaylist(SmartPlaylists::Type::Rating), libraryManager, EditMode::New,
 	                    parent) {}
 
 MinMaxIntegerDialog::MinMaxIntegerDialog(const std::shared_ptr<SmartPlaylist>& smartPlaylist,
-                                         LibraryInfoAccessor* libraryManager, QWidget* parent) :
+                                         Library::InfoAccessor* libraryManager, QWidget* parent) :
 	MinMaxIntegerDialog(smartPlaylist, libraryManager, EditMode::Edit, parent)
 {
 	for(int i = 0; i < smartPlaylist->count(); i++)

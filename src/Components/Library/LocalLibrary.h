@@ -46,11 +46,9 @@ class LocalLibrary :
 		void sigRenamed(const QString& newName);
 		void sigPathChanged(const QString& newPath);
 
-	protected:
+	public:
 		LocalLibrary(Library::Manager* libraryManager, LibraryId id, LibraryPlaylistInteractor* playlistInteractor,
 		             QObject* parent = nullptr);
-
-	public:
 		~LocalLibrary() override;
 
 		bool setLibraryPath(const QString& path);

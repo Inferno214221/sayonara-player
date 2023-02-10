@@ -27,10 +27,10 @@
 
 #include "Utils/Pimpl.h"
 
-class LibraryInfoAccessor;
 namespace Library
 {
 	class Info;
+	class InfoAccessor;
 }
 
 namespace Directory
@@ -67,7 +67,7 @@ namespace Directory
 			explicit FileListView(QWidget* parent = nullptr);
 			~FileListView() override;
 
-			void init(LibraryInfoAccessor* libraryInfoAccessor, const Library::Info& info);
+			void init(Library::InfoAccessor* libraryInfoAccessor, const Library::Info& info);
 
 			QStringList selectedPaths() const;
 
@@ -99,7 +99,7 @@ namespace Directory
 			MetaDataList infoDialogData() const override;
 			bool hasMetadata() const override;
 			QStringList pathlist() const override;
-            QWidget* getParentWidget() override;
+			QWidget* getParentWidget() override;
 	};
 }
 
