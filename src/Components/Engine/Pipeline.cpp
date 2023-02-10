@@ -44,42 +44,36 @@
 
 using Engine::Pipeline;
 using namespace PipelineExtensions;
-namespace EngineUtils=::Engine::Utils;
-namespace Callbacks=::Engine::Callbacks;
+namespace EngineUtils = ::Engine::Utils;
+namespace Callbacks = ::Engine::Callbacks;
 
 struct Pipeline::Private
 {
-	QString				name;
+	QString name;
 
-	GstElement*			pipeline=nullptr;
-	GstElement*			source=nullptr;
-	GstElement*			audioConvert=nullptr;
-	GstElement*			pitch=nullptr;
-	GstElement*			equalizer=nullptr;
-	GstElement*			tee=nullptr;
+	GstElement* pipeline = nullptr;
+	GstElement* source = nullptr;
+	GstElement* audioConvert = nullptr;
+	GstElement* pitch = nullptr;
+	GstElement* equalizer = nullptr;
+	GstElement* tee = nullptr;
 
 	GstElement*			positionElement=nullptr;
 
-	GstElement*			playbackBin=nullptr;
-	GstElement*			playbackQueue=nullptr;
-	GstElement*			playbackVolume=nullptr;
-	GstElement*			playbackSink=nullptr;
+	StreamRecorderBin* streamRecorder = nullptr;
+	BroadcastBin* broadcaster = nullptr;
+	VisualizerBin* visualizer = nullptr;
 
-	StreamRecorderBin*	streamRecorder=nullptr;
-	BroadcastBin*		broadcaster=nullptr;
-	VisualizerBin*		visualizer=nullptr;
-
-	QTimer*				progressTimer=nullptr;
+	QTimer* progressTimer = nullptr;
 
 	Private(const QString& name) :
-		name(name)
-	{}
+		name(name) {}
 
 	GstElement* createSink(const QString& sinkName)
 	{
-		static int Number=1;
+		static int Number = 1;
 
-		GstElement* ret=nullptr;
+		GstElement* ret = nullptr;
 
 		QString name = sinkName + QString::number(Number);
 
@@ -95,7 +89,8 @@ struct Pipeline::Private
 			QString device = GetSetting(Set::Engine_AlsaDevice);
 			EngineUtils::createElement(&ret, "alsasink", name.toLocal8Bit().data());
 
-			if(device.isEmpty()) {
+			if(device.isEmpty())
+			{
 				device = "default";
 			}
 
@@ -130,14 +125,15 @@ Pipeline::~Pipeline()
 	if(m->pipeline)
 	{
 		EngineUtils::setState(m->pipeline, GST_STATE_NULL);
-		gst_object_unref (GST_OBJECT(m->pipeline));
+		gst_object_unref(GST_OBJECT(m->pipeline));
 		m->pipeline = nullptr;
 	}
 }
 
 bool Pipeline::init(Engine* engine)
 {
-	if(m->pipeline) {
+	if(m->pipeline)
+	{
 		return true;
 	}
 
@@ -149,12 +145,14 @@ bool Pipeline::init(Engine* engine)
 	}
 
 	bool success = createElements();
-	if(!success) {
+	if(!success)
+	{
 		return false;
 	}
 
 	success = addAndLinkElements();
-	if(!success) {
+	if(!success)
+	{
 		return false;
 	}
 
@@ -170,10 +168,10 @@ bool Pipeline::init(Engine* engine)
 
 	m->progressTimer = new QTimer(this);
 	m->progressTimer->setTimerType(Qt::PreciseTimer);
-	m->progressTimer->setInterval( EngineUtils::getUpdateInterval() );
-	connect(m->progressTimer, &QTimer::timeout, this, [=]()
-	{
-		if(EngineUtils::getState(m->pipeline) != GST_STATE_NULL){
+	m->progressTimer->setInterval(EngineUtils::getUpdateInterval());
+	connect(m->progressTimer, &QTimer::timeout, this, [=]() {
+		if(EngineUtils::getState(m->pipeline) != GST_STATE_NULL)
+		{
 			Callbacks::positionChanged(this);
 		}
 	});
@@ -199,11 +197,11 @@ bool Pipeline::init(Engine* engine)
 bool Pipeline::createElements()
 {
 	// input
-	if(!EngineUtils::createElement(&m->source, "uridecodebin", "src")) return false;
-	if(!EngineUtils::createElement(&m->audioConvert, "audioconvert")) return false;
-	if(!EngineUtils::createElement(&m->tee, "tee")) return false;
-	if(!EngineUtils::createElement(&m->playbackQueue, "queue", "playback_queue")) return false;
-	if(!EngineUtils::createElement(&m->playbackVolume, "volume")) return false;
+	if(!EngineUtils::createElement(&m->source, "uridecodebin", "src")) { return false; }
+	if(!EngineUtils::createElement(&m->audioConvert, "audioconvert")) { return false; }
+	if(!EngineUtils::createElement(&m->tee, "tee")) { return false; }
+	if(!EngineUtils::createElement(&m->playbackQueue, "queue", "playback_queue")) { return false; }
+	if(!EngineUtils::createElement(&m->playbackVolume, "volume")) { return false; }
 
 	// optional pitch
 	EngineUtils::createElement(&m->pitch, "pitch");
@@ -218,21 +216,21 @@ bool Pipeline::createElements()
 	return (m->playbackSink != nullptr);
 }
 
-
 bool Pipeline::addAndLinkElements()
 {
 	{ // before tee
 		EngineUtils::addElements
-		(
-			GST_BIN(m->pipeline),
-			{m->source, m->audioConvert, m->equalizer, m->tee}
-		);
+			(
+				GST_BIN(m->pipeline),
+				{m->source, m->audioConvert, m->equalizer, m->tee}
+			);
 
 		bool success = EngineUtils::linkElements({
-			m->audioConvert, m->equalizer, m->tee
-		});
+			                                         m->audioConvert, m->equalizer, m->tee
+		                                         });
 
-		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link audio convert with tee")){
+		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link audio convert with tee"))
+		{
 			return false;
 		}
 	}
@@ -242,7 +240,8 @@ bool Pipeline::addAndLinkElements()
 		EngineUtils::addElements(GST_BIN(m->playbackBin), {m->playbackQueue, m->playbackVolume, m->playbackSink});
 
 		bool success = EngineUtils::linkElements({m->playbackQueue, m->playbackVolume, m->playbackSink});
-		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link eq with audio sink")) {
+		if(!EngineUtils::testAndErrorBool(success, "Engine: Cannot link eq with audio sink"))
+		{
 			return false;
 		}
 
@@ -258,24 +257,21 @@ bool Pipeline::addAndLinkElements()
 void Pipeline::configureElements()
 {
 	EngineUtils::setValues(G_OBJECT(m->tee),
-				"silent", true,
-				"allow-not-linked", true);
+	                       "silent", true,
+	                       "allow-not-linked", true);
 
 	EngineUtils::configureQueue(m->playbackQueue);
 
-	g_signal_connect (m->source, "pad-added", G_CALLBACK (Callbacks::decodebinReady), m->audioConvert);
-	g_signal_connect (m->source, "source-setup", G_CALLBACK (Callbacks::sourceReady), nullptr);
-
-	m->positionElement = m->source;
+	g_signal_connect (m->source, "pad-added", G_CALLBACK(Callbacks::decodebinReady), m->audioConvert);
+	g_signal_connect (m->source, "source-setup", G_CALLBACK(Callbacks::sourceReady), nullptr);
 }
-
 
 bool Pipeline::prepare(const QString& uri)
 {
 	stop();
 	EngineUtils::setValues(G_OBJECT(m->source),
-		"use-buffering", Util::File::isWWW(uri),
-		"uri", uri.toUtf8().data()
+	                       "use-buffering", Util::File::isWWW(uri),
+	                       "uri", uri.toUtf8().data()
 	);
 
 	EngineUtils::setInt64Value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
@@ -388,10 +384,10 @@ double Pipeline::internalVolume() const
 	return volume;
 }
 
-
 void Pipeline::speedActiveChanged()
 {
-	if(!m->pitch) {
+	if(!m->pitch)
+	{
 		return;
 	}
 
@@ -418,17 +414,18 @@ void Pipeline::speedActiveChanged()
 void Pipeline::sppedChanged()
 {
 	Pitchable::setSpeed
-	(
-		GetSetting(Set::Engine_Speed),
-		GetSetting(Set::Engine_Pitch) / 440.0,
-		GetSetting(Set::Engine_PreservePitch)
-	);
+		(
+			GetSetting(Set::Engine_Speed),
+			GetSetting(Set::Engine_Pitch) / 440.0,
+			GetSetting(Set::Engine_PreservePitch)
+		);
 }
 
 void Pipeline::sinkChanged()
 {
 	GstElement* newSink = m->createSink(GetSetting(Set::Engine_Sink));
-	if(!newSink){
+	if(!newSink)
+	{
 		return;
 	}
 
@@ -441,7 +438,7 @@ void Pipeline::checkPosition()
 	MilliSeconds positionMs = this->positionMs();
 	positionMs = std::max<MilliSeconds>(0, positionMs);
 
-	emit sigPositionChangedMs( positionMs );
+	emit sigPositionChangedMs(positionMs);
 
 	checkAboutToFinish();
 }
@@ -454,7 +451,7 @@ void Pipeline::checkAboutToFinish()
 
 	static bool aboutToFinish = false;
 
-	if(durationMs < positionMs || (durationMs <= aboutToFinishMs ) || (positionMs <= 0))
+	if(durationMs < positionMs || (durationMs <= aboutToFinishMs) || (positionMs <= 0))
 	{
 		aboutToFinish = false;
 		return;
@@ -466,7 +463,8 @@ void Pipeline::checkAboutToFinish()
 
 	if(aboutToFinish)
 	{
-		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << durationMs << ", Pos: " << positionMs;
+		spLog(Log::Develop, this) << "About to finish in " << difference << ": Dur: " << durationMs << ", Pos: "
+		                          << positionMs;
 		emit sigAboutToFinishMs(difference);
 	}
 }
