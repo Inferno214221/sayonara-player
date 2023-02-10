@@ -35,6 +35,23 @@
 
 namespace
 {
+	class NotificationHandlerMock :
+		public NotificationHandler
+	{
+		public:
+			void registerNotificator(Notificator* /*notificator*/) override {}
+
+			void changeCurrentNotificator(const QString& /*name*/) override {}
+
+			QList<Notificator*> notificators() const override { return {}; }
+
+			Notificator* currentNotificator() const override { return nullptr; }
+
+			void notify(const MetaData& /*track*/) override {}
+
+			void notify(const QString& /*title*/, const QString& /*message*/, const QString& /*imagePath*/) override {}
+	};
+
 	MetaData createRadioTrack(const QString& url, const QString& name)
 	{
 		MetaData track;
@@ -44,7 +61,8 @@ namespace
 		return track;
 	}
 
-	class PlaylistLoaderMock : public Playlist::Loader
+	class PlaylistLoaderMock :
+		public Playlist::Loader
 	{
 		public:
 			int getLastPlaylistIndex() const override { return 0; }
@@ -79,7 +97,9 @@ void PlayManagerTest::testRadioHistory()
 {
 	qRegisterMetaType<MetaData>();
 	SetSetting(Set::Stream_ShowHistory, true);
-	auto* playManager = PlayManager::create(nullptr);
+
+	auto notificationHandler = std::make_unique<NotificationHandlerMock>();
+	auto* playManager = PlayManager::create(notificationHandler.get(), nullptr);
 
 	const auto title1 = QStringLiteral("title1");
 	const auto title2 = QStringLiteral("some other title");
@@ -127,11 +147,12 @@ void PlayManagerTest::testRadioHistory()
 
 void PlayManagerTest::testCurrentTrack()
 {
-	auto track = MetaData{};
+	auto track = MetaData {};
 	track.setTitle("Title");
 	track.setFilepath("/path/to/file.mp3");
 
-	auto* playManager = PlayManager::create(nullptr);
+	auto notificationHandler = std::make_unique<NotificationHandlerMock>();
+	auto* playManager = PlayManager::create(notificationHandler.get(), nullptr);
 	playManager->changeCurrentTrack(track, 0);
 
 	QVERIFY(playManager->currentTrack().filepath() == track.filepath());

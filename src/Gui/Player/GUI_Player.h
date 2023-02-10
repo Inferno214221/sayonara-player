@@ -51,6 +51,7 @@ namespace Playlist
 }
 
 class PlayManager;
+class NotificationHandler;
 
 class GUI_Player :
 	public Gui::MainWindow,
@@ -62,7 +63,8 @@ class GUI_Player :
 
 	public:
 		GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
-		           Shutdown* shutdown, DynamicPlaybackChecker* dynamicPlaybackChecker,
+		           Shutdown* shutdown, NotificationHandler* notificationHandler,
+		           DynamicPlaybackChecker* dynamicPlaybackChecker,
 		           LibraryInfoAccessor* libraryAccessor, QWidget* parent);
 		~GUI_Player() override;
 

@@ -30,6 +30,7 @@
 
 class GUI_TrayIcon;
 class PlayManager;
+class NotificationHandler;
 class QTimer;
 
 class TrayIconContextMenu :
@@ -43,7 +44,7 @@ class TrayIconContextMenu :
 		void sigCloseClicked();
 
 	public:
-		TrayIconContextMenu(PlayManager* playManager, GUI_TrayIcon* parent);
+		TrayIconContextMenu(PlayManager* playManager, NotificationHandler* notificationHandler, GUI_TrayIcon* parent);
 		~TrayIconContextMenu() override;
 
 		void setForwardEnabled(bool b);
@@ -74,7 +75,7 @@ class GUI_TrayIcon :
 		void sigShowClicked();
 
 	public:
-		explicit GUI_TrayIcon(PlayManager* playManager, QObject* parent = nullptr);
+		GUI_TrayIcon(PlayManager* playManager, NotificationHandler* notificationHandler, QObject* parent = nullptr);
 		~GUI_TrayIcon() override;
 
 		bool event(QEvent* e) override;

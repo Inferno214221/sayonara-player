@@ -94,22 +94,25 @@ struct GUI_Player::Private
 	GUI_ControlsBase* controls {nullptr};
 	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
+	NotificationHandler* notificationHandler;
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
-	        Shutdown* shutdown, GUI_Player* parent) :
+	        Shutdown* shutdown, NotificationHandler* notificationHandler, GUI_Player* parent) :
 		menubar {new Menubar(shutdown, playlistCreator, parent)},
 		logger {std::make_shared<GUI_Logger>(parent)},
 		coverProvider {coverProvider},
-		playManager {playManager} {}
+		playManager {playManager},
+		notificationHandler {notificationHandler} {}
 };
 
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
-                       Shutdown* shutdown, DynamicPlaybackChecker* dynamicPlaybackChecker,
+                       Shutdown* shutdown, NotificationHandler* notificationHandler,
+                       DynamicPlaybackChecker* dynamicPlaybackChecker,
                        LibraryInfoAccessor* libraryAccessor, QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window")
 {
-	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, shutdown, this);
+	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, shutdown, notificationHandler, this);
 
 	initLanguage();
 
@@ -302,7 +305,7 @@ void GUI_Player::registerPreferenceDialog(QAction* dialog_action)
 
 void GUI_Player::initTrayActions()
 {
-	auto* trayIcon = new GUI_TrayIcon(m->playManager, this);
+	auto* trayIcon = new GUI_TrayIcon(m->playManager, m->notificationHandler, this);
 
 	connect(trayIcon, &GUI_TrayIcon::sigCloseClicked, this, &GUI_Player::shutdown);
 	connect(trayIcon, &GUI_TrayIcon::sigShowClicked, this, &GUI_Player::raise);

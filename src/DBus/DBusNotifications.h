@@ -24,6 +24,7 @@
 #include "Components/Notification/NotificationHandler.h"
 #include "Utils/Pimpl.h"
 
+class NotificationHandler;
 class DBusNotifications :
 		public QObject,
 		public NotificationInterface
@@ -31,9 +32,9 @@ class DBusNotifications :
 	Q_OBJECT
 	PIMPL(DBusNotifications)
 
-public:
-	explicit DBusNotifications(QObject* parent=nullptr);
-	virtual ~DBusNotifications() override;
+	public:
+		explicit DBusNotifications(NotificationHandler* notificationHandler, QObject* parent = nullptr);
+		virtual ~DBusNotifications() override;
 
 	void notify(const MetaData& md) override;
 	void notify(const QString& title, const QString& text, const QString& imagePath) override;

@@ -39,6 +39,7 @@ using namespace Gui;
 struct TrayIconContextMenu::Private
 {
 	PlayManager* playManager;
+	NotificationHandler* notificationHandler;
 
 	QAction* bwdAction;
 	QAction* closeAction;
@@ -49,8 +50,9 @@ struct TrayIconContextMenu::Private
 	QAction* showAction;
 	QAction* stopAction;
 
-	Private(PlayManager* playManager, TrayIconContextMenu* parent) :
+	Private(PlayManager* playManager, NotificationHandler* notificationHandler, QObject* parent) :
 		playManager(playManager),
+		notificationHandler(notificationHandler),
 		bwdAction {new QAction(parent)},
 		closeAction {new QAction(parent)},
 		currentSongAction {new QAction(parent)},
@@ -61,10 +63,11 @@ struct TrayIconContextMenu::Private
 		stopAction {new QAction(parent)} {}
 };
 
-TrayIconContextMenu::TrayIconContextMenu(PlayManager* playManager, GUI_TrayIcon* /*parent*/) :
+TrayIconContextMenu::TrayIconContextMenu(PlayManager* playManager, NotificationHandler* notificationHandler,
+                                         GUI_TrayIcon* /*parent*/) :
 	Gui::WidgetTemplate<QMenu>(nullptr)
 {
-	m = Pimpl::make<Private>(playManager, this);
+	m = Pimpl::make<Private>(playManager, notificationHandler, this);
 
 	this->addAction(m->playAction);
 	this->addAction(m->stopAction);
@@ -133,8 +136,7 @@ void TrayIconContextMenu::muteClicked()
 
 void TrayIconContextMenu::currentSongClicked()
 {
-	auto* nh = NotificationHandler::instance();
-	nh->notify(m->playManager->currentTrack());
+	m->notificationHandler->notify(m->playManager->currentTrack());
 }
 
 void TrayIconContextMenu::muteChanged(bool muted)
@@ -191,20 +193,20 @@ void TrayIconContextMenu::skinChanged()
 struct GUI_TrayIcon::Private
 {
 	PlayManager* playManager;
+	NotificationHandler* notificationHandler;
 	TrayIconContextMenu* contextMenu = nullptr;
 	QTimer* timer = nullptr;
 
-	explicit Private(PlayManager* playManager) :
-		playManager(playManager) {}
+	Private(PlayManager* playManager, NotificationHandler* notificationHandler) :
+		playManager {playManager},
+		notificationHandler {notificationHandler} {}
 };
 
-GUI_TrayIcon::GUI_TrayIcon(PlayManager* playManager, QObject* parent) :
-	QSystemTrayIcon(parent)
+GUI_TrayIcon::GUI_TrayIcon(PlayManager* playManager, NotificationHandler* notficationHandler, QObject* parent) :
+	QSystemTrayIcon(parent),
+	Notificator("Standard", notficationHandler)
 {
-	m = Pimpl::make<Private>(playManager);
-
-	auto* notificationHandler = NotificationHandler::instance();
-	notificationHandler->registerNotificator(this);
+	m = Pimpl::make<Private>(playManager, notficationHandler);
 
 	connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &GUI_TrayIcon::playstateChanged);
 
@@ -220,7 +222,7 @@ void GUI_TrayIcon::initContextMenu()
 {
 	if(!m->contextMenu)
 	{
-		m->contextMenu = new TrayIconContextMenu(m->playManager, this);
+		m->contextMenu = new TrayIconContextMenu(m->playManager, m->notificationHandler, this);
 
 		connect(m->contextMenu, &TrayIconContextMenu::sigCloseClicked, this, &GUI_TrayIcon::sigCloseClicked);
 		connect(m->contextMenu, &TrayIconContextMenu::sigShowClicked, this, &GUI_TrayIcon::sigShowClicked);

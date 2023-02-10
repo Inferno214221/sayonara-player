@@ -27,6 +27,7 @@
 #include <QObject>
 
 class PlayManager;
+class NotificationHandler;
 class Shutdown :
 	public QObject
 {
@@ -38,7 +39,7 @@ class Shutdown :
 		void sigStopped();
 
 	public:
-		static Shutdown* create(PlayManager* playManager);
+		static Shutdown* create(PlayManager* playManager, NotificationHandler* notificationHandler);
 
 		[[nodiscard]] virtual bool isRunning() const = 0;
 		virtual void stop() = 0;

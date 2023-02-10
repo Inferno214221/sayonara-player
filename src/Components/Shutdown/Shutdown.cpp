@@ -44,9 +44,10 @@ class ShutdownImpl :
 	public Shutdown
 {
 	public:
-		explicit ShutdownImpl(PlayManager* playManager) :
-			m_timer(new QTimer(this)),
-			m_timerCountdown(new QTimer(this))
+		explicit ShutdownImpl(PlayManager* playManager, NotificationHandler* notificationHandler) :
+			m_notificationHandler {notificationHandler},
+			m_timer {new QTimer(this)},
+			m_timerCountdown {new QTimer(this)}
 		{
 			m_timer->setInterval(100);
 			m_timerCountdown->setInterval(50);
@@ -255,14 +256,14 @@ class ShutdownImpl :
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		QString m_logoPath {":/Icons/logo.png"};
-		NotificationHandler* m_notificationHandler {NotificationHandler::instance()};
+		NotificationHandler* m_notificationHandler;
 		QTimer* m_timer;
 		QTimer* m_timerCountdown;
 		MilliSeconds m_msecs2go {0};
 		bool m_isRunning {false};
 };
 
-Shutdown* Shutdown::create(PlayManager* playManager)
+Shutdown* Shutdown::create(PlayManager* playManager, NotificationHandler* notificationHandler)
 {
-	return new ShutdownImpl(playManager);
+	return new ShutdownImpl(playManager, notificationHandler);
 }

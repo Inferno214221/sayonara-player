@@ -98,11 +98,11 @@ namespace
 		return track;
 	}
 
-	void showNotification(const MetaData& track)
+	void showNotification(NotificationHandler* notificationHandler, const MetaData& track)
 	{
 		if(GetSetting(Set::Notification_Show))
 		{
-			NotificationHandler::instance()->notify(track);
+			notificationHandler->notify(track);
 		}
 	}
 
@@ -134,8 +134,9 @@ class PlayManagerImpl :
 	public PlayManager
 {
 	public:
-		explicit PlayManagerImpl(QObject* parent) :
-			PlayManager(parent)
+		explicit PlayManagerImpl(NotificationHandler* notificationHandler, QObject* parent) :
+			PlayManager(parent),
+			m_notificationHandler {notificationHandler}
 		{
 			const auto loadPlaylist = (GetSetting(Set::PL_LoadSavedPlaylists) ||
 			                           GetSetting(Set::PL_LoadTemporaryPlaylists));
@@ -347,7 +348,7 @@ class PlayManagerImpl :
 			// show notification
 			if((m_currentTrackIndex > -1) && (!m_currentTrack.filepath().isEmpty()))
 			{
-				showNotification(m_currentTrack);
+				showNotification(m_notificationHandler, m_currentTrack);
 			}
 		}
 
@@ -372,7 +373,7 @@ class PlayManagerImpl :
 					oldMetadata = prepareTrackForStreamHistory(std::move(oldMetadata));
 
 					emit sigStreamFinished(oldMetadata);
-					showNotification(m_currentTrack);
+					showNotification(m_notificationHandler, m_currentTrack);
 				}
 
 				m_ringBuffer.insert(trackHash);
@@ -527,6 +528,10 @@ class PlayManagerImpl :
 		std::optional<MilliSeconds> m_initialPositionMs;
 		MilliSeconds m_trackPlaytimeMs {0};
 		PlayState m_playstate {PlayState::FirstStartup};
+		NotificationHandler* m_notificationHandler;
 };
 
-PlayManager* PlayManager::create(QObject* parent) { return new PlayManagerImpl(parent); }
+PlayManager* PlayManager::create(NotificationHandler* notificationHandler, QObject* parent)
+{
+	return new PlayManagerImpl(notificationHandler, parent);
+}

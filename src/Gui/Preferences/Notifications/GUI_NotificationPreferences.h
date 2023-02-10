@@ -28,26 +28,27 @@ UI_FWD(GUI_NotificationPreferences)
 class NotificationHandler;
 
 class GUI_NotificationPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
+	PIMPL(GUI_NotificationPreferences)
 	UI_CLASS(GUI_NotificationPreferences)
 
-public:
-	explicit GUI_NotificationPreferences(const QString& identifier);
-	virtual ~GUI_NotificationPreferences();
+	public:
+		GUI_NotificationPreferences(const QString& identifier, NotificationHandler* notificationHandler);
+		~GUI_NotificationPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
-private slots:
-	void notificationsChanged();
+	private slots:
+		void notificationsChanged();
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 };
 
 #endif // GUI_NotificationPreferences_H

@@ -27,6 +27,7 @@
 #include <memory>
 
 class MetaData;
+class NotificationHandler;
 
 class PlayManager :
 	public QObject
@@ -57,7 +58,7 @@ class PlayManager :
 		void sigError(const QString& message);
 
 	public:
-		static PlayManager* create(QObject* parent);
+		static PlayManager* create(NotificationHandler* notificationHandler, QObject* parent);
 		~PlayManager() override = default;
 
 		[[nodiscard]] virtual PlayState playstate() const = 0;

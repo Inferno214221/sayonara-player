@@ -41,7 +41,7 @@ struct DBusNotifications::Private
 	Private() : id(100) {}
 };
 
-DBusNotifications::DBusNotifications(QObject* parent) :
+DBusNotifications::DBusNotifications(NotificationHandler* notificationHandler, QObject* parent) :
 	QObject(parent),
 	NotificationInterface()
 {

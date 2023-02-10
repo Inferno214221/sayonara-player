@@ -34,6 +34,7 @@
 #include <QObject>
 
 class PlayManager;
+class NotificationHandler;
 
 // singleton base LastFM API class
 // signals and slots are handled by the adapter class
@@ -49,8 +50,8 @@ namespace LastFM
 			void sigLoggedIn(bool);
 
 		public:
-			Base(PlayManager* playManager);
-			virtual ~Base();
+			Base(PlayManager* playManager, NotificationHandler* notificationHandler);
+			~Base() override;
 
 			void login(const QString& username, const QString& password);
 			bool isLoggedIn();

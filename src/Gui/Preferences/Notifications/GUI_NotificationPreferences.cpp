@@ -24,16 +24,26 @@
 #include "Gui/Preferences/ui_GUI_NotificationPreferences.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
 
-GUI_NotificationPreferences::GUI_NotificationPreferences(const QString& identifier) :
-	Preferences::Base(identifier) {}
+struct GUI_NotificationPreferences::Private
+{
+	NotificationHandler* notificationHandler;
+
+	explicit Private(NotificationHandler* notificationHandler) :
+		notificationHandler {notificationHandler} {}
+};
+
+GUI_NotificationPreferences::GUI_NotificationPreferences(const QString& identifier,
+                                                         NotificationHandler* notificationHandler) :
+	Preferences::Base(identifier),
+	m {Pimpl::make<Private>(notificationHandler)} {}
 
 GUI_NotificationPreferences::~GUI_NotificationPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -47,66 +57,54 @@ void GUI_NotificationPreferences::retranslate()
 
 void GUI_NotificationPreferences::notificationsChanged()
 {
-	if(!isUiInitialized()){
-		return;
-	}
-
-	NotificationHandler* nh = NotificationHandler::instance();
-	NotificatonList notifications = nh->notificators();
-
-	ui->comboNotifications->clear();
-
-	for(const NotificationInterface* notification : notifications)
+	if(isUiInitialized())
 	{
-		ui->comboNotifications->addItem(notification->displayName(), notification->name());
+		const auto notificators = m->notificationHandler->notificators();
+
+		ui->comboNotifications->clear();
+
+		for(const auto* notificator: notificators)
+		{
+			ui->comboNotifications->addItem(notificator->displayName(), notificator->identifier());
+		}
+
+		auto* currentNotificator = m->notificationHandler->currentNotificator();
+		if(currentNotificator)
+		{
+			ui->comboNotifications->setCurrentText(currentNotificator->identifier());
+		}
 	}
-
-	ui->comboNotifications->setCurrentIndex(nh->currentIndex());
 }
-
 
 bool GUI_NotificationPreferences::commit()
 {
-	NotificationHandler* nh = NotificationHandler::instance();
+	const auto currentData = ui->comboNotifications->currentData().toString();
 
-	bool active =       ui->cbActivate->isChecked();
-	int timeout =       ui->sbTimeout->value();
-	QString cur_data =  ui->comboNotifications->currentData().toString();
+	SetSetting(Set::Notification_Name, currentData);
+	SetSetting(Set::Notification_Timeout, ui->sbTimeout->value());
+	SetSetting(Set::Notification_Show, ui->cbActivate->isChecked());
 
-	SetSetting(Set::Notification_Name, cur_data);
-	SetSetting(Set::Notification_Timeout, timeout);
-	SetSetting(Set::Notification_Show, active);
-
-	nh->notificatorChanged(cur_data);
+	m->notificationHandler->changeCurrentNotificator(currentData);
 
 	return true;
 }
 
 void GUI_NotificationPreferences::revert()
 {
-	int timeout = GetSetting(Set::Notification_Timeout);
-	int active = GetSetting(Set::Notification_Show);
-
-	ui->sbTimeout->setValue(timeout);
-	ui->cbActivate->setChecked(active);
+	ui->sbTimeout->setValue(GetSetting(Set::Notification_Timeout));
+	ui->cbActivate->setChecked(GetSetting(Set::Notification_Show));
 
 	notificationsChanged();
 }
 
-
-QString GUI_NotificationPreferences::actionName() const
-{
-	return tr("Notifications");
-}
+QString GUI_NotificationPreferences::actionName() const { return tr("Notifications"); }
 
 void GUI_NotificationPreferences::initUi()
 {
 	setupParent(this, &ui);
 
-	NotificationHandler* nh = NotificationHandler::instance();
-
 	revert();
 
-	connect(nh,	&NotificationHandler::sigNotificationsChanged,
-			this, &GUI_NotificationPreferences::notificationsChanged);
+	connect(m->notificationHandler, &NotificationHandler::sigNotificationsChanged,
+	        this, &GUI_NotificationPreferences::notificationsChanged);
 }

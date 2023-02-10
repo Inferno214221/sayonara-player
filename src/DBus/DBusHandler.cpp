@@ -40,18 +40,18 @@ struct DBusHandler::Private
 	DBusNotifications* dbusNotifications;
 
 	Private(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
-	        DBusHandler* parent) :
+	        NotificationHandler* notificationHandler, DBusHandler* parent) :
 		dbusMpris {new DBusMPRIS::MediaPlayer2(mainWindow, playManager, playlistAccessor, parent)},
 		dbusMate {new DBusMediaKeysInterfaceMate(playManager, parent)},
 		dbusGnome {new DBusMediaKeysInterfaceGnome(playManager, parent)},
-		dbusNotifications {new DBusNotifications(parent)} {}
+		dbusNotifications {new DBusNotifications(notificationHandler, parent)} {}
 };
 
 DBusHandler::DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
-                         QObject* parent) :
+                         NotificationHandler* notificationHandler, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Private>(mainWindow, playManager, playlistAccessor, this);
+	m = Pimpl::make<Private>(mainWindow, playManager, playlistAccessor, notificationHandler, this);
 
 	auto* dbusInterface = QDBusConnection::sessionBus().interface();
 	if(dbusInterface)

@@ -151,6 +151,7 @@ struct Application::Private
 {
 	MetaTypeRegistry* metatypeRegistry;
 	DB::Connector* db;
+	NotificationHandler* notificationHandler;
 	PlayManager* playManager;
 	Engine::Handler* engine;
 	Session::Manager* sessionManager;
@@ -190,8 +191,8 @@ struct Application::Private
 		}
 
 		settings->applyFixes();
-
-		playManager = PlayManager::create(app);
+		notificationHandler = NotificationHandler::create(app);
+		playManager = PlayManager::create(notificationHandler, app);
 		engine = new Engine::Handler(playManager);
 		sessionManager = new Session::Manager(playManager);
 
@@ -204,7 +205,7 @@ struct Application::Private
 		dynamicPlaybackChecker = new DynamicPlaybackCheckerImpl(libraryManager);
 		smartPlaylistManager = new SmartPlaylistManager(playlistHandler);
 
-		shutdown = Shutdown::create(playManager);
+		shutdown = Shutdown::create(playManager, notificationHandler);
 
 		Gui::Icons::setDefaultSystemTheme(QIcon::themeName());
 
@@ -319,7 +320,7 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 #ifdef SAYONARA_WITH_DBUS
 	{
 		measure("DBUS")
-		m->dbusHandler = new DBusHandler(m->player, m->playManager, m->playlistHandler, this);
+		m->dbusHandler = new DBusHandler(m->player, m->playManager, m->playlistHandler, m->notificationHandler, this);
 	}
 #endif
 
@@ -329,9 +330,9 @@ bool Application::init(const QStringList& filesToPlay, bool forceShow)
 
 	if(GetSetting(Set::Notification_Show))
 	{
-		NotificationHandler::instance()->notify("Sayonara Player",
-		                                        Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
-		                                        QString(":/Icons/logo.png")
+		m->notificationHandler->notify("Sayonara Player",
+		                               Lang::get(Lang::Version) + " " + SAYONARA_VERSION,
+		                               QString(":/Icons/logo.png")
 		);
 	}
 
@@ -373,6 +374,7 @@ void Application::initPlayer(bool force_show)
 	                           m->playlistHandler,
 	                           m->engine,
 	                           m->shutdown,
+	                           m->notificationHandler,
 	                           m->dynamicPlaybackChecker,
 	                           m->libraryManager,
 	                           nullptr);
@@ -413,8 +415,12 @@ void Application::initPreferences()
 	preferences->registerPreferenceDialog(new GUI_BroadcastPreferences("broadcast"));
 	preferences->registerPreferenceDialog(new GUI_RemoteControlPreferences("remotecontrol"));
 
-	preferences->registerPreferenceDialog(new GUI_NotificationPreferences("notifications"));
-	preferences->registerPreferenceDialog(new GUI_LastFmPreferences("lastfm", new LastFM::Base(m->playManager)));
+	auto* notificationPreferences = new GUI_NotificationPreferences("notifications", m->notificationHandler);
+	preferences->registerPreferenceDialog(notificationPreferences);
+
+	auto* lastFmPreferences =
+		new GUI_LastFmPreferences("lastfm", new LastFM::Base(m->playManager, m->notificationHandler));
+	preferences->registerPreferenceDialog(lastFmPreferences);
 
 	preferences->registerPreferenceDialog(new GUI_FileExtensionPreferences("file-extensions"));
 

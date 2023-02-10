@@ -33,6 +33,7 @@ namespace DBusMPRIS
 	class MediaPlayer2;
 }
 
+class NotificationHandler;
 class DBusHandler :
 	public QObject
 {
@@ -40,8 +41,8 @@ class DBusHandler :
 	PIMPL(DBusHandler)
 
 	public:
-		explicit DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
-		                     QObject* parent = nullptr);
+		DBusHandler(QMainWindow* mainWindow, PlayManager* playManager, PlaylistAccessor* playlistAccessor,
+		            NotificationHandler* notificationHandler, QObject* parent = nullptr);
 		virtual ~DBusHandler();
 
 	private slots:

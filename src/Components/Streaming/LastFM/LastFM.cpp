@@ -53,14 +53,16 @@ namespace LastFM
 	struct Base::Private
 	{
 		QString sessionKey;
-		PlayManager* playManager {nullptr};
+		PlayManager* playManager;
+		NotificationHandler* notificationHandler;
 		QTimer* scrobbleTimer {new QTimer()};
 		QTimer* trackChangedTimer {new QTimer()};
 		TrackChangedThread* trackChangeThread = nullptr;
 		bool loggedIn {false};
 
-		Private(PlayManager* playManager, QObject* parent) :
+		Private(PlayManager* playManager, NotificationHandler* notificationHandler, QObject* parent) :
 			playManager(playManager),
+			notificationHandler(notificationHandler),
 			trackChangeThread(new TrackChangedThread(parent))
 		{
 			scrobbleTimer->setSingleShot(true);
@@ -68,9 +70,9 @@ namespace LastFM
 		}
 	};
 
-	Base::Base(PlayManager* playManager)
+	Base::Base(PlayManager* playManager, NotificationHandler* notificationHandler)
 	{
-		m = Pimpl::make<Private>(playManager, this);
+		m = Pimpl::make<Private>(playManager, notificationHandler, this);
 
 		connect(m->scrobbleTimer, &QTimer::timeout, this, &Base::scrobble);
 		connect(m->trackChangedTimer, &QTimer::timeout, this, &Base::trackChangedTimerTimedOut);
@@ -123,7 +125,7 @@ namespace LastFM
 		const auto errorMessage = tr("Cannot login to Last.fm");
 		if(!success)
 		{
-			NotificationHandler::instance()->notify("Sayonara", errorMessage);
+			m->notificationHandler->notify("Sayonara", errorMessage);
 			emit sigLoggedIn(false);
 			return;
 		}
@@ -138,7 +140,7 @@ namespace LastFM
 
 		if(!m->loggedIn)
 		{
-			NotificationHandler::instance()->notify("Sayonara", errorMessage);
+			m->notificationHandler->notify("Sayonara", errorMessage);
 			spLog(Log::Warning, this) << "Cannot login";
 		}
 
