@@ -22,7 +22,6 @@
 #define IMPORTFOLDERTHREAD_H
 
 #include "ImportCache.h"
-#include "Utils/Pimpl.h"
 
 #include <QObject>
 
@@ -41,14 +40,14 @@ namespace Tagging
 namespace Library
 {
 	class ImportCache;
-	class ImportCacher :
+	class CacheProcessor :
 		public QObject
 	{
 		Q_OBJECT
-		PIMPL(ImportCacher)
 
 		signals:
 			void sigCachedFilesChanged();
+			void sigFinished();
 
 		public:
 			struct CacheResult
@@ -57,26 +56,25 @@ namespace Library
 				QStringList temporaryFiles;
 			};
 
-			~ImportCacher() noexcept override;
+			~CacheProcessor() noexcept override;
 
-			static ImportCacher* create(const QStringList& fileList,
-			                            const QString& libraryPath,
-			                            const std::shared_ptr<Tagging::TagReader>& tagReader,
-			                            const std::shared_ptr<Util::ArchiveExtractor>& archiveExtractor,
-			                            const std::shared_ptr<Util::DirectoryReader>& directoryReader,
-			                            const std::shared_ptr<Util::FileSystem>& fileSystem,
-			                            QObject* parent = nullptr);
+			static CacheProcessor* create(const QStringList& fileList,
+			                              const QString& libraryPath,
+			                              const std::shared_ptr<Tagging::TagReader>& tagReader,
+			                              const std::shared_ptr<Util::ArchiveExtractor>& archiveExtractor,
+			                              const std::shared_ptr<Util::DirectoryReader>& directoryReader,
+			                              const std::shared_ptr<Util::FileSystem>& fileSystem);
 
 			[[nodiscard]] virtual CacheResult cacheResult() const = 0;
 
-			void cancel();
-			[[nodiscard]] bool isCancelled() const;
+			virtual void cancel() = 0;
+			[[nodiscard]] virtual bool wasCancelled() const = 0;
 
 		public slots: // NOLINT(readability-redundant-access-specifiers)
 			virtual void cacheFiles() = 0;
 
 		protected:
-			explicit ImportCacher(QObject* parent);
+			void emitCachedFilesChanged();
 	};
 }
 

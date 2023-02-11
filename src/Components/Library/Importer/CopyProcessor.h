@@ -23,55 +23,40 @@
 
 #include <QThread>
 
-#include "Utils/Pimpl.h"
+#include <memory>
 
 namespace Util
 {
 	class FileSystem;
 }
 
+class MetaDataList;
 namespace Library
 {
 	class ImportCache;
-	class CopyThread :
-		public QThread
+	class CopyProcessor :
+		public QObject
 	{
 		Q_OBJECT
-		PIMPL(CopyThread)
 
 		signals:
 			void sigProgress(int progress);
+			void sigFinished();
 
 		public:
-			enum class Mode :
-				uint8_t
-			{
-				Copy = 0,
-				Rollback
-			};
+			static CopyProcessor* create(const QString& targetDirectory,
+			                             const std::shared_ptr<ImportCache>& cache,
+			                             const std::shared_ptr<Util::FileSystem>& fileSystem);
 
-			CopyThread(const QString& targetDirectory,
-			           const std::shared_ptr<ImportCache>& cache,
-			           const std::shared_ptr<Util::FileSystem>& fileSystem,
-			           QObject* parent = nullptr);
-
-			virtual ~CopyThread();
-
-			void cancel();
-			bool wasCancelled() const;
-
-			MetaDataList copiedMetadata() const;
-			int copiedFileCount() const;
-
-			void setMode(CopyThread::Mode mode);
+			virtual void copy() = 0;
+			virtual void cancel() = 0;
+			virtual void rollback() = 0;
+			[[nodiscard]] virtual bool wasCancelled() const = 0;
+			[[nodiscard]] virtual MetaDataList copiedMetadata() const = 0;
+			[[nodiscard]] virtual int copiedFileCount() const = 0;
 
 		protected:
-			void run() override;
-
-		private:
-			void copy();
-			void rollback();
-			void emitPercent();
+			void emitProgress(int progress);
 	};
 }
 

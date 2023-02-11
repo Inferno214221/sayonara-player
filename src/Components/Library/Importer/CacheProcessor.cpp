@@ -18,7 +18,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "CachingThread.h"
+#include "CacheProcessor.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/ArchiveExtractor.h"
@@ -31,6 +31,7 @@
 #include "Utils/Utils.h"
 
 #include <QDir>
+#include <QThread>
 
 namespace
 {
@@ -53,7 +54,7 @@ namespace
 		return tempDirectory;
 	}
 
-	Library::ImportCacher::CacheResult
+	Library::CacheProcessor::CacheResult
 	initCacheResult(const QString& libraryPath, const Tagging::TagReaderPtr& tagReader)
 	{
 		return {
@@ -61,39 +62,41 @@ namespace
 		};
 	}
 
-	class ImportCacherImpl :
-		public Library::ImportCacher
+	class CacheProcessorImpl :
+		public Library::CacheProcessor
 	{
 		public:
-			ImportCacherImpl(QStringList sourceFiles,
-			                 const QString& libraryPath,
-			                 const Tagging::TagReaderPtr& tagReader,
-			                 Util::ArchiveExtractorPtr archiveExtractor,
-			                 Util::DirectoryReaderPtr directoryReader,
-			                 Util::FileSystemPtr fileSystem,
-			                 QObject* parent) :
-				ImportCacher(parent),
+			CacheProcessorImpl(QStringList sourceFiles,
+			                   const QString& libraryPath,
+			                   const Tagging::TagReaderPtr& tagReader,
+			                   Util::ArchiveExtractorPtr archiveExtractor,
+			                   Util::DirectoryReaderPtr directoryReader,
+			                   Util::FileSystemPtr fileSystem) :
 				m_sourceFiles {std::move(sourceFiles)},
 				m_cacheResult {initCacheResult(libraryPath, tagReader)},
 				m_archiveExtractor {std::move(archiveExtractor)},
 				m_directoryReader {std::move(directoryReader)},
 				m_fileSystem(std::move(fileSystem)) {}
 
-			~ImportCacherImpl() override = default;
+			~CacheProcessorImpl() override = default;
 
 		protected:
-			[[nodiscard]] ImportCacher::CacheResult cacheResult() const override { return m_cacheResult; }
+			[[nodiscard]] CacheProcessor::CacheResult cacheResult() const override { return m_cacheResult; }
 
 			void cacheFiles() override
 			{
+				m_cancelled = false;
 				m_cacheResult.cache->clear();
 				spLog(Log::Develop, this) << "Read files";
 				scanRootFiles();
 
-				if(isCancelled())
+				if(wasCancelled())
 				{
 					m_cacheResult.cache->clear();
 				}
+
+				spLog(Log::Debug, this) << "Caching finished: " << m_cacheResult.cache->count() << " files";
+				emit sigFinished();
 			}
 
 		private:
@@ -101,7 +104,7 @@ namespace
 			{
 				for(const auto& filename: m_sourceFiles)
 				{
-					if(isCancelled())
+					if(wasCancelled())
 					{
 						return;
 					}
@@ -130,13 +133,13 @@ namespace
 					}
 				}
 
-				emit sigCachedFilesChanged(); // NOLINT(readability-misleading-indentation)
+				emitCachedFilesChanged();
 			}
 
 			void addFile(const QString& file, const QString& relativeDir = QString())
 			{
 				m_cacheResult.cache->addFile(file, relativeDir);
-				emit sigCachedFilesChanged();
+				emitCachedFilesChanged();
 			}
 
 			void scanDirectory(const QString& dir)
@@ -188,45 +191,37 @@ namespace
 				}
 			}
 
+			void cancel() override { m_cancelled = true; }
+
+			[[nodiscard]] bool wasCancelled() const override { return m_cancelled; }
+
 			QStringList m_sourceFiles;
-			Library::ImportCacher::CacheResult m_cacheResult;
+			Library::CacheProcessor::CacheResult m_cacheResult;
 			Util::ArchiveExtractorPtr m_archiveExtractor;
 			Util::DirectoryReaderPtr m_directoryReader;
 			Util::FileSystemPtr m_fileSystem;
+			std::atomic<bool> m_cancelled {false};
 	};
 }
 
 namespace Library
 {
-	struct ImportCacher::Private
+	CacheProcessor::~CacheProcessor() noexcept = default;
+
+	CacheProcessor* CacheProcessor::create(const QStringList& fileList,
+	                                       const QString& libraryPath,
+	                                       const Tagging::TagReaderPtr& tagReader,
+	                                       const Util::ArchiveExtractorPtr& archiveExtractor,
+	                                       const Util::DirectoryReaderPtr& directoryReader,
+	                                       const Util::FileSystemPtr& fileSystem)
 	{
-		bool cancelled {false};
-	};
-
-	ImportCacher::ImportCacher(QObject* parent) :
-		QObject(parent),
-		m {Pimpl::make<Private>()} {}
-
-	ImportCacher::~ImportCacher() noexcept = default;
-
-	ImportCacher* ImportCacher::create(const QStringList& fileList,
-	                                   const QString& libraryPath,
-	                                   const Tagging::TagReaderPtr& tagReader,
-	                                   const Util::ArchiveExtractorPtr& archiveExtractor,
-	                                   const Util::DirectoryReaderPtr& directoryReader,
-	                                   const Util::FileSystemPtr& fileSystem,
-	                                   QObject* parent)
-	{
-		return new ImportCacherImpl(fileList,
-		                            libraryPath,
-		                            tagReader,
-		                            archiveExtractor,
-		                            directoryReader,
-		                            fileSystem,
-		                            parent);
+		return new CacheProcessorImpl(fileList,
+		                              libraryPath,
+		                              tagReader,
+		                              archiveExtractor,
+		                              directoryReader,
+		                              fileSystem);
 	}
 
-	void ImportCacher::cancel() { m->cancelled = true; }
-
-	bool ImportCacher::isCancelled() const { return m->cancelled; }
+	void CacheProcessor::emitCachedFilesChanged() { emit sigCachedFilesChanged(); }
 }

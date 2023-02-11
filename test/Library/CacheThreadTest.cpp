@@ -21,7 +21,7 @@
 #include "Common/FileSystemMock.h"
 #include "Common/TagReaderMock.h"
 #include "Common/DirectoryReaderMock.h"
-#include "Components/Library/Importer/CachingThread.h"
+#include "Components/Library/Importer/CacheProcessor.h"
 #include "Components/Library/Importer/ImportCache.h"
 
 #include <QMap>
@@ -36,16 +36,16 @@ namespace
 	constexpr const auto SoundFile = 1;
 	constexpr const auto CoverFile = 1;
 
-	Library::ImportCacher* createCacher(const QStringList& filesToImport, const QString& libraryPath,
-	                                    const Util::ArchiveExtractorPtr& archiveExtractor,
-	                                    const std::shared_ptr<Test::FileSystemMock>& fileSystem)
+	Library::CacheProcessor* createCacher(const QStringList& filesToImport, const QString& libraryPath,
+	                                      const Util::ArchiveExtractorPtr& archiveExtractor,
+	                                      const std::shared_ptr<Test::FileSystemMock>& fileSystem)
 	{
-		return Library::ImportCacher::create(filesToImport,
-		                                     libraryPath,
-		                                     std::make_shared<Test::TagReaderMock>(),
-		                                     archiveExtractor,
-		                                     std::make_shared<Test::DirectoryReaderMock>(fileSystem),
-		                                     fileSystem);
+		return Library::CacheProcessor::create(filesToImport,
+		                                       libraryPath,
+		                                       std::make_shared<Test::TagReaderMock>(),
+		                                       archiveExtractor,
+		                                       std::make_shared<Test::DirectoryReaderMock>(fileSystem),
+		                                       fileSystem);
 	}
 }
 

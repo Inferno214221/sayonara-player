@@ -20,8 +20,8 @@
 
 #include "LibraryImporter.h"
 #include "ImportCache.h"
-#include "CachingThread.h"
-#include "CopyThread.h"
+#include "CacheProcessor.h"
+#include "CopyProcessor.h"
 #include "Components/Library/LocalLibrary.h"
 
 #include "Components/Tagging/ChangeNotifier.h"
