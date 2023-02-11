@@ -24,59 +24,73 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-class LocalLibrary;
+namespace Util
+{
+	class FileSystem;
+}
 
+namespace Tagging
+{
+	class TagReader;
+}
+
+namespace DB
+{
+	class LibraryDatabase;
+}
+
+class MetaDataList;
 namespace Library
 {
-	/**
-	 * @brief The LibraryImporter class
-	 * @ingroup Library
-	 */
+	class Info;
 	class Importer :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Importer)
 
-	public:
-		explicit Importer(LocalLibrary* library);
-		~Importer();
+		public:
+			Importer(DB::LibraryDatabase* libraryDatabase, std::shared_ptr<Util::FileSystem> fileSystem,
+			         std::shared_ptr<Tagging::TagReader> tagReader, QObject* parent);
+			~Importer() override;
 
-		enum class ImportStatus : uint8_t
-		{
-			Cancelled,
-			Rollback,
-			Caching,
-			NoTracks,
-			NoValidTracks,
-			CachingFinished,
-			Importing,
-			Imported
-		};
+			enum class ImportStatus :
+				uint8_t
+			{
+				Cancelled,
+				Rollback,
+				Caching,
+				NoTracks,
+				NoValidTracks,
+				CachingFinished,
+				Importing,
+				Imported
+			};
 
-	signals:
-		void sigMetadataCached(const MetaDataList& tracks);
-		void sigStatusChanged(Importer::ImportStatus);
-		void sigProgress(int percent);
-		void sigCachedFilesChanged();
-		void sigTargetDirectoryChanged(const QString& targetDir);
-		void sigTriggered();
+		signals:
+			void sigStatusChanged(Library::Importer::ImportStatus status);
+			void sigProgress(int percent);
+			void sigCachedFilesChanged();
+			void sigTargetDirectoryChanged(const QString& targetDir);
 
-	public:
-		bool isRunning() const;
-		void importFiles(const QStringList& files, const QString& targetDir);
-		void acceptImport(const QString& targetDir);
-		bool cancelImport();
-		void reset();
-		int cachedFileCount() const;
+		public:
+			void import(const QString& libraryPath, const QStringList& files, const QString& targetDir);
+			void cancelImport();
+			void copy(const QString& targetDir);
+			[[nodiscard]] Importer::ImportStatus status() const;
+			[[nodiscard]] MetaDataList cachedTracks() const;
 
-		Importer::ImportStatus status() const;
+			void reset();
 
-	private slots:
-		void cachingThreadFinished();
-		void copyThreadFinished();
-		void emitStatus(Importer::ImportStatus status);
-		void metadataChanged();
+		private slots:
+			void cachingProcessorFinished();
+			void copyProcessorFinished();
+
+		private: // NOLINT(readability-redundant-access-specifiers)
+			void startCaching(const QStringList& files, const QString& libraryPath);
+			void rollback();
+			void emitStatus(Importer::ImportStatus status);
+			void storeTracksInLibrary(const MetaDataList& tracks, int copiedFiles);
 	};
 }
 

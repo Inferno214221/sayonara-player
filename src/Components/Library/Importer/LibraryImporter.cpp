@@ -22,281 +22,260 @@
 #include "ImportCache.h"
 #include "CacheProcessor.h"
 #include "CopyProcessor.h"
+
 #include "Components/Library/LocalLibrary.h"
-
 #include "Components/Tagging/ChangeNotifier.h"
-
+#include "Database/LibraryDatabase.h"
+#include "Utils/Algorithm.h"
 #include "Utils/ArchiveExtractor.h"
 #include "Utils/DirectoryReader.h"
-#include "Utils/FileUtils.h"
 #include "Utils/FileSystem.h"
-#include "Utils/Library/LibraryInfo.h"
+#include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/TagReader.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
+#include <QStringList>
+#include <QThread>
 
-#include <QMap>
-#include <QDir>
-
-using Library::Importer;
-using Library::CachingThread;
-using Library::CopyThread;
-using Library::ImportCachePtr;
-
-struct Importer::Private
+namespace
 {
-	QString sourceDirectory;
-	QStringList temporaryFiles;
-
-	LocalLibrary* library = nullptr;
-	CachingThread* cachingThread = nullptr;
-	CopyThread* copyThread = nullptr;
-	ImportCachePtr importCache = nullptr;
-
-	Importer::ImportStatus status;
-
-	Private(LocalLibrary* library) :
-		library(library),
-		status(Importer::ImportStatus::NoTracks) {}
-
-	void deleteTemporaryFiles()
+	QStringList filterFilesToImport(QStringList files, const QString& libraryPath)
 	{
-		Util::File::deleteFiles(temporaryFiles);
+		files.erase(std::remove_if(files.begin(), files.end(), [&](const auto& file) {
+			return (Util::File::isSubdir(file, libraryPath) ||
+			        Util::File::isSamePath(file, libraryPath));
+		}), files.end());
+
+		return files;
 	}
-};
 
-Importer::Importer(LocalLibrary* library) :
-	QObject(library)
-{
-	m = Pimpl::make<Private>(library);
-
-	auto* cn = Tagging::ChangeNotifier::instance();
-	connect(cn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &Importer::metadataChanged);
-}
-
-Importer::~Importer() = default;
-
-bool Importer::isRunning() const
-{
-	return (m->copyThread && m->copyThread->isRunning()) ||
-	       (m->cachingThread && m->cachingThread->isRunning());
-}
-
-void Importer::importFiles(const QStringList& files, const QString& targetDir)
-{
-	QStringList filesToBeImported;
-
-	for(const auto& file: files)
+	void emitSuccessMessage(const bool success, const int copiedFilecount, const int cacheFilecount)
 	{
-		const auto info = m->library->info();
-
-		if(Util::File::isSubdir(file, info.path()) ||
-		   Util::File::isSamePath(file, info.path()))
+		if(success)
 		{
-			continue;
+			const auto message = (cacheFilecount == copiedFilecount)
+			                     ? QObject::tr("All files could be imported")
+			                     : QObject::tr("%1 of %2 files could be imported")
+				                     .arg(copiedFilecount)
+				                     .arg(cacheFilecount);
+
+			Message::info(message);
 		}
 
-		filesToBeImported << files;
+		else
+		{
+			Message::warning(QObject::tr("Cannot import tracks"));
+		}
 	}
 
-	if(filesToBeImported.isEmpty())
+	bool isProcessorRunning(QObject* processor)
 	{
-		emitStatus(ImportStatus::NoValidTracks);
-		return;
+		return processor && processor->thread() && processor->thread()->isRunning();
+	}
+}
+
+namespace Library
+{
+	struct Importer::Private
+	{
+		QString sourceDirectory;
+		QStringList temporaryFiles;
+		DB::LibraryDatabase* libraryDatabase;
+		CopyProcessor* copyProcessor {nullptr};
+		CacheProcessor* cacheProcessor {nullptr};
+		ImportCachePtr importCache {nullptr};
+		Importer::ImportStatus status {Importer::ImportStatus::NoTracks};
+		Util::FileSystemPtr fileSystem;
+		Tagging::TagReaderPtr tagReader;
+		Tagging::ChangeNotifier* taggingChangeNotifier {Tagging::ChangeNotifier::instance()};
+
+		Private(DB::LibraryDatabase* libraryDatabase, Util::FileSystemPtr fileSystem, Tagging::TagReaderPtr tagReader) :
+			libraryDatabase {libraryDatabase},
+			fileSystem {std::move(fileSystem)},
+			tagReader {std::move(tagReader)} {}
+	};
+
+	Importer::Importer(DB::LibraryDatabase* libraryDatabase, Util::FileSystemPtr fileSystem,
+	                   Tagging::TagReaderPtr tagReader, QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(libraryDatabase, std::move(fileSystem), std::move(tagReader))}
+	{
+		connect(m->taggingChangeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, [&]() {
+			if(m->importCache)
+			{
+				m->importCache->changeMetadata(m->taggingChangeNotifier->changedMetadata());
+			}
+		});
 	}
 
-	emitStatus(ImportStatus::Caching);
+	Importer::~Importer() = default;
 
-	if(!targetDir.isEmpty())
+	void Importer::import(const QString& libraryPath, const QStringList& files, const QString& targetDir)
 	{
 		emit sigTargetDirectoryChanged(targetDir);
+
+		const auto filesToBeImported = filterFilesToImport(files, libraryPath);
+		if(filesToBeImported.isEmpty())
+		{
+			emitStatus(ImportStatus::NoValidTracks);
+			return;
+		}
+
+		startCaching(filesToBeImported, libraryPath);
 	}
 
-	const auto fileSystem = Util::FileSystem::create();
-	auto* thread = CachingThread::create(filesToBeImported,
-	                                     m->library->info().path(),
-	                                     Tagging::TagReader::create(),
-	                                     Util::ArchiveExtractor::create(),
-	                                     Util::DirectoryReader::create(fileSystem),
-	                                     fileSystem);
-	connect(thread, &CachingThread::finished, this, &Importer::cachingThreadFinished);
-	connect(thread, &CachingThread::sigCachedFilesChanged, this, &Importer::sigCachedFilesChanged);
-	connect(thread, &CachingThread::destroyed, this, [=]() {
-		m->cachingThread = nullptr;
-	});
-
-	m->cachingThread = thread;
-	thread->start();
-}
-
-// preload thread has cached everything, but ok button has not been clicked yet
-void Importer::cachingThreadFinished()
-{
-	MetaDataList tracks;
-	auto* thread = static_cast<CachingThread*>(sender());
-
-	const auto cachingResult = thread->cacheResult();
-	m->temporaryFiles << cachingResult.temporaryFiles;
-	m->importCache = cachingResult.cache;
-
-	if(!m->importCache)
+	void Importer::startCaching(const QStringList& files, const QString& libraryPath)
 	{
-		emitStatus(ImportStatus::NoTracks);
+		emitStatus(ImportStatus::Caching);
+
+		auto* thread = new QThread {};
+		m->cacheProcessor = CacheProcessor::create(files,
+		                                           libraryPath,
+		                                           m->tagReader,
+		                                           Util::ArchiveExtractor::create(),
+		                                           Util::DirectoryReader::create(m->fileSystem),
+		                                           m->fileSystem);
+
+		m->cacheProcessor->moveToThread(thread);
+
+		connect(thread, &QThread::started, m->cacheProcessor, &CacheProcessor::cacheFiles);
+		connect(m->cacheProcessor, &CacheProcessor::sigFinished, thread, &QThread::quit);
+		connect(m->cacheProcessor, &CacheProcessor::sigFinished, this, &Importer::cachingProcessorFinished);
+		connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+		thread->start();
 	}
 
-	else
+	void Importer::cachingProcessorFinished()
 	{
-		tracks = m->importCache->soundfiles();
+		const auto cachingResult = m->cacheProcessor->cacheResult();
+		const auto wasCancelled = m->cacheProcessor->wasCancelled();
+
+		m->temporaryFiles = cachingResult.temporaryFiles;
+		m->importCache = cachingResult.cache;
+
+		m->cacheProcessor->deleteLater();
+		m->cacheProcessor = nullptr;
+
+		if(!m->importCache || wasCancelled)
+		{
+			emitStatus(ImportStatus::NoTracks);
+			return;
+		}
+
+		const auto tracks = m->importCache->soundfiles();
+		const auto status = tracks.isEmpty()
+		                    ? ImportStatus::NoTracks
+		                    : ImportStatus::CachingFinished;
+
+		emitStatus(status);
 	}
 
-	if(tracks.isEmpty() || thread->isCancelled())
+	void Importer::copy(const QString& targetDir)
 	{
-		emitStatus(ImportStatus::NoTracks);
+		emitStatus(ImportStatus::Importing);
+
+		auto* thread = new QThread {};
+		m->copyProcessor = CopyProcessor::create(targetDir, m->importCache, m->fileSystem);
+		m->copyProcessor->moveToThread(thread);
+
+		connect(thread, &QThread::started, m->copyProcessor, &CopyProcessor::copy);
+		connect(m->copyProcessor, &CopyProcessor::sigFinished, thread, &QThread::quit);
+		connect(m->copyProcessor, &CopyProcessor::sigFinished, this, &Importer::copyProcessorFinished);
+		connect(thread, &QThread::finished, thread, &QObject::deleteLater);
+
+		thread->start();
 	}
 
-	else
+	void Importer::copyProcessorFinished()
 	{
-		emitStatus(ImportStatus::CachingFinished);
+		m->fileSystem->deleteFiles(m->temporaryFiles);
+
+		spLog(Log::Debug, this) << "Copy folder thread finished " << m->copyProcessor->wasCancelled();
+
+		if(!m->copyProcessor->wasCancelled())
+		{
+			const auto tracks = m->copyProcessor->copiedMetadata();
+			storeTracksInLibrary(tracks, m->copyProcessor->copiedFileCount());
+			m->copyProcessor->deleteLater();
+			m->copyProcessor = nullptr;
+		}
+
+		else
+		{
+			rollback();
+		}
 	}
 
-	emit sigMetadataCached(tracks);
+	void Importer::rollback()
+	{
+		emitStatus(ImportStatus::Rollback);
 
-	thread->deleteLater();
-}
+		auto* thread = new QThread {};
+		m->copyProcessor->moveToThread(thread);
 
-int Importer::cachedFileCount() const
-{
-	return m->importCache ? m->importCache->soundfiles().count() : 0;
-}
+		connect(thread, &QThread::started, m->copyProcessor, &CopyProcessor::rollback);
+		connect(m->copyProcessor, &CopyProcessor::sigFinished, thread, &QThread::quit);
+		connect(m->copyProcessor, &CopyProcessor::sigFinished, this, [&]() {
+			m->copyProcessor->deleteLater();
+			m->copyProcessor = nullptr;
+		});
+		connect(thread, &QThread::finished, thread, &QObject::deleteLater);
 
-// fired if ok was clicked in dialog
-void Importer::acceptImport(const QString& targetDir)
-{
-	emitStatus(ImportStatus::Importing);
+		thread->start();
+	}
 
-	auto* copyThread = new CopyThread(targetDir, m->importCache, Util::FileSystem::create(), this);
-	connect(copyThread, &CopyThread::sigProgress, this, &Importer::sigProgress);
-	connect(copyThread, &QThread::finished, this, &Importer::copyThreadFinished);
-	connect(copyThread, &QThread::destroyed, this, [=]() {
-		m->copyThread = nullptr;
-	});
-
-	m->copyThread = copyThread;
-	copyThread->start();
-}
-
-void Importer::copyThreadFinished()
-{
-	auto* copyThread = static_cast<CopyThread*>(sender());
-
-	reset();
-
-	auto* db = DB::Connector::instance();
-	DB::LibraryDatabase* libraryDatabase = db->libraryDatabase(m->library->info().id(), db->databaseId());
-
-	MetaDataList tracks = copyThread->copiedMetadata();
-	{ // no tracks were copied or rollback was finished
+	void Importer::storeTracksInLibrary(const MetaDataList& tracks, const int copiedFiles)
+	{
 		if(tracks.isEmpty())
 		{
 			emitStatus(ImportStatus::NoTracks);
-			copyThread->deleteLater();
-
 			return;
 		}
-	}
 
-	{ // copy was cancelled
-		spLog(Log::Debug, this) << "Copy folder thread finished " << m->copyThread->wasCancelled();
-		if(copyThread->wasCancelled())
+		const auto success = m->libraryDatabase->storeMetadata(tracks);
+		const auto status = success ? ImportStatus::Imported : ImportStatus::Cancelled;
+
+		emitStatus(status);
+		emitSuccessMessage(success, copiedFiles, m->importCache->soundFileCount());
+
+		if(success)
 		{
-			emitStatus(ImportStatus::Rollback);
-
-			copyThread->setMode(CopyThread::Mode::Rollback);
-			copyThread->start();
-
-			return;
+			m->taggingChangeNotifier->clearChangedMetadata();
 		}
 	}
 
-	copyThread->deleteLater();
-
-	bool success = libraryDatabase->storeMetadata(tracks);
-	// error and success messages
-	if(!success)
+	void Importer::cancelImport()
 	{
-		emitStatus(ImportStatus::Cancelled);
+		if(isProcessorRunning(m->cacheProcessor))
+		{
+			m->cacheProcessor->cancel();
+		}
 
-		QString warning = tr("Cannot import tracks");
-		Message::warning(warning);
-		return;
+		else if(isProcessorRunning(m->copyProcessor))
+		{
+			m->copyProcessor->cancel();
+		}
 	}
 
-	int copiedFilecount = copyThread->copiedFileCount();
-	int cacheFilecount = m->importCache->count();
-
-	QString message;
-	if(cacheFilecount == copiedFilecount)
+	void Importer::reset()
 	{
-		message = tr("All files could be imported");
+		cancelImport();
+		m->fileSystem->deleteFiles(m->temporaryFiles);
 	}
 
-	else
+	void Importer::emitStatus(const Importer::ImportStatus status)
 	{
-		message = tr("%1 of %2 files could be imported")
-			.arg(copiedFilecount)
-			.arg(cacheFilecount);
+		m->status = status;
+		emit sigStatusChanged(m->status);
 	}
 
-	emitStatus(ImportStatus::Imported);
-	Message::info(message);
+	Importer::ImportStatus Importer::status() const { return m->status; }
 
-	Tagging::ChangeNotifier::instance()->clearChangedMetadata();
-}
-
-void Importer::metadataChanged()
-{
-	auto* cn = Tagging::ChangeNotifier::instance();
-	if(m->importCache)
+	MetaDataList Importer::cachedTracks() const
 	{
-		m->importCache->changeMetadata(cn->changedMetadata());
+		return m->importCache ? m->importCache->soundfiles() : MetaDataList {};
 	}
-}
-
-// fired if cancel button was clicked in dialog
-bool Importer::cancelImport()
-{
-	if(m->cachingThread && m->cachingThread->isRunning())
-	{
-		m->cachingThread->cancel();
-		emitStatus(ImportStatus::Rollback);
-	}
-
-	else if(m->copyThread && m->copyThread->isRunning())
-	{
-		m->copyThread->cancel();
-		emitStatus(ImportStatus::Rollback);
-	}
-
-	return true;
-}
-
-void Importer::reset()
-{
-	cancelImport();
-	m->deleteTemporaryFiles();
-}
-
-void Importer::emitStatus(Importer::ImportStatus status)
-{
-	m->status = status;
-	emit sigStatusChanged(m->status);
-}
-
-Importer::ImportStatus Importer::status() const
-{
-	return m->status;
 }

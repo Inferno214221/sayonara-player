@@ -122,3 +122,4 @@ new_test(SmartPlaylists/SmartPlaylistManagerTest.cpp)
 
 new_test(Database/ArtistTest.cpp)
 new_test(Library/CacheThreadTest.cpp)
+new_test(Library/LibraryImporterTest.cpp)

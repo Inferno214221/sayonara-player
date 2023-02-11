@@ -347,11 +347,14 @@ void LocalLibrary::importFilesTo(const QStringList& files, const QString& target
 	{
 		if(!m->libraryImporter)
 		{
-			m->libraryImporter = new Library::Importer(this, Util::FileSystem::create());
+			m->libraryImporter = new Library::Importer(m->libraryDatabase,
+			                                           Util::FileSystem::create(),
+			                                           Tagging::TagReader::create(),
+			                                           this);
 			connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &LocalLibrary::importStatusChanged);
 		}
 
-		m->libraryImporter->importFiles(files, targetDirectory);
+		m->libraryImporter->import(info().path(), files, targetDirectory);
 
 		emit sigImportDialogRequested(targetDirectory);
 	}
@@ -376,7 +379,10 @@ Library::Importer* LocalLibrary::importer()
 {
 	if(!m->libraryImporter)
 	{
-		m->libraryImporter = new Library::Importer(this);
+		m->libraryImporter = new Library::Importer(m->libraryDatabase,
+		                                           Util::FileSystem::create(),
+		                                           Tagging::TagReader::create(),
+		                                           this);
 		connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &LocalLibrary::importStatusChanged);
 	}
 

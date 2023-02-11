@@ -37,30 +37,29 @@
 
 struct GUI_ImportDialog::Private
 {
-	LocalLibrary* library;
+	Library::Importer* libraryImporter;
+	QString libraryPath;
 	std::shared_ptr<GUI_TagEdit> tagEditor;
 
 	Private(LocalLibrary* library, QWidget* parent) :
-		library {library},
+		libraryImporter {library->importer()},
+		libraryPath {library->info().path()},
 		tagEditor {std::make_shared<GUI_TagEdit>(parent)}
 	{
 		tagEditor->hide();
 	}
 };
 
-GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, bool copyEnabled, QWidget* parent) :
+GUI_ImportDialog::GUI_ImportDialog(LocalLibrary* library, const bool copyEnabled, QWidget* parent) :
 	Dialog(parent),
 	m {Pimpl::make<Private>(library, this)},
 	ui {std::make_shared<Ui::GUI_ImportDialog>()}
 {
 	ui->setupUi(this);
 
-	auto* importer = m->library->importer();
-	connect(importer, &Library::Importer::sigMetadataCached, this, &GUI_ImportDialog::setMetadata);
-	connect(importer, &Library::Importer::sigStatusChanged, this, &GUI_ImportDialog::setStatus);
-	connect(importer, &Library::Importer::sigProgress, this, &GUI_ImportDialog::setProgress);
-	connect(importer, &Library::Importer::sigCachedFilesChanged, this, &GUI_ImportDialog::cachedFilesChanged);
-	connect(importer, &Library::Importer::sigTriggered, this, &GUI_ImportDialog::show);
+	connect(m->libraryImporter, &Library::Importer::sigStatusChanged, this, &GUI_ImportDialog::setStatus);
+	connect(m->libraryImporter, &Library::Importer::sigProgress, this, &GUI_ImportDialog::setProgress);
+	connect(m->libraryImporter, &Library::Importer::sigCachedFilesChanged, this, &GUI_ImportDialog::cachedFilesChanged);
 
 	ui->labTargetPath->setText(library->info().path());
 	ui->labTargetPath->setVisible(copyEnabled);
@@ -83,8 +82,7 @@ GUI_ImportDialog::~GUI_ImportDialog() = default;
 
 void GUI_ImportDialog::setTargetDirectory(QString targetDirectory)
 {
-	const auto& libraryPrefix = m->library->info().path();
-	targetDirectory.remove(libraryPrefix + "/");;
+	targetDirectory.remove(m->libraryPath + "/");;
 	ui->leDirectory->setText(targetDirectory);
 }
 
@@ -100,7 +98,7 @@ void GUI_ImportDialog::setMetadata(const MetaDataList& tracks)
 	ui->btnEdit->setVisible(!tracks.isEmpty());
 }
 
-void GUI_ImportDialog::setStatus(Library::Importer::ImportStatus status)
+void GUI_ImportDialog::setStatus(const Library::Importer::ImportStatus status)
 {
 	using Status = Library::Importer::ImportStatus;
 
@@ -120,8 +118,9 @@ void GUI_ImportDialog::setStatus(Library::Importer::ImportStatus status)
 
 		case Status::CachingFinished:
 		{
-			int cachedFileCount = m->library->importer()->cachedFileCount();
-			ui->labStatus->setText(Lang::getWithNumber(Lang::NrTracksFound, cachedFileCount));
+			const auto tracks = m->libraryImporter->cachedTracks();
+			ui->labStatus->setText(Lang::getWithNumber(Lang::NrTracksFound, tracks.count()));
+			setMetadata(tracks);
 		}
 			break;
 
@@ -167,7 +166,7 @@ void GUI_ImportDialog::setProgress(int val)
 
 void GUI_ImportDialog::cachedFilesChanged()
 {
-	const auto count = m->library->importer()->cachedFileCount();
+	const auto count = m->libraryImporter->cachedTracks().count();
 	const auto text = Lang::getWithNumber(Lang::NrTracksFound, count);
 
 	ui->labStatus->setText(text);
@@ -180,39 +179,41 @@ QAbstractButton* GUI_ImportDialog::btnCancel() { return ui->buttonBox->button(QD
 void GUI_ImportDialog::accept()
 {
 	const auto targetDirectory = ui->leDirectory->text();
-	m->library->importer()->acceptImport(targetDirectory);
+	m->libraryImporter->copy(targetDirectory);
+
+	Gui::Dialog::accept();
 }
 
 void GUI_ImportDialog::reject()
 {
-	m->library->importer()->reset();
+
+	m->libraryImporter->reset();
 
 	using Status = Library::Importer::ImportStatus;
-	if((m->library->importer()->status() != Status::Rollback) &&
-	   (m->library->importer()->status() != Status::Importing))
+	if((m->libraryImporter->status() != Status::Rollback) &&
+	   (m->libraryImporter->status() != Status::Importing))
 	{
-		close();
+		Gui::Dialog::reject();
 	}
 }
 
 void GUI_ImportDialog::chooseDirectory()
 {
-	const auto libraryPath = m->library->info().path();
-	auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), libraryPath, true, this);
+	auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), m->libraryPath, true, this);
 	if(dir.isEmpty())
 	{
 		ui->leDirectory->clear();
 		return;
 	}
 
-	if(!dir.contains(libraryPath))
+	if(!dir.contains(m->libraryPath))
 	{
 		Message::warning(tr("%1<br />is no library directory").arg(dir));
 		ui->leDirectory->clear();
 		return;
 	}
 
-	dir.replace(libraryPath, "");
+	dir.replace(m->libraryPath, "");
 	dir = Util::File::cleanFilename(dir);
 
 	ui->leDirectory->setText(dir);
@@ -233,7 +234,6 @@ void GUI_ImportDialog::editPressed()
 void GUI_ImportDialog::showEvent(QShowEvent* e)
 {
 	Dialog::showEvent(e);
-	ui->labTargetPath->setText(m->library->info().path());
-
-	setStatus(m->library->importer()->status());
+	ui->labTargetPath->setText(m->libraryPath);
+	setStatus(m->libraryImporter->status());
 }

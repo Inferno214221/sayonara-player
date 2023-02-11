@@ -93,6 +93,7 @@ namespace
 				m_tracks.clear();
 
 				const auto files = m_importCache->files();
+				spLog(Log::Debug, this) << "Start copying " << files;
 				for(const auto& filename: files)
 				{
 					if(wasCancelled())
