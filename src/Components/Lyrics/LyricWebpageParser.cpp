@@ -35,7 +35,7 @@ namespace
 		auto result = tag;
 
 		const auto keys = regexConversions.keys();
-		for(const auto& key : keys)
+		for(const auto& key: keys)
 		{
 			result.replace(key, regexConversions.value(key));
 		}
@@ -177,7 +177,7 @@ namespace
 		regex.setMinimal(true);
 
 		return (regex.indexIn(website) != -1)
-		       ? regex.cap(1)
+		       ? regex.cap(1).trimmed()
 		       : QString();
 	}
 }
@@ -188,7 +188,7 @@ WebpageParser::parseWebpage(const QByteArray& rawData, const QMap<QString, QStri
 	const auto website = QString::fromUtf8(rawData);
 
 	const auto startEndTags = server->startEndTag();
-	for(const auto& startEndTag : startEndTags)
+	for(const auto& startEndTag: startEndTags)
 	{
 		const auto startTag = convertTagToRegex(startEndTag.first, regexConversions, true);
 		const auto endTag = convertTagToRegex(startEndTag.second, regexConversions, false);

@@ -1,414 +1,418 @@
 [
-    {
-        "address": "https://www.musixmatch.com",
-        "direct_url_template": "",
-        "is_end_tag_included": false,
-        "is_lowercase": false,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "Musixmatch",
-        "replacements": [
-            {
-                "replacement_from": "  ",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": "?",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": "=",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": "&",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": "/",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": "(",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": ")",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "\"",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "[",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "]",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "{",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "}",
-                "replacement_to": ""
-            }
-        ],
-        "search_url_template": "<SERVER>/search/<ARTIST> <TITLE>#",
-        "search_result_url_template": "<SERVER>/<SEARCH_RESULT_CAPTION>",
-        "search_result_regex": "href=\"/(lyrics/.+)\"",
-        "start_end_tags": [
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div class=\"empty-message\">"
-            },
-            {
-                "end_tag": "</span><span data-reactid",
-                "start_tag": "<div id=\"selectable-lyrics\""
-            },
-            {
-                "end_tag": "</p>",
-                "start_tag": "<p class=.*content"
-            },
-            {
-                "end_tag": "\",\"",
-                "start_tag": "\"body\":\""
-            }
-        ]
-    },
-    {
-        "address": "https://www.songtexte.com",
-        "direct_url_template": "",
-        "is_end_tag_included": false,
-        "is_lowercase": true,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "Songtexte.com",
-        "replacements": [
-            {
-                "replacement_from": "  ",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "+"
-            },
-            {
-                "replacement_from": "?",
-                "replacement_to": "+"
-            },
-            {
-                "replacement_from": "=",
-                "replacement_to": "+"
-            },
-            {
-                "replacement_from": "&",
-                "replacement_to": "+"
-            },
-            {
-                "replacement_from": "/",
-                "replacement_to": "+"
-            },
-            {
-                "replacement_from": "(",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": ")",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "\"",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "[",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "]",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "{",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "}",
-                "replacement_to": ""
-            }
-        ],
-        "search_url_template": "<SERVER>/search?q=<TITLE>+<ARTIST>&c=all",
-        "search_result_url_template": "<SERVER>/<SEARCH_RESULT_CAPTION>",
-        "search_result_regex": "href=\"(songtext.+\\.html)\"",
-        "start_end_tags": [
-            {
-                "end_tag": "</p>",
-                "start_tag": "class=\"blockedArtist\">"
-            },
-            {
-                "end_tag": "</div> <div",
-                "start_tag": "<div id=\"lyrics\">"
-            }
-        ]
-    },
-    {
-        "address": "https://genius.com",
-        "direct_url_template": "<SERVER>/<ARTIST>-<TITLE>-lyrics",
-        "is_end_tag_included": false,
-        "is_lowercase": true,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "Genius",
-        "replacements": [
-            {
-                "replacement_from": "  ",
-                "replacement_to": " "
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "(",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": ")",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": ",",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "&",
-                "replacement_to": "-and-"
-            },
-            {
-                "replacement_from": "/",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "'",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "--",
-                "replacement_to": "-"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div class=\"lyrics\">"
-            }
-        ]
-    },
-    {
-        "address": "http://www.metrolyrics.com",
-        "direct_url_template": "<SERVER>/<TITLE>-lyrics-<ARTIST>.html",
-        "is_end_tag_included": false,
-        "is_lowercase": true,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "MetroLyrics",
-        "replacements": [
-            {
-                "replacement_from": "&",
-                "replacement_to": "and"
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "-"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "<div class=\"bottom-mpu\"",
-                "start_tag": "class=\"lyric-message\">"
-            },
-            {
-                "end_tag": "<div class=\"bottom-mpu\"",
-                "start_tag": "<div id=\"lyrics-body-text\" class=\"js-lyric-text\">"
-            }
-        ]
-    },
-    {
-        "address": "http://www.oldielyrics.com/lyrics",
-        "direct_url_template": "<SERVER>/<ARTIST>/<TITLE>.html",
-        "is_end_tag_included": false,
-        "is_lowercase": true,
-        "is_numeric": false,
-        "is_start_tag_included": true,
-        "name": "OldieLyrics.com",
-        "replacements": [
-            {
-                "replacement_from": " ",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": "(",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": ")",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": ".",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": "&",
-                "replacement_to": "_"
-            },
-            {
-                "replacement_from": "'",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "__",
-                "replacement_to": "_"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div itemprop=\"text\">"
-            }
-        ]
-    },
-    {
-        "address": "http://lyrics-keeper.com",
-        "direct_url_template": "<SERVER>/en/<ARTIST>/<TITLE>.html",
-        "is_end_tag_included": false,
-        "is_lowercase": true,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "Lyrics Keeper",
-        "replacements": [
-            {
-                "replacement_from": "&",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "'",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": ".",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "--",
-                "replacement_to": "-"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div id=\"lyrics\">"
-            }
-        ]
-    },
-    {
-        "address": "http://www.elyrics.net/read",
-        "direct_url_template": "<SERVER>/<FIRST_ARTIST_LETTER>/<ARTIST>-lyrics/<TITLE>-lyrics.html",
-        "is_end_tag_included": false,
-        "is_lowercase": false,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "eLyrics",
-        "replacements": [
-            {
-                "replacement_from": "the ",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": "The ",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "'",
-                "replacement_to": "_"
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div id=\"inlyr\""
-            },
-            {
-                "end_tag": "</div>",
-                "start_tag": "<div id='inlyr'"
-            },
-            {
-                "end_tag": "</strong>",
-                "start_tag": "not found on eLyrics.net. <br> "
-            }
-        ]
-    },
-    {
-        "address": "http://www.golyr.de",
-        "direct_url_template": "<SERVER>/<ARTIST>/songtext-<TITLE>",
-        "is_end_tag_included": false,
-        "is_lowercase": false,
-        "is_numeric": false,
-        "is_start_tag_included": false,
-        "name": "Golyr",
-        "replacements": [
-            {
-                "replacement_from": "'",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": " ",
-                "replacement_to": "-"
-            },
-            {
-                "replacement_from": "(",
-                "replacement_to": ""
-            },
-            {
-                "replacement_from": ")",
-                "replacement_to": ""
-            }
-        ],
-        "search_url_template": "",
-        "search_result_url_template": "",
-        "search_result_regex": "",
-        "start_end_tags": [
-            {
-                "end_tag": "</div> <div class=\"fads\"",
-                "start_tag": "<div id=\"lyrics\">"
-            }
-        ]
-    }
+  {
+    "address": "https://www.musixmatch.com",
+    "direct_url_template": "",
+    "is_end_tag_included": false,
+    "is_lowercase": false,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Musixmatch",
+    "replacements": [
+      {
+        "replacement_from": "  ",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": "?",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": "=",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": "&",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": "/",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "\"",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "[",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "]",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "{",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "}",
+        "replacement_to": ""
+      }
+    ],
+    "search_url_template": "<SERVER>/search/<ARTIST> <TITLE>#",
+    "search_result_url_template": "<SERVER>/<SEARCH_RESULT_CAPTION>",
+    "search_result_regex": "href=\"/(lyrics/.+)\"",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div class=\"empty-message\">"
+      },
+      {
+        "end_tag": "</span><span data-reactid",
+        "start_tag": "<div id=\"selectable-lyrics\""
+      },
+      {
+        "end_tag": "</p>",
+        "start_tag": "<p class=.*content"
+      },
+      {
+        "end_tag": "\",\"",
+        "start_tag": "\"body\":\""
+      }
+    ]
+  },
+  {
+    "address": "https://www.songtexte.com",
+    "direct_url_template": "",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Songtexte.com",
+    "replacements": [
+      {
+        "replacement_from": "  ",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "+"
+      },
+      {
+        "replacement_from": "?",
+        "replacement_to": "+"
+      },
+      {
+        "replacement_from": "=",
+        "replacement_to": "+"
+      },
+      {
+        "replacement_from": "&",
+        "replacement_to": "+"
+      },
+      {
+        "replacement_from": "/",
+        "replacement_to": "+"
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "\"",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "[",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "]",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "{",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "}",
+        "replacement_to": ""
+      }
+    ],
+    "search_url_template": "<SERVER>/search?q=<TITLE>+<ARTIST>&c=all",
+    "search_result_url_template": "<SERVER>/<SEARCH_RESULT_CAPTION>",
+    "search_result_regex": "href=\"(songtext.+\\.html)\"",
+    "start_end_tags": [
+      {
+        "end_tag": "</p>",
+        "start_tag": "class=\"blockedArtist\">"
+      },
+      {
+        "end_tag": "</div> <div",
+        "start_tag": "<div id=\"lyrics\">"
+      }
+    ]
+  },
+  {
+    "address": "https://genius.com",
+    "direct_url_template": "<SERVER>/<ARTIST>-<TITLE>-lyrics",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Genius",
+    "replacements": [
+      {
+        "replacement_from": "  ",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ",",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "&",
+        "replacement_to": "-and-"
+      },
+      {
+        "replacement_from": "/",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "'",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "--",
+        "replacement_to": "-"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div class=\"lyrics\">"
+      },
+      {
+        "end_tag": "<div class=\"RightSidebar",
+        "start_tag": "<div data-lyrics-container"
+      }
+    ]
+  },
+  {
+    "address": "http://www.metrolyrics.com",
+    "direct_url_template": "<SERVER>/<TITLE>-lyrics-<ARTIST>.html",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "MetroLyrics",
+    "replacements": [
+      {
+        "replacement_from": "&",
+        "replacement_to": "and"
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "<div class=\"bottom-mpu\"",
+        "start_tag": "class=\"lyric-message\">"
+      },
+      {
+        "end_tag": "<div class=\"bottom-mpu\"",
+        "start_tag": "<div id=\"lyrics-body-text\" class=\"js-lyric-text\">"
+      }
+    ]
+  },
+  {
+    "address": "http://www.oldielyrics.com/lyrics",
+    "direct_url_template": "<SERVER>/<ARTIST>/<TITLE>.html",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": true,
+    "name": "OldieLyrics.com",
+    "replacements": [
+      {
+        "replacement_from": " ",
+        "replacement_to": "_"
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": "_"
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": "_"
+      },
+      {
+        "replacement_from": ".",
+        "replacement_to": "_"
+      },
+      {
+        "replacement_from": "&",
+        "replacement_to": "_"
+      },
+      {
+        "replacement_from": "'",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "__",
+        "replacement_to": "_"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div itemprop=\"text\">"
+      }
+    ]
+  },
+  {
+    "address": "http://lyrics-keeper.com",
+    "direct_url_template": "<SERVER>/en/<ARTIST>/<TITLE>.html",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Lyrics Keeper",
+    "replacements": [
+      {
+        "replacement_from": "&",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "'",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": ".",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "--",
+        "replacement_to": "-"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div id=\"lyrics\">"
+      }
+    ]
+  },
+  {
+    "address": "http://www.elyrics.net/read",
+    "direct_url_template": "<SERVER>/<FIRST_ARTIST_LETTER>/<ARTIST>-lyrics/<TITLE>-lyrics.html",
+    "is_end_tag_included": false,
+    "is_lowercase": false,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "eLyrics",
+    "replacements": [
+      {
+        "replacement_from": "the ",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "The ",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "'",
+        "replacement_to": "_"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div id=\"inlyr\""
+      },
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div id='inlyr'"
+      },
+      {
+        "end_tag": "</strong>",
+        "start_tag": "not found on eLyrics.net. <br> "
+      }
+    ]
+  },
+  {
+    "address": "http://www.golyr.de",
+    "direct_url_template": "<SERVER>/<ARTIST>/songtext-<TITLE>",
+    "is_end_tag_included": false,
+    "is_lowercase": false,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Golyr",
+    "replacements": [
+      {
+        "replacement_from": "'",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": ""
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div> <div class=\"fads\"",
+        "start_tag": "<div id=\"lyrics\">"
+      }
+    ]
+  }
 ]
