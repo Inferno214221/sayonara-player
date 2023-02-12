@@ -180,10 +180,7 @@ MetaDataList& MetaDataList::operator<<(const MetaDataList& tracks)
 
 MetaDataList& MetaDataList::operator<<(MetaDataList&& tracks) noexcept
 {
-	const auto oldEnd = end();
-	resize(size() + tracks.size());
-
-	std::move(tracks.begin(), tracks.end(), oldEnd);
+	std::move(tracks.begin(), tracks.end(), std::back_inserter(*this));
 	return *this;
 }
 

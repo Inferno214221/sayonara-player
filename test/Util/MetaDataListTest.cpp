@@ -63,12 +63,13 @@ class MetaDataListTest :
 		[[maybe_unused]] static void testRemoveByIndexSet();
 		[[maybe_unused]] void testRemoveByIndexRange();
 		[[maybe_unused]] void testAppendUnique();
+		[[maybe_unused]] void testPushBack();
 };
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 [[maybe_unused]] void MetaDataListTest::testCopyAndAssignment()
 {
-	constexpr const auto MaxIndex = 8;
+	constexpr const auto MaxIndex = 5000;
 	{ // copy constructor
 		const auto originalTracks = createTracks(0, MaxIndex);
 		const auto originalUniqueIds = Util::uniqueIds(originalTracks);
@@ -275,6 +276,43 @@ class MetaDataListTest :
 		tracks.copyTracks(testCase.indexes, testCase.targetIndex);
 
 		QVERIFY(Util::trackIds(tracks) == testCase.expectedIds);
+	}
+}
+
+[[maybe_unused]] void MetaDataListTest::testPushBack()
+{
+	constexpr const auto MaxIndex = 10000;
+
+	struct TestCase
+	{
+		MetaDataList tracks1;
+		MetaDataList tracks2;
+	};
+
+	const auto testCases = std::array {
+		TestCase {createTracks(0, MaxIndex), createTracks(MaxIndex + 1, MaxIndex + MaxIndex)},
+		TestCase {createTracks(0, MaxIndex), MetaDataList {}},
+		TestCase {MetaDataList {}, createTracks(0, MaxIndex)},
+		TestCase {MetaDataList {}, MetaDataList {}},
+	};
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks1 = testCase.tracks1;
+		auto tracks2 = testCase.tracks2;
+		auto tracks = MetaDataList {};
+		tracks << std::move(tracks1);
+		tracks << std::move(tracks2);
+
+		QVERIFY(tracks.count() == testCase.tracks1.count() + testCase.tracks2.count());
+	}
+
+	for(const auto& testCase: testCases)
+	{
+		auto tracks1 = testCase.tracks1;
+		auto tracks2 = testCase.tracks2;
+		auto tracks = MetaDataList() << tracks1 << tracks2;
+		QVERIFY(tracks.count() == testCase.tracks1.count() + testCase.tracks2.count());
 	}
 }
 
