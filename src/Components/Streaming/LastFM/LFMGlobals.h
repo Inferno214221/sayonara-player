@@ -22,10 +22,14 @@
  *
  */
 
-#ifndef LFMGLOBALS_H_
-#define LFMGLOBALS_H_
+#ifndef SAYONARA_LASTFM_GLOBALS_H
+#define SAYONARA_LASTFM_GLOBALS_H
 
-#define LFM_API_KEY 	QByteArray("51d6f9eaef806f603f346844bef326ba")
-#define LFM_API_SECRET	QByteArray("1093d769e54858cb0d21d42b35a8f603")
+namespace LastFM
+{
+	constexpr const auto* ApiKey = "51d6f9eaef806f603f346844bef326ba";
+	constexpr const auto* ApiSecret = "1093d769e54858cb0d21d42b35a8f603";
+	constexpr const auto* BaseUrl = "https://ws.audioscrobbler.com/2.0/";
+}
 
-#endif /* LFMGLOBALS_H_ */
+#endif /* SAYONARA_LASTFM_GLOBALS_H */

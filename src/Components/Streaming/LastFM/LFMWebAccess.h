@@ -26,8 +26,8 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#ifndef WebAccess_H_
-#define WebAccess_H_
+#ifndef SAYONARA_LASTFM_WEBACCESS_H
+#define SAYONARA_LASTFM_WEBACCESS_H
 
 #include <QObject>
 #include <QMap>
@@ -36,13 +36,7 @@ class QByteArray;
 
 namespace LastFM
 {
-	class UrlParams :
-		public QMap<QString, QString>
-	{
-		public:
-			void appendSignature();
-	};
-
+	using UrlParams = QMap<QString, QString>;
 	class WebAccess :
 		public QObject
 	{
@@ -55,10 +49,7 @@ namespace LastFM
 
 		public:
 			void callUrl(const QString& url);
-			void callPostUrl(const QString& url, const QByteArray& data);
-
-			static QString createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
-			                             QByteArray& postData);
+			void callPostUrl(const QString& url, const QByteArray& postData);
 
 		private:
 			bool checkError(const QByteArray& data);
@@ -66,5 +57,7 @@ namespace LastFM
 		private slots: // NOLINT(readability-redundant-access-specifiers)
 			void webClientFinished();
 	};
+
+	QByteArray createPostData(UrlParams signatureData);
 }
-#endif /* WebAccess_H_ */
+#endif /* SAYONARA_LASTFM_WEBACCESS_H */

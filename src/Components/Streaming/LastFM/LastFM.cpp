@@ -50,6 +50,16 @@
 
 namespace LastFM
 {
+	namespace
+	{
+		QString currentTimestamp()
+		{
+			auto rawtime = time(nullptr);
+			auto* ptm = localtime(&rawtime);
+
+			return QString::number(mktime(ptm));
+		}
+	}
 	struct Base::Private
 	{
 		QString sessionKey;
@@ -83,22 +93,17 @@ namespace LastFM
 
 	Base::~Base() = default;
 
-	bool Base::isLoggedIn()
-	{
-		return m->loggedIn;
-	}
+	bool Base::isLoggedIn() { return m->loggedIn; }
 
 	void Base::login(const QString& username, const QString& password)
 	{
 		auto* loginThread = new LoginThread(this);
 
 		connect(loginThread, &LoginThread::sigLoggedIn, this, &Base::loginThreadFinished);
-		connect(loginThread, &LoginThread::sigError,
-		        this,
-		        [=](const QString& error_message) {
-			        spLog(Log::Warning, this) << error_message;
-			        emit sigLoggedIn(false);
-		        });
+		connect(loginThread, &LoginThread::sigError, this, [&](const auto& errorMessage) {
+			spLog(Log::Warning, this) << "Login Error: " << errorMessage;
+			emit sigLoggedIn(false);
+		});
 
 		loginThread->login(username, password);
 	}
@@ -109,34 +114,32 @@ namespace LastFM
 
 		if(GetSetting(Set::LFM_Active))
 		{
-			const QString username = GetSetting(Set::LFM_Username);
-			const QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
+			const auto username = GetSetting(Set::LFM_Username);
+			const auto password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 			login(username, password);
 		}
 	}
 
-	void Base::loginThreadFinished(bool success)
+	void Base::loginThreadFinished(const bool success)
 	{
 		auto* loginThread = dynamic_cast<LoginThread*>(sender());
-
-		m->loggedIn = success;
 
 		const auto errorMessage = tr("Cannot login to Last.fm");
 		if(!success)
 		{
-			m->notificationHandler->notify("Sayonara", errorMessage);
-			emit sigLoggedIn(false);
-			return;
+			m->loggedIn = false;
 		}
 
-		const auto loginInfo = loginThread->getLoginStuff();
-		m->loggedIn = loginInfo.loggedIn;
-		m->sessionKey = loginInfo.sessionKey;
+		else
+		{
+			const auto loginInfo = loginThread->loginInfo();
+			m->loggedIn = loginInfo.loggedIn;
+			m->sessionKey = loginInfo.sessionKey;
 
-		SetSetting(Set::LFM_SessionKey, m->sessionKey);
-
-		spLog(Log::Debug, this) << "Got session key";
+			SetSetting(Set::LFM_SessionKey, m->sessionKey);
+			spLog(Log::Debug, this) << "Got session key";
+		}
 
 		if(!m->loggedIn)
 		{
@@ -159,7 +162,6 @@ namespace LastFM
 			m->trackChangedTimer->start(Timeout);
 		}
 
-		// scrobble
 		if(GetSetting(Set::LFM_Active) && m->loggedIn)
 		{
 			const auto seconds = GetSetting(Set::LFM_ScrobbleTimeSec);
@@ -184,42 +186,31 @@ namespace LastFM
 			return;
 		}
 
-		spLog(Log::Debug, this) << "Scrobble " << track.title() << " by "
-		                        << track.artist();
+		spLog(Log::Debug, this) << "Scrobble " << track.title() << " by " << track.artist();
 
 		auto* webAccess = new WebAccess();
-		connect(webAccess, &WebAccess::sigResponse, this, &Base::scrobbleResponseReceived);
 		connect(webAccess, &WebAccess::sigError, this, &Base::scrobbleErrorReceived);
+		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
 
-		auto rawtime = time(nullptr);
-		auto* ptm = localtime(&rawtime);
-		auto started = mktime(ptm);
+		constexpr const auto* MethodName = "track.scrobble";
 
-		UrlParams sigData;
+		auto urlParams = UrlParams {
+			{"api_key",   ApiKey},
+			{"artist",    track.artist()},
+			{"duration",  QString::number(track.durationMs() / 1000)},// NOLINT(readability-magic-numbers)
+			{"method",    MethodName},
+			{"sk",        m->sessionKey},
+			{"timestamp", currentTimestamp()},
+			{"track",     track.title()}};
+
 		if(!track.album().isEmpty())
 		{
-			sigData["album"] = track.album();
+			urlParams["album"] = track.album();
 		}
 
-		sigData["api_key"] = LFM_API_KEY;
-		sigData["artist"] = track.artist();
-		sigData["duration"] = QString::number(track.durationMs() / 1000); // NOLINT(readability-magic-numbers)
-		sigData["method"] = "track.scrobble";
-		sigData["sk"] = m->sessionKey;
-		sigData["timestamp"] = QString::number(started);
-		sigData["track"] = track.title();
-
-		sigData.appendSignature();
-
-		QByteArray postData;
-		const auto url = WebAccess::createPostUrl("http://ws.audioscrobbler.com/2.0/",
-		                                          sigData,
-		                                          postData);
-
-		webAccess->callPostUrl(url, postData);
+		const auto postData = LastFM::createPostData(urlParams);
+		webAccess->callPostUrl(BaseUrl, postData);
 	}
-
-	void Base::scrobbleResponseReceived(const QByteArray& /*data*/) {}
 
 	void Base::scrobbleErrorReceived(const QString& error) // NOLINT(readability-make-member-function-const)
 	{

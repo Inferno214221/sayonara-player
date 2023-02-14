@@ -21,91 +21,66 @@
 #include "LFMLoginThread.h"
 #include "LFMGlobals.h"
 #include "LFMWebAccess.h"
-#include "Utils/Utils.h"
-#include "Utils/Message/Message.h"
+
 #include "Utils/Logger/Logger.h"
+#include "Utils/Message/Message.h"
+#include "Utils/Utils.h"
 
-using namespace LastFM;
-
-struct LoginThread::Private
+namespace LastFM
 {
-	LoginStuff loginInfo;
-};
-
-LoginThread::LoginThread(QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>();
-}
-
-LoginThread::~LoginThread() = default;
-
-void LoginThread::login(const QString& username, const QString& password)
-{
-	auto* webAccess = new WebAccess();
-	connect(webAccess, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
-	connect(webAccess, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
-
-	m->loginInfo.loggedIn = false;
-	m->loginInfo.sessionKey = "";
-	m->loginInfo.subscriber = false;
-
-	UrlParams signatureData;
-	signatureData["api_key"] = LFM_API_KEY;
-	signatureData["method"] = "auth.getMobileSession";
-	signatureData["password"] = password;
-	signatureData["username"] = username;
-
-	signatureData.appendSignature();
-
-	QByteArray postData;
-	QString url = webAccess->createPostUrl("https://ws.audioscrobbler.com/2.0/",
-	                                       signatureData,
-	                                       postData);
-
-	webAccess->callPostUrl(url, postData);
-}
-
-void LoginThread::webaccessResponseReceived(const QByteArray& data)
-{
-	QString str = QString::fromUtf8(data);
-
-	m->loginInfo.loggedIn = true;
-	m->loginInfo.sessionKey = Util::easyTagFinder("lfm.session.key", str);
-	m->loginInfo.subscriber = (Util::easyTagFinder("lfm.session.subscriber", str).toInt() == 1);
-	m->loginInfo.error = str;
-
-	if(m->loginInfo.sessionKey.size() >= 32)
+	struct LoginThread::Private
 	{
-		emit sigLoggedIn(true);
+		LoginInfo loginInfo;
+	};
+
+	LoginThread::LoginThread(QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>()} {}
+
+	LoginThread::~LoginThread() = default;
+
+	void LoginThread::login(const QString& username, const QString& password)
+	{
+		constexpr const auto* AuthMethodName = "auth.getMobileSession";
+
+		auto* webAccess = new WebAccess();
+		connect(webAccess, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
+		connect(webAccess, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
+		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
+
+		m->loginInfo = LoginInfo {};
+
+		const auto urlParams = UrlParams {
+			{"api_key",  ApiKey},
+			{"method",   AuthMethodName},
+			{"password", password},
+			{"username", username}};
+
+		const auto postData = LastFM::createPostData(urlParams);
+		webAccess->callPostUrl(BaseUrl, postData);
 	}
 
-	else
+	void LoginThread::webaccessResponseReceived(const QByteArray& data)
 	{
-		emit sigLoggedIn(false);
+		const auto str = QString::fromUtf8(data);
+		const auto sessionKey = Util::easyTagFinder("lfm.session.key", str);
+		const auto isSubscriber = (Util::easyTagFinder("lfm.session.subscriber", str).toInt() == 1);
+		const auto success = (sessionKey.size() >= 32); // NOLINT(readability-magic-numbers)
+
+		m->loginInfo.loggedIn = success;
+		m->loginInfo.sessionKey = sessionKey;
+		m->loginInfo.subscriber = isSubscriber;
+		m->loginInfo.error = str;
+
+		emit sigLoggedIn(success);
 	}
 
-	if(sender())
+	void LoginThread::webaccessErrorReceived(const QString& error)
 	{
-		sender()->deleteLater();
+		spLog(Log::Warning, this) << "LastFM: Cannot login: " << error;
+
+		emit sigError(error);
 	}
+
+	LoginInfo LoginThread::loginInfo() const { return m->loginInfo; }
 }
-
-void LoginThread::webaccessErrorReceived(const QString& error)
-{
-	spLog(Log::Warning, this) << "LastFM: Cannot login";
-	spLog(Log::Warning, this) << error;
-
-	emit sigError(error);
-
-	if(sender())
-	{
-		sender()->deleteLater();
-	}
-}
-
-LoginStuff LoginThread::getLoginStuff()
-{
-	return m->loginInfo;
-}
-

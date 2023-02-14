@@ -30,9 +30,11 @@
 #include "LFMWebAccess.h"
 #include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Utils.h"
+#include "Utils/Logger/Logger.h"
 
 #include <QCryptographicHash>
 #include <QByteArray>
+#include <QUrl>
 
 namespace LastFM
 {
@@ -55,6 +57,28 @@ namespace LastFM
 
 			return {};
 		}
+
+		QString createSignature(const UrlParams& urlParams)
+		{
+			auto signatureItems = QStringList {};
+
+			for(auto it = urlParams.begin(); it != urlParams.end(); it++)
+			{
+				signatureItems << it.key() + it.value();
+			}
+
+			signatureItems.sort();
+			signatureItems << LastFM::ApiSecret;
+
+			auto signatureData = signatureItems.join("");
+
+			return Util::calcHash(signatureData.toUtf8());
+		}
+
+		QString htmlFormat(const QString& str)
+		{
+			return QUrl::toPercentEncoding(str);
+		}
 	}
 
 	void WebAccess::callUrl(const QString& url)
@@ -64,7 +88,7 @@ namespace LastFM
 		webClient->run(url, Timeout);
 	}
 
-	void WebAccess::callPostUrl(const QString& url, const QByteArray& post_data)
+	void WebAccess::callPostUrl(const QString& url, const QByteArray& postData)
 	{
 		auto* webClient = new WebClientImpl(this);
 		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
@@ -73,7 +97,7 @@ namespace LastFM
 		header["Content-Type"] = "application/x-www-form-urlencoded";
 
 		webClient->setRawHeader(header);
-		webClient->runPost(url, post_data, Timeout);
+		webClient->runPost(url, postData, Timeout);
 	}
 
 	void WebAccess::webClientFinished()
@@ -92,27 +116,8 @@ namespace LastFM
 		}
 
 		emit sigFinished();
-	}
 
-	QString WebAccess::createPostUrl(const QString& baseUrl, const UrlParams& signatureData,
-	                                 QByteArray& postData)
-	{
-		postData.clear();
-
-		QStringList dataList;
-		for(auto it = signatureData.cbegin(); it != signatureData.cend(); it++)
-		{
-			auto item = QString("%1=%2")
-				.arg(it.key())
-				.arg(it.value());
-
-			item.replace('&', "%26");
-			dataList << item;
-		}
-
-		postData = dataList.join('&').toUtf8();
-
-		return baseUrl;
+		webClient->deleteLater();
 	}
 
 	bool WebAccess::checkError(const QByteArray& data)
@@ -120,25 +125,31 @@ namespace LastFM
 		const auto errorString = parseErrorMessage(data);
 		if(!errorString.isEmpty())
 		{
+			spLog(Log::Error, this) << QString::fromUtf8(data);
 			emit sigError(errorString);
 		}
 
 		return (!errorString.isEmpty());
 	}
 
-	void UrlParams::appendSignature()
+	QByteArray createPostData(UrlParams urlParams)
 	{
-		QString signature;
+		auto dataList = QStringList {};
 
-		for(auto it = this->cbegin(); it != this->cend(); it++)
+		const auto signature = createSignature(urlParams);
+		urlParams["api_sig"] = signature;
+
+		for(auto it = urlParams.cbegin(); it != urlParams.cend(); it++)
 		{
-			signature += it.key();
-			signature += it.value();
+			const auto item = QString("%1=%2")
+				.arg(htmlFormat(it.key()))
+				.arg(htmlFormat(it.value()));
+
+			dataList << item;
 		}
 
-		signature += LFM_API_SECRET;
+		dataList.sort();
 
-		const auto hash = Util::calcHash(signature.toUtf8());
-		this->insert("api_sig", hash);
+		return dataList.join('&').toUtf8();
 	}
 }

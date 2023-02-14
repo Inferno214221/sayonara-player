@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LoginThread_H
-#define LoginThread_H
+#ifndef SAYONARA_LASTFM_LOGIN_THREAD_H
+#define SAYONARA_LASTFM_LOGIN_THREAD_H
 
 #include <QObject>
 #include "Utils/globals.h"
@@ -27,45 +27,37 @@
 
 namespace LastFM
 {
-    struct LoginStuff
-    {
-        QString		token;
-        QString		sessionKey;
-        bool		loggedIn;
-        bool		subscriber;
-        QString		error;
+	struct LoginInfo
+	{
+		QString token;
+		QString sessionKey;
+		bool loggedIn {false};
+		bool subscriber {false};
+		QString error;
+	};
 
-        LoginStuff()
-        {
-            loggedIn = false;
-            subscriber = false;
-        }
-    };
+	class LoginThread :
+		public QObject
+	{
+		Q_OBJECT
+		PIMPL(LoginThread)
 
+		signals:
+			void sigError(const QString& error);
+			void sigLoggedIn(bool success);
 
-    class LoginThread :
-            public QObject
-    {
-        Q_OBJECT
-        PIMPL(LoginThread)
+		public:
+			explicit LoginThread(QObject* parent = nullptr);
+			~LoginThread();
 
-    signals:
-        void sigTokenReceived(const QString& token);
-        void sigError(const QString& error);
-        void sigLoggedIn(bool success);
+			void login(const QString& username, const QString& password);
 
-    public:
-        explicit LoginThread(QObject* parent=nullptr);
-        ~LoginThread();
+			LoginInfo loginInfo() const;
 
-        void login(const QString& username, const QString& password);
-
-        LoginStuff getLoginStuff();
-
-    private slots:
-        void webaccessResponseReceived(const QByteArray& data);
-        void webaccessErrorReceived(const QString& response);
-    };
+		private slots:
+			void webaccessResponseReceived(const QByteArray& data);
+			void webaccessErrorReceived(const QString& response);
+	};
 }
 
-#endif // LoginThread_H
+#endif // SAYONARA_LASTFM_LOGIN_THREAD_H

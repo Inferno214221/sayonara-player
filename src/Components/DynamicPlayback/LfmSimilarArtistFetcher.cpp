@@ -77,7 +77,7 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 		        "method=artist.getsimilar&"
 		        "artist=%1&api_key=%2")
 			.arg(QString::fromUtf8(QUrl::toPercentEncoding(m->artist)))
-			.arg(QString::fromUtf8(LFM_API_KEY));
+			.arg(QString::fromUtf8(LastFM::ApiKey));
 
 	webAccess->callUrl(url);
 }

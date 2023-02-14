@@ -26,8 +26,8 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#ifndef LASTFM_H_
-#define LASTFM_H_
+#ifndef SAYONARA_LASTFM_H
+#define SAYONARA_LASTFM_H
 
 #include "Utils/Pimpl.h"
 
@@ -60,11 +60,10 @@ namespace LastFM
 			void currentTrackChanged(const MetaData& track);
 
 			void scrobble();
-			void scrobbleResponseReceived(const QByteArray& data);
 			void scrobbleErrorReceived(const QString& str);
 
 			void trackChangedTimerTimedOut();
 	};
 }
 
-#endif /* LASTFM_H_ */
+#endif /* SAYONARA_LASTFM_H */

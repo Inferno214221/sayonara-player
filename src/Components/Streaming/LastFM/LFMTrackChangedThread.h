@@ -22,33 +22,27 @@
  *
  */
 
-#ifndef LFMTRACKCHANGEDTHREAD_H_
-#define LFMTRACKCHANGEDTHREAD_H_
-
-#include "DynamicPlayback/ArtistMatch.h"
-#include "Utils/Pimpl.h"
+#ifndef SAYONARA_LASTFM_CHANGED_THREAD_H
+#define SAYONARA_LASTFM_CHANGED_THREAD_H
 
 #include <QObject>
 
-class SmartCompare;
-
+class MetaData;
 namespace LastFM
 {
 	class TrackChangedThread :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
-		PIMPL(TrackChangedThread)
 
-	public:
-		explicit TrackChangedThread(QObject* parent=nullptr);
-		~TrackChangedThread();
+		public:
+			explicit TrackChangedThread(QObject* parent = nullptr);
+			~TrackChangedThread() override;
 
-		void updateNowPlaying(const QString& sessionKey, const MetaData& track);
+			void updateNowPlaying(const QString& sessionKey, const MetaData& track);
 
-	private slots:
-		void updateResponseReceived(const QByteArray& response);
-		void updateErrorReceived(const QString& error);
+		private slots:
+			void updateErrorReceived(const QString& error);
 	};
 }
-#endif /* LFMTRACKCHANGEDTHREAD_H_ */
+#endif /* SAYONARA_LASTFM_CHANGED_THREAD_H */

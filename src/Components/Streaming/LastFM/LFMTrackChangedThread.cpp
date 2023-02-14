@@ -25,107 +25,50 @@
 #include "LFMTrackChangedThread.h"
 #include "LFMWebAccess.h"
 #include "LFMGlobals.h"
-#include "DynamicPlayback/LfmSimiliarArtistsParser.h"
 
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
-
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Compressor/Compressor.h"
-#include "Utils/Logger/Logger.h"
 
-#ifdef SMART_COMPARE
-#include "Utils/SmartCompare/SmartCompare.h"
-#endif
-
-#include <QMap>
-#include <QStringList>
-#include <QUrl>
-#include <QHash>
-
-using namespace LastFM;
-
-struct TrackChangedThread::Private
+namespace LastFM
 {
-	QString artist;
+	TrackChangedThread::TrackChangedThread(QObject* parent) :
+		QObject(parent) {}
 
-#ifdef SMART_COMPARE
-	SmartCompare*				_smart_comparison=nullptr;
-#endif
-};
+	TrackChangedThread::~TrackChangedThread() = default;
 
-TrackChangedThread::TrackChangedThread(QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<TrackChangedThread::Private>();
-
-	auto* db = DB::Connector::instance();
-	auto* libraryDatabase = db->libraryDatabase(-1, 0);
-
-	ArtistList artists;
-	libraryDatabase->getAllArtists(artists, false);
-
-#ifdef SMART_COMPARE
-	_smart_comparison = new SmartCompare(artists);
-#endif
-
-}
-
-TrackChangedThread::~TrackChangedThread() = default;
-
-void TrackChangedThread::updateNowPlaying(const QString& sessionKey, const MetaData& track)
-{
-	if(track.title().trimmed().isEmpty() || track.artist().trimmed().isEmpty())
+	void TrackChangedThread::updateNowPlaying(const QString& sessionKey, const MetaData& track)
 	{
-		return;
+		if(track.title().trimmed().isEmpty() || track.artist().trimmed().isEmpty())
+		{
+			return;
+		}
+
+		spLog(Log::Debug, this) << "Update current_track " << track.title() + " by " << track.artist();
+
+		auto* webAccess = new WebAccess();
+		connect(webAccess, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
+		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
+
+		auto artist = track.artist();
+		artist.replace("&", "&amp;");
+
+		constexpr const auto* MethodName = "track.updatenowplaying";
+		const auto urlParams = UrlParams {
+			{"api_key",  ApiKey},
+			{"artist",   artist},
+			{"duration", QString::number(track.durationMs() / 1000)},
+			{"method",   MethodName},
+			{"sk",       sessionKey},
+			{"track",    track.title()}};
+
+		const auto postData = LastFM::createPostData(urlParams);
+		webAccess->callPostUrl(BaseUrl, postData);
 	}
 
-	spLog(Log::Debug, this) << "Update current_track " << track.title() + " by "
-	                        << track.artist();
-
-	auto* webAccess = new WebAccess();
-	connect(webAccess, &WebAccess::sigResponse, this, &TrackChangedThread::updateResponseReceived);
-	connect(webAccess, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
-
-	auto artist = track.artist();
-	artist.replace("&", "&amp;");
-
-	UrlParams signatureData;
-	signatureData["api_key"] = LFM_API_KEY;
-	signatureData["artist"] = artist;
-	signatureData["duration"] = QString::number(track.durationMs() / 1000);
-	signatureData["method"] = QString("track.updatenowplaying");
-	signatureData["sk"] = sessionKey;
-	signatureData["track"] = track.title();
-
-	signatureData.appendSignature();
-
-	QByteArray postData;
-	const auto url = webAccess->createPostUrl(
-		QString("http://ws.audioscrobbler.com/2.0/"),
-		signatureData,
-		postData);
-
-	webAccess->callPostUrl(url, postData);
-}
-
-void TrackChangedThread::updateResponseReceived(const QByteArray& data)
-{
-	Q_UNUSED(data)
-	if(sender())
+	void TrackChangedThread::updateErrorReceived(const QString& error)
 	{
-		sender()->deleteLater();
-	}
-}
-
-void TrackChangedThread::updateErrorReceived(const QString& error)
-{
-	spLog(Log::Warning, this) << "Last.fm: Cannot update track";
-	spLog(Log::Warning, this) << "Last.fm: " << error;
-
-	if(sender())
-	{
-		sender()->deleteLater();
+		spLog(Log::Warning, this) << "Last.fm: Cannot update track";
+		spLog(Log::Warning, this) << "Last.fm: " << error;
 	}
 }

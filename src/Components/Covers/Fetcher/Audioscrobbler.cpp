@@ -105,7 +105,7 @@ QStringList Audioscrobbler::parseAddresses(const QByteArray& website) const
 		}
 	}
 
-	return QStringList{lfmCovers.values()};
+	return QStringList {lfmCovers.values()};
 }
 
 QString Audioscrobbler::albumAddress(const QString& artist, const QString& album) const
@@ -114,7 +114,7 @@ QString Audioscrobbler::albumAddress(const QString& artist, const QString& album
 	               QUrl::toPercentEncoding(artist) +
 	               "&album=" +
 	               QUrl::toPercentEncoding(album) +
-	               "&api_key=") + LFM_API_KEY;
+	               "&api_key=") + LastFM::ApiKey;
 }
 
 int Audioscrobbler::estimatedSize() const
