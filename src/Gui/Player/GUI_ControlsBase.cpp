@@ -29,6 +29,16 @@
 
 namespace
 {
+	QIcon widgetIcon(const Gui::Icons::IconName name)
+	{
+		using namespace Gui;
+
+		Icons::changeTheme();
+		return (Style::isDark())
+		       ? Icons::icon(name, Icons::ForceSayonaraIcon)
+		       : Icons::icon(name, Icons::Automatic);
+	}
+
 	void setIcon(QPushButton* btn, const QIcon& icon)
 	{
 		const auto width = Gui::Util::textWidth(btn->fontMetrics(), "MMn");
@@ -36,21 +46,21 @@ namespace
 		auto sz = QSize(width, width);
 		btn->setFixedSize(sz);
 
-		sz.setWidth((width * 800) / 1000);
-		sz.setHeight((width * 800) / 1000);
+		sz.setWidth((width * 800) / 1000); // NOLINT(readability-magic-numbers)
+		sz.setHeight((width * 800) / 1000); // NOLINT(readability-magic-numbers)
 
 		btn->setIconSize(sz);
 		btn->setIcon(icon);
 	}
 
-	QString getPositionStringFromSliderValue(int sliderValue, int max, MilliSeconds duration)
+	QString getPositionStringFromSliderValue(int sliderValue, const int max, const MilliSeconds duration)
 	{
 		sliderValue = std::max(sliderValue, 0);
 		sliderValue = std::min(max, sliderValue);
 
-		const auto percent = (sliderValue * 1.0) / max;
-
-		const auto currentPositionMs = static_cast<MilliSeconds>(percent * duration);
+		const auto percent = std::nearbyint(sliderValue) / max;
+		const auto currentPositionMs =
+			static_cast<MilliSeconds>(percent * duration); // NOLINT(bugprone-narrowing-conversions)
 		return Util::msToString(currentPositionMs, "$M:$S");
 	}
 
@@ -67,11 +77,57 @@ namespace
 			label->setText(text);
 		}
 	}
+
+	void setAlbumLabel(QLabel* label, QString album, const Year year)
+	{
+		const auto sYear = QString::number(year);
+		if(year > 1000 && (!album.contains(sYear))) // NOLINT(readability-magic-numbers)
+		{
+			album += QString(" (%1)").arg(year);
+		}
+
+		setFloatingText(label, album);
+	}
+
+	void setBitrateLabel(QLabel* label, const Bitrate bitrate)
+	{
+		const auto text = QString("%1 kBit/s").arg(std::nearbyint(bitrate / 1000.0));
+		label->setText(text);
+		label->setVisible(bitrate / 1000 > 0); // NOLINT(readability-magic-numbers)
+	}
+
+	void setFilesizeLabel(QLabel* label, const Filesize filesize)
+	{
+		const auto filesizeMB = std::nearbyint(filesize / 1024) / 1024.0;
+		const auto text = QString::number(filesizeMB, 'f', 2) + " MB";
+		label->setText(text);
+		label->setVisible(filesize > 0);
+	}
+
+	void setRatingLabel(Gui::RatingEditor* label, const Rating rating, const RadioMode radioMode)
+	{
+		if(label)
+		{
+			label->setVisible(radioMode == RadioMode::Off);
+			label->setRating(rating);
+		}
+	}
+
+	void setWidgetsVisible(const QList<QWidget*>& widgets, const bool b)
+	{
+		for(auto* widget: widgets)
+		{
+			if(widget)
+			{
+				widget->setVisible(b);
+			}
+		}
+	}
 }
 
 struct GUI_ControlsBase::Private
 {
-	Library::ContextMenu* contextMenu = nullptr;
+	Library::ContextMenu* contextMenu {nullptr};
 	PlayManager* playManager;
 	CoverDataProvider* coverProvider;
 
@@ -81,10 +137,9 @@ struct GUI_ControlsBase::Private
 };
 
 GUI_ControlsBase::GUI_ControlsBase(PlayManager* playManager, CoverDataProvider* coverProvider, QWidget* parent) :
-	Gui::Widget(parent)
+	Gui::Widget(parent),
+	m {Pimpl::make<Private>(playManager, coverProvider)}
 {
-	m = Pimpl::make<Private>(playManager, coverProvider);
-
 	m->coverProvider->registerCoverReceiver(this);
 }
 
@@ -130,10 +185,7 @@ void GUI_ControlsBase::init()
 	skinChanged();
 }
 
-Gui::RatingEditor* GUI_ControlsBase::labRating() const
-{
-	return nullptr;
-}
+Gui::RatingEditor* GUI_ControlsBase::labRating() const { return nullptr; }
 
 // new track
 void GUI_ControlsBase::currentTrackChanged(const MetaData& track)
@@ -144,22 +196,12 @@ void GUI_ControlsBase::currentTrackChanged(const MetaData& track)
 	setCoverLocation(track);
 	setRadioMode(track.radioMode());
 
-	sliProgress()->setEnabled((track.durationMs() / 1000) > 0);
+	sliProgress()->setEnabled((track.durationMs() / 1000) > 0); // NOLINT(readability-magic-numbers)
 }
 
-void GUI_ControlsBase::playstateChanged(PlayState state)
+void GUI_ControlsBase::playstateChanged(const PlayState state)
 {
-	labSayonara()->setVisible(state == PlayState::Stopped);
-	labVersion()->setVisible(state == PlayState::Stopped);
-	labWrittenBy()->setVisible(state == PlayState::Stopped);
-	labCopyright()->setVisible(state == PlayState::Stopped);
-
-	labTitle()->setVisible(state != PlayState::Stopped);
-	labArtist()->setVisible(state != PlayState::Stopped);
-	labAlbum()->setVisible(state != PlayState::Stopped);
-	widgetDetails()->setVisible(state != PlayState::Stopped);
-	labCurrentTime()->setVisible(state != PlayState::Stopped);
-	labMaxTime()->setVisible(state != PlayState::Stopped);
+	showTrackInfo(state != PlayState::Stopped);
 
 	switch(state)
 	{
@@ -170,8 +212,6 @@ void GUI_ControlsBase::playstateChanged(PlayState state)
 			played();
 			break;
 		case PlayState::Paused:
-			paused();
-			break;
 		default:
 			paused();
 			break;
@@ -180,49 +220,32 @@ void GUI_ControlsBase::playstateChanged(PlayState state)
 	checkRecordButtonVisible();
 }
 
-QIcon GUI_ControlsBase::icon(Gui::Icons::IconName name)
+void GUI_ControlsBase::played() // NOLINT(readability-make-member-function-const)
 {
-	using namespace Gui;
-
-	Icons::changeTheme();
-	return (Style::isDark())
-	       ? Icons::icon(name, Icons::ForceSayonaraIcon)
-	       : Icons::icon(name, Icons::Automatic);
+	btnPlay()->setIcon(widgetIcon(Gui::Icons::Pause));
 }
 
-void GUI_ControlsBase::played()
+void GUI_ControlsBase::paused() // NOLINT(readability-make-member-function-const)
 {
-	btnPlay()->setIcon(icon(Gui::Icons::Pause));
-}
-
-void GUI_ControlsBase::paused()
-{
-	btnPlay()->setIcon(icon(Gui::Icons::Play));
+	btnPlay()->setIcon(widgetIcon(Gui::Icons::Play));
 }
 
 void GUI_ControlsBase::stopped()
 {
-	btnPlay()->setIcon(icon(Gui::Icons::Play));
-
+	btnPlay()->setIcon(widgetIcon(Gui::Icons::Play));
 	labCurrentTime()->setText("00:00");
-
 	sliProgress()->setValue(0);
-	sliProgress()->setEnabled(false);
 
+	showTrackInfo(false);
 	setStandardCover();
-
-	if(labRating())
-	{
-		labRating()->hide();
-	}
 }
 
-void GUI_ControlsBase::recordChanged(bool b)
+void GUI_ControlsBase::recordChanged(bool b) // NOLINT(readability-make-member-function-const)
 {
 	btnRecord()->setChecked(b);
 }
 
-void GUI_ControlsBase::buffering([[maybe_unused]] int progress) {}
+void GUI_ControlsBase::buffering([[maybe_unused]] const int progress) {}
 
 void GUI_ControlsBase::progressMoved(int val)
 {
@@ -234,43 +257,33 @@ void GUI_ControlsBase::progressMoved(int val)
 	m->playManager->seekRelative(percent);
 }
 
-void GUI_ControlsBase::currentPositionChanged(MilliSeconds posMs)
+void GUI_ControlsBase::currentPositionChanged(const MilliSeconds posMs)
 {
 	const auto duration = m->playManager->durationMs();
-	const auto max = sliProgress()->maximum();
-	const auto percent = (posMs * 1.0) / duration;
+	const auto percent = std::nearbyint(posMs) / std::nearbyint(duration);
 
-	auto newValue = 0;
-	if(duration > 0)
+	if((duration > 0) || (posMs > duration))
 	{
-		newValue = static_cast<int>(max * percent);
-	}
+		if(!sliProgress()->isBusy())
+		{
+			const auto currentPositionString = Util::msToString(posMs, "$M:$S");
+			labCurrentTime()->setText(currentPositionString);
 
-	else if(posMs > duration)
-	{
-		newValue = 0;
-	}
-
-	else
-	{
-		return;
-	}
-
-	if(!sliProgress()->isBusy())
-	{
-		const auto currentPositionString = Util::msToString(posMs, "$M:$S");
-		labCurrentTime()->setText(currentPositionString);
-		sliProgress()->setValue(newValue);
+			const auto max = sliProgress()->maximum();
+			const auto newValue = (duration > 0) ? static_cast<int>(max * percent) : 0;
+			sliProgress()->setValue(newValue);
+		}
 	}
 }
 
-void GUI_ControlsBase::refreshCurrentPosition(int val)
+void GUI_ControlsBase::refreshCurrentPosition(const int val)
 {
 	const auto text = getPositionStringFromSliderValue(val, sliProgress()->maximum(), m->playManager->durationMs());
 	labCurrentTime()->setText(text);
 }
 
-void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds totalTimeMs)
+void
+GUI_ControlsBase::setTotalTimeLabel(const MilliSeconds totalTimeMs) // NOLINT(readability-make-member-function-const)
 {
 	if(totalTimeMs > 0)
 	{
@@ -282,19 +295,19 @@ void GUI_ControlsBase::setTotalTimeLabel(MilliSeconds totalTimeMs)
 	sliProgress()->setEnabled(totalTimeMs > 0);
 }
 
-void GUI_ControlsBase::progressHovered(int val)
+void GUI_ControlsBase::progressHovered(const int val)
 {
 	const auto text = getPositionStringFromSliderValue(val, sliProgress()->maximum(), m->playManager->durationMs());
 	QToolTip::showText(QCursor::pos(), text);
 }
 
-void GUI_ControlsBase::volumeChanged(int val)
+void GUI_ControlsBase::volumeChanged(const int val)
 {
 	setupVolumeButton(val);
 	sliVolume()->setValue(val);
 }
 
-void GUI_ControlsBase::setupVolumeButton(int percent)
+void GUI_ControlsBase::setupVolumeButton(const int percent)
 {
 	using namespace Gui;
 
@@ -303,12 +316,12 @@ void GUI_ControlsBase::setupVolumeButton(int percent)
 		setIcon(btnMute(), Icons::icon(Icons::VolMute));
 	}
 
-	else if(percent < 40)
+	else if(percent < 40) // NOLINT(readability-magic-numbers)
 	{
 		setIcon(btnMute(), Icons::icon(Icons::Vol1));
 	}
 
-	else if(percent < 80)
+	else if(percent < 80) // NOLINT(readability-magic-numbers)
 	{
 		setIcon(btnMute(), Icons::icon(Icons::Vol2));
 	}
@@ -329,7 +342,7 @@ void GUI_ControlsBase::decreaseVolume()
 	m->playManager->volumeDown();
 }
 
-void GUI_ControlsBase::changeVolumeByDelta(int val)
+void GUI_ControlsBase::changeVolumeByDelta(const int val)
 {
 	if(val > 0)
 	{
@@ -342,7 +355,7 @@ void GUI_ControlsBase::changeVolumeByDelta(int val)
 	}
 }
 
-void GUI_ControlsBase::muteChanged(bool muted)
+void GUI_ControlsBase::muteChanged(const bool muted)
 {
 	const auto volume = (muted) ? 0 : m->playManager->volume();
 
@@ -352,8 +365,6 @@ void GUI_ControlsBase::muteChanged(bool muted)
 	sliVolume()->setDisabled(muted);
 }
 
-// public slot:
-// id3 tags have changed
 void GUI_ControlsBase::metadataChanged()
 {
 	const auto& changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
@@ -372,57 +383,34 @@ void GUI_ControlsBase::metadataChanged()
 	}
 }
 
+void GUI_ControlsBase::showTrackInfo(const bool b) // NOLINT(readability-make-member-function-const)
+{
+	setWidgetsVisible(
+		{labTitle(), labArtist(), labAlbum(), widgetDetails(), labRating(), labCurrentTime(), labMaxTime()}, b);
+	setWidgetsVisible({labSayonara(), labCopyright(), labWrittenBy(), labVersion()}, !b);
+
+	sliProgress()->setEnabled(b);
+}
+
 void GUI_ControlsBase::refreshCurrentTrack()
 {
 	refreshLabels(m->playManager->currentTrack());
 }
 
-void GUI_ControlsBase::refreshLabels(const MetaData& md)
+void GUI_ControlsBase::refreshLabels(const MetaData& track)
 {
-	// title, artist
-	setFloatingText(labTitle(), md.title());
-	setFloatingText(labArtist(), md.artist());
-
-	{ //album
-		const auto sYear = QString::number(md.year());
-		auto albumName = md.album();
-
-		labAlbum()->setToolTip("");
-		if(md.year() > 1000 && (!albumName.contains(sYear)))
-		{
-			albumName += QString(" (%1)").arg(md.year());
-		}
-
-		else if(md.radioMode() == RadioMode::Station)
-		{
-			labAlbum()->setToolTip(md.filepath());
-		}
-
-		setFloatingText(labAlbum(), albumName);
+	if(track.isValid())
+	{
+		setFloatingText(labTitle(), track.title());
+		setFloatingText(labArtist(), track.artist());
+		setAlbumLabel(labAlbum(), track.album(), track.year());
+		setBitrateLabel(labBitrate(), track.bitrate());
+		setFilesizeLabel(labFilesize(), track.filesize());
+		setRatingLabel(labRating(), track.rating(), track.radioMode());
+		setTotalTimeLabel(track.durationMs());
 	}
 
-	{ // bitrate
-		const auto text = QString("%1 kBit/s").arg(std::nearbyint(md.bitrate() / 1000.0));
-		labBitrate()->setText(text);
-		labBitrate()->setVisible(md.bitrate() / 1000 > 0);
-	}
-
-	{ // filesize
-		const auto filesizeMB = (md.filesize() / 1024) / 1024.0;
-		const auto text = QString::number(filesizeMB, 'f', 2) + " MB";
-		labFilesize()->setText(text);
-		labFilesize()->setVisible(md.filesize() > 0);
-	}
-
-	{ // rating
-		if(labRating())
-		{
-			labRating()->setVisible(md.radioMode() == RadioMode::Off);
-			labRating()->setRating(md.rating());
-		}
-	}
-
-	setTotalTimeLabel(md.durationMs());
+	showTrackInfo(track.isValid());
 }
 
 void GUI_ControlsBase::skinChanged()
@@ -436,16 +424,16 @@ void GUI_ControlsBase::skinChanged()
 
 	using namespace Gui;
 
-	setIcon(btnNext(), icon(Icons::Forward));
-	setIcon(btnPrevious(), icon(Icons::Backward));
+	setIcon(btnNext(), widgetIcon(Icons::Forward));
+	setIcon(btnPrevious(), widgetIcon(Icons::Backward));
 
 	const auto playbackIcon = (m->playManager->playstate() == PlayState::Playing)
-	                          ? icon(Icons::Pause)
-	                          : icon(Icons::Play);
+	                          ? widgetIcon(Icons::Pause)
+	                          : widgetIcon(Icons::Play);
 
 	setIcon(btnPlay(), playbackIcon);
-	setIcon(btnStop(), icon(Icons::Stop));
-	setIcon(btnRecord(), icon(Icons::Record));
+	setIcon(btnStop(), widgetIcon(Icons::Stop));
+	setIcon(btnRecord(), widgetIcon(Icons::Record));
 
 	setupVolumeButton(sliVolume()->value());
 }
@@ -458,13 +446,10 @@ void GUI_ControlsBase::streamRecorderActiveChanged()
 
 void GUI_ControlsBase::checkRecordButtonVisible()
 {
-	const auto recordingEnabled =
-		(
-			GetSetting(SetNoDB::MP3enc_found) &&    // Lame Available
-			GetSetting(Set::Engine_SR_Active) &&    // Streamrecorder active
-			(m->playManager->currentTrack().radioMode() != RadioMode::Off) && // Radio on
-			(m->playManager->playstate() == PlayState::Playing)    // Is Playing
-		);
+	const auto recordingEnabled = GetSetting(SetNoDB::MP3enc_found) &&
+	                              GetSetting(Set::Engine_SR_Active) &&
+	                              (m->playManager->currentTrack().radioMode() != RadioMode::Off) &&
+	                              (m->playManager->playstate() == PlayState::Playing);
 
 	btnPlay()->setVisible(!recordingEnabled);
 	btnRecord()->setVisible(recordingEnabled);
@@ -475,13 +460,13 @@ void GUI_ControlsBase::checkRecordButtonVisible()
 	}
 }
 
-void GUI_ControlsBase::setCoverLocation(const MetaData& md)
+void GUI_ControlsBase::setCoverLocation(const MetaData& track) // NOLINT(readability-make-member-function-const)
 {
-	const auto coverLocation = Cover::Location::coverLocation(md);
+	const auto coverLocation = Cover::Location::coverLocation(track);
 	btnCover()->setCoverLocation(coverLocation);
 }
 
-void GUI_ControlsBase::setStandardCover()
+void GUI_ControlsBase::setStandardCover() // NOLINT(readability-make-member-function-const)
 {
 	const auto coverLocation = Cover::Location::invalidLocation();
 	btnCover()->setCoverLocation(coverLocation);
@@ -522,6 +507,8 @@ void GUI_ControlsBase::setupConnections()
 
 void GUI_ControlsBase::setupShortcuts()
 {
+	constexpr const auto SeekStep = 2000;
+
 	auto* sch = ShortcutHandler::instance();
 	sch->shortcut(ShortcutIdentifier::PlayPause).connect(this, m->playManager, SLOT(playPause()));
 	sch->shortcut(ShortcutIdentifier::Stop).connect(this, m->playManager, SLOT(stop()));
@@ -530,11 +517,11 @@ void GUI_ControlsBase::setupShortcuts()
 	sch->shortcut(ShortcutIdentifier::VolDown).connect(this, m->playManager, SLOT(volumeDown()));
 	sch->shortcut(ShortcutIdentifier::VolUp).connect(this, m->playManager, SLOT(volumeUp()));
 	sch->shortcut(ShortcutIdentifier::SeekFwd).connect(this, [=]() {
-		m->playManager->seekRelativeMs(2000);
+		m->playManager->seekRelativeMs(SeekStep);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekBwd).connect(this, [=]() {
-		m->playManager->seekRelativeMs(-2000);
+		m->playManager->seekRelativeMs(-SeekStep);
 	});
 
 	sch->shortcut(ShortcutIdentifier::SeekFwdFast).connect(this, [=]() {
@@ -548,7 +535,7 @@ void GUI_ControlsBase::setupShortcuts()
 	});
 }
 
-void GUI_ControlsBase::setRadioMode(RadioMode radio)
+void GUI_ControlsBase::setRadioMode(const RadioMode radio)
 {
 	checkRecordButtonVisible();
 
@@ -558,10 +545,7 @@ void GUI_ControlsBase::setRadioMode(RadioMode radio)
 	}
 }
 
-MD::Interpretation GUI_ControlsBase::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
+MD::Interpretation GUI_ControlsBase::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
 MetaDataList GUI_ControlsBase::infoDialogData() const
 {
@@ -570,10 +554,7 @@ MetaDataList GUI_ControlsBase::infoDialogData() const
 	       : MetaDataList();
 }
 
-QWidget* GUI_ControlsBase::getParentWidget()
-{
-	return this;
-}
+QWidget* GUI_ControlsBase::getParentWidget() { return this; }
 
 void GUI_ControlsBase::resizeEvent(QResizeEvent* e)
 {
@@ -594,12 +575,9 @@ void GUI_ControlsBase::contextMenuEvent(QContextMenuEvent* e)
 		using Library::ContextMenu;
 
 		m->contextMenu = new ContextMenu(this);
-		m->contextMenu->showActions
-			(
-				(ContextMenu::EntryInfo |
-				 ContextMenu::EntryLyrics |
-				 ContextMenu::EntryEdit)
-			);
+		m->contextMenu->showActions(ContextMenu::EntryInfo |
+		                            ContextMenu::EntryLyrics |
+		                            ContextMenu::EntryEdit);
 
 		connect(m->contextMenu->action(ContextMenu::EntryInfo), &QAction::triggered, this, [&]() { showInfo(); });
 		connect(m->contextMenu->action(ContextMenu::EntryEdit), &QAction::triggered, this, [&]() { showEdit(); });
@@ -617,7 +595,4 @@ void GUI_ControlsBase::setCoverData(const QByteArray& coverData, const QString& 
 	btnCover()->setCoverData(coverData, mimeType);
 }
 
-bool GUI_ControlsBase::isActive() const
-{
-	return (btnCover() != nullptr);
-}
+bool GUI_ControlsBase::isActive() const { return (btnCover() != nullptr); }

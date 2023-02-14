@@ -85,13 +85,11 @@ class GUI_ControlsBase :
 		[[nodiscard]] virtual bool isExternResizeAllowed() const = 0;
 
 	private:
-		QIcon icon(Gui::Icons::IconName name);
-
 		void played();
 		void paused();
 		void stopped();
 
-		void setCoverLocation(const MetaData& md);
+		void setCoverLocation(const MetaData& track);
 		void setStandardCover();
 
 		void setRadioMode(RadioMode radio);
@@ -106,6 +104,8 @@ class GUI_ControlsBase :
 
 		void setupShortcuts();
 		void setupConnections();
+
+		void showTrackInfo(bool b);
 
 	public slots:
 		void changeVolumeByDelta(int val);
@@ -128,7 +128,7 @@ class GUI_ControlsBase :
 		void currentTrackChanged(const MetaData& track);
 		void metadataChanged();
 
-		void refreshLabels(const MetaData& md);
+		void refreshLabels(const MetaData& track);
 		void refreshCurrentTrack();
 
 		// cover changed by engine
