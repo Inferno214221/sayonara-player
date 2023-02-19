@@ -311,6 +311,7 @@ void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
 void GUI_StationSearcher::searchClicked()
 {
 	clearStations();
+	checkOkButton();
 
 	if(const auto text = ui->leSearch->text(); !text.isEmpty())
 	{
