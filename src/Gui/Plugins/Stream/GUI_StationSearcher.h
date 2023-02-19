@@ -30,46 +30,46 @@
 UI_FWD(GUI_StationSearcher)
 
 class GUI_StationSearcher :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_StationSearcher)
-	UI_CLASS(GUI_StationSearcher)
+	UI_CLASS_SHARED_PTR(GUI_StationSearcher)
 
-signals:
-	void sigStreamSelected(const QString& name, const QString& url, bool save);
+	signals:
+		void sigStreamSelected(const QString& name, const QString& url, bool save);
 
-public:
-	GUI_StationSearcher(QWidget* parent=nullptr);
-	~GUI_StationSearcher() override;
+	public:
+		explicit GUI_StationSearcher(QWidget* parent = nullptr);
+		~GUI_StationSearcher() override;
 
-private:
-	QAbstractButton* okButton();
-	void checkOkButton();
-	void clearStations();
-	void clearStreams();
-	void changeMode(StationSearcher::Mode mode);
-	void setupCoverButton(const RadioStation& station);
-	void initLineEdit();
+	protected:
+		void showEvent(QShowEvent* e) override;
+		void closeEvent(QCloseEvent* e) override;
 
-private slots:
-	void searchClicked();
-	void searchPreviousClicked();
-	void searchNextClicked();
-	void okClicked();
+		void languageChanged() override;
+		void skinChanged() override;
 
-	void searchTextChanged(const QString& text);
-	void stationsFetched();
+	private slots:
+		void searchClicked();
+		void searchPreviousClicked();
+		void searchNextClicked();
+		void okClicked();
 
-	void currentStationChanged();
+		void searchTextChanged(const QString& text);
+		void stationsFetched();
 
-protected:
-	void showEvent(QShowEvent* e) override;
-	void closeEvent(QCloseEvent* e) override;
+		void currentStationChanged();
 
-	void languageChanged() override;
-	void skinChanged() override;
+	private: // NOLINT(readability-redundant-access-specifiers)
+		QAbstractButton* okButton();
+		void checkOkButton();
+		void clearStations();
+		void clearStreams();
+		void changeMode(StationSearcher::Mode mode);
+		void setupCoverButton(const RadioStation& station);
+		void initLineEdit();
+
 };
-
 
 #endif // STATIONSEARCHER_H

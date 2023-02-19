@@ -43,7 +43,7 @@ namespace
 			auto ret = re.cap(1).trimmed();
 			ret.remove("<br>", Qt::CaseInsensitive);
 
-			for(const auto&[key, value] : replaceMap)
+			for(const auto& [key, value]: replaceMap)
 			{
 				while(ret.contains(key))
 				{
@@ -54,7 +54,7 @@ namespace
 			return ret;
 		}
 
-		return QString();
+		return {};
 	}
 
 	RadioStation parseStn1Block(const QString& data)
@@ -137,12 +137,12 @@ namespace
 	{
 		auto stream = RadioUrl {};
 
-		if(items.size() >= 7)
+		if(items.size() >= 7) // NOLINT(readability-magic-numbers)
 		{
 			stream.url = formatItemUrl(items[0]);
 			stream.type = formatItem(items[1]);
 			stream.bitrate = formatItem(items[2]);
-			stream.index = formatItem(items[6]).toInt();
+			stream.index = formatItem(items[6]).toInt(); // NOLINT(readability-magic-numbers)
 		}
 
 		return stream;
@@ -179,7 +179,7 @@ namespace
 		while(index >= 0)
 		{
 			stations << parseStnBlock(re.cap(1));
-			index = re.indexIn(text, index + 8);
+			index = re.indexIn(text, index + 8); // NOLINT(readability-magic-numbers)
 		}
 
 		Util::Algorithm::sort(stations, [](const auto& s1, const auto& s2) {
@@ -203,9 +203,9 @@ FMStreamParser::FMStreamParser(const QByteArray& data)
 	const auto streams = extractStreams(text);
 	auto stations = extractStations(text);
 
-	for(const auto& stream : streams)
+	for(const auto& stream: streams)
 	{
-		for(auto& station : stations)
+		for(auto& station: stations)
 		{
 			if(station.index == stream.index)
 			{
