@@ -90,7 +90,7 @@ namespace
 
 	RadioStation parseStnBlock(const QString& stnBlock)
 	{
-		const auto stn1block = extractRegexp(stnBlock, "<div class=\"stn1\".*>(.*)<div");
+		const auto stn1block = extractRegexp(stnBlock, "<div class=\"stn1\".*>(.*)</div");
 
 		auto station = parseStn1Block(stn1block);
 		station.index = extractRegexp(stnBlock, "tf\\(([0-9]+),this").toInt();
