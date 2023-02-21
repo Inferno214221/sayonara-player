@@ -781,7 +781,7 @@
         <translation>Затримка (мс)</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+98"/>
+        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+100"/>
         <source>Notifications</source>
         <translation>Повідомлення</translation>
     </message>
@@ -789,27 +789,32 @@
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
-        <source>Hide instead of close</source>
-        <translation>Натомість закрити, сховати додаток</translation>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+31"/>
+        <source>Show system tray icon</source>
+        <translation>Показати піктограму системного лотка</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Start hidden</source>
-        <translation>Розпочати в прихованому режимі</translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+7"/>
         <source>Update notifications</source>
         <translation>Повідомлення про оновлення</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show system tray icon</source>
-        <translation>Показати піктограму системного лотка</translation>
+        <source>Start hidden</source>
+        <translation>Розпочати в прихованому режимі</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+108"/>
+        <location line="+59"/>
+        <source>Hide instead of close</source>
+        <translation>Натомість закрити, сховати додаток</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Inhibit shutdown/suspend during playback</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+117"/>
         <source>This might cause Sayonara not to show up again.</source>
         <translation>Це може привести до того, що Sayonara більше не з&apos;явиться.</translation>
     </message>
@@ -842,7 +847,7 @@
         <translation>Завантажити збережені плейлисти</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+10"/>
         <source>Start playing</source>
         <translation>Розпочати відтворення</translation>
     </message>
@@ -858,37 +863,36 @@
     </message>
     <message>
         <location line="+10"/>
-        <source>Stop behaviour</source>
-        <translation>Зупинити режим</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Load last track after pressing stop</source>
-        <translation>Після натиску стоп, завантажити останній трек</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <location line="+100"/>
-        <source>Current track</source>
-        <translation>Поточний трек</translation>
-    </message>
-    <message>
-        <location line="-94"/>
-        <source>Jump to current track when track changes</source>
-        <translation>Перейти до поточного треку в разі зміни трека</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Search</source>
-        <translation>Пошук</translation>
+        <source>Start up from file manager</source>
+        <translation>Запуск із файлового менеджера</translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>Play track after search</source>
-        <translation>Програти трек після пошуку</translation>
+        <source>Use special playlist when starting Sayonara from file manager</source>
+        <translation>Використовуйте спеціальний плейлист при запуску Sayonara з файлового менеджера</translation>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+9"/>
+        <source>Playlist name</source>
+        <translation>Ім&apos;я плейлиста</translation>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Load last track after resuming from stopped state</source>
+        <translation>Завантаження останнього треку після відновлення із зупиненого стану</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Play track when pressing &quot;Enter&quot; in search field</source>
+        <translation>Відтворення треку при натисканні &quot;Enter&quot; в полі пошуку</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Jump to current track in list when track changes</source>
+        <translation>При зміні треку перейти до поточного треку зі списку</translation>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Look</source>
         <translation>Подивитися</translation>
     </message>
@@ -923,7 +927,12 @@
         <translation>Показати рейтинг</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
+        <source>Current track</source>
+        <translation>Поточний трек</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Custom font color in standard theme</source>
         <translation>Колір шрифта користувача в стандартному інтерфейсі</translation>
     </message>
@@ -965,7 +974,7 @@
         <translation>Обхідні шляхи</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+254"/>
+        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+276"/>
         <source>Fix startup playback issue</source>
         <translation>Виправити проблему запуску відтворення</translation>
     </message>
@@ -1458,7 +1467,7 @@
 <context>
     <name>StreamServer</name>
     <message>
-        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+221"/>
+        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+220"/>
         <source>%1 wants to listen to your music.</source>
         <translation>%1 бажає долучитись до прослуховування вашої музики.</translation>
     </message>
@@ -1474,7 +1483,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+643"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+641"/>
         <source>All %1 could be removed</source>
         <translation>Всі %1 видалені</translation>
     </message>
@@ -1505,17 +1514,17 @@
 <context>
     <name>Library::ReloadThread</name>
     <message>
-        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
+        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+226"/>
         <source>Looking for covers</source>
         <translation>Шукаю обкладинки</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Reading files</source>
         <translation>Читаю файли</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+112"/>
         <source>Deleting orphaned tracks</source>
         <translation>Видаляю зниклі треки</translation>
     </message>
@@ -1575,7 +1584,7 @@
         <translation>Неможливо отримати оновлення мови</translation>
     </message>
     <message>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+109"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+117"/>
         <source>Between</source>
         <translation>Між</translation>
     </message>
@@ -1586,7 +1595,7 @@
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByCreateDate.cpp" line="+78"/>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+59"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+60"/>
         <source>%1 - %2</source>
         <translation>%1-%2</translation>
     </message>
@@ -1616,7 +1625,7 @@
         <translation>Вік треків</translation>
     </message>
     <message>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+117"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+118"/>
         <source>Random albums</source>
         <translation>Рандомні альбоми</translation>
     </message>
@@ -1679,13 +1688,39 @@
     <message>
         <location line="+80"/>
         <location line="+110"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="+368"/>
         <source>Purchase Url</source>
         <translation>Придбати на</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+123"/>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+106"/>
         <source>Between %1 and %2</source>
         <translation>Між %1 і %2</translation>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>All libraries</source>
+        <translation>Всі бібліотеки</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+55"/>
+        <source>Show radio stations from %1 to %2</source>
+        <translation>Показати радіостанції з %1 до %2</translation>
+    </message>
+    <message>
+        <location line="+84"/>
+        <source>Country</source>
+        <translation>Країна</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Type</source>
+        <translation>Тип</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Url</source>
+        <translation>Url</translation>
     </message>
     <message>
         <location filename="../src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+73"/>
@@ -1707,757 +1742,8 @@
         <source>Next search result</source>
         <translation>Наступний результат пошуку</translation>
     </message>
-</context>
-<context>
-    <name>Shutdown</name>
     <message>
-        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+94"/>
-        <source>Computer will shutdown after playlist has finished</source>
-        <translation>Комп&apos;ютер виключиться після завершення поточного плейлиста</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+29"/>
-        <location line="+30"/>
-        <source>Computer will shutdown in %n minute(s)</source>
-        <translation><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>LastFM::Base</name>
-    <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+126"/>
-        <source>Cannot login to Last.fm</source>
-        <translation>Не вдається увійти до Last.fm</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::CoverButton</name>
-    <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
-        <source>Search an alternative cover</source>
-        <translation>Пошук альтернативної обкладинки</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::DoubleCalendarDialog</name>
-    <message>
-        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
-        <source>Select date range</source>
-        <translation>Вибрати діапазон дат</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Start date</source>
-        <translation>Дата початку</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>End date</source>
-        <translation>Кінцева дата</translation>
-    </message>
-</context>
-<context>
-    <name>HistoryContainer</name>
-    <message>
-        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
-        <source>History</source>
-        <translation>Історія</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_InfoDialog</name>
-    <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
-        <source>Write cover to tracks</source>
-        <translation>Зберігти обкладинку в файлі трека</translation>
-    </message>
-</context>
-<context>
-    <name>Library::CoverViewContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
-        <source>Toolbar</source>
-        <translation>Панель інструментів</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_CoverView</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+193"/>
-        <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Використовувати Ctrl + mouse для збільшення</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+302"/>
-        <source>Rename by metadata</source>
-        <translation>Перейменувати за метаданними</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Collapse all</source>
-        <translation>Згорнути все</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Move to another library</source>
-        <translation>Перемістити до іншої бібліотеки</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy to another library</source>
-        <translation>Копіювати до іншої бібліотеки</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>View in file manager</source>
-        <translation>Переглянути в файловому менеджері</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::TreeView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+409"/>
-        <source>Copy here</source>
-        <translation>Копіювати сюди</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Move here</source>
-        <translation>Пересунути сюди</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DirectoryView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+215"/>
-        <source>Could not create directory</source>
-        <translation>Неможливо створити каталог</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GenreView</name>
-    <message>
-        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
-        <source>Updating genres</source>
-        <translation>Оновити жанри</translation>
-    </message>
-    <message>
-        <location line="+115"/>
-        <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>Ви дійсно бажаєте вилучити %1? з усіх треків?</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_EmptyLibrary</name>
-    <message>
-        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
-        <source>Please choose a name for your library</source>
-        <translation>Будь ласка, виберіть ім&apos;я для своєї бібліотеки</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Please choose another name for your library</source>
-        <translation>Будь ласка, виберіть ім&apos;я для своєї бібліотеки</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>The file path is invalid</source>
-        <translation>Ім&apos;я файлу недійсне</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library with the same file path already exists</source>
-        <translation>Бібліотека з таким же шляхом файлу вже існує</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library which contains this file path already exists</source>
-        <translation>Бібліотека, яка містить цей шлях до файлу, вже існує</translation>
-    </message>
-</context>
-<context>
-    <name>Library::HeaderView</name>
-    <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
-        <source>Resize columns</source>
-        <translation>Змінити розмір стовпців</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Resize columns automatically</source>
-        <translation>Автоматично змінити розмір стовпців</translation>
-    </message>
-</context>
-<context>
-    <name>Library::TrackModel</name>
-    <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+138"/>
-        <source>kBit/s</source>
-        <translation>kBit/s</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DeleteDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
-        <source>Only from library</source>
-        <translation>Тільки з бібліотеки</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation><numerusform>Ви збираєтесь видалити %n файл</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_LibraryReloadDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
-        <source>Fast scan</source>
-        <translation>Швидке сканування</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Deep scan</source>
-        <translation>Детальне сканування</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Only scan for new and deleted files</source>
-        <translation>Сканувати тільки нові і видалені файли</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Scan all files in your library directory</source>
-        <translation>Сканувати всі файли у каталозі бібліотеки</translation>
-    </message>
-</context>
-<context>
-    <name>Library::LocalLibraryMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
-        <source>Statistics</source>
-        <translation>Статистика</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit library</source>
-        <translation>Змінити бібліотеку</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::MergeMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
-        <location line="+57"/>
-        <source>Merge</source>
-        <translation>Об’єднати</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ControlsBase</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+103"/>
-        <source>Sayonara Player</source>
-        <translation>Sayonara Player</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Written by %1</source>
-        <translation>Автор %1</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Copyright</source>
-        <translation>Авторські права</translation>
-    </message>
-</context>
-<context>
-    <name>Menubar</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+349"/>
-        <source>View</source>
-        <translation>Вигляд</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+15"/>
-        <source>Help</source>
-        <translation>Допомога</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Plugins</source>
-        <translation>Плагіни</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Show large cover</source>
-        <translation>Показати велику обкладинку</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Fullscreen</source>
-        <translation>На весь екран</translation>
-    </message>
-    <message>
-        <location line="+67"/>
-        <source>Media files</source>
-        <translation>Медіа файли</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Open Media files</source>
-        <translation>Відкрити медіа файли</translation>
-    </message>
-    <message>
-        <location line="+61"/>
-        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
-        <translation>Щоб отримати звіти про помилки або надіслати запити про функції, будь ласка, відвідайте сторінку проекту Sayonara в GitLab</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>FAQ</source>
-        <translation>FAQ</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>About Sayonara</source>
-        <translation>Про Sayonara</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Written by %1</source>
-        <translation>Автор %1</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>License</source>
-        <translation>Ліцензія</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Donate</source>
-        <translation>Пожертвувати</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
-        <translation>Щиро дякую  всім перекладачам і кожному, хто допомає створювати Sayonara пакети</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>And special thanks to those people with local music collections</source>
-        <translation>І особлива подяка користувачам з локальною музичною колекцією</translation>
-    </message>
-</context>
-<context>
-    <name>TrayIconContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+126"/>
-        <source>Current song</source>
-        <translation>Поточна пісня</translation>
-    </message>
-</context>
-<context>
-    <name>VersionChecker</name>
-    <message>
-        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+70"/>
-        <source>A new version is available!</source>
-        <translation>Доступна нова версія!</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Playlist</name>
-    <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+436"/>
-        <source>Playlist name already exists</source>
-        <translation>Ім&apos;я плейлиста вже існує</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ActionMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
-        <source>Please set library path first</source>
-        <translation>Будь ласка, задайте спочатку шлях до бібліотеки</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::BottomBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
-        <source>Please set library path first</source>
-        <translation>Будь ласка, задайте спочатку шлях до бібліотеки</translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>Cancel shutdown?</source>
-        <translation>Відмінити завершення?</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+200"/>
-        <source>Jump to current track</source>
-        <translation>Перейти до поточного треку</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show track in library</source>
-        <translation>Показати трек в бібліотеці</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Jump to next album</source>
-        <translation>Перейти до наступного альбому</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Playlist mode</source>
-        <translation>Режим відтворення файлів</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::Model</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
-        <source>Goto row</source>
-        <translation>Перейти до рядка</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::TabBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
-        <source>Do you want relative file paths in your playlist?</source>
-        <translation>Бажаєте використовувати відносні шляхи файлу у вашому плейлисті?</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Media files</source>
-        <translation>Медіа файли</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Open Media files</source>
-        <translation>Відкрити медіа файли</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::View</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+396"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation><numerusform>Ви збираєтесь видалити %н файл</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Crossfader</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
-        <location line="+12"/>
-        <source>Crossfader</source>
-        <translation>Кросфейдер</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 and %2</source>
-        <translation>%1 і %2</translation>
-    </message>
-    <message>
-        <location line="+63"/>
-        <source>Crossfader does not work with Alsa</source>
-        <translation>Кросфейдер не працює з Alsa</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Gapless playback does not work with Alsa</source>
-        <translation>Безперервне відтворення не працює з Alsa</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Equalizer</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
-        <location line="+47"/>
-        <source>Linked sliders</source>
-        <translation>Зв`язані регулятори</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <source>Equalizer</source>
-        <translation>Еквалайзер</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_LevelPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
-        <source>Level</source>
-        <translation>Рівень</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_SpectrogramPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+78"/>
-        <source>Spectrogram</source>
-        <translation>Спектрограма</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Spectrum</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
-        <source>Spectrum</source>
-        <translation>Діапазон</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_StyleSettings</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
-        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Налаштування ще не збережені&lt;br /&gt;Зберегти?</translation>
-    </message>
-    <message>
-        <location line="+87"/>
-        <source>Please specify a name</source>
-        <translation>Будь ласка, вкажіть ім&apos;я</translation>
-    </message>
-    <message>
-        <location line="+168"/>
-        <source>Save changes?</source>
-        <translation>Зберегти зміни?</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_PlaylistChooser</name>
-    <message>
-        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+87"/>
-        <location line="+36"/>
-        <source>No playlists found</source>
-        <translation>Не знайдено жодного плейлиста</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Could not rename playlist</source>
-        <translation>Неможливо перейменувати плейлист</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Name is invalid</source>
-        <translation>Недопустиме ім&apos;я</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Do you really want to delete %1?</source>
-        <translation>Ви дійсно хочете видалити %1?</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Could not delete playlist %1</source>
-        <translation>Неможливо видалити плейлист %1</translation>
-    </message>
-</context>
-<context>
-    <name>TimeSpanChooser</name>
-    <message>
-        <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
-        <source>Create time span</source>
-        <translation>Створити проміжок часу</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::AbstractStationPlugin</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+249"/>
-        <source>Cannot open stream</source>
-        <translation>Потік не можливо відкрити</translation>
-    </message>
-    <message>
-        <location line="+75"/>
-        <source>Please choose another name</source>
-        <translation>Будь ласка, виберіть інше ім’я</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>Do you really want to delete %1</source>
-        <translation>Ви дійсно бажаєте видалити %1</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Podcasts</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
-        <source>Podcast</source>
-        <translation>Подкаст</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Stream</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+74"/>
-        <source>Search radio station</source>
-        <translation>Пошук радіостанції</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_EnginePreferences</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
-        <source>Audio</source>
-        <translation>Аудіо</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ShortcutEntry</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
-        <source>Enter shortcut</source>
-        <translation>Комбінація клавіш Enter</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Shortcut already in use</source>
-        <translation>Комбінація клавіш вже використовується </translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Test</source>
-        <translation>Тест</translation>
-    </message>
-</context>
-<context>
-    <name>SomaFM::StationModel</name>
-    <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
-        <source>Cannot fetch stations</source>
-        <translation>Неможливо завантажити радіостанції</translation>
-    </message>
-</context>
-<context>
-    <name>SC::GUI_ArtistSearch</name>
-    <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+127"/>
-        <source>Query too short</source>
-        <translation>Занадто короткий запит</translation>
-    </message>
-    <message>
-        <location line="+67"/>
-        <source>No artist named %1 found</source>
-        <translation>Не знайдено жодного артиста за іменем % 1</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>No artists found</source>
-        <translation>Не знайдено жодного виконавця</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+6"/>
-        <source>Found %n artist(s)</source>
-        <translation><numerusform>Знайдено %n виконавця</numerusform><numerusform>Знайдено %n виконавців</numerusform><numerusform>Знайдено %n виконавців</numerusform><numerusform>Знайдено %n виконавців</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+97"/>
-        <source>%n playlist(s) found</source>
-        <translation><numerusform>%n плейлист знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+186"/>
-        <source>Standard view</source>
-        <translation>Стандартний вигляд</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cover view</source>
-        <translation>Переглянути обкладинку</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Directory view</source>
-        <translation>Вигляд каталогу</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Toolbar</source>
-        <translation>Панель інструментів</translation>
-    </message>
-    <message>
-        <location line="+200"/>
-        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation>Перегляд треків відображається, якщо перегляд треків містить треки з різними типами файлів</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ImageSelectionDialog</name>
-    <message>
-        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
-        <source>Image files</source>
-        <translation>Медіа файли</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Any files</source>
-        <translation>Немає файлів</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Open image files</source>
-        <translation>Відкрити файли зображень</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::StreamRecorderPreferenceAction</name>
-    <message>
-        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
-        <location line="+7"/>
-        <source>Stream Recorder</source>
-        <translation>Запис потоку</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ShortcutPreferenceAction</name>
-    <message>
-        <location line="+10"/>
-        <location line="+12"/>
-        <source>Shortcuts</source>
-        <translation>Shortcuts</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::DirectoryChooser</name>
-    <message>
-        <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+58"/>
-        <source>Choose directory</source>
-        <translation>Вибрати каталог</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::LineEdit</name>
-    <message>
-        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
-        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
-        <translation>Підказка: Використовуйте клавіші зі стрілками вгору та вниз для перемикання між великими та малими літерами</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Remove special characters (letters)</source>
-        <translation>Видалити спеціальні символи (літери)</translation>
-    </message>
-</context>
-<context>
-    <name>Lang</name>
-    <message>
-        <location filename="../src/Utils/Language/Language.cpp" line="+85"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="-290"/>
         <source>About</source>
         <translation>Про додаток</translation>
     </message>
@@ -3121,7 +2407,7 @@
     <message>
         <location line="+2"/>
         <source>Playlist</source>
-        <translation>Список відтворення</translation>
+        <translation>Плейлист </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3164,12 +2450,7 @@
         <translation>Попередній трек</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Purchase Url</source>
-        <translation>Придбати на</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Quit</source>
         <translation>Вийти</translation>
     </message>
@@ -3261,7 +2542,7 @@
     <message>
         <location line="+2"/>
         <source>Shutdown</source>
-        <translation>Вимкнути</translation>
+        <translation>Завершення роботи</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3515,54 +2796,808 @@
         <translation>Масштаб</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+23"/>
         <source>No directories</source>
         <translation>Немає каталогів</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n directory(s)</source>
-        <translation><numerusform>%n каталог</numerusform><numerusform>%n каталогів</numerusform><numerusform>%n каталогів</numerusform><numerusform>%n каталогів</numerusform></translation>
+        <translation><numerusform>%n каталог</numerusform><numerusform>%n каталог(ів)</numerusform><numerusform>%n каталог(ів)</numerusform><numerusform>%n каталог(ів)</numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No files</source>
         <translation>Немає файлів</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n file(s)</source>
-        <translation><numerusform>%n файл</numerusform><numerusform>%n файлів</numerusform><numerusform>%n файлів</numerusform><numerusform>%n файлів</numerusform></translation>
+        <translation><numerusform>%n файл</numerusform><numerusform>%n файл(ів)</numerusform><numerusform>%n файл(ів)</numerusform><numerusform>%n файл(ів)</numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No playlists</source>
         <translation>Немає плейлистів</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n playlist(s)</source>
-        <translation><numerusform>%n плейлист</numerusform><numerusform>%n плейлистів</numerusform><numerusform>%n плейлистів</numerusform><numerusform>%n плейлистів</numerusform></translation>
+        <translation><numerusform>%n плейлист</numerusform><numerusform>%n плейлист(ів)</numerusform><numerusform>%n плейлист(ів)</numerusform><numerusform>%n плейлист(ів)</numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No tracks</source>
         <translation>Немає треків</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n трек</numerusform><numerusform>%n треків</numerusform><numerusform>%n треків</numerusform><numerusform>%n треків</numerusform></translation>
+        <translation><numerusform>%n трек</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform><numerusform>%n трек(ів)</numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No tracks found</source>
         <translation>Треки не знайдено</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s) found</source>
-        <translation><numerusform>%n трек знайдено</numerusform><numerusform>%n треків знайдено</numerusform><numerusform>%n треків знайдено</numerusform><numerusform>%n треків знайдено</numerusform></translation>
+        <translation><numerusform>%n трек знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform><numerusform>%n трек(ів) знайдено</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>ShutdownImpl</name>
+    <message>
+        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+73"/>
+        <source>Computer will shutdown after playlist has finished</source>
+        <translation>Комп&apos;ютер виключиться після завершення поточного плейлиста</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+29"/>
+        <location line="+32"/>
+        <source>Computer will shutdown in %n minute(s)</source>
+        <translation><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform><numerusform>Комп&apos;ютер завершить роботу через %n хвилин</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>LastFM::Base</name>
+    <message>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+125"/>
+        <source>Cannot login to Last.fm</source>
+        <translation>Не вдається увійти до Last.fm</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::CoverButton</name>
+    <message>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
+        <source>Search an alternative cover</source>
+        <translation>Пошук альтернативної обкладинки</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DoubleCalendarDialog</name>
+    <message>
+        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
+        <source>Select date range</source>
+        <translation>Вибрати діапазон дат</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Start date</source>
+        <translation>Дата початку</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>End date</source>
+        <translation>Кінцева дата</translation>
+    </message>
+</context>
+<context>
+    <name>HistoryContainer</name>
+    <message>
+        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
+        <source>History</source>
+        <translation>Історія</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_InfoDialog</name>
+    <message>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
+        <source>Write cover to tracks</source>
+        <translation>Зберігти обкладинку в файлі трека</translation>
+    </message>
+</context>
+<context>
+    <name>Library::CoverViewContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
+        <source>Toolbar</source>
+        <translation>Панель інструментів</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_CoverView</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+193"/>
+        <source>Use Ctrl + mouse wheel to zoom</source>
+        <translation>Використовувати Ctrl + mouse для збільшення</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+301"/>
+        <source>Rename by metadata</source>
+        <translation>Перейменувати за метаданними</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Collapse all</source>
+        <translation>Згорнути все</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move to another library</source>
+        <translation>Перемістити до іншої бібліотеки</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy to another library</source>
+        <translation>Копіювати до іншої бібліотеки</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>View in file manager</source>
+        <translation>Переглянути в файловому менеджері</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::TreeView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+407"/>
+        <source>Copy here</source>
+        <translation>Копіювати сюди</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move here</source>
+        <translation>Пересунути сюди</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DirectoryView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+215"/>
+        <source>Could not create directory</source>
+        <translation>Неможливо створити каталог</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GenreView</name>
+    <message>
+        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
+        <source>Updating genres</source>
+        <translation>Оновити жанри</translation>
+    </message>
+    <message>
+        <location line="+115"/>
+        <source>Do you really want to remove %1 from all tracks?</source>
+        <translation>Ви дійсно бажаєте вилучити %1? з усіх треків?</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_EmptyLibrary</name>
+    <message>
+        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
+        <source>Please choose a name for your library</source>
+        <translation>Будь ласка, виберіть ім&apos;я для своєї бібліотеки</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Please choose another name for your library</source>
+        <translation>Будь ласка, виберіть ім&apos;я для своєї бібліотеки</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>The file path is invalid</source>
+        <translation>Ім&apos;я файлу недійсне</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library with the same file path already exists</source>
+        <translation>Бібліотека з таким же шляхом файлу вже існує</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library which contains this file path already exists</source>
+        <translation>Бібліотека, яка містить цей шлях до файлу, вже існує</translation>
+    </message>
+</context>
+<context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
+        <source>Resize columns</source>
+        <translation>Змінити розмір стовпців</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resize columns automatically</source>
+        <translation>Автоматично змінити розмір стовпців</translation>
+    </message>
+</context>
+<context>
+    <name>Library::TrackModel</name>
+    <message>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+138"/>
+        <source>kBit/s</source>
+        <translation>kBit/s</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DeleteDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
+        <source>Only from library</source>
+        <translation>Тільки з бібліотеки</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Ви збираєтесь видалити %n файл</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform><numerusform>Ви збираєтесь видалити %n файлів</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_LibraryReloadDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
+        <source>Fast scan</source>
+        <translation>Швидке сканування</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Deep scan</source>
+        <translation>Детальне сканування</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Only scan for new and deleted files</source>
+        <translation>Сканувати тільки нові і видалені файли</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Scan all files in your library directory</source>
+        <translation>Сканувати всі файли у каталозі бібліотеки</translation>
+    </message>
+</context>
+<context>
+    <name>Library::LocalLibraryMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
+        <source>Statistics</source>
+        <translation>Статистика</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit library</source>
+        <translation>Змінити бібліотеку</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::MergeMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
+        <location line="+57"/>
+        <source>Merge</source>
+        <translation>Об’єднати</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ControlsBase</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+155"/>
+        <source>Sayonara Player</source>
+        <translation>Sayonara Player</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Written by %1</source>
+        <translation>Автор %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copyright</source>
+        <translation>Авторські права</translation>
+    </message>
+</context>
+<context>
+    <name>Menubar</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+347"/>
+        <source>View</source>
+        <translation>Вигляд</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+15"/>
+        <source>Help</source>
+        <translation>Допомога</translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>Plugins</source>
+        <translation>Плагіни</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Show large cover</source>
+        <translation>Показати велику обкладинку</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Fullscreen</source>
+        <translation>На весь екран</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>Media files</source>
+        <translation>Медіа файли</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open Media files</source>
+        <translation>Відкрити медіа файли</translation>
+    </message>
+    <message>
+        <location line="+61"/>
+        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
+        <translation>Щоб отримати звіти про помилки або надіслати запити про функції, будь ласка, відвідайте сторінку проекту Sayonara в GitLab</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>FAQ</source>
+        <translation>FAQ</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>About Sayonara</source>
+        <translation>Про Sayonara</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Written by %1</source>
+        <translation>Автор %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>License</source>
+        <translation>Ліцензія</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Donate</source>
+        <translation>Пожертвувати</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
+        <translation>Щиро дякую  всім перекладачам і кожному, хто допомає створювати Sayonara пакети</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>And special thanks to those people with local music collections</source>
+        <translation>І особлива подяка користувачам з локальною музичною колекцією</translation>
+    </message>
+</context>
+<context>
+    <name>TrayIconContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+129"/>
+        <source>Current song</source>
+        <translation>Поточна пісня</translation>
+    </message>
+</context>
+<context>
+    <name>VersionChecker</name>
+    <message>
+        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+70"/>
+        <source>A new version is available!</source>
+        <translation>Доступна нова версія!</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Playlist</name>
+    <message>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+441"/>
+        <source>Playlist name already exists</source>
+        <translation>Ім&apos;я плейлиста вже існує</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ActionMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+198"/>
+        <source>Please set library path first</source>
+        <translation>Будь ласка, задайте спочатку шлях до бібліотеки</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::BottomBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+236"/>
+        <source>Please set library path first</source>
+        <translation>Будь ласка, задайте спочатку шлях до бібліотеки</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Cancel shutdown?</source>
+        <translation>Відмінити завершення?</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+205"/>
+        <source>Jump to current track</source>
+        <translation>Перейти до поточного треку</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show track in library</source>
+        <translation>Показати трек в бібліотеці</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Jump to next album</source>
+        <translation>Перейти до наступного альбому</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Playlist mode</source>
+        <translation>Режим відтворення файлів</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::Model</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+493"/>
+        <source>Goto row</source>
+        <translation>Перейти до рядка</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::TabBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
+        <source>Do you want relative file paths in your playlist?</source>
+        <translation>Бажаєте використовувати відносні шляхи файлу у вашому плейлисті?</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Media files</source>
+        <translation>Медіа файли</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Open Media files</source>
+        <translation>Відкрити медіа файли</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::View</name>
+    <message numerus="yes">
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+403"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Ви збираєтесь видалити %н файл</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform><numerusform>Ви збираєтесь видалити %н файл(ів)</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Crossfader</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
+        <location line="+12"/>
+        <source>Crossfader</source>
+        <translation>Кросфейдер</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 and %2</source>
+        <translation>%1 і %2</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Crossfader does not work with Alsa</source>
+        <translation>Кросфейдер не працює з Alsa</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Gapless playback does not work with Alsa</source>
+        <translation>Безперервне відтворення не працює з Alsa</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Equalizer</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
+        <location line="+47"/>
+        <source>Linked sliders</source>
+        <translation>Зв`язані регулятори</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Equalizer</source>
+        <translation>Еквалайзер</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_LevelPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
+        <source>Level</source>
+        <translation>Рівень</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_SpectrogramPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+75"/>
+        <source>Spectrogram</source>
+        <translation>Спектрограма</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Spectrum</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
+        <source>Spectrum</source>
+        <translation>Діапазон</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_StyleSettings</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
+        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
+        <translation>Налаштування ще не збережені&lt;br /&gt;Зберегти?</translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <source>Please specify a name</source>
+        <translation>Будь ласка, вкажіть ім&apos;я</translation>
+    </message>
+    <message>
+        <location line="+168"/>
+        <source>Save changes?</source>
+        <translation>Зберегти зміни?</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_PlaylistChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+87"/>
+        <location line="+36"/>
+        <source>No playlists found</source>
+        <translation>Не знайдено жодного плейлиста</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Could not rename playlist</source>
+        <translation>Неможливо перейменувати плейлист</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Name is invalid</source>
+        <translation>Недопустиме ім&apos;я</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Do you really want to delete %1?</source>
+        <translation>Ви дійсно хочете видалити %1?</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Could not delete playlist %1</source>
+        <translation>Неможливо видалити плейлист %1</translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxIntegerDialog</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+109"/>
+        <source>Category</source>
+        <translation>Категорія</translation>
+    </message>
+</context>
+<context>
+    <name>TimeSpanChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
+        <source>Create time span</source>
+        <translation>Створити проміжок часу</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::AbstractStationPlugin</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+249"/>
+        <source>Cannot open stream</source>
+        <translation>Потік не можливо відкрити</translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Please choose another name</source>
+        <translation>Будь ласка, виберіть інше ім’я</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Do you really want to delete %1</source>
+        <translation>Ви дійсно бажаєте видалити %1</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Podcasts</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
+        <source>Podcast</source>
+        <translation>Подкаст</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+74"/>
+        <source>Search radio station</source>
+        <translation>Пошук радіостанції</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_EnginePreferences</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
+        <source>Audio</source>
+        <translation>Аудіо</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ShortcutEntry</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
+        <source>Enter shortcut</source>
+        <translation>Комбінація клавіш Enter</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shortcut already in use</source>
+        <translation>Комбінація клавіш вже використовується </translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Test</source>
+        <translation>Тест</translation>
+    </message>
+</context>
+<context>
+    <name>SomaFM::StationModel</name>
+    <message>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
+        <source>Cannot fetch stations</source>
+        <translation>Неможливо завантажити радіостанції</translation>
+    </message>
+</context>
+<context>
+    <name>SC::GUI_ArtistSearch</name>
+    <message>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+127"/>
+        <source>Query too short</source>
+        <translation>Занадто короткий запит</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>No artist named %1 found</source>
+        <translation>Не знайдено жодного артиста за іменем % 1</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No artists found</source>
+        <translation>Не знайдено жодного виконавця</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+6"/>
+        <source>Found %n artist(s)</source>
+        <translation><numerusform>Знайдено %n виконавця</numerusform><numerusform>Знайдено %n виконавців</numerusform><numerusform>Знайдено %n виконавців</numerusform><numerusform>Знайдено %n виконавців</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+97"/>
+        <source>%n playlist(s) found</source>
+        <translation><numerusform>%n плейлист знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform><numerusform>%n плейлистів знайдено</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+186"/>
+        <source>Standard view</source>
+        <translation>Стандартний вигляд</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Cover view</source>
+        <translation>Переглянути обкладинку</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Directory view</source>
+        <translation>Вигляд каталогу</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Toolbar</source>
+        <translation>Панель інструментів</translation>
+    </message>
+    <message>
+        <location line="+200"/>
+        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
+        <translation>Перегляд треків відображається, якщо перегляд треків містить треки з різними типами файлів</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ImageSelectionDialog</name>
+    <message>
+        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
+        <source>Image files</source>
+        <translation>Медіа файли</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Any files</source>
+        <translation>Немає файлів</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Open image files</source>
+        <translation>Відкрити файли зображень</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::StreamRecorderPreferenceAction</name>
+    <message>
+        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
+        <location line="+7"/>
+        <source>Stream Recorder</source>
+        <translation>Запис потоку</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ShortcutPreferenceAction</name>
+    <message>
+        <location line="+10"/>
+        <location line="+12"/>
+        <source>Shortcuts</source>
+        <translation>Shortcuts</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DirectoryChooser</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+58"/>
+        <source>Choose directory</source>
+        <translation>Вибрати каталог</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::LineEdit</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
+        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
+        <translation>Підказка: Використовуйте клавіші зі стрілками вгору та вниз для перемикання між великими та малими літерами</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove special characters (letters)</source>
+        <translation>Видалити спеціальні символи (літери)</translation>
     </message>
 </context>
 </TS>

@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="es_ES" sourcelanguage="en" version="2.1">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.1" language="es_ES" sourcelanguage="en">
 <context>
     <name>GUI_AlternativeCovers</name>
     <message>
@@ -50,7 +50,7 @@
     <message numerus="yes">
         <location filename="../src/Gui/Covers/GUI_AlternativeCovers.cpp" line="+297"/>
         <source>%n cover(s) found</source>
-        <translation><numerusform>%n carátula(s) encontradas</numerusform><numerusform>%n carátula(s) encontradas</numerusform></translation>
+        <translation><numerusform>%n carátula(s) encontradas</numerusform><numerusform>%n carátula(s) encontradas</numerusform><numerusform>%n carátula(s) encontradas</numerusform></translation>
     </message>
     <message>
         <location line="+134"/>
@@ -102,7 +102,7 @@
     <message>
         <location line="+198"/>
         <source>Change Cover</source>
-        <translation type="unfinished"/>
+        <translation>Cambiar carátula</translation>
     </message>
     <message>
         <location line="+83"/>
@@ -166,7 +166,7 @@
         <translation>Seleccionar destino</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+124"/>
+        <location filename="../src/Gui/Library/GUI_ImportDialog.cpp" line="+122"/>
         <source>Loading tracks</source>
         <translation>Carga pistas</translation>
     </message>
@@ -196,12 +196,12 @@
         <translation>Cancelado</translation>
     </message>
     <message>
-        <location line="+62"/>
+        <location line="+61"/>
         <source>Choose target directory</source>
         <translation>Elegir carpeta de destino</translation>
     </message>
     <message>
-        <location line="+13"/>
+        <location line="+9"/>
         <source>%1&lt;br /&gt;is no library directory</source>
         <translation>%1&lt;br /&gt; no es una carpeta de biblioteca</translation>
     </message>
@@ -219,7 +219,7 @@
         <translation>El directorio no existe</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+373"/>
+        <location filename="../src/Gui/Library/GUI_LocalLibrary.cpp" line="+371"/>
         <source>Audio files</source>
         <translation>Archivos de audio</translation>
     </message>
@@ -232,24 +232,16 @@
         <translation>Módulo</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+279"/>
+        <location filename="../src/Gui/Player/GUI_Logger.cpp" line="+236"/>
         <source>Cannot open file</source>
         <translation>No se puede abrir el archivo</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Player</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_Player.ui" line="+14"/>
-        <source>Sayonara Player</source>
-        <translation>Reproductor Sayonara</translation>
     </message>
 </context>
 <context>
     <name>GUI_AudioConverter</name>
     <message>
         <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.ui" line="+45"/>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+305"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="+303"/>
         <source>Start</source>
         <translation>Iniciar</translation>
     </message>
@@ -277,7 +269,7 @@
         <translation>Tasa de bits</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-164"/>
+        <location filename="../src/Gui/Plugins/AudioConverter/GUI_AudioConverter.cpp" line="-162"/>
         <source>Audio Converter</source>
         <translation>Conversor de audio</translation>
     </message>
@@ -288,12 +280,12 @@
     </message>
     <message>
         <location line="+26"/>
-        <location line="+123"/>
+        <location line="+121"/>
         <source>Cannot find encoder</source>
         <translation>No se puede encontrar el codificador</translation>
     </message>
     <message>
-        <location line="-112"/>
+        <location line="-110"/>
         <location line="+13"/>
         <source>Playlist does not contain tracks which are supported by the converter</source>
         <translation>La lista de reproducción no contiene pistas compatibles con el convertidor</translation>
@@ -309,14 +301,14 @@
         <translation>Estas pistas serán ignoradas</translation>
     </message>
     <message>
-        <location line="+8"/>
+        <location line="+6"/>
         <source>Choose target directory</source>
         <translation>Elegir carpeta de destino</translation>
     </message>
     <message numerus="yes">
         <location line="+30"/>
         <source>Failed to convert %n track(s)</source>
-        <translation><numerusform>Error al convertir %n pista(s)</numerusform><numerusform>Error al convertir %n pista(s)</numerusform></translation>
+        <translation><numerusform>Error al convertir %n pista(s)</numerusform><numerusform>Error al convertir %n pista(s)</numerusform><numerusform>Error al convertir %n pista(s)</numerusform></translation>
     </message>
     <message>
         <location line="+1"/>
@@ -373,7 +365,7 @@
     <message numerus="yes">
         <location line="+51"/>
         <source>%n listener(s)</source>
-        <translation><numerusform>%n oyente(s)</numerusform><numerusform>%n oyente(s)</numerusform></translation>
+        <translation><numerusform>%n oyente(s)</numerusform><numerusform>%n oyente(s)</numerusform><numerusform>%n oyente(s)</numerusform></translation>
     </message>
     <message>
         <location line="+66"/>
@@ -522,6 +514,14 @@
     </message>
 </context>
 <context>
+    <name>GuiSmartPlaylists</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/GuiSmartPlaylists.ui" line="+39"/>
+        <source>Menu</source>
+        <translation>Menú</translation>
+    </message>
+</context>
+<context>
     <name>GUI_StationSearcher</name>
     <message>
         <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.ui" line="+14"/>
@@ -621,6 +621,24 @@
     </message>
 </context>
 <context>
+    <name>GUI_FileExtensionPreferences</name>
+    <message>
+        <location filename="../src/Gui/Preferences/FileExtensions/GUI_FileExtensionPreferences.ui" line="+60"/>
+        <source>Be aware that you might face issues with missing codecs or metadata tags.</source>
+        <translation>Tenga en cuenta que es posible que tenga problemas con códecs o etiquetas de metadatos faltantes.</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/FileExtensions/GUI_FileExtensionPreferences.cpp" line="+140"/>
+        <source>Additional file extensions</source>
+        <translation>Extensiones de archivo adicionales</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Add new file extension</source>
+        <translation>Añadir una extensión nueva</translation>
+    </message>
+</context>
+<context>
     <name>GUI_LanguagePreferences</name>
     <message>
         <location filename="../src/Gui/Preferences/Language/GUI_LanguagePreferences.ui" line="+24"/>
@@ -643,40 +661,9 @@
         <translation>Siempre busco traductores a más idiomas</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Language/GUI_LanguagePreferences.cpp" line="+62"/>
+        <location filename="../src/Gui/Preferences/Language/GUI_LanguagePreferences.cpp" line="+78"/>
         <source>Language</source>
         <translation>Idioma</translation>
-    </message>
-    <message>
-        <location line="+113"/>
-        <source>Cannot check for language update</source>
-        <translation>No se puede verificar la actualización del idioma</translation>
-    </message>
-    <message>
-        <location line="+30"/>
-        <source>Language is up to date</source>
-        <translation>El idioma está actualizado</translation>
-    </message>
-    <message>
-        <location line="+28"/>
-        <location line="+24"/>
-        <source>Cannot fetch language update</source>
-        <translation>No se pudo obtener una actualización del idioma</translation>
-    </message>
-    <message>
-        <location line="-10"/>
-        <source>Language was updated successfully</source>
-        <translation>El idioma fue actualizado con éxito</translation>
-    </message>
-    <message>
-        <location line="+32"/>
-        <source>The language file could not be imported</source>
-        <translation>El archivo de idioma no pudo ser importado</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>The language file was imported successfully</source>
-        <translation>El archivo de idioma fue importado satisfactoriamente.</translation>
     </message>
 </context>
 <context>
@@ -762,6 +749,16 @@
     </message>
     <message>
         <location line="+18"/>
+        <source>Sorting</source>
+        <translation>Ordenando</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Ignore English article &quot;The&quot; in artist name</source>
+        <translation>Ignorar el artículo &quot;The&quot; en el nombre del artista</translation>
+    </message>
+    <message>
+        <location line="+85"/>
         <source>Other</source>
         <translation>Otra</translation>
     </message>
@@ -771,12 +768,7 @@
         <translation>Mostrar los botones de Limpiar Selección.</translation>
     </message>
     <message>
-        <location line="+20"/>
-        <source>Ignore English article &quot;The&quot; in artist name</source>
-        <translation>Ignorar el artículo &quot;The&quot; en el nombre del artista</translation>
-    </message>
-    <message>
-        <location filename="../src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+149"/>
+        <location filename="../src/Gui/Preferences/Library/GUI_LibraryPreferences.cpp" line="+194"/>
         <source>Cannot edit library</source>
         <translation>No se puede editar la biblioteca</translation>
     </message>
@@ -789,7 +781,7 @@
         <translation>Mostrar durante (ms)</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+98"/>
+        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+100"/>
         <source>Notifications</source>
         <translation>Notificaciones</translation>
     </message>
@@ -797,27 +789,32 @@
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
-        <source>Hide instead of close</source>
-        <translation>Ocultar en lugar de cerrar</translation>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+31"/>
+        <source>Show system tray icon</source>
+        <translation>Mostrar icono en la bandeja del sistema</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Start hidden</source>
-        <translation>Inicio oculto</translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+7"/>
         <source>Update notifications</source>
         <translation>Notificar si hay actualizaciones</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show system tray icon</source>
-        <translation>Mostrar icono en la bandeja del sistema</translation>
+        <source>Start hidden</source>
+        <translation>Inicio oculto</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+108"/>
+        <location line="+59"/>
+        <source>Hide instead of close</source>
+        <translation>Ocultar en lugar de cerrar</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Inhibit shutdown/suspend during playback</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+117"/>
         <source>This might cause Sayonara not to show up again.</source>
         <translation>Esto puede causar que Sayonara no vuelva a mostrarse de nuevo.</translation>
     </message>
@@ -835,17 +832,7 @@
         <translation>Comportamiento</translation>
     </message>
     <message>
-        <location line="+19"/>
-        <source>Stop behaviour</source>
-        <translation>Detener comportamiento</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Load last track after pressing stop</source>
-        <translation>Cargar la última pista luego de presionar Detener</translation>
-    </message>
-    <message>
-        <location line="+17"/>
+        <location line="+28"/>
         <source>Start up</source>
         <translation>Al iniciar</translation>
     </message>
@@ -860,7 +847,7 @@
         <translation>Cargar listas guardadas</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+10"/>
         <source>Start playing</source>
         <translation>Reproducir inmediatamente</translation>
     </message>
@@ -876,52 +863,46 @@
     </message>
     <message>
         <location line="+10"/>
-        <location line="+231"/>
-        <source>Current track</source>
+        <source>Start up from file manager</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="-225"/>
-        <source>Jump to current track when track changes</source>
+        <location line="+6"/>
+        <source>Use special playlist when starting Sayonara from file manager</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+11"/>
+        <location line="+9"/>
+        <source>Playlist name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Load last track after resuming from stopped state</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Play track when pressing &quot;Enter&quot; in search field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Jump to current track in list when track changes</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Look</source>
         <translation>Vista</translation>
     </message>
     <message>
-        <location line="+62"/>
-        <source>*bold text*</source>
-        <translation>*en negrita*</translation>
+        <location line="+6"/>
+        <source>Visible items</source>
+        <translation>Artículos disponibles</translation>
     </message>
     <message>
-        <location line="+33"/>
-        <source>&apos;italic text&apos;</source>
-        <translation>&apos;en itálica&apos;</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Example</source>
-        <translation>Ejemplo</translation>
-    </message>
-    <message>
-        <location line="+22"/>
-        <source>Playlist item text</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+36"/>
-        <source>Show covers</source>
-        <translation>Mostrar portadas</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Show numbers</source>
-        <translation>Mostrar número de pista en la lista</translation>
-    </message>
-    <message>
-        <location line="+7"/>
+        <location line="+6"/>
         <source>Show clear button</source>
         <translation>Mostrar botón transparente</translation>
     </message>
@@ -932,26 +913,73 @@
     </message>
     <message>
         <location line="+7"/>
+        <source>Show numbers</source>
+        <translation>Mostrar número de pista en la lista</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show covers</source>
+        <translation>Mostrar portadas</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source>Show rating</source>
         <translation>Mostrar calificación</translation>
     </message>
     <message>
-        <location line="+13"/>
-        <source>Playlist</source>
-        <translation>Lista de reproducción</translation>
+        <location line="+10"/>
+        <source>Current track</source>
+        <translation>Pista actual</translation>
     </message>
     <message>
-        <location line="+27"/>
+        <location line="+6"/>
         <source>Custom font color in standard theme</source>
-        <translation type="unfinished"/>
+        <translation>Color de fuente personalizado en tema estándar</translation>
     </message>
     <message>
-        <location line="+33"/>
+        <location line="+7"/>
         <source>Custom font color in dark theme</source>
-        <translation type="unfinished"/>
+        <translation>Color de fuente personalizado en tema oscuro</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+256"/>
+        <location line="+50"/>
+        <location line="+6"/>
+        <source>Row style</source>
+        <translation>Estilo de fila</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>Help</source>
+        <translation>Ayuda</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Example</source>
+        <translation>Ejemplo</translation>
+    </message>
+    <message>
+        <location line="+40"/>
+        <source>&apos;italic text&apos;</source>
+        <translation>&apos;en itálica&apos;</translation>
+    </message>
+    <message>
+        <location line="+62"/>
+        <source>*bold text*</source>
+        <translation>*en negrita*</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <location line="+6"/>
+        <source>Workarounds</source>
+        <translation>Soluciones alternativas</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+276"/>
+        <source>Fix startup playback issue</source>
+        <translation>Solucionar el problema de reproducción de inicio</translation>
+    </message>
+    <message>
+        <location line="+14"/>
         <source>Playlist look: Invalid expression</source>
         <translation>Apariencia de la Lista de Reproducción. Expresión inválida</translation>
     </message>
@@ -1048,14 +1076,9 @@
 <context>
     <name>GUI_SearchPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Search/GUI_SearchPreferences.ui" line="+23"/>
+        <location filename="../src/Gui/Preferences/Search/GUI_SearchPreferences.ui" line="+70"/>
         <source>Example</source>
         <translation>Ejemplo</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>Case insensitive</source>
-        <translation>Insensible a mayúsculas</translation>
     </message>
     <message>
         <location line="+13"/>
@@ -1063,14 +1086,9 @@
         <translation>Opción</translation>
     </message>
     <message>
-        <location line="+10"/>
-        <source>Ignore accents</source>
-        <translation>Ignorar acentos</translation>
-    </message>
-    <message>
-        <location line="+27"/>
-        <source>Ignore special characters</source>
-        <translation>Ignorar caracteres especiales</translation>
+        <location line="+34"/>
+        <source>Minimum text length</source>
+        <translation>Longitud mínima del texto</translation>
     </message>
 </context>
 <context>
@@ -1135,12 +1153,12 @@
         <translation>Ejemplo</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+173"/>
+        <location filename="../src/Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.cpp" line="+165"/>
         <source>Choose target directory</source>
         <translation>Elegir carpeta de destino</translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+70"/>
         <source>Target directory is empty</source>
         <translation>La carpeta de destino está vacía</translation>
     </message>
@@ -1176,7 +1194,7 @@
     <message>
         <location line="+29"/>
         <source>Buffer size</source>
-        <translation>Tamaño del logLines</translation>
+        <translation>Tamaño del buffer</translation>
     </message>
     <message>
         <location line="+7"/>
@@ -1242,15 +1260,20 @@
     <message>
         <location line="+27"/>
         <source>Bold Library Font</source>
-        <translation type="unfinished"/>
+        <translation>Librería de fuente negrita</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+45"/>
+        <location line="+7"/>
+        <source>Force native directory dialogs</source>
+        <translation>Forzar diálogos de directorios nativos</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/UiPreferences/GUI_UiPreferences.cpp" line="+46"/>
         <source>User Interface</source>
         <translation>Interfaz de usuario</translation>
     </message>
     <message>
-        <location line="+63"/>
+        <location line="+75"/>
         <source>General</source>
         <translation>General</translation>
     </message>
@@ -1300,7 +1323,7 @@
         <translation>Buscar en Soundcloud</translation>
     </message>
     <message>
-        <location line="+59"/>
+        <location line="+118"/>
         <source>Search artist</source>
         <translation>Buscar artista</translation>
     </message>
@@ -1327,13 +1350,12 @@
     </message>
     <message>
         <location line="+73"/>
-        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="+213"/>
+        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="+214"/>
         <source>Original</source>
         <translation>Original</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-53"/>
-        <location line="+9"/>
+        <location filename="../src/Gui/Tagging/GUI_CoverEdit.cpp" line="-95"/>
         <source>File has no cover</source>
         <translation>El archivo no tiene carátula</translation>
     </message>
@@ -1432,12 +1454,12 @@
         <translation>Aplicar a todas</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagFromPath.cpp" line="+120"/>
+        <location filename="../src/Gui/Tagging/GUI_TagFromPath.cpp" line="+139"/>
         <source>Tag</source>
         <translation>Etiqueta</translation>
     </message>
     <message>
-        <location line="+52"/>
+        <location line="+53"/>
         <source>Please select text first</source>
         <translation>Por favor, seleccione texto primero</translation>
     </message>
@@ -1445,7 +1467,7 @@
 <context>
     <name>StreamServer</name>
     <message>
-        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+221"/>
+        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+220"/>
         <source>%1 wants to listen to your music.</source>
         <translation>%1 desea escuchar su música.</translation>
     </message>
@@ -1455,13 +1477,13 @@
     <message>
         <location filename="../src/Components/Engine/Engine.cpp" line="+625"/>
         <source>You should restart Sayonara now</source>
-        <translation type="unfinished"/>
+        <translation>Debe reiniciar Sayonara ahora</translation>
     </message>
 </context>
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+752"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+641"/>
         <source>All %1 could be removed</source>
         <translation>Todo(a)s lo(a)s %1 podrían ser borrados</translation>
     </message>
@@ -1492,17 +1514,17 @@
 <context>
     <name>Library::ReloadThread</name>
     <message>
-        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
+        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+226"/>
         <source>Looking for covers</source>
         <translation>Buscando carátulas</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Reading files</source>
         <translation>Leyendo</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+112"/>
         <source>Deleting orphaned tracks</source>
         <translation>Eliminar pistas huérfanas</translation>
     </message>
@@ -1510,7 +1532,7 @@
 <context>
     <name>Lyrics::LookupThread</name>
     <message>
-        <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+238"/>
+        <location filename="../src/Components/Lyrics/LyricLookup.cpp" line="+233"/>
         <location line="+30"/>
         <source>Cannot fetch lyrics from %1</source>
         <translation>No se puede recuperar la letra de% 1</translation>
@@ -1522,741 +1544,186 @@
     </message>
 </context>
 <context>
-    <name>Shutdown</name>
+    <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+94"/>
-        <source>Computer will shutdown after playlist has finished</source>
-        <translation>El ordenador se apagará al acabar la lista</translation>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
+        <source>Cannot check for language update</source>
+        <translation>No se puede verificar la actualización del idioma</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Language is up to date</source>
+        <translation>El idioma está actualizado</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Cannot fetch language update</source>
+        <translation>No se pudo obtener una actualización del idioma</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Language was updated successfully</source>
+        <translation>El idioma fue actualizado con éxito</translation>
+    </message>
+    <message>
+        <location line="+18"/>
+        <source>The language file could not be imported</source>
+        <translation>El archivo de idioma no pudo ser importado</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>The language file was imported successfully</source>
+        <translation>El archivo de idioma fue importado satisfactoriamente.</translation>
+    </message>
+</context>
+<context>
+    <name>QObject</name>
+    <message>
+        <location line="-19"/>
+        <source>Cannot fetch language update</source>
+        <translation>No se pudo obtener una actualización del idioma</translation>
+    </message>
+    <message>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+117"/>
+        <source>Between</source>
+        <translation>Entre</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>and</source>
+        <translation>y</translation>
+    </message>
+    <message>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByCreateDate.cpp" line="+78"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+60"/>
+        <source>%1 - %2</source>
+        <translation>%1 - %2</translation>
+    </message>
+    <message>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByListeningDate.cpp" line="+107"/>
+        <source>Last listened</source>
+        <translation>Último escuchado</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>exactly %1</source>
+        <translation>exactamente %1</translation>
     </message>
     <message numerus="yes">
-        <location line="+29"/>
-        <location line="+30"/>
-        <source>Computer will shutdown in %n minute(s)</source>
-        <translation><numerusform>La computadora se apagará en %n minutos(s)</numerusform><numerusform>La computadora se apagará en %n minutos(s)</numerusform></translation>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRating.cpp" line="+33"/>
+        <source>%1 star(s)</source>
+        <translation><numerusform>%1 estrella</numerusform><numerusform>%1 estrellas</numerusform><numerusform>%1 estrella(s)</numerusform></translation>
     </message>
-</context>
-<context>
-    <name>LastFM::Base</name>
     <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+132"/>
-        <source>Cannot login to Last.fm</source>
-        <translation>No se pudo conectar a Last.fm</translation>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByRelativeDate.cpp" line="+54"/>
+        <source>%1 old</source>
+        <translation>%1</translation>
     </message>
-</context>
-<context>
-    <name>SC::JsonParser</name>
     <message>
-        <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+124"/>
+        <location line="+27"/>
+        <source>Age of tracks</source>
+        <translation>Antigüedad de las pistas</translation>
+    </message>
+    <message>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+118"/>
+        <source>Random albums</source>
+        <translation>Álbumes al azar</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n random album(s)</source>
+        <translation><numerusform>%n álbum al azar</numerusform><numerusform>%n álbumes al azar</numerusform><numerusform>%n álbum(es) al azar</numerusform></translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Number of albums</source>
+        <translation>Número de álbumes</translation>
+    </message>
+    <message>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomTracks.cpp" line="+41"/>
+        <source>Random tracks</source>
+        <translation>Pistas al azar</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+2"/>
+        <source>%n random track(s)</source>
+        <translation><numerusform>%n pista al azar</numerusform><numerusform>%n pistas al azar</numerusform><numerusform>%n pista(s) al azar</numerusform></translation>
+    </message>
+    <message>
+        <location line="+16"/>
+        <source>Number of tracks</source>
+        <translation>Número de surco</translation>
+    </message>
+    <message numerus="yes">
+        <location filename="../src/Components/SmartPlaylists/TimeSpan.cpp" line="+49"/>
+        <source>%n year(s)</source>
+        <translation><numerusform>%n año</numerusform><numerusform>%n años</numerusform><numerusform>%n año(s)</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n month(s)</source>
+        <translation><numerusform>%n mes</numerusform><numerusform>%n meses</numerusform><numerusform>%n mes(es)</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+5"/>
+        <source>%n day(s)</source>
+        <translation><numerusform>%1 día</numerusform><numerusform>%1 días</numerusform><numerusform>%n días</numerusform></translation>
+    </message>
+    <message>
+        <location filename="../src/Components/Streaming/Soundcloud/SoundcloudJsonParser.cpp" line="+125"/>
         <source>Website</source>
         <translation>Sitio web</translation>
     </message>
     <message>
-        <location line="+4"/>
-        <location line="+255"/>
+        <location line="+5"/>
+        <location line="+195"/>
         <source>Permalink Url</source>
         <translation>Url Permalink</translation>
     </message>
     <message>
-        <location line="-242"/>
+        <location line="-182"/>
         <source>Followers/Following</source>
         <translation>Seguidores/Siguiendo</translation>
     </message>
     <message>
-        <location line="+92"/>
-        <location line="+154"/>
+        <location line="+80"/>
+        <location line="+110"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="+368"/>
         <source>Purchase Url</source>
         <translation>Url para compras</translation>
     </message>
-</context>
-<context>
-    <name>Gui::CoverButton</name>
     <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
-        <source>Search an alternative cover</source>
-        <translation>Buscar una portada alternativa</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::DoubleCalendarDialog</name>
-    <message>
-        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
-        <source>Select date range</source>
-        <translation>Seleccionar intervalo de fecha</translation>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+106"/>
+        <source>Between %1 and %2</source>
+        <translation>Entre %1 y %2</translation>
     </message>
     <message>
-        <location line="+17"/>
-        <source>Start date</source>
-        <translation>Fecha de inicio</translation>
+        <location line="+60"/>
+        <source>All libraries</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+7"/>
-        <source>End date</source>
-        <translation>Fecha de término</translation>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+55"/>
+        <source>Show radio stations from %1 to %2</source>
+        <translation>Mostrar estaciones de radio desde %1 hasta %2</translation>
     </message>
-</context>
-<context>
-    <name>HistoryContainer</name>
     <message>
-        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
-        <source>History</source>
-        <translation>Historial</translation>
+        <location line="+84"/>
+        <source>Country</source>
+        <translation>País</translation>
     </message>
-</context>
-<context>
-    <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
-        <source>Write cover to tracks</source>
-        <translation>Guardar la carátula junto al archivo de audio</translation>
-    </message>
-</context>
-<context>
-    <name>Library::CoverViewContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+205"/>
-        <source>Toolbar</source>
-        <translation>Barra de herramientas</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_CoverView</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+201"/>
-        <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Ampliación: Ctrl+Rueda</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+302"/>
-        <source>Rename by metadata</source>
-        <translation>Renombrar por metadatos</translation>
+        <location line="+38"/>
+        <source>Type</source>
+        <translation>Tipo</translation>
     </message>
     <message>
         <location line="+2"/>
-        <source>Collapse all</source>
-        <translation>Colapsar todo</translation>
+        <source>Url</source>
+        <translation>Url</translation>
     </message>
     <message>
-        <location line="+1"/>
-        <source>Move to another library</source>
-        <translation>Mover a otra librería</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy to another library</source>
-        <translation>Copiar a otra biblioteca</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>View in file manager</source>
-        <translation>Ver en el gestor de archivos</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::TreeView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+407"/>
-        <source>Copy here</source>
-        <translation>Copiar aquí</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Move here</source>
-        <translation>Mover aquí</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DirectoryView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+217"/>
-        <source>Could not create directory</source>
-        <translation>No se pudo crear el directorio</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GenreView</name>
-    <message>
-        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
-        <source>Updating genres</source>
-        <translation>Actualizando géneros</translation>
-    </message>
-    <message>
-        <location line="+115"/>
-        <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>¿Realmente desear remover %1 de todas las pistas?</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_EmptyLibrary</name>
-    <message>
-        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+102"/>
-        <source>Please choose a name for your library</source>
-        <translation>Por favor escoge un nombre para tu biblioteca</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Please choose another name for your library</source>
-        <translation>Por favor escoge otro nombre para tu biblioteca</translation>
-    </message>
-    <message>
-        <location line="+23"/>
-        <source>The file path is invalid</source>
-        <translation>La ruta del archivo es inválida</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library with the same file path already exists</source>
-        <translation>Ya existe una biblioteca con la misma ruta</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library which contains this file path already exists</source>
-        <translation>Ya existe una biblioteca con la misma ruta</translation>
-    </message>
-</context>
-<context>
-    <name>Library::HeaderView</name>
-    <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+259"/>
-        <source>Resize columns</source>
-        <translation>Redimensionar columnas</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Resize columns automatically</source>
-        <translation>Redimensionar columnas automaticamente</translation>
-    </message>
-</context>
-<context>
-    <name>Library::TrackModel</name>
-    <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+144"/>
-        <source>kBit/s</source>
-        <translation>kBit/s</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DeleteDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
-        <source>Only from library</source>
-        <translation>Sólo de la biblioteca</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation><numerusform>Estás a punto de eliminar %n archivo(s)</numerusform><numerusform>Estás a punto de eliminar %n archivo(s)</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_LibraryReloadDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
-        <source>Fast scan</source>
-        <translation>Búsqueda rápida</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Deep scan</source>
-        <translation>Búsqueda profunda</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Only scan for new and deleted files</source>
-        <translation>Sólo buscar archivos nuevos o borrados</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Scan all files in your library directory</source>
-        <translation>Escanear todos los archivos en tu carpeta de biblioteca</translation>
-    </message>
-</context>
-<context>
-    <name>Library::LocalLibraryMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
-        <source>Statistics</source>
-        <translation>Estadísticas</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit library</source>
-        <translation>Modificar biblioteca</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::MergeMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
-        <location line="+57"/>
-        <source>Merge</source>
-        <translation>Fusionar</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ControlsBase</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+104"/>
-        <source>Sayonara Player</source>
-        <translation>Reproductor Sayonara</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Written by %1</source>
-        <translation>Escrito por %1</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copyright</source>
-        <translation>Derechos de autor</translation>
-    </message>
-</context>
-<context>
-    <name>Menubar</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+350"/>
-        <source>View</source>
-        <translation>Ver</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+15"/>
-        <source>Help</source>
-        <translation>Ayuda</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Plugins</source>
-        <translation>Complementos</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Show large cover</source>
-        <translation>Mostrar portada grande</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Fullscreen</source>
-        <translation>Pantalla completa</translation>
-    </message>
-    <message>
-        <location line="+65"/>
-        <source>Media files</source>
-        <translation>Archivos multimedia</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Open Media files</source>
-        <translation>Abrir archivos multimedia</translation>
-    </message>
-    <message>
-        <location line="+61"/>
-        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
-        <translation>Para informes de error y solicitud de características por favor visita la página del proyecto de Sayonara en GitLab</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>FAQ</source>
-        <translation>FAQ</translation>
-    </message>
-    <message>
-        <location line="+14"/>
-        <source>About Sayonara</source>
-        <translation>Acerca de Sayonara</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Written by %1</source>
-        <translation>Escrito por %1</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>License</source>
-        <translation>Licencia</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Donate</source>
-        <translation>Donar</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
-        <translation>Gracias a todos los valientes traductores y a todos aquellos que ayudan construyendo los paquetes de Sayonara</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>And special thanks to those people with local music collections</source>
-        <translation>Y un agradecimiento especial a aquellas personas con colecciones de música locales</translation>
-    </message>
-</context>
-<context>
-    <name>TrayIconContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+127"/>
-        <source>Current song</source>
-        <translation>Canción actual</translation>
-    </message>
-</context>
-<context>
-    <name>VersionChecker</name>
-    <message>
-        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+69"/>
-        <source>A new version is available!</source>
-        <translation>¡Hay una nueva versión disponible!</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Playlist</name>
-    <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+440"/>
-        <source>Playlist name already exists</source>
-        <translation>Este nombre de lista ya existe</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ActionMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
-        <source>Please set library path first</source>
-        <translation>Seleccione primero la ruta de la biblioteca</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::BottomBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
-        <source>Please set library path first</source>
-        <translation>Seleccione primero la ruta de la biblioteca</translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>Cancel shutdown?</source>
-        <translation>¿Cancelar el apagado?</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+186"/>
-        <source>Jump to current track</source>
-        <translation>Saltar a la pista actual.</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show track in library</source>
-        <translation>Mostrar pista en la biblioteca</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Playlist mode</source>
-        <translation>Modo lista de reproducción</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::Model</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+456"/>
-        <source>Goto row</source>
-        <translation>Ir a la fila</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::TabBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+124"/>
-        <source>Media files</source>
-        <translation>Archivos multimedia</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Open Media files</source>
-        <translation>Abrir archivos multimedia</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::View</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+347"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Crossfader</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
-        <location line="+12"/>
-        <source>Crossfader</source>
-        <translation>Solapamiento</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 and %2</source>
-        <translation>%1 y %2</translation>
-    </message>
-    <message>
-        <location line="+63"/>
-        <source>Crossfader does not work with Alsa</source>
-        <translation>El mezclador no funciona con Alsa</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Gapless playback does not work with Alsa</source>
-        <translation>La reproducción continua no funciona con Alsa</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Equalizer</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
-        <location line="+47"/>
-        <source>Linked sliders</source>
-        <translation>Sliders enlazados</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <source>Equalizer</source>
-        <translation>Ecualizador</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_LevelPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
-        <source>Level</source>
-        <translation>Nivel</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_SpectrogramPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+78"/>
-        <source>Spectrogram</source>
-        <translation>Spectograma </translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Spectrum</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
-        <source>Spectrum</source>
-        <translation>Espectro</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_StyleSettings</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
-        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Hay opciones sin guardar.&lt;br /&gt;¿Guardar ahora?</translation>
-    </message>
-    <message>
-        <location line="+87"/>
-        <source>Please specify a name</source>
-        <translation>Por favor, especifique un nombre</translation>
-    </message>
-    <message>
-        <location line="+168"/>
-        <source>Save changes?</source>
-        <translation>¿Guardar los cambios?</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_PlaylistChooser</name>
-    <message>
-        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+89"/>
-        <location line="+36"/>
-        <source>No playlists found</source>
-        <translation>0 listas halladas</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Could not rename playlist</source>
-        <translation>No se pudo renombrar la lista de reprodución</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Name is invalid</source>
-        <translation>El nombre es inválido</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Do you really want to delete %1?</source>
-        <translation>Realmente deseas eliminar %1?</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Could not delete playlist %1</source>
-        <translation>No se pudo eliminar la lista de reproducción %1</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::AbstractStationPlugin</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+247"/>
-        <source>Cannot open stream</source>
-        <translation>No se puede abrir la fuente</translation>
-    </message>
-    <message>
-        <location line="+74"/>
-        <source>Please choose another name</source>
-        <translation>Por favor, escoge otro nombre</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>Do you really want to delete %1</source>
-        <translation>¿Realmente quiere borrar %1?</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Podcasts</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
-        <source>Podcast</source>
-        <translation>Podcast</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Stream</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+73"/>
-        <source>Search radio station</source>
-        <translation>Buscar estación de radio</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_EnginePreferences</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
-        <source>Audio</source>
-        <translation>Audio</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ShortcutEntry</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
-        <source>Enter shortcut</source>
-        <translation>Teclée el atajo</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Shortcut already in use</source>
-        <translation>Atajo ya usado</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Test</source>
-        <translation>Probar</translation>
-    </message>
-</context>
-<context>
-    <name>SomaFM::StationModel</name>
-    <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
-        <source>Cannot fetch stations</source>
-        <translation>No se encuentran estaciones (revisar conexión)</translation>
-    </message>
-</context>
-<context>
-    <name>SC::GUI_ArtistSearch</name>
-    <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+84"/>
-        <source>Query too short</source>
-        <translation>Solicitud muy corta</translation>
-    </message>
-    <message>
-        <location line="+85"/>
-        <source>No artists found</source>
-        <translation>Artistas no hallados</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+6"/>
-        <source>Found %n artist(s)</source>
-        <translation><numerusform>Se encontraron %n artistas(s)</numerusform><numerusform>Se encontraron %n artistas(s)</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+56"/>
-        <source>%n playlist(s) found</source>
-        <translation><numerusform>Se encontraron %n listas(s) de reproducción</numerusform><numerusform>Se encontraron %n listas(s) de reproducción</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+196"/>
-        <source>Play in new tab</source>
-        <translation>Reproducir en una nueva pestaña</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Standard view</source>
-        <translation>Vista estandar</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cover view</source>
-        <translation>Carátulas</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Directory view</source>
-        <translation>Vista de directorios</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Toolbar</source>
-        <translation>Barra de herramientas</translation>
-    </message>
-    <message>
-        <location line="+249"/>
-        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation>La barra de herramientas está visible cuando hay pistas con diferentes tipos de archivos enumerados en la vista de pista</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ImageSelectionDialog</name>
-    <message>
-        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
-        <source>Image files</source>
-        <translation>Archivos de imagen</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Any files</source>
-        <translation>Cualquier archivo</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Open image files</source>
-        <translation>Abrir archivos de imagen</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::StreamRecorderPreferenceAction</name>
-    <message>
-        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
-        <location line="+7"/>
-        <source>Stream Recorder</source>
-        <translation>Grabador de emisión</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ShortcutPreferenceAction</name>
-    <message>
-        <location line="+10"/>
-        <location line="+12"/>
-        <source>Shortcuts</source>
-        <translation>Atajos</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::MiniSearcher</name>
-    <message>
-        <location filename="../src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+92"/>
+        <location filename="../src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+73"/>
         <source>Arrow up</source>
         <translation>Flecha envío</translation>
     </message>
@@ -2275,24 +1742,8 @@
         <source>Next search result</source>
         <translation>Próximo resultado de búsqueda</translation>
     </message>
-</context>
-<context>
-    <name>Gui::LineEdit</name>
     <message>
-        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
-        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
-        <translation>Pista: Usa las flechas arriba y abajo para cambiar entre letras mayúsculas y minúsculas</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Remove special characters (letters)</source>
-        <translation>Omitir caracteres especiales (letras)</translation>
-    </message>
-</context>
-<context>
-    <name>Lang</name>
-    <message>
-        <location filename="../src/Utils/Language/Language.cpp" line="+78"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="-290"/>
         <source>About</source>
         <translation>Acerca de</translation>
     </message>
@@ -2423,6 +1874,11 @@
     </message>
     <message>
         <location line="+2"/>
+        <source>Case insensitive</source>
+        <translation>Insensible a mayúsculas</translation>
+    </message>
+    <message>
+        <location line="+2"/>
         <source>Clear</source>
         <translation>Borrar todo</translation>
     </message>
@@ -2503,12 +1959,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+88"/>
+        <location line="+92"/>
         <source>Delete</source>
         <translation>Borrar</translation>
     </message>
     <message>
-        <location line="-86"/>
+        <location line="-90"/>
         <source>Descending</source>
         <translation>Descendente</translation>
     </message>
@@ -2671,6 +2127,16 @@
         <location line="+3"/>
         <source>h</source>
         <translation>h</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ignore accents</source>
+        <translation>Ignorar acentos</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Ignore special characters</source>
+        <translation>Ignorar caracteres especiales</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2869,12 +2335,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+144"/>
+        <location line="+148"/>
         <source>Tracks</source>
         <translation>Pistas</translation>
     </message>
     <message>
-        <location line="-142"/>
+        <location line="-146"/>
         <source>Move down</source>
         <translation>Mover abajo</translation>
     </message>
@@ -2936,7 +2402,7 @@
     <message>
         <location line="+2"/>
         <source>Play in new tab</source>
-        <translation>Reproducir en nueva pestaña</translation>
+        <translation>Reproducir en una nueva pestaña</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2984,12 +2450,7 @@
         <translation>Pista anterior</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Purchase Url</source>
-        <translation>Url para compras</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Quit</source>
         <translation>Salir</translation>
     </message>
@@ -3072,6 +2533,11 @@
         <location line="+2"/>
         <source>Shuffle</source>
         <translation>Activar reproducción aleatoria</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Shuffle playlist</source>
+        <translation>Mezcla lista de reproducción</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3163,6 +2629,11 @@
         <location line="+2"/>
         <source>Similar artists</source>
         <translation>Artistas similares</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Smart Playlists</source>
+        <translation>Lista de reproducción inteligente</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3260,7 +2731,7 @@
         <translation>Año desconocido</translation>
     </message>
     <message>
-        <location line="+6"/>
+        <location line="+5"/>
         <source>Various</source>
         <translation>Varios</translation>
     </message>
@@ -3325,14 +2796,14 @@
         <translation>Ampliación</translation>
     </message>
     <message>
-        <location line="+22"/>
+        <location line="+23"/>
         <source>No directories</source>
         <translation>Sin directorios</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n directory(s)</source>
-        <translation><numerusform>%n directorio</numerusform><numerusform>%n directorios</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3340,9 +2811,9 @@
         <translation>Sin archivos</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n file(s)</source>
-        <translation><numerusform>%n archivo(s)</numerusform><numerusform>%n archivo(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3350,9 +2821,9 @@
         <translation>Sin listas de reproducción</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n playlist(s)</source>
-        <translation><numerusform>%n lista(s) de reproducción</numerusform><numerusform>%n lista(s) de reproducción</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3360,9 +2831,9 @@
         <translation>Sin pistas</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n pista(s)</numerusform><numerusform>%n pista(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
         <location line="+4"/>
@@ -3370,9 +2841,763 @@
         <translation>No se encontraron pistas</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s) found</source>
-        <translation><numerusform>Se encontraron %n pistas(s)</numerusform><numerusform>Se encontraron %n pistas(s)</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>ShutdownImpl</name>
+    <message>
+        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+73"/>
+        <source>Computer will shutdown after playlist has finished</source>
+        <translation>El ordenador se apagará al acabar la lista</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+29"/>
+        <location line="+32"/>
+        <source>Computer will shutdown in %n minute(s)</source>
+        <translation><numerusform>La computadora se apagará en %n minutos(s)</numerusform><numerusform>La computadora se apagará en %n minutos(s)</numerusform><numerusform>La computadora se apagará en %n minutos(s)</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>LastFM::Base</name>
+    <message>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+125"/>
+        <source>Cannot login to Last.fm</source>
+        <translation>No se pudo conectar a Last.fm</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::CoverButton</name>
+    <message>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
+        <source>Search an alternative cover</source>
+        <translation>Buscar una portada alternativa</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DoubleCalendarDialog</name>
+    <message>
+        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
+        <source>Select date range</source>
+        <translation>Seleccionar intervalo de fecha</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Start date</source>
+        <translation>Fecha de inicio</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>End date</source>
+        <translation>Fecha de término</translation>
+    </message>
+</context>
+<context>
+    <name>HistoryContainer</name>
+    <message>
+        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
+        <source>History</source>
+        <translation>Historial</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_InfoDialog</name>
+    <message>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
+        <source>Write cover to tracks</source>
+        <translation>Guardar la carátula junto al archivo de audio</translation>
+    </message>
+</context>
+<context>
+    <name>Library::CoverViewContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
+        <source>Toolbar</source>
+        <translation>Barra de herramientas</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_CoverView</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+193"/>
+        <source>Use Ctrl + mouse wheel to zoom</source>
+        <translation>Ampliación: Ctrl+Rueda</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+301"/>
+        <source>Rename by metadata</source>
+        <translation>Renombrar por metadatos</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Collapse all</source>
+        <translation>Colapsar todo</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move to another library</source>
+        <translation>Mover a otra librería</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy to another library</source>
+        <translation>Copiar a otra biblioteca</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>View in file manager</source>
+        <translation>Ver en el gestor de archivos</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::TreeView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+407"/>
+        <source>Copy here</source>
+        <translation>Copiar aquí</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move here</source>
+        <translation>Mover aquí</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DirectoryView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+215"/>
+        <source>Could not create directory</source>
+        <translation>No se pudo crear el directorio</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GenreView</name>
+    <message>
+        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
+        <source>Updating genres</source>
+        <translation>Actualizando géneros</translation>
+    </message>
+    <message>
+        <location line="+115"/>
+        <source>Do you really want to remove %1 from all tracks?</source>
+        <translation>¿Realmente desear remover %1 de todas las pistas?</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_EmptyLibrary</name>
+    <message>
+        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
+        <source>Please choose a name for your library</source>
+        <translation>Por favor escoge un nombre para tu biblioteca</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Please choose another name for your library</source>
+        <translation>Por favor escoge otro nombre para tu biblioteca</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>The file path is invalid</source>
+        <translation>La ruta del archivo es inválida</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library with the same file path already exists</source>
+        <translation>Ya existe una biblioteca con la misma ruta</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library which contains this file path already exists</source>
+        <translation>Ya existe una biblioteca con la misma ruta</translation>
+    </message>
+</context>
+<context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
+        <source>Resize columns</source>
+        <translation>Redimensionar columnas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resize columns automatically</source>
+        <translation>Redimensionar columnas automaticamente</translation>
+    </message>
+</context>
+<context>
+    <name>Library::TrackModel</name>
+    <message>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+138"/>
+        <source>kBit/s</source>
+        <translation>kBit/s</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DeleteDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
+        <source>Only from library</source>
+        <translation>Sólo de la biblioteca</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Estás a punto de eliminar %n archivo(s)</numerusform><numerusform>Estás a punto de eliminar %n archivo(s)</numerusform><numerusform>Estás a punto de eliminar %n archivo(s)</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_LibraryReloadDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
+        <source>Fast scan</source>
+        <translation>Búsqueda rápida</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Deep scan</source>
+        <translation>Búsqueda profunda</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Only scan for new and deleted files</source>
+        <translation>Sólo buscar archivos nuevos o borrados</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Scan all files in your library directory</source>
+        <translation>Escanear todos los archivos en tu carpeta de biblioteca</translation>
+    </message>
+</context>
+<context>
+    <name>Library::LocalLibraryMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
+        <source>Statistics</source>
+        <translation>Estadísticas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit library</source>
+        <translation>Modificar biblioteca</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::MergeMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
+        <location line="+57"/>
+        <source>Merge</source>
+        <translation>Fusionar</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ControlsBase</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+155"/>
+        <source>Sayonara Player</source>
+        <translation>Reproductor Sayonara</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Written by %1</source>
+        <translation>Escrito por %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copyright</source>
+        <translation>Derechos de autor</translation>
+    </message>
+</context>
+<context>
+    <name>Menubar</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+347"/>
+        <source>View</source>
+        <translation>Ver</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+15"/>
+        <source>Help</source>
+        <translation>Ayuda</translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>Plugins</source>
+        <translation>Complementos</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Show large cover</source>
+        <translation>Mostrar portada grande</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Fullscreen</source>
+        <translation>Pantalla completa</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>Media files</source>
+        <translation>Archivos multimedia</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open Media files</source>
+        <translation>Abrir archivos multimedia</translation>
+    </message>
+    <message>
+        <location line="+61"/>
+        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
+        <translation>Para informes de error y solicitud de características por favor visita la página del proyecto de Sayonara en GitLab</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>FAQ</source>
+        <translation>FAQ</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>About Sayonara</source>
+        <translation>Acerca de Sayonara</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Written by %1</source>
+        <translation>Escrito por %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>License</source>
+        <translation>Licencia</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Donate</source>
+        <translation>Donar</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
+        <translation>Gracias a todos los valientes traductores y a todos aquellos que ayudan construyendo los paquetes de Sayonara</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>And special thanks to those people with local music collections</source>
+        <translation>Y un agradecimiento especial a aquellas personas con colecciones de música locales</translation>
+    </message>
+</context>
+<context>
+    <name>TrayIconContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+129"/>
+        <source>Current song</source>
+        <translation>Canción actual</translation>
+    </message>
+</context>
+<context>
+    <name>VersionChecker</name>
+    <message>
+        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+70"/>
+        <source>A new version is available!</source>
+        <translation>¡Hay una nueva versión disponible!</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Playlist</name>
+    <message>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+441"/>
+        <source>Playlist name already exists</source>
+        <translation>Este nombre de lista ya existe</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ActionMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+198"/>
+        <source>Please set library path first</source>
+        <translation>Seleccione primero la ruta de la biblioteca</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::BottomBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+236"/>
+        <source>Please set library path first</source>
+        <translation>Seleccione primero la ruta de la biblioteca</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Cancel shutdown?</source>
+        <translation>¿Cancelar el apagado?</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+205"/>
+        <source>Jump to current track</source>
+        <translation>Saltar a la pista actual.</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show track in library</source>
+        <translation>Mostrar pista en la biblioteca</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Jump to next album</source>
+        <translation>Saltar al próximo álbum</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Playlist mode</source>
+        <translation>Modo lista de reproducción</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::Model</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+493"/>
+        <source>Goto row</source>
+        <translation>Ir a la fila</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::TabBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
+        <source>Do you want relative file paths in your playlist?</source>
+        <translation>¿Desea rutas de archivo relativas en su lista de reproducción?</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Media files</source>
+        <translation>Archivos multimedia</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Open Media files</source>
+        <translation>Abrir archivos multimedia</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::View</name>
+    <message numerus="yes">
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+403"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Está a punto de eliminar %n archivo</numerusform><numerusform>Está a punto de eliminar %n archivos</numerusform><numerusform>Está a punto de eliminar %n archivo(s)</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Crossfader</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
+        <location line="+12"/>
+        <source>Crossfader</source>
+        <translation>Solapamiento</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 and %2</source>
+        <translation>%1 y %2</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Crossfader does not work with Alsa</source>
+        <translation>El mezclador no funciona con Alsa</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Gapless playback does not work with Alsa</source>
+        <translation>La reproducción continua no funciona con Alsa</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Equalizer</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
+        <location line="+47"/>
+        <source>Linked sliders</source>
+        <translation>Sliders enlazados</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Equalizer</source>
+        <translation>Ecualizador</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_LevelPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
+        <source>Level</source>
+        <translation>Nivel</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_SpectrogramPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+75"/>
+        <source>Spectrogram</source>
+        <translation>Spectograma </translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Spectrum</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
+        <source>Spectrum</source>
+        <translation>Espectro</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_StyleSettings</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
+        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
+        <translation>Hay opciones sin guardar.&lt;br /&gt;¿Guardar ahora?</translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <source>Please specify a name</source>
+        <translation>Por favor, especifique un nombre</translation>
+    </message>
+    <message>
+        <location line="+168"/>
+        <source>Save changes?</source>
+        <translation>¿Guardar los cambios?</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_PlaylistChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+87"/>
+        <location line="+36"/>
+        <source>No playlists found</source>
+        <translation>0 listas halladas</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Could not rename playlist</source>
+        <translation>No se pudo renombrar la lista de reprodución</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Name is invalid</source>
+        <translation>El nombre es inválido</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Do you really want to delete %1?</source>
+        <translation>Realmente deseas eliminar %1?</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Could not delete playlist %1</source>
+        <translation>No se pudo eliminar la lista de reproducción %1</translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxIntegerDialog</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+109"/>
+        <source>Category</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>TimeSpanChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
+        <source>Create time span</source>
+        <translation>Crear un intervalo</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::AbstractStationPlugin</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+249"/>
+        <source>Cannot open stream</source>
+        <translation>No se puede abrir la fuente</translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Please choose another name</source>
+        <translation>Por favor, escoge otro nombre</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Do you really want to delete %1</source>
+        <translation>¿Realmente quiere borrar %1?</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Podcasts</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
+        <source>Podcast</source>
+        <translation>Podcast</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+74"/>
+        <source>Search radio station</source>
+        <translation>Buscar estación de radio</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_EnginePreferences</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
+        <source>Audio</source>
+        <translation>Audio</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ShortcutEntry</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
+        <source>Enter shortcut</source>
+        <translation>Teclée el atajo</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shortcut already in use</source>
+        <translation>Atajo ya usado</translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Test</source>
+        <translation>Probar</translation>
+    </message>
+</context>
+<context>
+    <name>SomaFM::StationModel</name>
+    <message>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
+        <source>Cannot fetch stations</source>
+        <translation>No se encuentran estaciones (revisar conexión)</translation>
+    </message>
+</context>
+<context>
+    <name>SC::GUI_ArtistSearch</name>
+    <message>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+127"/>
+        <source>Query too short</source>
+        <translation>Solicitud muy corta</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>No artist named %1 found</source>
+        <translation>Ningún artista %1 encontrado con ese nombre</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No artists found</source>
+        <translation>Artistas no hallados</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+6"/>
+        <source>Found %n artist(s)</source>
+        <translation><numerusform>Se encontraron %n artistas(s)</numerusform><numerusform>Se encontraron %n artistas(s)</numerusform><numerusform>Se encontraron %n artistas(s)</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+97"/>
+        <source>%n playlist(s) found</source>
+        <translation><numerusform>Se encontraron %n listas(s) de reproducción</numerusform><numerusform>Se encontraron %n listas(s) de reproducción</numerusform><numerusform>Se encontraron %n listas(s) de reproducción</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+186"/>
+        <source>Standard view</source>
+        <translation>Vista estandar</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Cover view</source>
+        <translation>Carátulas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Directory view</source>
+        <translation>Vista de directorios</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Toolbar</source>
+        <translation>Barra de herramientas</translation>
+    </message>
+    <message>
+        <location line="+200"/>
+        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
+        <translation>La barra de herramientas está visible cuando hay pistas con diferentes tipos de archivos enumerados en la vista de pista</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ImageSelectionDialog</name>
+    <message>
+        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
+        <source>Image files</source>
+        <translation>Archivos de imagen</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Any files</source>
+        <translation>Cualquier archivo</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Open image files</source>
+        <translation>Abrir archivos de imagen</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::StreamRecorderPreferenceAction</name>
+    <message>
+        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
+        <location line="+7"/>
+        <source>Stream Recorder</source>
+        <translation>Grabador de emisión</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ShortcutPreferenceAction</name>
+    <message>
+        <location line="+10"/>
+        <location line="+12"/>
+        <source>Shortcuts</source>
+        <translation>Atajos</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DirectoryChooser</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+58"/>
+        <source>Choose directory</source>
+        <translation>Escoger carpeta</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::LineEdit</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
+        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
+        <translation>Pista: Usa las flechas arriba y abajo para cambiar entre letras mayúsculas y minúsculas</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove special characters (letters)</source>
+        <translation>Omitir caracteres especiales (letras)</translation>
     </message>
 </context>
 </TS>

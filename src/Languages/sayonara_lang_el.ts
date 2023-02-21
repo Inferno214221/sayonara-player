@@ -781,7 +781,7 @@
         <translation>Χρονικό όριο (ms)</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+98"/>
+        <location filename="../src/Gui/Preferences/Notifications/GUI_NotificationPreferences.cpp" line="+100"/>
         <source>Notifications</source>
         <translation>Ειδοποιήσεις</translation>
     </message>
@@ -789,27 +789,32 @@
 <context>
     <name>GUI_PlayerPreferences</name>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+17"/>
-        <source>Hide instead of close</source>
-        <translation>Απόκρυψη αντί για κλείσιμο</translation>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+31"/>
+        <source>Show system tray icon</source>
+        <translation>Εμφάνιση του εικονιδίου πλαισίου συστήματος</translation>
     </message>
     <message>
-        <location line="+21"/>
-        <source>Start hidden</source>
-        <translation>Έναρξη σε απόκρυψη</translation>
-    </message>
-    <message>
-        <location line="+52"/>
+        <location line="+7"/>
         <source>Update notifications</source>
         <translation>Ειδοποιήσεις ενημερώσεων</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show system tray icon</source>
-        <translation>Εμφάνιση του εικονιδίου πλαισίου συστήματος</translation>
+        <source>Start hidden</source>
+        <translation>Έναρξη σε απόκρυψη</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+108"/>
+        <location line="+59"/>
+        <source>Hide instead of close</source>
+        <translation>Απόκρυψη αντί για κλείσιμο</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Inhibit shutdown/suspend during playback</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.cpp" line="+117"/>
         <source>This might cause Sayonara not to show up again.</source>
         <translation>Αυτό μπορεί να εμποδίσει την επόμενη εμφάνιση του Sayonara.</translation>
     </message>
@@ -842,7 +847,7 @@
         <translation>Φόρτωση των αποθηκευμένων λιστών αναπαραγωγής</translation>
     </message>
     <message>
-        <location line="+17"/>
+        <location line="+10"/>
         <source>Start playing</source>
         <translation>Έναρξη αναπαραγωγής</translation>
     </message>
@@ -858,37 +863,36 @@
     </message>
     <message>
         <location line="+10"/>
-        <source>Stop behaviour</source>
-        <translation>Συμπεριφορά διακοπής</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Load last track after pressing stop</source>
-        <translation>Φόρτωση του τελευταίου κομματιού με το πάτημα του κουμπιού διακοπής</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <location line="+100"/>
-        <source>Current track</source>
-        <translation>Τρέχον τραγούδι</translation>
-    </message>
-    <message>
-        <location line="-94"/>
-        <source>Jump to current track when track changes</source>
-        <translation>Μετάβαση στο επόμενο τραγούδι όταν αλλάξει το τωρινό</translation>
-    </message>
-    <message>
-        <location line="+10"/>
-        <source>Search</source>
-        <translation>Αναζήτηση</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Play track after search</source>
+        <source>Start up from file manager</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location line="+28"/>
+        <location line="+6"/>
+        <source>Use special playlist when starting Sayonara from file manager</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+9"/>
+        <source>Playlist name</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+15"/>
+        <source>Load last track after resuming from stopped state</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Play track when pressing &quot;Enter&quot; in search field</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Jump to current track in list when track changes</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+25"/>
         <source>Look</source>
         <translation>Εμφάνιση</translation>
     </message>
@@ -923,7 +927,12 @@
         <translation>Εμφάνιση αξιολόγησης</translation>
     </message>
     <message>
-        <location line="+16"/>
+        <location line="+10"/>
+        <source>Current track</source>
+        <translation>Τρέχον τραγούδι</translation>
+    </message>
+    <message>
+        <location line="+6"/>
         <source>Custom font color in standard theme</source>
         <translation>Προσαρμοσμένο χρώμα γραμματοσειράς στο προκαθορισμένο θέμα</translation>
     </message>
@@ -965,7 +974,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+254"/>
+        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+276"/>
         <source>Fix startup playback issue</source>
         <translation type="unfinished"/>
     </message>
@@ -1458,7 +1467,7 @@
 <context>
     <name>StreamServer</name>
     <message>
-        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+221"/>
+        <location filename="../src/Components/Broadcasting/StreamServer.cpp" line="+220"/>
         <source>%1 wants to listen to your music.</source>
         <translation>Ο %1 θέλει να ακούσει την μουσική σας.</translation>
     </message>
@@ -1474,7 +1483,7 @@
 <context>
     <name>AbstractLibrary</name>
     <message>
-        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+738"/>
+        <location filename="../src/Components/Library/AbstractLibrary.cpp" line="+641"/>
         <source>All %1 could be removed</source>
         <translation>Οι/τα %1 αφαιρέθηκαν παντελώς</translation>
     </message>
@@ -1505,17 +1514,17 @@
 <context>
     <name>Library::ReloadThread</name>
     <message>
-        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+220"/>
+        <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+226"/>
         <source>Looking for covers</source>
         <translation>Αναζήτηση εξώφυλλων</translation>
     </message>
     <message>
-        <location line="+42"/>
+        <location line="+43"/>
         <source>Reading files</source>
         <translation>Ανάγνωση αρχείων</translation>
     </message>
     <message>
-        <location line="+109"/>
+        <location line="+112"/>
         <source>Deleting orphaned tracks</source>
         <translation>Διαγραφή ορφανών κομματιών</translation>
     </message>
@@ -1537,7 +1546,7 @@
 <context>
     <name>LanguagePreferences</name>
     <message>
-        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+161"/>
+        <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+170"/>
         <source>Cannot check for language update</source>
         <translation>Ο έλεγχος για ενημερώσεις γλώσσας είναι αδύνατος</translation>
     </message>
@@ -1575,7 +1584,7 @@
         <translation>Αδύνατη η λήψη της ενημέρωσης της γλώσσας</translation>
     </message>
     <message>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+109"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylist.cpp" line="+117"/>
         <source>Between</source>
         <translation type="unfinished"/>
     </message>
@@ -1586,7 +1595,7 @@
     </message>
     <message>
         <location filename="../src/Components/SmartPlaylists/SmartPlaylistByCreateDate.cpp" line="+78"/>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+59"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistByYear.cpp" line="+60"/>
         <source>%1 - %2</source>
         <translation type="unfinished"/>
     </message>
@@ -1616,7 +1625,7 @@
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+117"/>
+        <location filename="../src/Components/SmartPlaylists/SmartPlaylistRandomAlbum.cpp" line="+118"/>
         <source>Random albums</source>
         <translation type="unfinished"/>
     </message>
@@ -1679,13 +1688,39 @@
     <message>
         <location line="+80"/>
         <location line="+110"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="+368"/>
         <source>Purchase Url</source>
         <translation>Url αγοράς</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+123"/>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+106"/>
         <source>Between %1 and %2</source>
         <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+60"/>
+        <source>All libraries</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_StationSearcher.cpp" line="+55"/>
+        <source>Show radio stations from %1 to %2</source>
+        <translation>Εμφάνιση ραδιοφωνικών σταθμών από %1 έως %2</translation>
+    </message>
+    <message>
+        <location line="+84"/>
+        <source>Country</source>
+        <translation>Χώρα</translation>
+    </message>
+    <message>
+        <location line="+38"/>
+        <source>Type</source>
+        <translation>Τύπος</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Url</source>
+        <translation>Url</translation>
     </message>
     <message>
         <location filename="../src/Gui/Utils/SearchableWidget/MiniSearcher.cpp" line="+73"/>
@@ -1707,757 +1742,8 @@
         <source>Next search result</source>
         <translation>Επόμενο αποτέλεσμα αναζήτησης</translation>
     </message>
-</context>
-<context>
-    <name>Shutdown</name>
     <message>
-        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+94"/>
-        <source>Computer will shutdown after playlist has finished</source>
-        <translation>Ο υπολογιστής θα τερματιστεί μετά την ολοκλήρωση της λίστας αναπαραγωγής</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+29"/>
-        <location line="+30"/>
-        <source>Computer will shutdown in %n minute(s)</source>
-        <translation><numerusform>Ο υπολογιστής θα τερματιστεί σε %n λεπτό</numerusform><numerusform>Ο υπολογιστής θα τερματιστεί σε %n λεπτά</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>LastFM::Base</name>
-    <message>
-        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+126"/>
-        <source>Cannot login to Last.fm</source>
-        <translation>Αδύνατη η είσοδος στο Last.fm</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::CoverButton</name>
-    <message>
-        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
-        <source>Search an alternative cover</source>
-        <translation>Αναζήτηση εναλλακτικού εξώφυλλου</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::DoubleCalendarDialog</name>
-    <message>
-        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
-        <source>Select date range</source>
-        <translation>Επιλέξτε εύρος ημερομηνίας</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>Start date</source>
-        <translation>Ημερομηνία έναρξης</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>End date</source>
-        <translation>Ημερομηνία λήξης</translation>
-    </message>
-</context>
-<context>
-    <name>HistoryContainer</name>
-    <message>
-        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
-        <source>History</source>
-        <translation>Ιστορικό</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_InfoDialog</name>
-    <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
-        <source>Write cover to tracks</source>
-        <translation>Εγγραφή του εξώφυλλου στα κομμάτια</translation>
-    </message>
-</context>
-<context>
-    <name>Library::CoverViewContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
-        <source>Toolbar</source>
-        <translation>Γραμμή εργαλείων</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_CoverView</name>
-    <message>
-        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+193"/>
-        <source>Use Ctrl + mouse wheel to zoom</source>
-        <translation>Χρήση του Ctrl + τροχός ποντικιού για εστίαση</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+302"/>
-        <source>Rename by metadata</source>
-        <translation>Μετονομασία ανά μεταδεδομένων</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Collapse all</source>
-        <translation>Σύμπτυξη όλων</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Move to another library</source>
-        <translation>Μετακίνηση σε άλλη βιβλιοθήκη</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Copy to another library</source>
-        <translation>Αντιγραφή σε άλλη βιβλιοθήκη</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>View in file manager</source>
-        <translation>Προβολή στον διαχειριστή αρχείων</translation>
-    </message>
-</context>
-<context>
-    <name>Directory::TreeView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+409"/>
-        <source>Copy here</source>
-        <translation>Αντιγραφή εδώ</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Move here</source>
-        <translation>Μετακίνηση εδώ</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DirectoryView</name>
-    <message>
-        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+215"/>
-        <source>Could not create directory</source>
-        <translation>Αδύνατη η δημιουργία του καταλόγου</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GenreView</name>
-    <message>
-        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
-        <source>Updating genres</source>
-        <translation>Ενημέρωση ειδών μουσικής</translation>
-    </message>
-    <message>
-        <location line="+115"/>
-        <source>Do you really want to remove %1 from all tracks?</source>
-        <translation>Επιθυμείτε πραγματικά την αφαίρεση του %1 από όλα τα κομμάτια;</translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_EmptyLibrary</name>
-    <message>
-        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
-        <source>Please choose a name for your library</source>
-        <translation>Παρακαλώ διαλέξτε ένα όνομα για τη βιβλιοθήκη σας</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Please choose another name for your library</source>
-        <translation>Παρακαλώ επιλέξτε ένα άλλο όνομα για τη βιβλιοθήκη σας</translation>
-    </message>
-    <message>
-        <location line="+21"/>
-        <source>The file path is invalid</source>
-        <translation>Η διαδρομή αρχείου δεν είναι έγκυρη</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library with the same file path already exists</source>
-        <translation>Μια βιβλιοθήκη με την ίδια διαδρομή αρχείου υπάρχει ήδη</translation>
-    </message>
-    <message>
-        <location line="+7"/>
-        <source>A library which contains this file path already exists</source>
-        <translation>Μια βιβλιοθήκη που περιέχει αυτήν την διαδρομή αρχείου υπάρχει ήδη</translation>
-    </message>
-</context>
-<context>
-    <name>Library::HeaderView</name>
-    <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
-        <source>Resize columns</source>
-        <translation>Αλλαγή μεγέθους στηλών</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Resize columns automatically</source>
-        <translation>Αυτόματη αλλαγή μεγέθους στηλών</translation>
-    </message>
-</context>
-<context>
-    <name>Library::TrackModel</name>
-    <message>
-        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+138"/>
-        <source>kBit/s</source>
-        <translation>kBit/s</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_DeleteDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
-        <source>Only from library</source>
-        <translation>Μόνο από την βιβλιοθήκη</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+4"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation><numerusform>Πρόκειται να διαγράψετε %n αρχείο</numerusform><numerusform>Πρόκειται να διαγράψετε %n αρχεία</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::GUI_LibraryReloadDialog</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
-        <source>Fast scan</source>
-        <translation>Γρήγορη σάρωση</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Deep scan</source>
-        <translation>Βαθιά σάρωση</translation>
-    </message>
-    <message>
-        <location line="+34"/>
-        <source>Only scan for new and deleted files</source>
-        <translation>Σάρωση για νέα και διαγραμμένα αρχεία μόνο</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Scan all files in your library directory</source>
-        <translation>Σάρωση όλων των αρχείων στον κατάλογο της βιβλιοθήκης</translation>
-    </message>
-</context>
-<context>
-    <name>Library::LocalLibraryMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
-        <source>Statistics</source>
-        <translation>Στατιστικά</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Edit library</source>
-        <translation>Επεξεργασία της βιβλιοθήκης</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::MergeMenu</name>
-    <message>
-        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
-        <location line="+57"/>
-        <source>Merge</source>
-        <translation>Συγχώνευση</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ControlsBase</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+103"/>
-        <source>Sayonara Player</source>
-        <translation>Αναπαραγωγέας Sayonara</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Written by %1</source>
-        <translation>Γράφτηκε από %1</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Copyright</source>
-        <translation>Πνευματικά δικαιώματα</translation>
-    </message>
-</context>
-<context>
-    <name>Menubar</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+349"/>
-        <source>View</source>
-        <translation>Προβολή</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <location line="+15"/>
-        <source>Help</source>
-        <translation>Βοήθεια</translation>
-    </message>
-    <message>
-        <location line="-14"/>
-        <source>Plugins</source>
-        <translation>Πρόσθετα</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Show large cover</source>
-        <translation>Εμφάνιση μεγάλου εξώφυλλου</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Fullscreen</source>
-        <translation>Πλήρης οθόνη</translation>
-    </message>
-    <message>
-        <location line="+67"/>
-        <source>Media files</source>
-        <translation>Αρχεία πολυμέσων</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Open Media files</source>
-        <translation>Άνοιγμα αρχείων πολυμέσων</translation>
-    </message>
-    <message>
-        <location line="+61"/>
-        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
-        <translation>Για αναφορές σφαλμάτων και αιτήσεις νέων χαρακτηριστικών παρακαλώ ανατρέξτε στην σελίδα του έργου Sayonara στο GitLab</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>FAQ</source>
-        <translation>Συχνές ερωτήσεις</translation>
-    </message>
-    <message>
-        <location line="+17"/>
-        <source>About Sayonara</source>
-        <translation>Σχετικά με το Sayonara</translation>
-    </message>
-    <message>
-        <location line="+12"/>
-        <source>Written by %1</source>
-        <translation>Γράφτηκε από %1</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>License</source>
-        <translation>Άδεια χρήσης</translation>
-    </message>
-    <message>
-        <location line="+4"/>
-        <source>Donate</source>
-        <translation>Δωρεά</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
-        <translation>Ευχαριστώ όλους τους γενναίους μεταφραστές και όλους όσοι βοηθούν στην κατασκευή πακέτων του Sayonara</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>And special thanks to those people with local music collections</source>
-        <translation>Και ευχαριστώ επίσης σε όλους αυτούς με τις τοπικές τους μουσικές συλλογές</translation>
-    </message>
-</context>
-<context>
-    <name>TrayIconContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+126"/>
-        <source>Current song</source>
-        <translation>Τρέχον τραγούδι</translation>
-    </message>
-</context>
-<context>
-    <name>VersionChecker</name>
-    <message>
-        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+70"/>
-        <source>A new version is available!</source>
-        <translation>Μια νέα έκδοση είναι διαθέσιμη!</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Playlist</name>
-    <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+436"/>
-        <source>Playlist name already exists</source>
-        <translation>Το όνομα της λίστας αναπαραγωγής υπάρχει ήδη</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ActionMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+200"/>
-        <source>Please set library path first</source>
-        <translation>Παρακαλώ ορίστε τη διαδρομή της βιβλιοθήκης πρώτα</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::BottomBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+246"/>
-        <source>Please set library path first</source>
-        <translation>Παρακαλώ ορίστε τη διαδρομή της βιβλιοθήκης πρώτα</translation>
-    </message>
-    <message>
-        <location line="+50"/>
-        <source>Cancel shutdown?</source>
-        <translation>Ακύρωση του τερματισμού;</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+200"/>
-        <source>Jump to current track</source>
-        <translation>Μεταπήδηση στο τρέχον κομμάτι</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Show track in library</source>
-        <translation>Προβολή κομματιού στη βιβλιοθήκη</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Jump to next album</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Playlist mode</source>
-        <translation>Λειτουργία λίστας αναπαραγωγής</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::Model</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+491"/>
-        <source>Goto row</source>
-        <translation>Μετάβαση στη γραμμή</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::TabBar</name>
-    <message>
-        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
-        <source>Do you want relative file paths in your playlist?</source>
-        <translation>Θέλετε να χρησιμοποιούνται σχετικές διαδρομές αρχείων στη λίστα αναπαραγωγής;</translation>
-    </message>
-    <message>
-        <location line="+11"/>
-        <source>Media files</source>
-        <translation>Αρχεία πολυμέσων</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>Open Media files</source>
-        <translation>Άνοιγμα αρχείων πολυμέσων</translation>
-    </message>
-</context>
-<context>
-    <name>Playlist::View</name>
-    <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+396"/>
-        <source>You are about to delete %n file(s)</source>
-        <translation><numerusform>Πρόκειται να διαγράψετε %n αρχείο</numerusform><numerusform>Πρόκειται να διαγράψετε %n αρχεία</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Crossfader</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
-        <location line="+12"/>
-        <source>Crossfader</source>
-        <translation>Ομαλή μετάβαση</translation>
-    </message>
-    <message>
-        <location line="+2"/>
-        <source>%1 and %2</source>
-        <translation>%1 και %2</translation>
-    </message>
-    <message>
-        <location line="+63"/>
-        <source>Crossfader does not work with Alsa</source>
-        <translation>Η ομαλή μετάβαση κομματιών δεν λειτουργεί με Alsa</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Gapless playback does not work with Alsa</source>
-        <translation>Η αναπαραγωγή χωρίς ενδιάμεσα κενά δεν λειτουργεί με Alsa</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Equalizer</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
-        <location line="+47"/>
-        <source>Linked sliders</source>
-        <translation>Συνδεδεμένοι ολισθητές</translation>
-    </message>
-    <message>
-        <location line="-9"/>
-        <source>Equalizer</source>
-        <translation>Ισοσταθμιστής</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_LevelPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
-        <source>Level</source>
-        <translation>Ένταση</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_SpectrogramPainter</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+78"/>
-        <source>Spectrogram</source>
-        <translation>Φασματογράφημα</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Spectrum</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
-        <source>Spectrum</source>
-        <translation>Φάσμα</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_StyleSettings</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
-        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
-        <translation>Υπάρχουν μερικές μη αποθηκευμένες ρυθμίσεις&lt;br /&gt;Να αποθηκευτούν τώρα;</translation>
-    </message>
-    <message>
-        <location line="+87"/>
-        <source>Please specify a name</source>
-        <translation>Παρακαλώ προσδιορίστε ένα όνομα</translation>
-    </message>
-    <message>
-        <location line="+168"/>
-        <source>Save changes?</source>
-        <translation>Να αποθηκευτούν οι αλλαγές;</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_PlaylistChooser</name>
-    <message>
-        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+87"/>
-        <location line="+36"/>
-        <source>No playlists found</source>
-        <translation>Δεν βρέθηκαν λίστες αναπαραγωγής</translation>
-    </message>
-    <message>
-        <location line="+35"/>
-        <source>Could not rename playlist</source>
-        <translation>Αδύνατη η μετονομασία της λίστας αναπαραγωγής</translation>
-    </message>
-    <message>
-        <location line="+3"/>
-        <source>Name is invalid</source>
-        <translation>Το όνομα δεν είναι έγκυρο</translation>
-    </message>
-    <message>
-        <location line="+13"/>
-        <source>Do you really want to delete %1?</source>
-        <translation>Επιθυμείτε πραγματικά την διαγραφή του %1;</translation>
-    </message>
-    <message>
-        <location line="+6"/>
-        <source>Could not delete playlist %1</source>
-        <translation>Αδύνατη η διαγραφή της λίστας αναπαραγωγής %1</translation>
-    </message>
-</context>
-<context>
-    <name>TimeSpanChooser</name>
-    <message>
-        <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
-        <source>Create time span</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>Gui::AbstractStationPlugin</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+249"/>
-        <source>Cannot open stream</source>
-        <translation>Αδύνατο το άνοιγμα της ροής</translation>
-    </message>
-    <message>
-        <location line="+75"/>
-        <source>Please choose another name</source>
-        <translation>Παρακαλώ επιλέξτε ένα άλλο όνομα</translation>
-    </message>
-    <message>
-        <location line="+37"/>
-        <source>Do you really want to delete %1</source>
-        <translation>Επιθυμείτε πραγματικά την διαγραφή του %1;</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Podcasts</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
-        <source>Podcast</source>
-        <translation>Διαδικτυακή εκπομπή</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_Stream</name>
-    <message>
-        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+74"/>
-        <source>Search radio station</source>
-        <translation>Αναζήτηση ραδιοφωνικού σταθμού</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_EnginePreferences</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
-        <source>Audio</source>
-        <translation>Ήχος</translation>
-    </message>
-</context>
-<context>
-    <name>GUI_ShortcutEntry</name>
-    <message>
-        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
-        <source>Enter shortcut</source>
-        <translation>Εισαγωγή συντόμευσης</translation>
-    </message>
-    <message>
-        <location line="+25"/>
-        <source>Shortcut already in use</source>
-        <translation>Η συντόμευση χρησιμοποιείται ήδη</translation>
-    </message>
-    <message>
-        <location line="+59"/>
-        <source>Test</source>
-        <translation>Έλεγχος</translation>
-    </message>
-</context>
-<context>
-    <name>SomaFM::StationModel</name>
-    <message>
-        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
-        <source>Cannot fetch stations</source>
-        <translation>Αδύνατη η λήψη των σταθμών</translation>
-    </message>
-</context>
-<context>
-    <name>SC::GUI_ArtistSearch</name>
-    <message>
-        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+127"/>
-        <source>Query too short</source>
-        <translation>Το ερώτημα είναι πολύ σύντομο</translation>
-    </message>
-    <message>
-        <location line="+67"/>
-        <source>No artist named %1 found</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>No artists found</source>
-        <translation>Δεν βρέθηκαν καλλιτέχνες</translation>
-    </message>
-    <message numerus="yes">
-        <location line="+6"/>
-        <source>Found %n artist(s)</source>
-        <translation><numerusform>Βρέθηκε %n καλλιτέχνης</numerusform><numerusform>Βρέθηκαν %n καλλιτέχνες</numerusform></translation>
-    </message>
-    <message numerus="yes">
-        <location line="+97"/>
-        <source>%n playlist(s) found</source>
-        <translation><numerusform>Βρέθηκε %n λίστα αναπαραγωγής</numerusform><numerusform>Βρέθηκαν %n λίστες αναπαραγωγής</numerusform></translation>
-    </message>
-</context>
-<context>
-    <name>Library::ContextMenu</name>
-    <message>
-        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+186"/>
-        <source>Standard view</source>
-        <translation>Τυπική προβολή</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Cover view</source>
-        <translation>Προβολή εξώφυλλου</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Directory view</source>
-        <translation>Προβολή φακέλου</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Toolbar</source>
-        <translation>Γραμμή εργαλείων</translation>
-    </message>
-    <message>
-        <location line="+200"/>
-        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
-        <translation>Η γραμμή εργαλείων είναι ορατή όταν υπάρχουν κομμάτια διαφορετικών τύπων αρχείου στην προβολή κομματιών</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ImageSelectionDialog</name>
-    <message>
-        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
-        <source>Image files</source>
-        <translation>Αρχεία εικόνας</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Any files</source>
-        <translation>Οποιαδήποτε αρχεία</translation>
-    </message>
-    <message>
-        <location line="+5"/>
-        <source>Open image files</source>
-        <translation>Άνοιγμα αρχείων εικόνας</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::StreamRecorderPreferenceAction</name>
-    <message>
-        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
-        <location line="+7"/>
-        <source>Stream Recorder</source>
-        <translation>Καταγραφέας ροής</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::ShortcutPreferenceAction</name>
-    <message>
-        <location line="+10"/>
-        <location line="+12"/>
-        <source>Shortcuts</source>
-        <translation>Συντομεύσεις</translation>
-    </message>
-</context>
-<context>
-    <name>Gui::DirectoryChooser</name>
-    <message>
-        <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+58"/>
-        <source>Choose directory</source>
-        <translation type="unfinished"/>
-    </message>
-</context>
-<context>
-    <name>Gui::LineEdit</name>
-    <message>
-        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
-        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
-        <translation>Συμβουλή: Χρησιμοποιείστε τα πλήκτρα πάνω και κάτω βέλους για εναλλαγή μεταξύ κεφαλαίων και μικρών γραμμάτων</translation>
-    </message>
-    <message>
-        <location line="+1"/>
-        <source>Remove special characters (letters)</source>
-        <translation>Αφαίρεση ειδικών χαρακτήρων (γράμματα)</translation>
-    </message>
-</context>
-<context>
-    <name>Lang</name>
-    <message>
-        <location filename="../src/Utils/Language/Language.cpp" line="+85"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="-290"/>
         <source>About</source>
         <translation>Σχετικά</translation>
     </message>
@@ -3164,12 +2450,7 @@
         <translation>Προηγούμενο κομμάτι</translation>
     </message>
     <message>
-        <location line="+2"/>
-        <source>Purchase Url</source>
-        <translation>Url αγοράς</translation>
-    </message>
-    <message>
-        <location line="+2"/>
+        <location line="+4"/>
         <source>Quit</source>
         <translation>Έξοδος</translation>
     </message>
@@ -3261,7 +2542,7 @@
     <message>
         <location line="+2"/>
         <source>Shutdown</source>
-        <translation>Τερματισμός λειτουργείας</translation>
+        <translation>Τερματισμός</translation>
     </message>
     <message>
         <location line="+2"/>
@@ -3515,54 +2796,808 @@
         <translation>Εστίαση</translation>
     </message>
     <message>
-        <location line="+26"/>
+        <location line="+23"/>
         <source>No directories</source>
         <translation>Κανένας κατάλογος</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n directory(s)</source>
-        <translation><numerusform>%n κατάλογος</numerusform><numerusform>%n κατάλογοι</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No files</source>
         <translation>Κανένα αρχείο</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n file(s)</source>
-        <translation><numerusform>%n αρχείο</numerusform><numerusform>%n αρχεία</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No playlists</source>
         <translation>Καμιά λίστα αναπαραγωγής</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n playlist(s)</source>
-        <translation><numerusform>%n λίστα αναπαραγωγής</numerusform><numerusform>%n λίστες αναπαραγωγής</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No tracks</source>
         <translation>Κανένα κομμάτι</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s)</source>
-        <translation><numerusform>%n κομμάτι</numerusform><numerusform>%n κομμάτια</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+4"/>
         <source>No tracks found</source>
         <translation>Δεν βρέθηκαν κομμάτια</translation>
     </message>
     <message numerus="yes">
-        <location line="+3"/>
+        <location line="+1"/>
         <source>%n track(s) found</source>
-        <translation><numerusform>Βρέθηκε %n κομμάτι</numerusform><numerusform>Βρέθηκαν %n κομμάτια</numerusform></translation>
+        <translation type="unfinished"><numerusform></numerusform><numerusform></numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>ShutdownImpl</name>
+    <message>
+        <location filename="../src/Components/Shutdown/Shutdown.cpp" line="+73"/>
+        <source>Computer will shutdown after playlist has finished</source>
+        <translation>Ο υπολογιστής θα τερματιστεί μετά την ολοκλήρωση της λίστας αναπαραγωγής</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+29"/>
+        <location line="+32"/>
+        <source>Computer will shutdown in %n minute(s)</source>
+        <translation><numerusform>Ο υπολογιστής θα τερματιστεί σε %n λεπτό</numerusform><numerusform>Ο υπολογιστής θα τερματιστεί σε %n λεπτά</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>LastFM::Base</name>
+    <message>
+        <location filename="../src/Components/Streaming/LastFM/LastFM.cpp" line="+125"/>
+        <source>Cannot login to Last.fm</source>
+        <translation>Αδύνατη η είσοδος στο Last.fm</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::CoverButton</name>
+    <message>
+        <location filename="../src/Gui/Covers/CoverButton.cpp" line="+205"/>
+        <source>Search an alternative cover</source>
+        <translation>Αναζήτηση εναλλακτικού εξώφυλλου</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DoubleCalendarDialog</name>
+    <message>
+        <location filename="../src/Gui/History/DoubleCalendarDialog.cpp" line="+44"/>
+        <source>Select date range</source>
+        <translation>Επιλέξτε εύρος ημερομηνίας</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>Start date</source>
+        <translation>Ημερομηνία έναρξης</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>End date</source>
+        <translation>Ημερομηνία λήξης</translation>
+    </message>
+</context>
+<context>
+    <name>HistoryContainer</name>
+    <message>
+        <location filename="../src/Gui/History/HistoryContainer.cpp" line="+35"/>
+        <source>History</source>
+        <translation>Ιστορικό</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_InfoDialog</name>
+    <message>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+112"/>
+        <source>Write cover to tracks</source>
+        <translation>Εγγραφή του εξώφυλλου στα κομμάτια</translation>
+    </message>
+</context>
+<context>
+    <name>Library::CoverViewContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
+        <source>Toolbar</source>
+        <translation>Γραμμή εργαλείων</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_CoverView</name>
+    <message>
+        <location filename="../src/Gui/Library/CoverView/GUI_CoverView.cpp" line="+193"/>
+        <source>Use Ctrl + mouse wheel to zoom</source>
+        <translation>Χρήση του Ctrl + τροχός ποντικιού για εστίαση</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryContextMenu.cpp" line="+301"/>
+        <source>Rename by metadata</source>
+        <translation>Μετονομασία ανά μεταδεδομένων</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Collapse all</source>
+        <translation>Σύμπτυξη όλων</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move to another library</source>
+        <translation>Μετακίνηση σε άλλη βιβλιοθήκη</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Copy to another library</source>
+        <translation>Αντιγραφή σε άλλη βιβλιοθήκη</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>View in file manager</source>
+        <translation>Προβολή στον διαχειριστή αρχείων</translation>
+    </message>
+</context>
+<context>
+    <name>Directory::TreeView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/DirectoryTreeView.cpp" line="+407"/>
+        <source>Copy here</source>
+        <translation>Αντιγραφή εδώ</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Move here</source>
+        <translation>Μετακίνηση εδώ</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DirectoryView</name>
+    <message>
+        <location filename="../src/Gui/Library/DirectoryView/GUI_DirectoryView.cpp" line="+215"/>
+        <source>Could not create directory</source>
+        <translation>Αδύνατη η δημιουργία του καταλόγου</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GenreView</name>
+    <message>
+        <location filename="../src/Gui/Library/GenreView.cpp" line="+110"/>
+        <source>Updating genres</source>
+        <translation>Ενημέρωση ειδών μουσικής</translation>
+    </message>
+    <message>
+        <location line="+115"/>
+        <source>Do you really want to remove %1 from all tracks?</source>
+        <translation>Επιθυμείτε πραγματικά την αφαίρεση του %1 από όλα τα κομμάτια;</translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_EmptyLibrary</name>
+    <message>
+        <location filename="../src/Gui/Library/GUI_EmptyLibrary.cpp" line="+94"/>
+        <source>Please choose a name for your library</source>
+        <translation>Παρακαλώ διαλέξτε ένα όνομα για τη βιβλιοθήκη σας</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Please choose another name for your library</source>
+        <translation>Παρακαλώ επιλέξτε ένα άλλο όνομα για τη βιβλιοθήκη σας</translation>
+    </message>
+    <message>
+        <location line="+21"/>
+        <source>The file path is invalid</source>
+        <translation>Η διαδρομή αρχείου δεν είναι έγκυρη</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library with the same file path already exists</source>
+        <translation>Μια βιβλιοθήκη με την ίδια διαδρομή αρχείου υπάρχει ήδη</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>A library which contains this file path already exists</source>
+        <translation>Μια βιβλιοθήκη που περιέχει αυτήν την διαδρομή αρχείου υπάρχει ήδη</translation>
+    </message>
+</context>
+<context>
+    <name>Library::HeaderView</name>
+    <message>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
+        <source>Resize columns</source>
+        <translation>Αλλαγή μεγέθους στηλών</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Resize columns automatically</source>
+        <translation>Αυτόματη αλλαγή μεγέθους στηλών</translation>
+    </message>
+</context>
+<context>
+    <name>Library::TrackModel</name>
+    <message>
+        <location filename="../src/Gui/Library/TableView/TrackModel.cpp" line="+138"/>
+        <source>kBit/s</source>
+        <translation>kBit/s</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_DeleteDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_DeleteDialog.cpp" line="+89"/>
+        <source>Only from library</source>
+        <translation>Μόνο από την βιβλιοθήκη</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+4"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Πρόκειται να διαγράψετε %n αρχείο</numerusform><numerusform>Πρόκειται να διαγράψετε %n αρχεία</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::GUI_LibraryReloadDialog</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/GUI_ReloadLibraryDialog.cpp" line="+67"/>
+        <source>Fast scan</source>
+        <translation>Γρήγορη σάρωση</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Deep scan</source>
+        <translation>Βαθιά σάρωση</translation>
+    </message>
+    <message>
+        <location line="+34"/>
+        <source>Only scan for new and deleted files</source>
+        <translation>Σάρωση για νέα και διαγραμμένα αρχεία μόνο</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Scan all files in your library directory</source>
+        <translation>Σάρωση όλων των αρχείων στον κατάλογο της βιβλιοθήκης</translation>
+    </message>
+</context>
+<context>
+    <name>Library::LocalLibraryMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/LocalLibraryMenu.cpp" line="+157"/>
+        <source>Statistics</source>
+        <translation>Στατιστικά</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Edit library</source>
+        <translation>Επεξεργασία της βιβλιοθήκης</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::MergeMenu</name>
+    <message>
+        <location filename="../src/Gui/Library/Utils/MergeMenu.cpp" line="+51"/>
+        <location line="+57"/>
+        <source>Merge</source>
+        <translation>Συγχώνευση</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ControlsBase</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_ControlsBase.cpp" line="+155"/>
+        <source>Sayonara Player</source>
+        <translation>Αναπαραγωγέας Sayonara</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Written by %1</source>
+        <translation>Γράφτηκε από %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Copyright</source>
+        <translation>Πνευματικά δικαιώματα</translation>
+    </message>
+</context>
+<context>
+    <name>Menubar</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_PlayerMenubar.cpp" line="+347"/>
+        <source>View</source>
+        <translation>Προβολή</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <location line="+15"/>
+        <source>Help</source>
+        <translation>Βοήθεια</translation>
+    </message>
+    <message>
+        <location line="-14"/>
+        <source>Plugins</source>
+        <translation>Πρόσθετα</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Show large cover</source>
+        <translation>Εμφάνιση μεγάλου εξώφυλλου</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Fullscreen</source>
+        <translation>Πλήρης οθόνη</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>Media files</source>
+        <translation>Αρχεία πολυμέσων</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Open Media files</source>
+        <translation>Άνοιγμα αρχείων πολυμέσων</translation>
+    </message>
+    <message>
+        <location line="+61"/>
+        <source>For bug reports and feature requests please visit Sayonara&apos;s project page at GitLab</source>
+        <translation>Για αναφορές σφαλμάτων και αιτήσεις νέων χαρακτηριστικών παρακαλώ ανατρέξτε στην σελίδα του έργου Sayonara στο GitLab</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>FAQ</source>
+        <translation>Συχνές ερωτήσεις</translation>
+    </message>
+    <message>
+        <location line="+17"/>
+        <source>About Sayonara</source>
+        <translation>Σχετικά με το Sayonara</translation>
+    </message>
+    <message>
+        <location line="+12"/>
+        <source>Written by %1</source>
+        <translation>Γράφτηκε από %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>License</source>
+        <translation>Άδεια χρήσης</translation>
+    </message>
+    <message>
+        <location line="+4"/>
+        <source>Donate</source>
+        <translation>Δωρεά</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Thanks to all the brave translators and to everyone who helps building Sayonara packages</source>
+        <translation>Ευχαριστώ όλους τους γενναίους μεταφραστές και όλους όσοι βοηθούν στην κατασκευή πακέτων του Sayonara</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>And special thanks to those people with local music collections</source>
+        <translation>Και ευχαριστώ επίσης σε όλους αυτούς με τις τοπικές τους μουσικές συλλογές</translation>
+    </message>
+</context>
+<context>
+    <name>TrayIconContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Player/GUI_TrayIcon.cpp" line="+129"/>
+        <source>Current song</source>
+        <translation>Τρέχον τραγούδι</translation>
+    </message>
+</context>
+<context>
+    <name>VersionChecker</name>
+    <message>
+        <location filename="../src/Gui/Player/VersionChecker.cpp" line="+70"/>
+        <source>A new version is available!</source>
+        <translation>Μια νέα έκδοση είναι διαθέσιμη!</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Playlist</name>
+    <message>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+441"/>
+        <source>Playlist name already exists</source>
+        <translation>Το όνομα της λίστας αναπαραγωγής υπάρχει ήδη</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ActionMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistActionMenu.cpp" line="+198"/>
+        <source>Please set library path first</source>
+        <translation>Παρακαλώ ορίστε τη διαδρομή της βιβλιοθήκης πρώτα</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::BottomBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistBottomBar.cpp" line="+236"/>
+        <source>Please set library path first</source>
+        <translation>Παρακαλώ ορίστε τη διαδρομή της βιβλιοθήκης πρώτα</translation>
+    </message>
+    <message>
+        <location line="+48"/>
+        <source>Cancel shutdown?</source>
+        <translation>Ακύρωση του τερματισμού;</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+205"/>
+        <source>Jump to current track</source>
+        <translation>Μεταπήδηση στο τρέχον κομμάτι</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Show track in library</source>
+        <translation>Προβολή κομματιού στη βιβλιοθήκη</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Jump to next album</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Playlist mode</source>
+        <translation>Λειτουργία λίστας αναπαραγωγής</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::Model</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+493"/>
+        <source>Goto row</source>
+        <translation>Μετάβαση στη γραμμή</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::TabBar</name>
+    <message>
+        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
+        <source>Do you want relative file paths in your playlist?</source>
+        <translation>Θέλετε να χρησιμοποιούνται σχετικές διαδρομές αρχείων στη λίστα αναπαραγωγής;</translation>
+    </message>
+    <message>
+        <location line="+11"/>
+        <source>Media files</source>
+        <translation>Αρχεία πολυμέσων</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Open Media files</source>
+        <translation>Άνοιγμα αρχείων πολυμέσων</translation>
+    </message>
+</context>
+<context>
+    <name>Playlist::View</name>
+    <message numerus="yes">
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+403"/>
+        <source>You are about to delete %n file(s)</source>
+        <translation><numerusform>Πρόκειται να διαγράψετε %n αρχείο</numerusform><numerusform>Πρόκειται να διαγράψετε %n αρχεία</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Crossfader</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Crossfader.cpp" line="+71"/>
+        <location line="+12"/>
+        <source>Crossfader</source>
+        <translation>Ομαλή μετάβαση</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>%1 and %2</source>
+        <translation>%1 και %2</translation>
+    </message>
+    <message>
+        <location line="+63"/>
+        <source>Crossfader does not work with Alsa</source>
+        <translation>Η ομαλή μετάβαση κομματιών δεν λειτουργεί με Alsa</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Gapless playback does not work with Alsa</source>
+        <translation>Η αναπαραγωγή χωρίς ενδιάμεσα κενά δεν λειτουργεί με Alsa</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Equalizer</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Equalizer.cpp" line="+119"/>
+        <location line="+47"/>
+        <source>Linked sliders</source>
+        <translation>Συνδεδεμένοι ολισθητές</translation>
+    </message>
+    <message>
+        <location line="-9"/>
+        <source>Equalizer</source>
+        <translation>Ισοσταθμιστής</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_LevelPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_LevelPainter.cpp" line="+158"/>
+        <source>Level</source>
+        <translation>Ένταση</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_SpectrogramPainter</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_SpectrogramPainter.cpp" line="+75"/>
+        <source>Spectrogram</source>
+        <translation>Φασματογράφημα</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Spectrum</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_Spectrum.cpp" line="+158"/>
+        <source>Spectrum</source>
+        <translation>Φάσμα</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_StyleSettings</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Engine/GUI_StyleSettings.cpp" line="+203"/>
+        <source>There are some unsaved settings&lt;br /&gt;Save now?</source>
+        <translation>Υπάρχουν μερικές μη αποθηκευμένες ρυθμίσεις&lt;br /&gt;Να αποθηκευτούν τώρα;</translation>
+    </message>
+    <message>
+        <location line="+87"/>
+        <source>Please specify a name</source>
+        <translation>Παρακαλώ προσδιορίστε ένα όνομα</translation>
+    </message>
+    <message>
+        <location line="+168"/>
+        <source>Save changes?</source>
+        <translation>Να αποθηκευτούν οι αλλαγές;</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_PlaylistChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/PlaylistChooser/GUI_PlaylistChooser.cpp" line="+87"/>
+        <location line="+36"/>
+        <source>No playlists found</source>
+        <translation>Δεν βρέθηκαν λίστες αναπαραγωγής</translation>
+    </message>
+    <message>
+        <location line="+35"/>
+        <source>Could not rename playlist</source>
+        <translation>Αδύνατη η μετονομασία της λίστας αναπαραγωγής</translation>
+    </message>
+    <message>
+        <location line="+3"/>
+        <source>Name is invalid</source>
+        <translation>Το όνομα δεν είναι έγκυρο</translation>
+    </message>
+    <message>
+        <location line="+13"/>
+        <source>Do you really want to delete %1?</source>
+        <translation>Επιθυμείτε πραγματικά την διαγραφή του %1;</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Could not delete playlist %1</source>
+        <translation>Αδύνατη η διαγραφή της λίστας αναπαραγωγής %1</translation>
+    </message>
+</context>
+<context>
+    <name>MinMaxIntegerDialog</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/MinMaxIntegerDialog.cpp" line="+109"/>
+        <source>Category</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>TimeSpanChooser</name>
+    <message>
+        <location filename="../src/Gui/Plugins/SmartPlaylists/TimeSpanChooser.cpp" line="+97"/>
+        <source>Create time span</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>Gui::AbstractStationPlugin</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/AbstractStationPlugin.cpp" line="+249"/>
+        <source>Cannot open stream</source>
+        <translation>Αδύνατο το άνοιγμα της ροής</translation>
+    </message>
+    <message>
+        <location line="+75"/>
+        <source>Please choose another name</source>
+        <translation>Παρακαλώ επιλέξτε ένα άλλο όνομα</translation>
+    </message>
+    <message>
+        <location line="+37"/>
+        <source>Do you really want to delete %1</source>
+        <translation>Επιθυμείτε πραγματικά την διαγραφή του %1;</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Podcasts</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Podcasts.cpp" line="+76"/>
+        <source>Podcast</source>
+        <translation>Διαδικτυακή εκπομπή</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_Stream</name>
+    <message>
+        <location filename="../src/Gui/Plugins/Stream/GUI_Stream.cpp" line="+74"/>
+        <source>Search radio station</source>
+        <translation>Αναζήτηση ραδιοφωνικού σταθμού</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_EnginePreferences</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Engine/GUI_EnginePreferences.cpp" line="+53"/>
+        <source>Audio</source>
+        <translation>Ήχος</translation>
+    </message>
+</context>
+<context>
+    <name>GUI_ShortcutEntry</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Shortcuts/GUI_ShortcutEntry.cpp" line="+55"/>
+        <source>Enter shortcut</source>
+        <translation>Εισαγωγή συντόμευσης</translation>
+    </message>
+    <message>
+        <location line="+25"/>
+        <source>Shortcut already in use</source>
+        <translation>Η συντόμευση χρησιμοποιείται ήδη</translation>
+    </message>
+    <message>
+        <location line="+59"/>
+        <source>Test</source>
+        <translation>Έλεγχος</translation>
+    </message>
+</context>
+<context>
+    <name>SomaFM::StationModel</name>
+    <message>
+        <location filename="../src/Gui/SomaFM/SomaFMStationModel.cpp" line="+122"/>
+        <source>Cannot fetch stations</source>
+        <translation>Αδύνατη η λήψη των σταθμών</translation>
+    </message>
+</context>
+<context>
+    <name>SC::GUI_ArtistSearch</name>
+    <message>
+        <location filename="../src/Gui/Soundcloud/GUI_SoundcloudArtistSearch.cpp" line="+127"/>
+        <source>Query too short</source>
+        <translation>Το ερώτημα είναι πολύ σύντομο</translation>
+    </message>
+    <message>
+        <location line="+67"/>
+        <source>No artist named %1 found</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>No artists found</source>
+        <translation>Δεν βρέθηκαν καλλιτέχνες</translation>
+    </message>
+    <message numerus="yes">
+        <location line="+6"/>
+        <source>Found %n artist(s)</source>
+        <translation><numerusform>Βρέθηκε %n καλλιτέχνης</numerusform><numerusform>Βρέθηκαν %n καλλιτέχνες</numerusform></translation>
+    </message>
+    <message numerus="yes">
+        <location line="+97"/>
+        <source>%n playlist(s) found</source>
+        <translation><numerusform>Βρέθηκε %n λίστα αναπαραγωγής</numerusform><numerusform>Βρέθηκαν %n λίστες αναπαραγωγής</numerusform></translation>
+    </message>
+</context>
+<context>
+    <name>Library::ContextMenu</name>
+    <message>
+        <location filename="../src/Gui/Utils/ContextMenu/LibraryContextMenu.cpp" line="+186"/>
+        <source>Standard view</source>
+        <translation>Τυπική προβολή</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Cover view</source>
+        <translation>Προβολή εξώφυλλου</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Directory view</source>
+        <translation>Προβολή φακέλου</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Toolbar</source>
+        <translation>Γραμμή εργαλείων</translation>
+    </message>
+    <message>
+        <location line="+200"/>
+        <source>The toolbar is visible when there are tracks with differing file types listed in the track view</source>
+        <translation>Η γραμμή εργαλείων είναι ορατή όταν υπάρχουν κομμάτια διαφορετικών τύπων αρχείου στην προβολή κομματιών</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ImageSelectionDialog</name>
+    <message>
+        <location filename="../src/Gui/Utils/ImageSelectionDialog.cpp" line="+55"/>
+        <source>Image files</source>
+        <translation>Αρχεία εικόνας</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Any files</source>
+        <translation>Οποιαδήποτε αρχεία</translation>
+    </message>
+    <message>
+        <location line="+5"/>
+        <source>Open image files</source>
+        <translation>Άνοιγμα αρχείων εικόνας</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::StreamRecorderPreferenceAction</name>
+    <message>
+        <location filename="../src/Gui/Utils/PreferenceAction.cpp" line="+164"/>
+        <location line="+7"/>
+        <source>Stream Recorder</source>
+        <translation>Καταγραφέας ροής</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::ShortcutPreferenceAction</name>
+    <message>
+        <location line="+10"/>
+        <location line="+12"/>
+        <source>Shortcuts</source>
+        <translation>Συντομεύσεις</translation>
+    </message>
+</context>
+<context>
+    <name>Gui::DirectoryChooser</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+58"/>
+        <source>Choose directory</source>
+        <translation type="unfinished"/>
+    </message>
+</context>
+<context>
+    <name>Gui::LineEdit</name>
+    <message>
+        <location filename="../src/Gui/Utils/Widgets/LineEdit.cpp" line="+133"/>
+        <source>Hint: Use up and down arrow keys for switching between upper and lower case letters</source>
+        <translation>Συμβουλή: Χρησιμοποιείστε τα πλήκτρα πάνω και κάτω βέλους για εναλλαγή μεταξύ κεφαλαίων και μικρών γραμμάτων</translation>
+    </message>
+    <message>
+        <location line="+1"/>
+        <source>Remove special characters (letters)</source>
+        <translation>Αφαίρεση ειδικών χαρακτήρων (γράμματα)</translation>
     </message>
 </context>
 </TS>
