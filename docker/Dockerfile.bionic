@@ -51,7 +51,6 @@ RUN	apt-get update -qq && \
 	qt515x11extras \
 	qt515xmlpatterns \
 	qttools5-dev \
-	transifex-client \
 	zlib1g-dev \
     libgl1-mesa-dev
 
@@ -83,6 +82,9 @@ RUN wget "https://github.com/AppImage/AppImageKit/releases/download/continuous/a
 
 RUN mv "linuxdeploy-x86_64.AppImage" "linuxdeploy-plugin-qt-x86_64.AppImage" "appimagetool-x86_64.AppImage" /usr/local/bin/
 RUN chmod a+x /usr/local/bin/*.AppImage
+
+RUN mkdir -p /tmp/tx && curl -o /tmp/tx/install.sh https://raw.githubusercontent.com/transifex/cli/master/install.sh
+RUN cd /tmp/tx && /bin/bash ./install.sh
 
 # make clang the default compiler
 ENV CC clang-12
