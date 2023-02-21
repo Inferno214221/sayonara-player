@@ -162,7 +162,10 @@ namespace
 			row++;
 		}
 
-		tableWidget->resizeColumnsToContents();
+		for(auto i = 0; i < tableWidget->columnCount() - 1; i++)
+		{
+			tableWidget->resizeColumnToContents(i);
+		}
 	}
 
 	void populateStreamWidget(QTableWidget* tableWidget, const RadioStation& station)
@@ -195,7 +198,10 @@ namespace
 			tableWidget->setCurrentItem(tableWidget->item(0, 0));
 		}
 
-		tableWidget->resizeColumnsToContents();
+		for(auto i = 0; i < tableWidget->columnCount() - 1; i++)
+		{
+			tableWidget->resizeColumnToContents(i);
+		}
 	}
 
 	std::optional<RadioStation> stationAt(const QList<RadioStation>& stations, int row)
