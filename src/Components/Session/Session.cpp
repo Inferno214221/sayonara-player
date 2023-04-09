@@ -35,110 +35,103 @@
 
 using Session::Manager;
 
+namespace
+{
+	DB::Session* sessionConnector()
+	{
+		return DB::Connector::instance()->sessionConnector();
+	}
+}
+
 struct Manager::Private
 {
 	PlayManager* playManager;
 	Session::Id sessionId;
 	QList<Session::Id> sessionIds;
 	QList<Session::Timecode> sessionDays;
-	bool playtimeResetted;
+	bool playtimeResetted {true};
 
-	Private(PlayManager* playManager) :
+	explicit Private(PlayManager* playManager) :
 		playManager(playManager),
-		playtimeResetted(true)
+		sessionId {sessionConnector()->createNewSession()},
+		sessionIds {sessionConnector()->getSessionKeys()}
 	{
-		auto* db = DB::Connector::instance();
-		DB::Session* sessionConnector = db->sessionConnector();
-
-		sessionId = sessionConnector->createNewSession();
-
-		sessionIds = sessionConnector->getSessionKeys();
 		sessionIds.prepend(sessionId);
 
 		Util::Set<Session::Timecode> days;
-		for(Session::Timecode timecode: sessionIds)
+		for(const auto timecode: sessionIds)
 		{
-			Session::Timecode timecode_begin = Session::dayBegin(timecode);
-			days.insert(timecode_begin);
+			const auto timecodeBegin = Session::dayBegin(timecode);
+			days.insert(timecodeBegin);
 		}
 
-		sessionDays = days.toList();
-
-		Util::Algorithm::sort(sessionIds, [](auto key1, auto key2) {
+		Util::Algorithm::sort(sessionIds, [](const auto& key1, const auto& key2) {
 			return (key1 > key2);
 		});
 
-		Util::Algorithm::sort(sessionDays, [](auto key1, auto key2) {
+		sessionDays = days.toList();
+		Util::Algorithm::sort(sessionDays, [](const auto& key1, const auto& key2) {
 			return (key1 > key2);
 		});
 	}
 };
 
-Manager::Manager(PlayManager* playManager)
+Manager::Manager(PlayManager* playManager) :
+	m {Pimpl::make<Private>(playManager)}
 {
-	m = Pimpl::make<Private>(playManager);
 	connect(m->playManager, &PlayManager::sigPositionChangedMs, this, &Manager::positionChanged);
 }
 
 Manager::~Manager() = default;
 
-void Manager::positionChanged(MilliSeconds ms)
+void Manager::positionChanged(const MilliSeconds /*ms*/)
 {
-	Q_UNUSED(ms)
-	static const MilliSeconds MinTime = 5000;
+	constexpr const MilliSeconds MinTime = 5000;
+	const auto playtimeMs = m->playManager->currentTrackPlaytimeMs();
 
-	MilliSeconds playtime = m->playManager->currentTrackPlaytimeMs();
-
-	if(playtime > MinTime && m->playtimeResetted)
+	if(playtimeMs > MinTime && m->playtimeResetted)
 	{
 		spLog(Log::Debug, this) << "Adding track to Session " << m->sessionId;
-		auto* db = DB::Connector::instance();
-		DB::Session* sessionConnector = db->sessionConnector();
 
-		sessionConnector->addTrack(m->sessionId, m->playManager->currentTrack());
+		sessionConnector()->addTrack(m->sessionId, m->playManager->currentTrack());
 
 		emit sigSessionChanged(m->sessionId);
 	}
 
-	m->playtimeResetted = (playtime <= MinTime);
+	m->playtimeResetted = (playtimeMs <= MinTime);
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 Session::EntryListMap Manager::history(const QDateTime& dtBegin, const QDateTime& dtEnd)
 {
-	auto* db = DB::Connector::instance();
-	DB::Session* sessionConnector = db->sessionConnector();
-
-	return sessionConnector->getSessions(dtBegin, dtEnd);
+	return sessionConnector()->getSessions(dtBegin, dtEnd);
 }
 
 Session::EntryListMap Manager::historyForDay(const QDateTime& dt)
 {
-	QDateTime dt_min(dt.toUTC());
-	dt_min.setTime(QTime(0, 0));
+	auto dateTimeMin(dt.toUTC());
+	dateTimeMin.setTime(QTime(0, 0));
 
-	QDateTime dt_max(dt.toUTC());
-	dt_max.setTime(QTime(23, 59, 59));
+	auto dateTimeMax(dt.toUTC());
+	dateTimeMax.setTime(QTime(23, 59, 59)); // NOLINT(readability-magic-numbers)
 
-	return history(dt_min, dt_max);
+	return history(dateTimeMin, dateTimeMax);
 }
 
 Session::EntryListMap Manager::historyEntries(int dayIndex, int count)
 {
 	if(dayIndex > m->sessionDays.count() - 1)
 	{
-		return Session::EntryListMap();
+		return {};
 	}
 
-	int minIndex = std::min(dayIndex * count, m->sessionDays.count() - 1);
-	int maxIndex = std::min((dayIndex + 1) * count - 1, m->sessionDays.count() - 1);
+	const auto minIndex = std::min(dayIndex * count, m->sessionDays.count() - 1);
+	const auto maxIndex = std::min((dayIndex + 1) * count - 1, m->sessionDays.count() - 1);
 
-	Session::Timecode minKey = dayBegin(m->sessionDays[maxIndex]);
-	Session::Timecode maxKey = dayEnd(m->sessionDays[minIndex]);
+	const auto minKey = dayBegin(m->sessionDays[maxIndex]);
+	const auto maxKey = dayEnd(m->sessionDays[minIndex]);
 
-	auto* db = DB::Connector::instance();
-	DB::Session* sessionConnector = db->sessionConnector();
-
-	EntryListMap history = sessionConnector->getSessions(Util::intToDate(minKey), Util::intToDate(maxKey));
+	auto history = sessionConnector()->getSessions(Util::intToDate(minKey), Util::intToDate(maxKey));
 	if(history.isEmpty() && dayIndex == 0)
 	{
 		history[Session::dayBegin(Session::now())] = EntryList();
@@ -147,10 +140,8 @@ Session::EntryListMap Manager::historyEntries(int dayIndex, int count)
 	return history;
 }
 
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 bool Manager::isEmpty() const
 {
-	auto* db = DB::Connector::instance();
-	DB::Session* sessionConnector = db->sessionConnector();
-
-	return (sessionConnector->getSessionKeys().isEmpty());
+	return (sessionConnector()->getSessionKeys().isEmpty());
 }

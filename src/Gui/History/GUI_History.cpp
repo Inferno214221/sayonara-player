@@ -61,32 +61,27 @@ namespace
 
 struct GUI_History::Private
 {
+	Session::Manager* sessionManager;
+
 	QWidget* dateRangeWidget = nullptr;
 	QDate startDate, endDate;
 
-	QPushButton* btnLoadMore = nullptr;
-	QAction* actionGoToBottom = nullptr;
-	QAction* actionGoToTop = nullptr;
-	QAction* actionSelecteDataRange = nullptr;
+	QPushButton* btnLoadMore {new QPushButton(tr("Load more entries"))};
+	QAction* actionGoToBottom {new QAction()};
+	QAction* actionGoToTop {new QAction()};
+	QAction* actionSelecteDataRange {new QAction()};
 
-	Session::Manager* sessionManager;
-	int lastPage;
+	int lastPage {-1};
 
-	Private(Session::Manager* sessionManager) :
-		btnLoadMore(new QPushButton(tr("Load more entries"))),
-		actionGoToBottom(new QAction()),
-		actionGoToTop(new QAction()),
-		actionSelecteDataRange(new QAction()),
-		sessionManager(sessionManager),
-		lastPage(-1) {}
+	explicit Private(Session::Manager* sessionManager) :
+		sessionManager(sessionManager) {}
 };
 
 GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
-	Gui::Dialog(parent)
+	Gui::Dialog(parent),
+	m {Pimpl::make<Private>(sessionManager)},
+	ui {std::make_shared<Ui::GUI_History>()}
 {
-	m = Pimpl::make<Private>(sessionManager);
-
-	ui = new Ui::GUI_History();
 	ui->setupUi(this);
 	ui->scrollAreaWidgetContents->setLayout(new QVBoxLayout());
 
@@ -107,15 +102,9 @@ GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
 	initShortcuts();
 }
 
-GUI_History::~GUI_History()
-{
-	delete ui;
-}
+GUI_History::~GUI_History() = default;
 
-QFrame* GUI_History::header() const
-{
-	return ui->header;
-}
+QFrame* GUI_History::header() const { return ui->header; }
 
 void GUI_History::initShortcuts()
 {
@@ -137,7 +126,7 @@ void GUI_History::initShortcuts()
 void GUI_History::scrollToTop()
 {
 	const auto widgets = {ui->scrollArea, ui->scrollAreaRange};
-	for(auto widget: widgets)
+	for(auto* widget: widgets)
 	{
 		if(widget->isVisible())
 		{
@@ -149,7 +138,7 @@ void GUI_History::scrollToTop()
 void GUI_History::scrollToBottom()
 {
 	const auto widgets = {ui->scrollArea, ui->scrollAreaRange};
-	for(auto widget: widgets)
+	for(auto* widget: widgets)
 	{
 		if(widget->isVisible())
 		{
@@ -174,7 +163,7 @@ void GUI_History::dateRangeClicked()
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigAccepted, this, &GUI_History::calendarFinished);
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigRejected, calendarWidget, &QObject::deleteLater);
 
-	calendarWidget->resizeRelative(this, 1.0, QSize(800, 600));
+	calendarWidget->resizeRelative(this, 1.0, QSize(800, 600)); // NOLINT(readability-magic-numbers)
 	calendarWidget->show();
 }
 
@@ -204,7 +193,7 @@ void GUI_History::clearRangeClicked()
 
 void GUI_History::requestData(const int index)
 {
-	const Session::EntryListMap history = m->sessionManager->historyEntries(index, 10);
+	const auto history = m->sessionManager->historyEntries(index, 10);
 	m->btnLoadMore->setDisabled(history.isEmpty());
 
 	auto* page = createPage(m->sessionManager, history);
@@ -220,7 +209,7 @@ void GUI_History::requestData(const int index)
 		ui->scrollArea->widget()->resize(ui->scrollArea->widget()->sizeHint());
 		QApplication::processEvents();
 
-		int viewportHeight = ui->scrollArea->viewport()->height();
+		const auto viewportHeight = ui->scrollArea->viewport()->height();
 		ui->scrollArea->ensureVisible(0, oldHeight + viewportHeight - m->btnLoadMore->height(), 0, 0);
 	}
 }
@@ -241,7 +230,7 @@ void GUI_History::loadSelectedDateRange()
 		m->dateRangeWidget->deleteLater();
 	}
 
-	const QLocale locale = Util::Language::getCurrentLocale();
+	const auto locale = Util::Language::getCurrentLocale();
 	ui->labFrom->setText(locale.toString(m->startDate));
 	ui->labUntil->setText(locale.toString(m->endDate));
 
@@ -255,29 +244,3 @@ void GUI_History::loadSelectedDateRange()
 	ui->stackedWidget->setCurrentIndex(1);
 }
 
-QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::EntryListMap& history)
-{
-	auto* page = new QWidget();
-	auto* pageLayout = new QVBoxLayout(page);
-	pageLayout->setContentsMargins(0, 0, 0, 0);
-	page->setLayout(pageLayout);
-
-	QList<Timecode> sessionIds = history.keys();
-	Util::Algorithm::sort(sessionIds, [](auto id1, auto id2) {
-		return (id1 > id2);
-	});
-
-	Util::Set<Timecode> timecodes;
-	for(Timecode timecode: sessionIds)
-	{
-		const Timecode dayBegin = Session::dayBegin(timecode);
-		if(!timecodes.contains(dayBegin))
-		{
-			timecodes << dayBegin;
-			auto* historyWidget = new HistoryEntryWidget(sessionManager, dayBegin, page);
-			page->layout()->addWidget(historyWidget);
-		}
-	}
-
-	return page;
-}

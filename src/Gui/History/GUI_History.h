@@ -20,7 +20,7 @@ class GUI_History :
 {
 	Q_OBJECT
 	PIMPL(GUI_History)
-	UI_CLASS(GUI_History)
+	UI_CLASS_SHARED_PTR(GUI_History)
 
 	public:
 		explicit GUI_History(Session::Manager* sessionManager, QWidget* parent = nullptr);

@@ -35,13 +35,13 @@ namespace DB
 	{
 		public:
 			Session(const QString& connectionName, DbId databaseId);
-			~Session();
+			~Session() override;
 
-			::Session::EntryListMap getSessions(const QDateTime& dt_begin, const QDateTime& dt_end);
-			// ::Session::EntryList getSession(::Session::Id session_id);
-			QList<::Session::Id> getSessionKeys();
+			[[nodiscard]] ::Session::EntryListMap
+			getSessions(const QDateTime& dateTimeBegin, const QDateTime& dateTimeEnd);
+			[[nodiscard]] QList<::Session::Id> getSessionKeys();
 
-			::Session::Id createNewSession() const;
+			[[nodiscard]] ::Session::Id createNewSession() const;
 			bool addTrack(::Session::Id session_id, const MetaData& md);
 
 			bool clear();

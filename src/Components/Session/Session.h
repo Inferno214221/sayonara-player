@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef SAYONARA_PLAYER_SESSION_H
+#define SAYONARA_PLAYER_SESSION_H
 
 #include "Utils/Pimpl.h"
 #include "Utils/Session/SessionUtils.h"
@@ -43,16 +43,16 @@ namespace Session
 
 		public:
 			explicit Manager(PlayManager* playManager);
-			~Manager();
+			~Manager() override;
 
 			EntryListMap history(const QDateTime& begin, const QDateTime& end);
 			EntryListMap historyForDay(const QDateTime& dt);
-			EntryListMap historyEntries(int day_index, int count);
-			bool isEmpty() const;
+			EntryListMap historyEntries(int dayIndex, int count);
+			[[nodiscard]] bool isEmpty() const;
 
 		private slots:
 			void positionChanged(MilliSeconds ms);
 	};
 }
 
-#endif // SESSION_H
+#endif // SAYONARA_PLAYER_SESSION_H
