@@ -33,7 +33,7 @@ class QDateTime;
 namespace Session
 {
 	class Manager :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Manager)

@@ -56,7 +56,7 @@ struct Manager::Private
 		sessionIds.prepend(sessionId);
 
 		Util::Set<Session::Timecode> days;
-		for(Session::Timecode timecode : sessionIds)
+		for(Session::Timecode timecode: sessionIds)
 		{
 			Session::Timecode timecode_begin = Session::dayBegin(timecode);
 			days.insert(timecode_begin);
@@ -64,11 +64,11 @@ struct Manager::Private
 
 		sessionDays = days.toList();
 
-		Util::Algorithm::sort(sessionIds, [](auto key1, auto key2){
+		Util::Algorithm::sort(sessionIds, [](auto key1, auto key2) {
 			return (key1 > key2);
 		});
 
-		Util::Algorithm::sort(sessionDays, [](auto key1, auto key2){
+		Util::Algorithm::sort(sessionDays, [](auto key1, auto key2) {
 			return (key1 > key2);
 		});
 	}
@@ -85,7 +85,7 @@ Manager::~Manager() = default;
 void Manager::positionChanged(MilliSeconds ms)
 {
 	Q_UNUSED(ms)
-	static const MilliSeconds MinTime=5000;
+	static const MilliSeconds MinTime = 5000;
 
 	MilliSeconds playtime = m->playManager->currentTrackPlaytimeMs();
 
@@ -139,7 +139,8 @@ Session::EntryListMap Manager::historyEntries(int dayIndex, int count)
 	DB::Session* sessionConnector = db->sessionConnector();
 
 	EntryListMap history = sessionConnector->getSessions(Util::intToDate(minKey), Util::intToDate(maxKey));
-	if(history.isEmpty() && dayIndex == 0){
+	if(history.isEmpty() && dayIndex == 0)
+	{
 		history[Session::dayBegin(Session::now())] = EntryList();
 	}
 

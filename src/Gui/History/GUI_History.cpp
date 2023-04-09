@@ -1,35 +1,73 @@
 #include "GUI_History.h"
-#include "HistoryEntryWidget.h"
-#include "DoubleCalendarDialog.h"
-
 #include "Gui/History/ui_GUI_History.h"
-#include "Gui/Utils/Style.h"
+#include "DoubleCalendarDialog.h"
+#include "HistoryEntryWidget.h"
 
 #include "Components/Session/Session.h"
-
+#include "Gui/Utils/Style.h"
+#include "Gui/Utils/Widgets/CalendarWidget.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Set.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Language/LanguageUtils.h"
+#include "Utils/Set.h"
 
+#include <QAction>
 #include <QDate>
+#include <QDialog>
 #include <QScrollArea>
 #include <QPushButton>
 #include <QApplication>
 #include <QShortcut>
 
 using Session::Timecode;
-static QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::EntryListMap& history);
+namespace
+{
+	QWidget* createPage(Session::Manager* sessionManager, const Session::EntryListMap& history)
+	{
+		auto* page = new QWidget();
+		auto* pageLayout = new QVBoxLayout(page);
+		pageLayout->setContentsMargins(0, 0, 0, 0);
+		page->setLayout(pageLayout);
+
+		auto sessionIds = history.keys();
+		Util::Algorithm::sort(sessionIds, [](auto id1, auto id2) {
+			return (id1 > id2);
+		});
+
+		Util::Set<Timecode> timecodes;
+		for(const auto sessionId: sessionIds)
+		{
+			const auto dayBegin = Session::dayBegin(sessionId);
+			if(!timecodes.contains(dayBegin))
+			{
+				timecodes << dayBegin;
+				auto* historyWidget = new HistoryEntryWidget(sessionManager, dayBegin, page);
+				page->layout()->addWidget(historyWidget);
+			}
+		}
+
+		return page;
+	}
+
+	QShortcut* createShortcut(const QKeySequence& keySequence, QWidget* parent)
+	{
+		auto* sc = new QShortcut(parent);
+		sc->setKey(keySequence);
+		sc->setContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
+
+		return sc;
+	}
+}
 
 struct GUI_History::Private
 {
-	QWidget* dateRangeWidget=nullptr;
+	QWidget* dateRangeWidget = nullptr;
 	QDate startDate, endDate;
 
-	QPushButton* btnLoadMore=nullptr;
-	QAction* actionGoToBottom=nullptr;
-	QAction* actionGoToTop=nullptr;
-	QAction* actionSelecteDataRange=nullptr;
+	QPushButton* btnLoadMore = nullptr;
+	QAction* actionGoToBottom = nullptr;
+	QAction* actionGoToTop = nullptr;
+	QAction* actionSelecteDataRange = nullptr;
 
 	Session::Manager* sessionManager;
 	int lastPage;
@@ -40,8 +78,7 @@ struct GUI_History::Private
 		actionGoToTop(new QAction()),
 		actionSelecteDataRange(new QAction()),
 		sessionManager(sessionManager),
-		lastPage(-1)
-	{}
+		lastPage(-1) {}
 };
 
 GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
@@ -92,39 +129,15 @@ void GUI_History::initShortcuts()
 	m->actionSelecteDataRange->setShortcutVisibleInContextMenu(true);
 #endif
 
-	{
-		auto* sc = new QShortcut(this);
-		sc->setKey(QKeySequence(Qt::Key_Home));
-		sc->setContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
-		connect(sc, &QShortcut::activated, this, &GUI_History::scrollToTop);
-	}
-
-	{
-		auto* sc = new QShortcut(this);
-		sc->setKey(QKeySequence(Qt::Key_End));
-		sc->setContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
-		connect(sc, &QShortcut::activated, this, &GUI_History::scrollToBottom);
-	}
-
-	{
-		auto* sc = new QShortcut(this);
-		sc->setKey(QKeySequence("Ctrl+r"));
-		sc->setContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
-		connect(sc, &QShortcut::activated, this, &GUI_History::dateRangeClicked);
-	}
-
-	{
-		auto* sc = new QShortcut(this);
-		sc->setKey(QKeySequence("Ctrl+r"));
-		sc->setContext(Qt::ShortcutContext::WidgetWithChildrenShortcut);
-		connect(sc, &QShortcut::activated, this, &GUI_History::dateRangeClicked);
-	}
+	connect(createShortcut({Qt::Key_Home}, this), &QShortcut::activated, this, &GUI_History::scrollToTop);
+	connect(createShortcut({Qt::Key_End}, this), &QShortcut::activated, this, &GUI_History::scrollToBottom);
+	connect(createShortcut({"Ctrl+r"}, this), &QShortcut::activated, this, &GUI_History::dateRangeClicked);
 }
 
 void GUI_History::scrollToTop()
 {
 	const auto widgets = {ui->scrollArea, ui->scrollAreaRange};
-	for(auto widget : widgets)
+	for(auto widget: widgets)
 	{
 		if(widget->isVisible())
 		{
@@ -136,7 +149,7 @@ void GUI_History::scrollToTop()
 void GUI_History::scrollToBottom()
 {
 	const auto widgets = {ui->scrollArea, ui->scrollAreaRange};
-	for(auto widget : widgets)
+	for(auto widget: widgets)
 	{
 		if(widget->isVisible())
 		{
@@ -154,14 +167,14 @@ void GUI_History::loadMore()
 
 void GUI_History::dateRangeClicked()
 {
-	m->startDate = QDate();
-	m->endDate = QDate();
+	m->startDate = {};
+	m->endDate = {};
 
 	auto* calendarWidget = new Gui::DoubleCalendarDialog(this);
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigAccepted, this, &GUI_History::calendarFinished);
 	connect(calendarWidget, &Gui::DoubleCalendarDialog::sigRejected, calendarWidget, &QObject::deleteLater);
 
-    calendarWidget->resizeRelative(this, 1.0, QSize(800, 600));
+	calendarWidget->resizeRelative(this, 1.0, QSize(800, 600));
 	calendarWidget->show();
 }
 
@@ -189,22 +202,20 @@ void GUI_History::clearRangeClicked()
 	ui->stackedWidget->setCurrentIndex(0);
 }
 
-void GUI_History::requestData(int index)
+void GUI_History::requestData(const int index)
 {
 	const Session::EntryListMap history = m->sessionManager->historyEntries(index, 10);
 	m->btnLoadMore->setDisabled(history.isEmpty());
 
-	QWidget* page = createEntryListWidget(m->sessionManager, history);
-
-	int oldHeight = ui->scrollArea->widget()->height();
+	auto* page = createPage(m->sessionManager, history);
+	const auto oldHeight = ui->scrollArea->widget()->height();
 
 	ui->scrollAreaWidgetContents->layout()->removeWidget(m->btnLoadMore);
 	ui->scrollAreaWidgetContents->layout()->addWidget(page);
 	ui->scrollAreaWidgetContents->layout()->addWidget(m->btnLoadMore);
 
 	m->lastPage = index;
-
-	if(index > 0)
+	if(m->lastPage > 0)
 	{
 		ui->scrollArea->widget()->resize(ui->scrollArea->widget()->sizeHint());
 		QApplication::processEvents();
@@ -219,11 +230,12 @@ void GUI_History::loadSelectedDateRange()
 	if(!ui->scrollAreaRangeContents->layout())
 	{
 		auto* layout = new QVBoxLayout();
-		layout->setContentsMargins(0,0,0,0);
+		layout->setContentsMargins(0, 0, 0, 0);
 		ui->scrollAreaRangeContents->setLayout(layout);
 	}
 
-	else {
+	else
+	{
 		auto* layout = ui->scrollAreaRangeContents->layout();
 		layout->removeWidget(m->dateRangeWidget);
 		m->dateRangeWidget->deleteLater();
@@ -233,17 +245,15 @@ void GUI_History::loadSelectedDateRange()
 	ui->labFrom->setText(locale.toString(m->startDate));
 	ui->labUntil->setText(locale.toString(m->endDate));
 
-	const QDateTime start(m->startDate, QTime(0,0));
-	const QDateTime end(m->endDate, QTime(23, 59));
+	const auto history = m->sessionManager->history(
+		m->startDate.startOfDay(),
+		m->endDate.endOfDay());
 
-	const Session::EntryListMap history = m->sessionManager->history(start, end);
+	m->dateRangeWidget = createPage(m->sessionManager, history);
 
-	m->dateRangeWidget = createEntryListWidget(m->sessionManager, history);
 	ui->scrollAreaRangeContents->layout()->addWidget(m->dateRangeWidget);
-
 	ui->stackedWidget->setCurrentIndex(1);
 }
-
 
 QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::EntryListMap& history)
 {
@@ -253,12 +263,12 @@ QWidget* createEntryListWidget(Session::Manager* sessionManager, const Session::
 	page->setLayout(pageLayout);
 
 	QList<Timecode> sessionIds = history.keys();
-	Util::Algorithm::sort(sessionIds, [](auto id1, auto id2){
+	Util::Algorithm::sort(sessionIds, [](auto id1, auto id2) {
 		return (id1 > id2);
 	});
 
 	Util::Set<Timecode> timecodes;
-	for(Timecode timecode : sessionIds)
+	for(Timecode timecode: sessionIds)
 	{
 		const Timecode dayBegin = Session::dayBegin(timecode);
 		if(!timecodes.contains(dayBegin))
