@@ -146,5 +146,36 @@ Session::EntryListMap Manager::historyEntries(int dayIndex, int count)
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 bool Manager::isEmpty() const
 {
-	return (sessionConnector()->getSessionKeys().isEmpty());
+	return (m->sessionConnector->getSessionKeys().isEmpty());
+}
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Session::Manager::clearAllHistory()
+{
+	m->sessionConnector->clear();
+
+	for(const auto& sessionId: m->sessionIds)
+	{
+		emit sigSessionDeleted(sessionId);
+	}
+
+	m->sessionIds = QList<Session::Id> {m->sessionId};
+}
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+void Session::Manager::clearAllHistoryBefore(const QDateTime& dt)
+{
+	const auto oldSessionIds = std::move(m->sessionIds);
+
+	m->sessionConnector->clearBefore(dt);
+	m->sessionIds = m->sessionConnector->getSessionKeys();
+	m->sessionIds.prepend(m->sessionId);
+
+	for(const auto& oldSessionId: oldSessionIds)
+	{
+		if(!m->sessionIds.contains(oldSessionId))
+		{
+			emit sigSessionDeleted(oldSessionId);
+		}
+	}
 }

@@ -40,6 +40,7 @@ namespace Session
 
 		signals:
 			void sigSessionChanged(Session::Id id);
+			void sigSessionDeleted(Session::Id id);
 
 		public:
 			explicit Manager(PlayManager* playManager);
@@ -49,6 +50,8 @@ namespace Session
 			EntryListMap historyForDay(const QDateTime& dt);
 			EntryListMap historyEntries(int dayIndex, int count);
 			[[nodiscard]] bool isEmpty() const;
+			void clearAllHistory();
+			void clearAllHistoryBefore(const QDateTime& dt);
 
 		private slots:
 			void positionChanged(MilliSeconds ms);
