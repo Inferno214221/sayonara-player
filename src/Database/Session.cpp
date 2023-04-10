@@ -161,18 +161,18 @@ namespace DB
 		return ret;
 	}
 
-	bool Session::addTrack(::Session::Id session_id, const MetaData& md)
+	bool Session::addTrack(::Session::Id sessionId, const MetaData& track, const QDateTime& dateTime)
 	{
-		const auto timecode = Util::dateToInt(QDateTime::currentDateTime());
+		const auto timecode = Util::dateToInt(dateTime);
 		const auto query = insert(
 			"sessions",
 			{
-				{"sessionID", QVariant::fromValue<::Session::Id>(session_id)},
+				{"sessionID", QVariant::fromValue<::Session::Id>(sessionId)},
 				{"date",      QVariant::fromValue<::Session::Timecode>(timecode)},
-				{"trackID",   md.id()},
-				{"title",     md.title()},
-				{"artist",    md.artist()},
-				{"album",     md.album()}
+				{"trackID",   track.id()},
+				{"title",     track.title()},
+				{"artist",    track.artist()},
+				{"album",     track.album()}
 			},
 			"Session: Cannot insert track");
 

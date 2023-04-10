@@ -42,7 +42,7 @@ namespace DB
 			[[nodiscard]] QList<::Session::Id> getSessionKeys();
 
 			[[nodiscard]] ::Session::Id createNewSession() const;
-			bool addTrack(::Session::Id session_id, const MetaData& md);
+			bool addTrack(::Session::Id sessionId, const MetaData& track, const QDateTime& dateTime);
 
 			bool clear();
 			// bool clearBefore(const QDateTime& datetime);

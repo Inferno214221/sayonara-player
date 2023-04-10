@@ -31,6 +31,8 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 
+#include <QDateTime>
+
 #include <limits>
 
 using Session::Manager;
@@ -84,21 +86,20 @@ Manager::Manager(PlayManager* playManager) :
 
 Manager::~Manager() = default;
 
-void Manager::positionChanged(const MilliSeconds /*ms*/)
+void Manager::positionChanged(const MilliSeconds ms)
 {
 	constexpr const MilliSeconds MinTime = 5000;
-	const auto playtimeMs = m->playManager->currentTrackPlaytimeMs();
 
-	if(playtimeMs > MinTime && m->playtimeResetted)
+	if(ms > MinTime && m->playtimeResetted)
 	{
 		spLog(Log::Debug, this) << "Adding track to Session " << m->sessionId;
 
-		sessionConnector()->addTrack(m->sessionId, m->playManager->currentTrack());
+		m->sessionConnector->addTrack(m->sessionId, m->playManager->currentTrack(), QDateTime::currentDateTime());
 
 		emit sigSessionChanged(m->sessionId);
 	}
 
-	m->playtimeResetted = (playtimeMs <= MinTime);
+	m->playtimeResetted = (ms <= MinTime);
 }
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
