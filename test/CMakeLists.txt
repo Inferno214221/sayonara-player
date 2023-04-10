@@ -58,6 +58,8 @@ new_test(DynamicPlayback/ArtistMatchTest.cpp)
 
 new_test(Equalizer/EqualizerTest.cpp)
 
+new_test(History/HistoryTest.cpp Common/TestTracks.cpp)
+
 new_test(Library/ImportCacheTest.cpp)
 new_test(Library/LibraryManagerTest.cpp)
 new_test(Lyrics/LyricsLogicTest.cpp)
