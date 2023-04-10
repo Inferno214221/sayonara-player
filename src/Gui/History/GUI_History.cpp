@@ -41,8 +41,15 @@ namespace
 			if(!timecodes.contains(dayBegin))
 			{
 				timecodes << dayBegin;
-				auto* historyWidget = new HistoryEntryWidget(sessionManager, dayBegin, page);
-				page->layout()->addWidget(historyWidget);
+				auto* section = new HistoryEntryWidget(sessionManager, dayBegin, page);
+				page->layout()->addWidget(section);
+				QObject::connect(sessionManager, &Session::Manager::sigSessionDeleted,
+				                 page, [section, sessionId](const auto deletedSessionId) {
+						if(sessionId == deletedSessionId)
+						{
+							section->deleteLater();
+						}
+					});
 			}
 		}
 
@@ -65,11 +72,14 @@ struct GUI_History::Private
 
 	QWidget* dateRangeWidget = nullptr;
 	QDate startDate, endDate;
+	QMap<Session::Id, QWidget*> enrtryWidgets;
 
 	QPushButton* btnLoadMore {new QPushButton(tr("Load more entries"))};
 	QAction* actionGoToBottom {new QAction()};
 	QAction* actionGoToTop {new QAction()};
 	QAction* actionSelecteDataRange {new QAction()};
+	QAction* actionClearAllHistory {new QAction()};
+	QAction* actionClearOldHistory {new QAction()};
 
 	int lastPage {-1};
 
@@ -88,6 +98,8 @@ GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
 	ui->toolButton->registerAction(m->actionGoToBottom);
 	ui->toolButton->registerAction(m->actionGoToTop);
 	ui->toolButton->registerAction(m->actionSelecteDataRange);
+	ui->toolButton->registerAction(m->actionClearAllHistory);
+	ui->toolButton->registerAction(m->actionClearOldHistory);
 
 	ui->stackedWidget->setCurrentIndex(0);
 
@@ -97,6 +109,8 @@ GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
 	connect(m->actionGoToTop, &QAction::triggered, this, &GUI_History::scrollToTop);
 	connect(m->actionGoToBottom, &QAction::triggered, this, &GUI_History::scrollToBottom);
 	connect(m->actionSelecteDataRange, &QAction::triggered, this, &GUI_History::dateRangeClicked);
+	connect(m->actionClearAllHistory, &QAction::triggered, this, &GUI_History::clearAllHistoryClicked);
+	connect(m->actionClearOldHistory, &QAction::triggered, this, &GUI_History::clearOldHistoryClicked);
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_History::clearRangeClicked);
 
 	initShortcuts();
@@ -184,6 +198,8 @@ void GUI_History::languageChanged()
 	m->actionGoToTop->setText(tr("Scroll to top"));
 	m->actionGoToBottom->setText(tr("Scroll to bottom"));
 	m->actionSelecteDataRange->setText(tr("Select date range") + "...");
+	m->actionClearOldHistory->setText(tr("Clear history by date"));
+	m->actionClearAllHistory->setText(tr("Clear all history"));
 }
 
 void GUI_History::clearRangeClicked()
@@ -244,3 +260,22 @@ void GUI_History::loadSelectedDateRange()
 	ui->stackedWidget->setCurrentIndex(1);
 }
 
+void GUI_History::clearAllHistoryClicked()
+{
+	m->sessionManager->clearAllHistory();
+}
+
+void GUI_History::clearOldHistoryClicked()
+{
+	auto* dialog = new Gui::CalendarDialog(tr("Delete history"),
+	                                       tr("Delete history which is older than the specified date."),
+	                                       this);
+
+	if(dialog->exec() == QDialog::Accepted)
+	{
+		auto dateTime = dialog->selectedDate().startOfDay();
+		m->sessionManager->clearAllHistoryBefore(dateTime);
+	}
+
+	dialog->deleteLater();
+}

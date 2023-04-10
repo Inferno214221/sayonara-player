@@ -40,6 +40,8 @@ class GUI_History :
 		void dateRangeClicked();
 		void clearRangeClicked();
 		void calendarFinished();
+		void clearAllHistoryClicked();
+		void clearOldHistoryClicked();
 
 	protected:
 		void languageChanged() override;
