@@ -58,6 +58,8 @@ struct Manager::Private
 		sessionId {sessionConnector()->createNewSession()},
 		sessionIds {sessionConnector()->getSessionKeys()}
 	{
+		qRegisterMetaType<Session::Id>("SessionId");
+
 		sessionIds.prepend(sessionId);
 
 		Util::Set<Session::Timecode> days;

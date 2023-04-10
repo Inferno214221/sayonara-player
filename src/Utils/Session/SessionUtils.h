@@ -29,4 +29,6 @@ namespace Session
 	Timecode now();
 }
 
+Q_DECLARE_METATYPE(Session::Id)
+
 #endif // SESSIONTYPES_H
