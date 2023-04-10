@@ -179,24 +179,25 @@ namespace DB
 		return (!query.hasError());
 	}
 
-bool DB::Session::clear()
-{
-	const auto query = runQuery(
-		"DELETE FROM Sessions;",
-		"Session: Cannot clear sessions");
+	bool Session::clear()
+	{
+		const auto query = runQuery(
+			"DELETE FROM Sessions;",
+			"Session: Cannot clear sessions");
 
-	return (!query.hasError());
+		return (!query.hasError());
+	}
+
+	bool Session::clearBefore(const QDateTime& datetime)
+	{
+		const auto timecode = Util::dateToInt(datetime.date().endOfDay());
+		spLog(Log::Info, this) << "Delete all history <= " << timecode;
+
+		const auto query = runQuery(
+			"DELETE FROM Sessions WHERE sessionId <= :maxDate;",
+			{":maxDate", QVariant::fromValue<::Session::Timecode>(timecode)},
+			QString("Cannot clear before %1").arg(timecode));
+
+		return (!query.hasError());
+	}
 }
-
-/*
-bool DB::Session::clearBefore(const QDateTime& datetime)
-{
-	const auto timecode = Util::dateToInt(datetime);
-	const auto query = runQuery(
-		"DELETE FROM Sessions WHERE date < :minDate;",
-		{":minDate", QVariant::fromValue<::Session::Timecode>(timecode)},
-		QString("Cannot clear before %1").arg(timecode));
-
-	return (!query.hasError());
-}
-*/

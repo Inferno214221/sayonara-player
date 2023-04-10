@@ -45,7 +45,7 @@ namespace DB
 			bool addTrack(::Session::Id sessionId, const MetaData& track, const QDateTime& dateTime);
 
 			bool clear();
-			// bool clearBefore(const QDateTime& datetime);
+			bool clearBefore(const QDateTime& datetime);
 	};
 }
 
