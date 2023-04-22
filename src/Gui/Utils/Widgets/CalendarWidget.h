@@ -5,10 +5,13 @@
 
 namespace Gui
 {
-	class CalendarWidget : public QCalendarWidget
+	class CalendarWidget :
+		public QCalendarWidget
 	{
+		Q_OBJECT
+
 		public:
-			CalendarWidget(QWidget* parent=nullptr);
+			explicit CalendarWidget(QWidget* parent = nullptr);
 			~CalendarWidget() override;
 
 		protected:

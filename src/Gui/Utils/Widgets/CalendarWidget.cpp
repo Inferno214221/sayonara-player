@@ -9,8 +9,7 @@
 using Gui::CalendarWidget;
 
 CalendarWidget::CalendarWidget(QWidget* parent) :
-	QCalendarWidget(parent)
-{}
+	QCalendarWidget(parent) {}
 
 CalendarWidget::~CalendarWidget() = default;
 
@@ -18,14 +17,12 @@ void CalendarWidget::paintCell(QPainter* painter, const QRect& rect, const QDate
 {
 	if(Style::isDark())
 	{
-		bool isInvalidDate = (date < this->minimumDate() || date > this->maximumDate());
-		const QPalette p = this->palette();
-
+		const auto isInvalidDate = (date < minimumDate() || date > maximumDate());
 		if(isInvalidDate)
 		{
-			QColor c = p.color(QPalette::ColorGroup::Disabled, QPalette::ColorRole::WindowText);
+			const auto color = palette().color(QPalette::ColorGroup::Disabled, QPalette::ColorRole::WindowText);
 
-			painter->setPen(c);
+			painter->setPen(color);
 			painter->drawText(rect, int(Qt::AlignHCenter | Qt::AlignVCenter), QString::number(date.day()));
 
 			return;
