@@ -19,7 +19,6 @@
 #include <QApplication>
 #include <QShortcut>
 
-using Session::Timecode;
 namespace
 {
 	QWidget* createPage(Session::Manager* sessionManager, const Session::EntryListMap& history)
@@ -34,7 +33,7 @@ namespace
 			return (id1 > id2);
 		});
 
-		Util::Set<Timecode> timecodes;
+		Util::Set<Session::Timecode> timecodes;
 		for(const auto sessionId: sessionIds)
 		{
 			const auto dayBegin = Session::dayBegin(sessionId);
@@ -111,6 +110,7 @@ GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
 	connect(m->actionSelecteDataRange, &QAction::triggered, this, &GUI_History::dateRangeClicked);
 	connect(m->actionClearAllHistory, &QAction::triggered, this, &GUI_History::clearAllHistoryClicked);
 	connect(m->actionClearOldHistory, &QAction::triggered, this, &GUI_History::clearOldHistoryClicked);
+
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_History::clearRangeClicked);
 
 	initShortcuts();
@@ -263,19 +263,28 @@ void GUI_History::loadSelectedDateRange()
 void GUI_History::clearAllHistoryClicked()
 {
 	m->sessionManager->clearAllHistory();
+	assureOneTable();
 }
 
 void GUI_History::clearOldHistoryClicked()
 {
-	auto* dialog = new Gui::CalendarDialog(tr("Delete history"),
-	                                       tr("Delete history which is older than the specified date."),
-	                                       this);
+	auto dialog = Gui::CalendarDialog(tr("Delete history"),
+	                                  tr("Delete history which is older than the specified date."),
+	                                  this);
 
-	if(dialog->exec() == QDialog::Accepted)
+	if(dialog.exec() == QDialog::Accepted)
 	{
-		auto dateTime = dialog->selectedDate().startOfDay();
+		const auto dateTime = dialog.selectedDate().startOfDay();
 		m->sessionManager->clearAllHistoryBefore(dateTime);
 	}
 
-	dialog->deleteLater();
+	assureOneTable();
+}
+
+void GUI_History::assureOneTable()
+{
+	if(m->sessionManager->isEmpty())
+	{
+		requestData(0);
+	}
 }

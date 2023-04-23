@@ -31,9 +31,10 @@ class GUI_History :
 	private:
 		void initShortcuts();
 		void requestData(int index);
+		void assureOneTable();
 		void loadSelectedDateRange();
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void scrollToTop();
 		void scrollToBottom();
 		void loadMore();
