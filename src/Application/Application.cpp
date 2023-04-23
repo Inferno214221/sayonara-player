@@ -385,7 +385,7 @@ void Application::initLibraries()
 
 	auto* soundcloudContainer = new SC::LibraryContainer(m->libraryPlaylistInteractor, this);
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
-	auto* historyContainer = new HistoryContainer(m->sessionManager, this);
+	auto* historyContainer = new HistoryContainer(m->libraryPlaylistInteractor, m->sessionManager, this);
 
 	libraryContainers << static_cast<Library::AbstractContainer*>(somafmContainer);
 	libraryContainers << static_cast<Library::AbstractContainer*>(soundcloudContainer);

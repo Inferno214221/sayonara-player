@@ -11,6 +11,7 @@ namespace Session
 	class Manager;
 }
 
+class LibraryPlaylistInteractor;
 class HistoryEntryWidget :
 	public Gui::Widget
 {
@@ -18,7 +19,10 @@ class HistoryEntryWidget :
 	PIMPL(HistoryEntryWidget)
 
 	public:
-		explicit HistoryEntryWidget(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
+		HistoryEntryWidget(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+		                   Session::Manager* sessionManager,
+		                   Session::Timecode timecode,
+		                   QWidget* parent = nullptr);
 		~HistoryEntryWidget() override;
 		[[nodiscard]] Session::Id id() const;
 

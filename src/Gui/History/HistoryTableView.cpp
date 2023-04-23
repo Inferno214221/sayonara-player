@@ -1,26 +1,37 @@
 #include "HistoryTableView.h"
 #include "HistoryEntryModel.h"
 
+#include "Components/Playlist/LibraryPlaylistInteractor.h"
+#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Gui/Utils/EventFilter.h"
 #include "Gui/Utils/Widgets/HeaderView.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
 
-#include <QStringListModel>
-#include <QScrollBar>
 #include <QDrag>
-
-using Parent = Gui::WidgetTemplate<QTableView>;
+#include <QScrollBar>
+#include <QStringListModel>
 
 struct HistoryTableView::Private
 {
-	HistoryEntryModel* model = nullptr;
+	LibraryPlaylistInteractor* libraryPlaylistInteractor;
+	HistoryEntryModel* model;
+	Library::ContextMenu* contextMenu {nullptr};
 
-	Private(Session::Manager* sessionManager, Session::Timecode timecode) :
-		model(new HistoryEntryModel(sessionManager, timecode))
-	{}
+	Private(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+	        Session::Manager* sessionManager,
+	        const Session::Timecode timecode) :
+		libraryPlaylistInteractor {libraryPlaylistInteractor},
+		model {new HistoryEntryModel(sessionManager, timecode)} {}
 };
 
-HistoryTableView::HistoryTableView(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent) :
+HistoryTableView::HistoryTableView(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+                                   Session::Manager* sessionManager,
+                                   const Session::Timecode timecode,
+                                   QWidget* parent) :
 	Gui::WidgetTemplate<QTableView>(parent),
-	Gui::Dragable(this)
+	Gui::Dragable(this),
+	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager, timecode)}
 {
 	setModel(m->model);
 	setAlternatingRowColors(true);
@@ -87,4 +98,56 @@ void HistoryTableView::showEvent(QShowEvent* e)
 {
 	Gui::WidgetTemplate<QTableView>::showEvent(e);
 	skinChanged();
+}
+
+void HistoryTableView::contextMenuEvent(QContextMenuEvent* e)
+{
+	if(!m->contextMenu)
+	{
+		initContextMenu();
+	}
+
+	m->contextMenu->exec(e->globalPos());
+}
+
+void HistoryTableView::initContextMenu()
+{
+	m->contextMenu = new Library::ContextMenu(this);
+	m->contextMenu->showActions(Library::ContextMenu::EntryAppend |
+	                            Library::ContextMenu::EntryPlayNext |
+	                            Library::ContextMenu::EntryPlay |
+	                            Library::ContextMenu::EntryPlayNewTab);
+
+	connect(m->contextMenu->action(Library::ContextMenu::EntryAppend), &QAction::triggered,
+	        this, &HistoryTableView::appendTriggered);
+	connect(m->contextMenu->action(Library::ContextMenu::EntryPlay), &QAction::triggered,
+	        this, &HistoryTableView::playTriggered);
+	connect(m->contextMenu->action(Library::ContextMenu::EntryPlayNext), &QAction::triggered,
+	        this, &HistoryTableView::playNextTriggered);
+	connect(m->contextMenu->action(Library::ContextMenu::EntryPlayNewTab), &QAction::triggered,
+	        this, &HistoryTableView::playNewTabTriggered);
+}
+
+void HistoryTableView::appendTriggered()
+{
+	const auto tracks = m->model->tracksByIndexes(selectedIndexes());
+	m->libraryPlaylistInteractor->append(tracks);
+}
+
+void HistoryTableView::playNewTabTriggered()
+{
+	const auto tracks = m->model->tracksByIndexes(selectedIndexes());
+	m->libraryPlaylistInteractor->createPlaylist(tracks, true);
+}
+
+void HistoryTableView::playNextTriggered()
+{
+	const auto tracks = m->model->tracksByIndexes(selectedIndexes());
+	m->libraryPlaylistInteractor->insertAfterCurrentTrack(tracks);
+}
+
+void HistoryTableView::playTriggered()
+{
+	const auto tracks = m->model->tracksByIndexes(selectedIndexes());
+	m->libraryPlaylistInteractor->createPlaylist(tracks, false);
 }

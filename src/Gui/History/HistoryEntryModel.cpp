@@ -194,3 +194,20 @@ QMimeData* HistoryEntryModel::mimeData(const QModelIndexList& indexes) const
 
 	return data;
 }
+
+MetaDataList HistoryEntryModel::tracksByIndexes(const QModelIndexList& indexes) const
+{
+	auto rows = Util::Set<int> {};
+	auto tracks = MetaDataList {};
+	for(const auto& index: indexes)
+	{
+		if(!rows.contains(index.row()))
+		{
+			const auto e = entry(index.row());
+			tracks << e.track;
+			rows << index.row();
+		}
+	}
+
+	return tracks;
+}

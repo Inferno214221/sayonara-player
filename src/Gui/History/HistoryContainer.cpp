@@ -9,18 +9,18 @@
 struct HistoryContainer::Private
 {
 	GUI_History* widget = nullptr;
+	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Session::Manager* sessionManager;
 
-	Private(Session::Manager* sessionManager) :
-		sessionManager(sessionManager)
-	{}
+	Private(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager) :
+		libraryPlaylistInteractor {libraryPlaylistInteractor},
+		sessionManager(sessionManager) {}
 };
 
-HistoryContainer::HistoryContainer(Session::Manager* sessionManager, QObject* parent) :
-	Library::Container(parent)
-{
-	m = Pimpl::make<Private>(sessionManager);
-}
+HistoryContainer::HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+                                   Session::Manager* sessionManager, QObject* parent) :
+	Library::Container(parent),
+	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager)} {}
 
 HistoryContainer::~HistoryContainer() = default;
 
@@ -51,5 +51,5 @@ QIcon HistoryContainer::icon() const
 
 void HistoryContainer::initUi()
 {
-	m->widget = new GUI_History(m->sessionManager);
+	m->widget = new GUI_History(m->libraryPlaylistInteractor, m->sessionManager);
 }

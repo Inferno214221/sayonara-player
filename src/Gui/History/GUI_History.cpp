@@ -21,7 +21,8 @@
 
 namespace
 {
-	QWidget* createPage(Session::Manager* sessionManager, const Session::EntryListMap& history)
+	QWidget* createPage(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager,
+	                    const Session::EntryListMap& history)
 	{
 		auto* page = new QWidget();
 		auto* pageLayout = new QVBoxLayout(page);
@@ -40,7 +41,7 @@ namespace
 			if(!timecodes.contains(dayBegin))
 			{
 				timecodes << dayBegin;
-				auto* section = new HistoryEntryWidget(sessionManager, dayBegin, page);
+				auto* section = new HistoryEntryWidget(libraryPlaylistInteractor, sessionManager, dayBegin, page);
 				page->layout()->addWidget(section);
 				QObject::connect(sessionManager, &Session::Manager::sigSessionDeleted,
 				                 page, [section, sessionId](const auto deletedSessionId) {
@@ -67,6 +68,7 @@ namespace
 
 struct GUI_History::Private
 {
+	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Session::Manager* sessionManager;
 
 	QWidget* dateRangeWidget = nullptr;
@@ -82,13 +84,15 @@ struct GUI_History::Private
 
 	int lastPage {-1};
 
-	explicit Private(Session::Manager* sessionManager) :
-		sessionManager(sessionManager) {}
+	Private(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager) :
+		libraryPlaylistInteractor {libraryPlaylistInteractor},
+		sessionManager {sessionManager} {}
 };
 
-GUI_History::GUI_History(Session::Manager* sessionManager, QWidget* parent) :
+GUI_History::GUI_History(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager,
+                         QWidget* parent) :
 	Gui::Dialog(parent),
-	m {Pimpl::make<Private>(sessionManager)},
+	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager)},
 	ui {std::make_shared<Ui::GUI_History>()}
 {
 	ui->setupUi(this);
@@ -212,7 +216,7 @@ void GUI_History::requestData(const int index)
 	const auto history = m->sessionManager->historyEntries(index, 10);
 	m->btnLoadMore->setDisabled(history.isEmpty());
 
-	auto* page = createPage(m->sessionManager, history);
+	auto* page = createPage(m->libraryPlaylistInteractor, m->sessionManager, history);
 	const auto oldHeight = ui->scrollArea->widget()->height();
 
 	ui->scrollAreaWidgetContents->layout()->removeWidget(m->btnLoadMore);
@@ -254,7 +258,7 @@ void GUI_History::loadSelectedDateRange()
 		m->startDate.startOfDay(),
 		m->endDate.endOfDay());
 
-	m->dateRangeWidget = createPage(m->sessionManager, history);
+	m->dateRangeWidget = createPage(m->libraryPlaylistInteractor, m->sessionManager, history);
 
 	ui->scrollAreaRangeContents->layout()->addWidget(m->dateRangeWidget);
 	ui->stackedWidget->setCurrentIndex(1);

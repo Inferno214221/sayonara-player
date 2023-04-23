@@ -15,6 +15,7 @@ namespace Session
 	class Manager;
 }
 
+class LibraryPlaylistInteractor;
 class GUI_History :
 	public Gui::Dialog
 {
@@ -23,7 +24,9 @@ class GUI_History :
 	UI_CLASS_SHARED_PTR(GUI_History)
 
 	public:
-		explicit GUI_History(Session::Manager* sessionManager, QWidget* parent = nullptr);
+		GUI_History(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+		            Session::Manager* sessionManager,
+		            QWidget* parent = nullptr);
 		~GUI_History() override;
 
 		[[nodiscard]] QFrame* header() const;

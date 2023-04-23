@@ -32,15 +32,27 @@ struct HistoryEntryWidget::Private
 	QLabel* dateLabel;
 	QLabel* trackLabel;
 
-static QString dateToString(const QDateTime& date)
-{
-	QLocale locale = Util::Language::getCurrentLocale();
-	QString str = locale.toString(date.date());
-	return str;
-}
+	Private(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+	        Session::Manager* sessionManager,
+	        const Session::Timecode timecode,
+	        QWidget* parent) :
+		timecode {timecode},
+		tableView {new HistoryTableView(libraryPlaylistInteractor, sessionManager, timecode, parent)},
+		dateLabel {new QLabel(parent)},
+		trackLabel {new QLabel(parent)}
+	{
+		setBold(dateLabel);
+		setBold(trackLabel);
 
-HistoryEntryWidget::HistoryEntryWidget(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent) :
-	Gui::Widget(parent)
+		dateLabel->setText(dateToString(Util::intToDate(timecode)));
+		trackLabel->setText(Lang::getWithNumber(Lang::NrTracks, tableView->rows()));
+	}
+};
+
+HistoryEntryWidget::HistoryEntryWidget(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+                                       Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent) :
+	Gui::Widget {parent},
+	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager, timecode, this)}
 {
 	auto* labelLayout = new QHBoxLayout();
 	labelLayout->addWidget(m->dateLabel);

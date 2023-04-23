@@ -13,6 +13,8 @@ namespace Session
 	class Manager;
 }
 
+class LibraryPlaylistInteractor;
+
 class HistoryTableView :
 	public Gui::WidgetTemplate<QTableView>,
 	public Gui::Dragable
@@ -24,7 +26,10 @@ class HistoryTableView :
 		void sigRowcountChanged();
 
 	public:
-		explicit HistoryTableView(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
+		HistoryTableView(LibraryPlaylistInteractor* libraryPlaylistInteractor,
+		                 Session::Manager* sessionManager,
+		                 Session::Timecode timecode,
+		                 QWidget* parent = nullptr);
 		~HistoryTableView() override;
 
 		[[nodiscard]] int rows() const;
@@ -33,6 +38,17 @@ class HistoryTableView :
 		void skinChanged() override;
 		void resizeEvent(QResizeEvent* e) override;
 		void showEvent(QShowEvent* e) override;
+		void contextMenuEvent(QContextMenuEvent* e) override;
+
+	private slots:
+		void rowcountChanged();
+		void appendTriggered();
+		void playNewTabTriggered();
+		void playNextTriggered();
+		void playTriggered();
+
+	private: // NOLINT(readability-redundant-access-specifiers)
+		void initContextMenu();
 };
 
 #endif // HISTORYTABLEVIEW_H

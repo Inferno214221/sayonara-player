@@ -9,6 +9,7 @@ namespace Session
 	class Manager;
 }
 
+class LibraryPlaylistInteractor;
 class HistoryContainer :
 	public Library::Container
 {
@@ -16,7 +17,8 @@ class HistoryContainer :
 	PIMPL(HistoryContainer)
 
 	public:
-		HistoryContainer(Session::Manager* sessionManager, QObject* parent = nullptr);
+		HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager,
+		                 QObject* parent = nullptr);
 		~HistoryContainer() override;
 
 		[[nodiscard]] QString name() const override;
