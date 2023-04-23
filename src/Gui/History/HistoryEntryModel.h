@@ -12,6 +12,8 @@ namespace Session
 	class Manager;
 }
 
+class MetaDataList;
+
 class HistoryEntryModel :
 	public QAbstractTableModel
 {
@@ -21,24 +23,22 @@ class HistoryEntryModel :
 	signals:
 		void sigRowsAdded();
 
-	private:
-		const Session::Entry& entry(int row) const;
-
 	public:
-		HistoryEntryModel(Session::Manager* sessionManager, Session::Timecode timecode, QObject* parent=nullptr);
+		HistoryEntryModel(Session::Manager* sessionManager, Session::Timecode timecode, QObject* parent = nullptr);
 		~HistoryEntryModel() override;
 
-		// QAbstractItemModel interface
-	public:
-		QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
-		int rowCount(const QModelIndex& parent) const override;
-		int columnCount(const QModelIndex& parent) const override;
-		QVariant data(const QModelIndex& index, int role) const override;
+		[[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+		[[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+		[[nodiscard]] int columnCount(const QModelIndex& parent) const override;
+		[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
+		[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+		[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
+		[[nodiscard]] MetaDataList tracksByIndexes(const QModelIndexList& indexes) const;
 
-		Qt::ItemFlags flags(const QModelIndex& index) const override;
-		QMimeData* mimeData(const QModelIndexList& indexes) const override;
+	private:
+		[[nodiscard]] const Session::Entry& entry(int row) const;
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void historyChanged(Session::Id id);
 
 	protected:

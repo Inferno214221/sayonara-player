@@ -1,7 +1,6 @@
 #include "HistoryContainer.h"
 
 #include "Components/Session/Session.h"
-
 #include "Gui/History/GUI_History.h"
 #include "Gui/Utils/Icons.h"
 

@@ -1,47 +1,49 @@
 #include "HistoryEntryModel.h"
 #include "Components/Session/Session.h"
 
-#include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Set.h"
-
 #include "Utils/MimeData/CustomMimeData.h"
+#include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+
+namespace
+{
+	Session::EntryList calcHistory(const Session::Timecode timecode, Session::Manager* sessionManager)
+	{
+		auto result = Session::EntryList {};
+
+		const auto dt = Util::intToDate(timecode);
+		const auto entryListMap = sessionManager->historyForDay(dt);
+		const auto timecodes = entryListMap.keys();
+
+		for(const auto& key: timecodes)
+		{
+			auto entries = entryListMap[key];
+			Util::Algorithm::remove_duplicates(entries);
+
+			result << entries;
+		}
+
+		return result;
+	}
+}
 
 struct HistoryEntryModel::Private
 {
-	Session::Manager* session = nullptr;
+	Session::Manager* session;
+	Session::Timecode timecode;
 	Session::EntryList history;
 	Session::Entry invalidEntry;
 
-	Session::Timecode timecode;
-
-	Private(Session::Manager* sessionManager, Session::Timecode timecode) :
-		session(sessionManager),
-		timecode(timecode)
+	Private(Session::Manager* sessionManager, const Session::Timecode timecode) :
+		session {sessionManager},
+		timecode {timecode},
+		history {calcHistory(timecode, sessionManager)}
 	{
 		invalidEntry.timecode = 0;
-
-		calcHistory();
-	}
-
-	void calcHistory()
-	{
-		history.clear();
-
-		const QDateTime dt = Util::intToDate(this->timecode);
-		const Session::EntryListMap map = session->historyForDay(dt);
-		const QList<Session::Timecode> keys = map.keys();
-
-		for(Session::Timecode t: keys)
-		{
-			Session::EntryList lst = map[t];
-			Util::Algorithm::remove_duplicates(lst);
-
-			history << lst;
-		}
 	}
 };
 
@@ -57,88 +59,71 @@ HistoryEntryModel::HistoryEntryModel(Session::Manager* sessionManager, Session::
 
 HistoryEntryModel::~HistoryEntryModel() = default;
 
-const Session::Entry& HistoryEntryModel::entry(int row) const
+const Session::Entry& HistoryEntryModel::entry(const int row) const
 {
-	int index = (m->history.size() - 1) - row;
-	if(index < 0 || index >= m->history.size())
-	{
-		return m->invalidEntry;
-	}
-
-	return m->history[index];
+	const auto index = (m->history.size() - 1) - row;
+	return (index >= 0) && (index < m->history.size())
+	       ? m->history[index]
+	       : m->invalidEntry;
 }
 
-int HistoryEntryModel::rowCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
-	return m->history.count();
-}
+int HistoryEntryModel::rowCount(const QModelIndex& /*parent*/) const { return m->history.count(); }
 
-int HistoryEntryModel::columnCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
-	return 4;
-}
+int HistoryEntryModel::columnCount(const QModelIndex& /*parent*/) const { return 4; }
 
-QVariant HistoryEntryModel::data(const QModelIndex& index, int role) const
+QVariant HistoryEntryModel::data(const QModelIndex& index, const int role) const
 {
 	if(role != Qt::DisplayRole)
 	{
-		return QVariant();
+		return {};
 	}
 
-	int row = index.row();
-	int col = index.column();
-
-	const Session::Entry& e = entry(row);
-
-	switch(col)
+	const auto row = index.row();
+	switch(index.column())
 	{
 		case 0:
 		{
-			QDateTime dt = Util::intToDate(e.timecode);
-			return " " + dt.time().toString() + " ";
+			const auto dt = Util::intToDate(entry(row).timecode);
+			return QString(" %1 ").arg(dt.time().toString());
 		}
 
 		case 1:
-			return e.track.title();
+			return entry(row).track.title();
 		case 2:
-			return e.track.artist();
+			return entry(row).track.artist();
 		case 3:
-			return e.track.album();
+			return entry(row).track.album();
 		default:
-			return QVariant();
+			return {};
 	}
 }
 
 void HistoryEntryModel::languageChanged()
 {
-	int columnCount = this->columnCount(QModelIndex());
-	emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount);
+	emit headerDataChanged(Qt::Orientation::Horizontal, 0, columnCount({}));
 }
 
-void HistoryEntryModel::historyChanged(Session::Id id)
+void HistoryEntryModel::historyChanged(const Session::Id id)
 {
-	const Session::Timecode dayBegin = Session::dayBegin(id);
-	const Session::Timecode dayEnd = Session::dayEnd(id);
+	const auto dayBegin = Session::dayBegin(id);
+	const auto dayEnd = Session::dayEnd(id);
 
-	if(id >= dayBegin && id <= dayEnd)
+	if((id >= dayBegin) && (id <= dayEnd))
 	{
-		const int oldRowCount = rowCount(QModelIndex());
-		m->calcHistory();
-		const int newRowCount = rowCount(QModelIndex());
+		const int oldRowCount = rowCount({});
+		m->history = calcHistory(m->timecode, m->session);
+		const int newRowCount = rowCount({});
 
 		if(newRowCount > oldRowCount)
 		{
-			beginInsertRows(QModelIndex(), oldRowCount, newRowCount - 1);
-			this->insertRows(oldRowCount, (newRowCount - oldRowCount));
+			beginInsertRows({}, oldRowCount, newRowCount - 1);
+			insertRows(oldRowCount, (newRowCount - oldRowCount));
 			endInsertRows();
 
 			emit sigRowsAdded();
 		}
 
-		const int columnCount = this->columnCount(QModelIndex());
-		emit dataChanged(index(oldRowCount, 0), index(newRowCount, columnCount), {Qt::DisplayRole});
+		emit dataChanged(index(oldRowCount, 0), index(newRowCount, columnCount({})), {Qt::DisplayRole});
 	}
 }
 
@@ -146,12 +131,12 @@ QVariant HistoryEntryModel::headerData(int section, Qt::Orientation orientation,
 {
 	if(orientation == Qt::Orientation::Vertical)
 	{
-		return QVariant();
+		return {};
 	}
 
 	if(role != Qt::DisplayRole)
 	{
-		return QVariant();
+		return {};
 	}
 
 	switch(section)
@@ -165,13 +150,13 @@ QVariant HistoryEntryModel::headerData(int section, Qt::Orientation orientation,
 		case 3:
 			return Lang::get(Lang::Album);
 		default:
-			return QVariant();
+			return {};
 	}
 }
 
 Qt::ItemFlags HistoryEntryModel::flags(const QModelIndex& index) const
 {
-	Qt::ItemFlags f = QAbstractTableModel::flags(index);
+	auto f = QAbstractTableModel::flags(index);
 
 	const auto& e = entry(index.row());
 	if(e.track.filepath().isEmpty())
@@ -192,13 +177,13 @@ QMimeData* HistoryEntryModel::mimeData(const QModelIndexList& indexes) const
 {
 	auto* data = new Gui::CustomMimeData(this);
 
-	Util::Set<int> rows;
-	MetaDataList tracks;
-	for(const QModelIndex& index: indexes)
+	auto rows = Util::Set<int> {};
+	auto tracks = MetaDataList {};
+	for(const auto& index: indexes)
 	{
 		const auto& e = entry(index.row());
 
-		if(e.timecode > 0 && !rows.contains(index.row()))
+		if((e.timecode > 0) && !rows.contains(index.row()))
 		{
 			tracks << e.track;
 			rows << index.row();

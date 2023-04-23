@@ -1,13 +1,12 @@
 #ifndef HISTORYTABLEVIEW_H
 #define HISTORYTABLEVIEW_H
 
-#include <QTableView>
-
+#include "Gui/Utils/Widgets/Dragable.h"
+#include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Session/SessionUtils.h"
 
-#include "Gui/Utils/Widgets/WidgetTemplate.h"
-#include "Gui/Utils/Widgets/Dragable.h"
+#include <QTableView>
 
 namespace Session
 {
@@ -28,14 +27,10 @@ class HistoryTableView :
 		explicit HistoryTableView(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryTableView() override;
 
-		int rows() const;
-
-	private slots:
-		void rowcountChanged();
+		[[nodiscard]] int rows() const;
 
 	protected:
 		void skinChanged() override;
-
 		void resizeEvent(QResizeEvent* e) override;
 		void showEvent(QShowEvent* e) override;
 };

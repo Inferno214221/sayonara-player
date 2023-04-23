@@ -19,15 +19,12 @@ class HistoryContainer :
 		HistoryContainer(Session::Manager* sessionManager, QObject* parent = nullptr);
 		~HistoryContainer() override;
 
-		// Container interface
-	public:
-		QString name() const override;
-		QString displayName() const override;
-		QWidget* widget() const override;
-		QFrame* header() const override;
-		QIcon icon() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QWidget* widget() const override;
+		[[nodiscard]] QFrame* header() const override;
+		[[nodiscard]] QIcon icon() const override;
 
-		// ContainerImpl interface
 	protected:
 		void initUi() override;
 };

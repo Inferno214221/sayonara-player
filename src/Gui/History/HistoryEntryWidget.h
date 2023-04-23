@@ -20,14 +20,13 @@ class HistoryEntryWidget :
 	public:
 		explicit HistoryEntryWidget(Session::Manager* sessionManager, Session::Timecode timecode, QWidget* parent=nullptr);
 		~HistoryEntryWidget() override;
-
-		Session::Id id() const;
-
-	private slots:
-		void rowcount_changed();
+		[[nodiscard]] Session::Id id() const;
 
 	protected:
 		void languageChanged() override;
+
+	private slots:
+		void rowcountChanged();
 };
 
 #endif // HISTORYENTRYWIDGET_H
