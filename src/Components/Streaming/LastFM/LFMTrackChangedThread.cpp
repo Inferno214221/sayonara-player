@@ -48,7 +48,7 @@ namespace LastFM
 
 		auto* webAccess = new WebAccess();
 		connect(webAccess, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
-		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
+		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 		auto artist = track.artist();
 		artist.replace("&", "&amp;");
