@@ -23,7 +23,10 @@
 
 #include "Query.h"
 
-namespace Library {class Filter;}
+namespace Library
+{
+	class Filter;
+}
 class Album;
 class AlbumList;
 
@@ -39,13 +42,14 @@ namespace DB
 
 			virtual bool dbFetchAlbums(Query& q, AlbumList& result) const;
 
-			virtual AlbumId getAlbumID (const QString& album) const;
+			[[nodiscard]] virtual AlbumId getAlbumID(const QString& album) const;
 
-            virtual bool getAlbumByID(AlbumId id, Album& album) const;
+			virtual bool getAlbumByID(AlbumId id, Album& album) const;
 			virtual bool getAlbumByID(AlbumId id, Album& album, bool alsoEmpty) const;
 
 			virtual bool getAllAlbums(AlbumList& result, bool alsoEmpty) const;
-			virtual bool getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter) const;
+			virtual bool
+			getAllAlbumsByArtist(const IdList& artists, AlbumList& result, const ::Library::Filter& filter) const;
 
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result) const;
 
@@ -54,22 +58,22 @@ namespace DB
 		protected:
 			// too dangerous to call it directly because multiple insertions
 			// may occur
-			virtual AlbumId insertAlbumIntoDatabase (const QString& album);
-			virtual AlbumId insertAlbumIntoDatabase (const Album& album);
+			virtual AlbumId insertAlbumIntoDatabase(const QString& album);
+			virtual AlbumId insertAlbumIntoDatabase(const Album& album);
 			virtual void deleteAllAlbums();
 
-			virtual QString artistIdField() const=0;
-			virtual QString trackView() const=0;
-			virtual QString trackSearchView() const=0;
-			virtual LibraryId libraryId() const=0;
+			[[nodiscard]] virtual QString artistIdField() const = 0;
+			[[nodiscard]] virtual QString trackView() const = 0;
+			[[nodiscard]] virtual QString trackSearchView() const = 0;
+			[[nodiscard]] virtual LibraryId libraryId() const = 0;
 
-			virtual Module* module()=0;
-			virtual const Module* module() const=0;
+			[[nodiscard]] virtual Module* module() = 0;
+			[[nodiscard]] virtual const Module* module() const = 0;
 
 			virtual void updateAlbumCissearch();
 
 		private:
-			virtual QString fetchQueryAlbums(bool alsoEmpty) const;
+			[[nodiscard]] virtual QString fetchQueryAlbums(bool alsoEmpty) const;
 	};
 }
 

@@ -34,7 +34,7 @@ using ::Library::Filter;
 
 namespace
 {
-	static const auto CisPlaceholder = QStringLiteral(":cissearch");
+	constexpr const auto CisPlaceholder = ":cissearch";
 
 	QList<Disc> variantToDiscnumbers(const QVariant& variant)
 	{
@@ -160,12 +160,10 @@ QString Albums::fetchQueryAlbums(bool alsoEmpty) const
 	                            ? QStringLiteral("1")
 	                            : QStringLiteral("trackCount > 0");
 
-	const auto query = QString("SELECT %1 FROM %2 WHERE %3 ")
+	return QString("SELECT %1 FROM %2 WHERE %3 ")
 		.arg(joinedFields)
 		.arg(albumViewName(libraryId()))
 		.arg(whereStatement);
-
-	return query;
 }
 
 bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
