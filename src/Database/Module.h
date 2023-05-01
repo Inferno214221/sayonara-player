@@ -37,24 +37,20 @@ namespace DB
 			Module(const QString& connectionName, DbId databaseId);
 			virtual ~Module();
 
-			QSqlDatabase	db() const;
-			DbId			databaseId() const;
-			QString			connectionName() const;
+			[[nodiscard]] QSqlDatabase db() const;
+			[[nodiscard]] DbId databaseId() const;
+			[[nodiscard]] QString connectionName() const;
 
-			DB::Query		runQuery(const QString& query, const QString& error_text) const;
-			DB::Query		runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& error_text) const;
-			DB::Query		runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& error_text) const;
+			[[nodiscard]] DB::Query runQuery(const QString& query, const QString& errorText) const;
+			[[nodiscard]] DB::Query
+			runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const;
+			[[nodiscard]] DB::Query
+			runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const;
 
-			/**
-			 * @brief update
-			 * @param tablename Name of table to update
-			 * @param field_bindings Fields to update
-			 * @param where_binding Where clause
-			 * @param error_message
-			 * @return
-			 */
-			DB::Query		update(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QPair<QString, QVariant>& where_binding, const QString& error_message);
-			DB::Query		insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings, const QString& error_message);
+			DB::Query update(const QString& tablename, const QMap<QString, QVariant>& field_bindings,
+			                 const QPair<QString, QVariant>& where_binding, const QString& error_message);
+			DB::Query insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings,
+			                 const QString& error_message);
 	};
 }
 
