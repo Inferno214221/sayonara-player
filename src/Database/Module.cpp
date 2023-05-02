@@ -26,42 +26,160 @@
 #include <QThread>
 #include <QSqlError>
 #include <QSqlDatabase>
+
+#include <optional>
 #include <utility>
 
 using DB::Module;
+
+namespace
+{
+	void execPragma(const QSqlDatabase& db, const QString& key, const QString& value)
+	{
+		const auto q = QString("PRAGMA %1 = %2;").arg(key).arg(value);
+		db.exec(q);
+	}
+
+	quint64 getCurrentThreadId()
+	{
+		auto* thread = QThread::currentThread();
+		return QApplication::instance() && (thread == QApplication::instance()->thread())
+		       ? 0
+		       : reinterpret_cast<intptr_t>(thread);
+	}
+
+	QString getThreadedConnectionName(const QString& baseConnectioName)
+	{
+		const auto threadId = getCurrentThreadId();
+		return QString("%1-%2")
+			.arg(baseConnectioName)
+			.arg(threadId);
+	}
+
+	QSqlDatabase createNewDatabase(const QString& baseConnectioName)
+	{
+		constexpr const auto* instanceName = "DB::Module";
+
+		const auto threadConnectionName = getThreadedConnectionName(baseConnectioName);
+		spLog(Log::Info, instanceName) << "Create new connection to " << baseConnectioName
+		                               << " (" << threadConnectionName << ")";
+
+		auto db = QSqlDatabase::addDatabase("QSQLITE", threadConnectionName);
+		db.setDatabaseName(baseConnectioName);
+
+		if(!db.open())
+		{
+			const auto error = db.lastError();
+
+			spLog(Log::Error, instanceName) << "Database cannot be opened! " << baseConnectioName;
+			spLog(Log::Error, instanceName) << error.driverText();
+			spLog(Log::Error, instanceName) << error.databaseText();
+		}
+
+		execPragma(db, "case_sensitive_like", "true");
+
+		return db;
+	}
+
+	QString createFieldsString(const QStringList& fieldNames)
+	{
+		return fieldNames.join(", ");
+	}
+
+	QString createInsertPlaceholderString(const QStringList& fieldNames)
+	{
+		return QString(":%1")
+			.arg(fieldNames.join(", :"));
+	}
+
+	DB::Query createInsertQuery(const Module* module, const QString& tablename, const QMap<QString, QVariant>& bindings)
+	{
+		const auto fieldNames = bindings.keys();
+		const auto queryString = QString("INSERT INTO %1 (%2) VALUES (%3);")
+			.arg(tablename)
+			.arg(createFieldsString(fieldNames))
+			.arg(createInsertPlaceholderString(fieldNames));
+
+		auto query = DB::Query(module);
+		query.prepare(queryString);
+
+		for(const auto& fieldName: fieldNames)
+		{
+			query.bindValue(":" + fieldName, bindings[fieldName]);
+		}
+
+		return query;
+	}
+
+	QString createUpdatePlaceholderString(const QStringList& fieldNames)
+	{
+		QStringList updateCommands;
+		for(const auto& field: fieldNames)
+		{
+			updateCommands << QString("%1 = :%1")
+				.arg(field);
+		}
+
+		return updateCommands.join(", ");
+	}
+
+	DB::Query
+	createUpdateQuery(const Module* module, const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+	                  const QPair<QString, QVariant>& whereBinding)
+	{
+		const auto fieldNames = fieldBindings.keys();
+		const auto queryString = QString("UPDATE %1 SET %2 WHERE %3 = :W%3;")
+			.arg(tablename)
+			.arg(createUpdatePlaceholderString(fieldNames))
+			.arg(whereBinding.first);
+
+		auto query = DB::Query(module);
+		query.prepare(queryString);
+
+		for(const auto& field: fieldNames)
+		{
+			query.bindValue(":" + field, fieldBindings[field]);
+		}
+
+		query.bindValue(":W" + whereBinding.first, whereBinding.second);
+
+		return query;
+	}
+
+	DB::Query
+	createGenericQuery(const Module* module, const QString& queryText, const QMap<QString, QVariant>& bindings)
+	{
+		auto query = DB::Query(module);
+		query.prepare(queryText);
+
+		const auto keys = bindings.keys();
+		for(const auto& key: keys)
+		{
+			query.bindValue(key, bindings[key]);
+		}
+
+		return query;
+	}
+}
 
 struct Module::Private
 {
 	QString connectionName;
 	DbId databaseId;
 
-	Private(QString connectionName, DbId databaseId) :
+	Private(QString connectionName, const DbId databaseId) :
 		connectionName(std::move(connectionName)),
 		databaseId(databaseId) {}
 };
 
-Module::Module(const QString& connectionName, DbId databaseId)
-{
-	m = Pimpl::make<Private>(connectionName, databaseId);
-}
+Module::Module(const QString& connectionName, const DbId databaseId) :
+	m {Pimpl::make<Private>(connectionName, databaseId)} {}
 
 Module::~Module() = default;
 
-DbId Module::databaseId() const
-{
-	return m->databaseId;
-}
+DbId Module::databaseId() const { return m->databaseId; }
 
-QString Module::connectionName() const
-{
-	return m->connectionName;
-}
-
-static void execPragma(const QSqlDatabase& db, const QString& key, const QString& value)
-{
-	const QString q = QString("PRAGMA %1 = %2;").arg(key).arg(value);
-	db.exec(q);
-}
+QString Module::connectionName() const { return m->connectionName; }
 
 QSqlDatabase Module::db() const
 {
@@ -70,42 +188,10 @@ QSqlDatabase Module::db() const
 		return {};
 	}
 
-	QThread* t = QThread::currentThread();
-
-	quint64 id = quint64(t);
-	if(QApplication::instance() && (t == QApplication::instance()->thread()))
-	{
-		id = 0;
-	}
-
-	QString threadConnectionName = QString("%1-%2")
-		.arg(m->connectionName)
-		.arg(id);
-
-	const QStringList connections = QSqlDatabase::connectionNames();
-	if(connections.contains(threadConnectionName))
-	{
-		return QSqlDatabase::database(threadConnectionName);
-	}
-
-	spLog(Log::Info, this) << "Create new connection to " << connectionName()
-	                       << " (" << threadConnectionName << ")";
-
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", threadConnectionName);
-	db.setDatabaseName(m->connectionName);
-
-	if(!db.open())
-	{
-		QSqlError er = db.lastError();
-
-		spLog(Log::Error, this) << "Database cannot be opened! " << m->connectionName;
-		spLog(Log::Error, this) << er.driverText();
-		spLog(Log::Error, this) << er.databaseText();
-	}
-
-	execPragma(db, "case_sensitive_like", "true");
-
-	return db;
+	const auto threadedConnectionName = getThreadedConnectionName(m->connectionName);
+	return QSqlDatabase::connectionNames().contains(threadedConnectionName)
+	       ? QSqlDatabase::database(threadedConnectionName)
+	       : createNewDatabase(m->connectionName);
 }
 
 DB::Query Module::runQuery(const QString& query, const QString& errorText) const
@@ -120,87 +206,41 @@ Module::runQuery(const QString& query, const QPair<QString, QVariant>& bindings,
 }
 
 DB::Query
-Module::runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const
+Module::runQuery(const QString& queryText, const QMap<QString, QVariant>& bindings, const QString& errorText) const
 {
-	DB::Query q(this);
-	q.prepare(query);
-
-	const QList<QString> keys = bindings.keys();
-	for(const QString& k: keys)
-	{
-		q.bindValue(k, bindings[k]);
-	}
-
-	if(!q.exec())
+	auto query = createGenericQuery(this, queryText, bindings);
+	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.showError(errorText);
+		query.showError(errorText);
 	}
 
-	return q;
+	return query;
 }
 
 DB::Query
 Module::insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings, const QString& errorMessage)
 {
-	const QList<QString> fieldNames = fieldBindings.keys();
-	const QString fields = fieldNames.join(", ");
-	const QString bindings = ":" + fieldNames.join(", :");
-
-	QString query = "INSERT INTO " + tablename + " ";
-	query += "(" + fields + ") ";
-	query += "VALUES (" + bindings + ");";
-
-	DB::Query q(this);
-	q.prepare(query);
-
-	for(const QString& field: fieldNames)
-	{
-		q.bindValue(":" + field, fieldBindings[field]);
-	}
-
-	if(!q.exec())
+	auto query = createInsertQuery(this, tablename, fieldBindings);
+	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.showError(errorMessage);
+		query.showError(errorMessage);
 	}
 
-	return q;
+	return query;
 }
 
 DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
                          const QPair<QString, QVariant>& whereBinding, const QString& errorMessage)
 {
-	const QList<QString> fieldNames = fieldBindings.keys();
-
-	QStringList updateCommands;
-	for(const QString& field: fieldNames)
-	{
-		updateCommands << field + " = :" + field;
-	}
-
-	QString query = "UPDATE " + tablename + " SET ";
-	query += updateCommands.join(", ");
-	query += " WHERE ";
-	query += whereBinding.first + " = :W" + whereBinding.first;
-	query += ";";
-
-	DB::Query q(this);
-	q.prepare(query);
-
-	for(const QString& field: fieldNames)
-	{
-		q.bindValue(":" + field, fieldBindings[field]);
-	}
-
-	q.bindValue(":W" + whereBinding.first, whereBinding.second);
-
-	if(!q.exec() || q.numRowsAffected() == 0)
+	auto query = createUpdateQuery(this, tablename, fieldBindings, whereBinding);
+	if(!query.exec() || query.numRowsAffected() == 0)
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		q.setError(true);
-		q.showError(errorMessage);
+		query.setError(true);
+		query.showError(errorMessage);
 	}
 
-	return q;
+	return query;
 }

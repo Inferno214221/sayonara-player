@@ -41,16 +41,16 @@ namespace DB
 			[[nodiscard]] DbId databaseId() const;
 			[[nodiscard]] QString connectionName() const;
 
-			[[nodiscard]] DB::Query runQuery(const QString& query, const QString& errorText) const;
-			[[nodiscard]] DB::Query
+			DB::Query runQuery(const QString& query, const QString& errorText) const;
+			DB::Query
 			runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const;
-			[[nodiscard]] DB::Query
+			DB::Query
 			runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const;
 
-			DB::Query update(const QString& tablename, const QMap<QString, QVariant>& field_bindings,
-			                 const QPair<QString, QVariant>& where_binding, const QString& error_message);
-			DB::Query insert(const QString& tablename, const QMap<QString, QVariant>& field_bindings,
-			                 const QString& error_message);
+			DB::Query update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+			                 const QPair<QString, QVariant>& whereBinding, const QString& errorMessage);
+			DB::Query insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+			                 const QString& errorMessage);
 	};
 }
 
