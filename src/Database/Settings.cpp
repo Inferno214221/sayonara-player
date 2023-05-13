@@ -24,39 +24,39 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Logger/Logger.h"
 
-using DB::Query;
+DB::Settings::Settings(const QString& connectionName, DbId databaseId) :
+	DB::Module(connectionName, databaseId) {}
 
-DB::Settings::Settings(const QString& connection_name, DbId databaseId) :
-	DB::Module(connection_name, databaseId) {}
+DB::Settings::~Settings() = default;
 
-DB::Settings::~Settings() {}
-
-bool DB::Settings::loadSettings(QList<SettingKey>& found_keys)
+bool DB::Settings::loadSettings(QList<SettingKey>& foundKeys)
 {
-	found_keys.clear();
+	foundKeys.clear();
 
-	const SettingArray& settings = ::Settings::instance()->settings();
+	const auto& settings = ::Settings::instance()->settings();
 
-	for(AbstrSetting* s : settings)
+	for(auto* s: settings)
 	{
-		if(!s || !s->isDatabaseSetting()) {
+		if(!s || !s->isDatabaseSetting())
+		{
 			continue;
 		}
 
 		QString value;
-		QString db_key = s->dbKey();
-
-		bool success = loadSetting(db_key, value);
-		if(success) {
+		const auto dbKey = s->dbKey();
+		
+		const auto success = loadSetting(dbKey, value);
+		if(success)
+		{
 			s->assignValue(value);
-			found_keys << s->getKey();
+			foundKeys << s->getKey();
 		}
 
-		else {
-
-			spLog(Log::Debug, this) << "Setting " << db_key << ": Not found. Use default value...";
+		else
+		{
+			spLog(Log::Debug, this) << "Setting " << dbKey << ": Not found. Use default value...";
 			s->assignDefaultValue();
-			spLog(Log::Debug, this) << "Load Setting " << db_key << ": " << s->valueToString();
+			spLog(Log::Debug, this) << "Load Setting " << dbKey << ": " << s->valueToString();
 		}
 	}
 
@@ -75,18 +75,12 @@ bool DB::Settings::storeSettings()
 
 	db().transaction();
 
-	for(AbstrSetting* s : settings)
+	for(auto* s: settings)
 	{
-		if(!s) {
-			continue;
-		}
-
-		if(s->isDatabaseSetting())
+		if(s && s->isDatabaseSetting())
 		{
-			storeSetting(
-				s->dbKey(),
-				s->valueToString()
-			);
+			storeSetting(s->dbKey(),
+			             s->valueToString());
 		}
 	}
 
@@ -95,14 +89,12 @@ bool DB::Settings::storeSettings()
 	return true;
 }
 
-
 bool DB::Settings::loadSetting(QString key, QString& tgt_value)
 {
 	auto q = runQuery(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
-		QString("Cannot load setting %1").arg(key)
-	);
+		QString("Cannot load setting %1").arg(key));
 
 	if(hasError(q))
 	{
@@ -118,21 +110,19 @@ bool DB::Settings::loadSetting(QString key, QString& tgt_value)
 	return false;
 }
 
-
 bool DB::Settings::storeSetting(QString key, const QVariant& value)
 {
 	auto q = runQuery(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
-		QString("Store setting: Cannot fetch setting %1").arg(key)
-	);
+		QString("Store setting: Cannot fetch setting %1").arg(key));
 
 	if(hasError(q))
 	{
 		return false;
 	}
 
-	if (!q.next())
+	if(!q.next())
 	{
 		auto q2 = insert("settings",
 		                 {
@@ -168,8 +158,7 @@ bool DB::Settings::dropSetting(const QString& key)
 	const auto q = runQuery(
 		"DELETE FROM settings WHERE key = :key;",
 		{":key", key},
-		QString("Drop setting: Cannot drop setting %1").arg(key)
-	);
+		QString("Drop setting: Cannot drop setting %1").arg(key));
 
 	return !hasError(q);
 }

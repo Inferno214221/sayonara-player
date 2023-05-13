@@ -24,6 +24,7 @@
 #include "Utils/Library/Filter.h"
 
 #include <QStringList>
+#include <QVariant>
 
 namespace
 {
@@ -37,7 +38,7 @@ namespace
 			return result;
 		}
 
-		const auto&[from, to] = range;
+		const auto& [from, to] = range;
 		if(from == to)
 		{
 			result.sqlString = QString("(%1 = %2)")
@@ -76,7 +77,7 @@ namespace
 	{
 		DB::RangeMapping result;
 		QStringList sqlStrings;
-		for(const auto& rangeMapping : rangeMappings)
+		for(const auto& rangeMapping: rangeMappings)
 		{
 			sqlStrings << rangeMapping.sqlString;
 			for(auto it = rangeMapping.mapping.begin(); it != rangeMapping.mapping.end(); it++)
@@ -96,7 +97,7 @@ DB::RangeMapping DB::convertRangesToMapping(const Util::RangeList& ranges, const
 {
 	QList<DB::RangeMapping> rangeMappings;
 	Util::Algorithm::transform(ranges, rangeMappings, [&](const auto& range) {
-		const auto[from, to] = createPlaceholders(sqlPlaceholderTemplate, range.first, range.second);
+		const auto [from, to] = createPlaceholders(sqlPlaceholderTemplate, range.first, range.second);
 		return convertRangeToMapping(range, attribute, from, to);
 	});
 

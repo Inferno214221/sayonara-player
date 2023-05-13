@@ -60,8 +60,7 @@ bool Streams::deleteStream(const QString& name)
 		{
 			{":name", Util::convertNotNull(name)},
 		},
-		QString("Could not delete stream %1").arg(name)
-	);
+		QString("Could not delete stream %1").arg(name));
 
 	return !hasError(q);
 }
@@ -96,8 +95,7 @@ Stream Streams::getStream(const QString& name)
 	auto q = runQuery(
 		query,
 		{":name", name},
-		QString("Cannot fetch stream %1").arg(name)
-	);
+		QString("Cannot fetch stream %1").arg(name));
 
 	if(!hasError(q) && q.next())
 	{
@@ -107,5 +105,5 @@ Stream Streams::getStream(const QString& name)
 		return stream;
 	}
 
-	return Stream();
+	return {};
 }

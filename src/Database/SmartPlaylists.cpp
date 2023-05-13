@@ -86,13 +86,14 @@ namespace DB
 
 	bool SmartPlaylists::updateSmartPlaylist(const int id, const SmartPlaylistDatabaseEntry& smartPlaylistDatabaseEntry)
 	{
-		const auto query = update("SmartPlaylists", {
-			                          {ClassTypeField,  smartPlaylistDatabaseEntry.classType},
-			                          {AttributesField, smartPlaylistDatabaseEntry.attributes},
-			                          {RandomizedField, smartPlaylistDatabaseEntry.isRandomized},
-			                          {LibraryIdField,  smartPlaylistDatabaseEntry.libraryId}
-		                          }, {IdField, id},
-		                          "Cannot update Smart Playlists");
+		const auto q =
+			update("SmartPlaylists", {
+				       {ClassTypeField,  smartPlaylistDatabaseEntry.classType},
+				       {AttributesField, smartPlaylistDatabaseEntry.attributes},
+				       {RandomizedField, smartPlaylistDatabaseEntry.isRandomized},
+				       {LibraryIdField,  smartPlaylistDatabaseEntry.libraryId}
+			       }, {IdField, id},
+			       "Cannot update Smart Playlists");
 
 		return wasUpdateSuccessful(q);
 	}

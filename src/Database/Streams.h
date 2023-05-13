@@ -28,7 +28,8 @@ class Stream;
 
 namespace DB
 {
-	class Streams : private Module
+	class Streams :
+		private Module
 	{
 		public:
 			Streams(const QString& connectionName, DbId databaseId);

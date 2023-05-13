@@ -38,18 +38,18 @@ QString col2String(const QColor& col)
 {
 	QString str;
 	str = QString::number(col.red()) + "," +
-	QString::number(col.green()) + "," +
-	QString::number(col.blue()) + "," +
-	QString::number(col.alpha());
+	      QString::number(col.green()) + "," +
+	      QString::number(col.blue()) + "," +
+	      QString::number(col.alpha());
 	return str;
 }
-
 
 bool colFromString(const QString& str, QColor& c)
 {
 	QStringList colors = str.split(",");
 
-	if(colors.size() < 3) {
+	if(colors.size() < 3)
+	{
 		return false;
 	}
 
@@ -57,11 +57,13 @@ bool colFromString(const QString& str, QColor& c)
 	c.setGreen(colors[1].toInt());
 	c.setBlue(colors[2].toInt());
 
-	if(colors.size() == 4){
+	if(colors.size() == 4)
+	{
 		c.setAlpha(colors[3].toInt());
 	}
 
-	else{
+	else
+	{
 		c.setAlpha(255);
 	}
 
@@ -75,12 +77,14 @@ QList<RawColorStyle> VisualStyles::getRawColorStyles()
 	auto q = QSqlQuery(db());
 	q.prepare("SELECT * FROM VisualStyles;");
 
-	if(!q.exec()) {
-		q.showError("Could not fetch color styles");
+	if(!q.exec())
+	{
+		showError(q, "Could not fetch color styles");
 		return ret_val;
 	}
 
-	while(q.next()) {
+	while(q.next())
+	{
 		RawColorStyle rcs;
 
 		rcs.col_list.name = q.value(0).toString();
@@ -91,11 +95,10 @@ QList<RawColorStyle> VisualStyles::getRawColorStyles()
 		col3v = colFromString(q.value(3).toString(), col3);
 		col4v = colFromString(q.value(4).toString(), col4);
 
-
 		rcs.col_list.colors << col1;
 		rcs.col_list.colors << col2;
-		if(col3v) rcs.col_list.colors << col3;
-		if(col4v) rcs.col_list.colors << col4;
+		if(col3v) { rcs.col_list.colors << col3; }
+		if(col4v) { rcs.col_list.colors << col4; }
 		rcs.n_bins_spectrum = q.value(5).toInt();
 		rcs.rect_height_spectrum = q.value(6).toInt();
 		rcs.n_fading_steps_spectrum = q.value(7).toInt();
@@ -113,52 +116,57 @@ QList<RawColorStyle> VisualStyles::getRawColorStyles()
 	return ret_val;
 }
 
-
 bool VisualStyles::insertRawColorStyle(const RawColorStyle& rcs)
 {
 	if(rawColorStyleExists(rcs.col_list.name))
+	{
 		return updateRawColorStyle(rcs);
+	}
 
 	QString col_str;
-	for(int i=0; i<4; i++) {
+	for(int i = 0; i < 4; i++)
+	{
 		col_str += ":col" + QString::number(i + 1) + ", ";
 	}
 
 	auto q = QSqlQuery(db());
 	QString sql_str;
 	sql_str = "INSERT INTO VisualStyles VALUES ("
-			":name, "
-			+ col_str +
-			":n_bins_sp, "
-			":rect_height_sp, "
-			":fading_steps_sp, "
-			":h_spacing_sp, "
-			":v_spacing_sp, "
-			":rect_width_lv, "
-			":rect_height_lv, "
-			":h_spacing_lv, "
-			":v_spacing_lv, "
-			":fading_steps_lv"
-			")";
+	          ":name, "
+	          + col_str +
+	          ":n_bins_sp, "
+	          ":rect_height_sp, "
+	          ":fading_steps_sp, "
+	          ":h_spacing_sp, "
+	          ":v_spacing_sp, "
+	          ":rect_width_lv, "
+	          ":rect_height_lv, "
+	          ":h_spacing_lv, "
+	          ":v_spacing_lv, "
+	          ":fading_steps_lv"
+	          ")";
 
 	q.prepare(sql_str);
 	q.bindValue(":name", Util::convertNotNull(rcs.col_list.name));
 	q.bindValue(":col1", col2String(rcs.col_list.colors[0]));
 	q.bindValue(":col2", col2String(rcs.col_list.colors[1]));
 
-	if(rcs.col_list.colors.size() > 2) {
+	if(rcs.col_list.colors.size() > 2)
+	{
 		q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
 	}
 
-	else {
+	else
+	{
 		q.bindValue(":col3", QString(""));
 	}
 
-	if(rcs.col_list.colors.size() > 3) {
+	if(rcs.col_list.colors.size() > 3)
+	{
 		q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
 	}
 
-	else q.bindValue(":col4", QString(""));
+	else { q.bindValue(":col4", QString("")); }
 
 	q.bindValue(":n_bins_sp", rcs.n_bins_spectrum);
 	q.bindValue(":rect_height_sp", rcs.rect_height_spectrum);
@@ -180,15 +188,16 @@ bool VisualStyles::insertRawColorStyle(const RawColorStyle& rcs)
 	return true;
 }
 
-
 bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 {
-	if(!rawColorStyleExists(rcs.col_list.name)) {
+	if(!rawColorStyleExists(rcs.col_list.name))
+	{
 		return insertRawColorStyle(rcs);
 	}
 
 	QString col_str;
-	for(int i=0; i < 4; i++) {
+	for(int i = 0; i < 4; i++)
+	{
 		col_str += "col" + QString::number(i + 1) + "=:col" + QString::number(i + 1) + ", ";
 	}
 
@@ -196,35 +205,39 @@ bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 	QString sql_str;
 	sql_str = "UPDATE VisualStyles SET "
 
-			+ col_str +
-			"nBinsSpectrum=:n_bins_sp, "
-			"rectHeightSpectrum=:rect_height_sp, "
-			"fadingStepsSpectrum=:fading_steps_sp, "
-			"horSpacingSpectrum=:h_spacing_sp, "
-			"vertSpacingSpectrum=:v_spacing_sp, "
-			"rectWidthLevel=:rect_width_lv, "
-			"rectHeightLevel=:rect_height_lv, "
-			"horSpacingLevel=:h_spacing_lv, "
-			"verSpacingLevel=:v_spacing_lv, "
-			"fadingStepsLevel=:fading_steps_lv"
-			" WHERE name=:name";
+	          + col_str +
+	          "nBinsSpectrum=:n_bins_sp, "
+	          "rectHeightSpectrum=:rect_height_sp, "
+	          "fadingStepsSpectrum=:fading_steps_sp, "
+	          "horSpacingSpectrum=:h_spacing_sp, "
+	          "vertSpacingSpectrum=:v_spacing_sp, "
+	          "rectWidthLevel=:rect_width_lv, "
+	          "rectHeightLevel=:rect_height_lv, "
+	          "horSpacingLevel=:h_spacing_lv, "
+	          "verSpacingLevel=:v_spacing_lv, "
+	          "fadingStepsLevel=:fading_steps_lv"
+	          " WHERE name=:name";
 
 	q.prepare(sql_str);
 	q.bindValue(":name", Util::convertNotNull(rcs.col_list.name));
 	q.bindValue(":col1", Util::convertNotNull(col2String(rcs.col_list.colors[0])));
 	q.bindValue(":col2", Util::convertNotNull(col2String(rcs.col_list.colors[1])));
 
-	if(rcs.col_list.colors.size() > 2) {
+	if(rcs.col_list.colors.size() > 2)
+	{
 		q.bindValue(":col3", col2String(rcs.col_list.colors[2]));
 	}
-	else {
+	else
+	{
 		q.bindValue(":col3", QString(""));
 	}
 
-	if(rcs.col_list.colors.size() > 3) {
+	if(rcs.col_list.colors.size() > 3)
+	{
 		q.bindValue(":col4", col2String(rcs.col_list.colors[3]));
 	}
-	else {
+	else
+	{
 		q.bindValue(":col4", QString(""));
 	}
 
@@ -248,7 +261,6 @@ bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 	return true;
 }
 
-
 bool VisualStyles::deleteRawColorStyle(QString name)
 {
 	auto q = QSqlQuery(db());
@@ -264,7 +276,6 @@ bool VisualStyles::deleteRawColorStyle(QString name)
 	return true;
 }
 
-
 bool VisualStyles::rawColorStyleExists(QString name)
 {
 	auto q = QSqlQuery(db());
@@ -277,7 +288,8 @@ bool VisualStyles::rawColorStyleExists(QString name)
 		return false;
 	}
 
-	if(!q.next()){
+	if(!q.next())
+	{
 		return false;
 	}
 

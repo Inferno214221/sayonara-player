@@ -7,7 +7,8 @@ namespace SC
 {
 	class SearchInformationList;
 
-	class LibraryDatabase : public ::DB::LibraryDatabase
+	class LibraryDatabase :
+		public ::DB::LibraryDatabase
 	{
 		public:
 			LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);

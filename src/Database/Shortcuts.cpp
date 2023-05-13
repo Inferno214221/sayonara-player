@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "Shortcuts.h"
 #include "Query.h"
 #include "Utils/RawShortcutMap.h"
@@ -27,9 +25,8 @@
 using DB::Shortcuts;
 using DB::Query;
 
-DB::Shortcuts::Shortcuts(const QString& connection_name, DbId databaseId) :
-	Module(connection_name, databaseId)
-{}
+DB::Shortcuts::Shortcuts(const QString& connectionName, const DbId databaseId) :
+	Module(connectionName, databaseId) {}
 
 DB::Shortcuts::~Shortcuts() {}
 
@@ -39,8 +36,7 @@ RawShortcutMap DB::Shortcuts::getAllShortcuts()
 
 	auto q = runQuery(
 		"SELECT identifier, shortcut from Shortcuts;",
-		"Cannot fetch all shortcuts"
-	);
+		"Cannot fetch all shortcuts");
 
 	if(hasError(q))
 	{
@@ -49,10 +45,10 @@ RawShortcutMap DB::Shortcuts::getAllShortcuts()
 
 	while(q.next())
 	{
-		QString identifier = q.value(0).toString();
-		QString shortcut = q.value(1).toString();
+		const auto identifier = q.value(0).toString();
+		const auto shortcut = q.value(1).toString();
 
-		QStringList shortcuts = rsm[identifier];
+		auto shortcuts = rsm[identifier];
 		shortcuts << shortcut;
 
 		rsm[identifier] = shortcuts;
@@ -67,7 +63,7 @@ bool DB::Shortcuts::setShortcuts(const QString& identifier, const QStringList& s
 
 	clearShortcuts(identifier);
 
-	for(const QString& shortcut : shortcuts)
+	for(const auto& shortcut: shortcuts)
 	{
 		auto q = insert("Shortcuts",
 		                {
@@ -90,8 +86,7 @@ bool DB::Shortcuts::clearShortcuts(const QString& identifier)
 	const auto q = runQuery(
 		"DELETE FROM Shortcuts WHERE identifier=:identifier;",
 		{":identifier", identifier},
-		"Cannot clear Shortcuts"
-	);
+		"Cannot clear Shortcuts");
 
 	return !hasError(q);
 }

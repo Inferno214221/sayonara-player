@@ -17,12 +17,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "Equalizer.h"
 #include "Utils/EqualizerSetting.h"
 #include "Utils/Algorithm.h"
 #include "Query.h"
-
-#include <QString>
 
 namespace Algorithm = Util::Algorithm;
 using DB::Equalizer;
@@ -62,9 +61,9 @@ Equalizer::~Equalizer() = default;
 
 bool DB::Equalizer::deleteEqualizer(int id)
 {
-	auto q = runQuery("DELETE from Equalizer WHERE id=:id;",
-	                  {":id", id},
-	                  "Cannot remove equalizer");
+	const auto q = runQuery("DELETE from Equalizer WHERE id=:id;",
+	                        {":id", id},
+	                        "Cannot remove equalizer");
 
 	return !hasError(q);
 }
@@ -90,8 +89,7 @@ bool DB::Equalizer::updateEqualizer(const EqualizerSetting& equalizer)
 		update(TableName,
 		       {{"name",            equalizer.name()},
 		        {"equalizerValues", convertValuesToVariant(equalizer.values())},
-		        {"defaultValues",   convertValuesToVariant(equalizer.defaultValues())}
-		       },
+		        {"defaultValues",   convertValuesToVariant(equalizer.defaultValues())}},
 		       {"id", equalizer.id()},
 		       "Cannot update equalizer");
 
@@ -126,8 +124,7 @@ bool DB::Equalizer::fetchAllEqualizers(QList<EqualizerSetting>& equalizers)
 
 QList<EqualizerSetting> DB::Equalizer::factoryDefaults()
 {
-	return QList<EqualizerSetting>
-	{
+	return QList<EqualizerSetting> {
 		EqualizerSetting(-1, "Flat", {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}),
 		EqualizerSetting(-1, "Rock", {2, 4, 8, 3, 1, 3, 7, 10, 14, 14}),
 		EqualizerSetting(-1, "Light Rock", {1, 1, 2, 1, -2, -3, -1, 3, 5, 8}),
@@ -142,13 +139,13 @@ bool DB::Equalizer::restoreFactoryDefaults()
 	QList<EqualizerSetting> equalizers;
 	fetchAllEqualizers(equalizers);
 
-	for(const auto& equalizer : equalizers)
+	for(const auto& equalizer: equalizers)
 	{
 		deleteEqualizer(equalizer.id());
 	}
 
 	const auto defaults = DB::Equalizer::factoryDefaults();
-	return std::all_of(defaults.begin(), defaults.end(), [=](const auto& eq) {
-		return this->insertEqualizer(eq);
+	return std::all_of(defaults.begin(), defaults.end(), [this](const auto& eq) {
+		return insertEqualizer(eq);
 	});
 }

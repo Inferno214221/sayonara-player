@@ -212,18 +212,18 @@ bool Connector::updateLostArtists()
 		"DELETE FROM artists WHERE name IS NULL;"
 	};
 
-	this->transaction();
+	transaction();
 	for(const auto& query: queries)
 	{
 		auto q = runQuery(query, {":artistID", id}, "Cannot update lost artist");
 		if(hasError(q))
 		{
-			this->rollback();
+			rollback();
 			return false;
 		}
 	}
 
-	this->commit();
+	commit();
 	return true;
 }
 

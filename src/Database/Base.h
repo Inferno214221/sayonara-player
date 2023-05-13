@@ -36,8 +36,9 @@ namespace DB
 		PIMPL(Base)
 
 		public:
-			Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory, const QString& filename, QObject* parent=nullptr);
-			virtual ~Base();
+			Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory,
+			     const QString& filename, QObject* parent = nullptr);
+			~Base() override;
 
 			virtual bool closeDatabase();
 			virtual bool isInitialized();
@@ -48,11 +49,12 @@ namespace DB
 
 		protected:
 			virtual bool createDatabase();
-			virtual bool applyFixes()=0;
+			virtual bool applyFixes() = 0;
 
-            virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value);
+			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype,
+			                                  const QString& defaultValue);
 			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype);
-			virtual bool checkAndCreateTable(const QString& tablename, const QString& sql_create_str);
+			virtual bool checkAndCreateTable(const QString& tablename, const QString& sql);
 			virtual bool checkAndDropTable(const QString& tablename);
 	};
 }

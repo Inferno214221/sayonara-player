@@ -31,13 +31,13 @@ namespace DB
 	class Shortcuts :
 		private Module
 	{
-	public:
-		Shortcuts(const QString& connectionName, DbId databaseId);
-		~Shortcuts();
+		public:
+			Shortcuts(const QString& connectionName, DbId databaseId);
+			~Shortcuts();
 
-		RawShortcutMap getAllShortcuts();
-		bool setShortcuts(const QString& identifier, const QStringList& shortcuts);
-		bool clearShortcuts(const QString& identifier);
+			RawShortcutMap getAllShortcuts();
+			bool setShortcuts(const QString& identifier, const QStringList& shortcuts);
+			bool clearShortcuts(const QString& identifier);
 	};
 }
 

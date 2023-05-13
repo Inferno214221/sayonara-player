@@ -33,15 +33,15 @@
 using DB::Base;
 using DB::Query;
 
-namespace FileUtils=::Util::File;
+namespace FileUtils = ::Util::File;
 
 struct Base::Private
 {
 	QString sourceDirectory;
 	QString targetDirectory;
-	QString filename;			// player.db
-	QString connectionName;	// /home/user/.Sayonara/player.db
-	DbId	databaseId;
+	QString filename;            // player.db
+	QString connectionName;    // /home/user/.Sayonara/player.db
+	DbId databaseId;
 
 	bool initialized;
 
@@ -60,8 +60,8 @@ struct Base::Private
 	}
 };
 
-
-Base::Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory, const QString& filename, QObject* parent) :
+Base::Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory, const QString& filename,
+           QObject* parent) :
 	QObject(parent),
 	DB::Module(targetDirectory + "/" + filename, databaseId)
 {
@@ -76,7 +76,8 @@ Base::Base(DbId databaseId, const QString& sourceDirectory, const QString& targe
 
 	m->initialized = success && this->db().isOpen();
 
-	if(!m->initialized) {
+	if(!m->initialized)
+	{
 		spLog(Log::Error, this) << "Database is not open";
 	}
 }
@@ -90,7 +91,8 @@ bool Base::isInitialized()
 
 bool Base::closeDatabase()
 {
-	if(!QSqlDatabase::isDriverAvailable("QSQLITE")){
+	if(!QSqlDatabase::isDriverAvailable("QSQLITE"))
+	{
 		return false;
 	}
 
@@ -99,13 +101,15 @@ bool Base::closeDatabase()
 		QSqlDatabase database = db();
 		connection_name = database.connectionName();
 		QStringList connection_names = QSqlDatabase::connectionNames();
-		if(!connection_names.contains(connection_name)){
+		if(!connection_names.contains(connection_name))
+		{
 			return false;
 		}
 
 		spLog(Log::Info, this) << "close database " << m->filename << " (" << connection_name << ")...";
 
-		if(database.isOpen()){
+		if(database.isOpen())
+		{
 			database.close();
 		}
 	}
@@ -119,7 +123,8 @@ bool Base::createDatabase()
 {
 	//if ret is still not true we are not able to create the directory
 	bool success = QDir().cd(Util::xdgConfigPath());
-	if(!success) {
+	if(!success)
+	{
 		spLog(Log::Error, this) << "Could not change to .Sayonara dir";
 		return false;
 	}
@@ -127,7 +132,8 @@ bool Base::createDatabase()
 	const auto sourceDatabasefile = QDir(m->sourceDirectory).absoluteFilePath(m->filename);
 
 	success = FileUtils::exists(m->connectionName);
-	if(success) {
+	if(success)
+	{
 		return true;
 	}
 
@@ -141,14 +147,11 @@ bool Base::createDatabase()
 		if(success)
 		{
 			QFile f(m->connectionName);
-			f.setPermissions
-			(
-				f.permissions() |
-				QFile::Permission::WriteOwner | QFile::Permission::WriteUser |
-				QFile::Permission::ReadOwner | QFile::Permission::ReadUser
-			);
+			f.setPermissions(f.permissions() |
+			                 QFile::Permission::WriteOwner | QFile::Permission::WriteUser |
+			                 QFile::Permission::ReadOwner | QFile::Permission::ReadUser);
 
-			spLog(Log::Info, this) << "DB file has been copied to " <<   m->connectionName;
+			spLog(Log::Info, this) << "DB file has been copied to " << m->connectionName;
 		}
 
 		else

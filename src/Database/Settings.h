@@ -29,19 +29,19 @@ class QVariant;
 namespace DB
 {
 	class Settings :
-			private Module
+		private Module
 	{
-	public:
-		Settings(const QString& connectionName, DbId databaseId);
-		~Settings();
+		public:
+			Settings(const QString& connectionName, DbId databaseId);
+			~Settings();
 
-		bool loadSetting(QString key, QString& val);
-		bool storeSetting(QString key, const QVariant& val);
-		bool dropSetting(const QString& key);
+			bool loadSetting(QString key, QString& val);
+			bool storeSetting(QString key, const QVariant& val);
+			bool dropSetting(const QString& key);
 
-		bool loadSettings();
-		bool loadSettings(QList<SettingKey>& found_keys);
-		bool storeSettings();
+			bool loadSettings();
+			bool loadSettings(QList<SettingKey>& foundKeys);
+			bool storeSettings();
 	};
 }
 

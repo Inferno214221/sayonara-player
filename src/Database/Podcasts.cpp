@@ -45,16 +45,15 @@ bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 
 	while(q.next())
 	{
-		QString name = q.value(0).toString();
-		QString url = q.value(1).toString();
-		bool reversed = q.value(2).toBool();
+		const auto name = q.value(0).toString();
+		const auto url = q.value(1).toString();
+		const auto reversed = q.value(2).toBool();
 
 		podcasts << Podcast(name, url, reversed);
 	}
 
 	return true;
 }
-
 
 bool Podcasts::deletePodcast(const QString& name)
 {
@@ -63,12 +62,10 @@ bool Podcasts::deletePodcast(const QString& name)
 		{
 			{":name", Util::convertNotNull(name)},
 		},
-		QString("Could not delete podcast %1").arg(name)
-	);
+		QString("Could not delete podcast %1").arg(name));
 
 	return !hasError(q);
 }
-
 
 bool Podcasts::addPodcast(const Podcast& podcast)
 {
@@ -101,8 +98,7 @@ Podcast Podcasts::getPodcast(const QString& name)
 	auto q = runQuery(
 		"SELECT name, url, reversed FROM savedpodcasts WHERE name = :name;",
 		{":name", name},
-		QString("Cannot fetch podcast %1").arg(name)
-	);
+		QString("Cannot fetch podcast %1").arg(name));
 
 	if(!hasError(q) && q.next())
 	{
@@ -113,7 +109,7 @@ Podcast Podcasts::getPodcast(const QString& name)
 		return podcast;
 	}
 
-	return Podcast();
+	return {};
 }
 
 

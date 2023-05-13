@@ -23,11 +23,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 
-using DB::Query;
-
-DB::Covers::Covers(const QString& connection_name, DbId databaseId) :
-	DB::Module(connection_name, databaseId)
-{}
+DB::Covers::Covers(const QString& connectionName, DbId databaseId) :
+	DB::Module(connectionName, databaseId) {}
 
 DB::Covers::~Covers() = default;
 
@@ -38,8 +35,7 @@ bool DB::Covers::exists(const QString& hash)
 		{
 			{":hash", hash}
 		},
-		"Cannot check cover"
-	);
+		"Cannot check cover");
 
 	if(hasError(q))
 	{
@@ -56,8 +52,7 @@ bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 		{
 			{":hash", hash}
 		},
-		"Cannot fetch cover"
-	);
+		"Cannot fetch cover");
 
 	if(hasError(q))
 	{
@@ -66,7 +61,7 @@ bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 
 	if(q.next())
 	{
-		QByteArray data = q.value(0).toByteArray();
+		const auto data = q.value(0).toByteArray();
 		pm = ::Util::convertByteArrayToPixmap(data);
 
 		return true;
@@ -77,7 +72,8 @@ bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 
 bool DB::Covers::setCover(const QString& hash, const QPixmap& pm)
 {
-	if(hash.isEmpty() || pm.isNull()){
+	if(hash.isEmpty() || pm.isNull())
+	{
 		return false;
 	}
 
@@ -120,8 +116,7 @@ bool DB::Covers::removeCover(const QString& hash)
 	const auto q = runQuery(
 		"DELETE from covers WHERE hash=:hash;",
 		{{":hash", hash}},
-		"Cannot delete cover " + hash
-	);
+		QString("Cannot delete cover %1").arg(hash));
 
 	return !hasError(q);
 }
@@ -155,8 +150,8 @@ bool DB::Covers::getAllCovers(QMap<QString, QPixmap>& covers)
 
 	while(q.next())
 	{
-		QString hash = q.value(0).toString();
-		QByteArray data = q.value(1).toByteArray();
+		const auto hash = q.value(0).toString();
+		const auto data = q.value(1).toByteArray();
 
 		covers[hash] = ::Util::convertByteArrayToPixmap(data);
 	}

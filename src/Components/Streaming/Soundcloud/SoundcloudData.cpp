@@ -46,7 +46,7 @@ QString SC::Database::loadSetting(const QString& key)
 
 	if(DB::hasError(query))
 	{
-		return QString();
+		return {};
 	}
 
 	if(query.next())
@@ -54,7 +54,7 @@ QString SC::Database::loadSetting(const QString& key)
 		return query.value(0).toString();
 	}
 
-	return QString();
+	return {};
 }
 
 bool SC::Database::saveSetting(const QString& key, const QString& value)
