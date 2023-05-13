@@ -190,7 +190,7 @@ namespace LastFM
 
 		auto* webAccess = new WebAccess();
 		connect(webAccess, &WebAccess::sigError, this, &Base::scrobbleErrorReceived);
-		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
+		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 		constexpr const auto* MethodName = "track.scrobble";
 
