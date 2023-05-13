@@ -26,8 +26,6 @@
 #include <QList>
 #include <QMap>
 
-class MetaDataList;
-
 namespace Library
 {
 	class Info;
@@ -36,16 +34,13 @@ namespace Library
 namespace DB
 {
 	class Library :
-			private Module
+		private Module
 	{
-		PIMPL(Library)
-
 		public:
 			Library(const QString& connectionName, DbId databaseId);
 			~Library() override;
 
-			using LibraryInfo=::Library::Info;
-			QList<LibraryInfo> getAllLibraries();
+			QList<::Library::Info> getAllLibraries();
 
 			bool insertLibrary(LibraryId libraryId, const QString& libraryName, const QString& libraryPath, int index);
 			bool editLibrary(LibraryId libraryId, const QString& newName, const QString& newPath);

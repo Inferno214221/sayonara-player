@@ -35,70 +35,56 @@
 
 #include <QList>
 
-namespace Algorithm = Util::Algorithm;
-
-struct DB::Library::Private
+namespace
 {
-};
+	struct InfoOrder
+	{
+		int index;
+		::Library::Info value;
+	};
+
+	QList<::Library::Info> orderedInfos(QList<InfoOrder> orders)
+	{
+		std::sort(orders.begin(), orders.end(), [](const InfoOrder& order1, const InfoOrder& order2) {
+			return (order1.index < order2.index);
+		});
+
+		QList<::Library::Info> infos;
+		Util::Algorithm::transform(orders, infos, [](const auto& order) {
+			return order.value;
+		});
+
+		return infos;
+	}
+}
 
 DB::Library::Library(const QString& connectionName, DbId databaseId) :
 	Module(connectionName, databaseId) {}
 
 DB::Library::~Library() = default;
 
-template<typename T>
-struct Order
-{
-	int index;
-	T value;
-};
-
-using InfoOrder = Order<::Library::Info>;
-
 QList<::Library::Info> DB::Library::getAllLibraries()
 {
-	const auto query = "SELECT libraryID, libraryName, libraryPath, libraryIndex FROM Libraries;";
+	const auto query = QStringLiteral("SELECT libraryID, libraryName, libraryPath, libraryIndex FROM Libraries;");
 
-	QList<::Library::Info> infos;
 	QList<InfoOrder> orders;
 
 	auto q = runQuery(query, "Cannot fetch all libraries");
 	while(q.next())
 	{
-		LibraryId id = q.value(0).toInt();
-		QString name = q.value(1).toString();
-		QString path = q.value(2).toString();
+		const auto libraryId = q.value(0).value<LibraryId>();
+		const auto name = q.value(1).toString();
+		const auto path = q.value(2).toString();
 
-		InfoOrder order;
-		order.value = ::Library::Info(name, path, id);
-		order.index = q.value(3).toInt();
+		const auto order = InfoOrder {
+			q.value(3).toInt(),
+			::Library::Info(name, path, libraryId)
+		};
 
-		orders << order;
+		orders.push_back(order);
 	}
 
-	if(orders.empty())
-	{
-		return {};
-	}
-
-	if(orders.size() == 1)
-	{
-		infos << orders.first().value;
-	}
-
-	else
-	{
-		std::sort(orders.begin(), orders.end(), [](const InfoOrder& order1, const InfoOrder& order2) {
-			return (order1.index < order2.index);
-		});
-
-		for(const auto& order: Algorithm::AsConst(orders))
-		{
-			infos << order.value;
-		}
-	}
-
-	return infos;
+	return orderedInfos(orders);
 }
 
 bool
