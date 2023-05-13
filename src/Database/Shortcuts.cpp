@@ -37,12 +37,12 @@ RawShortcutMap DB::Shortcuts::getAllShortcuts()
 {
 	RawShortcutMap rsm;
 
-	Query q = runQuery(
+	auto q = runQuery(
 		"SELECT identifier, shortcut from Shortcuts;",
 		"Cannot fetch all shortcuts"
 	);
 
-	if(q.hasError())
+	if(hasError(q))
 	{
 		return rsm;
 	}
@@ -69,13 +69,13 @@ bool DB::Shortcuts::setShortcuts(const QString& identifier, const QStringList& s
 
 	for(const QString& shortcut : shortcuts)
 	{
-		Query q = insert("Shortcuts",
-		{
-			{"identifier", identifier},
-			{"shortcut", shortcut}
-		}, "Cannot insert shortcut " + identifier);
+		auto q = insert("Shortcuts",
+		                {
+			                {"identifier", identifier},
+			                {"shortcut",   shortcut}
+		                }, "Cannot insert shortcut " + identifier);
 
-		if(q.hasError())
+		if(hasError(q))
 		{
 			db().rollback();
 			return false;
@@ -87,12 +87,11 @@ bool DB::Shortcuts::setShortcuts(const QString& identifier, const QStringList& s
 
 bool DB::Shortcuts::clearShortcuts(const QString& identifier)
 {
-	Query q = runQuery
-	(
+	const auto q = runQuery(
 		"DELETE FROM Shortcuts WHERE identifier=:identifier;",
 		{":identifier", identifier},
 		"Cannot clear Shortcuts"
 	);
 
-	return (!q.hasError());
+	return !hasError(q);
 }

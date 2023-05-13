@@ -95,7 +95,7 @@ bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
 
 	if(!q.exec())
 	{
-		q.showError("Could not get all artists from database");
+		DB::showError(q, "Could not get all artists from database");
 		return false;
 	}
 
@@ -152,7 +152,7 @@ ArtistId Artists::getArtistID(const QString& artist) const
 		QString("Cannot fetch artistID for artist %1").arg(artist)
 	);
 
-	if(query.hasError())
+	if(hasError(query))
 	{
 		return -1;
 	}
@@ -209,7 +209,7 @@ bool Artists::deleteArtist(ArtistId id)
 		{":artistId", id},
 		QString("Cannot delete artist %1").arg(id));
 
-	return (!query.hasError());
+	return !hasError(query);
 }
 
 ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
@@ -229,7 +229,7 @@ ArtistId Artists::insertArtistIntoDatabase(const QString& artist)
 		};
 
 	auto query = module()->insert("artists", bindings, QString("Cannot insert artist %1").arg(artist));
-	return (query.hasError())
+	return hasError(query)
 	       ? -1
 	       : query.lastInsertId().toInt();
 }

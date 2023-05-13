@@ -177,69 +177,58 @@ void Base::rollback()
 
 bool Base::checkAndDropTable(const QString& tablename)
 {
-	Query q(this);
-	QString querytext = "DROP TABLE IF EXISTS " +  tablename + ";";
-	q.prepare(querytext);
+	auto q = runQuery(QString("DROP TABLE IF EXISTS %1;").arg(tablename),
+	                  QString("Cannot drop table %1").arg(tablename));
 
-	if(!q.exec()){
-		q.showError(QString("Cannot drop table ") + tablename);
-		return false;
-	}
-
-	return true;
+	return !hasError(q);
 }
-
 
 bool DB::Base::checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype)
 {
-    return checkAndInsertColumn(tablename, column, sqltype, QString());
+	return checkAndInsertColumn(tablename, column, sqltype, QString());
 }
 
-bool Base::checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype, const QString& default_value)
+bool Base::checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype,
+                                const QString& defaultValue)
 {
-	Query q(this);
-	QString querytext = "SELECT " + column + " FROM " + tablename + ";";
-	q.prepare(querytext);
+	const auto querytext = QString("SELECT %1 FROM %2;")
+		.arg(column)
+		.arg(tablename);
 
-	if(!q.exec())
+	auto q = runQuery(querytext, QString());
+	if(hasError(q))
 	{
-		Query q2 (this);
-		querytext = "ALTER TABLE " + tablename + " ADD COLUMN " + column + " " + sqltype;
-		if(!default_value.isEmpty()){
-			querytext += " DEFAULT " + default_value;
-		}
+		auto alterTable = QString("ALTER TABLE %1 ADD COLUMN %2 %3")
+			.arg(tablename)
+			.arg(column)
+			.arg(sqltype);
 
-		querytext += ";";
-
-		q2.prepare(querytext);
-
-		if(!q2.exec())
+		if(!defaultValue.isEmpty())
 		{
-			q.showError(QString("Cannot insert column ") + column + " into " + tablename);
-			return false;
+			alterTable += QString(" DEFAULT %1").arg(defaultValue);
 		}
 
-		return true;
+		alterTable += ";";
+
+		const auto errorString = QString("Cannot insert column %1 into %2")
+			.arg(column)
+			.arg(tablename);
+
+		auto alterTableQuery = runQuery(alterTable, errorString);
+		return !hasError(alterTableQuery);
 	}
 
 	return true;
 }
 
-bool Base::checkAndCreateTable(const QString& tablename, const QString& sql_create_str)
+bool Base::checkAndCreateTable(const QString& tablename, const QString& sql)
 {
-	Query q(this);
-	QString querytext = "SELECT * FROM " + tablename + ";";
-	q.prepare(querytext);
-
-	if(!q.exec())
+	const auto selectStatement = QString("SELECT * FROM %1;").arg(tablename);
+	auto q = runQuery(selectStatement, QString());
+	if(hasError(q))
 	{
-		Query q2(this);
-		q2.prepare(sql_create_str);
-
-		if(!q2.exec()){
-			q.showError(QString("Cannot create table ") + tablename);
-			return false;
-		}
+		const auto createQuery = runQuery(sql, QString("Cannot create table %1").arg(tablename));
+		return !hasError(createQuery);
 	}
 
 	return true;

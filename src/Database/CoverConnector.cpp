@@ -33,8 +33,7 @@ DB::Covers::~Covers() = default;
 
 bool DB::Covers::exists(const QString& hash)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"SELECT hash FROM covers WHERE hash = :hash;",
 		{
 			{":hash", hash}
@@ -42,7 +41,8 @@ bool DB::Covers::exists(const QString& hash)
 		"Cannot check cover"
 	);
 
-	if(q.hasError()){
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -51,8 +51,7 @@ bool DB::Covers::exists(const QString& hash)
 
 bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"SELECT data FROM covers WHERE hash = :hash;",
 		{
 			{":hash", hash}
@@ -60,7 +59,8 @@ bool DB::Covers::getCover(const QString& hash, QPixmap& pm)
 		"Cannot fetch cover"
 	);
 
-	if(q.hasError()){
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -94,47 +94,44 @@ bool DB::Covers::setCover(const QString& hash, const QPixmap& pm)
 
 bool DB::Covers::updateCover(const QString& hash, const QPixmap& pm)
 {
-	QByteArray data = ::Util::convertPixmapToByteArray(pm);
+	const auto data = ::Util::convertPixmapToByteArray(pm);
+	const auto q = update("covers",
+	                      {{"data", data}},
+	                      {"hash", hash},
+	                      "Cannot update cover");
 
-	Query q = update("covers",
-		{{"data", data}},
-		{"hash", hash},
-		"Cannot update cover"
-	);
-
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool DB::Covers::insertCover(const QString& hash, const QPixmap& pm)
 {
-	QByteArray data = ::Util::convertPixmapToByteArray(pm);
+	const auto data = ::Util::convertPixmapToByteArray(pm);
+	const auto q = insert("covers",
+	                      {
+		                      {"data", data},
+		                      {"hash", hash}
+	                      }, "Cannot insert cover");
 
-	Query q = insert("covers",
-	{
-		{"data", data},
-		{"hash", hash}
-	}, "Cannot insert cover");
-
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 bool DB::Covers::removeCover(const QString& hash)
 {
-	DB::Query q = runQuery
-	(
+	const auto q = runQuery(
 		"DELETE from covers WHERE hash=:hash;",
 		{{":hash", hash}},
 		"Cannot delete cover " + hash
 	);
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 Util::Set<QString> DB::Covers::getAllHashes()
 {
-	Query q = runQuery("SELECT hash FROM covers;", "Cannot fetch all hashes");
-	if(q.hasError()){
-		return Util::Set<QString>();
+	auto q = runQuery("SELECT hash FROM covers;", "Cannot fetch all hashes");
+	if(hasError(q))
+	{
+		return {};
 	}
 
 	Util::Set<QString> ret;
@@ -150,8 +147,9 @@ bool DB::Covers::getAllCovers(QMap<QString, QPixmap>& covers)
 {
 	covers.clear();
 
-	Query q = runQuery("SELECT hash, data FROM covers;", "Cannot fetch all covers");
-	if(q.hasError()){
+	auto q = runQuery("SELECT hash, data FROM covers;", "Cannot fetch all covers");
+	if(hasError(q))
+	{
 		return false;
 	}
 

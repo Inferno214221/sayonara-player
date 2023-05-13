@@ -36,9 +36,9 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 {
 	streams.clear();
 
-	Query q = runQuery("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
-
-	if(q.hasError()){
+	auto q = runQuery("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -55,8 +55,7 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 
 bool Streams::deleteStream(const QString& name)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"DELETE FROM savedstreams WHERE name = :name;",
 		{
 			{":name", Util::convertNotNull(name)},
@@ -64,45 +63,43 @@ bool Streams::deleteStream(const QString& name)
 		QString("Could not delete stream %1").arg(name)
 	);
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 bool Streams::addStream(const Stream& stream)
 {
-	Query q = insert("savedstreams",
-	{
-		{"name", Util::convertNotNull(stream.name())},
-		{"url", Util::convertNotNull(stream.url())}
-	}, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
+	const auto q = insert("savedstreams",
+	                      {
+		                      {"name", Util::convertNotNull(stream.name())},
+		                      {"url",  Util::convertNotNull(stream.url())}
+	                      }, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 {
-	Query q = update("savedstreams",
-		{
-			{"name", Util::convertNotNull(stream.name())},
-			{"url", Util::convertNotNull(stream.url())}
-		},
-		{"name", Util::convertNotNull(old_name)},
-		QString("Could not update stream name %1").arg(old_name)
-	);
+	const auto q = update("savedstreams",
+	                      {
+		                      {"name", Util::convertNotNull(stream.name())},
+		                      {"url",  Util::convertNotNull(stream.url())}
+	                      },
+	                      {"name", Util::convertNotNull(old_name)},
+	                      QString("Could not update stream name %1").arg(old_name));
 
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 Stream Streams::getStream(const QString& name)
 {
-	QString query = "SELECT name, url FROM savedstreams WHERE name = :name;";
-	Query q = runQuery
-	(
+	const auto query = "SELECT name, url FROM savedstreams WHERE name = :name;";
+	auto q = runQuery(
 		query,
 		{":name", name},
 		QString("Cannot fetch stream %1").arg(name)
 	);
 
-	if(!q.hasError() && q.next())
+	if(!hasError(q) && q.next())
 	{
 		Stream stream;
 		stream.setName(q.value(0).toString());

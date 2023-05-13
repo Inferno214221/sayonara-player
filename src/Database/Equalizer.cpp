@@ -66,7 +66,7 @@ bool DB::Equalizer::deleteEqualizer(int id)
 	                  {":id", id},
 	                  "Cannot remove equalizer");
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 int DB::Equalizer::insertEqualizer(const EqualizerSetting& equalizer)
@@ -79,17 +79,14 @@ int DB::Equalizer::insertEqualizer(const EqualizerSetting& equalizer)
 		       },
 		       "Cannot insert equalizer");
 
-	if(q.hasError())
-	{
-		return -1;
-	}
-
-	return q.lastInsertId().toInt();
+	return hasError(q)
+	       ? -1
+	       : q.lastInsertId().toInt();
 }
 
 bool DB::Equalizer::updateEqualizer(const EqualizerSetting& equalizer)
 {
-	auto q =
+	const auto q =
 		update(TableName,
 		       {{"name",            equalizer.name()},
 		        {"equalizerValues", convertValuesToVariant(equalizer.values())},
@@ -98,18 +95,16 @@ bool DB::Equalizer::updateEqualizer(const EqualizerSetting& equalizer)
 		       {"id", equalizer.id()},
 		       "Cannot update equalizer");
 
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool DB::Equalizer::fetchAllEqualizers(QList<EqualizerSetting>& equalizers)
 {
-	DB::Query q = this->runQuery
-		(
-			"SELECT id, name, equalizerValues, defaultValues FROM Equalizer;",
-			QString("Cannot fetch equalizers")
-		);
+	auto q = runQuery(
+		"SELECT id, name, equalizerValues, defaultValues FROM Equalizer;",
+		"Cannot fetch equalizers");
 
-	if(q.hasError())
+	if(hasError(q))
 	{
 		return false;
 	}

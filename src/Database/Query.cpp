@@ -18,236 +18,115 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Database/Query.h"
-#include "Database/Module.h"
+#include <QMap>
+#include <QSqlDriver>
+#include <QSqlError>
+#include <QSqlQuery>
+#include <QString>
+#include <QVariant>
+
 #include "Utils/Logger/Logger.h"
 
-#include <QSqlDriver>
-#include <cmath>
-
-//#define DB_DEBUG
-
-using DB::Query;
-using DB::Module;
-
-struct Query::Private
+namespace
 {
-	QString		query_string;
-	bool		success;
-
-	Private() :
-		success(false)
-	{}
-};
-
-Query::Query(const QString& connection_name, DbId databaseId) :
-	QSqlQuery(Module(connection_name, databaseId).db())
-{
-	m = Pimpl::make<Private>();
-}
-
-
-Query::Query(const Module* module) :
-	QSqlQuery(module->db())
-{
-	m = Pimpl::make<Private>();
-}
-
-
-Query::Query(QSqlDatabase db) :
-	QSqlQuery(db)
-{
-	m = Pimpl::make<Private>();
-}
-
-
-Query::Query(const Query& other) :
-	QSqlQuery(other)
-{
-	m = Pimpl::make<Private>();
-
-	m->query_string = other.m->query_string;
-	m->success = other.m->success;
-}
-
-DB::Query& Query::operator=(const DB::Query& other)
-{
-	QSqlQuery::operator =(other);
-	m->query_string = other.m->query_string;
-	m->success = other.m->success;
-
-	return *this;
-}
-
-Query::~Query()
-{
-	this->clear();
-}
-
-bool Query::prepare(const QString& query)
-{
-	m->query_string = query;
-
-	return QSqlQuery::prepare(query);
-}
-
-void Query::bindValue(const QString& placeholder, const QVariant& val, QSql::ParamType param_type )
-{
-	QString replace_str = QString("'") + val.toString() + "'";
-
-	m->query_string.replace(placeholder + " ", replace_str + " ");
-	m->query_string.replace(placeholder + ",", replace_str + ",");
-	m->query_string.replace(placeholder + ";", replace_str + ";");
-	m->query_string.replace(placeholder + ")", replace_str + ")");
-
-	QSqlQuery::bindValue(placeholder, val, param_type);
-}
-
-#undef DB_DEBUG
-#ifdef DB_DEBUG
-	#include <QTime>
-	#include <QHash>
-	static int n_queries=0;
-	static QHash<QString, int> query_map;
-#endif
-
-bool Query::exec()
-{
-#ifdef DB_DEBUG
-	QTime timer;
-	timer.start();
-	n_queries++;
-	int val = 1;
-	int n_calls = 0;
-	if(query_map.contains(m->query_string)){
-		val = query_map[m->query_string] + 1;
-		n_calls = val;
-	}
-
-	query_map[m->query_string] = val;
-
-#endif
-
-	m->success = QSqlQuery::exec();
-
-#ifdef DB_DEBUG
-	sp_log(Log::Debug, this) << QString("(%1) ").arg(n_queries)
-							 << m->query_string << ": "
-							 << timer.elapsed() << "ms";
-
-	if(n_calls > 1){
-		sp_log(Log::Debug, this) << QString("Called %1 times").arg(val);
-	}
-
-
-#endif
-
-	return m->success;
-}
-
-void Query::setError(bool b)
-{
-	m->success = (!b);
-}
-
-bool Query::hasError() const
-{
-	return (m->success == false);
-}
-
-QString Query::getQueryString() const
-{
-	QString str = m->query_string;
-	str.prepend("\n");
-	str.replace("SELECT ", "SELECT\n", Qt::CaseInsensitive);
-	str.replace("FROM", "\nFROM", Qt::CaseInsensitive);
-	str.replace(",", ",\n", Qt::CaseInsensitive);
-	str.replace("INNER JOIN", "\nINNER JOIN", Qt::CaseInsensitive);
-	str.replace("LEFT OUTER JOIN", "\nLEFT OUTER JOIN", Qt::CaseInsensitive);
-	str.replace("UNION", "\nUNION", Qt::CaseInsensitive);
-	str.replace("GROUP BY", "\nGROUP BY", Qt::CaseInsensitive);
-	str.replace("ORDER BY", "\nORDER BY", Qt::CaseInsensitive);
-	str.replace("WHERE", "\nWHERE", Qt::CaseInsensitive);
-	str.replace("(", "\n(\n");
-	str.replace(")", "\n)\n");
-
-	int idx = str.indexOf("(");
-	while(idx >= 0){
-		int idx_close = str.indexOf(")", idx);
-		int nl = str.indexOf("\n", idx);
-		while(nl > 0 && nl < idx_close)
+	QString trimInside(const QString& originalString, const QString& pattern, const QString& replacement)
+	{
+		auto result = originalString;
+		while(result.contains(pattern))
 		{
-			str.insert(nl + 1, '\t');
-			nl = str.indexOf("\n", nl + 2);
+			result.replace(pattern, replacement);
+		}
+		return result;
+	}
+
+	QString formatQueryString(QString queryString)
+	{
+		queryString.prepend("\n");
+		queryString.replace("SELECT ", "SELECT\n", Qt::CaseInsensitive);
+		queryString.replace("FROM", "\nFROM", Qt::CaseInsensitive);
+		queryString.replace(",", ",\n", Qt::CaseInsensitive);
+		queryString.replace("INNER JOIN", "\nINNER JOIN", Qt::CaseInsensitive);
+		queryString.replace("LEFT OUTER JOIN", "\nLEFT OUTER JOIN", Qt::CaseInsensitive);
+		queryString.replace("UNION", "\nUNION", Qt::CaseInsensitive);
+		queryString.replace("GROUP BY", "\nGROUP BY", Qt::CaseInsensitive);
+		queryString.replace("ORDER BY", "\nORDER BY", Qt::CaseInsensitive);
+		queryString.replace("WHERE", "\nWHERE", Qt::CaseInsensitive);
+		queryString.replace("(", "\n(\n");
+		queryString.replace(")", "\n)\n");
+
+		auto idx = queryString.indexOf("(");
+		while(idx >= 0)
+		{
+			const auto closingIndex = queryString.indexOf(")", idx);
+
+			auto newlineIndex = queryString.indexOf("\n", idx);
+			while(newlineIndex > 0 && newlineIndex < closingIndex)
+			{
+				queryString.insert(newlineIndex + 1, '\t');
+				newlineIndex = queryString.indexOf("\n", newlineIndex + 2);
+			}
+
+			idx = queryString.indexOf("(", closingIndex);
 		}
 
-		idx = str.indexOf("(", idx_close);
+		queryString = trimInside(queryString, "\n ", "\n");
+		queryString = trimInside(queryString, ", ", ",");
+		queryString = trimInside(queryString, " ,", ",");
+		queryString = trimInside(queryString, "  ", " ");
+		queryString = trimInside(queryString, "\n\n", "\n");
+
+		return queryString;
 	}
 
-	while(str.contains("\n ")){
-		str.replace("\n ", "\n");
-	}
+	QString extractSqlString(const QSqlQuery& q)
+	{
+		const auto boundValues = q.boundValues();
+		auto sql = q.executedQuery();
 
-	while(str.contains(", ")){
-		str.replace(", ", ",");
-	}
+		for(auto it = boundValues.begin(); it != boundValues.end(); it++)
+		{
+			sql.replace(it.key(), it.value().toString());
+		}
 
-	while(str.contains(" ,")){
-		str.replace(" ,", ",");
+		return formatQueryString(sql);
 	}
-
-	while(str.contains("  ")){
-		str.replace("  ", " ");
-	}
-
-	while(str.contains("\n\n")){
-		str.replace("\n\n", "\n");
-	}
-
-	return str;
 }
 
-void Query::showQuery() const
+namespace DB
 {
-	spLog(Log::Debug, this) << getQueryString();
-}
-
-void Query::showError(const QString& err_msg) const
-{
-	spLog(Log::Error, this) << "SQL ERROR: " << err_msg << ": " << int(this->lastError().type());
-
-	QSqlError e = this->lastError();
-
-	if(!e.text().isEmpty()){
-		spLog(Log::Error, this) << e.text();
+	bool hasError(const QSqlQuery& q)
+	{
+		return q.lastError().isValid() ||
+		       (q.lastError().type() != QSqlError::NoError);
 	}
 
-	if(!e.driverText().isEmpty()) {
-		spLog(Log::Error, this) << e.driverText();
+	bool wasUpdateSuccessful(const QSqlQuery& q)
+	{
+		return !hasError(q) && (q.numRowsAffected() > 0);
 	}
 
-	if(!e.databaseText().isEmpty()){
-		spLog(Log::Error, this) << e.databaseText();
+	void showError(const QSqlQuery& q, const QString& errorMessage)
+	{
+		constexpr const auto* ClassName = "SqlQuery";
+		spLog(Log::Error, ClassName) << "SQL ERROR: " << errorMessage
+		                             << ": " << static_cast<int>(q.lastError().type());
+
+		const auto sqlError = q.lastError();
+		if(!sqlError.text().isEmpty())
+		{
+			spLog(Log::Error, ClassName) << sqlError.text();
+		}
+
+		if(!sqlError.driverText().isEmpty())
+		{
+			spLog(Log::Error, ClassName) << sqlError.driverText();
+		}
+
+		if(!sqlError.databaseText().isEmpty())
+		{
+			spLog(Log::Error, ClassName) << sqlError.databaseText();
+		}
+
+		spLog(Log::Error, ClassName) << extractSqlString(q);
 	}
-
-#ifdef DEBUG
-	spLog(Log::Error, this) << m->query_string;
-#endif
-
-	spLog(Log::Error, this) << this->getQueryString();
-}
-
-size_t Query::fetchedRows()
-{
-	int last_pos = this->at();
-
-	this->last();
-	int rows = this->at() + 1;
-	this->seek(last_pos);
-
-	if(rows < 0){
-		return 0;
-	}
-
-	return size_t(rows);
 }

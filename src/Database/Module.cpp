@@ -212,7 +212,7 @@ Module::runQuery(const QString& queryText, const QMap<QString, QVariant>& bindin
 	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		query.showError(errorText);
+		showError(query, errorText);
 	}
 
 	return query;
@@ -225,7 +225,7 @@ Module::insert(const QString& tablename, const QMap<QString, QVariant>& fieldBin
 	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		query.showError(errorMessage);
+		showError(query, errorMessage);
 	}
 
 	return query;

@@ -18,54 +18,17 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Query_H
-#define Query_H
-
-#include "Utils/Pimpl.h"
+#ifndef SAYONARA_PLAYER_DB_QUERY
+#define SAYONARA_PLAYER_DB_QUERY
 
 #include <QString>
 #include <QSqlQuery>
-#include <QVariant>
-#include <QSqlDatabase>
-#include <QSqlError>
 
 namespace DB
 {
-	class Module;
-	class Query :
-			public QSqlQuery
-	{
-		PIMPL(Query)
-
-		private:
-			explicit Query(QSqlDatabase db);
-
-		public:
-			explicit Query(const Module* module);
-
-			Query(const QString& connection_name, DbId databaseId);
-			Query(const Query& other);
-
-            explicit Query(QSqlResult* result) = delete;
-            explicit Query(const QString& query=QString(), const QSqlDatabase& db = QSqlDatabase()) = delete;
-
-			Query& operator=(const Query& other);
-
-			virtual ~Query();
-
-			bool prepare(const QString& query);
-			void bindValue(const QString&  placeholder, const QVariant & val, QSql::ParamType paramType = QSql::In);
-			bool exec();
-			void setError(bool b);
-			bool hasError() const;
-
-			QString getQueryString() const;
-			void showQuery() const;
-			void showError(const QString& err_msg) const;
-
-
-			size_t fetchedRows();
-	};
+	bool hasError(const QSqlQuery& q);
+	bool wasUpdateSuccessful(const QSqlQuery& q);
+	void showError(const QSqlQuery& q, const QString& errorMessage);
 }
 
-#endif // Query_H
+#endif // SAYONARA_PLAYER_DB_QUERY

@@ -47,7 +47,7 @@ namespace DB
 			.arg(LibraryIdField);
 
 		auto query = runQuery(querytext, "Cannot fetch Smart Playlists");
-		if(query.hasError())
+		if(hasError(query))
 		{
 			return {};
 		}
@@ -79,7 +79,7 @@ namespace DB
 			{LibraryIdField,  smartPlaylistDatabaseEntry.libraryId}
 		}, "Cannot insert into Smart Playlists");
 
-		return (!query.hasError())
+		return (!hasError(query))
 		       ? query.lastInsertId().toInt()
 		       : -1;
 	}
@@ -94,16 +94,15 @@ namespace DB
 		                          }, {IdField, id},
 		                          "Cannot update Smart Playlists");
 
-		return (!query.hasError());
+		return wasUpdateSuccessful(q);
 	}
 
 	bool SmartPlaylists::deleteSmartPlaylist(const int id)
 	{
-		const auto querytext = QString("DELETE FROM SmartPlaylists WHERE id = :id");
-		auto query = DB::Query(this);
-		query.prepare(querytext);
-		query.bindValue(":id", id);
+		const auto query = runQuery("DELETE FROM SmartPlaylists WHERE id = :id;",
+		                            {{":id", id}},
+		                            QString("Cannot delete playlist %1").arg(id));
 
-		return (query.exec());
+		return !hasError(query);
 	}
 }

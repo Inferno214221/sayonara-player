@@ -133,7 +133,7 @@ DB::Playlist::getAllPlaylists(::Playlist::StoreType storeType, const bool getTra
 			.arg(sortingStatement);
 
 	auto query = runQuery(queryText, "Cannot fetch all playlists");
-	if(query.hasError())
+	if(hasError(query))
 	{
 		return {};
 	}
@@ -182,7 +182,7 @@ CustomPlaylist DB::Playlist::getPlaylistById(const int playlistId, const bool ge
 	                               "GROUP BY playlists.playlistID;").arg(joinedPlaylistFields());
 
 	auto query = runQuery(queryText, {{":playlist_id", playlistId}}, "Cannot fetch all playlists");
-	if(query.hasError())
+	if(hasError(query))
 	{
 		return {};
 	}
@@ -260,7 +260,7 @@ MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(const int playlistId)
 	                      QString("Cannot get tracks for playlist %1").arg(playlistId)
 	);
 
-	if(!query.hasError())
+	if(!hasError(query))
 	{
 		while(query.next())
 		{
@@ -331,7 +331,7 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 		},
 		QString("Playlist by id: Cannot fetch playlist %1").arg(playlistId));
 
-	if(query.hasError())
+	if(hasError(query))
 	{
 		return result;
 	}
@@ -391,7 +391,7 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 		QString("Playlist by name: Cannot fetch playlist %1").arg(name)
 	);
 
-	return (!query.hasError() && query.next())
+	return (!hasError(query) && query.next())
 	       ? query.value(0).toInt()
 	       : -1;
 }
@@ -427,7 +427,7 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int play
 	}
 
 	auto query = insert("playlistToTracks", fieldBindings, "Cannot insert track into playlist");
-	return (!query.hasError());
+	return !hasError(query);
 }
 
 int DB::Playlist::createPlaylist(const QString& playlistName, const bool temporary)
@@ -438,7 +438,7 @@ int DB::Playlist::createPlaylist(const QString& playlistName, const bool tempora
 		                          {"temporary", temporary ? 1 : 0}
 	                          }, "Cannot create playlist");
 
-	return (query.hasError())
+	return hasError(query)
 	       ? -1
 	       : query.lastInsertId().toInt();
 }
@@ -454,14 +454,14 @@ bool DB::Playlist::updatePlaylist(const int playlistId, const QString& name, con
 		return false;
 	}
 
-	const auto query = update("playlists",
-	                          {
-		                          {"temporary", temporary ? 1 : 0},
-		                          {"playlist",  Util::convertNotNull(name)}
-	                          },
-	                          {"playlistId", playlistId}, "Cannot update playlist");
+	const auto q = update("playlists",
+	                      {
+		                      {"temporary", temporary ? 1 : 0},
+		                      {"playlist",  Util::convertNotNull(name)}
+	                      },
+	                      {"playlistId", playlistId}, "Cannot update playlist");
 
-	return (!query.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool DB::Playlist::renamePlaylist(const int playlistId, const QString& name)
@@ -473,13 +473,13 @@ bool DB::Playlist::renamePlaylist(const int playlistId, const QString& name)
 		return false;
 	}
 
-	const auto query = update("playlists",
-	                          {
-		                          {"playlist", Util::convertNotNull(name)}
-	                          },
-	                          {"playlistId", playlistId}, "Cannot update playlist");
+	const auto q = update("playlists",
+	                      {
+		                      {"playlist", Util::convertNotNull(name)}
+	                      },
+	                      {"playlistId", playlistId}, "Cannot update playlist");
 
-	return (!query.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool DB::Playlist::updatePlaylistTracks(int playlistId, const MetaDataList& tracks)
@@ -517,7 +517,7 @@ bool DB::Playlist::clearPlaylist(int playlistId)
 	const auto querytext = QStringLiteral("DELETE FROM playlistToTracks WHERE playlistID = :playlistID;");
 	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be cleared");
 
-	return (!query.hasError());
+	return !hasError(query);
 }
 
 bool DB::Playlist::deletePlaylist(int playlistId)
@@ -527,5 +527,5 @@ bool DB::Playlist::deletePlaylist(int playlistId)
 	const auto querytext = QString("DELETE FROM playlists WHERE playlistID = :playlistID;");
 	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be deleted");
 
-	return (!query.hasError());
+	return !hasError(query);
 }

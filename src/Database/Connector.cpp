@@ -215,11 +215,8 @@ bool Connector::updateLostArtists()
 	this->transaction();
 	for(const auto& query: queries)
 	{
-		auto q = Query(this);
-		q.prepare(query);
-		q.bindValue(":artistID", id);
-
-		if(const auto success = q.exec(); !success)
+		auto q = runQuery(query, {":artistID", id}, "Cannot update lost artist");
+		if(hasError(q))
 		{
 			this->rollback();
 			return false;

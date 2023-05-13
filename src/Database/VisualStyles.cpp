@@ -72,8 +72,8 @@ QList<RawColorStyle> VisualStyles::getRawColorStyles()
 {
 	QList<RawColorStyle> ret_val;
 
-	Query q(this);
-	q.prepare("SELECT * FROM VisualStyles;" );
+	auto q = QSqlQuery(db());
+	q.prepare("SELECT * FROM VisualStyles;");
 
 	if(!q.exec()) {
 		q.showError("Could not fetch color styles");
@@ -124,7 +124,7 @@ bool VisualStyles::insertRawColorStyle(const RawColorStyle& rcs)
 		col_str += ":col" + QString::number(i + 1) + ", ";
 	}
 
-	Query q(this);
+	auto q = QSqlQuery(db());
 	QString sql_str;
 	sql_str = "INSERT INTO VisualStyles VALUES ("
 			":name, "
@@ -171,9 +171,9 @@ bool VisualStyles::insertRawColorStyle(const RawColorStyle& rcs)
 	q.bindValue(":v_spacing_lv", rcs.ver_spacing_level);
 	q.bindValue(":fading_steps_lv", rcs.n_fading_steps_level);
 
-
-	if(!q.exec()) {
-		q.showError("Could not insert style");
+	if(!q.exec())
+	{
+		showError(q, "Could not insert style");
 		return false;
 	}
 
@@ -192,7 +192,7 @@ bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 		col_str += "col" + QString::number(i + 1) + "=:col" + QString::number(i + 1) + ", ";
 	}
 
-	Query q(this);
+	auto q = QSqlQuery(db());
 	QString sql_str;
 	sql_str = "UPDATE VisualStyles SET "
 
@@ -239,9 +239,9 @@ bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 	q.bindValue(":v_spacing_lv", rcs.ver_spacing_level);
 	q.bindValue(":fading_steps_lv", rcs.n_fading_steps_level);
 
-
-	if(!q.exec()) {
-		q.showError(QString("Could not update style ") + rcs.col_list.name);
+	if(!q.exec())
+	{
+		showError(q, QString("Could not update style ") + rcs.col_list.name);
 		return false;
 	}
 
@@ -251,12 +251,13 @@ bool VisualStyles::updateRawColorStyle(const RawColorStyle& rcs)
 
 bool VisualStyles::deleteRawColorStyle(QString name)
 {
-	Query q(this);
+	auto q = QSqlQuery(db());
 	q.prepare("DELETE FROM visualstyles WHERE name=:name;");
 	q.bindValue(":name", Util::convertNotNull(name));
 
-	if(!q.exec()) {
-		q.showError(QString("Could not delete Raw color style ") + name);
+	if(!q.exec())
+	{
+		showError(q, QString("Could not delete Raw color style ") + name);
 		return false;
 	}
 
@@ -266,12 +267,13 @@ bool VisualStyles::deleteRawColorStyle(QString name)
 
 bool VisualStyles::rawColorStyleExists(QString name)
 {
-	Query q(this);
+	auto q = QSqlQuery(db());
 	q.prepare("SELECT * FROM visualstyles WHERE name=:name;");
 	q.bindValue(":name", Util::convertNotNull(name));
 
-	if(!q.exec()) {
-		q.showError("Cannot check if raw color style exists");
+	if(!q.exec())
+	{
+		showError(q, "Cannot check if raw color style exists");
 		return false;
 	}
 

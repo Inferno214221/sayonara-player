@@ -187,7 +187,7 @@ bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
 
 	if(!q.exec())
 	{
-		q.showError("Cannot fetch tracks from database");
+		showError(q, "Cannot fetch tracks from database");
 		return false;
 	}
 
@@ -279,7 +279,7 @@ int Tracks::getNumTracks() const
 		"Cannot count tracks"
 	);
 
-	return (!q.hasError() && q.next())
+	return (!hasError(q) && q.next())
 	       ? q.value(0).toInt()
 	       : -1;
 }
@@ -429,7 +429,7 @@ bool Tracks::deleteTrack(TrackID id)
 		{":trackID", id},
 		QString("Cannot delete track %1").arg(id));
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 bool Tracks::deleteTracks(const IdList& ids)
@@ -507,7 +507,7 @@ Util::Set<Genre> Tracks::getAllGenres() const
 {
 	const auto query = QString("SELECT genre FROM %1 GROUP BY genre;").arg(trackView());
 	auto q = module()->runQuery(query, "Cannot fetch genres");
-	if(q.hasError())
+	if(hasError(q))
 	{
 		return {};
 	}
@@ -589,7 +589,7 @@ bool Tracks::updateTrack(const MetaData& track)
 		{"trackId", track.id()},
 		QString("Cannot update track %1").arg(track.filepath()));
 
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool Tracks::renameFilepaths(const QMap<QString, QString>& paths, LibraryId targetLibrary)
@@ -628,7 +628,7 @@ bool Tracks::renameFilepath(const QString& oldPath, const QString& newPath, Libr
 		{"filename", oldPath},
 		"Could not rename Filepath");
 
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, AlbumId albumId, ArtistId albumArtistId)
@@ -652,5 +652,5 @@ bool Tracks::insertTrackIntoDatabase(const MetaData& track, ArtistId artistId, A
 
 	const auto q = module()->insert("tracks", bindings, QString("Cannot insert track %1").arg(track.filepath()));
 
-	return (!q.hasError());
+	return !hasError(q);
 }

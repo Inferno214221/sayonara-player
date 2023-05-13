@@ -34,16 +34,15 @@ bool Bookmarks::searchBookmarks(int trackId, QMap<Seconds, QString>& bookmarks)
 {
 	bookmarks.clear();
 
-	DB::Query q = this->runQuery
-	(
+	auto q = runQuery(
 		"SELECT name, timeidx FROM savedbookmarks WHERE trackid=:trackid;",
 		{
 			{":trackid", trackId}
 		},
-		QString("Cannot find bookmark for Track %1").arg(trackId)
-	);
+		QString("Cannot find bookmark for Track %1").arg(trackId));
 
-	if (q.hasError()){
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -58,47 +57,40 @@ bool Bookmarks::searchBookmarks(int trackId, QMap<Seconds, QString>& bookmarks)
 	return true;
 }
 
-
 bool Bookmarks::insertBookmark(int trackId, Seconds time, const QString& name)
 {
-	DB::Query q = insert("savedbookmarks",
-	{
-		{"trackid",	trackId},
-		{"name",	Util::convertNotNull(name)},
-		{"timeidx",	time}
-	}, "Cannot insert bookmarks");
+	auto q = insert("savedbookmarks",
+	                {
+		                {"trackid", trackId},
+		                {"name",    Util::convertNotNull(name)},
+		                {"timeidx", time}
+	                }, "Cannot insert bookmarks");
 
-	return (!q.hasError());
+	return !hasError(q);
 }
-
 
 bool Bookmarks::removeBookmark(int trackId, Seconds time)
 {
-	DB::Query q = runQuery
-	(
+	auto q = runQuery(
 		"DELETE FROM savedbookmarks WHERE trackid=:trackid AND timeidx=:timeidx;",
 		{
 			{":trackid", trackId},
 			{":timeidx", time}
 		},
-		"Cannot remove bookmark"
-	);
+		"Cannot remove bookmark");
 
-	return (!q.hasError());
+	return !hasError(q);
 }
-
 
 bool Bookmarks::removeAllBookmarks(int trackId)
 {
-	DB::Query q = runQuery
-	(
+	const auto q = runQuery(
 		"DELETE FROM savedbookmarks WHERE trackid=:trackid;",
 		{
 			{":trackid", trackId}
 		},
-		"Cannot remove all bookmarks"
-	);
+		"Cannot remove all bookmarks");
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 

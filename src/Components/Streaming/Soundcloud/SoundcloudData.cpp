@@ -44,7 +44,7 @@ QString SC::Database::loadSetting(const QString& key)
 		{{":key", key}},
 		QString("Cannot load setting %1").arg(key));
 
-	if(query.hasError())
+	if(DB::hasError(query))
 	{
 		return QString();
 	}
@@ -74,7 +74,7 @@ bool SC::Database::saveSetting(const QString& key, const QString& value)
 		{"key", key},
 		QString("Cannot apply setting %1").arg(key));
 
-	return (!query.hasError());
+	return !DB::hasError(query);
 }
 
 bool SC::Database::insertSetting(const QString& key, const QString& value)
@@ -87,7 +87,7 @@ bool SC::Database::insertSetting(const QString& key, const QString& value)
 		},
 		QString("Cannot insert setting %1").arg(key));
 
-	return (!query.hasError());
+	return !DB::hasError(query);
 }
 
 bool SC::Database::applyFixes()

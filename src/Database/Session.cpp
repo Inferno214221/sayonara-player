@@ -41,7 +41,7 @@ namespace DB
 			"SELECT DISTINCT sessionID FROM Sessions;",
 			"Session: Cannot fetch session keys");
 
-		while(!query.hasError() && query.next())
+		while(!hasError(query) && query.next())
 		{
 			ids << query.value(0).value<::Session::Id>();
 		}
@@ -105,7 +105,7 @@ namespace DB
 
 		auto ret = ::Session::EntryListMap {};
 
-		while(!query.hasError() && query.next())
+		while(!hasError(query) && query.next())
 		{
 			auto entry = ::Session::Entry {};
 			entry.sessionId = query.value(0).value<::Session::Id>();
@@ -176,7 +176,7 @@ namespace DB
 			},
 			"Session: Cannot insert track");
 
-		return (!query.hasError());
+		return !hasError(query);
 	}
 
 	bool Session::clear()
@@ -185,7 +185,7 @@ namespace DB
 			"DELETE FROM Sessions;",
 			"Session: Cannot clear sessions");
 
-		return (!query.hasError());
+		return !hasError(query);
 	}
 
 	bool Session::clearBefore(const QDateTime& datetime)
@@ -198,6 +198,6 @@ namespace DB
 			{":maxDate", QVariant::fromValue<::Session::Timecode>(timecode)},
 			QString("Cannot clear before %1").arg(timecode));
 
-		return (!query.hasError());
+		return !hasError(query);
 	}
 }

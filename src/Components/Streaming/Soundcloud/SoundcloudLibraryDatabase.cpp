@@ -150,7 +150,7 @@ bool SC::LibraryDatabase::dbFetchTracks(Query& query, MetaDataList& result) cons
 
 	if(!query.exec())
 	{
-		query.showError("Cannot fetch tracks from database");
+		DB::showError(query, "Cannot fetch tracks from database");
 		return false;
 	}
 
@@ -197,7 +197,7 @@ bool SC::LibraryDatabase::dbFetchAlbums(Query& query, AlbumList& result) const
 
 	if(!query.exec())
 	{
-		query.showError("Could not get all albums from database");
+		DB::showError(query, "Could not get all albums from database");
 		return false;
 	}
 
@@ -230,7 +230,7 @@ bool SC::LibraryDatabase::dbFetchArtists(Query& query, ArtistList& result) const
 
 	if(!query.exec())
 	{
-		query.showError("Could not get all artists from database");
+		DB::showError(query, "Could not get all artists from database");
 		return false;
 	}
 
@@ -279,7 +279,7 @@ ArtistId SC::LibraryDatabase::updateArtist(const Artist& artist)
 		{QStringLiteral("sc_id"), artist.id()},
 		QString("Soundcloud: Cannot update artist %1").arg(artist.name()));
 
-	return (query.hasError())
+	return DB::hasError(query)
 	       ? -1
 	       : getArtistID(artist.name());
 }
@@ -322,7 +322,7 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase(const Artist& artist)
 		},
 		QString("Soundcloud: Cannot insert artist %1").arg(artist.name()));
 
-	return (query.hasError())
+	return DB::hasError(query)
 	       ? -1
 	       : getArtistID(artist.name());
 }
@@ -341,7 +341,7 @@ AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 		{QStringLiteral("sc_id"), album.id()},
 		QString("Soundcloud: Cannot update album %1").arg(album.name()));
 
-	return (query.hasError())
+	return DB::hasError(query)
 	       ? -1
 	       : getAlbumID(album.name());
 }
@@ -365,7 +365,7 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase(const Album& album)
 		},
 		QString("Soundcloud: Cannot insert album %1").arg(album.name()));
 
-	return (query.hasError())
+	return DB::hasError(query)
 	       ? -1
 	       : getAlbumID(album.name());
 }
@@ -396,7 +396,7 @@ bool SC::LibraryDatabase::updateTrack(const MetaData& track)
 		{QStringLiteral("trackID"), track.id()},
 		QString("Soundcloud: Cannot update track %1").arg(track.filepath()));
 
-	return (!query.hasError());
+	return !DB::hasError(query);
 }
 
 bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int artistId, int albumId,
@@ -431,7 +431,7 @@ bool SC::LibraryDatabase::insertTrackIntoDatabase(const MetaData& track, int art
 		},
 		QString("Soundcloud: Cannot insert track %1").arg(track.filepath()));
 
-	return (!query.hasError());
+	return !DB::hasError(query);
 }
 
 bool SC::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
@@ -464,7 +464,7 @@ bool SC::LibraryDatabase::searchInformation(SC::SearchInformationList& searchInf
 		QStringLiteral("SELECT artistId, albumId, trackId, allCissearch FROM track_search_view;"),
 		QStringLiteral("Soundcloud: Cannot get search Information"));
 
-	if(query.hasError())
+	if(DB::hasError(query))
 	{
 		return false;
 	}

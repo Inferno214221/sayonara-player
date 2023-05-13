@@ -172,7 +172,7 @@ bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
 
 	if(!q.exec())
 	{
-		q.showError("Could not get all albums from database");
+		DB::showError(q, "Could not get all albums from database");
 		return false;
 	}
 
@@ -200,18 +200,11 @@ bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
 
 AlbumId Albums::getAlbumID(const QString& album) const
 {
-	auto q = Query(module());
+	auto q = module()->runQuery("SELECT albumID FROM albums WHERE name = :name;",
+	                            {":name", Util::convertNotNull(album)},
+	                            QString("Cannot fetch albumID of album '%1'").arg(album));
 
-	q.prepare("SELECT albumID FROM albums WHERE name = ?;");
-	q.addBindValue(Util::convertNotNull(album));
-
-	if(!q.exec())
-	{
-		q.showError("Cannot fetch albumID");
-		return -1;
-	}
-
-	return q.next()
+	return !DB::hasError(q) && q.next()
 	       ? q.value(0).toInt()
 	       : -1;
 }
@@ -231,7 +224,7 @@ bool Albums::getAlbumByID(AlbumId id, Album& album, bool alsoEmpty) const
 	const auto query = QString("%1 AND albumID = :id GROUP BY albumID, albumName, albumRating;")
 		.arg(fetchQueryAlbums(alsoEmpty));
 
-	auto q = Query(module());
+	auto q = QSqlQuery(module()->db());
 	q.prepare(query);
 	q.bindValue(":id", id);
 
@@ -251,7 +244,7 @@ bool Albums::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 	const auto query = QString("%1 GROUP BY albumID, albumName, albumRating;")
 		.arg(fetchQueryAlbums(alsoEmpty));
 
-	auto q = Query(module());
+	auto q = QSqlQuery(module()->db());
 	q.prepare(query);
 
 	return dbFetchAlbums(q, result);
@@ -280,7 +273,7 @@ bool Albums::getAllAlbumsByArtist(const IdList& artistIds, AlbumList& result, co
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)
 	{
-		Query q(module());
+		auto q = QSqlQuery(module()->db());
 		q.prepare(query);
 		q.bindValue(CisPlaceholder, searchFilter);
 		DB::bindMappingToQuery(q, mapping, sortedIds);
@@ -301,7 +294,7 @@ bool Albums::getAllAlbumsBySearchString(const Library::Filter& filter, AlbumList
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)
 	{
-		auto q = Query(module());
+		auto q = QSqlQuery(module()->db());
 		q.prepare(query);
 		q.bindValue(CisPlaceholder, searchFilter);
 
@@ -326,7 +319,9 @@ AlbumId Albums::updateAlbumRating(AlbumId id, Rating rating)
 		{"albumID", id},
 		QString("Cannot set album rating for id %1").arg(id));
 
-	return (!q.hasError()) ? id : -1;
+	return !hasError(q) && (q.numRowsAffected() > 0)
+	       ? id
+	       : -1;
 }
 
 void Albums::updateAlbumCissearch()
@@ -364,7 +359,7 @@ AlbumId Albums::insertAlbumIntoDatabase(const QString& name)
 		};
 
 	const auto q = module()->insert("albums", bindings, QString("2. Cannot insert album %1").arg(name));
-	return (!q.hasError()) ? q.lastInsertId().toInt() : -1;
+	return !hasError(q) ? q.lastInsertId().toInt() : -1;
 }
 
 AlbumId Albums::insertAlbumIntoDatabase(const Album& album)

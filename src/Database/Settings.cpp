@@ -98,14 +98,14 @@ bool DB::Settings::storeSettings()
 
 bool DB::Settings::loadSetting(QString key, QString& tgt_value)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Cannot load setting %1").arg(key)
 	);
 
-	if (q.hasError()) {
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -121,26 +121,27 @@ bool DB::Settings::loadSetting(QString key, QString& tgt_value)
 
 bool DB::Settings::storeSetting(QString key, const QVariant& value)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"SELECT value FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Store setting: Cannot fetch setting %1").arg(key)
 	);
 
-	if (q.hasError()) {
+	if(hasError(q))
+	{
 		return false;
 	}
 
 	if (!q.next())
 	{
-		Query q2 = insert("settings",
-		{
-			{"key", key},
-			{"value", value}
-		}, QString("Store setting: Cannot insert setting %1").arg(key));
+		auto q2 = insert("settings",
+		                 {
+			                 {"key",   key},
+			                 {"value", value}
+		                 }, QString("Store setting: Cannot insert setting %1").arg(key));
 
-		if (q2.hasError()) {
+		if(hasError(q2))
+		{
 			return false;
 		}
 
@@ -149,12 +150,12 @@ bool DB::Settings::storeSetting(QString key, const QVariant& value)
 
 	else
 	{
-		Query q2 = update("settings",
-			{{"value", value}},
-			{"key", key}
-		, QString("Store setting: Cannot update setting %1").arg(key));
+		auto q2 = update("settings",
+		                 {{"value", value}},
+		                 {"key", key}, QString("Store setting: Cannot update setting %1").arg(key));
 
-		if (q2.hasError()) {
+		if(!wasUpdateSuccessful(q2))
+		{
 			return false;
 		}
 	}
@@ -164,13 +165,12 @@ bool DB::Settings::storeSetting(QString key, const QVariant& value)
 
 bool DB::Settings::dropSetting(const QString& key)
 {
-	Query q = runQuery
-	(
+	const auto q = runQuery(
 		"DELETE FROM settings WHERE key = :key;",
 		{":key", key},
 		QString("Drop setting: Cannot drop setting %1").arg(key)
 	);
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 

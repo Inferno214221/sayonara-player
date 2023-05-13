@@ -37,9 +37,9 @@ bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 {
 	podcasts.clear();
 
-	Query q = runQuery("SELECT name, url, reversed FROM savedpodcasts;", "Cannot fetch podcasts");
-
-	if(q.hasError()){
+	auto q = runQuery("SELECT name, url, reversed FROM savedpodcasts;", "Cannot fetch podcasts");
+	if(hasError(q))
+	{
 		return false;
 	}
 
@@ -58,8 +58,7 @@ bool Podcasts::getAllPodcasts(QList<Podcast>& podcasts)
 
 bool Podcasts::deletePodcast(const QString& name)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"DELETE FROM savedpodcasts WHERE name = :name;",
 		{
 			{":name", Util::convertNotNull(name)},
@@ -67,47 +66,45 @@ bool Podcasts::deletePodcast(const QString& name)
 		QString("Could not delete podcast %1").arg(name)
 	);
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 
 bool Podcasts::addPodcast(const Podcast& podcast)
 {
-	Query q = insert("savedpodcasts",
-	{
-		{"name", Util::convertNotNull(podcast.name())},
-		{"url", Util::convertNotNull(podcast.url())},
-		{"reversed", podcast.reversed()}
-	}, QString("Could not add podcast: %1, %2").arg(podcast.name(), podcast.url()));
+	auto q = insert("savedpodcasts",
+	                {
+		                {"name",     Util::convertNotNull(podcast.name())},
+		                {"url",      Util::convertNotNull(podcast.url())},
+		                {"reversed", podcast.reversed()}
+	                }, QString("Could not add podcast: %1, %2").arg(podcast.name(), podcast.url()));
 
-	return (!q.hasError());
+	return !hasError(q);
 }
 
 bool Podcasts::updatePodcast(const QString& name, const Podcast& podcast)
 {
-	Query q = update("savedpodcasts",
-		{
-			{"name", Util::convertNotNull(podcast.name())},
-			{"url", Util::convertNotNull(podcast.url())},
-			{"reversed", podcast.reversed()}
-		},
-		{"name", Util::convertNotNull(name)},
-		QString("Could not update podcast url %1").arg(name)
-	);
+	const auto q = update("savedpodcasts",
+	                      {
+		                      {"name",     Util::convertNotNull(podcast.name())},
+		                      {"url",      Util::convertNotNull(podcast.url())},
+		                      {"reversed", podcast.reversed()}
+	                      },
+	                      {"name", Util::convertNotNull(name)},
+	                      QString("Could not update podcast url %1").arg(name));
 
-	return (!q.hasError());
+	return wasUpdateSuccessful(q);
 }
 
 Podcast Podcasts::getPodcast(const QString& name)
 {
-	Query q = runQuery
-	(
+	auto q = runQuery(
 		"SELECT name, url, reversed FROM savedpodcasts WHERE name = :name;",
 		{":name", name},
 		QString("Cannot fetch podcast %1").arg(name)
 	);
 
-	if(!q.hasError() && q.next())
+	if(!hasError(q) && q.next())
 	{
 		Podcast podcast;
 		podcast.setName(q.value(0).toString());
