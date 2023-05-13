@@ -29,6 +29,7 @@ class QSqlDatabase;
 
 namespace DB
 {
+	class Fixes;
 	class Base :
 		public QObject,
 		public DB::Module
@@ -37,25 +38,18 @@ namespace DB
 
 		public:
 			Base(DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory,
-			     const QString& filename, QObject* parent = nullptr);
+			     const QString& filename, Fixes* fixes, QObject* parent = nullptr);
 			~Base() override;
 
 			virtual bool closeDatabase();
-			virtual bool isInitialized();
+			[[nodiscard]] bool isInitialized() const;
 
-			virtual void transaction();
-			virtual void commit();
-			virtual void rollback();
-
-		protected:
-			virtual bool applyFixes() = 0;
-
-			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype,
-			                                  const QString& defaultValue);
-			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype);
-			virtual bool checkAndCreateTable(const QString& tablename, const QString& sql);
-			virtual bool checkAndDropTable(const QString& tablename);
+			void transaction();
+			void commit();
+			void rollback();
 	};
+
+	[[nodiscard]] QString createConnectionName(const QString& targetDirectory, const QString& filename);
 }
 
 #endif // ABSTRACTDATABASE_H

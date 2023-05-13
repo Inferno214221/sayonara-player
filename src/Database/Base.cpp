@@ -21,6 +21,7 @@
 #include "Database/Base.h"
 #include "Database/Module.h"
 #include "Database/Query.h"
+#include "Database/Fixes.h"
 
 #include "Utils/FileSystem.h"
 #include "Utils/Logger/Logger.h"
@@ -131,20 +132,25 @@ namespace DB
 	};
 
 	Base::Base(const DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory,
-	           const QString& filename, QObject* parent) :
+	           const QString& filename, Fixes* fixes, QObject* parent) :
 		QObject(parent),
-		DB::Module(targetDirectory + "/" + filename, databaseId),
+		DB::Module(createConnectionName(targetDirectory, filename), databaseId),
 		m {Pimpl::make<Private>(databaseId, sourceDirectory, targetDirectory, filename)}
 	{
-		if(!m->initialized || !db().isOpen())
+		if(!isInitialized())
 		{
 			spLog(Log::Error, this) << "Database is not open";
+		}
+
+		else if(fixes)
+		{
+			fixes->applyFixes();
 		}
 	}
 
 	DB::Base::~Base() = default;
 
-	bool Base::isInitialized() { return m->initialized; }
+	bool Base::isInitialized() const { return m->initialized && db().isOpen(); }
 
 	bool Base::closeDatabase()
 	{
@@ -187,62 +193,8 @@ namespace DB
 		db().rollback();
 	}
 
-	bool Base::checkAndDropTable(const QString& tablename)
+	QString createConnectionName(const QString& targetDirectory, const QString& filename)
 	{
-		auto q = runQuery(QString("DROP TABLE IF EXISTS %1;").arg(tablename),
-		                  QString("Cannot drop table %1").arg(tablename));
-
-		return !hasError(q);
-	}
-
-	bool DB::Base::checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype)
-	{
-		return checkAndInsertColumn(tablename, column, sqltype, QString());
-	}
-
-	bool Base::checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype,
-	                                const QString& defaultValue)
-	{
-		const auto querytext = QString("SELECT %1 FROM %2;")
-			.arg(column)
-			.arg(tablename);
-
-		auto q = runQuery(querytext, QString());
-		if(hasError(q))
-		{
-			auto alterTable = QString("ALTER TABLE %1 ADD COLUMN %2 %3")
-				.arg(tablename)
-				.arg(column)
-				.arg(sqltype);
-
-			if(!defaultValue.isEmpty())
-			{
-				alterTable += QString(" DEFAULT %1").arg(defaultValue);
-			}
-
-			alterTable += ";";
-
-			const auto errorString = QString("Cannot insert column %1 into %2")
-				.arg(column)
-				.arg(tablename);
-
-			auto alterTableQuery = runQuery(alterTable, errorString);
-			return !hasError(alterTableQuery);
-		}
-
-		return true;
-	}
-
-	bool Base::checkAndCreateTable(const QString& tablename, const QString& sql)
-	{
-		const auto selectStatement = QString("SELECT * FROM %1;").arg(tablename);
-		auto q = runQuery(selectStatement, QString());
-		if(hasError(q))
-		{
-			const auto createQuery = runQuery(sql, QString("Cannot create table %1").arg(tablename));
-			return !hasError(createQuery);
-		}
-
-		return true;
+		return QDir(targetDirectory).absoluteFilePath(filename);
 	}
 }

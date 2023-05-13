@@ -34,10 +34,10 @@ Test::Base::Base(const QString& testName) :
 	QApplication::setApplicationName("sayonara");
 
 	init_resources();
-	DB::Connector::instance_custom("", mTmpPath, "");
+	DB::Connector::customInstance("", mTmpPath, "");
 	Settings* s = Settings::instance();
 	s->checkSettings();
-	s->set<Set::Logger_Level>( int(Log::Develop) );
+	s->set<Set::Logger_Level>(int(Log::Develop));
 
 	this->setObjectName(testName);
 }

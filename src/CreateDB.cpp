@@ -34,7 +34,8 @@ int main(int argc, char** argv)
 {
 	QApplication app(argc, argv);
 
-	if(argc < 2){
+	if(argc < 2)
+	{
 		std::cerr << "Usage " << argv[0] << " <out_dir>" << std::endl;
 		return 1;
 	}
@@ -46,7 +47,7 @@ int main(int argc, char** argv)
 	QString databseFilename("player.db");
 
 	Util::File::deleteFiles({databseFilename});
-	DB::Connector* db = DB::Connector::instance_custom(sourceDirectory, targetDirectory, databseFilename);
+	DB::Connector* db = DB::Connector::customInstance(sourceDirectory, targetDirectory, databseFilename);
 	DB::Settings* setting_connector = db->settingsConnector();
 
 	Settings* settings = Settings::instance();
@@ -55,9 +56,10 @@ int main(int argc, char** argv)
 	SettingArray arr = settings->settings();
 
 	QList<AbstrSetting*> invalid_settings;
-	for(AbstrSetting* s : arr)
+	for(AbstrSetting* s: arr)
 	{
-		if(!s->isDatabaseSetting()){
+		if(!s->isDatabaseSetting())
+		{
 			continue;
 		}
 
@@ -71,7 +73,7 @@ int main(int argc, char** argv)
 
 	setting_connector->storeSettings();
 
-	for(AbstrSetting* s : invalid_settings)
+	for(AbstrSetting* s: invalid_settings)
 	{
 		setting_connector->dropSetting(s->dbKey());
 	}

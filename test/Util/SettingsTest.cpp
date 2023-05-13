@@ -2,6 +2,7 @@
 
 #include "Database/Connector.h"
 #include "Database/Settings.h"
+#include "Database/StandardConnectorFixes.h"
 
 #include "Utils/Settings/SettingRegistry.h"
 #include "Utils/Settings/Settings.h"
@@ -38,10 +39,7 @@ void SettingsTest::testDatabaseVersion()
 	auto dbVersion = QString {};
 	db->settingsConnector()->loadSetting("version", dbVersion);
 
-	const auto oldDbVersion = db->oldDatabaseVersion();
-	const auto maxDbVersion = DB::Connector::highestDatabaseVersion();
-
-	QVERIFY(oldDbVersion == maxDbVersion);
+	const auto maxDbVersion = DB::StandardConnectorFixes::latestDatabaseVersion();
 	QVERIFY(dbVersion.toInt() == maxDbVersion);
 }
 

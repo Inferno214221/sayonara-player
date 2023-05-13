@@ -52,24 +52,14 @@ namespace DB
 	{
 		PIMPL(Connector)
 
-		protected:
-			bool updateAlbumCissearchFix();
-			bool updateArtistCissearchFix();
-			bool updateTrackCissearchFix();
-			bool updateLostArtists();
-			bool updateLostAlbums();
-
-			virtual bool applyFixes() override;
-
 		public:
 			Connector(const QString& sourceDirectory, const QString& targetDirectory, const QString& databseFilename);
 			~Connector() override;
 
 			static Connector* instance();
-			static Connector*
-			instance_custom(QString sourceDirectory, QString targetDirectory, QString databseFilename);
+			static Connector* customInstance(QString sourceDirectory, QString targetDirectory, QString databseFilename);
 
-			LibraryDatabases libraryDatabases() const;
+			[[nodiscard]] LibraryDatabases libraryDatabases() const;
 			DB::LibraryDatabase* libraryDatabase(LibraryId libraryId, DbId databaseId);
 			DB::LibraryDatabase* registerLibraryDatabase(LibraryId libraryId);
 			void deleteLibraryDatabase(LibraryId libraryId);
@@ -86,9 +76,6 @@ namespace DB
 			DB::Library* libraryConnector();
 			DB::Session* sessionConnector();
 			DB::SmartPlaylists* smartPlaylistsConnector();
-
-			static int highestDatabaseVersion();
-			int oldDatabaseVersion() const;
 	};
 }
 #endif // DatabaseConnector_H

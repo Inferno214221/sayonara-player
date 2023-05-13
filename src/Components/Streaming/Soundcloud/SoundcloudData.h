@@ -37,18 +37,11 @@ class AlbumList;
 namespace SC
 {
 	class Database :
-			public DB::Base
+		public DB::Base
 	{
 		public:
 			Database();
 			~Database() override;
-
-			// todo: assure to be called
-			bool applyFixes() override;
-
-			QString loadSetting(const QString& key);
-			bool saveSetting(const QString& key, const QString& value);
-			bool insertSetting(const QString& key, const QString& value);
 	};
 }
 
