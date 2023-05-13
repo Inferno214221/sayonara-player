@@ -109,24 +109,21 @@ namespace DB
 {
 	struct Base::Private
 	{
-		Util::FileSystemPtr fileSystem {Util::FileSystem::create()};
-		QString filename;            // player.db
-		QString connectionName;    // /home/user/.Sayonara/player.db
-		DbId databaseId;
+		QString filename;
 		bool initialized {false};
 
-		Private(const DbId databaseId, const QString& sourceDirectory, const QString& targetDirectory,
-		        const QString& filename) :
-			filename(filename),
-			connectionName {QDir(targetDirectory).absoluteFilePath(filename)},
-			databaseId(databaseId)
+		Private(const QString& sourceDirectory, const QString& targetDirectory, const QString& filename) :
+			filename(filename)
 		{
+			auto fileSystem = Util::FileSystem::create();
 			if(!fileSystem->exists(targetDirectory))
 			{
 				fileSystem->createDirectories(targetDirectory);
 			}
 
 			const auto sourceDatabaseFile = QDir(sourceDirectory).absoluteFilePath(filename);
+			const auto connectionName = createConnectionName(targetDirectory, filename);
+
 			initialized = checkDatabase(fileSystem, connectionName, sourceDatabaseFile);
 		}
 	};
@@ -135,7 +132,7 @@ namespace DB
 	           const QString& filename, Fixes* fixes, QObject* parent) :
 		QObject(parent),
 		DB::Module(createConnectionName(targetDirectory, filename), databaseId),
-		m {Pimpl::make<Private>(databaseId, sourceDirectory, targetDirectory, filename)}
+		m {Pimpl::make<Private>(sourceDirectory, targetDirectory, filename)}
 	{
 		if(!isInitialized())
 		{
@@ -159,8 +156,7 @@ namespace DB
 			return false;
 		}
 
-		auto database = db();
-		const auto connectionName = database.connectionName();
+		const auto connectionName = Module::connectionName();
 		if(!QSqlDatabase::connectionNames().contains(connectionName))
 		{
 			return false;
@@ -168,9 +164,9 @@ namespace DB
 
 		spLog(Log::Info, this) << "close database " << m->filename << " (" << connectionName << ")...";
 
-		if(database.isOpen())
+		if(db().isOpen())
 		{
-			database.close();
+			db().close();
 		}
 
 		QSqlDatabase::removeDatabase(connectionName);
