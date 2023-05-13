@@ -48,7 +48,6 @@ namespace DB
 			virtual void rollback();
 
 		protected:
-			virtual bool createDatabase();
 			virtual bool applyFixes() = 0;
 
 			virtual bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype,
