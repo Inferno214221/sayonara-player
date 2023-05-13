@@ -92,7 +92,8 @@ namespace
 			.arg(fieldNames.join(", :"));
 	}
 
-	DB::Query createInsertQuery(const Module* module, const QString& tablename, const QMap<QString, QVariant>& bindings)
+	QSqlQuery
+	createInsertQuery(const QSqlDatabase& db, const QString& tablename, const QMap<QString, QVariant>& bindings)
 	{
 		const auto fieldNames = bindings.keys();
 		const auto queryString = QString("INSERT INTO %1 (%2) VALUES (%3);")
@@ -100,7 +101,7 @@ namespace
 			.arg(createFieldsString(fieldNames))
 			.arg(createInsertPlaceholderString(fieldNames));
 
-		auto query = DB::Query(module);
+		auto query = QSqlQuery(db);
 		query.prepare(queryString);
 
 		for(const auto& fieldName: fieldNames)
@@ -123,8 +124,8 @@ namespace
 		return updateCommands.join(", ");
 	}
 
-	DB::Query
-	createUpdateQuery(const Module* module, const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+	QSqlQuery
+	createUpdateQuery(const QSqlDatabase& db, const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
 	                  const QPair<QString, QVariant>& whereBinding)
 	{
 		const auto fieldNames = fieldBindings.keys();
@@ -133,7 +134,7 @@ namespace
 			.arg(createUpdatePlaceholderString(fieldNames))
 			.arg(whereBinding.first);
 
-		auto query = DB::Query(module);
+		auto query = QSqlQuery(db);
 		query.prepare(queryString);
 
 		for(const auto& field: fieldNames)
@@ -146,10 +147,10 @@ namespace
 		return query;
 	}
 
-	DB::Query
-	createGenericQuery(const Module* module, const QString& queryText, const QMap<QString, QVariant>& bindings)
+	QSqlQuery
+	createGenericQuery(const QSqlDatabase& db, const QString& queryText, const QMap<QString, QVariant>& bindings)
 	{
-		auto query = DB::Query(module);
+		auto query = QSqlQuery(db);
 		query.prepare(queryText);
 
 		const auto keys = bindings.keys();
@@ -194,21 +195,21 @@ QSqlDatabase Module::db() const
 	       : createNewDatabase(m->connectionName);
 }
 
-DB::Query Module::runQuery(const QString& query, const QString& errorText) const
+QSqlQuery Module::runQuery(const QString& query, const QString& errorText) const
 {
 	return runQuery(query, QMap<QString, QVariant>(), errorText);
 }
 
-DB::Query
+QSqlQuery
 Module::runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const
 {
 	return runQuery(query, {{bindings.first, bindings.second}}, errorText);
 }
 
-DB::Query
+QSqlQuery
 Module::runQuery(const QString& queryText, const QMap<QString, QVariant>& bindings, const QString& errorText) const
 {
-	auto query = createGenericQuery(this, queryText, bindings);
+	auto query = createGenericQuery(db(), queryText, bindings);
 	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
@@ -218,10 +219,10 @@ Module::runQuery(const QString& queryText, const QMap<QString, QVariant>& bindin
 	return query;
 }
 
-DB::Query
+QSqlQuery
 Module::insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings, const QString& errorMessage)
 {
-	auto query = createInsertQuery(this, tablename, fieldBindings);
+	auto query = createInsertQuery(db(), tablename, fieldBindings);
 	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
@@ -231,15 +232,19 @@ Module::insert(const QString& tablename, const QMap<QString, QVariant>& fieldBin
 	return query;
 }
 
-DB::Query Module::update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+QSqlQuery Module::update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
                          const QPair<QString, QVariant>& whereBinding, const QString& errorMessage)
 {
-	auto query = createUpdateQuery(this, tablename, fieldBindings, whereBinding);
-	if(!query.exec() || query.numRowsAffected() == 0)
+	auto query = createUpdateQuery(db(), tablename, fieldBindings, whereBinding);
+	if(!query.exec())
 	{
 		spLog(Log::Error, this) << "Query error to connection " << db().connectionName();
-		query.setError(true);
-		query.showError(errorMessage);
+		showError(query, errorMessage);
+	}
+
+	else if(query.numRowsAffected() == 0)
+	{
+		spLog(Log::Debug, this) << errorMessage << ": No rows affected.";
 	}
 
 	return query;

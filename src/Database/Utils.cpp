@@ -126,11 +126,11 @@ QString DB::getFilterWhereStatement(const Library::Filter& filter, QString searc
 	}
 }
 
-void DB::bindMappingToQuery(DB::Query& query, const DB::RangeMapping& rangeMapping, const QList<Id>& elements)
+void DB::bindMappingToQuery(QSqlQuery& query, const DB::RangeMapping& rangeMapping, const QList<Id>& elements)
 {
 	for(auto it = rangeMapping.mapping.begin(); it != rangeMapping.mapping.end(); it++)
 	{
-		query.bindValue(it.key(), elements[it.value()]);
+		query.bindValue(it.key(), {elements[it.value()]});
 	}
 }
 

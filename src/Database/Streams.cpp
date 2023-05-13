@@ -25,7 +25,6 @@
 #include "Utils/Streams/Station.h"
 
 using DB::Streams;
-using DB::Query;
 
 Streams::Streams(const QString& connection_name, DbId databaseId) :
 	Module(connection_name, databaseId) {}

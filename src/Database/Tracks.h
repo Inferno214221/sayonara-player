@@ -21,9 +21,7 @@
 #ifndef DATABASETRACKS_H
 #define DATABASETRACKS_H
 
-#include "Query.h"
-#include "Utils/Pimpl.h"
-
+#include "Utils/typedefs.h"
 #include <QMap>
 
 namespace Library
@@ -31,10 +29,13 @@ namespace Library
 	class Filter;
 }
 
+class QSqlQuery;
 class Genre;
+class MetaDataList;
 
 namespace DB
 {
+	class Module;
 	class Tracks
 	{
 		public:
@@ -43,7 +44,7 @@ namespace DB
 
 			void initViews();
 
-			virtual bool dbFetchTracks(Query& q, MetaDataList& result) const;
+			virtual bool dbFetchTracks(QSqlQuery& q, MetaDataList& result) const;
 
 			virtual int getNumTracks() const;
 			virtual bool getAllTracks(MetaDataList& result) const;

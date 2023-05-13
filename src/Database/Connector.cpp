@@ -140,16 +140,10 @@ bool Connector::updateAlbumCissearchFix()
 
 	for(const auto& album: albums)
 	{
-		const auto* query = "UPDATE albums SET cissearch=:cissearch WHERE albumID=:id;";
-		auto q = Query(this);
-		q.prepare(query);
-		q.bindValue(":cissearch", Util::convertNotNull(album.name().toLower()));
-		q.bindValue(":id", album.id());
-
-		if(!q.exec())
-		{
-			q.showError("Cannot update album cissearch");
-		}
+		update("albums",
+		       {{"cissearch", Util::convertNotNull(album.name().toLower())}},
+		       {"albumID", album.id()},
+		       "Cannot update album cissearch");
 	}
 
 	return true;
@@ -163,17 +157,10 @@ bool Connector::updateArtistCissearchFix()
 
 	for(const auto& artist: artists)
 	{
-		const auto* query = "UPDATE artists SET cissearch=:cissearch WHERE artistID=:id;";
-
-		auto q = Query(this);
-		q.prepare(query);
-		q.bindValue(":cissearch", Util::convertNotNull(artist.name().toLower()));
-		q.bindValue(":id", artist.id());
-
-		if(!q.exec())
-		{
-			q.showError("Cannot update artist cissearch");
-		}
+		update("artists",
+		       {{"cissearch", Util::convertNotNull(artist.name().toLower())}},
+		       {"artistID", artist.id()},
+		       "Cannot update artist cissearch");
 	}
 
 	return true;
@@ -384,7 +371,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 		const auto success = checkAndInsertColumn("playlists", "temporary", "integer");
 		if(success)
 		{
-			auto q = Query(this);
+			auto q = QSqlQuery(db());
 			const auto* querytext = "UPDATE playlists SET temporary=0;";
 			q.prepare(querytext);
 			if(q.exec())
@@ -401,7 +388,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 		{
 			const auto* querytext = "UPDATE playlisttotracks SET db_id = (CASE WHEN trackid > 0 THEN 0 ELSE -1 END);";
 
-			auto query = Query(this);
+			auto query = QSqlQuery(db());
 			query.prepare(querytext);
 			if(query.exec())
 			{
@@ -416,9 +403,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 
 			for(const auto& queryTextIndex: indexQueries)
 			{
-				auto queryIndex = Query(this);
-				queryIndex.prepare(queryTextIndex);
-				queryIndex.exec();
+				runQuery(queryTextIndex, "Cannot create index");
 			}
 		}
 	}
@@ -448,7 +433,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 				AND artists.artistID = tracks.artistID
 				GROUP BY albums.albumID, albums.name;)";
 
-		auto q = Query(this);
+		auto q = QSqlQuery(db());
 		q.prepare(querytext);
 
 		if(q.exec())
@@ -461,7 +446,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 	{
 		auto success = checkAndInsertColumn("tracks", "albumArtistID", "integer", "-1");
 
-		auto q = Query(this);
+		auto q = QSqlQuery(db());
 		q.prepare("UPDATE tracks SET albumArtistID=artistID;");
 		success = success && q.exec();
 
@@ -475,7 +460,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 	{
 		auto success = checkAndInsertColumn("tracks", "libraryID", "integer", "0");
 
-		auto q = Query(this);
+		auto q = QSqlQuery(db());
 		q.prepare("UPDATE tracks SET libraryID=0;");
 		success = success && q.exec();
 
@@ -666,7 +651,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 
 		for(const auto& query: queries)
 		{
-			auto q = Query(this);
+			auto q = QSqlQuery(db());
 			q.prepare(query);
 			q.exec();
 		}
@@ -701,7 +686,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 			AND tracks.albumID = albums.albumID
 			AND Session.trackID = tracks.trackID;)";
 
-		auto q = Query(this);
+		auto q = QSqlQuery(db());
 		q.prepare(query);
 		q.exec();
 
@@ -718,7 +703,7 @@ bool Connector::applyFixes() // NOLINT(readability-function-cognitive-complexity
 
 		for(const auto& query: queries)
 		{
-			auto q = Query(this);
+			auto q = QSqlQuery(db());
 			q.prepare(query);
 			q.exec();
 		}

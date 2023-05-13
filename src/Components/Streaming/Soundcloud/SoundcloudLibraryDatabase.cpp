@@ -13,8 +13,6 @@
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
 
-using ::DB::Query;
-
 namespace
 {
 	constexpr const auto PermalinkUrlKey = "permalink_url";
@@ -144,7 +142,7 @@ QString SC::LibraryDatabase::fetchQueryTracks(const QString& where) const
 		.arg(whereStatement);
 }
 
-bool SC::LibraryDatabase::dbFetchTracks(Query& query, MetaDataList& result) const
+bool SC::LibraryDatabase::dbFetchTracks(QSqlQuery& query, MetaDataList& result) const
 {
 	result.clear();
 
@@ -191,7 +189,7 @@ bool SC::LibraryDatabase::dbFetchTracks(Query& query, MetaDataList& result) cons
 	return true;
 }
 
-bool SC::LibraryDatabase::dbFetchAlbums(Query& query, AlbumList& result) const
+bool SC::LibraryDatabase::dbFetchAlbums(QSqlQuery& query, AlbumList& result) const
 {
 	result.clear();
 
@@ -224,7 +222,7 @@ bool SC::LibraryDatabase::dbFetchAlbums(Query& query, AlbumList& result) const
 	return true;
 }
 
-bool SC::LibraryDatabase::dbFetchArtists(Query& query, ArtistList& result) const
+bool SC::LibraryDatabase::dbFetchArtists(QSqlQuery& query, ArtistList& result) const
 {
 	result.clear();
 
@@ -291,7 +289,7 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase([[maybe_unused]] const QS
 
 bool SC::LibraryDatabase::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 {
-	auto query = Query(module());
+	auto query = QSqlQuery(module()->db());
 	const auto queryText =
 		fetchQueryAlbums(alsoEmpty) +
 		QStringLiteral(" GROUP BY albums.albumID, albums.name, albums.rating ");

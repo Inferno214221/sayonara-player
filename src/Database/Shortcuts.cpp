@@ -22,8 +22,9 @@
 #include "Query.h"
 #include "Utils/RawShortcutMap.h"
 
+#include <QSqlQuery>
+
 using DB::Shortcuts;
-using DB::Query;
 
 DB::Shortcuts::Shortcuts(const QString& connectionName, const DbId databaseId) :
 	Module(connectionName, databaseId) {}

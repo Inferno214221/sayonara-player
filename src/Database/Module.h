@@ -28,7 +28,6 @@
 
 namespace DB
 {
-	class Query;
 	class Module
 	{
 		PIMPL(Module)
@@ -41,15 +40,15 @@ namespace DB
 			[[nodiscard]] DbId databaseId() const;
 			[[nodiscard]] QString connectionName() const;
 
-			DB::Query runQuery(const QString& query, const QString& errorText) const;
-			DB::Query
+			QSqlQuery runQuery(const QString& query, const QString& errorText) const;
+			QSqlQuery
 			runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const;
-			DB::Query
+			QSqlQuery
 			runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const;
 
-			DB::Query update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+			QSqlQuery update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
 			                 const QPair<QString, QVariant>& whereBinding, const QString& errorMessage);
-			DB::Query insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
+			QSqlQuery insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
 			                 const QString& errorMessage);
 	};
 }

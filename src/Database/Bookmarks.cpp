@@ -23,7 +23,6 @@
 #include "Utils/Utils.h"
 
 using DB::Bookmarks;
-using DB::Query;
 
 Bookmarks::Bookmarks(const QString& connection_name, DbId databaseId) :
 	DB::Module(connection_name, databaseId) {}

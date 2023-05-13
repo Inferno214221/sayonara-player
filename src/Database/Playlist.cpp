@@ -28,8 +28,6 @@
 #include "Utils/MetaData/Genre.h"
 #include "Utils/Utils.h"
 
-using DB::Query;
-
 namespace
 {
 	constexpr const auto PositionKey = "position";

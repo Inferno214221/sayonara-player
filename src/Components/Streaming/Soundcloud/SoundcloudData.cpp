@@ -24,8 +24,6 @@
 
 #include "Database/Query.h"
 
-using DB::Query;
-
 SC::Database::Database() :
 	::DB::Base(25, ":/Database", Util::xdgConfigPath(), "soundcloud.db")
 {
@@ -157,8 +155,8 @@ bool SC::Database::applyFixes()
 
 	if(version < 6)
 	{
-		auto query = Query(this);
-		constexpr const auto queryText =
+		auto query = QSqlQuery(db());
+		constexpr const auto* queryText =
 			"UPDATE tracks "
 			"SET filename=substr(filename, 0, instr(filename, '?client')) "
 			"WHERE instr(filename, '?client') > 0;";

@@ -286,7 +286,7 @@ bool LibraryDatabase::fixEmptyAlbums()
 	db().transaction();
 	for(const QString& query : queries)
 	{
-		DB::Query q(this);
+		auto q = QSqlQuery(db());
 		q.prepare(query);
 		q.bindValue(":albumID", id);
 		bool success = q.exec();

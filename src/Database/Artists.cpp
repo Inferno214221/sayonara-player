@@ -21,6 +21,7 @@
 #include "Database/Artists.h"
 #include "Database/Module.h"
 #include "Database/Utils.h"
+#include "Database/Query.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/Artist.h"
@@ -30,7 +31,6 @@
 #include "Utils/Utils.h"
 
 using DB::Artists;
-using DB::Query;
 
 namespace
 {
@@ -89,7 +89,7 @@ QString Artists::fetchQueryArtists(bool alsoEmpty) const
 		.arg(joinStatementAlbum);
 }
 
-bool Artists::dbFetchArtists(Query& q, ArtistList& result) const
+bool Artists::dbFetchArtists(QSqlQuery& q, ArtistList& result) const
 {
 	result.clear();
 
@@ -128,7 +128,7 @@ bool Artists::getArtistByID(ArtistId id, Artist& artist, bool alsoEmpty) const
 	const auto queryText = QString("%1 WHERE artists.artistID = ?;")
 		.arg(fetchQueryArtists(alsoEmpty));
 
-	auto query = Query(module());
+	auto query = QSqlQuery(module()->db());
 	query.prepare(queryText);
 	query.addBindValue(id);
 
@@ -167,7 +167,7 @@ bool Artists::getAllArtists(ArtistList& result, bool alsoEmpty) const
 	const auto queryText = QString("%1 GROUP BY artists.artistID, artists.name;")
 		.arg(fetchQueryArtists(alsoEmpty));
 
-	auto query = Query(module());
+	auto query = QSqlQuery(module()->db());
 	query.prepare(queryText);
 
 	return dbFetchArtists(query, result);
@@ -189,7 +189,7 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)
 	{
-		auto query = Query(module());
+		auto query = QSqlQuery(module()->db());
 		query.prepare(queryText);
 		query.bindValue(cisPlaceholder, Util::convertNotNull(searchFilter));
 

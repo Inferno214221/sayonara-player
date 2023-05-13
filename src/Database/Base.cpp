@@ -31,7 +31,6 @@
 #include <QDir>
 
 using DB::Base;
-using DB::Query;
 
 namespace FileUtils = ::Util::File;
 

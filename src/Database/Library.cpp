@@ -62,16 +62,7 @@ QList<::Library::Info> DB::Library::getAllLibraries()
 	QList<::Library::Info> infos;
 	QList<InfoOrder> orders;
 
-	Query q(this);
-	q.prepare(query);
-
-	bool success = q.exec();
-
-	if(!success)
-	{
-		q.showError("Cannot fetch all libraries");
-	}
-
+	auto q = runQuery(query, "Cannot fetch all libraries");
 	while(q.next())
 	{
 		LibraryId id = q.value(0).toInt();
@@ -119,31 +110,19 @@ DB::Library::insertLibrary(const LibraryId id, const QString& libraryName, const
 		return false;
 	}
 
-	QString query = "INSERT INTO Libraries "
-	                "(libraryID, libraryName, libraryPath, libraryIndex) "
-	                "VALUES "
-	                "(:libraryId, :library_name, :library_path, :library_index);";
+	const auto errorString = QString("Cannot insert library (name: %1, path: %2)")
+		.arg(libraryName)
+		.arg(libraryPath);
 
-	Query q(this);
+	const auto q = insert("Libraries",
+	                      {
+		                      {"libraryID",    id},
+		                      {"libraryName",  Util::convertNotNull(libraryName)},
+		                      {"libraryPath",  Util::convertNotNull(libraryPath)},
+		                      {"libraryIndex", index}
+	                      }, errorString);
 
-	q.prepare(query);
-	q.bindValue(":libraryId", id);
-	q.bindValue(":library_name", Util::convertNotNull(libraryName));
-	q.bindValue(":library_path", Util::convertNotNull(libraryPath));
-	q.bindValue(":library_index", index);
-
-	bool success = q.exec();
-
-	if(!success)
-	{
-		q.showError
-			(
-				QString("Cannot insert library (name: %1, path: %2)")
-					.arg(libraryName, libraryPath)
-			);
-	}
-
-	return success;
+	return !hasError(q);
 }
 
 bool DB::Library::editLibrary(const LibraryId libraryId, const QString& newName, const QString& newPath)
@@ -154,52 +133,29 @@ bool DB::Library::editLibrary(const LibraryId libraryId, const QString& newName,
 		return false;
 	}
 
-	QString query = "UPDATE Libraries "
-	                "SET "
-	                "libraryName=:library_name, "
-	                "libraryPath=:library_path "
-	                "WHERE "
-	                "libraryID=:libraryId;";
+	const auto errorString = QString("Cannot update library (name: %1, path: %2)")
+		.arg(newName)
+		.arg(newPath);
 
-	Query q(this);
+	const auto q = update("Libraries",
+	                      {
+		                      {"libraryName", Util::convertNotNull(newName)},
+		                      {"libraryPath", Util::convertNotNull(newPath)}
+	                      },
+	                      {"libraryID", libraryId},
+	                      errorString);
 
-	q.prepare(query);
-	q.bindValue(":library_name", Util::convertNotNull(newName));
-	q.bindValue(":library_path", Util::convertNotNull(newPath));
-	q.bindValue(":libraryId", libraryId);
-
-	bool success = q.exec();
-
-	if(!success)
-	{
-		q.showError(
-			QString("Cannot update library (name: %1, path: %2)")
-				.arg(newName, newPath)
-		);
-	}
-
-	return success;
+	return wasUpdateSuccessful(q);
 }
 
-bool DB::Library::removeLibrary(LibraryId libraryId)
+bool DB::Library::removeLibrary(const LibraryId libraryId)
 {
-	QString query = "DELETE FROM Libraries WHERE libraryID=:libraryId;";
+	const auto sql = QStringLiteral("DELETE FROM Libraries WHERE libraryID=:libraryId;");
+	const auto q = runQuery(sql,
+	                        {":libraryId", libraryId},
+	                        QString("Cannot remove library %1").arg(libraryId));
 
-	Query q(this);
-
-	q.prepare(query);
-	q.bindValue(":libraryId", libraryId);
-
-	bool success = q.exec();
-
-	if(!success)
-	{
-		q.showError(
-			QString("Cannot remove library %1").arg(libraryId)
-		);
-	}
-
-	return success;
+	return !hasError(q);
 }
 
 bool DB::Library::reorderLibraries(const QMap<LibraryId, int>& order)
@@ -210,27 +166,31 @@ bool DB::Library::reorderLibraries(const QMap<LibraryId, int>& order)
 		return false;
 	}
 
-	bool success = true;
+	db().transaction();
+
+	auto success = true;
 	for(auto it = order.cbegin(); it != order.cend(); it++)
 	{
-		QString query = "UPDATE Libraries "
-		                "SET "
-		                "libraryIndex=:index "
-		                "WHERE "
-		                "libraryID=:libraryId;";
+		const auto q = update("Libraries",
+		                      {{"libraryIndex", it.value()}},
+		                      {"libraryID", it.key()},
+		                      "Cannot reorder libraries");
 
-		Query q(this);
-		q.prepare(query);
-		q.bindValue(":index", it.value());
-		q.bindValue(":libraryId", it.key());
-
-		success = (success && q.exec());
-
-		if(!success)
+		if(hasError(q))
 		{
-			q.showError("Cannot reorder libraries");
-
+			success = false;
+			break;
 		}
+	}
+
+	if(success)
+	{
+		db().commit();
+	}
+
+	else
+	{
+		db().rollback();
 	}
 
 	return success;
@@ -238,13 +198,8 @@ bool DB::Library::reorderLibraries(const QMap<LibraryId, int>& order)
 
 void DB::Library::addAlbumArtists()
 {
-	Query q(this);
-	QString querytext = "UPDATE tracks SET albumArtistID = artistID WHERE albumArtistID = -1;";
-	q.prepare(querytext);
-	if(!q.exec())
-	{
-		q.showError("Cannot add album artists");
-	}
+	runQuery("UPDATE tracks SET albumArtistID = artistID WHERE albumArtistID = -1;",
+	         "Cannot add album artists");
 }
 
 void DB::Library::dropIndexes()
@@ -257,41 +212,35 @@ void DB::Library::dropIndexes()
 
 	for(const auto& index: indexes)
 	{
-		Query q(this);
-		QString text = "DROP INDEX IF EXISTS " + index + ";";
-		q.prepare(text);
-		if(!q.exec())
-		{
-			q.showError("Cannot drop index " + index);
-		}
+		const auto sql = QString("DROP INDEX IF EXISTS %1;").arg(index);
+		runQuery(sql, QString("Cannot drop index %1").arg(index));
 	}
 }
-
-using IndexDescription = std::tuple<QString, QString, QString>;
 
 void DB::Library::createIndexes()
 {
 	dropIndexes();
 
-	QList<IndexDescription> indexes;
-
-	indexes << std::make_tuple("album_search", "albums", "albumID");
-	indexes << std::make_tuple("artist_search", "artists", "artistID");
-	indexes << std::make_tuple("track_search", "tracks", "trackID");
-	//indexes << std::make_tuple("track_file_search", "tracks", "trackID");
-
-	for(const IndexDescription& idx: Algorithm::AsConst(indexes))
+	struct IndexDescription
 	{
-		Query q(this);
-		QString name = std::get<0>(idx);
-		QString table = std::get<1>(idx);
-		QString column = std::get<2>(idx);
-		QString text = "CREATE INDEX " + name + " ON " + table + " (cissearch, " + column + ");";
-		q.prepare(text);
-		if(!q.exec())
-		{
-			q.showError("Cannot create index " + name);
-		}
+		QString name;
+		QString table;
+		QString column;
+	};
+
+	const auto indexes = QList<IndexDescription> {
+		{"album_search",  "albums",  "albumID"},
+		{"artist_search", "artists", "artistID"},
+		{"track_search",  "tracks",  "trackID"}};
+
+	for(const auto& index: indexes)
+	{
+		const auto sql = QString("CREATE INDEX %1 ON %2 (cissearch, %3);")
+			.arg(index.name)
+			.arg(index.table)
+			.arg(index.column);
+
+		runQuery(sql, QString("Cannot create index %1").arg(index.name));
 	}
 }
 

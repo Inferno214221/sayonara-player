@@ -21,6 +21,7 @@
 #include "Database/Albums.h"
 #include "Database/Module.h"
 #include "Database/Utils.h"
+#include "Database/Query.h"
 
 #include "Utils/MetaData/Album.h"
 #include "Utils/Library/Filter.h"
@@ -29,7 +30,6 @@
 #include "Utils/Settings/Settings.h"
 
 using DB::Albums;
-using DB::Query;
 using ::Library::Filter;
 
 namespace
@@ -166,7 +166,7 @@ QString Albums::fetchQueryAlbums(bool alsoEmpty) const
 		.arg(whereStatement);
 }
 
-bool Albums::dbFetchAlbums(Query& q, AlbumList& result) const
+bool Albums::dbFetchAlbums(QSqlQuery& q, AlbumList& result) const
 {
 	result.clear();
 

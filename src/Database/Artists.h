@@ -21,7 +21,7 @@
 #ifndef DATABASEARTISTS_H
 #define DATABASEARTISTS_H
 
-#include "Query.h"
+#include "Utils/typedefs.h"
 
 namespace Library
 {
@@ -30,16 +30,18 @@ namespace Library
 
 class Artist;
 class ArtistList;
+class QSqlQuery;
 
 namespace DB
 {
+	class Module;
 	class Artists
 	{
 		public:
 			Artists();
 			virtual ~Artists();
 
-			virtual bool dbFetchArtists(Query& q, ArtistList& result) const;
+			virtual bool dbFetchArtists(QSqlQuery& q, ArtistList& result) const;
 
 			[[nodiscard]] virtual ArtistId getArtistID(const QString& artist) const;
 			virtual bool getArtistByID(ArtistId id, Artist& artist) const;

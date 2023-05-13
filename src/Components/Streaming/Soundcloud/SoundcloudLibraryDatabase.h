@@ -18,9 +18,9 @@ namespace SC
 			QString fetchQueryArtists(bool alsoEmpty = false) const override;
 			QString fetchQueryTracks(const QString& where) const override;
 
-			bool dbFetchTracks(::DB::Query& query, MetaDataList& result) const override;
-			bool dbFetchAlbums(::DB::Query& query, AlbumList& result) const override;
-			bool dbFetchArtists(::DB::Query& query, ArtistList& result) const override;
+			bool dbFetchTracks(QSqlQuery& query, MetaDataList& result) const override;
+			bool dbFetchAlbums(QSqlQuery& query, AlbumList& result) const override;
+			bool dbFetchArtists(QSqlQuery& query, ArtistList& result) const override;
 
 			ArtistId updateArtist(const Artist& artist);
 			ArtistId insertArtistIntoDatabase(const Artist& artist) override;

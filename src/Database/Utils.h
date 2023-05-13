@@ -26,6 +26,7 @@
 #include <QList>
 #include <QMap>
 #include <QString>
+#include <QSqlQuery>
 
 #include <utility>
 #include <vector>
@@ -43,7 +44,6 @@ namespace Util
 
 namespace DB
 {
-	class Query;
 	struct RangeMapping
 	{
 		QString sqlString;
@@ -53,7 +53,7 @@ namespace DB
 	RangeMapping convertRangesToMapping(const Util::RangeList& ranges, const QString& attribute,
 	                                    const QString& sqlPlaceholderTemplate);
 
-	void bindMappingToQuery(Query& query, const RangeMapping& rangeMapping, const QList<Id>& elements);
+	void bindMappingToQuery(QSqlQuery& query, const RangeMapping& rangeMapping, const QList<Id>& elements);
 
 	QString getFilterWhereStatement(const ::Library::Filter& filter, QString searchPlaceholder);
 }

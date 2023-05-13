@@ -26,7 +26,6 @@
 #include "Utils/Utils.h"
 
 using DB::Podcasts;
-using DB::Query;
 
 Podcasts::Podcasts(const QString& connection_name, DbId databaseId) :
 	DB::Module(connection_name, databaseId) {}

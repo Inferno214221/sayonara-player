@@ -21,17 +21,20 @@
 #ifndef DATABASEALBUMS_H
 #define DATABASEALBUMS_H
 
-#include "Query.h"
+#include "Utils/typedefs.h"
 
 namespace Library
 {
 	class Filter;
 }
+
 class Album;
 class AlbumList;
+class QSqlQuery;
 
 namespace DB
 {
+	class Module;
 	class Albums
 	{
 		public:
@@ -40,7 +43,7 @@ namespace DB
 
 			virtual void initViews();
 
-			virtual bool dbFetchAlbums(Query& q, AlbumList& result) const;
+			virtual bool dbFetchAlbums(QSqlQuery& q, AlbumList& result) const;
 
 			[[nodiscard]] virtual AlbumId getAlbumID(const QString& album) const;
 

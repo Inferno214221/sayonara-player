@@ -43,7 +43,6 @@
 #include <tuple>
 
 using DB::Tracks;
-using DB::Query;
 using ::Library::Filter;
 
 namespace
@@ -181,7 +180,7 @@ QString Tracks::fetchQueryTracks(const QString& where) const
 		.arg(where.isEmpty() ? "1" : where);
 }
 
-bool Tracks::dbFetchTracks(Query& q, MetaDataList& result) const
+bool Tracks::dbFetchTracks(QSqlQuery& q, MetaDataList& result) const
 {
 	result.clear();
 
@@ -241,7 +240,7 @@ bool Tracks::getMultipleTracksByPath(const QStringList& paths, MetaDataList& tra
 MetaData Tracks::getSingleTrack(const QString& queryText, const std::pair<QString, QVariant>& binding,
                                 const QString& errorMessage) const
 {
-	auto q = Query(module());
+	auto q = QSqlQuery(module()->db());
 	q.prepare(queryText);
 	q.bindValue(binding.first, binding.second);
 
@@ -307,7 +306,7 @@ bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField,
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)
 	{
-		auto q = Query(module());
+		auto q = QSqlQuery(module()->db());
 		q.prepare(query);
 		q.bindValue(CisPlaceholder, searchFilter);
 		DB::bindMappingToQuery(q, mapping, sortedIds);
@@ -323,7 +322,7 @@ bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField,
 
 bool Tracks::getAllTracks(MetaDataList& result) const
 {
-	auto q = Query(module());
+	auto q = QSqlQuery(module()->db());
 	const auto query = fetchQueryTracks("");
 	q.prepare(query);
 
@@ -381,7 +380,7 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)
 	{
-		auto q = Query(module());
+		auto q = QSqlQuery(module()->db());
 		q.prepare(query);
 		q.bindValue(CisPlaceholder, searchFilter);
 
@@ -411,7 +410,7 @@ bool Tracks::getAllTracksByPaths(const QStringList& paths, MetaDataList& tracks)
 	}
 
 	const auto query = queries.join(" UNION ") + ';';
-	auto q = Query(module());
+	auto q = QSqlQuery(module()->db());
 	q.prepare(query);
 	for(auto it = placeholderPathMapping.begin(); it != placeholderPathMapping.end(); it++)
 	{
