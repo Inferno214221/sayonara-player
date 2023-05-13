@@ -30,33 +30,50 @@
 #include "Utils/Library/SearchMode.h"
 
 using DB::LibraryDatabase;
-using DB::Query;
 
-using SMM=::Library::SearchModeMask;
+namespace
+{
+	using AlbumHash = QString;
+
+	AlbumHash calcAlbumHash(const QString& albumName, const QString& albumArtist)
+	{
+		return albumName.toLower() + albumArtist.toLower();
+	}
+
+	AlbumHash calcAlbumHash(const Album& album)
+	{
+		return calcAlbumHash(album.name(), album.albumArtist());
+	}
+
+	QMap<QString, MetaData> createTrackMap(const MetaDataList& tracks)
+	{
+		auto result = QMap<QString, MetaData> {};
+		for(const auto& track: tracks)
+		{
+			result[track.filepath()] = track;
+		}
+
+		return result;
+	}
+}
 
 struct LibraryDatabase::Private
 {
-	QString artistIdField;
-	QString artistNameField;
+	QString artistIdField {"artistID"};
+	QString artistNameField {"artistName"};
 	QString connectionName;
 
-	SMM		searchMode;
-	DbId	databaseId;
+	::Library::SearchModeMask searchMode;
+	DbId databaseId;
 
 	LibraryId libraryId;
 
-	Private(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
-		connectionName(connectionName),
-		databaseId(databaseId),
-		libraryId(libraryId)
-	{
-		searchMode = GetSetting(Set::Lib_SearchMode);
-
-		artistIdField = "artistID";
-		artistNameField = "artistName";
-	}
+	Private(QString connectionName, const DbId databaseId, const LibraryId libraryId) :
+		connectionName {std::move(connectionName)},
+		searchMode {GetSetting(Set::Lib_SearchMode)},
+		databaseId {databaseId},
+		libraryId {libraryId} {}
 };
-
 
 LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
 	DB::Albums(),
@@ -73,10 +90,10 @@ LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId,
 		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
 		QString dbKey = s->dbKey();
 
-		Query q(connectionName, databaseId);
-		QString querytext = "SELECT value FROM settings WHERE key = '" + dbKey + "';";
+		auto q = QSqlQuery(DB::Module::db());
+		const auto querytext = "SELECT value FROM settings WHERE key = '" + dbKey + "';";
 
-		bool show_album_artists = false;
+		auto showAlbumArtists = false;
 
 		q.prepare(querytext);
 		if(q.exec())
@@ -84,15 +101,17 @@ LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId,
 			if(q.next())
 			{
 				QVariant var = q.value("value");
-				show_album_artists = var.toBool();
+				showAlbumArtists = var.toBool();
 			}
 		}
 
-		if(show_album_artists) {
+		if(showAlbumArtists)
+		{
 			changeArtistIdField(LibraryDatabase::ArtistIDField::AlbumArtistID);
 		}
 
-		else {
+		else
+		{
 			changeArtistIdField(LibraryDatabase::ArtistIDField::ArtistID);
 		}
 	}
@@ -127,24 +146,16 @@ QString LibraryDatabase::artistNameField() const
 
 QString LibraryDatabase::trackView() const
 {
-	if(m->libraryId < 0) {
-		return "tracks";
-	}
-
-	else {
-		return QString("track_view_%1").arg(m->libraryId);
-	}
+	return (m->libraryId < 0)
+	       ? "tracks"
+	       : QString("track_view_%1").arg(m->libraryId);
 }
 
 QString LibraryDatabase::trackSearchView() const
 {
-	if(m->libraryId < 0) {
-		return "track_search_view";
-	}
-
-	else {
-		return QString("track_search_view_%1").arg(m->libraryId);
-	}
+	return (m->libraryId < 0)
+	       ? "track_search_view"
+	       : QString("track_search_view_%1").arg(m->libraryId);
 }
 
 void LibraryDatabase::updateSearchMode()
@@ -161,19 +172,10 @@ void LibraryDatabase::updateSearchMode()
 	m->searchMode = currentSearchModeMask;
 }
 
-using AlbumHash=QString;
-static AlbumHash calcAlbumHash(const QString& albumName, const QString& albumArtist)
-{
-	return albumName.toLower() + albumArtist.toLower();
-}
-static AlbumHash calcAlbumHash(const Album& album)
-{
-	return calcAlbumHash(album.name(), album.albumArtist());
-}
-
 MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& tracks)
 {
-	if(tracks.isEmpty()){
+	if(tracks.isEmpty())
+	{
 		return tracks;
 	}
 
@@ -185,9 +187,9 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 		AlbumList albums;
 		DB::Albums::getAllAlbums(albums, true);
 
-		for(const Album& album : albums)
+		for(const auto& album: albums)
 		{
-			AlbumHash hash = calcAlbumHash(album);
+			const auto hash = calcAlbumHash(album);
 			albumMap[hash] = album;
 		}
 	}
@@ -198,73 +200,70 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 		ArtistList artists;
 		DB::Artists::getAllArtists(artists, true);
 
-		for(const Artist& artist : artists){
+		for(const auto& artist: artists)
+		{
 			artistMap[artist.name()] = artist;
 		}
 	}
 
 	// gather all metadata in a map
-	QHash<QString, MetaData> trackMap;
-	{
-		MetaDataList knownTracks;
-		DB::Tracks::getAllTracks(knownTracks);
-		for(const MetaData& md : knownTracks) {
-			trackMap[md.filepath()] = md;
-		}
-	}
+	MetaDataList knownTracks;
+	DB::Tracks::getAllTracks(knownTracks);
+	const auto trackMap = createTrackMap(knownTracks);
 
 	db().transaction();
 
-	MetaDataList ret(tracks);
-	for(MetaData& md : ret)
+	auto ret = tracks;
+	for(auto& track: ret)
 	{
-		if(md.libraryId() < 0) {
-			md.setLibraryid(m->libraryId);
+		if(track.libraryId() < 0)
+		{
+			track.setLibraryid(m->libraryId);
 		}
 
 		{ // check album id
-			AlbumHash hash = calcAlbumHash(md.album(), {md.albumArtist()});
-			Album album = albumMap[hash];
+			const auto hash = calcAlbumHash(track.album(), {track.albumArtist()});
+			auto album = albumMap[hash];
 			if(album.id() < 0)
 			{
-				AlbumId id = DB::Albums::insertAlbumIntoDatabase(md.album());
-				spLog(Log::Debug, this) << "Insert new album " << hash << " (" << md.album() << "): " << id;
+				const auto id = DB::Albums::insertAlbumIntoDatabase(track.album());
+				spLog(Log::Debug, this) << "Insert new album " << hash << " (" << track.album() << "): " << id;
 				album.setId(id);
 				albumMap[hash] = album;
 			}
 
-			md.setAlbumId(album.id());
+			track.setAlbumId(album.id());
 		}
 
 		{ // check artist id
-			Artist artist = artistMap[md.artist()];
+			auto artist = artistMap[track.artist()];
 			if(artist.id() < 0)
 			{
-				ArtistId id = DB::Artists::insertArtistIntoDatabase(md.artist());
-				spLog(Log::Debug, this) << "Insert new artist " << md.artist() << ": " << id;
+				const auto id = DB::Artists::insertArtistIntoDatabase(track.artist());
+				spLog(Log::Debug, this) << "Insert new artist " << track.artist() << ": " << id;
 				artist.setId(id);
-				artistMap[md.artist()] = artist;
+				artistMap[track.artist()] = artist;
 			}
 
-			md.setArtistId(artist.id());
+			track.setArtistId(artist.id());
 		}
 
 		{ // check album artist ...
-			Artist albumArtist = artistMap[md.albumArtist()];
+			auto albumArtist = artistMap[track.albumArtist()];
 			if(albumArtist.id() < 0)
 			{
-				ArtistId id = DB::Artists::insertArtistIntoDatabase(md.albumArtist());
-				spLog(Log::Debug, this) << "Insert new albumArtist " << md.albumArtist() << ": " << id;
+				const auto id = DB::Artists::insertArtistIntoDatabase(track.albumArtist());
+				spLog(Log::Debug, this) << "Insert new albumArtist " << track.albumArtist() << ": " << id;
 				albumArtist.setId(id);
-				artistMap[md.albumArtist()] = albumArtist;
+				artistMap[track.albumArtist()] = albumArtist;
 			}
 
-			md.setAlbumArtistId(albumArtist.id());
+			track.setAlbumArtistId(albumArtist.id());
 		}
 
 		{ // check track id
-			TrackID id = trackMap[md.filepath()].id();
-			md.setId(id);
+			const auto id = trackMap[track.filepath()].id();
+			track.setId(id);
 		}
 	}
 
@@ -284,13 +283,14 @@ bool LibraryDatabase::fixEmptyAlbums()
 	};
 
 	db().transaction();
-	for(const QString& query : queries)
+	for(const auto& query: queries)
 	{
 		auto q = QSqlQuery(db());
 		q.prepare(query);
 		q.bindValue(":albumID", id);
 		bool success = q.exec();
-		if(!success){
+		if(!success)
+		{
 			db().rollback();
 			return false;
 		}
@@ -323,7 +323,8 @@ LibraryId LibraryDatabase::libraryId() const
 
 bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 {
-	if(tracks.isEmpty()) {
+	if(tracks.isEmpty())
+	{
 		return true;
 	}
 
@@ -331,24 +332,26 @@ bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 
 	db().transaction();
 
-	for(const MetaData& md : modifiedTracks)
+	for(const auto& track: modifiedTracks)
 	{
 		// because all artists and albums should be in the db right now,
 		// we should never reach the inner block
-		if(md.albumId() < 0 || md.artistId() < 0 || md.libraryId() < 0)
+		if(track.albumId() < 0 || track.artistId() < 0 || track.libraryId() < 0)
 		{
-			spLog(Log::Warning, this) << "Cannot insert artist or album of " << md.filepath();
+			spLog(Log::Warning, this) << "Cannot insert artist or album of " << track.filepath();
 			continue;
 		}
 
 		// check, if the track was known before
 		{
-			if(md.id() < 0) {
-				DB::Tracks::insertTrackIntoDatabase(md, md.artistId(), md.albumId(), md.albumArtistId());
+			if(track.id() < 0)
+			{
+				DB::Tracks::insertTrackIntoDatabase(track, track.artistId(), track.albumId(), track.albumArtistId());
 			}
 
-			else {
-				DB::Tracks::updateTrack(md);
+			else
+			{
+				DB::Tracks::updateTrack(track);
 			}
 		}
 	}
