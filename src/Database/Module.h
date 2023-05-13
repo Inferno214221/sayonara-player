@@ -42,14 +42,18 @@ namespace DB
 
 			QSqlQuery runQuery(const QString& query, const QString& errorText) const;
 			QSqlQuery
-			runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const;
+			runQuery(const QString& query, const QPair <QString, QVariant>& bindings, const QString& errorText) const;
 			QSqlQuery
 			runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const;
 
 			QSqlQuery update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
-			                 const QPair<QString, QVariant>& whereBinding, const QString& errorMessage);
+			                 const QPair <QString, QVariant>& whereBinding, const QString& errorMessage);
 			QSqlQuery insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
 			                 const QString& errorMessage);
+
+			void transaction();
+			void commit();
+			void rollback();
 	};
 }
 

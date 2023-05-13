@@ -178,21 +178,6 @@ namespace DB
 		return true;
 	}
 
-	void Base::transaction()
-	{
-		db().transaction();
-	}
-
-	void Base::commit()
-	{
-		db().commit();
-	}
-
-	void Base::rollback()
-	{
-		db().rollback();
-	}
-
 	QString createConnectionName(const QString& targetDirectory, const QString& filename)
 	{
 		return QDir(targetDirectory).absoluteFilePath(filename);

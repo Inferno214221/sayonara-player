@@ -249,3 +249,18 @@ QSqlQuery Module::update(const QString& tablename, const QMap<QString, QVariant>
 
 	return query;
 }
+
+void Module::transaction()
+{
+	db().transaction();
+}
+
+void Module::commit()
+{
+	db().commit();
+}
+
+void Module::rollback()
+{
+	db().rollback();
+}

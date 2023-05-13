@@ -43,10 +43,6 @@ namespace DB
 
 			virtual bool closeDatabase();
 			[[nodiscard]] bool isInitialized() const;
-
-			void transaction();
-			void commit();
-			void rollback();
 	};
 
 	[[nodiscard]] QString createConnectionName(const QString& targetDirectory, const QString& filename);
