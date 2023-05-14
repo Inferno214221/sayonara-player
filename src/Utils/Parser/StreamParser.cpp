@@ -78,7 +78,10 @@ namespace
 	MetaData setMetadataTag(MetaData track, const QString& stationName, const QString& streamUrl,
 	                        const QString& coverUrl = QString())
 	{
-		track.setRadioStation(streamUrl, stationName);
+		if((track.radioMode() != RadioMode::Podcast) || track.title().isEmpty())
+		{
+			track.setRadioStation(streamUrl, stationName);
+		}
 
 		if(track.filepath().trimmed().isEmpty())
 		{

@@ -18,7 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/PodcastParser.h"
 #include "Utils/MetaData/MetaData.h"
@@ -32,245 +31,144 @@
 #include <QXmlStreamAttributes>
 #include <QStringList>
 
-static Year find_year(QString str)
+namespace
 {
-	int idx = str.indexOf(QRegExp("[0-9]{4,4}"));
-
-	if(idx >= 0) {
-		return Year(str.midRef(idx, 4).toInt());
+	Year findYear(const QString& str)
+	{
+		const auto index = str.indexOf(QRegExp("[0-9]{4,4}"));
+		return (index >= 0)
+		       ? Year(str.midRef(index, 4).toInt())
+		       : 0;
 	}
 
-	return 0;
-}
-
-static int parse_length_s(const QString& str)
-{
-	QStringList lst = str.split(":");
-	int h=0;
-	int m=0;
-	int s=0;
-
-	if(lst.size() == 3)
+	int parseLengthInSeconds(const QString& str)
 	{
-		h = lst[0].toInt();
-		m = lst[1].toInt();
-		s = lst[2].split(".").first().toInt();
-	}
+		QStringList lst = str.split(":");
+		auto hour = 0;
+		auto minute = 0;
+		auto seconds = 0;
 
-	if(lst.size() == 2)
-	{
-		m = lst[0].toInt();
-		s = lst[1].split(".").first().toInt();
-	}
-
-	if(lst.size() == 1)
-	{
-		s = lst[0].split(".").first().toInt();
-	}
-
-	return (h * 3600 + m * 60 + s);
-}
-
-static MetaData parse_item(QXmlStreamReader& reader)
-{
-	int n_chapters=0;
-
-	MetaData md;
-
-	while(reader.readNextStartElement())
-	{
-		if(reader.prefix() == "itunes")
+		if(lst.size() == 3)
 		{
-			if(reader.name() == "author")
+			hour = lst[0].toInt();
+			minute = lst[1].toInt();
+			seconds = lst[2].split(".").first().toInt();
+		}
+
+		if(lst.size() == 2)
+		{
+			minute = lst[0].toInt();
+			seconds = lst[1].split(".").first().toInt();
+		}
+
+		if(lst.size() == 1)
+		{
+			seconds = lst[0].split(".").first().toInt();
+		}
+
+		return (hour * 3600 + minute * 60 + seconds); // NOLINT(readability-magic-numbers)
+	}
+
+	MetaData setChapterInfo(QXmlStreamReader& reader, MetaData track)
+	{
+		auto chapterCount = 0;
+		while(reader.readNextStartElement())
+		{
+			QString title, lengthStr;
+
+			const auto attributes = reader.attributes();
+			for(const auto& attr: attributes)
 			{
-				md.setArtist(reader.readElementText().trimmed());
+				if(attr.name() == "start")
+				{
+					const auto length = parseLengthInSeconds(attr.value().toString());
+					lengthStr = QString::number(length);
+				}
+
+				else if(attr.name() == "title")
+				{
+					title = attr.value().toString();
+				}
 			}
 
-			else if(reader.name() == "duration")
-			{
-				int len = parse_length_s(reader.readElementText().trimmed());
-				md.setDurationMs(len * 1000);
-			}
-
-			else
+			if(title.isEmpty() || lengthStr.isEmpty())
 			{
 				reader.skipCurrentElement();
 			}
 
+			chapterCount++;
+
+			const auto chapterInfo = lengthStr + ":" + title;
+			const auto chapterKey = QString("Chapter %1").arg(chapterCount);
+
+			track.addCustomField(chapterKey, chapterKey, chapterInfo);
 		}
 
-		else if(reader.name() == "title")
-		{
-			md.setTitle(reader.readElementText().trimmed());
-			md.addCustomField("1title", "Title", md.title());
-		}
-
-		else if(reader.name() == "description")
-		{
-			md.addCustomField("2desciption", "Description", reader.readElementText().trimmed());
-		}
-
-		else if(reader.name() == "enclosure")
-		{
-			const QXmlStreamAttributes attributes = reader.attributes();
-			for(const QXmlStreamAttribute& attr : attributes)
-			{
-				if(attr.name() == "url")
-				{
-					md.setFilepath(attr.value().toString());
-				}
-			}
-
-			reader.skipCurrentElement();
-		}
-
-		else if(reader.name() == "link" && md.filepath().isEmpty())
-		{
-			md.setFilepath(reader.readElementText().trimmed());
-		}
-
-		else if( (reader.name() == "author") && md.artist().isEmpty() )
-		{
-			md.setArtist(reader.readElementText().trimmed());
-		}
-
-		else if((reader.name() == "pubDate"))
-		{
-			md.setYear(find_year(reader.readElementText().trimmed()));
-		}
-
-		else if((reader.prefix() == "dc") && (reader.name() == "date"))
-		{
-			md.setYear(find_year(reader.readElementText().trimmed()));
-		}
-
-		else if(reader.prefix() == "psc" && reader.name() == "chapters")
-		{
-			while(reader.readNextStartElement())
-			{
-				QString title, length_str;
-
-				const QXmlStreamAttributes attributes = reader.attributes();
-				for(const QXmlStreamAttribute& attr : attributes)
-				{
-					if(attr.name() == "start")
-					{
-						int length = parse_length_s(attr.value().toString());
-						length_str = QString::number(length);
-					}
-
-					else if(attr.name() == "title")
-					{
-						title = attr.value().toString();
-					}
-				}
-
-				if(title.isEmpty() || length_str.isEmpty())
-				{
-					reader.skipCurrentElement();
-				}
-
-				n_chapters++;
-
-				QString chapter_info = length_str + ":" + title;
-				QString chapter_key = QString("Chapter %1").arg(n_chapters);
-
-				md.addCustomField(chapter_key, chapter_key, chapter_info);
-			} // chapter
-		} // while chapters.hasElement
-
-		else
-		{
-			reader.skipCurrentElement();
-		}
+		return track;
 	}
 
-	md.changeRadioMode(RadioMode::Podcast);
-	return md;
-}
-
-static QStringList parse_category(QXmlStreamReader& reader)
-{
-	QStringList ret;
-	const QXmlStreamAttributes attributes = reader.attributes();
-	for(const QXmlStreamAttribute& attr : attributes)
+	QString decide(const QString& choice1, const QString& choice2)
 	{
-		if(attr.name() == "text") {
-			ret << attr.value().toString();
-		}
+		return (choice1.trimmed().isEmpty())
+		       ? choice2.trimmed()
+		       : choice1.trimmed();
 	}
 
-	while(reader.readNextStartElement())
+	QStringList toList(const QString& choice1, const QString& choice2)
 	{
-		if(reader.name() == "category")
+		auto result = QStringList {};
+
+		if(!choice1.trimmed().isEmpty())
 		{
-			ret << parse_category(reader);
+			result.push_back(choice1.trimmed());
+		}
+		if(!choice2.trimmed().isEmpty())
+		{
+			result.push_back(choice2.trimmed());
 		}
 
-		else
-		{
-			reader.skipCurrentElement();
-		}
+		result.removeDuplicates();
+
+		return result;
 	}
 
-	return ret;
-}
-
-static MetaDataList parse_channel(QXmlStreamReader& reader)
-{
-	MetaDataList result;
-
-	QString n = reader.name().toString();
-	QString album, author, cover_url;
-	QStringList categories;
-
-	while(reader.readNextStartElement())
+	MetaData parseItem(QXmlStreamReader& reader)
 	{
-		auto n = reader.name().toString();
-
-		if(reader.prefix() == "itunes")
+		struct Info
 		{
-			if(reader.name() == "author")
-			{
-				author = reader.readElementText().trimmed();
-			}
+			QString author;
+			QString title;
+			QString summary;
+		} standardInfo, iTunesInfo;
 
-			else if(reader.name() == "category")
-			{
-				categories = parse_category(reader);
-			}
+		MetaData track;
 
-			else if(reader.name() == "image")
+		while(reader.readNextStartElement())
+		{
+			if(reader.prefix() == "itunes")
 			{
-				const QXmlStreamAttributes attributes = reader.attributes();
-				for(const QXmlStreamAttribute& attr : attributes)
+				// covers for single tracks are ignored since the playlist and the DB is not yet capable
+				// of storing covers on a per-track base (hashes are calculated for artist/album combinations in
+				// Cover::Location and PlaylistModel)
+				if(reader.name() == "author")
 				{
-					if(attr.name() == "href"){
-						cover_url = attr.value().toString();
-					}
+					iTunesInfo.author = reader.readElementText().trimmed();
 				}
 
-				reader.skipCurrentElement();
-			}
-
-			else
-			{
-				reader.skipCurrentElement();
-			}
-		}
-
-		else if(reader.name() == "title")
-		{
-			album = reader.readElementText().trimmed();
-		}
-
-		else if(reader.name() == "image" && cover_url.isEmpty())
-		{
-			while(reader.readNextStartElement())
-			{
-				if(reader.name() == "url")
+				else if(reader.name() == "duration")
 				{
-					cover_url = reader.readElementText().trimmed();
+					const auto len = parseLengthInSeconds(reader.readElementText().trimmed());
+					track.setDurationMs(len * 1000); // NOLINT(readability-magic-numbers)
+				}
+
+				else if(reader.name() == "title")
+				{
+					iTunesInfo.title = reader.readElementText().trimmed();
+				}
+
+				else if(reader.name() == "summary")
+				{
+					iTunesInfo.summary = reader.readElementText().trimmed();
 				}
 
 				else
@@ -278,42 +176,221 @@ static MetaDataList parse_channel(QXmlStreamReader& reader)
 					reader.skipCurrentElement();
 				}
 			}
-		}
 
-		// item
-		else if(reader.name() == "item")
-		{
-			MetaData md = parse_item(reader);
-			if( !md.filepath().isEmpty() && Util::File::isSoundFile(md.filepath()) )
+			else if(reader.name() == "title")
 			{
-				result << std::move(md);
+				standardInfo.title = reader.readElementText().trimmed();
 			}
-		} // if(reader.name() == item)
 
-		else
-		{
-			reader.skipCurrentElement();
+			else if(reader.name() == "description")
+			{
+				standardInfo.summary = reader.readElementText().trimmed();
+			}
+
+			else if(reader.name() == "enclosure")
+			{
+				const auto attributes = reader.attributes();
+				track.setFilepath(attributes.value("url").toString());
+				reader.skipCurrentElement();
+			}
+
+			else if(reader.name() == "link")
+			{
+				const auto link = reader.readElementText().trimmed();
+				track.addCustomField("link", "Link", QString("<a href=\"%1\">%1</a>").arg(link));
+			}
+
+			else if(reader.name() == "author")
+			{
+				standardInfo.author = decide(reader.readElementText(), standardInfo.author);
+			}
+
+			else if(reader.name() == "pubDate")
+			{
+				const auto text = reader.readElementText().trimmed();
+				const auto year = findYear(reader.readElementText().trimmed());
+				track.setYear(year);
+				track.addCustomField("pubDate", "Publication Date", text);
+			}
+
+			else if((reader.prefix() == "dc") && (reader.name() == "date"))
+			{
+				const auto year = findYear(reader.readElementText().trimmed());
+				if(track.year() < 1000) // NOLINT(readability-magic-numbers)
+				{
+					track.setYear(year);
+				}
+			}
+
+			else if(reader.prefix() == "psc" && reader.name() == "chapters")
+			{
+				setChapterInfo(reader, track);
+			}
+
+			else
+			{
+				reader.skipCurrentElement();
+			}
 		}
+
+		track.setArtist(decide(iTunesInfo.author, standardInfo.author));
+		track.setTitle(decide(iTunesInfo.title, standardInfo.title));
+		track.addCustomField("title", "Title", track.title());
+		track.addCustomField("description", "Description", decide(iTunesInfo.summary, standardInfo.summary));
+		track.changeRadioMode(RadioMode::Podcast);
+
+		return track;
 	}
 
-	spLog(Log::Info, "Podcast parser") << "Set cover url " << cover_url;
-	for(auto it=result.begin(); it != result.end(); it++)
+	QStringList parseCategory(QXmlStreamReader& reader) // NOLINT(misc-no-recursion)
 	{
-		it->setCoverDownloadUrls({cover_url});
-		if(it->artist().isEmpty())
+		QStringList ret;
+		const auto attributes = reader.attributes();
+		for(const QXmlStreamAttribute& attr: attributes)
 		{
-			it->setArtist(author);
+			if(attr.name() == "text")
+			{
+				ret << attr.value().toString();
+			}
 		}
 
-		if(it->album().isEmpty())
+		while(reader.readNextStartElement())
 		{
-			it->setAlbum(album);
+			if(reader.name() == "category")
+			{
+				ret << parseCategory(reader);
+			}
+
+			else
+			{
+				reader.skipCurrentElement();
+			}
 		}
 
-		it->setGenres(categories);
+		return ret;
 	}
 
-	return result;
+	MetaDataList parseChannel(QXmlStreamReader& reader) // NOLINT(readability-function-cognitive-complexity)
+	{
+		struct Info
+		{
+			QString title;
+			QString summary;
+			QString album;
+			QString author;
+			QString coverUrl;
+			QString comment;
+			QStringList categories;
+		} standardInfo, iTunesInfo;
+
+		MetaDataList result;
+
+		const auto name = reader.name().toString();
+		while(reader.readNextStartElement())
+		{
+			auto n = reader.name().toString();
+
+			if(reader.prefix() == "itunes")
+			{
+				if(reader.name() == "author")
+				{
+					iTunesInfo.author = reader.readElementText().trimmed();
+				}
+
+				else if(reader.name() == "category")
+				{
+					iTunesInfo.categories = parseCategory(reader);
+				}
+
+				else if(reader.name() == "image")
+				{
+					const auto attributes = reader.attributes();
+					iTunesInfo.coverUrl = attributes.value("href").toString();
+
+					reader.skipCurrentElement();
+				}
+
+				else if(reader.name() == "summary")
+				{
+					iTunesInfo.summary = reader.readElementText().trimmed();
+				}
+
+				else if(reader.name() == "title")
+				{
+					iTunesInfo.title = reader.readElementText().trimmed();
+				}
+
+				else
+				{
+					reader.skipCurrentElement();
+				}
+			}
+
+			else if(reader.name() == "title")
+			{
+				standardInfo.title = reader.readElementText().trimmed();
+			}
+
+			else if(reader.name() == "image" && standardInfo.coverUrl.isEmpty())
+			{
+				while(reader.readNextStartElement())
+				{
+					if(reader.name() == "url")
+					{
+						standardInfo.coverUrl = reader.readElementText().trimmed();
+					}
+
+					else
+					{
+						reader.skipCurrentElement();
+					}
+				}
+			}
+
+			else if(reader.name() == "item")
+			{
+				auto track = parseItem(reader);
+				if(!track.filepath().isEmpty())
+				{
+					result << std::move(track);
+				}
+			}
+
+			else
+			{
+				reader.skipCurrentElement();
+			}
+		}
+
+		for(auto& track: result)
+		{
+			if(track.artist().isEmpty())
+			{
+				track.setArtist(decide(iTunesInfo.author, standardInfo.author));
+			}
+
+			if(track.album().isEmpty())
+			{
+				track.setAlbum(decide(iTunesInfo.album, standardInfo.album));
+			}
+
+			if(track.title().isEmpty())
+			{
+				track.setTitle(decide(iTunesInfo.title, standardInfo.title));
+			}
+
+			if(track.comment().isEmpty())
+			{
+				track.setComment(decide(iTunesInfo.summary, standardInfo.summary));
+			}
+
+			track.setGenres(toList(iTunesInfo.categories.join(","), standardInfo.categories.join(",")));
+			track.setCoverDownloadUrls(toList(iTunesInfo.coverUrl, standardInfo.coverUrl));
+		}
+
+		return result;
+	}
+
 }
 
 MetaDataList PodcastParser::parsePodcastXmlFile(const QString& content)
@@ -329,7 +406,7 @@ MetaDataList PodcastParser::parsePodcastXmlFile(const QString& content)
 			{
 				if(reader.name() == "channel")
 				{
-					result = parse_channel(reader);
+					result = parseChannel(reader);
 				}
 
 				else
