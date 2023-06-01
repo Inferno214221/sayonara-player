@@ -52,10 +52,12 @@ new_test(Common/FileSystemTest.cpp)
 new_test(Covers/CoverLocationTest.cpp)
 new_test(Covers/CoverFetchManagerTest.cpp)
 
-new_test(Database/PodcastTest.cpp)
 new_test(Database/AlbumTest.cpp)
 new_test(Database/LibraryDatabaseTest.cpp)
+new_test(Database/PodcastTest.cpp)
+new_test(Database/BasicQueryTest.cpp)
 new_test(Database/TracksTest.cpp Common/TestTracks.cpp)
+
 new_test(DynamicPlayback/ArtistMatchTest.cpp)
 
 new_test(Equalizer/EqualizerTest.cpp)
