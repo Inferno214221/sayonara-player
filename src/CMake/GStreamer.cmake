@@ -4,6 +4,7 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstaiff
 	gstalsa
 	gst
+	gstalsa
 	gstapetag
 	gstapp
 	gstasf
@@ -32,6 +33,7 @@ set(GSTREAMER_PLUGIN_LIBRARY_NAMES
 	gstopusparse
 	gstplayback
 	gstpulse
+	gstpulseaudio
 	gstrawparse
 	gstsmoothstreaming
 	gstsoundtouch
