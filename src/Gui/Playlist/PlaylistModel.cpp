@@ -164,6 +164,19 @@ namespace
 			.arg(track.albumId())
 			.arg(track.album());
 	}
+
+	QString getPodcastTooltip(const MetaData& track)
+	{
+		if(const auto description = track.customField("2description"); !description.isEmpty())
+		{
+			return QString("%1 - %2<br>%3")
+				.arg(track.title())
+				.arg(track.artist())
+				.arg(description);
+		}
+
+		return {};
+	}
 }
 
 struct Model::Private
@@ -241,6 +254,13 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 			       ? QVariant()
 			       : Util::msToString(durationMs, QStringLiteral("$M:$S"));
 		}
+	}
+
+	if(role == Qt::ToolTipRole)
+	{
+		return (track.radioMode() == RadioMode::Podcast)
+		       ? getPodcastTooltip(track)
+		       : QString {};
 	}
 
 	if(role == Qt::TextAlignmentRole)
