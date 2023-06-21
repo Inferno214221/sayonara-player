@@ -12,6 +12,10 @@
     <img src="https://img.shields.io/badge/Patreon-Become a patron-orange.svg"
         alt="Patreon: Become a patron">
 </a>
+<a href="https://liberapay.com/LucioCarreras/donate">
+    <img src="https://img.shields.io/liberapay/patrons/LucioCarreras.svg?logo=liberapay"
+	    alt="Liberapay: Donate">
+</a>
 <a href="bitcoin:1M1pY98SGfyt2SR858Q14F8GCweHf17jQs?message=Sayonara%20Player%20Donation&time=1514892640">
     <img src="https://img.shields.io/badge/Bitcoin-Donate-green" 
         alt="Bitcoin">
