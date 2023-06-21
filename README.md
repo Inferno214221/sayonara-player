@@ -20,6 +20,7 @@
     <img src="https://img.shields.io/badge/Bitcoin-Donate-green?logo=Bitcoin" 
         alt="Bitcoin">
 </a>
+
 ![Maintenance](https://img.shields.io/maintenance/yes/2023)
 ![License](https://img.shields.io/badge/License-GPLv3-green)
 
