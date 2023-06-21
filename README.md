@@ -5,19 +5,19 @@
 [![Twitter URL](https://img.shields.io/twitter/follow/SayonaraPlayer?style=social)](https://twitter.com/sayonaraplayer)
 
 <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=KD4GKTTLAP3JQ&source=url">
-    <img src="https://img.shields.io/badge/PayPal-Donate-blue.svg"
+    <img src="https://img.shields.io/badge/PayPal-Donate-blue.svg?logo=Paypal"
             alt="PayPal: Donate">
 </a>
 <a href="https://patreon.com/sayonaraplayer">
-    <img src="https://img.shields.io/badge/Patreon-Become a patron-orange.svg"
+    <img src="https://img.shields.io/badge/Patreon-Become a patron-orange.svg?logo=Patreon"
         alt="Patreon: Become a patron">
 </a>
 <a href="https://liberapay.com/LucioCarreras/donate">
-    <img src="https://img.shields.io/liberapay/patrons/LucioCarreras.svg?logo=liberapay"
+    <img src="https://img.shields.io/liberapay/patrons/LucioCarreras.svg?logo=liberapay&label=Liberapay"
 	    alt="Liberapay: Donate">
 </a>
 <a href="bitcoin:1M1pY98SGfyt2SR858Q14F8GCweHf17jQs?message=Sayonara%20Player%20Donation&time=1514892640">
-    <img src="https://img.shields.io/badge/Bitcoin-Donate-green" 
+    <img src="https://img.shields.io/badge/Bitcoin-Donate-green?logo=Bitcoin" 
         alt="Bitcoin">
 </a>
 ![Maintenance](https://img.shields.io/maintenance/yes/2023)
