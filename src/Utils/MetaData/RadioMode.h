@@ -21,6 +21,8 @@
 #ifndef RADIOMODE_H
 #define RADIOMODE_H
 
+#include <QObject>
+
 /**
  * @brief The RadioMode enum
  * @ingroup MetaDataHelper
@@ -33,6 +35,8 @@ enum class RadioMode : unsigned char
 	Podcast,
 	Undefined
 };
+
+Q_DECLARE_METATYPE(RadioMode)
 
 #endif // RADIOMODE_H
 
