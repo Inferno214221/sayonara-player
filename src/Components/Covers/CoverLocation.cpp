@@ -57,7 +57,7 @@ namespace
 
 		QList<Url> result;
 		Util::Algorithm::transform(urls, result, [&](const auto& url) {
-			return Util::File::isImageFile(url)
+			return Util::File::isImageFile(QUrl(url).path())
 			       ? fetchManager->directFetcherUrl(url)
 			       : fetchManager->websiteFetcherUrl(url);
 		});
