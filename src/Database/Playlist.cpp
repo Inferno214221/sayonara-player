@@ -43,7 +43,7 @@ namespace
 		return tracks;
 	}
 
-	QStringList variantToStringList(const QVariant& value, QChar splitter)
+	QStringList variantToStringList(const QVariant& value, const QChar splitter)
 	{
 		return value.toString().split(splitter);
 	}
@@ -65,7 +65,7 @@ namespace
 		}
 	}
 
-	QString createStoreTypeStatement(::Playlist::StoreType storeType)
+	QString createStoreTypeStatement(const ::Playlist::StoreType storeType)
 	{
 		switch(storeType)
 		{
@@ -107,12 +107,14 @@ namespace
 	}
 }
 
-DB::Playlist::Playlist(const QString& connection_name, DbId databaseId) :
+DB::Playlist::Playlist(const QString& connection_name, const DbId databaseId) :
 	Module(connection_name, databaseId) {}
 
 DB::Playlist::~Playlist() = default;
 
-QList<CustomPlaylist> DB::Playlist::getAllPlaylists(::Playlist::StoreType storeType, bool getTracks, ::Playlist::SortOrder sortOrder)
+QList<CustomPlaylist>
+DB::Playlist::getAllPlaylists(::Playlist::StoreType storeType, const bool getTracks,
+                              const ::Playlist::SortOrder sortOrder)
 {
 	QList<CustomPlaylist> result;
 
@@ -133,7 +135,7 @@ QList<CustomPlaylist> DB::Playlist::getAllPlaylists(::Playlist::StoreType storeT
 	auto query = runQuery(queryText, "Cannot fetch all playlists");
 	if(query.hasError())
 	{
-		return QList<CustomPlaylist>{};
+		return {};
 	}
 
 	while(query.next())
@@ -160,17 +162,17 @@ QList<CustomPlaylist> DB::Playlist::getAllPlaylists(::Playlist::StoreType storeT
 			customPlaylist.setTracks(std::move(mergedTracks));
 		}
 
-		result.push_back(std::move(customPlaylist));
+		result.push_back(customPlaylist);
 	}
 
 	return result;
 }
 
-CustomPlaylist DB::Playlist::getPlaylistById(int playlistId, bool getTracks)
+CustomPlaylist DB::Playlist::getPlaylistById(const int playlistId, const bool getTracks)
 {
 	if(playlistId < 0)
 	{
-		return CustomPlaylist{};
+		return {};
 	}
 
 	const auto queryText = QString("SELECT %1 "
@@ -182,7 +184,7 @@ CustomPlaylist DB::Playlist::getPlaylistById(int playlistId, bool getTracks)
 	auto query = runQuery(queryText, {{":playlist_id", playlistId}}, "Cannot fetch all playlists");
 	if(query.hasError())
 	{
-		return CustomPlaylist{};
+		return {};
 	}
 
 	if(query.next())
@@ -207,10 +209,10 @@ CustomPlaylist DB::Playlist::getPlaylistById(int playlistId, bool getTracks)
 		return result;
 	}
 
-	return CustomPlaylist{};
+	return {};
 }
 
-MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(int playlistId)
+MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(const int playlistId)
 {
 	MetaDataList result;
 
@@ -297,7 +299,7 @@ MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(int playlistId)
 	return result;
 }
 
-MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
+MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId)
 {
 	MetaDataList result;
 
@@ -441,7 +443,7 @@ int DB::Playlist::createPlaylist(const QString& playlistName, const bool tempora
 	       : query.lastInsertId().toInt();
 }
 
-bool DB::Playlist::updatePlaylist(int playlistId, const QString& name, bool temporary)
+bool DB::Playlist::updatePlaylist(const int playlistId, const QString& name, const bool temporary)
 {
 	const auto playlist = getPlaylistById(playlistId, false);
 	const auto existingId = getPlaylistIdByName(name);
@@ -462,7 +464,7 @@ bool DB::Playlist::updatePlaylist(int playlistId, const QString& name, bool temp
 	return (!query.hasError());
 }
 
-bool DB::Playlist::renamePlaylist(int playlistId, const QString& name)
+bool DB::Playlist::renamePlaylist(const int playlistId, const QString& name)
 {
 	const auto playlist = getPlaylistById(playlistId, false);
 	const auto existingId = getPlaylistIdByName(name);
@@ -497,7 +499,7 @@ bool DB::Playlist::updatePlaylistTracks(int playlistId, const MetaDataList& trac
 
 	db().transaction();
 	auto position = 0;
-	for(const auto& track : enabledTracks)
+	for(const auto& track: enabledTracks)
 	{
 		const auto success = insertTrackIntoPlaylist(track, playlistId, position);
 		if(success)

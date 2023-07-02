@@ -32,11 +32,12 @@ class MetaDataList;
 
 namespace Playlist
 {
-	enum class StoreType : uint8_t
+	enum class StoreType :
+		uint8_t
 	{
-			OnlyTemporary = 1,
-			OnlyPermanent = 2,
-			TemporaryAndPermanent = 3
+		OnlyTemporary = 1,
+		OnlyPermanent = 2,
+		TemporaryAndPermanent = 3
 	};
 }
 
@@ -55,7 +56,8 @@ namespace DB
 			int getPlaylistIdByName(const QString& name);
 
 			CustomPlaylist getPlaylistById(int playlistId, bool getTrack);
-			QList<CustomPlaylist> getAllPlaylists(PlaylistStoreType storeType, bool getTracks, PlaylistSortOrder sortOrder = PlaylistSortOrder::NameAsc);
+			QList<CustomPlaylist> getAllPlaylists(PlaylistStoreType storeType, bool getTracks,
+			                                      PlaylistSortOrder sortOrder = PlaylistSortOrder::NameAsc);
 
 			int createPlaylist(const QString& playlistName, bool temporary);
 			bool updatePlaylistTracks(int playlistId, const MetaDataList& tracks);
