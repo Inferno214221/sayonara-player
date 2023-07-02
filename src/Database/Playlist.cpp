@@ -340,7 +340,7 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 		const auto position = query.value(1).toInt();
 		const auto radioStationName = query.value(2).toString();
 		const auto radioStation = query.value(3).toString();
-		const auto isRadio = query.value(4).toBool();
+		const auto radioMode = query.value(4).value<RadioMode>();
 		const auto coverUrls = variantToStringList(query.value(5), ';');
 
 		auto track = MetaData(filepath);
@@ -349,9 +349,16 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 		track.setDatabaseId(databaseId());
 		track.setCoverDownloadUrls(coverUrls);
 
-		if(isRadio)
+		if(radioMode == RadioMode::Station)
 		{
 			track.setRadioStation(radioStation, radioStationName);
+		}
+
+		else if(radioMode == RadioMode::Podcast)
+		{
+			track.setTitle(radioStationName);
+			track.setArtist(radioStation);
+			track.setAlbum(radioStationName);
 		}
 
 		else
@@ -360,6 +367,7 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 			track.setArtist(filepath);
 		}
 
+		track.changeRadioMode(radioMode);
 		track.addCustomField(PositionKey, QString(), QString::number(position));
 
 		result.push_back(std::move(track));
@@ -386,9 +394,9 @@ int DB::Playlist::getPlaylistIdByName(const QString& name)
 	       : -1;
 }
 
-bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, int pos)
+bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int playlistId, const int pos)
 {
-	if(md.isDisabled())
+	if(track.isDisabled())
 	{
 		return false;
 	}
@@ -396,34 +404,36 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& md, int playlistId, i
 	auto fieldBindings = QMap<QString, QVariant>
 		{
 			{"playlistid",       playlistId},
-			{"filepath",         Util::convertNotNull(md.filepath())},
+			{"filepath",         Util::convertNotNull(track.filepath())},
 			{"position",         pos},
-			{"trackid",          md.id()},
-			{"db_id",            md.databaseId()},
-			{"coverDownloadUrl", md.coverDownloadUrls().join(";")}
+			{"trackid",          track.id()},
+			{"db_id",            track.databaseId()},
+			{"coverDownloadUrl", track.coverDownloadUrls().join(";")},
+			{"isRadio",          QVariant::fromValue(track.radioMode())}
 		};
 
-	const auto isRadio =
-		(md.radioMode() == RadioMode::Station) ||
-		(md.radioMode() == RadioMode::Podcast);
-
-	if(isRadio)
+	if(track.radioMode() == RadioMode::Station)
 	{
-		fieldBindings.insert("stationName", Util::convertNotNull(md.radioStationName()));
-		fieldBindings.insert("station", Util::convertNotNull(md.radioStation()));
-		fieldBindings.insert("isRadio", isRadio);
+		fieldBindings.insert("stationName", Util::convertNotNull(track.radioStationName()));
+		fieldBindings.insert("station", Util::convertNotNull(track.radioStation()));
+	}
+
+	if(track.radioMode() == RadioMode::Podcast)
+	{
+		fieldBindings.insert("stationName", Util::convertNotNull(track.title()));
+		fieldBindings.insert("station", Util::convertNotNull(track.artist()));
 	}
 
 	auto query = insert("playlistToTracks", fieldBindings, "Cannot insert track into playlist");
 	return (!query.hasError());
 }
 
-int DB::Playlist::createPlaylist(const QString& playlistName, bool temporary)
+int DB::Playlist::createPlaylist(const QString& playlistName, const bool temporary)
 {
 	const auto query = insert("playlists",
 	                          {
 		                          {"playlist",  Util::convertNotNull(playlistName)},
-		                          {"temporary", (temporary == true) ? 1 : 0}
+		                          {"temporary", temporary ? 1 : 0}
 	                          }, "Cannot create playlist");
 
 	return (query.hasError())
@@ -444,7 +454,7 @@ bool DB::Playlist::updatePlaylist(int playlistId, const QString& name, bool temp
 
 	const auto query = update("playlists",
 	                          {
-		                          {"temporary", (temporary == true) ? 1 : 0},
+		                          {"temporary", temporary ? 1 : 0},
 		                          {"playlist",  Util::convertNotNull(name)}
 	                          },
 	                          {"playlistId", playlistId}, "Cannot update playlist");
