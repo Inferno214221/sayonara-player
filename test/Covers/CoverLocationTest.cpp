@@ -63,16 +63,13 @@ namespace
 		return track;
 	}
 
-	MetaData createRadioTrack()
+	MetaData createRadioTrack(const QStringList& coverDownloadUrls)
 	{
 		MetaData track;
 		track.setId(1);
 		track.setRadioStation("https://www.myradio.de", "Radio Station");
 		track.setFilepath("https://www.myradio.de/stream.mp3");
-		track.setCoverDownloadUrls({"https://myimage.png",
-		                            "https://www.from.the.internet.de",
-		                            "https://www.from.google.de"
-		                           });
+		track.setCoverDownloadUrls(coverDownloadUrls);
 		return track;
 	}
 
@@ -497,18 +494,32 @@ CoverLocationTest::testAlbumWithTrackHintAndLocalCover() // NOLINT(readability-f
 [[maybe_unused]] void
 CoverLocationTest::testRadioStationDownloadUrls() // NOLINT(readability-convert-member-functions-to-static)
 {
-	const auto track = createRadioTrack();
+	constexpr const auto* DirectIdentifier = "direct";
+	constexpr const auto* WebsiteIdentifier = "website";
+
+	const auto coverDownloadUrls = QMap<QString, QString> {
+		{"https://domain.de/myimage.png",               DirectIdentifier},
+		{"https://www.from.the.internet.de",            WebsiteIdentifier},
+		{"https://www.from.google.de",                  WebsiteIdentifier},
+		{"https://www.path.to.website/image.jpg?bla=4", DirectIdentifier}
+	};
+
+	const auto track = createRadioTrack(coverDownloadUrls.keys());
+
 	const auto coverLocation = Cover::Location::coverLocation(track);
 	const auto searchUrls = coverLocation.searchUrls();
 	const auto searchTerm = coverLocation.searchTerm();
 
-	QVERIFY(searchUrls.size() >= 3);
-	QVERIFY(searchUrls[0].identifier() == "direct");
-	QVERIFY(searchUrls[0].url() == "https://myimage.png");
-	QVERIFY(searchUrls[1].identifier() == "website");
-	QVERIFY(searchUrls[1].url() == "https://www.from.the.internet.de");
-	QVERIFY(searchUrls[2].identifier() == "website");
-	QVERIFY(searchUrls[2].url() == "https://www.from.google.de");
+	QVERIFY(searchUrls.size() >= 4);
+	for(int i = 0; i < 4; i++)
+	{
+		const auto url = searchUrls[i].url();
+		const auto identifier = searchUrls[i].identifier();
+
+		QVERIFY(coverDownloadUrls.contains(url));
+		QVERIFY(identifier == coverDownloadUrls[url]);
+	}
+
 	QVERIFY(searchTerm == "Radio Station");
 }
 
@@ -573,20 +584,21 @@ CoverLocationTest::testCoverLocationValidityForPoorlyTaggedTracks()
 {
 	constexpr const auto* Dir = "PoorlyTaggedTrack";
 
-	struct TestCase { // NOLINT(cppcoreguidelines-pro-type-member-init)
+	struct TestCase
+	{ // NOLINT(cppcoreguidelines-pro-type-member-init)
 		bool coverInTag;
 		QStringList coverDownloadUrls;
 		bool expectedValid;
 	};
 
 	const auto testCases = {
-		TestCase{false, {}, false},
-		TestCase{true, {}, true},
-		TestCase{false, {"https://coverPage.com/getCover"}, true},
-		TestCase{true, {"https://coverPage.com/getCover"}, true}
+		TestCase {false, {}, false},
+		TestCase {true, {}, true},
+		TestCase {false, {"https://coverPage.com/getCover"}, true},
+		TestCase {true, {"https://coverPage.com/getCover"}, true}
 	};
 
-	for(const auto& [coverInTag, coverDownloadUrls, isValid] : testCases)
+	for(const auto& [coverInTag, coverDownloadUrls, isValid]: testCases)
 	{
 		createMP3(tempPath(Dir), "track.mp3", coverInTag);
 		auto track = createTrack(tempPath(QString("%1/track.mp3").arg(Dir)));
@@ -608,20 +620,21 @@ CoverLocationTest::testCoverLocationValidityForPoorlyTaggedTracks()
 {
 	constexpr const auto* Dir = "PoorlyTaggedTrack2";
 
-	struct TestCase {
+	struct TestCase
+	{
 		bool coverInTag;
 		bool hasCoverHint;
 		bool expectedValid;
 	};
 
-	constexpr const auto testCases = std::array{
-		TestCase{false, false, false},
-		TestCase{false, true, true},
-		TestCase{true, false, true},
-		TestCase{true, true, true}
+	constexpr const auto testCases = std::array {
+		TestCase {false, false, false},
+		TestCase {false, true, true},
+		TestCase {true, false, true},
+		TestCase {true, true, true}
 	};
 
-	for(const auto& [coverInTag, hasCoverHint, isValid] : testCases)
+	for(const auto& [coverInTag, hasCoverHint, isValid]: testCases)
 	{
 		QVERIFY(isValid == (coverInTag || hasCoverHint));
 
