@@ -153,10 +153,13 @@ static void prepareInfoTable(QTableWidget* table, const QList<StringPair>& data)
 		const auto textWidth = Gui::Util::textWidth(fm, stringPair.first) + 20;
 		maxSize = std::max(textWidth, maxSize);
 
-		auto* item2 = new QTableWidgetItem(stringPair.second);
+		auto* label = new QLabel();
+		label->setTextFormat(Qt::RichText);
+		label->setOpenExternalLinks(true);
+		label->setText(stringPair.second);
 
 		table->setItem(row, 0, item1);
-		table->setItem(row, 1, item2);
+		table->setCellWidget(row, 1, label);
 
 		row++;
 	}
