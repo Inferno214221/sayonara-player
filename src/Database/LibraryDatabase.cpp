@@ -76,32 +76,26 @@ struct LibraryDatabase::Private
 };
 
 LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId) :
-	DB::Albums(),
-	DB::Artists(),
-	DB::Tracks(),
-	DB::Module(connectionName, databaseId)
+	DB::Module(connectionName, databaseId),
+	m {Pimpl::make<Private>(connectionName, databaseId, libraryId)}
 {
-	m = Pimpl::make<Private>(connectionName, databaseId, libraryId);
-
 	DB::Tracks::initViews();
 	DB::Albums::initViews();
 
 	{ // set artistId field
-		AbstrSetting* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
-		QString dbKey = s->dbKey();
-
-		auto q = QSqlQuery(DB::Module::db());
-		const auto querytext = "SELECT value FROM settings WHERE key = '" + dbKey + "';";
-
+		const auto* s = Settings::instance()->setting(SettingKey::Lib_ShowAlbumArtists);
+		const auto dbKey = s->dbKey();
 		auto showAlbumArtists = false;
 
-		q.prepare(querytext);
-		if(q.exec())
+		auto q = runQuery("SELECT value FROM settings WHERE key = :key;",
+		                  {":key", dbKey},
+		                  "Cannot fetch setting " + dbKey);
+
+		if(!DB::hasError(q))
 		{
 			if(q.next())
 			{
-				QVariant var = q.value("value");
-				showAlbumArtists = var.toBool();
+				showAlbumArtists = q.value("value").toBool();
 			}
 		}
 
@@ -134,15 +128,9 @@ void LibraryDatabase::changeArtistIdField(LibraryDatabase::ArtistIDField field)
 	}
 }
 
-QString LibraryDatabase::artistIdField() const
-{
-	return m->artistIdField;
-}
+QString LibraryDatabase::artistIdField() const { return m->artistIdField; }
 
-QString LibraryDatabase::artistNameField() const
-{
-	return m->artistNameField;
-}
+QString LibraryDatabase::artistNameField() const { return m->artistNameField; }
 
 QString LibraryDatabase::trackView() const
 {
@@ -160,8 +148,7 @@ QString LibraryDatabase::trackSearchView() const
 
 void LibraryDatabase::updateSearchMode()
 {
-	auto currentSearchModeMask = GetSetting(Set::Lib_SearchMode);
-
+	const auto currentSearchModeMask = GetSetting(Set::Lib_SearchMode);
 	if(m->searchMode != currentSearchModeMask)
 	{
 		DB::Albums::updateAlbumCissearch();
@@ -274,22 +261,18 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 
 bool LibraryDatabase::fixEmptyAlbums()
 {
-	AlbumId id = DB::Albums::insertAlbumIntoDatabase(QString(""));
-
-	const QStringList queries {
-		QString("UPDATE tracks SET albumID=:albumID WHERE albumID IN (SELECT albumID FROM albums WHERE name IS NULL);"),
-		QString("UPDATE tracks SET albumID=:albumID WHERE albumID NOT IN (SELECT albumID FROM albums);"),
-		QString("DELETE FROM artists WHERE name IS NULL;")
+	const auto albumId = DB::Albums::insertAlbumIntoDatabase(QString(""));
+	const auto queries = QStringList {
+		"UPDATE tracks SET albumID=:albumID WHERE albumID IN (SELECT albumID FROM albums WHERE name IS NULL);",
+		"UPDATE tracks SET albumID=:albumID WHERE albumID NOT IN (SELECT albumID FROM albums);",
+		"DELETE FROM artists WHERE name IS NULL;"
 	};
 
 	db().transaction();
 	for(const auto& query: queries)
 	{
-		auto q = QSqlQuery(db());
-		q.prepare(query);
-		q.bindValue(":albumID", id);
-		bool success = q.exec();
-		if(!success)
+		const auto q = runQuery(query, {":albumID", albumId}, "Query error");
+		if(DB::hasError(q))
 		{
 			db().rollback();
 			return false;
@@ -299,15 +282,9 @@ bool LibraryDatabase::fixEmptyAlbums()
 	return db().commit();
 }
 
-DB::Module* LibraryDatabase::module()
-{
-	return this;
-}
+DB::Module* LibraryDatabase::module() { return this; }
 
-const DB::Module* LibraryDatabase::module() const
-{
-	return this;
-}
+const DB::Module* LibraryDatabase::module() const { return this; }
 
 void LibraryDatabase::clear()
 {
@@ -316,10 +293,7 @@ void LibraryDatabase::clear()
 	DB::Artists::deleteAllArtists();
 }
 
-LibraryId LibraryDatabase::libraryId() const
-{
-	return m->libraryId;
-}
+LibraryId LibraryDatabase::libraryId() const { return m->libraryId; }
 
 bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 {
@@ -328,10 +302,9 @@ bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 		return true;
 	}
 
-	MetaDataList modifiedTracks = insertMissingArtistsAndAlbums(tracks);
+	const auto modifiedTracks = insertMissingArtistsAndAlbums(tracks);
 
 	db().transaction();
-
 	for(const auto& track: modifiedTracks)
 	{
 		// because all artists and albums should be in the db right now,
@@ -342,17 +315,14 @@ bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 			continue;
 		}
 
-		// check, if the track was known before
+		if(track.id() < 0)
 		{
-			if(track.id() < 0)
-			{
-				DB::Tracks::insertTrackIntoDatabase(track, track.artistId(), track.albumId(), track.albumArtistId());
-			}
+			DB::Tracks::insertTrackIntoDatabase(track, track.artistId(), track.albumId(), track.albumArtistId());
+		}
 
-			else
-			{
-				DB::Tracks::updateTrack(track);
-			}
+		else
+		{
+			DB::Tracks::updateTrack(track);
 		}
 	}
 

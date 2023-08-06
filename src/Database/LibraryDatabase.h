@@ -47,18 +47,18 @@ namespace DB
 			};
 
 			LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);
-			virtual ~LibraryDatabase() override;
+			~LibraryDatabase() override;
 
 			void changeArtistIdField(ArtistIDField field);
 
 			void clear();
 			virtual bool storeMetadata(const MetaDataList& tracks);
 
-			LibraryId libraryId() const override;
-			QString artistIdField() const override;
-			QString artistNameField() const override;
-			QString trackView() const override;
-			QString trackSearchView() const override;
+			[[nodiscard]] LibraryId libraryId() const override;
+			[[nodiscard]] QString artistIdField() const override;
+			[[nodiscard]] QString artistNameField() const override;
+			[[nodiscard]] QString trackView() const override;
+			[[nodiscard]] QString trackSearchView() const override;
 
 			void updateSearchMode();
 
@@ -70,9 +70,7 @@ namespace DB
 
 		protected:
 			Module* module() override;
-			const Module* module() const override;
-
-			void initSearchMode();
+			[[nodiscard]] const Module* module() const override;
 	};
 }
 
