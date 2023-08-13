@@ -34,10 +34,10 @@ namespace PipelineExtensions
 			StreamRecorderBin(GstElement* pipeline, GstElement* tee);
 			~StreamRecorderBin();
 
-			bool init();
 			bool setEnabled(bool b);
 
-			void setTargetPath(const QString& path);
+			bool init();
+			virtual void setTargetPath(const QString& path);
 	};
 }
 

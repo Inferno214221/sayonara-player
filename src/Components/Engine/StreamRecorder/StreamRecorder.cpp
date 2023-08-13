@@ -103,7 +103,7 @@ QString SR::StreamRecorder::changeTrack(const MetaData& track)
 		m->recordingDestination = "";
 		m->sessionPlaylistName = "";
 		m->recording = false;
-		return QString();
+		return {};
 	}
 
 	m->currentTrack = track;
@@ -145,13 +145,8 @@ QString SR::StreamRecorder::changeTrack(const MetaData& track)
 
 bool SR::StreamRecorder::save()
 {
-	if(!FileUtils::exists(m->recordingDestination))
-	{
-		return false;
-	}
-
-	const auto fileInfo = QFileInfo(m->recordingDestination);
-	if(fileInfo.size() < 4000)
+	if(const auto fileInfo = QFileInfo(m->recordingDestination);
+		!fileInfo.exists() || (fileInfo.size() < 4000))
 	{
 		return false;
 	}
@@ -175,8 +170,7 @@ QString SR::StreamRecorder::checkTargetPath(const QString& targetPath)
 		Util::File::createDirectories(Util::File::getParentDirectory(targetPath));
 	}
 
-	const auto fileInfo = QFileInfo(targetPath);
-	return fileInfo.isWritable()
+	return QFileInfo(targetPath).isWritable()
 	       ? targetPath
 	       : QString();
 }

@@ -33,10 +33,27 @@
 using StreamRecorder::Data;
 using namespace PipelineExtensions;
 
+namespace
+{
+	void configureBinElements(GstElement* lame, GstElement* queue, GstElement* sink)
+	{
+		Engine::Utils::configureLame(lame);
+		Engine::Utils::configureQueue(queue);
+		Engine::Utils::configureSink(sink);
+
+		// this is just to avoid endless warning messages
+		Engine::Utils::setValues(
+			G_OBJECT(sink),
+			"location", Util::tempPath(".stream-recorder.mp3").toLocal8Bit().data());
+
+		Engine::Utils::setUintValue(G_OBJECT(sink), "buffer-size", 8192);
+	}
+}
+
 struct StreamRecorderBin::Private
 {
-	GstElement* pipeline = nullptr;
-	GstElement* tee = nullptr;
+	GstElement* pipeline;
+	GstElement* tee;
 
 	GstElement* bin = nullptr;
 	GstElement* queue = nullptr;
@@ -47,18 +64,17 @@ struct StreamRecorderBin::Private
 
 	Data data;
 	QString path;
-	bool isRunning;
+	bool isRunning {false};
 
 	Private(GstElement* pipeline, GstElement* tee) :
 		pipeline(pipeline),
-		tee(tee),
-		isRunning(false) {}
+		tee(tee) {}
 };
 
 StreamRecorderBin::StreamRecorderBin(GstElement* pipeline, GstElement* tee) :
 	m {Pimpl::make<Private>(pipeline, tee)} {}
 
-StreamRecorderBin::~StreamRecorderBin() {}
+StreamRecorderBin::~StreamRecorderBin() = default;
 
 bool StreamRecorderBin::init()
 {
@@ -80,63 +96,44 @@ bool StreamRecorderBin::init()
 	m->data.queue = m->queue;
 	m->data.sink = m->sink;
 
-	{ // configure
-		Engine::Utils::configureLame(m->lame);
-		Engine::Utils::configureQueue(m->queue);
-		Engine::Utils::configureSink(m->sink);
+	configureBinElements(m->lame, m->queue, m->sink);
 
-		// this is just to avoid endless warning messages
-		Engine::Utils::setValues(G_OBJECT(m->sink),
-		                         "location", Util::tempPath(".stream-recorder.mp3").toLocal8Bit().data());
-		Engine::Utils::setUintValue(G_OBJECT(m->sink), "buffer-size", 8192);
+	const auto success = Engine::Utils::createBin(
+		&m->bin,
+		{m->queue, m->converter, m->resampler, m->lame, m->sink},
+		"sr");
+
+	if(!success)
+	{
+		return false;
 	}
 
-	{ // init bin
-		bool success = Engine::Utils::createBin(&m->bin,
-		                                        {m->queue, m->converter, m->resampler, m->lame, m->sink},
-		                                        "sr");
-		if(!success)
-		{
-			return false;
-		}
+	gst_bin_add(GST_BIN(m->pipeline), m->bin);
 
-		gst_bin_add(GST_BIN(m->pipeline), m->bin);
-
-		success = Engine::Utils::connectTee(m->tee, m->bin, "StreamRecorderQueue");
-		if(!success)
-		{
-			Engine::Utils::setState(m->bin, GST_STATE_NULL);
-			gst_object_unref(m->bin);
-		}
-
-		return success;
+	const auto teeConnected = Engine::Utils::connectTee(m->tee, m->bin, "StreamRecorderQueue");
+	if(!teeConnected)
+	{
+		Engine::Utils::setState(m->bin, GST_STATE_NULL);
+		gst_object_unref(m->bin);
 	}
+
+	return teeConnected;
+
 }
 
-bool StreamRecorderBin::setEnabled(bool b)
+bool StreamRecorderBin::setEnabled(const bool b)
 {
-	if(b)
-	{
-		return init();
-	}
-
-	return true;
+	return b ? init() : true;
 }
 
 void StreamRecorderBin::setTargetPath(const QString& path)
 {
-	GstElement* fileSinkElement = m->sink;
-	if(!fileSinkElement)
+	if(!m->sink)
 	{
 		return;
 	}
 
-	if(path == m->path && !m->path.isEmpty())
-	{
-		return;
-	}
-
-	if(m->data.busy)
+	if(const auto isNewPath = (path != m->path && !path.isEmpty()); !isNewPath || m->data.busy)
 	{
 		return;
 	}
@@ -144,16 +141,15 @@ void StreamRecorderBin::setTargetPath(const QString& path)
 	m->path = path;
 	m->isRunning = !(path.isEmpty());
 
-	gchar* old_filename = m->data.filename;
+	auto* oldFilename = m->data.filename;
 
 	m->data.filename = strdup(m->path.toUtf8().data());
 	m->data.active = m->isRunning;
 
 	Probing::handleStreamRecorderProbe(&m->data, Probing::streamRecorderProbed);
 
-	if(old_filename)
+	if(oldFilename)
 	{
-		free(old_filename);
+		free(oldFilename);
 	}
 }
-
