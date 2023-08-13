@@ -24,25 +24,20 @@
 #include "Utils/Pimpl.h"
 #include "Components/Engine/gstfwd.h"
 
-namespace StreamRecorder
-{
-	struct Data;
-}
-
 namespace PipelineExtensions
 {
 	class StreamRecorderBin
 	{
 		PIMPL(StreamRecorderBin)
 
-	public:
-		StreamRecorderBin(GstElement* pipeline, GstElement* tee);
-		virtual ~StreamRecorderBin();
+		public:
+			StreamRecorderBin(GstElement* pipeline, GstElement* tee);
+			~StreamRecorderBin();
 
-		bool init();
-		bool setEnabled(bool b);
+			bool init();
+			bool setEnabled(bool b);
 
-		void setTargetPath(const QString& path);
+			void setTargetPath(const QString& path);
 	};
 }
 

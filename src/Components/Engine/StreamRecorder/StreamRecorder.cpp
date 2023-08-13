@@ -47,19 +47,14 @@ struct SR::StreamRecorder::Private
 	QDate date;
 	QTime time;
 
-	int currentIndex;
-	bool recording;
-
-	Private() :
-		currentIndex(1),
-		recording(false) {}
+	int currentIndex {1};
+	bool recording {false};
 };
 
 SR::StreamRecorder::StreamRecorder(PlayManager* playManager, QObject* parent) :
-	QObject(parent)
+	QObject(parent),
+	m {Pimpl::make<StreamRecorder::Private>()}
 {
-	m = Pimpl::make<StreamRecorder::Private>();
-
 	clear();
 
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
@@ -86,11 +81,9 @@ void SR::StreamRecorder::newSession()
 
 QString SR::StreamRecorder::changeTrack(const MetaData& track)
 {
-	const auto streamRecorderPath = GetSetting(Set::Engine_SR_Path);
-
 	if(!m->recording)
 	{
-		return QString();
+		return {};
 	}
 
 	if(track.title() == m->currentTrack.title())
@@ -127,6 +120,7 @@ QString SR::StreamRecorder::changeTrack(const MetaData& track)
 		targetPathTemplate = Utils::targetPathTemplateDefault(useSessionPath);
 	}
 
+	const auto streamRecorderPath = GetSetting(Set::Engine_SR_Path);
 	const auto targetPath = Utils::fullTargetPath(streamRecorderPath,
 	                                              targetPathTemplate,
 	                                              m->currentTrack,
@@ -182,12 +176,12 @@ QString SR::StreamRecorder::checkTargetPath(const QString& targetPath)
 	}
 
 	const auto fileInfo = QFileInfo(targetPath);
-	return (fileInfo.isWritable())
-		? targetPath
-		: QString();
+	return fileInfo.isWritable()
+	       ? targetPath
+	       : QString();
 }
 
-void SR::StreamRecorder::record(bool b)
+void SR::StreamRecorder::record(const bool b)
 {
 	if(b == m->recording)
 	{
@@ -210,10 +204,7 @@ void SR::StreamRecorder::record(bool b)
 	m->recording = b;
 }
 
-bool SR::StreamRecorder::isRecording() const
-{
-	return m->recording;
-}
+bool SR::StreamRecorder::isRecording() const { return m->recording; }
 
 void SR::StreamRecorder::playstateChanged(PlayState state)
 {

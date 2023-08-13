@@ -30,46 +30,29 @@ class PlayManager;
 
 namespace StreamRecorder
 {
-    /**
-     * @brief The StreamRecorder class
-     * @ingroup Engine
-     */
-    class StreamRecorder :
-			public QObject
-    {
-        PIMPL(StreamRecorder)
+	class StreamRecorder :
+		public QObject
+	{
+		PIMPL(StreamRecorder)
 
-    private:
-        // set metadata, add to session collector
-        bool save();
+		public:
+			explicit StreamRecorder(PlayManager* playManager, QObject* parent = nullptr);
+			~StreamRecorder();
 
-        void clear();
+			QString changeTrack(const MetaData& track);
 
-        // saves session collector into playlist, creates new session,
-		void newSession();
+			void record(bool b);
+			[[nodiscard]] bool isRecording() const;
 
-        // check and create session path
-		QString checkTargetPath(const QString& targetPath);
+		private slots:
+			void playstateChanged(PlayState state);
 
-
-    public:
-        explicit StreamRecorder(PlayManager* playManager, QObject* parent=nullptr);
-        ~StreamRecorder();
-
-        // change recording destination, create session path
-        // returns destination file
-		QString changeTrack(const MetaData& track);
-
-        // start or end a session
-        void record(bool b);
-
-        // is in a session currently
-		bool isRecording() const;
-
-
-    private slots:
-		void playstateChanged(PlayState state);
-    };
+		private:
+			bool save();
+			void clear();
+			void newSession();
+			QString checkTargetPath(const QString& targetPath);
+	};
 }
 
 #endif // STREAMRECORDER_H

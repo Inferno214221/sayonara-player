@@ -20,21 +20,14 @@
 
 #include "StreamRecorderData.h"
 
-using StreamRecorder::Data;
-
-Data::Data()
+namespace StreamRecorder
 {
-	probeId=0;
-	busy = false;
-	active = false;
-	isFilenameEmpty = true;
-}
-
-Data::~Data()
-{
-	if(filename){
-		g_free(filename);
-		filename = nullptr;
+	Data::~Data()
+	{
+		if(filename)
+		{
+			g_free(filename);
+			filename = nullptr;
+		}
 	}
 }
-

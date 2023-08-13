@@ -25,24 +25,19 @@
 
 namespace StreamRecorder
 {
-    /**
-     * @brief The StreamRecorderData struct
-     * @ingroup Engine
-     */
-    struct Data
-    {
-        GstElement*	queue=nullptr;
-        GstElement*	sink=nullptr;
-        gchar*		filename=nullptr;
+	struct Data
+	{
+		GstElement* queue {nullptr};
+		GstElement* sink {nullptr};
+		gchar* filename {nullptr};
 
-        bool		active;
-		int			probeId;
-        bool		busy;
-		bool		isFilenameEmpty;
+		bool active {false};
+		int probeId {0};
+		bool busy {false};
+		bool isFilenameEmpty {true};
 
-        Data();
-        ~Data();
-    };
+		~Data();
+	};
 }
 
 #endif // STREAMRECORDERDATA_H

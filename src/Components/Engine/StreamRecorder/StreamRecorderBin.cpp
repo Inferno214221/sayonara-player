@@ -35,59 +35,50 @@ using namespace PipelineExtensions;
 
 struct StreamRecorderBin::Private
 {
-	GstElement*			pipeline=nullptr;
-	GstElement*			tee=nullptr;
+	GstElement* pipeline = nullptr;
+	GstElement* tee = nullptr;
 
-	GstElement*			bin=nullptr;
-	GstElement*			queue=nullptr;
-	GstElement*			converter=nullptr;
-	GstElement*			sink=nullptr;
-	GstElement*			resampler=nullptr;
-	GstElement*			lame=nullptr;
+	GstElement* bin = nullptr;
+	GstElement* queue = nullptr;
+	GstElement* converter = nullptr;
+	GstElement* sink = nullptr;
+	GstElement* resampler = nullptr;
+	GstElement* lame = nullptr;
 
-	Data*				data=nullptr;
-	QString				path;
-	bool				isRunning;
-
+	Data data;
+	QString path;
+	bool isRunning;
 
 	Private(GstElement* pipeline, GstElement* tee) :
 		pipeline(pipeline),
 		tee(tee),
-		data(new Data()),
-		isRunning(false)
-	{}
-
-	~Private()
-	{
-		delete data; data = nullptr;
-	}
+		isRunning(false) {}
 };
 
-StreamRecorderBin::StreamRecorderBin(GstElement* pipeline, GstElement* tee)
-{
-	m = Pimpl::make<Private>(pipeline, tee);
-}
+StreamRecorderBin::StreamRecorderBin(GstElement* pipeline, GstElement* tee) :
+	m {Pimpl::make<Private>(pipeline, tee)} {}
 
 StreamRecorderBin::~StreamRecorderBin() {}
 
 bool StreamRecorderBin::init()
 {
-	if(m->bin) {
+	if(m->bin)
+	{
 		return true;
 	}
 
 	// stream recorder branch
-	if(	!Engine::Utils::createElement(&m->queue, "queue", "sr_queue") ||
-		!Engine::Utils::createElement(&m->converter, "audioconvert", "sr_converter") ||
-		!Engine::Utils::createElement(&m->resampler, "audioresample", "sr_resample") ||
-		!Engine::Utils::createElement(&m->lame, "lamemp3enc", "sr_lame")  ||
-		!Engine::Utils::createElement(&m->sink, "filesink", "sr_filesink"))
+	if(!Engine::Utils::createElement(&m->queue, "queue", "sr_queue") ||
+	   !Engine::Utils::createElement(&m->converter, "audioconvert", "sr_converter") ||
+	   !Engine::Utils::createElement(&m->resampler, "audioresample", "sr_resample") ||
+	   !Engine::Utils::createElement(&m->lame, "lamemp3enc", "sr_lame") ||
+	   !Engine::Utils::createElement(&m->sink, "filesink", "sr_filesink"))
 	{
 		return false;
 	}
 
-	m->data->queue = m->queue;
-	m->data->sink = m->sink;
+	m->data.queue = m->queue;
+	m->data.sink = m->sink;
 
 	{ // configure
 		Engine::Utils::configureLame(m->lame);
@@ -96,13 +87,16 @@ bool StreamRecorderBin::init()
 
 		// this is just to avoid endless warning messages
 		Engine::Utils::setValues(G_OBJECT(m->sink),
-								"location", Util::tempPath(".stream-recorder.mp3").toLocal8Bit().data());
+		                         "location", Util::tempPath(".stream-recorder.mp3").toLocal8Bit().data());
 		Engine::Utils::setUintValue(G_OBJECT(m->sink), "buffer-size", 8192);
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::createBin(&m->bin, {m->queue, m->converter, m->resampler, m->lame, m->sink}, "sr");
-		if(!success){
+		bool success = Engine::Utils::createBin(&m->bin,
+		                                        {m->queue, m->converter, m->resampler, m->lame, m->sink},
+		                                        "sr");
+		if(!success)
+		{
 			return false;
 		}
 
@@ -121,40 +115,44 @@ bool StreamRecorderBin::init()
 
 bool StreamRecorderBin::setEnabled(bool b)
 {
-	if(b){
+	if(b)
+	{
 		return init();
 	}
 
 	return true;
 }
 
-
 void StreamRecorderBin::setTargetPath(const QString& path)
 {
 	GstElement* fileSinkElement = m->sink;
-	if(!fileSinkElement) {
+	if(!fileSinkElement)
+	{
 		return;
 	}
 
-	if(path == m->path && !m->path.isEmpty()) {
+	if(path == m->path && !m->path.isEmpty())
+	{
 		return;
 	}
 
-	if(m->data->busy){
+	if(m->data.busy)
+	{
 		return;
 	}
 
 	m->path = path;
 	m->isRunning = !(path.isEmpty());
 
-	gchar* old_filename = m->data->filename;
+	gchar* old_filename = m->data.filename;
 
-	m->data->filename = strdup(m->path.toUtf8().data());
-	m->data->active = m->isRunning;
+	m->data.filename = strdup(m->path.toUtf8().data());
+	m->data.active = m->isRunning;
 
-	Probing::handleStreamRecorderProbe(m->data, Probing::streamRecorderProbed);
+	Probing::handleStreamRecorderProbe(&m->data, Probing::streamRecorderProbed);
 
-	if(old_filename){
+	if(old_filename)
+	{
 		free(old_filename);
 	}
 }
