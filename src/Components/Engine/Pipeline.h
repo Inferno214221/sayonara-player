@@ -37,10 +37,6 @@ namespace Engine
 {
 	class Engine;
 
-	/**
-	 * @brief The PlaybackPipeline class
-	 * @ingroup Engine
-	 */
 	class Pipeline :
 		public QObject,
 		public PipelineExtensions::Fadeable,
@@ -61,7 +57,7 @@ namespace Engine
 			void sigDataAvailable(const QByteArray& data);
 
 		public:
-			explicit Pipeline(const QString& name, QObject* parent=nullptr);
+			explicit Pipeline(const QString& name, QObject* parent = nullptr);
 			~Pipeline() override;
 
 			bool init(Engine* engine);
@@ -84,13 +80,13 @@ namespace Engine
 			void finishRecording() override;
 			void setRecordingPath(const QString& targetPath) override;
 
-			MilliSeconds	timeToGo() const;
+			MilliSeconds timeToGo() const;
 
-			void setRawData(const QByteArray& data) override;	// BroadcastDataReceiver
+			void setRawData(const QByteArray& data) override;    // BroadcastDataReceiver
 
 		public slots:
-			void play() override;	// Crossfader
-			void stop() override;	// Crossfader
+			void play() override;    // Crossfader
+			void stop() override;    // Crossfader
 			void pause();
 
 		private slots:
@@ -105,10 +101,10 @@ namespace Engine
 			bool addAndLinkElements();
 			void configureElements();
 
-			void postProcessFadeIn() override;	// Crossfader
-			void postProcessFadeOut() override;	// Crossfader
-			void setInternalVolume(double volume) override;	// Crossfader
-			double internalVolume() const override;			// Crossfader
+			void postProcessFadeIn() override;    // Crossfader
+			void postProcessFadeOut() override;    // Crossfader
+			void setInternalVolume(double volume) override;    // Crossfader
+			double internalVolume() const override;            // Crossfader
 
 			GstElement* positionElement() const override;
 			GstElement* pitchElement() const override;
