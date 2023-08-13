@@ -358,15 +358,18 @@ void Pipeline::setRawData(const QByteArray& data)
 	emit sigDataAvailable(data);
 }
 
-void Pipeline::record(bool b)
+void Pipeline::prepareForRecording()
 {
 	if(!m->streamRecorder)
 	{
-		m->streamRecorder = new StreamRecorderBin(m->pipeline, m->tee);
+		m->streamRecorder = StreamRecorderBin::create(m->pipeline, m->tee);
 		m->streamRecorder->init();
 	}
+}
 
-	m->streamRecorder->setEnabled(b);
+void Pipeline::finishRecording()
+{
+	m->streamRecorder->setTargetPath({});
 }
 
 void Pipeline::setRecordingPath(const QString& path)

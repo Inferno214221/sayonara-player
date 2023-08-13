@@ -28,6 +28,7 @@
 #include "PipelineExtensions/PositionAccessible.h"
 #include "PipelineExtensions/Pitchable.h"
 #include "PipelineExtensions/EqualizerAccesible.h"
+#include "PipelineExtensions/StreamRecordable.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -48,7 +49,8 @@ namespace Engine
 		public PipelineExtensions::BroadcastDataReceiver,
 		public PipelineExtensions::PositionAccessible,
 		public PipelineExtensions::Pitchable,
-		public PipelineExtensions::EqualizerAccessible
+		public PipelineExtensions::EqualizerAccessible,
+		public PipelineExtensions::StreamRecordable
 	{
 		Q_OBJECT
 		PIMPL(Pipeline)
@@ -78,8 +80,9 @@ namespace Engine
 			void setBroadcastingEnabled(bool b);
 			bool isBroadcastingEnabled() const;
 
-			void record(bool b);
-			void setRecordingPath(const QString& session_path);
+			void prepareForRecording() override;
+			void finishRecording() override;
+			void setRecordingPath(const QString& targetPath) override;
 
 			MilliSeconds	timeToGo() const;
 

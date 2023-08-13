@@ -40,7 +40,8 @@
 
 namespace Engine
 {
-	struct PipelineCreationException : public std::exception
+	struct PipelineCreationException :
+		public std::exception
 	{
 		const char* what() const noexcept override;
 	};
@@ -459,39 +460,24 @@ namespace Engine
 		return (streamRecorderActive && m->streamRecorder && m->streamRecorder->isRecording());
 	}
 
-	void Engine::setStreamRecorderRecording(bool b)
+	void Engine::setStreamRecorderRecording(const bool b)
 	{
 		if(b)
 		{
 			if(!m->streamRecorder)
 			{
-				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager, this);
+				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager, m->pipeline, this);
 			}
 		}
 
-		if(!m->streamRecorder)
-		{
-			return;
-		}
-
-		m->pipeline->record(b);
-
-		if(m->streamRecorder->isRecording() != b)
+		if(m->streamRecorder)
 		{
 			m->streamRecorder->record(b);
-		}
-
-		QString destinationFile;
-		if(b)
-		{
-			destinationFile = m->streamRecorder->changeTrack(m->currentTrack);
-			if(destinationFile.isEmpty())
+			if(b)
 			{
-				return;
+				m->streamRecorder->changeTrack(m->currentTrack);
 			}
 		}
-
-		m->pipeline->setRecordingPath(destinationFile);
 	}
 
 	void Engine::updateCover(GstElement* src, const QByteArray& data, const QString& mimetype)

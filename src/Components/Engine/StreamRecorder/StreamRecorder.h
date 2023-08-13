@@ -28,6 +28,11 @@
 class MetaData;
 class PlayManager;
 
+namespace PipelineExtensions
+{
+	class StreamRecordable;
+}
+
 namespace StreamRecorder
 {
 	class StreamRecorder :
@@ -36,10 +41,12 @@ namespace StreamRecorder
 		PIMPL(StreamRecorder)
 
 		public:
-			explicit StreamRecorder(PlayManager* playManager, QObject* parent = nullptr);
+			StreamRecorder(PlayManager* playManager,
+			               std::shared_ptr<PipelineExtensions::StreamRecordable> streamRecordable,
+			               QObject* parent = nullptr);
 			~StreamRecorder();
 
-			QString changeTrack(const MetaData& track);
+			void changeTrack(const MetaData& track);
 
 			void record(bool b);
 			[[nodiscard]] bool isRecording() const;
@@ -49,9 +56,8 @@ namespace StreamRecorder
 
 		private:
 			bool save();
-			void clear();
-			void newSession();
-			QString checkTargetPath(const QString& targetPath);
+			void startNewSession();
+			void endSession();
 	};
 }
 

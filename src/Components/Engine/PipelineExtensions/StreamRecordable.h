@@ -1,6 +1,6 @@
-/* StreamRecorderHandler.h */
-
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* ${CLASS_NAME}.h */
+/*
+ * Copyright (C) 2011-2023 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -17,25 +17,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+#ifndef SAYONARA_PLAYER_STREAMRECORDABLE_H
+#define SAYONARA_PLAYER_STREAMRECORDABLE_H
 
-#ifndef STREAMRECORDERHANDLER_H
-#define STREAMRECORDERHANDLER_H
-
-#include "Components/Engine/gstfwd.h"
-
-class QString;
 namespace PipelineExtensions
 {
-	class StreamRecorderBin
+	class StreamRecordable
 	{
 		public:
-			virtual ~StreamRecorderBin() = default;
+			virtual ~StreamRecordable() = default;
 
-			virtual bool init() = 0;
-			virtual void setTargetPath(const QString& path) = 0;
-
-			static StreamRecorderBin* create(GstElement* pipeline, GstElement* tee);
+			virtual void setRecordingPath(const QString& targetPath) = 0;
+			virtual void prepareForRecording() = 0;
+			virtual void finishRecording() = 0;
 	};
 }
 
-#endif // STREAMRECORDERHANDLER_H
+#endif //SAYONARA_PLAYER_STREAMRECORDABLE_H
