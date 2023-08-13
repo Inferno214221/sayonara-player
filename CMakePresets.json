@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "debug",
+      "binaryDir": "${sourceDir}/build/build-${presetName}",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "WITH_TESTS": "ON"
+      }
+    },
+    {
+      "name": "release",
+      "binaryDir": "${sourceDir}/build/build-${presetName}",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
+        "WITH_TESTS": "OFF"
+      }
+    }
+  ]
+}
