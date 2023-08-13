@@ -167,7 +167,7 @@ namespace
 
 	QString getPodcastTooltip(const MetaData& track)
 	{
-		if(const auto description = track.customField("2description"); !description.isEmpty())
+		if(const auto description = track.customField("description"); !description.isEmpty())
 		{
 			return QString("%1 - %2<br>%3")
 				.arg(track.title())

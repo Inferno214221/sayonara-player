@@ -35,47 +35,44 @@ namespace Cover
 
 UI_FWD(InfoDialog)
 
-/**
- * @brief The GUI_InfoDialog class
- * @ingroup InfoDialog
- */
 class GUI_InfoDialog :
 	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_InfoDialog)
-	UI_CLASS(InfoDialog)
+	UI_CLASS_SHARED_PTR(InfoDialog)
 
 	public:
 		enum class Tab :
 			uint8_t
 		{
-				Info = 0,
-				Lyrics = 1,
-				Edit = 2
+			Info = 0,
+			Lyrics = 1,
+			Edit = 2
 		};
 
 		explicit GUI_InfoDialog(QWidget* parent = nullptr);
 		~GUI_InfoDialog() override;
 
 		void setMetadata(const MetaDataList& tracks, MD::Interpretation interpretation);
-		bool hasMetadata() const;
+		[[nodiscard]] bool hasMetadata() const;
+		void setBusy(bool b);
 
 		GUI_InfoDialog::Tab show(GUI_InfoDialog::Tab track);
 		void showCoverEditTab();
 
-		void setBusy(bool b);
-
 	protected:
 		void skinChanged() override;
 		void languageChanged() override;
+		void closeEvent(QCloseEvent* e) override;
+		void resizeEvent(QResizeEvent* e) override;
 
 	private slots:
-		void tabIndexChangedInt(int idx);
+		void tabIndexChanged(int idx);
 		void writeCoversToTracksClicked();
 		void coverChanged();
 
-	private:
+	private: // NOLINT(readability-redundant-access-specifiers)
 		void init();
 		void initTagEdit();
 		void initLyrics();
@@ -86,13 +83,8 @@ class GUI_InfoDialog :
 
 		void prepareCover(const Cover::Location& coverLocation);
 		void prepareInfo(MD::Interpretation mode);
-		void prepareTab(GUI_InfoDialog::Tab idx);
-
-	protected:
-		void closeEvent(QCloseEvent* e) override;
-		void showEvent(QShowEvent* e) override;
-		void resizeEvent(QResizeEvent* e) override;
-
+		void enableTabs();
+		void switchTab(Tab tab);
 		using Gui::Dialog::show;
 };
 
