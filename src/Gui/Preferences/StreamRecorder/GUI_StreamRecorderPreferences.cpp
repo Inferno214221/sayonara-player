@@ -35,8 +35,10 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
 
+#include <QDate>
 #include <QDir>
 #include <QGridLayout>
+#include <QTime>
 
 namespace SR = StreamRecorder;
 
@@ -77,7 +79,7 @@ void GUI_StreamRecorderPreferences::initUi()
 	QList<QPair<QString, QString>> desc = StreamRecorder::Utils::descriptions();
 
 	int i = 0;
-	for(const QPair<QString, QString>& keyval : desc)
+	for(const auto& keyval: desc)
 	{
 		auto* btn = new TagButton(keyval.first, this);
 		btn->setText(
@@ -192,7 +194,7 @@ void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
 
 	if(err == SR::Utils::ErrorCode::OK)
 	{
-		SR::Utils::TargetPaths targetPath = SR::Utils::fullTargetPath
+		const auto targetPath = SR::Utils::fullTargetPath
 			(
 				ui->lePath->text(),
 				templateText,
@@ -201,7 +203,7 @@ void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
 				QTime::currentTime()
 			);
 
-		ui->leResultPath->setText(targetPath.first);
+		ui->leResultPath->setText(targetPath.filename);
 	}
 
 	else
@@ -333,7 +335,7 @@ TagButton::~TagButton() = default;
 void TagButton::languageChanged()
 {
 	const auto descriptions = SR::Utils::descriptions();
-	for(const auto& description : descriptions)
+	for(const auto& description: descriptions)
 	{
 		if(description.first == m->tagName)
 		{

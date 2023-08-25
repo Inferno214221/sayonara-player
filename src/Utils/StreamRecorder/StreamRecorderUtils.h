@@ -21,52 +21,52 @@
 #ifndef STREAMRECORDERUTILS_H
 #define STREAMRECORDERUTILS_H
 
+#include <QList>
 #include <QPair>
-#include <QList>
 #include <QString>
-#include <QHash>
-#include <QDateTime>
-#include <QList>
+
+#include <cstdint>
 
 class MetaData;
+class QStringList;
+class QDate;
+class QTime;
 
-namespace StreamRecorder
+namespace StreamRecorder::Utils
 {
-    namespace Utils
-    {
-        enum class ErrorCode : uint8_t
-        {
-            OK=1,
-            BracketError,
-            UnknownTag,
-            MissingUniqueTag,
-            InvalidChars,
-            Empty
-        };
+	enum class ErrorCode :
+		std::uint8_t
+	{
+		OK = 1,
+		BracketError,
+		UnknownTag,
+		MissingUniqueTag,
+		InvalidChars,
+		Empty
+	};
 
-        // filename, playlistname
-        using TargetPaths=QPair<QString, QString>;
+	struct TargetPath
+	{
+		QString filename;
+		QString playlistName;
+	};
 
-        QList<QString> supportedTags();
-        QList<QPair<QString, QString>> descriptions();
+	QStringList supportedTags();
+	QList<QPair<QString, QString>> descriptions();
 
-        ErrorCode validateTemplate(const QString& target_path_template, int* invalid_idx);
+	ErrorCode validateTemplate(const QString& targetPathTemplate, int* invalidIndex);
 
-        QString targetPathTemplateDefault(bool useSessionPath);
+	QString targetPathTemplateDefault(bool useSessionPath);
 
-		/**
-		 * @brief Get the target path and playlist path of a single recorded audio file
-		 * @param sr_path Stream recorder base path
-		 * @param path_template template string of path
-		 * @param md current MetaData object (used for album, title and artist)
-		 * @param d session date
-		 * @param t session time
-		 * @return tuple of audio filepath and playlist filepath
-		 */
-        TargetPaths fullTargetPath(const QString& srPath, const QString& path_template, const MetaData& md, const QDate& d, const QTime& t);
+	/**
+	 * @brief Get the target path and playlist path of a single recorded audio file
+	 * @return tuple of audio filepath and playlist filepath
+	 */
+	TargetPath
+	fullTargetPath(const QString& streamRecorderPath, const QString& pathTemplate, const MetaData& track,
+	               const QDate& d, const QTime& t);
 
-        QString parseErrorCode(ErrorCode err);
-    }
+	QString parseErrorCode(ErrorCode err);
 }
 
 #endif // STREAMRECORDERUTILS_H
