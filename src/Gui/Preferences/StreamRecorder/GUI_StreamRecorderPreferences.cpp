@@ -39,8 +39,21 @@
 #include <QDir>
 #include <QGridLayout>
 #include <QTime>
+#include <utility>
 
-namespace SR = StreamRecorder;
+namespace
+{
+	MetaData createDemoTrack()
+	{
+		auto track = MetaData {};
+		track.setTitle("Happy Song");
+		track.setArtist("Al White");
+		track.setAlbum("Rock Radio");
+		track.setTrackNumber(1);
+
+		return track;
+	}
+}
 
 struct GUI_StreamRecorderPreferences::Private
 {
@@ -48,10 +61,8 @@ struct GUI_StreamRecorderPreferences::Private
 };
 
 GUI_StreamRecorderPreferences::GUI_StreamRecorderPreferences(const QString& identifier) :
-	Base(identifier)
-{
-	m = Pimpl::make<Private>();
-}
+	Base(identifier),
+	m {Pimpl::make<Private>()} {}
 
 GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences()
 {
@@ -66,7 +77,7 @@ void GUI_StreamRecorderPreferences::initUi()
 {
 	setupParent(this, &ui);
 
-	QGridLayout* layout = new QGridLayout(ui->buttonWidget);
+	auto* layout = new QGridLayout(ui->buttonWidget);
 
 	ui->buttonWidget->setLayout(layout);
 	ui->leResultPath->setReadOnly(true);
@@ -76,29 +87,29 @@ void GUI_StreamRecorderPreferences::initUi()
 	ui->tabWidget->setCurrentIndex(0);
 	ui->tabWidget->setTabEnabled(1, GetSetting(Set::Engine_SR_SessionPath));
 
-	QList<QPair<QString, QString>> desc = StreamRecorder::Utils::descriptions();
+	const auto descriptions = StreamRecorder::Utils::descriptions();
 
 	int i = 0;
-	for(const auto& keyval: desc)
+	for(const auto& [key, description]: descriptions)
 	{
-		auto* btn = new TagButton(keyval.first, this);
+		auto* btn = new TagButton(key, this);
 		btn->setText(
-			Util::stringToFirstUpper(keyval.second)
+			Util::stringToFirstUpper(description)
 		);
 
-		connect(btn, &QPushButton::clicked, this, [=]() {
-			int old_position = ui->leTemplate->cursorPosition();
+		connect(btn, &QPushButton::clicked, this, [this, key = key]() {
+			const auto oldPosition = ui->leTemplate->cursorPosition();
 
-			ui->leTemplate->insert("<" + keyval.first + ">");
+			ui->leTemplate->insert("<" + key + ">");
 			ui->leTemplate->setFocus();
-			ui->leTemplate->setCursorPosition(old_position + keyval.first.size() + 2);
+			ui->leTemplate->setCursorPosition(oldPosition + key.size() + 2);
 			ui->leTemplate->setModified(true);
 		});
 
-		int row = i / 2;
-		int col = i % 2;
-
+		const auto row = i / 2;
+		const auto col = i % 2;
 		layout->addWidget(btn, row, col);
+
 		i++;
 	}
 
@@ -108,12 +119,12 @@ void GUI_StreamRecorderPreferences::initUi()
 	connect(ui->btnPath, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::pathButtonClicked);
 	connect(ui->leTemplate, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::lineEditChanged);
 	connect(ui->lePath, &QLineEdit::textChanged, this, &GUI_StreamRecorderPreferences::lineEditChanged);
-	connect(ui->cbCreateSessionPath, &QCheckBox::toggled, this, [=](bool b) {
-		ui->tabWidget->setTabEnabled(1, b);
+	connect(ui->cbCreateSessionPath, &QCheckBox::toggled, this, [this](const auto isEnabled) {
+		ui->tabWidget->setTabEnabled(1, isEnabled);
 	});
 
 	connect(ui->btnDefault, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::defaultButtonClicked);
-	connect(ui->btnUndo, &QPushButton::clicked, this, [=]() {
+	connect(ui->btnUndo, &QPushButton::clicked, this, [this]() {
 		ui->leTemplate->undo();
 	});
 
@@ -138,10 +149,7 @@ void GUI_StreamRecorderPreferences::skinChanged()
 	}
 }
 
-QString GUI_StreamRecorderPreferences::errorString() const
-{
-	return m->errorString;
-}
+QString GUI_StreamRecorderPreferences::errorString() const { return m->errorString; }
 
 void GUI_StreamRecorderPreferences::activeToggled(bool b)
 {
@@ -151,18 +159,16 @@ void GUI_StreamRecorderPreferences::activeToggled(bool b)
 	ui->cbCreateSessionPath->setEnabled(b);
 	ui->leTemplate->setEnabled(b);
 
-	bool create_session_path = GetSetting(Set::Engine_SR_SessionPath);
-	ui->cbCreateSessionPath->setChecked(create_session_path);
-	ui->tabWidget->setTabEnabled(1, (b && create_session_path));
+	const auto createSessionPath = GetSetting(Set::Engine_SR_SessionPath);
+	ui->cbCreateSessionPath->setChecked(createSessionPath);
+	ui->tabWidget->setTabEnabled(1, (b && createSessionPath));
 }
 
 void GUI_StreamRecorderPreferences::pathButtonClicked()
 {
-	QString path = ui->lePath->text();
-	if(path.isEmpty())
-	{
-		path = QDir::homePath();
-	}
+	const auto path = ui->lePath->text().isEmpty()
+	                  ? QDir::homePath()
+	                  : ui->lePath->text();
 
 	const auto dir = Gui::DirectoryChooser::getDirectory(tr("Choose target directory"), path, true, this);
 	if(!dir.isEmpty())
@@ -173,63 +179,51 @@ void GUI_StreamRecorderPreferences::pathButtonClicked()
 
 void GUI_StreamRecorderPreferences::defaultButtonClicked()
 {
-	const QString defaultTemplate = SR::Utils::targetPathTemplateDefault(true);
+	const QString defaultTemplate = StreamRecorder::Utils::targetPathTemplateDefault(true);
 	ui->leTemplate->setText(defaultTemplate);
 }
 
-void GUI_StreamRecorderPreferences::lineEditChanged(const QString& newText)
+void GUI_StreamRecorderPreferences::lineEditChanged(const QString& /*newText*/)
 {
-	Q_UNUSED(newText)
+	const auto templateText = ui->leTemplate->text();
+	const auto demoTrack = createDemoTrack();
 
-	QString templateText = ui->leTemplate->text();
-
-	MetaData md;
-	md.setTitle("Happy Song");
-	md.setArtist("Al White");
-	md.setAlbum("Rock Radio");
-	md.setTrackNumber(1);
-
-	int errorIndex;
-	SR::Utils::ErrorCode err = SR::Utils::validateTemplate(templateText, &errorIndex);
-
-	if(err == SR::Utils::ErrorCode::OK)
+	int errorIndex; // NOLINT(cppcoreguidelines-init-variables)
+	const auto err = StreamRecorder::Utils::validateTemplate(templateText, &errorIndex);
+	if(err == StreamRecorder::Utils::ErrorCode::OK)
 	{
-		const auto targetPath = SR::Utils::fullTargetPath
-			(
-				ui->lePath->text(),
-				templateText,
-				md,
-				QDate::currentDate(),
-				QTime::currentTime()
-			);
+		const auto targetPath = StreamRecorder::Utils::fullTargetPath(
+			ui->lePath->text(),
+			templateText,
+			demoTrack,
+			QDate::currentDate(),
+			QTime::currentTime());
 
 		ui->leResultPath->setText(targetPath.filename);
 	}
 
 	else
 	{
-		const QString errorString = SR::Utils::parseErrorCode(err);
+		const auto errorString = StreamRecorder::Utils::parseErrorCode(err);
+		const auto maxSelectedIndex = std::min(errorIndex + 5, templateText.size());
 
-		int maxSelectedIndex = std::min(errorIndex + 5, templateText.size());
-		ui->leResultPath->setText
-			(
-				QString("%1: '...%2...'")
-					.arg(errorString)
-					.arg(templateText.mid(errorIndex, maxSelectedIndex - errorIndex))
-			);
+		ui->leResultPath->setText(
+			QString("%1: '...%2...'")
+				.arg(errorString)
+				.arg(templateText.mid(errorIndex, maxSelectedIndex - errorIndex)));
 	}
 }
 
 bool GUI_StreamRecorderPreferences::commit()
 {
-	bool everythingOk = true;
+	auto everythingOk = true;
 
-	bool active = ui->cbActivate->isChecked();
-	const QString path = ui->lePath->text();
+	const auto isActive = ui->cbActivate->isChecked();
+	const auto path = ui->lePath->text();
 
-	if(active)
+	if(isActive)
 	{
-		if(!::Util::File::exists(path))
+		if(!Util::File::exists(path))
 		{
 			if(path.isEmpty())
 			{
@@ -247,11 +241,11 @@ bool GUI_StreamRecorderPreferences::commit()
 
 		if(everythingOk)
 		{
-			int invalidIndex;
-			SR::Utils::ErrorCode err = SR::Utils::validateTemplate(ui->leTemplate->text().trimmed(), &invalidIndex);
-			if(err != SR::Utils::ErrorCode::OK)
+			int invalidIndex; // NOLINT(cppcoreguidelines-init-variables)
+			const auto err = StreamRecorder::Utils::validateTemplate(ui->leTemplate->text().trimmed(), &invalidIndex);
+			if(err != StreamRecorder::Utils::ErrorCode::OK)
 			{
-				m->errorString += tr("Template path is not valid") + "\n" + SR::Utils::parseErrorCode(err);
+				m->errorString += tr("Template path is not valid") + "\n" + StreamRecorder::Utils::parseErrorCode(err);
 				everythingOk = false;
 			}
 		}
@@ -271,17 +265,16 @@ bool GUI_StreamRecorderPreferences::commit()
 
 void GUI_StreamRecorderPreferences::revert()
 {
-	bool isLameAvailable = GetSetting(SetNoDB::MP3enc_found);
+	const auto isLameAvailable = GetSetting(SetNoDB::MP3enc_found);
+	const auto path = GetSetting(Set::Engine_SR_Path);
+	const auto active = GetSetting(Set::Engine_SR_Active) && isLameAvailable;
+	const auto createSessionPath = GetSetting(Set::Engine_SR_SessionPath);
+	const auto autoRecord = GetSetting(Set::Engine_SR_AutoRecord);
 
-	QString path = GetSetting(Set::Engine_SR_Path);
-	QString templatePath = GetSetting(Set::Engine_SR_SessionPathTemplate);
-	bool active = GetSetting(Set::Engine_SR_Active) && isLameAvailable;
-	bool createSessionPath = GetSetting(Set::Engine_SR_SessionPath);
-	bool autoRecord = GetSetting(Set::Engine_SR_AutoRecord);
-
+	auto templatePath = GetSetting(Set::Engine_SR_SessionPathTemplate);
 	if(templatePath.isEmpty())
 	{
-		templatePath = SR::Utils::targetPathTemplateDefault(true);
+		templatePath = StreamRecorder::Utils::targetPathTemplateDefault(true);
 	}
 
 	ui->cbActivate->setEnabled(isLameAvailable);
@@ -311,30 +304,25 @@ void GUI_StreamRecorderPreferences::revert()
 	}
 }
 
-QString GUI_StreamRecorderPreferences::actionName() const
-{
-	return tr("Stream recorder");
-}
+QString GUI_StreamRecorderPreferences::actionName() const { return tr("Stream recorder"); }
 
 struct TagButton::Private
 {
 	QString tagName;
 
-	Private(const QString& tagName) :
-		tagName(tagName) {}
+	Private(QString tagName) :
+		tagName(std::move(tagName)) {}
 };
 
 TagButton::TagButton(const QString& tagName, QWidget* parent) :
-	Gui::WidgetTemplate<QPushButton>(parent)
-{
-	m = Pimpl::make<Private>(tagName);
-}
+	Gui::WidgetTemplate<QPushButton>(parent),
+	m {Pimpl::make<Private>(tagName)} {}
 
 TagButton::~TagButton() = default;
 
 void TagButton::languageChanged()
 {
-	const auto descriptions = SR::Utils::descriptions();
+	const auto descriptions = StreamRecorder::Utils::descriptions();
 	for(const auto& description: descriptions)
 	{
 		if(description.first == m->tagName)

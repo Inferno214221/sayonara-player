@@ -32,21 +32,19 @@
 
 UI_FWD(GUI_StreamRecorderPreferences)
 
-
-class TagButton : public
-		Gui::WidgetTemplate<QPushButton>
+class TagButton :
+	public Gui::WidgetTemplate<QPushButton>
 {
 	Q_OBJECT
 	PIMPL(TagButton)
 
-public:
-	TagButton(const QString& tag_name, QWidget* parent);
-	~TagButton() override;
+	public:
+		TagButton(const QString& tagName, QWidget* parent);
+		~TagButton() override;
 
-protected:
-	void languageChanged() override;
+	protected:
+		void languageChanged() override;
 };
-
 
 class GUI_StreamRecorderPreferences :
 	public Preferences::Base
@@ -62,14 +60,14 @@ class GUI_StreamRecorderPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;
 		void retranslate() override;
 		void skinChanged() override;
 
-		QString errorString() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	private slots:
 		void activeToggled(bool);
