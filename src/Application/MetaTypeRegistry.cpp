@@ -47,6 +47,7 @@ namespace Util
 		qRegisterMetaType<IntSet>("IntSet");
 		qRegisterMetaType<IndexSet>("IndexSet");
 		qRegisterMetaType<IdSet>("IDSet");
+		qRegisterMetaType<RadioMode>("RadioMode");
 
 		qRegisterMetaType<MetaData>("MetaData");
 		qRegisterMetaType<MetaDataList>("MetaDataList");

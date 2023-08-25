@@ -57,6 +57,7 @@ new_test(Database/LibraryDatabaseTest.cpp)
 new_test(Database/PodcastTest.cpp)
 new_test(Database/BasicQueryTest.cpp)
 new_test(Database/TracksTest.cpp Common/TestTracks.cpp)
+new_test(Database/PlaylistDatabaseTest.cpp)
 
 new_test(DynamicPlayback/ArtistMatchTest.cpp)
 

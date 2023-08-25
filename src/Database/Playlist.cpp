@@ -409,7 +409,7 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int play
 			{"trackid",          track.id()},
 			{"db_id",            track.databaseId()},
 			{"coverDownloadUrl", track.coverDownloadUrls().join(";")},
-			{"isRadio",          QVariant::fromValue(track.radioMode())}
+			{"isRadio",          static_cast<int>(track.radioMode())} // for some reason QVariant::fromValue does not work here
 		};
 
 	if(track.radioMode() == RadioMode::Station)
