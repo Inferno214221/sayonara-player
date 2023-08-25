@@ -38,7 +38,7 @@ namespace
 {
 	constexpr const auto InvalidTimeStamp {-1};
 	constexpr const auto VolumeDelta {5};
-	constexpr const auto RingbufferSize {3};
+	constexpr const auto RingbufferSize {12};
 
 	template<int MaxItemCount>
 	class RingBuffer
@@ -374,9 +374,10 @@ class PlayManagerImpl :
 
 					emit sigStreamFinished(oldMetadata);
 					showNotification(m_notificationHandler, m_currentTrack);
-				}
 
-				m_ringBuffer.insert(trackHash);
+					spLog(Log::Info, this) << "Cannot ignore " << trackHash;
+					m_ringBuffer.insert(trackHash);
+				}
 			}
 
 			emit sigCurrentMetadataChanged();
