@@ -3,7 +3,7 @@
   "configurePresets": [
     {
       "name": "debug",
-      "binaryDir": "${sourceDir}/build/build-${presetName}",
+      "binaryDir": "${sourceDir}/build-${presetName}",
       "generator": "Unix Makefiles",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
@@ -13,7 +13,7 @@
     },
     {
       "name": "release",
-      "binaryDir": "${sourceDir}/build/build-${presetName}",
+      "binaryDir": "${sourceDir}/build-${presetName}",
       "generator": "Unix Makefiles",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
