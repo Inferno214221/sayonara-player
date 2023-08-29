@@ -32,6 +32,7 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QUrl>
 #include <QList>
@@ -55,6 +56,7 @@ namespace Engine
 	struct Engine::Engine::Private
 	{
 		Util::FileSystemPtr fileSystem;
+		Tagging::TagWriterPtr tagWriter;
 		MetaData currentTrack;
 
 		PipelinePtr pipeline, otherPipeline;
@@ -68,8 +70,9 @@ namespace Engine
 		MilliSeconds currentPositionMs;
 		GaplessState gaplessState;
 
-		Private(Util::FileSystemPtr fileSystem, PlayManager* playManager) :
+		Private(Util::FileSystemPtr fileSystem, Tagging::TagWriterPtr tagWriter, PlayManager* playManager) :
 			fileSystem(std::move(fileSystem)),
+			tagWriter(std::move(tagWriter)),
 			playManager(playManager),
 			currentPositionMs(0),
 			gaplessState(GaplessState::Stopped) {}
@@ -89,9 +92,10 @@ namespace Engine
 		}
 	};
 
-	Engine::Engine(const Util::FileSystemPtr& fileSystem, PlayManager* playManager, QObject* parent) :
+	Engine::Engine(const Util::FileSystemPtr& fileSystem, const Tagging::TagWriterPtr& tagWriter,
+	               PlayManager* playManager, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<Private>(fileSystem, playManager)}
+		m {Pimpl::make<Private>(fileSystem, tagWriter, playManager)}
 	{
 		gst_init(nullptr, nullptr);
 
@@ -470,6 +474,7 @@ namespace Engine
 			{
 				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager,
 				                                                       m->fileSystem,
+				                                                       m->tagWriter,
 				                                                       m->pipeline,
 				                                                       this);
 			}

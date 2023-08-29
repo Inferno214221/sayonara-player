@@ -18,31 +18,36 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "TagReaderMock.h"
+#ifndef SAYONARA_PLAYER_TAGGINGMOCKS_H
+#define SAYONARA_PLAYER_TAGGINGMOCKS_H
 
-#include "Utils/MetaData/MetaData.h"
-#include "Utils/FileUtils.h"
-
-#include <QString>
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 namespace Test
 {
-	TagReaderMock::~TagReaderMock() = default;
-
-	std::optional<MetaData> TagReaderMock::readMetadata(const QString& filepath)
+	class TagReaderMock :
+		public Tagging::TagReader
 	{
-		if(Util::File::isSoundFile(filepath))
-		{
-			m_count++;
+		public:
+			~TagReaderMock() override;
+			std::optional<MetaData> readMetadata(const QString& filepath) override;
 
-			auto track = MetaData {filepath};
-			track.setTitle(filepath);
-			track.setAlbum(filepath);
-			track.setArtist(filepath);
+			[[nodiscard]] int count() const { return m_count; }
 
-			return {track};
-		}
+		private:
+			int m_count {0};
+	};
 
-		return std::nullopt;
-	}
+	class TagWriterMock :
+		public Tagging::TagWriter
+	{
+		public:
+			~TagWriterMock() override;
+
+			bool writeMetaData(const QString& filepath, const MetaData& track) override;
+			bool updateMetaData(const MetaData& track) override;
+	};
 }
+
+#endif //SAYONARA_PLAYER_TAGGINGMOCKS_H

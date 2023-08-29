@@ -31,6 +31,11 @@
 
 #include <vector>
 
+namespace Tagging
+{
+	class TagWriter;
+}
+
 namespace Util
 {
 	class FileSystem;
@@ -88,8 +93,9 @@ namespace Engine
 			void sigError(const QString& error_message);
 
 		public:
-			Engine(const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager,
-			       QObject* parent = nullptr);
+			Engine(const std::shared_ptr<Util::FileSystem>& fileSystem,
+			       const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+			       PlayManager* playManager, QObject* parent = nullptr);
 			~Engine();
 
 			void updateBitrate(Bitrate br, GstElement* src);

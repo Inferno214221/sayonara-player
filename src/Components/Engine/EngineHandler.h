@@ -33,6 +33,11 @@
 
 class PlayManager;
 
+namespace Tagging
+{
+	class TagWriter;
+}
+
 namespace Util
 {
 	class FileSystem;
@@ -56,7 +61,9 @@ namespace Engine
 		PIMPL(Handler)
 
 		public:
-			Handler(const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager);
+			Handler(const std::shared_ptr<Util::FileSystem>& fileSystem,
+			        const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+			        PlayManager* playManager);
 			~Handler() override;
 
 			void shutdown();

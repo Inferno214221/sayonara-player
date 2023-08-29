@@ -33,6 +33,11 @@ namespace PipelineExtensions
 	class StreamRecordable;
 }
 
+namespace Tagging
+{
+	class TagWriter;
+}
+
 namespace Util
 {
 	class FileSystem;
@@ -48,6 +53,7 @@ namespace StreamRecorder
 		public:
 			StreamRecorder(PlayManager* playManager,
 			               std::shared_ptr<Util::FileSystem> fileSystem,
+			               std::shared_ptr<Tagging::TagWriter> tagWriter,
 			               std::shared_ptr<PipelineExtensions::StreamRecordable> streamRecordable,
 			               QObject* parent = nullptr);
 			~StreamRecorder() override;
@@ -60,7 +66,7 @@ namespace StreamRecorder
 		private slots:
 			void playstateChanged(PlayState state);
 
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
 			bool save();
 			void startNewSession();
 			void endSession();

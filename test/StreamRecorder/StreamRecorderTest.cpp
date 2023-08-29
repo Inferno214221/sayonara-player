@@ -1,6 +1,7 @@
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/PlayManagerMock.h"
 #include "test/Common/FileSystemMock.h"
+#include "test/Common/TaggingMocks.h"
 
 #include "Components/Engine/StreamRecorder/StreamRecorder.h"
 #include "Components/Engine/PipelineExtensions/StreamRecordable.h"
@@ -18,6 +19,8 @@ namespace SR = StreamRecorder;
 
 namespace
 {
+	const auto StreamedData = QByteArray {};
+
 	class PipelineMock :
 		public PipelineExtensions::StreamRecordable
 	{
@@ -38,9 +41,10 @@ namespace
 			void finishRecording() override
 			{
 				m_sessionActive = false;
+				m_targetPath.clear();
 			}
 
-			bool sessionActive() const
+			[[nodiscard]] bool sessionActive() const
 			{
 				return m_sessionActive;
 			}
@@ -70,15 +74,6 @@ namespace
 		return track;
 	}
 
-	void createFile(const QString& filename)
-	{
-		const auto data = QByteArray(25000, 'x');
-		auto f = QFile(filename);
-		f.open(QFile::WriteOnly);
-		f.write(data);
-		f.close();
-	}
-
 	QString todaysDateString()
 	{
 		const auto currentDate = QDate::currentDate();
@@ -96,15 +91,17 @@ namespace
 	struct TestEnv
 	{
 		Util::FileSystemPtr fileSystem;
+		Tagging::TagWriterPtr tagWriter;
 		PlayManager* playManager;
 		std::shared_ptr<PipelineMock> pipeline;
 		StreamRecorder::StreamRecorder streamRecorder;
 
 		explicit TestEnv(const QString& tempPath) :
 			fileSystem {std::make_shared<Test::FileSystemMock>(createStructure(tempPath))},
+			tagWriter {std::make_shared<Test::TagWriterMock>()},
 			playManager {new PlayManagerMock()},
 			pipeline {std::make_shared<PipelineMock>()},
-			streamRecorder {StreamRecorder::StreamRecorder(playManager, fileSystem, pipeline, nullptr)} {}
+			streamRecorder {StreamRecorder::StreamRecorder(playManager, fileSystem, tagWriter, pipeline, nullptr)} {}
 	};
 }
 
@@ -210,16 +207,14 @@ class StreamRecorderTest :
 			for(const auto& testCase: testCases)
 			{
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
-
-				testEnv.streamRecorder.changeTrack(track);
-
 				const auto expectedFilename =
 					QString("%1/%2/%3")
 						.arg(tempPath())
 						.arg(todaysDateString())
 						.arg(testCase.expectedFilename);
 
-				createFile(expectedFilename);
+				testEnv.streamRecorder.changeTrack(track);
+				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
 
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
@@ -285,14 +280,13 @@ class StreamRecorderTest :
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
 
 				testEnv.streamRecorder.changeTrack(track);
+				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
 
 				const auto expectedFilename =
 					QString("%1/%2/%3")
 						.arg(tempPath())
 						.arg(todaysDateString())
 						.arg(testCase.expectedFilename);
-
-				createFile(expectedFilename);
 
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
@@ -330,14 +324,13 @@ class StreamRecorderTest :
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
 
 				testEnv.streamRecorder.changeTrack(track);
+				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
 
 				const auto expectedFilename =
 					QString("%1/%2/%3")
 						.arg(tempPath())
 						.arg(todaysDateString())
 						.arg(testCase.expectedFilename);
-
-				createFile(expectedFilename);
 
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
@@ -376,6 +369,7 @@ class StreamRecorderTest :
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
 
 				testEnv.streamRecorder.changeTrack(track);
+				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
 
 				const auto expectedFilename = testCase.expectedFilename.isEmpty()
 				                              ? QString {}
@@ -384,9 +378,6 @@ class StreamRecorderTest :
 					                              .arg(todaysDateString())
 					                              .arg(testCase.expectedFilename);
 
-				createFile(expectedFilename);
-
-				const auto targetPath = testEnv.pipeline->targetPath();
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording() == testCase.isRecording);
 

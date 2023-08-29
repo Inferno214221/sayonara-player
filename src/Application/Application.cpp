@@ -95,6 +95,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/FileSystem.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
@@ -139,6 +140,7 @@ static void initResources() // must be static for some reason
 struct Application::Private
 {
 	Util::FileSystemPtr fileSystem;
+	Tagging::TagWriterPtr tagWriter;
 	NotificationHandler* notificationHandler;
 	PlayManager* playManager;
 	Engine::Handler* engine;
@@ -163,9 +165,10 @@ struct Application::Private
 
 	explicit Private(Application* app) :
 		fileSystem {Util::FileSystem::create()},
+		tagWriter(Tagging::TagWriter::create()),
 		notificationHandler {NotificationHandler::create(app)},
 		playManager {PlayManager::create(notificationHandler, app)},
-		engine {new Engine::Handler(fileSystem, playManager)},
+		engine {new Engine::Handler(fileSystem, tagWriter, playManager)},
 		sessionManager {new Session::Manager(playManager)},
 		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
 		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playManager)},

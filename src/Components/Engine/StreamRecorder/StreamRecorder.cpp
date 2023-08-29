@@ -30,7 +30,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
 #include "Utils/StreamRecorder/StreamRecorderUtils.h"
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Utils.h"
 
 #include <QDir>
@@ -69,6 +69,7 @@ namespace StreamRecorder
 	struct StreamRecorder::Private
 	{
 		Util::FileSystemPtr fileSystem;
+		Tagging::TagWriterPtr tagWriter;
 		StreamRecordablePtr streamRecordable;
 		QString recordingDestination;
 		QString sessionPlaylistName;
@@ -80,15 +81,20 @@ namespace StreamRecorder
 		int currentIndex {1};
 		bool recording {false};
 
-		Private(Util::FileSystemPtr fileSystem, StreamRecordablePtr streamRecordable) :
+		Private(Util::FileSystemPtr fileSystem, Tagging::TagWriterPtr tagWriter, StreamRecordablePtr streamRecordable) :
 			fileSystem {std::move(fileSystem)},
+			tagWriter {std::move(tagWriter)},
 			streamRecordable {std::move(streamRecordable)} {}
 	};
 
 	StreamRecorder::StreamRecorder(PlayManager* playManager, Util::FileSystemPtr fileSystem,
-	                               StreamRecordablePtr streamRecordable, QObject* parent) :
+	                               Tagging::TagWriterPtr tagWriter, StreamRecordablePtr streamRecordable,
+	                               QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<StreamRecorder::Private>(std::move(fileSystem), std::move(streamRecordable))}
+		m {Pimpl::make<StreamRecorder::Private>(std::move(fileSystem),
+		                                        std::move(tagWriter),
+		                                        std::move(streamRecordable))
+		}
 	{
 		connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 	}
@@ -126,10 +132,8 @@ namespace StreamRecorder
 		}
 
 		spLog(Log::Info, this) << "Finalize file " << m->recordingDestination;
-
-		m->currentTrack.setFilepath(m->recordingDestination);
-
-		Tagging::Utils::setMetaDataOfFile(m->currentTrack);
+		
+		m->tagWriter->writeMetaData(m->recordingDestination, m->currentTrack);
 		m->sessionCollector.push_back(m->currentTrack);
 
 		M3UParser::saveM3UPlaylist(m->sessionPlaylistName, m->sessionCollector, true);
