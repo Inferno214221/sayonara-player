@@ -7,7 +7,7 @@ function(NEW_TEST ...)
 			Common/PlayManagerMock.h
 			Common/FileSystemMock.cpp
 			Common/DirectoryReaderMock.cpp
-			Common/TagReaderMock.cpp
+            Common/TaggingMocks.cpp
 			${ARGV} ${RESOURCES_RCC})
 
 	target_link_libraries(${TEST_NAME}

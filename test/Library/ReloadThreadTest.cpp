@@ -19,7 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/TestTracks.h"
-#include "Common/TagReaderMock.h"
+#include "Common/TaggingMocks.h"
 
 #include "Components/Library/Threads/ReloadThread.h"
 #include "Components/Library/Threads/ReloadThreadFileScanner.h"

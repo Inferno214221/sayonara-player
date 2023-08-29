@@ -19,7 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/FileSystemMock.h"
-#include "Common/TagReaderMock.h"
+#include "Common/TaggingMocks.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"

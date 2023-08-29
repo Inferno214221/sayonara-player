@@ -18,7 +18,7 @@
  */
 
 #include "Common/SayonaraTest.h"
-#include "Common/TagReaderMock.h"
+#include "Common/TaggingMocks.h"
 #include "Common/FileSystemMock.h"
 
 #include "Components/Library/Importer/CopyProcessor.h"

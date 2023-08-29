@@ -19,7 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/FileSystemMock.h"
-#include "Common/TagReaderMock.h"
+#include "Common/TaggingMocks.h"
 #include "Common/DirectoryReaderMock.h"
 #include "Components/Library/Importer/CacheProcessor.h"
 #include "Components/Library/Importer/ImportCache.h"
