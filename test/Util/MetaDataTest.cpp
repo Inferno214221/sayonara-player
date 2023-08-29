@@ -58,6 +58,7 @@ class MetaDataTest :
 		[[maybe_unused]] void streamTest();
 		[[maybe_unused]] void moveTest();
 		[[maybe_unused]] void setRadioStationTest();
+		[[maybe_unused]] void testRadioModeConversion();
 };
 
 [[maybe_unused]] void MetaDataTest::copyTest() // NOLINT(readability-convert-member-functions-to-static)
@@ -155,6 +156,23 @@ MetaDataTest::setRadioStationTest() // NOLINT(readability-convert-member-functio
 		QVERIFY(track.artist() == track.radioStation());
 		QVERIFY(track.title() == track.radioStationName());
 		QVERIFY(track.album() == track.title());
+	}
+}
+
+void MetaDataTest::testRadioModeConversion()
+{
+	constexpr const auto radioModes = std::array {
+		RadioMode::Off,
+		RadioMode::Podcast,
+		RadioMode::Soundcloud,
+		RadioMode::Station,
+		RadioMode::Undefined
+	};
+
+	for(const auto& radioMode: radioModes)
+	{
+		const auto variant = QVariant::fromValue(radioMode);
+		QVERIFY(variant.value<RadioMode>() == radioMode);
 	}
 }
 

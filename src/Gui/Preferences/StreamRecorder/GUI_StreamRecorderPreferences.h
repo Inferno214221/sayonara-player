@@ -27,10 +27,16 @@
 
 #include "Gui/Preferences/PreferenceWidget.h"
 #include "Utils/Pimpl.h"
+#include "Utils/FileSystem.h"
 
 #include <QPushButton>
 
 UI_FWD(GUI_StreamRecorderPreferences)
+
+namespace Util
+{
+	class FileSystem;
+}
 
 class TagButton :
 	public Gui::WidgetTemplate<QPushButton>
@@ -54,7 +60,7 @@ class GUI_StreamRecorderPreferences :
 	UI_CLASS(GUI_StreamRecorderPreferences)
 
 	public:
-		explicit GUI_StreamRecorderPreferences(const QString& identifier);
+		GUI_StreamRecorderPreferences(const QString& identifier, const std::shared_ptr<Util::FileSystem>& filesystem);
 		~GUI_StreamRecorderPreferences() override;
 
 		bool commit() override;

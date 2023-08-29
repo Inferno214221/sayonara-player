@@ -31,9 +31,9 @@
 
 #include <vector>
 
-namespace StreamRecorder
+namespace Util
 {
-	class StreamRecorder;
+	class FileSystem;
 }
 
 class PlayManager;
@@ -44,31 +44,32 @@ namespace Engine
 	class LevelDataReceiver;
 
 	class Pipeline;
-	using PipelinePtr=std::shared_ptr<Pipeline>;
+	using PipelinePtr = std::shared_ptr<Pipeline>;
 	/**
 	 * @brief The PlaybackEngine class
 	 * @ingroup Engine
 	 */
 	class Engine :
-			public QObject
+		public QObject
 	{
 
 		Q_OBJECT
 		PIMPL(Engine)
 
-	private:
-		/**
-		 * @brief The GaplessState enum
-		 * @ingroup Engine
-		 */
-		enum class GaplessState : uint8_t
-		{
-			NoGapless=0,		// no gapless enabled at all
-			AboutToFinish,		// the phase when the new track is already displayed but not played yet
-			TrackFetched,		// track is requested, but no yet there
-			Playing,			// currently playing
-			Stopped
-		};
+		private:
+			/**
+			 * @brief The GaplessState enum
+			 * @ingroup Engine
+			 */
+			enum class GaplessState :
+				uint8_t
+			{
+				NoGapless = 0,        // no gapless enabled at all
+				AboutToFinish,        // the phase when the new track is already displayed but not played yet
+				TrackFetched,        // track is requested, but no yet there
+				Playing,            // currently playing
+				Stopped
+			};
 
 		signals:
 			void sigDataAvailable(const QByteArray& data);
@@ -87,7 +88,8 @@ namespace Engine
 			void sigError(const QString& error_message);
 
 		public:
-			explicit Engine(PlayManager* playManager, QObject* parent=nullptr);
+			Engine(const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager,
+			       QObject* parent = nullptr);
 			~Engine();
 
 			void updateBitrate(Bitrate br, GstElement* src);

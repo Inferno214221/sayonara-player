@@ -22,6 +22,7 @@
 
 #include "Components/Engine/PipelineExtensions/StreamRecordable.h"
 #include "Components/PlayManager/PlayManager.h"
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -33,7 +34,6 @@
 #include "Utils/Utils.h"
 
 #include <QDir>
-#include <QFile>
 #include <QDate>
 #include <QTime>
 
@@ -68,6 +68,7 @@ namespace StreamRecorder
 
 	struct StreamRecorder::Private
 	{
+		Util::FileSystemPtr fileSystem;
 		StreamRecordablePtr streamRecordable;
 		QString recordingDestination;
 		QString sessionPlaylistName;
@@ -79,14 +80,15 @@ namespace StreamRecorder
 		int currentIndex {1};
 		bool recording {false};
 
-		explicit Private(StreamRecordablePtr streamRecordable) :
+		Private(Util::FileSystemPtr fileSystem, StreamRecordablePtr streamRecordable) :
+			fileSystem {std::move(fileSystem)},
 			streamRecordable {std::move(streamRecordable)} {}
 	};
 
-	StreamRecorder::StreamRecorder(PlayManager* playManager, StreamRecordablePtr streamRecordable,
-	                               QObject* parent) :
+	StreamRecorder::StreamRecorder(PlayManager* playManager, Util::FileSystemPtr fileSystem,
+	                               StreamRecordablePtr streamRecordable, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<StreamRecorder::Private>(std::move(streamRecordable))}
+		m {Pimpl::make<StreamRecorder::Private>(std::move(fileSystem), std::move(streamRecordable))}
 	{
 		connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
 	}
@@ -117,8 +119,7 @@ namespace StreamRecorder
 
 	bool StreamRecorder::save()
 	{
-		const auto fileInfo = QFileInfo(m->recordingDestination);
-		if(!fileInfo.exists())
+		if(!m->fileSystem->exists(m->recordingDestination))
 		{
 			spLog(Log::Info, this) << "Skip file " << m->recordingDestination;
 			return false;
@@ -174,7 +175,7 @@ namespace StreamRecorder
 			return;
 		}
 
-		Util::File::createDirectories(Util::File::getParentDirectory(audioPath));
+		m->fileSystem->createDirectories(Util::File::getParentDirectory(audioPath));
 
 		m->recordingDestination = audioPath;
 		m->sessionPlaylistName = playlistPath;

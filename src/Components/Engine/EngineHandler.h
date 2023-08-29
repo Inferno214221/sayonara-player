@@ -33,6 +33,11 @@
 
 class PlayManager;
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace Engine
 {
 	/**
@@ -51,7 +56,7 @@ namespace Engine
 		PIMPL(Handler)
 
 		public:
-			explicit Handler(PlayManager* playManager);
+			Handler(const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager);
 			~Handler() override;
 
 			void shutdown();

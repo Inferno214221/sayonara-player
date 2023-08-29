@@ -33,6 +33,11 @@ namespace PipelineExtensions
 	class StreamRecordable;
 }
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace StreamRecorder
 {
 	class StreamRecorder :
@@ -42,9 +47,10 @@ namespace StreamRecorder
 
 		public:
 			StreamRecorder(PlayManager* playManager,
+			               std::shared_ptr<Util::FileSystem> fileSystem,
 			               std::shared_ptr<PipelineExtensions::StreamRecordable> streamRecordable,
 			               QObject* parent = nullptr);
-			~StreamRecorder();
+			~StreamRecorder() override;
 
 			void changeTrack(const MetaData& track);
 

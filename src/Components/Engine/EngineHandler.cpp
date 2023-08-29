@@ -60,18 +60,16 @@ struct Handler::Private
 
 	Engine* engine;
 
-	Private(Handler* engineHandler, PlayManager* playManager) :
-		engine(new Engine(playManager, engineHandler)) {}
+	Private(Handler* engineHandler, const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager) :
+		engine(new Engine(fileSystem, playManager, engineHandler)) {}
 };
 
-Handler::Handler(PlayManager* playManager) :
-	QObject(),
-	CoverDataProvider()
+Handler::Handler(const std::shared_ptr<Util::FileSystem>& fileSystem, PlayManager* playManager) :
+	CoverDataProvider(),
+	m {Pimpl::make<Private>(this, fileSystem, playManager)}
 {
-	m = Pimpl::make<Private>(this, playManager);
-
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
-	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, [=](const auto& track) {
+	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, [this](const auto& track) {
 		m->engine->changeTrack(track);
 	});
 	connect(playManager, &PlayManager::sigSeekedAbsoluteMs, m->engine, &Engine::jumpAbsMs);

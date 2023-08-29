@@ -95,6 +95,7 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MeasureApp.h"
@@ -137,6 +138,7 @@ static void initResources() // must be static for some reason
 
 struct Application::Private
 {
+	Util::FileSystemPtr fileSystem;
 	NotificationHandler* notificationHandler;
 	PlayManager* playManager;
 	Engine::Handler* engine;
@@ -160,9 +162,10 @@ struct Application::Private
 	bool shutdownTriggered {false};
 
 	explicit Private(Application* app) :
+		fileSystem {Util::FileSystem::create()},
 		notificationHandler {NotificationHandler::create(app)},
 		playManager {PlayManager::create(notificationHandler, app)},
-		engine {new Engine::Handler(playManager)},
+		engine {new Engine::Handler(fileSystem, playManager)},
 		sessionManager {new Session::Manager(playManager)},
 		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
 		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playManager)},
@@ -359,7 +362,7 @@ void Application::initPreferences()
 
 	preferences->registerPreferenceDialog(new GUI_ProxyPreferences("proxy"));
 	preferences->registerPreferenceDialog(new GUI_StreamPreferences("streams"));
-	preferences->registerPreferenceDialog(new GUI_StreamRecorderPreferences("streamrecorder"));
+	preferences->registerPreferenceDialog(new GUI_StreamRecorderPreferences("streamrecorder", m->fileSystem));
 	preferences->registerPreferenceDialog(new GUI_BroadcastPreferences("broadcast"));
 	preferences->registerPreferenceDialog(new GUI_RemoteControlPreferences("remotecontrol"));
 

@@ -28,7 +28,7 @@
 #include "Gui/Utils/Widgets/DirectoryChooser.h"
 
 #include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
@@ -58,11 +58,16 @@ namespace
 struct GUI_StreamRecorderPreferences::Private
 {
 	QString errorString;
+	Util::FileSystemPtr fileSystem;
+
+	Private(Util::FileSystemPtr fileSystem) :
+		fileSystem {std::move(fileSystem)} {}
 };
 
-GUI_StreamRecorderPreferences::GUI_StreamRecorderPreferences(const QString& identifier) :
+GUI_StreamRecorderPreferences::GUI_StreamRecorderPreferences(const QString& identifier,
+                                                             const Util::FileSystemPtr& fileSystem) :
 	Base(identifier),
-	m {Pimpl::make<Private>()} {}
+	m {Pimpl::make<Private>(fileSystem)} {}
 
 GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences()
 {
@@ -223,7 +228,7 @@ bool GUI_StreamRecorderPreferences::commit()
 
 	if(isActive)
 	{
-		if(!Util::File::exists(path))
+		if(!m->fileSystem->exists(path))
 		{
 			if(path.isEmpty())
 			{
@@ -310,7 +315,7 @@ struct TagButton::Private
 {
 	QString tagName;
 
-	Private(QString tagName) :
+	explicit Private(QString tagName) :
 		tagName(std::move(tagName)) {}
 };
 

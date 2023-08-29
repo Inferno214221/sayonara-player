@@ -44,7 +44,7 @@ namespace Engine
 		public PipelineExtensions::DelayedPlayable,
 		public PipelineExtensions::BroadcastDataReceiver,
 		public PipelineExtensions::PositionAccessible,
-		public PipelineExtensions::Pitchable,
+		//public PipelineExtensions::Pitchable,
 		public PipelineExtensions::EqualizerAccessible,
 		public PipelineExtensions::StreamRecordable
 	{
@@ -107,7 +107,7 @@ namespace Engine
 			double internalVolume() const override;            // Crossfader
 
 			GstElement* positionElement() const override;
-			GstElement* pitchElement() const override;
+			//GstElement* pitchElement() const override;
 			GstElement* equalizerElement() const override;
 	};
 }

@@ -25,12 +25,13 @@
 
 #include "StreamRecorder/StreamRecorder.h"
 
-#include "Utils/MetaData/MetaData.h"
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaData.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/Logger/Logger.h"
-#include "Utils/Language/Language.h"
 
 #include <QUrl>
 #include <QList>
@@ -43,7 +44,7 @@ namespace Engine
 	struct PipelineCreationException :
 		public std::exception
 	{
-		const char* what() const noexcept override;
+		[[nodiscard]] const char* what() const noexcept override;
 	};
 
 	const char* PipelineCreationException::what() const noexcept
@@ -53,6 +54,7 @@ namespace Engine
 
 	struct Engine::Engine::Private
 	{
+		Util::FileSystemPtr fileSystem;
 		MetaData currentTrack;
 
 		PipelinePtr pipeline, otherPipeline;
@@ -66,7 +68,8 @@ namespace Engine
 		MilliSeconds currentPositionMs;
 		GaplessState gaplessState;
 
-		Private(PlayManager* playManager) :
+		Private(Util::FileSystemPtr fileSystem, PlayManager* playManager) :
+			fileSystem(std::move(fileSystem)),
 			playManager(playManager),
 			currentPositionMs(0),
 			gaplessState(GaplessState::Stopped) {}
@@ -86,11 +89,10 @@ namespace Engine
 		}
 	};
 
-	Engine::Engine(PlayManager* playManager, QObject* parent) :
-		QObject(parent)
+	Engine::Engine(const Util::FileSystemPtr& fileSystem, PlayManager* playManager, QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(fileSystem, playManager)}
 	{
-		m = Pimpl::make<Private>(playManager);
-
 		gst_init(nullptr, nullptr);
 
 		m->pipeline = initPipeline("FirstPipeline");
@@ -466,7 +468,10 @@ namespace Engine
 		{
 			if(!m->streamRecorder)
 			{
-				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager, m->pipeline, this);
+				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager,
+				                                                       m->fileSystem,
+				                                                       m->pipeline,
+				                                                       this);
 			}
 		}
 

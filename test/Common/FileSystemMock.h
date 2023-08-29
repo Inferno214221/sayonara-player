@@ -31,7 +31,7 @@ namespace Test
 		public Util::FileSystem
 	{
 		public:
-			explicit FileSystemMock(const QMap<QString, QStringList>& fileStructure);
+			explicit FileSystemMock(const QMap<QString, QStringList>& fileStructure = QMap<QString, QStringList>());
 
 			~FileSystemMock() noexcept override = default;
 

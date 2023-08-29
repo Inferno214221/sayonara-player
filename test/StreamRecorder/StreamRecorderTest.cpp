@@ -1,5 +1,6 @@
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/PlayManagerMock.h"
+#include "test/Common/FileSystemMock.h"
 
 #include "Components/Engine/StreamRecorder/StreamRecorder.h"
 #include "Components/Engine/PipelineExtensions/StreamRecordable.h"
@@ -83,20 +84,27 @@ namespace
 		const auto currentDate = QDate::currentDate();
 		return QString("%1%2%3")
 			.arg(currentDate.year())
-			.arg(currentDate.month(), 2, 10, QChar('0'))
-			.arg(currentDate.day(), 2, 10, QChar('0'));
+			.arg(currentDate.month(), 2, 10, QChar('0')) // NOLINT(readability-magic-numbers)
+			.arg(currentDate.day(), 2, 10, QChar('0')); // NOLINT(readability-magic-numbers)
+	}
+
+	QMap<QString, QStringList> createStructure(const QString& path)
+	{
+		return {{path, {}}};
 	}
 
 	struct TestEnv
 	{
+		Util::FileSystemPtr fileSystem;
 		PlayManager* playManager;
 		std::shared_ptr<PipelineMock> pipeline;
 		StreamRecorder::StreamRecorder streamRecorder;
 
-		TestEnv() :
+		explicit TestEnv(const QString& tempPath) :
+			fileSystem {std::make_shared<Test::FileSystemMock>(createStructure(tempPath))},
 			playManager {new PlayManagerMock()},
 			pipeline {std::make_shared<PipelineMock>()},
-			streamRecorder {StreamRecorder::StreamRecorder(playManager, pipeline, nullptr)} {}
+			streamRecorder {StreamRecorder::StreamRecorder(playManager, fileSystem, pipeline, nullptr)} {}
 	};
 }
 
@@ -132,7 +140,7 @@ class StreamRecorderTest :
 		[[maybe_unused]] void
 		testIfRecordFlagIsOffFilenameIsEmpty() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -156,7 +164,7 @@ class StreamRecorderTest :
 
 		[[maybe_unused]] void testNonWWWFileStopsSession() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -185,7 +193,7 @@ class StreamRecorderTest :
 		[[maybe_unused]] void
 		ifFilesAreSavedProperlyIndexesAreCounted() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -216,14 +224,12 @@ class StreamRecorderTest :
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
 			}
-
-			Util::File::deleteFiles({tempPath()});
 		}
 
 		[[maybe_unused]] void
 		ifFileIsNotSavedTheIndexStaysTheSame() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -252,14 +258,12 @@ class StreamRecorderTest :
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
 			}
-
-			Util::File::deleteFiles({tempPath()});
 		}
 
 		[[maybe_unused]] void
 		testIndexStartsOverAfterNextSession() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -299,14 +303,12 @@ class StreamRecorderTest :
 					testEnv.streamRecorder.record(true); // start new session
 				}
 			}
-
-			Util::File::deleteFiles({tempPath()});
 		}
 
 		[[maybe_unused]] void
 		testSessionStopsAfterStoppedSignalFrom() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -346,14 +348,12 @@ class StreamRecorderTest :
 					testEnv.streamRecorder.record(true);
 				}
 			}
-
-			Util::File::deleteFiles({tempPath()});
 		}
 
 		[[maybe_unused]] void
 		testSessionDoesNotComeUpIfRecordIsNotTriggeredAgain() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto testEnv = TestEnv {};
+			auto testEnv = TestEnv {tempPath()};
 			struct TestCase
 			{
 				int number;
@@ -395,8 +395,6 @@ class StreamRecorderTest :
 					testEnv.playManager->sigPlaystateChanged(PlayState::Stopped);
 				}
 			}
-
-			Util::File::deleteFiles({tempPath()});
 		}
 };
 
