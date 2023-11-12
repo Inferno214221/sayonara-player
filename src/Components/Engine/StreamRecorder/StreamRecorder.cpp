@@ -21,7 +21,6 @@
 #include "StreamRecorder.h"
 
 #include "Components/Engine/PipelineExtensions/StreamRecordable.h"
-#include "Components/PlayManager/PlayManager.h"
 #include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
@@ -87,17 +86,13 @@ namespace StreamRecorder
 			streamRecordable {std::move(streamRecordable)} {}
 	};
 
-	StreamRecorder::StreamRecorder(PlayManager* playManager, Util::FileSystemPtr fileSystem,
-	                               Tagging::TagWriterPtr tagWriter, StreamRecordablePtr streamRecordable,
-	                               QObject* parent) :
+	StreamRecorder::StreamRecorder(Util::FileSystemPtr fileSystem, Tagging::TagWriterPtr tagWriter,
+	                               StreamRecordablePtr streamRecordable, QObject* parent) :
 		QObject(parent),
 		m {Pimpl::make<StreamRecorder::Private>(std::move(fileSystem),
 		                                        std::move(tagWriter),
 		                                        std::move(streamRecordable))
-		}
-	{
-		connect(playManager, &PlayManager::sigPlaystateChanged, this, &StreamRecorder::playstateChanged);
-	}
+		} {}
 
 	StreamRecorder::~StreamRecorder() = default;
 
@@ -118,7 +113,7 @@ namespace StreamRecorder
 	void StreamRecorder::endSession()
 	{
 		save();
-		
+
 		m->recording = false;
 		m->recordingDestination.clear();
 		m->sessionPlaylistName.clear();

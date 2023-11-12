@@ -41,8 +41,6 @@ namespace Util
 	class FileSystem;
 }
 
-class PlayManager;
-
 namespace Engine
 {
 	class SpectrumDataReceiver;
@@ -95,7 +93,7 @@ namespace Engine
 		public:
 			Engine(const std::shared_ptr<Util::FileSystem>& fileSystem,
 			       const std::shared_ptr<Tagging::TagWriter>& tagWriter,
-			       PlayManager* playManager, QObject* parent = nullptr);
+			       QObject* parent = nullptr);
 			~Engine();
 
 			void updateBitrate(Bitrate br, GstElement* src);

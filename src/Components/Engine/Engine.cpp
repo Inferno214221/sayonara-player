@@ -64,16 +64,14 @@ namespace Engine
 		std::vector<float> spectrumValues;
 		QPair<float, float> levelValues;
 
-		PlayManager* playManager;
 		StreamRecorder::StreamRecorder* streamRecorder = nullptr;
 
 		MilliSeconds currentPositionMs;
 		GaplessState gaplessState;
 
-		Private(Util::FileSystemPtr fileSystem, Tagging::TagWriterPtr tagWriter, PlayManager* playManager) :
+		Private(Util::FileSystemPtr fileSystem, Tagging::TagWriterPtr tagWriter) :
 			fileSystem(std::move(fileSystem)),
 			tagWriter(std::move(tagWriter)),
-			playManager(playManager),
 			currentPositionMs(0),
 			gaplessState(GaplessState::Stopped) {}
 
@@ -92,10 +90,9 @@ namespace Engine
 		}
 	};
 
-	Engine::Engine(const Util::FileSystemPtr& fileSystem, const Tagging::TagWriterPtr& tagWriter,
-	               PlayManager* playManager, QObject* parent) :
+	Engine::Engine(const Util::FileSystemPtr& fileSystem, const Tagging::TagWriterPtr& tagWriter, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<Private>(fileSystem, tagWriter, playManager)}
+		m {Pimpl::make<Private>(fileSystem, tagWriter)}
 	{
 		gst_init(nullptr, nullptr);
 
@@ -472,11 +469,8 @@ namespace Engine
 		{
 			if(!m->streamRecorder)
 			{
-				m->streamRecorder = new StreamRecorder::StreamRecorder(m->playManager,
-				                                                       m->fileSystem,
-				                                                       m->tagWriter,
-				                                                       m->pipeline,
-				                                                       this);
+				m->streamRecorder =
+					new StreamRecorder::StreamRecorder(m->fileSystem, m->tagWriter, m->pipeline, this);
 			}
 		}
 

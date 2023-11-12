@@ -50,8 +50,7 @@ namespace StreamRecorder
 		PIMPL(StreamRecorder)
 
 		public:
-			StreamRecorder(PlayManager* playManager,
-			               std::shared_ptr<Util::FileSystem> fileSystem,
+			StreamRecorder(std::shared_ptr<Util::FileSystem> fileSystem,
 			               std::shared_ptr<Tagging::TagWriter> tagWriter,
 			               std::shared_ptr<PipelineExtensions::StreamRecordable> streamRecordable,
 			               QObject* parent = nullptr);
@@ -61,9 +60,6 @@ namespace StreamRecorder
 			void updateMetadata(const MetaData& track);
 			void endSession();
 			[[nodiscard]] bool isRecording() const;
-
-		private slots:
-			void playstateChanged(PlayState state);
 
 		private: // NOLINT(readability-redundant-access-specifiers)
 			bool save();

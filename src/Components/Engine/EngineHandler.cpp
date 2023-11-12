@@ -61,15 +61,14 @@ struct Handler::Private
 	Engine* engine;
 
 	Private(Handler* engineHandler, const std::shared_ptr<Util::FileSystem>& fileSystem,
-	        const std::shared_ptr<Tagging::TagWriter>& tagWriter,
-	        PlayManager* playManager) :
-		engine(new Engine(fileSystem, tagWriter, playManager, engineHandler)) {}
+	        const std::shared_ptr<Tagging::TagWriter>& tagWriter) :
+		engine(new Engine(fileSystem, tagWriter, engineHandler)) {}
 };
 
 Handler::Handler(const std::shared_ptr<Util::FileSystem>& fileSystem,
                  const std::shared_ptr<Tagging::TagWriter>& tagWriter, PlayManager* playManager) :
 	CoverDataProvider(),
-	m {Pimpl::make<Private>(this, fileSystem, tagWriter, playManager)}
+	m {Pimpl::make<Private>(this, fileSystem, tagWriter)}
 {
 	connect(playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
 	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, [this](const auto& track) {
@@ -141,6 +140,7 @@ void Handler::playstateChanged(PlayState state)
 		case PlayState::Stopped:
 			m->engine->stop();
 			break;
+
 		default:
 			return;
 	}
