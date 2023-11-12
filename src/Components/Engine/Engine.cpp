@@ -285,7 +285,7 @@ namespace Engine
 
 		if(isStreamRecorderRecording())
 		{
-			setStreamRecorderRecording(true);
+			m->streamRecorder->updateMetadata(m->currentTrack);
 		}
 
 		m->changeGaplessState(GaplessState::Playing);
@@ -482,10 +482,14 @@ namespace Engine
 
 		if(m->streamRecorder)
 		{
-			m->streamRecorder->record(b);
-			if(b)
+			if(b && !m->streamRecorder->isRecording())
 			{
-				m->streamRecorder->changeTrack(m->currentTrack);
+				m->streamRecorder->startNewSession(m->currentTrack);
+			}
+
+			else if(!b && m->streamRecorder->isRecording())
+			{
+				m->streamRecorder->endSession();
 			}
 		}
 	}
@@ -518,7 +522,7 @@ namespace Engine
 
 		if(isStreamRecorderRecording())
 		{
-			setStreamRecorderRecording(true);
+			m->streamRecorder->updateMetadata(track);
 		}
 	}
 

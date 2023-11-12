@@ -101,10 +101,9 @@ namespace StreamRecorder
 
 	StreamRecorder::~StreamRecorder() = default;
 
-	void StreamRecorder::startNewSession()
+	void StreamRecorder::startNewSession(const MetaData& track)
 	{
 		m->recording = true;
-		m->currentTrack.setTitle({});
 		m->sessionCollector.clear();
 		m->recordingDestination.clear();
 		m->sessionPlaylistName.clear();
@@ -112,11 +111,14 @@ namespace StreamRecorder
 		m->date = QDate::currentDate();
 		m->time = QTime::currentTime();
 		m->streamRecordable->prepareForRecording();
+
+		setCurrentTrack(track);
 	}
 
 	void StreamRecorder::endSession()
 	{
 		save();
+		
 		m->recording = false;
 		m->recordingDestination.clear();
 		m->sessionPlaylistName.clear();
@@ -132,7 +134,7 @@ namespace StreamRecorder
 		}
 
 		spLog(Log::Info, this) << "Finalize file " << m->recordingDestination;
-		
+
 		m->tagWriter->writeMetaData(m->recordingDestination, m->currentTrack);
 		m->sessionCollector.push_back(m->currentTrack);
 
@@ -141,7 +143,31 @@ namespace StreamRecorder
 		return true;
 	}
 
-	void StreamRecorder::changeTrack(const MetaData& track)
+	void StreamRecorder::setCurrentTrack(const MetaData& track)
+	{
+		m->currentTrack = track;
+		m->currentTrack.setYear(static_cast<Year>(QDateTime::currentDateTime().date().year()));
+		m->currentTrack.setTrackNumber(static_cast<TrackNum>(m->currentIndex));
+
+		const auto [audioPath, playlistPath] = prepareTargetPath(m->currentTrack, m->date, m->time);
+		if(audioPath.isEmpty())
+		{
+			spLog(Log::Warning, this) << "Cannot determine target path";
+			endSession();
+			return;
+		}
+
+		m->fileSystem->createDirectories(Util::File::getParentDirectory(audioPath));
+
+		m->recordingDestination = audioPath;
+		m->sessionPlaylistName = playlistPath;
+
+		spLog(Log::Info, this) << "Change file: " << m->recordingDestination;
+
+		m->streamRecordable->setRecordingPath(m->recordingDestination);
+	}
+
+	void StreamRecorder::updateMetadata(const MetaData& track)
 	{
 		if(!m->recording)
 		{
@@ -167,53 +193,8 @@ namespace StreamRecorder
 			return;
 		}
 
-		m->currentTrack = track;
-		m->currentTrack.setYear(static_cast<Year>(QDateTime::currentDateTime().date().year()));
-		m->currentTrack.setTrackNumber(static_cast<TrackNum>(m->currentIndex));
-
-		const auto [audioPath, playlistPath] = prepareTargetPath(m->currentTrack, m->date, m->time);
-		if(audioPath.isEmpty())
-		{
-			spLog(Log::Warning, this) << "Cannot determine target path";
-			endSession();
-			return;
-		}
-
-		m->fileSystem->createDirectories(Util::File::getParentDirectory(audioPath));
-
-		m->recordingDestination = audioPath;
-		m->sessionPlaylistName = playlistPath;
-
-		spLog(Log::Info, this) << "Change file: " << m->recordingDestination;
-
-		m->streamRecordable->setRecordingPath(m->recordingDestination);
-	}
-
-	void StreamRecorder::record(const bool b)
-	{
-		if(b == m->recording)
-		{
-			return;
-		}
-
-		if(b)
-		{
-			startNewSession();
-		}
-
-		else
-		{
-			endSession();
-		}
+		setCurrentTrack(track);
 	}
 
 	bool StreamRecorder::isRecording() const { return m->recording; }
-
-	void StreamRecorder::playstateChanged(const PlayState state)
-	{
-		if(state == PlayState::Stopped)
-		{
-			record(false);
-		}
-	}
 }

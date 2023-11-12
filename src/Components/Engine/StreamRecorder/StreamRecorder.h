@@ -26,7 +26,6 @@
 #include <QObject>
 
 class MetaData;
-class PlayManager;
 
 namespace PipelineExtensions
 {
@@ -58,9 +57,9 @@ namespace StreamRecorder
 			               QObject* parent = nullptr);
 			~StreamRecorder() override;
 
-			void changeTrack(const MetaData& track);
-
-			void record(bool b);
+			void startNewSession(const MetaData& track);
+			void updateMetadata(const MetaData& track);
+			void endSession();
 			[[nodiscard]] bool isRecording() const;
 
 		private slots:
@@ -68,8 +67,7 @@ namespace StreamRecorder
 
 		private: // NOLINT(readability-redundant-access-specifiers)
 			bool save();
-			void startNewSession();
-			void endSession();
+			void setCurrentTrack(const MetaData& track);
 	};
 }
 
