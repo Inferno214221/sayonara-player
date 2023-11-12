@@ -1,5 +1,4 @@
 #include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
 #include "test/Common/FileSystemMock.h"
 #include "test/Common/TaggingMocks.h"
 
@@ -14,23 +13,29 @@
 
 #include <QDateTime>
 #include <QFile>
+#include <utility>
 
 namespace SR = StreamRecorder;
 
 namespace
 {
-	const auto StreamedData = QByteArray {};
-
 	class PipelineMock :
 		public PipelineExtensions::StreamRecordable
 	{
 		public:
-			PipelineMock() = default;
+			explicit PipelineMock(Util::FileSystemPtr fileSystem) :
+				m_fileSystem {std::move(fileSystem)} {};
 			~PipelineMock() override = default;
 
 			void setRecordingPath(const QString& targetPath) override
 			{
+				const auto StreamedData = QByteArray {};
+
 				m_targetPath = targetPath;
+				if(m_isSaveEnabled)
+				{
+					m_fileSystem->writeFile(StreamedData, targetPath);
+				}
 			}
 
 			void prepareForRecording() override
@@ -54,9 +59,16 @@ namespace
 				return m_targetPath;
 			}
 
+			void toggleSaveFile(const bool b)
+			{
+				m_isSaveEnabled = b;
+			}
+
 		private:
+			bool m_isSaveEnabled {true};
 			bool m_sessionActive {false};
 			QString m_targetPath;
+			Util::FileSystemPtr m_fileSystem;
 	};
 
 	QString createWWWPath(const int i)
@@ -83,7 +95,7 @@ namespace
 			.arg(currentDate.day(), 2, 10, QChar('0')); // NOLINT(readability-magic-numbers)
 	}
 
-	QMap<QString, QStringList> createStructure(const QString& path)
+	QMap<QString, QStringList> createFileStructure(const QString& path)
 	{
 		return {{path, {}}};
 	}
@@ -92,17 +104,33 @@ namespace
 	{
 		Util::FileSystemPtr fileSystem;
 		Tagging::TagWriterPtr tagWriter;
-		PlayManager* playManager;
 		std::shared_ptr<PipelineMock> pipeline;
 		StreamRecorder::StreamRecorder streamRecorder;
 
 		explicit TestEnv(const QString& tempPath) :
-			fileSystem {std::make_shared<Test::FileSystemMock>(createStructure(tempPath))},
+			fileSystem {std::make_shared<Test::FileSystemMock>(createFileStructure(tempPath))},
 			tagWriter {std::make_shared<Test::TagWriterMock>()},
-			playManager {new PlayManagerMock()},
-			pipeline {std::make_shared<PipelineMock>()},
-			streamRecorder {StreamRecorder::StreamRecorder(playManager, fileSystem, tagWriter, pipeline, nullptr)} {}
+			pipeline {std::make_shared<PipelineMock>(fileSystem)},
+			streamRecorder {StreamRecorder::StreamRecorder(fileSystem, tagWriter, pipeline, nullptr)} {}
 	};
+
+	void createOrUpdateSession(TestEnv& testEnv, const bool create, const MetaData& track)
+	{
+		if(create)
+		{
+			if(testEnv.streamRecorder.isRecording())
+			{
+				testEnv.streamRecorder.endSession();
+			}
+
+			testEnv.streamRecorder.startNewSession(track);
+		}
+
+		else
+		{
+			testEnv.streamRecorder.updateMetadata(track);
+		}
+	}
 }
 
 class StreamRecorderTest :
@@ -138,23 +166,15 @@ class StreamRecorderTest :
 		testIfRecordFlagIsOffFilenameIsEmpty() // NOLINT(readability-convert-member-functions-to-static)
 		{
 			auto testEnv = TestEnv {tempPath()};
-			struct TestCase
-			{
-				int number;
-			};
-
-			const auto testCases = std::array {
-				TestCase {1},
-				TestCase {2},
-				TestCase {8}
-			};
+			constexpr const auto trackNumbers = std::array {1, 2, 3};
 
 			QVERIFY(!testEnv.pipeline->sessionActive());
 			QVERIFY(!testEnv.streamRecorder.isRecording());
 
-			for(const auto& testCase: testCases)
+			for(const auto& trackNumber: trackNumbers)
 			{
-				testEnv.streamRecorder.changeTrack(createTrack(testCase.number, createWWWPath(testCase.number)));
+				const auto track = createTrack(trackNumber, createWWWPath(trackNumber));
+				testEnv.streamRecorder.updateMetadata(track);
 				QVERIFY(testEnv.pipeline->targetPath().isEmpty());
 			}
 		}
@@ -165,23 +185,25 @@ class StreamRecorderTest :
 			struct TestCase
 			{
 				int number;
+				bool isFirstTrack;
 				bool isWWW;
 			};
 
 			const auto testCases = std::array {
-				TestCase {1, true},
-				TestCase {2, true},
-				TestCase {8, false}
+				TestCase {1, true, true},
+				TestCase {2, false, true},
+				TestCase {8, false, false}
 			};
 
-			testEnv.streamRecorder.record(true);
 			for(const auto& testCase: testCases)
 			{
 				const auto filepath = testCase.isWWW
 				                      ? createWWWPath(testCase.number)
 				                      : tempPath("someFile.mp3");
+				const auto track = createTrack(testCase.number, filepath);
 
-				testEnv.streamRecorder.changeTrack(createTrack(testCase.number, filepath));
+				createOrUpdateSession(testEnv, testCase.isFirstTrack, track);
+
 				QVERIFY(testCase.isWWW == testEnv.streamRecorder.isRecording());
 				QVERIFY(testCase.isWWW == testEnv.pipeline->sessionActive());
 			}
@@ -194,16 +216,16 @@ class StreamRecorderTest :
 			struct TestCase
 			{
 				int number;
+				bool isFirstTrack;
 				QString expectedFilename;
 			};
 
 			const auto testCases = std::array {
-				TestCase {1, "0001 - title1.mp3"},
-				TestCase {2, "0002 - title2.mp3"},
-				TestCase {8, "0003 - title8.mp3"}
+				TestCase {1, true, "0001 - title1.mp3"},
+				TestCase {2, false, "0002 - title2.mp3"},
+				TestCase {8, false, "0003 - title8.mp3"}
 			};
 
-			testEnv.streamRecorder.record(true);
 			for(const auto& testCase: testCases)
 			{
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
@@ -213,8 +235,7 @@ class StreamRecorderTest :
 						.arg(todaysDateString())
 						.arg(testCase.expectedFilename);
 
-				testEnv.streamRecorder.changeTrack(track);
-				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
+				createOrUpdateSession(testEnv, testCase.isFirstTrack, track);
 
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
@@ -225,24 +246,25 @@ class StreamRecorderTest :
 		ifFileIsNotSavedTheIndexStaysTheSame() // NOLINT(readability-convert-member-functions-to-static)
 		{
 			auto testEnv = TestEnv {tempPath()};
+			testEnv.pipeline->toggleSaveFile(false);
+
 			struct TestCase
 			{
 				int number;
+				bool isFirstTrack;
 				QString expectedFilename;
 			};
 
 			const auto testCases = std::array {
-				TestCase {1, "0001 - title1.mp3"},
-				TestCase {2, "0001 - title2.mp3"},
-				TestCase {3, "0001 - title3.mp3"}
+				TestCase {1, true, "0001 - title1.mp3"},
+				TestCase {2, false, "0001 - title2.mp3"},
+				TestCase {3, false, "0001 - title3.mp3"}
 			};
 
-			testEnv.streamRecorder.record(true);
 			for(const auto& testCase: testCases)
 			{
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
-
-				testEnv.streamRecorder.changeTrack(track);
+				createOrUpdateSession(testEnv, testCase.isFirstTrack, track);
 
 				const auto expectedFilename =
 					QString("%1/%2/%3")
@@ -262,25 +284,22 @@ class StreamRecorderTest :
 			struct TestCase
 			{
 				int number;
-				bool isLastTrackOfSession;
+				bool isFirstTrackOfSession;
 				QString expectedFilename;
 			};
 
 			const auto testCases = std::array {
-				TestCase {1, false, "0001 - title1.mp3"},
+				TestCase {1, true, "0001 - title1.mp3"},
 				TestCase {2, false, "0002 - title2.mp3"},
-				TestCase {3, true, "0003 - title3.mp3"},
-				TestCase {8, false, "0001 - title8.mp3"},
+				TestCase {3, false, "0003 - title3.mp3"},
+				TestCase {8, true, "0001 - title8.mp3"},
 				TestCase {9, false, "0002 - title9.mp3"}
 			};
 
-			testEnv.streamRecorder.record(true);
 			for(const auto& testCase: testCases)
 			{
 				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
-
-				testEnv.streamRecorder.changeTrack(track);
-				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
+				createOrUpdateSession(testEnv, testCase.isFirstTrackOfSession, track);
 
 				const auto expectedFilename =
 					QString("%1/%2/%3")
@@ -290,101 +309,6 @@ class StreamRecorderTest :
 
 				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
 				QVERIFY(testEnv.streamRecorder.isRecording());
-
-				if(testCase.isLastTrackOfSession)
-				{
-					testEnv.streamRecorder.record(false); // end session
-					testEnv.streamRecorder.record(true); // start new session
-				}
-			}
-		}
-
-		[[maybe_unused]] void
-		testSessionStopsAfterStoppedSignalFrom() // NOLINT(readability-convert-member-functions-to-static)
-		{
-			auto testEnv = TestEnv {tempPath()};
-			struct TestCase
-			{
-				int number;
-				bool isLastTrackOfSession;
-				QString expectedFilename;
-			};
-
-			const auto testCases = std::array {
-				TestCase {1, false, "0001 - title1.mp3"},
-				TestCase {2, false, "0002 - title2.mp3"},
-				TestCase {3, true, "0003 - title3.mp3"},
-				TestCase {8, false, "0001 - title8.mp3"},
-				TestCase {9, false, "0002 - title9.mp3"}
-			};
-
-			testEnv.streamRecorder.record(true);
-			for(const auto& testCase: testCases)
-			{
-				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
-
-				testEnv.streamRecorder.changeTrack(track);
-				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
-
-				const auto expectedFilename =
-					QString("%1/%2/%3")
-						.arg(tempPath())
-						.arg(todaysDateString())
-						.arg(testCase.expectedFilename);
-
-				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
-				QVERIFY(testEnv.streamRecorder.isRecording());
-
-				if(testCase.isLastTrackOfSession)
-				{
-					testEnv.playManager->sigPlaystateChanged(PlayState::Stopped);
-					testEnv.streamRecorder.record(true);
-				}
-			}
-		}
-
-		[[maybe_unused]] void
-		testSessionDoesNotComeUpIfRecordIsNotTriggeredAgain() // NOLINT(readability-convert-member-functions-to-static)
-		{
-			auto testEnv = TestEnv {tempPath()};
-			struct TestCase
-			{
-				int number;
-				bool isLastTrackOfSession;
-				QString expectedFilename;
-				bool isRecording;
-			};
-
-			const auto testCases = std::array {
-				TestCase {1, false, "0001 - title1.mp3", true},
-				TestCase {2, false, "0002 - title2.mp3", true},
-				TestCase {3, true, "0003 - title3.mp3", true},
-				TestCase {8, false, QString(), false},
-				TestCase {9, false, QString(), false}
-			};
-
-			testEnv.streamRecorder.record(true);
-			for(const auto& testCase: testCases)
-			{
-				const auto track = createTrack(testCase.number, createWWWPath(testCase.number));
-
-				testEnv.streamRecorder.changeTrack(track);
-				testEnv.fileSystem->writeFile(StreamedData, testEnv.pipeline->targetPath());
-
-				const auto expectedFilename = testCase.expectedFilename.isEmpty()
-				                              ? QString {}
-				                              : QString("%1/%2/%3")
-					                              .arg(tempPath())
-					                              .arg(todaysDateString())
-					                              .arg(testCase.expectedFilename);
-
-				QVERIFY(testEnv.pipeline->targetPath() == expectedFilename);
-				QVERIFY(testEnv.streamRecorder.isRecording() == testCase.isRecording);
-
-				if(testCase.isLastTrackOfSession)
-				{
-					testEnv.playManager->sigPlaystateChanged(PlayState::Stopped);
-				}
 			}
 		}
 };
