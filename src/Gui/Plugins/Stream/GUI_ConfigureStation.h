@@ -33,32 +33,32 @@ class GUI_ConfigureStation :
 {
 	Q_OBJECT
 	PIMPL(GUI_ConfigureStation)
-	UI_CLASS(GUI_ConfigureStation)
+	UI_CLASS_SHARED_PTR(GUI_ConfigureStation)
 
-public:
-	enum Mode
-	{
-		New,
-		Edit,
-		Save
-	};
+	public:
+		enum Mode
+		{
+			New,
+			Edit,
+			Save
+		};
 
-	GUI_ConfigureStation(QWidget* parent=nullptr);
-	virtual ~GUI_ConfigureStation();
+		explicit GUI_ConfigureStation(QWidget* parent = nullptr);
+		~GUI_ConfigureStation() override;
 
-	virtual void init_ui();
+		virtual void init_ui();
 
-	void setError(const QString& message);
-	void setMode(const QString& stream_name, Mode mode);
-	Mode mode() const;
+		void setError(const QString& message);
+		void setMode(const QString& streamName, Mode mode);
+		[[nodiscard]] Mode mode() const;
 
-	virtual StationPtr configuredStation() = 0;
-	virtual QList<QWidget*> configurationWidgets() = 0;
-	virtual void configureWidgets(StationPtr station) = 0;
-	virtual QString labelText(int row) const = 0;
+		virtual StationPtr configuredStation() = 0;
+		virtual QList<QWidget*> configurationWidgets() = 0;
+		virtual void configureWidgets(StationPtr station) = 0;
+		[[nodiscard]] virtual QString labelText(int row) const = 0;
 
-protected:
-	void languageChanged();
+	protected:
+		void languageChanged() override;
 };
 
 #endif // GUI_ConfigureStation_H

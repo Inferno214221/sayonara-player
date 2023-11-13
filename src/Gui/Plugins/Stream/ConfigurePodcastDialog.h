@@ -8,14 +8,16 @@ class ConfigurePodcastDialog :
 {
 	PIMPL(ConfigurePodcastDialog)
 
-public:
-	ConfigurePodcastDialog(QWidget* parent);
-	~ConfigurePodcastDialog() override;
+	public:
+		explicit ConfigurePodcastDialog(QWidget* parent);
+		~ConfigurePodcastDialog() override;
 
-	StationPtr			configuredStation() override;
-	QList<QWidget*>		configurationWidgets() override;
-	void				configureWidgets(StationPtr station) override;
-	QString				labelText(int i) const override;
+		[[nodiscard]] StationPtr configuredStation() override;
+
+		void configureWidgets(StationPtr station) override;
+		[[nodiscard]] QList<QWidget*> configurationWidgets() override;
+
+		[[nodiscard]] QString labelText(int index) const override;
 };
 
 #endif // GUI_CONFIGURESTREAM_H

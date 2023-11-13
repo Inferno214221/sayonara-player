@@ -27,20 +27,20 @@ class PodcastHandler :
 	public AbstractStationHandler
 {
 	Q_OBJECT
-public:
-	explicit PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
-	~PodcastHandler() override;
+	public:
+		explicit PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+		~PodcastHandler() override;
 
 		bool getAllStreams(QList<StationPtr>& stations) override;
-		bool addNewStream(StationPtr station) override;
-		bool deleteStream(const QString& station_name) override;
-		bool update(const QString& station_name, StationPtr station) override;
+		bool addNewStream(const StationPtr& station) override;
+		bool deleteStream(const QString& stationName) override;
+		bool updateStream(const QString& stationName, const StationPtr& station) override;
 
-		StationPtr createStreamInstance(const QString& name, const QString& url) const override;
-		StationPtr station(const QString& name) override;
+		[[nodiscard]] StationPtr createStreamInstance(const QString& name, const QString& url) const override;
+		[[nodiscard]] StationPtr station(const QString& name) override;
 
 	protected:
-		MetaDataList preprocessPlaylist(StationPtr station, MetaDataList tracks) override;
+		MetaDataList preprocessPlaylist(const StationPtr& station, MetaDataList tracks) override;
 };
 
 #endif // STREAMHANDLERPODCASTS_H

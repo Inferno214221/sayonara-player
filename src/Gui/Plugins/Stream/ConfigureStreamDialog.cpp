@@ -10,25 +10,20 @@
 struct ConfigureStreamDialog::Private
 {
 	PlaylistCreator* playlistCreator;
-	QLineEdit* name;
-	QLineEdit* url;
-	QCheckBox* updateMetadata;
+	QLineEdit* name {new QLineEdit()};
+	QLineEdit* url {new QLineEdit()};
+	QCheckBox* updateMetadata {new QCheckBox()};
 
-	Private(PlaylistCreator* playlistCreator) :
-		playlistCreator {playlistCreator},
-		name {new QLineEdit()},
-		url {new QLineEdit()},
-		updateMetadata {new QCheckBox()}
+	explicit Private(PlaylistCreator* playlistCreator) :
+		playlistCreator {playlistCreator}
 	{
 		updateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
 	}
 };
 
 ConfigureStreamDialog::ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent) :
-	GUI_ConfigureStation(parent)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
+	GUI_ConfigureStation(parent),
+	m {Pimpl::make<Private>(playlistCreator)} {}
 
 ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
@@ -39,7 +34,7 @@ StationPtr ConfigureStreamDialog::configuredStation()
 
 void ConfigureStreamDialog::configureWidgets(StationPtr station)
 {
-	auto* stream = dynamic_cast<Stream*>(station.get());
+	auto stream = std::dynamic_pointer_cast<Stream>(station);
 	if(stream)
 	{
 		m->name->setText(stream->name());
@@ -49,8 +44,8 @@ void ConfigureStreamDialog::configureWidgets(StationPtr station)
 
 	else
 	{
-		m->name->setText(QString());
-		m->url->setText(QString());
+		m->name->setText({});
+		m->url->setText({});
 		m->updateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
 	}
 }
@@ -60,7 +55,7 @@ QList<QWidget*> ConfigureStreamDialog::configurationWidgets()
 	return {m->name, m->url, m->updateMetadata};
 }
 
-QString ConfigureStreamDialog::labelText(int index) const
+QString ConfigureStreamDialog::labelText(const int index) const
 {
 	switch(index)
 	{

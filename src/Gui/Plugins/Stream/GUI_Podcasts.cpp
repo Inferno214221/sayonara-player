@@ -30,23 +30,17 @@ struct GUI_Podcasts::Private
 {
 	PlaylistCreator* playlistCreator;
 
-	Private(PlaylistCreator* playlistCreator) :
-		playlistCreator(playlistCreator)
-	{}
+	explicit Private(PlaylistCreator* playlistCreator) :
+		playlistCreator(playlistCreator) {}
 };
 
 GUI_Podcasts::GUI_Podcasts(PlaylistCreator* playlistCreator, QWidget* parent) :
-	Gui::AbstractStationPlugin(playlistCreator, parent)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
+	Gui::AbstractStationPlugin(playlistCreator, parent),
+	m {Pimpl::make<Private>(playlistCreator)} {}
 
 GUI_Podcasts::~GUI_Podcasts()
 {
-	if(ui)
-	{
-		delete ui; ui=nullptr;
-	}
+	delete ui;
 }
 
 QString GUI_Podcasts::name() const

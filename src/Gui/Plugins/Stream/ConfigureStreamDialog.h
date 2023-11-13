@@ -14,10 +14,12 @@ class ConfigureStreamDialog :
 		ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent);
 		~ConfigureStreamDialog() override;
 
-		StationPtr configuredStation() override;
-		QList<QWidget*> configurationWidgets() override;
+		[[nodiscard]] StationPtr configuredStation() override;
+
 		void configureWidgets(StationPtr station) override;
-		QString labelText(int index) const override;
+		[[nodiscard]] QList<QWidget*> configurationWidgets() override;
+		
+		[[nodiscard]] QString labelText(int index) const override;
 };
 
 #endif // GUI_CONFIGURESTREAM_H

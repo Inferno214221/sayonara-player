@@ -39,19 +39,19 @@ bool StreamHandler::getAllStreams(QList<StationPtr>& stations)
 	auto streams = QList<Stream> {};
 	const auto b = db->getAllStreams(streams);
 
-	Util::Algorithm::transform(streams, stations, [&](const auto& stream) {
+	Util::Algorithm::transform(streams, stations, [this](const auto& stream) {
 		return createStreamInstance(stream.name(), stream.url());
 	});
 
 	return b;
 }
 
-bool StreamHandler::addNewStream(StationPtr station)
+bool StreamHandler::addNewStream(const StationPtr& station)
 {
 	auto* db = DB::Connector::instance()->streamConnector();
 
-	const auto* stream = dynamic_cast<Stream*>(station.get());
-	return (stream != nullptr)
+	const auto stream = std::dynamic_pointer_cast<Stream>(station);
+	return stream
 	       ? db->addStream(*stream)
 	       : false;
 }
@@ -63,12 +63,12 @@ bool StreamHandler::deleteStream(const QString& name)
 	return db->deleteStream(name);
 }
 
-bool StreamHandler::update(const QString& name, StationPtr station)
+bool StreamHandler::updateStream(const QString& name, const StationPtr& station)
 {
 	auto* db = DB::Connector::instance()->streamConnector();
-	const auto* stream = dynamic_cast<Stream*>(station.get());
 
-	return (stream != nullptr)
+	const auto stream = std::dynamic_pointer_cast<Stream>(station);
+	return stream
 	       ? db->updateStream(name, *stream)
 	       : false;
 }
@@ -88,9 +88,9 @@ StationPtr StreamHandler::station(const QString& name)
 	       : nullptr;
 }
 
-MetaDataList StreamHandler::preprocessPlaylist(StationPtr station, MetaDataList tracks)
+MetaDataList StreamHandler::preprocessPlaylist(const StationPtr& station, MetaDataList tracks)
 {
-	auto* stream = dynamic_cast<Stream*>(station.get());
+	const auto stream = std::dynamic_pointer_cast<Stream>(station);
 	for(auto& track: tracks)
 	{
 		track.setUpdateable(stream->isUpdatable());

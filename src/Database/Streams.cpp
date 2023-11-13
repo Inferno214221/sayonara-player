@@ -26,8 +26,8 @@
 
 using DB::Streams;
 
-Streams::Streams(const QString& connection_name, DbId databaseId) :
-	Module(connection_name, databaseId) {}
+Streams::Streams(const QString& connectionName, DbId databaseId) :
+	Module(connectionName, databaseId) {}
 
 Streams::~Streams() = default;
 

@@ -19,8 +19,8 @@ class Station
 
 		Station& station(const Station& other);
 
-		virtual QString url() const = 0;
-		virtual QString name() const = 0;
+		[[nodiscard]] virtual QString url() const = 0;
+		[[nodiscard]] virtual QString name() const = 0;
 };
 
 class Stream :
@@ -36,10 +36,10 @@ class Stream :
 
 		Stream& operator=(const Stream& stream);
 
-		QString name() const override;
+		[[nodiscard]] QString name() const override;
 		void setName(const QString& name);
 
-		QString url() const override;
+		[[nodiscard]] QString url() const override;
 		void setUrl(const QString& url);
 
 		[[nodiscard]] bool isUpdatable() const;
@@ -57,13 +57,13 @@ class Podcast :
 
 		~Podcast() override;
 
-		QString name() const override;
+		[[nodiscard]] QString name() const override;
 		void setName(const QString& name);
 
-		QString url() const override;
+		[[nodiscard]] QString url() const override;
 		void setUrl(const QString& url);
 
-		bool reversed() const;
+		[[nodiscard]] bool reversed() const;
 		void setReversed(bool b);
 
 		Podcast& operator=(const Podcast& podcast);

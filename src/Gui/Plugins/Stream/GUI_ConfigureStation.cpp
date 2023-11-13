@@ -26,25 +26,34 @@
 #include <QHBoxLayout>
 #include <QLabel>
 
+namespace
+{
+	QString getModeString(GUI_ConfigureStation::Mode mode)
+	{
+		switch(mode)
+		{
+			case GUI_ConfigureStation::Edit:
+				return Lang::get(Lang::Edit);
+			case GUI_ConfigureStation::New:
+				return Lang::get(Lang::New);
+			case GUI_ConfigureStation::Save:
+				return Lang::get(Lang::Save);
+		}
+	}
+}
+
 struct GUI_ConfigureStation::Private
 {
-	QList<QLabel*>				labels;
-	GUI_ConfigureStation::Mode	mode;
-	bool						isInitialized;
-
-	Private() :
-		mode(GUI_ConfigureStation::Mode::New),
-		isInitialized(false)
-	{}
+	QList<QLabel*> labels;
+	GUI_ConfigureStation::Mode mode {GUI_ConfigureStation::Mode::New};
+	bool isInitialized {false};
 };
 
 GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
-	Gui::Dialog(parent)
+	Gui::Dialog(parent),
+	m {Pimpl::make<Private>()},
+	ui {std::make_shared<Ui::GUI_ConfigureStation>()}
 {
-	m = Pimpl::make<Private>();
-
-	ui = new Ui::GUI_ConfigureStation();
-
 	ui->setupUi(this);
 	ui->labError->setVisible(false);
 
@@ -56,18 +65,19 @@ GUI_ConfigureStation::~GUI_ConfigureStation() = default;
 
 void GUI_ConfigureStation::init_ui()
 {
-	if(m->isInitialized){
+	if(m->isInitialized)
+	{
 		return;
 	}
 
 	m->isInitialized = true;
 
-	const QList<QWidget*> configWidgets = configurationWidgets();
-
 	auto* layout = dynamic_cast<QGridLayout*>(ui->configWidget->layout());
 
 	int row = 0;
-	for(QWidget* configWidget : configWidgets)
+
+	const auto configWidgets = configurationWidgets();
+	for(auto* configWidget: configWidgets)
 	{
 		auto* label = new QLabel();
 		label->setText(labelText(row));
@@ -86,27 +96,16 @@ void GUI_ConfigureStation::setError(const QString& message)
 	ui->labError->setVisible(true);
 }
 
-void GUI_ConfigureStation::setMode(const QString& stream_name, GUI_ConfigureStation::Mode mode)
+void GUI_ConfigureStation::setMode(const QString& streamName, const GUI_ConfigureStation::Mode mode)
 {
 	m->mode = mode;
 
-	QString modeString;
-	if(mode == GUI_ConfigureStation::Edit) {
-		modeString = Lang::get(Lang::Edit);
-	}
-
-	else if(mode == GUI_ConfigureStation::New) {
-		modeString = Lang::get(Lang::New);
-	}
-
-	else if(mode == GUI_ConfigureStation::Save) {
-		modeString = Lang::get(Lang::Save);
-	}
-
-	QString text = QString("%1: %2").arg(stream_name).arg(modeString);
+	const auto text = QString("%1: %2")
+		.arg(streamName)
+		.arg(getModeString(mode));
 
 	ui->labHeader->setText(text);
-	this->setWindowTitle(text);
+	setWindowTitle(text);
 }
 
 GUI_ConfigureStation::Mode GUI_ConfigureStation::mode() const
@@ -116,7 +115,7 @@ GUI_ConfigureStation::Mode GUI_ConfigureStation::mode() const
 
 void GUI_ConfigureStation::languageChanged()
 {
-	for(int i=0; i<m->labels.size(); i++)
+	for(int i = 0; i < m->labels.size(); i++)
 	{
 		m->labels[i]->setText(labelText(i));
 	}

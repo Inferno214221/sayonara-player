@@ -294,10 +294,8 @@ struct StreamParser::Private
 };
 
 StreamParser::StreamParser(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(webClientFactory);
-}
+	QObject(parent),
+	m {Pimpl::make<Private>(webClientFactory)} {}
 
 StreamParser::~StreamParser() = default;
 

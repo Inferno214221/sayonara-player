@@ -37,15 +37,13 @@ struct GUI_Stream::Private
 	GUI_StationSearcher* searcher = nullptr;
 	QAction* actionSearchRadioStation = nullptr;
 
-	Private(PlaylistCreator* playlistCreator) :
+	explicit Private(PlaylistCreator* playlistCreator) :
 		playlistCreator(playlistCreator) {}
 };
 
 GUI_Stream::GUI_Stream(PlaylistCreator* playlistCreator, QWidget* parent) :
-	Gui::AbstractStationPlugin(playlistCreator, parent)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
+	Gui::AbstractStationPlugin(playlistCreator, parent),
+	m {Pimpl::make<Private>(playlistCreator)} {}
 
 GUI_Stream::~GUI_Stream()
 {
@@ -96,30 +94,15 @@ void GUI_Stream::initUi()
 	retranslate();
 }
 
-QString GUI_Stream::titleFallbackName() const
-{
-	return Lang::get(Lang::Radio);
-}
+QString GUI_Stream::titleFallbackName() const { return Lang::get(Lang::Radio); }
 
-QComboBox* GUI_Stream::comboStream()
-{
-	return ui->comboStream;
-}
+QComboBox* GUI_Stream::comboStream() { return ui->comboStream; }
 
-QPushButton* GUI_Stream::btnPlay()
-{
-	return ui->btnListen;
-}
+QPushButton* GUI_Stream::btnPlay() { return ui->btnListen; }
 
-Gui::MenuToolButton* GUI_Stream::btnMenu()
-{
-	return ui->btnTool;
-}
+Gui::MenuToolButton* GUI_Stream::btnMenu() { return ui->btnTool; }
 
-AbstractStationHandler* GUI_Stream::streamHandler() const
-{
-	return new StreamHandler(m->playlistCreator);
-}
+AbstractStationHandler* GUI_Stream::streamHandler() const { return new StreamHandler(m->playlistCreator); }
 
 void GUI_Stream::skinChanged()
 {
@@ -147,14 +130,9 @@ void GUI_Stream::searchRadioTriggered()
 	m->searcher->show();
 }
 
-void GUI_Stream::streamSelected(const QString& name, const QString& url, bool save)
+void GUI_Stream::streamSelected(const QString& name, const QString& url, const bool save)
 {
-	const auto index = addStream(name, url);
-	if(save && (index >= 0))
-	{
-		currentIndexChanged(index);
-		saveClicked();
-	}
+	addStream(name, url, !save);
 }
 
 GUI_ConfigureStation* GUI_Stream::createConfigDialog()

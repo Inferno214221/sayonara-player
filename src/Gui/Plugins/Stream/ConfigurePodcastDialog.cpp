@@ -7,20 +7,14 @@
 
 struct ConfigurePodcastDialog::Private
 {
-	QLineEdit* name=nullptr;
-	QLineEdit* url=nullptr;
-	QCheckBox* reverse=nullptr;
+	QLineEdit* name {new QLineEdit()};
+	QLineEdit* url {new QLineEdit()};
+	QCheckBox* reverse {new QCheckBox()};
 };
 
 ConfigurePodcastDialog::ConfigurePodcastDialog(QWidget* parent) :
-	GUI_ConfigureStation(parent)
-{
-	m = Pimpl::make<Private>();
-
-	m->name = new QLineEdit(this);
-	m->url = new QLineEdit(this);
-	m->reverse = new QCheckBox(this);
-}
+	GUI_ConfigureStation(parent),
+	m {Pimpl::make<Private>()} {}
 
 ConfigurePodcastDialog::~ConfigurePodcastDialog() = default;
 
@@ -36,10 +30,9 @@ QList<QWidget*> ConfigurePodcastDialog::configurationWidgets()
 
 void ConfigurePodcastDialog::configureWidgets(StationPtr station)
 {
-	if(station)
+	const auto podcast = std::dynamic_pointer_cast<Podcast>(station);
+	if(podcast)
 	{
-		Podcast* podcast = dynamic_cast<Podcast*>(station.get());
-
 		m->name->setText(podcast->name());
 		m->url->setText(podcast->url());
 		m->reverse->setChecked(podcast->reversed());
@@ -53,19 +46,17 @@ void ConfigurePodcastDialog::configureWidgets(StationPtr station)
 	}
 }
 
-QString ConfigurePodcastDialog::labelText(int i) const
+QString ConfigurePodcastDialog::labelText(const int i) const
 {
-	if(i == 0){
-		return Lang::get(Lang::Name);
+	switch(i)
+	{
+		case 0:
+			Lang::get(Lang::Name);
+		case 1:
+			return "Url";
+		case 2:
+			return Lang::get(Lang::ReverseOrder);
+		default:
+			return QString {};
 	}
-
-	else if(i == 1){
-		return "Url";
-	}
-
-	else if(i == 2){
-		return Lang::get(Lang::ReverseOrder);
-	}
-
-	return QString();
 }

@@ -35,46 +35,41 @@ PodcastHandler::~PodcastHandler() = default;
 
 bool PodcastHandler::getAllStreams(QList<StationPtr>& stations)
 {
-	DB::Podcasts* db = DB::Connector::instance()->podcastConnector();
+	auto* db = DB::Connector::instance()->podcastConnector();
+
 	QList<Podcast> podcasts;
-	bool b = db->getAllPodcasts(podcasts);
+	auto podcastsFetched = db->getAllPodcasts(podcasts);
 
 	QList<StationPtr> ret;
-	Util::Algorithm::transform(podcasts, stations, [](const Podcast& p)
-	{
+	Util::Algorithm::transform(podcasts, stations, [](const auto& p) {
 		return std::make_shared<Podcast>(p);
 	});
 
-	return b;
+	return podcastsFetched;
 }
 
-bool PodcastHandler::addNewStream(StationPtr station)
+bool PodcastHandler::addNewStream(const StationPtr& station)
 {
-	DB::Podcasts* db = DB::Connector::instance()->podcastConnector();
-
-	Podcast* p = dynamic_cast<Podcast*>(station.get());
-	if(p) {
-		return db->addPodcast(*p);
-	}
-
-	return false;
+	auto* db = DB::Connector::instance()->podcastConnector();
+	auto podcast = std::dynamic_pointer_cast<Podcast>(station);
+	return podcast
+	       ? db->addPodcast(*podcast)
+	       : false;
 }
 
-bool PodcastHandler::deleteStream(const QString& station_name)
+bool PodcastHandler::deleteStream(const QString& stationName)
 {
-	DB::Podcasts* db = DB::Connector::instance()->podcastConnector();
-	return db->deletePodcast(station_name);
+	auto* db = DB::Connector::instance()->podcastConnector();
+	return db->deletePodcast(stationName);
 }
 
-bool PodcastHandler::update(const QString& station_name, StationPtr station)
+bool PodcastHandler::updateStream(const QString& stationName, const StationPtr& station)
 {
-	DB::Podcasts* db = DB::Connector::instance()->podcastConnector();
-	Podcast* podcast = dynamic_cast<Podcast*>(station.get());
-	if(!podcast) {
-		return false;
-	}
-
-	return db->updatePodcast(station_name, *podcast);
+	auto* db = DB::Connector::instance()->podcastConnector();
+	auto podcast = std::dynamic_pointer_cast<Podcast>(station);
+	return podcast
+	       ? db->updatePodcast(stationName, *podcast)
+	       : false;
 }
 
 StationPtr PodcastHandler::createStreamInstance(const QString& name, const QString& url) const
@@ -84,23 +79,20 @@ StationPtr PodcastHandler::createStreamInstance(const QString& name, const QStri
 
 StationPtr PodcastHandler::station(const QString& name)
 {
-	DB::Podcasts* db = DB::Connector::instance()->podcastConnector();
-
-	Podcast podcast = db->getPodcast(name);
-	if(podcast.name().isEmpty()){
-		return nullptr;
-	}
-
-	return std::make_shared<Podcast>(podcast);
+	auto* db = DB::Connector::instance()->podcastConnector();
+	const auto podcast = db->getPodcast(name);
+	return !podcast.name().isEmpty()
+	       ? std::make_shared<Podcast>(podcast)
+	       : nullptr;
 }
 
-void PodcastHandler::createPlaylist(StationPtr station, MetaDataList& tracks)
+MetaDataList PodcastHandler::preprocessPlaylist(const StationPtr& station, MetaDataList tracks)
 {
-	auto* podcast = dynamic_cast<Podcast*>(station.get());
+	const auto podcast = std::dynamic_pointer_cast<Podcast>(station);
 	if(podcast && podcast->reversed())
 	{
 		std::reverse(tracks.begin(), tracks.end());
 	}
 
-	AbstractStationHandler::createPlaylist(station, tracks);
+	return tracks;
 }

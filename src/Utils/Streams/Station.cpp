@@ -44,20 +44,11 @@ Stream& Stream::operator=(const Stream& other)
 	return *this;
 }
 
-QString Stream::name() const
-{
-	return m->name;
-}
+QString Stream::name() const { return m->name; }
 
-void Stream::setName(const QString& name)
-{
-	m->name = name;
-}
+void Stream::setName(const QString& name) { m->name = name; }
 
-QString Stream::url() const
-{
-	return m->url;
-}
+QString Stream::url() const { return m->url; }
 
 void Stream::setUrl(const QString& url) { m->url = url; }
 
@@ -69,22 +60,17 @@ struct Podcast::Private
 	QString url;
 	bool reversed;
 
-	Private(const QString& name, const QString& url, bool reversed) :
-		name(name),
-		url(url),
-		reversed(reversed)
-	{}
+	Private(QString name, QString url, const bool reversed) :
+		name(std::move(name)),
+		url(std::move(url)),
+		reversed(reversed) {}
 };
 
 Podcast::Podcast() :
-	Podcast(QString(), QString(), false)
-{}
+	Podcast(QString(), QString(), false) {}
 
 Podcast::Podcast(const QString& name, const QString& url, bool reversed) :
-	Station()
-{
-	m = Pimpl::make<Private>(name, url, reversed);
-}
+	m {Pimpl::make<Private>(name, url, reversed)} {}
 
 Podcast::Podcast(const Podcast& other) :
 	Podcast()
@@ -94,35 +80,17 @@ Podcast::Podcast(const Podcast& other) :
 
 Podcast::~Podcast() = default;
 
-QString Podcast::name() const
-{
-	return m->name;
-}
+QString Podcast::name() const { return m->name; }
 
-void Podcast::setName(const QString& name)
-{
-	m->name = name;
-}
+void Podcast::setName(const QString& name) { m->name = name; }
 
-QString Podcast::url() const
-{
-	return m->url;
-}
+QString Podcast::url() const { return m->url; }
 
-void Podcast::setUrl(const QString& url)
-{
-	m->url = url;
-}
+void Podcast::setUrl(const QString& url) { m->url = url; }
 
-bool Podcast::reversed() const
-{
-	return m->reversed;
-}
+bool Podcast::reversed() const { return m->reversed; }
 
-void Podcast::setReversed(bool b)
-{
-	m->reversed = b;
-}
+void Podcast::setReversed(bool b) { m->reversed = b; }
 
 Podcast& Podcast::operator=(const Podcast& other)
 {

@@ -34,19 +34,17 @@ struct AbstractStationHandler::Private
 	StreamParser* streamParser = nullptr;
 	StationPtr parsedStation;
 
-	Private(PlaylistCreator* playlistCreator) :
+	explicit Private(PlaylistCreator* playlistCreator) :
 		playlistCreator(playlistCreator) {}
 };
 
 AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
+	QObject(parent),
+	m {Pimpl::make<Private>(playlistCreator)} {}
 
 AbstractStationHandler::~AbstractStationHandler() = default;
 
-void AbstractStationHandler::createPlaylist(StationPtr station, const MetaDataList& tracks)
+void AbstractStationHandler::createPlaylist(const StationPtr& station, const MetaDataList& tracks)
 {
 	if(!tracks.isEmpty())
 	{
@@ -61,7 +59,7 @@ void AbstractStationHandler::createPlaylist(StationPtr station, const MetaDataLi
 	}
 }
 
-bool AbstractStationHandler::parseStation(StationPtr station)
+bool AbstractStationHandler::parseStation(const StationPtr& station)
 {
 	if(m->streamParser)
 	{
@@ -75,12 +73,12 @@ bool AbstractStationHandler::parseStation(StationPtr station)
 	connect(m->streamParser, &StreamParser::sigUrlCountExceeded, this, &AbstractStationHandler::sigUrlCountExceeded);
 	connect(m->streamParser, &StreamParser::sigStopped, this, &AbstractStationHandler::parserStopped);
 
-	m->streamParser->parse(station->name(), station->url());
+	m->streamParser->parse(m->parsedStation->name(), m->parsedStation->url());
 
 	return true;
 }
 
-void AbstractStationHandler::parserFinished(bool success)
+void AbstractStationHandler::parserFinished(const bool success)
 {
 	if(!success)
 	{
@@ -113,11 +111,5 @@ void AbstractStationHandler::parserStopped()
 {
 	sender()->deleteLater(); // m->stream_parser may be nullptr here
 	m->streamParser = nullptr;
-
 	emit sigStopped();
-}
-
-bool AbstractStationHandler::save(StationPtr station)
-{
-	return addNewStream(station);
 }

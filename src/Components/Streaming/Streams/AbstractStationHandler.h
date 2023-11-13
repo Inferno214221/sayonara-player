@@ -29,22 +29,11 @@
 
 class PlaylistCreator;
 
-/**
- * @brief Used to interprete website data as streams. Some methods have to be overridden,
- * to map their functions to their specific database functions.
- * The track list is held in a map, which is accessible through its station name. It can be
- * accessed via the get_tracks() method.
- * @ingroup Streams
- */
 class AbstractStationHandler :
 	public QObject
 {
 	Q_OBJECT
 	PIMPL(AbstractStationHandler)
-
-	public:
-		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
-		virtual ~AbstractStationHandler();
 
 	signals:
 		void sigStopped();
@@ -53,66 +42,26 @@ class AbstractStationHandler :
 		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		/**
-		 * @brief Retrieves data from the station and tries to interprete it via the parse_content() method.
-		 * @param url url to retrieve the data from
-		 * @param station_name the station name
-		 * @return true, if no other station is parsed atm, false else
-		 */
-		bool parseStation(StationPtr station);
+		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+		~AbstractStationHandler() override;
 
-		/**
-		 * @brief Saves the station. Calls the add_stream() method.
-		 * @param station_name The station name.
-		 * @param url the station url.
-		 */
-		bool save(StationPtr station);
+		bool parseStation(const StationPtr& station);
 
-		/**
-		 * @brief This method should return all stations in database
-		 * @param streams target StreamMap
-		 * @return true if successful, false else
-		 */
 		virtual bool getAllStreams(QList<StationPtr>& streams) = 0;
-
-		/**
-		 * @brief This method should add a new station to database. If the station
-		 * already exists, there should be a corresponding error handling.
-		 * @param station_name station name
-		 * @param url url
-		 * @return true if successful, false else
-		 */
-		virtual bool addNewStream(StationPtr station) = 0;
-
-		virtual StationPtr createStreamInstance(const QString& name, const QString& url) const = 0;
-
-		/**
-		 * @brief Delete a station from the database.
-		 * @param station_name the station to be deleted
-		 * @return true if successful, false else
-		 */
+		virtual bool addNewStream(const StationPtr& station) = 0;
 		virtual bool deleteStream(const QString& name) = 0;
+		virtual bool updateStream(const QString& name, const StationPtr& station) = 0;
 
-		/**
-		 * @brief Update the url of a station
-		 * @param station_name the station to be updated
-		 * @param url the new url
-		 * @return true if successful, false else
-		 */
-		virtual bool update(const QString& name, StationPtr station) = 0;
+		[[nodiscard]] virtual StationPtr createStreamInstance(const QString& name, const QString& url) const = 0;
+		[[nodiscard]] virtual StationPtr station(const QString& name) = 0;
 
-		virtual StationPtr station(const QString& name) = 0;
-
-		/**
-		 * @brief Clears all station content
-		 */
 		void stop();
 
 	protected:
-		virtual MetaDataList preprocessPlaylist(StationPtr station, MetaDataList tracks) = 0;
+		virtual MetaDataList preprocessPlaylist(const StationPtr& station, MetaDataList tracks) = 0;
 
 	private:
-		void createPlaylist(StationPtr station, const MetaDataList& tracks);
+		void createPlaylist(const StationPtr& station, const MetaDataList& tracks);
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void parserFinished(bool success);
