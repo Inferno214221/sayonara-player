@@ -301,16 +301,16 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 {
 	MetaDataList result;
 
-	const auto static fields = QStringList
-		{
-			QStringLiteral("ptt.filepath          AS filepath"),
-			QStringLiteral("ptt.position          AS position"),
-			QStringLiteral("ptt.stationName       AS radioStationName"),
-			QStringLiteral("ptt.station           AS radioStation"),
-			QStringLiteral("ptt.isRadio           AS isRadio"),
-			QStringLiteral("ptt.coverDownloadUrl  AS coverDownloadUrl"),
-			QStringLiteral("ptt.position          AS position")
-		};
+	const auto static fields = QStringList {
+		QStringLiteral("ptt.filepath          AS filepath"),
+		QStringLiteral("ptt.position          AS position"),
+		QStringLiteral("ptt.stationName       AS radioStationName"),
+		QStringLiteral("ptt.station           AS radioStation"),
+		QStringLiteral("ptt.isRadio           AS isRadio"),
+		QStringLiteral("ptt.isUpdatable       AS isUpdatable"),
+		QStringLiteral("ptt.coverDownloadUrl  AS coverDownloadUrl"),
+		QStringLiteral("ptt.position          AS position")
+	};
 
 	const auto static joinedFields = fields.join(", ");
 
@@ -341,13 +341,15 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 		const auto radioStationName = query.value(2).toString();
 		const auto radioStation = query.value(3).toString();
 		const auto radioMode = query.value(4).value<RadioMode>();
-		const auto coverUrls = variantToStringList(query.value(5), ';');
+		const auto isUpdatable = query.value(5).toBool();
+		const auto coverUrls = variantToStringList(query.value(6), ';');
 
 		auto track = MetaData(filepath);
 		track.setId(-1);
 		track.setExtern(true);
 		track.setDatabaseId(databaseId());
 		track.setCoverDownloadUrls(coverUrls);
+		track.setUpdateable(isUpdatable);
 
 		if(radioMode == RadioMode::Station)
 		{
@@ -401,16 +403,15 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int play
 		return false;
 	}
 
-	auto fieldBindings = QMap<QString, QVariant>
-		{
-			{"playlistid",       playlistId},
-			{"filepath",         Util::convertNotNull(track.filepath())},
-			{"position",         pos},
-			{"trackid",          track.id()},
-			{"db_id",            track.databaseId()},
-			{"coverDownloadUrl", track.coverDownloadUrls().join(";")},
-			{"isRadio",          static_cast<int>(track.radioMode())} // for some reason QVariant::fromValue does not work here
-		};
+	auto fieldBindings = QMap<QString, QVariant> {
+		{"playlistid",       playlistId},
+		{"filepath",         Util::convertNotNull(track.filepath())},
+		{"position",         pos},
+		{"trackid",          track.id()},
+		{"db_id",            track.databaseId()},
+		{"coverDownloadUrl", track.coverDownloadUrls().join(";")},
+		{"isRadio",          static_cast<int>(track.radioMode())}, // for some reason QVariant::fromValue does not work here
+		{"isUpdatable",      track.isUpdatable()}};
 
 	if(track.radioMode() == RadioMode::Station)
 	{

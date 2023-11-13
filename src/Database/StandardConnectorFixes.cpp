@@ -35,7 +35,7 @@
 
 namespace
 {
-	constexpr const auto LatestDatabaseVersion = 32;
+	constexpr const auto LatestDatabaseVersion = 33;
 
 	bool updateAlbumCissearchFix(DB::Module& module, DB::LibraryDatabase& libraryDatabase)
 	{
@@ -691,6 +691,15 @@ namespace DB
 			if(success)
 			{
 				settingsConnector.storeSetting("version", 32); // NOLINT(readability-magic-numbers)
+			}
+		}
+
+		if(currentVersion < 33) // NOLINT(readability-magic-numbers)
+		{
+			const auto success = checkAndInsertColumn("playlistToTracks", "isUpdatable", "INTEGER", "1");
+			if(success)
+			{
+				settingsConnector.storeSetting("version", 33); // NOLINT(readability-magic-numbers)
 			}
 		}
 	}
