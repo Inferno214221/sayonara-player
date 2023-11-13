@@ -198,6 +198,7 @@ enum class SettingKey :
 	Stream_NewTab,
 	Stream_SearchWindowSize,
 	Stream_ShowHistory,
+	Stream_UpdateMetadata,
 	Num_Setting_Keys
 };
 
@@ -407,6 +408,7 @@ namespace Set
 	CreateSetting(Stream_NewTab, bool); // Open Streams in new tab
 	CreateSetting(Stream_SearchWindowSize, QSize); // Size of the stream search dialog
 	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
+	CreateSetting(Stream_UpdateMetadata, bool); // Update metadata (can be changed for each stream individually)
 }
 
 namespace SetNoDB

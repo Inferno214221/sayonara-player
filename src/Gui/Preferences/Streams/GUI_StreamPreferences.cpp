@@ -18,26 +18,23 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #include "GUI_StreamPreferences.h"
 #include "ui_GUI_StreamPreferences.h"
 
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-
 GUI_StreamPreferences::GUI_StreamPreferences(const QString& identifier) :
-	Preferences::Base(identifier)
-{}
+	Preferences::Base(identifier) {}
 
-GUI_StreamPreferences::~GUI_StreamPreferences() {}
+GUI_StreamPreferences::~GUI_StreamPreferences() = default;
 
 bool GUI_StreamPreferences::commit()
 {
 	SetSetting(Set::Stream_NewTab, ui->cbNewTab->isChecked());
 	SetSetting(Set::Stream_ShowHistory, ui->cbShowHistory->isChecked());
 	SetSetting(Set::Engine_BufferSizeMS, ui->sbBufferSize->value());
+	SetSetting(Set::Stream_UpdateMetadata, ui->cbUpdateMetadata->isChecked());
 
 	return true;
 }
@@ -47,25 +44,23 @@ void GUI_StreamPreferences::revert()
 	ui->cbShowHistory->setChecked(GetSetting(Set::Stream_ShowHistory));
 	ui->cbNewTab->setChecked(GetSetting(Set::Stream_NewTab));
 	ui->sbBufferSize->setValue(GetSetting(Set::Engine_BufferSizeMS));
+	ui->cbUpdateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
 }
 
 QString GUI_StreamPreferences::actionName() const
 {
-	QString s = Lang::get(Lang::Streams);
-	QString p = Lang::get(Lang::Podcasts);
-
-	return tr("%1 and %2").arg(s).arg(p);
+	return tr("%1 and %2")
+		.arg(Lang::get(Lang::Streams))
+		.arg(Lang::get(Lang::Podcasts));
 }
 
 void GUI_StreamPreferences::initUi()
 {
-	if(isUiInitialized()){
-		return;
+	if(!isUiInitialized())
+	{
+		setupParent(this, &ui);
+		revert();
 	}
-
-	setupParent(this, &ui);
-
-	revert();
 }
 
 void GUI_StreamPreferences::retranslate()
