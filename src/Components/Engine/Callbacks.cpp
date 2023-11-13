@@ -64,6 +64,22 @@ EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer dat
 
 namespace
 {
+	QStringList supportedTags {
+		GST_TAG_TITLE,
+		GST_TAG_ARTIST,
+		GST_TAG_ALBUM,
+		GST_TAG_ALBUM_ARTIST,
+		GST_TAG_COMMENT,
+
+		GST_TAG_PERFORMER,
+		GST_TAG_HOMEPAGE,
+		GST_TAG_DESCRIPTION,
+		GST_TAG_ORGANIZATION,
+		GST_TAG_CONTACT,
+		GST_TAG_SHOW_NAME,
+		GST_TAG_PUBLISHER
+	};
+
 	bool isSoupSource(GstElement* source)
 	{
 		auto* factory = gst_element_get_factory(source);
@@ -88,100 +104,180 @@ namespace
 		g_object_get(source, "location", &uri, nullptr);
 		return (uri && !strncmp(uri, "https://api.soundcloud.com", 26));
 	}
-}
 
-static bool parse_image(GstElement* src, GstTagList* tags, EngineNS::Engine* engine)
-{
-	GstSample* sample;
-	bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
-
-	if(!success)
+	bool parseTags(MetaData& metadata, const GstTagList* tags)
 	{
-		success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
-		if(!success)
+		auto wasUpdated = false;
+
+		for(const auto& tag: supportedTags)
 		{
-			return false;
+			gchar* value = nullptr;
+			auto hasTag = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
+			if(!hasTag)
+			{
+				continue;
+			}
+
+			wasUpdated = true;
+
+			if(tag == GST_TAG_TITLE)
+			{
+				metadata.setTitle(value);
+			}
+
+			else if(tag == GST_TAG_ARTIST)
+			{
+				metadata.setArtist(value);
+			}
+
+			else if(tag == GST_TAG_ALBUM)
+			{
+				metadata.setAlbum(value);
+			}
+
+			else if(tag == GST_TAG_ALBUM_ARTIST)
+			{
+				metadata.setAlbumArtist(value);
+			}
+
+			else if(tag == GST_TAG_COMMENT)
+			{
+				metadata.setComment(value);
+			}
+
+			else
+			{
+				const gchar* nick = gst_tag_get_nick(tag.toLocal8Bit().constData());
+
+				QString sNick = tag;
+				if(nick && strnlen(nick, 3) > 0)
+				{
+					sNick = QString::fromLocal8Bit(nick);
+				}
+
+				metadata.replaceCustomField(tag, Util::stringToFirstUpper(sNick), value);
+			}
+
+			g_free(value);
+		}
+
+		return wasUpdated;
+	}
+
+	void updateMetadata(GstTagList* tags, GstElement* srcElement, EngineNS::Engine* engine)
+	{
+		auto track = engine->currentTrack();
+//		if(track.isUpdatable())
+		{
+			const auto wasUpdated = parseTags(track, tags);
+			if(wasUpdated)
+			{
+				engine->updateMetadata(track, srcElement);
+			}
 		}
 	}
 
-	GstCaps* caps = gst_sample_get_caps(sample);
-	if(!caps)
+	void updateBitrate(GstTagList* tags, GstElement* srcElement, EngineNS::Engine* engine)
 	{
-		gst_sample_unref(sample);
-		return false;
+		Bitrate bitrate;
+		const auto success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
+		if(success)
+		{
+			engine->updateBitrate((bitrate / 1000) * 1000, srcElement);
+		}
 	}
 
-	EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
-	if(mimetype.data() == nullptr)
+	bool updateCoverImage(GstTagList* tags, GstElement* src, EngineNS::Engine* engine)
 	{
-		gst_sample_unref(sample);
-		return false;
-	}
+		GstSample* sample;
+		bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
 
-	QString mime;
-	QString fullMime(mimetype.data());
+		if(!success)
+		{
+			success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
+			if(!success)
+			{
+				return false;
+			}
+		}
 
-	QRegExp re(".*(image/[a-z|A-Z]+).*");
-	if(re.indexIn(fullMime) >= 0)
-	{
-		mime = re.cap(1);
-	}
+		GstCaps* caps = gst_sample_get_caps(sample);
+		if(!caps)
+		{
+			gst_sample_unref(sample);
+			return false;
+		}
 
-	spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << fullMime;
+		EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
+		if(mimetype.data() == nullptr)
+		{
+			gst_sample_unref(sample);
+			return false;
+		}
 
-	GstBuffer* buffer = gst_sample_get_buffer(sample);
-	if(!buffer)
-	{
-		gst_sample_unref(sample);
-		return false;
-	}
+		QString mime;
+		QString fullMime(mimetype.data());
 
-	gsize size = gst_buffer_get_size(buffer);
-	if(size == 0)
-	{
-		gst_sample_unref(sample);
-		return false;
-	}
+		QRegExp re(".*(image/[a-z|A-Z]+).*");
+		if(re.indexIn(fullMime) >= 0)
+		{
+			mime = re.cap(1);
+		}
 
-	gchar* data = new gchar[size];
-	size = gst_buffer_extract(buffer, 0, data, size);
+		spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << fullMime;
 
-	if(size == 0)
-	{
+		GstBuffer* buffer = gst_sample_get_buffer(sample);
+		if(!buffer)
+		{
+			gst_sample_unref(sample);
+			return false;
+		}
+
+		gsize size = gst_buffer_get_size(buffer);
+		if(size == 0)
+		{
+			gst_sample_unref(sample);
+			return false;
+		}
+
+		gchar* data = new gchar[size];
+		size = gst_buffer_extract(buffer, 0, data, size);
+
+		if(size == 0)
+		{
+			delete[] data;
+			gst_sample_unref(sample);
+			return false;
+		}
+
+		QByteArray arr(data, size);
+		engine->updateCover(src, arr, mime);
+
 		delete[] data;
 		gst_sample_unref(sample);
-		return false;
+
+		return (size > 0);
 	}
 
-	QByteArray arr(data, size);
-	engine->updateCover(src, arr, mime);
+	void updateCurrentTrack(GstMessage* message, GstElement* srcElement, EngineNS::Engine* engine)
+	{
+		GstTagList* tags = nullptr;
+		gst_message_parse_tag(message, &tags);
 
-	delete[] data;
-	gst_sample_unref(sample);
+		if(tags)
+		{
+			updateMetadata(tags, srcElement, engine);
+			updateBitrate(tags, srcElement, engine);
+			updateCoverImage(tags, srcElement, engine);
 
-	return (size > 0);
+			gst_tag_list_unref(tags);
+		}
+	}
 }
 
 // check messages from bus
 gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 {
-	static QStringList string_tags
-		{
-			GST_TAG_TITLE,
-			GST_TAG_ARTIST,
-			GST_TAG_ALBUM,
-			GST_TAG_ALBUM_ARTIST,
-			GST_TAG_COMMENT,
-
-			GST_TAG_PERFORMER,
-			GST_TAG_HOMEPAGE,
-			GST_TAG_DESCRIPTION,
-			GST_TAG_ORGANIZATION,
-			GST_TAG_CONTACT,
-			GST_TAG_SHOW_NAME,
-			GST_TAG_PUBLISHER
-		};
-
 	Q_UNUSED(bus);
 
 	auto* engine = static_cast<Engine*>(data);
@@ -229,7 +325,6 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 			break;
 
 		case GST_MESSAGE_TAG:
-		{
 			if(msg_src_name.contains("fake") ||
 			   msg_src_name.contains("lame") ||
 			   !msg_src_name.contains("sink"))
@@ -237,84 +332,7 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 				break;
 			}
 
-			GstTagList* tags = nullptr;
-			gst_message_parse_tag(msg, &tags);
-			if(!tags)
-			{
-				break;
-			}
-
-			parse_image(src, tags, engine);
-
-			bool success;
-			MetaData md = engine->currentTrack();
-			bool update_metadata = false;
-			for(const QString& tag : string_tags)
-			{
-				gchar* value = nullptr;
-				success = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
-				if(!success)
-				{
-					continue;
-				}
-
-				update_metadata = true;
-
-				if(tag == GST_TAG_TITLE)
-				{
-					md.setTitle(value);
-				}
-
-				else if(tag == GST_TAG_ARTIST)
-				{
-					md.setArtist(value);
-				}
-
-				else if(tag == GST_TAG_ALBUM)
-				{
-					md.setAlbum(value);
-				}
-
-				else if(tag == GST_TAG_ALBUM_ARTIST)
-				{
-					md.setAlbumArtist(value);
-				}
-
-				else if(tag == GST_TAG_COMMENT)
-				{
-					md.setComment(value);
-				}
-
-				else
-				{
-					const gchar* nick = gst_tag_get_nick(tag.toLocal8Bit().constData());
-
-					QString sNick = tag;
-					if(nick && strnlen(nick, 3) > 0)
-					{
-						sNick = QString::fromLocal8Bit(nick);
-					}
-
-					md.replaceCustomField(tag, Util::stringToFirstUpper(sNick), value);
-				}
-
-				g_free(value);
-			}
-
-			Bitrate bitrate;
-			success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
-			if(success)
-			{
-				engine->updateBitrate((bitrate / 1000) * 1000, src);
-			}
-
-			if(update_metadata)
-			{
-				engine->updateMetadata(md, src);
-			}
-
-			gst_tag_list_unref(tags);
-		}
+			updateCurrentTrack(msg, src, engine);
 
 			break;
 
