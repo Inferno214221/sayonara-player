@@ -46,16 +46,19 @@ AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator,
 
 AbstractStationHandler::~AbstractStationHandler() = default;
 
-void AbstractStationHandler::createPlaylist(StationPtr station, MetaDataList& tracks)
+void AbstractStationHandler::createPlaylist(StationPtr station, const MetaDataList& tracks)
 {
-	const auto playlistName = GetSetting(Set::Stream_NewTab)
-	                          ? station->name()
-	                          : QString {};
+	if(!tracks.isEmpty())
+	{
+		const auto playlistName = GetSetting(Set::Stream_NewTab)
+		                          ? station->name()
+		                          : QString {};
 
-	const auto index = m->playlistCreator->createPlaylist(tracks, playlistName);
+		const auto index = m->playlistCreator->createPlaylist(preprocessPlaylist(station, tracks), playlistName);
 
-	auto playlist = m->playlistCreator->playlist(index);
-	playlist->changeTrack(0);
+		auto playlist = m->playlistCreator->playlist(index);
+		playlist->changeTrack(0);
+	}
 }
 
 bool AbstractStationHandler::parseStation(StationPtr station)
@@ -87,12 +90,7 @@ void AbstractStationHandler::parserFinished(bool success)
 
 	else
 	{
-		auto tracks = m->streamParser->tracks();
-		if(!tracks.isEmpty())
-		{
-			createPlaylist(m->parsedStation, tracks);
-		}
-
+		createPlaylist(m->parsedStation, m->streamParser->tracks());
 		emit sigDataAvailable();
 	}
 

@@ -23,6 +23,8 @@
 #include "Database/Streams.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Streams/Station.h"
 
 StreamHandler::StreamHandler(PlaylistCreator* playlistCreator, QObject* parent) :
@@ -84,4 +86,15 @@ StationPtr StreamHandler::station(const QString& name)
 	return !stream.name().isEmpty()
 	       ? std::make_shared<Stream>(stream)
 	       : nullptr;
+}
+
+MetaDataList StreamHandler::preprocessPlaylist(StationPtr station, MetaDataList tracks)
+{
+	auto* stream = dynamic_cast<Stream*>(station.get());
+	for(auto& track: tracks)
+	{
+		track.setUpdateable(stream->isUpdatable());
+	}
+
+	return tracks;
 }

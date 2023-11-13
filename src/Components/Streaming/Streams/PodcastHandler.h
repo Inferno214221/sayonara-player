@@ -31,16 +31,16 @@ public:
 	explicit PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
 	~PodcastHandler() override;
 
-	bool getAllStreams(QList<StationPtr>& stations) override;
-	bool addNewStream(StationPtr station) override;
-	bool deleteStream(const QString& station_name) override;
-	bool update(const QString& station_name, StationPtr station) override;
+		bool getAllStreams(QList<StationPtr>& stations) override;
+		bool addNewStream(StationPtr station) override;
+		bool deleteStream(const QString& station_name) override;
+		bool update(const QString& station_name, StationPtr station) override;
 
-	StationPtr createStreamInstance(const QString& name, const QString& url) const override;
-	StationPtr station(const QString& name) override;
+		StationPtr createStreamInstance(const QString& name, const QString& url) const override;
+		StationPtr station(const QString& name) override;
 
-protected:
-	void createPlaylist(StationPtr station, MetaDataList& tracks) override;
+	protected:
+		MetaDataList preprocessPlaylist(StationPtr station, MetaDataList tracks) override;
 };
 
 #endif // STREAMHANDLERPODCASTS_H

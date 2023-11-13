@@ -37,6 +37,9 @@ class StreamHandler :
 
 		StationPtr createStreamInstance(const QString& name, const QString& url) const override;
 		StationPtr station(const QString& name) override;
+
+	protected:
+		MetaDataList preprocessPlaylist(StationPtr station, MetaDataList tracks) override;
 };
 
 #endif // STREAMHANDLERSTREAMS_H

@@ -109,9 +109,12 @@ class AbstractStationHandler :
 		void stop();
 
 	protected:
-		virtual void createPlaylist(StationPtr station, MetaDataList& tracks);
+		virtual MetaDataList preprocessPlaylist(StationPtr station, MetaDataList tracks) = 0;
 
-	private slots:
+	private:
+		void createPlaylist(StationPtr station, const MetaDataList& tracks);
+
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void parserFinished(bool success);
 		void parserStopped();
 };
