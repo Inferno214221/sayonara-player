@@ -22,39 +22,33 @@
 #define GUI_ABSTRACT_STREAM_H_
 
 #include "Gui/Plugins/PlayerPluginBase.h"
+#include "GUI_ConfigureStation.h"
 #include "Gui/Utils/PreferenceAction.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Streams/Station.h"
 
+class AbstractStationHandler;
 class PlaylistCreator;
-
 class QComboBox;
 class QPushButton;
-class QLineEdit;
-class QLabel;
-class AbstractStationHandler;
-class GUI_ConfigureStation;
 
 namespace Gui
 {
 	class MenuToolButton;
 
-	/**
-	 * @brief Currently only a Radio Search Entry action
-	 */
 	class StreamPreferenceAction :
 		public PreferenceAction
 	{
 		Q_OBJECT
 
 		public:
-			StreamPreferenceAction(QWidget* parent);
-			virtual ~StreamPreferenceAction() override;
+			explicit StreamPreferenceAction(QWidget* parent);
+			~StreamPreferenceAction() override;
 
-			QString identifier() const override;
+			[[nodiscard]] QString identifier() const override;
 
 		protected:
-			QString displayName() const override;
+			[[nodiscard]] QString displayName() const override;
 	};
 
 	class AbstractStationPlugin :
@@ -65,56 +59,46 @@ namespace Gui
 
 		public:
 			explicit AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
-			virtual ~AbstractStationPlugin() override;
+			~AbstractStationPlugin() override;
 
 		protected:
-			virtual void retranslate() override;
-			virtual void play(const QString& stationName);
+			[[nodiscard]] virtual QComboBox* comboStream() = 0;
+			[[nodiscard]] virtual QPushButton* btnPlay() = 0;
+			[[nodiscard]] virtual MenuToolButton* btnMenu() = 0;
+			[[nodiscard]] virtual AbstractStationHandler* streamHandler() const = 0;
+			[[nodiscard]] virtual QString titleFallbackName() const = 0;
+			[[nodiscard]] virtual GUI_ConfigureStation* createConfigDialog() = 0;
 
-			bool hasLoadingBar() const override;
+			void initUi() override;
+			void assignUiVariables() override;
+			void skinChanged() override;
+			void retranslate() override;
+			[[nodiscard]] bool hasLoadingBar() const override;
 
-			template<typename T, typename UiType>
-			void setup_parent(T* subclass, UiType** uiptr)
-			{
-				PlayerPlugin::Base::setupParent(subclass, uiptr);
-				AbstractStationPlugin::initUi();
-			}
-
-		protected slots:
-			void listenClicked();
-			void currentIndexChanged(int index);
-
-			void newClicked();
-			void saveClicked();
-			void editClicked();
-			void deleteClicked();
-
-			void urlCountExceeded(int urlCount, int maxUrlCount);
-
-			void stopped();
-			void error();
-			void dataAvailable();
+			void addStream(const QString& name, const QString& url, bool temporary);
 
 		private slots:
-			void configFinished();
+			void listenClicked();
+			void currentIndexChanged(int index);
+			void newClicked();
+			void editClicked();
+			void deleteClicked();
+			void urlCountExceeded(int urlCount, int maxUrlCount);
+			void error();
 
-		protected:
-			virtual QComboBox* comboStream() = 0;
-			virtual QPushButton* btnPlay() = 0;
-			virtual MenuToolButton* btnMenu() = 0;
-			virtual AbstractStationHandler* streamHandler() const = 0;
-			virtual QString titleFallbackName() const = 0;
-			virtual GUI_ConfigureStation* createConfigDialog() = 0;
-
-			virtual int addStream(const QString& name, const QString& url);
-
-			virtual void initUi() override;
-			virtual void assignUiVariables() override;
-			virtual void skinChanged() override;
-
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
+			void showConfigDialog(const QString& name, const StationPtr& station,
+			                      GUI_ConfigureStation::Mode mode,
+			                      std::function<void(GUI_ConfigureStation*)>&& callback);
+			void saveStation(const StationPtr& station);
 			void initConnections();
 			void setupStations();
+			[[nodiscard]] QString currentName() const;
+			[[nodiscard]] QString currentUrl() const;
+			void setSearching(bool b);
+
+			virtual void play(const QString& stationName);
+
 	};
 }
 
