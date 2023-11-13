@@ -89,6 +89,9 @@ class MetaData :
 		RadioMode radioMode() const;
 		void changeRadioMode(RadioMode mode);
 
+		bool isUpdatable() const;
+		void setUpdateable(bool b);
+
 		bool isValid() const;
 
 		bool operator==(const MetaData& other) const;

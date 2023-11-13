@@ -66,6 +66,7 @@ struct MetaData::Private
 	Rating rating {Rating::Zero};
 	RadioMode radioMode {RadioMode::Off};
 	bool isExtern {false};
+	bool isUpdatable {true};
 	bool isDisabled {false};
 
 	Private() = default;
@@ -105,6 +106,7 @@ struct MetaData::Private
 		       (rating == other.rating) &&
 		       (radioMode == other.radioMode) &&
 		       (isExtern == other.isExtern) &&
+		       (isUpdatable == other.isUpdatable) &&
 		       (isDisabled == other.isDisabled);
 	}
 };
@@ -458,3 +460,7 @@ void MetaData::setModifiedDate(const uint64_t t) { m->modifydate = t; }
 uint64_t MetaData::modifiedDate() const { return m->modifydate; }
 
 QDateTime MetaData::modifiedDateTime() const { return Util::intToDate(m->modifydate); }
+
+bool MetaData::isUpdatable() const { return m->isUpdatable; }
+
+void MetaData::setUpdateable(const bool b) { m->isUpdatable = b; }
