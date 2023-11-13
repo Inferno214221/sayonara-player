@@ -167,7 +167,7 @@ namespace
 	void updateMetadata(GstTagList* tags, GstElement* srcElement, EngineNS::Engine* engine)
 	{
 		auto track = engine->currentTrack();
-//		if(track.isUpdatable())
+		if(track.isUpdatable())
 		{
 			const auto wasUpdated = parseTags(track, tags);
 			if(wasUpdated)
