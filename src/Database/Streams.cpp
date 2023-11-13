@@ -35,7 +35,7 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 {
 	streams.clear();
 
-	auto q = runQuery("SELECT name, url FROM savedstreams;", "Cannot fetch streams");
+	auto q = runQuery("SELECT name, url, isUpdatable FROM savedstreams;", "Cannot fetch streams");
 	if(hasError(q))
 	{
 		return false;
@@ -43,10 +43,11 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 
 	while(q.next())
 	{
-		QString name = q.value(0).toString();
-		QString url = q.value(1).toString();
-
-		streams << Stream(name, url);
+		streams << Stream {
+			q.value(0).toString(),
+			q.value(1).toString(),
+			q.value(2).toBool()
+		};
 	}
 
 	return true;
@@ -68,8 +69,9 @@ bool Streams::addStream(const Stream& stream)
 {
 	const auto q = insert("savedstreams",
 	                      {
-		                      {"name", Util::convertNotNull(stream.name())},
-		                      {"url",  Util::convertNotNull(stream.url())}
+		                      {"name",        Util::convertNotNull(stream.name())},
+		                      {"url",         Util::convertNotNull(stream.url())},
+		                      {"isUpdatable", stream.isUpdatable()}
 	                      }, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
 
 	return !hasError(q);
@@ -79,8 +81,9 @@ bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 {
 	const auto q = update("savedstreams",
 	                      {
-		                      {"name", Util::convertNotNull(stream.name())},
-		                      {"url",  Util::convertNotNull(stream.url())}
+		                      {"name",        Util::convertNotNull(stream.name())},
+		                      {"url",         Util::convertNotNull(stream.url())},
+		                      {"isUpdatable", stream.isUpdatable()}
 	                      },
 	                      {"name", Util::convertNotNull(old_name)},
 	                      QString("Could not update stream name %1").arg(old_name));
@@ -90,18 +93,18 @@ bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 
 Stream Streams::getStream(const QString& name)
 {
-	const auto query = "SELECT name, url FROM savedstreams WHERE name = :name;";
 	auto q = runQuery(
-		query,
+		"SELECT name, url, isUpdatable FROM savedstreams WHERE name = :name;",
 		{":name", name},
 		QString("Cannot fetch stream %1").arg(name));
 
 	if(!hasError(q) && q.next())
 	{
-		Stream stream;
-		stream.setName(q.value(0).toString());
-		stream.setUrl(q.value(1).toString());
-		return stream;
+		return {
+			q.value(0).toString(),
+			q.value(1).toString(),
+			q.value(2).toBool()
+		};
 	}
 
 	return {};

@@ -15,22 +15,20 @@ struct Stream::Private
 {
 	QString name;
 	QString url;
+	bool isUpdatable;
 
-	Private(const QString& name, const QString& url) :
-		name(name),
-		url(url)
-	{}
+	Private(QString name, QString url, bool isUpdatable) :
+		name(std::move(name)),
+		url(std::move(url)),
+		isUpdatable(isUpdatable) {}
 };
 
 Stream::Stream() :
-	Stream(QString(), QString())
-{}
+	Stream(QString(), QString(), true) {}
 
-Stream::Stream(const QString& name, const QString& url) :
-	Station()
-{
-	m = Pimpl::make<Private>(name, url);
-}
+Stream::Stream(const QString& name, const QString& url, bool isUpdatable) :
+	Station(),
+	m {Pimpl::make<Private>(name, url, isUpdatable)} {}
 
 Stream::~Stream() = default;
 
@@ -61,10 +59,9 @@ QString Stream::url() const
 	return m->url;
 }
 
-void Stream::setUrl(const QString& url)
-{
-	m->url = url;
-}
+void Stream::setUrl(const QString& url) { m->url = url; }
+
+bool Stream::isUpdatable() const { return m->isUpdatable; }
 
 struct Podcast::Private
 {

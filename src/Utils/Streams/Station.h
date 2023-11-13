@@ -30,7 +30,7 @@ class Stream :
 
 	public:
 		Stream();
-		Stream(const QString& name, const QString& url);
+		Stream(const QString& name, const QString& url, bool isUpdatable = true);
 		Stream(const Stream& other);
 		~Stream() override;
 
@@ -41,6 +41,8 @@ class Stream :
 
 		QString url() const override;
 		void setUrl(const QString& url);
+
+		[[nodiscard]] bool isUpdatable() const;
 };
 
 class Podcast :
