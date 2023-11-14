@@ -54,20 +54,22 @@ namespace Gui
 	{
 		QMap<QString, StationPtr> temporaryStations;
 		PlaylistCreator* playlistCreator;
-		AbstractStationHandler* streamHandler {nullptr};
+		AbstractStationHandler* stationHandler {nullptr};
 		ProgressBar* loadingBar {nullptr};
 		QComboBox* comboStream {nullptr};
 		QPushButton* btnPlay {nullptr};
 		MenuToolButton* btnTool {nullptr};
 		bool searching {false};
 
-		explicit Private(PlaylistCreator* playlistCreator) :
-			playlistCreator(playlistCreator) {}
+		explicit Private(PlaylistCreator* playlistCreator, AbstractStationHandler* stationHandler) :
+			playlistCreator(playlistCreator),
+			stationHandler(stationHandler) {}
 	};
 
-	AbstractStationPlugin::AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent) :
+	AbstractStationPlugin::AbstractStationPlugin(PlaylistCreator* playlistCreator,
+	                                             AbstractStationHandler* stationHandler, QWidget* parent) :
 		PlayerPlugin::Base(parent),
-		m {Pimpl::make<Private>(playlistCreator)} {}
+		m {Pimpl::make<Private>(playlistCreator, stationHandler)} {}
 
 	AbstractStationPlugin::~AbstractStationPlugin() = default;
 
@@ -81,8 +83,6 @@ namespace Gui
 
 	void AbstractStationPlugin::initUi()
 	{
-		m->streamHandler = streamHandler(); // sub classes might instantiate this new on every call, so only call this method once
-
 		m->btnPlay->setFocusPolicy(Qt::StrongFocus);
 		m->btnTool->showActions(ContextMenuEntries(ContextMenu::EntryNew));
 		m->btnTool->registerPreferenceAction(new StreamPreferenceAction(m->btnTool));
@@ -103,10 +103,10 @@ namespace Gui
 		connect(m->btnTool, &MenuToolButton::sigDelete, this, &AbstractStationPlugin::deleteClicked);
 		connect(m->btnTool, &MenuToolButton::sigNew, this, &AbstractStationPlugin::newClicked);
 		connect(m->comboStream, combo_activated_int, this, &AbstractStationPlugin::currentIndexChanged);
-		connect(m->streamHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::error);
-		connect(m->streamHandler, &AbstractStationHandler::sigDataAvailable, this, [this]() { setSearching(false); });
-		connect(m->streamHandler, &AbstractStationHandler::sigStopped, [this]() { setSearching(false); });
-		connect(m->streamHandler, &AbstractStationHandler::sigUrlCountExceeded,
+		connect(m->stationHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::error);
+		connect(m->stationHandler, &AbstractStationHandler::sigDataAvailable, this, [this]() { setSearching(false); });
+		connect(m->stationHandler, &AbstractStationHandler::sigStopped, [this]() { setSearching(false); });
+		connect(m->stationHandler, &AbstractStationHandler::sigUrlCountExceeded,
 		        this, &AbstractStationPlugin::urlCountExceeded);
 	}
 
@@ -116,7 +116,7 @@ namespace Gui
 		const auto lastUrl = currentUrl();
 
 		auto stations = QList<StationPtr> {};
-		m->streamHandler->getAllStreams(stations);
+		m->stationHandler->getAllStreams(stations);
 
 		m->comboStream->clear();
 		for(const auto& station: stations)
@@ -160,7 +160,7 @@ namespace Gui
 		if(m->searching)
 		{
 			m->btnPlay->setDisabled(true);
-			m->streamHandler->stop();
+			m->stationHandler->stop();
 
 			return;
 		}
@@ -182,7 +182,7 @@ namespace Gui
 
 	void AbstractStationPlugin::play(const QString& stationName)
 	{
-		auto stationPtr = m->streamHandler->station(stationName);
+		auto stationPtr = m->stationHandler->station(stationName);
 		if(!stationPtr)
 		{
 			stationPtr = m->temporaryStations[stationName];
@@ -190,7 +190,7 @@ namespace Gui
 
 		if(stationPtr)
 		{
-			const auto success = m->streamHandler->parseStation(stationPtr);
+			const auto success = m->stationHandler->parseStation(stationPtr);
 			if(!success)
 			{
 				spLog(Log::Warning, this) << "Stream Handler busy";
@@ -242,7 +242,7 @@ namespace Gui
 
 	void AbstractStationPlugin::addStream(const QString& name, const QString& url, const bool temporary)
 	{
-		const auto station = m->streamHandler->createStreamInstance(name, url);
+		const auto station = m->stationHandler->createStreamInstance(name, url);
 
 		m->temporaryStations.insert(name, station);
 		m->comboStream->addItem(name, url);
@@ -257,7 +257,7 @@ namespace Gui
 	void AbstractStationPlugin::saveStation(const StationPtr& station)
 	{
 		showConfigDialog(station->name(), station, GUI_ConfigureStation::Mode::Save, [this](auto* configDialog) {
-			const auto success = m->streamHandler->addNewStream(configDialog->configuredStation());
+			const auto success = m->stationHandler->addNewStream(configDialog->configuredStation());
 			if(success)
 			{
 				m->temporaryStations.remove(currentName());
@@ -279,7 +279,7 @@ namespace Gui
 				return;
 			}
 
-			const auto streamAdded = m->streamHandler->addNewStream(station);
+			const auto streamAdded = m->stationHandler->addNewStream(station);
 			if(streamAdded)
 			{
 				m->temporaryStations.remove(station->name());
@@ -289,11 +289,11 @@ namespace Gui
 
 	void AbstractStationPlugin::editClicked()
 	{
-		const auto station = m->streamHandler->station(currentName());
+		const auto station = m->stationHandler->station(currentName());
 		if(station)
 		{
 			showConfigDialog(currentName(), station, GUI_ConfigureStation::Mode::Edit, [this](auto* configDialog) {
-				const auto success = m->streamHandler->update(currentName(), configDialog->configuredStation());
+				const auto success = m->stationHandler->update(currentName(), configDialog->configuredStation());
 				spLog(Log::Info, this) << "Updated " << currentName() << ": " << success;
 			});
 		}
@@ -304,7 +304,7 @@ namespace Gui
 		const auto answer = Message::question_yn(tr("Do you really want to delete %1").arg(currentName()) + "?");
 		if(answer == Message::Answer::Yes)
 		{
-			const auto success = m->streamHandler->deleteStream(currentName());
+			const auto success = m->stationHandler->deleteStream(currentName());
 			spLog(Log::Info, this) << "Delete " << currentName() << success;
 		}
 

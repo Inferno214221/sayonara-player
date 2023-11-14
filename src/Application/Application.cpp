@@ -47,6 +47,8 @@
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
 #include "Components/Streaming/LastFM/LastFM.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
+#include "Components/Streaming/Streams/PodcastHandler.h"
+#include "Components/Streaming/Streams/StreamHandler.h"
 #include "DBus/DBusMPRIS.h"
 #include "DBus/DBusMediaKeysInterfaceGnome.h"
 #include "DBus/DBusMediaKeysInterfaceMate.h"
@@ -409,8 +411,8 @@ void Application::initPlugins()
 	playerPluginHandler->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
 	playerPluginHandler->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
 	playerPluginHandler->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
-	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler));
-	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler));
+	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler, new StreamHandler(m->playlistHandler)));
+	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler, new PodcastHandler(m->playlistHandler)));
 	playerPluginHandler->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
 	playerPluginHandler->addPlugin(new GuiSmartPlaylists(m->smartPlaylistManager, m->libraryManager));
 	playerPluginHandler->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));

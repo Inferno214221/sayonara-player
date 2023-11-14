@@ -58,14 +58,14 @@ namespace Gui
 		PIMPL(AbstractStationPlugin)
 
 		public:
-			explicit AbstractStationPlugin(PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
+			AbstractStationPlugin(PlaylistCreator* playlistCreator, AbstractStationHandler* stationHandler,
+			                      QWidget* parent = nullptr);
 			~AbstractStationPlugin() override;
 
 		protected:
 			[[nodiscard]] virtual QComboBox* comboStream() = 0;
 			[[nodiscard]] virtual QPushButton* btnPlay() = 0;
 			[[nodiscard]] virtual MenuToolButton* btnMenu() = 0;
-			[[nodiscard]] virtual AbstractStationHandler* streamHandler() const = 0;
 			[[nodiscard]] virtual QString titleFallbackName() const = 0;
 			[[nodiscard]] virtual GUI_ConfigureStation* createConfigDialog() = 0;
 

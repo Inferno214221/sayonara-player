@@ -25,16 +25,16 @@
 
 UI_FWD(GUI_Podcasts)
 
+class PodcastHandler;
 class GUI_Podcasts :
-		public Gui::AbstractStationPlugin
+	public Gui::AbstractStationPlugin
 {
 	Q_OBJECT
-	PIMPL(GUI_Podcasts)
 	UI_CLASS(GUI_Podcasts)
 
 	public:
-		explicit GUI_Podcasts(PlaylistCreator* playlistCreator, QWidget* parent=nullptr);
-		virtual ~GUI_Podcasts() override;
+		GUI_Podcasts(PlaylistCreator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent = nullptr);
+		~GUI_Podcasts() override;
 
 		QString name() const override;
 		QString displayName() const override;
@@ -48,7 +48,6 @@ class GUI_Podcasts :
 		QPushButton* btnPlay() override;
 		Gui::MenuToolButton* btnMenu() override;
 
-		AbstractStationHandler* streamHandler() const override;
 		GUI_ConfigureStation* createConfigDialog() override;
 };
 

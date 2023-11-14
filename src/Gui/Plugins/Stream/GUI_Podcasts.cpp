@@ -26,17 +26,8 @@
 
 #include "Utils/Language/Language.h"
 
-struct GUI_Podcasts::Private
-{
-	PlaylistCreator* playlistCreator;
-
-	explicit Private(PlaylistCreator* playlistCreator) :
-		playlistCreator(playlistCreator) {}
-};
-
-GUI_Podcasts::GUI_Podcasts(PlaylistCreator* playlistCreator, QWidget* parent) :
-	Gui::AbstractStationPlugin(playlistCreator, parent),
-	m {Pimpl::make<Private>(playlistCreator)} {}
+GUI_Podcasts::GUI_Podcasts(PlaylistCreator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent) :
+	Gui::AbstractStationPlugin(playlistCreator, podcastHandler, parent) {}
 
 GUI_Podcasts::~GUI_Podcasts()
 {
@@ -83,11 +74,6 @@ QPushButton* GUI_Podcasts::btnPlay()
 Gui::MenuToolButton* GUI_Podcasts::btnMenu()
 {
 	return ui->btnTool;
-}
-
-AbstractStationHandler* GUI_Podcasts::streamHandler() const
-{
-	return new PodcastHandler(m->playlistCreator);
 }
 
 GUI_ConfigureStation* GUI_Podcasts::createConfigDialog()

@@ -24,7 +24,7 @@
 #include "AbstractStationPlugin.h"
 
 UI_FWD(GUI_Stream)
-
+class StreamHandler;
 class GUI_Stream :
 	public Gui::AbstractStationPlugin
 {
@@ -33,23 +33,21 @@ class GUI_Stream :
 	PIMPL(GUI_Stream)
 
 	public:
-		explicit GUI_Stream(PlaylistCreator* playlistCreator, QWidget* parent=nullptr);
+		GUI_Stream(PlaylistCreator* playlistCreator, StreamHandler* streamHandler, QWidget* parent = nullptr);
 		~GUI_Stream() override;
 
-		QString name() const override;
-		QString displayName() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
 
 	private:
 		void initUi() override;
 		void retranslate() override;
-		QString titleFallbackName() const override;
+		[[nodiscard]] QString titleFallbackName() const override;
 
-	// GUI_AbstractStream interface
 	protected:
 		QComboBox* comboStream() override;
 		QPushButton* btnPlay() override;
 		Gui::MenuToolButton* btnMenu() override;
-		AbstractStationHandler* streamHandler() const override;
 		GUI_ConfigureStation* createConfigDialog() override;
 
 		void skinChanged() override;
