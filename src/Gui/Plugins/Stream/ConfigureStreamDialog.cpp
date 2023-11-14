@@ -9,21 +9,19 @@
 
 struct ConfigureStreamDialog::Private
 {
-	PlaylistCreator* playlistCreator;
 	QLineEdit* name {new QLineEdit()};
 	QLineEdit* url {new QLineEdit()};
 	QCheckBox* updateMetadata {new QCheckBox()};
 
-	explicit Private(PlaylistCreator* playlistCreator) :
-		playlistCreator {playlistCreator}
+	Private()
 	{
 		updateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
 	}
 };
 
-ConfigureStreamDialog::ConfigureStreamDialog(PlaylistCreator* playlistCreator, QWidget* parent) :
+ConfigureStreamDialog::ConfigureStreamDialog(QWidget* parent) :
 	GUI_ConfigureStation(parent),
-	m {Pimpl::make<Private>(playlistCreator)} {}
+	m {Pimpl::make<Private>()} {}
 
 ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
