@@ -236,18 +236,6 @@ namespace
 	}
 
 	template<typename Callback>
-	WebClient* createWebClient(WebClientFactory& webClientFactory, StreamParser* parent, Callback callback)
-	{
-		auto* webClient = webClientFactory.createClient(parent);
-		webClient->setMode(WebClient::Mode::AsSayonara);
-		QObject::connect(webClient, &WebClient::sigFinished, parent, callback);
-		QObject::connect(parent, &StreamParser::sigStopped, webClient, &WebClient::stop);
-		QObject::connect(parent, &StreamParser::sigStopped, webClient, &WebClient::deleteLater);
-
-		return webClient;
-	}
-
-	template<typename Callback>
 	IcyWebAccess* createIcyClient(StreamParser* parent, Callback callback)
 	{
 		auto* icyWebAccess = new IcyWebAccess(parent);
@@ -275,181 +263,224 @@ namespace
 	}
 }
 
-struct StreamParser::Private
+class StreamParserImpl :
+	public StreamParser
 {
-	// If an url leads me to some website content and I have to parse it
-	// and this Url is found again during parsing, it cannot be a stream
-	// and so, it cannot be a metadata object
-	Urls forbiddenUrls;
-	QString stationName;
-	QString coverUrl;
-	MetaDataList tracks;
-	Urls urls;
-	std::shared_ptr<WebClientFactory> webClientFactory;
-	int timeout {0};
-	bool stopped {false};
+	Q_OBJECT
 
-	explicit Private(std::shared_ptr<WebClientFactory> webClientFactory) :
-		webClientFactory {std::move(webClientFactory)} {}
+	public:
+		StreamParserImpl(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent) :
+			StreamParser(parent),
+			m_webClientFactory {webClientFactory} {}
+
+		~StreamParserImpl() override = default;
+
+		void parse(const QString& stationName, const QString& stationUrl, const int timeout) override
+		{
+			m_stationName.clear();
+
+			if(!stationUrl.isEmpty())
+			{
+				m_stationName = stationName;
+				parse(Urls {stationUrl}, timeout);
+			}
+		}
+
+		void parse(const Urls& urls, const int timeout) override
+		{
+			m_timeout = timeout;
+			m_stopped = false;
+			m_tracks.clear();
+
+			m_urls = urls;
+			m_urls.removeDuplicates();
+
+			if(m_urls.size() > MaxSizeUrls)
+			{
+				emit sigUrlCountExceeded(m_urls.size(), MaxSizeUrls);
+			}
+
+			else
+			{
+				parseNextUrl();
+			}
+		}
+
+		void stopParsing() override
+		{
+			m_stopped = true;
+			emit sigStopped();
+		}
+
+		[[nodiscard]] bool isStopped() const override { return m_stopped; }
+
+		bool parseNextUrl()
+		{
+			if(m_stopped)
+			{
+				emit sigStopped();
+				return false;
+			}
+
+			if(m_urls.isEmpty())
+			{
+				emit sigFinished(!m_tracks.empty());
+				return false;
+			}
+
+			auto* webClient = m_webClientFactory->createClient(this);
+			webClient->setMode(WebClient::Mode::AsSayonara);
+			QObject::connect(webClient, &WebClient::sigFinished, this, &StreamParserImpl::webClientFinished);
+			QObject::connect(this, &StreamParser::sigStopped, webClient, &WebClient::stop);
+			QObject::connect(this, &StreamParser::sigStopped, webClient, &WebClient::deleteLater);
+
+			webClient->run(m_urls.takeFirst(), m_timeout);
+
+			return true;
+		}
+
+		[[nodiscard]] MetaDataList tracks() const override { return m_tracks; }
+
+		void setCoverUrl(const QString& coverUrl) override
+		{
+			m_coverUrl = coverUrl;
+
+			for(auto& track: m_tracks)
+			{
+				track.setCoverDownloadUrls({coverUrl});
+			}
+		}
+
+	private slots:
+
+		void webClientFinished()
+		{
+			auto* webClient = dynamic_cast<WebClient*>(sender());
+
+			const auto status = webClient->status();
+			const auto url = webClient->url();
+			const auto data = webClient->data();
+
+			webClient->deleteLater();
+
+			switch(status)
+			{
+				case WebClient::Status::GotData:
+				{
+					m_forbiddenUrls << url;
+					spLog(Log::Develop, this) << "Got data. Try to parse content";
+
+					auto [tracks, urls] = parseContent(url, data, m_coverUrl, m_stationName, m_forbiddenUrls);
+					m_tracks = removeDuplicates(std::move(tracks));
+					m_urls << urls;
+					m_urls.removeDuplicates();
+				}
+					break;
+
+				case WebClient::Status::NoHttp:
+				{
+					spLog(Log::Develop, this) << "No correct http was found. Maybe Icy?";
+
+					auto* icyWebAccess = createIcyClient(this, [&, url](auto* icy) {
+						this->icyFinished(url, icy);
+					});
+
+					icyWebAccess->check(QUrl(url));
+				}
+					return;
+
+				case WebClient::Status::AudioStream:
+				{
+					spLog(Log::Develop, this) << "Found audio stream";
+
+					m_tracks << setMetadataTag(MetaData {}, m_stationName, url, m_coverUrl);
+					m_tracks = removeDuplicates(std::move(m_tracks));
+				}
+					break;
+
+				default:
+					spLog(Log::Develop, this) << "Web Access finished: " << int(status);
+			}
+
+			if(m_urls.size() > MaxSizeUrls)
+			{
+				emit sigUrlCountExceeded(m_urls.size(), MaxSizeUrls);
+			}
+
+			else
+			{
+				parseNextUrl();
+			}
+		}
+
+		void icyFinished(const QString& url, IcyWebAccess* icyWebAccess)
+		{
+			const auto status = icyWebAccess->status();
+			if(status == IcyWebAccess::Status::Success)
+			{
+				spLog(Log::Develop, this) << "Stream is icy stream";
+
+				m_tracks << setMetadataTag(MetaData {}, m_stationName, url, m_coverUrl);
+				m_tracks = removeDuplicates(std::move(m_tracks));
+			}
+
+			else
+			{
+				spLog(Log::Develop, this) << "Stream is no icy stream";
+			}
+
+			icyWebAccess->deleteLater();
+
+			parseNextUrl();
+		}
+
+	private: // NOLINT(readability-redundant-access-specifiers)
+		Urls m_forbiddenUrls;
+		QString m_stationName;
+		QString m_coverUrl;
+		MetaDataList m_tracks;
+		Urls m_urls;
+		std::shared_ptr<WebClientFactory> m_webClientFactory;
+		int m_timeout {0};
+		bool m_stopped {false};
 };
 
-StreamParser::StreamParser(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent) :
-	QObject(parent),
-	m {Pimpl::make<Private>(webClientFactory)} {}
+StreamParser::StreamParser(QObject* parent) :
+	QObject(parent) {}
 
 StreamParser::~StreamParser() = default;
 
-void StreamParser::parse(const QString& stationName, const QString& stationUrl, const int timeout)
+void StreamParser::parse(const QString& stationName, const QString& stationUrl)
 {
-	m->stationName.clear();
-
-	if(!stationUrl.isEmpty())
-	{
-		m->stationName = stationName;
-		parse(Urls {stationUrl}, timeout);
-	}
+	constexpr const auto Timeout = 5000;
+	return parse(stationName, stationUrl, Timeout);
 }
 
-void StreamParser::parse(const Urls& urls, const int timeout)
+class StationParserFactoryImpl :
+	public StationParserFactory
 {
-	m->timeout = timeout;
-	m->stopped = false;
-	m->tracks.clear();
+	public:
+		StationParserFactoryImpl(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent) :
+			m_webClientFactory {webClientFactory},
+			m_parent {parent} {}
 
-	m->urls = urls;
-	m->urls.removeDuplicates();
+		~StationParserFactoryImpl() override = default;
 
-	if(m->urls.size() > MaxSizeUrls)
-	{
-		emit sigUrlCountExceeded(m->urls.size(), MaxSizeUrls);
-	}
-
-	else
-	{
-		parseNextUrl();
-	}
-}
-
-bool StreamParser::parseNextUrl()
-{
-	if(m->stopped)
-	{
-		emit sigStopped();
-		return false;
-	}
-
-	if(m->urls.isEmpty())
-	{
-		emit sigFinished(!m->tracks.empty());
-		return false;
-	}
-
-	auto* webClient = createWebClient(*m->webClientFactory, this, &StreamParser::webClientFinished);
-	webClient->run(m->urls.takeFirst(), m->timeout);
-
-	return true;
-}
-
-void StreamParser::webClientFinished()
-{
-	auto* webClient = dynamic_cast<WebClient*>(sender());
-
-	const auto status = webClient->status();
-	const auto url = webClient->url();
-	const auto data = webClient->data();
-
-	webClient->deleteLater();
-
-	switch(status)
-	{
-		case WebClient::Status::GotData:
+		[[nodiscard]] StreamParser* createParser() const override
 		{
-			m->forbiddenUrls << url;
-			spLog(Log::Develop, this) << "Got data. Try to parse content";
-
-			auto [tracks, urls] = parseContent(url, data, m->coverUrl, m->stationName, m->forbiddenUrls);
-			m->tracks = removeDuplicates(std::move(tracks));
-			m->urls << urls;
-			m->urls.removeDuplicates();
+			return new StreamParserImpl(m_webClientFactory, m_parent);
 		}
-			break;
 
-		case WebClient::Status::NoHttp:
-		{
-			spLog(Log::Develop, this) << "No correct http was found. Maybe Icy?";
+	private:
+		std::shared_ptr<WebClientFactory> m_webClientFactory;
+		QObject* m_parent;
+};
 
-			auto* icyWebAccess = createIcyClient(this, [&, url](auto* icy) {
-				this->icyFinished(url, icy);
-			});
-
-			icyWebAccess->check(QUrl(url));
-		}
-			return;
-
-		case WebClient::Status::AudioStream:
-		{
-			spLog(Log::Develop, this) << "Found audio stream";
-
-			m->tracks << setMetadataTag(MetaData {}, m->stationName, url, m->coverUrl);
-			m->tracks = removeDuplicates(std::move(m->tracks));
-		}
-			break;
-
-		default:
-			spLog(Log::Develop, this) << "Web Access finished: " << int(status);
-	}
-
-	if(m->urls.size() > MaxSizeUrls)
-	{
-		emit sigUrlCountExceeded(m->urls.size(), MaxSizeUrls);
-	}
-
-	else
-	{
-		parseNextUrl();
-	}
-}
-
-void StreamParser::icyFinished(const QString& url, IcyWebAccess* icyWebAccess)
+std::shared_ptr<StationParserFactory>
+StationParserFactory::createStationParserFactory(const std::shared_ptr<WebClientFactory>& webClientFactory,
+                                                 QObject* parent)
 {
-	const auto status = icyWebAccess->status();
-	if(status == IcyWebAccess::Status::Success)
-	{
-		spLog(Log::Develop, this) << "Stream is icy stream";
-
-		m->tracks << setMetadataTag(MetaData {}, m->stationName, url, m->coverUrl);
-		m->tracks = removeDuplicates(std::move(m->tracks));
-	}
-
-	else
-	{
-		spLog(Log::Develop, this) << "Stream is no icy stream";
-	}
-
-	icyWebAccess->deleteLater();
-
-	parseNextUrl();
+	return std::make_shared<StationParserFactoryImpl>(webClientFactory, parent);
 }
 
-MetaDataList StreamParser::tracks() const
-{
-	return m->tracks;
-}
-
-void StreamParser::setCoverUrl(const QString& coverUrl)
-{
-	m->coverUrl = coverUrl;
-
-	for(auto& track: m->tracks)
-	{
-		track.setCoverDownloadUrls({coverUrl});
-	}
-}
-
-void StreamParser::stop()
-{
-	m->stopped = true;
-	emit sigStopped();
-}
-
-bool StreamParser::isStopped() const { return m->stopped; }
+#include "StreamParser.moc"

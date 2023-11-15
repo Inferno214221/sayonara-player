@@ -27,9 +27,11 @@
 #include "Utils/Algorithm.h"
 #include "Utils/Streams/Station.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/StreamParser.h"
 
-PodcastHandler::PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent) :
-	AbstractStationHandler(playlistCreator, parent) {}
+PodcastHandler::PodcastHandler(PlaylistCreator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
+                               QObject* parent) :
+	AbstractStationHandler(playlistCreator, stationParserFactory, parent) {}
 
 PodcastHandler::~PodcastHandler() = default;
 

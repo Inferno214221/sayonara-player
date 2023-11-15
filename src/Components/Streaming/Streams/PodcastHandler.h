@@ -28,7 +28,9 @@ class PodcastHandler :
 {
 	Q_OBJECT
 	public:
-		explicit PodcastHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+		PodcastHandler(PlaylistCreator* playlistCreator,
+		               const std::shared_ptr<StationParserFactory>& stationParserFactory,
+		               QObject* parent = nullptr);
 		~PodcastHandler() override;
 
 		bool getAllStreams(QList<StationPtr>& stations) override;

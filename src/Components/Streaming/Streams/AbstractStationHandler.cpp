@@ -26,21 +26,23 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/Settings/Settings.h"
-#include "Utils/WebAccess/WebClientFactory.h"
 
 struct AbstractStationHandler::Private
 {
 	PlaylistCreator* playlistCreator;
+	StationParserFactoryPtr stationParserFactory;
 	StreamParser* streamParser = nullptr;
 	StationPtr parsedStation;
 
-	explicit Private(PlaylistCreator* playlistCreator) :
-		playlistCreator(playlistCreator) {}
+	Private(PlaylistCreator* playlistCreator, StationParserFactoryPtr stationParserFactory) :
+		playlistCreator(playlistCreator),
+		stationParserFactory(std::move(stationParserFactory)) {}
 };
 
-AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent) :
+AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator,
+                                               const StationParserFactoryPtr& stationParserFactory, QObject* parent) :
 	QObject(parent),
-	m {Pimpl::make<Private>(playlistCreator)} {}
+	m {Pimpl::make<Private>(playlistCreator, stationParserFactory)} {}
 
 AbstractStationHandler::~AbstractStationHandler() = default;
 
@@ -67,7 +69,7 @@ bool AbstractStationHandler::parseStation(const StationPtr& station)
 	}
 
 	m->parsedStation = station;
-	m->streamParser = new StreamParser(std::make_shared<WebClientFactory>(), this);
+	m->streamParser = m->stationParserFactory->createParser();
 
 	connect(m->streamParser, &StreamParser::sigFinished, this, &AbstractStationHandler::parserFinished);
 	connect(m->streamParser, &StreamParser::sigUrlCountExceeded, this, &AbstractStationHandler::sigUrlCountExceeded);
@@ -100,7 +102,7 @@ void AbstractStationHandler::stop()
 {
 	if(m->streamParser && !m->streamParser->isStopped())
 	{
-		m->streamParser->stop();
+		m->streamParser->stopParsing();
 	}
 
 	m->streamParser = nullptr;

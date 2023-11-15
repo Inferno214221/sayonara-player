@@ -33,7 +33,9 @@ void AsyncDropHandler::start()
 {
 	QStringList files = m->station.playlists();
 
-	auto* streamParser = new StreamParser(std::make_shared<WebClientFactory>());
+	auto stationParserFactory =
+		StationParserFactory::createStationParserFactory(std::make_shared<WebClientFactory>(), this);
+	auto* streamParser = stationParserFactory->createParser();
 
 	const Cover::Location cl = m->station.coverLocation();
 	auto searchUrls = cl.searchUrls();
@@ -44,7 +46,7 @@ void AsyncDropHandler::start()
 	}
 
 	connect(streamParser, &StreamParser::sigFinished, this, &AsyncDropHandler::streamParserFinished);
-	streamParser->parse(files);
+	streamParser->parse(files, 5000);
 }
 
 void AsyncDropHandler::streamParserFinished(bool success)

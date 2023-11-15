@@ -30,7 +30,6 @@ class StreamParser :
 	public QObject
 {
 	Q_OBJECT
-	PIMPL(StreamParser)
 
 	signals:
 		void sigFinished(bool success);
@@ -38,27 +37,28 @@ class StreamParser :
 		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		explicit StreamParser(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent = nullptr);
+		explicit StreamParser(QObject* parent);
 		~StreamParser() override;
 
-		// NOLINTNEXTLINE(readability-magic-numbers)
-		void parse(const QString& stationName, const QString& stationUrl, int timeout = 5000);
-		void parse(const QStringList& urls, int timeout = 5000); // NOLINT(readability-magic-numbers)
-
-		void setCoverUrl(const QString& coverUrl);
-
-		void stop();
-		[[nodiscard]] bool isStopped() const;
-
-		[[nodiscard]] MetaDataList tracks() const;
-
-	private slots:
-		void webClientFinished();
-
-	private: // NOLINT(readability-redundant-access-specifiers)
-		bool parseNextUrl();
-		void icyFinished(const QString& url, IcyWebAccess* icyWebAccess);
-
+		void parse(const QString& stationName, const QString& stationUrl);
+		virtual void parse(const QString& stationName, const QString& stationUrl, int timeout) = 0;
+		virtual void parse(const QStringList& urls, int timeout) = 0;
+		virtual void stopParsing() = 0;
+		[[nodiscard]] virtual MetaDataList tracks() const = 0;
+		[[nodiscard]] virtual bool isStopped() const = 0;
+		virtual void setCoverUrl(const QString& coverUrl) = 0;
 };
+
+class StationParserFactory
+{
+	public:
+		virtual ~StationParserFactory() = default;
+		[[nodiscard]] virtual StreamParser* createParser() const = 0;
+
+		static std::shared_ptr<StationParserFactory>
+		createStationParserFactory(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent);
+};
+
+using StationParserFactoryPtr = std::shared_ptr<StationParserFactory>;
 
 #endif

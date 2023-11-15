@@ -97,16 +97,18 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
-#include "Utils/Tagging/TagWriter.h"
 #include "Utils/FileSystem.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MeasureApp.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/StreamParser.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/Proxy.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QIcon>
 #include <QElapsedTimer>
@@ -407,12 +409,17 @@ void Application::initPlugins()
 	[[maybe_unused]] auto measureApp = Util::MeasureApp("Plugins", m->timer);
 
 	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
+	
+	auto webClientFactory = std::make_shared<WebClientFactory>();
+	auto stationParserFactory = StationParserFactory::createStationParserFactory(webClientFactory, this);
+	auto* streamHandler = new StreamHandler(m->playlistHandler, stationParserFactory);
+	auto* podcastHandler = new PodcastHandler(m->playlistHandler, stationParserFactory);
 
 	playerPluginHandler->addPlugin(new GUI_LevelPainter(m->engine, m->playManager));
 	playerPluginHandler->addPlugin(new GUI_Spectrum(m->engine, m->playManager));
 	playerPluginHandler->addPlugin(new GUI_Equalizer(new Equalizer(m->engine)));
-	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler, new StreamHandler(m->playlistHandler)));
-	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler, new PodcastHandler(m->playlistHandler)));
+	playerPluginHandler->addPlugin(new GUI_Stream(m->playlistHandler, streamHandler));
+	playerPluginHandler->addPlugin(new GUI_Podcasts(m->playlistHandler, podcastHandler));
 	playerPluginHandler->addPlugin(new GUI_PlaylistChooser(new Playlist::Chooser(m->playlistHandler, this)));
 	playerPluginHandler->addPlugin(new GuiSmartPlaylists(m->smartPlaylistManager, m->libraryManager));
 	playerPluginHandler->addPlugin(new GUI_AudioConverter(new ConverterFactory(m->playlistHandler)));

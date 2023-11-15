@@ -28,6 +28,7 @@
 #include <QList>
 
 class PlaylistCreator;
+class StationParserFactory;
 
 class AbstractStationHandler :
 	public QObject
@@ -42,7 +43,9 @@ class AbstractStationHandler :
 		void sigUrlCountExceeded(int urlCount, int maxUrlCount);
 
 	public:
-		explicit AbstractStationHandler(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+		AbstractStationHandler(PlaylistCreator* playlistCreator,
+		                       const std::shared_ptr<StationParserFactory>& stationParserFactory,
+		                       QObject* parent = nullptr);
 		~AbstractStationHandler() override;
 
 		bool parseStation(const StationPtr& station);
