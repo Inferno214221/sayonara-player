@@ -46,6 +46,13 @@ namespace
 			.arg(Lang::get(Lang::Streams))
 			.arg(Lang::get(Lang::Podcasts));
 	}
+
+	void configurePlayStopButton(QPushButton* btnPlayStop, const bool isSearching)
+	{
+		btnPlayStop->setText(isSearching
+		                     ? Lang::get(Lang::Stop)
+		                     : Lang::get(Lang::Listen));
+	}
 }
 
 namespace Gui
@@ -103,17 +110,30 @@ namespace Gui
 		connect(m->btnTool, &MenuToolButton::sigDelete, this, &AbstractStationPlugin::deleteClicked);
 		connect(m->btnTool, &MenuToolButton::sigNew, this, &AbstractStationPlugin::newClicked);
 		connect(m->comboStream, combo_activated_int, this, &AbstractStationPlugin::currentIndexChanged);
-		connect(m->stationHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::error);
+		connect(m->stationHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::errorReceived);
 		connect(m->stationHandler, &AbstractStationHandler::sigDataAvailable, this, [this]() { setSearching(false); });
 		connect(m->stationHandler, &AbstractStationHandler::sigStopped, [this]() { setSearching(false); });
 		connect(m->stationHandler, &AbstractStationHandler::sigUrlCountExceeded,
 		        this, &AbstractStationPlugin::urlCountExceeded);
 	}
 
+	void AbstractStationPlugin::restorePreviousIndex(const QString& name)
+	{
+		if(m->comboStream->count() == 0)
+		{
+			currentIndexChanged(-1);
+		}
+		else
+		{
+			const auto index = std::max(0, m->comboStream->findText(name));
+			m->comboStream->setCurrentIndex(index);
+			currentIndexChanged(index);
+		}
+	}
+
 	void AbstractStationPlugin::setupStations()
 	{
 		const auto lastName = currentName();
-		const auto lastUrl = currentUrl();
 
 		auto stations = QList<StationPtr> {};
 		m->stationHandler->getAllStreams(stations);
@@ -124,22 +144,7 @@ namespace Gui
 			m->comboStream->addItem(station->name(), station->url());
 		}
 
-		auto index = Util::Algorithm::indexOf(stations, [&](const auto& station) {
-			return (lastName == station->name()) ||
-			       (lastUrl == station->url());
-		});
-
-		if(m->comboStream->count() > 0)
-		{
-			index = std::max(0, index);
-		}
-
-		m->btnPlay->setEnabled(false);
-		if(index >= 0)
-		{
-			m->comboStream->setCurrentIndex(index);
-			currentIndexChanged(m->comboStream->currentIndex());
-		}
+		restorePreviousIndex(lastName);
 	}
 
 	void AbstractStationPlugin::currentIndexChanged(const int index)
@@ -182,44 +187,19 @@ namespace Gui
 
 	void AbstractStationPlugin::play(const QString& stationName)
 	{
-		auto stationPtr = m->stationHandler->station(stationName);
-		if(!stationPtr)
+		auto station = m->stationHandler->station(stationName);
+		if(!station)
 		{
-			stationPtr = m->temporaryStations[stationName];
+			station = m->temporaryStations[stationName];
 		}
 
-		if(stationPtr)
+		if(station)
 		{
-			const auto success = m->stationHandler->parseStation(stationPtr);
+			const auto success = m->stationHandler->parseStation(station);
 			if(!success)
 			{
 				spLog(Log::Warning, this) << "Stream Handler busy";
 				setSearching(false);
-			}
-		}
-	}
-
-	void AbstractStationPlugin::error()
-	{
-		setSearching(false);
-
-		const auto question = QString("%1\n%2\n\n%3")
-			.arg(tr("Cannot open stream"))
-			.arg(currentUrl())
-			.arg(Lang::get(Lang::Retry).question());
-
-		const auto answer = Message::question_yn(question);
-		if(answer == Message::Answer::Yes)
-		{
-			listenClicked();
-		}
-
-		else
-		{
-			const auto removed = (m->temporaryStations.remove(currentName()) == 0);
-			if(removed)
-			{
-				m->comboStream->removeItem(m->comboStream->currentIndex());
 			}
 		}
 	}
@@ -320,14 +300,36 @@ namespace Gui
 		setSearching(false);
 	}
 
+	void AbstractStationPlugin::errorReceived()
+	{
+		setSearching(false);
+
+		const auto question = QString("%1\n%2\n\n%3")
+			.arg(tr("Cannot open stream"))
+			.arg(currentUrl())
+			.arg(Lang::get(Lang::Retry).question());
+
+		const auto answer = Message::question_yn(question);
+		if(answer == Message::Answer::Yes)
+		{
+			listenClicked();
+		}
+
+		else
+		{
+			const auto removed = (m->temporaryStations.remove(currentName()) == 0);
+			if(removed)
+			{
+				m->comboStream->removeItem(m->comboStream->currentIndex());
+			}
+		}
+	}
+
 	bool AbstractStationPlugin::hasLoadingBar() const { return true; }
 
 	void AbstractStationPlugin::retranslate()
 	{
-		const auto text = (m->searching) ?
-		                  Lang::get(Lang::Stop) : Lang::get(Lang::Listen);
-
-		m->btnPlay->setText(text);
+		configurePlayStopButton(m->btnPlay, m->searching);
 	}
 
 	void AbstractStationPlugin::skinChanged()
@@ -341,11 +343,8 @@ namespace Gui
 
 	void AbstractStationPlugin::setSearching(const bool isSearching)
 	{
-		const auto text = isSearching
-		                  ? Lang::get(Lang::Stop)
-		                  : Lang::get(Lang::Listen);
+		configurePlayStopButton(m->btnPlay, isSearching);
 
-		m->btnPlay->setText(text);
 		m->btnPlay->setDisabled(false);
 		m->loadingBar->setVisible(isSearching);
 		m->searching = isSearching;

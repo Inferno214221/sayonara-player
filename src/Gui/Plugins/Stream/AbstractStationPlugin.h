@@ -84,7 +84,7 @@ namespace Gui
 			void editClicked();
 			void deleteClicked();
 			void urlCountExceeded(int urlCount, int maxUrlCount);
-			void error();
+			void errorReceived();
 
 		private: // NOLINT(readability-redundant-access-specifiers)
 			void showConfigDialog(const QString& name, const StationPtr& station,
@@ -93,6 +93,8 @@ namespace Gui
 			void saveStation(const StationPtr& station);
 			void initConnections();
 			void setupStations();
+			void restorePreviousIndex(const QString& name);
+			void stopSearching();
 			[[nodiscard]] QString currentName() const;
 			[[nodiscard]] QString currentUrl() const;
 			void setSearching(bool b);
