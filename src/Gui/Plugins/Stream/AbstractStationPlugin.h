@@ -89,7 +89,7 @@ namespace Gui
 		private: // NOLINT(readability-redundant-access-specifiers)
 			void showConfigDialog(const QString& name, const StationPtr& station,
 			                      GUI_ConfigureStation::Mode mode,
-			                      std::function<void(GUI_ConfigureStation*)>&& callback);
+			                      std::function<bool(GUI_ConfigureStation*)>&& callback);
 			void saveStation(const StationPtr& station);
 			void initConnections();
 			void setupStations();

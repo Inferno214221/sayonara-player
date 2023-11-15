@@ -206,12 +206,22 @@ namespace Gui
 
 	void AbstractStationPlugin::showConfigDialog(const QString& name, const StationPtr& station,
 	                                             const GUI_ConfigureStation::Mode mode,
-	                                             std::function<void(GUI_ConfigureStation*)>&& callback)
+	                                             std::function<bool(GUI_ConfigureStation*)>&& callback)
 	{
 		auto* configDialog = createConfigDialog();
-		connect(configDialog, &Dialog::accepted, [configDialog, callback = std::move(callback)]() {
-			callback(configDialog);
+		connect(configDialog, &Dialog::accepted, [configDialog, mode, this, callback = std::move(callback)]() {
+			const auto success = callback(configDialog);
 			configDialog->deleteLater();
+
+			if(success)
+			{
+				setupStations();
+			}
+
+			else
+			{
+				spLog(Log::Warning, this) << "Could not touch radio station (Mode " << static_cast<int>(mode) << ")";
+			}
 		});
 
 		configDialog->init_ui();
@@ -242,8 +252,7 @@ namespace Gui
 			{
 				m->temporaryStations.remove(currentName());
 			}
-
-			spLog(Log::Info, this) << "Saved " << currentName() << ": " << success;
+			return success;
 		});
 	}
 
@@ -256,7 +265,7 @@ namespace Gui
 			{
 				configDialog->setError(tr("Please choose another name"));
 				configDialog->open();
-				return;
+				return false;
 			}
 
 			const auto streamAdded = m->stationHandler->addNewStream(station);
@@ -264,6 +273,8 @@ namespace Gui
 			{
 				m->temporaryStations.remove(station->name());
 			}
+
+			return true;
 		});
 	}
 
@@ -273,8 +284,7 @@ namespace Gui
 		if(station)
 		{
 			showConfigDialog(currentName(), station, GUI_ConfigureStation::Mode::Edit, [this](auto* configDialog) {
-				const auto success = m->stationHandler->update(currentName(), configDialog->configuredStation());
-				spLog(Log::Info, this) << "Updated " << currentName() << ": " << success;
+				return m->stationHandler->updateStream(currentName(), configDialog->configuredStation());
 			});
 		}
 	}
