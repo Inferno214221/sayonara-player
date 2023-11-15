@@ -81,6 +81,7 @@ namespace Gui
 			void listenClicked();
 			void currentIndexChanged(int index);
 			void newClicked();
+			void saveClicked();
 			void editClicked();
 			void deleteClicked();
 			void urlCountExceeded(int urlCount, int maxUrlCount);

@@ -109,6 +109,7 @@ namespace Gui
 		connect(m->btnTool, &MenuToolButton::sigEdit, this, &AbstractStationPlugin::editClicked);
 		connect(m->btnTool, &MenuToolButton::sigDelete, this, &AbstractStationPlugin::deleteClicked);
 		connect(m->btnTool, &MenuToolButton::sigNew, this, &AbstractStationPlugin::newClicked);
+		connect(m->btnTool, &MenuToolButton::sigSave, this, &AbstractStationPlugin::saveClicked);
 		connect(m->comboStream, combo_activated_int, this, &AbstractStationPlugin::currentIndexChanged);
 		connect(m->stationHandler, &AbstractStationHandler::sigError, this, &AbstractStationPlugin::errorReceived);
 		connect(m->stationHandler, &AbstractStationHandler::sigDataAvailable, this, [this]() { setSearching(false); });
@@ -279,6 +280,20 @@ namespace Gui
 
 			return true;
 		});
+	}
+
+	void AbstractStationPlugin::saveClicked()
+	{
+		const auto station = m->temporaryStations[currentName()];
+		if(station)
+		{
+			const auto streamAdded = m->stationHandler->addNewStream(station);
+			if(streamAdded)
+			{
+				m->temporaryStations.remove(station->name());
+				currentIndexChanged(m->comboStream->currentIndex()); // switch toolbutton from save to edit
+			}
+		}
 	}
 
 	void AbstractStationPlugin::editClicked()
