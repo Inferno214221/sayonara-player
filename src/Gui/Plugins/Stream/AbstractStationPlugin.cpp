@@ -175,7 +175,6 @@ namespace Gui
 			const auto stationName = currentName().isEmpty()
 			                         ? titleFallbackName()
 			                         : currentName();
-
 			setSearching(true);
 			play(stationName);
 
@@ -219,7 +218,7 @@ namespace Gui
 			}
 		});
 
-		configDialog->init_ui();
+		configDialog->initUi();
 		configDialog->setMode(name, mode);
 		configDialog->configureWidgets(station);
 		configDialog->open();

@@ -46,7 +46,7 @@ class GUI_ConfigureStation :
 		explicit GUI_ConfigureStation(QWidget* parent = nullptr);
 		~GUI_ConfigureStation() override;
 
-		virtual void init_ui();
+		void initUi();
 
 		void setError(const QString& message);
 		void setMode(const QString& streamName, Mode mode);

@@ -63,7 +63,7 @@ GUI_ConfigureStation::GUI_ConfigureStation(QWidget* parent) :
 
 GUI_ConfigureStation::~GUI_ConfigureStation() = default;
 
-void GUI_ConfigureStation::init_ui()
+void GUI_ConfigureStation::initUi()
 {
 	if(m->isInitialized)
 	{
