@@ -31,6 +31,24 @@ namespace
 	constexpr const auto* stationName = "Station";
 	constexpr const auto* stationUrl = "https://mySuperAwesomeRadio.de";
 	constexpr const auto SpyTimeout = 50;
+
+	struct ParserEnvironment
+	{
+		std::shared_ptr<TestWebClientFactory> webClientFactory;
+		std::shared_ptr<StationParserFactory> stationParserFactory;
+		StreamParser* parser;
+	};
+
+	ParserEnvironment createParser(QObject* test)
+	{
+		auto env = ParserEnvironment {};
+
+		env.webClientFactory = std::make_shared<TestWebClientFactory>();
+		env.stationParserFactory = StationParserFactory::createStationParserFactory(env.webClientFactory, test);
+		env.parser = env.stationParserFactory->createParser();
+
+		return env;
+	}
 }
 
 class StreamParserTest :
@@ -53,28 +71,26 @@ class StreamParserTest :
 
 [[maybe_unused]] void StreamParserTest::testNoData()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
-	auto* client = testWebClientFactory->clients().first();
+	env.parser->parse(stationName, stationUrl);
+	auto* client = env.webClientFactory->clients().first();
 	client->fireData("Nothing", WebClient::Status::GotData);
 
 	spy.wait(SpyTimeout);
 
 	QVERIFY(spy.count() == 1);
-	QVERIFY(streamParser.tracks().isEmpty());
+	QVERIFY(env.parser->tracks().isEmpty());
 }
 
 [[maybe_unused]] void StreamParserTest::testOneAudioFile()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
-	auto* client = testWebClientFactory->clients().first();
+	env.parser->parse(stationName, stationUrl);
+	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
     <a href="https://path/to/track.mp3">Hallo</a>
@@ -85,8 +101,8 @@ class StreamParserTest :
 	spy.wait(SpyTimeout);
 
 	QVERIFY(spy.count() == 1);
-	QVERIFY(streamParser.tracks().size() == 1);
-	const auto track = streamParser.tracks()[0];
+	QVERIFY(env.parser->tracks().size() == 1);
+	const auto track = env.parser->tracks()[0];
 
 	QVERIFY(track.filepath() == "https://path/to/track.mp3");
 	QVERIFY(track.radioMode() == RadioMode::Station);
@@ -96,12 +112,11 @@ class StreamParserTest :
 
 [[maybe_unused]] void StreamParserTest::testRelativeAudioFile()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
-	auto* client = testWebClientFactory->clients().first();
+	env.parser->parse(stationName, stationUrl);
+	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
     <a href="/path/to/relativeTrack.mp3">Hallo</a>
@@ -111,8 +126,8 @@ class StreamParserTest :
 
 	spy.wait(SpyTimeout);
 
-	QVERIFY(streamParser.tracks().size() == 1);
-	const auto track = streamParser.tracks()[0];
+	QVERIFY(env.parser->tracks().size() == 1);
+	const auto track = env.parser->tracks()[0];
 
 	const auto expectedPath = QString("%1/path/to/relativeTrack.mp3").arg(stationUrl);
 	QVERIFY(track.filepath().toLower() == expectedPath.toLower());
@@ -123,13 +138,12 @@ class StreamParserTest :
 
 [[maybe_unused]] void StreamParserTest::testMultipleAudioFiles()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
+	env.parser->parse(stationName, stationUrl);
 
-	auto* client = testWebClientFactory->clients().first();
+	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
     <a href="https://path/to/track.mp3">Hallo</a>
@@ -142,28 +156,27 @@ class StreamParserTest :
 
 	spy.wait(SpyTimeout);
 
-	QVERIFY(streamParser.tracks().size() == 3);
-	QVERIFY(streamParser.tracks()[0].filepath() == "https://path/to/track.mp3");
-	QVERIFY(streamParser.tracks()[1].filepath() == "https://path/to/windows.wma");
-	QVERIFY(streamParser.tracks()[2].filepath() == "https://path/to/vorbis.ogg");
+	QVERIFY(env.parser->tracks().size() == 3);
+	QVERIFY(env.parser->tracks()[0].filepath() == "https://path/to/track.mp3");
+	QVERIFY(env.parser->tracks()[1].filepath() == "https://path/to/windows.wma");
+	QVERIFY(env.parser->tracks()[2].filepath() == "https://path/to/vorbis.ogg");
 }
 
 [[maybe_unused]] void StreamParserTest::testPlaylistFile()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
+	env.parser->parse(stationName, stationUrl);
 
-	auto* client = testWebClientFactory->clients().first();
+	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
     <a href="https://path/to/playlist.m3u">Hallo</a>
 </http>)";
 	client->fireData(data, WebClient::Status::GotData);
 
-	auto* playlistClient = testWebClientFactory->clientByUrl("https://path/to/playlist.m3u");
+	auto* playlistClient = env.webClientFactory->clientByUrl("https://path/to/playlist.m3u");
 	const auto* playlistFile = R"(
 https://path/to/file1.mp3
 https://path/to/file2.mp3)";
@@ -171,26 +184,25 @@ https://path/to/file2.mp3)";
 
 	spy.wait(SpyTimeout);
 
-	QVERIFY(streamParser.tracks().size() == 2);
-	QVERIFY(streamParser.tracks()[0].filepath() == "https://path/to/file1.mp3");
-	QVERIFY(streamParser.tracks()[1].filepath() == "https://path/to/file2.mp3");
+	QVERIFY(env.parser->tracks().size() == 2);
+	QVERIFY(env.parser->tracks()[0].filepath() == "https://path/to/file1.mp3");
+	QVERIFY(env.parser->tracks()[1].filepath() == "https://path/to/file2.mp3");
 }
 
 [[maybe_unused]] void StreamParserTest::testStream()
 {
-	auto testWebClientFactory = std::make_shared<TestWebClientFactory>();
-	auto streamParser = StreamParser(testWebClientFactory, this);
-	auto spy = QSignalSpy(&streamParser, &StreamParser::sigFinished);
+	auto env = createParser(this);
+	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	streamParser.parse(stationName, stationUrl);
-	auto* client = testWebClientFactory->clients().first();
+	env.parser->parse(stationName, stationUrl);
+	auto* client = env.webClientFactory->clients().first();
 
 	client->fireData("Audio DATA", WebClient::Status::AudioStream);
 
 	spy.wait(SpyTimeout);
 
-	QVERIFY(streamParser.tracks().size() == 1);
-	QVERIFY(streamParser.tracks()[0].filepath() == "https://mySuperAwesomeRadio.de");
+	QVERIFY(env.parser->tracks().size() == 1);
+	QVERIFY(env.parser->tracks()[0].filepath() == "https://mySuperAwesomeRadio.de");
 }
 
 QTEST_GUILESS_MAIN(StreamParserTest)

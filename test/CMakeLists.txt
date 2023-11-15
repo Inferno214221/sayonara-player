@@ -85,6 +85,7 @@ new_test(Playlist/RepeatTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTrack
 new_test(PlayManager/PlayManagerTest.cpp)
 
 new_test(Streaming/RadioStationParserTest.cpp)
+new_test(Streaming/StreamHandlerTest.cpp)
 
 new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
