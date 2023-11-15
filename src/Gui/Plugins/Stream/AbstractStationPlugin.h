@@ -75,7 +75,7 @@ namespace Gui
 			void retranslate() override;
 			[[nodiscard]] bool hasLoadingBar() const override;
 
-			void addStream(const QString& name, const QString& url, bool temporary);
+			void addStream(const StationPtr& station, bool temporary);
 
 		private slots:
 			void listenClicked();

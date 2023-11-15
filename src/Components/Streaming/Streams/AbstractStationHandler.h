@@ -52,7 +52,6 @@ class AbstractStationHandler :
 		virtual bool deleteStream(const QString& name) = 0;
 		virtual bool updateStream(const QString& name, const StationPtr& station) = 0;
 
-		[[nodiscard]] virtual StationPtr createStreamInstance(const QString& name, const QString& url) const = 0;
 		[[nodiscard]] virtual StationPtr station(const QString& name) = 0;
 
 		void stop();

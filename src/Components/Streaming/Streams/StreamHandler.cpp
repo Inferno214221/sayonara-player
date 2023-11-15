@@ -26,6 +26,8 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Streams/Station.h"
+#include "Utils/Parser/StreamParser.h"
+#include "Utils/Settings/Settings.h"
 
 StreamHandler::StreamHandler(PlaylistCreator* playlistCreator, QObject* parent) :
 	AbstractStationHandler(playlistCreator, parent) {}
@@ -39,14 +41,14 @@ bool StreamHandler::getAllStreams(QList<StationPtr>& stations)
 	auto streams = QList<Stream> {};
 	const auto b = db->getAllStreams(streams);
 
-	Util::Algorithm::transform(streams, stations, [this](const auto& stream) {
-		return createStreamInstance(stream.name(), stream.url());
+	Util::Algorithm::transform(streams, stations, [](auto& stream) {
+		return std::make_shared<Stream>(std::move(stream));
 	});
 
 	return b;
 }
 
-bool StreamHandler::addNewStream(const StationPtr& station)
+bool StreamHandler::saveStream(const StationPtr& station)
 {
 	auto* db = DB::Connector::instance()->streamConnector();
 
@@ -73,9 +75,9 @@ bool StreamHandler::updateStream(const QString& name, const StationPtr& station)
 	       : false;
 }
 
-StationPtr StreamHandler::createStreamInstance(const QString& name, const QString& url) const
+StationPtr StreamHandler::createStreamInstance(const QString& name, const QString& url)
 {
-	return std::make_shared<Stream>(name, url);
+	return std::make_shared<Stream>(name, url, GetSetting(Set::Stream_UpdateMetadata));
 }
 
 StationPtr StreamHandler::station(const QString& name)

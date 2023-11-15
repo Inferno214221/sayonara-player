@@ -35,7 +35,7 @@ class StreamHandler :
 		bool deleteStream(const QString& stationName) override;
 		bool updateStream(const QString& stationName, const StationPtr& station) override;
 
-		[[nodiscard]] StationPtr createStreamInstance(const QString& name, const QString& url) const override;
+		[[nodiscard]] static StationPtr createStreamInstance(const QString& name, const QString& url);
 		[[nodiscard]] StationPtr station(const QString& name) override;
 
 	protected:

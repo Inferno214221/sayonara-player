@@ -72,11 +72,6 @@ bool PodcastHandler::updateStream(const QString& stationName, const StationPtr& 
 	       : false;
 }
 
-StationPtr PodcastHandler::createStreamInstance(const QString& name, const QString& url) const
-{
-	return std::make_shared<Podcast>(name, url);
-}
-
 StationPtr PodcastHandler::station(const QString& name)
 {
 	auto* db = DB::Connector::instance()->podcastConnector();

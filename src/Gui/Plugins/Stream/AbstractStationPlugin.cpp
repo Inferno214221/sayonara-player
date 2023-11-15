@@ -230,13 +230,12 @@ namespace Gui
 		configDialog->open();
 	}
 
-	void AbstractStationPlugin::addStream(const QString& name, const QString& url, const bool temporary)
+	void AbstractStationPlugin::addStream(const StationPtr& station, const bool temporary)
 	{
-		const auto station = m->stationHandler->createStreamInstance(name, url);
-
-		m->temporaryStations.insert(name, station);
-		m->comboStream->addItem(name, url);
-		m->comboStream->setCurrentText(name);
+		m->temporaryStations.insert(station->name(), station);
+		m->comboStream->addItem(station->name(), station->url());
+		m->comboStream->setCurrentText(station->name());
+		currentIndexChanged(m->comboStream->currentIndex()); // Also trigger menu re-creation
 
 		if(!temporary)
 		{

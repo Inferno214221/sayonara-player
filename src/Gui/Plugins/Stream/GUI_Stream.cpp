@@ -35,11 +35,15 @@ struct GUI_Stream::Private
 {
 	GUI_StationSearcher* searcher = nullptr;
 	QAction* actionSearchRadioStation = nullptr;
+	StreamHandler* streamHandler;
+
+	explicit Private(StreamHandler* streamHandler) :
+		streamHandler {streamHandler} {}
 };
 
 GUI_Stream::GUI_Stream(PlaylistCreator* playlistCreator, StreamHandler* streamHandler, QWidget* parent) :
 	Gui::AbstractStationPlugin(playlistCreator, streamHandler, parent),
-	m {Pimpl::make<Private>()} {}
+	m {Pimpl::make<Private>(streamHandler)} {}
 
 GUI_Stream::~GUI_Stream()
 {
@@ -126,7 +130,7 @@ void GUI_Stream::searchRadioTriggered()
 
 void GUI_Stream::streamSelected(const QString& name, const QString& url, const bool save)
 {
-	addStream(name, url, !save);
+	addStream(m->streamHandler->createStreamInstance(name, url), !save);
 }
 
 GUI_ConfigureStation* GUI_Stream::createConfigDialog()
