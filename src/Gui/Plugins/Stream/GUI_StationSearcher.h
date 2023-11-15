@@ -54,7 +54,8 @@ class GUI_StationSearcher :
 		void searchClicked();
 		void searchPreviousClicked();
 		void searchNextClicked();
-		void okClicked();
+		void listenClicked();
+		void saveAndListenClicked();
 
 		void searchTextChanged(const QString& text);
 		void stationsFetched();
@@ -62,8 +63,8 @@ class GUI_StationSearcher :
 		void currentStationChanged();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
-		QAbstractButton* okButton();
-		void checkOkButton();
+		void listen(bool save);
+		void checkListenButtons();
 		void clearStations();
 		void clearStreams();
 		void changeMode(StationSearcher::Mode mode);

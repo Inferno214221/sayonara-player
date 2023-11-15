@@ -20,6 +20,7 @@
 
 #include "GUI_StationSearcher.h"
 #include "Gui/Plugins/ui_GUI_StationSearcher.h"
+#include "Gui/Utils/Icons.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Streaming/StationSearcher/StationSearcher.h"
@@ -230,7 +231,8 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 {
 	ui->setupUi(this);
 
-	okButton()->setEnabled(false);
+	ui->btnListen->setEnabled(false);
+	ui->btnSaveAndListen->setEnabled(false);
 	ui->pbProgress->setVisible(false);
 	ui->btnCover->setVisible(false);
 	ui->btnSearch->setEnabled(ui->leSearch->text().size() > 0);
@@ -243,8 +245,9 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	initTableWidget(ui->twStations);
 	initTableWidget(ui->twStreams);
 
-	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &GUI_StationSearcher::okClicked);
-	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_StationSearcher::close);
+	connect(ui->btnListen, &QPushButton::clicked, this, &GUI_StationSearcher::listenClicked);
+	connect(ui->btnSaveAndListen, &QPushButton::clicked, this, &GUI_StationSearcher::saveAndListenClicked);
+	connect(ui->btnCancel, &QPushButton::clicked, this, &GUI_StationSearcher::close);
 	connect(ui->leSearch, &QLineEdit::textChanged, this, &GUI_StationSearcher::searchTextChanged);
 	connect(ui->leSearch, &QLineEdit::returnPressed, this, &GUI_StationSearcher::searchClicked);
 	connect(ui->btnSearch, &QPushButton::clicked, this, &GUI_StationSearcher::searchClicked);
@@ -257,11 +260,6 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 }
 
 GUI_StationSearcher::~GUI_StationSearcher() = default;
-
-QAbstractButton* GUI_StationSearcher::okButton()
-{
-	return ui->buttonBox->button(QDialogButtonBox::StandardButton::Ok);
-}
 
 void GUI_StationSearcher::initLineEdit()
 {
@@ -287,13 +285,14 @@ void GUI_StationSearcher::initLineEdit()
 	ui->leSearch->installEventFilter(cmf);
 }
 
-void GUI_StationSearcher::checkOkButton()
+void GUI_StationSearcher::checkListenButtons()
 {
 	const auto& currentStation = stationAt(m->searcher->foundStations(), ui->twStations->currentRow());
 	const auto currentStreamIndex = ui->twStreams->currentRow();
 	const auto isEnabled = (currentStation && Util::between(currentStreamIndex, currentStation->streams));
 
-	okButton()->setEnabled(isEnabled);
+	ui->btnListen->setEnabled(isEnabled);
+	ui->btnSaveAndListen->setEnabled(isEnabled);
 }
 
 void GUI_StationSearcher::clearStations()
@@ -317,7 +316,7 @@ void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
 void GUI_StationSearcher::searchClicked()
 {
 	clearStations();
-	checkOkButton();
+	checkListenButtons();
 
 	if(const auto text = ui->leSearch->text(); !text.isEmpty())
 	{
@@ -369,13 +368,17 @@ void GUI_StationSearcher::stationsFetched()
 	populateStationWidget(ui->twStations, stations);
 }
 
-void GUI_StationSearcher::okClicked()
+void GUI_StationSearcher::listenClicked() { listen(false); }
+
+void GUI_StationSearcher::saveAndListenClicked() { listen(true); }
+
+void GUI_StationSearcher::listen(const bool save)
 {
 	const auto currentStation = stationAt(m->searcher->foundStations(), ui->twStations->currentRow());
 	const auto currentStreamIndex = ui->twStreams->currentRow();
 	const auto& stream = currentStation->streams[currentStreamIndex];
 
-	emit sigStreamSelected(currentStation->name, stream.url, ui->cbSave->isChecked());
+	emit sigStreamSelected(currentStation->name, stream.url, save);
 
 	close();
 }
@@ -410,7 +413,7 @@ void GUI_StationSearcher::currentStationChanged()
 		setupCoverButton(*currentStation);
 	}
 
-	checkOkButton();
+	checkListenButtons();
 }
 
 void GUI_StationSearcher::setupCoverButton(const RadioStation& station)
@@ -454,6 +457,12 @@ void GUI_StationSearcher::languageChanged()
 	ui->btnSearch->setText(Lang::get(Lang::SearchVerb));
 	ui->btnSearchNext->setText(Lang::get(Lang::NextPage));
 	ui->btnSearchPrev->setText(Lang::get(Lang::PreviousPage));
+	ui->btnCancel->setText(Lang::get(Lang::Cancel));
+	ui->btnListen->setText(Lang::get(Lang::Listen));
+	ui->btnSaveAndListen->setText(
+		QString("%1 && %2")
+			.arg(Lang::get(Lang::Save))
+			.arg(Lang::get(Lang::Listen)));
 
 	const auto tooltip = QString("<b>%1</b><br>s:, n: %2<br>g: %3")
 		.arg(Lang::get(Lang::SearchNoun))
@@ -461,7 +470,6 @@ void GUI_StationSearcher::languageChanged()
 		.arg(Lang::get(Lang::Genre));
 
 	ui->leSearch->setToolTip(tooltip);
-	ui->cbSave->setText(Lang::get(Lang::Save));
 
 	setPlaceholderText(ui->leSearch, m->mode);
 	setFromToLabel(ui->labFromTo, m->searcher->foundStations());
@@ -479,4 +487,8 @@ void GUI_StationSearcher::skinChanged()
 
 	ui->twStations->horizontalHeader()->setMinimumHeight(rowHeight);
 	ui->labLink->setText(Util::createLink("fmstream.org", Style::isDark(), true, "http://fmstream.org"));
+
+	ui->btnCancel->setIcon(Gui::Icons::icon(Gui::Icons::Close));
+	ui->btnListen->setIcon(Gui::Icons::icon(Gui::Icons::Play));
+	ui->btnSaveAndListen->setIcon(Gui::Icons::icon(Gui::Icons::Save));
 }
