@@ -50,17 +50,23 @@ class AbstractStationHandler :
 
 		bool parseStation(const StationPtr& station);
 
-		virtual bool getAllStreams(QList<StationPtr>& streams) = 0;
-		virtual bool addNewStream(const StationPtr& station) = 0;
-		virtual bool deleteStream(const QString& name) = 0;
-		virtual bool updateStream(const QString& name, const StationPtr& station) = 0;
+		void addTemporaryStation(const StationPtr& station);
+		[[nodiscard]] bool isTemporary(const QString& stationName) const;
 
-		[[nodiscard]] virtual StationPtr station(const QString& name) = 0;
+		[[nodiscard]] StationPtr station(const QString& name);
+		bool addNewStream(const StationPtr& station);
+		bool removeStream(const QString& name);
+
+		virtual bool getAllStreams(QList<StationPtr>& streams) = 0;
+		virtual bool updateStream(const QString& name, const StationPtr& station) = 0;
 
 		void stop();
 
 	protected:
 		virtual MetaDataList preprocessPlaylist(const StationPtr& station, MetaDataList tracks) = 0;
+		virtual bool saveStream(const StationPtr& station) = 0;
+		virtual bool deleteStream(const QString& name) = 0;
+		[[nodiscard]] virtual StationPtr fetchStation(const QString& name) = 0;
 
 	private:
 		void createPlaylist(const StationPtr& station, const MetaDataList& tracks);

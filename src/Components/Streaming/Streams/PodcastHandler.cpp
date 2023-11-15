@@ -50,7 +50,7 @@ bool PodcastHandler::getAllStreams(QList<StationPtr>& stations)
 	return podcastsFetched;
 }
 
-bool PodcastHandler::addNewStream(const StationPtr& station)
+bool PodcastHandler::saveStream(const StationPtr& station)
 {
 	auto* db = DB::Connector::instance()->podcastConnector();
 	auto podcast = std::dynamic_pointer_cast<Podcast>(station);
@@ -74,7 +74,7 @@ bool PodcastHandler::updateStream(const QString& stationName, const StationPtr& 
 	       : false;
 }
 
-StationPtr PodcastHandler::station(const QString& name)
+StationPtr PodcastHandler::fetchStation(const QString& name)
 {
 	auto* db = DB::Connector::instance()->podcastConnector();
 	const auto podcast = db->getPodcast(name);

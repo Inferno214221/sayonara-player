@@ -81,7 +81,7 @@ StationPtr StreamHandler::createStreamInstance(const QString& name, const QStrin
 	return std::make_shared<Stream>(name, url, GetSetting(Set::Stream_UpdateMetadata));
 }
 
-StationPtr StreamHandler::station(const QString& name)
+StationPtr StreamHandler::fetchStation(const QString& name)
 {
 	auto* db = DB::Connector::instance()->streamConnector();
 	const auto stream = db->getStream(name);

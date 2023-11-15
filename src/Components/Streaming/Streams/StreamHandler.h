@@ -33,15 +33,15 @@ class StreamHandler :
 		~StreamHandler() override;
 
 		bool getAllStreams(QList<StationPtr>& stations) override;
-		bool addNewStream(const StationPtr& station) override;
-		bool deleteStream(const QString& stationName) override;
 		bool updateStream(const QString& stationName, const StationPtr& station) override;
 
 		[[nodiscard]] static StationPtr createStreamInstance(const QString& name, const QString& url);
-		[[nodiscard]] StationPtr station(const QString& name) override;
 
 	protected:
 		MetaDataList preprocessPlaylist(const StationPtr& station, MetaDataList tracks) override;
+		[[nodiscard]] StationPtr fetchStation(const QString& name) override;
+		bool saveStream(const StationPtr& station) override;
+		bool deleteStream(const QString& stationName) override;
 };
 
 #endif // STREAMHANDLERSTREAMS_H

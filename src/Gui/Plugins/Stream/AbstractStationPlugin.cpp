@@ -59,7 +59,6 @@ namespace Gui
 {
 	struct AbstractStationPlugin::Private
 	{
-		QMap<QString, StationPtr> temporaryStations;
 		PlaylistCreator* playlistCreator;
 		AbstractStationHandler* stationHandler {nullptr};
 		ProgressBar* loadingBar {nullptr};
@@ -150,7 +149,7 @@ namespace Gui
 
 	void AbstractStationPlugin::currentIndexChanged(const int index)
 	{
-		const auto isTemporary = m->temporaryStations.contains(currentName());
+		const auto isTemporary = m->stationHandler->isTemporary(currentName());
 		const auto isEditable = ((index >= 0) && !isTemporary);
 		const auto isListentDisabled = ((currentUrl().size() < 8) && !m->searching);
 
@@ -189,11 +188,6 @@ namespace Gui
 	void AbstractStationPlugin::play(const QString& stationName)
 	{
 		auto station = m->stationHandler->station(stationName);
-		if(!station)
-		{
-			station = m->temporaryStations[stationName];
-		}
-
 		if(station)
 		{
 			const auto success = m->stationHandler->parseStation(station);
@@ -233,14 +227,14 @@ namespace Gui
 
 	void AbstractStationPlugin::addStream(const StationPtr& station, const bool temporary)
 	{
-		m->temporaryStations.insert(station->name(), station);
+		m->stationHandler->addTemporaryStation(station);
 		m->comboStream->addItem(station->name(), station->url());
 		m->comboStream->setCurrentText(station->name());
 		currentIndexChanged(m->comboStream->currentIndex()); // Also trigger menu re-creation
 
 		if(!temporary)
 		{
-			saveStation(station);
+			saveStation(station); // after successful save, the station will be removed from
 		}
 		else
 		{
@@ -251,12 +245,7 @@ namespace Gui
 	void AbstractStationPlugin::saveStation(const StationPtr& station)
 	{
 		showConfigDialog(station->name(), station, GUI_ConfigureStation::Mode::Save, [this](auto* configDialog) {
-			const auto success = m->stationHandler->addNewStream(configDialog->configuredStation());
-			if(success)
-			{
-				m->temporaryStations.remove(currentName());
-			}
-			return success;
+			return m->stationHandler->addNewStream(configDialog->configuredStation());
 		});
 	}
 
@@ -272,25 +261,18 @@ namespace Gui
 				return false;
 			}
 
-			const auto streamAdded = m->stationHandler->addNewStream(station);
-			if(streamAdded)
-			{
-				m->temporaryStations.remove(station->name());
-			}
-
-			return true;
+			return m->stationHandler->addNewStream(station);
 		});
 	}
 
 	void AbstractStationPlugin::saveClicked()
 	{
-		const auto station = m->temporaryStations[currentName()];
-		if(station)
+		if(m->stationHandler->isTemporary(currentName()))
 		{
+			const auto station = m->stationHandler->station(currentName());
 			const auto streamAdded = m->stationHandler->addNewStream(station);
 			if(streamAdded)
 			{
-				m->temporaryStations.remove(station->name());
 				currentIndexChanged(m->comboStream->currentIndex()); // switch toolbutton from save to edit
 			}
 		}
@@ -312,7 +294,7 @@ namespace Gui
 		const auto answer = Message::question_yn(tr("Do you really want to delete %1").arg(currentName()) + "?");
 		if(answer == Message::Answer::Yes)
 		{
-			const auto success = m->stationHandler->deleteStream(currentName());
+			const auto success = m->stationHandler->removeStream(currentName());
 			spLog(Log::Info, this) << "Delete " << currentName() << success;
 		}
 
@@ -341,15 +323,6 @@ namespace Gui
 		if(answer == Message::Answer::Yes)
 		{
 			listenClicked();
-		}
-
-		else
-		{
-			const auto removed = (m->temporaryStations.remove(currentName()) == 0);
-			if(removed)
-			{
-				m->comboStream->removeItem(m->comboStream->currentIndex());
-			}
 		}
 	}
 

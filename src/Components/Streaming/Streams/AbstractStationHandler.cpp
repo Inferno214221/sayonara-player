@@ -27,12 +27,15 @@
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/Settings/Settings.h"
 
+#include <QMap>
+
 struct AbstractStationHandler::Private
 {
 	PlaylistCreator* playlistCreator;
 	StationParserFactoryPtr stationParserFactory;
 	StreamParser* streamParser = nullptr;
 	StationPtr parsedStation;
+	QMap<QString, StationPtr> temporaryStations;
 
 	Private(PlaylistCreator* playlistCreator, StationParserFactoryPtr stationParserFactory) :
 		playlistCreator(playlistCreator),
@@ -80,6 +83,34 @@ bool AbstractStationHandler::parseStation(const StationPtr& station)
 	return true;
 }
 
+StationPtr AbstractStationHandler::station(const QString& name)
+{
+	return m->temporaryStations.contains(name)
+	       ? m->temporaryStations[name]
+	       : fetchStation(name);
+}
+
+bool AbstractStationHandler::addNewStream(const StationPtr& station)
+{
+	const auto success = saveStream(station);
+	if(success)
+	{
+		m->temporaryStations.remove(station->name());
+	}
+	return success;
+}
+
+bool AbstractStationHandler::removeStream(const QString& name)
+{
+	if(m->temporaryStations.contains(name))
+	{
+		m->temporaryStations.remove(name);
+		return true;
+	}
+
+	return deleteStream(name);
+}
+
 void AbstractStationHandler::parserFinished(const bool success)
 {
 	if(!success)
@@ -114,4 +145,14 @@ void AbstractStationHandler::parserStopped()
 	sender()->deleteLater(); // m->stream_parser may be nullptr here
 	m->streamParser = nullptr;
 	emit sigStopped();
+}
+
+void AbstractStationHandler::addTemporaryStation(const StationPtr& station)
+{
+	m->temporaryStations.insert(station->name(), station);
+}
+
+bool AbstractStationHandler::isTemporary(const QString& stationName) const
+{
+	return m->temporaryStations.contains(stationName);
 }
