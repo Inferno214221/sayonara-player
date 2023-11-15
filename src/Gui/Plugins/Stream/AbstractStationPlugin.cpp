@@ -242,6 +242,10 @@ namespace Gui
 		{
 			saveStation(station);
 		}
+		else
+		{
+			listenClicked();
+		}
 	}
 
 	void AbstractStationPlugin::saveStation(const StationPtr& station)
