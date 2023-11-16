@@ -96,7 +96,5 @@ pkg_get_variable(GIO_MODULE_DIR gio-2.0 giomoduledir)
 pkg_get_variable(GIO_QUERYMODULES gio-2.0 gio_querymodules)
 
 # in bionic the variable gio_querymodules does not exist
-if (NOT GIO_QUERYMODULES)
-	get_filename_component(GLIB_BINARY_DIR ${GLIB_COMPILE_SCHEMAS} DIRECTORY)
-	set(GIO_QUERYMODULES ${GLIB_BINARY_DIR}/gio-querymodules)
-endif()
+get_filename_component(GLIB_BINARY_DIR ${GLIB_COMPILE_SCHEMAS} DIRECTORY)
+set(GIO_QUERYMODULES ${GLIB_BINARY_DIR}/gio-querymodules)

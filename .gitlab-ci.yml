@@ -1,4 +1,4 @@
-image: "registry.gitlab.com/luciocarreras/sayonara-player:bionic"
+image: "registry.gitlab.com/luciocarreras/sayonara-player:focal"
 stages:
   - build
   - test
@@ -9,7 +9,7 @@ stages:
 # Build
 build-sayonara:
   stage: build
-  script: 
+  script:
     - cmake --preset=ci -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
     - cd build
     - make -j`nproc`
@@ -25,7 +25,7 @@ build-sayonara:
 # Unit tests
 test-sayonara:
   stage: test
-  dependencies: 
+  dependencies:
     - build-sayonara
   variables:
     QT_QPA_PLATFORM: "offscreen"
