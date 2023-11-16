@@ -10,8 +10,8 @@ stages:
 build-sayonara:
   stage: build
   script: 
-    - mkdir -p build && cd build
-    - cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DWITH_TESTS=1 -DWITH_COTIRE=1 -DLINK_GSTREAMER_PLUGINS=1 -DCMAKE_PREFIX_PATH=/opt/qt -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
+    - cmake --preset=ci -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
+    - cd build
     - make -j`nproc`
     - make install DESTDIR=AppDir
   artifacts:

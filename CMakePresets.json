@@ -20,6 +20,18 @@
         "CMAKE_CXX_COMPILER_LAUNCHER": "ccache",
         "WITH_TESTS": "OFF"
       }
+    },
+    {
+      "name": "ci",
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+         "CMAKE_BUILD_TYPE": "Release",
+         "CMAKE_INSTALL_PREFIX": "/usr",
+         "WITH_TESTS": "ON",
+         "LINK_GSTREAMER_PLUGINS": "ON",
+         "CMAKE_PREFIX_PATH": "/opt/qt"
+       }
     }
   ]
 }
