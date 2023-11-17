@@ -39,6 +39,8 @@
 #include <vector>
 
 #include <gst/gst.h>
+#include <gst/app/gstappsink.h>
+#include <gst/base/gstbasesrc.h>
 
 namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
@@ -47,7 +49,7 @@ namespace
 	constexpr const auto TcpBufferSize = 16384U;
 	constexpr const auto DeepLoggingEnabled = false;
 	constexpr const auto* ClassEngineCallbacks = "Engine Callbacks";
-
+	
 	bool isSoupSource(GstElement* source)
 	{
 		auto* factory = gst_element_get_factory(source);
@@ -69,8 +71,8 @@ namespace
 	bool hasSoundcloudUri(GstElement* source)
 	{
 		gchar* uri = nullptr;
-		g_object_get(source, "location", &uri, nullptr);
-		return (uri && !strncmp(uri, "https://api.soundcloud.com", 26));
+		g_object_get(source, "location", &uri, nullptr); // NOLINT(cppcoreguidelines-pro-type-vararg)
+		return (uri && !strncmp(uri, "https://api.soundcloud.com", 26)); // NOLINT(readability-magic-numbers)
 	}
 
 	bool parseTags(MetaData& metadata, const GstTagList* tags)
@@ -160,11 +162,12 @@ namespace
 
 	void updateBitrate(GstTagList* tags, GstElement* srcElement, ::Engine::Engine* engine)
 	{
-		Bitrate bitrate;
+		Bitrate bitrate {0};
+
 		const auto success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
 		if(success)
 		{
-			engine->updateBitrate((bitrate / 1000) * 1000, srcElement);
+			engine->updateBitrate((bitrate / 1000) * 1000, srcElement); // NOLINT(readability-magic-numbers)
 		}
 	}
 
@@ -674,7 +677,7 @@ GstFlowReturn Callbacks::newBuffer(GstElement* sink, gpointer p)
 void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpointer /* data */)
 {
 	spLog(Log::Develop, "Engine Callback") << "Source ready: is soup? " << isSoupSource(source);
-	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false);
+	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 
 	if(isSoupSource(source))
 	{

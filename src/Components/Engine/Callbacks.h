@@ -21,35 +21,25 @@
 #ifndef ENGINECALLBACKS_H
 #define ENGINECALLBACKS_H
 
-#include <gst/app/gstappsink.h>
-#include <gst/base/gstbasesrc.h>
 #include <gst/gst.h>
 
-#include <qglobal.h>
-
 struct GstURIDecodeBin;
-/**
- * @ingroup Engine
- */
-namespace Engine
+
+namespace Engine::Callbacks
 {
-	namespace Callbacks
-	{
-		gboolean
-		busStateChanged(GstBus* bus, GstMessage* msg, gpointer data);
+	gboolean busStateChanged(GstBus* bus, GstMessage* msg, gpointer data);
 
-		gboolean
-		levelHandler(GstBus* bus, GstMessage* message, gpointer data);
+	gboolean levelHandler(GstBus* bus, GstMessage* message, gpointer data);
 
-		gboolean
-		spectrumHandler(GstBus* bus, GstMessage* message, gpointer data);
+	gboolean spectrumHandler(GstBus* bus, GstMessage* message, gpointer data);
 
-		void decodebinReady(GstElement* src, GstPad* newSrcPad, gpointer data);
-		void sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer user_data);
+	void decodebinReady(GstElement* src, GstPad* newSrcPad, gpointer data);
 
-		gboolean positionChanged(gpointer data);
-		GstFlowReturn newBuffer(GstElement* sink, gpointer data);
-	}
+	void sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer userData);
+
+	gboolean positionChanged(gpointer data);
+
+	GstFlowReturn newBuffer(GstElement* sink, gpointer data);
 }
 
 #endif // ENGINECALLBACKS_H
