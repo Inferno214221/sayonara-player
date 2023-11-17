@@ -32,6 +32,25 @@
 
 namespace
 {
+	GValue convertVectorToBoxedGstValueArray(const std::vector<double>& vec)
+	{
+		GValue valueArray = G_VALUE_INIT;
+		g_value_init(&valueArray, G_TYPE_VALUE_ARRAY);
+
+		auto* garray = g_value_array_new(0);
+		for(const auto& v: vec)
+		{
+			GValue singleValue = G_VALUE_INIT;
+			g_value_init(&singleValue, G_TYPE_DOUBLE);
+			g_value_set_double(&singleValue, v);
+			g_value_array_append(garray, &singleValue);
+		}
+
+		g_value_take_boxed(&valueArray, garray);
+
+		return valueArray;
+	}
+
 	GstTagList* createTagList(const int buffersize, const char* mimeDataString)
 	{
 		auto* tagList = gst_tag_list_new_empty();
@@ -76,9 +95,9 @@ class EngineMock :
 
 		[[nodiscard]] const std::vector<float>& spectrum() const override { return m_spectrum; }
 
-		void setLevel(float /*left*/, float /*right*/) override {}
+		void setLevel(float left, float right) override { m_level = {left, right}; }
 
-		[[nodiscard]] QPair<float, float> level() const override { return {}; }
+		[[nodiscard]] QPair<float, float> level() const override { return m_level; }
 
 		void setVisualizerEnabled(bool /*levelEnabled*/, bool /*spectrumEnabled*/) override {}
 
@@ -124,6 +143,7 @@ class EngineMock :
 
 	private:
 		std::vector<float> m_spectrum;
+		QPair<float, float> m_level;
 		CoverData m_coverData;
 
 };
@@ -180,6 +200,57 @@ class CallbackTest :
 					QVERIFY(engine.coverData().src == element);
 					QVERIFY(engine.coverData().data.size() == testCase.expectedBuffersize);
 					QVERIFY(engine.coverData().mimedata == QString(testCase.mimeDataStr));
+				}
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
+		[[maybe_unused]] void levelTest()
+		{
+			gst_init(nullptr, nullptr);
+
+			struct TestCase
+			{
+				const char* structureName {nullptr};
+				const char* fieldName {nullptr};
+				std::vector<double> data {0.0};
+				int expectedValueCount;
+			};
+
+			const auto testCases = std::array {
+				TestCase {"level", "peak", {-1.0, -0.5}, 2},
+				TestCase {"level", "peak", {-1.0, -0.8, -0.7, -0.6, -0.5}, 2},
+				TestCase {"level", "peak", {-1.0}, 1},
+				TestCase {"level", "peak", {}, 0},
+				TestCase {"elementName", "peak", {-1.0, -1.0}, 0},
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				auto engine = EngineMock();
+
+				auto valueArray = convertVectorToBoxedGstValueArray(testCase.data);
+				auto* structure = gst_structure_new_empty(testCase.structureName);
+				gst_structure_take_value(structure, testCase.fieldName, &valueArray);
+
+				auto* element = gst_element_factory_make("fakesink", "level");
+				// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+				auto* message = gst_message_new_element(GST_OBJECT(element), structure);
+
+				auto result = Engine::Callbacks::busStateChanged(nullptr, message, &engine);
+				QVERIFY(result == true);
+
+				const auto [left, right] = engine.level();
+
+				if(testCase.expectedValueCount == 1)
+				{
+					QVERIFY(left == static_cast<float>(testCase.data[0]));
+					QVERIFY(left == right);
+				}
+				else if(testCase.expectedValueCount > 1)
+				{
+					QVERIFY(left == static_cast<float>(testCase.data[0]));
+					QVERIFY(right == static_cast<float>(testCase.data[1]));
 				}
 			}
 		}

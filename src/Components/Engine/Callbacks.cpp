@@ -460,9 +460,7 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 	return true;
 }
 
-// level changed
-gboolean
-Callbacks::levelHandler(GstBus* bus, GstMessage* message, gpointer data)
+gboolean Callbacks::levelHandler([[maybe_unused]] GstBus* bus, GstMessage* message, gpointer data)
 {
 	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
@@ -470,60 +468,53 @@ Callbacks::levelHandler(GstBus* bus, GstMessage* message, gpointer data)
 		return true;
 	}
 
-	const GstStructure* structure = gst_message_get_structure(message);
+	const auto* structure = gst_message_get_structure(message);
 	if(!structure)
 	{
 		spLog(Log::Warning, ClassEngineCallbacks) << "structure is null";
 		return true;
 	}
 
-	const gchar* name = gst_structure_get_name(structure);
+	const auto* name = gst_structure_get_name(structure);
 	if(strcmp(name, "level") != 0)
 	{
 		return true;
 	}
 
-	const GValue* peak_value = gst_structure_get_value(structure, "peak");
-	if(!peak_value)
+	const auto* peakValue = gst_structure_get_value(structure, "peak");
+	if(!peakValue)
 	{
 		return true;
 	}
 
-	auto* rms_arr = static_cast<GValueArray*>(g_value_get_boxed(peak_value));
-	guint n_peak_elements = rms_arr->n_values;
-	if(n_peak_elements == 0)
+	auto* rmsArray = static_cast<GValueArray*>(g_value_get_boxed(peakValue));
+	auto numPeakElements = rmsArray->n_values;
+	if(numPeakElements == 0)
 	{
 		return true;
 	}
 
-	double channel_values[2];
-	n_peak_elements = std::min((guint) 2, n_peak_elements);
-	for(guint i = 0; i < n_peak_elements; i++)
-	{
-		const GValue* val = rms_arr->values + i;
+	auto channelValues = std::array<float, 2> {0.0F};
+	numPeakElements = std::min(2U, numPeakElements);
 
-		if(!G_VALUE_HOLDS_DOUBLE(val))
-		{
-			spLog(Log::Debug, ClassEngineCallbacks) << "Could not find a double";
-			break;
-		}
+	std::transform(rmsArray->values,
+	               rmsArray->values + numPeakElements, // NOLINT(cppcoreguidelines-pro-bounds-pointer-arithmetic)
+	               std::begin(channelValues),
+	               [](const auto& value) -> float {
+		               if(G_VALUE_HOLDS_DOUBLE(&value))
+		               {
+			               if(const auto d = g_value_get_double(&value); d < 0)
+			               {
+				               return static_cast<float>(d);
+			               }
+		               }
 
-		double d = g_value_get_double(val);
-		if(d < 0)
-		{
-			channel_values[i] = d;
-		}
-	}
+		               spLog(Log::Debug, ClassEngineCallbacks) << "Could not find a negative double value";
+		               return 0.0F;
+	               });
 
-	if(n_peak_elements >= 2)
-	{
-		engine->setLevel(channel_values[0], channel_values[1]);
-	}
-
-	else if(n_peak_elements == 1)
-	{
-		engine->setLevel(channel_values[0], channel_values[0]);
-	}
+	engine->setLevel(channelValues[0],
+	                 (numPeakElements >= 2) ? channelValues[1] : channelValues[0]);
 
 	return true;
 }
