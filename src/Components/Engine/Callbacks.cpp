@@ -42,22 +42,6 @@
 
 namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
-
-#ifdef Q_OS_WIN
-void EngineCallbacks::destroy_notify(gpointer data) {}
-
-GstBusSyncReply
-EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer data) {
-	if(bus_state_changed(bus, msg, data)){
-		gst_message_unref(msg);
-		return GST_BUS_DROP;
-	}
-
-	gst_message_unref(msg);
-	return GST_BUS_DROP;
-}
-#endif
-
 namespace
 {
 	constexpr const auto DeepLoggingEnabled = false;

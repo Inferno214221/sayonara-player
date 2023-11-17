@@ -35,14 +35,6 @@ namespace Engine
 {
 	namespace Callbacks
 	{
-
-	#ifdef Q_OS_WIN
-		void destroy_notify(gpointer data);
-
-		GstBusSyncReply
-		bus_message_received(GstBus* bus, GstMessage* msg, gpointer data);
-	#endif
-
 		gboolean
 		busStateChanged(GstBus* bus, GstMessage* msg, gpointer data);
 
