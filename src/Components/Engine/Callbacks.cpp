@@ -521,48 +521,39 @@ gboolean Callbacks::levelHandler([[maybe_unused]] GstBus* bus, GstMessage* messa
 
 // spectrum changed
 gboolean
-Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
+Callbacks::spectrumHandler([[maybe_unused]] GstBus* bus, GstMessage* message, gpointer data)
 {
-	Q_UNUSED(bus);
-
-	static std::vector<float> spectrumValues;
-
 	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
 	{
 		return true;
 	}
 
-	const GstStructure* structure = gst_message_get_structure(message);
+	const auto* structure = gst_message_get_structure(message);
 	if(!structure)
 	{
 		return true;
 	}
 
-	const gchar* structure_name = gst_structure_get_name(structure);
-	if(strcmp(structure_name, "spectrum") != 0)
+	const auto structureName = QString(gst_structure_get_name(structure));
+	if(structureName != "spectrum")
 	{
 		return true;
 	}
 
-	const GValue* magnitudes = gst_structure_get_value(structure, "magnitude");
+	const auto* magnitudes = gst_structure_get_value(structure, "magnitude");
+	const auto bins = gst_value_list_get_size(magnitudes);
 
-	int bins = std::max(1, GetSetting(Set::Engine_SpectrumBins));
-	if(spectrumValues.empty())
-	{
-		spectrumValues.resize(bins, 0);
-	}
+	static std::vector<float> spectrumValues;
+	spectrumValues.resize(bins, 0);
 
-	for(int i = 0; i < bins; ++i)
+	for(auto i = 0U; i < bins; ++i)
 	{
-		const GValue* mag = gst_value_list_get_value(magnitudes, i);
-		if(!mag)
+		const auto* magnitude = gst_value_list_get_value(magnitudes, i);
+		if(magnitude)
 		{
-			continue;
+			spectrumValues[i] = g_value_get_float(magnitude);
 		}
-
-		float f = g_value_get_float(mag);
-		spectrumValues[i] = f;
 	}
 
 	engine->setSpectrum(spectrumValues);

@@ -51,6 +51,22 @@ namespace
 		return valueArray;
 	}
 
+	GValue ascendingValueList(const size_t count)
+	{
+		GValue valueList = G_VALUE_INIT;
+		g_value_init(&valueList, GST_TYPE_LIST);
+
+		for(auto i = 0U; i < count; i++)
+		{
+			GValue singleValue = G_VALUE_INIT;
+			g_value_init(&singleValue, G_TYPE_FLOAT);
+			g_value_set_float(&singleValue, static_cast<float>(i));
+			gst_value_list_append_and_take_value(&valueList, &singleValue);
+		}
+
+		return valueList;
+	}
+
 	GstTagList* createTagList(const int buffersize, const char* mimeDataString)
 	{
 		auto* tagList = gst_tag_list_new_empty();
@@ -91,7 +107,7 @@ class EngineMock :
 
 		void setStreamRecorderRecording(bool /*b*/) override {}
 
-		void setSpectrum(const std::vector<float>& /*spectrum*/) override {}
+		void setSpectrum(const std::vector<float>& spectrum) override { m_spectrum = spectrum; }
 
 		[[nodiscard]] const std::vector<float>& spectrum() const override { return m_spectrum; }
 
@@ -156,15 +172,16 @@ class CallbackTest :
 
 	public:
 		CallbackTest() :
-			Test::Base("CallbackTest") {}
+			Test::Base("CallbackTest")
+		{
+			gst_init(nullptr, nullptr);
+		}
 
 	private slots:
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 		[[maybe_unused]] void coverTest()
 		{
-			gst_init(nullptr, nullptr);
-
 			struct TestCase
 			{
 				int buffersize {0};
@@ -207,8 +224,6 @@ class CallbackTest :
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
 		[[maybe_unused]] void levelTest()
 		{
-			gst_init(nullptr, nullptr);
-
 			struct TestCase
 			{
 				const char* structureName {nullptr};
@@ -252,6 +267,35 @@ class CallbackTest :
 					QVERIFY(left == static_cast<float>(testCase.data[0]));
 					QVERIFY(right == static_cast<float>(testCase.data[1]));
 				}
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
+		[[maybe_unused]] void spectrumTest()
+		{
+			constexpr const auto* elementName = "spectrum";
+			constexpr const auto* structureName = "spectrum";
+			constexpr const auto* fieldName = "magnitude";
+			constexpr const auto count = 50U;
+
+			auto engine = EngineMock();
+
+			auto valueList = ascendingValueList(count);
+
+			auto* structure = gst_structure_new_empty(structureName);
+			gst_structure_take_value(structure, fieldName, &valueList);
+			auto* element = gst_element_factory_make("fakesink", elementName);
+			// NOLINTNEXTLINE(cppcoreguidelines-pro-type-cstyle-cast)
+			auto* message = gst_message_new_element(GST_OBJECT(element), structure);
+
+			auto result = Engine::Callbacks::busStateChanged(nullptr, message, &engine);
+			QVERIFY(result == true);
+
+			const auto& spectrum = engine.spectrum();
+			QVERIFY(spectrum.size() == count);
+			for(auto i = 0U; i < count; i++)
+			{
+				QVERIFY(spectrum[i] == i * 1.0F);
 			}
 		}
 };
