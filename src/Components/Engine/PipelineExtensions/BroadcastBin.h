@@ -29,7 +29,8 @@ namespace PipelineExtensions
 	class BroadcastDataReceiver
 	{
 		public:
-			virtual void setRawData(const QByteArray& data)=0;
+			virtual ~BroadcastDataReceiver() = default;
+			virtual void setRawData(const QByteArray& data) = 0;
 	};
 
 	/**
@@ -41,7 +42,8 @@ namespace PipelineExtensions
 		PIMPL(BroadcastBin)
 
 		public:
-			BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline, GstElement* tee);
+			BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline,
+			             GstElement* tee);
 			virtual ~BroadcastBin();
 
 			bool init();
@@ -49,6 +51,5 @@ namespace PipelineExtensions
 			bool isEnabled() const;
 	};
 }
-
 
 #endif // BROADCASTER_H

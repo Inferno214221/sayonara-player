@@ -44,6 +44,7 @@ namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
 namespace
 {
+	constexpr const auto TcpBufferSize = 16384U;
 	constexpr const auto DeepLoggingEnabled = false;
 	constexpr const auto* ClassEngineCallbacks = "Engine Callbacks";
 
@@ -640,36 +641,33 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer d
 	gst_object_unref(sinkPad);
 }
 
-#define TCP_BUFFER_SIZE 16384
-
 GstFlowReturn Callbacks::newBuffer(GstElement* sink, gpointer p)
 {
-	static char data[TCP_BUFFER_SIZE];
-
+	auto data = QByteArray(TcpBufferSize, 0);
 	auto* pipeline = static_cast<PipelineExtensions::BroadcastDataReceiver*>(p);
 	if(!pipeline)
 	{
 		return GST_FLOW_OK;
 	}
 
-	GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
+	auto* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	if(!sample)
 	{
 		return GST_FLOW_OK;
 	}
 
-	GstBuffer* buffer = gst_sample_get_buffer(sample);
+	auto* buffer = gst_sample_get_buffer(sample);
 	if(!buffer)
 	{
 		gst_sample_unref(sample);
 		return GST_FLOW_OK;
 	}
 
-	gsize size = gst_buffer_get_size(buffer);
-	gsize newSize = gst_buffer_extract(buffer, 0, data, size);
+	const auto bufferSize = gst_buffer_get_size(buffer);
+	const auto newSize = gst_buffer_extract(buffer, 0, data.data(), bufferSize);
 
-	QByteArray bytes(data, int(newSize));
-	pipeline->setRawData(bytes);
+	data.resize(static_cast<int>(newSize));
+	pipeline->setRawData(data);
 
 	gst_sample_unref(sample);
 
