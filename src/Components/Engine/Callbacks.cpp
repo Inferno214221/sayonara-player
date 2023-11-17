@@ -583,31 +583,30 @@ gboolean Callbacks::positionChanged(gpointer data)
 }
 
 // dynamic linking, important for decodebin
-void Callbacks::decodebinReady(GstElement* source, GstPad* new_src_pad, gpointer data)
+void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer data)
 {
-	EngineUtils::GStringAutoFree element_name(gst_element_get_name(source));
-	spLog(Log::Develop, "Callback") << "Source: " << element_name.data();
+	const auto sourceName = EngineUtils::GStringAutoFree(gst_element_get_name(source)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	spLog(Log::Develop, "Callback") << "Source: " << sourceName.data();
 
 	auto* element = static_cast<GstElement*>(data);
-	GstPad* sink_pad = gst_element_get_static_pad(element, "sink");
-	if(!sink_pad)
+	auto* sinkPad = gst_element_get_static_pad(element, "sink");
+	if(!sinkPad)
 	{
 		return;
 	}
 
-	if(gst_pad_is_linked(sink_pad))
+	if(gst_pad_is_linked(sinkPad))
 	{
-		gst_object_unref(sink_pad);
+		gst_object_unref(sinkPad);
 		return;
 	}
 
-	GstPadLinkReturn pad_link_return = gst_pad_link(new_src_pad, sink_pad);
-
-	if(pad_link_return != GST_PAD_LINK_OK)
+	const auto padLinkReturn = gst_pad_link(newSrcPad, sinkPad);
+	if(padLinkReturn != GST_PAD_LINK_OK)
 	{
 		spLog(Log::Error, ClassEngineCallbacks) << "Dynamic pad linking: Cannot link pads";
 
-		switch(pad_link_return)
+		switch(padLinkReturn)
 		{
 			case GST_PAD_LINK_WRONG_HIERARCHY:
 				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Wrong hierarchy";
@@ -633,11 +632,12 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* new_src_pad, gpointer
 
 	else
 	{
-		spLog(Log::Develop, "Callbacks") << "Successfully linked " << gst_element_get_name(source) << " with "
-		                                 << gst_element_get_name(element);
+		const auto elementName = EngineUtils::GStringAutoFree(gst_element_get_name(element)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		spLog(Log::Develop, "Callbacks")
+			<< "Successfully linked " << sourceName.data() << " with " << elementName.data();
 	}
 
-	gst_object_unref(sink_pad);
+	gst_object_unref(sinkPad);
 }
 
 #define TCP_BUFFER_SIZE 16384

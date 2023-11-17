@@ -44,7 +44,7 @@ namespace Engine
 		gboolean
 		spectrumHandler(GstBus* bus, GstMessage* message, gpointer data);
 
-		void decodebinReady(GstElement* src, GstPad* new_pad, gpointer data);
+		void decodebinReady(GstElement* src, GstPad* newSrcPad, gpointer data);
 		void sourceReady(GstURIDecodeBin* bin, GstElement* source, gpointer user_data);
 
 		gboolean positionChanged(gpointer data);
