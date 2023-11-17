@@ -43,8 +43,6 @@
 namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
 
-const char* ClassEngineCallbacks = "Engine Callbacks";
-
 #ifdef Q_OS_WIN
 void EngineCallbacks::destroy_notify(gpointer data) {}
 
@@ -62,6 +60,9 @@ EngineCallbacks::bus_message_received(GstBus* bus, GstMessage* msg, gpointer dat
 
 namespace
 {
+	constexpr const auto DeepLoggingEnabled = false;
+	constexpr const auto* ClassEngineCallbacks = "Engine Callbacks";
+
 	QStringList supportedTags {
 		GST_TAG_TITLE,
 		GST_TAG_ARTIST,
@@ -259,7 +260,7 @@ namespace
 
 	void updateCurrentTrack(GstMessage* message, GstElement* srcElement, ::Engine::Engine* engine)
 	{
-		GstTagList* tags = nullptr;
+		GstTagList* tags {nullptr};
 		gst_message_parse_tag(message, &tags);
 
 		if(tags)
@@ -271,161 +272,197 @@ namespace
 			gst_tag_list_unref(tags);
 		}
 	}
+
+	void handleStateChange(GstMessage* message, ::Engine::Engine* engine)
+	{
+		auto* sourceElement = GST_ELEMENT(message->src); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		const auto messageSourceName = QString(GST_MESSAGE_SRC_NAME(message));
+		auto oldState = GST_STATE_NULL;
+		auto newState = GST_STATE_NULL;
+		auto pendingState = GST_STATE_NULL;
+		gst_message_parse_state_changed(message, &oldState, &newState, &pendingState);
+
+		if constexpr(DeepLoggingEnabled)
+		{
+			spLog(Log::Debug, ClassEngineCallbacks) << messageSourceName << ": "
+			                                        << "State changed from "
+			                                        << gst_element_state_get_name(oldState)
+			                                        << " to "
+			                                        << gst_element_state_get_name(newState)
+			                                        << " pending: "
+			                                        << gst_element_state_get_name(pendingState);
+		}
+
+		if(messageSourceName.contains("pipeline", Qt::CaseInsensitive))
+		{
+			if((newState == GST_STATE_PLAYING) ||
+			   (newState == GST_STATE_PAUSED) ||
+			   (newState == GST_STATE_READY))
+			{
+				engine->setTrackReady(sourceElement);
+			}
+		}
+	}
+
+	int getBufferState(GstMessage* message)
+	{
+		auto percent = 0;
+		auto averageIn = 0;
+		auto averageOut = 0;
+		auto bufferingLeft = 0L;
+		auto bufferingMode = GstBufferingMode::GST_BUFFERING_STREAM;
+
+		gst_message_parse_buffering(message, &percent);
+		gst_message_parse_buffering_stats(message, &bufferingMode, &averageIn, &averageOut, &bufferingLeft);
+
+		spLog(Log::Crazy, ClassEngineCallbacks) << "Buffering: " << percent;
+		spLog(Log::Crazy, ClassEngineCallbacks) << "Avg In: " << averageIn << " Avg Out: " << averageOut
+		                                        << " buffering_left: " << bufferingLeft;
+
+		return static_cast<int>(bufferingLeft);
+	}
+
+	QString printMessage(GstMessage* message, const Log logLevel)
+	{
+		auto messageText = QString {};
+		GError* data {nullptr};
+
+		switch(logLevel)
+		{
+			case Log::Info:
+				gst_message_parse_info(message, &data, nullptr);
+				break;
+			case Log::Warning:
+				gst_message_parse_warning(message, &data, nullptr);
+				break;
+			case Log::Error:
+				gst_message_parse_error(message, &data, nullptr);
+				break;
+			default:
+				return {};
+		}
+
+		if(data)
+		{
+			spLog(logLevel, ClassEngineCallbacks) << "Engine: " << data->message << ": "
+			                                      << GST_MESSAGE_SRC_NAME(message);
+			messageText = QString(data->message);
+			g_error_free(data);
+		}
+
+		return messageText;
+	}
+
+	void printInfo(GstMessage* message) { printMessage(message, Log::Info); }
+
+	void printWarning(GstMessage* message) { printMessage(message, Log::Warning); }
+
+	void handleError(GstMessage* message, ::Engine::Engine* engine)
+	{
+		static auto errorMessage = QString {};
+		const auto newErrorMessage = printMessage(message, Log::Error);
+
+		if(errorMessage != newErrorMessage)
+		{
+			engine->error(newErrorMessage, QString(GST_MESSAGE_SRC_NAME(message)).toLower());
+			errorMessage = newErrorMessage;
+		}
+	}
+
+	void printStreamStatus([[maybe_unused]] GstMessage* message)
+	{
+		if constexpr(DeepLoggingEnabled)
+		{
+			GstStreamStatusType type {GST_STREAM_STATUS_TYPE_CREATE};
+			gst_message_parse_stream_status(message, &type, nullptr);
+			spLog(Log::Debug, ClassEngineCallbacks) << "Get stream status " << type;
+		}
+	}
 }
 
 // check messages from bus
-gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
+gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* message, gpointer data)
 {
-	Q_UNUSED(bus);
-
 	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
 	{
 		return true;
 	}
 
-	GstMessageType msg_type = GST_MESSAGE_TYPE(msg);
-	QString msg_src_name = QString(GST_MESSAGE_SRC_NAME(msg)).toLower();
-	GstElement* src = reinterpret_cast<GstElement*>(msg->src);
+	const auto messageType = GST_MESSAGE_TYPE(message);
+	const auto messageSourceName = QString(GST_MESSAGE_SRC_NAME(message)).toLower();
+	auto* sourceElement = GST_ELEMENT(message->src); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 
-	switch(msg_type)
+	switch(messageType)
 	{
 		case GST_MESSAGE_EOS:
-
-			if(!msg_src_name.contains("sr_filesink") &&
-			   !msg_src_name.contains("level_sink") &&
-			   !msg_src_name.contains("spectrum_sink") &&
-			   !msg_src_name.contains("pipeline"))
+			if(!messageSourceName.contains("sr_filesink") &&
+			   !messageSourceName.contains("level_sink") &&
+			   !messageSourceName.contains("spectrum_sink") &&
+			   !messageSourceName.contains("pipeline"))
 			{
-				spLog(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << msg_src_name;
+				spLog(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << messageSourceName;
 				break;
 			}
 
-			engine->setTrackFinished(src);
-
+			engine->setTrackFinished(sourceElement);
 			break;
 
 		case GST_MESSAGE_ELEMENT:
-			if(msg_src_name.compare("spectrum") == 0)
+			if(messageSourceName == "spectrum")
 			{
-				return spectrumHandler(bus, msg, engine);
+				return spectrumHandler(bus, message, engine);
 			}
 
-			if(msg_src_name.compare("level") == 0)
+			if(messageSourceName == "level")
 			{
-				return levelHandler(bus, msg, engine);
+				return levelHandler(bus, message, engine);
 			}
 
 			break;
 
 		case GST_MESSAGE_SEGMENT_DONE:
-			spLog(Log::Debug, ClassEngineCallbacks) << "Segment done: " << msg_src_name;
+			spLog(Log::Debug, ClassEngineCallbacks) << "Segment done: " << messageSourceName;
 			break;
 
 		case GST_MESSAGE_TAG:
-			if(msg_src_name.contains("fake") ||
-			   msg_src_name.contains("lame") ||
-			   !msg_src_name.contains("sink"))
+			if(messageSourceName.contains("fake") ||
+			   messageSourceName.contains("lame") ||
+			   !messageSourceName.contains("sink"))
 			{
 				break;
 			}
 
-			updateCurrentTrack(msg, src, engine);
+			updateCurrentTrack(message, sourceElement, engine);
 
 			break;
 
 		case GST_MESSAGE_STATE_CHANGED:
-			GstState old_state, new_state, pending_state;
-
-			gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
-//			sp_log(Log::Debug, "Callback") << GST_MESSAGE_SRC_NAME(msg) << ": "
-//							   << "State changed from "
-//							   << gst_element_state_get_name(old_state)
-//							   << " to "
-//							   << gst_element_state_get_name(new_state)
-//							   << " pending: "
-//							   << gst_element_state_get_name(pending_state);
-
-			if(!msg_src_name.contains("pipeline", Qt::CaseInsensitive))
-			{
-				break;
-			}
-
-			if(new_state == GST_STATE_PLAYING ||
-			   new_state == GST_STATE_PAUSED ||
-			   new_state == GST_STATE_READY)
-			{
-				engine->setTrackReady(src);
-			}
-
+			handleStateChange(message, engine);
 			break;
 
 		case GST_MESSAGE_BUFFERING:
-
-			gint percent;
-
-			gint avg_in, avg_out;
-			int64_t buffering_left;
-
-			GstBufferingMode mode;
-
-			gst_message_parse_buffering(msg, &percent);
-			gst_message_parse_buffering_stats(msg, &mode, &avg_in, &avg_out, &buffering_left);
-
-			spLog(Log::Crazy, "Engine Callback") << "Buffering: " << percent;
-			spLog(Log::Crazy, "Engine Callback") << "Avg In: " << avg_in << " Avg Out: " << avg_out
-			                                     << " buffering_left: " << buffering_left;
-
-			engine->setBufferState(percent, src);
+			engine->setBufferState(getBufferState(message), sourceElement);
 			break;
 
 		case GST_MESSAGE_DURATION_CHANGED:
-			engine->updateDuration(src);
+			engine->updateDuration(sourceElement);
 			break;
 
 		case GST_MESSAGE_INFO:
-			/*gst_message_parse_info(msg, &err, nullptr);*/
+			printInfo(message);
 			break;
 
 		case GST_MESSAGE_WARNING:
-		{
-			GError* err;
-			gst_message_parse_warning(msg, &err, nullptr);
-			spLog(Log::Warning, ClassEngineCallbacks) << "Engine: GST_MESSAGE_WARNING: " << err->message << ": "
-			                                          << GST_MESSAGE_SRC_NAME(msg);
-			g_error_free(err);
-		}
+			printWarning(message);
 			break;
 
 		case GST_MESSAGE_ERROR:
-		{
-			static QString error_msg;
-			GError* err;
-			gst_message_parse_error(msg, &err, nullptr);
-
-			QString src_name(GST_MESSAGE_SRC_NAME(msg));
-
-			spLog(Log::Error, ClassEngineCallbacks) << "Engine: GST_MESSAGE_ERROR: " << err->message << ": "
-			                                        << src_name;
-
-			QString new_error_msg = QString(err->message);
-
-			if(error_msg != new_error_msg)
-			{
-				engine->error(new_error_msg, src_name);
-				error_msg = new_error_msg;
-			}
-
-			g_error_free(err);
-		}
+			handleError(message, engine);
 			break;
 
 		case GST_MESSAGE_STREAM_STATUS:
-			/*{
-				GstStreamStatusType type;
-				gst_message_parse_stream_status(msg, &type, NULL);
-				sp_log(Log::Debug, ClassEngineCallbacks) << "Get stream status " << type;
-			}*/
+			printStreamStatus(message);
 			break;
 
 		default:
