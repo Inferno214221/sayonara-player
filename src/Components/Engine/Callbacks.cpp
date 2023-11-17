@@ -42,8 +42,6 @@
 
 namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
-using ::Engine::Engine;
-namespace EngineNS = Engine;
 
 const char* ClassEngineCallbacks = "Engine Callbacks";
 
@@ -164,7 +162,7 @@ namespace
 		return wasUpdated;
 	}
 
-	void updateMetadata(GstTagList* tags, GstElement* srcElement, EngineNS::Engine* engine)
+	void updateMetadata(GstTagList* tags, GstElement* srcElement, ::Engine::Engine* engine)
 	{
 		auto track = engine->currentTrack();
 		if(track.isUpdatable())
@@ -177,7 +175,7 @@ namespace
 		}
 	}
 
-	void updateBitrate(GstTagList* tags, GstElement* srcElement, EngineNS::Engine* engine)
+	void updateBitrate(GstTagList* tags, GstElement* srcElement, ::Engine::Engine* engine)
 	{
 		Bitrate bitrate;
 		const auto success = gst_tag_list_get_uint(tags, GST_TAG_BITRATE, &bitrate);
@@ -187,7 +185,7 @@ namespace
 		}
 	}
 
-	bool updateCoverImage(GstTagList* tags, GstElement* src, EngineNS::Engine* engine)
+	bool updateCoverImage(GstTagList* tags, GstElement* src, ::Engine::Engine* engine)
 	{
 		GstSample* sample;
 		bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
@@ -259,7 +257,7 @@ namespace
 		return (size > 0);
 	}
 
-	void updateCurrentTrack(GstMessage* message, GstElement* srcElement, EngineNS::Engine* engine)
+	void updateCurrentTrack(GstMessage* message, GstElement* srcElement, ::Engine::Engine* engine)
 	{
 		GstTagList* tags = nullptr;
 		gst_message_parse_tag(message, &tags);
@@ -280,7 +278,7 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 {
 	Q_UNUSED(bus);
 
-	auto* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
 	{
 		return true;
@@ -441,9 +439,7 @@ gboolean Callbacks::busStateChanged(GstBus* bus, GstMessage* msg, gpointer data)
 gboolean
 Callbacks::levelHandler(GstBus* bus, GstMessage* message, gpointer data)
 {
-	Q_UNUSED(bus);
-
-	auto* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
 	{
 		return true;
@@ -515,7 +511,7 @@ Callbacks::spectrumHandler(GstBus* bus, GstMessage* message, gpointer data)
 
 	static std::vector<float> spectrumValues;
 
-	auto* engine = static_cast<Engine*>(data);
+	auto* engine = static_cast<::Engine::Engine*>(data);
 	if(!engine)
 	{
 		return true;

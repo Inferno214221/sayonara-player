@@ -1,4 +1,4 @@
-/* PlaybackEngine.h */
+/* Engine.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,17 +18,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GSTPLAYBACKENGINE_H_
-#define GSTPLAYBACKENGINE_H_
+#ifndef SAYONARA_PLAYBACK_ENGINE_H
+#define SAYONARA_PLAYBACK_ENGINE_H
 
-#include "Utils/Pimpl.h"
-#include "Interfaces/Engine/AudioDataReceiver.h"
+#include "Utils/typedefs.h"
 
 #include <QObject>
-#include <QImage>
 
 #include <gst/gst.h>
-
+#include <memory>
 #include <vector>
 
 namespace Tagging
@@ -41,38 +39,18 @@ namespace Util
 	class FileSystem;
 }
 
+class MetaData;
+
 namespace Engine
 {
-	class SpectrumDataReceiver;
 	class LevelDataReceiver;
-
 	class Pipeline;
-	using PipelinePtr = std::shared_ptr<Pipeline>;
-	/**
-	 * @brief The PlaybackEngine class
-	 * @ingroup Engine
-	 */
+	class SpectrumDataReceiver;
+
 	class Engine :
 		public QObject
 	{
-
 		Q_OBJECT
-		PIMPL(Engine)
-
-		private:
-			/**
-			 * @brief The GaplessState enum
-			 * @ingroup Engine
-			 */
-			enum class GaplessState :
-				uint8_t
-			{
-				NoGapless = 0,        // no gapless enabled at all
-				AboutToFinish,        // the phase when the new track is already displayed but not played yet
-				TrackFetched,        // track is requested, but no yet there
-				Playing,            // currently playing
-				Stopped
-			};
 
 		signals:
 			void sigDataAvailable(const QByteArray& data);
@@ -91,65 +69,56 @@ namespace Engine
 			void sigError(const QString& error_message);
 
 		public:
-			Engine(const std::shared_ptr<Util::FileSystem>& fileSystem,
-			       const std::shared_ptr<Tagging::TagWriter>& tagWriter,
-			       QObject* parent = nullptr);
-			~Engine();
+			explicit Engine(QObject* parent);
+			~Engine() noexcept override;
 
-			void updateBitrate(Bitrate br, GstElement* src);
-			void updateDuration(GstElement* src);
+			Engine(const Engine& other) = delete;
+			Engine(Engine&& other) = delete;
+			Engine& operator=(const Engine& other) = delete;
+			Engine& operator=(Engine&& other) = delete;
 
-			void setTrackReady(GstElement* src);
-			void setTrackAlmostFinished(MilliSeconds time2go);
-			void setTrackFinished(GstElement* src);
+			virtual void updateBitrate(Bitrate br, GstElement* src) = 0;
+			virtual void updateDuration(GstElement* src) = 0;
 
-			bool isStreamRecorderRecording() const;
-			void setStreamRecorderRecording(bool b);
+			virtual void setTrackReady(GstElement* src) = 0;
+			virtual void setTrackAlmostFinished(MilliSeconds time2go) = 0;
+			virtual void setTrackFinished(GstElement* src) = 0;
 
-			void setSpectrum(const std::vector<float>& spectrum);
-			const std::vector<float>& spectrum() const;
+			[[nodiscard]] virtual bool isStreamRecorderRecording() const = 0;
+			virtual void setStreamRecorderRecording(bool b) = 0;
 
-			void setLevel(float left, float right);
-			QPair<float, float> level() const;
+			virtual void setSpectrum(const std::vector<float>& spectrum) = 0;
+			[[nodiscard]] virtual const std::vector<float>& spectrum() const = 0;
 
-			void setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled);
-			void setBroadcastEnabled(bool b);
-			void setEqualizer(int band, int value);
+			virtual void setLevel(float left, float right) = 0;
+			[[nodiscard]] virtual QPair<float, float> level() const = 0;
 
-			MetaData currentTrack() const;
+			virtual void setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled) = 0;
+			virtual void setBroadcastEnabled(bool b) = 0;
+			virtual void setEqualizer(int band, int value) = 0;
 
-		public slots:
-			void play();
-			void stop();
-			void pause();
+			[[nodiscard]] virtual MetaData currentTrack() const = 0;
 
-			void jumpAbsMs(MilliSeconds pos_ms);
-			void jumpRelMs(MilliSeconds pos_ms);
-			void jumpRel(double percent);
-			void updateMetadata(const MetaData& track, GstElement* src);
-			void updateCover(GstElement* src, const QByteArray& data, const QString& mimedata);
+		public slots: // NOLINT(readability-redundant-access-specifiers)
+			virtual void play() = 0;
+			virtual void stop() = 0;
+			virtual void pause() = 0;
 
-			bool changeTrack(const MetaData& track);
+			virtual void jumpAbsMs(MilliSeconds ms) = 0;
+			virtual void jumpRelMs(MilliSeconds ms) = 0;
+			virtual void jumpRel(double percent) = 0;
+			virtual void updateMetadata(const MetaData& track, GstElement* src) = 0;
+			virtual void updateCover(GstElement* src, const QByteArray& data, const QString& mimedata) = 0;
 
-			void setBufferState(int progress, GstElement* src);
-			void error(const QString& error, const QString& elementName);
+			virtual bool changeTrack(const MetaData& track) = 0;
 
-		private:
-			PipelinePtr initPipeline(const QString& name);
-			bool changeMetadata(const MetaData& track);
-
-			void swapPipelines();
-			bool changeTrackCrossfading(const MetaData& track);
-			bool changeTrackGapless(const MetaData& track);
-			bool changeTrackImmediatly(const MetaData& track);
-
-			void setCurrentPositionMs(MilliSeconds pos_ms);
-
-		private slots:
-			void gaplessChanged();
-			void streamrecorderActiveChanged();
-			void currentPositionChanged(MilliSeconds pos_ms);
+			virtual void setBufferState(int progress, GstElement* src) = 0;
+			virtual void error(const QString& error, const QString& elementName) = 0;
 	};
+
+	Engine* createEngine(const std::shared_ptr<Util::FileSystem>& fileSystem,
+	                             const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+	                             QObject* parent);
 }
 
-#endif /* GSTENGINE_H_ */
+#endif /* SAYONARA_PLAYBACK_ENGINE_H */

@@ -62,7 +62,7 @@ struct Handler::Private
 
 	Private(Handler* engineHandler, const std::shared_ptr<Util::FileSystem>& fileSystem,
 	        const std::shared_ptr<Tagging::TagWriter>& tagWriter) :
-		engine(new Engine(fileSystem, tagWriter, engineHandler)) {}
+		engine(::Engine::createEngine(fileSystem, tagWriter, engineHandler)) {}
 };
 
 Handler::Handler(const std::shared_ptr<Util::FileSystem>& fileSystem,
