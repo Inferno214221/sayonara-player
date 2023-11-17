@@ -141,7 +141,7 @@ class CallbackTest :
 	private slots:
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
-		[[maybe_unused]] void test()
+		[[maybe_unused]] void coverTest()
 		{
 			gst_init(nullptr, nullptr);
 

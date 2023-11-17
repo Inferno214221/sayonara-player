@@ -170,76 +170,80 @@ namespace
 		}
 	}
 
-	bool updateCoverImage(GstTagList* tags, GstElement* src, ::Engine::Engine* engine)
+	GstSample* tryFetchImageFromTags(GstTagList* tags)
 	{
-		GstSample* sample;
-		bool success = gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample);
+		GstSample* sample {nullptr};
 
-		if(!success)
+		if(gst_tag_list_get_sample(tags, GST_TAG_IMAGE, &sample) ||
+		   gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample))
 		{
-			success = gst_tag_list_get_sample(tags, GST_TAG_PREVIEW_IMAGE, &sample);
-			if(!success)
+			return sample;
+		}
+
+		return nullptr;
+	}
+
+	QString extractMimeData(GstSample* sample)
+	{
+		auto* caps = gst_sample_get_caps(sample);
+		if(!caps)
+		{
+			return {};
+		}
+
+		auto* capsString = gst_caps_to_string(caps);
+		if(!capsString)
+		{
+			return {};
+		}
+
+		const auto mimeData = QString(capsString);
+		g_free(capsString);
+
+		auto re = QRegExp(".*(image/[a-z|A-Z]+).*");
+		return (re.indexIn(mimeData) >= 0)
+		       ? re.cap(1)
+		       : QString {};
+	}
+
+	QByteArray extractBuffer(GstSample* sample)
+	{
+		if(auto* buffer = gst_sample_get_buffer(sample); buffer != nullptr)
+		{
+			if(const auto size = gst_buffer_get_size(buffer); size > 0)
 			{
-				return false;
+				auto data = QByteArray(static_cast<int>(size), 0x00);
+				const auto extractedBytes = gst_buffer_extract(buffer, 0, data.data(), size);
+				data.resize(static_cast<int>(extractedBytes));
+				return data;
 			}
 		}
 
-		GstCaps* caps = gst_sample_get_caps(sample);
-		if(!caps)
+		return {};
+	}
+
+	bool updateCoverImage(GstTagList* tags, GstElement* src, ::Engine::Engine* engine)
+	{
+		auto* sample = tryFetchImageFromTags(tags);
+		if(!sample)
 		{
-			gst_sample_unref(sample);
 			return false;
 		}
 
-		EngineUtils::GStringAutoFree mimetype(gst_caps_to_string(caps));
-		if(mimetype.data() == nullptr)
+		const auto mimeType = extractMimeData(sample);
+		const auto coverData = extractBuffer(sample);
+		const auto isDataValid = !mimeType.isEmpty() && !coverData.isEmpty();
+		if(isDataValid)
 		{
-			gst_sample_unref(sample);
-			return false;
+			spLog(Log::Develop, "Engine Callbacks")
+				<< "Cover in Track: " << mimeType
+				<< coverData.size() << " bytes.";
+			engine->updateCover(src, coverData, mimeType);
 		}
 
-		QString mime;
-		QString fullMime(mimetype.data());
-
-		QRegExp re(".*(image/[a-z|A-Z]+).*");
-		if(re.indexIn(fullMime) >= 0)
-		{
-			mime = re.cap(1);
-		}
-
-		spLog(Log::Develop, "Engine Callbacks") << "Cover in Track: " << fullMime;
-
-		GstBuffer* buffer = gst_sample_get_buffer(sample);
-		if(!buffer)
-		{
-			gst_sample_unref(sample);
-			return false;
-		}
-
-		gsize size = gst_buffer_get_size(buffer);
-		if(size == 0)
-		{
-			gst_sample_unref(sample);
-			return false;
-		}
-
-		gchar* data = new gchar[size];
-		size = gst_buffer_extract(buffer, 0, data, size);
-
-		if(size == 0)
-		{
-			delete[] data;
-			gst_sample_unref(sample);
-			return false;
-		}
-
-		QByteArray arr(data, size);
-		engine->updateCover(src, arr, mime);
-
-		delete[] data;
 		gst_sample_unref(sample);
 
-		return (size > 0);
+		return isDataValid;
 	}
 
 	void updateCurrentTrack(GstMessage* message, GstElement* srcElement, ::Engine::Engine* engine)
