@@ -23,6 +23,7 @@
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/PipelineExtensions/BroadcastBin.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 
 #include <glib-2.0/gobject/gvalue.h>
@@ -30,6 +31,9 @@
 #include <gstreamer-1.0/gst/gstbuffer.h>
 #include <gstreamer-1.0/gst/gstcaps.h>
 #include <gstreamer-1.0/gst/gstmessage.h>
+#include <gstreamer-1.0/gst/gsttaglist.h>
+
+#include <map>
 
 namespace
 {
@@ -68,7 +72,21 @@ namespace
 		return valueList;
 	}
 
-	GstTagList* createTagList(const int buffersize, const char* mimeDataString)
+	GstTagList* createTagList(const std::map<QString, QString>& tagMap)
+	{
+		auto* tagList = gst_tag_list_new_empty();
+		for(const auto& [tag, value]: tagMap)
+		{
+			GValue gValue = G_VALUE_INIT;
+			g_value_init(&gValue, G_TYPE_STRING);
+			g_value_set_string(&gValue, value.toLocal8Bit().constData());
+			gst_tag_list_add_value(tagList, GST_TAG_MERGE_REPLACE, tag.toLocal8Bit().constData(), &gValue);
+		}
+
+		return tagList;
+	}
+
+	GstTagList* createTagListForCover(const int buffersize, const char* mimeDataString)
 	{
 		auto* tagList = gst_tag_list_new_empty();
 		auto* buffer = gst_buffer_new_and_alloc (buffersize);
@@ -122,7 +140,7 @@ class EngineMock :
 
 		void setEqualizer(int /*band*/, int /*value*/) override {}
 
-		[[nodiscard]] MetaData currentTrack() const override { return {}; }
+		[[nodiscard]] MetaData currentTrack() const override { return m_track; }
 
 		void play() override {}
 
@@ -136,7 +154,7 @@ class EngineMock :
 
 		void jumpRel(double /*percent*/) override {}
 
-		void updateMetadata(const MetaData& /*track*/, GstElement* /*src*/) override {}
+		void updateMetadata(const MetaData& track, GstElement* /*src*/) override { m_track = track; }
 
 		struct CoverData
 		{
@@ -162,6 +180,7 @@ class EngineMock :
 		std::vector<float> m_spectrum;
 		QPair<float, float> m_level;
 		CoverData m_coverData;
+		MetaData m_track;
 
 };
 // access working directory with Test::Base::tempPath("somefile.txt");
@@ -216,7 +235,7 @@ class CallbackTest :
 
 			for(const auto& testCase: testCases)
 			{
-				auto* tagList = createTagList(testCase.buffersize, testCase.mimeDataStr);
+				auto* tagList = createTagListForCover(testCase.buffersize, testCase.mimeDataStr);
 				auto* element = gst_element_factory_make("fakesink", testCase.elementName);
 				auto* message =
 					gst_message_new_tag(GST_OBJECT(element), tagList); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
@@ -334,6 +353,48 @@ class CallbackTest :
 			Engine::Callbacks::newBuffer(appsink, &broadcaster);
 
 			QVERIFY(broadcaster.data().size() == DataSize);
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
+		[[maybe_unused]] void tagTest()
+		{
+			const auto title = QString("title");
+			const auto artist = QString("artist");
+			const auto album = QString("album");
+			const auto albumArtist = QString("albumArtist");
+			const auto comment = QString("comment");
+			const auto showName = QString("showName");
+
+			auto* tagList = createTagList(
+				{
+					{GST_TAG_TITLE,        title},
+					{GST_TAG_ARTIST,       artist},
+					{GST_TAG_ALBUM,        album},
+					{GST_TAG_ALBUM_ARTIST, albumArtist},
+					{GST_TAG_COMMENT,      comment},
+					{GST_TAG_SHOW_NAME,    showName}
+				}
+			);
+
+			gchar* str = nullptr;
+			QVERIFY(gst_tag_list_get_string(tagList, GST_TAG_TITLE, &str));
+
+			auto* element = gst_element_factory_make("fakesink", "sink");
+			auto* message =
+				gst_message_new_tag(GST_OBJECT(element), tagList); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+
+			auto engine = EngineMock();
+
+			auto result = Engine::Callbacks::busStateChanged(nullptr, message, &engine);
+			QVERIFY(result == true);
+
+			const auto track = engine.currentTrack();
+			QVERIFY(track.title() == title);
+			QVERIFY(track.artist() == artist);
+			QVERIFY(track.album() == album);
+			QVERIFY(track.albumArtist() == albumArtist);
+			QVERIFY(track.comment() == comment);
+			QVERIFY(track.customField(GST_TAG_SHOW_NAME) == showName);
 		}
 };
 

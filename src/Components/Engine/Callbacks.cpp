@@ -48,22 +48,6 @@ namespace
 	constexpr const auto DeepLoggingEnabled = false;
 	constexpr const auto* ClassEngineCallbacks = "Engine Callbacks";
 
-	QStringList supportedTags {
-		GST_TAG_TITLE,
-		GST_TAG_ARTIST,
-		GST_TAG_ALBUM,
-		GST_TAG_ALBUM_ARTIST,
-		GST_TAG_COMMENT,
-
-		GST_TAG_PERFORMER,
-		GST_TAG_HOMEPAGE,
-		GST_TAG_DESCRIPTION,
-		GST_TAG_ORGANIZATION,
-		GST_TAG_CONTACT,
-		GST_TAG_SHOW_NAME,
-		GST_TAG_PUBLISHER
-	};
-
 	bool isSoupSource(GstElement* source)
 	{
 		auto* factory = gst_element_get_factory(source);
@@ -91,12 +75,28 @@ namespace
 
 	bool parseTags(MetaData& metadata, const GstTagList* tags)
 	{
+		constexpr const auto supportedTags = std::array {
+			GST_TAG_TITLE,
+			GST_TAG_ARTIST,
+			GST_TAG_ALBUM,
+			GST_TAG_ALBUM_ARTIST,
+			GST_TAG_COMMENT,
+
+			GST_TAG_PERFORMER,
+			GST_TAG_HOMEPAGE,
+			GST_TAG_DESCRIPTION,
+			GST_TAG_ORGANIZATION,
+			GST_TAG_CONTACT,
+			GST_TAG_SHOW_NAME,
+			GST_TAG_PUBLISHER
+		};
+
 		auto wasUpdated = false;
 
 		for(const auto& tag: supportedTags)
 		{
 			gchar* value = nullptr;
-			auto hasTag = gst_tag_list_get_string(tags, tag.toLocal8Bit().constData(), &value);
+			auto hasTag = gst_tag_list_get_string(tags, tag, &value);
 			if(!hasTag)
 			{
 				continue;
@@ -104,42 +104,39 @@ namespace
 
 			wasUpdated = true;
 
-			if(tag == GST_TAG_TITLE)
+			if(const auto& qTag = QString(tag); qTag == GST_TAG_TITLE)
 			{
 				metadata.setTitle(value);
 			}
 
-			else if(tag == GST_TAG_ARTIST)
+			else if(qTag == GST_TAG_ARTIST)
 			{
 				metadata.setArtist(value);
 			}
 
-			else if(tag == GST_TAG_ALBUM)
+			else if(qTag == GST_TAG_ALBUM)
 			{
 				metadata.setAlbum(value);
 			}
 
-			else if(tag == GST_TAG_ALBUM_ARTIST)
+			else if(qTag == GST_TAG_ALBUM_ARTIST)
 			{
 				metadata.setAlbumArtist(value);
 			}
 
-			else if(tag == GST_TAG_COMMENT)
+			else if(qTag == GST_TAG_COMMENT)
 			{
 				metadata.setComment(value);
 			}
 
 			else
 			{
-				const gchar* nick = gst_tag_get_nick(tag.toLocal8Bit().constData());
+				const auto* nick = gst_tag_get_nick(tag);
+				const auto* qNick = (nick && strnlen(nick, 3) > 0)
+				                    ? nick
+				                    : tag;
 
-				QString sNick = tag;
-				if(nick && strnlen(nick, 3) > 0)
-				{
-					sNick = QString::fromLocal8Bit(nick);
-				}
-
-				metadata.replaceCustomField(tag, Util::stringToFirstUpper(sNick), value);
+				metadata.replaceCustomField(tag, Util::stringToFirstUpper(qNick), value);
 			}
 
 			g_free(value);
