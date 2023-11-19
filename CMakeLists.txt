@@ -9,6 +9,21 @@ option(WITH_CCACHE "Use CCache if available" OFF)
 option(DISABLE_NATIVE_DIR_DIALOGS "Disable native directory dialogs (problem for snap and flatpak)" OFF)
 option(GIT_REVISION "Add some git revision to the version string")
 
+include(cmake/Compiler.cmake)
+
+if(LINK_GSTREAMER_PLUGINS)
+	include(cmake/GStreamer.cmake)
+endif()
+
+if(WITH_COTIRE)
+	include(cmake/Cotire.cmake)
+	message("Compiling with Cotire")
+	add_definitions(-D__STRICT_ANSI__)
+else()
+	message("Compiling without Cotire")
+endif()
+
+
 get_property(HAS_64_SUFFIX GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS)
 if(HAS_64_SUFFIX)
 	set(LIB_SUFFIX "64")
