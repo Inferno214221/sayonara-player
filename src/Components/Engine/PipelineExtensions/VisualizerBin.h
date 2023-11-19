@@ -18,28 +18,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef VISUALIZER_H
-#define VISUALIZER_H
+#ifndef SAYONARA_ENGINE_VISUALIZER_H
+#define SAYONARA_ENGINE_VISUALIZER_H
 
-#include "Utils/Pimpl.h"
 #include <gst/gst.h>
+#include <memory>
 
 namespace PipelineExtensions
 {
 	class VisualizerBin
 	{
-		PIMPL(VisualizerBin)
-
 		public:
-			VisualizerBin(GstElement* pipeline, GstElement* tee);
-			~VisualizerBin();
+			virtual ~VisualizerBin();
 
-			bool init();
-			bool setEnabled(bool levelEnabled, bool spectrumEnabled);
+			virtual bool setEnabled(bool levelEnabled, bool spectrumEnabled) = 0;
 
-			bool isLevelEnabled() const;
-			bool isSpectrumEnabled() const;
+			[[nodiscard]] virtual bool isLevelEnabled() const = 0;
+			[[nodiscard]] virtual bool isSpectrumEnabled() const = 0;
 	};
+
+	std::shared_ptr<VisualizerBin> createVisualizerBin(GstElement* pipeline, GstElement* tee);
 }
 
-#endif // VISUALIZER_H
+#endif // SAYONARA_ENGINE_VISUALIZER_H

@@ -23,123 +23,132 @@
 #include "Components/Engine/EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
-#include <QString>
-#include <QList>
-
-namespace PipelineExtensions
+class VisualizerBinImpl :
+	public PipelineExtensions::VisualizerBin
 {
-	struct VisualizerBin::Private
-	{
-		GstElement* pipeline {nullptr};
-		GstElement* tee {nullptr};
+	public:
+		VisualizerBinImpl(GstElement* pipeline, GstElement* tee) :
+			m_pipeline(pipeline),
+			m_tee(tee) {}
 
-		GstElement* bin {nullptr};
-		GstElement* queue {nullptr};
-		GstElement* spectrum {nullptr};
-		GstElement* level {nullptr};
-		GstElement* sink {nullptr};
+		~VisualizerBinImpl() override = default;
 
-		gulong probe {0};
-		bool isRunning {false};
-		bool isSpectrumEnabled {false};
-		bool isLevelEnabled {false};
-
-		Private(GstElement* pipeline, GstElement* tee) :
-			pipeline(pipeline),
-			tee(tee) {}
-	};
-
-	VisualizerBin::VisualizerBin(GstElement* pipeline, GstElement* tee) :
-		m {Pimpl::make<Private>(pipeline, tee)} {}
-
-	VisualizerBin::~VisualizerBin() = default;
-
-	bool VisualizerBin::init()
-	{
-		if(m->bin)
+		bool setEnabled(const bool levelEnabled, const bool spectrumEnabled) override
 		{
+			if(!init())
+			{
+				return false;
+			}
+
+			m_isLevelEnabled = levelEnabled;
+			m_isSpectrumEnabled = spectrumEnabled;
+
+			const auto isRunning = (levelEnabled || spectrumEnabled);
+			if(isRunning == m_isRunning)
+			{
+				Engine::Utils::setValue(G_OBJECT(m_level), "post-messages", levelEnabled);
+				Engine::Utils::setValue(G_OBJECT(m_spectrum), "post-messages", spectrumEnabled);
+
+				return true;
+			}
+
+			m_isRunning = isRunning;
+
+			PipelineExtensions::Probing::handleProbe(&m_isRunning, m_queue,
+			                                         &m_probe, PipelineExtensions::Probing::spectrumProbed);
+			Engine::Utils::setValue(G_OBJECT(m_level), "post-messages", levelEnabled);
+			Engine::Utils::setValue(G_OBJECT(m_spectrum), "post-messages", spectrumEnabled);
+
 			return true;
 		}
 
-		{ // create
-			if(Engine::Utils::createElement(&m->queue, "queue", "visualizer") &&
-			   Engine::Utils::createElement(&m->level, "level") &&
+		[[nodiscard]] bool isLevelEnabled() const override { return m_isLevelEnabled; }
+
+		[[nodiscard]] bool isSpectrumEnabled() const override { return m_isSpectrumEnabled; }
+
+	private:
+		bool createElements()
+		{
+			if(Engine::Utils::createElement(&m_queue, "queue", "visualizer") &&
+			   Engine::Utils::createElement(&m_level, "level") &&
 			   // in case of renaming, also look in EngineCallbase GST_MESSAGE_EVENT
-			   Engine::Utils::createElement(&m->spectrum, "spectrum") &&
-			   Engine::Utils::createElement(&m->sink, "fakesink", "visualizer"))
+			   Engine::Utils::createElement(&m_spectrum, "spectrum") &&
+			   Engine::Utils::createElement(&m_sink, "fakesink", "visualizer"))
 			{
-				Engine::Utils::createBin(&m->bin, {m->queue, m->level, m->spectrum, m->sink}, "visualizer");
+				Engine::Utils::createBin(&m_bin, {m_queue, m_level, m_spectrum, m_sink}, "visualizer");
 			}
 
-			if(!m->bin)
-			{
-				return false;
-			}
+			return (m_bin != nullptr);
 		}
 
-		{ // link
-			gst_bin_add(GST_BIN(m->pipeline), m->bin);
-			const auto success = Engine::Utils::connectTee(m->tee, m->bin, "Visualizer");
+		bool linkElements()
+		{
+			gst_bin_add(GST_BIN(m_pipeline), m_bin);
+			const auto success = Engine::Utils::connectTee(m_tee, m_bin, "Visualizer");
 			if(!success)
 			{
-				gst_bin_remove(GST_BIN(m->pipeline), m->bin);
-				gst_object_unref(m->bin);
-				m->bin = nullptr;
-				return false;
+				gst_bin_remove(GST_BIN(m_pipeline), m_bin);
+				gst_object_unref(m_bin);
+				m_bin = nullptr;
 			}
+
+			return success;
 		}
 
-		{ // configure
-			Engine::Utils::setValues(G_OBJECT(m->level), "post-messages", true);
-			Engine::Utils::setUint64Value(G_OBJECT(m->level), "interval", 20 * GST_MSECOND);
-			Engine::Utils::setValues(G_OBJECT (m->spectrum),
+		void configureElements()
+		{
+			Engine::Utils::setValues(G_OBJECT(m_level), "post-messages", true);
+			Engine::Utils::setUint64Value(G_OBJECT(m_level), "interval", 20 * GST_MSECOND);
+			Engine::Utils::setValues(G_OBJECT (m_spectrum),
 			                         "post-messages", true,
 			                         "message-phase", false,
 			                         "message-magnitude", true,
 			                         "multi-channel", false);
 
-			Engine::Utils::setIntValue(G_OBJECT(m->spectrum), "threshold", -75); // NOLINT(readability-magic-numbers)
-			Engine::Utils::setUintValue(G_OBJECT(m->spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
-			Engine::Utils::setUint64Value(G_OBJECT(m->spectrum),
+			Engine::Utils::setIntValue(G_OBJECT(m_spectrum),
+			                           "threshold",
+			                           -75); // NOLINT(readability-magic-numbers)
+			Engine::Utils::setUintValue(G_OBJECT(m_spectrum), "bands", GetSetting(Set::Engine_SpectrumBins));
+			Engine::Utils::setUint64Value(G_OBJECT(m_spectrum),
 			                              "interval",
 			                              20 * GST_MSECOND); // NOLINT(readability-magic-numbers)
 
-			Engine::Utils::configureQueue(m->queue, 1000); // NOLINT(readability-magic-numbers)
-			Engine::Utils::configureSink(m->sink);
+			Engine::Utils::configureQueue(m_queue, 1000); // NOLINT(readability-magic-numbers)
+			Engine::Utils::configureSink(m_sink);
 		}
 
-		return true;
-	}
-
-	bool VisualizerBin::setEnabled(bool levelEnabled, bool spectrumEnabled)
-	{
-		if(!init())
+		bool init()
 		{
+			if(m_bin || (createElements() && linkElements()))
+			{
+				configureElements();
+				return true;
+			}
+
 			return false;
 		}
 
-		m->isLevelEnabled = levelEnabled;
-		m->isSpectrumEnabled = spectrumEnabled;
+		GstElement* m_pipeline {nullptr};
+		GstElement* m_tee {nullptr};
 
-		const auto isRunning = (levelEnabled || spectrumEnabled);
-		if(isRunning == m->isRunning)
-		{
-			Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", levelEnabled);
-			Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", spectrumEnabled);
+		GstElement* m_bin {nullptr};
+		GstElement* m_queue {nullptr};
+		GstElement* m_spectrum {nullptr};
+		GstElement* m_level {nullptr};
+		GstElement* m_sink {nullptr};
 
-			return true;
-		}
+		gulong m_probe {0};
+		bool m_isRunning {false};
+		bool m_isSpectrumEnabled {false};
+		bool m_isLevelEnabled {false};
+};
 
-		m->isRunning = isRunning;
+namespace PipelineExtensions
+{
+	VisualizerBin::~VisualizerBin() = default;
 
-		Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::spectrumProbed);
-		Engine::Utils::setValue(G_OBJECT(m->level), "post-messages", levelEnabled);
-		Engine::Utils::setValue(G_OBJECT(m->spectrum), "post-messages", spectrumEnabled);
-
-		return true;
+	std::shared_ptr<VisualizerBin> createVisualizerBin(GstElement* pipeline, GstElement* tee)
+	{
+		return std::make_shared<VisualizerBinImpl>(pipeline, tee);
 	}
-
-	bool VisualizerBin::isLevelEnabled() const { return m->isLevelEnabled; }
-
-	bool VisualizerBin::isSpectrumEnabled() const { return m->isSpectrumEnabled; }
 }

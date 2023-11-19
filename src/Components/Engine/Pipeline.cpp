@@ -63,7 +63,7 @@ namespace Engine
 
 		PipelineExtensions::StreamRecorderBin* streamRecorder = nullptr;
 		PipelineExtensions::BroadcastBin* broadcaster = nullptr;
-		PipelineExtensions::VisualizerBin* visualizer = nullptr;
+		std::shared_ptr<PipelineExtensions::VisualizerBin> visualizer = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -195,7 +195,7 @@ namespace Engine
 
 		m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
 
-		m->visualizer = new PipelineExtensions::VisualizerBin(m->pipeline, m->tee);
+		m->visualizer = PipelineExtensions::createVisualizerBin(m->pipeline, m->tee);
 		m->broadcaster = new PipelineExtensions::BroadcastBin(this, m->pipeline, m->tee);
 
 		return (m->playbackSink != nullptr);
