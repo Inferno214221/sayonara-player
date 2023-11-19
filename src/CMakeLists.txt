@@ -30,16 +30,9 @@ if( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
 
-# DBus and Shutdown
-if(WIN32)
-	message("Windows: host Will compile without dbus and shutdown support")
-else()
-	message("No Windows: Will compile with dbus and shutdown support")
-	# Macros.h.in
-	set(SAYONARA_WITH_DBUS 1)
-	set(SAYONARA_WITH_SHUTDOWN 1)
-	set(WIN32 0)
-endif()
+# Macros.h.in
+set(SAYONARA_WITH_DBUS 1)
+set(SAYONARA_WITH_SHUTDOWN 1)
 
 configure_file(Macros.h.in "${CMAKE_CURRENT_BINARY_DIR}/Utils/Macros.h" @ONLY)
 
@@ -63,14 +56,6 @@ qt5_add_resources(DATABASE_RCC
 
 add_executable(${PROJECT_NAME} Main.cpp ${QM_FILES} ${DATABASE_RCC})
 
-if(WIN32)
-	set(OS_LIBRARIES
-		api-ms-win-core-winrt-l1-1-0
-		api-ms-win-core-winrt-string-l1-1-0
-		${GIO_LIBRARIES}
-	)
-endif()
-
 target_link_libraries(${PROJECT_NAME}
 	sayonara_application
 	sayonara_languages
@@ -85,11 +70,7 @@ target_link_libraries("create-database"
 	Qt5::Widgets
 )
 
-if(WIN32)
-	install(TARGETS ${PROJECT_NAME} DESTINATION .)
-else()
-	install(TARGETS ${PROJECT_NAME} DESTINATION bin)
-endif()
+install(TARGETS ${PROJECT_NAME} DESTINATION bin)
 
 if(GSTREAMER_PLUGIN_LIBRARIES)
 	message("Will install gstreamer plugins")

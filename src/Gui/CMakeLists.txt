@@ -11,13 +11,6 @@ set(GUI_RESOURCES
 	Soundcloud/SoundcloudIcons.qrc
 )
 
-if(WIN32)
-	set(GUI_RESOURCES
-		${GUI_RESOURCES}
-		Resources/IconsWindows.qrc
-	)
-endif()
-
 qt5_add_resources(GUI_RESOURCES_RCC
 	${GUI_RESOURCES}
 )
