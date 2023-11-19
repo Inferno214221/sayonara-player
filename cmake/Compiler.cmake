@@ -51,20 +51,3 @@ if ( ${CMAKE_BUILD_TYPE} MATCHES "Debug" )
 endif()
 
 set(CMAKE_CXX_FLAGS_NONE "${CMAKE_CXX_FLAGS_NONE} ${COMMON_FLAGS}")
-
-try_compile(COMPILE_CHECK_PAIR
-	${CMAKE_CURRENT_BINARY_DIR}/try_compile
-	${CMAKE_SOURCE_DIR}/cmake/cpp/pair.cpp
-	OUTPUT_VARIABLE OUT
-	CXX_STANDARD_REQUIRED 17
-)
-
-if(NOT COMPILE_CHECK_PAIR)
-	message(FATAL_ERROR
-		"Cannot compile pair\n"
-		"Your compiler probably does not support the C++17 standard\n"
-		"${CMAKE_CXX_COMPILER}, ${CMAKE_CXX_COMPILER_ID}"
-	)
-endif()
-
-
