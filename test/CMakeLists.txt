@@ -1,11 +1,11 @@
 project(sayonara-test)
+
 include("NewTest.cmake")
+include(${CMAKE_SOURCE_DIR}/cmake/Packages.cmake)
 
 if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
-
-find_package(Qt5 COMPONENTS Core Gui Sql Network Xml Test REQUIRED)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -14,17 +14,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 file(COPY ${CMAKE_SOURCE_DIR}/resources/player.db
 	DESTINATION	${CMAKE_CURRENT_BINARY_DIR}
 )
-
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Gui_INCLUDE_DIRS})
-include_directories(${Qt5Xml_INCLUDE_DIRS})
-include_directories(${Qt5Sql_INCLUDE_DIRS})
-include_directories(${Qt5Network_INCLUDE_DIRS})
-include_directories(${Qt5Test_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
-
-add_definitions(${Qt5Core_DEFINITIONS})
-add_definitions(${QT_DEFINITIONS})
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CMAKE_BINARY_DIR}/src)

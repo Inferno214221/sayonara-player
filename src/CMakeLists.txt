@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(sayonara)
 
-include(FindPkgConfig)
 include(CheckIncludeFileCXX)
+
+include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 # absolute linker paths are no longer supoorted in -l parameter
 # use -L for path and -l for library itself
@@ -20,20 +22,6 @@ if(POLICY CMP0071)
 	cmake_policy(SET CMP0071 NEW)
 endif()
 
-pkg_check_modules(GLIB glib-2.0 REQUIRED)
-pkg_check_modules(GOBJECT gobject-2.0 REQUIRED)
-pkg_check_modules(GSTREAMER gstreamer-1.0 REQUIRED)
-pkg_check_modules(GSTREAMER_BASE gstreamer-base-1.0 REQUIRED)
-pkg_check_modules(GSTREAMER_BASE_APP gstreamer-app-1.0 REQUIRED)
-pkg_check_modules(ZLIB REQUIRED zlib REQUIRED)
-pkg_check_modules(TAGLIB REQUIRED taglib REQUIRED)
-
-if(WIN32)
-	pkg_check_modules(GIO gio-windows-2.0 REQUIRED)
-elseif(GSTREAMER_PLUGIN_LIBRARIES)
-	pkg_check_modules(GIO gio-2.0 REQUIRED)
-endif()
-
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
 
@@ -41,34 +29,6 @@ if( NOT DEFINED CMAKE_BUILD_TYPE OR NOT CMAKE_BUILD_TYPE )
 	message("Use standard build type \"Release\"")
 	set(CMAKE_BUILD_TYPE "Release")
 endif()
-
-# in order to choose another qt installation set CMAKE_PREFIX_PATH
-find_package(Qt5 5.8 COMPONENTS Core Widgets Sql Network DBus Xml Svg REQUIRED)
-find_package(Qt5LinguistTools REQUIRED)
-
-include_directories(${Qt5Core_INCLUDE_DIRS})
-include_directories(${Qt5Widgets_INCLUDE_DIRS})
-include_directories(${Qt5Xml_INCLUDE_DIRS})
-include_directories(${Qt5Sql_INCLUDE_DIRS})
-include_directories(${Qt5DBus_INCLUDE_DIRS})
-include_directories(${Qt5Network_INCLUDE_DIRS})
-include_directories(${Qt5Svg_INCLUDE_DIRS})
-include_directories(${GLIB_INCLUDE_DIRS})
-include_directories(${GOBJECT_INCLUDE_DIRS})
-include_directories(${GSTREAMER_INCLUDE_DIRS})
-include_directories(${GSTREAMER_BASE_INCLUDE_DIRS})
-include_directories(${GSTREAMER_BASE_APP_INCLUDE_DIRS})
-include_directories(${TAGLIB_INCLUDE_DIRS})
-include_directories(${ZLIB_INCLUDE_DIRS})
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-include_directories(${CMAKE_CURRENT_BINARY_DIR})
-
-add_definitions(${Qt5Core_DEFINITIONS})
-add_definitions(${QT_DEFINITIONS})
-
-link_directories(${TAGLIB_LIBRARY_DIRS})
-link_directories(${GLIB_LIBRARY_DIRS})
-link_directories(${GSTREAMER_LIBRARY_DIRS})
 
 # DBus and Shutdown
 if(WIN32)
@@ -79,10 +39,6 @@ else()
 	set(SAYONARA_WITH_DBUS 1)
 	set(SAYONARA_WITH_SHUTDOWN 1)
 	set(WIN32 0)
-endif()
-
-if(GIO_LIBRARY_DIRS)
-	link_directories(${GIO_LIBRARY_DIRS})
 endif()
 
 # check libexecinfo for non-glibc systems

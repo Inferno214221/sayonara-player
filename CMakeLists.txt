@@ -9,6 +9,7 @@ option(DISABLE_NATIVE_DIR_DIALOGS "Disable native directory dialogs (problem for
 option(GIT_REVISION "Add some git revision to the version string")
 
 include(cmake/Compiler.cmake)
+include(cmake/Packages.cmake)
 
 if(LINK_GSTREAMER_PLUGINS)
 	include(cmake/GStreamer.cmake)
