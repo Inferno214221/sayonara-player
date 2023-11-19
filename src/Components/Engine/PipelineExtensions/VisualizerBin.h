@@ -26,23 +26,19 @@
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The Visualizer class
-	 * @ingroup EngineInterfaces
-	 */
 	class VisualizerBin
 	{
 		PIMPL(VisualizerBin)
 
-	public:
-		VisualizerBin(GstElement* pipeline, GstElement* tee);
-		~VisualizerBin();
+		public:
+			VisualizerBin(GstElement* pipeline, GstElement* tee);
+			~VisualizerBin();
 
-		bool init();
-		bool setEnabled(bool levelEnabled, bool spectrumEnabled);
+			bool init();
+			bool setEnabled(bool levelEnabled, bool spectrumEnabled);
 
-		bool isLevelEnabled() const;
-		bool isSpectrumEnabled() const;
+			bool isLevelEnabled() const;
+			bool isSpectrumEnabled() const;
 	};
 }
 
