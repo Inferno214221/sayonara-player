@@ -5,7 +5,6 @@ option(WITH_DOC "Building with doxygen support" OFF)
 option(WITH_TESTS "Building with tests" OFF)
 option(WITH_COTIRE "Building with cotire PCH and compile time optimizations" OFF)
 option(LINK_GSTREAMER_PLUGINS "Link the most common GStreamer plugins into the binary. Used for the creation of AppImage files")
-option(WITH_CCACHE "Use CCache if available" OFF)
 option(DISABLE_NATIVE_DIR_DIALOGS "Disable native directory dialogs (problem for snap and flatpak)" OFF)
 option(GIT_REVISION "Add some git revision to the version string")
 

@@ -4,16 +4,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 message("Build type = ${CMAKE_BUILD_TYPE}")
 
-if(WITH_CCACHE)
-	# Configure CCache if available
-	find_program(CCACHE_FOUND ccache)
-	if(CCACHE_FOUND)
-			set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
-			set_property(GLOBAL PROPERTY RULE_LAUNCH_LINK ccache)
-			message("Found CCache")
-	endif(CCACHE_FOUND)
-endif(WITH_CCACHE)
-
 set(COMMON_FLAGS_TEST
 		"-Woverloaded-virtual"
 		"-Wall"
