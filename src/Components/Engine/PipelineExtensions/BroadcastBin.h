@@ -33,10 +33,6 @@ namespace PipelineExtensions
 			virtual void setRawData(const QByteArray& data) = 0;
 	};
 
-	/**
-	 * @brief The Broadcaster class
-	 * @ingroup EngineInterfaces
-	 */
 	class BroadcastBin
 	{
 		PIMPL(BroadcastBin)
@@ -48,7 +44,7 @@ namespace PipelineExtensions
 
 			bool init();
 			bool setEnabled(bool b);
-			bool isEnabled() const;
+			[[nodiscard]] bool isEnabled() const;
 	};
 }
 

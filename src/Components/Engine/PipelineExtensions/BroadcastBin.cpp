@@ -32,56 +32,54 @@ using namespace PipelineExtensions;
 
 struct BroadcastBin::Private
 {
-	BroadcastDataReceiver* dataReceiver=nullptr;
-	GstElement* pipeline=nullptr;
-	GstElement* tee=nullptr;
+	BroadcastDataReceiver* dataReceiver;
+	GstElement* pipeline;
+	GstElement* tee {nullptr};
 
-	GstElement*			bin=nullptr;
-	GstElement*			queue=nullptr;
-	GstElement*			converter=nullptr;
-	GstElement*			resampler=nullptr;
-	GstElement*			lame=nullptr;
-	GstElement*			appSink=nullptr;
+	GstElement* bin {nullptr};
+	GstElement* queue {nullptr};
+	GstElement* converter {nullptr};
+	GstElement* resampler {nullptr};
+	GstElement* lame {nullptr};
+	GstElement* appSink {nullptr};
 
-	gulong				probe;
-
-	bool				isRunning;
+	gulong probe {0};
+	bool isRunning {false};
 
 	Private(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee) :
 		dataReceiver(dataReceiver),
 		pipeline(pipeline),
-		tee(tee),
-		probe(0),
-		isRunning(false)
-	{}
+		tee(tee) {}
 };
 
-BroadcastBin::BroadcastBin(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee)
-{
-	m = Pimpl::make<Private>(dataReceiver, pipeline, tee);
-}
+BroadcastBin::BroadcastBin(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee) :
+	m {Pimpl::make<Private>(dataReceiver, pipeline, tee)} {}
 
 BroadcastBin::~BroadcastBin() = default;
 
 bool BroadcastBin::init()
 {
-	if(m->bin){
+	if(m->bin)
+	{
 		return true;
 	}
 
 	// create
-	if( !Engine::Utils::createElement(&m->queue, "queue", "bc_lame_queue") ||
-		!Engine::Utils::createElement(&m->converter, "audioconvert", "bc_lame_converter") ||
-		!Engine::Utils::createElement(&m->resampler, "audioresample", "bc_lame_resampler") ||
-		!Engine::Utils::createElement(&m->lame, "lamemp3enc", "bc_lamemp3enc") ||
-		!Engine::Utils::createElement(&m->appSink, "appsink", "bc_lame_appsink"))
+	if(!Engine::Utils::createElement(&m->queue, "queue", "bc_lame_queue") ||
+	   !Engine::Utils::createElement(&m->converter, "audioconvert", "bc_lame_converter") ||
+	   !Engine::Utils::createElement(&m->resampler, "audioresample", "bc_lame_resampler") ||
+	   !Engine::Utils::createElement(&m->lame, "lamemp3enc", "bc_lamemp3enc") ||
+	   !Engine::Utils::createElement(&m->appSink, "appsink", "bc_lame_appsink"))
 	{
 		return false;
 	}
 
 	{ // init bin
-		bool success = Engine::Utils::createBin(&m->bin, {m->queue,  m->converter, m->resampler, m->lame, m->appSink}, "broadcast");
-		if(!success){
+		bool success = Engine::Utils::createBin(&m->bin,
+		                                        {m->queue, m->converter, m->resampler, m->lame, m->appSink},
+		                                        "broadcast");
+		if(!success)
+		{
 			return false;
 		}
 
@@ -111,11 +109,13 @@ bool BroadcastBin::init()
 
 bool BroadcastBin::setEnabled(bool b)
 {
-	if(b && !init()){
+	if(b && !init())
+	{
 		return false;
 	}
 
-	if(m->isRunning == b) {
+	if(m->isRunning == b)
+	{
 		return true;
 	}
 
@@ -129,3 +129,5 @@ bool BroadcastBin::isEnabled() const
 {
 	return m->isRunning;
 }
+
+BroadcastDataReceiver::~BroadcastDataReceiver() = default;
