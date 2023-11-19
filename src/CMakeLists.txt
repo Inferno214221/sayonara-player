@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(sayonara)
 
-include(CheckIncludeFileCXX)
+include(${CMAKE_SOURCE_DIR}/cmake/UnixEnvironment.cmake)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -39,33 +39,6 @@ else()
 	set(SAYONARA_WITH_DBUS 1)
 	set(SAYONARA_WITH_SHUTDOWN 1)
 	set(WIN32 0)
-endif()
-
-# check libexecinfo for non-glibc systems
-if(NOT WIN32)
-	include(CheckSymbolExists)
-	message("Checking if backtrace symbol present")
-	check_symbol_exists(backtrace execinfo.h backtrace_exists)
-	if(NOT backtrace_exists)
-		message("backtrace is missing (non-glibc platform), trying to find libexecinfo")
-		find_library(execinfo_LIB execinfo)
-		if(NOT execinfo_LIB)
-			message(FATAL_ERROR "libexecinfo not found")
-		endif()
-		set(OS_LIBRARIES ${execinfo_LIB})
-	else()
-		set(SAYONARA_HAS_BACKTRACE 1)
-	endif()
-endif()
-
-# Check demangle
-check_include_file_cxx("cxxabi.h" HAVE_CXX_ABI)
-if(${HAVE_CXX_ABI})
-	# Macros.h.in
-	set(SAYONARA_HAS_CXX_ABI 1)
-	message("Compile with demangle")
-else()
-	message("Demangle not found")
 endif()
 
 configure_file(Macros.h.in "${CMAKE_CURRENT_BINARY_DIR}/Utils/Macros.h" @ONLY)
