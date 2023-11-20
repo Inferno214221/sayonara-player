@@ -26,7 +26,6 @@
 #include "Utils/Pimpl.h"
 #include <QThread>
 
-
 namespace PipelineExtensions
 {
 	class Fadeable;
@@ -51,7 +50,6 @@ namespace PipelineExtensions
 			void timedOut();
 	};
 
-
 	/**
 	 * @brief The CrossFader class
 	 * @ingroup EngineInterfaces
@@ -62,15 +60,16 @@ namespace PipelineExtensions
 
 		public:
 
-			enum class FadeMode : unsigned char
+			enum class FadeMode :
+				unsigned char
 			{
-				NoFading=0,
+				NoFading = 0,
 				FadeIn,
 				FadeOut
 			};
 
 			Fadeable();
-			Fadeable(const Fadeable& other)=delete;
+			Fadeable(const Fadeable& other) = delete;
 
 			virtual ~Fadeable();
 
@@ -91,43 +90,41 @@ namespace PipelineExtensions
 			 */
 			void fadeOut();
 
-
 		private:
 			bool initFader(FadeMode mode);
 
 		protected:
-			virtual void stop()=0;
-			virtual void play()=0;
+			virtual void stop() = 0;
+			virtual void play() = 0;
 
 			/**
 			 * @brief Some additional stuff the implementation class wants to do
 			 * when fading out
 			 */
-			virtual void postProcessFadeOut()=0;
+			virtual void postProcessFadeOut() = 0;
 
 			/**
 			 * @brief Some additional stuff the implementation class wants to do
 			 * when fading in
 			 */
-			virtual void postProcessFadeIn()=0;
+			virtual void postProcessFadeIn() = 0;
 
 			/**
 			 * @brief get current volume of pipeline
 			 * @return value between 0 and 1.0
 			 */
-			virtual double internalVolume() const=0;
+			virtual double internalVolume() const = 0;
 
 			/**
 			 * @brief set current volume of pipeline
 			 * @param vol value between 0 and 1.0
 			 */
-			virtual void setInternalVolume(double vol)=0;
+			virtual void setInternalVolume(double vol) = 0;
 
 			/**
 			 * @brief Stops the current fader process
 			 */
 			void abortFader();
-
 
 		private:
 			friend class CrossFadeableTimer;

@@ -34,13 +34,13 @@ static const int FadingStepTime = 20;
 
 struct Fadeable::Private
 {
-	CrossFadeableTimer*		timer = nullptr;
+	CrossFadeableTimer* timer = nullptr;
 
-	double					fadingStep;
-	double					startVolume;
-	double					targetVolume;
+	double fadingStep;
+	double startVolume;
+	double targetVolume;
 
-	Fadeable::FadeMode		mode;
+	Fadeable::FadeMode mode;
 
 	Private(Fadeable* parent) :
 		fadingStep(0),
@@ -53,7 +53,8 @@ struct Fadeable::Private
 
 	~Private()
 	{
-		delete timer; timer=nullptr;
+		delete timer;
+		timer = nullptr;
 	}
 };
 
@@ -72,7 +73,8 @@ bool Fadeable::initFader(Fadeable::FadeMode mode)
 	double currentVolume = GetSetting(Set::Engine_Vol) / 100.0;
 	int fadingTime = GetSetting(Set::Engine_CrossFaderTime);
 
-	if(mode == Fadeable::FadeMode::NoFading){
+	if(mode == Fadeable::FadeMode::NoFading)
+	{
 		return false;
 	}
 
@@ -92,10 +94,12 @@ bool Fadeable::initFader(Fadeable::FadeMode mode)
 
 	m->fadingStep = FadingStepTime * (m->targetVolume - m->startVolume) / (fadingTime * 1.0);
 
-	spLog(Log::Develop, this) << "Fading step: " << m->fadingStep << " every " << FadingStepTime << "ms from Volume " << m->startVolume << " to " << m->targetVolume;
+	spLog(Log::Develop, this) << "Fading step: " << m->fadingStep << " every " << FadingStepTime << "ms from Volume "
+	                          << m->startVolume << " to " << m->targetVolume;
 
 	bool b = std::fabs(m->fadingStep) > 0.00001;
-	if(b) {
+	if(b)
+	{
 		m->timer->start(FadingStepTime);
 	}
 
@@ -105,7 +109,8 @@ bool Fadeable::initFader(Fadeable::FadeMode mode)
 void Fadeable::fadeIn()
 {
 	bool b = initFader(Fadeable::FadeMode::FadeIn);
-	if(!b){
+	if(!b)
+	{
 		return;
 	}
 
@@ -116,7 +121,8 @@ void Fadeable::fadeIn()
 void Fadeable::fadeOut()
 {
 	bool b = initFader(Fadeable::FadeMode::FadeOut);
-	if(!b){
+	if(!b)
+	{
 		return;
 	}
 
@@ -138,7 +144,8 @@ void Fadeable::timedOut()
 	else if(m->mode == Fadeable::FadeMode::FadeOut)
 	{
 		fade_allowed &= (new_volume > m->targetVolume);
-		if(!fade_allowed){
+		if(!fade_allowed)
+		{
 			this->stop();
 		}
 	}
@@ -153,11 +160,11 @@ void Fadeable::timedOut()
 		setInternalVolume(new_volume);
 	}
 
-	else {
+	else
+	{
 		m->timer->stop();
 	}
 }
-
 
 MilliSeconds Fadeable::fadingTimeMs() const
 {
@@ -179,8 +186,8 @@ using PipelineExtensions::CrossFadeableTimer;
 
 struct CrossFadeableTimer::Private
 {
-	QTimer*			timer=nullptr;
-	Fadeable*	fadeable=nullptr;
+	QTimer* timer = nullptr;
+	Fadeable* fadeable = nullptr;
 
 	Private(Fadeable* fadeable) :
 		fadeable(fadeable)
@@ -191,7 +198,8 @@ struct CrossFadeableTimer::Private
 	~Private()
 	{
 		timer->stop();
-		delete timer; timer=nullptr;
+		delete timer;
+		timer = nullptr;
 	}
 };
 
