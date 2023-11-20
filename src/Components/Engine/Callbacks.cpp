@@ -379,7 +379,6 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 
 	const auto messageType = GST_MESSAGE_TYPE(message);
 	const auto messageSourceName = QString(GST_MESSAGE_SRC_NAME(message)).toLower();
-	auto* sourceElement = GST_ELEMENT(message->src); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 
 	switch(messageType)
 	{
@@ -393,7 +392,7 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 				break;
 			}
 
-			engine->setTrackFinished(sourceElement);
+			engine->setTrackFinished(GST_ELEMENT(message->src));
 			break;
 
 		case GST_MESSAGE_ELEMENT:
@@ -421,7 +420,7 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 				break;
 			}
 
-			updateCurrentTrack(message, sourceElement, engine);
+			updateCurrentTrack(message, GST_ELEMENT(message->src), engine);
 
 			break;
 
@@ -430,11 +429,11 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 			break;
 
 		case GST_MESSAGE_BUFFERING:
-			engine->setBufferState(getBufferState(message), sourceElement);
+			engine->setBufferState(getBufferState(message), GST_ELEMENT(message->src));
 			break;
 
 		case GST_MESSAGE_DURATION_CHANGED:
-			engine->updateDuration(sourceElement);
+			engine->updateDuration(GST_ELEMENT(message->src));
 			break;
 
 		case GST_MESSAGE_INFO:
