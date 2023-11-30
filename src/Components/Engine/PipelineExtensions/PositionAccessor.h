@@ -23,34 +23,26 @@
 
 #include "Components/Engine/gstfwd.h"
 #include "Utils/typedefs.h"
-#include "Utils/Pimpl.h"
+
+#include <memory>
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The Seeker class
-	 * @ingroup EngineInterfaces
-	 */
-	class PositionAccessible
+	class PositionAccessor
 	{
 		public:
-			PositionAccessible();
-			virtual ~PositionAccessible();
+			virtual ~PositionAccessor();
 
-			NanoSeconds seekRelative(double percent, NanoSeconds ns);
-			NanoSeconds seekAbsolute(NanoSeconds ns);
-			NanoSeconds seekNearest(NanoSeconds ns);
+			virtual void seekRelative(double percent, MilliSeconds duration) = 0;
+			virtual void seekAbsoluteMs(MilliSeconds ms) = 0;
+			virtual void seekNearestMs(MilliSeconds ms) = 0;
 
-			NanoSeconds seekRelativeMs(double percent, MilliSeconds ms);
-			NanoSeconds seekAbsoluteMs(MilliSeconds ms);
-			NanoSeconds seekNearestMs(MilliSeconds ms);
-
-			virtual MilliSeconds positionMs() const;
-			virtual MilliSeconds durationMs() const;
-
-		protected:
-			virtual GstElement* positionElement() const = 0;
+			[[nodiscard]] virtual MilliSeconds timeToGo() const = 0;
+			[[nodiscard]] virtual MilliSeconds positionMs() const = 0;
+			[[nodiscard]] virtual MilliSeconds durationMs() const = 0;
 	};
+
+	std::shared_ptr<PositionAccessor> createPositionAccessor(GstElement* positionElement);
 }
 
 #endif // SEEKHANDLER_H

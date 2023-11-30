@@ -25,7 +25,6 @@
 #include "PipelineExtensions/PipelineInterfaces.h"
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Broadcasting.h"
-#include "PipelineExtensions/PositionAccessible.h"
 #include "PipelineExtensions/EqualizerAccesible.h"
 #include "PipelineExtensions/StreamRecordable.h"
 #include "Utils/Pimpl.h"
@@ -42,7 +41,6 @@ namespace Engine
 		public PipelineExtensions::PlaystateController,
 		public PipelineExtensions::VolumeController,
 		public PipelineExtensions::Changeable,
-		public PipelineExtensions::PositionAccessible,
 		public PipelineExtensions::EqualizerAccessible,
 		public PipelineExtensions::StreamRecordable
 	{
@@ -78,12 +76,16 @@ namespace Engine
 			void finishRecording() override;
 			void setRecordingPath(const QString& targetPath) override;
 
-			MilliSeconds timeToGo() const;
-
 			void fadeIn();
 			void fadeOut();
 
 			void startDelayedPlayback(MilliSeconds ms);
+
+			void seekRelative(double percent, MilliSeconds duration);
+			void seekAbsoluteMs(MilliSeconds ms);
+			void seekRelativeMs(MilliSeconds ms);
+			[[nodiscard]] MilliSeconds duration() const;
+			MilliSeconds timeToGo() const;
 
 		public slots:
 			void play() override;
@@ -105,7 +107,6 @@ namespace Engine
 			void setVolume(double volume) override;
 			[[nodiscard]] double volume() const override;
 
-			GstElement* positionElement() const override;
 			GstElement* equalizerElement() const override;
 	};
 }

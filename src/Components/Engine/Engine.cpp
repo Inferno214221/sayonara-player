@@ -165,20 +165,13 @@ namespace Engine
 				emit sigBuffering(-1);
 			}
 
-			void jumpAbsMs(const MilliSeconds ms) override
-			{
-				m_pipeline->seekAbsolute(ms * GST_MSECOND);
-			}
+			void jumpAbsMs(const MilliSeconds ms) override { m_pipeline->seekAbsoluteMs(ms); }
 
-			void jumpRelMs(const MilliSeconds ms) override
-			{
-				const auto newTimeStamp = m_pipeline->positionMs() + ms;
-				m_pipeline->seekAbsolute(newTimeStamp * GST_MSECOND);
-			}
+			void jumpRelMs(const MilliSeconds ms) override { m_pipeline->seekRelativeMs(ms); }
 
 			void jumpRel(const double percent) override
 			{
-				m_pipeline->seekRelative(percent, m_currentTrack.durationMs() * GST_MSECOND);
+				m_pipeline->seekRelative(percent, m_currentTrack.durationMs());
 			}
 
 			void setTrackReady(GstElement* src) override
@@ -324,7 +317,7 @@ namespace Engine
 					return;
 				}
 
-				const auto durationMs = m_pipeline->durationMs();
+				const auto durationMs = m_pipeline->duration();
 				const auto difference = std::abs(durationMs - m_currentTrack.durationMs());
 				if(durationMs < 1000 || difference < 1999 || // NOLINT(readability-magic-numbers)
 				   durationMs > 1'500'000'000) // NOLINT(readability-magic-numbers)

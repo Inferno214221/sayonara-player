@@ -29,6 +29,7 @@
 #include "PipelineExtensions/Pitcher.h"
 #include "PipelineExtensions/Crossfader.h"
 #include "PipelineExtensions/DelayedPlayback.h"
+#include "PipelineExtensions/PositionAccessor.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
@@ -70,6 +71,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::Pitcher> pitcher = nullptr;
 		std::shared_ptr<PipelineExtensions::Crossfader> crossfader = nullptr;
 		std::shared_ptr<PipelineExtensions::DelayedPlaybackInvoker> delayedInvoker = nullptr;
+		std::shared_ptr<PipelineExtensions::PositionAccessor> positionAccessor = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -207,6 +209,7 @@ namespace Engine
 		m->pitcher = PipelineExtensions::createPitcher();
 		m->crossfader = PipelineExtensions::createCrossfader(this, this);
 		m->delayedInvoker = PipelineExtensions::createDelayedPlaybackInvoker(this);
+		m->positionAccessor = PipelineExtensions::createPositionAccessor(m->source);
 
 		return (m->playbackSink != nullptr);
 	}
@@ -312,14 +315,6 @@ namespace Engine
 
 	GstState Pipeline::state() const { return Utils::getState(m->pipeline); }
 
-	MilliSeconds Pipeline::timeToGo() const
-	{
-		auto* element = m->pipeline;
-		const auto ms = Utils::getTimeToGo(element);
-
-		return std::max<MilliSeconds>(ms - 100, 0); // NOLINT(readability-magic-numbers)
-	}
-
 	void Pipeline::prepareForRecording()
 	{
 		if(!m->streamRecorder)
@@ -372,8 +367,8 @@ namespace Engine
 
 		if(Utils::getState(m->pipeline) == GST_STATE_PLAYING)
 		{
-			const auto positionMs = std::max<MilliSeconds>(this->positionMs(), 0);
-			seekNearestMs(positionMs);
+			const auto positionMs = std::max<MilliSeconds>(m->positionAccessor->positionMs(), 0);
+			m->positionAccessor->seekNearestMs(positionMs);
 		}
 
 		checkPosition();
@@ -399,15 +394,15 @@ namespace Engine
 
 	void Pipeline::checkPosition()
 	{
-		emit sigPositionChangedMs(std::max<MilliSeconds>(0, positionMs()));
+		emit sigPositionChangedMs(std::max<MilliSeconds>(0, m->positionAccessor->positionMs()));
 
 		checkAboutToFinish();
 	}
 
 	void Pipeline::checkAboutToFinish()
 	{
-		const auto positionMs = this->positionMs();
-		const auto durationMs = this->durationMs();
+		const auto positionMs = m->positionAccessor->positionMs();
+		const auto durationMs = m->positionAccessor->durationMs();
 		const auto aboutToFinishMs = std::max<MilliSeconds>(PipelineExtensions::Crossfader::fadingTimeMs(), 300);
 
 		static bool aboutToFinish = false;
@@ -431,8 +426,6 @@ namespace Engine
 
 	bool Pipeline::hasElement(GstElement* e) const { return Utils::hasElement(GST_BIN(m->pipeline), e); }
 
-	GstElement* Pipeline::positionElement() const { return m->playbackSink; }
-
 	GstElement* Pipeline::equalizerElement() const { return m->equalizer; }
 
 	void Pipeline::fadeIn() { m->crossfader->fadeIn(); }
@@ -440,4 +433,20 @@ namespace Engine
 	void Pipeline::fadeOut() { m->crossfader->fadeOut(); }
 
 	void Pipeline::startDelayedPlayback(const MilliSeconds ms) { m->delayedInvoker->playIn(ms); }
+
+	void Pipeline::seekRelative(const double percent, const MilliSeconds duration)
+	{
+		m->positionAccessor->seekRelative(percent, duration);
+	}
+
+	void Pipeline::seekAbsoluteMs(const MilliSeconds duration) { m->positionAccessor->seekAbsoluteMs(duration); }
+
+	void Pipeline::seekRelativeMs(const MilliSeconds ms)
+	{
+		m->positionAccessor->seekAbsoluteMs(m->positionAccessor->positionMs() + ms);
+	}
+
+	MilliSeconds Pipeline::duration() const { return m->positionAccessor->durationMs(); }
+
+	MilliSeconds Pipeline::timeToGo() const { return m->positionAccessor->timeToGo(); }
 }
