@@ -38,7 +38,6 @@ struct LineEntry
 	}
 };
 
-
 static LineEntry split_line(const QString& line)
 {
 	LineEntry ret;
@@ -47,18 +46,21 @@ static LineEntry split_line(const QString& line)
 	QRegExp re_idx("(\\S+)([0-9]+)");
 	QStringList splitted = line.split("=");
 
-	if(splitted.size() < 2){
+	if(splitted.size() < 2)
+	{
 		return ret;
 	}
 
 	pos_idx = re_idx.indexIn(splitted[0]);
-	if(pos_idx < 0){
+	if(pos_idx < 0)
+	{
 		ret.key = splitted[0];
 		ret.value = splitted[1];
 		ret.trackIdx = 1;
 	}
 
-	else {
+	else
+	{
 		ret.key = re_idx.cap(1).toLower();
 		ret.value = splitted[1];
 		ret.trackIdx = re_idx.cap(2).toInt();
@@ -66,7 +68,6 @@ static LineEntry split_line(const QString& line)
 
 	return ret;
 }
-
 
 PLSParser::PLSParser(const QString& filename) :
 	AbstractPlaylistParser(filename) {}
@@ -80,28 +81,32 @@ void PLSParser::parse()
 	MetaData md;
 	int cur_trackIdx = -1;
 
-	for(QString line : lines) {
+	for(QString line: lines)
+	{
 		line = line.trimmed();
-		if(line.isEmpty() || line.startsWith("#")){
+		if(line.isEmpty() || line.startsWith("#"))
+		{
 			continue;
 		}
 
 		LineEntry line_entry = split_line(line);
 
-		if(line_entry.trackIdx < 0){
+		if(line_entry.trackIdx < 0)
+		{
 			continue;
 		}
 
-		if(line_entry.trackIdx != cur_trackIdx){
+		if(line_entry.trackIdx != cur_trackIdx)
+		{
 
-			if(cur_trackIdx > 0){
+			if(cur_trackIdx > 0)
+			{
 				addTrack(md);
 			}
 
 			md = MetaData();
 			cur_trackIdx = line_entry.trackIdx;
 		}
-
 
 		md.setTrackNumber(TrackNum(line_entry.trackIdx));
 
@@ -126,7 +131,8 @@ void PLSParser::parse()
 		}
 	}
 
-	if(!md.filepath().isEmpty()){
+	if(!md.filepath().isEmpty())
+	{
 		addTrack(md);
 	}
 }

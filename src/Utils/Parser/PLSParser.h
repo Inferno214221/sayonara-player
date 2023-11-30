@@ -24,18 +24,15 @@
 #include "AbstractPlaylistParser.h"
 
 class QString;
-/**
- * @brief The PLSParser class
- * @ingroup PlaylistParser
- */
-class PLSParser final: public AbstractPlaylistParser
+class PLSParser final :
+	public AbstractPlaylistParser
 {
-public:
-	explicit PLSParser(const QString& filename);
-	~PLSParser() override;
+	public:
+		explicit PLSParser(const QString& filename);
+		~PLSParser() override;
 
-private:
-	void parse() override;
+	private:
+		void parse() override;
 };
 
 #endif // PLSPARSER_H

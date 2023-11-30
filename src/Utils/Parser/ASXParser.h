@@ -24,20 +24,17 @@
 #include "AbstractPlaylistParser.h"
 
 class QDomNode;
-/**
- * @brief The ASXParser class
- * @ingroup PlaylistParser
- */
-class ASXParser :
-		public AbstractPlaylistParser
-{
-public:
-	explicit ASXParser(const QString& filename);
-	~ASXParser() override;
 
-private:
-	void parse() override;
-	QString parseRefNode(const QDomNode& node);
+class ASXParser :
+	public AbstractPlaylistParser
+{
+	public:
+		explicit ASXParser(const QString& filename);
+		~ASXParser() override;
+
+	private:
+		void parse() override;
+		QString parseRefNode(const QDomNode& node);
 };
 
 #endif // ASXPARSER_H

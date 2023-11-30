@@ -129,7 +129,7 @@ void M3UParser::saveM3UPlaylist(QString filename, const MetaDataList& tracks, bo
 
 	auto dir = QDir(Util::File::getParentDirectory(filename));
 	auto lines = QStringList() << QStringLiteral("#EXTM3U");
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		lines << QString("#EXTINF:%1,%2 - %3") // no, there is no space missing here.
 			.arg(track.durationMs() / 1000)
