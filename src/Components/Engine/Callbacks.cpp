@@ -366,6 +366,34 @@ namespace
 			spLog(Log::Debug, ClassEngineCallbacks) << "Get stream status " << type;
 		}
 	}
+
+	void logPadLinKReturnError(const GstPadLinkReturn padLinkReturn)
+	{
+		spLog(Log::Error, ClassEngineCallbacks) << "Dynamic pad linking: Cannot link pads";
+
+		switch(padLinkReturn)
+		{
+			case GST_PAD_LINK_WRONG_HIERARCHY:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Wrong hierarchy";
+				break;
+			case GST_PAD_LINK_WAS_LINKED:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pad was already linked";
+				break;
+			case GST_PAD_LINK_WRONG_DIRECTION:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads have wrong direction";
+				break;
+			case GST_PAD_LINK_NOFORMAT:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads have incompatible format";
+				break;
+			case GST_PAD_LINK_NOSCHED:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads cannot cooperate scheduling";
+				break;
+			case GST_PAD_LINK_REFUSED:
+			default:
+				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Refused because of different reason";
+				break;
+		}
+	}
 }
 
 // check messages from bus
@@ -594,46 +622,19 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer d
 		return;
 	}
 
-	if(gst_pad_is_linked(sinkPad))
+	if(!gst_pad_is_linked(sinkPad))
 	{
-		gst_object_unref(sinkPad);
-		return;
-	}
-
-	const auto padLinkReturn = gst_pad_link(newSrcPad, sinkPad);
-	if(padLinkReturn != GST_PAD_LINK_OK)
-	{
-		spLog(Log::Error, ClassEngineCallbacks) << "Dynamic pad linking: Cannot link pads";
-
-		switch(padLinkReturn)
+		const auto padLinkReturn = gst_pad_link(newSrcPad, sinkPad);
+		if(padLinkReturn == GST_PAD_LINK_OK)
 		{
-			case GST_PAD_LINK_WRONG_HIERARCHY:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Wrong hierarchy";
-				break;
-			case GST_PAD_LINK_WAS_LINKED:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pad was already linked";
-				break;
-			case GST_PAD_LINK_WRONG_DIRECTION:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads have wrong direction";
-				break;
-			case GST_PAD_LINK_NOFORMAT:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads have incompatible format";
-				break;
-			case GST_PAD_LINK_NOSCHED:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Pads cannot cooperate scheduling";
-				break;
-			case GST_PAD_LINK_REFUSED:
-			default:
-				spLog(Log::Error, ClassEngineCallbacks) << "Cause: Refused because of different reason";
-				break;
+			const auto elementName = EngineUtils::GStringAutoFree(gst_element_get_name(element)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+			spLog(Log::Develop, "Callbacks") << "Successfully linked " << sourceName.data()
+			                                 << " with " << elementName.data();
 		}
-	}
-
-	else
-	{
-		const auto elementName = EngineUtils::GStringAutoFree(gst_element_get_name(element)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-		spLog(Log::Develop, "Callbacks")
-			<< "Successfully linked " << sourceName.data() << " with " << elementName.data();
+		else
+		{
+			logPadLinKReturnError(padLinkReturn);
+		}
 	}
 
 	gst_object_unref(sinkPad);
