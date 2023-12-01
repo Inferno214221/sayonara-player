@@ -57,6 +57,13 @@ namespace
 				return true;
 			}
 
+			QString readFileIntoString(const QString& filename) override
+			{
+				QString content;
+				const auto success = Util::File::readFileIntoString(filename, content);
+				return success ? content : QString {};
+			}
+
 			bool copyFile(const QString& sourceFile, const QString& targetFile) override
 			{
 				const auto targetDir = Util::File::getParentDirectory(targetFile);

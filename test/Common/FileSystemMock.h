@@ -46,6 +46,8 @@ namespace Test
 
 			bool writeFile(const QByteArray& /*data*/, const QString& filename) override;
 
+			QString readFileIntoString(const QString& filename) override;
+
 			[[nodiscard]] QMap<QString, QStringList> allFiles() const { return m_fileStructure; }
 
 			bool copyFile(const QString& sourceFile, const QString& targetFile) override;
@@ -55,6 +57,7 @@ namespace Test
 			void createFileStructure(const QMap<QString, QStringList>& dirFilesMap);
 
 			QMap<QString, QStringList> m_fileStructure;
+			QMap<QString, QString> m_content;
 	};
 
 	QStringList flattenFileSystemStructure(const QMap<QString, QStringList>& dirFilesMap);

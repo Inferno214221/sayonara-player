@@ -69,7 +69,7 @@ namespace Test
 		return isDir(filename) || isFile(filename);
 	}
 
-	bool FileSystemMock::writeFile(const QByteArray&, const QString& filename)
+	bool FileSystemMock::writeFile(const QByteArray& content, const QString& filename)
 	{
 		auto [d, f] = Util::File::splitFilename(filename);
 		f = Util::File::cleanFilename(f);
@@ -84,7 +84,14 @@ namespace Test
 			m_fileStructure.insert(d, {f});
 		}
 
+		m_content[filename] = QString {content};
+
 		return true;
+	}
+
+	QString FileSystemMock::readFileIntoString(const QString& filename)
+	{
+		return exists(filename) ? m_content[filename] : QString {};
 	}
 
 	void FileSystemMock::createFileStructure(const QMap<QString, QStringList>& dirFilesMap)
@@ -113,7 +120,8 @@ namespace Test
 
 		if(const auto parentDir = Util::File::getParentDirectory(targetFile); createDirectories(parentDir))
 		{
-			writeFile("", Util::File::cleanFilename(targetFile));
+			const auto data = readFileIntoString(sourceFile);
+			writeFile(data.toLocal8Bit(), Util::File::cleanFilename(targetFile));
 			return true;
 		}
 
@@ -142,6 +150,8 @@ namespace Test
 				m_fileStructure[filename] = values;
 				break;
 			}
+
+			m_content.remove(file);
 		}
 	}
 

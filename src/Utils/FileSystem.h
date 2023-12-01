@@ -43,6 +43,7 @@ namespace Util
 			virtual bool createDirectories(const QString& path) = 0;
 			virtual bool exists(const QString& filename) = 0;
 			virtual bool writeFile(const QByteArray& data, const QString& filename) = 0;
+			virtual QString readFileIntoString(const QString& filename) = 0;
 			virtual bool copyFile(const QString& sourceFile, const QString& targetFile) = 0;
 			virtual void deleteFiles(const QStringList& files) = 0;
 
