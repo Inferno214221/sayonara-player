@@ -20,7 +20,7 @@ rm -f ${FILENAME}
 
 cat <<EOT >> ${FILENAME}
 /*
- * Copyright (C) 2011-2022 Michael Lugmair
+ * Copyright (C) 2011-2023 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -53,11 +53,18 @@ class ${TESTNAME} :
         {}
 
     private slots:
-        void test();
-};
+        // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+        [[maybe_unused]] void test1()
+        {
 
-void ${TESTNAME}::test()
-{}
+        }
+
+        // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+        [[maybe_unused]] void test2()
+        {
+
+        }
+};
 
 QTEST_GUILESS_MAIN(${TESTNAME})
 #include "${TESTNAME}.moc"
