@@ -21,6 +21,7 @@
 #include "StreamParser.h"
 
 #include "Utils/Algorithm.h"
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
@@ -30,8 +31,8 @@
 #include "Utils/StandardPaths.h"
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/IcyWebAccess.h"
-#include "Utils/WebAccess/WebClientFactory.h"
 #include "Utils/WebAccess/WebClient.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QFile>
 #include <QDir>
@@ -180,7 +181,8 @@ namespace
 		return splitUrlsIntoTracksAndPlaylists(foundUrls, baseUrl, stationName);
 	}
 
-	[[nodiscard]] QString writePlaylistFile(const QString& extension, const QByteArray& data)
+	[[nodiscard]] QString
+	writePlaylistFile(const QString& extension, const QByteArray& data, const Util::FileSystemPtr& fileSystem)
 	{
 		auto filename = Util::tempPath("ParsedPlaylist");
 		if(!extension.isEmpty())
@@ -188,18 +190,18 @@ namespace
 			filename += "." + extension;
 		}
 
-		Util::File::writeFile(data, filename);
+		fileSystem->writeFile(data, filename);
 
 		return filename;
 	}
 
-	MetaDataList tryParsePlaylist(const QString& url, const QByteArray& data)
+	MetaDataList tryParsePlaylist(const QString& url, const QByteArray& data, const Util::FileSystemPtr& fileSystem)
 	{
 		const auto extension = Util::File::getFileExtension(url);
 		const auto filename = writePlaylistFile(extension, data);
 		auto result = PlaylistParser::parsePlaylist(filename, false);
 
-		Util::File::deleteFiles({filename});
+		fileSystem->deleteFiles({filename});
 
 		return result;
 	}
@@ -211,7 +213,8 @@ namespace
 
 	QPair<MetaDataList, Urls>
 	parseContent(const QString& url, const QByteArray& data, const QString& coverUrl, const QString& stationName,
-	             const Urls& forbiddenUrls)
+	             const Urls& forbiddenUrls,
+	             const Util::FileSystemPtr& fileSystem)
 	{
 		auto result = QPair<MetaDataList, Urls> {};
 		auto& [tracks, _] = result;
@@ -220,7 +223,7 @@ namespace
 
 		if(tracks.isEmpty())
 		{
-			tracks = tryParsePlaylist(url, data);
+			tracks = tryParsePlaylist(url, data, fileSystem);
 		}
 
 		if(tracks.isEmpty())
@@ -269,9 +272,11 @@ class StreamParserImpl :
 	Q_OBJECT
 
 	public:
-		StreamParserImpl(const std::shared_ptr<WebClientFactory>& webClientFactory, QObject* parent) :
+		StreamParserImpl(const std::shared_ptr<WebClientFactory>& webClientFactory, Util::FileSystemPtr fileSystem,
+		                 QObject* parent) :
 			StreamParser(parent),
-			m_webClientFactory {webClientFactory} {}
+			m_webClientFactory {webClientFactory},
+			m_fileSystem {std::move(fileSystem)} {}
 
 		~StreamParserImpl() override = default;
 
@@ -370,7 +375,12 @@ class StreamParserImpl :
 					m_forbiddenUrls << url;
 					spLog(Log::Develop, this) << "Got data. Try to parse content";
 
-					auto [tracks, urls] = parseContent(url, data, m_coverUrl, m_stationName, m_forbiddenUrls);
+					auto [tracks, urls] = parseContent(url,
+					                                   data,
+					                                   m_coverUrl,
+					                                   m_stationName,
+					                                   m_forbiddenUrls,
+					                                   m_fileSystem);
 					m_tracks = removeDuplicates(std::move(tracks));
 					m_urls << urls;
 					m_urls.removeDuplicates();
@@ -441,6 +451,7 @@ class StreamParserImpl :
 		MetaDataList m_tracks;
 		Urls m_urls;
 		std::shared_ptr<WebClientFactory> m_webClientFactory;
+		Util::FileSystemPtr m_fileSystem;
 		int m_timeout {0};
 		bool m_stopped {false};
 };
@@ -468,11 +479,12 @@ class StationParserFactoryImpl :
 
 		[[nodiscard]] StreamParser* createParser() const override
 		{
-			return new StreamParserImpl(m_webClientFactory, m_parent);
+			return new StreamParserImpl(m_webClientFactory, m_fileSystem, m_parent);
 		}
 
 	private:
 		std::shared_ptr<WebClientFactory> m_webClientFactory;
+		Util::FileSystemPtr m_fileSystem {Util::FileSystem::create()};
 		QObject* m_parent;
 };
 
