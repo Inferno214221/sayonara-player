@@ -35,8 +35,7 @@ namespace Test
 
 			~FileSystemMock() noexcept override = default;
 
-			[[nodiscard]] bool
-			isDir(const QString& filename) override;
+			[[nodiscard]] bool isDir(const QString& filename) override;
 
 			[[nodiscard]] bool isFile(const QString& filename) override;
 
@@ -52,6 +51,11 @@ namespace Test
 
 			bool copyFile(const QString& sourceFile, const QString& targetFile) override;
 			void deleteFiles(const QStringList& files) override;
+
+			[[nodiscard]] QStringList
+			entryList(const QDir& dir, const QStringList& nameFilters, QDir::Filters filters) const override;
+
+			[[nodiscard]] std::optional<QDir> cd(const QDir& dir, const QString& subDir) const override;
 
 		private:
 			void createFileStructure(const QMap<QString, QStringList>& dirFilesMap);

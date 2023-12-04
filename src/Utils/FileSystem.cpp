@@ -78,6 +78,20 @@ namespace
 			{
 				Util::File::deleteFiles(files);
 			}
+
+			[[nodiscard]] QStringList
+			entryList(const QDir& dir, const QStringList& nameFilters, const QDir::Filters filters) const override
+			{
+				return dir.entryList(nameFilters, filters);
+			}
+
+			[[nodiscard]] std::optional<QDir> cd(const QDir& dir, const QString& subDir) const override
+			{
+				auto newDir = dir;
+				return newDir.cd(subDir)
+				       ? std::optional {newDir}
+				       : std::nullopt;
+			}
 	};
 }
 
@@ -89,5 +103,10 @@ namespace Util
 	FileSystemPtr FileSystem::create()
 	{
 		return std::make_shared<FileSystemImpl>();
+	}
+
+	QStringList FileSystem::entryList(const QDir& dir, QDir::Filters filters) const
+	{
+		return entryList(dir, {}, filters);
 	}
 }

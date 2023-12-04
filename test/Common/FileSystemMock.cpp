@@ -20,9 +20,68 @@
 
 #include "FileSystemMock.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Algorithm.h"
 
 #include <QStringList>
 #include <QDir>
+
+namespace
+{
+	bool filenameMatchesExtension(const QString& filename, QString nameFilter)
+	{
+		nameFilter = nameFilter.toLower();
+		if(nameFilter.startsWith("*."))
+		{
+			nameFilter.remove(0, 2);
+		}
+
+		if(nameFilter.isEmpty())
+		{
+			return false;
+		}
+
+		return filename.toLower().endsWith(nameFilter);
+	}
+
+	QStringList filterFiles(const QStringList& files, const QStringList& nameFilters)
+	{
+		auto result = QStringList {};
+
+		for(const auto& filename: files)
+		{
+			const auto isMatch = Util::Algorithm::contains(nameFilters, [&filename](const auto nameFilter) {
+				return filenameMatchesExtension(filename, nameFilter);
+			});
+
+			if(isMatch || nameFilters.isEmpty())
+			{
+				result << filename;
+			}
+		}
+
+		return result;
+	}
+
+	QStringList filterDirs(const QDir& baseDir, const QStringList& allDirs, const Util::FileSystem* fileSystem)
+	{
+		auto result = QStringList {};
+
+		for(const auto& dir: allDirs)
+		{
+			auto maybeUpDir = fileSystem->cd({dir}, "..");
+			if(maybeUpDir.has_value())
+			{
+				const auto x = maybeUpDir.value().absolutePath();
+				if(maybeUpDir->absolutePath() == baseDir.absolutePath())
+				{
+					result << QDir(dir).dirName();
+				}
+			}
+		}
+
+		return result;
+	}
+}
 
 namespace Test
 {
@@ -76,6 +135,7 @@ namespace Test
 		if(m_fileStructure.contains(d))
 		{
 			m_fileStructure[d].push_back(f);
+			m_fileStructure[d].removeDuplicates();
 		}
 
 		else
@@ -106,7 +166,7 @@ namespace Test
 			const auto files = dirFilesMap[dir];
 			for(const auto& file: files)
 			{
-				writeFile({}, dir + "/" + file);
+				writeFile({}, QDir {dir}.absoluteFilePath(file));
 			}
 		}
 	}
@@ -155,6 +215,34 @@ namespace Test
 		}
 	}
 
+	QStringList
+	FileSystemMock::entryList(const QDir& dir, const QStringList& nameFilters, const QDir::Filters filters) const
+	{
+		auto filtered = QStringList {};
+
+		if(filters & QDir::Files)
+		{
+			filtered << filterFiles(m_fileStructure[dir.absolutePath()], nameFilters);
+		}
+
+		if(filters & QDir::Dirs)
+		{
+			filtered << filterDirs(dir, m_fileStructure.keys(), this);
+		}
+
+		return filtered;
+	}
+
+	std::optional<QDir> FileSystemMock::cd(const QDir& dir, const QString& subDir) const
+	{
+		const auto success = m_fileStructure.contains(dir.absolutePath()) &&
+		                     m_fileStructure.contains(QDir::cleanPath(dir.absoluteFilePath(subDir)));
+
+		return success
+		       ? std::optional {QDir::cleanPath(dir.absoluteFilePath(subDir))}
+		       : std::nullopt;
+	}
+
 	QStringList flattenFileSystemStructure(const QMap<QString, QStringList>& dirFilesMap)
 	{
 		auto result = QStringList {};
@@ -165,7 +253,7 @@ namespace Test
 			const auto files = dirFilesMap[dir];
 			for(const auto& file: files)
 			{
-				result << Util::File::cleanFilename(dir + "/" + file);
+				result << Util::File::cleanFilename(QDir {dir}.absoluteFilePath(file));
 			}
 		}
 

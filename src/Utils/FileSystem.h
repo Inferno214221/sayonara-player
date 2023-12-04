@@ -21,8 +21,11 @@
 #ifndef SAYONARA_PLAYER_FILESYSTEM_H
 #define SAYONARA_PLAYER_FILESYSTEM_H
 
+#include <QDir>
 #include <QString>
 #include <QStringList>
+
+#include <optional>
 #include <memory>
 
 namespace Util
@@ -46,6 +49,11 @@ namespace Util
 			virtual QString readFileIntoString(const QString& filename) = 0;
 			virtual bool copyFile(const QString& sourceFile, const QString& targetFile) = 0;
 			virtual void deleteFiles(const QStringList& files) = 0;
+			[[nodiscard]] virtual QStringList
+			entryList(const QDir& dir, const QStringList& nameFilters, QDir::Filters filters) const = 0;
+			[[nodiscard]] virtual QStringList entryList(const QDir& dir, QDir::Filters filters) const final;
+
+			[[nodiscard]] virtual std::optional<QDir> cd(const QDir& dir, const QString& subDir) const = 0;
 
 			static std::shared_ptr<FileSystem> create();
 	};
