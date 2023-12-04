@@ -19,107 +19,58 @@
 
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/TestTracks.h"
+#include "test/Common/FileSystemMock.h"
 
 #include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
 #include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TagReader.h"
 #include "Utils/Algorithm.h"
+
+#include <QMap>
+#include <QStringList>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
 namespace
 {
-	void createFileStructure(const QString& basePath)
+	class TagReaderMock :
+		public Tagging::TagReader
 	{
-		auto success = Util::File::createDirectories(QString("%1/path/to/somewhere/else").arg(basePath));
-		success &= Util::File::createDirectories(QString("%1/path/to/another/dir").arg(basePath));
+		public:
+			explicit TagReaderMock(Util::FileSystemPtr fileSystem) :
+				m_fileSystem {std::move(fileSystem)} {}
 
-		if(!success)
-		{
-			throw "Could not create directories";
-		}
-	}
+			~TagReaderMock() override = default;
 
-	void setPermissions(const QString& path)
-	{
-		const auto permission = (
-			QFileDevice::Permission::ReadOwner |
-			QFileDevice::Permission::ReadGroup |
-			QFileDevice::Permission::ReadOther |
-			QFileDevice::Permission::ReadUser |
-			QFileDevice::Permission::WriteOwner |
-			QFileDevice::Permission::WriteGroup |
-			QFileDevice::Permission::WriteOther |
-			QFileDevice::Permission::WriteUser
-		);
-
-		QFile::setPermissions(path, permission);
-	}
-
-	QString createMp3File(const QString& path)
-	{
-		QString newName;
-
-		auto success = Util::File::copyFile(":/test/mp3test.mp3", path, newName);
-		if(!success)
-		{
-			throw "could not create mp3 file";
-		}
-
-		setPermissions(newName);
-		return newName;
-	}
-
-	QString createOggFile(const QString& path)
-	{
-		QString newName;
-
-		auto success = Util::File::copyFile(":/test/oggtest.ogg", path, newName);
-		if(!success)
-		{
-			throw "could not create ogg file";
-		}
-
-		setPermissions(newName);
-		return newName;
-	}
-
-	QStringList createTrackFiles(const QString& basePath)
-	{
-		createFileStructure(basePath);
-
-		const auto tracks = Test::createTracks();
-
-		QStringList names;
-		names << createMp3File(QString("%1/path").arg(basePath));
-		names << createMp3File(QString("%1/path/to").arg(basePath));
-		names << createMp3File(QString("%1/path/to/somewhere").arg(basePath));
-		names << createMp3File(QString("%1/path/to/somewhere/else").arg(basePath));
-		names << createMp3File(QString("%1/path/to/another").arg(basePath));
-		names << createMp3File(QString("%1/path/to/another/dir").arg(basePath));
-
-		names << createOggFile(QString("%1/path").arg(basePath));
-		names << createOggFile(QString("%1/path/to").arg(basePath));
-		names << createOggFile(QString("%1/path/to/somewhere").arg(basePath));
-		names << createOggFile(QString("%1/path/to/somewhere/else").arg(basePath));
-		names << createOggFile(QString("%1/path/to/another").arg(basePath));
-		names << createOggFile(QString("%1/path/to/another/dir").arg(basePath));
-
-		for(int i = 0; i < names.size(); i++)
-		{
-			auto track = tracks[i];
-			track.setFilepath(names[i]);
-
-			const auto success = Tagging::Utils::setMetaDataOfFile(track);
-			if(!success)
+			std::optional<MetaData> readMetadata(const QString& filepath) override
 			{
-				throw "Could not set metadata";
-			}
-		}
+				auto track = MetaData {};
+				if(m_fileSystem->exists(filepath) && !filepath.endsWith("invalid.mp3"))
+				{
+					track.setFilepath(filepath);
+					return {track};
+				}
 
-		return names;
+				return std::nullopt;
+			}
+
+		private:
+			Util::FileSystemPtr m_fileSystem;
+
+	};
+
+	std::shared_ptr<Test::FileSystemMock> createTrackFiles()
+	{
+		return std::make_shared<Test::FileSystemMock>(
+			QMap<QString, QStringList> {
+				{"/path",                {"a.mp3", "a.ogg", "invalid.mp3"}},
+				{"/path/to",             {"b.mp3", "b.ogg"}},
+				{"/path/to/somewhere",   {"c.mp3", "c.ogg"}},
+				{"/path/to/another",     {"d.mp3", "d.ogg"}},
+				{"/path/to/another/dir", {"e.mp3", "e.ogg"}}});
 	}
 }
 
@@ -130,109 +81,81 @@ class DirectoryReaderTest :
 
 	public:
 		DirectoryReaderTest() :
-			Test::Base("DirectoryReaderTest")
-		{
-			m_names = createTrackFiles(Test::Base::tempPath());
-		}
+			Test::Base("DirectoryReaderTest") {}
 
 	private slots:
 		void testScanFilesInDirectory();
 		void testScanRecursively();
-		void testScanMetadata();
-
-	private:
-		QStringList m_names;
 };
 
-void DirectoryReaderTest::testScanFilesInDirectory()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void DirectoryReaderTest::testScanFilesInDirectory()
 {
-	const auto fileSystem = Util::FileSystem::create();
-	const auto directoryReader = Util::DirectoryReader::create(fileSystem);
-	const auto baseDir = Test::Base::tempPath();
+	const auto fileSystem = createTrackFiles();
+	const auto tagReader = std::make_shared<TagReaderMock>(fileSystem);
+	const auto directoryReader = Util::DirectoryReader::create(fileSystem, tagReader);
 
+	struct TestCase
 	{
-		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = directoryReader->scanFilesInDirectory(dir);
-		QVERIFY(files.count() == 2);
+		QString baseDir;
+		QStringList nameFilters;
+		QStringList expectedFiles;
+	};
 
-		const auto hasMp3 = Util::Algorithm::contains(files, [](const auto& filename) {
-			return Util::File::getFilenameOfPath(filename) == "mp3test.mp3";
-		});
-		QVERIFY(hasMp3);
+	const auto testCases = std::array {
+		TestCase {"/path", {}, {"/path/a.mp3", "/path/a.ogg", "/path/invalid.mp3"}},
+		TestCase {"/path", {"*.mp3"}, {"/path/a.mp3", "/path/invalid.mp3"}},
+		TestCase {"/path", {"ogg"}, {"/path/a.ogg"}},
+		TestCase {"/path", {"m4a"}, {}},
+	};
 
-		const auto hasOgg = Util::Algorithm::contains(files, [](const auto& filename) {
-			return Util::File::getFilenameOfPath(filename) == "oggtest.ogg";
-		});
-		QVERIFY(hasOgg);
-	}
-
+	for(auto testCase: testCases)
 	{
-		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.mp3");
-		QVERIFY(files.count() == 1);
-		QVERIFY(files[0] == QString("%1/mp3test.mp3").arg(dir));
-	}
+		auto files = directoryReader->scanFilesInDirectory({testCase.baseDir}, testCase.nameFilters);
+		files.sort();
+		testCase.expectedFiles.sort();
 
-	{
-		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.ogg");
-		QVERIFY(files.count() == 1);
-		QVERIFY(files[0] == QString("%1/oggtest.ogg").arg(dir));
-	}
-
-	{
-		const auto dir = QString("%1/path").arg(baseDir);
-		const auto files = directoryReader->scanFilesInDirectory(dir, QStringList() << "*.m4a");
-		QVERIFY(files.count() == 0);
+		QVERIFY(files == testCase.expectedFiles);
 	}
 }
 
-void DirectoryReaderTest::testScanRecursively()
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void DirectoryReaderTest::testScanRecursively()
 {
-	auto filesystem = Util::FileSystem::create();
-	auto directoryReader = Util::DirectoryReader::create(filesystem);
-	const auto baseDir = Test::Base::tempPath();
+	const auto fileSystem = createTrackFiles();
+	const auto tagReader = std::make_shared<TagReaderMock>(fileSystem);
+	auto directoryReader = Util::DirectoryReader::create(fileSystem, tagReader);
+	const auto allFiles = Test::flattenFileSystemStructure(fileSystem->allFiles());
 
-	{ // there's some db file in the directory, so files > m_names
-		const auto files = directoryReader->scanFilesRecursively(baseDir);
-		QVERIFY(files.count() > m_names.count());
-		for(const auto& name: m_names)
-		{
-			QVERIFY(files.contains(name));
-		}
-	}
-
+	struct TestCase
 	{
-		const auto files = directoryReader->scanFilesRecursively(baseDir, QStringList() << "*.mp3" << "*.ogg");
-		QVERIFY(files.count() == m_names.count());
-		for(const auto& name: m_names)
-		{
-			QVERIFY(files.contains(name));
-		}
-	}
+		QString baseDir;
+		QStringList nameFilters;
+		int expectedFileCount;
+	};
 
+	const auto testCases = std::array {
+		TestCase {"/", {}, 11},
+		TestCase {"/", {"*.mp3", "*.ogg"}, 11},
+		TestCase {"/", {"*.mp3"}, 6},
+		TestCase {"/", {"*.ogg"}, 5},
+		TestCase {"/path", {"*.mp3", "ogg"}, 11},
+		TestCase {"/path/to", {"*.mp3", "ogg"}, 8},
+		TestCase {"/path/to/another", {"*.mp3", "ogg"}, 4},
+		TestCase {"/", {"*.wav", "m4a"}, 0},
+	};
+
+	for(const auto& testCase: testCases)
 	{
-		const auto files = directoryReader->scanFilesRecursively(baseDir, QStringList() << "*.ogg");
-		QVERIFY(files.count() == 6);
-		for(const auto& file: files)
+		const auto files = directoryReader->scanFilesRecursively(testCase.baseDir, testCase.nameFilters);
+		QVERIFY(files.count() == testCase.expectedFileCount);
+		for(const auto& name: files)
 		{
-			QVERIFY(m_names.contains(file));
+			QVERIFY(allFiles.contains(name));
+
+			const auto [dir, filename] = Util::File::splitFilename(name);
+			QVERIFY(dir.startsWith(testCase.baseDir));
 		}
-	}
-}
-
-void DirectoryReaderTest::testScanMetadata()
-{
-	auto filesystem = Util::FileSystem::create();
-	const auto directoryReader = Util::DirectoryReader::create(filesystem);
-	const auto tracks = directoryReader->scanMetadata(m_names);
-	const auto generatedTracks = Test::createTracks();
-
-	for(const auto& track: tracks)
-	{
-		Util::Algorithm::contains(generatedTracks, [&](const auto& generatedTrack) {
-			return (track.title() == generatedTrack.title());
-		});
 	}
 }
 
