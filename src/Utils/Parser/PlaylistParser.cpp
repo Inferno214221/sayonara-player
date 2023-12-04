@@ -64,22 +64,22 @@ namespace
 
 	std::shared_ptr<AbstractPlaylistParser> getPlaylistParser(const QString& filename)
 	{
-		if(filename.endsWith(QStringLiteral("m3u"), Qt::CaseInsensitive))
+		if(Util::File::getFileExtension(filename).toLower() == "m3u")
 		{
 			return std::make_shared<M3UParser>(filename);
 		}
 
-		if(filename.endsWith(QStringLiteral("pls"), Qt::CaseInsensitive))
+		if(Util::File::getFileExtension(filename).toLower() == "pls")
 		{
 			return std::make_shared<PLSParser>(filename);
 		}
 
-		if(filename.endsWith(QStringLiteral("ram"), Qt::CaseInsensitive))
+		if(Util::File::getFileExtension(filename).toLower() == "ram")
 		{
 			return std::make_shared<M3UParser>(filename);
 		}
 
-		if(filename.endsWith(QStringLiteral("asx"), Qt::CaseInsensitive))
+		if(Util::File::getFileExtension(filename).toLower() == "asx")
 		{
 			return std::make_shared<ASXParser>(filename);
 		}
@@ -90,20 +90,20 @@ namespace
 
 MetaDataList PlaylistParser::parsePlaylist(const QString& filename, bool parseTags)
 {
-	MetaDataList result;
 	if(Util::File::isWWW(filename))
 	{
-		return result;
+		return {};
 	}
 
 	const auto playlistParser = getPlaylistParser(filename);
 	if(!playlistParser)
 	{
-		return result;
+		return {};
 	}
 
-	auto tracks = playlistParser->tracks(parseTags);
-	for(auto& track : tracks)
+	auto result = MetaDataList {};
+	auto tracks = playlistParser->tracks();
+	for(auto& track: tracks)
 	{
 		if(track.title().isEmpty())
 		{
@@ -120,3 +120,8 @@ MetaDataList PlaylistParser::parsePlaylist(const QString& filename, bool parseTa
 	return result;
 }
 
+MetaDataList
+PlaylistParser::parsePlaylistWithoutTags(const QString& filename, const std::shared_ptr<Util::FileSystem>& fileSystem)
+{
+	return parsePlaylist(filename, fileSystem, nullptr);
+}
