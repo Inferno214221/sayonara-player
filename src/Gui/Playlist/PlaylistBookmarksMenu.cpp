@@ -29,80 +29,71 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Language/Language.h"
 
-using Playlist::BookmarksMenu;
-
-struct BookmarksMenu::Private
+namespace Playlist
 {
-	PlayerPlugin::Handler* playerPluginHandler;
-	BookmarkStorage bookmarks;
-
-	Private() :
-		playerPluginHandler {PlayerPlugin::Handler::instance()} {}
-};
-
-BookmarksMenu::BookmarksMenu(QWidget* parent) :
-	QMenu(parent)
-{
-	m = Pimpl::make<Private>();
-
-	this->setTitle(Lang::get(Lang::Bookmarks));
-}
-
-BookmarksMenu::~BookmarksMenu() = default;
-
-bool BookmarksMenu::hasBookmarks() const
-{
-	return (!this->actions().isEmpty());
-}
-
-void BookmarksMenu::setTrack(const MetaData& track, bool editAllowed)
-{
-	m->bookmarks.setTrack(track);
-	bookmarksChanged(editAllowed);
-}
-
-MetaData BookmarksMenu::track() const
-{
-	return m->bookmarks.track();
-}
-
-void BookmarksMenu::bookmarksChanged(bool editAllowed)
-{
-	for(auto* a : this->actions())
+	struct BookmarksMenu::Private
 	{
-		a->deleteLater();
+		PlayerPlugin::Handler* playerPluginHandler {PlayerPlugin::Handler::instance()};
+		BookmarkStoragePtr bookmarkStorage {BookmarkStorage::create()};
+	};
+
+	BookmarksMenu::BookmarksMenu(QWidget* parent) :
+		QMenu(parent),
+		m {Pimpl::make<Private>()}
+	{
+		setTitle(Lang::get(Lang::Bookmarks));
 	}
 
-	this->clear();
+	BookmarksMenu::~BookmarksMenu() = default;
 
-	const auto& bookmarks = m->bookmarks.bookmarks();
-	for(const auto& bookmark : bookmarks)
+	bool BookmarksMenu::hasBookmarks() const { return !actions().isEmpty(); }
+
+	void BookmarksMenu::setTrack(const MetaData& track, bool editAllowed)
 	{
-		const auto name = bookmark.name();
-		if(!name.isEmpty())
+		m->bookmarkStorage->setTrack(track);
+		bookmarksChanged(editAllowed);
+	}
+
+	MetaData BookmarksMenu::track() const { return m->bookmarkStorage->track(); }
+
+	void BookmarksMenu::bookmarksChanged(const bool editAllowed)
+	{
+		for(auto* a: actions())
 		{
-			auto* action = this->addAction(name);
-			action->setData(bookmark.timestamp());
-			connect(action, &QAction::triggered, this, &BookmarksMenu::actionPressed);
+			a->deleteLater();
 		}
+
+		clear();
+
+		const auto& bookmarks = m->bookmarkStorage->bookmarks();
+		for(const auto& bookmark: bookmarks)
+		{
+			const auto name = bookmark.name();
+			if(!name.isEmpty())
+			{
+				auto* action = addAction(name);
+				action->setData(bookmark.timestamp());
+				connect(action, &QAction::triggered, this, &BookmarksMenu::actionPressed);
+			}
+		}
+
+		addSeparator();
+
+		auto* editAction = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
+		addAction(editAction);
+
+		connect(editAction, &QAction::triggered, [this]() {
+			m->playerPluginHandler->showPlugin("Bookmarks");
+		});
+
+		editAction->setEnabled(editAllowed);
 	}
 
-	this->addSeparator();
+	void BookmarksMenu::actionPressed()
+	{
+		auto* action = dynamic_cast<QAction*>(sender());
+		const auto time = static_cast<Seconds>(action->data().toInt());
 
-	auto* editAction = new QAction(Gui::Icons::icon(Gui::Icons::Edit), Lang::get(Lang::Edit), this);
-	this->addAction(editAction);
-
-	connect(editAction, &QAction::triggered, [&]() {
-		m->playerPluginHandler->showPlugin("Bookmarks");
-	});
-
-	editAction->setEnabled(editAllowed);
-}
-
-void BookmarksMenu::actionPressed()
-{
-	auto* action = dynamic_cast<QAction*>(sender());
-	const auto time = static_cast<Seconds>(action->data().toInt());
-
-	emit sigBookmarkPressed(time);
+		emit sigBookmarkPressed(time);
+	}
 }

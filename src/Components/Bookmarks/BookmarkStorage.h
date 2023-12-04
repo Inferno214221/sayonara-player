@@ -21,49 +21,40 @@
 #ifndef BOOKMARK_STORAGE_H
 #define BOOKMARK_STORAGE_H
 
-#include "Utils/Pimpl.h"
 #include "Bookmark.h"
+#include "Utils/MetaData/MetaData.h"
 
-class MetaData;
+#include <memory>
+
 class BookmarkStorage
 {
-	PIMPL(BookmarkStorage)
-
 	public:
-		enum class CreationStatus : unsigned char
+		enum class CreationStatus :
+			unsigned char
 		{
-				Success,
-				AlreadyThere,
-				NoDBTrack,
-				DBError,
-				OtherError
+			Success,
+			AlreadyThere,
+			NoDBTrack,
+			DBError,
+			OtherError
 		};
 
-		BookmarkStorage();
-		BookmarkStorage(const MetaData& track);
-
 		virtual ~BookmarkStorage();
+		virtual CreationStatus create(Seconds timestamp) = 0;
 
-		/**
-		 * @brief create a new bookmark for current track and current position
-		 * @return true if successful, else false
-		 */
-		virtual CreationStatus create(Seconds timestamp);
+		virtual bool remove(int index) = 0;
 
-		/**
-		 * @brief remove single bookmark from database for current track
-		 * @param idx index
-		 * @return
-		 */
-		bool remove(int index);
+		[[nodiscard]] virtual const QList<Bookmark>& bookmarks() const = 0;
+		[[nodiscard]] virtual Bookmark bookmark(int index) const = 0;
 
-		const QList<Bookmark>& bookmarks() const;
-		Bookmark bookmark(int index) const;
+		[[nodiscard]] virtual int count() const = 0;
 
-		int count() const;
+		virtual void setTrack(const MetaData& track) = 0;
+		[[nodiscard]] virtual const MetaData& track() const = 0;
 
-		void setTrack(const MetaData& track);
-		const MetaData& track() const;
+		static std::shared_ptr<BookmarkStorage> create(const MetaData& track = MetaData {});
 };
+
+using BookmarkStoragePtr = std::shared_ptr<BookmarkStorage>;
 
 #endif // BOOKMARK_STORAGE_H

@@ -25,53 +25,47 @@ struct Bookmark::Private
 {
 	Seconds timestamp;
 	QString name;
-	bool valid;
+	bool valid {false};
 
-	Private() :
-		timestamp(0),
-		valid(false)
-	{}
+	Private(const Seconds timestamp, const QString& name, const bool valid) :
+		timestamp {timestamp},
+		name {name},
+		valid {valid} {}
+
+	Private(const Private& other) = default;
+	Private(Private&& other) = default;
+	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) = default;
 };
 
-Bookmark::Bookmark(Seconds timestamp)
-{
-	m = Pimpl::make<Private>();
-	m->timestamp = timestamp;
-}
+Bookmark::Bookmark(const Seconds timestamp, const QString& name, bool valid) :
+	m {Pimpl::make<Private>(timestamp, name, valid)} {}
 
-Bookmark::Bookmark(Seconds timestamp, const QString& name, bool valid) :
-	Bookmark(timestamp)
-{
-	m->name = name;
-	m->valid = valid;
-}
+Bookmark::Bookmark(const Seconds timestamp) :
+	m {Pimpl::make<Private>(timestamp, QString {}, false)} {}
 
 Bookmark::~Bookmark() = default;
 
 Bookmark::Bookmark(const Bookmark& other) :
-	Bookmark(other.m->timestamp, other.m->name, other.m->valid)
-{}
+	Bookmark(other.m->timestamp, other.m->name, other.m->valid) {}
+
+Bookmark::Bookmark(Bookmark&& other) noexcept :
+	m {std::move(other.m)} {}
 
 Bookmark& Bookmark::operator=(const Bookmark& other)
 {
-	m->timestamp = other.m->timestamp;
-	m->name = other.m->name;
-	m->valid = other.m->valid;
-
+	*m = *(other.m);
 	return *this;
 }
 
-Seconds Bookmark::timestamp() const
+Bookmark& Bookmark::operator=(Bookmark&& other) noexcept
 {
-	return m->timestamp;
+	m = std::move(other.m);
+	return *this;
 }
 
-QString Bookmark::name() const
-{
-	return m->name;
-}
+Seconds Bookmark::timestamp() const { return m->timestamp; }
 
-bool Bookmark::isValid() const
-{
-	return m->valid;
-}
+QString Bookmark::name() const { return m->name; }
+
+bool Bookmark::isValid() const { return m->valid; }

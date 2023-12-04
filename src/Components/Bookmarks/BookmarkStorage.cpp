@@ -21,161 +21,149 @@
 #include "BookmarkStorage.h"
 #include "Bookmark.h"
 
-#include "Database/Connector.h"
 #include "Database/Bookmarks.h"
-
-#include "Utils/Utils.h"
+#include "Database/Connector.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/Utils.h"
 
-namespace Algorithm = Util::Algorithm;
+#include <utility>
 
 namespace
 {
 	void sortBookmarks(QList<Bookmark>& bookmarks)
 	{
-		Algorithm::sort(bookmarks, [](const auto& bm1, const auto& bm2) {
+		Util::Algorithm::sort(bookmarks, [](const auto& bm1, const auto& bm2) {
 			return (bm1.timestamp() < bm2.timestamp());
 		});
 	}
-}
 
-struct BookmarkStorage::Private
-{
-	QList<Bookmark> bookmarks;
-	MetaData track;
-	DB::Bookmarks* db;
-
-	Private(const MetaData& track) :
-		track {track},
-		db {DB::Connector::instance()->bookmarkConnector()}
+	class BookmarkStorageImpl :
+		public BookmarkStorage
 	{
-		reloadBookmarks();
-	}
-
-	void reloadBookmarks()
-	{
-		bookmarks.clear();
-
-		if(!track.customField("Chapter1").isEmpty())
-		{
-			int chapterIndex = 1;
-
-			QString entry;
-
-			do
+		public:
+			explicit BookmarkStorageImpl(MetaData track) :
+				m_track {std::move(track)}
 			{
-				const auto customFieldName = QString("Chapter%1").arg(chapterIndex);
-				entry = track.customField(customFieldName);
-
-				auto entries = entry.split(":");
-				const auto length = static_cast<Seconds>(entries.takeFirst().toInt());
-				const auto name = entries.join(":");
-
-				bookmarks << Bookmark(length, name, true);
-				chapterIndex++;
-
-			} while(!entry.isEmpty());
-		}
-
-		if(bookmarks.isEmpty() && track.id() >= 0)
-		{
-			QMap<Seconds, QString> bookmarkMap;
-			db->searchBookmarks(track.id(), bookmarkMap);
-
-			for(auto it = bookmarkMap.begin(); it != bookmarkMap.end(); it++)
-			{
-				bookmarks << Bookmark {it.key(), it.value(), true};
+				reloadBookmarks();
 			}
-		}
 
-		sortBookmarks(bookmarks);
-	}
-};
+			~BookmarkStorageImpl() override = default;
 
-BookmarkStorage::BookmarkStorage() :
-	BookmarkStorage{MetaData{}}
-{}
+			CreationStatus create(const Seconds timestamp) override
+			{
+				if((m_track.id() < 0) || (m_track.databaseId() != 0))
+				{
+					return CreationStatus::NoDBTrack;
+				}
 
-BookmarkStorage::BookmarkStorage(const MetaData& track)
-{
-	m = Pimpl::make<Private>(track);
+				if(timestamp == 0)
+				{
+					return CreationStatus::OtherError;
+				}
+
+				const auto alreadyThere = Util::Algorithm::contains(m_bookmarks, [&timestamp](const auto& bookmark) {
+					return (bookmark.timestamp() == timestamp);
+				});
+
+				if(alreadyThere)
+				{
+					return CreationStatus::AlreadyThere;
+				}
+
+				const auto name = Util::msToString(timestamp * 1000, "$M:$S");
+				const auto success = m_db->insertBookmark(m_track.id(), timestamp, name);
+				if(success)
+				{
+					reloadBookmarks();
+					return CreationStatus::Success;
+				}
+
+				return CreationStatus::DBError;
+			}
+
+			bool remove(const int index) override
+			{
+				if(!Util::between(index, count()))
+				{
+					return false;
+				}
+
+				const auto removed = m_db->removeBookmark(m_track.id(), m_bookmarks[index].timestamp());
+				if(removed)
+				{
+					reloadBookmarks();
+				}
+
+				return removed;
+			}
+
+			[[nodiscard]] const QList<Bookmark>& bookmarks() const override { return m_bookmarks; }
+
+			[[nodiscard]] Bookmark bookmark(const int index) const override
+			{
+				return Util::between(index, count())
+				       ? m_bookmarks[index]
+				       : Bookmark {};
+			}
+
+			[[nodiscard]] int count() const override { return m_bookmarks.count(); }
+
+			void setTrack(const MetaData& track) override
+			{
+				m_track = track;
+				reloadBookmarks();
+			}
+
+			[[nodiscard]] const MetaData& track() const override { return m_track; }
+
+		private:
+			void reloadBookmarks()
+			{
+				m_bookmarks.clear();
+
+				if(!m_track.customField("Chapter1").isEmpty())
+				{
+					for(auto chapterIndex = 1;; chapterIndex++)
+					{
+						const auto customFieldName = QString("Chapter%1").arg(chapterIndex);
+						const auto entry = m_track.customField(customFieldName);
+						if(entry.isEmpty())
+						{
+							break;
+						}
+
+						auto entries = entry.split(":");
+						const auto length = static_cast<Seconds>(entries.takeFirst().toInt());
+						const auto name = entries.join(":");
+
+						m_bookmarks << Bookmark(length, name, true);
+					}
+				}
+
+				if(m_bookmarks.isEmpty() && m_track.id() >= 0)
+				{
+					QMap<Seconds, QString> bookmarkMap;
+					m_db->searchBookmarks(m_track.id(), bookmarkMap);
+
+					for(auto it = bookmarkMap.begin(); it != bookmarkMap.end(); it++)
+					{
+						m_bookmarks << Bookmark {it.key(), it.value(), true};
+					}
+				}
+
+				sortBookmarks(m_bookmarks);
+			}
+
+			QList<Bookmark> m_bookmarks;
+			MetaData m_track;
+			DB::Bookmarks* m_db {DB::Connector::instance()->bookmarkConnector()};
+	};
 }
 
 BookmarkStorage::~BookmarkStorage() = default;
 
-BookmarkStorage::CreationStatus BookmarkStorage::create(Seconds timestamp)
+BookmarkStoragePtr BookmarkStorage::create(const MetaData& track)
 {
-	if(m->track.id() < 0 || m->track.databaseId() != 0)
-	{
-		return CreationStatus::NoDBTrack;
-	}
-
-	if(timestamp == 0)
-	{
-		return CreationStatus::OtherError;
-	}
-
-	const auto alreadyThere = Algorithm::contains(m->bookmarks, [&timestamp](const Bookmark& bm) {
-		return (bm.timestamp() == timestamp);
-	});
-
-	if(alreadyThere)
-	{
-		return CreationStatus::AlreadyThere;
-	}
-
-	const auto name = Util::msToString(timestamp * 1000, "$M:$S");
-	const auto success = m->db->insertBookmark(m->track.id(), timestamp, name);
-	if(success)
-	{
-		m->reloadBookmarks();
-		return CreationStatus::Success;
-	}
-
-	return CreationStatus::DBError;
-}
-
-bool BookmarkStorage::remove(int idx)
-{
-	if(!Util::between(idx, count()))
-	{
-		return false;
-	}
-
-	const auto removed = m->db->removeBookmark(m->track.id(), m->bookmarks[idx].timestamp());
-	if(removed)
-	{
-		m->reloadBookmarks();
-	}
-
-	return removed;
-}
-
-const QList<Bookmark>& BookmarkStorage::bookmarks() const
-{
-	return m->bookmarks;
-}
-
-Bookmark BookmarkStorage::bookmark(int index) const
-{
-	return (Util::between(index, count()))
-		? m->bookmarks[index]
-		: Bookmark{};
-}
-
-int BookmarkStorage::count() const
-{
-	return m->bookmarks.count();
-}
-
-void BookmarkStorage::setTrack(const MetaData& track)
-{
-	m->track = track;
-	m->reloadBookmarks();
-}
-
-const MetaData& BookmarkStorage::track() const
-{
-	return m->track;
+	return std::make_shared<BookmarkStorageImpl>(track);
 }

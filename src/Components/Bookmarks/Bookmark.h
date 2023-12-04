@@ -37,13 +37,16 @@ class Bookmark
 		explicit Bookmark(Seconds timestamp = 0);
 
 		Bookmark(const Bookmark& other);
+		Bookmark(Bookmark&& other) noexcept;
+
 		Bookmark& operator=(const Bookmark& other);
+		Bookmark& operator=(Bookmark&& other) noexcept;
 
 		~Bookmark();
 
-		Seconds timestamp() const;
-		QString name() const;
-		bool isValid() const;
+		[[nodiscard]] Seconds timestamp() const;
+		[[nodiscard]] QString name() const;
+		[[nodiscard]] bool isValid() const;
 };
 
 #endif // BOOKMARK_H
