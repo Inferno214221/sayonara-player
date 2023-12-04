@@ -101,11 +101,12 @@ namespace
 		return getTrackListWithTrackMap(paths, std::move(filepathTrackMap));
 	}
 
-	QStringList scanFilesInDirectory(const QDir& dir, const QStringList& nameFilter = {})
+	QStringList
+	scanFilesInDirectory(const QDir& dir, const Util::FileSystemPtr& fileSystem, const QStringList& nameFilter = {})
 	{
 		QStringList result;
 
-		const auto fileList = dir.entryList(nameFilter, QDir::Filters(QDir::Files | QDir::NoDotAndDotDot));
+		const auto fileList = fileSystem->entryList(dir, nameFilter, QDir::Filters(QDir::Files | QDir::NoDotAndDotDot));
 		for(const auto& filename: fileList)
 		{
 			result << dir.absoluteFilePath(filename);
@@ -115,28 +116,31 @@ namespace
 	}
 
 	// NOLINTNEXTLINE(misc-no-recursion)
-	QStringList scanFilesRecursively(const QDir& originalDirectory, const QStringList& nameFilter = {})
+	QStringList
+	scanFilesRecursively(const QDir& dir, const Util::FileSystemPtr& fileSystem, const QStringList& nameFilter = {})
 	{
-		const auto b = originalDirectory.absolutePath();
-		if(originalDirectory.canonicalPath().isEmpty())
+		const auto b = dir.absolutePath();
+		if(!fileSystem->exists(dir.absolutePath()))
 		{
 			return {};
 		}
 
-		auto dir = originalDirectory;
-		const auto dirNames = dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
+		const auto dirNames = fileSystem->entryList(dir, QDir::Dirs | QDir::NoDotAndDotDot);
 
 		QStringList result;
 		for(const auto& dirName: dirNames)
 		{
-			if(!dirName.isEmpty() && dir.cd(dirName))
+			if(!dirName.isEmpty())
 			{
-				result << scanFilesRecursively(dir, nameFilter);
-				dir.cdUp();
+				if(const auto maybeSubDir = fileSystem->cd(dir, dirName); maybeSubDir.has_value())
+				{
+					const auto subDir = maybeSubDir->absolutePath();
+					result << scanFilesRecursively(subDir, fileSystem, nameFilter);
+				}
 			}
 		}
 
-		result << scanFilesInDirectory(dir, nameFilter);
+		result << scanFilesInDirectory(dir, fileSystem, nameFilter);
 
 		return result;
 	}
@@ -153,10 +157,7 @@ namespace
 
 			if(fileSystem->isDir(filename))
 			{
-				QDir dir(filename);
-				dir.cd(filename);
-
-				const auto files = scanFilesRecursively(dir);
+				const auto files = scanFilesRecursively({filename}, fileSystem);
 				for(const auto& file: files)
 				{
 					if(Util::File::isSoundFile(file))
@@ -199,12 +200,12 @@ namespace
 
 			QStringList scanFilesInDirectory(const QDir& baseDir, const QStringList& nameFilters) override
 			{
-				return ::scanFilesInDirectory(baseDir, nameFilters);
+				return ::scanFilesInDirectory(baseDir, m_fileSystem, nameFilters);
 			}
 
 			QStringList scanFilesRecursively(const QDir& baseDir, const QStringList& nameFilters) override
 			{
-				return ::scanFilesRecursively(baseDir, nameFilters);
+				return ::scanFilesRecursively(baseDir, m_fileSystem, nameFilters);
 			}
 
 			MetaDataList scanMetadata(const QStringList& files) override
