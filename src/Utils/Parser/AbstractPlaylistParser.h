@@ -23,30 +23,43 @@
 
 #include "Utils/Pimpl.h"
 
-/**
- * @brief The AbstractPlaylistParser class
- * @ingroup PlaylistParser
- */
+class MetaDataList;
+class MetaData;
+class QString;
+
+namespace Tagging
+{
+	class TagReader;
+}
+
+namespace Util
+{
+	class FileSystem;
+}
+
 class AbstractPlaylistParser
 {
 	PIMPL(AbstractPlaylistParser)
 
 	public:
-		explicit AbstractPlaylistParser(const QString& filepath);
+		AbstractPlaylistParser(const QString& filepath,
+		                       const std::shared_ptr<Util::FileSystem>& fileSystem,
+		                       const std::shared_ptr<Tagging::TagReader>& tagReader);
 		virtual ~AbstractPlaylistParser();
 
-		virtual MetaDataList tracks(bool forceParse = false) final;
+		virtual MetaDataList tracks() final;
 
 	protected:
 		virtual void parse() = 0;
 
 		void addTrack(const MetaData& track);
 		void addTracks(const MetaDataList& tracks);
-		const QString& content() const;
+		[[nodiscard]] const QString& content() const;
 
-		QString getAbsoluteFilename(const QString& filename) const;
+		[[nodiscard]] QString getAbsoluteFilename(const QString& filename) const;
+		
+		void parseSubPlaylist(const QString& playlistPath);
 
-		bool isParseTagsActive() const;
 };
 
 #endif // ABSTRACTPLAYLISTPARSER_H

@@ -1,11 +1,14 @@
 #include "PlaylistTestUtils.h"
 
 #include "test/Common/SayonaraTest.h"
+#include "test/Common/FileSystemMock.h"
 
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Utils.h"
+#include "Utils/Tagging/TagReader.h"
+
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
@@ -47,6 +50,36 @@ class PlaylistFileTest :
 			m_tracks = Test::Playlist::createTrackFiles(basePath);
 		}
 
+	private:
+		class TagReader :
+			public Tagging::TagReader
+		{
+			public:
+				explicit TagReader(Util::FileSystemPtr fileSystem) :
+					m_fileSystem {std::move(fileSystem)} {}
+
+				~TagReader() override = default;
+
+				std::optional<MetaData> readMetadata(const QString& filepath) override
+				{
+					if(!m_fileSystem->exists(filepath))
+					{
+						return std::nullopt;
+					}
+
+					auto track = MetaData {};
+					track.setFilepath(filepath);
+					track.setTitle(filepath);
+					track.setAlbum(filepath);
+					track.setArtist(filepath);
+
+					return {track};
+				}
+
+			private:
+				Util::FileSystemPtr m_fileSystem;
+		};
+
 	private slots:
 		void parseStandardM3U();
 		void parseExtendedM3U();
@@ -59,40 +92,43 @@ class PlaylistFileTest :
 
 void PlaylistFileTest::parseStandardM3U()
 {
-	QString content = R"m3u(
+	const QString content = R"m3u(
 	file1.mp3
 
 	file2.ogg
-	<file3>
+	/non/existent/path
+	/path/to/file.flac
     # don't parse this
-	<file4>
+	/other/path/some/file.aac
 	)m3u";
 
-	content.replace("<file3>", this->tempPath("file3.flac"));
-	content.replace("<file4>", this->tempPath("file4.aac"));
+	constexpr const auto* PlaylistName = "/current/playlist.m3u";
 
-	const auto filename = this->tempPath("standard.m3u");
-	const auto success = Util::File::writeFile(content.toUtf8(), filename);
-	QVERIFY(success);
+	auto fileSystem = std::make_shared<Test::FileSystemMock>(
+		QMap<QString, QStringList> {
+			{"/current",         {"playlist.m3u", "file1.mp3", "file2.ogg"}},
+			{"/path/to",         {"file.flac"}},
+			{"/other/path/some", {"file.aac"}},
+		}
+	);
 
-	Util::File::writeFile(QByteArray(), this->tempPath("file1.mp3"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file2.ogg"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file3.flac"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file4.aac"));
+	fileSystem->writeFile(content.toLocal8Bit(), PlaylistName);
 
-	auto parser = M3UParser(filename);
+	auto tagReader = std::make_shared<PlaylistFileTest::TagReader>(fileSystem);
+
+	auto parser = M3UParser(PlaylistName, fileSystem, tagReader);
 	const auto tracks = parser.tracks();
 
 	QVERIFY(tracks.size() == 4);
-	QVERIFY(tracks[0].filepath() == this->tempPath("file1.mp3"));
-	QVERIFY(tracks[1].filepath() == this->tempPath("file2.ogg"));
-	QVERIFY(tracks[2].filepath() == this->tempPath("file3.flac"));
-	QVERIFY(tracks[3].filepath() == this->tempPath("file4.aac"));
+	QVERIFY(tracks[0].filepath() == "/current/file1.mp3");
+	QVERIFY(tracks[1].filepath() == "/current/file2.ogg");
+	QVERIFY(tracks[2].filepath() == "/path/to/file.flac");
+	QVERIFY(tracks[3].filepath() == "/other/path/some/file.aac");
 }
 
 void PlaylistFileTest::parseExtendedM3U()
 {
-	QString content = R"m3u(
+	const QString content = R"m3u(
 	#EXTM3U
 
 	#EXTINF:221,Queen - Bohemian Rhapsody
@@ -102,25 +138,26 @@ void PlaylistFileTest::parseExtendedM3U()
 	file2.ogg
 	# This is a comment
 	#EXTINF:264 ,冨田勲 - Boléro
-	<file3>
+	/path/to/bolero.flac
 	#EXTINF: 504,  Bob Marley - Buffalo Soldier
 
-<file4>
+/some/path/to/buffalo soldier.aac
 	)m3u";
 
-	content.replace("<file3>", this->tempPath("file3.flac"));
-	content.replace("<file4>", this->tempPath("file4.aac"));
+	auto fileSystem = std::make_shared<Test::FileSystemMock>(
+		QMap<QString, QStringList> {
+			{"/current",      {"playlist.m3u", "file1.mp3", "file2.ogg"}},
+			{"/path/to",      {"bolero.flac"}},
+			{"/some/path/to", {"buffalo soldier.aac"}},
+		}
+	);
 
-	const auto filename = this->tempPath("extended.m3u");
-	const auto success = Util::File::writeFile(content.toUtf8(), filename);
-	QVERIFY(success);
+	constexpr const auto* PlaylistName = "/current/playlist.m3u";
 
-	Util::File::writeFile(QByteArray(), this->tempPath("file1.mp3"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file2.ogg"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file3.flac"));
-	Util::File::writeFile(QByteArray(), this->tempPath("file4.aac"));
+	fileSystem->writeFile(content.toLocal8Bit(), PlaylistName);
+	auto tagReader = std::make_shared<PlaylistFileTest::TagReader>(fileSystem);
 
-	auto parser = M3UParser(filename);
+	auto parser = M3UParser(PlaylistName, fileSystem, nullptr);
 	const auto tracks = parser.tracks();
 
 	QVERIFY(tracks.size() == 4);
@@ -128,28 +165,28 @@ void PlaylistFileTest::parseExtendedM3U()
 	QVERIFY(tracks[0].durationMs() == 221'000);
 	QVERIFY(tracks[0].artist() == "Queen");
 	QVERIFY(tracks[0].title() == "Bohemian Rhapsody");
-	QVERIFY(tracks[0].filepath() == this->tempPath("file1.mp3"));
+	QVERIFY(tracks[0].filepath() == "/current/file1.mp3");
 
 	QVERIFY(tracks[1].durationMs() == 473'000);
 	QVERIFY(tracks[1].artist() == "Dire Straits");
 	QVERIFY(tracks[1].title() == "Walk Of Life");
-	QVERIFY(tracks[1].filepath() == this->tempPath("file2.ogg"));
+	QVERIFY(tracks[1].filepath() == "/current/file2.ogg");
 
 	QVERIFY(tracks[2].durationMs() == 264'000);
 	QVERIFY(tracks[2].artist() == QString::fromUtf8("冨田勲"));
 	QVERIFY(tracks[2].title() == QString::fromUtf8("Boléro"));
-	QVERIFY(tracks[2].filepath() == this->tempPath("file3.flac"));
+	QVERIFY(tracks[2].filepath() == "/path/to/bolero.flac");
 
 	QVERIFY(tracks[3].durationMs() == 504'000);
 	QVERIFY(tracks[3].artist() == "Bob Marley");
 	QVERIFY(tracks[3].title() == "Buffalo Soldier");
-	QVERIFY(tracks[3].filepath() == this->tempPath("file4.aac"));
+	QVERIFY(tracks[3].filepath() == "/some/path/to/buffalo soldier.aac");
 }
 
 void PlaylistFileTest::writeM3uAbsolute()
 {
 	MetaDataList tracks;
-	for(const auto& [path, track] : m_tracks)
+	for(const auto& [path, track]: m_tracks)
 	{
 		tracks << track;
 	}
@@ -167,7 +204,7 @@ void PlaylistFileTest::writeM3uAbsolute()
 void PlaylistFileTest::writeM3uRelative()
 {
 	MetaDataList tracks;
-	for(const auto& [path, track] : m_tracks)
+	for(const auto& [path, track]: m_tracks)
 	{
 		tracks << track;
 	}

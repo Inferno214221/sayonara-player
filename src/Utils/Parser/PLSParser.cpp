@@ -19,121 +19,87 @@
  */
 
 #include "PLSParser.h"
-#include "Utils/MetaData/MetaData.h"
 
+#include "Utils/FileSystem.h"
+#include "Utils/MetaData/MetaData.h"
+#include "Utils/Tagging/TagReader.h"
+
+#include <QMap>
 #include <QRegExp>
 #include <QStringList>
 
-#include <algorithm>
-
-struct LineEntry
+namespace
 {
-	QString key;
-	QString value;
-	int trackIdx;
-
-	LineEntry()
+	int getIndex(const QString& key)
 	{
-		trackIdx = -1;
-	}
-};
+		auto re = QRegExp {"\\S+([0-9]+)"};
+		const auto index = (re.indexIn(key) >= 0)
+		                   ? re.cap(1).toInt()
+		                   : -1;
 
-static LineEntry split_line(const QString& line)
-{
-	LineEntry ret;
-
-	int pos_idx;
-	QRegExp re_idx("(\\S+)([0-9]+)");
-	QStringList splitted = line.split("=");
-
-	if(splitted.size() < 2)
-	{
-		return ret;
+		return index;
 	}
 
-	pos_idx = re_idx.indexIn(splitted[0]);
-	if(pos_idx < 0)
+	QMap<QString, QString> parseFileIntoMap(const QStringList& lines)
 	{
-		ret.key = splitted[0];
-		ret.value = splitted[1];
-		ret.trackIdx = 1;
-	}
+		auto result = QMap<QString, QString> {};
+		for(auto line: lines)
+		{
+			line = line.trimmed();
+			if(line.startsWith("#") || line.isEmpty())
+			{
+				continue;
+			}
 
-	else
-	{
-		ret.key = re_idx.cap(1).toLower();
-		ret.value = splitted[1];
-		ret.trackIdx = re_idx.cap(2).toInt();
-	}
+			auto splitted = line.split("=");
+			const auto key = splitted.takeFirst().toLower().trimmed();
 
-	return ret;
+			if(splitted.count() >= 1)
+			{
+				result[key] = splitted.join("="); // maybe there's an '=' inside the value
+			}
+		}
+
+		return result;
+	}
 }
 
-PLSParser::PLSParser(const QString& filename) :
-	AbstractPlaylistParser(filename) {}
+PLSParser::PLSParser(const QString& filename,
+                     const Util::FileSystemPtr& fileSystem,
+                     const Tagging::TagReaderPtr& tagReader) :
+	AbstractPlaylistParser(filename, fileSystem, tagReader) {}
 
 PLSParser::~PLSParser() = default;
 
 void PLSParser::parse()
 {
-	QStringList lines = content().split("\n");
+	const auto lines = content().split("\n");
+	const auto map = parseFileIntoMap(lines);
 
-	MetaData md;
-	int cur_trackIdx = -1;
-
-	for(QString line: lines)
+	const auto keys = map.keys();
+	for(const auto& key: keys)
 	{
-		line = line.trimmed();
-		if(line.isEmpty() || line.startsWith("#"))
+		if(!key.startsWith("file"))
 		{
 			continue;
 		}
 
-		LineEntry line_entry = split_line(line);
-
-		if(line_entry.trackIdx < 0)
+		if(const auto index = getIndex(key); index >= 0)
 		{
-			continue;
-		}
+			auto track = MetaData {getAbsoluteFilename(map[key])};
 
-		if(line_entry.trackIdx != cur_trackIdx)
-		{
-
-			if(cur_trackIdx > 0)
+			if(const auto titleKey = QString("title%1").arg(index); map.contains(titleKey))
 			{
-				addTrack(md);
+				track.setTitle(map[titleKey]);
 			}
 
-			md = MetaData();
-			cur_trackIdx = line_entry.trackIdx;
+			if(const auto lengthKey = QString("length%1").arg(index); map.contains(lengthKey))
+			{
+				const auto len = std::max(0, map[lengthKey].toInt());
+				track.setDurationMs(len * 1'000); // NOLINT(readability-magic-numbers)
+			}
+
+			addTrack(track);
 		}
-
-		md.setTrackNumber(TrackNum(line_entry.trackIdx));
-
-		if(line_entry.key.startsWith("file", Qt::CaseInsensitive))
-		{
-			QString filepath = getAbsoluteFilename(line_entry.value);
-			md.setFilepath(filepath);
-			md.setArtist(filepath);
-		}
-
-		else if(line_entry.key.startsWith("title", Qt::CaseInsensitive))
-		{
-			md.setTitle(line_entry.value);
-		}
-
-		else if(line_entry.key.startsWith("length", Qt::CaseInsensitive))
-		{
-			int len = line_entry.value.toInt();
-
-			len = std::max(0, len);
-			md.setDurationMs(len * 1000);
-		}
-	}
-
-	if(!md.filepath().isEmpty())
-	{
-		addTrack(md);
 	}
 }
-

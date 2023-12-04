@@ -98,7 +98,8 @@ namespace
 	                                       const Util::FileSystemPtr& fileSystem,
 	                                       const Tagging::TagReaderPtr& tagReader)
 	{
-		const auto tracks = PlaylistParser::parsePlaylist(playlistFile, false);
+		// do not parse tags, this is why no tagReader is given.
+		const auto tracks = PlaylistParser::parsePlaylistWithoutTags(playlistFile, fileSystem);
 
 		auto paths = QStringList {};
 		Util::Algorithm::transform(tracks, paths, [](const auto& track) {

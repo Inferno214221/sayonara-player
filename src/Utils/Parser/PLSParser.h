@@ -28,7 +28,9 @@ class PLSParser final :
 	public AbstractPlaylistParser
 {
 	public:
-		explicit PLSParser(const QString& filename);
+		PLSParser(const QString& filename,
+		          const std::shared_ptr<Util::FileSystem>& fileSystem,
+		          const std::shared_ptr<Tagging::TagReader>& tagReader);
 		~PLSParser() override;
 
 	private:

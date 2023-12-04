@@ -21,12 +21,29 @@
 #ifndef SAYONARA_PLAYER_PLAYLISTPARSER_H
 #define SAYONARA_PLAYER_PLAYLISTPARSER_H
 
+#include <memory>
+
 class QString;
 class MetaDataList;
 
-namespace PlaylistParser 
+namespace Tagging
 {
-	MetaDataList parsePlaylist(const QString& filename, bool parseTags);
+	class TagReader;
+}
+
+namespace Util
+{
+	class FileSystem;
+}
+
+namespace PlaylistParser
+{
+	MetaDataList parsePlaylist(const QString& filename,
+	                           const std::shared_ptr<Util::FileSystem>& fileSystem,
+	                           const std::shared_ptr<Tagging::TagReader>& tagReader);
+
+	MetaDataList parsePlaylistWithoutTags(const QString& filename,
+	                                      const std::shared_ptr<Util::FileSystem>& fileSystem);
 }
 
 #endif /* SAYONARA_PLAYER_PLAYLISTPARSER_H */

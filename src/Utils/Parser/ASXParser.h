@@ -18,23 +18,22 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ASXPARSER_H
-#define ASXPARSER_H
+#ifndef SAYONARA_PARSER_ASXPARSER_H
+#define SAYONARA_PARSER_ASXPARSER_H
 
 #include "AbstractPlaylistParser.h"
-
-class QDomNode;
 
 class ASXParser :
 	public AbstractPlaylistParser
 {
 	public:
-		explicit ASXParser(const QString& filename);
+		ASXParser(const QString& filename,
+		          const std::shared_ptr<Util::FileSystem>& fileSystem,
+		          const std::shared_ptr<Tagging::TagReader>& tagReader);
 		~ASXParser() override;
 
-	private:
+	protected:
 		void parse() override;
-		QString parseRefNode(const QDomNode& node);
 };
 
-#endif // ASXPARSER_H
+#endif // SAYONARA_PARSER_ASXPARSER_H

@@ -22,39 +22,43 @@
 #include "PLSParser.h"
 #include "ASXParser.h"
 
-#include "Utils/Parser/PlaylistParser.h"
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/PlaylistParser.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include <QUrl>
 
 namespace
 {
 	template<typename ParserType>
-	std::shared_ptr<ParserType> tryOutParser(const QString& filename)
+	std::shared_ptr<ParserType> tryOutParser(const QString& filename,
+	                                         const Util::FileSystemPtr& fileSystem,
+	                                         const Tagging::TagReaderPtr& tagReader)
 	{
-		auto parser = std::make_shared<ParserType>(filename);
-		const auto tracks = parser->tracks();
-
-		return (!parser->tracks().isEmpty())
+		const auto parser = std::make_shared<ParserType>(filename, fileSystem, tagReader);
+		return !parser->tracks().isEmpty()
 		       ? parser
 		       : nullptr;
 	}
 
-	std::shared_ptr<AbstractPlaylistParser> determinePlaylistParser(const QString& filename)
+	std::shared_ptr<AbstractPlaylistParser> determinePlaylistParser(const QString& filename,
+	                                                                const Util::FileSystemPtr& fileSystem,
+	                                                                const Tagging::TagReaderPtr& tagReader)
 	{
-		if(auto parser = tryOutParser<M3UParser>(filename); parser)
+		if(auto parser = tryOutParser<M3UParser>(filename, fileSystem, tagReader); parser)
 		{
 			return parser;
 		}
 
-		if(auto parser = tryOutParser<PLSParser>(filename); parser)
+		if(auto parser = tryOutParser<PLSParser>(filename, fileSystem, tagReader); parser)
 		{
 			return parser;
 		}
 
-		if(auto parser = tryOutParser<ASXParser>(filename); parser)
+		if(auto parser = tryOutParser<ASXParser>(filename, fileSystem, tagReader); parser)
 		{
 			return parser;
 		}
@@ -62,40 +66,44 @@ namespace
 		return nullptr;
 	}
 
-	std::shared_ptr<AbstractPlaylistParser> getPlaylistParser(const QString& filename)
+	std::shared_ptr<AbstractPlaylistParser> getPlaylistParser(const QString& filename,
+	                                                          const Util::FileSystemPtr& fileSystem,
+	                                                          const Tagging::TagReaderPtr& tagReader)
 	{
 		if(Util::File::getFileExtension(filename).toLower() == "m3u")
 		{
-			return std::make_shared<M3UParser>(filename);
+			return std::make_shared<M3UParser>(filename, fileSystem, tagReader);
 		}
 
 		if(Util::File::getFileExtension(filename).toLower() == "pls")
 		{
-			return std::make_shared<PLSParser>(filename);
+			return std::make_shared<PLSParser>(filename, fileSystem, tagReader);
 		}
 
 		if(Util::File::getFileExtension(filename).toLower() == "ram")
 		{
-			return std::make_shared<M3UParser>(filename);
+			return std::make_shared<M3UParser>(filename, fileSystem, tagReader);
 		}
 
 		if(Util::File::getFileExtension(filename).toLower() == "asx")
 		{
-			return std::make_shared<ASXParser>(filename);
+			return std::make_shared<ASXParser>(filename, fileSystem, tagReader);
 		}
 
-		return determinePlaylistParser(filename);
+		return determinePlaylistParser(filename, fileSystem, tagReader);
 	}
 }
 
-MetaDataList PlaylistParser::parsePlaylist(const QString& filename, bool parseTags)
+MetaDataList PlaylistParser::parsePlaylist(const QString& filename,
+                                           const Util::FileSystemPtr& fileSystem,
+                                           const Tagging::TagReaderPtr& tagReader)
 {
 	if(Util::File::isWWW(filename))
 	{
 		return {};
 	}
 
-	const auto playlistParser = getPlaylistParser(filename);
+	const auto playlistParser = getPlaylistParser(filename, fileSystem, tagReader);
 	if(!playlistParser)
 	{
 		return {};

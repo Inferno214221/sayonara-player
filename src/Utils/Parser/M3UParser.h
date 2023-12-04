@@ -27,7 +27,9 @@ class M3UParser :
 	public AbstractPlaylistParser
 {
 	public:
-		explicit M3UParser(const QString& filename);
+		M3UParser(const QString& filename,
+		          const std::shared_ptr<Util::FileSystem>& fileSystem,
+		          const std::shared_ptr<Tagging::TagReader>& tagReader);
 		~M3UParser() override;
 
 		static void saveM3UPlaylist(QString filename, const MetaDataList& tracks, bool relative);

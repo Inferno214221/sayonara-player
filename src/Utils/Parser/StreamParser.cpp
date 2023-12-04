@@ -198,8 +198,8 @@ namespace
 	MetaDataList tryParsePlaylist(const QString& url, const QByteArray& data, const Util::FileSystemPtr& fileSystem)
 	{
 		const auto extension = Util::File::getFileExtension(url);
-		const auto filename = writePlaylistFile(extension, data);
-		auto result = PlaylistParser::parsePlaylist(filename, false);
+		const auto filename = writePlaylistFile(extension, data, fileSystem);
+		auto result = PlaylistParser::parsePlaylistWithoutTags(filename, fileSystem);
 
 		fileSystem->deleteFiles({filename});
 

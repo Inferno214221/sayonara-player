@@ -19,76 +19,64 @@
  */
 
 #include "AbstractPlaylistParser.h"
-#include "PlaylistParser.h"
+
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
-#include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
-
-#include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Parser/PlaylistParser.h"
 
 #include <QDir>
 
 struct AbstractPlaylistParser::Private
 {
-	MetaDataList tracks;
+	Util::FileSystemPtr fileSystem;
+	Tagging::TagReaderPtr tagReader;
 	QString fileContent;
 	QString directory;
-	bool parseTags {false};
+	MetaDataList tracks;
+
+	Private(const QString& filename, Util::FileSystemPtr fileSystem_, Tagging::TagReaderPtr tagReader) :
+		fileSystem {std::move(fileSystem_)},
+		tagReader {std::move(tagReader)},
+		fileContent {fileSystem->readFileIntoString(filename)},
+		directory {Util::File::getParentDirectory(filename)} {}
 };
 
-AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename)
-{
-	m = Pimpl::make<AbstractPlaylistParser::Private>();
-
-	QString pureFile;
-
-	Util::File::splitFilename(filename, m->directory, pureFile);
-	Util::File::readFileIntoString(filename, m->fileContent);
-}
+AbstractPlaylistParser::AbstractPlaylistParser(const QString& filename,
+                                               const Util::FileSystemPtr& fileSystem,
+                                               const Tagging::TagReaderPtr& tagReader) :
+	m {Pimpl::make<Private>(filename, fileSystem, tagReader)} {}
 
 AbstractPlaylistParser::~AbstractPlaylistParser() = default;
 
-MetaDataList AbstractPlaylistParser::tracks(bool parseTags)
+MetaDataList AbstractPlaylistParser::tracks()
 {
-	m->parseTags = parseTags;
 	m->tracks.clear();
 
 	parse();
 
-	if(parseTags)
+	if(m->tagReader)
 	{
-		for(auto& track : m->tracks)
+		for(auto& track: m->tracks)
 		{
-			Tagging::Utils::getMetaDataOfFile(track);
+			auto maybeTrack = m->tagReader->readMetadata(track.filepath());
+			if(maybeTrack)
+			{
+				std::swap(track, maybeTrack.value());
+			}
 		}
 	}
 
 	return m->tracks;
 }
 
-void AbstractPlaylistParser::addTrack(const MetaData& md)
-{
-	m->tracks << md;
-}
-
-void AbstractPlaylistParser::addTracks(const MetaDataList& tracks)
-{
-	m->tracks << tracks;
-}
-
-const QString& AbstractPlaylistParser::content() const
-{
-	return m->fileContent;
-}
-
 QString AbstractPlaylistParser::getAbsoluteFilename(const QString& filename) const
 {
-	QString ret;
-
 	if(filename.isEmpty())
 	{
-		return "";
+		return {};
 	}
 
 	if(Util::File::isWWW(filename))
@@ -96,24 +84,34 @@ QString AbstractPlaylistParser::getAbsoluteFilename(const QString& filename) con
 		return filename;
 	}
 
-	if(!Util::File::isAbsolute(filename))
-	{
-		ret = m->directory + "/" + filename;
-	}
-	else
-	{
-		ret = filename;
-	}
+	const auto fullPath = Util::File::isAbsolute(filename)
+	                      ? filename
+	                      : QDir(m->directory).absoluteFilePath(filename);
 
-	if(!Util::File::exists(ret))
-	{
-		ret = "";
-	}
-
-	return Util::File::cleanFilename(ret);
+	return m->fileSystem->exists(fullPath)
+	       ? Util::File::cleanFilename(fullPath)
+	       : QString {};
 }
 
-bool AbstractPlaylistParser::isParseTagsActive() const
+void AbstractPlaylistParser::addTrack(const MetaData& track)
 {
-	return m->parseTags;
+	if(!track.filepath().isEmpty())
+	{
+		m->tracks << track;
+	}
+}
+
+void AbstractPlaylistParser::addTracks(const MetaDataList& tracks)
+{
+	for(const auto& track: tracks)
+	{
+		addTrack(track);
+	}
+}
+
+const QString& AbstractPlaylistParser::content() const { return m->fileContent; }
+
+void AbstractPlaylistParser::parseSubPlaylist(const QString& playlistPath)
+{
+	addTracks(PlaylistParser::parsePlaylist(playlistPath, m->fileSystem, m->tagReader));
 }

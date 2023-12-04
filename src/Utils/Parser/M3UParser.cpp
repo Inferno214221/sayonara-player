@@ -21,8 +21,10 @@
 #include "PlaylistParser.h"
 #include "M3UParser.h"
 
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include <QDir>
 #include <QFile>
@@ -63,8 +65,10 @@ namespace
 	}
 }
 
-M3UParser::M3UParser(const QString& filename) :
-	AbstractPlaylistParser(filename) {}
+M3UParser::M3UParser(const QString& filename,
+                     const Util::FileSystemPtr& fileSystem,
+                     const Tagging::TagReaderPtr& tagReader) :
+	AbstractPlaylistParser(filename, fileSystem, tagReader) {}
 
 M3UParser::~M3UParser() = default;
 
@@ -88,7 +92,7 @@ void M3UParser::parse()
 
 		else if(Util::File::isPlaylistFile(line))
 		{
-			addTracks(PlaylistParser::parsePlaylist(line, isParseTagsActive()));
+			parseSubPlaylist(line);
 		}
 
 		else if(Util::File::isSoundFile(line))
