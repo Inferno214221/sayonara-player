@@ -27,6 +27,12 @@
 
 class QDir;
 class MetaDataList;
+
+namespace Tagging
+{
+	class TagReader;
+}
+
 namespace Util
 {
 	class FileSystem;
@@ -44,7 +50,8 @@ namespace Util
 
 			[[nodiscard]] virtual MetaDataList scanMetadata(const QStringList& fileList) = 0;
 
-			static std::shared_ptr<DirectoryReader> create(const std::shared_ptr<FileSystem>& fileSystem);
+			static std::shared_ptr<DirectoryReader> create(const std::shared_ptr<FileSystem>& fileSystem,
+			                                               const std::shared_ptr<Tagging::TagReader>& tagReader);
 	};
 
 	using DirectoryReaderPtr = std::shared_ptr<DirectoryReader>;

@@ -27,6 +27,7 @@
 #include "Utils/FileUtils.h"
 #include "Utils/FileSystem.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TagReader.h"
 #include "Utils/Parser/PlaylistParser.h"
 #include "Utils/MetaData/MetaDataList.h"
 
@@ -34,6 +35,7 @@
 #include <QDir>
 
 #include <map>
+#include <utility>
 
 namespace
 {
@@ -58,7 +60,8 @@ namespace
 		return result;
 	}
 
-	MetaDataList getTrackListWithTrackMap(const QStringList& soundFiles, TrackMap trackMap)
+	MetaDataList
+	getTrackListWithTrackMap(const QStringList& soundFiles, TrackMap trackMap, const Tagging::TagReaderPtr& tagReader)
 	{
 		MetaDataList tracks;
 		for(const auto& soundFile: soundFiles)
@@ -71,11 +74,14 @@ namespace
 
 			else
 			{
-				auto track = MetaData {soundFile};
-				const auto hasTags = Tagging::Utils::getMetaDataOfFile(track);
-				if(!hasTags)
+				auto maybeTrack = tagReader->readMetadata(soundFile);
+				auto track = (maybeTrack.has_value())
+				             ? maybeTrack.value()
+				             : MetaData {soundFile};
+
+				if(!maybeTrack.has_value())
 				{
-					const auto title = Util::File::getFilenameOfPath(track.filepath());
+					const auto title = Util::File::getFilenameOfPath(soundFile);
 					track.setTitle(title);
 				}
 
@@ -88,7 +94,9 @@ namespace
 		return tracks;
 	}
 
-	MetaDataList getTracksFromPlaylistFile(const QString& playlistFile)
+	MetaDataList getTracksFromPlaylistFile(const QString& playlistFile,
+	                                       const Util::FileSystemPtr& fileSystem,
+	                                       const Tagging::TagReaderPtr& tagReader)
 	{
 		const auto tracks = PlaylistParser::parsePlaylist(playlistFile, false);
 
@@ -98,7 +106,7 @@ namespace
 		});
 
 		auto filepathTrackMap = createLibraryTrackMap(paths);
-		return getTrackListWithTrackMap(paths, std::move(filepathTrackMap));
+		return getTrackListWithTrackMap(paths, std::move(filepathTrackMap), tagReader);
 	}
 
 	QStringList
@@ -145,7 +153,9 @@ namespace
 		return result;
 	}
 
-	MetaDataList scanMetadata(const QStringList& fileList, const Util::FileSystemPtr& fileSystem)
+	MetaDataList scanMetadata(const QStringList& fileList,
+	                          const Util::FileSystemPtr& fileSystem,
+	                          const Tagging::TagReaderPtr& tagReader)
 	{
 		QStringList soundFiles, playlistFiles;
 		for(const auto& filename: fileList)
@@ -179,11 +189,11 @@ namespace
 		}
 
 		auto filepathTrackMap = createLibraryTrackMap(soundFiles);
-		auto tracks = getTrackListWithTrackMap(soundFiles, std::move(filepathTrackMap));
+		auto tracks = getTrackListWithTrackMap(soundFiles, std::move(filepathTrackMap), tagReader);
 
 		for(const auto& playlistFile: playlistFiles)
 		{
-			tracks << getTracksFromPlaylistFile(playlistFile);
+			tracks << getTracksFromPlaylistFile(playlistFile, fileSystem, tagReader);
 		}
 
 		return tracks;
@@ -193,8 +203,9 @@ namespace
 		public Util::DirectoryReader
 	{
 		public:
-			DirectoryReaderImpl(const Util::FileSystemPtr& fileSystem) :
-				m_fileSystem {fileSystem} {}
+			DirectoryReaderImpl(Util::FileSystemPtr fileSystem, Tagging::TagReaderPtr tagReader) :
+				m_fileSystem {std::move(fileSystem)},
+				m_tagReader {std::move(tagReader)} {}
 
 			~DirectoryReaderImpl() noexcept override = default;
 
@@ -210,11 +221,12 @@ namespace
 
 			MetaDataList scanMetadata(const QStringList& files) override
 			{
-				return ::scanMetadata(files, m_fileSystem);
+				return ::scanMetadata(files, m_fileSystem, m_tagReader);
 			}
 
 		private:
 			Util::FileSystemPtr m_fileSystem;
+			Tagging::TagReaderPtr m_tagReader;
 	};
 }
 
@@ -223,8 +235,9 @@ namespace Util
 	DirectoryReader::DirectoryReader() = default;
 	DirectoryReader::~DirectoryReader() noexcept = default;
 
-	std::shared_ptr<DirectoryReader> DirectoryReader::create(const FileSystemPtr& fileSystem)
+	std::shared_ptr<DirectoryReader> DirectoryReader::create(const FileSystemPtr& fileSystem,
+	                                                         const Tagging::TagReaderPtr& tagReader)
 	{
-		return std::make_shared<DirectoryReaderImpl>(fileSystem);
+		return std::make_shared<DirectoryReaderImpl>(fileSystem, tagReader);
 	}
 }

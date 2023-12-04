@@ -36,6 +36,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include "Gui/Utils/MimeData/MimeDataUtils.h"
 #include "Gui/Utils/MimeData/CustomMimeData.h"
@@ -197,7 +198,8 @@ void FileListModel::setParentDirectory(const QString& dir)
 	extensions << "*";
 
 	const auto fileSystem = Util::FileSystem::create();
-	auto directoryReader = Util::DirectoryReader::create(fileSystem);
+	const auto tagReader = Tagging::TagReader::create();
+	auto directoryReader = Util::DirectoryReader::create(fileSystem, tagReader);
 	m->files = directoryReader->scanFilesInDirectory(QDir(dir), extensions);
 	if(m->files.size() > oldRowcount)
 	{

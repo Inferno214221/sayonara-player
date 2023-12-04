@@ -135,7 +135,7 @@ namespace Library
 		                                           libraryPath,
 		                                           m->tagReader,
 		                                           Util::ArchiveExtractor::create(),
-		                                           Util::DirectoryReader::create(m->fileSystem),
+		                                           Util::DirectoryReader::create(m->fileSystem, m->tagReader),
 		                                           m->fileSystem);
 
 		m->cacheProcessor->moveToThread(thread);

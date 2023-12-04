@@ -3,9 +3,10 @@
 #include "Database/Connector.h"
 
 #include "Utils/DirectoryReader.h"
-#include "Utils/Utils.h"
 #include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Utils.h"
 
 #include <QStringList>
 #include <QDir>
@@ -37,7 +38,9 @@ MetaDataScanner::MetaDataScanner(const QStringList& files, bool recursive, QObje
 
 void MetaDataScanner::start()
 {
-	const auto directoryReader = Util::DirectoryReader::create(Util::FileSystem::create());
+	const auto fileSystem = Util::FileSystem::create();
+	const auto tagReader = Tagging::TagReader::create();
+	const auto directoryReader = Util::DirectoryReader::create(fileSystem, tagReader);
 	if(!m->recursive)
 	{
 		m->tracks.clear();
