@@ -90,7 +90,7 @@ bool Fadeable::initFader(Fadeable::FadeMode mode)
 		m->targetVolume = currentVolume;
 	}
 
-	this->setInternalVolume(m->startVolume);
+	this->setVolume(m->startVolume);
 
 	m->fadingStep = FadingStepTime * (m->targetVolume - m->startVolume) / (fadingTime * 1.0);
 
@@ -131,7 +131,7 @@ void Fadeable::fadeOut()
 
 void Fadeable::timedOut()
 {
-	double currentVolume = internalVolume();
+	double currentVolume = volume();
 	double new_volume = currentVolume + m->fadingStep;
 
 	bool fade_allowed = (new_volume <= 1.0) && (new_volume >= 0);
@@ -157,7 +157,7 @@ void Fadeable::timedOut()
 			spLog(Log::Crazy, this) << "Set volume from " << currentVolume << " to " << new_volume;
 		}
 
-		setInternalVolume(new_volume);
+		setVolume(new_volume);
 	}
 
 	else

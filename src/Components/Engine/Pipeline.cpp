@@ -282,7 +282,7 @@ namespace Engine
 	void Pipeline::volumeChanged()
 	{
 		const auto volume = GetSetting(Set::Engine_Vol) / 100.0;
-		setInternalVolume(volume);
+		setVolume(volume);
 	}
 
 	void Pipeline::muteChanged()
@@ -333,12 +333,12 @@ namespace Engine
 		m->streamRecorder->setTargetPath(path);
 	}
 
-	void Pipeline::setInternalVolume(const double volume)
+	void Pipeline::setVolume(const double volume)
 	{
 		Utils::setValue(G_OBJECT(m->playbackVolume), "volume", volume);
 	}
 
-	double Pipeline::internalVolume() const
+	double Pipeline::volume() const
 	{
 		double volume; // NOLINT(cppcoreguidelines-init-variables)
 		g_object_get(m->playbackVolume, "volume", &volume, nullptr); // NOLINT(cppcoreguidelines-pro-type-vararg)

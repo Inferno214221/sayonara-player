@@ -113,13 +113,13 @@ namespace PipelineExtensions
 			 * @brief get current volume of pipeline
 			 * @return value between 0 and 1.0
 			 */
-			virtual double internalVolume() const = 0;
+			virtual double volume() const = 0;
 
 			/**
 			 * @brief set current volume of pipeline
 			 * @param vol value between 0 and 1.0
 			 */
-			virtual void setInternalVolume(double vol) = 0;
+			virtual void setVolume(double vol) = 0;
 
 			/**
 			 * @brief Stops the current fader process

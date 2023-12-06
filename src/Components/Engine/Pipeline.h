@@ -22,6 +22,7 @@
 #define GSTPLAYBACKPIPELINE_H_
 
 #include "PipelineExtensions/Broadcasting.h"
+#include "PipelineExtensions/PipelineInterfaces.h"
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
@@ -40,6 +41,8 @@ namespace Engine
 	class Pipeline :
 		public QObject,
 		public PipelineExtensions::Broadcastable,
+		public PipelineExtensions::PlaystateController,
+		public PipelineExtensions::VolumeController,
 		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable,
@@ -80,11 +83,11 @@ namespace Engine
 			void setRecordingPath(const QString& targetPath) override;
 
 			MilliSeconds timeToGo() const;
-			
+
 		public slots:
-			void play() override;    // Crossfader
-			void stop() override;    // Crossfader
-			void pause();
+			void play() override;
+			void stop() override;
+			void pause() override;
 
 		private slots:
 			void volumeChanged();
@@ -100,8 +103,9 @@ namespace Engine
 
 			void postProcessFadeIn() override;    // Crossfader
 			void postProcessFadeOut() override;    // Crossfader
-			void setInternalVolume(double volume) override;    // Crossfader
-			double internalVolume() const override;            // Crossfader
+
+			void setVolume(double volume) override;
+			[[nodiscard]] double volume() const override;
 
 			GstElement* positionElement() const override;
 			GstElement* equalizerElement() const override;
