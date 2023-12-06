@@ -23,6 +23,9 @@ include_directories(${CMAKE_BINARY_DIR}/src/3rdParty/taglib)
 include_directories(${CMAKE_SOURCE_DIR})
 include_directories(${CMAKE_BINARY_DIR}/test)
 
+pkg_check_modules(GSTREAMER_AUDIO gstreamer-audio-1.0 REQUIRED)
+include_directories(${GSTREAMER_AUDIO_INCLUDE_DIRS})
+
 set(RESOURCES
 	resources/Test.qrc
 	${CMAKE_CURRENT_SOURCE_DIR}/../resources/Database.qrc
@@ -46,6 +49,7 @@ new_test(Database/PlaylistDatabaseTest.cpp)
 new_test(Database/PodcastTest.cpp)
 new_test(Database/TracksTest.cpp Common/TestTracks.cpp)
 new_test(DynamicPlayback/ArtistMatchTest.cpp)
+new_test(Engine/BroadcastTest.cpp)
 new_test(Engine/CallbackTest.cpp)
 new_test(Equalizer/EqualizerTest.cpp)
 new_test(History/HistoryTest.cpp Common/TestTracks.cpp)

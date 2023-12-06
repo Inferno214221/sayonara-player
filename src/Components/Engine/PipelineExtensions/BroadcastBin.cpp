@@ -28,106 +28,193 @@
 
 #include <gst/app/gstappsink.h>
 
-using namespace PipelineExtensions;
-
-struct BroadcastBin::Private
+namespace
 {
-	BroadcastDataReceiver* dataReceiver;
-	GstElement* pipeline;
-	GstElement* tee {nullptr};
 
-	GstElement* bin {nullptr};
-	GstElement* queue {nullptr};
-	GstElement* converter {nullptr};
-	GstElement* resampler {nullptr};
-	GstElement* lame {nullptr};
-	GstElement* appSink {nullptr};
-
-	gulong probe {0};
-	bool isRunning {false};
-
-	Private(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee) :
-		dataReceiver(dataReceiver),
-		pipeline(pipeline),
-		tee(tee) {}
-};
-
-BroadcastBin::BroadcastBin(BroadcastDataReceiver* dataReceiver, GstElement* pipeline, GstElement* tee) :
-	m {Pimpl::make<Private>(dataReceiver, pipeline, tee)} {}
-
-BroadcastBin::~BroadcastBin() = default;
-
-bool BroadcastBin::init()
-{
-	if(m->bin)
+	GstFlowReturn newBuffer(GstElement* sink, gpointer p)
 	{
-		return true;
-	}
+		constexpr const auto TcpBufferSize = 16384U;
 
-	// create
-	if(!Engine::Utils::createElement(&m->queue, "queue", "bc_lame_queue") ||
-	   !Engine::Utils::createElement(&m->converter, "audioconvert", "bc_lame_converter") ||
-	   !Engine::Utils::createElement(&m->resampler, "audioresample", "bc_lame_resampler") ||
-	   !Engine::Utils::createElement(&m->lame, "lamemp3enc", "bc_lamemp3enc") ||
-	   !Engine::Utils::createElement(&m->appSink, "appsink", "bc_lame_appsink"))
-	{
-		return false;
-	}
-
-	{ // init bin
-		bool success = Engine::Utils::createBin(&m->bin,
-		                                        {m->queue, m->converter, m->resampler, m->lame, m->appSink},
-		                                        "broadcast");
-		if(!success)
+		auto data = QByteArray(TcpBufferSize, 0);
+		auto* rawDataReceiver = static_cast<PipelineExtensions::RawDataReceiver*>(p);
+		if(!rawDataReceiver)
 		{
-			return false;
+			return GST_FLOW_OK;
 		}
 
-		gst_bin_add(GST_BIN(m->pipeline), m->bin);
-		success = Engine::Utils::connectTee(m->tee, m->bin, "BroadcastQueue");
-		if(!success)
+		auto* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+		if(!sample)
 		{
-			Engine::Utils::setState(m->bin, GST_STATE_NULL);
-			gst_object_unref(m->bin);
-			return false;
+			return GST_FLOW_OK;
 		}
+
+		auto* buffer = gst_sample_get_buffer(sample);
+		if(!buffer)
+		{
+			gst_sample_unref(sample);
+			return GST_FLOW_OK;
+		}
+
+		const auto bufferSize = gst_buffer_get_size(buffer);
+		const auto newSize = gst_buffer_extract(buffer, 0, data.data(), bufferSize);
+
+		data.resize(static_cast<int>(newSize));
+		rawDataReceiver->setRawData(data);
+
+		gst_sample_unref(sample);
+
+		return GST_FLOW_OK;
 	}
 
-	{ // configure
-		gst_object_ref(m->appSink);
-
-		Engine::Utils::configureLame(m->lame);
-		Engine::Utils::configureQueue(m->queue);
-		Engine::Utils::configureSink(m->appSink);
-		Engine::Utils::setValues(G_OBJECT(m->appSink), "emit-signals", true);
-
-		g_signal_connect (m->appSink, "new-sample", G_CALLBACK(Engine::Callbacks::newBuffer), m->dataReceiver);
-	}
-
-	return true;
-}
-
-bool BroadcastBin::setEnabled(bool b)
-{
-	if(b && !init())
+	class BroadcasterImpl :
+		public PipelineExtensions::Broadcaster
 	{
-		return false;
-	}
+		public:
+			BroadcasterImpl(PipelineExtensions::RawDataReceiverPtr rawDataReceiver, GstElement* pipeline,
+			                GstElement* tee) :
+				m_rawDataReceiver(std::move(rawDataReceiver)),
+				m_pipeline(pipeline),
+				m_tee(tee) {}
 
-	if(m->isRunning == b)
+			~BroadcasterImpl() override = default;
+
+			bool setEnabled(const bool b) override
+			{
+				if(b && !init())
+				{
+					return false;
+				}
+
+				if(m_isRunning == b)
+				{
+					return true;
+				}
+
+				m_isRunning = b;
+				PipelineExtensions::Probing::handleProbe(&m_isRunning, m_queue,
+				                                         &m_probe, PipelineExtensions::Probing::lameProbed);
+
+				return true;
+			}
+
+			[[nodiscard]] bool isEnabled() const override { return m_isRunning; }
+
+		private:
+			bool createElements()
+			{
+				if(!Engine::Utils::createElement(&m_queue, "queue", "bc_lame_queue") ||
+				   !Engine::Utils::createElement(&m_converter, "audioconvert", "bc_lame_converter") ||
+				   !Engine::Utils::createElement(&m_resampler, "audioresample", "bc_lame_resampler") ||
+				   !Engine::Utils::createElement(&m_lame, "lamemp3enc", "bc_lamemp3enc") ||
+				   !Engine::Utils::createElement(&m_appSink, "appsink", "bc_lame_appsink"))
+				{
+					return false; // NOLINT(readability-simplify-boolean-expr)
+				}
+
+				return true;
+			}
+
+			bool initBin()
+			{
+				const auto binCreated =
+					Engine::Utils::createBin(&m_bin,
+					                         {m_queue, m_converter, m_resampler, m_lame, m_appSink},
+					                         "broadcast");
+				if(!binCreated)
+				{
+					return false;
+				}
+
+				gst_bin_add(GST_BIN(m_pipeline), m_bin);
+				const auto success = Engine::Utils::connectTee(m_tee, m_bin, "BroadcastQueue");
+				if(!success)
+				{
+					Engine::Utils::setState(m_bin, GST_STATE_NULL);
+					gst_object_unref(m_bin);
+				}
+
+				return success;
+			}
+
+			void configureElements()
+			{
+				gst_object_ref(m_appSink);
+
+				Engine::Utils::configureLame(m_lame);
+				Engine::Utils::configureQueue(m_queue);
+				Engine::Utils::configureSink(m_appSink);
+				Engine::Utils::setValues(G_OBJECT(m_appSink), "emit-signals", true);
+
+				g_signal_connect (m_appSink, "new-sample",
+				                  G_CALLBACK(newBuffer), m_rawDataReceiver.get());
+			}
+
+			bool init()
+			{
+				if(m_bin)
+				{
+					return true;
+				}
+
+				if(createElements() && initBin())
+				{
+					configureElements();
+					return true;
+				}
+
+				return false;
+			}
+
+			PipelineExtensions::RawDataReceiverPtr m_rawDataReceiver;
+			GstElement* m_pipeline;
+			GstElement* m_tee {nullptr};
+
+			GstElement* m_bin {nullptr};
+			GstElement* m_queue {nullptr};
+			GstElement* m_converter {nullptr};
+			GstElement* m_resampler {nullptr};
+			GstElement* m_lame {nullptr};
+			GstElement* m_appSink {nullptr};
+
+			gulong m_probe {0};
+			bool m_isRunning {false};
+	};
+
+	class RawDataReceiverImpl :
+		public PipelineExtensions::RawDataReceiver
 	{
-		return true;
+		public:
+			explicit RawDataReceiverImpl(std::function<void(const QByteArray&)>&& callback) :
+				m_callback {std::move(callback)} {}
+
+			~RawDataReceiverImpl() override = default;
+
+			void setRawData(const QByteArray& data) override
+			{
+				m_callback(data);
+			}
+
+		private:
+			std::function<void(const QByteArray&)> m_callback;
+	};
+}
+
+namespace PipelineExtensions
+{
+	RawDataReceiver::~RawDataReceiver() = default;
+
+	Broadcastable::~Broadcastable() = default;
+
+	Broadcaster::~Broadcaster() = default;
+
+	std::shared_ptr<Broadcaster>
+	createBroadcaster(const RawDataReceiverPtr& dataReceiver, GstElement* pipeline, GstElement* tee)
+	{
+		return std::make_shared<BroadcasterImpl>(dataReceiver, pipeline, tee);
 	}
 
-	m->isRunning = b;
-	Probing::handleProbe(&m->isRunning, m->queue, &m->probe, Probing::lameProbed);
-
-	return true;
+	RawDataReceiverPtr createRawDataReceiver(std::function<void(const QByteArray&)>&& callback)
+	{
+		return std::make_shared<RawDataReceiverImpl>(std::move(callback));
+	}
 }
-
-bool BroadcastBin::isEnabled() const
-{
-	return m->isRunning;
-}
-
-BroadcastDataReceiver::~BroadcastDataReceiver() = default;

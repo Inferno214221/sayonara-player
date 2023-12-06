@@ -18,34 +18,48 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef BROADCASTER_H
-#define BROADCASTER_H
+#ifndef SAYONARA_ENGINE_BROADCASTER_H
+#define SAYONARA_ENGINE_BROADCASTER_H
 
-#include "Utils/Pimpl.h"
 #include <gst/gst.h>
+#include <functional>
+#include <memory>
 
+class QByteArray;
 namespace PipelineExtensions
 {
-	class BroadcastDataReceiver
+	class RawDataReceiver
 	{
 		public:
-			virtual ~BroadcastDataReceiver() = default;
+			virtual ~RawDataReceiver();
 			virtual void setRawData(const QByteArray& data) = 0;
 	};
 
-	class BroadcastBin
+	using RawDataReceiverPtr = std::shared_ptr<RawDataReceiver>;
+
+	class Broadcastable
 	{
-		PIMPL(BroadcastBin)
-
 		public:
-			BroadcastBin(PipelineExtensions::BroadcastDataReceiver* broadcastDataReceiver, GstElement* pipeline,
-			             GstElement* tee);
-			virtual ~BroadcastBin();
+			virtual ~Broadcastable();
 
-			bool init();
-			bool setEnabled(bool b);
-			[[nodiscard]] bool isEnabled() const;
+			virtual void setBroadcastingEnabled(bool b) = 0;
+			[[nodiscard]] virtual bool isBroadcastingEnabled() const = 0;
 	};
+
+	class Broadcaster
+	{
+		public:
+			virtual ~Broadcaster();
+
+			virtual bool setEnabled(bool b) = 0;
+			[[nodiscard]] virtual bool isEnabled() const = 0;
+	};
+
+	std::shared_ptr<Broadcaster> createBroadcaster(const RawDataReceiverPtr& broadcastDataReceiver,
+	                                               GstElement* pipeline,
+	                                               GstElement* tee);
+
+	RawDataReceiverPtr createRawDataReceiver(std::function<void(const QByteArray&)>&& callback);
 }
 
-#endif // BROADCASTER_H
+#endif // SAYONARA_ENGINE_BROADCASTER_H

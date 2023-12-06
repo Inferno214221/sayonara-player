@@ -46,10 +46,9 @@ namespace EngineUtils = ::Engine::Utils;
 namespace Callbacks = ::Engine::Callbacks;
 namespace
 {
-	constexpr const auto TcpBufferSize = 16384U;
 	constexpr const auto DeepLoggingEnabled = false;
 	constexpr const auto* ClassEngineCallbacks = "Engine Callbacks";
-	
+
 	bool isSoupSource(GstElement* source)
 	{
 		auto* factory = gst_element_get_factory(source);
@@ -639,39 +638,6 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer d
 	}
 
 	gst_object_unref(sinkPad);
-}
-
-GstFlowReturn Callbacks::newBuffer(GstElement* sink, gpointer p)
-{
-	auto data = QByteArray(TcpBufferSize, 0);
-	auto* pipeline = static_cast<PipelineExtensions::BroadcastDataReceiver*>(p);
-	if(!pipeline)
-	{
-		return GST_FLOW_OK;
-	}
-
-	auto* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
-	if(!sample)
-	{
-		return GST_FLOW_OK;
-	}
-
-	auto* buffer = gst_sample_get_buffer(sample);
-	if(!buffer)
-	{
-		gst_sample_unref(sample);
-		return GST_FLOW_OK;
-	}
-
-	const auto bufferSize = gst_buffer_get_size(buffer);
-	const auto newSize = gst_buffer_extract(buffer, 0, data.data(), bufferSize);
-
-	data.resize(static_cast<int>(newSize));
-	pipeline->setRawData(data);
-
-	gst_sample_unref(sample);
-
-	return GST_FLOW_OK;
 }
 
 void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpointer /* data */)

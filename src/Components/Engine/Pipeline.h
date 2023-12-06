@@ -21,6 +21,7 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
+#include "PipelineExtensions/BroadcastBin.h"
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
@@ -39,10 +40,10 @@ namespace Engine
 
 	class Pipeline :
 		public QObject,
+		public PipelineExtensions::Broadcastable,
 		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable,
-		public PipelineExtensions::BroadcastDataReceiver,
 		public PipelineExtensions::PositionAccessible,
 		//public PipelineExtensions::Pitchable,
 		public PipelineExtensions::EqualizerAccessible,
@@ -73,17 +74,15 @@ namespace Engine
 			bool isLevelVisualizerEnabled() const;
 			bool isSpectrumVisualizerEnabled() const;
 
-			void setBroadcastingEnabled(bool b);
-			bool isBroadcastingEnabled() const;
+			void setBroadcastingEnabled(bool b) override;
+			[[nodiscard]] bool isBroadcastingEnabled() const override;
 
 			void prepareForRecording() override;
 			void finishRecording() override;
 			void setRecordingPath(const QString& targetPath) override;
 
 			MilliSeconds timeToGo() const;
-
-			void setRawData(const QByteArray& data) override;    // BroadcastDataReceiver
-
+			
 		public slots:
 			void play() override;    // Crossfader
 			void stop() override;    // Crossfader

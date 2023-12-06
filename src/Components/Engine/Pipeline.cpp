@@ -62,7 +62,8 @@ namespace Engine
 		GstElement* playbackSink = nullptr;
 
 		PipelineExtensions::StreamRecorderBin* streamRecorder = nullptr;
-		PipelineExtensions::BroadcastBin* broadcaster = nullptr;
+		std::shared_ptr<PipelineExtensions::Broadcaster> broadcaster = nullptr;
+		std::shared_ptr<PipelineExtensions::RawDataReceiver> rawDataReceiver = nullptr;
 		std::shared_ptr<PipelineExtensions::VisualizerBin> visualizer = nullptr;
 
 		QTimer* progressTimer = nullptr;
@@ -196,7 +197,11 @@ namespace Engine
 		m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
 
 		m->visualizer = PipelineExtensions::createVisualizerBin(m->pipeline, m->tee);
-		m->broadcaster = new PipelineExtensions::BroadcastBin(this, m->pipeline, m->tee);
+		m->rawDataReceiver = PipelineExtensions::createRawDataReceiver([this](const auto& data) {
+			emit sigDataAvailable(data);
+		});
+
+		m->broadcaster = PipelineExtensions::createBroadcaster(m->rawDataReceiver, m->pipeline, m->tee);
 
 		return (m->playbackSink != nullptr);
 	}
@@ -296,10 +301,7 @@ namespace Engine
 
 	bool Pipeline::isSpectrumVisualizerEnabled() const { return m->visualizer->isSpectrumEnabled(); }
 
-	void Pipeline::setBroadcastingEnabled(bool b)
-	{
-		m->broadcaster->setEnabled(b);
-	}
+	void Pipeline::setBroadcastingEnabled(const bool b) { m->broadcaster->setEnabled(b); }
 
 	bool Pipeline::isBroadcastingEnabled() const { return m->broadcaster->isEnabled(); }
 
@@ -311,11 +313,6 @@ namespace Engine
 		const auto ms = Utils::getTimeToGo(element);
 
 		return std::max<MilliSeconds>(ms - 100, 0); // NOLINT(readability-magic-numbers)
-	}
-
-	void Pipeline::setRawData(const QByteArray& data)
-	{
-		emit sigDataAvailable(data);
 	}
 
 	void Pipeline::prepareForRecording()

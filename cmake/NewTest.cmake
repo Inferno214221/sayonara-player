@@ -13,6 +13,7 @@ function(NEW_TEST ...)
 	target_link_libraries(${TEST_NAME}
 		sayonara_components
 		Qt5::Test
+		${GSTREAMER_AUDIO_LIBRARIES}
 	)
 
 	add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME} -o "${TEST_NAME}.out")

@@ -22,7 +22,6 @@
 #include "Components/Engine/Callbacks.h"
 #include "Components/Engine/Engine.h"
 #include "Components/Engine/EngineUtils.h"
-#include "Components/Engine/PipelineExtensions/BroadcastBin.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Utils.h"
 
@@ -185,19 +184,6 @@ class EngineMock :
 };
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-
-class BroadcastReceiverMock :
-	public PipelineExtensions::BroadcastDataReceiver
-{
-	public:
-		[[nodiscard]] QByteArray data() const { return m_data; }
-
-		void setRawData(const QByteArray& data) override { m_data = data; }
-
-	private:
-		QByteArray m_data;
-};
-
 class CallbackTest :
 	public Test::Base
 {
@@ -330,29 +316,6 @@ class CallbackTest :
 			{
 				QVERIFY(spectrum[i] == i * 1.0F);
 			}
-		}
-
-		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
-		[[maybe_unused]] void newBufferTest()
-		{
-			constexpr const auto DataSize = 100;
-			constexpr const auto* elementName = "Element";
-
-			auto* appsrc = gst_element_factory_make("appsrc", nullptr);
-			auto* appsink = gst_element_factory_make("appsink", elementName);
-			auto* buffer = gst_buffer_new_and_alloc (DataSize);
-			gst_element_link(appsrc, appsink);
-			auto* sinkPad = gst_element_get_static_pad(appsrc, "src");
-
-			gst_element_set_state(appsrc, GST_STATE_PLAYING);
-			gst_element_set_state(appsink, GST_STATE_PLAYING);
-
-			gst_pad_push(sinkPad, buffer);
-
-			auto broadcaster = BroadcastReceiverMock {};
-			Engine::Callbacks::newBuffer(appsink, &broadcaster);
-
-			QVERIFY(broadcaster.data().size() == DataSize);
 		}
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static,readability-function-cognitive-complexity)
