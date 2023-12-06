@@ -7,19 +7,20 @@
 
 namespace Test
 {
-	class Base : public QObject
+	class Base :
+		public QObject
 	{
 		Q_OBJECT
 
-	private:
-		QString mTmpPath;
+		public:
+			explicit Base(const QString& testName);
+			~Base() override;
 
-	public:
-		Base(const QString& test_name);
-		virtual ~Base() override;
+			[[nodiscard]] QString tempPath() const;
+			[[nodiscard]] QString tempPath(const QString& append) const;
 
-		QString tempPath() const;
-		QString tempPath(const QString& append) const;
+		private:
+			QString m_localPath;
 	};
 }
 

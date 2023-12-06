@@ -13,48 +13,61 @@
 #include <QApplication>
 #include <QDir>
 
-using Test::Base;
-
 // needs to be done in global namespace
-static void init_resources()
+static void initResources()
 {
 	Q_INIT_RESOURCE(Test);
 	Q_INIT_RESOURCE(Database);
 	Q_INIT_RESOURCE(Resources);
 }
 
-Test::Base::Base(const QString& testName) :
-	QObject(),
-	mTmpPath(Util::tempPath(testName))
+namespace
 {
-	Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+	void initFileSystem(const QString& localPath)
+	{
+		Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+		Util::File::createDirectories(localPath);
+		QStandardPaths::setTestModeEnabled(true);
+	}
 
-	Util::File::createDirectories(mTmpPath);
-	QStandardPaths::setTestModeEnabled(true);
-	QApplication::setApplicationName("sayonara");
+	void initDatabase(const QString& targetDirectory)
+	{
+		DB::Connector::customInstance("", targetDirectory, "");
+	}
 
-	init_resources();
-	DB::Connector::customInstance("", mTmpPath, "");
-	Settings* s = Settings::instance();
-	s->checkSettings();
-	s->set<Set::Logger_Level>(int(Log::Develop));
-
-	this->setObjectName(testName);
+	void initSettings()
+	{
+		auto* settings = Settings::instance();
+		settings->checkSettings();
+		settings->set<Set::Logger_Level>(static_cast<int>(Log::Develop));
+	}
 }
 
-Test::Base::~Base()
+namespace Test
 {
-	Util::File::deleteFiles({mTmpPath});
-	Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
-}
+	Base::Base(const QString& testName) :
+		m_localPath {Util::tempPath(testName)}
+	{
+		QApplication::setApplicationName("sayonara");
 
-QString Test::Base::tempPath() const
-{
-	return mTmpPath;
-}
+		initResources();
+		initFileSystem(m_localPath);
+		initDatabase(m_localPath);
+		initSettings();
 
-QString Test::Base::tempPath(const QString& append) const
-{
-	QDir d(tempPath());
-	return d.absoluteFilePath(append);
+		setObjectName(testName);
+	}
+
+	Base::~Base()
+	{
+		Util::File::deleteFiles({m_localPath});
+		Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+	}
+
+	QString Base::tempPath() const { return m_localPath; }
+
+	QString Base::tempPath(const QString& append) const
+	{
+		return QDir(m_localPath).absoluteFilePath(append);
+	}
 }
