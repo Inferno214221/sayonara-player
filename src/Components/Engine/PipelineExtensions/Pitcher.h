@@ -1,4 +1,4 @@
-/* SpeedHandler.cpp */
+/* SpeedHandler.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,39 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Pitchable.h"
-#include "Components/Engine/EngineUtils.h"
-#include "Utils/Settings/Settings.h"
+#ifndef SPEEDHANDLER_H
+#define SPEEDHANDLER_H
 
-using namespace PipelineExtensions;
+#include "Components/Engine/gstfwd.h"
+#include <memory>
 
-Pitchable::Pitchable() = default;
-Pitchable::~Pitchable() = default;
-
-void Pitchable::setSpeed(float speed, double pitch, bool preservePitch)
+namespace PipelineExtensions
 {
-	if(!GetSetting(Set::Engine_SpeedActive)) {
-		return;
-	}
-
-	GstElement* pitchElement = this->pitchElement();
-	if(!pitchElement) {
-		return;
-	}
-
-	if(preservePitch)
+	class Pitcher
 	{
-		Engine::Utils::setValues(pitchElement,
-					 "tempo", speed,
-					 "rate", 1.0,
-					 "pitch", pitch);
-	}
+		public:
+			virtual ~Pitcher();
 
-	else
-	{
-		Engine::Utils::setValues(pitchElement,
-					 "tempo", 1.0,
-					 "rate", speed,
-					 "pitch", pitch);
-	}
+			[[nodiscard]] virtual GstElement* pitchElement() const = 0;
+			virtual void setSpeed(float speed, double pitch, bool preservePitch) = 0;
+	};
+
+	std::shared_ptr<Pitcher> createPitcher();
 }
+
+#endif // SPEEDHANDLER_H

@@ -26,6 +26,7 @@
 #include "PipelineExtensions/Probing.h"
 #include "PipelineExtensions/VisualizerBin.h"
 #include "PipelineExtensions/Broadcasting.h"
+#include "PipelineExtensions/Pitcher.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
@@ -52,7 +53,6 @@ namespace Engine
 		GstElement* pipeline = nullptr;
 		GstElement* source = nullptr;
 		GstElement* audioConvert = nullptr;
-		GstElement* pitch = nullptr;
 		GstElement* equalizer = nullptr;
 		GstElement* tee = nullptr;
 
@@ -65,6 +65,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::Broadcaster> broadcaster = nullptr;
 		std::shared_ptr<PipelineExtensions::RawDataReceiver> rawDataReceiver = nullptr;
 		std::shared_ptr<PipelineExtensions::VisualizerBin> visualizer = nullptr;
+		std::shared_ptr<PipelineExtensions::Pitcher> pitcher = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -189,9 +190,6 @@ namespace Engine
 		if(!Utils::createElement(&m->playbackQueue, "queue", "playback_queue")) { return false; }
 		if(!Utils::createElement(&m->playbackVolume, "volume")) { return false; }
 
-		// optional pitch
-		//Utils::createElement(&m->pitch, "pitch");
-
 		Utils::createElement(&m->equalizer, "equalizer-10bands");
 
 		m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
@@ -202,6 +200,7 @@ namespace Engine
 		});
 
 		m->broadcaster = PipelineExtensions::createBroadcaster(m->rawDataReceiver, m->pipeline, m->tee);
+		m->pitcher = PipelineExtensions::createPitcher();
 
 		return (m->playbackSink != nullptr);
 	}
@@ -348,20 +347,21 @@ namespace Engine
 
 	void Pipeline::speedActiveChanged()
 	{
-		if(!m->pitch)
+		auto* pitch = m->pitcher->pitchElement();
+		if(!pitch)
 		{
 			return;
 		}
 
 		if(GetSetting(Set::Engine_SpeedActive))
 		{
-			Changeable::addElement(m->pitch, m->audioConvert, m->equalizer);
+			Changeable::addElement(pitch, m->audioConvert, m->equalizer);
 			sppedChanged();
 		}
 
 		else
 		{
-			Changeable::removeElement(m->pitch, m->audioConvert, m->equalizer);
+			Changeable::removeElement(pitch, m->audioConvert, m->equalizer);
 		}
 
 		if(Utils::getState(m->pipeline) == GST_STATE_PLAYING)
@@ -375,10 +375,10 @@ namespace Engine
 
 	void Pipeline::sppedChanged()
 	{
-//	Pitchable::setSpeed(
-//		GetSetting(Set::Engine_Speed),
-//		GetSetting(Set::Engine_Pitch) / 440.0,
-//		GetSetting(Set::Engine_PreservePitch));
+		m->pitcher->setSpeed(
+			GetSetting(Set::Engine_Speed),
+			GetSetting(Set::Engine_Pitch) / 440.0, // NOLINT(readability-magic-numbers)
+			GetSetting(Set::Engine_PreservePitch));
 	}
 
 	void Pipeline::sinkChanged()
@@ -426,11 +426,6 @@ namespace Engine
 	bool Pipeline::hasElement(GstElement* e) const { return Utils::hasElement(GST_BIN(m->pipeline), e); }
 
 	GstElement* Pipeline::positionElement() const { return m->playbackSink; }
-
-//GstElement* Pipeline::pitchElement() const
-//{
-//	return m->pitch;
-//}
 
 	GstElement* Pipeline::equalizerElement() const { return m->equalizer; }
 

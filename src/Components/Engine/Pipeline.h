@@ -27,7 +27,6 @@
 #include "PipelineExtensions/DelayedPlayable.h"
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PositionAccessible.h"
-#include "PipelineExtensions/Pitchable.h"
 #include "PipelineExtensions/EqualizerAccesible.h"
 #include "PipelineExtensions/StreamRecordable.h"
 #include "Utils/Pimpl.h"
@@ -45,7 +44,6 @@ namespace Engine
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable,
 		public PipelineExtensions::PositionAccessible,
-		//public PipelineExtensions::Pitchable,
 		public PipelineExtensions::EqualizerAccessible,
 		public PipelineExtensions::StreamRecordable
 	{
@@ -106,7 +104,6 @@ namespace Engine
 			double internalVolume() const override;            // Crossfader
 
 			GstElement* positionElement() const override;
-			//GstElement* pitchElement() const override;
 			GstElement* equalizerElement() const override;
 	};
 }
