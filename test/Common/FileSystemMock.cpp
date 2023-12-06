@@ -104,7 +104,7 @@ namespace Test
 	bool FileSystemMock::createDirectories(const QString& path)
 	{
 		const auto root = QDir::rootPath();
-		auto [d, f] = Util::File::splitFilename(path);
+		auto d = path;
 		while(d != root)
 		{
 			if(!m_fileStructure.contains(d))
@@ -130,23 +130,17 @@ namespace Test
 
 	bool FileSystemMock::writeFile(const QByteArray& content, const QString& filename)
 	{
-		auto [d, f] = Util::File::splitFilename(filename);
-		f = Util::File::cleanFilename(f);
+		auto [d, f] = Util::File::splitFilename(Util::File::cleanFilename(filename));
 		if(m_fileStructure.contains(d))
 		{
 			m_fileStructure[d].push_back(f);
 			m_fileStructure[d].removeDuplicates();
+			m_content[filename] = QString {content};
+
+			return true;
 		}
 
-		else
-		{
-			createDirectories(d);
-			m_fileStructure.insert(d, {f});
-		}
-
-		m_content[filename] = QString {content};
-
-		return true;
+		return false;
 	}
 
 	QString FileSystemMock::readFileIntoString(const QString& filename)
@@ -202,13 +196,11 @@ namespace Test
 				}
 			}
 
-			auto [dir, filename] = Util::File::splitFilename(file);
-			dir = Util::File::cleanFilename(dir);
-			if(auto values = m_fileStructure[dir]; values.contains(file))
+			const auto [dir, filename] = Util::File::splitFilename(file);
+			if(auto values = m_fileStructure[dir]; values.contains(filename))
 			{
-				values.removeAll(file);
-				m_fileStructure[filename] = values;
-				break;
+				values.removeAll(filename);
+				m_fileStructure[dir] = values;
 			}
 
 			m_content.remove(file);
