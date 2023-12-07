@@ -23,13 +23,14 @@
 #include "Components/Engine/EngineUtils.h"
 #include "Components/Engine/Callbacks.h"
 
-#include "PipelineExtensions/Probing.h"
-#include "PipelineExtensions/VisualizerBin.h"
 #include "PipelineExtensions/Broadcasting.h"
-#include "PipelineExtensions/Pitcher.h"
 #include "PipelineExtensions/Crossfader.h"
 #include "PipelineExtensions/DelayedPlayback.h"
+#include "PipelineExtensions/Equalizer.h"
+#include "PipelineExtensions/Pitcher.h"
 #include "PipelineExtensions/PositionAccessor.h"
+#include "PipelineExtensions/Probing.h"
+#include "PipelineExtensions/VisualizerBin.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
@@ -56,7 +57,6 @@ namespace Engine
 		GstElement* pipeline = nullptr;
 		GstElement* source = nullptr;
 		GstElement* audioConvert = nullptr;
-		GstElement* equalizer = nullptr;
 		GstElement* tee = nullptr;
 
 		GstElement* playbackBin = nullptr;
@@ -72,6 +72,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::Crossfader> crossfader = nullptr;
 		std::shared_ptr<PipelineExtensions::DelayedPlaybackInvoker> delayedInvoker = nullptr;
 		std::shared_ptr<PipelineExtensions::PositionAccessor> positionAccessor = nullptr;
+		std::shared_ptr<PipelineExtensions::Equalizer> equalizer = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -196,8 +197,6 @@ namespace Engine
 		if(!Utils::createElement(&m->playbackQueue, "queue", "playback_queue")) { return false; }
 		if(!Utils::createElement(&m->playbackVolume, "volume")) { return false; }
 
-		Utils::createElement(&m->equalizer, "equalizer-10bands");
-
 		m->playbackSink = m->createSink(GetSetting(Set::Engine_Sink));
 
 		m->visualizer = PipelineExtensions::createVisualizerBin(m->pipeline, m->tee);
@@ -210,6 +209,7 @@ namespace Engine
 		m->crossfader = PipelineExtensions::createCrossfader(this, this);
 		m->delayedInvoker = PipelineExtensions::createDelayedPlaybackInvoker(this);
 		m->positionAccessor = PipelineExtensions::createPositionAccessor(m->source);
+		m->equalizer = PipelineExtensions::createEqualizer();
 
 		return (m->playbackSink != nullptr);
 	}
@@ -217,10 +217,19 @@ namespace Engine
 	bool Pipeline::addAndLinkElements()
 	{
 		{ // before tee
-			Utils::addElements(GST_BIN(m->pipeline),
-			                   {m->source, m->audioConvert, m->equalizer, m->tee});
+			auto success = false;
 
-			const auto success = Utils::linkElements({m->audioConvert, m->equalizer, m->tee});
+			if(auto* equalizerElement = m->equalizer->equalizerElement(); equalizerElement)
+			{
+				Utils::addElements(GST_BIN(m->pipeline), {m->source, m->audioConvert, equalizerElement, m->tee});
+				success = Utils::linkElements({m->audioConvert, equalizerElement, m->tee});
+			}
+
+			else
+			{
+				Utils::addElements(GST_BIN(m->pipeline), {m->source, m->audioConvert, m->tee});
+				success = Utils::linkElements({m->audioConvert, m->tee});
+			}
 
 			if(!Utils::testAndErrorBool(success, "Engine: Cannot link audio convert with tee"))
 			{
@@ -349,20 +358,24 @@ namespace Engine
 	void Pipeline::speedActiveChanged()
 	{
 		auto* pitch = m->pitcher->pitchElement();
-		if(!pitch)
+		auto* neighbor = m->equalizer->equalizerElement()
+		                 ? m->equalizer->equalizerElement()
+		                 : m->tee;
+
+		if(!pitch || !neighbor)
 		{
 			return;
 		}
 
 		if(GetSetting(Set::Engine_SpeedActive))
 		{
-			Changeable::addElement(pitch, m->audioConvert, m->equalizer);
+			Changeable::addElement(pitch, m->audioConvert, neighbor);
 			sppedChanged();
 		}
 
 		else
 		{
-			Changeable::removeElement(pitch, m->audioConvert, m->equalizer);
+			Changeable::removeElement(pitch, m->audioConvert, neighbor);
 		}
 
 		if(Utils::getState(m->pipeline) == GST_STATE_PLAYING)
@@ -426,8 +439,6 @@ namespace Engine
 
 	bool Pipeline::hasElement(GstElement* e) const { return Utils::hasElement(GST_BIN(m->pipeline), e); }
 
-	GstElement* Pipeline::equalizerElement() const { return m->equalizer; }
-
 	void Pipeline::fadeIn() { m->crossfader->fadeIn(); }
 
 	void Pipeline::fadeOut() { m->crossfader->fadeOut(); }
@@ -449,4 +460,6 @@ namespace Engine
 	MilliSeconds Pipeline::duration() const { return m->positionAccessor->durationMs(); }
 
 	MilliSeconds Pipeline::timeToGo() const { return m->positionAccessor->timeToGo(); }
+
+	void Pipeline::setEqualizerBand(const int band, const int value) { m->equalizer->setBand(band, value); }
 }

@@ -24,9 +24,8 @@
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PipelineInterfaces.h"
 #include "PipelineExtensions/Changeable.h"
-#include "PipelineExtensions/Broadcasting.h"
-#include "PipelineExtensions/EqualizerAccesible.h"
 #include "PipelineExtensions/StreamRecordable.h"
+
 #include "Utils/Pimpl.h"
 
 #include <QObject>
@@ -41,7 +40,6 @@ namespace Engine
 		public PipelineExtensions::PlaystateController,
 		public PipelineExtensions::VolumeController,
 		public PipelineExtensions::Changeable,
-		public PipelineExtensions::EqualizerAccessible,
 		public PipelineExtensions::StreamRecordable
 	{
 		Q_OBJECT
@@ -87,6 +85,8 @@ namespace Engine
 			[[nodiscard]] MilliSeconds duration() const;
 			MilliSeconds timeToGo() const;
 
+			void setEqualizerBand(int band, int value);
+
 		public slots:
 			void play() override;
 			void stop() override;
@@ -106,8 +106,6 @@ namespace Engine
 
 			void setVolume(double volume) override;
 			[[nodiscard]] double volume() const override;
-
-			GstElement* equalizerElement() const override;
 	};
 }
 

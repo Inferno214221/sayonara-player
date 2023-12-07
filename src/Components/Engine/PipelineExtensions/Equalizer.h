@@ -1,4 +1,4 @@
-/* EqualizerHandler.cpp */
+/* EqualizerHandler.h */
 
 /* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
  *
@@ -18,30 +18,24 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "EqualizerAccesible.h"
-#include "Components/Engine/EngineUtils.h"
+#ifndef EQUALIZERHANDLER_H
+#define EQUALIZERHANDLER_H
 
-#include <QList>
-#include <QString>
+#include "Components/Engine/gstfwd.h"
+#include "Utils/Pimpl.h"
 
-using namespace PipelineExtensions;
-
-EqualizerAccessible::EqualizerAccessible() = default;
-EqualizerAccessible::~EqualizerAccessible() = default;
-
-void EqualizerAccessible::setEqualizerBand(int bandIndex, int value)
+namespace PipelineExtensions
 {
-	auto bandName = QString("band%1").arg(bandIndex);
+	class Equalizer
+	{
+		public:
+			virtual ~Equalizer() = default;
 
-	GstElement* element = this->equalizerElement();
-	if(!element){
-		return;
-	}
+			virtual void setBand(int bandIndex, int value) = 0;
+			virtual GstElement* equalizerElement() = 0;
+	};
 
-	double newValue = (value > 0)
-		? (value * 0.25)
-		: (value * 0.75);
-
-	Engine::Utils::setValue(element, bandName.toUtf8().data(), newValue);
+	std::shared_ptr<Equalizer> createEqualizer();
 }
 
+#endif // EQUALIZERHANDLER_H
