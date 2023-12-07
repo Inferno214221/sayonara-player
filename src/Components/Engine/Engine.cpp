@@ -589,7 +589,7 @@ namespace Engine
 				if(success)
 				{
 					const auto timeToGo = m_otherPipeline->timeToGo();
-					m_pipeline->playIn(timeToGo);
+					m_pipeline->startDelayedPlayback(timeToGo);
 
 					changeGaplessState(GaplessState::TrackFetched);
 

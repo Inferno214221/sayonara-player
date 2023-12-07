@@ -28,6 +28,7 @@
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/Pitcher.h"
 #include "PipelineExtensions/Crossfader.h"
+#include "PipelineExtensions/DelayedPlayback.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
@@ -68,6 +69,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::VisualizerBin> visualizer = nullptr;
 		std::shared_ptr<PipelineExtensions::Pitcher> pitcher = nullptr;
 		std::shared_ptr<PipelineExtensions::Crossfader> crossfader = nullptr;
+		std::shared_ptr<PipelineExtensions::DelayedPlaybackInvoker> delayedInvoker = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -204,6 +206,7 @@ namespace Engine
 		m->broadcaster = PipelineExtensions::createBroadcaster(m->rawDataReceiver, m->pipeline, m->tee);
 		m->pitcher = PipelineExtensions::createPitcher();
 		m->crossfader = PipelineExtensions::createCrossfader(this, this);
+		m->delayedInvoker = PipelineExtensions::createDelayedPlaybackInvoker(this);
 
 		return (m->playbackSink != nullptr);
 	}
@@ -278,7 +281,7 @@ namespace Engine
 	{
 		Utils::setState(m->pipeline, GST_STATE_NULL);
 
-		abortDelayedPlaying();
+		m->delayedInvoker->abortDelayedPlaying();
 		m->crossfader->abortFading();
 	}
 
@@ -435,4 +438,6 @@ namespace Engine
 	void Pipeline::fadeIn() { m->crossfader->fadeIn(); }
 
 	void Pipeline::fadeOut() { m->crossfader->fadeOut(); }
+
+	void Pipeline::startDelayedPlayback(const MilliSeconds ms) { m->delayedInvoker->playIn(ms); }
 }

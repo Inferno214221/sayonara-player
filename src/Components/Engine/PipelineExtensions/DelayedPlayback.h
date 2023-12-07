@@ -18,52 +18,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef DELAYEDPLAYHANDLER_H
-#define DELAYEDPLAYHANDLER_H
+#ifndef SAYONARA_ENGINE_DELAYED_PLAYABLE_H
+#define SAYONARA_ENGINE_DELAYED_PLAYABLE_H
 
-#include "Utils/Pimpl.h"
-#include <QObject>
+#include "PipelineInterfaces.h"
+#include "Utils/typedefs.h"
+
+#include <memory>
+#include <gst/gst.h>
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The DelayedPlayable class
-	 * @ingroup EngineInterfaces
-	 */
-	class DelayedPlayable
+	class DelayedPlaybackInvoker
 	{
-		PIMPL(DelayedPlayable)
-
 		public:
-			DelayedPlayable();
-			~DelayedPlayable();
+			virtual ~DelayedPlaybackInvoker();
 
-		public:
-			virtual void play()=0;
-
-			void playIn(MilliSeconds ms);
-			void abortDelayedPlaying();
+			virtual void playIn(MilliSeconds ms) = 0;
+			virtual void abortDelayedPlaying() = 0;
 	};
 
-
-	/**
-	 * @brief Pure private class. Only used by Delayed Pipeline
-	 * @ingroup EngineInterfaces
-	 */
-	class DelayedPlayableLogic : public QObject
-	{
-		Q_OBJECT
-		PIMPL(DelayedPlayableLogic)
-
-		friend class DelayedPlayable;
-
-		private:
-			DelayedPlayableLogic(DelayedPlayable* dph);
-			~DelayedPlayableLogic();
-
-			void startTimer(MilliSeconds ms);
-			void stopTimer();
-	};
+	std::shared_ptr<DelayedPlaybackInvoker>
+	createDelayedPlaybackInvoker(PlaystateController* pipeline);
 }
 
-#endif // DELAYEDPLAYHANDLER_H
+#endif // SAYONARA_ENGINE_DELAYED_PLAYABLE_H
