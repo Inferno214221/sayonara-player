@@ -25,34 +25,18 @@
 
 namespace PipelineExtensions
 {
-	/**
-	 * @brief The ChangeablePipeline class
-	 * @ingroup EngineInterfaces
-	 */
 	class Changeable
 	{
 		public:
 			Changeable();
 			virtual ~Changeable();
 
-			/**
-			 * @brief Add an element between two elements
-			 * @param element element to add
-			 * @param firstElement element, after which new element is inserted
-			 * @param secondElement element, before which new element is inserted (may be null)
-			 */
 			bool addElement(GstElement* element, GstElement* firstElement, GstElement* secondElement);
 
-			/**
-			 * @brief remove an element between two elements
-			 * @param element element to remove
-			 * @param firstElement element, after which new element is removed
-			 * @param secondElement element, before which new element is removed (may be null)
-			 */
 			bool removeElement(GstElement* element, GstElement* firstElement, GstElement* secondElement);
 
-
-			bool replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* element_before, GstElement* pipeline, GstElement* bin);
+			bool replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* elementBefore, GstElement* pipeline,
+			                 GstElement* bin);
 	};
 }
 
