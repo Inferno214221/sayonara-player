@@ -27,6 +27,7 @@
 #include "PipelineExtensions/VisualizerBin.h"
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/Pitcher.h"
+#include "PipelineExtensions/Crossfader.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"
@@ -66,6 +67,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::RawDataReceiver> rawDataReceiver = nullptr;
 		std::shared_ptr<PipelineExtensions::VisualizerBin> visualizer = nullptr;
 		std::shared_ptr<PipelineExtensions::Pitcher> pitcher = nullptr;
+		std::shared_ptr<PipelineExtensions::Crossfader> crossfader = nullptr;
 
 		QTimer* progressTimer = nullptr;
 
@@ -201,6 +203,7 @@ namespace Engine
 
 		m->broadcaster = PipelineExtensions::createBroadcaster(m->rawDataReceiver, m->pipeline, m->tee);
 		m->pitcher = PipelineExtensions::createPitcher();
+		m->crossfader = PipelineExtensions::createCrossfader(this, this);
 
 		return (m->playbackSink != nullptr);
 	}
@@ -276,7 +279,7 @@ namespace Engine
 		Utils::setState(m->pipeline, GST_STATE_NULL);
 
 		abortDelayedPlaying();
-		abortFader();
+		m->crossfader->abortFading();
 	}
 
 	void Pipeline::volumeChanged()
@@ -402,7 +405,7 @@ namespace Engine
 	{
 		const auto positionMs = this->positionMs();
 		const auto durationMs = this->durationMs();
-		const auto aboutToFinishMs = std::max<MilliSeconds>(fadingTimeMs(), 300);
+		const auto aboutToFinishMs = std::max<MilliSeconds>(PipelineExtensions::Crossfader::fadingTimeMs(), 300);
 
 		static bool aboutToFinish = false;
 
@@ -429,7 +432,7 @@ namespace Engine
 
 	GstElement* Pipeline::equalizerElement() const { return m->equalizer; }
 
-	void Pipeline::postProcessFadeIn() {}
+	void Pipeline::fadeIn() { m->crossfader->fadeIn(); }
 
-	void Pipeline::postProcessFadeOut() {}
+	void Pipeline::fadeOut() { m->crossfader->fadeOut(); }
 }

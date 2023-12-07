@@ -24,7 +24,6 @@
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PipelineInterfaces.h"
 #include "PipelineExtensions/Changeable.h"
-#include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PositionAccessible.h"
@@ -43,7 +42,6 @@ namespace Engine
 		public PipelineExtensions::Broadcastable,
 		public PipelineExtensions::PlaystateController,
 		public PipelineExtensions::VolumeController,
-		public PipelineExtensions::Fadeable,
 		public PipelineExtensions::Changeable,
 		public PipelineExtensions::DelayedPlayable,
 		public PipelineExtensions::PositionAccessible,
@@ -84,6 +82,9 @@ namespace Engine
 
 			MilliSeconds timeToGo() const;
 
+			void fadeIn();
+			void fadeOut();
+
 		public slots:
 			void play() override;
 			void stop() override;
@@ -100,9 +101,6 @@ namespace Engine
 			bool createElements();
 			bool addAndLinkElements();
 			void configureElements();
-
-			void postProcessFadeIn() override;    // Crossfader
-			void postProcessFadeOut() override;    // Crossfader
 
 			void setVolume(double volume) override;
 			[[nodiscard]] double volume() const override;
