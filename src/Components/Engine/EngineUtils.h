@@ -40,33 +40,54 @@ namespace Engine
 	 */
 	namespace Utils
 	{
-		using Elements=QList<GstElement*>;
+		using Elements = QList<GstElement*>;
 
 		template<typename T>
 		struct GObjectAutoFree
 		{
-			T* obj=nullptr;
+			T* obj = nullptr;
 
-			GObjectAutoFree(T* obj) : obj(obj) {}
+			GObjectAutoFree(T* obj) :
+				obj(obj) {}
+
 			~GObjectAutoFree()
 			{
-				if(obj) {
+				if(obj)
+				{
 					g_free(obj);
 				}
 
 				obj = nullptr;
 			}
+
 			T* data() const { return obj; }
 		};
 
-		using GStringAutoFree=GObjectAutoFree<gchar>;
+		class AutoUnref
+		{
+			public:
+				AutoUnref(gpointer element) : // NOLINT(google-explicit-constructor)
+					m_element {element} {}
+
+				~AutoUnref()
+				{
+					gst_object_unref(m_element);
+				}
+
+				gpointer operator*() const { return m_element; }
+
+			private:
+				gpointer m_element;
+		};
+
+		using GStringAutoFree = GObjectAutoFree<gchar>;
 
 		/**
 		 * @brief config_queue
 		 * @param queue
 		 * @param max_time_ms
 		 */
-		void configureQueue(GstElement* queue, guint64 max_time_ms=100);
+		void configureQueue(GstElement* queue, guint64 max_time_ms = 100);
 
 		/**
 		 * @brief config_sink
@@ -184,7 +205,6 @@ namespace Engine
 			}
 		};
 
-
 		template<typename GlibObject, typename T>
 		/**
 		 * @brief set_value
@@ -200,7 +220,6 @@ namespace Engine
 			Dont_Use_Integers_In_GObject_Set<T>();
 		}
 
-
 		template<typename GlibObject, typename T>
 		/**
 		 * @brief set_value
@@ -212,7 +231,6 @@ namespace Engine
 		{
 			g_object_set(G_OBJECT(object), key, value, nullptr);
 		}
-
 
 		template<typename GlibObject, typename T>
 		/**
@@ -227,7 +245,6 @@ namespace Engine
 			setValue(object, key, value, std::integral_constant<bool, b>());
 		}
 
-
 		template<typename GlibObject, typename First>
 		/**
 		 * @brief set_values
@@ -239,7 +256,6 @@ namespace Engine
 		{
 			setValue(object, key, value);
 		}
-
 
 		template<typename GlibObject, typename First, typename... Args>
 		/**
@@ -255,7 +271,6 @@ namespace Engine
 			setValues(object, std::forward<Args>(args)...);
 		}
 
-
 		template<typename GlibObject>
 		/**
 		 * @brief set_int64_value
@@ -269,7 +284,6 @@ namespace Engine
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
 
-
 		template<typename GlibObject>
 		/**
 		 * @brief set_int_value
@@ -277,13 +291,11 @@ namespace Engine
 		 * @param key
 		 * @param value
 		 */
-		void setIntValue(GlibObject* object,const  gchar* key, gint value)
+		void setIntValue(GlibObject* object, const gchar* key, gint value)
 		{
 			GValue val = getInt(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
-
-
 
 		template<typename GlibObject>
 		/**
@@ -297,7 +309,6 @@ namespace Engine
 			GValue val = getUint64(value);
 			g_object_set_property(G_OBJECT(object), key, &val);
 		}
-
 
 		template<typename GlibObject>
 		/**

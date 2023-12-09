@@ -400,7 +400,7 @@ namespace Engine
 		auto* newSink = m->createSink(GetSetting(Set::Engine_Sink));
 		if(newSink)
 		{
-			replaceSink(m->playbackSink, newSink, m->playbackVolume, m->pipeline, m->playbackBin);
+			replaceSink(m->playbackSink, newSink, m->playbackVolume, m->playbackBin);
 			m->playbackSink = newSink;
 		}
 	}

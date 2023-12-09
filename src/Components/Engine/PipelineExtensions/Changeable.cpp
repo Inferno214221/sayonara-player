@@ -28,412 +28,384 @@
 #include <memory>
 #include <mutex>
 
-static std::mutex mtx;
-
-using PipelineExtensions::Changeable;
-
-const int SleepInterval = 50;
-
-struct StackMutex
+namespace
 {
-	bool couldLock;
+	static std::mutex globalMutex;
 
-	StackMutex(std::mutex& mtx) :
-		couldLock(mtx.try_lock()) {}
+	constexpr const auto MaxTimeout = 2000;
+	const int SleepInterval = 50;
 
-	~StackMutex()
+	class WeakLockGuard
 	{
-		if(couldLock)
-		{
-			mtx.unlock();
-		}
-	}
-};
+		public:
+			explicit WeakLockGuard(std::mutex* mtx) :
+				m_mtx {mtx},
+				m_couldLock {m_mtx->try_lock()} {}
 
-struct ProbeData
-{
-	GstElement* firstElement = nullptr;
-	GstElement* secondElement = nullptr;
-	GstElement* elementOfInterest = nullptr;
-	GstElement* pipeline = nullptr;
-
-	GstState oldState;
-	bool done;
-
-	ProbeData()
-	{
-		oldState = GST_STATE_NULL;
-		done = false;
-	}
-};
-
-Changeable::Changeable() = default;
-Changeable::~Changeable() = default;
-
-static GstPadProbeReturn
-src_blocked_add(GstPad* pad, GstPadProbeInfo* info, gpointer data)
-{
-	auto* probeData = static_cast<ProbeData*>(data);
-
-	gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID (info));
-
-	Engine::Utils::setState(probeData->firstElement, GST_STATE_NULL);
-	Engine::Utils::setState(probeData->elementOfInterest, GST_STATE_NULL);
-
-	Engine::Utils::addElements(GST_BIN(probeData->pipeline), {probeData->elementOfInterest});
-	Engine::Utils::unlinkElements({probeData->firstElement, probeData->secondElement});
-
-	Engine::Utils::linkElements({
-		                            probeData->firstElement, probeData->elementOfInterest, probeData->secondElement
-	                            });
-
-	Engine::Utils::setState(probeData->elementOfInterest, probeData->oldState);
-	Engine::Utils::setState(probeData->firstElement, probeData->oldState);
-
-	if(probeData->secondElement)
-	{
-		Engine::Utils::setState(probeData->secondElement, probeData->oldState);
-	}
-
-	probeData->done = true;
-
-	return GST_PAD_PROBE_DROP;
-}
-
-bool Changeable::addElement(GstElement* element, GstElement* firstElement, GstElement* secondElement)
-{
-	StackMutex sm(mtx);
-	if(!sm.couldLock)
-	{
-		return false;
-	}
-
-	Engine::Utils::GStringAutoFree name(gst_element_get_name(element));
-
-	spLog(Log::Debug, this) << "Add " << name.data() << " to pipeline";
-
-	GstElement* parent = GST_ELEMENT(gst_element_get_parent(firstElement));
-	if(Engine::Utils::hasElement(GST_BIN(parent), element))
-	{
-		spLog(Log::Debug, this) << "Element already in pipeline";
-		return true;
-	}
-
-	auto data = std::make_shared<ProbeData>();
-	data->firstElement = firstElement;
-	data->secondElement = secondElement;
-	data->elementOfInterest = element;
-	data->pipeline = parent;
-
-	data->oldState = Engine::Utils::getState(parent);
-	if(data->oldState != GST_STATE_PLAYING)
-	{
-		Engine::Utils::unlinkElements({data->firstElement, data->secondElement});
-
-		bool success = Engine::Utils::addElements(GST_BIN(parent), {data->elementOfInterest});
-		if(success)
-		{
-			success = Engine::Utils::linkElements({
-				                                      data->firstElement, data->elementOfInterest, data->secondElement
-			                                      });
-
-			if(!success)
+			~WeakLockGuard()
 			{
-				spLog(Log::Warning, this) << "Could not link elements for any reason";
-				Engine::Utils::removeElements(GST_BIN(parent), {data->elementOfInterest});
+				if(m_couldLock)
+				{
+					m_mtx->unlock();
+				}
+			}
+
+			[[nodiscard]] bool wasLocked() const { return m_couldLock; }
+
+		private:
+			std::mutex* m_mtx;
+			bool m_couldLock;
+	};
+
+	template<typename T, typename Callback>
+	bool wait(int timeoutMs, T* probeData, Callback&& onTimeoutReached)
+	{
+		while(!probeData->done)
+		{
+			Util::sleepMs(SleepInterval);
+			timeoutMs -= SleepInterval;
+			if(timeoutMs <= 0)
+			{
+				spLog(Log::Warning, "Changeable") << "Wait for timeout: Could not establish probe callback ";
+				onTimeoutReached();
+				return false;
 			}
 		}
 
-		if(success)
-		{
-			spLog(Log::Debug, this) << "Pipeline not playing, added " << name.data() << " immediately";
-		}
+		Engine::Utils::setState(probeData->newSink, GST_STATE_PLAYING);
 
-		return success;
+		return true;
 	}
 
-	GstPad* pad = gst_element_get_static_pad(firstElement, "src");
-	auto probe_id = gst_pad_add_probe
-		(
-			pad,
-			GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
-			src_blocked_add,
-			data.get(), nullptr
-		);
-
-	int32_t MaxMs = 2000;
-	bool success = true;
-	while(!data->done)
+	template<typename T>
+	void installFlushListener(GstElement* element, T* probeData)
 	{
-		Util::sleepMs(SleepInterval);
-		MaxMs -= SleepInterval;
-		if(MaxMs <= 0)
-		{
-			success = false;
-			spLog(Log::Warning, this) << "Add: Could not establish probe " << name.data();
-			gst_pad_remove_probe(pad, probe_id);
-			break;
-		}
-	}
-
-	if(success)
-	{
-		spLog(Log::Debug, this) << "Element " << name.data() << " added.";
-	}
-
-	return success;
-}
-
-static GstPadProbeReturn
-eos_probe_installed_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
-{
-	auto* probe_data = static_cast<ProbeData*>(data);
-
-	if(GST_EVENT_TYPE(GST_PAD_PROBE_INFO_DATA(info)) != GST_EVENT_EOS)
-	{
-		return GST_PAD_PROBE_PASS;
-	}
-
-	gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
-
-	Engine::Utils::setState(probe_data->firstElement, GST_STATE_NULL);
-	Engine::Utils::unlinkElements({
-		                              probe_data->firstElement, probe_data->elementOfInterest, probe_data->secondElement
-	                              });
-
-	Engine::Utils::removeElements(GST_BIN(probe_data->pipeline), {probe_data->elementOfInterest});
-	Engine::Utils::setState(probe_data->elementOfInterest, GST_STATE_NULL);
-
-	if(probe_data->secondElement)
-	{
-		Engine::Utils::linkElements({probe_data->firstElement, probe_data->secondElement});
-		Engine::Utils::setState(probe_data->firstElement, probe_data->oldState);
-		Engine::Utils::setState(probe_data->secondElement, probe_data->oldState);
-	}
-
-	probe_data->done = true;
-
-	return GST_PAD_PROBE_DROP;
-}
-
-static GstPadProbeReturn
-src_blocked_remove(GstPad* pad, GstPadProbeInfo* info, gpointer data)
-{
-	auto* probe_data = static_cast<ProbeData*>(data);
-
-	gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
-
-	/** We only need that second probe here to flush all next elements **/
-	if(probe_data->secondElement)
-	{
-		GstPad* srcpad = gst_element_get_static_pad(probe_data->elementOfInterest, "src");
-		gst_pad_add_probe
-			(
-				srcpad,
-				GstPadProbeType(GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM),
-				eos_probe_installed_remove,
-				probe_data, nullptr
-			);
-
+		auto* srcpad = gst_element_get_static_pad(element, "src");
+		gst_pad_add_probe(
+			srcpad,
+			GstPadProbeType(GST_PAD_PROBE_TYPE_BLOCK | GST_PAD_PROBE_TYPE_EVENT_DOWNSTREAM),
+			probeData->onElementFlushed,
+			probeData, nullptr);
 		gst_object_unref(srcpad);
 	}
 
-	/** Flush the old element with an eos event **/
-	GstPad* sinkpad = gst_element_get_static_pad(probe_data->elementOfInterest, "sink");
-	gst_pad_send_event(sinkpad, gst_event_new_eos());
-	gst_object_unref(sinkpad);
-
-	if(!probe_data->secondElement)
+	void flushData(GstElement* element)
 	{
-		Engine::Utils::removeElements(GST_BIN(probe_data->pipeline), {probe_data->elementOfInterest});
-		probe_data->done = true;
+		auto* sinkpad = gst_element_get_static_pad(element, "sink");
+		gst_pad_send_event(sinkpad, gst_event_new_eos());
+		gst_object_unref(sinkpad);
 	}
 
-	return GST_PAD_PROBE_OK;
-}
-
-bool Changeable::removeElement(GstElement* element, GstElement* firstElement, GstElement* secondElement)
-{
-	StackMutex sm(mtx);
-	if(!sm.couldLock)
+	struct ProbeData
 	{
+		GstElement* elementA = nullptr;
+		GstElement* elementB = nullptr;
+		GstElement* elementOfInterest = nullptr;
+		GstElement* bin = nullptr;
+		GstElement* newSink = nullptr;
+
+		GstState oldState {GST_STATE_NULL};
+		bool done {false};
+
+		GstPadProbeReturn (* onElementFlushed)(GstPad*, GstPadProbeInfo*, gpointer);
+		GstPadProbeReturn (* onDataFlowStopped)(GstPad*, GstPadProbeInfo*, gpointer);
+	};
+
+	GstPadProbeReturn dataFlowStoppedAndFlush(GstPad* pad, GstPadProbeInfo* info, gpointer data)
+	{
+		auto* probeData = static_cast<ProbeData*>(data);
+
+		gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
+
+		installFlushListener(probeData->elementOfInterest, probeData);
+		flushData(probeData->elementOfInterest);
+
+		return GST_PAD_PROBE_OK;
+	}
+
+	template<typename T>
+	bool installDataFlowStoppedListener(GstElement* element, T* probeData)
+	{
+		auto* srcPad = gst_element_get_static_pad(element, "src");
+		const auto probeId = gst_pad_add_probe(
+			srcPad,
+			GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
+			probeData->onDataFlowStopped,
+			probeData, nullptr);
+
+		const auto success = wait(MaxTimeout, probeData, [&]() {
+			gst_pad_remove_probe(srcPad, probeId);
+		});
+
+		return success;
+	}
+
+	GstPadProbeReturn dataFlowStoppedForInsert(GstPad* pad, GstPadProbeInfo* info, gpointer data)
+	{
+		auto* probeData = static_cast<ProbeData*>(data);
+
+		gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID (info));
+
+		Engine::Utils::setState(probeData->elementA, GST_STATE_NULL);
+		Engine::Utils::setState(probeData->elementOfInterest, GST_STATE_NULL);
+
+		Engine::Utils::addElements(GST_BIN(probeData->bin), {probeData->elementOfInterest});
+		Engine::Utils::unlinkElements({probeData->elementA, probeData->elementB});
+
+		Engine::Utils::linkElements({probeData->elementA, probeData->elementOfInterest, probeData->elementB});
+
+		Engine::Utils::setState(probeData->elementOfInterest, probeData->oldState);
+		Engine::Utils::setState(probeData->elementA, probeData->oldState);
+
+		if(probeData->elementB)
+		{
+			Engine::Utils::setState(probeData->elementB, probeData->oldState);
+		}
+
+		probeData->done = true;
+
+		return GST_PAD_PROBE_DROP;
+	}
+
+	void removeElement(ProbeData* probeData)
+	{
+		Engine::Utils::unlinkElements({probeData->elementA, probeData->elementOfInterest, probeData->elementB});
+		Engine::Utils::removeElements(GST_BIN(probeData->bin), {probeData->elementOfInterest});
+		Engine::Utils::setState(probeData->elementOfInterest, GST_STATE_NULL);
+		Engine::Utils::linkElements({probeData->elementA, probeData->elementB});
+		Engine::Utils::setState(probeData->bin, probeData->oldState);
+	}
+
+	GstPadProbeReturn dataFlushedForRemoval(GstPad* pad, GstPadProbeInfo* info, gpointer data)
+	{
+		auto* probeData = static_cast<ProbeData*>(data);
+
+		if(GST_EVENT_TYPE(GST_PAD_PROBE_INFO_DATA(info)) != GST_EVENT_EOS)
+		{
+			return GST_PAD_PROBE_PASS;
+		}
+
+		// remove EOS listener
+		gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
+
+		removeElement(probeData);
+
+		probeData->done = true;
+
+		return GST_PAD_PROBE_DROP;
+	}
+
+	struct ReplaceSinkProbeData
+	{
+		GstElement* oldSink = nullptr;
+		GstElement* newSink = nullptr;
+		GstElement* elementA = nullptr;
+		GstElement* bin = nullptr;
+		GstPadProbeReturn (* onDataFlowStopped)(GstPad*, GstPadProbeInfo*, gpointer) = nullptr;
+
+		bool done {false};
+		GstState oldState {GST_STATE_NULL};
+	};
+
+	bool removeElementDirectly(GstElement* elementA, GstElement* elementOfInterest, GstElement* elementB, GstBin* bin)
+	{
+		Engine::Utils::unlinkElements({elementA, elementOfInterest, elementB});
+		Engine::Utils::removeElements(bin, {elementOfInterest});
+		return Engine::Utils::linkElements({elementA, elementB});
+	}
+
+	GstPadProbeReturn dataFlowStoppedForReplace(GstPad* pad, GstPadProbeInfo* info, gpointer data)
+	{
+		gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID (info));
+
+		auto* probeData = static_cast<ReplaceSinkProbeData*>(data);
+		const auto pos = Engine::Utils::getPositionMs(probeData->oldSink);
+
+		gst_object_ref(probeData->bin);
+		gst_object_ref(probeData->oldSink);
+
+		Engine::Utils::unlinkElements({probeData->elementA, probeData->oldSink});
+		Engine::Utils::removeElements(GST_BIN(probeData->bin), {probeData->oldSink});
+		Engine::Utils::setState(probeData->oldSink, GST_STATE_NULL);
+
+		Engine::Utils::addElements(GST_BIN(probeData->bin), {probeData->newSink});
+		Engine::Utils::linkElements({probeData->elementA, probeData->newSink});
+		Engine::Utils::setState(probeData->newSink, GST_STATE_PLAYING);
+
+		// flush, in order to force new buffers into the sink. Without seeking
+		constexpr const auto SeekFlags = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH |
+		                                                           GST_SEEK_FLAG_KEY_UNIT |
+		                                                           GST_SEEK_FLAG_SNAP_NEAREST);
+
+		gst_element_seek_simple(probeData->newSink, GST_FORMAT_TIME, SeekFlags, pos * GST_MSECOND);
+
+		probeData->done = true;
+
+		return GST_PAD_PROBE_DROP;
+	}
+
+	bool addElementDirectly(GstElement* elementA, GstElement* elementOfInterest, GstElement* elementB, GstBin* bin)
+	{
+		spLog(Log::Develop, "Changeable") << "Add element directly";
+
+		Engine::Utils::unlinkElements({elementA, elementB});
+
+		const auto isAdded = Engine::Utils::addElements(bin, {elementOfInterest});
+		if(isAdded)
+		{
+			const auto isLinked = Engine::Utils::linkElements({elementA, elementOfInterest, elementB});
+			if(!isLinked)
+			{
+				spLog(Log::Warning, "Changeable") << "Could not link elements for any reason";
+				Engine::Utils::removeElements(bin, {elementOfInterest});
+
+				return false;
+			}
+
+			return true;
+		}
+
 		return false;
 	}
 
-	Engine::Utils::GStringAutoFree name(gst_element_get_name(element));
-
-	spLog(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
-
-	GstElement* parent = GST_ELEMENT(gst_element_get_parent(firstElement));
-	if(!Engine::Utils::hasElement(GST_BIN(parent), element))
+	bool replaceSinkDirectly(GstElement* oldSink, GstElement* newSink, GstElement* elementA, GstBin* bin)
 	{
-		spLog(Log::Debug, this) << "Element " << name.data() << " not in pipeline";
-		return true;
-	}
-
-	GstPad* pad = gst_element_get_static_pad(firstElement, "src");
-
-	auto data = std::make_shared<ProbeData>();
-	data->firstElement = firstElement;
-	data->secondElement = secondElement;
-	data->elementOfInterest = element;
-	data->pipeline = parent;
-
-	data->oldState = Engine::Utils::getState(parent);
-
-	// we need that element later, but a gst_bin_remove decreases refcount
-	gst_object_ref(element);
-
-	if(data->oldState != GST_STATE_PLAYING)
-	{
-		Engine::Utils::unlinkElements({firstElement, element, secondElement});
-		Engine::Utils::removeElements(GST_BIN(parent), {element});
-
-		bool success = true;
-		if(secondElement)
+		if(!Engine::Utils::addElements(bin, {newSink}))
 		{
-			success = Engine::Utils::linkElements({firstElement, secondElement});
+			return false;
 		}
 
-		if(success)
+		if(!Engine::Utils::linkElements({elementA, newSink}))
 		{
-			spLog(Log::Debug, this) << "Pipeline not playing, removed " << name.data() << " immediately";
+			Engine::Utils::removeElements(bin, {newSink});
+			return false;
+		}
+
+		Engine::Utils::removeElements(bin, {oldSink});
+		return true;
+	}
+}
+
+namespace PipelineExtensions
+{
+	Changeable::Changeable() = default;
+	Changeable::~Changeable() = default;
+
+	bool Changeable::addElement(GstElement* element, GstElement* elementA, GstElement* elementB)
+	{
+		const auto lockGuard = WeakLockGuard(&globalMutex);
+		if(!lockGuard.wasLocked())
+		{
+			return false;
+		}
+
+		const auto name = Engine::Utils::GStringAutoFree(gst_element_get_name(element));
+		auto parent = Engine::Utils::AutoUnref(gst_element_get_parent(elementA));
+		auto* parentElement = GST_ELEMENT(*parent);
+
+		spLog(Log::Debug, this) << "Add " << name.data() << " to pipeline";
+		if(Engine::Utils::hasElement(GST_BIN(parentElement), element))
+		{
+			spLog(Log::Debug, this) << "Element " << name.data() << "already in pipeline";
+			return true;
+		}
+
+		auto probeData = std::make_shared<ProbeData>();
+		probeData->elementA = elementA;
+		probeData->elementB = elementB;
+		probeData->elementOfInterest = element;
+		probeData->bin = parentElement;
+		probeData->onDataFlowStopped = dataFlowStoppedForInsert;
+		probeData->oldState = Engine::Utils::getState(parentElement);
+
+		const auto success = (probeData->oldState == GST_STATE_NULL)
+		                     ? addElementDirectly(elementA, element, elementB, GST_BIN(parentElement))
+		                     : installDataFlowStoppedListener(elementA, probeData.get());
+
+		if(!success)
+		{
+			spLog(Log::Debug, this) << "Could not add " << name.data();
 		}
 
 		return success;
 	}
 
-	gst_pad_add_probe
-		(
-			pad,
-			GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
-			src_blocked_remove,
-			data.get(), nullptr
-		);
-
-	int32_t MaxMs = 2000;
-	bool success = true;
-	while(!data->done)
+	bool Changeable::removeElement(GstElement* element, GstElement* elementA, GstElement* elementB)
 	{
-		Util::sleepMs(SleepInterval);
-		MaxMs -= SleepInterval;
-		if(MaxMs <= 0)
-		{
-			success = false;
-			spLog(Log::Warning, this) << "Remove: Could not establish probe callback " << name.data();
-			break;
-		}
-	}
-
-	if(success)
-	{
-		spLog(Log::Debug, this) << "Element " << name.data() << " removed.";
-	}
-
-	return success;
-}
-
-struct ReplaceSinkProbeData
-{
-	GstElement* old_sink = nullptr;
-	GstElement* new_sink = nullptr;
-	GstElement* element_before = nullptr;
-	GstElement* pipeline = nullptr;
-	GstElement* bin = nullptr;
-	bool done;
-	GstState old_state;
-
-	ReplaceSinkProbeData() :
-		done(false) {}
-};
-
-static GstPadProbeReturn
-src_blocked_replace(GstPad* pad, GstPadProbeInfo* info, gpointer data)
-{
-	auto* probe_data = static_cast<ReplaceSinkProbeData*>(data);
-
-	gst_pad_remove_probe(pad, GST_PAD_PROBE_INFO_ID(info));
-
-	Engine::Utils::setState(probe_data->old_sink, GST_STATE_NULL);
-	Engine::Utils::removeElements(GST_BIN(probe_data->bin), {probe_data->old_sink});
-
-	Engine::Utils::addElements(GST_BIN(probe_data->bin), {probe_data->new_sink});
-	Engine::Utils::linkElements({probe_data->element_before, probe_data->new_sink});
-
-	gst_element_sync_state_with_parent(probe_data->new_sink);
-
-	probe_data->done = true;
-
-	spLog(Log::Debug, "Changeable ReplaceCB") << "Replacement finished";
-
-	return GST_PAD_PROBE_OK;
-}
-
-bool
-Changeable::replaceSink(GstElement* old_sink, GstElement* new_sink, GstElement* element_before, GstElement* pipeline,
-                        GstElement* bin)
-{
-	StackMutex sm(mtx);
-	if(!sm.couldLock)
-	{
-		return false;
-	}
-
-	Engine::Utils::GStringAutoFree name(gst_element_get_name(old_sink));
-	spLog(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
-
-	//gst_element* bin = gst_element(gst_element_get_parent(old_sink));
-	GstPad* pad = gst_element_get_static_pad(element_before, "src");
-	GstState old_state = Engine::Utils::getState(old_sink);
-
-	if(!Engine::Utils::hasElement(GST_BIN(bin), old_sink))
-	{
-		spLog(Log::Debug, this) << "Element " << name.data() << " not in pipeline";
-		return addElement(new_sink, element_before, nullptr);
-	}
-
-	auto* probe_data = new ReplaceSinkProbeData();
-	probe_data->old_sink = old_sink;
-	probe_data->new_sink = new_sink;
-	probe_data->element_before = element_before;
-	probe_data->pipeline = pipeline;
-	probe_data->bin = bin;
-	probe_data->old_state = old_state;
-
-	//gst_object_ref(old_sink);
-
-	if(probe_data->old_state == GST_STATE_NULL)
-	{
-		//Engine::Utils::set_state(old_sink, GST_STATE_NULL);
-		Engine::Utils::removeElements(GST_BIN(bin), {old_sink});
-		Engine::Utils::addElements(GST_BIN(bin), {new_sink});
-		Engine::Utils::linkElements({element_before, new_sink});
-
-		spLog(Log::Debug, this) << "Immediate replacement finished";
-
-		return true;
-	}
-
-	gst_pad_add_probe
-		(
-			pad,
-			GST_PAD_PROBE_TYPE_BLOCK_DOWNSTREAM,
-			src_blocked_replace,
-			probe_data, nullptr
-		);
-
-	spLog(Log::Debug, this) << "Element " << name.data() << " replaced.";
-
-	MilliSeconds maxMs = 2000;
-	while(Engine::Utils::getState(pipeline) != old_state)
-	{
-		Util::sleepMs(50);
-		maxMs -= 50;
-		if(maxMs < 0)
+		const auto lockGuard = WeakLockGuard(&globalMutex);
+		if(!lockGuard.wasLocked())
 		{
 			return false;
 		}
+
+		auto parent = Engine::Utils::AutoUnref(gst_element_get_parent(elementA));
+		auto* parentElement = GST_ELEMENT(*parent);
+		const auto name = Engine::Utils::GStringAutoFree(gst_element_get_name(element));
+
+		spLog(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
+		if(!Engine::Utils::hasElement(GST_BIN(parentElement), element))
+		{
+			spLog(Log::Debug, this) << "Element " << name.data() << " not in pipeline";
+			return true;
+		}
+
+		auto probeData = std::make_shared<ProbeData>();
+		probeData->elementA = elementA;
+		probeData->elementB = elementB;
+		probeData->elementOfInterest = element;
+		probeData->bin = parentElement;
+		probeData->oldState = Engine::Utils::getState(parentElement);
+		probeData->onDataFlowStopped = dataFlowStoppedAndFlush;
+		probeData->onElementFlushed = dataFlushedForRemoval;
+
+		// we need that element later, but a gst_bin_remove decreases refcount
+		gst_object_ref(element);
+
+		const auto success = (probeData->oldState == GST_STATE_NULL)
+		                     ? removeElementDirectly(elementA, element, elementB, GST_BIN(parentElement))
+		                     : installDataFlowStoppedListener(elementA, probeData.get());
+
+		if(!success)
+		{
+			spLog(Log::Debug, this) << "Could not remove " << name.data();
+		}
+
+		return success;
 	}
 
-	return true;
+	bool Changeable::replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* elementA, GstElement* bin)
+	{
+		const auto lockGuard = WeakLockGuard(&globalMutex);
+		if(!lockGuard.wasLocked())
+		{
+			return false;
+		}
+
+		const auto name = Engine::Utils::GStringAutoFree(gst_element_get_name(oldSink));
+		spLog(Log::Debug, this) << "Remove " << name.data() << " from pipeline";
+
+		if(!Engine::Utils::hasElement(GST_BIN(bin), oldSink))
+		{
+			spLog(Log::Debug, this) << "Element " << name.data() << " not in pipeline";
+			return addElement(newSink, elementA, nullptr); // NOLINT(readability-suspicious-call-argument)
+		}
+
+		auto* probeData = new ReplaceSinkProbeData();
+		probeData->oldSink = oldSink;
+		probeData->newSink = newSink;
+		probeData->elementA = elementA;
+		probeData->bin = bin;
+		probeData->oldState = Engine::Utils::getState(oldSink);
+		probeData->onDataFlowStopped = dataFlowStoppedForReplace;
+
+		const auto success = (probeData->oldState == GST_STATE_NULL)
+		                     ? replaceSinkDirectly(oldSink, newSink, elementA, GST_BIN(bin))
+		                     : installDataFlowStoppedListener(elementA, probeData);
+		if(!success)
+		{
+			spLog(Log::Warning, this) << "Could not replace element " << name.data();
+		}
+
+		return success;
+	}
 }

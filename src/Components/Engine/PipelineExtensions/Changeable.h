@@ -35,8 +35,7 @@ namespace PipelineExtensions
 
 			bool removeElement(GstElement* element, GstElement* firstElement, GstElement* secondElement);
 
-			bool replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* elementBefore, GstElement* pipeline,
-			                 GstElement* bin);
+			bool replaceSink(GstElement* oldSink, GstElement* newSink, GstElement* elementBefore, GstElement* bin);
 	};
 }
 
