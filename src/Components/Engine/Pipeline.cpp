@@ -25,7 +25,7 @@
 
 #include "PipelineExtensions/Probing.h"
 #include "PipelineExtensions/VisualizerBin.h"
-#include "PipelineExtensions/BroadcastBin.h"
+#include "PipelineExtensions/Broadcasting.h"
 #include "StreamRecorder/StreamRecorderBin.h"
 
 #include "Utils/globals.h"

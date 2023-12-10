@@ -21,11 +21,11 @@
 #ifndef GSTPLAYBACKPIPELINE_H_
 #define GSTPLAYBACKPIPELINE_H_
 
-#include "PipelineExtensions/BroadcastBin.h"
+#include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/Changeable.h"
 #include "PipelineExtensions/Fadeable.h"
 #include "PipelineExtensions/DelayedPlayable.h"
-#include "PipelineExtensions/BroadcastBin.h"
+#include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PositionAccessible.h"
 #include "PipelineExtensions/Pitchable.h"
 #include "PipelineExtensions/EqualizerAccesible.h"

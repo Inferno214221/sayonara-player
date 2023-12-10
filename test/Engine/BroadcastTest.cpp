@@ -19,7 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Components/Engine/EngineUtils.h"
-#include "Components/Engine/PipelineExtensions/BroadcastBin.h"
+#include "Components/Engine/PipelineExtensions/Broadcasting.h"
 #include <gstreamer-1.0/gst/audio/audio.h>
 #include <gstreamer-1.0/gst/gstbuffer.h>
 
