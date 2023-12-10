@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef GSTPLAYBACKPIPELINE_H_
-#define GSTPLAYBACKPIPELINE_H_
+#ifndef SAYONARA_PLAYER_PIPELINE_H
+#define SAYONARA_PLAYER_PIPELINE_H
 
 #include "PipelineExtensions/Broadcasting.h"
 #include "PipelineExtensions/PipelineInterfaces.h"
@@ -58,14 +58,14 @@ namespace Engine
 			bool prepare(const QString& uri);
 
 			bool hasElement(GstElement* e) const;
-			GstState state() const;
+			[[nodiscard]] GstState state() const;
 
 			void checkPosition();
 			void checkAboutToFinish();
 
 			void setVisualizerEnabled(bool levelEnabled, bool spectrumEnabled);
-			bool isLevelVisualizerEnabled() const;
-			bool isSpectrumVisualizerEnabled() const;
+			[[nodiscard]] bool isLevelVisualizerEnabled() const;
+			[[nodiscard]] bool isSpectrumVisualizerEnabled() const;
 
 			void setBroadcastingEnabled(bool b) override;
 			[[nodiscard]] bool isBroadcastingEnabled() const override;
@@ -83,11 +83,11 @@ namespace Engine
 			void seekAbsoluteMs(MilliSeconds ms);
 			void seekRelativeMs(MilliSeconds ms);
 			[[nodiscard]] MilliSeconds duration() const;
-			MilliSeconds timeToGo() const;
+			[[nodiscard]] MilliSeconds timeToGo() const;
 
 			void setEqualizerBand(int band, int value);
 
-		public slots:
+		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void play() override;
 			void stop() override;
 			void pause() override;
@@ -99,7 +99,7 @@ namespace Engine
 			void sppedChanged();
 			void sinkChanged();
 
-		private:
+		private: // NOLINT(readability-redundant-access-specifiers)
 			bool createElements();
 			bool addAndLinkElements();
 			void configureElements();
@@ -107,6 +107,6 @@ namespace Engine
 			void setVolume(double volume) override;
 			[[nodiscard]] double volume() const override;
 	};
-}
+} // SAYONARA_PLAYER_PIPELINE_H
 
 #endif
