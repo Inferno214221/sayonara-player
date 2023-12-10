@@ -30,129 +30,141 @@
 using namespace PipelineExtensions;
 
 GstPadProbeReturn
-Probing::levelProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b){
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-
-GstPadProbeReturn
-Probing::spectrumProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b){
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-
-GstPadProbeReturn
-Probing::lameProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data){
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b){
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-GstPadProbeReturn
-Probing::pitchProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
+Probing::levelProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
 {
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
 	auto* b = static_cast<bool*>( user_data );
-	if(*b){
+	if(*b)
+	{
 		return GST_PAD_PROBE_REMOVE;
 	}
 
-	else{
+	else
+	{
 		return GST_PAD_PROBE_DROP;
 	}
 }
 
+GstPadProbeReturn
+Probing::spectrumProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
+{
+	Q_UNUSED(pad)
+	Q_UNUSED(info)
+
+	auto* b = static_cast<bool*>( user_data );
+	if(*b)
+	{
+		return GST_PAD_PROBE_REMOVE;
+	}
+
+	else
+	{
+		return GST_PAD_PROBE_DROP;
+	}
+}
+
+GstPadProbeReturn
+Probing::lameProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
+{
+	Q_UNUSED(pad)
+	Q_UNUSED(info)
+
+	auto* b = static_cast<bool*>( user_data );
+	if(*b)
+	{
+		return GST_PAD_PROBE_REMOVE;
+	}
+
+	else
+	{
+		return GST_PAD_PROBE_DROP;
+	}
+}
+
+GstPadProbeReturn
+Probing::pitchProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
+{
+	Q_UNUSED(pad)
+	Q_UNUSED(info)
+
+	auto* b = static_cast<bool*>( user_data );
+	if(*b)
+	{
+		return GST_PAD_PROBE_REMOVE;
+	}
+
+	else
+	{
+		return GST_PAD_PROBE_DROP;
+	}
+}
 
 void Probing::handleProbe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback)
 {
-	GstPad* pad =  gst_element_get_static_pad(queue, "src");
+	GstPad* pad = gst_element_get_static_pad(queue, "src");
 
-	if(*active == true){
-		if(*probe_id > 0){
+	if(*active == true)
+	{
+		if(*probe_id > 0)
+		{
 			gst_pad_remove_probe(pad, *probe_id);
 			*probe_id = 0;
 		}
 	}
 
-	else if(*probe_id == 0){
+	else if(*probe_id == 0)
+	{
 		*probe_id = gst_pad_add_probe(
-					pad,
-					(GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER),
-					callback,
-					active, // userdata
-					NULL
-					);
+			pad,
+			(GstPadProbeType) (GST_PAD_PROBE_TYPE_BUFFER),
+			callback,
+			active, // userdata
+			NULL
+		);
 	}
 
-	if(pad != nullptr){
+	if(pad != nullptr)
+	{
 		gst_object_unref(pad);
 	}
 }
 
-
 void Probing::handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback)
 {
-	GstPad* pad =  gst_element_get_static_pad(data->queue, "src");
+	GstPad* pad = gst_element_get_static_pad(data->queue, "src");
 
 	if(data->probeId == 0)
 	{
 		data->busy = true;
 		data->probeId = gst_pad_add_probe(
-					pad,
-					(GstPadProbeType)(GST_PAD_PROBE_TYPE_BUFFER),
-					callback,
-					data, // userdata
-					NULL
+			pad,
+			(GstPadProbeType) (GST_PAD_PROBE_TYPE_BUFFER),
+			callback,
+			data, // userdata
+			NULL
 		);
 
 		gst_element_send_event(data->sink, gst_event_new_eos());
 	}
 
-	if(pad != nullptr){
+	if(pad != nullptr)
+	{
 		gst_object_unref(pad);
 	}
 }
 
-
 GstPadProbeReturn
-Probing::streamRecorderProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_data)
+Probing::streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
 {
 	Q_UNUSED(pad)
 	Q_UNUSED(info)
 
 	auto* data = static_cast<StreamRecorder::Data*>(user_data);
 
-	if(!data){
+	if(!data)
+	{
 		return GST_PAD_PROBE_DROP;
 	}
 
@@ -165,7 +177,8 @@ Probing::streamRecorderProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_
 
 		data->isFilenameEmpty = false;
 
-		if(data->probeId > 0){
+		if(data->probeId > 0)
+		{
 			//gst_pad_remove_probe(pad, data->probe_id);
 			data->probeId = 0;
 		}
@@ -182,8 +195,8 @@ Probing::streamRecorderProbed(GstPad *pad, GstPadProbeInfo *info, gpointer user_
 		{
 			Engine::Utils::setState(data->sink, GST_STATE_NULL);
 			Engine::Utils::setValue(data->sink,
-									 "location",
-									 Util::tempPath("probing.mp3").toLocal8Bit().data());
+			                        "location",
+			                        Util::tempPath("probing.mp3").toLocal8Bit().data());
 
 			data->isFilenameEmpty = true;
 		}
