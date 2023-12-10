@@ -30,6 +30,7 @@
 
 namespace
 {
+	GstPadProbeReturn onDeactivated(GstPad*, GstPadProbeInfo*, gpointer) { return GST_PAD_PROBE_DROP; }
 
 	GstFlowReturn newBuffer(GstElement* sink, gpointer p)
 	{
@@ -91,8 +92,10 @@ namespace
 				}
 
 				m_isRunning = b;
-				PipelineExtensions::Probing::handleProbe(&m_isRunning, m_queue,
-				                                         &m_probe, PipelineExtensions::Probing::lameProbed);
+				m_probingData.active = b;
+				m_probingData.queue = m_queue;
+
+				PipelineExtensions::Probing::handleProbe(&m_probingData, onDeactivated);
 
 				return true;
 			}
@@ -166,6 +169,7 @@ namespace
 			}
 
 			PipelineExtensions::RawDataReceiverPtr m_rawDataReceiver;
+			PipelineExtensions::Probing::GenericProbingData m_probingData;
 			GstElement* m_pipeline;
 			GstElement* m_tee {nullptr};
 
@@ -176,7 +180,6 @@ namespace
 			GstElement* m_lame {nullptr};
 			GstElement* m_appSink {nullptr};
 
-			gulong m_probe {0};
 			bool m_isRunning {false};
 	};
 

@@ -51,10 +51,8 @@ struct GUI_Spectrum::Private
 	SpectrumDataProvider* dataProvider;
 	float* logarithmLookupTable = nullptr;
 
-
-	Private(SpectrumDataProvider* dataProvider) :
-		dataProvider(dataProvider)
-	{}
+	explicit Private(SpectrumDataProvider* dataProvider) :
+		dataProvider(dataProvider) {}
 
 	void initLookupTable(int bins)
 	{
@@ -94,7 +92,7 @@ struct GUI_Spectrum::Private
 			steps.resize(binCount);
 		}
 
-		for(BinSteps& step : steps)
+		for(BinSteps& step: steps)
 		{
 			step.resize(rects);
 			std::fill(step.begin(), step.end(), 0);
@@ -160,7 +158,7 @@ QString GUI_Spectrum::displayName() const
 
 bool GUI_Spectrum::isActive() const
 {
-	return this->isVisible();
+	return GetSetting(Set::Engine_ShowSpectrum);
 }
 
 void GUI_Spectrum::retranslate() {}
@@ -221,9 +219,9 @@ void GUI_Spectrum::showEvent(QShowEvent* e)
 
 void GUI_Spectrum::closeEvent(QCloseEvent* e)
 {
+	VisualPlugin::closeEvent(e);
 	SetSetting(Set::Engine_ShowSpectrum, false);
 	m->dataProvider->spectrumActiveChanged(false);
-	VisualPlugin::closeEvent(e);
 }
 
 void GUI_Spectrum::paintEvent(QPaintEvent* e)

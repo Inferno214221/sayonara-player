@@ -27,170 +27,65 @@
 #include "Utils/Utils.h"
 #include "Utils/StandardPaths.h"
 
-using namespace PipelineExtensions;
-
-GstPadProbeReturn
-Probing::levelProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
+namespace PipelineExtensions::Probing
 {
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b)
+	void handleProbe(GenericProbingData* userData, GstPadProbeCallback callback)
 	{
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else
-	{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-GstPadProbeReturn
-Probing::spectrumProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
-{
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b)
-	{
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else
-	{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-GstPadProbeReturn
-Probing::lameProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
-{
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b)
-	{
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else
-	{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-GstPadProbeReturn
-Probing::pitchProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
-{
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* b = static_cast<bool*>( user_data );
-	if(*b)
-	{
-		return GST_PAD_PROBE_REMOVE;
-	}
-
-	else
-	{
-		return GST_PAD_PROBE_DROP;
-	}
-}
-
-void Probing::handleProbe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback)
-{
-	GstPad* pad = gst_element_get_static_pad(queue, "src");
-
-	if(*active == true)
-	{
-		if(*probe_id > 0)
+		auto pad = Engine::Utils::getStaticPad(userData->queue, Engine::Utils::src);
+		if(userData->active)
 		{
-			gst_pad_remove_probe(pad, *probe_id);
-			*probe_id = 0;
+			if(userData->probeId > 0)
+			{
+				gst_pad_remove_probe(*pad, userData->probeId);
+				userData->probeId = 0;
+			}
+		}
+
+		else if(userData->probeId == 0)
+		{
+			userData->probeId = gst_pad_add_probe(*pad, GST_PAD_PROBE_TYPE_BUFFER, callback, userData, nullptr);
 		}
 	}
 
-	else if(*probe_id == 0)
+	void handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback)
 	{
-		*probe_id = gst_pad_add_probe(
-			pad,
-			(GstPadProbeType) (GST_PAD_PROBE_TYPE_BUFFER),
-			callback,
-			active, // userdata
-			NULL
-		);
-	}
-
-	if(pad != nullptr)
-	{
-		gst_object_unref(pad);
-	}
-}
-
-void Probing::handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback)
-{
-	GstPad* pad = gst_element_get_static_pad(data->queue, "src");
-
-	if(data->probeId == 0)
-	{
-		data->busy = true;
-		data->probeId = gst_pad_add_probe(
-			pad,
-			(GstPadProbeType) (GST_PAD_PROBE_TYPE_BUFFER),
-			callback,
-			data, // userdata
-			NULL
-		);
-
-		gst_element_send_event(data->sink, gst_event_new_eos());
-	}
-
-	if(pad != nullptr)
-	{
-		gst_object_unref(pad);
-	}
-}
-
-GstPadProbeReturn
-Probing::streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data)
-{
-	Q_UNUSED(pad)
-	Q_UNUSED(info)
-
-	auto* data = static_cast<StreamRecorder::Data*>(user_data);
-
-	if(!data)
-	{
-		return GST_PAD_PROBE_DROP;
-	}
-
-	if(data->active)
-	{
-		spLog(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
-
-		Engine::Utils::setState(data->sink, GST_STATE_NULL);
-		Engine::Utils::setValue(data->sink, "location", data->filename);
-
-		data->isFilenameEmpty = false;
-
-		if(data->probeId > 0)
+		if(data->probeId == 0)
 		{
-			//gst_pad_remove_probe(pad, data->probe_id);
-			data->probeId = 0;
+			auto pad = Engine::Utils::getStaticPad(data->queue, Engine::Utils::src);
+
+			data->busy = true;
+			// NOLINTNEXTLINE(bugprone-narrowing-conversions, cppcoreguidelines-narrowing-conversions)
+			data->probeId = gst_pad_add_probe(*pad, GST_PAD_PROBE_TYPE_BUFFER, callback, data, nullptr);
+
+			gst_element_send_event(data->sink, gst_event_new_eos());
+		}
+	}
+
+	GstPadProbeReturn streamRecorderProbed(GstPad* /*pad*/, GstPadProbeInfo* /*info*/, gpointer userData)
+	{
+		auto* data = static_cast<StreamRecorder::Data*>(userData);
+		if(!data)
+		{
+			return GST_PAD_PROBE_DROP;
 		}
 
-		Engine::Utils::setState(data->sink, GST_STATE_PLAYING);
+		if(data->active)
+		{
+			spLog(Log::Develop, "PipelineProbes") << "set new filename streamrecorder: " << data->filename;
 
-		data->busy = false;
-		return GST_PAD_PROBE_REMOVE;
-	}
+			Engine::Utils::setState(data->sink, GST_STATE_NULL);
+			Engine::Utils::setValue(data->sink, "location", data->filename);
 
-	else
-	{
+			data->isFilenameEmpty = false;
+			data->probeId = std::min(0, data->probeId);
+
+			Engine::Utils::setState(data->sink, GST_STATE_PLAYING);
+
+			data->busy = false;
+
+			return GST_PAD_PROBE_REMOVE;
+		}
+
 		if(!data->isFilenameEmpty)
 		{
 			Engine::Utils::setState(data->sink, GST_STATE_NULL);
@@ -202,6 +97,7 @@ Probing::streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_
 		}
 
 		data->busy = false;
+
 		return GST_PAD_PROBE_DROP;
 	}
 }

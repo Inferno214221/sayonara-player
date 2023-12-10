@@ -28,89 +28,20 @@ namespace StreamRecorder
 	struct Data;
 }
 
-namespace PipelineExtensions
+namespace PipelineExtensions::Probing
 {
-	/**
-	 * @ingroup EngineHelper
-	 */
-	namespace Probing
+	struct GenericProbingData
 	{
+		bool active {false};
+		GstElement* queue {nullptr};
+		gulong probeId {0};
+	};
 
-		/**
-		 * @brief This is the main interface for the outside world
-		 * @ingroup EngineHelper
-		 * @param active
-		 * @param queue
-		 * @param probe_id
-		 * @param callback
-		 */
-		void handleProbe(bool* active, GstElement* queue, gulong* probe_id, GstPadProbeCallback callback);
+	void handleProbe(GenericProbingData* userData, GstPadProbeCallback callback);
 
+	GstPadProbeReturn streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer userData);
 
-		/**
-		 * @brief level_probed
-		 * @ingroup EngineHelper
-		 * @param pad
-		 * @param info
-		 * @param user_data
-		 * @return
-		 */
-		GstPadProbeReturn
-		levelProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
-
-		/**
-		 * @brief spectrum_probed
-		 * @ingroup EngineHelper
-		 * @param pad
-		 * @param info
-		 * @param user_data
-		 * @return
-		 */
-		GstPadProbeReturn
-		spectrumProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
-
-		/**
-		 * @brief lame_probed
-		 * @ingroup EngineHelper
-		 * @param pad
-		 * @param info
-		 * @param user_data
-		 * @return
-		 */
-		GstPadProbeReturn
-		lameProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
-
-		/**
-		 * @brief pitch_probed
-		 * @ingroup EngineHelper
-		 * @param pad
-		 * @param info
-		 * @param user_data
-		 * @return
-		 */
-		GstPadProbeReturn
-		pitchProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
-
-
-		/**
-		 * @brief stream_recorder_probed
-		 * @ingroup EngineHelper
-		 * @param pad
-		 * @param info
-		 * @param user_data
-		 * @return
-		 */
-		GstPadProbeReturn
-		streamRecorderProbed(GstPad* pad, GstPadProbeInfo* info, gpointer user_data);
-
-		/**
-		 * @brief handle_stream_recorder_probe
-		 * @ingroup EngineHelper
-		 * @param data
-		 * @param callback
-		 */
-		void handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback);
-	}
+	void handleStreamRecorderProbe(StreamRecorder::Data* data, GstPadProbeCallback callback);
 }
 
 #endif // PIPELINEPROBES_H

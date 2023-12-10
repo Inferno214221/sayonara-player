@@ -23,6 +23,11 @@
 #include "Components/Engine/EngineUtils.h"
 #include "Utils/Settings/Settings.h"
 
+namespace
+{
+	GstPadProbeReturn onDeactivated(GstPad*, GstPadProbeInfo*, gpointer) { return GST_PAD_PROBE_DROP; }
+}
+
 class VisualizerBinImpl :
 	public PipelineExtensions::VisualizerBin
 {
@@ -53,9 +58,10 @@ class VisualizerBinImpl :
 			}
 
 			m_isRunning = isRunning;
+			m_probingData.active = isRunning;
+			m_probingData.queue = m_queue;
 
-			PipelineExtensions::Probing::handleProbe(&m_isRunning, m_queue,
-			                                         &m_probe, PipelineExtensions::Probing::spectrumProbed);
+			PipelineExtensions::Probing::handleProbe(&m_probingData, onDeactivated);
 			Engine::Utils::setValue(G_OBJECT(m_level), "post-messages", levelEnabled);
 			Engine::Utils::setValue(G_OBJECT(m_spectrum), "post-messages", spectrumEnabled);
 
@@ -137,7 +143,7 @@ class VisualizerBinImpl :
 		GstElement* m_level {nullptr};
 		GstElement* m_sink {nullptr};
 
-		gulong m_probe {0};
+		PipelineExtensions::Probing::GenericProbingData m_probingData;
 		bool m_isRunning {false};
 		bool m_isSpectrumEnabled {false};
 		bool m_isLevelEnabled {false};
