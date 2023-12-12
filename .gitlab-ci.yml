@@ -81,7 +81,7 @@ package-appimage:
 # Snap
 ## Package Snap
 package-snap:
-  image: registry.gitlab.com/luciocarreras/sayonara-player:core20
+  image: registry.gitlab.com/luciocarreras/sayonara-player:core20-5-99-qt-5-15-7
   stage: build
   tags:
     - luke-1
@@ -108,7 +108,7 @@ package-snap:
 
 # Deploy Snap
 deploy-snap:
-  image: registry.gitlab.com/luciocarreras/sayonara-player:core20
+  image: registry.gitlab.com/luciocarreras/sayonara-player:core20-5-99-qt-5-15-7
   stage: deploy
   dependencies:
     - package-snap

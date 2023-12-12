@@ -3,11 +3,12 @@ FROM ubuntu:focal
 RUN export DEBIAN_FRONTEND=noninteractive && \
   apt-get update && \
   apt-get dist-upgrade --yes && \
-  apt-get install --yes curl sudo jq squashfs-tools tzdata patch
+  apt-get install --yes curl sudo jq squashfs-tools tzdata patch wget
 
-# Core
-RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core' | jq '.download_url' -r) --output core.snap && \
-  mkdir -p /snap/core && unsquashfs -d /snap/core/current core.snap && rm core.snap
+ENV KDE_FRAMEWORK="kde-frameworks-5-99-qt-5-15-7-core20"
+
+ # Core
+RUN mkdir -p /snap/core && curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core' | jq '.download_url' -r) --output core.snap && unsquashfs -d /snap/core/current core.snap && rm core.snap
 
 # Core18
 RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/core18' | jq '.download_url' -r) --output core18.snap && \
@@ -25,13 +26,13 @@ RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/sna
 RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/gtk-common-themes' | jq '.download_url' -r) --output gtk-common-themes.snap && \
   mkdir -p /snap/gtk-common-themes && unsquashfs -d /snap/gtk-common-themes/current gtk-common-themes.snap && rm gtk-common-themes.snap
 
-# kde-frameworks-5-91-qt-5-15-3-core20
-RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-91-qt-5-15-3-core20' | jq '.download_url' -r) --output kde-frameworks-5-91-qt-5-15-3-core20.snap && \
-  mkdir -p /snap/kde-frameworks-5-91-qt-5-15-3-core20 && unsquashfs -d /snap/kde-frameworks-5-91-qt-5-15-3-core20/current kde-frameworks-5-91-qt-5-15-3-core20.snap && rm kde-frameworks-5-91-qt-5-15-3-core20.snap
+# ${KDE_FRAMEWORK}
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' "https://api.snapcraft.io/api/v1/snaps/details/${KDE_FRAMEWORK}" | jq '.download_url' -r) --output ${KDE_FRAMEWORK}.snap && \
+  mkdir -p /snap/${KDE_FRAMEWORK} && unsquashfs -d /snap/${KDE_FRAMEWORK}/current ${KDE_FRAMEWORK}.snap && rm ${KDE_FRAMEWORK}.snap
 
-# kde-frameworks-5-91-qt-5-15-3-core20-sdk
-RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' 'https://api.snapcraft.io/api/v1/snaps/details/kde-frameworks-5-91-qt-5-15-3-core20-sdk' | jq '.download_url' -r) --output kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && \
-  mkdir -p /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk && unsquashfs -d /snap/kde-frameworks-5-91-qt-5-15-3-core20-sdk/current kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap && rm kde-frameworks-5-91-qt-5-15-3-core20-sdk.snap
+# ${KDE_FRAMEWORK}-sdk
+RUN curl -L $(curl -H 'X-Ubuntu-Series: 16' "https://api.snapcraft.io/api/v1/snaps/details/${KDE_FRAMEWORK}-sdk" | jq '.download_url' -r) --output ${KDE_FRAMEWORK}-sdk.snap && \
+  mkdir -p /snap/${KDE_FRAMEWORK}-sdk && unsquashfs -d /snap/${KDE_FRAMEWORK}-sdk/current ${KDE_FRAMEWORK}-sdk.snap && rm ${KDE_FRAMEWORK}-sdk.snap
 
 # Patch snapcraftctl script to use python environment
 COPY ./snapcraft-core20.patch /tmp/snapcraft-core20.patch
@@ -42,7 +43,7 @@ RUN apt remove --yes --purge curl jq squashfs-tools patch && \
   apt-get autoclean --yes && \
   apt-get clean --yes
 
-# Generate locale and install dependencies.
+# Generate locale and install dependencies
 RUN apt update && apt dist-upgrade --yes && apt install --yes sudo locales snapd && locale-gen en_US.UTF-8
 
 # Create a snapcraft runner (TODO: move version detection to the core of snapcraft)

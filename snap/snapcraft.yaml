@@ -95,7 +95,7 @@ parts:
     build-snaps:
       - gtk-common-themes
     build-environment:
-      - KDE_RUNTIME: kde-frameworks-5-91-qt-5-15-3-core20
+      - KDE_RUNTIME: kde-frameworks-5-99-qt-5-15-7-core20
     override-prime: |
       set -eux
       for snap in "gtk-common-themes" "$KDE_RUNTIME" ; do
