@@ -32,6 +32,19 @@
          "LINK_GSTREAMER_PLUGINS": "ON",
          "CMAKE_PREFIX_PATH": "/opt/qt"
        }
+    },
+    {
+      "name": "ci-cotire",
+      "binaryDir": "${sourceDir}/build",
+      "generator": "Unix Makefiles",
+      "cacheVariables": {
+         "CMAKE_BUILD_TYPE": "Release",
+         "CMAKE_INSTALL_PREFIX": "/usr",
+         "WITH_TESTS": "ON",
+         "LINK_GSTREAMER_PLUGINS": "ON",
+         "CMAKE_PREFIX_PATH": "/opt/qt",
+		 "WITH_COTIRE": "ON"
+       }
     }
   ]
 }

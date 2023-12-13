@@ -12,7 +12,7 @@ build-sayonara:
   tags:
     - luke-1
   script:
-    - cmake --preset=ci -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
+    - cmake --preset=ci-cotire -DGIT_REVISION="${CI_COMMIT_SHORT_SHA}"
     - cd build
     - make -j`nproc`
     - make install DESTDIR=AppDir
