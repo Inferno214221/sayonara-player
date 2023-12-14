@@ -33,10 +33,6 @@ class QSize;
 class QPoint;
 class SettingConvertible;
 
-/**
-* @brief The SettingConverter<bool> class
-* @ingroup Settings
-*/
 namespace SettingConverter
 {
 	QString toString(const SettingConvertible& t);

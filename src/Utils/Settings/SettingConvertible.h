@@ -25,12 +25,11 @@ class QString;
 
 class SettingConvertible
 {
-public:
-	SettingConvertible();
-	virtual ~SettingConvertible();
+	public:
+		virtual ~SettingConvertible() = default;
 
-	virtual bool loadFromString(const QString& str)=0;
-	virtual QString toString() const = 0;
+		virtual bool loadFromString(const QString& str) = 0;
+		[[nodiscard]] virtual QString toString() const = 0;
 };
 
 #endif // SAYONARA_PLAYER_SETTINGCONVERTIBLE_H
