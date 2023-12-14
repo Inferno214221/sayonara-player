@@ -21,35 +21,55 @@
 #include "SettingConverter.h"
 #include "SettingConvertible.h"
 
+#include "Utils/Algorithm.h"
+
 #include <QStringList>
 #include <QSize>
 #include <QPoint>
 
-/** Bool **/
-QString SettingConverter::toString(const bool& val)
-{
-	if(val) {
-		return QString("true");
-	}
+#include <optional>
 
-	else {
-		return QString("false");
+namespace
+{
+	auto stringToIntConverter = [](const auto& str) -> std::optional<int> {
+		bool ok = false;
+		auto i = str.toInt(&ok);
+
+		return ok ? std::optional {i} : std::nullopt;
+	};
+
+	template<typename A, typename B>
+	QString pairToString(const A& a, const B& b) { return QString("%1,%2").arg(a).arg(b); }
+
+	template<typename A>
+	std::optional<std::pair<A, A>>
+	stringToPair(const QString& str, std::function<std::optional<A>(QString)>&& converter)
+	{
+		const auto splitted = str.split(",");
+		if(splitted.count() < 2)
+		{
+			return std::nullopt;
+		}
+
+		const auto a = converter(splitted[0]);
+		const auto b = converter(splitted[1]);
+
+		return (a.has_value() && b.has_value())
+		       ? std::optional {std::make_pair(a.value(), b.value())}
+		       : std::nullopt;
 	}
 }
 
+QString SettingConverter::toString(const bool& val) { return val ? "true" : "false"; }
+
 bool SettingConverter::fromString(const QString& val, bool& b)
 {
-    b = ((val.compare("true", Qt::CaseInsensitive) == 0) || (val.toInt() > 0));
+	b = (val.toLower() == "true") || (val.toInt() > 0);
 
 	return true;
 }
 
-
-/** Integer **/
-QString SettingConverter::toString(const int& val)
-{
-	return QString::number(val);
-}
+QString SettingConverter::toString(const int& val) { return QString::number(val); }
 
 bool SettingConverter::fromString(const QString& val, int& i)
 {
@@ -59,12 +79,7 @@ bool SettingConverter::fromString(const QString& val, int& i)
 	return ok;
 }
 
-
-/** Floating Point **/
-QString SettingConverter::toString(const float& val)
-{
-	return QString::number(val);
-}
+QString SettingConverter::toString(const float& val) { return QString::number(val); }
 
 bool SettingConverter::fromString(const QString& val, float& i)
 {
@@ -74,12 +89,7 @@ bool SettingConverter::fromString(const QString& val, float& i)
 	return ok;
 }
 
-
-/** QStringList **/
-QString SettingConverter::toString(const QStringList& val)
-{
-	return val.join(",");
-}
+QString SettingConverter::toString(const QStringList& val) { return val.join(","); }
 
 bool SettingConverter::fromString(const QString& val, QStringList& lst)
 {
@@ -87,11 +97,7 @@ bool SettingConverter::fromString(const QString& val, QStringList& lst)
 	return true;
 }
 
-/** QString **/
-QString SettingConverter::toString(const QString& val)
-{
-	return val;
-}
+QString SettingConverter::toString(const QString& val) { return val; }
 
 bool SettingConverter::fromString(const QString& val, QString& b)
 {
@@ -99,72 +105,38 @@ bool SettingConverter::fromString(const QString& val, QString& b)
 	return true;
 }
 
-/** QSize **/
-QString SettingConverter::toString(const QSize& val)
-{
-	return QString::number(val.width()) + "," + QString::number(val.height());
-}
+QString SettingConverter::toString(const QSize& val) { return pairToString(val.width(), val.height()); }
 
 bool SettingConverter::fromString(const QString& val, QSize& sz)
 {
-	bool ok;
-	int width, height;
+	const auto result = stringToPair<int>(val, stringToIntConverter);
+	if(result.has_value())
+	{
+		sz = QSize {result->first, result->second};
+	}
 
-	QStringList lst = val.split(",");
-
-	if(lst.size() < 2) return false;
-
-	width = lst[0].toInt(&ok);
-
-	if(!ok) return false;
-	height = lst[1].toInt(&ok);
-	if(!ok) return false;
-
-	sz.setWidth(width);
-	sz.setHeight(height);
-
-	return true;
+	return result.has_value();
 }
 
-/** QPoint **/
-QString SettingConverter::toString(const QPoint& val)
+QString SettingConverter::toString(const QPoint& val) { return pairToString(val.x(), val.y()); }
+
+bool SettingConverter::fromString(const QString& val, QPoint& point)
 {
-	return QString::number(val.x()) + "," + QString::number(val.y());
+	const auto result = stringToPair<int>(val, stringToIntConverter);
+	if(result.has_value())
+	{
+		point = QPoint {result->first, result->second};
+	}
+
+	return result.has_value();
 }
 
-bool SettingConverter::fromString(const QString& val, QPoint& sz)
-{
-	bool ok;
-	int x, y;
-
-	QStringList lst = val.split(",");
-
-	if(lst.size() < 2) return false;
-
-	x = lst[0].toInt(&ok);
-
-	if(!ok) return false;
-	y = lst[1].toInt(&ok);
-	if(!ok) return false;
-
-	sz.setX(x);
-	sz.setY(y);
-
-	return true;
-}
-
-/** QByteArray **/
 QString SettingConverter::toString(const QByteArray& arr)
 {
-	if(arr.isEmpty()){
-		return QString();
-	}
-
 	QStringList numbers;
-	for(Byte item : arr)
-	{
-		numbers << QString::number(item);
-	}
+	Util::Algorithm::transform(arr, numbers, [](const auto& byte) {
+		return QString::number(byte);
+	});
 
 	return numbers.join(",");
 }
@@ -172,27 +144,22 @@ QString SettingConverter::toString(const QByteArray& arr)
 bool SettingConverter::fromString(const QString& str, QByteArray& arr)
 {
 	arr.clear();
-	if(str.isEmpty()){
+
+	if(str.isEmpty())
+	{
 		return true;
 	}
 
-	QStringList numbers = str.split(",");
-
-	for(const QString& num_str : numbers)
+	const auto numbers = str.split(",");
+	for(const auto& numStr: numbers)
 	{
-		int num = num_str.toInt();
+		const auto num = numStr.toInt();
 		arr.append(char(num));
 	}
 
-	return (!numbers.empty());
+	return !numbers.empty();
 }
 
-QString SettingConverter::toString(const SettingConvertible& t)
-{
-	return t.toString();
-}
+QString SettingConverter::toString(const SettingConvertible& t) { return t.toString(); }
 
-bool SettingConverter::fromString(const QString& val, SettingConvertible& t)
-{
-	return t.loadFromString(val);
-}
+bool SettingConverter::fromString(const QString& val, SettingConvertible& t) { return t.loadFromString(val); }

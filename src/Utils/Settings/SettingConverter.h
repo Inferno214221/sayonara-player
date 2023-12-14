@@ -48,23 +48,22 @@ namespace SettingConverter
 	QString toString(const int& val);
 	bool fromString(const QString& val, int& i);
 
-	template<typename T, typename = typename std::enable_if< std::is_enum<T>::value, T >::type>
+	template<typename T, typename = typename std::enable_if<std::is_enum<T>::value, T>::type>
 	QString toString(const T& val)
 	{
 		int i = static_cast<int>(val);
 		return toString(i);
 	}
 
-	template <typename T, typename = typename std::enable_if< std::is_enum<T>::value, T >::type>
+	template<typename T, typename = typename std::enable_if<std::is_enum<T>::value, T>::type>
 	bool fromString(const QString& val, T& e)
 	{
-		int i;
-		bool b = fromString(val, i);
+		int i = 0;
+		const auto b = fromString(val, i);
 
 		e = static_cast<T>(i);
 		return b;
 	}
-
 
 	QString toString(const float& val);
 	bool fromString(const QString& val, float& i);
@@ -109,7 +108,8 @@ namespace SettingConverter
 	{
 		QStringList lst;
 
-		for(const T& v : val) {
+		for(const T& v: val)
+		{
 			lst << toString(v);
 		}
 
@@ -122,15 +122,17 @@ namespace SettingConverter
 		ret.clear();
 		QStringList lst = val.split(",");
 
-		for(const QString& l : lst)
+		for(const auto& item: lst)
 		{
 			try
 			{
 				T v;
-				if(fromString(l, v)){
+				if(fromString(item, v))
+				{
 					ret << v;
 				}
-			} catch (std::exception& e) {
+			} catch(std::exception& e)
+			{
 				std::cerr << e.what() << std::endl;
 			}
 		}
