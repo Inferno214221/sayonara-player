@@ -25,75 +25,67 @@
 
 struct AbstrSetting::Private
 {
-	QString			db_key;
-	SettingKey		key;
-	bool			db_setting;
+	QString databaseKey;
+	SettingKey key {SettingKey::Num_Setting_Keys};
+	bool isDatabaseSetting {false};
+
+	Private() = default;
+
+	Private(QString databaseKey, const SettingKey key, const bool isDatabaseSetting) :
+		databaseKey {std::move(databaseKey)},
+		key {key},
+		isDatabaseSetting {isDatabaseSetting} {}
+
+	Private(const Private& other) = default;
+	Private(Private&& other) = default;
+	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) = default;
 };
 
-AbstrSetting::AbstrSetting()
-{
-	m = Pimpl::make<Private>();
-}
+AbstrSetting::AbstrSetting() :
+	m {Pimpl::make<Private>()} {}
 
 AbstrSetting::AbstrSetting(SettingKey key) :
-	AbstrSetting()
-{
-	m->key = key;
-	m->db_setting = false;
-}
+	m {Pimpl::make<Private>(QString {}, key, false)} {}
 
-AbstrSetting::AbstrSetting(SettingKey key, const char* db_key) :
-	AbstrSetting(key)
-{
-	m->db_key = db_key;
-	m->db_setting = true;
-}
+AbstrSetting::AbstrSetting(SettingKey key, const char* databaseKey) :
+	m {Pimpl::make<Private>(databaseKey, key, true)} {}
 
 AbstrSetting::AbstrSetting(const AbstrSetting& other) :
-	AbstrSetting()
-{
-	m->key = other.m->key;
-	m->db_key = other.m->db_key;
-	m->db_setting = other.m->db_setting;
-}
+	m {Pimpl::make<Private>(*other.m)} {}
 
 AbstrSetting& AbstrSetting::operator=(const AbstrSetting& other)
 {
-	m->key = other.m->key;
-	m->db_key = other.m->db_key;
-	m->db_setting = other.m->db_setting;
+	*m = *(other.m);
+	return *this;
+}
 
+AbstrSetting::AbstrSetting(AbstrSetting&& other) noexcept :
+	m {Pimpl::make<Private>(std::move(*other.m))} {}
+
+AbstrSetting& AbstrSetting::operator=(AbstrSetting&& other) noexcept
+{
+	*m = std::move(*(other.m));
 	return *this;
 }
 
 AbstrSetting::~AbstrSetting() = default;
 
-SettingKey AbstrSetting::getKey() const
-{
-	return m->key;
-}
+SettingKey AbstrSetting::getKey() const { return m->key; }
 
-QString AbstrSetting::dbKey() const
-{
-	return m->db_key;
-}
+QString AbstrSetting::dbKey() const { return m->databaseKey; }
 
-bool AbstrSetting::isDatabaseSetting() const
-{
-	return m->db_setting;
-}
+bool AbstrSetting::isDatabaseSetting() const { return m->isDatabaseSetting; }
 
 void AbstrSetting::assignValue(const QString& value)
 {
-	if(!m->db_setting) {
-		return;
-	}
-
-	bool success = loadValueFromString(value);
-
-	if(!success)
+	if(m->isDatabaseSetting)
 	{
-		spLog(Log::Warning, this) << "Setting " << m->db_key << ": Cannot convert. Use default value...";
-		assignDefaultValue();
+		const auto success = loadValueFromString(value);
+		if(!success)
+		{
+			spLog(Log::Warning, this) << "Setting " << m->databaseKey << ": Cannot convert. Use default value...";
+			assignDefaultValue();
+		}
 	}
 }

@@ -26,14 +26,6 @@
 #include "Utils/Settings/SettingKey.h"
 #include "Utils/Pimpl.h"
 
-class Settings;
-
-/**
- * @brief The AbstrSetting class\n
- * Every setting needs a key and a value
- * The SettingKey is only used inside the setting mechanism
- * @ingroup Settings
- */
 class AbstrSetting
 {
 	PIMPL(AbstrSetting)
@@ -42,100 +34,72 @@ class AbstrSetting
 		AbstrSetting();
 		AbstrSetting(const AbstrSetting& other);
 		AbstrSetting& operator=(const AbstrSetting& other);
+		AbstrSetting(AbstrSetting&& other) noexcept;
+		AbstrSetting& operator=(AbstrSetting&& other) noexcept;
 
 	protected:
-		AbstrSetting(SettingKey key);
+		explicit AbstrSetting(SettingKey key);
 		AbstrSetting(SettingKey key, const char* dbKey);
-
 
 	public:
 		virtual ~AbstrSetting();
 
-		SettingKey getKey() const;
-		QString dbKey() const;
-		bool isDatabaseSetting() const;
+		[[nodiscard]] SettingKey getKey() const;
+		[[nodiscard]] QString dbKey() const;
+		[[nodiscard]] bool isDatabaseSetting() const;
 
 		void assignValue(const QString& value);
 
-		/* Pure virtual function for DB load/save */
-		virtual bool loadValueFromString(const QString& str)=0;
-		virtual QString valueToString() const=0;
-		virtual void assignDefaultValue()=0;
+		virtual bool loadValueFromString(const QString& str) = 0;
+		[[nodiscard]] virtual QString valueToString() const = 0;
+		virtual void assignDefaultValue() = 0;
 };
 
-
 template<typename KeyClass>
-/**
- * @brief The Setting class\n
- * T is the pure value type e.g. QString
- * @ingroup Settings
- */
-class Setting : public AbstrSetting
+class Setting :
+	public AbstrSetting
 {
-	private:
-		Setting()=delete;
-		Setting(const Setting&)=delete;
-
-		typename KeyClass::Data mValue;
-		typename KeyClass::Data mDefaultValue;
-
 	public:
+		Setting() = delete;
+		Setting(const Setting&) = delete;
 
-		/* Constructor */
-		Setting(const char* db_key, const typename KeyClass::Data& def) :
-			AbstrSetting(KeyClass::key, db_key)
-		{
-			mDefaultValue = def;
-			mValue = def;
-		}
+		Setting(const char* databaseKey, const typename KeyClass::Data& value) :
+			AbstrSetting(KeyClass::key, databaseKey),
+			m_value {value},
+			m_defaultValue {value} {}
 
-		Setting(const typename KeyClass::Data& def) :
-			AbstrSetting(KeyClass::key)
-		{
-			mDefaultValue = def;
-			mValue = def;
-		}
+		explicit Setting(const typename KeyClass::Data& value) :
+			AbstrSetting(KeyClass::key),
+			m_value {value},
+			m_defaultValue {value} {}
 
-		/* Destructor */
-		~Setting() = default;
+		~Setting() override = default;
 
-		void assignDefaultValue() override
-		{
-			mValue = mDefaultValue;
-		}
+		void assignDefaultValue() override { m_value = m_defaultValue; }
 
-		QString valueToString() const override
-		{
-			 return SettingConverter::toString(mValue);
-		}
+		[[nodiscard]] QString valueToString() const override { return SettingConverter::toString(m_value); }
 
-		bool loadValueFromString(const QString& str) override
-		{
-			return SettingConverter::fromString(str, mValue);
-		}
+		bool loadValueFromString(const QString& str) override { return SettingConverter::fromString(str, m_value); }
 
-		/* ... */
-		const typename KeyClass::Data& value() const
-		{
-			return mValue;
-		}
+		const typename KeyClass::Data& value() const { return m_value; }
 
-		/* ... */
-		const typename KeyClass::Data& default_value() const
-		{
-			return mDefaultValue;
-		}
+		//const typename KeyClass::Data& default_value() const		{			return m_defaultValue;		}
 
-		/* ... */
 		bool assignValue(const typename KeyClass::Data& val)
 		{
-			if( mValue == val ){
+			if(m_value == val)
+			{
 				return false;
 			}
 
-			mValue = val;
+			m_value = val;
+
 			return true;
 		}
+
+	private:
+		typename KeyClass::Data m_value;
+		typename KeyClass::Data m_defaultValue;
 };
 
 #endif // SAYONARA_PLAYER_SETTING_H
