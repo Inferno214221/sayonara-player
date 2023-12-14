@@ -21,13 +21,9 @@
 #ifndef SAYONARA_PLAYER_SETTING_REGISTRY_H
 #define SAYONARA_PLAYER_SETTING_REGISTRY_H
 
- #include <QList>
- #include "SettingKey.h"
+#include <QList>
+#include "SettingKey.h"
 
-/**
- * @brief The SettingRegistry class
- * @ingroup Settings
- */
 namespace SettingRegistry
 {
 	bool init();
