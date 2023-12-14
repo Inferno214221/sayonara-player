@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef SETTINGNOTIFIER_H
-#define SETTINGNOTIFIER_H
+#ifndef SAYONARA_PLAYER_SETTINGNOTIFIER_H
+#define SAYONARA_PLAYER_SETTINGNOTIFIER_H
 
 #include <functional>
 #include <QObject>
@@ -100,5 +100,4 @@ namespace Set
 	}
 }
 
-
-#endif // SETTINGNOTIFIER_H
+#endif // SAYONARA_PLAYER_SETTINGNOTIFIER_H

@@ -20,8 +20,8 @@
 
 // clazy:excludeall=non-pod-global-static
 
-#ifndef SETTINGKEY_H
-#define SETTINGKEY_H
+#ifndef SAYONARA_PLAYER_SETTINGKEY_H
+#define SAYONARA_PLAYER_SETTINGKEY_H
 
 #include "Utils/typedefs.h"
 
@@ -417,4 +417,4 @@ namespace SetNoDB
 	CreateSetting(Pitch_found, bool); // is pitch element available?
 	CreateSetting(Soundcloud_AuthToken, QString); // soundcloud authentication token
 }
-#endif // SETTINGKEY_H
+#endif // SAYONARA_PLAYER_SETTINGKEY_H

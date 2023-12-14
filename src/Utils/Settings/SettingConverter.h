@@ -18,8 +18,8 @@
 * along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef SETTINGCONVERTER_H
-#define SETTINGCONVERTER_H
+#ifndef SAYONARA_PLAYER_SETTINGCONVERTER_H
+#define SAYONARA_PLAYER_SETTINGCONVERTER_H
 
 #include "Utils/typedefs.h"
 
@@ -141,4 +141,4 @@ namespace SettingConverter
 	}
 }
 
-#endif // SETTINGCONVERTER_H
+#endif // SAYONARA_PLAYER_SETTINGCONVERTER_H

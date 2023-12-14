@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 #pragma once
-#ifndef SAYONARA_SETTINGS_H_
-#define SAYONARA_SETTINGS_H_
+#ifndef SAYONARA_PLAYER_SETTINGS_H
+#define SAYONARA_PLAYER_SETTINGS_H
 
 #include "Utils/Settings/SettingKey.h"
 #include "Utils/Settings/Setting.h"
@@ -92,4 +92,4 @@ class Settings
 		void applyFixes();
 };
 
-#endif // SAYONARA_SETTINGS_H_
+#endif // SAYONARA_PLAYER_SETTINGS_H

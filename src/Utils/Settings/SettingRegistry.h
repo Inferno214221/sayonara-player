@@ -18,6 +18,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifndef SAYONARA_PLAYER_SETTING_REGISTRY_H
+#define SAYONARA_PLAYER_SETTING_REGISTRY_H
+
  #include <QList>
  #include "SettingKey.h"
 
@@ -30,4 +33,6 @@ namespace SettingRegistry
 	bool init();
 	QList<SettingKey> undeployableKeys();
 }
+
+#endif // SAYONARA_PLAYER_SETTING_REGISTRY_H
 

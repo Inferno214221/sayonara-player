@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef SETTINGCONVERTIBLE_H
-#define SETTINGCONVERTIBLE_H
+#ifndef SAYONARA_PLAYER_SETTINGCONVERTIBLE_H
+#define SAYONARA_PLAYER_SETTINGCONVERTIBLE_H
 
 class QString;
 
@@ -35,4 +33,4 @@ public:
 	virtual QString toString() const = 0;
 };
 
-#endif // SETTINGCONVERTIBLE_H
+#endif // SAYONARA_PLAYER_SETTINGCONVERTIBLE_H

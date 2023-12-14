@@ -19,8 +19,8 @@
  */
 
 #pragma once
-#ifndef SAYONARA_SETTING_H_
-#define SAYONARA_SETTING_H_
+#ifndef SAYONARA_PLAYER_SETTING_H
+#define SAYONARA_PLAYER_SETTING_H
 
 #include "Utils/Settings/SettingConverter.h"
 #include "Utils/Settings/SettingKey.h"
@@ -138,4 +138,4 @@ class Setting : public AbstrSetting
 		}
 };
 
-#endif // SAYONARA_SETTING_H_
+#endif // SAYONARA_PLAYER_SETTING_H
