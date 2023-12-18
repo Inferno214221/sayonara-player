@@ -20,7 +20,7 @@
 
 #include "SettingNotifier.h"
 
-void AbstrSettingNotifier::emit_value_changed()
+void AbstrSettingNotifier::emitValueChanged()
 {
 	emit sigValueChanged();
 }

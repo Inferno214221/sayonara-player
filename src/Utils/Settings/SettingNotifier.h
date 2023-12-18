@@ -20,71 +20,71 @@
 
 #ifndef SAYONARA_PLAYER_SETTINGNOTIFIER_H
 #define SAYONARA_PLAYER_SETTINGNOTIFIER_H
-
-#include <functional>
-#include <QObject>
-
 #pragma once
 
-class AbstrSettingNotifier : public QObject
+#include <QObject>
+
+#include <functional>
+#include <memory>
+
+class AbstrSettingNotifier :
+	public QObject
 {
 	Q_OBJECT
 
-signals:
-	void sigValueChanged();
+	signals:
+		void sigValueChanged();
 
-public:
-	template<typename T>
-	void addListener(T* c, void (T::*fn)())
-	{
-		connect(this, &AbstrSettingNotifier::sigValueChanged, c, fn);
-	}
+	public:
+		template<typename Listener>
+		void addListener(Listener* listener, void (Listener::*fn)())
+		{
+			connect(this, &AbstrSettingNotifier::sigValueChanged, listener, fn);
+		}
 
-	void emit_value_changed();
+		void emitValueChanged();
 };
 
 template<typename KeyClass>
 class SettingNotifier
 {
-private:
-	AbstrSettingNotifier* m=nullptr;
+	public:
+		SettingNotifier(const SettingNotifier& other) = delete;
+		SettingNotifier(SettingNotifier&& other) = delete;
+		SettingNotifier& operator=(const SettingNotifier& other) = delete;
+		SettingNotifier& operator=(SettingNotifier&& other) = delete;
 
-	SettingNotifier() :
-		m(new AbstrSettingNotifier())
-	{}
+		~SettingNotifier() = default;
 
-	SettingNotifier(const SettingNotifier& other) = delete;
+		static SettingNotifier<KeyClass>* instance()
+		{
+			static SettingNotifier<KeyClass> inst;
+			return &inst;
+		}
 
-public:
-	~SettingNotifier() = default;
+		void valueChanged()
+		{
+			m_settingNotifier->emitValueChanged();
+		}
 
-	static SettingNotifier<KeyClass>* instance()
-	{
-		static SettingNotifier<KeyClass> inst;
-		return &inst;
-	}
+		template<typename T>
+		void addListener(T* c, void (T::*fn)())
+		{
+			m_settingNotifier->addListener(c, fn);
+		}
 
-	void valueChanged()
-	{
-		m->emit_value_changed();
-	}
+	private:
+		SettingNotifier() = default;
 
-	template<typename T>
-	void addListener(T* c, void (T::*fn)())
-	{
-		m->addListener(c, fn);
-	}
+		std::unique_ptr<AbstrSettingNotifier> m_settingNotifier {std::make_unique<AbstrSettingNotifier>()};
 };
-
 
 namespace Set
 {
-	template<typename KeyClassInstance, typename T>
-	//typename std::enable_if<std::is_base_of<SayonaraClass, T>::value, void>::type
-	void
-	listen(T* t, void (T::*fn)(), bool run=true)
+	template<typename KeyClass, typename Listener>
+	void listen(Listener* t, void (Listener::*fn)(), const bool run = true)
 	{
-		SettingNotifier<KeyClassInstance>::instance()->addListener(t, fn);
+		SettingNotifier<KeyClass>::instance()->addListener(t, fn);
 
 		if(run)
 		{
@@ -93,10 +93,10 @@ namespace Set
 		}
 	}
 
-	template<typename KeyClassInstance>
+	template<typename KeyClass>
 	void shout()
 	{
-		SettingNotifier<KeyClassInstance>::instance()->valueChanged();
+		SettingNotifier<KeyClass>::instance()->valueChanged();
 	}
 }
 
