@@ -62,7 +62,7 @@ namespace Library
 
 			static PluginHandler* create();
 
-		public slots:
+		public slots: // NOLINT(readability-redundant-access-specifiers)
 			virtual void setCurrentLibrary(const QString& name) = 0;
 			virtual void setCurrentLibrary(int index) = 0;
 			virtual void setCurrentLibrary(LibraryContainer* currentLibrary) = 0;
