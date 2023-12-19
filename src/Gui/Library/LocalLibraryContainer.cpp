@@ -32,7 +32,7 @@ using namespace Library;
 struct LocalLibraryContainer::Private
 {
 	Library::Manager* libraryManager;
-	GUI_LocalLibrary* ui = nullptr;
+	GUI_LocalLibrary* ui {nullptr};
 	Info library;
 	QString name;
 
@@ -44,40 +44,23 @@ struct LocalLibraryContainer::Private
 
 LocalLibraryContainer::LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library,
                                              Library::PluginHandler* pluginHandler) :
-	Container(pluginHandler)
-{
-	m = Pimpl::make<Private>(libraryManager, library);
-}
+	Container(pluginHandler),
+	m {Pimpl::make<Private>(libraryManager, library)} {}
 
 LocalLibraryContainer::~LocalLibraryContainer() = default;
 
 QString LocalLibraryContainer::name() const
 {
-	QString name = displayName();
-	name = name.toLower();
+	auto name = displayName().toLower();
 	name.replace(" ", "-");
 	return name;
 }
 
-QString LocalLibraryContainer::displayName() const
-{
-	return m->name;
-}
+QString LocalLibraryContainer::displayName() const { return m->name; }
 
-QWidget* LocalLibraryContainer::widget() const
-{
-	return static_cast<QWidget*>(m->ui);
-}
+QWidget* LocalLibraryContainer::widget() const { return m->ui; }
 
-QMenu* LocalLibraryContainer::menu()
-{
-	if(m->ui)
-	{
-		return m->ui->menu();
-	}
-
-	return nullptr;
-}
+QMenu* LocalLibraryContainer::menu() { return (m->ui) ? m->ui->menu() : nullptr; }
 
 void LocalLibraryContainer::initUi()
 {
@@ -87,22 +70,10 @@ void LocalLibraryContainer::initUi()
 	}
 }
 
-bool LocalLibraryContainer::isLocal() const
-{
-	return true;
-}
+bool LocalLibraryContainer::isLocal() const { return true; }
 
-QFrame* LocalLibraryContainer::header() const
-{
-	return m->ui->headerFrame();
-}
+QFrame* LocalLibraryContainer::header() const { return m->ui->headerFrame(); }
 
-QIcon LocalLibraryContainer::icon() const
-{
-	return Gui::Icons::icon(Gui::Icons::LocalLibrary);
-}
+QIcon LocalLibraryContainer::icon() const { return Gui::Icons::icon(Gui::Icons::LocalLibrary); }
 
-void LocalLibraryContainer::rename(const QString& name)
-{
-	m->name = name;
-}
+void LocalLibraryContainer::rename(const QString& name) { m->name = name; }

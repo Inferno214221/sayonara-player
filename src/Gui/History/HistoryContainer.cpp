@@ -8,7 +8,7 @@
 
 struct HistoryContainer::Private
 {
-	GUI_History* widget = nullptr;
+	std::shared_ptr<GUI_History> widget = nullptr;
 	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Session::Manager* sessionManager;
 
@@ -24,32 +24,24 @@ HistoryContainer::HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInt
 
 HistoryContainer::~HistoryContainer() = default;
 
-QString HistoryContainer::name() const
-{
-	return "history";
-}
+QString HistoryContainer::name() const { return "history"; }
 
-QString HistoryContainer::displayName() const
-{
-	return tr("History");
-}
+QString HistoryContainer::displayName() const { return QObject::tr("History"); }
 
-QWidget* HistoryContainer::widget() const
-{
-	return m->widget;
-}
+QWidget* HistoryContainer::widget() const { return m->widget.get(); }
 
-QFrame* HistoryContainer::header() const
-{
-	return m->widget->header();
-}
+QFrame* HistoryContainer::header() const { return m->widget->header(); }
 
-QIcon HistoryContainer::icon() const
-{
-	return Gui::Icons::icon(Gui::Icons::Edit);
-}
+QIcon HistoryContainer::icon() const { return Gui::Icons::icon(Gui::Icons::Edit); }
 
 void HistoryContainer::initUi()
 {
-	m->widget = new GUI_History(m->libraryPlaylistInteractor, m->sessionManager);
+	m->widget = std::make_shared<GUI_History>(m->libraryPlaylistInteractor,
+	                                          m->sessionManager);
 }
+
+void HistoryContainer::rename(const QString& /*newName*/) {}
+
+QMenu* HistoryContainer::menu() { return nullptr; }
+
+bool HistoryContainer::isLocal() const { return false; }

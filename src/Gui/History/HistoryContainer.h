@@ -18,7 +18,6 @@ class LibraryPlaylistInteractor;
 class HistoryContainer :
 	public Gui::Library::Container
 {
-	Q_OBJECT
 	PIMPL(HistoryContainer)
 
 	public:
@@ -26,11 +25,14 @@ class HistoryContainer :
 		                 Library::PluginHandler* pluginHandler);
 		~HistoryContainer() override;
 
-		[[nodiscard]] QString name() const override;
-		[[nodiscard]] QString displayName() const override;
-		[[nodiscard]] QWidget* widget() const override;
 		[[nodiscard]] QFrame* header() const override;
 		[[nodiscard]] QIcon icon() const override;
+		[[nodiscard]] QMenu* menu() override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QWidget* widget() const override;
+		[[nodiscard]] bool isLocal() const override;
+		void rename(const QString& newName) override;
 
 	protected:
 		void initUi() override;

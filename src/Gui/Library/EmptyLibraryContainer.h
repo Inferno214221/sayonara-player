@@ -30,29 +30,24 @@ namespace Library
 	class PluginHandler;
 }
 
-/**
- * @brief The EmptyLibraryContainer class
- * @ingroup Library
- */
 class EmptyLibraryContainer :
 	public Gui::Library::Container
 {
-	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)
 
-		// LibraryContainerInterface interface
 	public:
 		EmptyLibraryContainer(Library::Manager* libraryManager, Library::PluginHandler* pluginHandler);
 		~EmptyLibraryContainer() override;
 
-		[[nodiscard]] QString name() const override;
-		[[nodiscard]] QString displayName() const override;
-		[[nodiscard]] QWidget* widget() const override;
-		[[nodiscard]] QMenu* menu() override;
 		[[nodiscard]] QFrame* header() const override;
 		[[nodiscard]] QIcon icon() const override;
-
+		[[nodiscard]] QMenu* menu() override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QWidget* widget() const override;
+		[[nodiscard]] bool isLocal() const override;
 		void initUi() override;
+		void rename(const QString& newName) override;
 };
 
 #endif // EMPTYLIBRARYCONTAINER_H

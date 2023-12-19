@@ -40,24 +40,21 @@ namespace SomaFM
 	class LibraryContainer :
 		public Gui::Library::Container
 	{
-		Q_OBJECT
 		PIMPL(LibraryContainer)
-
-		private:
-			GUI_SomaFM* ui = nullptr;
 
 		public:
 			LibraryContainer(SomaFM::Library* library, ::Library::PluginHandler* pluginHandler);
 			~LibraryContainer() override;
 
-			// override from LibraryViewInterface
-			[[nodiscard]] QString name() const override;
-			[[nodiscard]] QString displayName() const override;
-			[[nodiscard]] QWidget* widget() const override;
+			[[nodiscard]] QFrame* header() const override;
 			[[nodiscard]] QIcon icon() const override;
 			[[nodiscard]] QMenu* menu() override;
-			[[nodiscard]] QFrame* header() const override;
+			[[nodiscard]] QString displayName() const override;
+			[[nodiscard]] QString name() const override;
+			[[nodiscard]] QWidget* widget() const override;
+			[[nodiscard]] bool isLocal() const override;
 			void initUi() override;
+			void rename(const QString& newName) override;
 	};
 }
 #endif

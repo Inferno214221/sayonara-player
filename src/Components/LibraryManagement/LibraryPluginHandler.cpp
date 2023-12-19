@@ -235,4 +235,3 @@ namespace Library
 		return new PluginHandlerImpl();
 	}
 }
-

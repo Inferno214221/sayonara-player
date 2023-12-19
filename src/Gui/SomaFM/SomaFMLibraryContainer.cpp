@@ -28,7 +28,7 @@
 
 #include <QIcon>
 
-static void soma_fm_init_icons()
+static void initSomaFmIcons()
 {
 	Q_INIT_RESOURCE(SomaFMIcons);
 }
@@ -36,51 +36,35 @@ static void soma_fm_init_icons()
 struct SomaFM::LibraryContainer::Private
 {
 	SomaFM::Library* library;
+	GUI_SomaFM* ui {nullptr};
 
 	explicit Private(SomaFM::Library* library) :
 		library(library) {}
 };
 
 SomaFM::LibraryContainer::LibraryContainer(SomaFM::Library* library, ::Library::PluginHandler* pluginHandler) :
-	Gui::Library::Container(pluginHandler)
+	Gui::Library::Container(pluginHandler),
+	m {Pimpl::make<Private>(library)}
 {
-	m = Pimpl::make<Private>(library);
-	soma_fm_init_icons();
+	initSomaFmIcons();
 }
 
 SomaFM::LibraryContainer::~LibraryContainer() = default;
 
-QString SomaFM::LibraryContainer::name() const
-{
-	return "SomaFM";
-}
+QString SomaFM::LibraryContainer::name() const { return "SomaFM"; }
 
-QString SomaFM::LibraryContainer::displayName() const
-{
-	return "SomaFM";
-}
+QString SomaFM::LibraryContainer::displayName() const { return "SomaFM"; }
 
-QWidget* SomaFM::LibraryContainer::widget() const
-{
-	return ui;
-}
+QWidget* SomaFM::LibraryContainer::widget() const { return m->ui; }
 
-QMenu* SomaFM::LibraryContainer::menu()
-{
-	return nullptr;
-}
+QMenu* SomaFM::LibraryContainer::menu() { return nullptr; }
 
-void SomaFM::LibraryContainer::initUi()
-{
-	ui = new GUI_SomaFM(m->library, nullptr);
-}
+void SomaFM::LibraryContainer::initUi() { m->ui = new GUI_SomaFM(m->library, nullptr); }
 
-QIcon SomaFM::LibraryContainer::icon() const
-{
-	return QIcon(":/soma_icons/soma.png");
-}
+QIcon SomaFM::LibraryContainer::icon() const { return QIcon(":/soma_icons/soma.png"); }
 
-QFrame* SomaFM::LibraryContainer::header() const
-{
-	return ui->headerFrame();
-}
+QFrame* SomaFM::LibraryContainer::header() const { return m->ui ? m->ui->headerFrame() : nullptr; }
+
+void SomaFM::LibraryContainer::rename(const QString& /*newName*/) {}
+
+bool SomaFM::LibraryContainer::isLocal() const { return false; }

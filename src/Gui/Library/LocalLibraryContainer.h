@@ -31,14 +31,9 @@ namespace Library
 	class PluginHandler;
 }
 
-/**
- * @brief The LocalLibraryContainer class
- * @ingroup GuiLibrary
- */
 class LocalLibraryContainer :
 	public Gui::Library::Container
 {
-	Q_OBJECT
 	PIMPL(LocalLibraryContainer)
 
 	public:
@@ -46,15 +41,14 @@ class LocalLibraryContainer :
 		                      Library::PluginHandler* pluginHandler);
 		~LocalLibraryContainer() override;
 
-		// override from LibraryViewInterface
-		[[nodiscard]] QString name() const override;
-		[[nodiscard]] QString displayName() const override;
-		[[nodiscard]] QWidget* widget() const override;
-		[[nodiscard]] QMenu* menu() override;
 		[[nodiscard]] QFrame* header() const override;
 		[[nodiscard]] QIcon icon() const override;
-		void initUi() override;
+		[[nodiscard]] QMenu* menu() override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QWidget* widget() const override;
 		[[nodiscard]] bool isLocal() const override;
+		void initUi() override;
 		void rename(const QString& new_name) override;
 };
 

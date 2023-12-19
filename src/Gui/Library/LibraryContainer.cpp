@@ -40,15 +40,7 @@ namespace Gui::Library
 	Container::Container(::Library::PluginHandler* pluginHandler) :
 		m {Pimpl::make<Private>(pluginHandler)} {}
 
-	void Container::rename(const QString& /*newName*/) {}
-
 	Container::~Container() = default;
-
-	QString Container::displayName() const { return name(); }
-
-	QMenu* Container::menu() { return nullptr; }
-
-	bool Container::isLocal() const { return false; }
 
 	void Container::init()
 	{

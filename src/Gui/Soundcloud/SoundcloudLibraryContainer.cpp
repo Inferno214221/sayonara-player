@@ -41,28 +41,30 @@ struct SC::LibraryContainer::Private
 {
 	LibraryPlaylistInteractor* playlistInteractor;
 	QThread* tokenThread;
+	SC::Library* library;
+	SC::GUI_Library* ui {nullptr};
 
-	explicit Private(LibraryPlaylistInteractor* playlistInteractor) :
+	Private(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
 		playlistInteractor(playlistInteractor),
-		tokenThread {new QThread {}} {}
+		tokenThread {new QThread {parent}},
+		library {new SC::Library(playlistInteractor, parent)} {}
 
 	~Private()
 	{
 		while(tokenThread->isRunning())
 		{
 			tokenThread->quit();
-			QThread::currentThread()->wait(10);
+			QThread::currentThread()->wait(10); // NOLINT(readability-magic-numbers)
 		}
 	}
 };
 
 SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor,
                                        ::Library::PluginHandler* pluginHandler) :
-	Gui::Library::Container(pluginHandler)
+	Gui::Library::Container(pluginHandler),
+	m {Pimpl::make<Private>(playlistInteractor, this)}
 {
 	initSoundcloudIcons();
-
-	m = Pimpl::make<Private>(playlistInteractor);
 
 	auto* tokenObserver = new SC::TokenObserver(nullptr);
 	auto* thread = new QThread(nullptr);
@@ -76,44 +78,20 @@ SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistIntera
 
 SC::LibraryContainer::~LibraryContainer() = default;
 
-QString SC::LibraryContainer::name() const
-{
-	return "soundcloud";
-}
+QString SC::LibraryContainer::name() const { return "soundcloud"; }
 
-QString SC::LibraryContainer::displayName() const
-{
-	return "Soundcloud";
-}
+QString SC::LibraryContainer::displayName() const { return "Soundcloud"; }
 
-QWidget* SC::LibraryContainer::widget() const
-{
-	return static_cast<QWidget*>(ui);
-}
+QWidget* SC::LibraryContainer::widget() const { return m->ui; }
 
-QMenu* SC::LibraryContainer::menu()
-{
-	if(ui)
-	{
-		return ui->getMenu();
-	}
+QMenu* SC::LibraryContainer::menu() { return m->ui ? m->ui->getMenu() : nullptr; }
 
-	return nullptr;
-}
+void SC::LibraryContainer::initUi() { m->ui = new SC::GUI_Library(m->library); }
 
-void SC::LibraryContainer::initUi()
-{
-	auto* library = new SC::Library(m->playlistInteractor, this);
-	ui = new SC::GUI_Library(library);
-}
+QFrame* SC::LibraryContainer::header() const { return m->ui->headerFrame(); }
 
-QFrame* SC::LibraryContainer::header() const
-{
-	return ui->headerFrame();
-}
+QIcon SC::LibraryContainer::icon() const { return QIcon(":/sc_icons/icon.png"); }
 
-QIcon SC::LibraryContainer::icon() const
-{
-	initSoundcloudIcons();
-	return QIcon(":/sc_icons/icon.png");
-}
+void SC::LibraryContainer::rename(const QString& /*newName*/) {}
+
+bool SC::LibraryContainer::isLocal() const { return false; }

@@ -34,7 +34,7 @@ using namespace Library;
 struct EmptyLibraryContainer::Private
 {
 	Library::Manager* libraryManager;
-	GUI_EmptyLibrary* ui = nullptr;
+	std::shared_ptr<GUI_EmptyLibrary> ui = nullptr;
 
 	explicit Private(Library::Manager* libraryManager) :
 		libraryManager {libraryManager} {}
@@ -42,44 +42,25 @@ struct EmptyLibraryContainer::Private
 
 EmptyLibraryContainer::EmptyLibraryContainer(Library::Manager* libraryManager,
                                              Library::PluginHandler* pluginHandler) :
-	Gui::Library::Container(pluginHandler)
-{
-	m = Pimpl::make<Private>(libraryManager);
-}
+	Gui::Library::Container(pluginHandler),
+	m {Pimpl::make<Private>(libraryManager)} {}
 
 EmptyLibraryContainer::~EmptyLibraryContainer() = default;
 
-QString EmptyLibraryContainer::name() const
-{
-	return "empty-library";
-}
+QString EmptyLibraryContainer::name() const { return "empty-library"; }
 
-QString EmptyLibraryContainer::displayName() const
-{
-	return Lang::get(Lang::New);
-}
+QString EmptyLibraryContainer::displayName() const { return Lang::get(Lang::New); }
 
-QWidget* EmptyLibraryContainer::widget() const
-{
-	return static_cast<QWidget*>(m->ui);
-}
+QWidget* EmptyLibraryContainer::widget() const { return static_cast<QWidget*>(m->ui.get()); }
 
-QMenu* EmptyLibraryContainer::menu()
-{
-	return nullptr;
-}
+QMenu* EmptyLibraryContainer::menu() { return nullptr; }
 
-void EmptyLibraryContainer::initUi()
-{
-	m->ui = new GUI_EmptyLibrary(m->libraryManager);
-}
+void EmptyLibraryContainer::initUi() { m->ui = std::make_shared<GUI_EmptyLibrary>(m->libraryManager); }
 
-QFrame* EmptyLibraryContainer::header() const
-{
-	return m->ui->headerFrame();
-}
+QFrame* EmptyLibraryContainer::header() const { return m->ui->headerFrame(); }
 
-QIcon EmptyLibraryContainer::icon() const
-{
-	return Gui::Icons::icon(Gui::Icons::Star);
-}
+QIcon EmptyLibraryContainer::icon() const { return Gui::Icons::icon(Gui::Icons::Star); }
+
+void EmptyLibraryContainer::rename(const QString& /*newName*/) {}
+
+bool EmptyLibraryContainer::isLocal() const { return false; }

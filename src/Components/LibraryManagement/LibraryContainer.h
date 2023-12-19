@@ -15,23 +15,16 @@ namespace Library
 	{
 		public:
 			virtual ~LibraryContainer() = default;
-			[[nodiscard]] virtual QString name() const = 0;
-
-			virtual void rename(const QString& newName) = 0;
-
-			[[nodiscard]] virtual QString displayName() const = 0;
-
-			[[nodiscard]] virtual QWidget* widget() const = 0;
 
 			[[nodiscard]] virtual QFrame* header() const = 0;
-
-			[[nodiscard]] virtual QMenu* menu() = 0;
-
 			[[nodiscard]] virtual QIcon icon() const = 0;
-
-			virtual void init() = 0;
-
+			[[nodiscard]] virtual QMenu* menu() = 0;
+			[[nodiscard]] virtual QString displayName() const = 0;
+			[[nodiscard]] virtual QString name() const = 0;
+			[[nodiscard]] virtual QWidget* widget() const = 0;
 			[[nodiscard]] virtual bool isLocal() const = 0;
+			virtual void init() = 0;
+			virtual void rename(const QString& newName) = 0;
 	};
 }
 

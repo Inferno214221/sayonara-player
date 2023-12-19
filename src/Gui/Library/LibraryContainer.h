@@ -32,27 +32,17 @@ namespace Library
 namespace Gui::Library
 {
 	class Container :
-		public QObject,
 		public ::Library::LibraryContainer
 	{
-		Q_OBJECT
 		PIMPL(Container)
-
-			friend class PluginHandler;
 
 		public:
 			explicit Container(::Library::PluginHandler* libraryPluginHandler);
 			~Container() override;
 
-			void init() override;
-
-			void rename(const QString& new_name) override;
-			[[nodiscard]] QString displayName() const override;
-			[[nodiscard]] QMenu* menu() override;
-			[[nodiscard]] bool isLocal() const override;
-
 		protected:
 			virtual void initUi() = 0;
+			void init() final;
 	};
 }
 
