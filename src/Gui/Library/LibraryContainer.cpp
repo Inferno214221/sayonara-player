@@ -20,6 +20,7 @@
 
 #include "LibraryContainer.h"
 #include "Gui/Library/Utils/LibraryPluginCombobox.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include <QWidget>
 #include <QAction>
@@ -30,12 +31,14 @@ namespace Gui::Library
 	struct Container::Private
 	{
 		bool initialized {false};
+		::Library::PluginHandler* pluginHandler;
+
+		explicit Private(::Library::PluginHandler* pluginHandler) :
+			pluginHandler {pluginHandler} {}
 	};
 
-	Container::Container(QObject* parent) :
-		QObject(parent),
-		::Library::LibraryContainer(),
-		m {Pimpl::make<Private>()} {}
+	Container::Container(::Library::PluginHandler* pluginHandler) :
+		m {Pimpl::make<Private>(pluginHandler)} {}
 
 	void Container::rename(const QString& /*newName*/) {}
 
@@ -69,7 +72,7 @@ namespace Gui::Library
 			auto* vBoxLayout = new QVBoxLayout(headerFrame);
 			vBoxLayout->setContentsMargins(0, 0, 0, 0);
 
-			auto* comboBox = new ::Library::PluginCombobox(displayName(), headerFrame);
+			auto* comboBox = new ::Library::PluginCombobox(m->pluginHandler, displayName(), headerFrame);
 			vBoxLayout->addWidget(comboBox);
 
 			headerFrame->setFrameShape(QFrame::NoFrame);

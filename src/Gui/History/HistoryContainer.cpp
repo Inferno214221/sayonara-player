@@ -1,5 +1,5 @@
 #include "HistoryContainer.h"
-
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/Session/Session.h"
 #include "Gui/History/GUI_History.h"
 #include "Gui/Utils/Icons.h"
@@ -18,8 +18,8 @@ struct HistoryContainer::Private
 };
 
 HistoryContainer::HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInteractor,
-                                   Session::Manager* sessionManager, QObject* parent) :
-	Gui::Library::Container(parent),
+                                   Session::Manager* sessionManager, Library::PluginHandler* pluginHandler) :
+	Gui::Library::Container(pluginHandler),
 	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager)} {}
 
 HistoryContainer::~HistoryContainer() = default;

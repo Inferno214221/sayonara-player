@@ -9,6 +9,11 @@ namespace Session
 	class Manager;
 }
 
+namespace Library
+{
+	class PluginHandler;
+}
+
 class LibraryPlaylistInteractor;
 class HistoryContainer :
 	public Gui::Library::Container
@@ -18,7 +23,7 @@ class HistoryContainer :
 
 	public:
 		HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInteractor, Session::Manager* sessionManager,
-		                 QObject* parent = nullptr);
+		                 Library::PluginHandler* pluginHandler);
 		~HistoryContainer() override;
 
 		[[nodiscard]] QString name() const override;

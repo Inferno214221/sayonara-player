@@ -30,6 +30,7 @@
 namespace Library
 {
 	class LibraryContainer;
+	class PluginHandler;
 }
 
 namespace PlayerPlugin
@@ -51,7 +52,8 @@ class Menubar :
 		void sigLoggerClicked();
 
 	public:
-		explicit Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, QWidget* parent = nullptr);
+		Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator,
+		        Library::PluginHandler* pluginHandler, QWidget* parent = nullptr);
 		~Menubar() override;
 
 		void insertPreferenceAction(QAction* action);

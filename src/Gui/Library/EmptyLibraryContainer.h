@@ -27,7 +27,9 @@
 namespace Library
 {
 	class Manager;
+	class PluginHandler;
 }
+
 /**
  * @brief The EmptyLibraryContainer class
  * @ingroup Library
@@ -40,7 +42,7 @@ class EmptyLibraryContainer :
 
 		// LibraryContainerInterface interface
 	public:
-		explicit EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent = nullptr);
+		EmptyLibraryContainer(Library::Manager* libraryManager, Library::PluginHandler* pluginHandler);
 		~EmptyLibraryContainer() override;
 
 		[[nodiscard]] QString name() const override;

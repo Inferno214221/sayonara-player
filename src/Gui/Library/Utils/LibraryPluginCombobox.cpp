@@ -41,14 +41,16 @@ namespace Library
 	struct PluginCombobox::Private
 	{
 		QList<QAction*> actions;
-		PluginHandler* pluginHandler {PluginHandler::instance()};
+		PluginHandler* pluginHandler;
+
+		explicit Private(PluginHandler* pluginHandler) :
+			pluginHandler {pluginHandler} {}
 	};
 
-	PluginCombobox::PluginCombobox(const QString& text, QWidget* parent) :
-		ComboBox(parent)
+	PluginCombobox::PluginCombobox(PluginHandler* pluginHandler, const QString& text, QWidget* parent) :
+		ComboBox(parent),
+		m {Pimpl::make<Private>(pluginHandler)}
 	{
-		m = Pimpl::make<Private>();
-
 		this->setSizeAdjustPolicy(QComboBox::AdjustToContents);
 		this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 		this->setFocusPolicy(Qt::ClickFocus);

@@ -26,6 +26,7 @@
 
 namespace Library
 {
+	class PluginHandler;
 	class PluginCombobox :
 		public Gui::ComboBox
 	{
@@ -33,7 +34,7 @@ namespace Library
 		PIMPL(PluginCombobox)
 
 		public:
-			explicit PluginCombobox(const QString& text, QWidget* parent = nullptr);
+			PluginCombobox(PluginHandler* libraryPluginHandler, const QString& text, QWidget* parent = nullptr);
 			~PluginCombobox() override;
 
 		public slots:

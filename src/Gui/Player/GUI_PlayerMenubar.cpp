@@ -90,11 +90,13 @@ struct Menubar::Private
 	QAction* currentLibraryMenuAction = nullptr;
 
 	Library::LibraryContainer* currentLibrary = nullptr;
+	Library::PluginHandler* pluginHandler;
 
 	QLabel* heartLabel = nullptr;
 	QLabel* donateLabel = nullptr;
 
-	Private(Shutdown* shutdown, PlaylistCreator* playlistCreator, Menubar* menubar) :
+	Private(Shutdown* shutdown, PlaylistCreator* playlistCreator, Library::PluginHandler* pluginHandler,
+	        Menubar* menubar) :
 		shutdown {shutdown},
 		playlistCreator(playlistCreator),
 		menuFile(new QMenu(menubar)),
@@ -113,7 +115,8 @@ struct Menubar::Private
 		actionFullscreen(new QAction(menuView)),
 		actionHelp(new QAction(menuHelp)),
 		actionAbout(new QAction(menuHelp)),
-		actionLogger(new QAction(menuHelp))
+		actionLogger(new QAction(menuHelp)),
+		pluginHandler {pluginHandler}
 	{
 		menubar->insertMenu(nullptr, menuFile);
 		menubar->insertMenu(nullptr, menuPlugins);
@@ -149,10 +152,11 @@ struct Menubar::Private
 	}
 };
 
-Menubar::Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, QWidget* parent) :
+Menubar::Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, Library::PluginHandler* pluginHandler,
+                 QWidget* parent) :
 	Gui::WidgetTemplate<QMenuBar>(parent)
 {
-	m = Pimpl::make<Private>(shutdown, playlistCreator, this);
+	m = Pimpl::make<Private>(shutdown, playlistCreator, pluginHandler, this);
 
 	m->actionViewLibrary->setChecked(GetSetting(Set::Lib_Show));
 	m->actionViewLibrary->setText(Lang::get(Lang::Library));
@@ -242,8 +246,7 @@ void Menubar::setShowLibraryActionEnabled(bool b)
 
 void Menubar::showLibraryMenu(bool b)
 {
-	auto* libraryPluginHandler = Library::PluginHandler::instance();
-	this->changeCurrentLibrary(libraryPluginHandler->currentLibrary());
+	this->changeCurrentLibrary(m->pluginHandler->currentLibrary());
 
 	if(m->currentLibraryMenuAction)
 	{
@@ -332,9 +335,8 @@ void Menubar::initConnections()
 	connect(shortcutHandler, &ShortcutHandler::sigShortcutChanged, this, &Menubar::shortcutChanged);
 
 	// Library
-	auto* libraryPluginHandler = Library::PluginHandler::instance();
-	connect(libraryPluginHandler, &Library::PluginHandler::sigLibrariesChanged, this, [=]() {
-		this->changeCurrentLibrary(libraryPluginHandler->currentLibrary());
+	connect(m->pluginHandler, &Library::PluginHandler::sigLibrariesChanged, this, [this]() {
+		changeCurrentLibrary(m->pluginHandler->currentLibrary());
 	});
 
 	auto* playerPluginHandler = PlayerPlugin::Handler::instance();

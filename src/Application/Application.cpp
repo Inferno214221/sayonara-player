@@ -152,6 +152,7 @@ struct Application::Private
 	Playlist::Handler* playlistHandler;
 	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Library::Manager* libraryManager;
+	Library::PluginHandler* libraryPluginHandler;
 	Playlist::LibraryInteractor* playlistLibraryInteractor;
 	DynamicPlaybackChecker* dynamicPlaybackChecker;
 	DynamicPlayback::Handler* dynamicPlaybackHandler;
@@ -177,6 +178,7 @@ struct Application::Private
 		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
 		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playManager)},
 		libraryManager {Library::Manager::create(libraryPlaylistInteractor)},
+		libraryPluginHandler {Library::PluginHandler::create()},
 		playlistLibraryInteractor {new Playlist::LibraryInteractor(libraryManager)},
 		dynamicPlaybackChecker {DynamicPlaybackChecker::create(libraryManager)},
 		dynamicPlaybackHandler {new DynamicPlayback::Handler(playManager, playlistHandler, playManager)},
@@ -196,6 +198,7 @@ struct Application::Private
 		delete dynamicPlaybackHandler;
 		delete dynamicPlaybackChecker;
 		delete playlistLibraryInteractor;
+		delete libraryPluginHandler;
 		delete libraryManager;
 		delete libraryPlaylistInteractor;
 		delete playlistHandler;
@@ -252,7 +255,6 @@ Application::~Application()
 void Application::shutdown()
 {
 	PlayerPlugin::Handler::instance()->shutdown();
-	Library::PluginHandler::instance()->shutdown();
 
 	m->playlistHandler->shutdown();
 	m->engine->shutdown();
@@ -318,6 +320,7 @@ void Application::initPlayer(const bool forceShow)
 
 	m->player = new GUI_Player(m->playManager,
 	                           m->playlistHandler,
+	                           m->libraryPluginHandler,
 	                           m->engine,
 	                           m->shutdown,
 	                           m->notificationHandler,
@@ -389,19 +392,23 @@ void Application::initLibraries()
 {
 	[[maybe_unused]] auto measureApp = Util::MeasureApp("Libraries", m->timer);
 
-	m->localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, this);
+	m->localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, m->libraryPluginHandler, this);
 
 	auto libraryContainers = m->localLibraryWatcher->getLocalLibraryContainers();
 
-	auto* soundcloudContainer = new SC::LibraryContainer(m->libraryPlaylistInteractor, this);
-	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
-	auto* historyContainer = new HistoryContainer(m->libraryPlaylistInteractor, m->sessionManager, this);
+	auto* soundcloudContainer = new SC::LibraryContainer(m->libraryPlaylistInteractor, m->libraryPluginHandler);
+	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this),
+	                                                     m->libraryPluginHandler);
+	auto* historyContainer = new HistoryContainer(m->libraryPlaylistInteractor,
+	                                              m->sessionManager,
+	                                              m->libraryPluginHandler);
 
 	libraryContainers << static_cast<Library::LibraryContainer*>(somafmContainer);
 	libraryContainers << static_cast<Library::LibraryContainer*>(soundcloudContainer);
 	libraryContainers << static_cast<Library::LibraryContainer*>(historyContainer);
 
-	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer(m->libraryManager));
+	m->libraryPluginHandler->init(libraryContainers,
+	                              new EmptyLibraryContainer(m->libraryManager, m->libraryPluginHandler));
 }
 
 void Application::initPlugins()

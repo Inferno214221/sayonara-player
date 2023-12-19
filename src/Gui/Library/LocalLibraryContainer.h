@@ -28,6 +28,7 @@ namespace Library
 {
 	class Info;
 	class Manager;
+	class PluginHandler;
 }
 
 /**
@@ -41,9 +42,9 @@ class LocalLibraryContainer :
 	PIMPL(LocalLibraryContainer)
 
 	public:
-		explicit LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library,
-		                               QObject* parent = nullptr);
-		virtual ~LocalLibraryContainer() override;
+		LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library,
+		                      Library::PluginHandler* pluginHandler);
+		~LocalLibraryContainer() override;
 
 		// override from LibraryViewInterface
 		[[nodiscard]] QString name() const override;

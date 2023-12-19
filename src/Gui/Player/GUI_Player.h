@@ -41,6 +41,7 @@ class DynamicPlaybackChecker;
 namespace Library
 {
 	class InfoAccessor;
+	class PluginHandler;
 }
 class Shutdown;
 namespace PlayerPlugin
@@ -65,10 +66,11 @@ class GUI_Player :
 	UI_CLASS_SHARED_PTR(GUI_Player)
 
 	public:
-		GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
+		GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler,
+		           Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
 		           Shutdown* shutdown, NotificationHandler* notificationHandler,
-		           DynamicPlaybackChecker* dynamicPlaybackChecker,
-		           Library::InfoAccessor* libraryAccessor, QWidget* parent);
+		           DynamicPlaybackChecker* dynamicPlaybackChecker, Library::InfoAccessor* libraryAccessor,
+		           QWidget* parent);
 		~GUI_Player() override;
 
 		void registerPreferenceDialog(QAction* dialog_action);

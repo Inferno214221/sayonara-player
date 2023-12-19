@@ -21,6 +21,7 @@
 #include "LocalLibraryContainer.h"
 #include "Gui/Library/GUI_LocalLibrary.h"
 #include "Gui/Utils/Icons.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Utils/Library/LibraryInfo.h"
 
 #include <QAction>
@@ -38,12 +39,12 @@ struct LocalLibraryContainer::Private
 	Private(Library::Manager* libraryManager, const Info& library) :
 		libraryManager(libraryManager),
 		library(library),
-		name(library.name())
-	{}
+		name(library.name()) {}
 };
 
-LocalLibraryContainer::LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library, QObject* parent) :
-	Container(parent)
+LocalLibraryContainer::LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library,
+                                             Library::PluginHandler* pluginHandler) :
+	Container(pluginHandler)
 {
 	m = Pimpl::make<Private>(libraryManager, library);
 }

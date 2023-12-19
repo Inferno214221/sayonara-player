@@ -21,6 +21,7 @@
 #include "EmptyLibraryContainer.h"
 #include "GUI_EmptyLibrary.h"
 
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Gui/Utils/Icons.h"
 #include "Utils/Language/Language.h"
 
@@ -35,12 +36,13 @@ struct EmptyLibraryContainer::Private
 	Library::Manager* libraryManager;
 	GUI_EmptyLibrary* ui = nullptr;
 
-	Private(Library::Manager* libraryManager) :
+	explicit Private(Library::Manager* libraryManager) :
 		libraryManager {libraryManager} {}
 };
 
-EmptyLibraryContainer::EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent) :
-	Gui::Library::Container(parent)
+EmptyLibraryContainer::EmptyLibraryContainer(Library::Manager* libraryManager,
+                                             Library::PluginHandler* pluginHandler) :
+	Gui::Library::Container(pluginHandler)
 {
 	m = Pimpl::make<Private>(libraryManager);
 }

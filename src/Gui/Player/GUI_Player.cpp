@@ -92,28 +92,33 @@ struct GUI_Player::Private
 	std::shared_ptr<GUI_Logger> logger {nullptr};
 	GUI_TrayIcon* trayIcon {nullptr};
 	GUI_ControlsBase* controls {nullptr};
+	Library::PluginHandler* libraryPluginHandler;
 	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
 	NotificationHandler* notificationHandler;
 
-	Private(PlayManager* playManager, PlaylistCreator* playlistCreator, CoverDataProvider* coverProvider,
+	Private(PlayManager* playManager, PlaylistCreator* playlistCreator,
+	        Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
 	        Shutdown* shutdown, NotificationHandler* notificationHandler, GUI_Player* parent) :
-		menubar {new Menubar(shutdown, playlistCreator, parent)},
+		menubar {new Menubar(shutdown, playlistCreator, libraryPluginHandler, parent)},
 		logger {std::make_shared<GUI_Logger>(parent)},
+		libraryPluginHandler {libraryPluginHandler},
 		coverProvider {coverProvider},
 		playManager {playManager},
 		notificationHandler {notificationHandler} {}
 };
 
-GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler, CoverDataProvider* coverProvider,
+GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler,
+                       Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
                        Shutdown* shutdown, NotificationHandler* notificationHandler,
                        DynamicPlaybackChecker* dynamicPlaybackChecker,
                        Library::InfoAccessor* libraryAccessor, QWidget* parent) :
 	Gui::MainWindow(parent),
-	MessageReceiverInterface("Player Main Window")
+	MessageReceiverInterface("Player Main Window"),
+	m {Pimpl::make<Private>(playManager, playlistHandler, libraryPluginHandler, coverProvider, shutdown,
+	                        notificationHandler, this)
+	}
 {
-	m = Pimpl::make<Private>(playManager, playlistHandler, coverProvider, shutdown, notificationHandler, this);
-
 	initLanguage();
 
 	ui = std::make_shared<Ui::GUI_Player>();
@@ -263,8 +268,7 @@ void GUI_Player::initFontChangeFix()
 
 void GUI_Player::initConnections()
 {
-	auto* libraryPluginHandler = Library::PluginHandler::instance();
-	connect(libraryPluginHandler, &Library::PluginHandler::sigCurrentLibraryChanged,
+	connect(m->libraryPluginHandler, &Library::PluginHandler::sigCurrentLibraryChanged,
 	        this, &GUI_Player::currentLibraryChanged);
 
 	connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, [&](const auto& /* track */) {
@@ -415,7 +419,7 @@ void GUI_Player::initLibrary()
 	if(isVisible)
 	{
 		addCurrentLibrary();
-		auto* libraryWidget = Library::PluginHandler::instance()->currentLibraryWidget();
+		auto* libraryWidget = m->libraryPluginHandler->currentLibraryWidget();
 		if(libraryWidget)
 		{
 			libraryWidget->show();
@@ -492,7 +496,7 @@ void GUI_Player::addCurrentLibrary()
 
 	removeCurrentLibrary();
 
-	auto* libraryWidget = Library::PluginHandler::instance()->currentLibraryWidget();
+	auto* libraryWidget = m->libraryPluginHandler->currentLibraryWidget();
 	if(libraryWidget)
 	{
 		layout->addWidget(libraryWidget);

@@ -23,6 +23,7 @@
 #include "SoundcloudLibraryContainer.h"
 #include "Gui/Soundcloud/GUI_SoundcloudLibrary.h"
 
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Components/Streaming/Soundcloud/SoundcloudLibrary.h"
 #include "Components/Streaming/Soundcloud/SoundcloudTokenObserver.h"
@@ -55,8 +56,9 @@ struct SC::LibraryContainer::Private
 	}
 };
 
-SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
-	Gui::Library::Container(parent)
+SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor,
+                                       ::Library::PluginHandler* pluginHandler) :
+	Gui::Library::Container(pluginHandler)
 {
 	initSoundcloudIcons();
 

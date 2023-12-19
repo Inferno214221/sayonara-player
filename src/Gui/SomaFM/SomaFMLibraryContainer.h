@@ -27,6 +27,11 @@
 #include <QtGlobal>
 #include "Gui/Library/LibraryContainer.h"
 
+namespace Library
+{
+	class PluginHandler;
+}
+
 namespace SomaFM
 {
 	class Library;
@@ -42,7 +47,7 @@ namespace SomaFM
 			GUI_SomaFM* ui = nullptr;
 
 		public:
-			explicit LibraryContainer(SomaFM::Library* library, QObject* parent);
+			LibraryContainer(SomaFM::Library* library, ::Library::PluginHandler* pluginHandler);
 			~LibraryContainer() override;
 
 			// override from LibraryViewInterface

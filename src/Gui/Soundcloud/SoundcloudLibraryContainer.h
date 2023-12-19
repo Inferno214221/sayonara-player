@@ -29,6 +29,11 @@
 
 class LibraryPlaylistInteractor;
 
+namespace Library
+{
+	class PluginHandler;
+}
+
 namespace SC
 {
 	class GUI_Library;
@@ -43,8 +48,8 @@ namespace SC
 			SC::GUI_Library* ui = nullptr;
 
 		public:
-
-			explicit LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
+			LibraryContainer(LibraryPlaylistInteractor* playlistInteractor,
+			                 ::Library::PluginHandler* pluginHandler);
 			~LibraryContainer() override;
 
 			// override from LibraryViewInterface

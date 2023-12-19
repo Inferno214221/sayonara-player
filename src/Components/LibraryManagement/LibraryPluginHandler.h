@@ -21,12 +21,15 @@
 #ifndef LIBRARYPLUGINLOADER_H
 #define LIBRARYPLUGINLOADER_H
 
-#include "Utils/Singleton.h"
-#include "Utils/Pimpl.h"
-
+#include <QList>
 #include <QObject>
 
+#include <memory>
+
 class QMenu;
+class QString;
+class QWidget;
+
 namespace Library
 {
 	class Info;
@@ -36,35 +39,35 @@ namespace Library
 		public QObject
 	{
 		Q_OBJECT
-		PIMPL(PluginHandler)
-			SINGLETON(PluginHandler)
 
 		signals:
 			void sigNewLibraryRequested(const QString& name, const QString& path);
 			void sigCurrentLibraryChanged();
 			void sigLibrariesChanged();
 
-		private:
-			void initLibraries(const QList<LibraryContainer*>& containers);
-
 		public:
-			void init(const QList<LibraryContainer*>& containers, LibraryContainer* fallbackLibrary);
-			void shutdown();
+			~PluginHandler() override;
 
-			[[nodiscard]] QList<LibraryContainer*> libraries(bool alsoEmpty) const;
-			[[nodiscard]] LibraryContainer* currentLibrary() const;
-			[[nodiscard]] QWidget* currentLibraryWidget() const;
+			virtual void init(const QList<LibraryContainer*>& containers, LibraryContainer* fallbackLibrary) = 0;
 
-			void addLocalLibrary(LibraryContainer* container);
-			void renameLocalLibrary(const QString& oldName, const QString& newName);
-			void removeLocalLibrary(const QString& name);
-			void moveLocalLibrary(int oldIndex, int newIndex);
+			[[nodiscard]] virtual QList<LibraryContainer*> libraries(bool alsoEmpty) const = 0;
+			[[nodiscard]] virtual LibraryContainer* currentLibrary() const = 0;
+			[[nodiscard]] virtual QWidget* currentLibraryWidget() const = 0;
+
+			// LocalLibraryWatcher
+			virtual void addLocalLibrary(LibraryContainer* container) = 0;
+			virtual void renameLocalLibrary(const QString& oldName, const QString& newName) = 0;
+			virtual void removeLocalLibrary(const QString& name) = 0;
+			virtual void moveLocalLibrary(int oldIndex, int newIndex) = 0;
+
+			static PluginHandler* create();
 
 		public slots:
-			void setCurrentLibrary(const QString& name);
-			void setCurrentLibrary(int index);
-			void setCurrentLibrary(LibraryContainer* currentLibrary);
+			virtual void setCurrentLibrary(const QString& name) = 0;
+			virtual void setCurrentLibrary(int index) = 0;
+			virtual void setCurrentLibrary(LibraryContainer* currentLibrary) = 0;
 	};
+
 }
 
 #endif // LIBRARYPLUGINLOADER_H

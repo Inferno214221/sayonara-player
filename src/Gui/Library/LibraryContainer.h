@@ -24,10 +24,13 @@
 #include "Utils/Pimpl.h"
 #include "Components/LibraryManagement/LibraryContainer.h"
 
-namespace Gui::Library
+namespace Library
 {
 	class PluginHandler;
+}
 
+namespace Gui::Library
+{
 	class Container :
 		public QObject,
 		public ::Library::LibraryContainer
@@ -38,7 +41,7 @@ namespace Gui::Library
 			friend class PluginHandler;
 
 		public:
-			explicit Container(QObject* parent = nullptr);
+			explicit Container(::Library::PluginHandler* libraryPluginHandler);
 			~Container() override;
 
 			void init() override;

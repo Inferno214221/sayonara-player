@@ -21,9 +21,10 @@
 
 /* SomaFMLibraryContainer.cpp */
 
+#include "GUI_SomaFM.h"
 #include "SomaFMLibraryContainer.h"
 #include "Components/Streaming/SomaFM/SomaFMLibrary.h"
-#include "GUI_SomaFM.h"
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include <QIcon>
 
@@ -36,12 +37,12 @@ struct SomaFM::LibraryContainer::Private
 {
 	SomaFM::Library* library;
 
-	Private(SomaFM::Library* library) :
+	explicit Private(SomaFM::Library* library) :
 		library(library) {}
 };
 
-SomaFM::LibraryContainer::LibraryContainer(SomaFM::Library* library, QObject* parent) :
-	Gui::Library::Container(parent)
+SomaFM::LibraryContainer::LibraryContainer(SomaFM::Library* library, ::Library::PluginHandler* pluginHandler) :
+	Gui::Library::Container(pluginHandler)
 {
 	m = Pimpl::make<Private>(library);
 	soma_fm_init_icons();
