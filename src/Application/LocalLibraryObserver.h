@@ -33,17 +33,16 @@ namespace Library
 	class Manager;
 	class PluginHandler;
 
-	class LocalLibraryWatcher :
+	class LocalLibraryObserver :
 		public QObject
 	{
 		Q_OBJECT
-		PIMPL(LocalLibraryWatcher)
+		PIMPL(LocalLibraryObserver)
 
 		public:
-			LocalLibraryWatcher(Library::Manager* libraryManager,
-			                    Library::PluginHandler* pluginHandler,
-			                    QObject* parent = nullptr);
-			~LocalLibraryWatcher() override;
+			LocalLibraryObserver(Library::Manager* libraryManager, Library::PluginHandler* pluginHandler,
+			                     QObject* parent = nullptr);
+			~LocalLibraryObserver() override;
 
 			[[nodiscard]] QList<LibraryContainer*> getLocalLibraryContainers() const;
 

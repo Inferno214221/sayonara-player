@@ -23,7 +23,7 @@
 
 #include "Application/Application.h"
 #include "Application/InstanceThread.h"
-#include "Application/LocalLibraryWatcher.h"
+#include "Application/LocalLibraryObserver.h"
 #include "Application/MetaTypeRegistry.h"
 #include "Components/Bookmarks/Bookmarks.h"
 #include "Components/Converter/ConverterFactory.h"
@@ -162,7 +162,7 @@ struct Application::Private
 
 	GUI_Player* player {nullptr};
 	Dbus::SessionManager* dbusSessionManager {nullptr};
-	Library::LocalLibraryWatcher* localLibraryWatcher {nullptr};
+	Library::LocalLibraryObserver* localLibraryWatcher {nullptr};
 	RemoteControl* remoteControl {nullptr};
 	InstanceThread* instanceThread {nullptr};
 
@@ -392,7 +392,7 @@ void Application::initLibraries()
 {
 	[[maybe_unused]] auto measureApp = Util::MeasureApp("Libraries", m->timer);
 
-	m->localLibraryWatcher = new Library::LocalLibraryWatcher(m->libraryManager, m->libraryPluginHandler, this);
+	m->localLibraryWatcher = new Library::LocalLibraryObserver(m->libraryManager, m->libraryPluginHandler, this);
 
 	auto libraryContainers = m->localLibraryWatcher->getLocalLibraryContainers();
 
