@@ -42,7 +42,7 @@ namespace PipelineExtensions
 			[[nodiscard]] virtual MilliSeconds durationMs() const = 0;
 	};
 
-	std::shared_ptr<PositionAccessor> createPositionAccessor(GstElement* positionElement);
+	std::shared_ptr<PositionAccessor> createPositionAccessor(GstElement* readElement, GstElement* seekElement);
 }
 
 #endif // SEEKHANDLER_H

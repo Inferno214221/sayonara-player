@@ -208,7 +208,7 @@ namespace Engine
 		m->pitcher = PipelineExtensions::createPitcher();
 		m->crossfader = PipelineExtensions::createCrossfader(this, this);
 		m->delayedInvoker = PipelineExtensions::createDelayedPlaybackInvoker(this);
-		m->positionAccessor = PipelineExtensions::createPositionAccessor(m->source);
+		m->positionAccessor = PipelineExtensions::createPositionAccessor(m->pipeline, m->tee);
 		m->equalizer = PipelineExtensions::createEqualizer();
 
 		return (m->playbackSink != nullptr);

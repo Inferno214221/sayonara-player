@@ -33,7 +33,8 @@ namespace
 	using ChronoMs = std::chrono::milliseconds;
 
 	constexpr const auto SeekAccurate = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
-	constexpr const auto SeekNearest = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
+	constexpr const auto SeekNearest = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT |
+	                                                             GST_SEEK_FLAG_SNAP_NEAREST);
 
 	bool seek(GstElement* audioSource, const GstSeekFlags flags, const std::chrono::nanoseconds ns)
 	{
@@ -75,45 +76,47 @@ namespace
 		public PipelineExtensions::PositionAccessor
 	{
 		public:
-			explicit PositionAccessorImpl(GstElement* positionElement) :
-				m_positionElement {positionElement} {}
+			explicit PositionAccessorImpl(GstElement* readElement, GstElement* seekElement) :
+				m_readElement {readElement},
+				m_seekElement {seekElement} {}
 
 			~PositionAccessorImpl() override = default; // NOLINT(cppcoreguidelines-explicit-virtual-functions)
 
 			void seekRelative(const double percent, const MilliSeconds duration) override
 			{
 				const auto newTimeNs = getRelativeTimeStampNs(percent, ChronoMs {duration});
-				seek(m_positionElement, SeekAccurate, newTimeNs);
+				seek(m_seekElement, SeekNearest, newTimeNs);
 			}
 
 			void seekAbsoluteMs(const MilliSeconds ms) override
 			{
-				seek(m_positionElement, SeekAccurate, msToNs(ChronoMs {ms}));
+				seek(m_seekElement, SeekNearest, msToNs(ChronoMs {ms}));
 			}
 
 			void seekNearestMs(const MilliSeconds ms) override
 			{
-				seek(m_positionElement, SeekNearest, msToNs(ChronoMs {ms}));
+				seek(m_seekElement, SeekNearest, msToNs(ChronoMs {ms}));
 			}
 
 			[[nodiscard]] MilliSeconds positionMs() const override
 			{
-				return Engine::Utils::getPositionMs(m_positionElement);
+				return Engine::Utils::getPositionMs(m_readElement);
 			}
 
 			[[nodiscard]] MilliSeconds durationMs() const override
 			{
-				return Engine::Utils::getDurationMs(m_positionElement);
+				return Engine::Utils::getDurationMs(m_readElement);
 			}
 
 			[[nodiscard]] MilliSeconds timeToGo() const override
 			{
-				const auto ms = Engine::Utils::getTimeToGo(m_positionElement);
+				const auto ms = Engine::Utils::getTimeToGo(m_readElement);
 				return std::max<MilliSeconds>(ms - 100, 0); // NOLINT(readability-magic-numbers)
 			}
 
 		private:
-			GstElement* m_positionElement;
+			GstElement* m_readElement;
+			GstElement* m_seekElement;
 	};
 }
 
@@ -121,8 +124,8 @@ namespace PipelineExtensions
 {
 	PositionAccessor::~PositionAccessor() = default;
 
-	std::shared_ptr<PositionAccessor> createPositionAccessor(GstElement* positionElement)
+	std::shared_ptr<PositionAccessor> createPositionAccessor(GstElement* readElement, GstElement* seekElement)
 	{
-		return std::make_shared<PositionAccessorImpl>(positionElement);
+		return std::make_shared<PositionAccessorImpl>(readElement, seekElement);
 	}
 }
