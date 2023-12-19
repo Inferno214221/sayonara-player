@@ -32,10 +32,6 @@ namespace Library
 	class Info;
 	class LibraryContainer;
 
-	/**
-	 * @brief Library Plugin Manager
-	 * @ingroup LibraryPlugins
-	 */
 	class PluginHandler :
 		public QObject
 	{
@@ -50,34 +46,24 @@ namespace Library
 
 		private:
 			void initLibraries(const QList<LibraryContainer*>& containers);
-			void initDllLibraries();
 
 		public:
-			/**
-			 * @brief Search for plugins and add some predefined plugins
-			 * @param containers Some predefined plugins
-			 */
-			void init(const QList<LibraryContainer*>& containers, LibraryContainer* fallback_library);
+			void init(const QList<LibraryContainer*>& containers, LibraryContainer* fallbackLibrary);
 			void shutdown();
 
-			/**
-			 * @brief Get a list for all found plugins. The ui is not necessarily initialized
-			 * @return list for all found library plugins
-			 */
-			QList<LibraryContainer*> libraries(bool also_empty) const;
-
-			LibraryContainer* currentLibrary() const;
-			QWidget* currentLibraryWidget() const;
+			[[nodiscard]] QList<LibraryContainer*> libraries(bool alsoEmpty) const;
+			[[nodiscard]] LibraryContainer* currentLibrary() const;
+			[[nodiscard]] QWidget* currentLibraryWidget() const;
 
 			void addLocalLibrary(LibraryContainer* container);
-			void renameLocalLibrary(const QString& old_name, const QString& new_name);
+			void renameLocalLibrary(const QString& oldName, const QString& newName);
 			void removeLocalLibrary(const QString& name);
-			void moveLocalLibrary(int old_local_library_index, int new_local_library_index);
+			void moveLocalLibrary(int oldIndex, int newIndex);
 
 		public slots:
 			void setCurrentLibrary(const QString& name);
 			void setCurrentLibrary(int index);
-			void setCurrentLibrary(LibraryContainer* container);
+			void setCurrentLibrary(LibraryContainer* currentLibrary);
 	};
 }
 

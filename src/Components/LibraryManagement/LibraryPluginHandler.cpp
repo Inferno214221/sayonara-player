@@ -32,299 +32,199 @@
 #include <QVariantMap>
 #include <QWidget>
 
-using Library::PluginHandler;
-using Library::LibraryContainer;
-
-using ContainerList = QList<LibraryContainer*>;
-
-namespace Algorithm = Util::Algorithm;
-
-struct PluginHandler::Private
+namespace Library
 {
-	LibraryContainer* emptyLibrary = nullptr;
-	LibraryContainer* currentLibrary = nullptr;
-	ContainerList libraryContainers;
+	using ContainerList = QList<LibraryContainer*>;
 
-	LibraryContainer* find_library(const QString& name)
+	namespace
 	{
-		spLog(Log::Debug, this) << "Searching for Library " << name;
-
-		auto it = Algorithm::find(libraryContainers, [&name](LibraryContainer* c) {
-			return (c->name() == name);
-		});
-
-		if(it != libraryContainers.end())
+		QString convertDisplayName(const QString& displayName)
 		{
-			return *it;
+			auto ret = displayName.toLower().trimmed();
+			ret.replace(" ", "-");
+
+			return ret;
 		}
 
-		return nullptr;
+		LibraryContainer* findLibrary(const ContainerList& containers, const QString& name)
+		{
+			spLog(Log::Debug, "LibraryPluginHandler") << "Searching for Library " << name;
+
+			const auto it = Util::Algorithm::find(containers, [&name](auto* container) {
+				return (container->name() == name);
+			});
+
+			return (it != containers.end()) ? *it : nullptr;
+		}
 	}
-};
 
-static QString convert_display_name(const QString& display_name)
-{
-	QString ret = display_name.toLower().trimmed();
-	ret.replace(" ", "-");
+	struct PluginHandler::Private
+	{
+		LibraryContainer* emptyLibrary = nullptr;
+		LibraryContainer* currentLibrary = nullptr;
+		ContainerList libraryContainers;
+	};
 
-	return ret;
-}
+	PluginHandler::PluginHandler() :
+		QObject(nullptr),
+		m {Pimpl::make<Private>()} {}
 
-/*************************************************************************/
+	PluginHandler::~PluginHandler() = default;
 
-PluginHandler::PluginHandler() :
-	QObject(nullptr)
-{
-	m = Pimpl::make<Private>();
-}
+	void PluginHandler::init(const ContainerList& containers, LibraryContainer* fallbackLibrary)
+	{
+		m->emptyLibrary = fallbackLibrary;
 
-PluginHandler::~PluginHandler() = default;
+		initLibraries(containers);
 
-void PluginHandler::init(const ContainerList& containers, LibraryContainer* fallback_library)
-{
-	m->emptyLibrary = fallback_library;
+		if(auto* lastLibrary = findLibrary(m->libraryContainers, GetSetting(Set::Lib_CurPlugin)); lastLibrary)
+		{
+			setCurrentLibrary(lastLibrary);
+			return;
+		}
 
-	QString last_library = GetSetting(Set::Lib_CurPlugin);
-	initLibraries(containers);
-	initDllLibraries();
-
-	{ // First startup handling
-		bool has_local_library = Util::Algorithm::contains(m->libraryContainers, [](LibraryContainer* container) {
+		const auto localLibraryIndex = Util::Algorithm::indexOf(m->libraryContainers, [&](auto* container) {
 			return container->isLocal();
 		});
 
-		LibraryContainer* c = m->find_library(last_library);
-		if(!has_local_library && (c == nullptr))
-		{
-			setCurrentLibrary(-1);
-		}
+		setCurrentLibrary(localLibraryIndex);
 
-		else
-		{
-			setCurrentLibrary(last_library);
-		}
 	}
-}
 
-void PluginHandler::shutdown()
-{
-	for(const auto& container: m->libraryContainers)
+	void PluginHandler::shutdown()
 	{
-		delete container;
+		for(auto* container: m->libraryContainers)
+		{
+			delete container;
+		}
+
+		m->libraryContainers.clear();
 	}
 
-	m->libraryContainers.clear();
-}
+	void PluginHandler::initLibraries(const QList<Library::LibraryContainer*>& containers)
+	{
+		for(auto* container: containers)
+		{
+			if(container)
+			{
+				spLog(Log::Debug, this) << "Add library " << container->displayName();
+				m->libraryContainers << container;
+			}
+		}
+	}
 
-void PluginHandler::initLibraries(const QList<Library::LibraryContainer*>& containers)
-{
-	for(LibraryContainer* container: containers)
+	void PluginHandler::setCurrentLibrary(const QString& name)
+	{
+		setCurrentLibrary(findLibrary(m->libraryContainers, name));
+	}
+
+	void PluginHandler::setCurrentLibrary(int index)
+	{
+		auto* result = m->emptyLibrary;
+
+		if(!m->libraryContainers.isEmpty() && (index >= 0))
+		{
+			index = std::min(index, m->libraryContainers.size() - 1);
+			result = m->libraryContainers[index];
+		}
+
+		setCurrentLibrary(result);
+	}
+
+	void PluginHandler::setCurrentLibrary(LibraryContainer* currentLibrary)
+	{
+		if(!currentLibrary)
+		{
+			currentLibrary = m->libraryContainers.isEmpty()
+			                 ? m->emptyLibrary
+			                 : m->libraryContainers.first();
+		}
+
+		m->currentLibrary = currentLibrary;
+
+		if(m->currentLibrary)
+		{
+			m->currentLibrary->init();
+		}
+
+		SetSetting(Set::Lib_CurPlugin, currentLibrary->name());
+
+		emit sigCurrentLibraryChanged();
+	}
+
+	LibraryContainer* PluginHandler::currentLibrary() const { return m->currentLibrary; }
+
+	QWidget* PluginHandler::currentLibraryWidget() const
+	{
+		return (m->currentLibrary)
+		       ? m->currentLibrary->widget()
+		       : nullptr;
+	}
+
+	void PluginHandler::addLocalLibrary(Library::LibraryContainer* container)
 	{
 		if(!container)
 		{
-			continue;
+			return;
 		}
 
-		spLog(Log::Debug, this) << "Add library " << container->displayName();
+		auto index = Util::Algorithm::indexOf(m->libraryContainers, [empty = m->emptyLibrary](auto* container) {
+			return !container->isLocal() &&
+			       (container != empty);
+		});
 
-		m->libraryContainers << container;
-	}
-}
-
-void PluginHandler::initDllLibraries()
-{
-//	QDir plugin_dir = QDir(Util::libPath());
-//	QStringList dll_filenames = plugin_dir.entryList(QDir::Files);
-
-//	for(const QString& filename : dll_filenames)
-//	{
-//		QString absolute_path = plugin_dir.absoluteFilePath(filename);
-//		QPluginLoader loader(absolute_path);
-//		QJsonObject metadata = loader.metaData();
-//		QVariantMap map = metadata.toVariantMap();
-//		const auto keys = map.keys();
-
-//		bool has_correct_iid = false;
-//		for(const QString& key : keys)
-//		{
-//			if(key.trimmed() != "IID"){
-//				continue;
-//			}
-
-//			QString value = map[key].toString();
-
-//			if(value.startsWith("com.sayonara-player.apiv2."))
-//			{
-//				spLog(Log::Debug, this) << "Have found valid plugin with iid = " << value;
-//				has_correct_iid = true;
-//			}
-
-//			else if(value.startsWith("com.sayonara-player."))
-//			{
-//				spLog(Log::Info, this) << "Ignoring *outdated* plugin with iid = " << value << " at " << absolute_path;
-//				spLog(Log::Info, this) << "You can delete this file";
-//			}
-
-//			else
-//			{
-//				spLog(Log::Warning, this) << "Ignoring *invalid* plugin with iid = " << value << " at " << absolute_path;
-//			}
-
-//			break;
-//		}
-
-//		if(!has_correct_iid)
-//		{
-//			continue;
-//		}
-
-//		QObject* raw_plugin = loader.instance();
-//		if(!raw_plugin)
-//		{
-//			spLog(Log::Warning, this) << "Cannot load plugin: " << filename << ": " << loader.errorString();
-//			loader.unload();
-//			continue;
-//		}
-
-//		AbstractContainer* container = dynamic_cast<AbstractContainer*>(raw_plugin);
-//		if(!container)
-//		{
-//			loader.unload();
-//			continue;
-//		}
-
-//		spLog(Log::Info, this) << "Found library plugin " << container->displayName();
-
-//		m->libraryContainers << container;
-//	}
-}
-
-void PluginHandler::setCurrentLibrary(const QString& name)
-{
-	setCurrentLibrary(m->find_library(name));
-}
-
-void PluginHandler::setCurrentLibrary(int index)
-{
-	LibraryContainer* ret = m->emptyLibrary;
-
-	if(!m->libraryContainers.isEmpty() && index >= 0)
-	{
-		index = std::min(index, m->libraryContainers.size() - 1);
-		ret = m->libraryContainers[index];
-	}
-
-	setCurrentLibrary(ret);
-}
-
-void PluginHandler::setCurrentLibrary(LibraryContainer* cur_library)
-{
-	if(!cur_library)
-	{
-		if(m->libraryContainers.isEmpty())
-		{
-			cur_library = m->emptyLibrary;
-		}
-
-		else
-		{
-			cur_library = m->libraryContainers.first();
-		}
-	}
-
-	m->currentLibrary = cur_library;
-
-	if(m->currentLibrary)
-	{
-		m->currentLibrary->init();
-	}
-
-	SetSetting(Set::Lib_CurPlugin, cur_library->name());
-
-	emit sigCurrentLibraryChanged();
-}
-
-LibraryContainer* PluginHandler::currentLibrary() const
-{
-	return m->currentLibrary;
-}
-
-QWidget* PluginHandler::currentLibraryWidget() const
-{
-	if(!m->currentLibrary)
-	{
-		return nullptr;
-	}
-
-	return m->currentLibrary->widget();
-}
-
-void PluginHandler::addLocalLibrary(Library::LibraryContainer* container)
-{
-	if(container == nullptr)
-	{
-		return;
-	}
-
-	int idx = Algorithm::indexOf(m->libraryContainers, [=](LibraryContainer* c) {
-		return (c->isLocal() == false && c != m->emptyLibrary);
-	});
-
-	idx = std::max(idx, 0);
-	m->libraryContainers.insert(idx, container);
-
-	emit sigLibrariesChanged();
-
-	setCurrentLibrary(idx);
-}
-
-void PluginHandler::renameLocalLibrary(const QString& old_name, const QString& new_name)
-{
-	LibraryContainer* c = m->find_library(convert_display_name(old_name));
-	if(c && c->isLocal())
-	{
-		c->rename(new_name);
-		emit sigLibrariesChanged();
-	}
-}
-
-void PluginHandler::removeLocalLibrary(const QString& name)
-{
-	LibraryContainer* c = m->find_library(convert_display_name(name));
-	if(c && c->isLocal())
-	{
-		m->libraryContainers.removeAll(c);
-
-		if(m->currentLibrary == c)
-		{
-			setCurrentLibrary(0);
-		}
+		index = std::max(index, 0);
+		m->libraryContainers.insert(index, container);
 
 		emit sigLibrariesChanged();
-	}
-}
 
-void PluginHandler::moveLocalLibrary(int old_index, int new_index)
-{
-	// first index is empty library
-	if(!Util::between(old_index, m->libraryContainers) ||
-	   !Util::between(new_index, m->libraryContainers))
+		setCurrentLibrary(index);
+	}
+
+	void PluginHandler::renameLocalLibrary(const QString& oldName, const QString& new_name)
 	{
-		return;
+		auto* container = findLibrary(m->libraryContainers, convertDisplayName(oldName));
+		if(container && container->isLocal())
+		{
+			container->rename(new_name);
+			emit sigLibrariesChanged();
+		}
 	}
 
-	m->libraryContainers.move(old_index, new_index);
-
-	emit sigLibrariesChanged();
-}
-
-QList<Library::LibraryContainer*> PluginHandler::libraries(bool also_empty) const
-{
-	QList<LibraryContainer*> containers = m->libraryContainers;
-	if(also_empty)
+	void PluginHandler::removeLocalLibrary(const QString& name)
 	{
-		containers.push_front(m->emptyLibrary);
+		auto* container = findLibrary(m->libraryContainers, convertDisplayName(name));
+		if(container && container->isLocal())
+		{
+			m->libraryContainers.removeAll(container);
+
+			if(m->currentLibrary == container)
+			{
+				setCurrentLibrary(0);
+			}
+
+			emit sigLibrariesChanged();
+		}
 	}
 
-	return containers;
+	void PluginHandler::moveLocalLibrary(const int oldIndex, const int newIndex)
+	{
+		if(Util::between(oldIndex, m->libraryContainers) &&
+		   Util::between(newIndex, m->libraryContainers))
+		{
+			m->libraryContainers.move(oldIndex, newIndex);
+			emit sigLibrariesChanged();
+		}
+	}
+
+	QList<Library::LibraryContainer*> PluginHandler::libraries(const bool alsoEmpty) const
+	{
+		auto containers = m->libraryContainers;
+		if(alsoEmpty)
+		{
+			containers.push_front(m->emptyLibrary);
+		}
+
+		return containers;
+	}
 }
