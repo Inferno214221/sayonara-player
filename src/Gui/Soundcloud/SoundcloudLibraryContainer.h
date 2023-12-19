@@ -34,27 +34,27 @@ namespace SC
 	class GUI_Library;
 
 	class LibraryContainer :
-		public ::Library::Container
+		public Gui::Library::Container
 	{
 		Q_OBJECT
 		PIMPL(LibraryContainer)
 
-	private:
-		SC::GUI_Library*	ui=nullptr;
+		private:
+			SC::GUI_Library* ui = nullptr;
 
-	public:
+		public:
 
-		explicit LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent=nullptr);
-		~LibraryContainer() override;
+			explicit LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
+			~LibraryContainer() override;
 
-		// override from LibraryViewInterface
-		QString			name() const override;
-		QString			displayName() const override;
-		QWidget*		widget() const override;
-		QMenu*			menu() override;
-		QFrame*			header() const override;
-		QIcon			icon() const override;
-		void			initUi() override;
+			// override from LibraryViewInterface
+			[[nodiscard]] QString name() const override;
+			[[nodiscard]] QString displayName() const override;
+			[[nodiscard]] QWidget* widget() const override;
+			[[nodiscard]] QMenu* menu() override;
+			[[nodiscard]] QFrame* header() const override;
+			[[nodiscard]] QIcon icon() const override;
+			void initUi() override;
 	};
 }
 

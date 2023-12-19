@@ -29,7 +29,7 @@
 
 namespace Library
 {
-	class AbstractContainer;
+	class LibraryContainer;
 }
 
 namespace PlayerPlugin
@@ -67,7 +67,7 @@ class Menubar :
 		void initLanguages();
 		void initSkin();
 
-		QAction* changeCurrentLibrary(Library::AbstractContainer* library);
+		QAction* changeCurrentLibrary(Library::LibraryContainer* library);
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void openDirClicked();

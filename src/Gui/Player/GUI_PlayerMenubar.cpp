@@ -27,7 +27,7 @@
 
 #include "Gui/Shutdown/GUI_Shutdown.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
-#include "Components/LibraryManagement/AbstractLibraryContainer.h"
+#include "Components/LibraryManagement/LibraryContainer.h"
 
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
@@ -89,7 +89,7 @@ struct Menubar::Private
 
 	QAction* currentLibraryMenuAction = nullptr;
 
-	Library::AbstractContainer* currentLibrary = nullptr;
+	Library::LibraryContainer* currentLibrary = nullptr;
 
 	QLabel* heartLabel = nullptr;
 	QLabel* donateLabel = nullptr;
@@ -183,7 +183,7 @@ void Menubar::insertPreferenceAction(QAction* action)
 	m->menuFile->insertAction(m->sepAfterPreferences, action);
 }
 
-QAction* Menubar::changeCurrentLibrary(Library::AbstractContainer* library)
+QAction* Menubar::changeCurrentLibrary(Library::LibraryContainer* library)
 {
 	showLibraryAction(false);
 	m->currentLibrary = library;

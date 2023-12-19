@@ -33,7 +33,7 @@ namespace Library
  * @ingroup Library
  */
 class EmptyLibraryContainer :
-	public Library::Container
+	public Gui::Library::Container
 {
 	Q_OBJECT
 	PIMPL(EmptyLibraryContainer)
@@ -43,12 +43,12 @@ class EmptyLibraryContainer :
 		explicit EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent = nullptr);
 		~EmptyLibraryContainer() override;
 
-		QString name() const override;
-		QString displayName() const override;
-		QWidget* widget() const override;
-		QMenu* menu() override;
-		QFrame* header() const override;
-		QIcon icon() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QWidget* widget() const override;
+		[[nodiscard]] QMenu* menu() override;
+		[[nodiscard]] QFrame* header() const override;
+		[[nodiscard]] QIcon icon() const override;
 
 		void initUi() override;
 };

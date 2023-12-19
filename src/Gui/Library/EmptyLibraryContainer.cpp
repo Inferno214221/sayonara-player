@@ -36,12 +36,11 @@ struct EmptyLibraryContainer::Private
 	GUI_EmptyLibrary* ui = nullptr;
 
 	Private(Library::Manager* libraryManager) :
-		libraryManager{libraryManager}
-	{}
+		libraryManager {libraryManager} {}
 };
 
 EmptyLibraryContainer::EmptyLibraryContainer(Library::Manager* libraryManager, QObject* parent) :
-	Library::Container(parent)
+	Gui::Library::Container(parent)
 {
 	m = Pimpl::make<Private>(libraryManager);
 }

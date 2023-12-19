@@ -33,26 +33,26 @@ namespace SomaFM
 	class GUI_SomaFM;
 
 	class LibraryContainer :
-		public ::Library::Container
+		public Gui::Library::Container
 	{
 		Q_OBJECT
 		PIMPL(LibraryContainer)
 
-	private:
-		GUI_SomaFM*	ui=nullptr;
+		private:
+			GUI_SomaFM* ui = nullptr;
 
-	public:
-		explicit LibraryContainer(SomaFM::Library* library, QObject* parent);
-		~LibraryContainer() override;
+		public:
+			explicit LibraryContainer(SomaFM::Library* library, QObject* parent);
+			~LibraryContainer() override;
 
-		// override from LibraryViewInterface
-		QString			name() const override;
-		QString			displayName() const override;
-		QWidget*		widget() const override;
-		QIcon			icon() const override;
-		QMenu*			menu() override;
-		QFrame*			header() const override;
-		void			initUi() override;
+			// override from LibraryViewInterface
+			[[nodiscard]] QString name() const override;
+			[[nodiscard]] QString displayName() const override;
+			[[nodiscard]] QWidget* widget() const override;
+			[[nodiscard]] QIcon icon() const override;
+			[[nodiscard]] QMenu* menu() override;
+			[[nodiscard]] QFrame* header() const override;
+			void initUi() override;
 	};
 }
 #endif

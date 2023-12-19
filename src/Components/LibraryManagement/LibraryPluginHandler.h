@@ -30,54 +30,54 @@ class QMenu;
 namespace Library
 {
 	class Info;
-	class AbstractContainer;
+	class LibraryContainer;
 
 	/**
 	 * @brief Library Plugin Manager
 	 * @ingroup LibraryPlugins
 	 */
 	class PluginHandler :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(PluginHandler)
-		SINGLETON(PluginHandler)
+			SINGLETON(PluginHandler)
 
-	signals:
-		void sigNewLibraryRequested(const QString& name, const QString& path);
-		void sigCurrentLibraryChanged();
-		void sigLibrariesChanged();
+		signals:
+			void sigNewLibraryRequested(const QString& name, const QString& path);
+			void sigCurrentLibraryChanged();
+			void sigLibrariesChanged();
 
-	private:
-		void initLibraries(const QList<AbstractContainer*>& containers);
-		void initDllLibraries();
+		private:
+			void initLibraries(const QList<LibraryContainer*>& containers);
+			void initDllLibraries();
 
-	public:
-		/**
-		 * @brief Search for plugins and add some predefined plugins
-		 * @param containers Some predefined plugins
-		 */
-		void init(const QList<AbstractContainer*>& containers, AbstractContainer* fallback_library);
-		void shutdown();
+		public:
+			/**
+			 * @brief Search for plugins and add some predefined plugins
+			 * @param containers Some predefined plugins
+			 */
+			void init(const QList<LibraryContainer*>& containers, LibraryContainer* fallback_library);
+			void shutdown();
 
-		/**
-		 * @brief Get a list for all found plugins. The ui is not necessarily initialized
-		 * @return list for all found library plugins
-		 */
-		QList<AbstractContainer*>	libraries(bool also_empty) const;
+			/**
+			 * @brief Get a list for all found plugins. The ui is not necessarily initialized
+			 * @return list for all found library plugins
+			 */
+			QList<LibraryContainer*> libraries(bool also_empty) const;
 
-		AbstractContainer*			currentLibrary() const;
-		QWidget*			currentLibraryWidget() const;
+			LibraryContainer* currentLibrary() const;
+			QWidget* currentLibraryWidget() const;
 
-		void addLocalLibrary(AbstractContainer* container);
-		void renameLocalLibrary(const QString& old_name, const QString& new_name);
-		void removeLocalLibrary(const QString& name);
-		void moveLocalLibrary(int old_local_library_index, int new_local_library_index);
+			void addLocalLibrary(LibraryContainer* container);
+			void renameLocalLibrary(const QString& old_name, const QString& new_name);
+			void removeLocalLibrary(const QString& name);
+			void moveLocalLibrary(int old_local_library_index, int new_local_library_index);
 
-	public slots:
-		void setCurrentLibrary(const QString& name);
-		void setCurrentLibrary(int index);
-		void setCurrentLibrary(AbstractContainer* container);
+		public slots:
+			void setCurrentLibrary(const QString& name);
+			void setCurrentLibrary(int index);
+			void setCurrentLibrary(LibraryContainer* container);
 	};
 }
 

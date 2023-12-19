@@ -39,9 +39,8 @@ struct LocalLibraryWatcher::Private
 	QList<Info> infos;
 
 	Private(Library::Manager* libraryManager) :
-		libraryManager{libraryManager},
-		infos{libraryManager->allLibraries()}
-	{}
+		libraryManager {libraryManager},
+		infos {libraryManager->allLibraries()} {}
 };
 
 LocalLibraryWatcher::LocalLibraryWatcher(Library::Manager* libraryManager, QObject* parent) :
@@ -57,10 +56,10 @@ LocalLibraryWatcher::LocalLibraryWatcher(Library::Manager* libraryManager, QObje
 
 LocalLibraryWatcher::~LocalLibraryWatcher() = default;
 
-QList<AbstractContainer*> LocalLibraryWatcher::getLocalLibraryContainers() const
+QList<LibraryContainer*> LocalLibraryWatcher::getLocalLibraryContainers() const
 {
-	QList<AbstractContainer*> containers;
-	Util::Algorithm::transform(m->infos, containers, [&](const Info& info){
+	QList<LibraryContainer*> containers;
+	Util::Algorithm::transform(m->infos, containers, [&](const Info& info) {
 		return new LocalLibraryContainer(m->libraryManager, info);
 	});
 

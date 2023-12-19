@@ -25,73 +25,57 @@
 #include <QAction>
 #include <QLayout>
 
-using Library::Container;
-
-struct Container::Private
+namespace Gui::Library
 {
-	bool initialized;
-
-	Private() :
-		initialized(false) {}
-};
-
-Container::Container(QObject* parent) :
-	QObject(parent),
-	Library::AbstractContainer()
-{
-	m = Pimpl::make<Private>();
-}
-
-void Container::rename(const QString& newName)
-{
-	Q_UNUSED(newName)
-}
-
-Container::~Container() = default;
-
-QString Container::displayName() const
-{
-	return name();
-}
-
-QMenu* Container::menu()
-{
-	return nullptr;
-}
-
-bool Container::isLocal() const
-{
-	return false;
-}
-
-void Container::init()
-{
-	if(m->initialized)
+	struct Container::Private
 	{
-		return;
-	}
+		bool initialized {false};
+	};
 
-	this->initUi();
+	Container::Container(QObject* parent) :
+		QObject(parent),
+		::Library::LibraryContainer(),
+		m {Pimpl::make<Private>()} {}
 
-	QWidget* ui = this->widget();
-	QLayout* layout = ui->layout();
-	if(layout)
+	void Container::rename(const QString& /*newName*/) {}
+
+	Container::~Container() = default;
+
+	QString Container::displayName() const { return name(); }
+
+	QMenu* Container::menu() { return nullptr; }
+
+	bool Container::isLocal() const { return false; }
+
+	void Container::init()
 	{
-		layout->setContentsMargins(5, 0, 8, 0);
+		if(m->initialized)
+		{
+			return;
+		}
+
+		initUi();
+
+		auto* ui = widget();
+		auto* layout = ui->layout();
+		if(layout)
+		{
+			layout->setContentsMargins(5, 0, 8, 0); // NOLINT(readability-magic-numbers)
+		}
+
+		auto* headerFrame = header();
+		if(headerFrame)
+		{
+			auto* vBoxLayout = new QVBoxLayout(headerFrame);
+			vBoxLayout->setContentsMargins(0, 0, 0, 0);
+
+			auto* comboBox = new ::Library::PluginCombobox(displayName(), headerFrame);
+			vBoxLayout->addWidget(comboBox);
+
+			headerFrame->setFrameShape(QFrame::NoFrame);
+			headerFrame->setLayout(vBoxLayout);
+		}
+
+		m->initialized = true;
 	}
-
-	QFrame* headerFrame = this->header();
-	if(headerFrame)
-	{
-		auto* vBoxLayout = new QVBoxLayout(headerFrame);
-		vBoxLayout->setContentsMargins(0, 0, 0, 0);
-
-		auto* comboBox = new Library::PluginCombobox(this->displayName(), headerFrame);
-		vBoxLayout->addWidget(comboBox);
-
-		headerFrame->setFrameShape(QFrame::NoFrame);
-		headerFrame->setLayout(vBoxLayout);
-	}
-
-	m->initialized = true;
 }

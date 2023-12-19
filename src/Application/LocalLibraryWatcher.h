@@ -29,7 +29,7 @@
 
 namespace Library
 {
-	class AbstractContainer;
+	class LibraryContainer;
 	class Manager;
 
 	class LocalLibraryWatcher :
@@ -42,7 +42,7 @@ namespace Library
 			explicit LocalLibraryWatcher(Library::Manager* libraryManager, QObject* parent = nullptr);
 			~LocalLibraryWatcher();
 
-			QList<AbstractContainer*> getLocalLibraryContainers() const;
+			QList<LibraryContainer*> getLocalLibraryContainers() const;
 
 		private slots:
 			void libraryAdded(LibraryId id);

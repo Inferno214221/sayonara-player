@@ -19,7 +19,7 @@ struct HistoryContainer::Private
 
 HistoryContainer::HistoryContainer(LibraryPlaylistInteractor* libraryPlaylistInteractor,
                                    Session::Manager* sessionManager, QObject* parent) :
-	Library::Container(parent),
+	Gui::Library::Container(parent),
 	m {Pimpl::make<Private>(libraryPlaylistInteractor, sessionManager)} {}
 
 HistoryContainer::~HistoryContainer() = default;

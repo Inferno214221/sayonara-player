@@ -397,9 +397,9 @@ void Application::initLibraries()
 	auto* somafmContainer = new SomaFM::LibraryContainer(new SomaFM::Library(m->playlistHandler, this), this);
 	auto* historyContainer = new HistoryContainer(m->libraryPlaylistInteractor, m->sessionManager, this);
 
-	libraryContainers << static_cast<Library::AbstractContainer*>(somafmContainer);
-	libraryContainers << static_cast<Library::AbstractContainer*>(soundcloudContainer);
-	libraryContainers << static_cast<Library::AbstractContainer*>(historyContainer);
+	libraryContainers << static_cast<Library::LibraryContainer*>(somafmContainer);
+	libraryContainers << static_cast<Library::LibraryContainer*>(soundcloudContainer);
+	libraryContainers << static_cast<Library::LibraryContainer*>(historyContainer);
 
 	Library::PluginHandler::instance()->init(libraryContainers, new EmptyLibraryContainer(m->libraryManager));
 }
@@ -409,7 +409,7 @@ void Application::initPlugins()
 	[[maybe_unused]] auto measureApp = Util::MeasureApp("Plugins", m->timer);
 
 	auto* playerPluginHandler = PlayerPlugin::Handler::instance();
-	
+
 	auto webClientFactory = std::make_shared<WebClientFactory>();
 	auto stationParserFactory = StationParserFactory::createStationParserFactory(webClientFactory, this);
 	auto* streamHandler = new StreamHandler(m->playlistHandler, stationParserFactory);

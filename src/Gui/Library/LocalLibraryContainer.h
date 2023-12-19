@@ -35,24 +35,25 @@ namespace Library
  * @ingroup GuiLibrary
  */
 class LocalLibraryContainer :
-	public Library::Container
+	public Gui::Library::Container
 {
 	Q_OBJECT
 	PIMPL(LocalLibraryContainer)
 
 	public:
-		explicit LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library, QObject* parent = nullptr);
+		explicit LocalLibraryContainer(Library::Manager* libraryManager, const Library::Info& library,
+		                               QObject* parent = nullptr);
 		virtual ~LocalLibraryContainer() override;
 
 		// override from LibraryViewInterface
-		QString name() const override;
-		QString displayName() const override;
-		QWidget* widget() const override;
-		QMenu* menu() override;
-		QFrame* header() const override;
-		QIcon icon() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
+		[[nodiscard]] QWidget* widget() const override;
+		[[nodiscard]] QMenu* menu() override;
+		[[nodiscard]] QFrame* header() const override;
+		[[nodiscard]] QIcon icon() const override;
 		void initUi() override;
-		bool isLocal() const override;
+		[[nodiscard]] bool isLocal() const override;
 		void rename(const QString& new_name) override;
 };
 

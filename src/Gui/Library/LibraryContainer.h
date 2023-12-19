@@ -18,48 +18,39 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef LIBRARYCONTAINERIMPL_H
-#define LIBRARYCONTAINERIMPL_H
+#ifndef SAYONARA_PLAYER_GUI_LIBRARY_CONTAINER_H
+#define SAYONARA_PLAYER_GUI_LIBRARY_CONTAINER_H
 
 #include "Utils/Pimpl.h"
-#include "Components/LibraryManagement/AbstractLibraryContainer.h"
+#include "Components/LibraryManagement/LibraryContainer.h"
 
-/**
- * @brief An interface class needed when implementing a library plugin
- * @ingroup LibraryPlugins
- * @ingroup Interfaces
- */
-
-namespace Library
+namespace Gui::Library
 {
 	class PluginHandler;
 
 	class Container :
 		public QObject,
-		public Library::AbstractContainer
+		public ::Library::LibraryContainer
 	{
 		Q_OBJECT
 		PIMPL(Container)
 
 			friend class PluginHandler;
 
-		protected:
-			/**
-			 * @brief Should initialize the ui. The ui constructor should be called within this function
-			 */
-			virtual void initUi() = 0;
-
 		public:
 			explicit Container(QObject* parent = nullptr);
-			virtual ~Container() override;
+			~Container() override;
 
 			void init() override;
 
-			virtual void rename(const QString& new_name) override;
-			virtual QString displayName() const override;
-			virtual QMenu* menu() override;
-			virtual bool isLocal() const override;
+			void rename(const QString& new_name) override;
+			[[nodiscard]] QString displayName() const override;
+			[[nodiscard]] QMenu* menu() override;
+			[[nodiscard]] bool isLocal() const override;
+
+		protected:
+			virtual void initUi() = 0;
 	};
 }
 
-#endif // LIBRARYCONTAINER_H
+#endif // SAYONARA_PLAYER_GUI_LIBRARY_CONTAINER_H

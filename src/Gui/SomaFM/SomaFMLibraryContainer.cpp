@@ -37,12 +37,11 @@ struct SomaFM::LibraryContainer::Private
 	SomaFM::Library* library;
 
 	Private(SomaFM::Library* library) :
-		library(library)
-	{}
+		library(library) {}
 };
 
 SomaFM::LibraryContainer::LibraryContainer(SomaFM::Library* library, QObject* parent) :
-	::Library::Container(parent)
+	Gui::Library::Container(parent)
 {
 	m = Pimpl::make<Private>(library);
 	soma_fm_init_icons();

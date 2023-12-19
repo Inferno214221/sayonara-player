@@ -56,7 +56,7 @@ struct SC::LibraryContainer::Private
 };
 
 SC::LibraryContainer::LibraryContainer(LibraryPlaylistInteractor* playlistInteractor, QObject* parent) :
-	::Library::Container(parent)
+	Gui::Library::Container(parent)
 {
 	initSoundcloudIcons();
 

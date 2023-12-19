@@ -28,7 +28,7 @@
 #include "Translator.h"
 
 #include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
-#include "Components/LibraryManagement/AbstractLibraryContainer.h"
+#include "Components/LibraryManagement/LibraryContainer.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/PlaylistHandler.h"

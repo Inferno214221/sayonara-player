@@ -11,7 +11,7 @@ namespace Session
 
 class LibraryPlaylistInteractor;
 class HistoryContainer :
-	public Library::Container
+	public Gui::Library::Container
 {
 	Q_OBJECT
 	PIMPL(HistoryContainer)

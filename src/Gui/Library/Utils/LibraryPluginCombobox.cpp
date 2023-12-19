@@ -21,7 +21,7 @@
 #include "LibraryPluginCombobox.h"
 #include "LibraryPluginComboBoxDelegate.h"
 
-#include "Components/LibraryManagement/AbstractLibraryContainer.h"
+#include "Components/LibraryManagement/LibraryContainer.h"
 #include "Components/LibraryManagement/LibraryPluginHandler.h"
 
 #include <QList>
@@ -30,7 +30,7 @@
 
 namespace
 {
-	QString getElidedText(const Library::AbstractContainer* container, const QFontMetrics& fontMetrics)
+	QString getElidedText(const Library::LibraryContainer* container, const QFontMetrics& fontMetrics)
 	{
 		return fontMetrics.elidedText(container->displayName(), Qt::TextElideMode::ElideRight, 200);
 	}
@@ -73,7 +73,7 @@ namespace Library
 		this->clear();
 
 		const auto containers = m->pluginHandler->libraries(true);
-		for(const auto* container : containers)
+		for(const auto* container: containers)
 		{
 			const auto icon = container->icon();
 			const auto displayName = getElidedText(container, this->fontMetrics());
@@ -134,7 +134,7 @@ namespace Library
 		auto i = 0;
 
 		const auto containers = m->pluginHandler->libraries(true);
-		for(const auto* container : containers)
+		for(const auto* container: containers)
 		{
 			if(this->itemData(i, Qt::DisplayRole).toString().isEmpty())
 			{
