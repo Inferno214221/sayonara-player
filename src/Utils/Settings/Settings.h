@@ -36,10 +36,6 @@
 
 using SettingArray = std::array<AbstrSetting*, static_cast<unsigned int>(SettingKey::Num_Setting_Keys)>;
 
-/**
- * @brief The Settings class
- * @ingroup Settings
- */
 class Settings
 {
 		SINGLETON(Settings)
@@ -48,16 +44,12 @@ class Settings
 	public:
 		[[nodiscard]] AbstrSetting* setting(SettingKey keyIndex) const;
 
-		/* get all settings (used by database) */
 		const SettingArray& settings();
 
-		/* before you want to access a setting you have to register it */
 		void registerSetting(AbstrSetting* s);
 
-		/* checks if all settings are registered */
 		bool checkSettings();
 
-		/* get a setting, defined by a unique, REGISTERED key */
 		template<typename KeyClass>
 		const typename KeyClass::Data& get() const
 		{
@@ -67,7 +59,6 @@ class Settings
 			return s->value();
 		}
 
-		/* set a setting, define by a unique, REGISTERED key */
 		template<typename KeyClass>
 		void set(const typename KeyClass::Data& val)
 		{
@@ -76,12 +67,10 @@ class Settings
 			assert(s);
 			if(s->assignValue(val))
 			{
-				SettingNotifier<KeyClass>* sn = SettingNotifier<KeyClass>::instance();
-				sn->valueChanged();
+				SettingNotifier<KeyClass>::instance()->valueChanged();
 			}
 		}
 
-		/* get a setting, defined by a unique, REGISTERED key */
 		template<typename KeyClass>
 		void shout() const
 		{
