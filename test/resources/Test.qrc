@@ -2,6 +2,7 @@
     <qresource prefix="/test">
         <file>mp3test.mp3</file>
         <file>oggtest.ogg</file>
+        <file>emptyTestFile.mp3</file>
         <file>logo.png</file>
         <file>fmstream.org.html</file>
         <file>star.png</file>
