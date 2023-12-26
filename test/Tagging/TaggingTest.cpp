@@ -47,47 +47,63 @@ class TaggingTest :
 
 	private slots:
 
-		void testWriteAndReadBasicTags()
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testWriteAndReadBasicTags()
 		{
+			struct TestCase
+			{
+				TestEnv testEnv;
+				bool isFullySupportedTag {true};
+			};
+
 			const auto testCases = std::array {
-				TestEnv {":/test/mp3test.mp3", tempPath("sayonara-test.mp3")},
-				TestEnv {":/test/oggtest.ogg", tempPath("sayonara-test.ogg")},
-				TestEnv {":/test/emptyTestFile.mp3", tempPath("emptyTestFile.mp3")}
+				TestCase {{":/test/mp3test.mp3", tempPath("sayonara-test.mp3")}, true},
+				TestCase {{":/test/oggtest.ogg", tempPath("sayonara-test.ogg")}, true},
+				TestCase {{":/test/wavtest.wav", tempPath("wavRiff.wav")}, false},
+				TestCase {{":/test/emptyTestFile.mp3", tempPath("emptyTestFile.mp3")}, true},
 			};
 
 			for(const auto& testCase: testCases)
 			{
-				auto track = MetaData(testCase.filename());
+				auto track = MetaData(testCase.testEnv.filename());
 				track.setArtist("artist");
 				track.setAlbum("album");
-				track.setDiscCount(4);
-				track.setDiscnumber(3);
-				track.setAlbumArtist("albumartist");
 				track.setGenres(QStringList() << "genre1" << "genre2");
 				track.setTitle("title");
 				track.setComment("comment");
-				track.setRating(Rating(Rating::Four));
 				track.setYear(1995);
 				track.setTrackNumber(17);
+
+				if(testCase.isFullySupportedTag)
+				{
+					track.setDiscCount(4);
+					track.setDiscnumber(3);
+					track.setAlbumArtist("albumartist");
+					track.setRating(Rating(Rating::Four));
+				}
 
 				const auto success = Tagging::Utils::setMetaDataOfFile(track);
 				QVERIFY(success);
 
-				auto trackNew = MetaData(testCase.filename());
+				auto trackNew = MetaData(testCase.testEnv.filename());
 				Tagging::Utils::getMetaDataOfFile(trackNew);
 				QVERIFY(trackNew.artist() == "artist");
 				QVERIFY(trackNew.album() == "album");
-				QVERIFY(trackNew.discCount() == 4);
-				QVERIFY(trackNew.discnumber() == 3);
-				QVERIFY(trackNew.albumArtist() == "albumartist");
 				QVERIFY(trackNew.genres().count() == 2);
 				QVERIFY(trackNew.genres().contains(Genre("genre1")));
 				QVERIFY(trackNew.genres().contains(Genre("genre2")));
 				QVERIFY(trackNew.title() == "title");
 				QVERIFY(trackNew.comment() == "comment");
-				QVERIFY(trackNew.rating() == Rating::Four);
 				QVERIFY(trackNew.year() == 1995);
 				QVERIFY(trackNew.trackNumber() == 17);
+
+				if(testCase.isFullySupportedTag)
+				{
+					QVERIFY(trackNew.discCount() == 4);
+					QVERIFY(trackNew.discnumber() == 3);
+					QVERIFY(trackNew.albumArtist() == "albumartist");
+					QVERIFY(trackNew.rating() == Rating::Four);
+				}
 			}
 		};
 };
