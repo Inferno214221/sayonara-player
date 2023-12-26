@@ -30,6 +30,7 @@
 #include <taglib/oggflacfile.h>
 #include <taglib/flacfile.h>
 #include <taglib/mp4file.h>
+#include <taglib/wavfile.h>
 
 namespace
 {
@@ -132,6 +133,18 @@ namespace
 
 		return parsedTag;
 	}
+
+	Tagging::ParsedTag getParsedTagFromWAV(TagLib::RIFF::WAV::File* file)
+	{
+		return {
+			file->hasID3v2Tag()
+			? dynamic_cast<TagLib::Tag*>(file->tag())
+			: dynamic_cast<TagLib::Tag*>(file->InfoTag()),
+			file->hasID3v2Tag()
+			? Tagging::TagType::ID3v2
+			: Tagging::TagType::Unknown
+		};
+	}
 }
 
 namespace Tagging
@@ -183,16 +196,19 @@ namespace Tagging
 			parsedTag = getParsedTagFromMP4(mp4);
 		}
 
+		else if(auto* wavFile = dynamic_cast<TagLib::RIFF::WAV::File*>(fileRef.file()); wavFile)
+		{
+			parsedTag = getParsedTagFromWAV(wavFile);
+		}
+
 		else if(fileRef.file())
 		{
 			parsedTag.tag = fileRef.tag();
-			parsedTag.type = TagType::Unknown;
-		}
 
-		const auto tagType = getTagTypeFromTag(fileRef.tag());
-		if(tagType != Tagging::TagType::Unsupported)
-		{
-			parsedTag.type = tagType;
+			const auto tagType = getTagTypeFromTag(parsedTag.tag);
+			parsedTag.type = (tagType == Tagging::TagType::Unsupported)
+			                 ? Tagging::TagType::Unknown
+			                 : tagType;
 		}
 
 		return parsedTag;
