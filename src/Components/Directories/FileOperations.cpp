@@ -35,33 +35,78 @@
 
 #include <QStringList>
 
+namespace
+{
+	void refreshLibraries(Library::InfoAccessor* libraryInfoAccessor, const QList<LibraryId>& libraries)
+	{
+		for(const auto& id: libraries)
+		{
+			auto* library = libraryInfoAccessor->libraryInstance(id);
+			if(library)
+			{
+				library->refetch();
+			}
+		}
+	}
+
+	QString replaceTag(const QString& expression, const MetaData& track)
+	{
+		QString ret(expression);
+		ret.replace("<title>", track.title());
+		ret.replace("<album>", track.album());
+		ret.replace("<artist>", track.artist());
+		ret.replace("<year>", QString::number(track.year()));
+		ret.replace("<bitrate>", QString::number(track.bitrate() / 1000)); // NOLINT(readability-magic-numbers)
+
+		auto trackNrString = QString::number(track.trackNumber());
+		if(track.trackNumber() < 10) // NOLINT(readability-magic-numbers)
+		{
+			trackNrString.prepend("0");
+		}
+
+		ret.replace("<tracknum>", trackNrString);
+		ret.replace("<disc>", QString::number(int(track.discnumber())));
+
+		return ret;
+	}
+
+	QString incrementFilename(const QString& filename)
+	{
+		if(!Util::File::exists(filename))
+		{
+			return filename;
+		}
+
+		auto [dir, pureFilename] = Util::File::splitFilename(filename);
+		const auto extension = Util::File::getFileExtension(filename);
+
+		for(int i = 1; i < 1000; i++) // NOLINT(readability-magic-numbers)
+		{
+			const auto pureNewName = QString("%1-%2").arg(pureFilename).arg(i);
+			const auto fullNewName = QString("%1/%2.%3").arg(dir).arg(pureNewName).arg(extension);
+			if(!Util::File::exists(fullNewName))
+			{
+				return Util::File::cleanFilename(fullNewName);
+			}
+		}
+
+		return {};
+	}
+}
+
 struct FileOperations::Private
 {
 	Library::InfoAccessor* libraryInfoAccessor;
 
-	Private(Library::InfoAccessor* libraryInfoAccessor) :
+	explicit Private(Library::InfoAccessor* libraryInfoAccessor) :
 		libraryInfoAccessor {libraryInfoAccessor} {}
 };
 
 FileOperations::FileOperations(Library::InfoAccessor* libraryInfoAccessor, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(libraryInfoAccessor);
-}
+	QObject(parent),
+	m {Pimpl::make<Private>(libraryInfoAccessor)} {}
 
 FileOperations::~FileOperations() = default;
-
-static void refreshLibraries(Library::InfoAccessor* libraryInfoAccessor, const QList<LibraryId>& libraries)
-{
-	for(const auto& id: libraries)
-	{
-		auto* library = libraryInfoAccessor->libraryInstance(id);
-		if(library)
-		{
-			library->refetch();
-		}
-	}
-}
 
 bool FileOperations::renamePath(const QString& path, const QString& newName)
 {
@@ -143,54 +188,7 @@ void FileOperations::deleteThreadFinished()
 
 QStringList FileOperations::supportedReplacementTags()
 {
-	return QStringList
-		{
-			"<title>", "<album>", "<artist>", "<year>", "<bitrate>", "<tracknum>", "<disc>"
-		};
-}
-
-static QString replaceTag(const QString& expression, const MetaData& track)
-{
-	QString ret(expression);
-	ret.replace("<title>", track.title());
-	ret.replace("<album>", track.album());
-	ret.replace("<artist>", track.artist());
-	ret.replace("<year>", QString::number(track.year()));
-	ret.replace("<bitrate>", QString::number(track.bitrate() / 1000));
-
-	auto trackNrString = QString::number(track.trackNumber());
-	if(track.trackNumber() < 10)
-	{
-		trackNrString.prepend("0");
-	}
-
-	ret.replace("<tracknum>", trackNrString);
-	ret.replace("<disc>", QString::number(int(track.discnumber())));
-
-	return ret;
-}
-
-static QString incrementFilename(const QString& filename)
-{
-	if(!Util::File::exists(filename))
-	{
-		return filename;
-	}
-
-	auto [dir, pureFilename] = Util::File::splitFilename(filename);
-	const auto extension = Util::File::getFileExtension(filename);
-
-	for(int i = 1; i < 1000; i++)
-	{
-		const auto pureNewName = QString("%1-%2").arg(pureFilename).arg(i);
-		const auto fullNewName = QString("%1/%2.%3").arg(dir).arg(pureNewName).arg(extension);
-		if(!Util::File::exists(fullNewName))
-		{
-			return Util::File::cleanFilename(fullNewName);
-		}
-	}
-
-	return QString();
+	return {"<title>", "<album>", "<artist>", "<year>", "<bitrate>", "<tracknum>", "<disc>"};
 }
 
 bool FileOperations::renameByExpression(const QString& originalFilepath, const QString& expression) const
@@ -225,33 +223,29 @@ bool FileOperations::renameByExpression(const QString& originalFilepath, const Q
 
 	if(originalTrack.id() < 0)
 	{
-		return Util::File::renameFile(fullNewName, originalFilepath);
+		return Util::File::renameFile(fullNewName, originalFilepath); // NOLINT(readability-suspicious-call-argument)
 	}
 
-	else
+	auto success = Util::File::renameFile(originalFilepath, fullNewName);
+	if(success)
 	{
-		auto success = Util::File::renameFile(originalFilepath, fullNewName);
-		if(success)
+		auto newTrack = originalTrack;
+		newTrack.setFilepath(fullNewName);
+
+		success = libraryDb->updateTrack(newTrack);
+		if(!success)
 		{
-			auto newTrack = originalTrack;
-			newTrack.setFilepath(fullNewName);
-
-			success = libraryDb->updateTrack(newTrack);
-			if(!success)
-			{
-				Util::File::renameFile(fullNewName, originalFilepath);
-			}
-
-			else
-			{
-				auto* changeNotifier = Tagging::ChangeNotifier::instance();
-				changeNotifier->changeMetadata
-					(
-						QList<MetaDataPair> {MetaDataPair(originalTrack, newTrack)}
-					);
-			}
+			Util::File::renameFile(fullNewName, originalFilepath); // NOLINT(readability-suspicious-call-argument)
 		}
 
-		return success;
+		else
+		{
+			auto* changeNotifier = Tagging::ChangeNotifier::instance();
+			changeNotifier->changeMetadata(
+				QList<MetaDataPair> {MetaDataPair(originalTrack, newTrack)});
+		}
 	}
+
+	return success;
+
 }
