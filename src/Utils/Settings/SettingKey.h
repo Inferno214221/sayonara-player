@@ -195,6 +195,8 @@ enum class SettingKey :
 	Soundcloud_AuthToken,
 	Spectrum_Style,
 	Speed_LastTab,
+	Speed_ShowSteps,
+	Speed_Step,
 	Stream_NewTab,
 	Stream_SearchWindowSize,
 	Stream_ShowHistory,
@@ -405,6 +407,8 @@ namespace Set
 	CreateSetting(Settings_Revision, int); // Version number of settings
 	CreateSetting(Spectrum_Style, int); // index of spectrum style
 	CreateSetting(Speed_LastTab, int); // Last tab selected int he speed/pitch plugin
+	CreateSetting(Speed_ShowSteps, bool); // Show speed step buttons in speed plugin
+	CreateSetting(Speed_Step, int); // [0-100]
 	CreateSetting(Stream_NewTab, bool); // Open Streams in new tab
 	CreateSetting(Stream_SearchWindowSize, QSize); // Size of the stream search dialog
 	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
