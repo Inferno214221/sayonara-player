@@ -28,13 +28,27 @@
 #include <QToolTip>
 #include <QCursor>
 
+namespace
+{
+	constexpr const auto StandardAFrequency = 440;
+	constexpr const auto FrequencyScalingFactor = 10;
+
+	void tryRestoreLastTab(int lastTab, QTabWidget* tabWidget)
+	{
+		lastTab = std::max(0, std::min(lastTab, tabWidget->count() - 1));
+		tabWidget->setCurrentIndex(lastTab);
+	}
+}
+
 GUI_Speed::GUI_Speed(QWidget* parent) :
 	PlayerPlugin::Base(parent) {}
 
 GUI_Speed::~GUI_Speed()
 {
-	if(ui){
-		delete ui; ui=nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -46,15 +60,12 @@ void GUI_Speed::retranslate()
 
 void GUI_Speed::initUi()
 {
-	using Gui::MouseEnterFilter;
-	using Gui::MouseLeaveFilter;
-
 	setupParent(this, &ui);
 
-	bool active =	GetSetting(Set::Engine_SpeedActive);
-    double fSpeed =	double(GetSetting(Set::Engine_Speed));
-    int speed =		int(fSpeed * 100);
-	int pitch =		GetSetting(Set::Engine_Pitch);
+	const auto active = GetSetting(Set::Engine_SpeedActive);
+	const auto fSpeed = static_cast<double>(GetSetting(Set::Engine_Speed));
+	const auto speed = static_cast<int>(fSpeed * 100);
+	const auto pitch = GetSetting(Set::Engine_Pitch);
 
 	activeChanged(active);
 	ui->cbActive->setChecked(active);
@@ -63,51 +74,14 @@ void GUI_Speed::initUi()
 	ui->sliSpeed->setMouseTracking(true);
 	ui->btnSpeed->setText(QString::number(fSpeed, 'f', 2));
 
-	ui->cbPreservePitch->setChecked( GetSetting(Set::Engine_PreservePitch));
+	ui->cbPreservePitch->setChecked(GetSetting(Set::Engine_PreservePitch));
 
-	ui->sliPitch->setValue(pitch * 10);
+	ui->sliPitch->setValue(pitch * FrequencyScalingFactor);
 	ui->sliPitch->setMouseTracking(true);
-	ui->btnPitch->setText(QString::number(pitch) + " Hz");
+	ui->btnPitch->setText(QString("%1 Hz").arg(pitch));
 
-	{ // mouse events for speed button
-		auto* mefSpeed = new MouseEnterFilter(ui->btnSpeed);
-		auto* mlfSpeed = new MouseLeaveFilter(ui->btnSpeed);
-
-		ui->btnSpeed->installEventFilter(mefSpeed);
-		ui->btnSpeed->installEventFilter(mlfSpeed);
-
-		connect(mefSpeed, &MouseEnterFilter::sigMouseEntered, this, [=](){
-			ui->btnSpeed->setText(QString::number(1.0, 'f', 2));
-		});
-
-		connect(mlfSpeed, &MouseLeaveFilter::sigMouseLeft, this, [=](){
-			ui->btnSpeed->setText(QString::number(ui->sliSpeed->value() / 100.0, 'f', 2));
-		});
-	}
-
-	{ // mouse events for pitch button
-		auto* mef_pitch = new MouseEnterFilter(ui->btnPitch);
-		auto* mlf_pitch = new MouseLeaveFilter(ui->btnPitch);
-
-		ui->btnPitch->installEventFilter(mef_pitch);
-		ui->btnPitch->installEventFilter(mlf_pitch);
-
-		connect(mef_pitch, &MouseEnterFilter::sigMouseEntered, this, [=](){
-			ui->btnPitch->setText("440 Hz");
-		});
-
-		connect(mlf_pitch, &MouseLeaveFilter::sigMouseLeft, this, [=](){
-			ui->btnPitch->setText(QString("%1 Hz").arg(ui->sliPitch->value() / 10));
-		});
-
-	}
-
-	{ // restore tab
-		int last_tab = GetSetting(Set::Speed_LastTab);
-		last_tab = std::max(0, std::min(last_tab, ui->tabWidget->count() - 1));
-
-		ui->tabWidget->setCurrentIndex(last_tab);
-	}
+	setupMouseEventFilters();
+	tryRestoreLastTab(GetSetting(Set::Speed_LastTab), ui->tabWidget);
 
 	connect(ui->sliSpeed, &QSlider::valueChanged, this, &GUI_Speed::speedChanged);
 	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_Speed::activeToggled);
@@ -123,94 +97,123 @@ void GUI_Speed::initUi()
 	ListenSetting(SetNoDB::Pitch_found, GUI_Speed::pitchFoundChanged);
 }
 
-
-QString GUI_Speed::name() const
+void GUI_Speed::setupMouseEventFilters()
 {
-	return "Speed";
+	using Gui::MouseEnterFilter;
+	using Gui::MouseLeaveFilter;
+
+	auto* mouseEnterPitch = new MouseEnterFilter(ui->btnPitch);
+	auto* mouseLeavePitch = new MouseLeaveFilter(ui->btnPitch);
+
+	ui->btnPitch->installEventFilter(mouseEnterPitch);
+	ui->btnPitch->installEventFilter(mouseLeavePitch);
+
+	connect(mouseEnterPitch, &MouseEnterFilter::sigMouseEntered, this, [ui = this->ui]() {
+		ui->btnPitch->setText(QString("%1 Hz").arg(StandardAFrequency));
+	});
+
+	connect(mouseLeavePitch, &MouseLeaveFilter::sigMouseLeft, this, [ui = this->ui]() {
+		ui->btnPitch->setText(QString("%1 Hz").arg(
+			ui->sliPitch->value() / FrequencyScalingFactor)); // NOLINT(readability-magic-numbers)
+	});
+
+	auto* mouseEnterSpeed = new MouseEnterFilter(ui->btnSpeed);
+	auto* mouseLeaveSpeed = new MouseLeaveFilter(ui->btnSpeed);
+
+	ui->btnSpeed->installEventFilter(mouseEnterSpeed);
+	ui->btnSpeed->installEventFilter(mouseLeaveSpeed);
+
+	connect(mouseEnterSpeed, &MouseEnterFilter::sigMouseEntered, this, [ui = this->ui]() {
+		ui->btnSpeed->setText(QString::number(1.0, 'f', 2));
+	});
+
+	connect(mouseLeaveSpeed, &MouseLeaveFilter::sigMouseLeft, this, [ui = this->ui]() {
+		ui->btnSpeed->setText(QString::number(ui->sliSpeed->value() / 100.0, 'f', 2));
+	});
 }
+
+QString GUI_Speed::name() const { return "Speed"; }
 
 QString GUI_Speed::displayName() const
 {
-	QString s = tr("Speed");
-	QString p = tr("Pitch");
-
 	return tr("%1 and %2")
-		.arg(s)
-		.arg(p);
+		.arg(tr("Speed"))
+		.arg(tr("Pitch"));
 }
 
-void GUI_Speed::speedChanged(int val)
+void GUI_Speed::speedChanged(const int val)
 {
 	ui->btnSpeed->setText(QString::number(val / 100.0, 'f', 2));
-	SetSetting(Set::Engine_Speed, ui->sliSpeed->value() / 100.0f);
+	SetSetting(Set::Engine_Speed, ui->sliSpeed->value() / 100.0f); // NOLINT(readability-uppercase-literal-suffix)
 }
 
-void GUI_Speed::activeChanged(bool active)
+void GUI_Speed::activeChanged(const bool active)
 {
-	ui->sliSpeed->setEnabled( active);
+	ui->sliSpeed->setEnabled(active);
 	ui->btnSpeed->setEnabled(active);
 	ui->sliPitch->setEnabled(active);
 	ui->cbPreservePitch->setEnabled(active);
 	ui->btnPitch->setEnabled(active);
 }
 
-void GUI_Speed::activeToggled(bool active)
+void GUI_Speed::activeToggled(const bool active)
 {
 	activeChanged(active);
 	SetSetting(Set::Engine_SpeedActive, active);
 }
 
-void GUI_Speed::preservePitchChanged(bool enabled)
+void GUI_Speed::preservePitchChanged(const bool enabled) // NOLINT(readability-convert-member-functions-to-static)
 {
 	SetSetting(Set::Engine_PreservePitch, enabled);
 }
 
-void GUI_Speed::pitchChanged(int slider_value)
+void GUI_Speed::pitchChanged(const int sliderValue)
 {
-	int pitch = slider_value / 10;
+	const auto pitch = sliderValue / FrequencyScalingFactor;
 	SetSetting(Set::Engine_Pitch, pitch);
-	ui->btnPitch->setText(QString::number(pitch) + " Hz");
+	ui->btnPitch->setText(QString("%1 Hz").arg(pitch));
 }
 
 void GUI_Speed::revertSpeedClicked()
 {
-	ui->sliSpeed->setValue(100);
+	ui->sliSpeed->setValue(100); // NOLINT(readability-magic-numbers)
 }
 
 void GUI_Speed::revertPitchClicked()
 {
-	ui->sliPitch->setValue(4400);
+	ui->sliPitch->setValue(StandardAFrequency * FrequencyScalingFactor);
 }
 
-void GUI_Speed::pitchHovered(int val)
+void GUI_Speed::pitchHovered(const int val) // NOLINT(readability-convert-member-functions-to-static)
 {
-	QToolTip::showText( QCursor::pos(), QString::number(val / 10));
+	QToolTip::showText(QCursor::pos(), QString::number(val / FrequencyScalingFactor));
 }
 
-void GUI_Speed::speedHovered(int val)
+void GUI_Speed::speedHovered(const int val) // NOLINT(readability-convert-member-functions-to-static)
 {
-	QToolTip::showText( QCursor::pos(), QString::number(val / 100.0));
+	QToolTip::showText(QCursor::pos(), QString::number(val / 100.0));
 }
 
-void GUI_Speed::currentTabChanged(int idx)
+void GUI_Speed::currentTabChanged(const int idx) // NOLINT(readability-convert-member-functions-to-static)
 {
 	SetSetting(Set::Speed_LastTab, idx);
 }
 
 void GUI_Speed::pitchFoundChanged()
 {
-	bool pitch_found = GetSetting(SetNoDB::Pitch_found);
-	if(!pitch_found)
+	const auto pitchFound = GetSetting(SetNoDB::Pitch_found);
+	if(!pitchFound)
 	{
 		ui->cbActive->setChecked(false);
 		activeChanged(false);
 		ui->cbActive->setToolTip(tr("%1 not found").arg("gstreamer bad plugins") + "<br />" +
-							  tr("%1 not found").arg("libsoundtouch"));
+		                         tr("%1 not found").arg("libsoundtouch"));
 	}
 
-	else{
+	else
+	{
 		ui->cbActive->setToolTip("");
 	}
 
-	ui->cbActive->setEnabled(pitch_found);
+	ui->cbActive->setEnabled(pitchFound);
 }

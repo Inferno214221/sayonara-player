@@ -25,38 +25,40 @@
 
 UI_FWD(GUI_Speed)
 
-class GUI_Speed : public PlayerPlugin::Base
+class GUI_Speed :
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Speed)
 
-public:
-	explicit GUI_Speed(QWidget* parent=nullptr);
-	~GUI_Speed() override;
+	public:
+		explicit GUI_Speed(QWidget* parent = nullptr);
+		~GUI_Speed() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		[[nodiscard]] QString name() const override;
+		[[nodiscard]] QString displayName() const override;
 
-private:
-	void retranslate() override;
-	void initUi() override;
+	private:
+		void retranslate() override;
+		void initUi() override;
+		void setupMouseEventFilters();
 
-private slots:
-	void speedChanged(int value);
-	void activeChanged(bool enabled);
-	void activeToggled(bool enabled);
-	void preservePitchChanged(bool enabled);
-	void pitchChanged(int pitch);
+	private slots:
+		void speedChanged(int value);
+		void activeChanged(bool enabled);
+		void activeToggled(bool enabled);
+		void preservePitchChanged(bool enabled);
+		void pitchChanged(int sliderValue);
 
-	void revertSpeedClicked();
-	void revertPitchClicked();
+		void revertSpeedClicked();
+		void revertPitchClicked();
 
-	void pitchHovered(int val);
-	void speedHovered(int val);
+		void pitchHovered(int val);
+		void speedHovered(int val);
 
-	void currentTabChanged(int idx);
+		void currentTabChanged(int idx);
 
-	void pitchFoundChanged();
+		void pitchFoundChanged();
 };
 
 #endif // GUI_SPEED_H
