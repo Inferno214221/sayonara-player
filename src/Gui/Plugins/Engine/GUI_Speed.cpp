@@ -33,6 +33,7 @@ namespace
 {
 	constexpr const auto StandardAFrequency = 440;
 	constexpr const auto FrequencyScalingFactor = 10;
+	constexpr const auto SpeedScalingFactor = 100.0f;
 
 	void tryRestoreLastTab(int lastTab, QTabWidget* tabWidget)
 	{
@@ -65,7 +66,7 @@ void GUI_Speed::initUi()
 
 	const auto active = GetSetting(Set::Engine_SpeedActive);
 	const auto fSpeed = static_cast<double>(GetSetting(Set::Engine_Speed));
-	const auto speed = static_cast<int>(fSpeed * 100);
+	const auto speed = static_cast<int>(fSpeed * SpeedScalingFactor);
 	const auto pitch = GetSetting(Set::Engine_Pitch);
 
 	activeChanged(active);
@@ -136,7 +137,7 @@ void GUI_Speed::setupMouseEventFilters()
 	});
 
 	connect(mouseLeaveSpeed, &MouseLeaveFilter::sigMouseLeft, this, [ui = this->ui]() {
-		ui->btnSpeed->setText(QString::number(ui->sliSpeed->value() / 100.0, 'f', 2));
+		ui->btnSpeed->setText(QString::number(ui->sliSpeed->value() / SpeedScalingFactor, 'f', 2));
 	});
 }
 
@@ -151,8 +152,9 @@ QString GUI_Speed::displayName() const
 
 void GUI_Speed::speedChanged(const int val)
 {
-	ui->btnSpeed->setText(QString::number(val / 100.0, 'f', 2));
-	SetSetting(Set::Engine_Speed, ui->sliSpeed->value() / 100.0f); // NOLINT(readability-uppercase-literal-suffix)
+	ui->btnSpeed->setText(QString::number(val / SpeedScalingFactor, 'f', 2));
+	SetSetting(Set::Engine_Speed,
+	           ui->sliSpeed->value() / SpeedScalingFactor); // NOLINT(readability-uppercase-literal-suffix)
 }
 
 void GUI_Speed::activeChanged(const bool active)
@@ -201,7 +203,7 @@ void GUI_Speed::pitchHovered(const int val) // NOLINT(readability-convert-member
 
 void GUI_Speed::speedHovered(const int val) // NOLINT(readability-convert-member-functions-to-static)
 {
-	QToolTip::showText(QCursor::pos(), QString::number(val / 100.0));
+	QToolTip::showText(QCursor::pos(), QString::number(val / SpeedScalingFactor));
 }
 
 void GUI_Speed::currentTabChanged(const int idx) // NOLINT(readability-convert-member-functions-to-static)
