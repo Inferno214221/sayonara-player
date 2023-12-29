@@ -104,6 +104,8 @@ void GUI_Speed::initUi()
 	ListenSetting(SetNoDB::Pitch_found, GUI_Speed::pitchFoundChanged);
 	ListenSetting(Set::Speed_Step, GUI_Speed::preferencesChanged);
 	ListenSetting(Set::Speed_ShowSteps, GUI_Speed::preferencesChanged);
+	ListenSetting(Set::Speed_MinValue, GUI_Speed::minMaxValueChanged);
+	ListenSetting(Set::Speed_MaxValue, GUI_Speed::minMaxValueChanged);
 }
 
 void GUI_Speed::setupMouseEventFilters()
@@ -248,6 +250,23 @@ void GUI_Speed::preferencesChanged()
 
 	ui->btnSpeedDown->setText(QString("-%1%").arg(GetSetting(Set::Speed_Step)));
 	ui->btnSpeedUp->setText(QString("+%1%").arg(GetSetting(Set::Speed_Step)));
+}
+
+void GUI_Speed::minMaxValueChanged()
+{
+	const auto originalValue = ui->sliSpeed->value();
+	auto currentValue = originalValue;
+	currentValue = std::min(currentValue, GetSetting(Set::Speed_MaxValue));
+	currentValue = std::max(currentValue, GetSetting(Set::Speed_MinValue));
+
+	if(currentValue != originalValue)
+	{
+		ui->sliSpeed->setValue(currentValue);
+		SetSetting(Set::Engine_Speed, currentValue / SpeedScalingFactor);
+	}
+
+	ui->sliSpeed->setMinimum(GetSetting(Set::Speed_MinValue));
+	ui->sliSpeed->setMaximum(GetSetting(Set::Speed_MaxValue));
 }
 
 void GUI_Speed::increaseSpeedSlider()

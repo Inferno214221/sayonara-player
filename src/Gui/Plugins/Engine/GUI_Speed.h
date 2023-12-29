@@ -43,6 +43,7 @@ class GUI_Speed :
 		void initUi() override;
 		void setupMouseEventFilters();
 		void preferencesChanged();
+		void minMaxValueChanged();
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void speedChanged(int value);

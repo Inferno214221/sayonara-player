@@ -31,6 +31,8 @@ GUI_SpeedPreferences::GUI_SpeedPreferences(QWidget* parent) :
 	connect(this, &QDialog::accepted, this, [this]() {
 		SetSetting(Set::Speed_ShowSteps, ui->cbShowSpeedStepButtons->isChecked());
 		SetSetting(Set::Speed_Step, ui->sbSpeedStepValue->value());
+		SetSetting(Set::Speed_MinValue, ui->sbSpeedMinValue->value());
+		SetSetting(Set::Speed_MaxValue, ui->sbSpeedMaxValue->value());
 	});
 
 	connect(ui->cbShowSpeedStepButtons, &QCheckBox::toggled, this, [this](const auto active) {
@@ -48,6 +50,9 @@ void GUI_SpeedPreferences::showEvent(QShowEvent* e)
 	ui->sbSpeedStepValue->setVisible(showSpeedStepSettings);
 	ui->labSpeedStepValue->setVisible(showSpeedStepSettings);
 	ui->sbSpeedStepValue->setValue(GetSetting(Set::Speed_Step));
+
+	ui->sbSpeedMinValue->setValue(GetSetting(Set::Speed_MinValue));
+	ui->sbSpeedMaxValue->setValue(GetSetting(Set::Speed_MaxValue));
 }
 
 GUI_SpeedPreferences::~GUI_SpeedPreferences() = default;

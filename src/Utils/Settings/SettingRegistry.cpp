@@ -268,6 +268,8 @@ bool SettingRegistry::init()
 	registerSetting<Set::Speed_LastTab>("speed_last_tab", 0);
 	registerSetting<Set::Speed_ShowSteps>("speed_show_steps", false);
 	registerSetting<Set::Speed_Step>("speed_step", 10);
+	registerSetting<Set::Speed_MinValue>("speed_min_value", 50);
+	registerSetting<Set::Speed_MaxValue>("speed_max_value", 200);
 
 	registerSetting<Set::InfoDialog_Size>("info_dialog_size", {4, 3});
 	registerSetting<Set::AlternativeCovers_Size>("alternative_covers_size", {});
