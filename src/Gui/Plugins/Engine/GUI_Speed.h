@@ -42,8 +42,9 @@ class GUI_Speed :
 		void retranslate() override;
 		void initUi() override;
 		void setupMouseEventFilters();
+		void preferencesChanged();
 
-	private slots:
+	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void speedChanged(int value);
 		void activeChanged(bool enabled);
 		void activeToggled(bool enabled);
@@ -59,6 +60,10 @@ class GUI_Speed :
 		void currentTabChanged(int idx);
 
 		void pitchFoundChanged();
+		void preferencesClicked();
+
+		void increaseSpeedSlider();
+		void decreaseSpeedSlider();
 };
 
 #endif // GUI_SPEED_H

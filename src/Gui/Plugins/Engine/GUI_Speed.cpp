@@ -19,6 +19,7 @@
  */
 
 #include "GUI_Speed.h"
+#include "GUI_SpeedPreferences.h"
 #include "Gui/Plugins/ui_GUI_Speed.h"
 #include "Gui/Utils/EventFilter.h"
 
@@ -82,19 +83,26 @@ void GUI_Speed::initUi()
 
 	setupMouseEventFilters();
 	tryRestoreLastTab(GetSetting(Set::Speed_LastTab), ui->tabWidget);
+	ui->btnPreferences->setVisible(ui->tabWidget->currentIndex() == 0);
 
 	connect(ui->sliSpeed, &QSlider::valueChanged, this, &GUI_Speed::speedChanged);
 	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_Speed::activeToggled);
 	connect(ui->cbPreservePitch, &QCheckBox::toggled, this, &GUI_Speed::preservePitchChanged);
 	connect(ui->sliPitch, &QSlider::valueChanged, this, &GUI_Speed::pitchChanged);
 	connect(ui->btnSpeed, &QPushButton::clicked, this, &GUI_Speed::revertSpeedClicked);
+	connect(ui->btnSpeedDown, &QPushButton::clicked, this, &GUI_Speed::decreaseSpeedSlider);
+	connect(ui->btnSpeedUp, &QPushButton::clicked, this, &GUI_Speed::increaseSpeedSlider);
 	connect(ui->btnPitch, &QPushButton::clicked, this, &GUI_Speed::revertPitchClicked);
 	connect(ui->tabWidget, &QTabWidget::currentChanged, this, &GUI_Speed::currentTabChanged);
 
 	connect(ui->sliSpeed, &Gui::Slider::sigSliderHovered, this, &GUI_Speed::speedHovered);
 	connect(ui->sliPitch, &Gui::Slider::sigSliderHovered, this, &GUI_Speed::pitchHovered);
 
+	connect(ui->btnPreferences, &QPushButton::clicked, this, &GUI_Speed::preferencesClicked);
+
 	ListenSetting(SetNoDB::Pitch_found, GUI_Speed::pitchFoundChanged);
+	ListenSetting(Set::Speed_Step, GUI_Speed::preferencesChanged);
+	ListenSetting(Set::Speed_ShowSteps, GUI_Speed::preferencesChanged);
 }
 
 void GUI_Speed::setupMouseEventFilters()
@@ -154,6 +162,8 @@ void GUI_Speed::activeChanged(const bool active)
 	ui->sliPitch->setEnabled(active);
 	ui->cbPreservePitch->setEnabled(active);
 	ui->btnPitch->setEnabled(active);
+	ui->btnSpeedDown->setEnabled(active);
+	ui->btnSpeedUp->setEnabled(active);
 }
 
 void GUI_Speed::activeToggled(const bool active)
@@ -196,6 +206,7 @@ void GUI_Speed::speedHovered(const int val) // NOLINT(readability-convert-member
 
 void GUI_Speed::currentTabChanged(const int idx) // NOLINT(readability-convert-member-functions-to-static)
 {
+	ui->btnPreferences->setVisible(idx == 0);
 	SetSetting(Set::Speed_LastTab, idx);
 }
 
@@ -216,4 +227,33 @@ void GUI_Speed::pitchFoundChanged()
 	}
 
 	ui->cbActive->setEnabled(pitchFound);
+}
+
+void GUI_Speed::preferencesClicked()
+{
+	auto* preferences = new GUI_SpeedPreferences(this);
+	connect(preferences, &QDialog::finished, this, [preferences](const auto /*result*/) {
+		preferences->deleteLater();
+	});
+
+	preferences->show();
+}
+
+void GUI_Speed::preferencesChanged()
+{
+	ui->btnSpeedDown->setVisible(GetSetting(Set::Speed_ShowSteps));
+	ui->btnSpeedUp->setVisible(GetSetting(Set::Speed_ShowSteps));
+
+	ui->btnSpeedDown->setText(QString("-%1%").arg(GetSetting(Set::Speed_Step)));
+	ui->btnSpeedUp->setText(QString("+%1%").arg(GetSetting(Set::Speed_Step)));
+}
+
+void GUI_Speed::increaseSpeedSlider()
+{
+	ui->sliSpeed->setValue(std::min(ui->sliSpeed->maximum(), ui->sliSpeed->value() + GetSetting(Set::Speed_Step)));
+}
+
+void GUI_Speed::decreaseSpeedSlider()
+{
+	ui->sliSpeed->setValue(std::max(ui->sliSpeed->minimum(), ui->sliSpeed->value() - GetSetting(Set::Speed_Step)));
 }
