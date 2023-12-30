@@ -8,10 +8,7 @@
     <img src="https://img.shields.io/badge/PayPal-Donate-blue.svg?logo=Paypal"
             alt="PayPal: Donate">
 </a>
-<a href="https://patreon.com/sayonaraplayer">
-    <img src="https://img.shields.io/badge/Patreon-Become a patron-orange.svg?logo=Patreon"
-        alt="Patreon: Become a patron">
-</a>
+<a href="https://patreon.com/sayonaraplayer"><img src="https://img.shields.io/endpoint.svg?url=https%3A%2F%2Fshieldsio-patreon.vercel.app%2Fapi%3Fusername%3Dsayonaraplayer%26type%3Dpatrons&style=flat" alt="Support me on Patreon" /></a>
 <a href="https://liberapay.com/LucioCarreras/donate">
     <img src="https://img.shields.io/liberapay/patrons/LucioCarreras.svg?logo=liberapay&label=Liberapay"
 	    alt="Liberapay: Donate">
