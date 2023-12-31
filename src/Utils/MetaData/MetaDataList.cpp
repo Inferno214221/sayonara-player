@@ -198,11 +198,20 @@ MetaDataList& MetaDataList::operator<<(MetaData&& track) noexcept
 
 void MetaDataList::appendUnique(const MetaDataList& other)
 {
-	std::copy_if(other.begin(), other.end(), std::back_inserter(*this), [&](const auto& newTrack) {
-		return std::none_of(begin(), end(), [&](const auto& ownTrack) {
-			return ownTrack.isEqual(newTrack);
-		});
+	auto filepaths = std::set<uint> {};
+	std::for_each(begin(), end(), [&filepaths](const auto& track) {
+		filepaths.insert(track.filepathHash());
 	});
+
+	for(const auto& track: other)
+	{
+		const auto hash = track.filepathHash();
+		if(filepaths.find(hash) == filepaths.end())
+		{
+			filepaths.insert(hash);
+			push_back(track);
+		}
+	}
 }
 
 int MetaDataList::count() const { return static_cast<int>(Parent::size()); }
