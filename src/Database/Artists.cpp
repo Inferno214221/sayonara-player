@@ -34,19 +34,19 @@ using DB::Artists;
 
 namespace
 {
-	QString getSearchSelectStatement(const QString& artistIdField, const QString& artistNameField)
+	QString getSearchSelectStatement(const DB::ArtistIdInfo artistIdInfo)
 	{
 		return QString("%1, %2, %3")
-			.arg(artistIdField)
-			.arg(artistNameField)
+			.arg(artistIdInfo.idField)
+			.arg(artistIdInfo.nameField)
 			.arg(QStringLiteral("COUNT(DISTINCT trackID) AS trackCount "));
 	}
 
-	QString getSearchGroupByStatement(const QString& artistIdField, const QString& artistNameField)
+	QString getSearchGroupByStatement(const DB::ArtistIdInfo artistIdInfo)
 	{
 		return QString("%1, %2")
-			.arg(artistIdField)
-			.arg(artistNameField);
+			.arg(artistIdInfo.idField)
+			.arg(artistIdInfo.nameField);
 	}
 
 	QString getJoinedArtistFields(const QString& trackView)
@@ -77,7 +77,7 @@ QString Artists::fetchQueryArtists(bool alsoEmpty) const
 	const auto joinStatementArtist = QString("%1 %2 ON %2.%3 = artists.artistID")
 		.arg(joinType)
 		.arg(trackView())
-		.arg(artistIdField());
+		.arg(artistIdInfo().idField);
 
 	const auto joinStatementAlbum = QString("%1 albums ON %2.albumID = albums.albumID")
 		.arg(joinType)
@@ -177,14 +177,14 @@ bool Artists::getAllArtistsBySearchString(const Library::Filter& filter, ArtistL
 {
 	static const auto cisPlaceholder = QStringLiteral(":cissearch");
 
-	const auto searchSelectStatement = getSearchSelectStatement(artistIdField(), artistNameField());
+	const auto searchSelectStatement = getSearchSelectStatement(artistIdInfo());
 	const auto filterWhereStatement = DB::getFilterWhereStatement(filter, cisPlaceholder);
-	const auto groupByStatement = getSearchGroupByStatement(artistIdField(), artistNameField());
+	const auto groupByStatement = getSearchGroupByStatement(artistIdInfo());
 	const auto queryText = QString("SELECT %1 FROM %2 WHERE %3 GROUP BY %4;")
 		.arg(searchSelectStatement)
 		.arg(trackSearchView())
 		.arg(filterWhereStatement)
-		.arg(getSearchGroupByStatement(artistIdField(), artistNameField()));
+		.arg(getSearchGroupByStatement(artistIdInfo()));
 
 	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
 	for(const auto& searchFilter: searchFilters)

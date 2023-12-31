@@ -373,7 +373,7 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result)
 
 bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter) const
 {
-	if(artistIdField().toLower() == "albumartistid")
+	if(artistIdInfo().key == DB::ArtistIdInfo::ArtistIdField::AlbumArtistId)
 	{
 		result = getAllTracksByIdList(artistIds, filter, [](const auto& track) {
 			return track.albumArtistId();

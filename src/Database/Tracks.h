@@ -21,6 +21,7 @@
 #ifndef DATABASETRACKS_H
 #define DATABASETRACKS_H
 
+#include "Database/Utils.h"
 #include "Utils/typedefs.h"
 #include <QMap>
 #include <functional>
@@ -86,10 +87,10 @@ namespace DB
 			void deleteAllTracks(bool alsoViews);
 
 		protected:
-			virtual QString artistIdField() const = 0;
-			virtual QString trackView() const = 0;
-			virtual QString trackSearchView() const = 0;
-			virtual LibraryId libraryId() const = 0;
+			[[nodiscard]] virtual ArtistIdInfo artistIdInfo() const = 0;
+			[[nodiscard]] virtual QString trackView() const = 0;
+			[[nodiscard]] virtual QString trackSearchView() const = 0;
+			[[nodiscard]] virtual LibraryId libraryId() const = 0;
 
 			virtual Module* module() = 0;
 			virtual const Module* module() const = 0;

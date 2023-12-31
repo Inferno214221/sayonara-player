@@ -21,6 +21,7 @@
 #ifndef DATABASEARTISTS_H
 #define DATABASEARTISTS_H
 
+#include "Database/Utils.h"
 #include "Utils/typedefs.h"
 
 namespace Library
@@ -56,8 +57,7 @@ namespace DB
 			[[maybe_unused]] virtual ArtistId insertArtistIntoDatabase(const Artist& artist);
 
 		protected:
-			[[nodiscard]] virtual QString artistIdField() const = 0;
-			[[nodiscard]] virtual QString artistNameField() const = 0;
+			[[nodiscard]] virtual ArtistIdInfo artistIdInfo() const = 0;
 			[[nodiscard]] virtual QString trackView() const = 0;
 			[[nodiscard]] virtual QString trackSearchView() const = 0;
 

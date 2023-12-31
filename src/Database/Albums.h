@@ -21,6 +21,7 @@
 #ifndef DATABASEALBUMS_H
 #define DATABASEALBUMS_H
 
+#include "Database/Utils.h"
 #include "Utils/typedefs.h"
 
 namespace Library
@@ -65,7 +66,7 @@ namespace DB
 			virtual AlbumId insertAlbumIntoDatabase(const Album& album);
 			virtual void deleteAllAlbums();
 
-			[[nodiscard]] virtual QString artistIdField() const = 0;
+			[[nodiscard]] virtual ArtistIdInfo artistIdInfo() const = 0;
 			[[nodiscard]] virtual QString trackView() const = 0;
 			[[nodiscard]] virtual QString trackSearchView() const = 0;
 			[[nodiscard]] virtual LibraryId libraryId() const = 0;

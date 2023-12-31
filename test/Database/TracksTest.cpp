@@ -93,7 +93,7 @@ class TracksTest :
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		DB::LibraryDatabase*
-		initDatabase(DB::LibraryDatabase::ArtistIDField artistIdField = DB::LibraryDatabase::ArtistIDField::ArtistID)
+		initDatabase(DB::ArtistIdInfo::ArtistIdField artistIdField = DB::ArtistIdInfo::ArtistIdField::ArtistId)
 		{
 			if(m_libraryDatabase)
 			{
@@ -127,7 +127,7 @@ class TracksTest :
 
 [[maybe_unused]] void TracksTest::testFetchByAlbumArtist()
 {
-	auto* db = initDatabase(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
+	auto* db = initDatabase(DB::ArtistIdInfo::ArtistIdField::AlbumArtistId);
 
 	MetaDataList tracks;
 	const auto artistId = db->getArtistID("Europe");
@@ -139,7 +139,7 @@ class TracksTest :
 
 [[maybe_unused]] void TracksTest::testFetchByAlbumArtistWithFilter()
 {
-	auto* db = initDatabase(DB::LibraryDatabase::ArtistIDField::AlbumArtistID);
+	auto* db = initDatabase(DB::ArtistIdInfo::ArtistIdField::AlbumArtistId);
 
 	MetaDataList tracks;
 	const auto artistId = db->getArtistID("Africa");

@@ -96,11 +96,11 @@ class ArtistTest :
 [[maybe_unused]] void ArtistTest::testFetch() // NOLINT(readability-convert-member-functions-to-static)
 {
 	constexpr const auto testCases = std::array {
-		std::tuple {DB::LibraryDatabase::ArtistIDField::ArtistID, 6, 3},
-		std::tuple {DB::LibraryDatabase::ArtistIDField::AlbumArtistID, 6, 2}
+		std::tuple {DB::ArtistIdInfo::ArtistIdField::ArtistId, 6, 3},
+		std::tuple {DB::ArtistIdInfo::ArtistIdField::AlbumArtistId, 6, 2}
 	};
 
-	for(const auto&[artistIdField, expectedWithEmpty, expectedWithoutEmpty] : testCases)
+	for(const auto& [artistIdField, expectedWithEmpty, expectedWithoutEmpty]: testCases)
 	{
 		createTestLibrary({
 			                  {"album1", "artist1",            "albumArtist1", "title1"},

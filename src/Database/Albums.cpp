@@ -257,7 +257,7 @@ bool Albums::getAllAlbumsByArtist(const IdList& artistIds, AlbumList& result, co
 		return false;
 	}
 
-	const auto artistIdField = trackSearchView() + "." + this->artistIdField();
+	const auto artistIdField = trackSearchView() + "." + artistIdInfo().idField;
 
 	const auto sortedIds = Util::prepareContainerForRangeCalculation(artistIds);
 	const auto ranges = Util::getRangesFromList(sortedIds);

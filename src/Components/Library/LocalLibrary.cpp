@@ -210,9 +210,9 @@ void LocalLibrary::showAlbumArtistsChanged()
 	{
 		if(libraryDatabase->databaseId() == 0)
 		{
-			const auto field = (showAlbumArtists)
-			                   ? DB::LibraryDatabase::ArtistIDField::AlbumArtistID
-			                   : DB::LibraryDatabase::ArtistIDField::ArtistID;
+			const auto field = showAlbumArtists
+			                   ? DB::ArtistIdInfo::ArtistIdField::AlbumArtistId
+			                   : DB::ArtistIdInfo::ArtistIdField::ArtistId;
 
 			libraryDatabase->changeArtistIdField(field);
 		}

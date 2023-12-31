@@ -86,7 +86,7 @@ namespace
 		cleanLibraryDatabase(db);
 	}
 
-	void createTestLibrary(const QList<MetaDataBlock>& data, const DB::LibraryDatabase::ArtistIDField artistIdField)
+	void createTestLibrary(const QList<MetaDataBlock>& data, const DB::ArtistIdInfo::ArtistIdField artistIdField)
 	{
 		createLibraryDatabase();
 		auto* db = DB::Connector::instance()->libraryDatabase(testLibraryId, 0);
@@ -176,7 +176,7 @@ class LocalLibraryTest :
 		                  {"album", "artist", "title"},
 		                  {"album", "artist", "title2"},
 		                  {"album", "artist", "title3"}
-	                  }, DB::LibraryDatabase::ArtistIDField::ArtistID);
+	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 	auto spyAlbums = QSignalSpy(localLibrary, &LocalLibrary::sigAllAlbumsLoaded);
@@ -210,7 +210,7 @@ class LocalLibraryTest :
 		                  {"album1", "artist", "title"},
 		                  {"album2", "artist", "title2"},
 		                  {"album3", "artist", "title3"}
-	                  }, DB::LibraryDatabase::ArtistIDField::ArtistID);
+	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 	localLibrary->init();
@@ -243,7 +243,7 @@ class LocalLibraryTest :
 		                  {"album1", "artist1", "title"},
 		                  {"album2", "artist2", "title2"},
 		                  {"album3", "artist3", "title3"}
-	                  }, DB::LibraryDatabase::ArtistIDField::ArtistID);
+	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 

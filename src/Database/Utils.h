@@ -44,6 +44,18 @@ namespace Util
 
 namespace DB
 {
+	struct ArtistIdInfo
+	{
+		enum class ArtistIdField :
+			uint8_t
+		{
+			AlbumArtistId,
+			ArtistId
+		} key;
+		QString idField;
+		QString nameField;
+	};
+
 	struct RangeMapping
 	{
 		QString sqlString;

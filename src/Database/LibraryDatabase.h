@@ -39,24 +39,16 @@ namespace DB
 		PIMPL(LibraryDatabase)
 
 		public:
-			enum class ArtistIDField :
-				uint8_t
-			{
-				AlbumArtistID,
-				ArtistID
-			};
-
 			LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);
 			~LibraryDatabase() override;
 
-			void changeArtistIdField(ArtistIDField field);
+			void changeArtistIdField(ArtistIdInfo::ArtistIdField field);
 
 			void clear();
 			virtual bool storeMetadata(const MetaDataList& tracks);
 
 			[[nodiscard]] LibraryId libraryId() const override;
-			[[nodiscard]] QString artistIdField() const override;
-			[[nodiscard]] QString artistNameField() const override;
+			[[nodiscard]] ArtistIdInfo artistIdInfo() const override;
 			[[nodiscard]] QString trackView() const override;
 			[[nodiscard]] QString trackSearchView() const override;
 

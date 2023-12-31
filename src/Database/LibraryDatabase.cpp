@@ -55,12 +55,18 @@ namespace
 
 		return result;
 	}
+
+	DB::ArtistIdInfo createArtistIdInfo(const DB::ArtistIdInfo::ArtistIdField artistIdField)
+	{
+		return (artistIdField == DB::ArtistIdInfo::ArtistIdField::ArtistId)
+		       ? DB::ArtistIdInfo {artistIdField, "artistId", "artistName"}
+		       : DB::ArtistIdInfo {artistIdField, "albumArtistId", "albumArtistName"};
+	}
 }
 
 struct LibraryDatabase::Private
 {
-	QString artistIdField {"artistID"};
-	QString artistNameField {"artistName"};
+	ArtistIdInfo artistIdInfo {createArtistIdInfo(ArtistIdInfo::ArtistIdField::ArtistId)};
 	QString connectionName;
 
 	::Library::SearchModeMask searchMode;
@@ -101,36 +107,24 @@ LibraryDatabase::LibraryDatabase(const QString& connectionName, DbId databaseId,
 
 		if(showAlbumArtists)
 		{
-			changeArtistIdField(LibraryDatabase::ArtistIDField::AlbumArtistID);
+			changeArtistIdField(ArtistIdInfo::ArtistIdField::AlbumArtistId);
 		}
 
 		else
 		{
-			changeArtistIdField(LibraryDatabase::ArtistIDField::ArtistID);
+			changeArtistIdField(ArtistIdInfo::ArtistIdField::ArtistId);
 		}
 	}
 }
 
 LibraryDatabase::~LibraryDatabase() = default;
 
-void LibraryDatabase::changeArtistIdField(LibraryDatabase::ArtistIDField field)
+void LibraryDatabase::changeArtistIdField(const ArtistIdInfo::ArtistIdField field)
 {
-	if(field == LibraryDatabase::ArtistIDField::AlbumArtistID)
-	{
-		m->artistIdField = "albumArtistID";
-		m->artistNameField = "albumArtistName";
-	}
-
-	else
-	{
-		m->artistIdField = "artistID";
-		m->artistNameField = "artistName";
-	}
+	m->artistIdInfo = createArtistIdInfo(field);
 }
 
-QString LibraryDatabase::artistIdField() const { return m->artistIdField; }
-
-QString LibraryDatabase::artistNameField() const { return m->artistNameField; }
+DB::ArtistIdInfo LibraryDatabase::artistIdInfo() const { return m->artistIdInfo; }
 
 QString LibraryDatabase::trackView() const
 {
