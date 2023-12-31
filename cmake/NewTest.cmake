@@ -8,6 +8,7 @@ function(NEW_TEST ...)
 			Common/FileSystemMock.cpp
 			Common/DirectoryReaderMock.cpp
             Common/TaggingMocks.cpp
+			Common/DatabaseUtils.cpp
 			${ARGV} ${RESOURCES_RCC})
 
 	target_link_libraries(${TEST_NAME}

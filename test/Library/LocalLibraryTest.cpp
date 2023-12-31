@@ -18,6 +18,7 @@
  */
 
 #include "Common/SayonaraTest.h"
+#include "Common/DatabaseUtils.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -72,8 +73,9 @@ namespace
 			return track.id();
 		});
 
-		db->deleteAllAlbums();
-		db->deleteAllArtists();
+		Test::DB::deleteAllAlbums(db);
+		Test::DB::deleteAllArtists(db);
+		//Test::DB::deleteAllTracks(db);
 	}
 
 	void createLibraryDatabase()

@@ -1,4 +1,5 @@
 #include "test/Common/SayonaraTest.h"
+#include "test/Common/DatabaseUtils.h"
 
 #include "Database/Connector.h"
 #include "Database/Artists.h"
@@ -46,9 +47,7 @@ namespace
 			return track.id();
 		});
 
-		db->deleteAllAlbums();
-		db->deleteAllArtists();
-		db->clear();
+		Test::DB::clearDatabase(db);
 	}
 
 	void createLibraryDatabase()

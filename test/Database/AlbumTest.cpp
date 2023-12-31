@@ -1,4 +1,5 @@
 #include "test/Common/SayonaraTest.h"
+#include "test/Common/DatabaseUtils.h"
 
 #include "Database/Connector.h"
 #include "Database/Albums.h"
@@ -16,7 +17,7 @@
 static QStringList getHashes(const AlbumList& albums)
 {
 	QStringList hashes;
-	Util::Algorithm::transform(albums, hashes, [](const Album& album){
+	Util::Algorithm::transform(albums, hashes, [](const Album& album) {
 		return album.name() + album.albumArtist();
 	});
 
@@ -31,25 +32,24 @@ class AlbumTest :
 {
 	Q_OBJECT
 
-private:
-	QStringList mAlbumNames;
-	DB::LibraryDatabase* mLibraryDatabase=nullptr;
+	private:
+		QStringList mAlbumNames;
+		DB::LibraryDatabase* mLibraryDatabase = nullptr;
 
-public:
-	AlbumTest() :
-		Test::Base("AlbumTest")
-	{}
+	public:
+		AlbumTest() :
+			Test::Base("AlbumTest") {}
 
-	~AlbumTest() override = default;
+		~AlbumTest() override = default;
 
-private:
-	DB::LibraryDatabase* init(int count);
+	private:
+		DB::LibraryDatabase* init(int count);
 
-private slots:
-	void testInsert();
-	void testInsertWithAlbumArtists();
-	void testInsertKnown();
-	void testRename();
+	private slots:
+		void testInsert();
+		void testInsertWithAlbumArtists();
+		void testInsertKnown();
+		void testRename();
 };
 
 DB::LibraryDatabase* AlbumTest::init(int count)
@@ -57,7 +57,7 @@ DB::LibraryDatabase* AlbumTest::init(int count)
 	mAlbumNames.clear();
 
 	MetaDataList tracks;
-	for(int i=0; i<count; i++)
+	for(int i = 0; i < count; i++)
 	{
 		MetaData md;
 
@@ -72,11 +72,12 @@ DB::LibraryDatabase* AlbumTest::init(int count)
 	auto* db = DB::Connector::instance();
 	db->registerLibraryDatabase(0);
 
-	if(!mLibraryDatabase){
+	if(!mLibraryDatabase)
+	{
 		mLibraryDatabase = db->libraryDatabase(0, 0);
 	}
 
-	mLibraryDatabase->clear();
+	Test::DB::clearDatabase(db);
 	mLibraryDatabase->insertMissingArtistsAndAlbums(tracks);
 
 	return mLibraryDatabase;
@@ -114,11 +115,11 @@ void AlbumTest::testInsertWithAlbumArtists()
 	}
 
 	MetaDataList tracks;
-	for(int albumArtist=0; albumArtist<5; albumArtist++)
+	for(int albumArtist = 0; albumArtist < 5; albumArtist++)
 	{
 		QString albumArtistName = QString("albumArtist%1").arg(albumArtist);
 
-		for(int album=0; album<4; album++)
+		for(int album = 0; album < 4; album++)
 		{
 			MetaData md;
 
@@ -147,11 +148,11 @@ void AlbumTest::testInsertWithAlbumArtists()
 
 	tracks.clear();
 	// 5 known and one additional artist with two albums
-	for(int albumArtist=0; albumArtist<6; albumArtist++)
+	for(int albumArtist = 0; albumArtist < 6; albumArtist++)
 	{
 		QString albumArtistName = QString("albumArtist%1").arg(albumArtist);
 
-		for(int album=0; album<2; album++)
+		for(int album = 0; album < 2; album++)
 		{
 			MetaData md;
 
@@ -195,7 +196,7 @@ void AlbumTest::testInsertKnown()
 	QVERIFY(albums.count() == mAlbumNames.size());
 
 	MetaDataList tracks;
-	for(int i=0; i<Count / 2; i++)
+	for(int i = 0; i < Count / 2; i++)
 	{
 		int index = Util::randomNumber(0, mAlbumNames.size() - 1);
 		MetaData md;
