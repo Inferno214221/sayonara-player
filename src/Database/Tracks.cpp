@@ -283,41 +283,22 @@ int Tracks::getNumTracks() const
 	       : -1;
 }
 
-bool DB::Tracks::getAllTracksByIdList(const IdList& ids, const QString& idField, const Filter& filter,
-                                      MetaDataList& result) const
+MetaDataList DB::Tracks::getAllTracksByIdList(const IdList& ids,
+                                              const Filter& filter, std::function<Id(MetaData)>&& whichId) const
 {
 	if(ids.isEmpty())
 	{
-		return false;
+		return {};
 	}
 
-	const auto sortedIds = Util::prepareContainerForRangeCalculation(ids);
-	const auto ranges = Util::getRangesFromList(sortedIds);
-	const auto mapping = DB::convertRangesToMapping(ranges, idField, "albumId");
+	auto result = getAllTracks(filter);
+	result.removeTracks([&ids, &whichId](const auto& track) {
+		return !Util::Algorithm::contains(ids, [matchingId = whichId(track)](const auto& id) {
+			return matchingId == id;
+		});
+	});
 
-	auto whereStatement = (filter.cleared())
-	                      ? QString()
-	                      : DB::getFilterWhereStatement(filter, CisPlaceholder) + " AND ";
-
-	whereStatement += QString("(%1)").arg(mapping.sqlString);
-
-	const auto query = fetchQueryTracks(whereStatement);
-
-	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
-	for(const auto& searchFilter: searchFilters)
-	{
-		auto q = QSqlQuery(module()->db());
-		q.prepare(query);
-		q.bindValue(CisPlaceholder, searchFilter);
-		DB::bindMappingToQuery(q, mapping, sortedIds);
-
-		MetaDataList tmpList;
-		dbFetchTracks(q, tmpList);
-
-		result.appendUnique(tmpList);
-	}
-
-	return true;
+	return result;
 }
 
 bool Tracks::getAllTracks(MetaDataList& result) const
@@ -327,6 +308,38 @@ bool Tracks::getAllTracks(MetaDataList& result) const
 	q.prepare(query);
 
 	return dbFetchTracks(q, result);
+}
+
+MetaDataList Tracks::getAllTracks(const Filter& filter) const
+{
+	auto result = MetaDataList {};
+	const auto whereStatement = filter.cleared()
+	                            ? QString()
+	                            : DB::getFilterWhereStatement(filter, CisPlaceholder);
+
+	const auto query = fetchQueryTracks(whereStatement);
+
+	const auto searchFilters = filter.searchModeFiltertext(true, GetSetting(Set::Lib_SearchMode));
+	for(const auto& searchFilter: searchFilters)
+	{
+		auto q = QSqlQuery(module()->db());
+		q.prepare(query);
+		q.bindValue(CisPlaceholder, searchFilter);
+
+		MetaDataList tmpList;
+		dbFetchTracks(q, tmpList);
+
+		if(result.isEmpty())
+		{
+			result = std::move(tmpList);
+		}
+		else
+		{
+			result.appendUnique(tmpList);
+		}
+	}
+
+	return result;
 }
 
 bool DB::Tracks::getAllTracksByAlbum(const IdList& albumsIds, MetaDataList& result) const
@@ -339,21 +352,16 @@ Tracks::getAllTracksByAlbum(const IdList& albumIds, MetaDataList& result, const 
 {
 	const auto albumIdField = QString("%1.albumID").arg(trackSearchView());
 
-	MetaDataList tracks;
-	const auto success = getAllTracksByIdList(albumIds, albumIdField, filter, tracks);
-	if(!success)
-	{
-		return false;
-	}
+	result = getAllTracksByIdList(albumIds, filter, [](const auto& track) {
+		return track.albumId();
+	});
 
 	if(discnumber >= 0)
 	{
-		tracks.removeTracks([&](const auto& track) {
+		result.removeTracks([&](const auto& track) {
 			return (track.discnumber() != discnumber);
 		});
 	}
-
-	result.appendUnique(tracks);
 
 	return true;
 }
@@ -365,11 +373,21 @@ bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result)
 
 bool Tracks::getAllTracksByArtist(const IdList& artistIds, MetaDataList& result, const Filter& filter) const
 {
-	const auto artistIdField = QString("%1.%2")
-		.arg(trackSearchView())
-		.arg(this->artistIdField());
+	if(artistIdField().toLower() == "albumartistid")
+	{
+		result = getAllTracksByIdList(artistIds, filter, [](const auto& track) {
+			return track.albumArtistId();
+		});
+	}
 
-	return getAllTracksByIdList(artistIds, artistIdField, filter, result);
+	else
+	{
+		result = getAllTracksByIdList(artistIds, filter, [](const auto& track) {
+			return track.artistId();
+		});
+	}
+
+	return true;
 }
 
 bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& result) const
@@ -386,7 +404,14 @@ bool Tracks::getAllTracksBySearchString(const Filter& filter, MetaDataList& resu
 
 		MetaDataList tracks;
 		dbFetchTracks(q, tracks);
-		result.appendUnique(tracks);
+		if(result.isEmpty())
+		{
+			result = std::move(tracks);
+		}
+		else
+		{
+			result.appendUnique(tracks);
+		}
 	}
 
 	return true;

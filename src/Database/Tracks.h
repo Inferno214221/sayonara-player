@@ -23,6 +23,7 @@
 
 #include "Utils/typedefs.h"
 #include <QMap>
+#include <functional>
 
 namespace Library
 {
@@ -98,8 +99,10 @@ namespace DB
 		private:
 			MetaData getSingleTrack(const QString& queryText, const std::pair<QString, QVariant>& binding,
 			                        const QString& errorMessage) const;
-			bool getAllTracksByIdList(const IdList& ids, const QString& idField, const ::Library::Filter& filter,
-			                          MetaDataList& tracks) const;
+			[[nodiscard]] MetaDataList getAllTracksByIdList(const IdList& ids, const ::Library::Filter& filter,
+			                                                std::function<Id(MetaData)>&& whichId) const;
+
+			MetaDataList getAllTracks(const ::Library::Filter& filter) const;
 	};
 }
 
