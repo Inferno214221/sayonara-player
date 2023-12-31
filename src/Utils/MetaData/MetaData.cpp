@@ -45,6 +45,7 @@ struct MetaData::Private
 	QString title;
 	QString comment;
 	QString filepath;
+	HashValue filepathHash;
 	Util::Set<GenreID> genres;
 	uint64_t createdate {0};
 	uint64_t modifydate {0};
@@ -97,7 +98,7 @@ struct MetaData::Private
 		       (albumIdx == other.albumIdx) &&
 		       (artistIdx == other.artistIdx) &&
 		       (comment == other.comment) &&
-		       (filepath == other.filepath) &&
+		       (filepathHash == other.filepathHash) &&
 		       (bitrate == other.bitrate) &&
 		       (tracknum == other.tracknum) &&
 		       (year == other.year) &&
@@ -201,7 +202,7 @@ TrackID MetaData::id() const { return m->id; }
 
 void MetaData::setId(const TrackID& value) { m->id = value; }
 
-bool MetaData::isEqual(const MetaData& other) const { return Util::File::isSamePath(m->filepath, other.filepath()); }
+bool MetaData::isEqual(const MetaData& other) const { return (filepathHash() == other.filepathHash()); }
 
 bool MetaData::isEqualDeep(const MetaData& other) const { return m->isEqual(*other.m); }
 
@@ -392,6 +393,8 @@ QStringList MetaData::genresToList() const
 
 QString MetaData::filepath() const { return m->filepath; }
 
+HashValue MetaData::filepathHash() const { return m->filepathHash; }
+
 QString MetaData::setFilepath(const QString& filepath, RadioMode mode)
 {
 	auto isLocalPath = false;
@@ -438,6 +441,7 @@ QString MetaData::setFilepath(const QString& filepath, RadioMode mode)
 		}
 	}
 
+	m->filepathHash = qHash(m->filepath);
 	m->radioMode = mode;
 
 	return m->filepath;

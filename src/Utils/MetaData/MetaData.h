@@ -74,6 +74,7 @@ class MetaData :
 		void setComment(const QString& comment);
 
 		QString filepath() const;
+		[[nodiscard]] HashValue filepathHash() const;
 		QString setFilepath(const QString& filepath, RadioMode mode = RadioMode::Undefined);
 
 		ArtistId albumArtistId() const;

@@ -59,6 +59,34 @@ class MetaDataTest :
 		[[maybe_unused]] void moveTest();
 		[[maybe_unused]] void setRadioStationTest();
 		[[maybe_unused]] void testRadioModeConversion();
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testFilepathHash()
+		{
+			struct TestCase
+			{
+				QString filepath1;
+				QString filepath2;
+				bool expectEqual {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {"/path/to/a", "/path/to/b", false},
+				TestCase {"/path/to/a", "/path/to/a", true},
+				TestCase {"/path/to/a", "/path/to/./a", true},
+				TestCase {"/path/to/a", "/path/to/../to/a", true}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto track1 = MetaData {testCase.filepath1};
+				const auto track2 = MetaData {testCase.filepath2};
+				const auto isEqual = track1.filepathHash() == track2.filepathHash();
+				
+				QVERIFY(isEqual == testCase.expectEqual);
+				QVERIFY(track1.isEqual(track2) == testCase.expectEqual);
+			}
+		}
 };
 
 [[maybe_unused]] void MetaDataTest::copyTest() // NOLINT(readability-convert-member-functions-to-static)
