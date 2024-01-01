@@ -42,27 +42,21 @@ namespace DB
 			LibraryDatabase(const QString& connectionName, DbId databaseId, LibraryId libraryId);
 			~LibraryDatabase() override;
 
-			void changeArtistIdField(ArtistIdInfo::ArtistIdField field);
-
-			void clear();
 			virtual bool storeMetadata(const MetaDataList& tracks);
 
 			[[nodiscard]] LibraryId libraryId() const override;
+
+			bool fixEmptyAlbums();
+			void updateSearchMode();
+			void changeArtistIdField(ArtistIdInfo::ArtistIdField field);
+			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
+
+		private:
+			Module* module() override;
+			[[nodiscard]] const Module* module() const override;
 			[[nodiscard]] ArtistIdInfo artistIdInfo() const override;
 			[[nodiscard]] QString trackView() const override;
 			[[nodiscard]] QString trackSearchView() const override;
-
-			void updateSearchMode();
-
-			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
-			bool fixEmptyAlbums();
-
-			using Albums::deleteAllAlbums;
-			using Artists::deleteAllArtists;
-
-		protected:
-			Module* module() override;
-			[[nodiscard]] const Module* module() const override;
 	};
 }
 

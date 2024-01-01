@@ -181,7 +181,7 @@ bool SC::LibraryDatabase::dbFetchTracks(QSqlQuery& query, MetaDataList& result) 
 		track.setCreatedDate(query.value(17).value<uint64_t>());
 		track.setModifiedDate(query.value(18).value<uint64_t>());
 		track.setComment(query.value(19).toString());
-		track.setDatabaseId(module()->databaseId());
+		track.setDatabaseId(databaseId());
 
 		result.push_back(std::move(track));
 	}
@@ -214,7 +214,7 @@ bool SC::LibraryDatabase::dbFetchAlbums(QSqlQuery& query, AlbumList& result) con
 		album.setYear(query.value(8).value<Year>());
 		album.setArtists(query.value(9).toString().split(','));
 		album.setDiscnumbers(getDiscnumbersFromVariant(query.value(10)));
-		album.setDatabaseId(module()->databaseId());
+		album.setDatabaseId(databaseId());
 
 		result.push_back(std::move(album));
 	}
@@ -254,7 +254,7 @@ bool SC::LibraryDatabase::dbFetchArtists(QSqlQuery& query, ArtistList& result) c
 
 		artist.setCoverDownloadUrls({query.value(5).toString()});
 		artist.setSongcount(query.value(7).value<uint16_t>());
-		artist.setDatabaseId(module()->databaseId());
+		artist.setDatabaseId(databaseId());
 
 		result.push_back(std::move(artist));
 	}
@@ -289,7 +289,7 @@ ArtistId SC::LibraryDatabase::insertArtistIntoDatabase([[maybe_unused]] const QS
 
 bool SC::LibraryDatabase::getAllAlbums(AlbumList& result, bool alsoEmpty) const
 {
-	auto query = QSqlQuery(module()->db());
+	auto query = QSqlQuery(db());
 	const auto queryText =
 		fetchQueryAlbums(alsoEmpty) +
 		QStringLiteral(" GROUP BY albums.albumID, albums.name, albums.rating ");
@@ -439,7 +439,7 @@ bool SC::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 		return true;
 	}
 
-	module()->db().transaction();
+	db().transaction();
 
 	for(const auto& track: tracks)
 	{
@@ -453,7 +453,7 @@ bool SC::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 		insertTrackIntoDatabase(track, track.artistId(), track.albumId(), track.albumArtistId());
 	}
 
-	return module()->db().commit();
+	return db().commit();
 }
 
 bool SC::LibraryDatabase::searchInformation(SC::SearchInformationList& searchInformation)

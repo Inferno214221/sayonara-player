@@ -280,13 +280,6 @@ DB::Module* LibraryDatabase::module() { return this; }
 
 const DB::Module* LibraryDatabase::module() const { return this; }
 
-void LibraryDatabase::clear()
-{
-	DB::Tracks::deleteAllTracks(false);
-	DB::Albums::deleteAllAlbums();
-	DB::Artists::deleteAllArtists();
-}
-
 LibraryId LibraryDatabase::libraryId() const { return m->libraryId; }
 
 bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
