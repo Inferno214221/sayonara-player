@@ -76,6 +76,7 @@ new_test(Playlist/RepeatTest.cpp Playlist/PlaylistTestUtils.cpp Common/TestTrack
 new_test(Settings/SettingConverterTest.cpp)
 new_test(Settings/SettingsNotifierTest.cpp)
 new_test(SmartPlaylists/ConverterTest.cpp)
+new_test(SmartPlaylists/ListeningDateTest.cpp)
 new_test(SmartPlaylists/SmartPlaylistManagerTest.cpp)
 new_test(StreamRecorder/StreamRecorderTest.cpp)
 new_test(StreamRecorder/StreamRecorderUtilsTest.cpp)
