@@ -22,6 +22,7 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 #include "Utils/Algorithm.h"
+#include "Utils/Language/Language.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/RandomGenerator.h"
@@ -33,11 +34,20 @@
 
 namespace
 {
-	IdList getRandomAlbums(const int count, DB::LibraryDatabase* libraryDatabase)
+	IdList getRandomAlbums(int count, DB::LibraryDatabase* libraryDatabase)
 	{
 		auto albums = AlbumList {};
 		libraryDatabase->getAllAlbums(albums, false);
 		Util::Algorithm::shuffle(albums);
+
+		if(count == 0)
+		{
+			count = albums.count();
+			if(count == 0)
+			{
+				return {};
+			}
+		}
 
 		auto albumIds = IdList {};
 		for(const auto& album: albums)
@@ -92,7 +102,7 @@ SmartPlaylistRandomAlbum::SmartPlaylistRandomAlbum(const int id, const int count
 
 SmartPlaylistRandomAlbum::~SmartPlaylistRandomAlbum() = default;
 
-int SmartPlaylistRandomAlbum::minimumValue() const { return 1; }
+int SmartPlaylistRandomAlbum::minimumValue() const { return 0; }
 
 int SmartPlaylistRandomAlbum::maximumValue() const
 {
@@ -107,7 +117,7 @@ int SmartPlaylistRandomAlbum::maximumValue() const
 MetaDataList SmartPlaylistRandomAlbum::filterTracks(MetaDataList /*tracks*/)
 {
 	auto* dbConnector = DB::Connector::instance();
-	auto* libraryDatabase = dbConnector->libraryDatabase(-1, 0);
+	auto* libraryDatabase = dbConnector->libraryDatabase(libraryId(), 0);
 
 	const auto albumIds = getRandomAlbums(value(0), libraryDatabase);
 	return getTracksByAlbumIds(albumIds, libraryDatabase);
@@ -117,10 +127,20 @@ QString SmartPlaylistRandomAlbum::classType() const { return SmartPlaylistRandom
 
 QString SmartPlaylistRandomAlbum::displayClassType() const { return QObject::tr("Random albums"); }
 
-QString SmartPlaylistRandomAlbum::name() const { return QObject::tr("%n random album(s)", "", value(0)); }
+QString SmartPlaylistRandomAlbum::name() const
+{
+	return (value(0) > 0)
+	       ? QObject::tr("%n random album(s)", "", value(0))
+	       : QObject::tr("All albums randomized");
+}
 
 SmartPlaylists::Type SmartPlaylistRandomAlbum::type() const { return SmartPlaylists::Type::RandomAlbums; }
 
 bool SmartPlaylistRandomAlbum::canFetchTracks() const { return true; }
 
-QString SmartPlaylistRandomAlbum::text(int /*index*/) const { return QObject::tr("Number of albums"); }
+QString SmartPlaylistRandomAlbum::text(int /*index*/) const
+{
+	return QObject::tr("Number of albums") + " " +
+	       QString("(0=%1)").arg(Lang::get(Lang::All));
+}
+
