@@ -30,6 +30,7 @@
 #include "Components/Session/Session.h"
 #include "Database/SmartPlaylists.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QStringList>
@@ -62,7 +63,8 @@ namespace
 	}
 }
 
-std::shared_ptr<SmartPlaylist> SmartPlaylists::create(const SmartPlaylistDatabaseEntry& entry)
+std::shared_ptr<SmartPlaylist>
+SmartPlaylists::create(const SmartPlaylistDatabaseEntry& entry, const Util::FileSystemPtr& fileSystem)
 {
 	try
 	{
@@ -70,53 +72,44 @@ std::shared_ptr<SmartPlaylist> SmartPlaylists::create(const SmartPlaylistDatabas
 
 		if(entry.classType == SmartPlaylistByRating::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::Rating, entry.id, values, entry.isRandomized, entry.libraryId);
+			return createFromType(SmartPlaylists::Type::Rating, entry.id, values, entry.isRandomized, entry.libraryId,
+			                      nullptr);
 		}
 
 		if(entry.classType == SmartPlaylistByYear::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::Year, entry.id, values, entry.isRandomized, entry.libraryId);
+			return createFromType(SmartPlaylists::Type::Year, entry.id, values, entry.isRandomized, entry.libraryId,
+			                      nullptr);
 		}
 
 		if(entry.classType == SmartPlaylistByCreateDate::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::Created, entry.id, values, entry.isRandomized, entry.libraryId);
+			return createFromType(SmartPlaylists::Type::Created, entry.id, values, entry.isRandomized, entry.libraryId,
+			                      nullptr);
 		}
 
 		if(entry.classType == SmartPlaylistByRelativeDate::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::CreatedRelative,
-			                      entry.id,
-			                      values,
-			                      entry.isRandomized,
-			                      entry.libraryId);
+			return createFromType(SmartPlaylists::Type::CreatedRelative, entry.id, values, entry.isRandomized,
+			                      entry.libraryId, nullptr);
 		}
 
 		if(entry.classType == SmartPlaylistByListeningDate::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::LastPlayed,
-			                      entry.id,
-			                      values,
-			                      entry.isRandomized,
-			                      entry.libraryId);
+			return createFromType(SmartPlaylists::Type::LastPlayed, entry.id, values, entry.isRandomized,
+			                      entry.libraryId, fileSystem);
 		}
 
 		if(entry.classType == SmartPlaylistRandomTracks::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::RandomTracks,
-			                      entry.id,
-			                      values,
-			                      entry.isRandomized,
-			                      entry.libraryId);
+			return createFromType(SmartPlaylists::Type::RandomTracks, entry.id, values, entry.isRandomized,
+			                      entry.libraryId, nullptr);
 		}
 
 		if(entry.classType == SmartPlaylistRandomAlbum::ClassType)
 		{
-			return createFromType(SmartPlaylists::Type::RandomAlbums,
-			                      entry.id,
-			                      values,
-			                      entry.isRandomized,
-			                      entry.libraryId);
+			return createFromType(SmartPlaylists::Type::RandomAlbums, entry.id, values, entry.isRandomized,
+			                      entry.libraryId, nullptr);
 		}
 
 		return nullptr;
@@ -131,7 +124,8 @@ std::shared_ptr<SmartPlaylist> SmartPlaylists::create(const SmartPlaylistDatabas
 
 std::shared_ptr<SmartPlaylist>
 SmartPlaylists::createFromType(const SmartPlaylists::Type field, const int id, const QList<int>& values,
-                               const bool isRandomized, const LibraryId libraryId)
+                               const bool isRandomized, const LibraryId libraryId,
+                               const Util::FileSystemPtr& fileSystem)
 {
 	using SmartPlaylists::Type;
 	switch(field)
@@ -145,7 +139,8 @@ SmartPlaylists::createFromType(const SmartPlaylists::Type field, const int id, c
 		case Type::CreatedRelative:
 			return std::make_shared<SmartPlaylistByRelativeDate>(id, values[0], values[1], isRandomized, libraryId);
 		case Type::LastPlayed:
-			return std::make_shared<SmartPlaylistByListeningDate>(id, values[0], values[1], isRandomized, libraryId);
+			return std::make_shared<SmartPlaylistByListeningDate>(id, values[0], values[1], isRandomized, libraryId,
+			                                                      fileSystem);
 		case Type::RandomTracks:
 			return std::make_shared<SmartPlaylistRandomTracks>(id, values[0], libraryId);
 		case Type::RandomAlbums:

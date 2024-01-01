@@ -97,10 +97,8 @@ struct GuiSmartPlaylists::Private
 
 GuiSmartPlaylists::GuiSmartPlaylists(SmartPlaylistManager* smartPlaylistManager, Library::InfoAccessor* libraryManager,
                                      QWidget* parent) :
-	PlayerPlugin::Base(parent)
-{
-	m = Pimpl::make<Private>(smartPlaylistManager, libraryManager);
-}
+	PlayerPlugin::Base(parent),
+	m {Pimpl::make<Private>(smartPlaylistManager, libraryManager)} {}
 
 GuiSmartPlaylists::~GuiSmartPlaylists() noexcept
 {
@@ -154,12 +152,8 @@ void GuiSmartPlaylists::newClicked()
 	const auto status = dialog->exec();
 	if(status == MinMaxIntegerDialog::Accepted)
 	{
-		const auto smartPlaylist = SmartPlaylists::createFromType(dialog->type(),
-		                                                          -1,
-		                                                          dialog->values(),
-		                                                          dialog->isRandomized(),
-		                                                          dialog->libraryId());
-		m->smartPlaylistManager->insertPlaylist(smartPlaylist);
+		m->smartPlaylistManager->createAndInsert(dialog->type(), -1, dialog->values(), dialog->isRandomized(),
+		                                         dialog->libraryId());
 	}
 
 	dialog->deleteLater();

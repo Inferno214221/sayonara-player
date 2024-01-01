@@ -52,7 +52,7 @@ namespace
 
 	std::shared_ptr<SmartPlaylist> createDummySmartPlaylist(const SmartPlaylists::Type type)
 	{
-		auto smartPlaylist = SmartPlaylists::createFromType(type, -1, {-1, -1, -1, -1, -1}, true, -1);
+		auto smartPlaylist = SmartPlaylists::createFromType(type, -1, {-1, -1, -1, -1, -1}, true, -1, nullptr);
 		smartPlaylist->setValue(0, smartPlaylist->minimumValue());
 		smartPlaylist->setValue(1, smartPlaylist->maximumValue());
 		return smartPlaylist;

@@ -29,12 +29,18 @@
 class SmartPlaylist;
 struct SmartPlaylistDatabaseEntry;
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace SmartPlaylists
 {
-	std::shared_ptr<SmartPlaylist> create(const SmartPlaylistDatabaseEntry& entry);
+	std::shared_ptr<SmartPlaylist>
+	create(const SmartPlaylistDatabaseEntry& entry, const std::shared_ptr<Util::FileSystem>& fileSystem);
 	std::shared_ptr<SmartPlaylist>
 	createFromType(SmartPlaylists::Type field, int id, const QList<int>& values, bool isRandomized,
-	               LibraryId libraryId);
+	               LibraryId libraryId, const std::shared_ptr<Util::FileSystem>& fileSystem);
 };
 
 #endif //SAYONARA_PLAYER_SMARTPLAYLISTCREATOR_H

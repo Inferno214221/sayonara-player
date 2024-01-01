@@ -21,9 +21,15 @@
 #define SAYONARA_PLAYER_SMARTPLAYLISTMANAGER_H
 
 #include "Utils/Pimpl.h"
+#include "SmartPlaylist.h"
 
 #include <QList>
 #include <QObject>
+
+namespace Util
+{
+	class FileSystem;
+}
 
 struct Spid
 {
@@ -50,11 +56,13 @@ class SmartPlaylistManager :
 		void sigPlaylistsChanged();
 
 	public:
-		explicit SmartPlaylistManager(PlaylistCreator* playlistCreator);
+		SmartPlaylistManager(PlaylistCreator* playlistCreator, const std::shared_ptr<Util::FileSystem>& fileSystem);
 		~SmartPlaylistManager() override;
 
 		[[nodiscard]] SmartPlaylistPtr smartPlaylist(const Spid& id) const;
 		[[nodiscard]] QList<SmartPlaylistPtr> smartPlaylists() const;
+		SmartPlaylistPtr createAndInsert(SmartPlaylists::Type field, int id, const QList<int>& values,
+		                                 bool isRandomized, LibraryId libraryId);
 
 		void selectPlaylist(const Spid& id);
 		void deletePlaylist(const Spid& id);

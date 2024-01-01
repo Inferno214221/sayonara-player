@@ -19,6 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/PlayManagerMock.h"
+#include "Common/FileSystemMock.h"
 
 #include "Components/SmartPlaylists/SmartPlaylistManager.h"
 #include "Components/SmartPlaylists/SmartPlaylistCreator.h"
@@ -127,7 +128,8 @@ class SmartPlaylistManagerTest :
 [[maybe_unused]] void
 SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
+	auto fileSystem = std::make_shared<Test::FileSystemMock>();
+	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 
 	const auto smartPlaylists = std::array {
 		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, false, 1},
@@ -138,7 +140,8 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 
 	for(const auto& [type, values, randomize, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, randomize, libraryId);
+		const auto createdSmartPlaylist =
+			SmartPlaylists::createFromType(type, -1, values, randomize, libraryId, fileSystem);
 		manager.insertPlaylist(createdSmartPlaylist);
 
 		const auto allSmartPlaylists = manager.smartPlaylists();
@@ -155,7 +158,7 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 			QVERIFY(manager.smartPlaylist(spid)->value(i) == values[i]);
 		}
 
-		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
+		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == manager.smartPlaylist(spid)->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == manager.smartPlaylist(spid)->name());
@@ -168,7 +171,8 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 [[maybe_unused]] void
 SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
+	auto fileSystem = std::make_shared<Test::FileSystemMock>();
+	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 
 	const auto smartPlaylists = std::array {
 		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, true, 1},
@@ -177,7 +181,8 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 	for(const auto& [type, values, isRandomized, expectedCount]: smartPlaylists)
 	{
-		const auto createdSmartPlaylist = SmartPlaylists::createFromType(type, -1, values, isRandomized, libraryId);
+		const auto createdSmartPlaylist =
+			SmartPlaylists::createFromType(type, -1, values, isRandomized, libraryId, fileSystem);
 		manager.insertPlaylist(createdSmartPlaylist);
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
@@ -209,7 +214,7 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
-		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
+		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == smartPlaylist->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == smartPlaylist->name());
@@ -221,7 +226,8 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 [[maybe_unused]] void SmartPlaylistManagerTest::testDelete() // NOLINT(readability-convert-member-functions-to-static)
 {
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock());
+	auto fileSystem = std::make_shared<Test::FileSystemMock>();
+	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 	auto smartPlaylist =
 		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId); // NOLINT(readability-magic-numbers)
 
@@ -235,16 +241,18 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 	QVERIFY(manager.smartPlaylists().isEmpty());
 
-	auto newManager = SmartPlaylistManager(new PlaylistCreatorMock());
+	auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
 	QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 }
 
 [[maybe_unused]] void SmartPlaylistManagerTest::testSelect() // NOLINT(readability-convert-member-functions-to-static)
 {
+	auto fileSystem = std::make_shared<Test::FileSystemMock>();
 	auto* playlistCreator = new PlaylistCreatorMock();
-	auto manager = SmartPlaylistManager(playlistCreator);
-	auto smartPlaylist =
-		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId); // NOLINT(readability-magic-numbers)
+	auto manager = SmartPlaylistManager(playlistCreator, fileSystem);
+
+	// NOLINTNEXTLINE(readability-magic-numbers)
+	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId);
 
 	manager.insertPlaylist(smartPlaylist);
 

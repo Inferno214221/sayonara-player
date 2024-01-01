@@ -24,6 +24,7 @@
 
 #include "Database/Connector.h"
 #include "Database/Session.h"
+#include "Utils/FileSystem.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
@@ -46,9 +47,19 @@ namespace
 	}
 }
 
+struct SmartPlaylistByListeningDate::Private
+{
+	Util::FileSystemPtr fileSystem;
+
+	explicit Private(Util::FileSystemPtr fileSystem) :
+		fileSystem {std::move(fileSystem)} {}
+};
+
 SmartPlaylistByListeningDate::SmartPlaylistByListeningDate(const int id, const int value1, const int value2,
-                                                           const bool isRandomized, const LibraryId libraryId) :
-	SmartPlaylist(id, {value1, value2}, isRandomized, libraryId) {}
+                                                           const bool isRandomized, const LibraryId libraryId,
+                                                           const Util::FileSystemPtr& fileSystem) :
+	SmartPlaylist(id, {value1, value2}, isRandomized, libraryId),
+	m {Pimpl::make<Private>(fileSystem)} {}
 
 SmartPlaylistByListeningDate::~SmartPlaylistByListeningDate() = default;
 
@@ -86,7 +97,9 @@ MetaDataList SmartPlaylistByListeningDate::filterTracks(MetaDataList tracks)
 				continue;
 			}
 
-			if(!Util::File::isWWW(filepath) && Util::File::exists(filepath) && (entry.track.libraryId() == libraryId()))
+			if(!Util::File::isWWW(filepath) &&
+			   m->fileSystem->exists(filepath) &&
+			   (libraryId() == entry.track.libraryId()))
 			{
 				processedFilepaths << filepath;
 				tracks.push_back(std::move(entry.track));

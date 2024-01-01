@@ -27,22 +27,25 @@
 #include "Database/LibraryDatabase.h"
 #include "Database/SmartPlaylists.h"
 #include "Interfaces/PlaylistInterface.h"
+#include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/RandomGenerator.h"
 
 struct SmartPlaylistManager::Private
 {
 	PlaylistCreator* playlistCreator;
+	Util::FileSystemPtr fileSystem;
 	std::map<Spid, SmartPlaylistPtr> smartPlaylists;
 
-	explicit Private(PlaylistCreator* playlistCreator) :
-		playlistCreator {playlistCreator}
+	Private(PlaylistCreator* playlistCreator, Util::FileSystemPtr fileSystem_) :
+		playlistCreator {playlistCreator},
+		fileSystem {std::move(fileSystem_)}
 	{
 		auto* db = DB::Connector::instance()->smartPlaylistsConnector();
 		const auto smartPlaylistDatabaseEntries = db->getAllSmartPlaylists();
 		for(const auto& entry: smartPlaylistDatabaseEntries)
 		{
-			const auto smartPlaylist = SmartPlaylists::create(entry);
+			const auto smartPlaylist = SmartPlaylists::create(entry, fileSystem);
 			if(smartPlaylist)
 			{
 				smartPlaylists[Spid(smartPlaylist->id())] = smartPlaylist;
@@ -51,10 +54,8 @@ struct SmartPlaylistManager::Private
 	}
 };
 
-SmartPlaylistManager::SmartPlaylistManager(PlaylistCreator* playlistCreator)
-{
-	m = Pimpl::make<Private>(playlistCreator);
-}
+SmartPlaylistManager::SmartPlaylistManager(PlaylistCreator* playlistCreator, const Util::FileSystemPtr& fileSystem) :
+	m {Pimpl::make<Private>(playlistCreator, fileSystem)} {}
 
 SmartPlaylistManager::~SmartPlaylistManager() = default;
 
@@ -66,7 +67,7 @@ SmartPlaylistPtr SmartPlaylistManager::smartPlaylist(const Spid& id) const
 QList<SmartPlaylistPtr> SmartPlaylistManager::smartPlaylists() const
 {
 	QList<SmartPlaylistPtr> smartPlaylists;
-	for(const auto&[key, value]: m->smartPlaylists)
+	for(const auto& [key, value]: m->smartPlaylists)
 	{
 		smartPlaylists << value;
 	}
@@ -126,4 +127,13 @@ void SmartPlaylistManager::updatePlaylist(const Spid& id, const SmartPlaylistPtr
 		m->smartPlaylists[id] = smartPlaylist;
 		emit sigPlaylistsChanged();
 	}
+}
+
+SmartPlaylistPtr SmartPlaylistManager::createAndInsert(SmartPlaylists::Type field, int id, const QList<int>& values,
+                                                       const bool isRandomized, const LibraryId libraryId)
+{
+	auto smartPlaylist = SmartPlaylists::createFromType(field, id, values, isRandomized, libraryId, m->fileSystem);
+	insertPlaylist(smartPlaylist);
+
+	return smartPlaylist;
 }

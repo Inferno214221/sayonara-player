@@ -30,13 +30,21 @@ namespace Session
 	class Manager;
 }
 
+namespace Util
+{
+	class FileSystem;
+}
+
 class SmartPlaylistByListeningDate :
 	public SmartPlaylist
 {
+	PIMPL(SmartPlaylistByListeningDate)
+
 	public:
 		static constexpr const auto* ClassType = "last-played";
 
-		SmartPlaylistByListeningDate(int id, int value1, int value2, bool isRandomized, LibraryId libraryId);
+		SmartPlaylistByListeningDate(int id, int value1, int value2, bool isRandomized, LibraryId libraryId,
+		                             const std::shared_ptr<Util::FileSystem>& fileSystem);
 		~SmartPlaylistByListeningDate() override;
 
 		[[nodiscard]] int minimumValue() const override;
