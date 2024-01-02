@@ -99,7 +99,7 @@ MetaDataList SmartPlaylistByListeningDate::filterTracks(MetaDataList tracks)
 
 			if(!Util::File::isWWW(filepath) &&
 			   m->fileSystem->exists(filepath) &&
-			   (libraryId() == entry.track.libraryId()))
+			   ((libraryId() == -1) || (libraryId() == entry.track.libraryId())))
 			{
 				processedFilepaths << filepath;
 				tracks.push_back(std::move(entry.track));
