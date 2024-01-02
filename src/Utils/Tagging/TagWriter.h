@@ -25,6 +25,7 @@
 
 class MetaData;
 class QString;
+class QPixmap;
 
 namespace Tagging
 {
@@ -32,9 +33,11 @@ namespace Tagging
 	{
 		public:
 			virtual ~TagWriter() = default;
-			
+
 			virtual bool writeMetaData(const QString& filepath, const MetaData& track) = 0;
 			virtual bool updateMetaData(const MetaData& track) = 0;
+
+			virtual bool writeCover(const QString& filepath, const QPixmap& cover) = 0;
 
 			static std::shared_ptr<TagWriter> create();
 	};

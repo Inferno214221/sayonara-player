@@ -76,6 +76,8 @@ class PlaylistFileTest :
 					return {track};
 				}
 
+				[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
+
 			private:
 				Util::FileSystemPtr m_fileSystem;
 		};

@@ -68,6 +68,8 @@ namespace
 			{
 				return std::nullopt;
 			}
+
+			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
 	};
 
 	class VerboseTagReaderMock :
@@ -88,6 +90,8 @@ namespace
 
 				return track;
 			}
+
+			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
 
 		private:
 			QString m_title;

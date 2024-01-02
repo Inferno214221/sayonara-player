@@ -20,6 +20,7 @@
 
 #include "TagWriter.h"
 #include "Tagging.h"
+#include "TaggingCover.h"
 
 #include "Utils/MetaData/MetaData.h"
 
@@ -43,6 +44,12 @@ namespace
 			{
 				return Tagging::Utils::setMetaDataOfFile(track);
 			}
+
+			bool writeCover(const QString& filepath, const QPixmap& cover) override
+			{
+				return Tagging::writeCover(filepath, cover);
+			}
+
 	};
 }
 

@@ -46,6 +46,8 @@ namespace Test
 		return std::nullopt;
 	}
 
+	bool TagReaderMock::isCoverSupported(const QString& /*filepath*/) const { return false; }
+
 	TagWriterMock::~TagWriterMock() = default;
 
 	bool TagWriterMock::writeMetaData(const QString& filepath, const MetaData& /*track*/)
@@ -56,5 +58,10 @@ namespace Test
 	bool TagWriterMock::updateMetaData(const MetaData& track)
 	{
 		return !track.filepath().isEmpty();
+	}
+
+	bool TagWriterMock::writeCover(const QString& /*filepath*/, const QPixmap& /*cover*/)
+	{
+		return false;
 	}
 }

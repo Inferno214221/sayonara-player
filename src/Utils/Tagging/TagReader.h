@@ -36,6 +36,8 @@ namespace Tagging
 			virtual ~TagReader() = default;
 			virtual std::optional<MetaData> readMetadata(const QString& filepath) = 0;
 
+			[[nodiscard]] virtual bool isCoverSupported(const QString& filepath) const = 0;
+
 			static std::shared_ptr<TagReader> create();
 	};
 

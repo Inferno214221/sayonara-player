@@ -22,6 +22,7 @@
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Tagging/TaggingCover.h"
 
 #include <QString>
 
@@ -38,6 +39,11 @@ namespace
 				auto track = MetaData {filepath};
 				const auto success = Tagging::Utils::getMetaDataOfFile(track, Tagging::Quality::Quality);
 				return success ? std::optional {track} : std::nullopt;
+			}
+
+			[[nodiscard]] bool isCoverSupported(const QString& filepath) const override
+			{
+				return Tagging::isCoverSupported(filepath);
 			}
 	};
 }

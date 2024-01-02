@@ -35,6 +35,8 @@ namespace Test
 
 			[[nodiscard]] int count() const { return m_count; }
 
+			bool isCoverSupported(const QString& filepath) const override;
+
 		private:
 			int m_count {0};
 	};
@@ -47,6 +49,7 @@ namespace Test
 
 			bool writeMetaData(const QString& filepath, const MetaData& track) override;
 			bool updateMetaData(const MetaData& track) override;
+			bool writeCover(const QString& filepath, const QPixmap& cover) override;
 	};
 }
 
