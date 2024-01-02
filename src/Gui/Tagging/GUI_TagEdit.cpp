@@ -75,7 +75,7 @@ namespace
 	QStringList extractNames(const Container& container)
 	{
 		QStringList names;
-		for(const auto& item : container)
+		for(const auto& item: container)
 		{
 			if(!item.name().isEmpty())
 			{
@@ -177,13 +177,12 @@ struct GUI_TagEdit::Private
 	GUI_TagFromPath* uiTagFromPath;
 	GUI_CoverEdit* uiCoverEdit;
 	QList<WidgetTuple> widgetTuples;
-	int currentIndex;
+	int currentIndex {-1};
 
 	Private(GUI_TagEdit* parent, Ui::GUI_TagEdit* ui) :
 		tagEditor {new Tagging::Editor()},
 		uiTagFromPath {new GUI_TagFromPath(tagEditor, ui->tabFromPath)},
-		uiCoverEdit {new GUI_CoverEdit(tagEditor, parent)},
-		currentIndex {-1}
+		uiCoverEdit {new GUI_CoverEdit(tagEditor, parent)}
 	{
 		ui->tabFromPath->layout()->addWidget(uiTagFromPath);
 		ui->tabCover->layout()->addWidget(uiCoverEdit);
@@ -217,7 +216,7 @@ GUI_TagEdit::GUI_TagEdit(QWidget* parent) :
 	connect(m->tagEditor, &Editor::sigStarted, this, &GUI_TagEdit::commitStarted);
 	connect(m->tagEditor, &Editor::sigFinished, this, &GUI_TagEdit::commitFinished);
 
-	for(const auto& widgetTuple : m->widgetTuples)
+	for(const auto& widgetTuple: m->widgetTuples)
 	{
 		if(widgetTuple.checkbox)
 		{
@@ -259,7 +258,7 @@ void GUI_TagEdit::runEditor(Editor* editor)
 
 void GUI_TagEdit::languageChanged()
 {
-	for(const auto& widgetTuple : m->widgetTuples)
+	for(const auto& widgetTuple: m->widgetTuples)
 	{
 		widgetTuple.label->setText(Lang::get(widgetTuple.term));
 		setCheckboxText(widgetTuple.checkbox, m->tagEditor->count());
@@ -283,7 +282,7 @@ void GUI_TagEdit::metadataChanged([[maybe_unused]] const MetaDataList& changedTr
 {
 	reset();
 
-	for(const auto& widgetTuple : m->widgetTuples)
+	for(const auto& widgetTuple: m->widgetTuples)
 	{
 		setCheckboxText(widgetTuple.checkbox, m->tagEditor->count());
 	}
@@ -319,7 +318,7 @@ void GUI_TagEdit::applyAllTagFromPathTriggered()
 
 	if(!invalidFilepaths.isEmpty())
 	{
-		for(const auto& invalidFilepath : invalidFilepaths)
+		for(const auto& invalidFilepath: invalidFilepaths)
 		{
 			m->uiTagFromPath->addInvalidFilepath(invalidFilepath);
 		}
@@ -459,7 +458,7 @@ void GUI_TagEdit::reset()
 
 	ui->tabWidget->tabBar()->setEnabled(true);
 
-	for(const auto& widgetTuple : m->widgetTuples)
+	for(const auto& widgetTuple: m->widgetTuples)
 	{
 		if(widgetTuple.checkbox)
 		{
