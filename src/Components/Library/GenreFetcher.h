@@ -32,6 +32,8 @@ namespace Tagging
 {
 	class Editor;
 	class UserOperations;
+	class TagReader;
+	class TagWriter;
 }
 
 class GenreFetcher :
@@ -46,7 +48,9 @@ class GenreFetcher :
 		void sigFinished();
 
 	public:
-		explicit GenreFetcher(QObject* parent = nullptr);
+		GenreFetcher(const std::shared_ptr<Tagging::TagReader>& tagReader,
+		             const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+		             QObject* parent = nullptr);
 		~GenreFetcher() override;
 
 		[[nodiscard]] Util::Set<Genre> genres() const;

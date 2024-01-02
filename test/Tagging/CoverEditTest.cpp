@@ -19,6 +19,7 @@
 
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/TestTracks.h"
+#include "test/Common/TaggingMocks.h"
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Tagging/CoverEditor.h"
@@ -32,6 +33,28 @@
 #include <QSignalSpy>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
+
+namespace
+{
+	class LocalTagReaderMock :
+		public Test::TagReaderMock
+	{
+		public:
+			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return true; }
+	};
+
+	class LocalTagWriterMock :
+		public Test::TagWriterMock
+	{
+		public:
+			bool writeCover(const QString& /*filepath*/, const QPixmap& /*cover*/) override { return true; }
+	};
+
+	Tagging::Editor createEditor()
+	{
+		return {std::make_shared<LocalTagReaderMock>(), std::make_shared<LocalTagWriterMock>()};
+	}
+}
 
 class CoverEditTest :
 	public Test::Base
@@ -70,7 +93,7 @@ class CoverEditTest :
 
 void CoverEditTest::testInitialState()
 {
-	auto tagEditor = Tagging::Editor();
+	auto tagEditor = createEditor();
 	auto coverEditor = Tagging::CoverEditor(&tagEditor, nullptr);
 	auto tracks = Test::createTracks();
 	tagEditor.setMetadata(tracks);
@@ -84,7 +107,7 @@ void CoverEditTest::testInitialState()
 
 void CoverEditTest::testReplaceCurrentCover()
 {
-	auto tagEditor = Tagging::Editor();
+	auto tagEditor = createEditor();
 	auto coverEditor = Tagging::CoverEditor(&tagEditor, nullptr);
 	auto tracks = Test::createTracks();
 	tagEditor.setMetadata(tracks);
@@ -116,7 +139,7 @@ void CoverEditTest::testReplaceCurrentCover()
 
 void CoverEditTest::testReplaceCoverForAll()
 {
-	auto tagEditor = Tagging::Editor();
+	auto tagEditor = createEditor();
 	auto coverEditor = Tagging::CoverEditor(&tagEditor, nullptr);
 	auto tracks = Test::createTracks();
 	tagEditor.setMetadata(tracks);
@@ -156,7 +179,7 @@ void CoverEditTest::testReplaceCoverForAll()
 
 void CoverEditTest::testCommit()
 {
-	auto tagEditor = Tagging::Editor();
+	auto tagEditor = createEditor();
 	auto coverEditor = Tagging::CoverEditor(&tagEditor, nullptr);
 	auto tracks = Test::createTracks();
 	writeFiles(tracks);
@@ -178,7 +201,7 @@ void CoverEditTest::testCommit()
 
 void CoverEditTest::testCommitWithoutUpdate()
 {
-	auto tagEditor = Tagging::Editor();
+	auto tagEditor = createEditor();
 	auto coverEditor = Tagging::CoverEditor(&tagEditor, nullptr);
 	auto tracks = Test::createTracks();
 	writeFiles(tracks);

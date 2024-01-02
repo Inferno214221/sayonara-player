@@ -31,15 +31,17 @@
 #include "Gui/Utils/Style.h"
 
 #include "Utils/Algorithm.h"
-#include "Utils/Utils.h"
-#include "Utils/Set.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
-#include "Utils/Tagging/Tagging.h"
-#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/Artist.h"
-#include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
+#include "Utils/Tagging/Tagging.h"
+#include "Utils/Utils.h"
 
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
@@ -180,7 +182,7 @@ struct GUI_TagEdit::Private
 	int currentIndex {-1};
 
 	Private(GUI_TagEdit* parent, Ui::GUI_TagEdit* ui) :
-		tagEditor {new Tagging::Editor()},
+		tagEditor {new Tagging::Editor(TagReader::create(), TagWriter::create())},
 		uiTagFromPath {new GUI_TagFromPath(tagEditor, ui->tabFromPath)},
 		uiCoverEdit {new GUI_CoverEdit(tagEditor, parent)}
 	{

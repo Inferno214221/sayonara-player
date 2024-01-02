@@ -30,20 +30,31 @@
 #include "Utils/Library/LibraryInfo.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
+#include "Utils/Tagging/TagWriter.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include <QTimer>
 
+using Tagging::TagWriterPtr;
+using Tagging::TagReaderPtr;
+
 struct GenreFetcher::Private
 {
+	TagReaderPtr tagReader;
+	TagWriterPtr tagWriter;
 	LocalLibrary* localLibrary = nullptr;
 	Util::Set<Genre> genres;
 	Util::Set<Genre> additionalGenres; // empty genres that are inserted
 	bool taggingInProgress {false};
+
+	Private(TagReaderPtr tagReader, TagWriterPtr tagWriter) :
+		tagReader {std::move(tagReader)},
+		tagWriter {std::move(tagWriter)} {}
 };
 
-GenreFetcher::GenreFetcher(QObject* parent) :
+GenreFetcher::GenreFetcher(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, QObject* parent) :
 	QObject(parent),
-	m {Pimpl::make<Private>()}
+	m {Pimpl::make<Private>(tagReader, tagWriter)}
 {
 	auto* tagChangeNotifier = Tagging::ChangeNotifier::instance();
 
@@ -55,7 +66,7 @@ Tagging::UserOperations* GenreFetcher::initTagging()
 {
 	m->taggingInProgress = true;
 
-	auto* userOperation = new Tagging::UserOperations(-1, this);
+	auto* userOperation = new Tagging::UserOperations(m->tagReader, m->tagWriter, -1, this);
 
 	connect(userOperation, &Tagging::UserOperations::sigProgress, this, &GenreFetcher::sigProgress);
 	connect(userOperation, &Tagging::UserOperations::sigFinished, this, &GenreFetcher::taggingOperationsFinished);

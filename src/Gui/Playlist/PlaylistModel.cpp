@@ -46,6 +46,8 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Utils.h"
 #include "Utils/globals.h"
 
@@ -409,7 +411,7 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	{
 		if(!m->uto)
 		{
-			m->uto = new Tagging::UserOperations(-1, this);
+			m->uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(), -1, this);
 		}
 
 		m->uto->setTrackRating(modifiedTracks, rating);

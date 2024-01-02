@@ -45,12 +45,16 @@
 #include "Utils/Set.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
+#include "Utils/Tagging/TagWriter.h"
+#include "Utils/Tagging/TagReader.h"
 
 #include <QHash>
 #include <QFileInfo>
 #include <QFile>
 
 using Tagging::Editor;
+using Tagging::TagWriterPtr;
+using Tagging::TagReaderPtr;
 
 namespace
 {
@@ -91,9 +95,9 @@ namespace
 		       : pixmap;
 	}
 
-	bool saveCoverInTrack(const QString& filepath, const QPixmap& pixmap, Editor* editor)
+	bool saveCoverInTrack(const QString& filepath, const QPixmap& pixmap, const TagWriterPtr& tagWriter, Editor* editor)
 	{
-		const auto success = Tagging::writeCover(filepath, pixmap);
+		const auto success = tagWriter->writeCover(filepath, pixmap);
 		if(!success)
 		{
 			spLog(Log::Warning, editor) << "Failed to write cover";
@@ -102,12 +106,13 @@ namespace
 		return success;
 	}
 
-	bool saveCoverToPersistence(const MetaData& track, const QPixmap& cover, DB::Covers* coverDatabase, Editor* editor)
+	bool saveCoverToPersistence(const MetaData& track, const QPixmap& cover, DB::Covers* coverDatabase,
+	                            const TagWriterPtr& tagWriter, Editor* editor)
 	{
 		const auto coverLocation = Cover::Location::coverLocation(track);
 
 		const auto pixmap = scalePixmap(cover);
-		saveCoverInTrack(track.filepath(), pixmap, editor);
+		saveCoverInTrack(track.filepath(), pixmap, tagWriter, editor);
 
 		if(QFile(coverLocation.audioFileTarget()).isWritable())
 		{
@@ -124,9 +129,10 @@ namespace
 		       : true;
 	}
 
-	Editor::FailReason applyTrackChangesToFile(const MetaData& currentMetadata, Editor* editor)
+	Editor::FailReason
+	applyTrackChangesToFile(const MetaData& currentMetadata, const TagWriterPtr& tagWriter, Editor* editor)
 	{
-		return Tagging::Utils::setMetaDataOfFile(currentMetadata)
+		return tagWriter->writeMetaData(currentMetadata.filepath(), currentMetadata)
 		       ? Editor::FailReason::NoError
 		       : checkFailReason(currentMetadata.filepath(), editor);
 	}
@@ -143,16 +149,23 @@ struct Editor::Private
 {
 	QList<ChangeInformation> changeInfo;
 	QMap<QString, Editor::FailReason> failedFiles;
+	TagReaderPtr tagReader;
+	TagWriterPtr tagWriter;
+
+	Private(TagReaderPtr tagReader, TagWriterPtr tagWriter) :
+		tagReader {std::move(tagReader)},
+		tagWriter {std::move(tagWriter)} {}
 };
 
-Editor::Editor(QObject* parent) :
+Editor::Editor(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Editor::Private>();
+	m = Pimpl::make<Editor::Private>(tagReader, tagWriter);
 }
 
-Editor::Editor(const MetaDataList& tracks, QObject* parent) :
-	Editor(parent)
+Editor::Editor(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, const MetaDataList& tracks,
+               QObject* parent) :
+	Editor(tagReader, tagWriter, parent)
 {
 	setMetadata(tracks);
 }
@@ -280,7 +293,7 @@ bool Editor::isCoverSupported(int index) const
 	if(Util::between(index, m->changeInfo))
 	{
 		const auto& originalMetadata = m->changeInfo[index].originalMetadata();
-		return Tagging::isCoverSupported(originalMetadata.filepath());
+		return m->tagReader->isCoverSupported(originalMetadata.filepath());
 	}
 
 	return false;
@@ -289,7 +302,7 @@ bool Editor::isCoverSupported(int index) const
 bool Editor::canLoadEntireAlbum() const
 {
 	const auto albumIds = getOriginalAlbumIds(m->changeInfo);
-	return (albumIds.count() == 1);
+	return (albumIds.count() == 1 && !albumIds.contains(-1));
 }
 
 void Editor::loadEntireAlbum()
@@ -425,12 +438,12 @@ void Editor::commit()
 		if(changeInfo.hasNewCover())
 		{
 			commitResult.coverChanged |=
-				saveCoverToPersistence(currentMetadata, changeInfo.cover(), coverDatabase, this);
+				saveCoverToPersistence(currentMetadata, changeInfo.cover(), coverDatabase, m->tagWriter, this);
 		}
 
 		if(changeInfo.hasChanges())
 		{
-			const auto writeResult = applyTrackChangesToFile(currentMetadata, this);
+			const auto writeResult = applyTrackChangesToFile(currentMetadata, m->tagWriter, this);
 
 			if((writeResult == Editor::FailReason::NoError) &&
 			   applyTrackChangesToDatabase(currentMetadata, libraryDatabase))

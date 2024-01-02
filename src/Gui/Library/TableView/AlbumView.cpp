@@ -32,9 +32,11 @@
 #include "Components/Library/AbstractLibrary.h"
 
 #include "Utils/Library/MergeData.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
+#include "Utils/Utils.h"
 
 #include <QHeaderView>
 #include <QVBoxLayout>
@@ -46,6 +48,8 @@ struct AlbumView::Private
 	AbstractLibrary* library = nullptr;
 	DiscPopupMenu* discmenu = nullptr;
 	QPoint discmenuPoint;
+	Tagging::TagReaderPtr tagReader {Tagging::TagReader::create()};
+	Tagging::TagWriterPtr tagWriter {Tagging::TagWriter::create()};
 };
 
 AlbumView::AlbumView(QWidget* parent) :
@@ -62,7 +66,7 @@ void AlbumView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 
-	auto* model = new AlbumModel(this, m->library);
+	auto* model = new AlbumModel(m->tagReader, m->tagWriter, m->library, this);
 	auto* delegate = new RatingDelegate(static_cast<int>(ColumnIndex::Album::Rating), 0, this);
 
 	this->setItemModel(model);
@@ -270,7 +274,7 @@ void AlbumView::refreshClicked()
 
 void AlbumView::runMergeOperation(const MergeData& mergedata)
 {
-	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
+	auto* uto = new Tagging::UserOperations(m->tagReader, m->tagWriter, mergedata.libraryId(), this);
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());

@@ -44,6 +44,8 @@
 #include "Utils/Language/LanguageUtils.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QSize>
 #include <QPair>
@@ -215,7 +217,8 @@ TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 		{
 			if(!m->uto)
 			{
-				m->uto = new Tagging::UserOperations(-1, this);
+				m->uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(),
+				                                     -1, this);
 			}
 
 			m->uto->setTrackRating(track, rating);

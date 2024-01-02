@@ -41,6 +41,8 @@
 #include "Utils/MetaData/Album.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QPixmap>
 #include <QColor>
@@ -49,21 +51,26 @@ using namespace Library;
 
 struct AlbumModel::Private
 {
+	Tagging::TagReaderPtr tagReader;
+	Tagging::TagWriterPtr tagWriter;
 	QPixmap pixmapSingle;
 	QPixmap pixmapMulti;
 	QPair<int, Rating> tempRating;
 	Tagging::UserOperations* uto = nullptr;
 
-	Private() :
+	Private(Tagging::TagReaderPtr tagReader, Tagging::TagWriterPtr tagWriter) :
+		tagReader {std::move(tagReader)},
+		tagWriter {std::move(tagWriter)},
 		pixmapSingle(Gui::Util::pixmap(QStringLiteral("cd.png"), Gui::Util::NoTheme)),
 		pixmapMulti(Gui::Util::pixmap(QStringLiteral("cds.png"), Gui::Util::NoTheme)),
 		tempRating {-1, Rating::Zero} {}
 };
 
-AlbumModel::AlbumModel(QObject* parent, AbstractLibrary* library) :
+AlbumModel::AlbumModel(const Tagging::TagReaderPtr& tagReader, const Tagging::TagWriterPtr& tagWriter,
+                       AbstractLibrary* library, QObject* parent) :
 	ItemModel(+ColumnIndex::Album::Count, parent, library)
 {
-	m = Pimpl::make<AlbumModel::Private>();
+	m = Pimpl::make<AlbumModel::Private>(tagReader, tagWriter);
 
 	connect(library, &AbstractLibrary::sigCurrentAlbumChanged, this, &AlbumModel::albumChanged);
 }
@@ -216,7 +223,7 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 
 			if(!m->uto)
 			{
-				m->uto = new Tagging::UserOperations(-1, this);
+				m->uto = new Tagging::UserOperations(m->tagReader, m->tagWriter, -1, this);
 			}
 
 			m->uto->setAlbumRating(album, rating);

@@ -30,14 +30,8 @@ class Genre;
 
 namespace Tagging
 {
-	/**
-	 * @brief The TagEdit class
-	 * Metadata has to be added using the set_metadata(const MetaDataList&) method.
-	 * Use update_track(int idx, const MetaData& md) to stage the changes you made
-	 * to the track. commit() starts the thread and writes changes to HDD and the
-	 * database. When finished the finished() signal is emitted.
-	 * @ingroup Tagging
-	 */
+	class TagReader;
+	class TagWriter;
 	class Editor :
 		public QObject
 	{
@@ -51,8 +45,10 @@ namespace Tagging
 			void sigMetadataReceived(const MetaDataList& tracks);
 
 		public:
-			explicit Editor(QObject* parent = nullptr);
-			explicit Editor(const MetaDataList& tracks, QObject* parent = nullptr);
+			Editor(const std::shared_ptr<TagReader>& tagReader, const std::shared_ptr<TagWriter>& tagWriter,
+			       QObject* parent = nullptr);
+			Editor(const std::shared_ptr<TagReader>& tagReader, const std::shared_ptr<TagWriter>& tagWriter,
+			       const MetaDataList& tracks, QObject* parent = nullptr);
 			~Editor() override;
 
 			enum FailReason

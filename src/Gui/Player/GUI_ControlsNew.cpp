@@ -24,6 +24,8 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 using Gui::RatingEditor;
 
@@ -110,7 +112,10 @@ void GUI_ControlsNew::ratingChangedHere(bool save)
 
 	const auto rating = ui->widgetRating->rating();
 
-	auto* uto = new Tagging::UserOperations(track.libraryId(), this);
+	auto* uto = new Tagging::UserOperations(Tagging::TagReader::create(),
+	                                        Tagging::TagWriter::create(),
+	                                        track.libraryId(),
+	                                        this);
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &QObject::deleteLater);
 	uto->setTrackRating(track, rating);
 }

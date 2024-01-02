@@ -29,6 +29,8 @@ class Genre;
 namespace Tagging
 {
 	class Editor;
+	class TagReader;
+	class TagWriter;
 	class UserOperations :
 		public QObject
 	{
@@ -40,7 +42,8 @@ namespace Tagging
 			void sigProgress(int);
 
 		public:
-			UserOperations(LibraryId libraryId, QObject* parent = nullptr);
+			UserOperations(const std::shared_ptr<TagReader>& tagReader, const std::shared_ptr<TagWriter>& tagWriter,
+			               LibraryId libraryId, QObject* parent = nullptr);
 			~UserOperations() override;
 
 			void setTrackRating(const MetaData& md, Rating rating);

@@ -38,6 +38,8 @@
 #include "Utils/Utils.h"
 #include "Utils/Set.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QHeaderView>
 #include <QTimer>
@@ -284,7 +286,10 @@ namespace Library
 
 	void CoverView::runMergeOperation(const MergeData& mergedata)
 	{
-		auto* taggingOperation = new Tagging::UserOperations(mergedata.libraryId(), this);
+		auto* taggingOperation = new Tagging::UserOperations(Tagging::TagReader::create(),
+		                                                     Tagging::TagWriter::create(),
+		                                                     mergedata.libraryId(),
+		                                                     this);
 
 		connect(taggingOperation, &Tagging::UserOperations::sigFinished,
 		        taggingOperation, &Tagging::UserOperations::deleteLater);

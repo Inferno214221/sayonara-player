@@ -32,12 +32,16 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Utils.h"
 
 #include <tuple>
 
 using Tagging::UserOperations;
 using Tagging::Editor;
+using Tagging::TagWriterPtr;
+using Tagging::TagReaderPtr;
 
 struct RatingPair
 {
@@ -51,25 +55,28 @@ struct UserOperations::Private
 {
 	DB::LibraryDatabase* libraryDatabase = nullptr;
 	TrackRatingHistory trackRatingHistory;
+	TagReaderPtr tagReader;
+	TagWriterPtr tagWriter;
 
-	Private(LibraryId libraryId)
+	Private(TagReaderPtr tagReader, TagWriterPtr tagWriter, const LibraryId libraryId) :
+		tagReader {std::move(tagReader)},
+		tagWriter {std::move(tagWriter)}
 	{
 		auto* db = DB::Connector::instance();
 		libraryDatabase = db->libraryDatabase(libraryId, db->databaseId());
 	}
 };
 
-UserOperations::UserOperations(LibraryId libraryId, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(libraryId);
-}
+UserOperations::UserOperations(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, const LibraryId libraryId,
+                               QObject* parent) :
+	QObject(parent),
+	m {Pimpl::make<Private>(tagReader, tagWriter, libraryId)} {}
 
 UserOperations::~UserOperations() = default;
 
 Editor* UserOperations::createEditor()
 {
-	auto* editor = new Tagging::Editor();
+	auto* editor = new Tagging::Editor(m->tagReader, m->tagWriter);
 
 	connect(editor, &Tagging::Editor::sigFinished, this, [this]() {
 		m->trackRatingHistory.clear();

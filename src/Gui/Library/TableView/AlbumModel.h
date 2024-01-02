@@ -31,6 +31,12 @@
 #include "Gui/Library/ItemModel.h"
 #include "Utils/Pimpl.h"
 
+namespace Tagging
+{
+	class TagReader;
+	class TagWriter;
+}
+
 namespace Library
 {
 	/**
@@ -44,7 +50,9 @@ namespace Library
 		PIMPL(AlbumModel)
 
 		public:
-			AlbumModel(QObject* parent, AbstractLibrary* library);
+			AlbumModel(const std::shared_ptr<Tagging::TagReader>& tagReader,
+			           const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+			           AbstractLibrary* library, QObject* parent);
 			~AlbumModel() override;
 
 			Qt::ItemFlags flags(const QModelIndex& index) const override;

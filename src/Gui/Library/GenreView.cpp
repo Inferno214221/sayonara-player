@@ -39,6 +39,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Message/Message.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QDropEvent>
 #include <QContextMenuEvent>
@@ -112,7 +114,7 @@ struct GenreView::Private
 	bool isDragging {false};
 
 	explicit Private(QTreeWidget* parent) :
-		genreFetcher(new GenreFetcher(parent)),
+		genreFetcher(new GenreFetcher(Tagging::TagReader::create(), Tagging::TagWriter::create(), parent)),
 		defaultIndent {parent->indentation()} {}
 };
 

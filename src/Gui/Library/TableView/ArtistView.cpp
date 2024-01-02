@@ -33,11 +33,13 @@
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
 
-#include "Utils/Settings/Settings.h"
-#include "Utils/Library/Sorting.h"
-#include "Utils/Library/MergeData.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Library/MergeData.h"
+#include "Utils/Library/Sorting.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 using namespace Library;
 
@@ -223,7 +225,8 @@ void ArtistView::albumArtistsTriggered(bool b)
 
 void ArtistView::runMergeOperation(const Library::MergeData& mergedata)
 {
-	auto* uto = new Tagging::UserOperations(mergedata.libraryId(), this);
+	auto* uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(),
+	                                        mergedata.libraryId(), this);
 	connect(uto, &Tagging::UserOperations::sigFinished, uto, &Tagging::UserOperations::deleteLater);
 
 	uto->mergeArtists(mergedata.sourceIds(), mergedata.targetId());
