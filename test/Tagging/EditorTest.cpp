@@ -1,369 +1,451 @@
 #include "test/Common/SayonaraTest.h"
+#include "test/Common/TaggingMocks.h"
+#include "test/Common/DatabaseUtils.h"
 
 #include "Components/Tagging/Editor.h"
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
+#include "Utils/Algorithm.h"
+#include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Utils.h"
-#include "Utils/FileUtils.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Tagging/Tagging.h"
+#include "Utils/Utils.h"
 
 #include <QFile>
 #include <QSignalSpy>
 
 using namespace Tagging;
 
+namespace
+{
+	class LocalTagReader :
+		public Test::TagReaderMock
+	{
+		public:
+			explicit LocalTagReader(const bool isCoverSupported) :
+				m_isCoverSupported {isCoverSupported} {}
+
+			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override
+			{
+				return m_isCoverSupported;
+			}
+
+		private:
+			bool m_isCoverSupported;
+	};
+
+	class LocalTagWriter :
+		public Test::TagWriterMock
+	{
+		public:
+			bool writeMetaData(const QString& filepath, const MetaData& track) override
+			{
+				return TagWriterMock::writeMetaData(filepath, track);
+			}
+
+			bool updateMetaData(const MetaData& track) override
+			{
+				m_tracks[track.filepath()] = track;
+				return TagWriterMock::updateMetaData(track);
+			}
+
+			bool writeCover(const QString& filepath, const QPixmap& cover) override
+			{
+				m_covers[filepath] = cover;
+				return TagWriterMock::writeCover(filepath, cover);
+			}
+
+			QMap<QString, QPixmap> covers() { return m_covers; }
+
+			QMap<QString, MetaData> tracks() { return m_tracks; };
+
+		private:
+			QMap<QString, QPixmap> m_covers;
+			QMap<QString, MetaData> m_tracks;
+	};
+
+	constexpr const auto TracksPerAlbum = 10;
+	struct TrackTemplate
+	{
+		QString artist;
+		QString album;
+		QString title;
+	};
+
+	MetaDataList createTracks(const int count, const TrackTemplate& trackTemplate)
+	{
+		auto result = MetaDataList {};
+		for(int i = 0; i < count; i++)
+		{
+			auto title = trackTemplate.title;
+			title.replace('%', QString::number(i));
+
+			auto track = MetaData {};
+			track.setTitle(title);
+			track.setArtist(trackTemplate.artist);
+			track.setAlbum(trackTemplate.album);
+			track.setFilepath(QString("/path/%1/%2/%3.mp3")
+				                  .arg(track.artist())
+				                  .arg(track.album())
+				                  .arg(track.title()));
+
+			result.push_back(std::move(track));
+		}
+
+		return result;
+	}
+
+	MetaDataList
+	createAlbums(const int count, const TrackTemplate& trackTemplate, const std::function<MetaData(MetaData)>& modifier)
+	{
+		auto tracks = MetaDataList {};
+		for(int i = 0; i < count; i++)
+		{
+			auto albumName = trackTemplate.album;
+			albumName.replace('%', QString::number(i));
+
+			const auto albumTemplate = TrackTemplate {
+				trackTemplate.artist,
+				albumName,
+				trackTemplate.title
+			};
+
+			tracks << createTracks(TracksPerAlbum, albumTemplate); // NOLINT(*-magic-numbers)
+		}
+
+		for(auto& track: tracks)
+		{
+			track = modifier(track);
+		}
+
+		return tracks;
+	}
+
+	MetaDataList createAlbums(const int count, const TrackTemplate& trackTemplate)
+	{
+		return createAlbums(count, trackTemplate, [](const auto& track) { return track; });
+	}
+
+	std::pair<bool, MetaDataList> createLibrary(DB::LibraryDatabase* libraryDatabase, const MetaDataList& tracks)
+	{
+		const auto success = libraryDatabase->storeMetadata(tracks);
+		if(!success)
+		{
+			return {false, {}};
+		}
+
+		auto fetchedTracks = MetaDataList {};
+		libraryDatabase->getAllTracks(fetchedTracks);
+
+		return {fetchedTracks.count() == tracks.count(), fetchedTracks};
+	}
+}
+
 class EditorTest :
 	public Test::Base
 {
 	Q_OBJECT
-	DB::LibraryDatabase* mLibraryDatabase=nullptr;
 
-public:
-	EditorTest();
-	~EditorTest()=default;
+	public:
+		EditorTest() :
+			Test::Base("EditorTest") {}
 
-	MetaDataList createMetadata(int artists, int albums, int tracks);
+		~EditorTest() override = default;
 
-private slots:
-	void testInit();
-	void testRating();
-	void testOneAlbum();
-	void testChangedMetadata();
-	void testEdit();
-	void testCover();
-	void testCommit();
-};
+	private slots:
 
-EditorTest::EditorTest() :
-	Test::Base("EditorTest")
-{
-	auto* db = DB::Connector::instance();
-	db->registerLibraryDatabase(0);
-
-	mLibraryDatabase = db->libraryDatabase(0, 0);
-	mLibraryDatabase->storeMetadata(createMetadata(2, 2, 10));
-}
-
-MetaDataList EditorTest::createMetadata(int artists, int albums, int trackCount)
-{
-	QStringList genres[]
-	{
-		{"Metal", "Folk", "Blues"},
-		{"Pop"},
-		{""}
-	};
-
-	TrackID trackId = 1;
-
-	MetaDataList tracks;
-	for(int ar=0; ar<artists; ar++)
-	{
-		QString artist = QString("artist %1").arg(ar);
-
-		for(int al=0; al<albums; al++)
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testGenerator()
 		{
-			AlbumId albumId = AlbumId((ar*albums) + al);
-			QString album = QString("album %1").arg(al);
-			int year = 2000 + ar;
-
-			for(int t=0; t<trackCount; t++)
+			const auto tracks = createAlbums(2, {"artist", "album%", "title%"});
+			for(int a = 0, index = 0; a < 2; a++)
 			{
-				MetaData md;
-				md.setId(TrackID(trackId++));
-				md.setTitle(QString("title %1").arg(t));
-				md.setAlbum(album);
-				md.setAlbumId(albumId);
-				md.setArtist(artist);
-				md.setArtistId(ArtistId(ar));
-				md.setGenres(genres[al]);
-				md.setTrackNumber(TrackNum(t));
-				md.setRating(Rating::One);
-				md.setYear(Year(year));
-				md.setLibraryid(0);
-				QString dir = QString("%1/%2/%3 by %4")
-						.arg(tempPath())
-						.arg(md.year())
-						.arg(md.album())
-						.arg(md.artist());
-
-				QString path =
-					QString("%1/%2. %3.mp3")
-						.arg(dir)
-						.arg(md.trackNumber())
-						.arg(md.title());
-
-				md.setFilepath(path);
-
-				if(!Util::File::exists(dir))
+				for(int t = 0; t < TracksPerAlbum; t++, index++)
 				{
-					Util::File::createDirectories(dir);
+					QVERIFY(tracks[index].artist() == "artist");
+					QVERIFY(tracks[index].album() == QString("album%1").arg(a));
+					QVERIFY(tracks[index].title() == QString("title%1").arg(t));
 				}
+			}
+		};
 
-				if(!Util::File::exists(path))
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testInitialState()
+		{
+			struct TestCase
+			{
+				int albumCount {1};
+				int expectedCount {0};
+				bool canLoadEntireAlbum {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {1, TracksPerAlbum, false},
+				TestCase {0, 0, false},
+				TestCase {4, 4 * TracksPerAlbum, false}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto tracks = createAlbums(testCase.albumCount, {"artist", "album%", "title%"});
+				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks);
+				QVERIFY(editor.count() == testCase.expectedCount);
+				QVERIFY(editor.hasChanges() == false);
+				QVERIFY(editor.canLoadEntireAlbum() == false);
+				QVERIFY(editor.failedFiles().isEmpty());
+
+				for(int i = 0; i < editor.count(); i++)
 				{
-					QString source = ":/test/mp3test.mp3";
-					QString target = path;
-
-					QFile f(source);
-					f.copy(path);
-
-					QFile f_new(path);
-					f_new.setPermissions(
-						QFile::Permission::ReadUser | QFile::Permission::ReadGroup | QFile::Permission::ReadOwner | QFile::Permission::ReadOther |
-						QFile::Permission::WriteUser | QFile::Permission::WriteGroup | QFile::Permission::WriteOwner | QFile::Permission::WriteOther
-					);
-
-					Tagging::Utils::setMetaDataOfFile(md);
+					QVERIFY(editor.hasCoverReplacement(i) == false);
+					QVERIFY(editor.metadata(i).artist() == tracks[i].artist());
+					QVERIFY(editor.metadata(i).album() == tracks[i].album());
+					QVERIFY(editor.metadata(i).title() == tracks[i].title());
+					QVERIFY(editor.metadata(i).filepath() == tracks[i].filepath());
 				}
+			}
+		};
 
-				tracks << md;
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testCanLoadEntireAlbum()
+		{
+			struct TestCase
+			{
+				int albumCount {0};
+				int albumId {-1};
+				bool expectedValue {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {0, -1, false},
+				TestCase {1, -1, false},
+				TestCase {1, 5, true},
+				TestCase {2, -1, false},
+				TestCase {2, 5, true}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				auto modifier = [albumId = testCase.albumId](auto track) {
+					track.setAlbumId(albumId);
+					return track;
+				};
+
+				const auto tracks = createAlbums(testCase.albumCount,
+				                                 {"artist", "album%", "title%"},
+				                                 std::move(modifier));
+				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks);
+
+				QVERIFY(editor.canLoadEntireAlbum() == testCase.expectedValue);
 			}
 		}
-	}
 
-	return tracks;
-}
-
-void EditorTest::testInit()
-{
-	MetaDataList tracks = createMetadata(5, 3, 10);
-	Editor* editor = new Editor(tracks);
-
-	QVERIFY(editor->count() == (5*3*10));
-	QVERIFY(editor->hasChanges() == false);
-
-	// 15 albums here
-	QVERIFY(editor->canLoadEntireAlbum() == false);
-
-	for(int i=0; i<int(tracks.size()); i++)
-	{
-		const MetaData& md = tracks[i];
-		QVERIFY(QFile::exists(md.filepath()));
-
-		QVERIFY(editor->hasCoverReplacement(i) == false);
-
-		if(i < 10)
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testIsCoverSupported()
 		{
-			QVERIFY(editor->isCoverSupported(i) == true);
-		}
-	}
+			struct TestCase
+			{
+				bool isCoverSupported {false};
+			};
 
-	QVERIFY(editor->failedFiles().isEmpty());
+			const auto testCases = std::array {
+				TestCase {true},
+				TestCase {false}
+			};
 
-	editor->deleteLater();
-}
+			for(const auto& testCase: testCases)
+			{
+				const auto tracks = createTracks(4, {"artist", "album", "title%"});
+				auto editor = Editor(std::make_shared<LocalTagReader>(testCase.isCoverSupported),
+				                     TagWriter::create(),
+				                     tracks);
 
-void EditorTest::testRating()
-{
-	MetaDataList tracks = createMetadata(1, 1, 6);
-	Editor* editor = new Editor(tracks);
-
-	QVERIFY(editor->count() == (1*1*6));
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == true);
-
-	tracks[0].setRating(Rating::Zero);
-	tracks[1].setRating(Rating::One);
-	tracks[2].setRating(Rating::Two);
-	tracks[3].setRating(Rating::Three);
-	tracks[4].setRating(Rating::Four);
-	tracks[5].setRating(Rating::Five);
-
-	for(int i=0; i<6; i++)
-	{
-		editor->updateTrack(i, tracks[i]);
-	}
-
-	QVERIFY(editor->hasChanges() == true);
-
-	const MetaDataList updatedTracks = editor->metadata();
-	for(int r=0; r<6; r++)
-	{
-		MetaData md = editor->metadata(r);
-		QVERIFY(md.rating() == Rating(r));
-	}
-}
-
-void EditorTest::testOneAlbum()
-{
-	MetaDataList tracks = createMetadata(1, 1, 10);
-	Editor* editor = new Editor();
-	editor->setMetadata(tracks);
-
-	QVERIFY(editor->count() == 10);
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == true);
-
-	editor->deleteLater();
-}
-
-
-void EditorTest::testChangedMetadata()
-{
-	MetaDataList tracks = createMetadata(1, 1, 2);
-	Editor* editor = new Editor();
-	editor->setMetadata(tracks);
-
-	QVERIFY(editor->count() == 2);
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == true);
-
-	tracks = createMetadata(2, 2, 5);
-	editor->setMetadata(tracks);
-
-	QVERIFY(editor->count() == 2*2*5);
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == false);
-
-	editor->deleteLater();
-}
-
-void EditorTest::testEdit()
-{
-	MetaDataList tracks = createMetadata(1, 1, 10);
-	Editor* editor = new Editor();
-	editor->setMetadata(tracks);
-
-	QVERIFY(editor->count() == 10);
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == true);
-
-	for(int i=0; i<int(tracks.size()); i++)
-	{
-		MetaData md = tracks[i];
-
-		if(i % 3 == 0) // 0, 3, 6, 9
-		{
-			md.setTitle( QString("other %1").arg(i) );
-			editor->updateTrack(i, md);
-		}
-	}
-
-	QVERIFY(editor->hasChanges() == true);
-	MetaDataList editor_tracks = editor->metadata();
-
-	for(int i=0; i<int(tracks.size()); i++)
-	{
-		MetaData md_org = tracks[i];
-		MetaData md_changed = editor->metadata(i);
-
-		if(i % 3 == 0)
-		{
-			QVERIFY(md_org.isEqualDeep(md_changed) == false);
+				for(int i = 0; i < editor.count(); i++)
+				{
+					QVERIFY(editor.isCoverSupported(i) == testCase.isCoverSupported);
+				}
+			}
 		}
 
-		else
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testRating()
 		{
-			QVERIFY(md_org.isEqualDeep(md_changed) == true);
+			auto tracks = createTracks(6, {"artist", "album", "title%"});
+			auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(), tracks);
+
+			for(int i = 0; i < editor.count(); i++)
+			{
+				QVERIFY(editor.metadata(i).rating() == static_cast<Rating>(0));
+				tracks[i].setRating(static_cast<Rating>(i));
+				editor.updateTrack(i, tracks[i]);
+				QVERIFY(editor.metadata(i).rating() == static_cast<Rating>(i));
+			}
 		}
 
-		QVERIFY(md_changed.isEqualDeep(editor_tracks[i]) == true);
-	}
-
-	editor->deleteLater();
-}
-
-void EditorTest::testCover()
-{
-	MetaDataList tracks;
-
-	mLibraryDatabase->getAllTracks(tracks);
-
-	QVERIFY(tracks.size() == 2*2*10);
-
-	Editor* editor = new Editor();
-	editor->setMetadata(tracks);
-	QVERIFY(editor->count() == tracks.count());
-	QVERIFY(editor->hasChanges() == false);
-
-	QString name(":/test/logo.png");
-	QPixmap cover(name);
-	QVERIFY(cover.isNull() == false);
-
-	for(int i=0; i<tracks.count(); i++)
-	{
-		QVERIFY(editor->hasCoverReplacement(i) == false);
-	}
-
-	for(int i=0; i<10; i++)
-	{
-		editor->updateCover(i, cover);
-	}
-
-	QVERIFY(editor->hasChanges() == false);
-
-	for(int i=0; i<tracks.count(); i++)
-	{
-		QVERIFY(editor->hasCoverReplacement(i) == (i < 10));
-	}
-
-	editor->deleteLater();
-}
-
-void EditorTest::testCommit()
-{
-	MetaDataList tracks;
-
-	mLibraryDatabase->getAllTracks(tracks);
-
-	QVERIFY(tracks.size() == 2*2*10);
-
-	Editor* editor = new Editor();
-	editor->setMetadata(tracks);
-
-	auto* mdcn = Tagging::ChangeNotifier::instance();
-	QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
-
-	QVERIFY(editor->count() == tracks.count());
-	QVERIFY(editor->hasChanges() == false);
-	QVERIFY(editor->canLoadEntireAlbum() == false);
-
-	for(int i=0; i<int(tracks.size()); i++)
-	{
-		if(i % 10 == 0) // 0, 10, 20, 30
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testUndo()
 		{
-			MetaData md = tracks[i];
-			md.setTitle( QString("other %1").arg(i) );
-			editor->updateTrack(i, md);
+			struct TestCase
+			{
+				QString changedArtist;
+				bool expectedChanges {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {"artist", false},
+				TestCase {"newArtist", true}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto tracks = createAlbums(1, {"artist", "album%", "title%"});
+				const auto tracksNew = createAlbums(1, {testCase.changedArtist, "album%", "title%"});
+				auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(), tracks);
+
+				for(int i = 0; i < editor.count(); i++)
+				{
+					QVERIFY(!editor.hasChanges());
+
+					editor.updateTrack(i, tracksNew[i]);
+					QVERIFY(editor.hasChanges() == testCase.expectedChanges);
+					QVERIFY(editor.metadata(i).isEqualDeep(tracksNew[i]));
+
+					editor.undo(i);
+					QVERIFY(!editor.hasChanges());
+				}
+			}
 		}
-	}
 
-	auto* t = new QThread();
-	editor->moveToThread(t);
-
-	connect(t, &QThread::started, editor, &Editor::commit);
-	connect(editor, &Editor::sigFinished, t, &QThread::quit);
-	connect(t, &QThread::finished, t, &QObject::deleteLater);
-	connect(t, &QThread::finished, editor, &QObject::deleteLater);
-
-	t->start();
-
-	spy.wait();
-
-	QCOMPARE(spy.count(), 1);
-
-	QList<MetaDataPair> changedMetaData = mdcn->changedMetadata();
-
-	QVERIFY(changedMetaData.size() == 4);
-
-	int currentIndex = 0;
-	for(int i=0; i<int(tracks.size()); i++)
-	{
-		if(i % 10 == 0) // 0, 10, 20, 30
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testCanUpdateCover()
 		{
-			MetaDataPair trackPair = changedMetaData[currentIndex];
+			struct TestCase
+			{
+				int numAlbums {1};
+				QString pixmapPath;
+				bool isCoverSupported {false};
+				bool expectedSuccess {false};
+				int expectedUpdatedCovers {0};
+			};
 
-			QVERIFY(trackPair.first.isEqualDeep(tracks[i]));
-			QVERIFY(trackPair.second.filepath() == tracks[i].filepath());
-			QVERIFY(trackPair.second.title().startsWith("other"));
+			const auto testCases = std::array {
+				TestCase {1, ":/test/logo.png", true, true, TracksPerAlbum},
+				TestCase {1, "asdfasdf", true, false, 0},
+				TestCase {1, ":/test/logo.png", false, false, 0},
+			};
 
-			currentIndex++;
+			for(const auto& testCase: testCases)
+			{
+				const auto tagReader = std::make_shared<LocalTagReader>(testCase.isCoverSupported);
+				const auto tagWriter = std::make_shared<LocalTagWriter>();
+				const auto tracks = createAlbums(1, {"artist", "album%", "title%"});
+
+				auto editor = Editor(tagReader, tagWriter, tracks);
+
+				const auto pixmap = QPixmap(testCase.pixmapPath);
+				for(int i = 0; i < editor.count(); i++)
+				{
+					editor.updateCover(i, pixmap);
+
+					QVERIFY(editor.hasCoverReplacement(i) == testCase.expectedSuccess);
+					QVERIFY(editor.hasChanges() == false);
+				}
+
+				QVERIFY(tagWriter->covers().count() == 0);
+				editor.commit();
+				QVERIFY(tagWriter->covers().count() == testCase.expectedUpdatedCovers);
+			}
 		}
-	}
-}
+
+		MetaDataList updateTrackNumber(MetaDataList tracks, Editor& editor)
+		{
+			for(int i = 0; i < tracks.count(); i++)
+			{
+				tracks[i].setTrackNumber(i + 1);
+				editor.updateTrack(i, tracks[i]);
+			}
+
+			return tracks;
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testChangeNotifierIsTriggeredOnCommit()
+		{
+			auto [libraryCreated, tracks] =
+				createLibrary(createLibraryDatabase(), createAlbums(3, {"artist", "album%", "title%"}));
+			QVERIFY(libraryCreated);
+
+			auto editor = Editor(std::make_shared<LocalTagReader>(true),
+			                     std::make_shared<LocalTagWriter>(),
+			                     tracks);
+
+			tracks = updateTrackNumber(std::move(tracks), editor);
+
+			auto* changeNotifier = Tagging::ChangeNotifier::instance();
+			auto spy = QSignalSpy(changeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged);
+
+			editor.commit();
+			QVERIFY(spy.count() == 1);
+
+			const auto changedMetaData = changeNotifier->changedMetadata();
+			QVERIFY(changedMetaData.count() == tracks.count());
+
+			int index = 1;
+			for(const auto& [oldTrack, newTrack]: changedMetaData)
+			{
+				QVERIFY(oldTrack.trackNumber() == 0);
+				QVERIFY(newTrack.trackNumber() == index++);
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testDatabaseIsAffectedOnCommit()
+		{
+			auto* library = createLibraryDatabase();
+			auto [libraryCreated, tracks] =
+				createLibrary(library, createAlbums(3, {"artist", "album%", "title%"}));
+			QVERIFY(libraryCreated);
+
+			auto editor = Editor(std::make_shared<LocalTagReader>(true),
+			                     std::make_shared<LocalTagWriter>(),
+			                     tracks);
+
+			tracks = updateTrackNumber(std::move(tracks), editor);
+
+			editor.commit();
+
+			auto fetchedTracks = MetaDataList {};
+			library->getAllTracks(fetchedTracks);
+			Util::Algorithm::sort(fetchedTracks, [](const auto& track1, const auto track2) {
+				return track1.trackNumber() < track2.trackNumber();
+			});
+
+			for(int i = 0; i < fetchedTracks.count(); i++)
+			{
+				QVERIFY(fetchedTracks[i].trackNumber() == i + 1);
+			}
+		}
+
+	private:
+		DB::LibraryDatabase* createLibraryDatabase()
+		{
+			auto* libraryDatabase = DB::Connector::instance()->registerLibraryDatabase(0);
+			Test::DB::clearDatabase(libraryDatabase);
+
+			auto tracks = MetaDataList {};
+			libraryDatabase->getAllTracks(tracks);
+
+			if(!tracks.isEmpty())
+			{
+				throw "TEST ERROR: Could not clear library database";
+			}
+
+			return libraryDatabase;
+		}
+};
 
 QTEST_MAIN(EditorTest)
 
