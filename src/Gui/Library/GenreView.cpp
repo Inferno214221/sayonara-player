@@ -53,6 +53,16 @@ namespace
 	using StringSet = Util::Set<QString>;
 	using GenreTreeBuilder::GenreNode;
 
+	enum DataRole
+	{
+		InvalidGenreRole = Qt::UserRole
+	};
+
+	bool isInvalidGenre(const QModelIndex& index)
+	{
+		return index.data(InvalidGenreRole).toBool();
+	}
+
 	QStringList getGenreNames(const Util::Set<Genre>& genres)
 	{
 		QStringList result;
@@ -65,6 +75,7 @@ namespace
 		return result;
 	}
 
+	// NOLINTNEXTLINE(*-no-recursion)
 	void populateWidget(QTreeWidget* tree, QTreeWidgetItem* parentItem, GenreNode* parentNode,
 	                    const QStringList& expandedItems)
 	{
@@ -114,8 +125,8 @@ GenreView::GenreView(QWidget* parent) :
 	setAlternatingRowColors(true);
 	setItemDelegate(new Gui::StyledItemDelegate(this));
 
-	connect(this, &QTreeWidget::itemCollapsed, this, &GenreView::itemCollapsed);
-	connect(this, &QTreeWidget::itemExpanded, this, &GenreView::itemExpanded);
+	connect(this, &QTreeWidget::itemCollapsed, this, [this](auto* item) { m->expandedItems.removeAll(item->text(0)); });
+	connect(this, &QTreeWidget::itemExpanded, this, [this](auto* item) { m->expandedItems << item->text(0); });
 
 	connect(m->genreFetcher, &GenreFetcher::sigFinished, this, &GenreView::updateFinished);
 	connect(m->genreFetcher, &GenreFetcher::sigProgress, this, &GenreView::progressChanged);
@@ -144,16 +155,6 @@ void GenreView::updateFinished()
 {
 	setAcceptDrops(true);
 	emit sigProgress("", -1);
-}
-
-void GenreView::itemExpanded(QTreeWidgetItem* item)
-{
-	m->expandedItems << item->text(0);
-}
-
-void GenreView::itemCollapsed(QTreeWidgetItem* item)
-{
-	m->expandedItems.removeAll(item->text(0));
 }
 
 void GenreView::expandCurrentItem()
@@ -265,7 +266,7 @@ void GenreView::selectionChanged(const QItemSelection& selected, const QItemSele
 	for(const auto& index: indexes)
 	{
 		genreNames << index.data().toString();
-		if(GenreTreeItem::isInvalidGenre(index))
+		if(isInvalidGenre(index))
 		{
 			emit sigInvalidGenreSelected();
 			return;
@@ -351,7 +352,7 @@ void GenreView::contextMenuEvent(QContextMenuEvent* e)
 	const auto indexes = selectionModel()->selectedIndexes();
 	for(const auto& index: indexes)
 	{
-		if(GenreTreeItem::isInvalidGenre(index))
+		if(isInvalidGenre(index))
 		{
 			e->ignore();
 			return;
@@ -371,7 +372,7 @@ void GenreView::dragEnterEvent(QDragEnterEvent* e)
 void GenreView::dragMoveEvent(QDragMoveEvent* e)
 {
 	const auto index = this->indexAt(e->pos());
-	if(GenreTreeItem::isInvalidGenre(index))
+	if(isInvalidGenre(index))
 	{
 		e->ignore();
 		return;
@@ -398,7 +399,7 @@ void GenreView::dropEvent(QDropEvent* e)
 	m->isDragging = false;
 
 	const auto index = indexAt(e->pos());
-	if(GenreTreeItem::isInvalidGenre(index))
+	if(isInvalidGenre(index))
 	{
 		e->ignore();
 		return;
@@ -435,7 +436,7 @@ void GenreView::languageChanged()
 	for(int i = 0; i < rows; i++)
 	{
 		const auto index = model->index(i, 0);
-		if(GenreTreeItem::isInvalidGenre(index))
+		if(isInvalidGenre(index))
 		{
 			model->setData(index, invalidGenreName(), Qt::DisplayRole);
 			break;
@@ -457,7 +458,7 @@ GenreTreeItem::GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool 
 
 void GenreTreeItem::setInvalidGenre(const bool b)
 {
-	setData(0, GenreTreeItem::InvalidGenreRole, b);
+	setData(0, InvalidGenreRole, b);
 
 	if(b)
 	{
@@ -465,14 +466,4 @@ void GenreTreeItem::setInvalidGenre(const bool b)
 		         ~Qt::ItemIsDragEnabled &
 		         ~Qt::ItemIsDropEnabled);
 	}
-}
-
-bool GenreTreeItem::isInvalidGenre(const QModelIndex& index)
-{
-	return index.data(GenreTreeItem::InvalidGenreRole).toBool();
-}
-
-[[maybe_unused]] bool GenreTreeItem::isInvalidGenre() const
-{
-	return this->data(0, GenreTreeItem::InvalidGenreRole).toBool();
 }

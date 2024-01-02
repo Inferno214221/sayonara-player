@@ -78,9 +78,7 @@ namespace Library
 
 			[[maybe_unused]] QTreeWidgetItem* findGenre(const QString& genre);
 
-		private slots:
-			void itemExpanded(QTreeWidgetItem* item);
-			void itemCollapsed(QTreeWidgetItem* item);
+		private slots: // NOLINT(*-redundant-access-specifiers)
 			void expandCurrentItem();
 
 			void progressChanged(int progress);
@@ -107,18 +105,10 @@ namespace Library
 		public QTreeWidgetItem
 	{
 		public:
-			enum DataRole
-			{
-				InvalidGenreRole = Qt::UserRole
-			};
-
 			GenreTreeItem(QTreeWidgetItem* parent, const QStringList& text);
 			GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool isInvalidGenre);
 
 			void setInvalidGenre(bool b);
-			[[maybe_unused]] bool isInvalidGenre() const;
-
-			static bool isInvalidGenre(const QModelIndex& index);
 	};
 }
 
