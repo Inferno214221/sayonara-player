@@ -35,55 +35,61 @@
 
 struct GenreFetcher::Private
 {
-	LocalLibrary*					localLibrary=nullptr;
-	Util::Set<Genre>				genres;
-	Util::Set<Genre>				additionalGenres; // empty genres that are inserted
-	Tagging::UserOperations*		uto=nullptr;
+	LocalLibrary* localLibrary = nullptr;
+	Util::Set<Genre> genres;
+	Util::Set<Genre> additionalGenres; // empty genres that are inserted
+	bool taggingInProgress {false};
 };
 
 GenreFetcher::GenreFetcher(QObject* parent) :
-	QObject(parent)
+	QObject(parent),
+	m {Pimpl::make<Private>()}
 {
-	m = Pimpl::make<Private>();
+	auto* tagChangeNotifier = Tagging::ChangeNotifier::instance();
 
-	Tagging::ChangeNotifier* mcn = Tagging::ChangeNotifier::instance();
-
-	connect(mcn, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GenreFetcher::reloadGenres);
-	connect(mcn, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &GenreFetcher::reloadGenres);
+	connect(tagChangeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GenreFetcher::reloadGenres);
+	connect(tagChangeNotifier, &Tagging::ChangeNotifier::sigMetadataDeleted, this, &GenreFetcher::reloadGenres);
 }
 
 Tagging::UserOperations* GenreFetcher::initTagging()
 {
-	if(!m->uto)
-	{
-		m->uto = new Tagging::UserOperations(-1, this);
-		connect(m->uto, &Tagging::UserOperations::sigProgress, this, &GenreFetcher::sigProgress);
-		connect(m->uto, &Tagging::UserOperations::sigFinished, this, &GenreFetcher::sigFinished);
-	}
+	m->taggingInProgress = true;
 
-	return m->uto;
+	auto* userOperation = new Tagging::UserOperations(-1, this);
+
+	connect(userOperation, &Tagging::UserOperations::sigProgress, this, &GenreFetcher::sigProgress);
+	connect(userOperation, &Tagging::UserOperations::sigFinished, this, &GenreFetcher::taggingOperationsFinished);
+
+	return userOperation;
+}
+
+void GenreFetcher::taggingOperationsFinished()
+{
+	m->taggingInProgress = false;
+
+	emit sigFinished();
+
+	sender()->deleteLater();
 }
 
 GenreFetcher::~GenreFetcher() = default;
 
 void GenreFetcher::reloadGenres()
 {
-	if(!m->localLibrary){
-		return;
+	if(m->localLibrary)
+	{
+		const auto libraryId = m->localLibrary->info().id();
+		auto* libraryDatabase = DB::Connector::instance()->libraryDatabase(libraryId, 0);
+		m->genres = libraryDatabase->getAllGenres();
+
+		emit sigGenresFetched();
 	}
-
-	LibraryId libraryId = m->localLibrary->info().id();
-
-	DB::LibraryDatabase* lib_db = DB::Connector::instance()->libraryDatabase(libraryId, 0);
-	m->genres = lib_db->getAllGenres();
-
-	emit sigGenresFetched();
 }
 
 Util::Set<Genre> GenreFetcher::genres() const
 {
-	Util::Set<Genre> genres(m->genres);
-	for(const Genre& genre : m->additionalGenres)
+	auto genres = Util::Set<Genre> {m->genres};
+	for(const auto& genre: m->additionalGenres)
 	{
 		genres.insert(genre);
 	}
@@ -97,37 +103,37 @@ void GenreFetcher::createGenre(const Genre& genre)
 	emit sigGenresFetched();
 }
 
-void GenreFetcher::applyGenreToMetadata(const MetaDataList& v_md, const Genre& genre)
+void GenreFetcher::applyGenreToMetadata(const MetaDataList& tracks, const Genre& genre)
 {
-	Tagging::UserOperations* uto = initTagging();
-	uto->applyGenreToMetadata(v_md, genre);
-}
-
-void GenreFetcher::deleteGenre(const Genre& genre)
-{
-	Tagging::UserOperations* uto = initTagging();
-	uto->deleteGenre(genre);
+	if(!m->taggingInProgress)
+	{
+		auto* userTaggingOperation = initTagging();
+		userTaggingOperation->applyGenreToMetadata(tracks, genre);
+	}
 }
 
 void GenreFetcher::deleteGenres(const Util::Set<Genre>& genres)
 {
-	for(const Genre& genre : genres)
+	if(!m->taggingInProgress)
 	{
-		deleteGenre(genre);
+		auto* userTaggingOperation = initTagging();
+		userTaggingOperation->deleteGenres(genres);
 	}
 }
 
 void GenreFetcher::renameGenre(const Genre& oldGenre, const Genre& newGenre)
 {
-	Tagging::UserOperations* uto = initTagging();
-	uto->renameGenre(oldGenre, newGenre);
+	if(!m->taggingInProgress)
+	{
+		auto* userTaggingOperation = initTagging();
+		userTaggingOperation->renameGenre(oldGenre, newGenre);
+	}
 }
 
-void GenreFetcher::set_local_library(LocalLibrary* local_library)
+void GenreFetcher::setLocalLibrary(LocalLibrary* localLibrary)
 {
-	m->localLibrary = local_library;
-	connect(m->localLibrary, &LocalLibrary::sigReloadingLibraryFinished,
-			this, &GenreFetcher::reloadGenres);
+	m->localLibrary = localLibrary;
+	connect(m->localLibrary, &LocalLibrary::sigReloadingLibraryFinished, this, &GenreFetcher::reloadGenres);
 
-	QTimer::singleShot(200, this, SLOT(reloadGenres()));
+	QTimer::singleShot(200, this, SLOT(reloadGenres())); // NOLINT(*-magic-numbers)
 }

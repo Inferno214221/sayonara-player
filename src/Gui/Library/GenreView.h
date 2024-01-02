@@ -38,8 +38,6 @@ namespace Util
 	class Tree;
 }
 
-using GenreNode=Util::Tree<QString>;
-
 namespace Library
 {
 	/**
@@ -47,9 +45,9 @@ namespace Library
 	 * @ingroup GuiLibrary
 	 */
 	class GenreView :
-			public Gui::WidgetTemplate<QTreeWidget>
+		public Gui::WidgetTemplate<QTreeWidget>
 	{
-		using Parent=Gui::WidgetTemplate<QTreeWidget>;
+			using Parent = Gui::WidgetTemplate<QTreeWidget>;
 
 		Q_OBJECT
 		PIMPL(GenreView)
@@ -65,7 +63,7 @@ namespace Library
 			using Parent::pressed;
 
 		public:
-			explicit GenreView(QWidget* parent=nullptr);
+			explicit GenreView(QWidget* parent = nullptr);
 			~GenreView() override;
 
 			void init(LocalLibrary* library);
@@ -77,8 +75,6 @@ namespace Library
 			void initContextMenu();
 
 			void setGenres(const Util::Set<Genre>& genres);
-			void buildGenreDataTree(const Util::Set<Genre>& genres);
-			void populateWidget(QTreeWidgetItem* parent_item, GenreNode* node);
 
 			[[maybe_unused]] QTreeWidgetItem* findGenre(const QString& genre);
 
@@ -107,15 +103,16 @@ namespace Library
 			void contextMenuEvent(QContextMenuEvent* e) override;
 	};
 
-	class GenreTreeItem : public QTreeWidgetItem
+	class GenreTreeItem :
+		public QTreeWidgetItem
 	{
 		public:
 			enum DataRole
 			{
-				InvalidGenreRole=Qt::UserRole
+				InvalidGenreRole = Qt::UserRole
 			};
 
-			GenreTreeItem(QTreeWidgetItem* parent, const QStringList& text, bool isInvalidGenre);
+			GenreTreeItem(QTreeWidgetItem* parent, const QStringList& text);
 			GenreTreeItem(QTreeWidget* parent, const QStringList& text, bool isInvalidGenre);
 
 			void setInvalidGenre(bool b);

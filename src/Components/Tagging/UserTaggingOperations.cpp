@@ -25,13 +25,14 @@
 #include "Database/Connector.h"
 #include "Database/LibraryDatabase.h"
 
-#include "Utils/Settings/Settings.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/MetaData/Artist.h"
-#include "Utils/MetaData/Album.h"
-#include "Utils/Utils.h"
-#include "Utils/Set.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/Album.h"
+#include "Utils/MetaData/Artist.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <tuple>
 
@@ -40,15 +41,15 @@ using Tagging::Editor;
 
 struct RatingPair
 {
-	Rating oldRating{Rating::Last};
-	Rating newRating{Rating::Last};
+	Rating oldRating {Rating::Last};
+	Rating newRating {Rating::Last};
 };
 
 using TrackRatingHistory = QMap<TrackID, RatingPair>;
 
 struct UserOperations::Private
 {
-	DB::LibraryDatabase* libraryDatabase=nullptr;
+	DB::LibraryDatabase* libraryDatabase = nullptr;
 	TrackRatingHistory trackRatingHistory;
 
 	Private(LibraryId libraryId)
@@ -70,7 +71,7 @@ Editor* UserOperations::createEditor()
 {
 	auto* editor = new Tagging::Editor();
 
-	connect(editor, &Tagging::Editor::sigFinished, this, [=](){
+	connect(editor, &Tagging::Editor::sigFinished, this, [this]() {
 		m->trackRatingHistory.clear();
 	});
 	connect(editor, &Tagging::Editor::sigFinished, this, &UserOperations::sigFinished);
@@ -107,9 +108,9 @@ void UserOperations::setTrackRating(const MetaDataList& tracks, Rating rating)
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int i=0; i<tracks.count(); i++)
+	for(int i = 0; i < tracks.count(); i++)
 	{
-		auto track = (tracks[i]);
+		auto track = tracks[i];
 		m->trackRatingHistory[track.id()] = {track.rating(), rating};
 
 		track.setRating(rating);
@@ -131,18 +132,21 @@ void UserOperations::setAlbumRating(const Album& album, Rating rating)
 
 void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targetArtist)
 {
-	if(artistIds.isEmpty()) {
+	if(artistIds.isEmpty())
+	{
 		return;
 	}
 
-	if(targetArtist < 0){
+	if(targetArtist < 0)
+	{
 		spLog(Log::Warning, this) << "Cannot merge artist: Target artist id < 0";
 		return;
 	}
 
 	Artist artist;
 	const auto success = m->libraryDatabase->getArtistByID(targetArtist, artist);
-	if(!success){
+	if(!success)
+	{
 		return;
 	}
 
@@ -156,14 +160,16 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 	editor->setMetadata(tracks);
 
 	const auto showAlbumArtists = GetSetting(Set::Lib_ShowAlbumArtists);
-	for(int idx=0; idx<tracks.count(); idx++)
+	for(int idx = 0; idx < tracks.count(); idx++)
 	{
 		auto& track = tracks[idx];
-		if(showAlbumArtists){
+		if(showAlbumArtists)
+		{
 			track.setAlbumArtist(artist.name(), artist.id());
 		}
 
-		else {
+		else
+		{
 			track.setArtistId(artist.id());
 			track.setArtist(artist.name());
 		}
@@ -175,7 +181,8 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 
 	for(auto it = artistIds.begin(); it != artistIds.end(); it++)
 	{
-		if(*it == targetArtist){
+		if(*it == targetArtist)
+		{
 			continue;
 		}
 
@@ -185,18 +192,21 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 
 void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAlbum)
 {
-	if(albumIds.isEmpty())	{
+	if(albumIds.isEmpty())
+	{
 		return;
 	}
 
-	if(targetAlbum < 0){
+	if(targetAlbum < 0)
+	{
 		spLog(Log::Warning, this) << "Cannot merge albums: Target album id < 0";
 		return;
 	}
 
 	Album album;
 	bool success = m->libraryDatabase->getAlbumByID(targetAlbum, album, true);
-	if(!success) {
+	if(!success)
+	{
 		return;
 	}
 
@@ -209,7 +219,7 @@ void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAl
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(auto idx=0; idx<tracks.count(); idx++)
+	for(auto idx = 0; idx < tracks.count(); idx++)
 	{
 		auto& track = tracks[idx];
 		track.setAlbumId(album.id());
@@ -220,7 +230,6 @@ void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAl
 
 	runEditor(editor);
 }
-
 
 void UserOperations::addGenre(Util::Set<Id> ids, const Genre& genre)
 {
@@ -234,7 +243,7 @@ void UserOperations::addGenre(Util::Set<Id> ids, const Genre& genre)
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(auto i=0; i<tracks.count(); i++)
+	for(auto i = 0; i < tracks.count(); i++)
 	{
 		editor->addGenre(i, genre);
 	}
@@ -242,22 +251,26 @@ void UserOperations::addGenre(Util::Set<Id> ids, const Genre& genre)
 	runEditor(editor);
 }
 
-
-void UserOperations::deleteGenre(const Genre& genre)
+void UserOperations::deleteGenres(const Util::Set<Genre>& genres)
 {
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
 
-	tracks.removeTracks([&](const MetaData& md){
-		return (!md.hasGenre(genre));
+	Util::Algorithm::removeIf(tracks, [&](const auto& track) {
+		return std::none_of(genres.begin(), genres.end(), [&track](const auto& genre) {
+			return track.hasGenre(genre);
+		});
 	});
 
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(int i=0; i<tracks.count(); i++)
+	for(int i = 0; i < tracks.count(); i++)
 	{
-		editor->deleteGenre(i, genre);
+		for(const auto& genre: genres)
+		{
+			editor->deleteGenre(i, genre);
+		}
 	}
 
 	runEditor(editor);
@@ -268,14 +281,14 @@ void UserOperations::renameGenre(const Genre& genre, const Genre& newGenre)
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracks(tracks);
 
-	tracks.removeTracks([&](const MetaData& md){
+	tracks.removeTracks([&](const MetaData& md) {
 		return (!md.hasGenre(genre));
 	});
 
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(auto i=0; i<tracks.count(); i++)
+	for(auto i = 0; i < tracks.count(); i++)
 	{
 		editor->renameGenre(i, genre, newGenre);
 	}
@@ -288,7 +301,7 @@ void UserOperations::applyGenreToMetadata(const MetaDataList& tracks, const Genr
 	auto* editor = createEditor();
 	editor->setMetadata(tracks);
 
-	for(auto i=0; i<tracks.count(); i++)
+	for(auto i = 0; i < tracks.count(); i++)
 	{
 		editor->addGenre(i, genre);
 	}

@@ -18,10 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
-#ifndef GENREFETCHER_H
-#define GENREFETCHER_H
+#ifndef SAYONARA_PLAYER_GENREFETCHER_H
+#define SAYONARA_PLAYER_GENREFETCHER_H
 
 #include <QObject>
 #include "Utils/Pimpl.h"
@@ -37,36 +35,37 @@ namespace Tagging
 }
 
 class GenreFetcher :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(GenreFetcher)
 
-signals:
-	void sigGenresFetched();
-	void sigProgress(int progress);
-	void sigFinished();
+	signals:
+		void sigGenresFetched();
+		void sigProgress(int progress);
+		void sigFinished();
 
-public:
-	explicit GenreFetcher(QObject* parent=nullptr);
-	~GenreFetcher() override;
+	public:
+		explicit GenreFetcher(QObject* parent = nullptr);
+		~GenreFetcher() override;
 
-	Util::Set<Genre> genres() const;
+		[[nodiscard]] Util::Set<Genre> genres() const;
 
-	void applyGenreToMetadata(const MetaDataList& v_md, const Genre& genre);
-	void createGenre(const Genre& genre);
-	void deleteGenre(const Genre& genre);
-	void deleteGenres(const Util::Set<Genre>& genres);
-	void renameGenre(const Genre& oldGenre, const Genre& newGenre);
+		void applyGenreToMetadata(const MetaDataList& tracks, const Genre& genre);
+		void createGenre(const Genre& genre);
+		void deleteGenres(const Util::Set<Genre>& genres);
+		void renameGenre(const Genre& oldGenre, const Genre& newGenre);
 
-	void set_local_library(LocalLibrary* local_library);
+		void setLocalLibrary(LocalLibrary* localLibrary);
 
-public slots:
-	void reloadGenres();
+	public slots: // NOLINT(*-redundant-access-specifiers)
+		void reloadGenres();
 
-private:
-	Tagging::UserOperations* initTagging();
+	private slots:
+		void taggingOperationsFinished();
 
+	private: // NOLINT(*-redundant-access-specifiers)
+		Tagging::UserOperations* initTagging();
 };
 
-#endif // GENREFETCHER_H
+#endif // SAYONARA_PLAYER_GENREFETCHER_H

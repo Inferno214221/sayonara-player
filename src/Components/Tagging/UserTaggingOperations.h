@@ -18,8 +18,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef USERTAGGINGOPERATIONS_H
-#define USERTAGGINGOPERATIONS_H
+#ifndef SAYONARA_PLAYER_USERTAGGINGOPERATIONS_H
+#define SAYONARA_PLAYER_USERTAGGINGOPERATIONS_H
 
 #include <QObject>
 #include "Utils/Pimpl.h"
@@ -30,38 +30,38 @@ namespace Tagging
 {
 	class Editor;
 	class UserOperations :
-			public QObject
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(UserOperations)
 
-	signals:
-		void sigFinished();
-		void sigProgress(int);
+		signals:
+			void sigFinished();
+			void sigProgress(int);
 
-	public:
-		UserOperations(LibraryId libraryId, QObject* parent=nullptr);
-		~UserOperations() override;
+		public:
+			UserOperations(LibraryId libraryId, QObject* parent = nullptr);
+			~UserOperations() override;
 
-		void setTrackRating(const MetaData& md, Rating rating);
-		void setTrackRating(const MetaDataList& tracks, Rating rating);
-		Rating oldRating(TrackID trackId) const;
-		Rating newRating(TrackID trackId) const;
+			void setTrackRating(const MetaData& md, Rating rating);
+			void setTrackRating(const MetaDataList& tracks, Rating rating);
+			Rating oldRating(TrackID trackId) const;
+			Rating newRating(TrackID trackId) const;
 
-		void setAlbumRating(const Album& album, Rating rating);
+			void setAlbumRating(const Album& album, Rating rating);
 
-		void mergeArtists(const Util::Set<Id>& artisIids, ArtistId targetArtistId);
-		void mergeAlbums(const Util::Set<Id>& albumsIds, AlbumId targetAlbumId);
+			void mergeArtists(const Util::Set<Id>& artisIids, ArtistId targetArtistId);
+			void mergeAlbums(const Util::Set<Id>& albumsIds, AlbumId targetAlbumId);
 
-		void addGenre(const IdSet ids, const Genre& genre);
-		void deleteGenre(const Genre& genre);
-		void renameGenre(const Genre& genre, const Genre& newGenre);
-		void applyGenreToMetadata(const MetaDataList& tracks, const Genre& genre);
+			void addGenre(const IdSet ids, const Genre& genre);
+			void deleteGenres(const Util::Set<Genre>& genres);
+			void renameGenre(const Genre& genre, const Genre& newGenre);
+			void applyGenreToMetadata(const MetaDataList& tracks, const Genre& genre);
 
-	private:
-		Editor* createEditor();
-		void runEditor(Editor* editor);
+		private:
+			Editor* createEditor();
+			void runEditor(Editor* editor);
 	};
 }
 
-#endif // USERTAGGINGOPERATIONS_H
+#endif // SAYONARA_PLAYER_USERTAGGINGOPERATIONS_H
