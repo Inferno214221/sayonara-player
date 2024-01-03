@@ -37,6 +37,7 @@ namespace
 			case GUI_ConfigureStation::New:
 				return Lang::get(Lang::New);
 			case GUI_ConfigureStation::Save:
+			default:
 				return Lang::get(Lang::Save);
 		}
 	}
