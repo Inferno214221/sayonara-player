@@ -1,6 +1,6 @@
 /* ColumnIndex.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,42 +32,45 @@ namespace ColumnIndex
 {
 	using IntegerType = uint8_t;
 
-	enum class Album : IntegerType
+	enum class Album :
+		IntegerType
 	{
-			MultiDisc = 0,
-			Name,
-			Duration,
-			//AlbumArtist,
-			NumSongs,
-			Year,
-            Rating,
-            Count
+		MultiDisc = 0,
+		Name,
+		Duration,
+		//AlbumArtist,
+		NumSongs,
+		Year,
+		Rating,
+		Count
 	};
 
-	enum class Artist : IntegerType
+	enum class Artist :
+		IntegerType
 	{
-			//Undefined=0,
-			Name = 0,
-            Tracks,
-            Count
+		//Undefined=0,
+		Name = 0,
+		Tracks,
+		Count
 	};
 
-	enum class Track : IntegerType
+	enum class Track :
+		IntegerType
 	{
-			TrackNumber = 0,
-			Title,
-			Artist,
-			Album,
-			Discnumber,
-			Year,
-			Length,
-			Bitrate,
-			Filesize,
-			Filetype,
-			AddedDate,
-			ModifiedDate,
-            Rating,
-            Count
+		TrackNumber = 0,
+		Title,
+		Artist,
+		Album,
+		Discnumber,
+		Year,
+		Length,
+		Bitrate,
+		Filesize,
+		Filetype,
+		AddedDate,
+		ModifiedDate,
+		Rating,
+		Count
 	};
 }
 

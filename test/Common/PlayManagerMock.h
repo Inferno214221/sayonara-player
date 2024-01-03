@@ -1,6 +1,6 @@
 /* ${CLASS_NAME}.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -23,12 +23,14 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Utils/MetaData/MetaData.h"
 
-class PlayManagerMock : public PlayManager
+class PlayManagerMock :
+	public PlayManager
 {
-	MetaData m_metadata;
+		MetaData m_metadata;
 
 	public:
-		PlayManagerMock() : PlayManager(nullptr) {}
+		PlayManagerMock() :
+			PlayManager(nullptr) {}
 
 		void play() override {}
 

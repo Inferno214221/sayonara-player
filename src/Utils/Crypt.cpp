@@ -1,6 +1,6 @@
 /* Crypt.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,7 +41,7 @@ namespace
 			const auto currentByte = *(src.data() + i);
 			const auto pos = i % key.size();
 			const auto maskChar = *(key.data() + pos);
-			const auto resultChar = currentByte ^maskChar;
+			const auto resultChar = currentByte ^ maskChar;
 
 			result.push_back(resultChar);
 		}

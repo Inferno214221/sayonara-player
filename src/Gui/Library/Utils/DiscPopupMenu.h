@@ -1,6 +1,6 @@
 /* DiscPopupMenu.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,8 @@ namespace Library
 	 * @brief A single action representing one or all discs
 	 * @ingroup GuiLibrary
 	 */
-	class DiscAction : public QAction
+	class DiscAction :
+		public QAction
 	{
 		Q_OBJECT
 
@@ -48,7 +49,8 @@ namespace Library
 	 * @brief A menu containing various DiscAction objects
 	 * @ingroup GuiLibrary
 	 */
-	class DiscPopupMenu : public QMenu
+	class DiscPopupMenu :
+		public QMenu
 	{
 		Q_OBJECT
 

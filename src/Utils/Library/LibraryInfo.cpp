@@ -1,6 +1,6 @@
 /* LibraryInfo.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -59,7 +59,7 @@ Info::Info(const Info& other) :
 
 Info::~Info() {}
 
-Info& Info::operator =(const Info& other)
+Info& Info::operator=(const Info& other)
 {
 	m->name = other.name();
 	m->path = other.path();
@@ -67,7 +67,6 @@ Info& Info::operator =(const Info& other)
 
 	return *this;
 }
-
 
 QString Info::name() const
 {
@@ -92,7 +91,8 @@ bool Info::valid() const
 bool Info::loadFromString(const QString& str)
 {
 	QStringList lst = str.split("::");
-	if(lst.size() != 3) {
+	if(lst.size() != 3)
+	{
 		return false;
 	}
 
@@ -100,7 +100,8 @@ bool Info::loadFromString(const QString& str)
 	QString name = lst[0];
 	QString path = lst[1];
 	int id = lst[2].toInt(&ok);
-	if(!ok){
+	if(!ok)
+	{
 		return false;
 	}
 

@@ -1,6 +1,6 @@
 /* GUI_TrayIcon.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)  gleugner
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)  gleugner
  *
  * This file is part of sayonara player
  *

@@ -1,6 +1,6 @@
 /* GUI_Equalizer.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -61,7 +61,7 @@ struct GUI_Equalizer::Private
 	void applySetting(const EqualizerSetting& equalizer)
 	{
 		int band = 0;
-		for(const auto value : equalizer)
+		for(const auto value: equalizer)
 		{
 			auto* slider = this->sliders[band];
 
@@ -120,7 +120,7 @@ void GUI_Equalizer::initUi()
 
 	ui->btn_tool->registerAction(m->actionGauss);
 
-	for(auto* slider : Algorithm::AsConst(m->sliders))
+	for(auto* slider: Algorithm::AsConst(m->sliders))
 	{
 		connect(slider, &EqualizerSlider::sigValueChanged,
 		        this, &GUI_Equalizer::sliderValueChanged);
@@ -205,7 +205,7 @@ void GUI_Equalizer::fillEqualizerPresets()
 	}
 
 	const auto presetNames = m->equalizer->names();
-	for(const auto& preset : presetNames)
+	for(const auto& preset: presetNames)
 	{
 		ui->combo_presets->addItem(preset);
 	}

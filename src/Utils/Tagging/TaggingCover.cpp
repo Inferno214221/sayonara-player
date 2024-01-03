@@ -1,6 +1,6 @@
 /* TaggingCover.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -82,16 +82,16 @@ namespace
 		TagInfo info;
 
 		info.fileRef = (QFileInfo(filepath).size() > 0)
-			? TagLib::FileRef(TagLib::FileName(filepath.toUtf8()))
-			: TagLib::FileRef();
+		               ? TagLib::FileRef(TagLib::FileName(filepath.toUtf8()))
+		               : TagLib::FileRef();
 
 		info.parsedTag = Tagging::isValidFile(info.fileRef)
-			? Tagging::getParsedTagFromFileRef(info.fileRef)
-			: Tagging::ParsedTag();
+		                 ? Tagging::getParsedTagFromFileRef(info.fileRef)
+		                 : Tagging::ParsedTag();
 
 		return (!info.fileRef.isNull() && info.parsedTag.tag)
-			? std::optional(info)
-			: std::nullopt;
+		       ? std::optional(info)
+		       : std::nullopt;
 	}
 
 	QString getMimetype(const QString& path)
@@ -218,8 +218,8 @@ QPixmap Tagging::extractCover(const QString& filepath)
 
 	const auto success = extractCover(filepath, data, mime);
 	return (success)
-		? QPixmap::fromImage(QImage::fromData(data))
-		: QPixmap();
+	       ? QPixmap::fromImage(QImage::fromData(data))
+	       : QPixmap();
 }
 
 bool Tagging::extractCover(const ParsedTag& parsedTag, QByteArray& coverData, QString& mimeType)
@@ -281,7 +281,7 @@ bool Tagging::isCoverSupported(const QString& filepath)
 		(parsedTag.type == Tagging::TagType::ID3v2 || parsedTag.type == Tagging::TagType::MP4);
 
 	return ((TAGLIB_MAJOR_VERSION == 1) && (TAGLIB_MINOR_VERSION <= 10))
-		? isSupported
-		: isSupported || (parsedTag.type == Tagging::TagType::Xiph);
+	       ? isSupported
+	       : isSupported || (parsedTag.type == Tagging::TagType::Xiph);
 }
 

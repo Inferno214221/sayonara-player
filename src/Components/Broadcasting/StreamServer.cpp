@@ -1,6 +1,6 @@
 /* StreamServer.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,8 +57,7 @@ struct StreamServer::Private
 		playManager(playManager),
 		audioDataProvider(audioDataProvider),
 		currentPort(GetSetting(Set::Broadcast_Port)),
-		asking(false)
-	{}
+		asking(false) {}
 };
 
 StreamServer::StreamServer(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QObject* parent) :
@@ -311,7 +310,7 @@ void StreamServer::disconnect(StreamWriterPtr sw)
 
 void StreamServer::disconnectAll()
 {
-	for(StreamWriter* sw : Algorithm::AsConst(m->clients))
+	for(StreamWriter* sw: Algorithm::AsConst(m->clients))
 	{
 		QObject::disconnect(sw, &StreamWriter::sigDisconnected, this, &StreamServer::disconnected);
 		QObject::disconnect(sw, &StreamWriter::sigNewConnection, this, &StreamServer::newConnection);

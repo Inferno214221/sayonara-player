@@ -1,6 +1,6 @@
 /* Genre.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,7 +31,8 @@ struct Genre::Private
 
 	static GenreID calcId(const QString& name)
 	{
-		if(name.trimmed().isEmpty()){
+		if(name.trimmed().isEmpty())
+		{
 			return 0;
 		}
 
@@ -39,12 +40,12 @@ struct Genre::Private
 		return GenreID(qHash(nameData));
 	}
 
-	Private()=default;
+	Private() = default;
 
-	Private(const Private& other)=default;
-	Private(Private&& other) noexcept=default;
-	Private& operator=(const Private& other)=default;
-	Private& operator=(Private&& other) noexcept=default;
+	Private(const Private& other) = default;
+	Private(Private&& other) noexcept = default;
+	Private& operator=(const Private& other) = default;
+	Private& operator=(Private&& other) noexcept = default;
 };
 
 Genre::Genre()
@@ -110,17 +111,17 @@ bool Genre::isEqual(const Genre& other) const
 	return (m->id == other.id());
 }
 
-bool Genre::operator ==(const Genre& other) const
+bool Genre::operator==(const Genre& other) const
 {
 	return isEqual(other);
 }
 
-bool Genre::operator <(const Genre& other) const
+bool Genre::operator<(const Genre& other) const
 {
 	return (m->id < other.id());
 }
 
-bool Genre::operator >(const Genre& other) const
+bool Genre::operator>(const Genre& other) const
 {
 	return (m->id > other.id());
 }

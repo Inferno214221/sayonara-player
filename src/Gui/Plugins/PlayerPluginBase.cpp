@@ -1,6 +1,6 @@
 /* PlayerPlugin.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,8 +31,8 @@ using PlayerPlugin::Base;
 
 struct Base::Private
 {
-	QAction*	pluginAction=nullptr;
-	bool		isInitialized;
+	QAction* pluginAction = nullptr;
+	bool isInitialized;
 
 	Private() :
 		pluginAction(new QAction(nullptr)),
@@ -43,7 +43,8 @@ struct Base::Private
 
 	~Private()
 	{
-		delete pluginAction; pluginAction = nullptr;
+		delete pluginAction;
+		pluginAction = nullptr;
 	}
 };
 
@@ -72,7 +73,7 @@ bool Base::hasLoadingBar() const
 
 QAction* Base::pluginAction() const
 {
-	m->pluginAction->setText( this->displayName() );
+	m->pluginAction->setText(this->displayName());
 	return m->pluginAction;
 }
 
@@ -88,7 +89,10 @@ void Base::finalizeInitialization()
 	if(parentWidget())
 	{
 		ShortcutHandler* sch = ShortcutHandler::instance();
-		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this, parentWidget(), SLOT(close()), Qt::WidgetWithChildrenShortcut);
+		sch->shortcut(ShortcutIdentifier::ClosePlugin).connect(this,
+		                                                       parentWidget(),
+		                                                       SLOT(close()),
+		                                                       Qt::WidgetWithChildrenShortcut);
 	}
 
 	setUiInitialized();
@@ -99,7 +103,8 @@ void Base::assignUiVariables() {}
 
 void Base::languageChanged()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		retranslate();
 	}
 }
@@ -116,7 +121,8 @@ void Base::setUiInitialized()
 
 void Base::showEvent(QShowEvent* e)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		initUi();
 	}
 

@@ -1,6 +1,6 @@
 /* Translator.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,7 +46,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 {
 	if(!m->translators.isEmpty())
 	{
-		for(QTranslator* t : m->translators)
+		for(QTranslator* t: m->translators)
 		{
 			QApplication::removeTranslator(t);
 			t->deleteLater();
@@ -62,7 +62,7 @@ bool Translator::switchTranslator(QObject* parent, const QString& fourLetter)
 	filenames << QDir(languageDir).absoluteFilePath(languageFile)
 	          << Util::Language::getCurrentQtTranslationPaths();
 
-	for(const QString& filename : filenames)
+	for(const QString& filename: filenames)
 	{
 		auto* translator = new QTranslator(parent);
 		bool loaded = translator->load(filename);

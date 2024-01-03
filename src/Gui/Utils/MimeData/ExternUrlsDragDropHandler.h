@@ -1,6 +1,6 @@
 /* ExternUrlsDragDropHandler.h */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -23,13 +23,14 @@
 #include "DragDropAsyncHandler.h"
 #include "Utils/Pimpl.h"
 
-	class ExternUrlsDragDropHandler : public Gui::AsyncDropHandler
+class ExternUrlsDragDropHandler :
+	public Gui::AsyncDropHandler
 {
 	Q_OBJECT
 	PIMPL(ExternUrlsDragDropHandler)
 
 	public:
-		explicit ExternUrlsDragDropHandler(const QList<QUrl>& urls, QObject* parent=nullptr);
+		explicit ExternUrlsDragDropHandler(const QList<QUrl>& urls, QObject* parent = nullptr);
 		virtual ~ExternUrlsDragDropHandler();
 
 	public slots:

@@ -1,6 +1,6 @@
 /* RatingLabel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ namespace Gui
 		PIMPL(RatingLabel)
 
 		public:
-			RatingLabel(QWidget* parent, bool enabled=true);
+			RatingLabel(QWidget* parent, bool enabled = true);
 			~RatingLabel() override;
 
 			/**
@@ -93,7 +93,8 @@ namespace Gui
 	 * in delegates
 	 * @ingroup Widgets
 	 */
-	class RatingEditor : public QWidget
+	class RatingEditor :
+		public QWidget
 	{
 		Q_OBJECT
 		PIMPL(RatingEditor)

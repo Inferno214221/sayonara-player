@@ -1,6 +1,6 @@
 /* ${CLASS_NAME}.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -24,7 +24,7 @@ class SoundModifier
 {
 	public:
 		virtual ~SoundModifier() = default;
-		virtual void setEqualizer(int band, int value)=0;
+		virtual void setEqualizer(int band, int value) = 0;
 };
 
 #endif //SAYONARA_PLAYER_SOUNDMODIFIER_H

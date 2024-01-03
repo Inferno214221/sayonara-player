@@ -1,6 +1,6 @@
 /* Image.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,18 +33,17 @@ struct Image::Private
 };
 
 Image::Image() :
-	m(nullptr)
-{}
+	m(nullptr) {}
 
 Image::Image(const QPixmap& pm) :
-	Image::Image(pm, QSize(-1, -1))
-{}
+	Image::Image(pm, QSize(-1, -1)) {}
 
 Image::Image(const QPixmap& pm, const QSize& max_size)
 {
 	m = new Private();
 
-	if(pm.isNull()){
+	if(pm.isNull())
+	{
 		spLog(Log::Warning, this) << "Pixmap is null!";
 	}
 
@@ -57,17 +56,20 @@ Image::Image(const QPixmap& pm, const QSize& max_size)
 		int ph = pm.height();
 
 		QPixmap p(pm);
-		if(mh <= 0 || mw <= 0){
+		if(mh <= 0 || mw <= 0)
+		{
 			p = pm;
 		}
 
-		else if((pw > mw) || (ph > mh)){
+		else if((pw > mw) || (ph > mh))
+		{
 			p = pm.scaled(mw, mh, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 		}
 
 		m->img = Util::convertPixmapToByteArray(p);
 
-		if(m->img.size() == 0){
+		if(m->img.size() == 0)
+		{
 			spLog(Log::Warning, this) << "Could not compress " << m->img.size() << " bytes of image data";
 		}
 	}
@@ -75,7 +77,8 @@ Image::Image(const QPixmap& pm, const QSize& max_size)
 
 Image::Image(const Image& other)
 {
-	if(!other.m){
+	if(!other.m)
+	{
 		m = nullptr;
 		return;
 	}
@@ -84,12 +87,12 @@ Image::Image(const Image& other)
 	m->img = other.m->img;
 }
 
-
 Image::~Image()
 {
 	if(m)
 	{
-		delete m; m=nullptr;
+		delete m;
+		m = nullptr;
 	}
 }
 
@@ -105,8 +108,10 @@ class Image& Image::operator=(const Image& other)
 		m->img = other.m->img;
 	}
 
-	else if(m){
-		delete m; m=nullptr;
+	else if(m)
+	{
+		delete m;
+		m = nullptr;
 	}
 
 	return *this;
@@ -114,14 +119,17 @@ class Image& Image::operator=(const Image& other)
 
 QPixmap Image::pixmap() const
 {
-	if(!m){
+	if(!m)
+	{
 		spLog(Log::Warning, this) << "No data";
 		return QPixmap();
 	}
 
 	QPixmap pm = Util::convertByteArrayToPixmap(m->img);
-	if(pm.isNull()){
-		spLog(Log::Warning, this) << "Pixmap is empty after decompressing (" << m->img.size() << "," << m->img.size() << " bytes)";
+	if(pm.isNull())
+	{
+		spLog(Log::Warning, this) << "Pixmap is empty after decompressing (" << m->img.size() << "," << m->img.size()
+		                          << " bytes)";
 	}
 
 	return pm;

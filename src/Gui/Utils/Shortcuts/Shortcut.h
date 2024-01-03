@@ -1,6 +1,6 @@
 /* Shortcut.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,7 +41,7 @@ class QWidget;
 class Shortcut
 {
 	private:
-		PIMPL(Shortcut)
+	PIMPL(Shortcut)
 
 		Shortcut();
 
@@ -53,13 +53,11 @@ class Shortcut
 		 */
 		QList<QShortcut*> initQtShortcut(QWidget* parent, Qt::ShortcutContext context);
 
-
-	friend class ShortcutHandler;
+		friend class ShortcutHandler;
 	ShortcutHandlerPrivate:
 		void setQtShortcuts(const QList<QShortcut*>& qshortcuts);
 		void removeQtShortcut(QShortcut* qshortcut);
 		QList<QShortcut*> qtShortcuts() const;
-
 
 	public:
 		/**
@@ -98,45 +96,45 @@ class Shortcut
 		 * @brief
 		 * @param shortcuts map new user-readable key sequences to this shortcut
 		 */
-		void					changeShortcut(const QStringList& shortcuts);
+		void changeShortcut(const QStringList& shortcuts);
 
 		/**
 		 * @brief get the human-readable name of the shortcut
 		 * @return
 		 */
-		QString					name() const;
+		QString name() const;
 
 		/**
 		 * @brief get a human-readable list of mapped default shortcuts
 		 * @return
 		 */
-		QStringList				defaultShortcut() const;
+		QStringList defaultShortcut() const;
 
 		/**
 		 * @brief get a list key squences mapped to this shortcut
 		 * @return
 		 */
-		QList<QKeySequence>		sequences() const;
-		QKeySequence			sequence() const;
+		QList<QKeySequence> sequences() const;
+		QKeySequence sequence() const;
 
 		/**
 		 * @brief get a human-readable list of mapped shortcuts
 		 * @return
 		 */
-		const QStringList&		shortcuts() const;
+		const QStringList& shortcuts() const;
 
 		/**
 		 * @brief get the unique identifier
 		 * @return
 		 */
-		ShortcutIdentifier		identifier() const;
-		QString					databaseKey() const;
+		ShortcutIdentifier identifier() const;
+		QString databaseKey() const;
 
 		/**
 		 * @brief Check if the shortcut is valid or if it was retrieved via getInvalid()
 		 * @return
 		 */
-		bool					isValid() const;
+		bool isValid() const;
 
 		template<typename T>
 		/**
@@ -144,15 +142,14 @@ class Shortcut
 		 * @param parent the widget the shortcut is attached to
 		 * @param func a lambda function which will be triggered when shortcut is pressed
 		 */
-		void connect(QWidget* parent, T func, Qt::ShortcutContext context=Qt::WindowShortcut)
+		void connect(QWidget* parent, T func, Qt::ShortcutContext context = Qt::WindowShortcut)
 		{
 			QList<QShortcut*> shortcuts = initQtShortcut(parent, context);
-			for(QShortcut* sc : shortcuts)
+			for(QShortcut* sc: shortcuts)
 			{
 				parent->connect(sc, &QShortcut::activated, func);
 			}
 		}
-
 
 		/**
 		 * @brief create a qt shortcut for a widget
@@ -160,7 +157,8 @@ class Shortcut
 		 * @param the receiver object of the shortcut
 		 * @param the slot which is triggered when pressing that shortcut
 		 */
-		void connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context=Qt::WindowShortcut);
+		void
+		connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context = Qt::WindowShortcut);
 };
 
 #endif // SHORTCUT_H

@@ -1,6 +1,6 @@
 /* Popularimeter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -21,8 +21,7 @@
 #include "Popularimeter.h"
 
 Models::Popularimeter::Popularimeter() :
-	Models::Popularimeter::Popularimeter("sayonara player", Rating::Zero, 0)
-{}
+	Models::Popularimeter::Popularimeter("sayonara player", Rating::Zero, 0) {}
 
 Models::Popularimeter::Popularimeter(const QString& email, Rating rating, int playcount) :
 	email(email),

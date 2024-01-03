@@ -1,6 +1,6 @@
 /* DatabaseVisualStyles.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,8 @@ struct RawColorStyle;
 
 namespace DB
 {
-	class VisualStyles : private Module
+	class VisualStyles :
+		private Module
 	{
 		public:
 			VisualStyles(const QString& connectionName, DbId databaseId);

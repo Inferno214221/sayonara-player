@@ -1,6 +1,6 @@
 /* Cover.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,12 +22,10 @@
 
 Models::Cover::Cover(const QString& mimeType_, const QByteArray& imageData_) :
 	mimeType(mimeType_),
-	imageData(imageData_)
-{}
+	imageData(imageData_) {}
 
 Models::Cover::Cover() :
-	Models::Cover::Cover(QString(), QByteArray())
-{}
+	Models::Cover::Cover(QString(), QByteArray()) {}
 
 Models::Cover::MimeType Models::Cover::convertMimeType() const
 {

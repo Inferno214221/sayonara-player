@@ -1,6 +1,6 @@
 /* Sorting.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,16 +40,16 @@ namespace Library
 			SortOrder so_artists;
 			SortOrder so_tracks;
 
-		Sortings();
-		Sortings(const Sortings& so);
-		~Sortings() override;
+			Sortings();
+			Sortings(const Sortings& so);
+			~Sortings() override;
 
-		Sortings& operator=(const Sortings& other);
-		bool operator==(Sortings so);
+			Sortings& operator=(const Sortings& other);
+			bool operator==(Sortings so);
 
-		// SettingConvertible
-		QString toString() const override;
-		bool loadFromString(const QString& str) override;
+			// SettingConvertible
+			QString toString() const override;
+			bool loadFromString(const QString& str) override;
 	};
 }
 

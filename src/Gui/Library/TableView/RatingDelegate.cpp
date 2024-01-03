@@ -1,6 +1,6 @@
 /* LibraryRatingDelegate.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -68,7 +68,8 @@ void RatingDelegate::paint(QPainter* painter, const QStyleOptionViewItem& option
 }
 
 QWidget*
-RatingDelegate::createEditor(QWidget* parent, [[maybe_unused]] const QStyleOptionViewItem& option, const QModelIndex& index) const
+RatingDelegate::createEditor(QWidget* parent, [[maybe_unused]] const QStyleOptionViewItem& option,
+                             const QModelIndex& index) const
 {
 	const auto rating = index.data(Qt::EditRole).value<Rating>();
 	auto* editor = new RatingEditor(rating, parent);

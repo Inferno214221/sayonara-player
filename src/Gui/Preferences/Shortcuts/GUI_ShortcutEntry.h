@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,40 +35,39 @@ UI_FWD(GUI_ShortcutEntry)
  */
 
 class GUI_ShortcutEntry :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ShortcutEntry)
 	PIMPL(GUI_ShortcutEntry)
 
-signals:
-	/**
-	 * @brief signal is emitted when the test button is pressed
-	 * @param sequences list of sequences mapped to a specific shortcut
-	 */
-	void sigTestPressed(const QList<QKeySequence>& sequences);
-	void sigSequenceEntered();
+	signals:
+		/**
+		 * @brief signal is emitted when the test button is pressed
+		 * @param sequences list of sequences mapped to a specific shortcut
+		 */
+		void sigTestPressed(const QList<QKeySequence>& sequences);
+		void sigSequenceEntered();
 
-public:
-	explicit GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent=nullptr);
-	~GUI_ShortcutEntry();
+	public:
+		explicit GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent = nullptr);
+		~GUI_ShortcutEntry();
 
-	QList<QKeySequence> sequences() const;
-	void showSequenceError();
+		QList<QKeySequence> sequences() const;
+		void showSequenceError();
 
-public slots:
-	void commit();
-	void clear();
-	void revert();
+	public slots:
+		void commit();
+		void clear();
+		void revert();
 
+	private slots:
+		void editClicked();
+		void defaultClicked();
+		void testClicked();
 
-private slots:
-	void editClicked();
-	void defaultClicked();
-	void testClicked();
-
-	void languageChanged() override;
-	void skinChanged() override;
+		void languageChanged() override;
+		void skinChanged() override;
 };
 
 #endif // GUI_SHORTCUTENTRY_H

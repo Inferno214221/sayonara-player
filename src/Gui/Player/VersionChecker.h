@@ -1,6 +1,6 @@
 /* VersionChecker.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,8 @@
 /**
  * @brief Checks if the version is up to date when instantiated
  */
-class VersionChecker : public QObject
+class VersionChecker :
+	public QObject
 {
 	Q_OBJECT
 

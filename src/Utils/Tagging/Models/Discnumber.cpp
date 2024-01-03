@@ -1,6 +1,6 @@
 /* Discnumber.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,8 +24,7 @@
 
 Models::Discnumber::Discnumber(Disc disc, Disc discCount) :
 	disc(disc),
-	disccount(discCount)
-{}
+	disccount(discCount) {}
 
 QString Models::Discnumber::toString() const
 {

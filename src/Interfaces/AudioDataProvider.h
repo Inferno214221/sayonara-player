@@ -1,6 +1,6 @@
 /* AudioDataProvider.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -34,30 +34,30 @@ namespace Engine
 class LevelDataProvider
 {
 	public:
-		virtual void setLevelData(float left, float right)=0;
-		virtual void levelActiveChanged(bool b)=0;
+		virtual void setLevelData(float left, float right) = 0;
+		virtual void levelActiveChanged(bool b) = 0;
 
-		virtual void registerLevelReceiver(Engine::LevelDataReceiver* receiver)=0;
-		virtual void unregisterLevelReceiver(Engine::LevelDataReceiver* receiver)=0;
+		virtual void registerLevelReceiver(Engine::LevelDataReceiver* receiver) = 0;
+		virtual void unregisterLevelReceiver(Engine::LevelDataReceiver* receiver) = 0;
 };
 
 class SpectrumDataProvider
 {
 	public:
-		virtual void setSpectrumData(const std::vector<float>& spectrum)=0;
-		virtual void spectrumActiveChanged(bool b)=0;
+		virtual void setSpectrumData(const std::vector<float>& spectrum) = 0;
+		virtual void spectrumActiveChanged(bool b) = 0;
 
-		virtual void registerSpectrumReceiver(Engine::SpectrumDataReceiver* receiver)=0;
-		virtual void unregisterSpectrumReceiver(Engine::SpectrumDataReceiver* receiver)=0;
+		virtual void registerSpectrumReceiver(Engine::SpectrumDataReceiver* receiver) = 0;
+		virtual void unregisterSpectrumReceiver(Engine::SpectrumDataReceiver* receiver) = 0;
 };
 
 class RawAudioDataProvider
 {
 	public:
-		virtual void setAudioData(const QByteArray& data)=0;
+		virtual void setAudioData(const QByteArray& data) = 0;
 
-		virtual void registerAudioDataReceiver(Engine::RawAudioDataReceiver* receiver)=0;
-		virtual void unregisterAudioDataReceiver(Engine::RawAudioDataReceiver* receiver)=0;
+		virtual void registerAudioDataReceiver(Engine::RawAudioDataReceiver* receiver) = 0;
+		virtual void unregisterAudioDataReceiver(Engine::RawAudioDataReceiver* receiver) = 0;
 };
 
 #endif //SAYONARA_PLAYER_AUDIODATAPROVIDER_H

@@ -1,6 +1,6 @@
 /* StyledItemDelegate.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,20 +31,22 @@ namespace Gui
 	 * height of rows in a table and tree view
 	 * @ingroup Gui
 	 */
-	class StyledItemDelegate : public QStyledItemDelegate
+	class StyledItemDelegate :
+		public QStyledItemDelegate
 	{
 		Q_OBJECT
 		PIMPL(StyledItemDelegate)
 
 		public:
-			explicit StyledItemDelegate(int decorationColumn, QObject* parent=nullptr);
-			explicit StyledItemDelegate(QObject* parent=nullptr);
+			explicit StyledItemDelegate(int decorationColumn, QObject* parent = nullptr);
+			explicit StyledItemDelegate(QObject* parent = nullptr);
 			~StyledItemDelegate() override;
 
 			QSize sizeHint(const QStyleOptionViewItem& option,
-						   const QModelIndex& index) const override;
+			               const QModelIndex& index) const override;
 
-			virtual void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
+			virtual void
+			paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;
 	};
 }
 

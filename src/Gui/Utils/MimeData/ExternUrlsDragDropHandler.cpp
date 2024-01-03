@@ -1,6 +1,6 @@
 /* ExternUrlsDragDropHandler.cpp */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,9 @@ using Directory::MetaDataScanner;
 struct ExternUrlsDragDropHandler::Private
 {
 	QList<QUrl> urls;
-	Private(const QList<QUrl>& urls) : urls(urls) {}
+
+	Private(const QList<QUrl>& urls) :
+		urls(urls) {}
 };
 
 ExternUrlsDragDropHandler::ExternUrlsDragDropHandler(const QList<QUrl>& urls, QObject* parent) :
@@ -47,7 +49,7 @@ ExternUrlsDragDropHandler::~ExternUrlsDragDropHandler() = default;
 void ExternUrlsDragDropHandler::start()
 {
 	QStringList files;
-	Util::Algorithm::transform(m->urls, files, [](const auto& url){
+	Util::Algorithm::transform(m->urls, files, [](const auto& url) {
 		return (url.toLocalFile());
 	});
 

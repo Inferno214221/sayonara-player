@@ -1,6 +1,6 @@
 /* LocalCoverSearcher.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -137,7 +137,7 @@ QStringList LocalSearcher::coverPathsFromPathHint(const QString& filename)
 
 	QStringList ret;
 	QMap<QString, double> sizeMap;
-	for(const auto& entry : entries)
+	for(const auto& entry: entries)
 	{
 		const auto pixmapPath = filepath + "/" + entry;
 		const auto pixmap = QPixmap(pixmapPath);

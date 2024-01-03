@@ -1,6 +1,6 @@
 /* LineInputDialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ using Gui::Completer;
 
 struct LineInputDialog::Private
 {
-	Gui::Completer* completer=nullptr;
+	Gui::Completer* completer = nullptr;
 	QString infoPrefix;
 	QList<QChar> invalidChars;
 	LineInputDialog::ReturnValue returnValue;
@@ -40,8 +40,7 @@ struct LineInputDialog::Private
 
 	Private() :
 		returnValue(LineInputDialog::Ok),
-		showPrefix(false)
-	{}
+		showPrefix(false) {}
 };
 
 LineInputDialog::LineInputDialog(const QString& windowTitle, const QString& infoText, QWidget* parent) :
@@ -64,7 +63,8 @@ LineInputDialog::LineInputDialog(const QString& windowTitle, const QString& info
 	connect(ui->leInput, &QLineEdit::textEdited, this, &LineInputDialog::textEdited);
 }
 
-LineInputDialog::LineInputDialog(const QString& window_title, const QString& info_text, const QString& preset, QWidget* parent) :
+LineInputDialog::LineInputDialog(const QString& window_title, const QString& info_text, const QString& preset,
+                                 QWidget* parent) :
 	LineInputDialog(window_title, info_text, parent)
 {
 	ui->leInput->setText(preset);
@@ -72,7 +72,8 @@ LineInputDialog::LineInputDialog(const QString& window_title, const QString& inf
 
 LineInputDialog::~LineInputDialog()
 {
-	delete ui; ui=nullptr;
+	delete ui;
+	ui = nullptr;
 }
 
 QString LineInputDialog::getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath)
@@ -166,13 +167,15 @@ void LineInputDialog::cancelClicked()
 void LineInputDialog::textEdited(const QString& text)
 {
 	QString newText(text);
-	for(QChar c : m->invalidChars)
+	for(QChar c: m->invalidChars)
 	{
-		if(!c.isPrint()) {
+		if(!c.isPrint())
+		{
 			continue;
 		}
 
-		while(newText.contains(c)){
+		while(newText.contains(c))
+		{
 			newText.remove(c);
 		}
 	}

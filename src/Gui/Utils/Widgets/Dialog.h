@@ -1,6 +1,6 @@
 /* Dialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,26 +33,26 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class Dialog :
-			public Gui::WidgetTemplate<QDialog>
+		public Gui::WidgetTemplate<QDialog>
 	{
 		Q_OBJECT
 
-	signals:
-		/**
-		 * @brief emitted when closed
-		 */
-		void sigClosed();
+		signals:
+			/**
+			 * @brief emitted when closed
+			 */
+			void sigClosed();
 
-	public:
-		explicit Dialog(QWidget* parent=nullptr);
-		virtual ~Dialog() override;
+		public:
+			explicit Dialog(QWidget* parent = nullptr);
+			virtual ~Dialog() override;
 
-        void resizeRelative(QWidget* widget, double percent, const QSize& maxSize);
-		bool isAccepted() const;
+			void resizeRelative(QWidget* widget, double percent, const QSize& maxSize);
+			bool isAccepted() const;
 
-	protected:
-		virtual void closeEvent(QCloseEvent* e) override;
-        virtual void paintEvent(QPaintEvent* e) override;
+		protected:
+			virtual void closeEvent(QCloseEvent* e) override;
+			virtual void paintEvent(QPaintEvent* e) override;
 	};
 }
 

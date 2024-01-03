@@ -1,6 +1,6 @@
 /* GUI_CoverPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,39 +26,38 @@
 UI_FWD(GUI_CoverPreferences)
 
 class GUI_CoverPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_CoverPreferences)
 
-public:
-	explicit GUI_CoverPreferences(const QString& identifier);
-	~GUI_CoverPreferences() override;
+	public:
+		explicit GUI_CoverPreferences(const QString& identifier);
+		~GUI_CoverPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
-	void skinChanged() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
+		void skinChanged() override;
 
-private slots:
-	void upClicked();
-	void downClicked();
-	void addClicked();
-	void removeClicked();
+	private slots:
+		void upClicked();
+		void downClicked();
+		void addClicked();
+		void removeClicked();
 
-	void currentRowChanged(int row);
-	void deleteCoversFromDb();
-	void deleteCoverFiles();
-	void fetchCoversFromWWWTriggered(bool b);
+		void currentRowChanged(int row);
+		void deleteCoversFromDb();
+		void deleteCoverFiles();
+		void fetchCoversFromWWWTriggered(bool b);
 
-	void saveCoverToLibraryToggled(bool b);
-	void coverTemplateEdited(const QString& text);
+		void saveCoverToLibraryToggled(bool b);
+		void coverTemplateEdited(const QString& text);
 };
-
 
 #endif // GUI_CoverPreferences_H

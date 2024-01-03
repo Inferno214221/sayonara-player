@@ -1,6 +1,6 @@
 /* SimilarArtistFetcher.h */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,8 @@ class QString;
 namespace DynamicPlayback
 {
 	class ArtistMatch;
-	class SimilarArtistFetcher : public QObject
+	class SimilarArtistFetcher :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(SimilarArtistFetcher)

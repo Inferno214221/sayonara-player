@@ -1,6 +1,6 @@
 /* StreamServer.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,7 +46,8 @@ class StreamServer :
 		void sigListening(bool);
 
 	public:
-		explicit StreamServer(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QObject* parent = nullptr);
+		explicit StreamServer(PlayManager* playManager, RawAudioDataProvider* audioDataProvider,
+		                      QObject* parent = nullptr);
 		~StreamServer();
 
 		QStringList connectedClients() const;

@@ -1,6 +1,6 @@
 /* StandardPathTest.cpp */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -29,25 +29,25 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-class StandardPathTest : 
-    public Test::Base
+class StandardPathTest :
+	public Test::Base
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
-        StandardPathTest() :
-            Test::Base("StandardPathTest")
-        {
-	        Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
-        }
-
-        ~StandardPathTest()
-        {
+	public:
+		StandardPathTest() :
+			Test::Base("StandardPathTest")
+		{
 			Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
-        }
+		}
 
-    private slots:
-        void test();
+		~StandardPathTest()
+		{
+			Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+		}
+
+	private slots:
+		void test();
 };
 
 void StandardPathTest::test()
@@ -75,7 +75,8 @@ void StandardPathTest::test()
 	QVERIFY(QFile::exists(Util::similarArtistsPath()));
 
 	QVERIFY(Util::translationsPath() == homePath.absoluteFilePath("share/sayonara/translations"));
-	QVERIFY(Util::translationsSharePath() == Util::File::cleanFilename(QString("%1/%2").arg(SAYONARA_INSTALL_SHARE_PATH).arg("translations")));
+	QVERIFY(Util::translationsSharePath() ==
+	        Util::File::cleanFilename(QString("%1/%2").arg(SAYONARA_INSTALL_SHARE_PATH).arg("translations")));
 	QVERIFY(QFile::exists(Util::translationsPath()));
 
 	QVERIFY(Util::coverDirectory() == homePath.absoluteFilePath("cache/sayonara/covers"));
@@ -92,4 +93,5 @@ void StandardPathTest::test()
 }
 
 QTEST_GUILESS_MAIN(StandardPathTest)
+
 #include "StandardPathTest.moc"

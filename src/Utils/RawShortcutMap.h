@@ -1,6 +1,6 @@
 /* RawShortcutMap.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,7 +34,7 @@ class QStringList;
  * @ingroup Shortcuts
  */
 struct RawShortcutMap :
-		public QMap<QString, QStringList>
+	public QMap<QString, QStringList>
 {
 	QString toString() const;
 	static RawShortcutMap fromString(const QString& setting);

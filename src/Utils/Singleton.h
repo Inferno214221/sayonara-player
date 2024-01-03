@@ -1,6 +1,6 @@
 /* singleton.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,25 +23,24 @@
 #define SAYONARA_SINGLETON_H
 
 #define _SINGLETON_BASIC_(class_name) friend class Application; \
-				protected: \
-				class_name( const class_name& other ) = delete; \
-				class_name& operator=(const class_name& other) = delete; \
-				class_name( const class_name&& other ) = delete; \
-				class_name& operator=(const class_name&& other) = delete; \
-				public: \
-				static class_name *instance() \
-				{ static class_name instance; return &instance; } \
-				virtual ~class_name ();
+                protected: \
+                class_name( const class_name& other ) = delete; \
+                class_name& operator=(const class_name& other) = delete; \
+                class_name( const class_name&& other ) = delete; \
+                class_name& operator=(const class_name&& other) = delete; \
+                public: \
+                static class_name *instance() \
+                { static class_name instance; return &instance; } \
+                virtual ~class_name ();
 
 #define SINGLETON(class_name) _SINGLETON_BASIC_(class_name) \
-				protected: \
-				    class_name(); \
-				private:
+                protected: \
+                    class_name(); \
+                private:
 
 #define SINGLETON_QOBJECT(class_name) _SINGLETON_BASIC_(class_name) \
-				protected: \
-				    class_name(QObject* parent=nullptr); \
-				private:
-
+                protected: \
+                    class_name(QObject* parent=nullptr); \
+                private:
 
 #endif // SAYONARA_SINGLETON_H

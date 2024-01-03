@@ -1,6 +1,6 @@
 /* GUI_Lyrics.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -246,7 +246,7 @@ void GUI_Lyrics::setupSources()
 
 	auto i = 0;
 	const auto servers = m->lyrics->servers();
-	for(const auto& server : servers)
+	for(const auto& server: servers)
 	{
 		ui->comboServers->addItem(server, i++);
 	}

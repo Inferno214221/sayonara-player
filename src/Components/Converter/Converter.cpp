@@ -1,6 +1,6 @@
 /* Converter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -56,8 +56,7 @@ struct Converter::Private
 		errorCount(0),
 		processCount(0),
 		quality(quality),
-		stopped(false)
-	{}
+		stopped(false) {}
 };
 
 Converter::Converter(int quality, QObject* parent) :
@@ -88,10 +87,10 @@ void Converter::addMetadata(const MetaDataList& tracks)
 	m->tracks.clear();
 
 	QStringList formats = supportedInputFormats();
-	for(const MetaData& md : tracks)
+	for(const MetaData& md: tracks)
 	{
 		const QString filepath(md.filepath());
-		for(const QString& format : formats)
+		for(const QString& format: formats)
 		{
 			if(filepath.endsWith(format, Qt::CaseInsensitive))
 			{
@@ -112,7 +111,7 @@ void Converter::start(int numThreads, const QString& targetDirectoryectory)
 	m->currentIndex = 0;
 	m->stopped = false;
 
-	for(const MetaData& md : m->tracks)
+	for(const MetaData& md: m->tracks)
 	{
 		m->processes << processEntry(md);
 	}
@@ -134,7 +133,7 @@ void Converter::stop()
 	m->stopped = true;
 
 	const auto processKeys = m->runningProcesses.keys();
-	for(int key : processKeys)
+	for(int key: processKeys)
 	{
 		QProcess* p = m->runningProcesses.value(key);
 		if(p)

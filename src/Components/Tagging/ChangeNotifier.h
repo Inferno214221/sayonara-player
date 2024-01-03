@@ -1,6 +1,6 @@
 /* MetaDataChangeNotifier.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,47 +31,48 @@ class MetaData;
 class MetaDataList;
 class Album;
 
-using MetaDataPair=QPair<MetaData, MetaData>;
-using AlbumPair=QPair<Album, Album>;
+using MetaDataPair = QPair<MetaData, MetaData>;
+using AlbumPair = QPair<Album, Album>;
 
 namespace Tagging
 {
-    /**
-     * @brief The MetaDataChangeNotifier class (Singleton)
-     * @ingroup Tagging
-     */
-    class ChangeNotifier : public QObject
-    {
-        Q_OBJECT
+	/**
+	 * @brief The MetaDataChangeNotifier class (Singleton)
+	 * @ingroup Tagging
+	 */
+	class ChangeNotifier :
+		public QObject
+	{
+		Q_OBJECT
 
-        SINGLETON_QOBJECT(ChangeNotifier)
-        PIMPL(ChangeNotifier)
-    signals:
-        /**
-         * @brief sig_metadata_changed Signal emitted when change_metadata was called
-         * @param v_md_oldThe original Metadata used for comparison
-         * @param v_md_new The actualized Metadata
-         */
-        void sigMetadataChanged();
-        void sigMetadataDeleted();
-		void sigAlbumsChanged();
+			SINGLETON_QOBJECT(ChangeNotifier)
+		PIMPL(ChangeNotifier)
+		signals:
+			/**
+			 * @brief sig_metadata_changed Signal emitted when change_metadata was called
+			 * @param v_md_oldThe original Metadata used for comparison
+			 * @param v_md_new The actualized Metadata
+			 */
+			void sigMetadataChanged();
+			void sigMetadataDeleted();
+			void sigAlbumsChanged();
 
-    public:
-		/**
-		 * @brief change_metadata Tell the MetaDataChangeNotifier that MetaData has been changed
-		 * @param v_md_old The original Metadata used for comparison
-		 * @param v_md_new The actualized Metadata
-		 */
-		void clearChangedMetadata();
-		void changeMetadata(const QList<MetaDataPair>& changedTracks);
-        void deleteMetadata(const MetaDataList& deletedTracks);
-		void updateAlbums(const QList<AlbumPair>& changedAlbums);
+		public:
+			/**
+			 * @brief change_metadata Tell the MetaDataChangeNotifier that MetaData has been changed
+			 * @param v_md_old The original Metadata used for comparison
+			 * @param v_md_new The actualized Metadata
+			 */
+			void clearChangedMetadata();
+			void changeMetadata(const QList<MetaDataPair>& changedTracks);
+			void deleteMetadata(const MetaDataList& deletedTracks);
+			void updateAlbums(const QList<AlbumPair>& changedAlbums);
 
-		const QList<MetaDataPair>& changedMetadata() const;
-        const MetaDataList& deletedMetadata() const;
-		const QList<AlbumPair>& changedAlbums() const;
+			const QList<MetaDataPair>& changedMetadata() const;
+			const MetaDataList& deletedMetadata() const;
+			const QList<AlbumPair>& changedAlbums() const;
 
-    };
+	};
 }
 
 #endif // METADATACHANGENOTIFIER_H

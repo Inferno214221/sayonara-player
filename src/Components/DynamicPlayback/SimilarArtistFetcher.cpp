@@ -1,6 +1,6 @@
 /* SimilarArtistFetcher.cpp */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -25,8 +25,7 @@ struct SimilarArtistFetcher::Private
 	QString artist;
 
 	Private(const QString& artist) :
-		artist(artist)
-	{}
+		artist(artist) {}
 };
 
 SimilarArtistFetcher::SimilarArtistFetcher(const QString& artist, QObject* parent) :

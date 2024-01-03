@@ -1,6 +1,6 @@
 /* MimeDataUtils.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,7 +53,7 @@ QStringList MimeData::playlists(const QMimeData* data)
 	QStringList wwwPlaylists;
 
 	const auto urls = data->urls();
-	for(const auto& url : urls)
+	for(const auto& url: urls)
 	{
 		if(::Util::File::isPlaylistFile(url.toString()))
 		{

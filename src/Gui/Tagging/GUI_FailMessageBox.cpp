@@ -1,6 +1,6 @@
 /* GUI_FailMessageBox.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,17 +40,18 @@ GUI_FailMessageBox::GUI_FailMessageBox(QWidget* parent) :
 
 GUI_FailMessageBox::~GUI_FailMessageBox()
 {
-	delete ui; ui=nullptr;
+	delete ui;
+	ui = nullptr;
 }
 
 void GUI_FailMessageBox::setFailedFiles(const QMap<QString, Tagging::Editor::FailReason>& files)
 {
 	ui->tv_files->clear();
 
-	using Reason=Tagging::Editor::FailReason;
+	using Reason = Tagging::Editor::FailReason;
 	ui->tv_files->setRowCount(files.size());
 	ui->tv_files->setColumnCount(4);
-	ui->tv_files->setHorizontalHeaderLabels(QStringList{
+	ui->tv_files->setHorizontalHeaderLabels(QStringList {
 		Lang::get(Lang::Filename),
 		tr("File exists") + "?",
 		tr("Writeable") + "?",
@@ -58,8 +59,8 @@ void GUI_FailMessageBox::setFailedFiles(const QMap<QString, Tagging::Editor::Fai
 	});
 
 	const QList<QString> keys = files.keys();
-	int row=0;
-	for(const QString& key : keys)
+	int row = 0;
+	for(const QString& key: keys)
 	{
 		Reason reason = files[key];
 
@@ -109,14 +110,16 @@ void GUI_FailMessageBox::detailsToggled(bool b)
 {
 	ui->tv_files->setVisible(b);
 
-	if(b) {
+	if(b)
+	{
 		this->adjustSize();
 		QSize sz = this->size();
 		sz.setWidth(parentWidget()->width());
 		this->resize(sz);
 	}
 
-	else {
+	else
+	{
 		this->adjustSize();
 	}
 }

@@ -1,6 +1,6 @@
 /* Genre.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,30 +29,29 @@ using GenreID = uint32_t;
 
 class Genre
 {
-private:
+	private:
 	PIMPL(Genre)
 
-public:
-	Genre();
-	explicit Genre(const QString& name);
-	Genre(const Genre& other);
-	Genre(Genre&& other) noexcept;
+	public:
+		Genre();
+		explicit Genre(const QString& name);
+		Genre(const Genre& other);
+		Genre(Genre&& other) noexcept;
 
-	~Genre();
+		~Genre();
 
-	static GenreID calculateId(const QString& name);
-	GenreID id() const;
+		static GenreID calculateId(const QString& name);
+		GenreID id() const;
 
-	QString name() const;
-	void setName(const QString& name);
+		QString name() const;
+		void setName(const QString& name);
 
-	bool isEqual(const Genre& other) const;
-	bool operator ==(const Genre& other) const;
-	bool operator <(const Genre& other) const;
-	bool operator >(const Genre& other) const;
-	Genre& operator =(const Genre& other);
-	Genre& operator =(Genre&& other) noexcept;
+		bool isEqual(const Genre& other) const;
+		bool operator==(const Genre& other) const;
+		bool operator<(const Genre& other) const;
+		bool operator>(const Genre& other) const;
+		Genre& operator=(const Genre& other);
+		Genre& operator=(Genre&& other) noexcept;
 };
-
 
 #endif // GENRE_H

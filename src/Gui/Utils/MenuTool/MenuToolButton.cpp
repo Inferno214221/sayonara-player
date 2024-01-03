@@ -1,6 +1,6 @@
 /* MenuTool.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,13 +30,12 @@ using Gui::ContextMenu;
 
 struct MenuToolButton::Private
 {
-	ContextMenu* menu=nullptr;
+	ContextMenu* menu = nullptr;
 	bool overrideText;
 
 	Private(MenuToolButton* parent) :
 		menu(new ContextMenu(parent)),
-		overrideText(false)
-	{}
+		overrideText(false) {}
 };
 
 MenuToolButton::MenuToolButton(QWidget* parent) :
@@ -44,7 +43,7 @@ MenuToolButton::MenuToolButton(QWidget* parent) :
 {
 	m = Pimpl::make<Private>(this);
 
-	connect(m->menu, &ContextMenu::sigOpen, this,  &MenuToolButton::sigOpen);
+	connect(m->menu, &ContextMenu::sigOpen, this, &MenuToolButton::sigOpen);
 	connect(m->menu, &ContextMenu::sigNew, this, &MenuToolButton::sigNew);
 	connect(m->menu, &ContextMenu::sigUndo, this, &MenuToolButton::sigUndo);
 	connect(m->menu, &ContextMenu::sigDefault, this, &MenuToolButton::sigDefault);
@@ -64,7 +63,7 @@ MenuToolButton::MenuToolButton(QWidget* parent) :
 
 MenuToolButton::~MenuToolButton() = default;
 
-void MenuToolButton::registerAction(QAction *action)
+void MenuToolButton::registerAction(QAction* action)
 {
 	m->menu->registerAction(action);
 	proveEnabled();
@@ -112,7 +111,7 @@ void MenuToolButton::mouseReleaseEvent(QMouseEvent* e)
 	QPoint p = this->mapToGlobal(this->pos()) - this->pos();
 	m->menu->exec(p);
 
-	{	// when menu is visible and triggered outside
+	{    // when menu is visible and triggered outside
 		// the button's border the button does not
 		// recognize the mouseLeave event. So, the
 		// hover state still persists and the

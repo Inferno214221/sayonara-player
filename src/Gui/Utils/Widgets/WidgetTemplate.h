@@ -1,6 +1,6 @@
 /* WidgetTemplate.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,9 +29,9 @@
 
 class QWidget;
 
-#define combo_current_index_changed_int	static_cast<void (QComboBox::*) (int)>(&QComboBox::currentIndexChanged)
-#define combo_activated_int	static_cast<void (QComboBox::*) (int)>(&QComboBox::activated)
-#define spinbox_value_changed_int	static_cast<void (QSpinBox::*) (int)>(&QSpinBox::valueChanged)
+#define combo_current_index_changed_int    static_cast<void (QComboBox::*) (int)>(&QComboBox::currentIndexChanged)
+#define combo_activated_int    static_cast<void (QComboBox::*) (int)>(&QComboBox::activated)
+#define spinbox_value_changed_int    static_cast<void (QSpinBox::*) (int)>(&QSpinBox::valueChanged)
 
 namespace Gui
 {
@@ -47,7 +47,7 @@ namespace Gui
 		Q_OBJECT
 
 		private:
-			WidgetTemplateParent* mWtp=nullptr;
+			WidgetTemplateParent* mWtp = nullptr;
 
 		public:
 			AbstrWidgetTemplate(QObject* parent, WidgetTemplateParent* wtp);
@@ -58,14 +58,13 @@ namespace Gui
 			virtual void skinChanged();
 	};
 
-
 	/**
 	 * @brief The WidgetTemplateParent class
 	 * @ingroup Widgets
 	 */
 	class WidgetTemplateParent
 	{
-		friend class AbstrWidgetTemplate;
+			friend class AbstrWidgetTemplate;
 
 		public:
 			WidgetTemplateParent();
@@ -82,18 +81,18 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class WidgetTemplate :
-			public T,
-			protected WidgetTemplateParent
+		public T,
+		protected WidgetTemplateParent
 	{
-		friend class AbstrWidgetTemplate;
+			friend class AbstrWidgetTemplate;
 
 		private:
-			AbstrWidgetTemplate* mAwt=nullptr;
+			AbstrWidgetTemplate* mAwt = nullptr;
 
 		public:
-            template<typename... Args>
-            WidgetTemplate(Args... args) :
-                T(args...),
+			template<typename... Args>
+			WidgetTemplate(Args... args) :
+				T(args...),
 				WidgetTemplateParent()
 			{
 				mAwt = new AbstrWidgetTemplate(this, this);
@@ -108,7 +107,7 @@ namespace Gui
 
 				T::showEvent(e);
 			}
-		};
+	};
 }
 
 #endif // SAYONARAWIDGETTEMPLATE_H

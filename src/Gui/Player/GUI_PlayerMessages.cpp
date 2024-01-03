@@ -1,6 +1,6 @@
 /* GUI_PlayerMessages.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,11 +45,12 @@ static Message::Answer convertAnswer(int answer)
 	}
 }
 
-Message::Answer GUI_Player::errorReceived(const QString& error, const QString& senderName) // NOLINT(google-default-arguments)
+Message::Answer
+GUI_Player::errorReceived(const QString& error, const QString& senderName) // NOLINT(google-default-arguments)
 {
 	const auto title = senderName.isEmpty()
-	                ? Lang::get(Lang::Error) + ":"
-	                : senderName + ": " + Lang::get(Lang::Error);
+	                   ? Lang::get(Lang::Error) + ":"
+	                   : senderName + ": " + Lang::get(Lang::Error);
 
 	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
@@ -61,11 +62,12 @@ Message::Answer GUI_Player::errorReceived(const QString& error, const QString& s
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::warningReceived(const QString& warning, const QString& senderName) // NOLINT(google-default-arguments)
+Message::Answer
+GUI_Player::warningReceived(const QString& warning, const QString& senderName) // NOLINT(google-default-arguments)
 {
 	const auto title = senderName.isEmpty()
-	                ? Lang::get(Lang::Warning)
-	                : senderName + ": " + Lang::get(Lang::Warning);
+	                   ? Lang::get(Lang::Warning)
+	                   : senderName + ": " + Lang::get(Lang::Warning);
 
 	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
@@ -77,11 +79,12 @@ Message::Answer GUI_Player::warningReceived(const QString& warning, const QStrin
 	return convertAnswer(msgBox.exec());
 }
 
-Message::Answer GUI_Player::infoReceived(const QString& info, const QString& senderName) // NOLINT(google-default-arguments)
+Message::Answer
+GUI_Player::infoReceived(const QString& info, const QString& senderName) // NOLINT(google-default-arguments)
 {
 	const auto title = senderName.isEmpty()
-	                ? Lang::get(Lang::Info)
-	                : senderName + ": " + Lang::get(Lang::Info);
+	                   ? Lang::get(Lang::Info)
+	                   : senderName + ": " + Lang::get(Lang::Info);
 
 	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);
@@ -94,11 +97,12 @@ Message::Answer GUI_Player::infoReceived(const QString& info, const QString& sen
 }
 
 Message::Answer
-GUI_Player::questionReceived(const QString& question, const QString& senderName, Message::QuestionType type) // NOLINT(google-default-arguments)
+GUI_Player::questionReceived(const QString& question, const QString& senderName,
+                             Message::QuestionType type) // NOLINT(google-default-arguments)
 {
 	const auto title = senderName.isEmpty()
-	                ? Lang::get(Lang::Info)
-	                : senderName + ": " + Lang::get(Lang::Info);
+	                   ? Lang::get(Lang::Info)
+	                   : senderName + ": " + Lang::get(Lang::Info);
 
 	auto msgBox = QMessageBox(this);
 	msgBox.setWindowTitle(title);

@@ -1,6 +1,6 @@
 /* GUI_PlayerPluginBase.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,26 +35,26 @@ namespace PlayerPlugin
 }
 
 class GUI_PlayerPlugin :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_PlayerPlugin)
 	PIMPL(GUI_PlayerPlugin)
 
-public:
-	explicit GUI_PlayerPlugin(QWidget* parent = nullptr);
-	~GUI_PlayerPlugin() override;
+	public:
+		explicit GUI_PlayerPlugin(QWidget* parent = nullptr);
+		~GUI_PlayerPlugin() override;
 
-	void setContent(PlayerPlugin::Base* playerPlugin);
-	void show(PlayerPlugin::Base* playerPlugin);
-	void showCurrentPlugin();
+		void setContent(PlayerPlugin::Base* playerPlugin);
+		void show(PlayerPlugin::Base* playerPlugin);
+		void showCurrentPlugin();
 
-private:
-	void closeCurrentPlugin();
+	private:
+		void closeCurrentPlugin();
 
-protected:
-	void languageChanged() override;
-	void closeEvent(QCloseEvent* e) override;
+	protected:
+		void languageChanged() override;
+		void closeEvent(QCloseEvent* e) override;
 };
 
 #endif // GUI_PLAYERPLUGIN_H

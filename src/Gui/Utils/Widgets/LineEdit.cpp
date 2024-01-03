@@ -1,6 +1,6 @@
 /* TagTextInput.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -82,14 +82,14 @@ void LineEdit::itemTextChanged(const QString& text)
 	m->items.removeDuplicates();
 	m->currentIndex = m->items.indexOf(text);
 
-	for(auto* action : m->actions)
+	for(auto* action: m->actions)
 	{
 		m->contextMenu->removeAction(action);
 	}
 
 	m->actions.clear();
 
-	for(const auto& item : m->items)
+	for(const auto& item: m->items)
 	{
 		auto* action = new QAction(item, m->contextMenu);
 		connect(action, &QAction::triggered, this, &LineEdit::itemActionTriggered);
@@ -115,7 +115,7 @@ void LineEdit::removeSpecialCharsTriggered()
 	QString newText;
 	const auto text = this->text();
 
-	for(const auto& c : text)
+	for(const auto& c: text)
 	{
 		newText.append((!specialChars.contains(c)) ? c : ' ');
 	}
@@ -147,8 +147,8 @@ void LineEdit::keyPressEvent(QKeyEvent* event)
 	else if(event->key() == Qt::Key_Down)
 	{
 		m->currentIndex = (m->currentIndex == 0)
-			? m->items.size() - 1
-			: m->currentIndex - 1;
+		                  ? m->items.size() - 1
+		                  : m->currentIndex - 1;
 
 		this->setText(m->items[m->currentIndex]);
 	}

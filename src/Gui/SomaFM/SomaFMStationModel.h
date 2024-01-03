@@ -1,6 +1,6 @@
 /* SomaFMStationModel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,39 +33,40 @@ namespace SomaFM
 {
 	class Station;
 	class StationModel :
-			public SearchableTableModel
+		public SearchableTableModel
 	{
 		Q_OBJECT
 		PIMPL(StationModel)
 
-	public:
-		explicit StationModel(QObject* parent = nullptr);
-		~StationModel() override;
+		public:
+			explicit StationModel(QObject* parent = nullptr);
+			~StationModel() override;
 
-	private:
-		enum class Status : char
-		{
-			Waiting,
-			Error,
-			OK
-		};
+		private:
+			enum class Status :
+				char
+			{
+				Waiting,
+				Error,
+				OK
+			};
 
-	public:
-		// QAbstractItemModel interface
-		int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-		int columnCount(const QModelIndex& parent=QModelIndex()) const override;
-		QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
-		QMimeData* mimeData(const QModelIndexList &indexes) const override;
-		Qt::ItemFlags flags(const QModelIndex& index) const override;
+		public:
+			// QAbstractItemModel interface
+			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-	public:
-		// AbstractSearchModelInterface interface
-		QModelIndexList searchResults(const QString& substr) override;
+		public:
+			// AbstractSearchModelInterface interface
+			QModelIndexList searchResults(const QString& substr) override;
 
-		void setStations(const QList<SomaFM::Station>& stations);
-		void replaceStation(const SomaFM::Station& station);
-		bool hasStations() const;
-		void setWaiting();
+			void setStations(const QList<SomaFM::Station>& stations);
+			void replaceStation(const SomaFM::Station& station);
+			bool hasStations() const;
+			void setWaiting();
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_IconPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,7 +34,8 @@
 
 namespace Algorithm = Util::Algorithm;
 
-class IconRadioButton : public QRadioButton
+class IconRadioButton :
+	public QRadioButton
 {
 	private:
 		QString mTheme;
@@ -100,7 +101,7 @@ bool GUI_IconPreferences::commit()
 		return true;
 	}
 
-	for(IconRadioButton* rb : m->radioButtons)
+	for(IconRadioButton* rb: m->radioButtons)
 	{
 		rb->setStyleSheet("font-weight: normal;");
 		if(rb->isChecked())
@@ -128,7 +129,7 @@ void GUI_IconPreferences::revert()
 		return;
 	}
 
-	for(IconRadioButton* rb : m->radioButtons)
+	for(IconRadioButton* rb: m->radioButtons)
 	{
 		rb->setChecked(rb->theme() == m->originalTheme);
 	}
@@ -200,7 +201,7 @@ void GUI_IconPreferences::initUi()
 	});
 	QIcon::setThemeSearchPaths(iconPaths);
 
-	for(const QString& iconPath : Algorithm::AsConst(iconPaths))
+	for(const QString& iconPath: Algorithm::AsConst(iconPaths))
 	{
 		const QDir d(iconPath);
 		const QStringList subdirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -210,7 +211,7 @@ void GUI_IconPreferences::initUi()
 			continue;
 		}
 
-		for(const QString& subdir : subdirs)
+		for(const QString& subdir: subdirs)
 		{
 			if(subdir.isEmpty() || (subdir == m->systemTheme))
 			{

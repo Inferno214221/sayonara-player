@@ -1,6 +1,6 @@
 /* GUILibraryInfoBox.cpp
 
- * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+ * Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -87,7 +87,7 @@ void GUI_LibraryInfoBox::languageChanged()
 void GUI_LibraryInfoBox::skinChanged()
 {
 	const auto height = ui->lab_icon->height();
-	ui->lab_path->setText(Util::createLink( m->libraryInfo.path(), Style::isDark()));
+	ui->lab_path->setText(Util::createLink(m->libraryInfo.path(), Style::isDark()));
 	ui->lab_icon->setPixmap(Gui::Icons::pixmap(Gui::Icons::LocalLibrary, QSize(height, height)));
 }
 
@@ -116,7 +116,7 @@ void GUI_LibraryInfoBox::refresh()
 	MilliSeconds durationMs = 0;
 	Filesize filesize = 0;
 
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		durationMs += track.durationMs();
 		filesize += track.filesize();

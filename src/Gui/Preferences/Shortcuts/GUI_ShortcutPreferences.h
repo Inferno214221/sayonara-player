@@ -1,6 +1,6 @@
 /* GUI_ShortcutPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,30 +30,30 @@ UI_FWD(GUI_ShortcutPreferences)
  * @brief The GUI_ShortcutPreferences class
  * @ingroup Shortcuts
  */
-class GUI_ShortcutPreferences final:
-		public Preferences::Base
+class GUI_ShortcutPreferences final :
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ShortcutPreferences)
 	PIMPL(GUI_ShortcutPreferences)
 
-public:
-	explicit GUI_ShortcutPreferences(const QString& identifier);
-	~GUI_ShortcutPreferences();
+	public:
+		explicit GUI_ShortcutPreferences(const QString& identifier);
+		~GUI_ShortcutPreferences();
 
-	void revert() override;
-	bool commit() override;
+		void revert() override;
+		bool commit() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
-	QString errorString() const override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
+		QString errorString() const override;
 
-private slots:
-	void testPressed(const QList<QKeySequence>& sequences);
-	void sequenceEntered();
+	private slots:
+		void testPressed(const QList<QKeySequence>& sequences);
+		void sequenceEntered();
 };
 
 #endif // GUI_ShortcutPreferences_H

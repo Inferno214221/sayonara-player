@@ -1,6 +1,6 @@
 /* StreamHttpParser.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,16 +38,16 @@ class StreamHttpParser
 		enum class HttpAnswer :
 			unsigned char
 		{
-				Fail = 0,
-				OK,
-				Reject,
-				Ignore,
-				Playlist,
-				HTML5,
-				MP3,
-				BG,
-				Favicon,
-				MetaData
+			Fail = 0,
+			OK,
+			Reject,
+			Ignore,
+			Playlist,
+			HTML5,
+			MP3,
+			BG,
+			Favicon,
+			MetaData
 		};
 
 		StreamHttpParser();

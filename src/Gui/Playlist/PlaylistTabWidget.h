@@ -1,6 +1,6 @@
 /* PlaylistTabWidget.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,7 +31,7 @@ namespace Playlist
 {
 	class View;
 	class TabWidget :
-			public QTabWidget
+		public QTabWidget
 	{
 		Q_OBJECT
 		PIMPL(TabWidget)
@@ -52,7 +52,7 @@ namespace Playlist
 			void sigContextMenuRequested(int tabIndex, const QPoint& point);
 
 		public:
-			explicit TabWidget(QWidget* parent=nullptr);
+			explicit TabWidget(QWidget* parent = nullptr);
 			~TabWidget() override;
 
 			void showMenuItems(MenuEntries actions, const QPoint& position);

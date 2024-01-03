@@ -1,6 +1,6 @@
 /* SomaFMStationModel.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,8 +45,8 @@
 
 struct SomaFM::StationModel::Private
 {
-	QList<SomaFM::Station>			stations;
-	SomaFM::StationModel::Status	status;
+	QList<SomaFM::Station> stations;
+	SomaFM::StationModel::Status status;
 };
 
 SomaFM::StationModel::StationModel(QObject* parent) :
@@ -83,7 +83,7 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		return int(Qt::AlignVCenter| Qt::AlignLeft);
+		return int(Qt::AlignVCenter | Qt::AlignLeft);
 	}
 
 	if(row < 0 || row >= rowCount())
@@ -93,32 +93,37 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	if(role == Qt::DecorationRole)
 	{
-		if(m->status == Status::Waiting){
+		if(m->status == Status::Waiting)
+		{
 			return QVariant();
 		}
 
-		if(col == 1){
+		if(col == 1)
+		{
 			return QVariant();
 		}
 
-		if(m->status == Status::Error){
+		if(m->status == Status::Error)
+		{
 			return Gui::Icons::icon(Gui::Icons::Undo);
 		}
 
 		return m->stations[row].isLoved()
-			? Gui::Icons::icon(Gui::Icons::Star)
-			: Gui::Icons::icon(Gui::Icons::StarDisabled);
+		       ? Gui::Icons::icon(Gui::Icons::Star)
+		       : Gui::Icons::icon(Gui::Icons::StarDisabled);
 	}
 
 	else if(role == Qt::DisplayRole && col == 1)
 	{
 		if(m->stations.isEmpty())
 		{
-			if(m->status == Status::Waiting){
+			if(m->status == Status::Waiting)
+			{
 				return Lang::get(Lang::LoadingArg).arg("SomaFM");
 			}
 
-			else if(m->status == Status::Error){
+			else if(m->status == Status::Error)
+			{
 				return tr("Cannot fetch stations");
 			}
 
@@ -130,7 +135,8 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 
 	else if(role == Qt::WhatsThisRole)
 	{
-		if(m->stations.isEmpty()){
+		if(m->stations.isEmpty())
+		{
 			return QVariant();
 		}
 
@@ -145,13 +151,14 @@ QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
 	QModelIndexList ret;
 
 	int i = 0;
-	for(const SomaFM::Station& station : m->stations)
+	for(const SomaFM::Station& station: m->stations)
 	{
 		const QString name = station.name();
 		const QString desc = station.description();
 		const QString str = name + desc;
 
-		if(str.contains(substr, Qt::CaseInsensitive)){
+		if(str.contains(substr, Qt::CaseInsensitive))
+		{
 			ret << this->index(i, 0);
 		}
 	}
@@ -163,9 +170,10 @@ void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 {
 	int stationCount = stations.size();
 
-	if(stationCount == 0){
+	if(stationCount == 0)
+	{
 		m->status = Status::Error;
-		emit dataChanged( index(0,0), index(0, 1) );
+		emit dataChanged(index(0, 0), index(0, 1));
 		return;
 	}
 
@@ -186,9 +194,10 @@ void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
 
 void SomaFM::StationModel::replaceStation(const SomaFM::Station& station)
 {
-	for(int i=0; i<m->stations.size(); i++)
+	for(int i = 0; i < m->stations.size(); i++)
 	{
-		if(station.name() == m->stations[i].name()){
+		if(station.name() == m->stations[i].name())
+		{
 			m->stations[i] = station;
 
 			emit dataChanged(this->index(i, 0), this->index(i, 1));
@@ -205,13 +214,13 @@ bool SomaFM::StationModel::hasStations() const
 void SomaFM::StationModel::setWaiting()
 {
 	m->status = Status::Waiting;
-	emit dataChanged( index(0,0), index(0, 1) );
+	emit dataChanged(index(0, 0), index(0, 1));
 }
 
 QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 {
 	int row = -1;
-	for(const QModelIndex& index : indexes)
+	for(const QModelIndex& index: indexes)
 	{
 		if(index.row() > 0 && index.row() < m->stations.count())
 		{
@@ -240,7 +249,8 @@ Qt::ItemFlags SomaFM::StationModel::flags(const QModelIndex& index) const
 		case Status::Waiting:
 			return (Qt::NoItemFlags);
 		case Status::Error:
-			if(index.column() == 0){
+			if(index.column() == 0)
+			{
 				return Qt::ItemIsEnabled;
 			}
 			return (Qt::NoItemFlags);

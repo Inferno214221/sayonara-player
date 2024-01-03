@@ -1,6 +1,6 @@
 /* ComboBox.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,8 +40,8 @@ void ComboBox::skinChanged()
 	if(view() && view()->parentWidget())
 	{
 		const auto stylesheet = (Style::isDark())
-			? QStringLiteral("background: #505050; border: none;")
-			: QString();
+		                        ? QStringLiteral("background: #505050; border: none;")
+		                        : QString();
 
 		view()->parentWidget()->setStyleSheet(stylesheet);
 	}

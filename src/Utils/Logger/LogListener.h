@@ -1,6 +1,6 @@
 /* LogListener.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,12 +28,11 @@ class QDateTime;
 class QString;
 struct LogEntry;
 
-using StrRef=const QString&;
+using StrRef = const QString&;
 class LogListener
 {
 	public:
-	virtual void addLogLine(const LogEntry& le)=0;
+		virtual void addLogLine(const LogEntry& le) = 0;
 };
-
 
 #endif // LOGLISTENER_H

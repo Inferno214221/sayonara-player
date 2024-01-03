@@ -1,6 +1,6 @@
 /* LineInputDialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,12 +46,13 @@ namespace Gui
 		public:
 			enum ReturnValue
 			{
-				Ok=0,
+				Ok = 0,
 				Cancelled
 			};
 
-			LineInputDialog(const QString& title, const QString& infoText, const QString& inputText, QWidget* parent=nullptr);
-			LineInputDialog(const QString& title, const QString& infoText, QWidget* parent=nullptr);
+			LineInputDialog(const QString& title, const QString& infoText, const QString& inputText,
+			                QWidget* parent = nullptr);
+			LineInputDialog(const QString& title, const QString& infoText, QWidget* parent = nullptr);
 			virtual ~LineInputDialog() override;
 
 			void setHeaderText(const QString& text);
@@ -78,7 +79,7 @@ namespace Gui
 
 			void setPlaceholderText(const QString& text);
 
-			void showInfo(bool b, const QString& infoPrefix=QString());
+			void showInfo(bool b, const QString& infoPrefix = QString());
 
 			/**
 			 * @brief Convenience method for return_value() method
@@ -97,8 +98,9 @@ namespace Gui
 			void closeEvent(QCloseEvent* e) override;
 
 		public:
-			static QString getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath=QString());
-			static QString getNewFilename(QWidget* parent, const QString& info, const QString& parentPath=QString());
+			static QString
+			getRenameFilename(QWidget* parent, const QString& oldName, const QString& parentPath = QString());
+			static QString getNewFilename(QWidget* parent, const QString& info, const QString& parentPath = QString());
 	};
 }
 

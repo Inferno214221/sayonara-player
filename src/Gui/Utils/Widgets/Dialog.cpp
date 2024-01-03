@@ -1,6 +1,6 @@
 /* Dialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,8 +38,8 @@ using Gui::WidgetTemplate;
 Dialog::Dialog(QWidget* parent) :
 	WidgetTemplate<QDialog>(parent)
 {
-    this->setAttribute(Qt::WA_StyledBackground);
-    setSizeGripEnabled(true);
+	this->setAttribute(Qt::WA_StyledBackground);
+	setSizeGripEnabled(true);
 }
 
 Dialog::~Dialog() = default;
@@ -51,11 +51,11 @@ bool Dialog::isAccepted() const
 
 void Dialog::resizeRelative(QWidget* widget, double percent, const QSize& maxSize)
 {
-    QSize size;
-    size.setWidth(std::max<int>(widget->width() * percent, maxSize.width()));
-    size.setHeight(std::max<int>(widget->height() * percent, maxSize.height()));
+	QSize size;
+	size.setWidth(std::max<int>(widget->width() * percent, maxSize.width()));
+	size.setHeight(std::max<int>(widget->height() * percent, maxSize.height()));
 
-    this->resize(size);
+	this->resize(size);
 }
 
 void Dialog::closeEvent(QCloseEvent* e)
@@ -64,12 +64,12 @@ void Dialog::closeEvent(QCloseEvent* e)
 	emit sigClosed();
 }
 
-void Dialog::paintEvent(QPaintEvent *e)
+void Dialog::paintEvent(QPaintEvent* e)
 {
-    QStyleOption option;
-    option.init(this);
-    QPainter p(this);
-    style()->drawPrimitive(QStyle::PE_Widget, &option, &p, this);
+	QStyleOption option;
+	option.init(this);
+	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &option, &p, this);
 
-    QDialog::paintEvent(e);
+	QDialog::paintEvent(e);
 }

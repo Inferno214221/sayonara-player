@@ -1,6 +1,6 @@
 /* TaggingEnums.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,21 +39,21 @@ namespace Tagging
 	enum class Quality :
 		unsigned char
 	{
-			Fast = TagLib::AudioProperties::Fast,
-			Standard = TagLib::AudioProperties::Average,
-			Quality = TagLib::AudioProperties::Accurate,
-			Dirty
+		Fast = TagLib::AudioProperties::Fast,
+		Standard = TagLib::AudioProperties::Average,
+		Quality = TagLib::AudioProperties::Accurate,
+		Dirty
 	};
 
 	enum class TagType :
 		unsigned char
 	{
-			ID3v1 = 0,
-			ID3v2,
-			Xiph,
-			MP4,
-			Unsupported,
-			Unknown
+		ID3v1 = 0,
+		ID3v2,
+		Xiph,
+		MP4,
+		Unsupported,
+		Unknown
 	};
 
 	struct ParsedTag

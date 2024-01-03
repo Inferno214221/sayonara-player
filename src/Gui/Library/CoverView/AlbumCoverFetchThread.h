@@ -1,6 +1,6 @@
 /* AlbumCoverFetchThread.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,7 +46,8 @@ namespace Library
 	 * and current_coverLocation().
 	 * @ingroup GuiLibrary
 	 */
-	class AlbumCoverFetchThread : public QThread
+	class AlbumCoverFetchThread :
+		public QThread
 	{
 		Q_OBJECT
 		PIMPL(AlbumCoverFetchThread)

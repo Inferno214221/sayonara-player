@@ -1,6 +1,6 @@
 /* InputField.h */
 /*
- * Copyright (C) 2011-2022 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,8 @@ class InputField :
 		~InputField() override;
 
 		std::optional<int> data() const;
-		void setData(SmartPlaylists::InputFormat inputFormat, const std::shared_ptr<SmartPlaylists::StringConverter>& converter, const int value);
+		void setData(SmartPlaylists::InputFormat inputFormat,
+		             const std::shared_ptr<SmartPlaylists::StringConverter>& converter, const int value);
 
 	private slots:
 		void mousePressed(QMouseEvent* e);

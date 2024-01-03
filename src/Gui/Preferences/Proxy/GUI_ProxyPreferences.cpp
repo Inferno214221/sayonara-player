@@ -1,6 +1,6 @@
 /* GUI_ProxyPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,14 +26,14 @@
 #include "Utils/WebAccess/Proxy.h"
 
 GUI_ProxyPreferences::GUI_ProxyPreferences(const QString& identifier) :
-	Base(identifier)
-{}
+	Base(identifier) {}
 
 GUI_ProxyPreferences::~GUI_ProxyPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -73,7 +73,8 @@ bool GUI_ProxyPreferences::commit()
 
 		SetSetting(Set::Proxy_Password, str);
 	}
-	else {
+	else
+	{
 		SetSetting(Set::Proxy_Password, QString());
 	}
 

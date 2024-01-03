@@ -1,6 +1,6 @@
 /* ImageSelectionDialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,8 +31,8 @@ using Gui::ImageSelectionDialog;
 struct ImageSelectionDialog::Private
 {
 	QString start_dir;
-	QLabel* imageLabel=nullptr;
-	QLabel* resolutionLabel=nullptr;
+	QLabel* imageLabel = nullptr;
+	QLabel* resolutionLabel = nullptr;
 
 	Private(QWidget* parent)
 	{
@@ -51,10 +51,10 @@ ImageSelectionDialog::ImageSelectionDialog(const QString& dir, QWidget* parent) 
 	m->start_dir = dir;
 
 	const QStringList filters
-	{
-		tr("Image files") + " (" + Util::imageExtensions().join(" ") + ")",
-		tr("Any files") + " (*)"
-	};
+		{
+			tr("Image files") + " (" + Util::imageExtensions().join(" ") + ")",
+			tr("Any files") + " (*)"
+		};
 
 	this->setDirectory(dir);
 	this->setFilter(QDir::AllEntries | QDir::AllDirs);
@@ -79,7 +79,8 @@ ImageSelectionDialog::~ImageSelectionDialog() {}
 void ImageSelectionDialog::fileSelected(const QString& file)
 {
 	QPixmap pm(file);
-	if(pm.isNull()) {
+	if(pm.isNull())
+	{
 		return;
 	}
 

@@ -1,6 +1,6 @@
 /* GUI_TagEdit.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,7 @@ class MetaData;
 UI_FWD(GUI_TagEdit)
 
 class GUI_TagEdit :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	UI_CLASS(GUI_TagEdit)
@@ -51,7 +51,7 @@ class GUI_TagEdit :
 		void sigCancelled();
 
 	public:
-		explicit GUI_TagEdit(QWidget* parent=nullptr);
+		explicit GUI_TagEdit(QWidget* parent = nullptr);
 		~GUI_TagEdit() override;
 
 		void showDefaultTab();

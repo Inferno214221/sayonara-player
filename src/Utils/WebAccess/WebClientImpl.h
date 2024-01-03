@@ -1,6 +1,6 @@
 /* WebClientImpl.h */
 /*
- * Copyright (C) 2011-2022 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -56,7 +56,7 @@ class WebClientImpl :
 		explicit WebClientImpl(QObject* parent);
 		~WebClientImpl() override;
 
-		void run(const QString& url, int timeout=WebClient::Timeout) override;
+		void run(const QString& url, int timeout = WebClient::Timeout) override;
 		void runPost(const QString& url, const QByteArray& postData, int timeout) override;
 
 		void setMode(WebClientImpl::Mode mode) override;

@@ -1,6 +1,6 @@
 /* SomaFMStation.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,29 +34,29 @@
 
 struct SomaFM::Station::Private
 {
-	QString			content;
-	QString			stationName;
+	QString content;
+	QString stationName;
 	QMap<QString, SomaFM::Station::UrlType> urls;
-	QString			description;
-    Cover::Location	cover;
-	MetaDataList	tracks;
-	bool			loved;
+	QString description;
+	Cover::Location cover;
+	MetaDataList tracks;
+	bool loved;
 	QMap<QString, QString> imageLowHighMap;
 
 	Private()
 	{
 		imageLowHighMap = QMap<QString, QString>
-		{
-			{"blender120.png",		"beatblender-400"},
-			{"1023brc.jpg",			"brfm-400"},
-			{"gsclassic120.jpg",	"gsclassic400"},
-			{"illstreet.jpg",		"illstreet-400"},
-			{"indychick.jpg",		"indiepop-400"},
-			{"seventies120.jpg",	"seventies400"},
-			{"lush-x120.jpg",		"lush-400"},
-			{"sss.jpg",				"spacestation-400"},
-			{"sog120.jpg",			"suburbsofgoa-400"}
-		};
+			{
+				{"blender120.png",   "beatblender-400"},
+				{"1023brc.jpg",      "brfm-400"},
+				{"gsclassic120.jpg", "gsclassic400"},
+				{"illstreet.jpg",    "illstreet-400"},
+				{"indychick.jpg",    "indiepop-400"},
+				{"seventies120.jpg", "seventies400"},
+				{"lush-x120.jpg",    "lush-400"},
+				{"sss.jpg",          "spacestation-400"},
+				{"sog120.jpg",       "suburbsofgoa-400"}
+			};
 	}
 
 	Private(const Private& other) :
@@ -67,8 +67,7 @@ struct SomaFM::Station::Private
 		CASSIGN(cover),
 		CASSIGN(tracks),
 		CASSIGN(loved),
-		CASSIGN(imageLowHighMap)
-	{}
+		CASSIGN(imageLowHighMap) {}
 
 	Private& operator=(const Private& other)
 	{
@@ -86,7 +85,8 @@ struct SomaFM::Station::Private
 
 	QString completeUrl(const QString& url)
 	{
-		if(url.startsWith("/")){
+		if(url.startsWith("/"))
+		{
 			return QString("https://somafm.com") + url;
 		}
 
@@ -100,7 +100,8 @@ struct SomaFM::Station::Private
 		re.setMinimal(true);
 
 		int idx = re.indexIn(content);
-		if(idx > 0){
+		if(idx > 0)
+		{
 			stationName = Util::stringToFirstUpper(re.cap(1)).toLocal8Bit();
 		}
 	}
@@ -115,28 +116,30 @@ struct SomaFM::Station::Private
 		re_mp3.setMinimal(true);
 		re_aac.setMinimal(true);
 
-		int idx=-1;
-		do{
-			idx = re_mp3.indexIn(content, idx+1);
-			if(idx > 0){
+		int idx = -1;
+		do
+		{
+			idx = re_mp3.indexIn(content, idx + 1);
+			if(idx > 0)
+			{
 				QString url = completeUrl(re_mp3.cap(1));
 				urls[url] = SomaFM::Station::UrlType::MP3;
 			}
 		} while(idx > 0);
 
-		idx=-1;
+		idx = -1;
 		do
 		{
-			idx = re_aac.indexIn(content, idx+1);
+			idx = re_aac.indexIn(content, idx + 1);
 
-			if(idx > 0){
+			if(idx > 0)
+			{
 				QString url = completeUrl(re_aac.cap(1));
 				urls[url] = SomaFM::Station::UrlType::AAC;
 			}
 
 		} while(idx > 0);
 	}
-
 
 	void parseDescription()
 	{
@@ -145,7 +148,8 @@ struct SomaFM::Station::Private
 		re.setMinimal(true);
 
 		int idx = re.indexIn(content);
-		if(idx > 0){
+		if(idx > 0)
+		{
 			description = re.cap(1).toLocal8Bit();
 		}
 	}
@@ -200,7 +204,7 @@ struct SomaFM::Station::Private
 SomaFM::Station::Station()
 {
 	m = Pimpl::make<SomaFM::Station::Private>();
-    m->cover = Cover::Location::invalidLocation();
+	m->cover = Cover::Location::invalidLocation();
 	m->loved = false;
 }
 
@@ -249,11 +253,13 @@ SomaFM::Station::UrlType SomaFM::Station::urlType(const QString& url) const
 QString SomaFM::Station::urlTypeString(const QString& url) const
 {
 	SomaFM::Station::UrlType urlType = this->urlType(url);
-	if(urlType == SomaFM::Station::UrlType::MP3) {
+	if(urlType == SomaFM::Station::UrlType::MP3)
+	{
 		return "mp3";
 	}
 
-	else if(urlType == SomaFM::Station::UrlType::AAC) {
+	else if(urlType == SomaFM::Station::UrlType::AAC)
+	{
 		return "aac";
 	}
 
@@ -278,14 +284,13 @@ Cover::Location SomaFM::Station::coverLocation() const
 bool SomaFM::Station::isValid() const
 {
 	return
-	(
+		(
 			!m->stationName.isEmpty()
 			&& (!m->urls.isEmpty())
 			&& (!m->description.isEmpty())
 //			&& m->cover.is_valid()
-	);
+		);
 }
-
 
 MetaDataList SomaFM::Station::metadata() const
 {
@@ -297,7 +302,8 @@ void SomaFM::Station::setMetadata(const MetaDataList& v_md)
 	m->tracks = v_md;
 }
 
-void SomaFM::Station::setLoved(bool loved){
+void SomaFM::Station::setLoved(bool loved)
+{
 	m->loved = loved;
 }
 

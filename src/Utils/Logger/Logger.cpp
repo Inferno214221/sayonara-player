@@ -1,6 +1,6 @@
 /* Logger.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,6 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Logger/LogListener.h"
 
-
 #include <QString>
 #include <QStringList>
 #include <QByteArray>
@@ -43,34 +42,36 @@
 #include <iomanip>
 
 #ifdef Q_OS_UNIX
-	#define LOG_RED "\x1B[31m"
-	#define LOG_GREEN "\x1B[32m"
-	#define LOG_BLUE "\x1B[34m"
-	#define LOG_YELLOW "\x1B[33m"
-	#define LOG_COL_END "\x1B[0m"
+#define LOG_RED "\x1B[31m"
+#define LOG_GREEN "\x1B[32m"
+#define LOG_BLUE "\x1B[34m"
+#define LOG_YELLOW "\x1B[33m"
+#define LOG_COL_END "\x1B[0m"
 #else
-	#define LOG_RED ""
-	#define LOG_GREEN ""
-	#define LOG_BLUE ""
-	#define LOG_YELLOW ""
-	#define LOG_COL_END ""
+#define LOG_RED ""
+#define LOG_GREEN ""
+#define LOG_BLUE ""
+#define LOG_YELLOW ""
+#define LOG_COL_END ""
 #endif
 
 #ifdef SAYONARA_HAS_CXX_ABI
-	#include "cxxabi.h"
+
+#include "cxxabi.h"
+
 #endif
 
-using LogListeners=QList<LogListener*>;
+using LogListeners = QList<LogListener*>;
 Q_GLOBAL_STATIC(LogListeners, log_listeners)
 
-using LogEntries=QList<LogEntry>;
+using LogEntries = QList<LogEntry>;
 Q_GLOBAL_STATIC(LogEntries, log_buffer)
 
 struct Logger::Private
 {
-	QString				class_name;
-	std::stringstream	msg;
-	Log					type;
+	QString class_name;
+	std::stringstream msg;
+	Log type;
 
 	Private() {}
 
@@ -79,12 +80,13 @@ struct Logger::Private
 		QString type_str;
 		std::string color;
 
-		bool ignore=false;
+		bool ignore = false;
 
 		Settings* s = Settings::instance();
 		int logger_level = 0;
 
-		if(s->checkSettings()){
+		if(s->checkSettings())
+		{
 			logger_level = GetSetting(Set::Logger_Level);
 		}
 
@@ -105,21 +107,24 @@ struct Logger::Private
 			case Log::Debug:
 				color = LOG_YELLOW;
 				type_str = "Debug";
-				if(logger_level < 1) {
+				if(logger_level < 1)
+				{
 					ignore = true;
 				}
 				break;
 			case Log::Develop:
 				color = LOG_YELLOW;
 				type_str = "Dev";
-				if(logger_level < 2){
+				if(logger_level < 2)
+				{
 					ignore = true;
 				}
 				break;
 			case Log::Crazy:
 				color = LOG_YELLOW;
 				type_str = "CrazyLog";
-				if(logger_level < 3){
+				if(logger_level < 3)
+				{
 					ignore = true;
 				}
 
@@ -138,12 +143,13 @@ struct Logger::Private
 
 			std::string str(msg.str());
 			std::clog
-					<< "[" << date_time.toStdString() << "] "
-					<< color
-					<< type_str.toStdString() << ": "
-					<< LOG_COL_END;
+				<< "[" << date_time.toStdString() << "] "
+				<< color
+				<< type_str.toStdString() << ": "
+				<< LOG_COL_END;
 
-			if(!class_name.isEmpty()) {
+			if(!class_name.isEmpty())
+			{
 				std::clog << LOG_BLUE << class_name.toStdString() << ": " << LOG_COL_END;
 			}
 
@@ -151,13 +157,13 @@ struct Logger::Private
 			std::clog << std::endl;
 
 			LogEntry le;
-				le.className = class_name;
-				le.message = QString::fromStdString(str);
-				le.type = type;
+			le.className = class_name;
+			le.message = QString::fromStdString(str);
+			le.type = type;
 
 			log_buffer->push_back(le);
 
-			for(auto it=log_listeners->begin(); it != log_listeners->end(); it++)
+			for(auto it = log_listeners->begin(); it != log_listeners->end(); it++)
 			{
 				LogListener* log_listener = *it;
 				if(log_listener)
@@ -170,7 +176,6 @@ struct Logger::Private
 		msg.clear();
 	}
 };
-
 
 Logger::Logger(const Log& type, const QString& class_name)
 {
@@ -189,7 +194,7 @@ Logger::~Logger()
 //static
 void Logger::registerLogListener(LogListener* log_listener)
 {
-	for(auto it=log_buffer->begin(); it != log_buffer->end(); it++)
+	for(auto it = log_buffer->begin(); it != log_buffer->end(); it++)
 	{
 		log_listener->addLogLine(*it);
 	}
@@ -197,69 +202,69 @@ void Logger::registerLogListener(LogListener* log_listener)
 	log_listeners->push_back(log_listener);
 }
 
-
-Logger& Logger::operator << (const QString& msg)
+Logger& Logger::operator<<(const QString& msg)
 {
 	(*this) << msg.toLocal8Bit().constData();
 	return *this;
 }
 
-Logger& Logger::operator << (const QStringList& lst)
+Logger& Logger::operator<<(const QStringList& lst)
 {
 	(*this) << lst.join(",");
 
 	return *this;
 }
 
-Logger& Logger::operator << (const QChar& c)
+Logger& Logger::operator<<(const QChar& c)
 {
 	(*this) << c.toLatin1();
 
 	return *this;
 }
 
-Logger& Logger::operator << (const QPoint& point)
+Logger& Logger::operator<<(const QPoint& point)
 {
 	(*this) << "Point(" << point.x() << "," << point.y() << ")";
 	return *this;
 }
 
-Logger& Logger::operator <<(const QSize& size)
+Logger& Logger::operator<<(const QSize& size)
 {
 	(*this) << "Size(" << size.width() << "," << size.height() << ")";
 	return *this;
 }
 
-Logger& Logger::operator <<(const QRect& r)
+Logger& Logger::operator<<(const QRect& r)
 {
 	(*this) << "Rect("
-			<< "left:" << r.left()
-			<< ", right:" << r.right()
-			<< ", top:" << r.top()
-			<< ", bottom:" << r.bottom()
-			<< ", width:" << r.width()
-			<< ", heigh:" << r.height();
+	        << "left:" << r.left()
+	        << ", right:" << r.right()
+	        << ", top:" << r.top()
+	        << ", bottom:" << r.bottom()
+	        << ", width:" << r.width()
+	        << ", heigh:" << r.height();
 	return *this;
 }
 
-
-Logger& Logger::operator << (const QByteArray& arr)
+Logger& Logger::operator<<(const QByteArray& arr)
 {
 	m->msg << std::endl;
 
 	QString line_str;
 
-	for(int i=0; i<arr.size(); i++)
+	for(int i = 0; i < arr.size(); i++)
 	{
 		char c = arr[i];
 
 		QChar qc = QChar(c);
 
-		if(qc.isPrint()){
+		if(qc.isPrint())
+		{
 			line_str += qc;
 		}
 
-		else{
+		else
+		{
 			line_str += ".";
 		}
 
@@ -276,7 +281,7 @@ Logger& Logger::operator << (const QByteArray& arr)
 
 	if(!line_str.isEmpty())
 	{
-		for(int i=0; i<8-line_str.size(); i++)
+		for(int i = 0; i < 8 - line_str.size(); i++)
 		{
 			m->msg << "   ";
 		}
@@ -287,19 +292,18 @@ Logger& Logger::operator << (const QByteArray& arr)
 	return *this;
 }
 
-Logger& Logger::operator << (const char* str)
+Logger& Logger::operator<<(const char* str)
 {
 	m->msg << str;
 
 	return *this;
 }
 
-Logger& Logger::operator << (const std::string& str)
+Logger& Logger::operator<<(const std::string& str)
 {
 	(*this) << str.c_str();
 	return *this;
 }
-
 
 /*************************
  * Static Log functions
@@ -312,11 +316,13 @@ Logger spLog(const Log& type, const std::string& data)
 #ifdef SAYONARA_HAS_CXX_ABI
 		int status;
 		char* content = abi::__cxa_demangle(data.c_str(), nullptr, nullptr, &status);
-		if(content && strnlen(content, 3) > 1){
+		if(content && strnlen(content, 3) > 1)
+		{
 			class_name = QString(content);
 			free(content);
 		}
-		else {
+		else
+		{
 			class_name = QString::fromStdString(data);
 		}
 

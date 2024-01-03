@@ -1,6 +1,6 @@
 /* Dragable.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -68,7 +68,7 @@ struct Dragable::Private
 
 		QList<QUrl> urls = data->urls();
 
-		for(const QUrl& url : urls)
+		for(const QUrl& url: urls)
 		{
 			QString filename = url.toLocalFile();
 			if(filename.isEmpty())
@@ -151,8 +151,8 @@ QDrag* Dragable::createDrag() const
 	}
 
 	const auto dragStrings = (hasDragLabel())
-	                     ? QStringList {dragLabel()}
-	                     : m->getStrings(mimeData);
+	                         ? QStringList {dragLabel()}
+	                         : m->getStrings(mimeData);
 
 	const auto fm = m->widget->fontMetrics();
 	const auto fontHeight = fm.height() + 8;
@@ -165,7 +165,7 @@ QDrag* Dragable::createDrag() const
 	const auto fontPadding = (pmHeight - textHeight) / 2 + 1;
 
 	auto pmWidth = logoHeight + 4;
-	for(const auto& str : Algorithm::AsConst(dragStrings))
+	for(const auto& str: Algorithm::AsConst(dragStrings))
 	{
 		pmWidth = std::max(pmWidth, Gui::Util::textWidth(fm, str));
 	}
@@ -188,7 +188,7 @@ QDrag* Dragable::createDrag() const
 	painter.drawPixmap(leftOffset, (pmHeight - logoHeight) / 2, logoHeight, logoHeight, cover);
 	painter.translate(logoWidth + 15, fontPadding + fontHeight - 2);
 
-	for(const auto& dragString : dragStrings)
+	for(const auto& dragString: dragStrings)
 	{
 		painter.drawText(0, 0, dragString);
 		painter.translate(0, fontHeight + 2);

@@ -1,6 +1,6 @@
 /* VisualStyleTypes.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,82 +29,82 @@
 
 struct ColorList
 {
-    QString name;
+	QString name;
 	QList<QColor> colors;
 };
 
 struct ColorStyle
 {
-    QString name;
+	QString name;
 
-    // list size is number or rectangles
-    // int is the step index
-    std::vector< QHash<int, QColor> > style;
-    ColorList col_list;
+	// list size is number or rectangles
+	// int is the step index
+	std::vector<QHash<int, QColor> > style;
+	ColorList col_list;
 
-    int rect_height;
-    int rect_width;
+	int rect_height;
+	int rect_width;
 
-    int n_rects;
-    int n_fading_steps;
-    int hor_spacing;
-    int ver_spacing;
+	int n_rects;
+	int n_fading_steps;
+	int hor_spacing;
+	int ver_spacing;
 };
 
 struct RawColorStyle
 {
-    ColorList col_list;
+	ColorList col_list;
 
-    int n_bins_spectrum;
+	int n_bins_spectrum;
 
-    int rect_height_spectrum;
-    int rect_width_level;
-    int rect_height_level;
-    int n_rects_level;
+	int rect_height_spectrum;
+	int rect_width_level;
+	int rect_height_level;
+	int n_rects_level;
 
-    int n_fading_steps_spectrum;
-    int n_fading_steps_level;
+	int n_fading_steps_spectrum;
+	int n_fading_steps_level;
 
-    int hor_spacing_level;
-    int ver_spacing_level;
+	int hor_spacing_level;
+	int ver_spacing_level;
 
-    int hor_spacing_spectrum;
-    int ver_spacing_spectrum;
+	int hor_spacing_spectrum;
+	int ver_spacing_spectrum;
 
-    RawColorStyle()
+	RawColorStyle()
 	{
-        col_list.name = "";
+		col_list.name = "";
 
 		n_rects_level = 0;
-        n_bins_spectrum = 20;
-        rect_height_spectrum = 2;
-        rect_width_level = 3;
-        rect_height_level = 6;
-        n_fading_steps_level = 20;
-        n_fading_steps_spectrum = 20;
-        hor_spacing_level = 2;
-        hor_spacing_spectrum = 2;
-        ver_spacing_level = 2;
-        ver_spacing_spectrum = 1;
-    }
+		n_bins_spectrum = 20;
+		rect_height_spectrum = 2;
+		rect_width_level = 3;
+		rect_height_level = 6;
+		n_fading_steps_level = 20;
+		n_fading_steps_spectrum = 20;
+		hor_spacing_level = 2;
+		hor_spacing_spectrum = 2;
+		ver_spacing_level = 2;
+		ver_spacing_spectrum = 1;
+	}
 
-    QString toString() const
+	QString toString() const
 	{
-        QString ret;
-        ret += col_list.name + "";
-        ret += ", n_bins_sp: " + QString::number(n_bins_spectrum);
-        ret += ", rect_h_sp: " + QString::number(rect_height_spectrum);
-        ret += ", fad_s_sp: " +  QString::number(n_fading_steps_spectrum);
-        ret += ", rect_w_lv: " + QString::number(rect_width_level);
-        ret += ", rect_h_lv: " + QString::number(rect_height_level);
-        ret += ", fad_s_lv: " + QString::number(n_fading_steps_level);
-        ret += ", hor_s_lv: " + QString::number(hor_spacing_level);
-        ret += ", ver_s_lv: " + QString::number(ver_spacing_level);
-        ret += ", hor_s_sp: " + QString::number(hor_spacing_spectrum);
-        ret += ", ver_s_sp: " + QString::number(ver_spacing_spectrum);
+		QString ret;
+		ret += col_list.name + "";
+		ret += ", n_bins_sp: " + QString::number(n_bins_spectrum);
+		ret += ", rect_h_sp: " + QString::number(rect_height_spectrum);
+		ret += ", fad_s_sp: " + QString::number(n_fading_steps_spectrum);
+		ret += ", rect_w_lv: " + QString::number(rect_width_level);
+		ret += ", rect_h_lv: " + QString::number(rect_height_level);
+		ret += ", fad_s_lv: " + QString::number(n_fading_steps_level);
+		ret += ", hor_s_lv: " + QString::number(hor_spacing_level);
+		ret += ", ver_s_lv: " + QString::number(ver_spacing_level);
+		ret += ", hor_s_sp: " + QString::number(hor_spacing_spectrum);
+		ret += ", ver_s_sp: " + QString::number(ver_spacing_spectrum);
 
-        return ret;
-    }
+		return ret;
+	}
 
 };
 

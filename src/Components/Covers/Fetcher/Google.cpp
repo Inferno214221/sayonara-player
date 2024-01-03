@@ -1,6 +1,6 @@
 /* GoogleCoverFetcher.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -77,9 +77,9 @@ QString Google::albumAddress(const QString& artist, const QString& album) const
 	albumCopy = QUrl::toPercentEncoding(album);
 
 	auto searchString = (artist.compare("various", Qt::CaseInsensitive) != 0)
-	                     ? QUrl::toPercentEncoding(artist) + "+" + albumCopy
-	                     : albumCopy;
-	
+	                    ? QUrl::toPercentEncoding(artist) + "+" + albumCopy
+	                    : albumCopy;
+
 	return fulltextSearchAddress(searchString);
 }
 
@@ -100,8 +100,8 @@ QString Google::radioSearchAddress(const QString& stationName, const QString& st
 {
 	const auto searchString = searchStringFromRadioStation(stationName, stationUrl);
 	return (searchString.isEmpty())
-		? QString()
-		: fulltextSearchAddress(searchString);
+	       ? QString()
+	       : fulltextSearchAddress(searchString);
 }
 
 int Google::estimatedSize() const

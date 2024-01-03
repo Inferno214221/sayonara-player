@@ -1,6 +1,6 @@
 /* RatingDelegate.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ namespace Library
 		PIMPL(RatingDelegate)
 
 		public:
-			RatingDelegate(int ratingColumn, int decorationColumn=-1, QObject* parent=nullptr);
+			RatingDelegate(int ratingColumn, int decorationColumn = -1, QObject* parent = nullptr);
 			~RatingDelegate() override;
 
 			void paint(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index) const override;

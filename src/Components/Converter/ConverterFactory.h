@@ -1,6 +1,6 @@
 /* ConverterFactory.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -29,14 +29,16 @@ class ConverterFactory
 	PIMPL(ConverterFactory)
 
 	public:
-		enum class ConvertType : uint8_t
+		enum class ConvertType :
+			uint8_t
 		{
 			OggVorbis = 0,
 			OggOpus,
 			Lame
 		};
 
-		enum class Bitrate : uint8_t
+		enum class Bitrate :
+			uint8_t
 		{
 			Constant = 0,
 			Variable

@@ -1,6 +1,6 @@
 /* LibraryFileExtensionBar.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,8 @@ namespace Library
 	 * @brief The FileExtensionBar class
 	 * @ingroup GuiLibrary
 	 */
-	class FileExtensionBar : public Gui::Widget
+	class FileExtensionBar :
+		public Gui::Widget
 	{
 		Q_OBJECT
 		PIMPL(FileExtensionBar)

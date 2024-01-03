@@ -1,6 +1,6 @@
 /* CustomMimeData.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,7 +54,7 @@ void CustomMimeData::setMetadata(const MetaDataList& tracks)
 	m->tracks = tracks;
 
 	auto urls = this->urls();
-	for(const auto& track : tracks)
+	for(const auto& track: tracks)
 	{
 		const auto url = QUrl::fromLocalFile(track.filepath());
 		if(!Util::File::isWWW(track.filepath()))

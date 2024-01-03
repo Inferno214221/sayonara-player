@@ -1,6 +1,6 @@
 /* GUI_StyleSettings.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,21 +34,21 @@
 #include <QCloseEvent>
 #include <QList>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct GUI_StyleSettings::Private
 {
-	DB::VisualStyles*		db=nullptr;
+	DB::VisualStyles* db = nullptr;
 
-	QList<RawColorStyle>	styles;
-	QList<RawColorStyle>	styles_old;
+	QList<RawColorStyle> styles;
+	QList<RawColorStyle> styles_old;
 
-	RawColorStyle			cur_style;
-	QColor					colors[4];
+	RawColorStyle cur_style;
+	QColor colors[4];
 
-	QString		cur_text;
-	int			cur_idx;
-	bool		sth_changed;
+	QString cur_text;
+	int cur_idx;
+	bool sth_changed;
 
 	Private()
 	{
@@ -110,15 +110,15 @@ void GUI_StyleSettings::init()
 
 	RawColorStyle style;
 
-	for(int i=0; i<4; i++)
+	for(int i = 0; i < 4; i++)
 	{
-		m->colors[i] = QColor(0,0,0,0);
-		style.col_list.colors << QColor(0,0,0,0);
+		m->colors[i] = QColor(0, 0, 0, 0);
+		style.col_list.colors << QColor(0, 0, 0, 0);
 	}
 
 	m->styles.push_front(style);
 
-	for(const RawColorStyle& style : Algorithm::AsConst(m->styles))
+	for(const RawColorStyle& style: Algorithm::AsConst(m->styles))
 	{
 		ui->combo_styles->addItem(style.col_list.name);
 	}
@@ -130,20 +130,19 @@ void GUI_StyleSettings::init()
 
 QIcon col2Icon(QColor col)
 {
-	QPixmap pm(18,18);
+	QPixmap pm(18, 18);
 	pm.fill(col);
 
 	QIcon icon(pm);
 	return icon;
 }
 
-
 void GUI_StyleSettings::connect_spinbox(const QSpinBox* box)
 {
 	connect(box,
-			static_cast<void (QSpinBox::*) (int)>(&QSpinBox::valueChanged),
-			this,
-			&GUI_StyleSettings::spin_box_changed
+	        static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+	        this,
+	        &GUI_StyleSettings::spin_box_changed
 	);
 }
 
@@ -160,15 +159,14 @@ void GUI_StyleSettings::connect_spinboxes()
 	connect_spinbox(ui->sb_v_spacing_sp);
 }
 
-void GUI_StyleSettings::disconnect_spinbox(const QSpinBox *box)
+void GUI_StyleSettings::disconnect_spinbox(const QSpinBox* box)
 {
 	disconnect(box,
-			static_cast<void (QSpinBox::*) (int)>(&QSpinBox::valueChanged),
-			this,
-			&GUI_StyleSettings::spin_box_changed
+	           static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged),
+	           this,
+	           &GUI_StyleSettings::spin_box_changed
 	);
 }
-
 
 void GUI_StyleSettings::disconnect_spinboxes()
 {
@@ -193,7 +191,6 @@ void GUI_StyleSettings::disconnect_combo_idx_changed()
 	disconnect(ui->combo_styles, combo_current_index_changed_int, this, &GUI_StyleSettings::combo_styles_changed);
 }
 
-
 void GUI_StyleSettings::combo_styles_changed(int idx)
 {
 	int new_idx = idx;
@@ -214,7 +211,8 @@ void GUI_StyleSettings::combo_styles_changed(int idx)
 				return;
 			}
 
-			else {
+			else
+			{
 				set_sth_changed(false);
 
 				disconnect_combo_idx_changed();
@@ -223,7 +221,8 @@ void GUI_StyleSettings::combo_styles_changed(int idx)
 			}
 		}
 
-		else {
+		else
+		{
 			set_sth_changed(false);
 		}
 	}
@@ -254,26 +253,30 @@ void GUI_StyleSettings::combo_styles_changed(int idx)
 	ui->btn_col1->setIcon(col2Icon(col_list[0]));
 	ui->btn_col2->setIcon(col2Icon(col_list[1]));
 
-	if(col_list.size() > 2) {
+	if(col_list.size() > 2)
+	{
 		ui->btn_col3->setIcon(col2Icon(col_list[2]));
 	}
 
-	else  {
+	else
+	{
 		ui->btn_col3->setIcon(col2Icon(QColor(0, 0, 0, 0)));
 	}
 
-	if(col_list.size() > 3) {
+	if(col_list.size() > 3)
+	{
 		ui->btn_col4->setIcon(col2Icon(col_list[3]));
 	}
 
-	else {
+	else
+	{
 		ui->btn_col4->setIcon(col2Icon(QColor(0, 0, 0, 0)));
 	}
 
 	m->colors[0] = col_list[0];
 	m->colors[1] = col_list[1];
-	m->colors[2] = (col_list.size() > 2) ? col_list[2] : QColor(0,0,0,0);
-	m->colors[3] = (col_list.size() > 3) ? col_list[3] : QColor(0,0,0,0);
+	m->colors[2] = (col_list.size() > 2) ? col_list[2] : QColor(0, 0, 0, 0);
+	m->colors[3] = (col_list.size() > 3) ? col_list[3] : QColor(0, 0, 0, 0);
 
 	connect_spinboxes();
 
@@ -286,7 +289,8 @@ void GUI_StyleSettings::combo_styles_changed(int idx)
 void GUI_StyleSettings::save_pressed()
 {
 	// we came from [0]
-	if(m->cur_idx == 0 && m->cur_text.isEmpty()) {
+	if(m->cur_idx == 0 && m->cur_text.isEmpty())
+	{
 		Message::warning(tr("Please specify a name"));
 		return;
 	}
@@ -304,10 +308,12 @@ void GUI_StyleSettings::save_pressed()
 
 	style.col_list.name = m->cur_text;
 	style.col_list.colors << m->colors[0] << m->colors[1];
-	if(ui->cb_col3->isChecked()) {
+	if(ui->cb_col3->isChecked())
+	{
 		style.col_list.colors << m->colors[2];
 	}
-	if(ui->cb_col4->isChecked()) {
+	if(ui->cb_col4->isChecked())
+	{
 		style.col_list.colors << m->colors[3];
 	}
 
@@ -333,16 +339,15 @@ void GUI_StyleSettings::save_pressed()
 	emit sig_style_update();
 }
 
-
 void GUI_StyleSettings::col1_activated()
 {
-		int cur_style = ui->combo_styles->currentIndex();
+	int cur_style = ui->combo_styles->currentIndex();
 
-		QColor col_new = QColorDialog::getColor(m->styles[cur_style].col_list.colors[0], this);
-		ui->btn_col1->setIcon(col2Icon(col_new));
-		m->colors[0] = col_new;
+	QColor col_new = QColorDialog::getColor(m->styles[cur_style].col_list.colors[0], this);
+	ui->btn_col1->setIcon(col2Icon(col_new));
+	m->colors[0] = col_new;
 
-		col_changed();
+	col_changed();
 }
 
 void GUI_StyleSettings::col2_activated()
@@ -361,7 +366,7 @@ void GUI_StyleSettings::col3_activated()
 	int cur_style = ui->combo_styles->currentIndex();
 
 	QColor col_old(255, 255, 255);
-	if(m->styles[cur_style].col_list.colors.size() > 2)col_old = m->styles[cur_style].col_list.colors[2];
+	if(m->styles[cur_style].col_list.colors.size() > 2) { col_old = m->styles[cur_style].col_list.colors[2]; }
 	QColor col_new = QColorDialog::getColor(col_old, this);
 
 	ui->btn_col3->setIcon(col2Icon(col_new));
@@ -370,13 +375,12 @@ void GUI_StyleSettings::col3_activated()
 	col_changed();
 }
 
-
 void GUI_StyleSettings::col4_activated()
 {
 	int cur_style = ui->combo_styles->currentIndex();
 
 	QColor col_old(255, 255, 255);
-	if(m->styles[cur_style].col_list.colors.size() > 3) col_old = m->styles[cur_style].col_list.colors[3];
+	if(m->styles[cur_style].col_list.colors.size() > 3) { col_old = m->styles[cur_style].col_list.colors[3]; }
 
 	QColor col_new = QColorDialog::getColor(col_old, this);
 
@@ -385,7 +389,6 @@ void GUI_StyleSettings::col4_activated()
 
 	col_changed();
 }
-
 
 void GUI_StyleSettings::del_pressed()
 {
@@ -426,37 +429,41 @@ void GUI_StyleSettings::undo_pressed()
 	ui->btn_col1->setIcon(col2Icon(col_list[0]));
 	ui->btn_col2->setIcon(col2Icon(col_list[1]));
 
-	if(col_list.size() > 2) {
+	if(col_list.size() > 2)
+	{
 		ui->btn_col3->setIcon(col2Icon(col_list[2]));
 	}
-	else  {
+	else
+	{
 		ui->btn_col3->setIcon(col2Icon(QColor(0, 0, 0, 0)));
 	}
 
-	if(col_list.size() > 3) {
+	if(col_list.size() > 3)
+	{
 		ui->btn_col4->setIcon(col2Icon(col_list[3]));
 	}
-	else {
+	else
+	{
 		ui->btn_col4->setIcon(col2Icon(QColor(0, 0, 0, 0)));
 	}
 
 	m->colors[0] = col_list[0];
 	m->colors[1] = col_list[1];
-	m->colors[2] = (col_list.size() > 2) ? col_list[2] : QColor(0,0,0,0);
-	m->colors[3] = (col_list.size() > 3) ? col_list[3] : QColor(0,0,0,0);
+	m->colors[2] = (col_list.size() > 2) ? col_list[2] : QColor(0, 0, 0, 0);
+	m->colors[3] = (col_list.size() > 3) ? col_list[3] : QColor(0, 0, 0, 0);
 
 	set_sth_changed(false);
 
 	connect_spinboxes();
 }
 
-
-void GUI_StyleSettings::closeEvent(QCloseEvent * e)
+void GUI_StyleSettings::closeEvent(QCloseEvent* e)
 {
 	if(m->sth_changed)
 	{
 		Message::Answer ret = Message::question_yn(tr("Save changes?"));
-		if(ret == Message::Answer::Yes) {
+		if(ret == Message::Answer::Yes)
+		{
 			save_pressed();
 
 		}
@@ -476,16 +483,16 @@ void GUI_StyleSettings::col_changed()
 	set_sth_changed(true);
 }
 
-void GUI_StyleSettings::combo_text_changed(const QString&  str)
+void GUI_StyleSettings::combo_text_changed(const QString& str)
 {
 	Q_UNUSED(str)
-	if(m->cur_idx != ui->combo_styles->currentIndex()){
+	if(m->cur_idx != ui->combo_styles->currentIndex())
+	{
 		return;
 	}
 
 	m->cur_text = ui->combo_styles->currentText();
 }
-
 
 void GUI_StyleSettings::set_sth_changed(bool b)
 {
@@ -494,29 +501,33 @@ void GUI_StyleSettings::set_sth_changed(bool b)
 
 	if(b)
 	{
-		if(!windowTitle().endsWith("*")) {
+		if(!windowTitle().endsWith("*"))
+		{
 			setWindowTitle(windowTitle() + "*");
 		}
 	}
 
-	else{
+	else
+	{
 		setWindowTitle(windowTitle().remove("*"));
 	}
 }
 
-
 void GUI_StyleSettings::show(int idx)
 {
-	if(isVisible()) {
+	if(isVisible())
+	{
 		return;
 	}
 
 	set_sth_changed(false);
 	showNormal();
-	if(idx < m->styles.size() - 1){
+	if(idx < m->styles.size() - 1)
+	{
 		ui->combo_styles->setCurrentIndex(idx + 1);
 	}
-	else{
+	else
+	{
 		ui->combo_styles->setCurrentIndex(0);
 	}
 }

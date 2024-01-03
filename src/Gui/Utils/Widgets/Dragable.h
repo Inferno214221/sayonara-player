@@ -1,6 +1,6 @@
 /* Dragable.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,7 +35,8 @@ class QAbstractItemView;
 namespace Gui
 {
 	class Dragable;
-	class DragableConnector : public QObject
+	class DragableConnector :
+		public QObject
 	{
 			friend class Dragable;
 
@@ -60,13 +61,14 @@ namespace Gui
 	class Dragable
 	{
 		PIMPL(Dragable)
-		friend class DragableConnector;
+			friend class DragableConnector;
 
 		public:
 			explicit Dragable(QAbstractItemView* parent);
 			virtual ~Dragable();
 
-			enum class ReleaseReason : char
+			enum class ReleaseReason :
+				char
 			{
 				Dropped,
 				Destroyed

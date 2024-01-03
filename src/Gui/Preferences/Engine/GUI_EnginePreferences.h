@@ -1,6 +1,6 @@
 /* GUI_EnginePreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,24 +33,24 @@ class GUI_EnginePreferences :
 	PIMPL(GUI_EnginePreferences)
 	UI_CLASS(GUI_EnginePreferences)
 
-public:
-	explicit GUI_EnginePreferences(const QString& identifier);
-	virtual ~GUI_EnginePreferences();
+	public:
+		explicit GUI_EnginePreferences(const QString& identifier);
+		virtual ~GUI_EnginePreferences();
 
-	// Base interface
-	QString actionName() const override;
-	bool commit() override;
-	void revert() override;
-	void initUi() override;
-	void retranslate() override;
+		// Base interface
+		QString actionName() const override;
+		bool commit() override;
+		void revert() override;
+		void initUi() override;
+		void retranslate() override;
 
-private slots:
+	private slots:
 
-	void radioButtonChanged(bool b);
+		void radioButtonChanged(bool b);
 
-	void alsaProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
-	void alsaProcessErrorOccured(QProcess::ProcessError error);
-	void alsaStdoutWritten();
+		void alsaProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
+		void alsaProcessErrorOccured(QProcess::ProcessError error);
+		void alsaStdoutWritten();
 };
 
 #endif // GUI_ENGINEPREFERENCES_H

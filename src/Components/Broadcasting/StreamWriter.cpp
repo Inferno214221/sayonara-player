@@ -1,6 +1,6 @@
 /* StreamWriter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,17 +60,17 @@ struct StreamWriter::Private
 		playManager(playManager),
 		socket(socket),
 		audioDataProvider(audioDataProvider),
-		parser{new StreamHttpParser()},
-		sender{new StreamDataSender(socket)},
+		parser {new StreamHttpParser()},
+		sender {new StreamDataSender(socket)},
 		ip(ip),
 		type(StreamWriter::Type::Undefined),
 		dismissed(false),
-		sendData(false)
-	{}
+		sendData(false) {}
 };
 
 // socket is the client socket
-StreamWriter::StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket, const QString& ip) :
+StreamWriter::StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket,
+                           const QString& ip) :
 	Engine::RawAudioDataReceiver()
 {
 	m = Pimpl::make<Private>(playManager, audioDataProvider, socket, ip);
@@ -150,7 +150,7 @@ void StreamWriter::writeAudioData(const QByteArray& data)
 	if(m->parser->isIcyStream())
 	{
 		m->sender->sendIcyData(data, getCurrentTitle(m->playManager));
-	} 
+	}
 
 	else
 	{
@@ -263,7 +263,7 @@ void StreamWriter::dataAvailble()
 			sendMetadata();
 			break;
 
-		default: 
+		default:
 			m->type = StreamWriter::Type::Streaming;
 			close_connection = false;
 			//sp_log(Log::Debug, this) << "Accepted: " << _parser->get_user_agent() << ": " << ip;

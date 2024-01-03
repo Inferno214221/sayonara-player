@@ -1,6 +1,6 @@
 /* AlbumCoverFetchThread.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,8 +52,8 @@ struct AlbumCoverFetchThread::Private
 
 	QStringList queuedHashes;
 
-	std::atomic<int> timeToWait{0};
-	std::atomic<bool> stopped{false};
+	std::atomic<int> timeToWait {0};
+	std::atomic<bool> stopped {false};
 
 	void pause(int ms = 10)
 	{
@@ -236,8 +236,7 @@ void AlbumCoverFetchThread::removeHash(const AlbumCoverFetchThread::Hash& hash)
 
 	{
 		[[maybe_unused]] const auto lockGuard = LockGuard(mutexHashLocationPairs);
-		Util::Algorithm::removeIf(m->hashLocationPairs, [&](const auto& hashLocationPair)
-		{
+		Util::Algorithm::removeIf(m->hashLocationPairs, [&](const auto& hashLocationPair) {
 			return (hashLocationPair.first == hash);
 		});
 	}

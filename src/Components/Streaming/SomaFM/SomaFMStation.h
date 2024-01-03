@@ -1,6 +1,6 @@
 /* SomaFMStation.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@ class MetaDataList;
 
 namespace Cover
 {
-    class Location;
+	class Location;
 }
 
 namespace SomaFM
@@ -42,9 +42,10 @@ namespace SomaFM
 		PIMPL(Station)
 
 		public:
-			enum class UrlType : unsigned char
+			enum class UrlType :
+				unsigned char
 			{
-				AAC=0,
+				AAC = 0,
 				MP3,
 				Undefined
 			};
@@ -55,13 +56,13 @@ namespace SomaFM
 			Station& operator=(const Station& other);
 			~Station();
 
-			QString			name() const;
-			QStringList		playlists() const;
-			QString			description() const;
-			UrlType			urlType(const QString& url) const;
-			QString			urlTypeString(const QString& url) const;
+			QString name() const;
+			QStringList playlists() const;
+			QString description() const;
+			UrlType urlType(const QString& url) const;
+			QString urlTypeString(const QString& url) const;
 			Cover::Location coverLocation() const;
-			bool			isValid() const;
+			bool isValid() const;
 
 			MetaDataList metadata() const;
 			void setMetadata(const MetaDataList& tracks);

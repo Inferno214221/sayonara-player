@@ -1,6 +1,6 @@
 /* PluginCloseButton.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,7 +35,7 @@
  * @ingroup PlayerPlugins
  */
 class PluginCloseButton :
-		public Gui::WidgetTemplate<QPushButton>
+	public Gui::WidgetTemplate<QPushButton>
 {
 	Q_OBJECT
 
@@ -49,7 +49,7 @@ class PluginCloseButton :
 		void setStandardIcon();
 
 	public:
-		explicit PluginCloseButton(QWidget* parent=nullptr);
+		explicit PluginCloseButton(QWidget* parent = nullptr);
 		~PluginCloseButton() override;
 
 	protected:

@@ -1,6 +1,6 @@
 /* GUI_SpeedPreferences.h */
 
-/* Copyright (C) 2011-2023 Michael Lugmair
+/* Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of Sayonara Player
  *

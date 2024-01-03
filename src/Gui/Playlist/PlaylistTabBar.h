@@ -1,6 +1,6 @@
 /* PlaylistTabBar.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,7 +34,7 @@ namespace Playlist
 	 * @ingroup GuiPlaylists
 	 */
 	class TabBar :
-			public QTabBar
+		public QTabBar
 	{
 		Q_OBJECT
 		PIMPL(TabBar)
@@ -58,9 +58,8 @@ namespace Playlist
 
 			void sigContextMenuRequested(int currentIndex, const QPoint& position);
 
-
 		public:
-			explicit TabBar(QWidget* parent=nullptr);
+			explicit TabBar(QWidget* parent = nullptr);
 			~TabBar() override;
 
 			void showMenuItems(MenuEntries entries, const QPoint& position);

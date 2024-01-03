@@ -1,6 +1,6 @@
 /* GUI_StreamPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,18 +33,18 @@ class GUI_StreamPreferences :
 	Q_OBJECT
 	UI_CLASS(GUI_StreamPreferences)
 
-public:
-	GUI_StreamPreferences(const QString& identifier);
-	~GUI_StreamPreferences();
+	public:
+		GUI_StreamPreferences(const QString& identifier);
+		~GUI_StreamPreferences();
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 };
 
 #endif // GUI_STREAMPREFERENCES_H

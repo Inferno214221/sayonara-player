@@ -1,6 +1,6 @@
 /* ConverterFactory.cpp */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -51,8 +51,7 @@ struct ConverterFactory::Private
 	PlaylistAccessor* playlistAccessor;
 
 	Private(PlaylistAccessor* playlistAccessor) :
-		playlistAccessor(playlistAccessor)
-	{}
+		playlistAccessor(playlistAccessor) {}
 };
 
 ConverterFactory::ConverterFactory(PlaylistAccessor* playlistAccessor)
@@ -79,7 +78,8 @@ Converter* ConverterFactory::createOpusConverter(Bitrate bitrate, int quality)
 
 Converter* ConverterFactory::finalizeConverter(Converter* converter)
 {
-	if(checkConverter(converter)){
+	if(checkConverter(converter))
+	{
 		addTracks(m->playlistAccessor, converter);
 	}
 

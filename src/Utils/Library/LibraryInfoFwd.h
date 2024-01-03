@@ -1,6 +1,6 @@
 /* ${CLASS_NAME}.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -25,7 +25,7 @@
 namespace Library
 {
 	class Info;
-	using InfoPtr=std::shared_ptr<Info>;
+	using InfoPtr = std::shared_ptr<Info>;
 }
 
 #endif //SAYONARA_PLAYER_LIBRARYINFOFWD_H

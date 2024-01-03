@@ -1,6 +1,6 @@
 /* typedefs.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -68,23 +68,25 @@ using Filesize = uint64_t;
 template<typename K, typename V>
 using PairList = QList<QPair<K, V>>;
 
-enum class Rating : uint8_t
+enum class Rating :
+	uint8_t
 {
-		Zero = 0,
-		One = 1,
-		Two = 2,
-		Three = 3,
-		Four = 4,
-		Five = 5,
-		Last = 6
+	Zero = 0,
+	One = 1,
+	Two = 2,
+	Three = 3,
+	Four = 4,
+	Five = 5,
+	Last = 6
 };
 
-enum class PlayState : unsigned char
+enum class PlayState :
+	unsigned char
 {
-		Playing = 0,
-		Paused,
-		Stopped,
-		FirstStartup
+	Playing = 0,
+	Paused,
+	Stopped,
+	FirstStartup
 };
 
 Q_DECLARE_METATYPE(Rating)

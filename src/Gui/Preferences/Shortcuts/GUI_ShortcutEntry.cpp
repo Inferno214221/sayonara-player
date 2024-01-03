@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,13 +31,12 @@
 
 struct GUI_ShortcutEntry::Private
 {
-	ShortcutHandler*	sch=nullptr;
-	ShortcutIdentifier	identifier;
+	ShortcutHandler* sch = nullptr;
+	ShortcutIdentifier identifier;
 
 	Private(ShortcutIdentifier identifier) :
 		sch(ShortcutHandler::instance()),
-		identifier(identifier)
-	{}
+		identifier(identifier) {}
 };
 
 GUI_ShortcutEntry::GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* parent) :
@@ -45,7 +44,8 @@ GUI_ShortcutEntry::GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* par
 {
 	m = Pimpl::make<Private>(identifier);
 	Shortcut sc = m->sch->shortcut(identifier);
-	if(sc.name().trimmed().isEmpty()){
+	if(sc.name().trimmed().isEmpty())
+	{
 		spLog(Log::Warning, this) << "Shortcut name is empty";
 	}
 
@@ -66,7 +66,11 @@ GUI_ShortcutEntry::GUI_ShortcutEntry(ShortcutIdentifier identifier, QWidget* par
 
 GUI_ShortcutEntry::~GUI_ShortcutEntry()
 {
-	if(ui){ delete ui; ui = nullptr; }
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
+	}
 }
 
 QList<QKeySequence> GUI_ShortcutEntry::sequences() const
@@ -83,7 +87,7 @@ void GUI_ShortcutEntry::showSequenceError()
 void GUI_ShortcutEntry::commit()
 {
 	QStringList lst = ui->leEntry->text().split(",");
-	for(auto it=lst.begin(); it != lst.end(); it++)
+	for(auto it = lst.begin(); it != lst.end(); it++)
 	{
 		*it = it->trimmed();
 	}
@@ -105,7 +109,6 @@ void GUI_ShortcutEntry::revert()
 	);
 }
 
-
 void GUI_ShortcutEntry::defaultClicked()
 {
 	Shortcut sc = m->sch->shortcut(m->identifier);
@@ -120,7 +123,8 @@ void GUI_ShortcutEntry::testClicked()
 	QStringList splitted = ui->leEntry->text().split(", ");
 	QList<QKeySequence> sequences;
 
-	for(const QString& str : splitted){
+	for(const QString& str: splitted)
+	{
 		sequences << QKeySequence::fromString(str, QKeySequence::NativeText);
 	}
 
@@ -146,7 +150,6 @@ void GUI_ShortcutEntry::skinChanged()
 	ui->btnEdit->setIcon(Icons::icon(Icons::Edit));
 	ui->btnTest->setIcon(Icons::icon(Icons::Info));
 }
-
 
 void GUI_ShortcutEntry::editClicked()
 {

@@ -1,6 +1,6 @@
 /* GUI_PreferenceDialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -41,26 +41,25 @@
 
 using Preferences::Base;
 using Preferences::Action;
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct GUI_PreferenceDialog::Private
 {
-	QList<Base*>	preferenceWidgets;
-    QMainWindow*    mainWindow;
-	Action*			action=nullptr;
-	int				currentRow;
+	QList<Base*> preferenceWidgets;
+	QMainWindow* mainWindow;
+	Action* action = nullptr;
+	int currentRow;
 
-    Private(QMainWindow* mainWindow) :
-        mainWindow(mainWindow),
-		currentRow(-1)
-	{}
+	Private(QMainWindow* mainWindow) :
+		mainWindow(mainWindow),
+		currentRow(-1) {}
 };
 
 GUI_PreferenceDialog::GUI_PreferenceDialog(QMainWindow* parent) :
 	Gui::Dialog(parent),
 	PreferenceUi()
 {
-    m = Pimpl::make<Private>(parent);
+	m = Pimpl::make<Private>(parent);
 	PreferenceRegistry::instance()->setUserInterface(this);
 }
 
@@ -68,7 +67,8 @@ GUI_PreferenceDialog::~GUI_PreferenceDialog()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -82,8 +82,8 @@ void GUI_PreferenceDialog::showPreference(const QString& identifier)
 {
 	initUi();
 
-	int i=0;
-	for(Preferences::Base* pwi : Algorithm::AsConst(m->preferenceWidgets))
+	int i = 0;
+	for(Preferences::Base* pwi: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		const QString dialogId = pwi->identifier();
 		if(identifier.compare(dialogId) == 0)
@@ -109,8 +109,8 @@ void GUI_PreferenceDialog::languageChanged()
 
 	bool isEmpty = (ui->listPreferences->count() == 0);
 
-	int i=0;
-	for(Base* dialog : Algorithm::AsConst(m->preferenceWidgets))
+	int i = 0;
+	for(Base* dialog: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		QListWidgetItem* item;
 		if(isEmpty)
@@ -128,14 +128,16 @@ void GUI_PreferenceDialog::languageChanged()
 		i++;
 	}
 
-	if(m->action){
+	if(m->action)
+	{
 		m->action->setText(actionName() + "...");
 	}
 
 	if(Util::between(m->currentRow, m->preferenceWidgets.count()))
 	{
 		Base* dialog = m->preferenceWidgets[m->currentRow];
-		if(dialog){
+		if(dialog)
+		{
 			ui->labPreferenceTitle->setText(dialog->actionName());
 		}
 	}
@@ -153,7 +155,8 @@ QAction* GUI_PreferenceDialog::action()
 	// action has to be initialized here, because pure
 	// virtual get_action_name should not be called from ctor
 	const QString name = actionName();
-	if(!m->action){
+	if(!m->action)
+	{
 		m->action = new Action(name, this);
 	}
 
@@ -166,7 +169,7 @@ QAction* GUI_PreferenceDialog::action()
 QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 {
 	QList<QAction*> ret;
-	for(Preferences::Base* dialog : Algorithm::AsConst(m->preferenceWidgets))
+	for(Preferences::Base* dialog: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		const QString actionName = dialog->actionName();
 		const QString identifier = dialog->identifier();
@@ -175,7 +178,7 @@ QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 		action->setText(actionName);
 		ret << action;
 
-		connect(action, &QAction::triggered, this, [=](){
+		connect(action, &QAction::triggered, this, [=]() {
 			showPreference(identifier);
 		});
 	}
@@ -185,7 +188,8 @@ QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 
 void GUI_PreferenceDialog::commitAndClose()
 {
-	if(commit()){
+	if(commit())
+	{
 		close();
 	}
 }
@@ -193,7 +197,7 @@ void GUI_PreferenceDialog::commitAndClose()
 bool GUI_PreferenceDialog::commit()
 {
 	bool success = true;
-	for(Base* iface : Algorithm::AsConst(m->preferenceWidgets))
+	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		if(iface->isUiInitialized())
 		{
@@ -214,9 +218,10 @@ bool GUI_PreferenceDialog::commit()
 
 void GUI_PreferenceDialog::revert()
 {
-	for(Base* iface : Algorithm::AsConst(m->preferenceWidgets))
+	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
 	{
-		if(iface->isUiInitialized()){
+		if(iface->isUiInitialized())
+		{
 			iface->revert();
 		}
 	}
@@ -226,7 +231,8 @@ void GUI_PreferenceDialog::revert()
 
 void GUI_PreferenceDialog::rowChanged(int row)
 {
-	if(!Util::between(row, m->preferenceWidgets)){
+	if(!Util::between(row, m->preferenceWidgets))
+	{
 		return;
 	}
 
@@ -237,7 +243,7 @@ void GUI_PreferenceDialog::rowChanged(int row)
 	Base* widget = m->preferenceWidgets[row];
 
 	QLayout* layout = ui->widgetPreferences->layout();
-	layout->setContentsMargins(0,0,0,0);
+	layout->setContentsMargins(0, 0, 0, 0);
 
 	if(layout)
 	{
@@ -251,10 +257,9 @@ void GUI_PreferenceDialog::rowChanged(int row)
 	widget->show();
 }
 
-
 void GUI_PreferenceDialog::hideAll()
 {
-	for(Base* iface : Algorithm::AsConst(m->preferenceWidgets))
+	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		iface->setParent(nullptr);
 		iface->hide();
@@ -270,19 +275,19 @@ void GUI_PreferenceDialog::showEvent(QShowEvent* e)
 	ui->listPreferences->setFocus();
 }
 
-
 void GUI_PreferenceDialog::initUi()
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
-    this->setAttribute(Qt::WA_StyledBackground);
+	this->setAttribute(Qt::WA_StyledBackground);
 
 	ui = new Ui::GUI_PreferenceDialog();
 	ui->setupUi(this);
 
-    for(Base* widget : Algorithm::AsConst(m->preferenceWidgets))
+	for(Base* widget: Algorithm::AsConst(m->preferenceWidgets))
 	{
 		ui->listPreferences->addItem(widget->actionName());
 	}
@@ -302,7 +307,7 @@ void GUI_PreferenceDialog::initUi()
 
 	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
 
-    auto sz = m->mainWindow->size();
+	auto sz = m->mainWindow->size();
 	sz *= 0.66;
-    this->resize(sz);
+	this->resize(sz);
 }

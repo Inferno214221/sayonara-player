@@ -1,6 +1,6 @@
 /* HeaderView.cpp */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -61,8 +61,8 @@ namespace
 	void drawSortIndicator(QPainter* painter, const QRect& rect, bool ascending)
 	{
 		const auto arrow = ascending
-			? QStringLiteral(u"▲")
-			: QStringLiteral(u"▼");
+		                   ? QStringLiteral(u"▲")
+		                   : QStringLiteral(u"▼");
 
 		auto targetRect = rect;
 		targetRect.setWidth(rect.width() - 4);

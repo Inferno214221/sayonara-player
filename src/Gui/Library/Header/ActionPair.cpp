@@ -1,6 +1,6 @@
 /* ActionPair.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,8 +31,7 @@ struct ActionPair::Private
 	Private(Lang::Term term, bool ascending, Library::SortOrder sortorder) :
 		term(term),
 		sortorder(sortorder),
-		ascending(ascending)
-	{}
+		ascending(ascending) {}
 };
 
 ActionPair::ActionPair(Lang::Term term, bool ascending, Library::SortOrder sortorder)
@@ -59,8 +58,8 @@ ActionPair::~ActionPair() = default;
 QString ActionPair::name() const
 {
 	const auto text = (m->ascending)
-		? Lang::get(Lang::Ascending)
-		: Lang::get(Lang::Descending);
+	                  ? Lang::get(Lang::Ascending)
+	                  : Lang::get(Lang::Descending);
 
 	return QString("%1 (%2)").arg(Lang::get(m->term), text);
 }

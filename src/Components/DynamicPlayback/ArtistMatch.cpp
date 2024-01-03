@@ -1,6 +1,6 @@
 /* ArtistMatch.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -120,7 +120,7 @@ QList<ArtistMatch::Entry> ArtistMatch::get(Quality quality) const
 {
 	auto result = QList<ArtistMatch::Entry>();
 
-	for(const auto& entry : m->entries)
+	for(const auto& entry: m->entries)
 	{
 		switch(quality)
 		{
@@ -164,7 +164,7 @@ QString ArtistMatch::toString() const
 	auto lines = QStringList {};
 
 	{
-		for(const auto& entry : m->entries)
+		for(const auto& entry: m->entries)
 		{
 			QString line;
 			auto textStream = QTextStream(&line);
@@ -183,7 +183,7 @@ ArtistMatch ArtistMatch::fromString(const QString& data)
 	auto artistMatch = ArtistMatch {};
 
 	const auto lines = data.split('\n');
-	for(const auto& line : lines)
+	for(const auto& line: lines)
 	{
 		auto splitted = line.split('\t');
 		if(splitted.size() != 3)

@@ -1,6 +1,6 @@
 /* GUIRemoteControl.cpp
 
- * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+ * Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -36,7 +36,8 @@ GUI_RemoteControlPreferences::~GUI_RemoteControlPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -60,7 +61,6 @@ void GUI_RemoteControlPreferences::retranslate()
 	ui->cbDiscover->setToolTip(tooltip);
 	ui->labDiscover->setToolTip(tooltip);
 }
-
 
 bool GUI_RemoteControlPreferences::commit()
 {
@@ -89,12 +89,10 @@ void GUI_RemoteControlPreferences::revert()
 	refreshUrl();
 }
 
-
 QString GUI_RemoteControlPreferences::actionName() const
 {
 	return tr("Remote control");
 }
-
 
 void GUI_RemoteControlPreferences::activeToggled(bool b)
 {
@@ -124,18 +122,17 @@ void GUI_RemoteControlPreferences::discoverPortChanged(int port)
 	}
 }
 
-
 QString GUI_RemoteControlPreferences::getUrlString()
 {
 	int port = ui->sbPort->value();
 	const QStringList ips = Util::ipAddresses();
 
 	QStringList ret;
-	for(const QString& ip : ips)
+	for(const QString& ip: ips)
 	{
 		ret << QString("%1:%2")
-					.arg(ip)
-					.arg(port);
+			.arg(ip)
+			.arg(port);
 	}
 
 	return ret.join("\n");

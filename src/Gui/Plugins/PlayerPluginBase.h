@@ -1,6 +1,6 @@
 /* PlayerPlugin.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,125 +38,120 @@ namespace PlayerPlugin
 	class Base :
 		public Gui::Widget
 	{
-		friend class Handler;
+			friend class Handler;
 
 		Q_OBJECT
 
-	private:
+		private:
 		PIMPL(Base)
 
-	public:
-		explicit Base(QWidget* parent=nullptr);
-		virtual ~Base() override;
+		public:
+			explicit Base(QWidget* parent = nullptr);
+			virtual ~Base() override;
 
-	signals:
-		/**
-		 * @brief signal is emitted when the plugin action is triggered\n
-		 * also emitted for when closeEvent is fired
-		 * @param plugin this pointer to current plugin
-		 * @param checked indicates whether checked or unchecked
-		 */
-		void sigActionTriggered(bool checked);
+		signals:
+			/**
+			 * @brief signal is emitted when the plugin action is triggered\n
+			 * also emitted for when closeEvent is fired
+			 * @param plugin this pointer to current plugin
+			 * @param checked indicates whether checked or unchecked
+			 */
+			void sigActionTriggered(bool checked);
 
-		/**
-		 * @brief emitted when reloading is requested, after firing this signal
-		 * the plugin will be painted new. Useful, if the size has changed
-		 */
-		void sigReload(PlayerPlugin::Base* plugin);
+			/**
+			 * @brief emitted when reloading is requested, after firing this signal
+			 * the plugin will be painted new. Useful, if the size has changed
+			 */
+			void sigReload(PlayerPlugin::Base* plugin);
 
-		void sigOpened();
+			void sigOpened();
 
+		private slots:
+			/**
+			 * @brief Checks/unchecks the action and emits sig_action_triggered signal
+			 * also called when closeEvent is fired
+			 * @param checked if action is checked or unchecked
+			 */
+			void actionTriggered(bool checked);
 
-	private slots:
-		/**
-		 * @brief Checks/unchecks the action and emits sig_action_triggered signal
-		 * also called when closeEvent is fired
-		 * @param checked if action is checked or unchecked
-		 */
-		void actionTriggered(bool checked);
+		private:
 
-	private:
+			/**
+			 * @brief mark ui as initialized
+			 */
+			void setUiInitialized();
 
-		/**
-		 * @brief mark ui as initialized
-		 */
-		void setUiInitialized();
+			/**
+			 * @brief languageChanged. Calls retranslate_ui in subclasses
+			 */
+			virtual void languageChanged() final override;
 
+			/**
+			 * @brief GUI will be initialized on first show up. Please use this to make Sayonara starting fast
+			 */
+			virtual void initUi() = 0;
 
-		/**
-		 * @brief languageChanged. Calls retranslate_ui in subclasses
-		 */
-		virtual void languageChanged() final override;
+		protected:
+			virtual void finalizeInitialization();
 
-		/**
-		 * @brief GUI will be initialized on first show up. Please use this to make Sayonara starting fast
-		 */
-		virtual void initUi()=0;
+			/**
+			 * @brief Check if ui already was initialized
+			 * @return
+			 */
+			virtual bool isUiInitialized() const;
+			virtual void assignUiVariables();
 
+			virtual void retranslate() = 0;
 
-	protected:
-		virtual void finalizeInitialization();
+			template<typename T, typename UiClass>
+			void setupParent(T* widget, UiClass** ui)
+			{
+				if(isUiInitialized())
+				{
+					return;
+				}
 
-		/**
-		 * @brief Check if ui already was initialized
-		 * @return
-		 */
-		virtual bool isUiInitialized() const;
-		virtual void assignUiVariables();
+				*ui = new UiClass();
+				(*ui)->setupUi(widget);
 
-		virtual void retranslate()=0;
-
-		template<typename T, typename UiClass>
-		void setupParent(T* widget, UiClass** ui)
-		{
-			if(isUiInitialized()){
-				return;
+				assignUiVariables();
+				finalizeInitialization();
 			}
 
-			*ui = new UiClass();
-			(*ui)->setupUi(widget);
+			void closeEvent(QCloseEvent* e) override;
+			void showEvent(QShowEvent* e) override;
 
-			assignUiVariables();
-			finalizeInitialization();
-		}
+		public:
 
-		void closeEvent(QCloseEvent* e) override;
-		void showEvent(QShowEvent* e) override;
+			/**
+			 * @brief needed by the player ui, final
+			 * @return action of plugin
+			 */
+			virtual QAction* pluginAction() const final;
 
+			/**
+			 * @brief must be overwritten
+			 * @return the NOT translated name of the plugin
+			 */
+			virtual QString name() const = 0;
 
-	public:
+			/**
+			 * @brief must be overwritten
+			 * @return the translated name of the plugin
+			 */
+			virtual QString displayName() const = 0;
 
-		/**
-		 * @brief needed by the player ui, final
-		 * @return action of plugin
-		 */
-		virtual QAction*	pluginAction() const final;
+			/**
+			 * @brief indicates if title bar is shown or not
+			 */
+			virtual bool hasTitle() const;
 
-
-		/**
-		 * @brief must be overwritten
-		 * @return the NOT translated name of the plugin
-		 */
-		virtual QString		name() const=0;
-
-		/**
-		 * @brief must be overwritten
-		 * @return the translated name of the plugin
-		 */
-		virtual QString		displayName() const=0;
-
-
-		/**
-		 * @brief indicates if title bar is shown or not
-		 */
-		virtual bool		hasTitle() const;
-
-		/**
-		 * @brief indicates if the widget has a loading bar. If yes, there will be reserved
-		 * some extra space at the bottom of the widget
-		 * @return
-		 */
-		virtual bool		hasLoadingBar() const;
+			/**
+			 * @brief indicates if the widget has a loading bar. If yes, there will be reserved
+			 * some extra space at the bottom of the widget
+			 * @return
+			 */
+			virtual bool hasLoadingBar() const;
 	};
 }
 

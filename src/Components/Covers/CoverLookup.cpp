@@ -1,6 +1,6 @@
 /* CoverLookup.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -61,7 +61,7 @@ struct Lookup::Private
 	int coversRequested;
 	Source source {Source::Unknown};
 	std::atomic<bool> stopped {false};
-	bool ignoreCache{false};
+	bool ignoreCache {false};
 
 	explicit Private(int coversRequested) :
 		coversRequested(coversRequested) {}

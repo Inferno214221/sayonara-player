@@ -1,6 +1,6 @@
 /* GUI_BroadcastSetup.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,6 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 
-
 GUI_BroadcastPreferences::GUI_BroadcastPreferences(const QString& identifier) :
 	Base(identifier) {}
 
@@ -35,7 +34,8 @@ GUI_BroadcastPreferences::~GUI_BroadcastPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -59,29 +59,31 @@ bool GUI_BroadcastPreferences::commit()
 	bool old_prompt = GetSetting(Set::Broadcast_Prompt);
 	int old_port = GetSetting(Set::Broadcast_Port);
 
-	if(old_active != new_active){
+	if(old_active != new_active)
+	{
 		SetSetting(Set::Broadcast_Active, new_active);
 	}
 
-	if(old_prompt != new_prompt){
+	if(old_prompt != new_prompt)
+	{
 		SetSetting(Set::Broadcast_Prompt, new_prompt);
 	}
 
-	if(old_port != new_port){
+	if(old_port != new_port)
+	{
 		SetSetting(Set::Broadcast_Port, new_port);
 	}
 
 	return true;
 }
 
-
 void GUI_BroadcastPreferences::revert()
 {
 	bool active = GetSetting(Set::Broadcast_Active);
 
-	ui->cbActive->setChecked( active );
-	ui->cbPrompt->setChecked( GetSetting(Set::Broadcast_Prompt) );
-	ui->sbPort->setValue( GetSetting(Set::Broadcast_Port) );
+	ui->cbActive->setChecked(active);
+	ui->cbPrompt->setChecked(GetSetting(Set::Broadcast_Prompt));
+	ui->sbPort->setValue(GetSetting(Set::Broadcast_Port));
 	ui->leUrl->setVisible(active);
 	ui->labUrlTitle->setVisible(active);
 
@@ -96,12 +98,10 @@ void GUI_BroadcastPreferences::retranslate()
 	ui->labUrlTitle->setText(Lang::get(Lang::StreamUrl));
 }
 
-
 QString GUI_BroadcastPreferences::actionName() const
 {
 	return Lang::get(Lang::Broadcast);
 }
-
 
 void GUI_BroadcastPreferences::activeToggled(bool b)
 {
@@ -121,7 +121,7 @@ QString GUI_BroadcastPreferences::urlString() const
 	QStringList ips = Util::ipAddresses();
 
 	QStringList ret;
-	for(const QString& ip : ips)
+	for(const QString& ip: ips)
 	{
 		QString str = QString("http://") + ip + ":" + QString::number(port) + "/playlist.m3u";
 		ret << str;

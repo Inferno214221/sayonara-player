@@ -1,6 +1,6 @@
 /* GUI_Equalizer.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -48,7 +48,7 @@ class GUI_Equalizer :
 	PIMPL(GUI_Equalizer)
 
 	public:
-		explicit GUI_Equalizer(Equalizer* equalizer, QWidget* parent=nullptr);
+		explicit GUI_Equalizer(Equalizer* equalizer, QWidget* parent = nullptr);
 		~GUI_Equalizer() override;
 
 		QString name() const override;

@@ -1,6 +1,6 @@
 /* GUI_PlaylistChooser.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,29 +32,29 @@ namespace Playlist
 UI_FWD(GUI_PlaylistChooser)
 
 class GUI_PlaylistChooser :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_PlaylistChooser)
 	PIMPL(GUI_PlaylistChooser)
 
-public:
-	explicit GUI_PlaylistChooser(Playlist::Chooser* playlistChooser, QWidget* parent=nullptr);
-	~GUI_PlaylistChooser() override;
+	public:
+		explicit GUI_PlaylistChooser(Playlist::Chooser* playlistChooser, QWidget* parent = nullptr);
+		~GUI_PlaylistChooser() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
-private slots:
-	void playlistsChanged();
-	void deleteTriggered();
-	void renameTriggered();
-	void renameDialogClosed();
-	void playlistSelected(int index);
+	private slots:
+		void playlistsChanged();
+		void deleteTriggered();
+		void renameTriggered();
+		void renameDialogClosed();
+		void playlistSelected(int index);
 
-private:
-	void retranslate() override;
-	void initUi() override;
+	private:
+		void retranslate() override;
+		void initUi() override;
 };
 
 #endif /* GUIPLAYLISTCHOOSER_H_ */

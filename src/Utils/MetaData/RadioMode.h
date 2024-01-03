@@ -1,6 +1,6 @@
 /* RadioMode.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,7 +27,8 @@
  * @brief The RadioMode enum
  * @ingroup MetaDataHelper
  */
-enum class RadioMode : unsigned char
+enum class RadioMode :
+	unsigned char
 {
 	Off = 0,
 	Station,

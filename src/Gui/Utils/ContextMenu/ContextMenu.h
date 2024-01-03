@@ -1,6 +1,6 @@
 /* ContextMenu.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,7 +26,6 @@
 
 #include <QMenu>
 
-
 namespace Gui
 {
 	class PreferenceAction;
@@ -34,14 +33,14 @@ namespace Gui
 	 * @brief Combination of ContextMenu::Entry values
 	 * @ingroup Gui
 	 */
-	using ContextMenuEntries=uint16_t;
+	using ContextMenuEntries = uint16_t;
 
 	/**
 	 * @brief A context menu with some standard actions
 	 * @ingroup Gui
 	 */
 	class ContextMenu :
-			public Gui::WidgetTemplate<QMenu>
+		public Gui::WidgetTemplate<QMenu>
 	{
 		Q_OBJECT
 		PIMPL(ContextMenu)
@@ -53,16 +52,16 @@ namespace Gui
 			 */
 			enum Entry
 			{
-				EntryNone	=0,
-				EntryNew	=(1<<0),
-				EntryEdit	=(1<<1),
-				EntryUndo	=(1<<2),
-				EntrySave	=(1<<3),
-				EntrySaveAs	=(1<<4),
-				EntryRename	=(1<<5),
-				EntryDelete	=(1<<6),
-				EntryOpen	=(1<<7),
-				EntryDefault=(1<<8)
+				EntryNone = 0,
+				EntryNew = (1 << 0),
+				EntryEdit = (1 << 1),
+				EntryUndo = (1 << 2),
+				EntrySave = (1 << 3),
+				EntrySaveAs = (1 << 4),
+				EntryRename = (1 << 5),
+				EntryDelete = (1 << 6),
+				EntryOpen = (1 << 7),
+				EntryDefault = (1 << 8)
 			};
 
 		signals:
@@ -76,7 +75,6 @@ namespace Gui
 			void sigOpen();
 			void sigDefault();
 
-
 		private:
 			/**
 			 * @brief show_action
@@ -85,9 +83,8 @@ namespace Gui
 			 */
 			void showAction(bool b, QAction* action);
 
-
 		public:
-			explicit ContextMenu(QWidget* parent=nullptr);
+			explicit ContextMenu(QWidget* parent = nullptr);
 			virtual ~ContextMenu() override;
 
 			/**
@@ -108,12 +105,10 @@ namespace Gui
 			 */
 			ContextMenuEntries entries() const;
 
-
 		protected:
 			void showEvent(QShowEvent* e) override;
 			void languageChanged() override;
 			void skinChanged() override;
-
 
 		public slots:
 			/**
@@ -135,7 +130,6 @@ namespace Gui
 			void showAll();
 
 			void addPreferenceAction(PreferenceAction* action);
-
 
 		private slots:
 			/**

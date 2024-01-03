@@ -1,6 +1,6 @@
 /* PlaylistTabBar.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -100,7 +100,7 @@ void TabBar::saveAsPressed()
 	const auto oldName = tabText(currentIndex());
 	Gui::LineInputDialog dialog(Lang::get(Lang::SaveAs).triplePt(), dialogText, oldName, this);
 	dialog.exec();
-	
+
 	if(dialog.returnValue() == Gui::LineInputDialog::ReturnValue::Ok)
 	{
 		const auto newName = dialog.text();

@@ -1,6 +1,6 @@
 /* Pimpl.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,12 +34,11 @@
 #define MOVE(x) x = std::move(other.x)
 #define CMP(x) (x == other.x)
 
-
 #define PIMPL(Class) private: \
-	struct Private; \
-	friend struct Private; \
-	std::unique_ptr< Class ::Private> m; \
-	private:
+    struct Private; \
+    friend struct Private; \
+    std::unique_ptr< Class ::Private> m; \
+    private:
 
 /**
  * ingroup @Helper
@@ -52,10 +51,10 @@ namespace Pimpl
 	 * @param args arguments, the ::Private constructor needs
 	 * @return Unique Pointer to the ::Private structure
 	 */
-	std::unique_ptr<T> make(Args&&... args)
+	std::unique_ptr<T> make(Args&& ... args)
 	{
 		return std::unique_ptr<T>(
-				new T(std::forward<Args>(args)...)
+			new T(std::forward<Args>(args)...)
 		);
 	}
 }

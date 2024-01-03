@@ -1,6 +1,6 @@
 /* Helper.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,10 +37,10 @@ class QColor;
 #include "Utils/Macros.h"
 
 #ifndef CAST_MACROS
-	#define scast(x, y) static_cast<x>(y)
-	#define dcast(x, y) dynamic_cast<x>(y)
-	#define rcast(x, y) reinterpret_cast<x>(y)
-	#define CAST_MACROS
+#define scast(x, y) static_cast<x>(y)
+#define dcast(x, y) dynamic_cast<x>(y)
+#define rcast(x, y) reinterpret_cast<x>(y)
+#define CAST_MACROS
 #endif
 
 /**
@@ -79,7 +79,6 @@ namespace Util
 
 	QString convertNotNull(const QString& str);
 
-
 	/**
 	 * @brief create a link string
 	 * @param name appearing name in link
@@ -88,24 +87,24 @@ namespace Util
 	 * @return link string
 	 */
 	QString createLink(const QString& name,
-						bool dark=true,
-						bool underline=true);
+	                   bool dark = true,
+	                   bool underline = true);
 
 	QString createLink(const QString& name,
-						bool dark,
-						bool underline,
-						const QString& target);
+	                   bool dark,
+	                   bool underline,
+	                   const QString& target);
 
 	QString createLink(const QString& name,
-						const QColor& color,
-						bool underline,
-						const QString& target);
+	                   const QColor& color,
+	                   bool underline,
+	                   const QString& target);
 
 	/**
 	 * @brief get all supported sound file extensions
 	 * @return
 	 */
-	QStringList soundfileExtensions(bool withAsterisk=true);
+	QStringList soundfileExtensions(bool withAsterisk = true);
 
 	/**
 	 * @brief get filter for file reader or file chooser
@@ -117,26 +116,25 @@ namespace Util
 	 * @brief get all supported playlist file extensions
 	 * @return
 	 */
-	QStringList playlistExtensions(bool withAsterisk=true);
+	QStringList playlistExtensions(bool withAsterisk = true);
 
 	/**
 	 * @brief get all supported podcast file extensions
 	 * @return
 	 */
-	QStringList podcastExtensions(bool withAsterisk=true);
+	QStringList podcastExtensions(bool withAsterisk = true);
 
-	QStringList imageExtensions(bool withAsterisk=true);
-
+	QStringList imageExtensions(bool withAsterisk = true);
 
 	enum Extension
 	{
-		Soundfile=1<<0,
-		Playlist=1<<1,
-		Podcast=1<<2,
-		Images=1<<3
+		Soundfile = 1 << 0,
+		Playlist = 1 << 1,
+		Podcast = 1 << 2,
+		Images = 1 << 3
 	};
 
-	using Extensions=uint16_t;
+	using Extensions = uint16_t;
 
 	/**
 	 * @brief get filter for file chooser dialog based on extensions
@@ -154,9 +152,7 @@ namespace Util
 	 */
 	int randomNumber(int min, int max);
 
-
 	QString randomString(int max_chars);
-
 
 	/**
 	 * @brief gets value out of tag
@@ -164,15 +160,14 @@ namespace Util
 	 * @param xmlDocument content of the xml document
 	 * @return extracted string
 	 */
-	QString easyTagFinder(const QString&  tag, const QString& xmlDocument);
+	QString easyTagFinder(const QString& tag, const QString& xmlDocument);
 
 	/**
 	 * @brief calculate a md5 hashsum
 	 * @param data input data
 	 * @return hashsum
 	 */
-	QByteArray calcHash(const QByteArray&  data);
-
+	QByteArray calcHash(const QByteArray& data);
 
 	/**
 	 * @brief sleep
@@ -180,13 +175,11 @@ namespace Util
 	 */
 	void sleepMs(uint64_t ms);
 
-
 	/**
 	 * @brief get all ip addresses of the host
 	 * @return list of ip addresses
 	 */
 	QStringList ipAddresses();
-
 
 	QByteArray convertPixmapToByteArray(const QPixmap& pm);
 	QByteArray convertPixmapToByteArray(const QPixmap& pm, const char* format);

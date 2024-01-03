@@ -1,6 +1,6 @@
 /* EqualizerSlider.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -95,9 +95,9 @@ double EqualizerSlider::equalizerValue() const
 void Gui::EqualizerSlider::setEqualizerValue(double value)
 {
 	this->setValue
-	(
-		(value > 0) ? int(value) : int(value * 2)
-	);
+		(
+			(value > 0) ? int(value) : int(value * 2)
+		);
 }
 
 void EqualizerSlider::setZero()

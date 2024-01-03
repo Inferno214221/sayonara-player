@@ -1,6 +1,6 @@
 /* CoverViewContextMenu.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -100,7 +100,7 @@ void CoverViewContextMenu::initSortingActions()
 	m->actionSorting->setText(Lang::get(Lang::SortBy));
 
 	static const auto sortingActions = CoverView::sortingActions();
-	for(const auto& actionPair : sortingActions)
+	for(const auto& actionPair: sortingActions)
 	{
 		auto* action = m->menuSorting->addAction(actionPair.name());
 		action->setCheckable(true);
@@ -114,7 +114,7 @@ void CoverViewContextMenu::initZoomActions()
 	m->menuZoom->clear();
 
 	const static auto zoomFactors = CoverView::zoomFactors();
-	for(const auto& zoomFactor : zoomFactors)
+	for(const auto& zoomFactor: zoomFactors)
 	{
 		auto* action = m->menuZoom->addAction(QString::number(zoomFactor));
 		action->setData(zoomFactor);
@@ -166,7 +166,7 @@ void CoverViewContextMenu::setZoom(int zoom)
 	auto found = false;
 
 	const auto actions = m->menuZoom->actions();
-	for(auto* action : actions)
+	for(auto* action: actions)
 	{
 		action->setChecked((action->text().toInt() >= zoom) && !found);
 		found |= (action->text().toInt() >= zoom);
@@ -176,7 +176,7 @@ void CoverViewContextMenu::setZoom(int zoom)
 void CoverViewContextMenu::setSorting(Library::SortOrder sortOrder)
 {
 	const auto actions = m->menuSorting->actions();
-	for(auto* action : actions)
+	for(auto* action: actions)
 	{
 		action->setChecked(action->data().toInt() == static_cast<int>(sortOrder));
 	}

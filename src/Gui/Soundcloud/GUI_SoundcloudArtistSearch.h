@@ -1,6 +1,6 @@
 /* GUI_SoundcloudArtistSearch.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,7 +30,10 @@ class ArtistList;
 class MetaDataList;
 class AlbumList;
 
-namespace Cover { class Location; }
+namespace Cover
+{
+	class Location;
+}
 
 class QListWidget;
 
@@ -41,14 +44,14 @@ namespace SC
 	class Library;
 
 	class GUI_ArtistSearch :
-			public Gui::Dialog
+		public Gui::Dialog
 	{
 		Q_OBJECT
 		UI_CLASS_SHARED_PTR(GUI_SoundcloudArtistSearch)
 		PIMPL(GUI_ArtistSearch)
 
 		public:
-			explicit GUI_ArtistSearch(SC::Library* library, QWidget* parent=nullptr);
+			explicit GUI_ArtistSearch(SC::Library* library, QWidget* parent = nullptr);
 			~GUI_ArtistSearch() override;
 
 		private slots:

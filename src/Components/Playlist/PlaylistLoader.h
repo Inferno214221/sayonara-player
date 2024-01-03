@@ -1,6 +1,6 @@
 /* PlaylistLoader.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,12 +36,13 @@ namespace Playlist
 	{
 		public:
 			virtual ~Loader() = default;
-			virtual int getLastPlaylistIndex() const=0;
-			virtual int getLastTrackIndex() const=0;
-			virtual const QList<CustomPlaylist>& playlists() const=0;
+			virtual int getLastPlaylistIndex() const = 0;
+			virtual int getLastTrackIndex() const = 0;
+			virtual const QList<CustomPlaylist>& playlists() const = 0;
 	};
 
-	class LoaderImpl : public Loader
+	class LoaderImpl :
+		public Loader
 	{
 		PIMPL(LoaderImpl)
 

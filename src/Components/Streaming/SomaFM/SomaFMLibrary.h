@@ -1,6 +1,6 @@
 /* SomaFMLibrary.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,8 @@ class PlaylistCreator;
 namespace SomaFM
 {
 	class Station;
-	class Library : public QObject
+	class Library :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(Library)
@@ -44,7 +45,7 @@ namespace SomaFM
 			void sigLoadingStarted();
 
 		public:
-			explicit Library(PlaylistCreator* playlistCreator, QObject* parent=nullptr);
+			explicit Library(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
 			~Library();
 
 			Station station(const QString& name);

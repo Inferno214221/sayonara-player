@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ namespace Playlist
 	 * @ingroup GuiPlaylists
 	 */
 	class TabMenu :
-			public Gui::WidgetTemplate<QMenu>
+		public Gui::WidgetTemplate<QMenu>
 	{
 		Q_OBJECT
 		PIMPL(TabMenu)
@@ -57,7 +57,7 @@ namespace Playlist
 			void sigSaveToFileClicked();
 
 		public:
-			explicit TabMenu(QWidget* parent=nullptr);
+			explicit TabMenu(QWidget* parent = nullptr);
 			~TabMenu() override;
 
 			void showMenuItems(MenuEntries entries);

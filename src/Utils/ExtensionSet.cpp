@@ -1,6 +1,6 @@
 /* ExtensionSet.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -52,11 +52,13 @@ ExtensionSet& ExtensionSet::operator=(const ExtensionSet& other)
 
 void ExtensionSet::addExtension(const QString& ext, bool enabled)
 {
-	if(enabled){
+	if(enabled)
+	{
 		m->enabledExtensions.insert(ext.toLower());
 	}
 
-	else {
+	else
+	{
 		m->disabledExtensions.insert(ext.toLower());
 	}
 }
@@ -87,11 +89,13 @@ ExtensionSet& ExtensionSet::operator<<(const QString& ext)
 
 void ExtensionSet::setEnabled(const QString& ext, bool b)
 {
-	if(b){
+	if(b)
+	{
 		enable(ext);
 	}
 
-	else {
+	else
+	{
 		disable(ext);
 	}
 }

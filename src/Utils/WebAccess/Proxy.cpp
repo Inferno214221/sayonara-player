@@ -1,6 +1,6 @@
 /* Proxy.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,8 @@ void Proxy::setProxy()
 		proxy.setHostName(Proxy::hostname());
 		proxy.setPort(Proxy::port());
 
-		if(hasUsername()){
+		if(hasUsername())
+		{
 			proxy.setUser(username());
 			proxy.setPassword(password());
 		}
@@ -64,7 +65,6 @@ void Proxy::unsetProxy()
 	proxy.setType(QNetworkProxy::NoProxy);
 	QNetworkProxy::setApplicationProxy(proxy);
 }
-
 
 QString Proxy::hostname()
 {
@@ -98,12 +98,14 @@ bool Proxy::hasUsername()
 
 QString Proxy::fullUrl()
 {
-	if(!active()){
+	if(!active())
+	{
 		return QString();
 	}
 
 	QString host_name = hostname();
-	if(!host_name.startsWith("http")){
+	if(!host_name.startsWith("http"))
+	{
 		host_name.prepend("http://");
 	}
 
@@ -113,10 +115,11 @@ QString Proxy::fullUrl()
 QString Proxy::envHostname()
 {
 	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
-	for(const QNetworkProxy& proxy : proxies)
+	for(const QNetworkProxy& proxy: proxies)
 	{
 		QString hostname = proxy.hostName();
-		if(!hostname.isEmpty()){
+		if(!hostname.isEmpty())
+		{
 			return hostname;
 		}
 	}
@@ -124,14 +127,14 @@ QString Proxy::envHostname()
 	return QString();
 }
 
-
 int Proxy::envPort()
 {
 	QList<QNetworkProxy> proxies = QNetworkProxyFactory::systemProxyForQuery();
-	for(const QNetworkProxy& proxy : proxies)
+	for(const QNetworkProxy& proxy: proxies)
 	{
 		int port = proxy.port();
-		if(port > 0){
+		if(port > 0)
+		{
 			return port;
 		}
 	}

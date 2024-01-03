@@ -1,6 +1,6 @@
 /* ProgressBar.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class ProgressBar :
-			public Gui::WidgetTemplate<QProgressBar>
+		public Gui::WidgetTemplate<QProgressBar>
 	{
 		Q_OBJECT
 		PIMPL(ProgressBar)
@@ -45,7 +45,7 @@ namespace Gui
 		public:
 			enum class Position
 			{
-				Top=0,
+				Top = 0,
 				Middle,
 				Bottom
 			};

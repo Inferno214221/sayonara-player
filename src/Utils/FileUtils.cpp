@@ -1,6 +1,6 @@
 /* FileUtils.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -61,7 +61,7 @@ void Util::File::removeFilesInDirectory(const QString& dirName, const QStringLis
 			QDir::Filters(QDir::System | QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot)
 		);
 
-	for(const auto& fileInfo : fileInfoList)
+	for(const auto& fileInfo: fileInfoList)
 	{
 		const auto path = fileInfo.absoluteFilePath();
 
@@ -96,7 +96,7 @@ void Util::File::deleteFiles(const QStringList& paths)
 		return (str1.size() > str2.size());
 	});
 
-	for(const auto& path : Algorithm::AsConst(sortedPaths))
+	for(const auto& path: Algorithm::AsConst(sortedPaths))
 	{
 		if(path.contains(".."))
 		{
@@ -140,8 +140,8 @@ QString Util::File::getParentDirectory(const QString& filename)
 QString Util::File::getFilenameOfPath(const QString& path)
 {
 	return (!path.trimmed().isEmpty())
-		? QDir(cleanFilename(path)).dirName()
-		: QString();
+	       ? QDir(cleanFilename(path)).dirName()
+	       : QString();
 }
 
 void Util::File::splitFilename(const QString& src, QString& path, QString& filename)
@@ -161,7 +161,7 @@ std::pair<QString, QString> Util::File::splitFilename(const QString& src)
 QStringList Util::File::getParentDirectories(const QStringList& files)
 {
 	Util::Set<QString> folders;
-	for(const auto& file : files)
+	for(const auto& file: files)
 	{
 		const auto folder = getParentDirectory(file);
 		folders.insert(folder);
@@ -212,7 +212,7 @@ bool Util::File::isUrl(const QString& str)
 
 bool Util::File::isWWW(const QString& str)
 {
-	const auto schemes = QStringList{"http", "https", "ftp", "itpc", "feed"};
+	const auto schemes = QStringList {"http", "https", "ftp", "itpc", "feed"};
 	const auto url = QUrl(str);
 	const auto scheme = url.scheme().toLower();
 
@@ -412,7 +412,7 @@ QString Util::File::getCommonDirectory(const QStringList& paths)
 
 	QString ret;
 	QStringList absolutePaths;
-	for(const auto& path : paths)
+	for(const auto& path: paths)
 	{
 		const auto filename = getAbsoluteFilename(path);
 		const auto info = QFileInfo(filename);
@@ -440,7 +440,7 @@ QString Util::File::getCommonDirectory(const QStringList& paths)
 
 	ret = absolutePaths[0];
 
-	for(const auto& absolutePath : Algorithm::AsConst(absolutePaths))
+	for(const auto& absolutePath: Algorithm::AsConst(absolutePaths))
 	{
 		ret = getCommonDirectory(ret, absolutePath);
 	}
@@ -490,7 +490,7 @@ bool Util::File::copyDir(const QString& sourceDirectory, const QString& targetDi
 	const auto srcInfos = src.entryInfoList(QStringList(),
 	                                        (QDir::Files | QDir::Dirs |
 	                                         QDir::Filter::NoDotAndDotDot));
-	for(const auto& info : srcInfos)
+	for(const auto& info: srcInfos)
 	{
 		if(info.isDir())
 		{
@@ -597,7 +597,7 @@ QByteArray Util::File::getMD5Sum(const QString& filename)
 bool Util::File::moveFiles(const QStringList& files, const QString& dir, QStringList& newNames)
 {
 	bool success = true;
-	for(const auto& file : files)
+	for(const auto& file: files)
 	{
 		QString newName;
 		success = moveFile(file, dir, newName);
@@ -626,7 +626,7 @@ bool Util::File::renameFile(const QString& oldName, const QString& newName)
 bool Util::File::copyFiles(const QStringList& files, const QString& dir, QStringList& newNames)
 {
 	bool success = true;
-	for(const auto& file : files)
+	for(const auto& file: files)
 	{
 		QString newName;
 		success = copyFile(file, dir, newName);

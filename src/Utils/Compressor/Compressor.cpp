@@ -1,6 +1,6 @@
 /* Compressor.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,10 +23,10 @@
 #include <iostream>
 #include "zlib.h"
 
-
-QByteArray Compressor::compress(const QByteArray &arr)
+QByteArray Compressor::compress(const QByteArray& arr)
 {
-	if(arr.isEmpty()){
+	if(arr.isEmpty())
+	{
 		return arr;
 	}
 
@@ -52,7 +52,8 @@ QByteArray Compressor::compress(const QByteArray &arr)
 
 QByteArray Compressor::decompress(const QByteArray& arr)
 {
-	if(arr.isEmpty()){
+	if(arr.isEmpty())
+	{
 		return arr;
 	}
 

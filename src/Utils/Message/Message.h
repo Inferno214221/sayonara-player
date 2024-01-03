@@ -1,6 +1,6 @@
 /* GlobalMessage.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,9 +31,10 @@ namespace Message
 	 * @brief The GlobalMessage class
 	 * @ingroup Helper
 	 */
-	enum class Answer : unsigned char
+	enum class Answer :
+		unsigned char
 	{
-		Yes=0,
+		Yes = 0,
 		No,
 		Ok,
 		Cancel,
@@ -44,36 +45,37 @@ namespace Message
 	 * @brief The GlobalMessage class
 	 * @ingroup Helper
 	 */
-	enum class QuestionType : unsigned char
+	enum class QuestionType :
+		unsigned char
 	{
-		YesNo=0,
+		YesNo = 0,
 		OkCancel
 	};
 
 	Message::Answer info(
-			const QString& info,
-			const QString& sender_name=QString());
+		const QString& info,
+		const QString& sender_name = QString());
 
 	Message::Answer warning(
-			const QString& warning,
-			const QString& sender_name=QString());
+		const QString& warning,
+		const QString& sender_name = QString());
 
 	Message::Answer error(
-			const QString& error,
-			const QString& sender_name=QString());
+		const QString& error,
+		const QString& sender_name = QString());
 
 	Message::Answer question(
-			const QString& question,
-			const QString& sender_name,
-			QuestionType type);
+		const QString& question,
+		const QString& sender_name,
+		QuestionType type);
 
 	Message::Answer question_yn(
-			const QString& question,
-			const QString& sender_name=QString());
+		const QString& question,
+		const QString& sender_name = QString());
 
 	Message::Answer question_ok(
-			const QString& question,
-			const QString& sender_name=QString());
+		const QString& question,
+		const QString& sender_name = QString());
 
 	/**
 	 * @brief register a receiver here, so it is called whenever a message has to be written

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,17 +29,18 @@ using namespace Library;
 
 struct ColumnHeader::Private
 {
-	int 			preferredSize;
-	int				defaultSize;
+	int preferredSize;
+	int defaultSize;
 
 	QMap<Qt::SortOrder, SortOrder> sortorderMap;
 
 	ColumnIndex::IntegerType columnIndex;
 
-	bool 			switchable;
-	bool			stretchable;
+	bool switchable;
+	bool stretchable;
 
-	Private(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int sz, bool stretchable) :
+	Private(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortorderAscending,
+	        SortOrder sortorderDescending, int sz, bool stretchable) :
 		preferredSize(sz),
 		defaultSize(sz),
 		columnIndex(columnIndex),
@@ -53,14 +54,15 @@ struct ColumnHeader::Private
 
 ColumnHeader::~ColumnHeader() = default;
 
-ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortOrder sortorderAscending, SortOrder sortorderDescending, int preferredSize, bool stretchable)
+ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortOrder sortorderAscending,
+                           SortOrder sortorderDescending, int preferredSize, bool stretchable)
 {
 	m = Pimpl::make<Private>(type, switchable, sortorderAscending, sortorderDescending, preferredSize, stretchable);
 }
 
 QString ColumnHeader::hash() const
 {
-	return hashPrefix() + QString::number( int(m->columnIndex) );
+	return hashPrefix() + QString::number(int(m->columnIndex));
 }
 
 bool ColumnHeader::isSwitchable() const
@@ -88,9 +90,9 @@ ColumnIndex::IntegerType ColumnHeader::columnIndex() const
 	return m->columnIndex;
 }
 
-ColumnHeaderTrack::ColumnHeaderTrack(ColumnIndex::Track type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
-	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
-{}
+ColumnHeaderTrack::ColumnHeaderTrack(ColumnIndex::Track type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+                                     int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderTrack::title() const
 {
@@ -133,9 +135,9 @@ QString ColumnHeaderTrack::hashPrefix() const
 	return "track";
 }
 
-ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
-	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
-{}
+ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+                                     int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderAlbum::title() const
 {
@@ -166,9 +168,9 @@ QString ColumnHeaderAlbum::hashPrefix() const
 	return "album";
 }
 
-ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, SortOrder sortAsc, SortOrder sortDesc, int preferredWidth, bool stretchable) :
-	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable)
-{}
+ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+                                       int preferredWidth, bool stretchable) :
+	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderArtist::title() const
 {
@@ -176,11 +178,13 @@ QString ColumnHeaderArtist::title() const
 	switch(type)
 	{
 		case ColumnIndex::Artist::Name:
-			if(GetSetting(Set::Lib_ShowAlbumArtists)) {
+			if(GetSetting(Set::Lib_ShowAlbumArtists))
+			{
 				return Lang::get(Lang::AlbumArtist);
 			}
 
-			else {
+			else
+			{
 				return Lang::get(Lang::Artist);
 			}
 		case ColumnIndex::Artist::Tracks:

@@ -1,6 +1,6 @@
 /* SimilarArtists.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,7 +47,7 @@ namespace
 		}
 
 		const auto targetName = artist + ".comp";
-		for(const auto& filename : files)
+		for(const auto& filename: files)
 		{
 			if(filename.compare(targetName, Qt::CaseInsensitive) == 0)
 			{
@@ -83,7 +83,7 @@ SimilarArtists::getSimilarArtists(const QString& artist)
 	}
 
 	const auto similarArtists = QString::fromLocal8Bit(decomp).split("\n");
-	for(const auto& similarArtist : similarArtists)
+	for(const auto& similarArtist: similarArtists)
 	{
 		const auto lst = similarArtist.split('\t');
 		if(lst.size() < 3)

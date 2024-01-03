@@ -1,6 +1,6 @@
 /* SayonaraCompleter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -61,32 +61,35 @@ void Completer::setStringList(QStringList strings)
 QStringList Completer::splitPath(const QString& path) const
 {
 	QStringList splitted = path.split(",");
-	if(splitted.isEmpty()){
+	if(splitted.isEmpty())
+	{
 		return QStringList();
 	}
 
-	else {
-		return QStringList{splitted.last().trimmed().toLower()};
+	else
+	{
+		return QStringList {splitted.last().trimmed().toLower()};
 	}
 }
-
 
 QString Completer::pathFromIndex(const QModelIndex& index) const
 {
 	auto* line_edit = dynamic_cast<QLineEdit*>(this->widget());
-	if(!line_edit){
+	if(!line_edit)
+	{
 		return QCompleter::pathFromIndex(index);
 	}
 
 	QString text = line_edit->text();
 	QStringList items = text.split(",");
-	if(items.isEmpty()){
+	if(items.isEmpty())
+	{
 		return QCompleter::pathFromIndex(index);
 	}
 
 	items.removeLast();
 
-	for(auto it=items.begin(); it != items.end(); it++)
+	for(auto it = items.begin(); it != items.end(); it++)
 	{
 		*it = it->trimmed();
 	}

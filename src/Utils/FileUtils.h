@@ -1,6 +1,6 @@
 /* FileUtils.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,37 +43,37 @@ namespace Util
 		 * @param filename input filename
 		 * @return nicely formatted filename
 		 */
-		QString			cleanFilename(const QString& filename);
+		QString cleanFilename(const QString& filename);
 
-		QByteArray		getMD5Sum(const QString& filename);
+		QByteArray getMD5Sum(const QString& filename);
 
 		/**
 		 * @brief Remove all files from directory
 		 * @param dirName directory name
 		 * @param filters file name filters
 		 */
-		void			removeFilesInDirectory(const QString& dirName, const QStringList& filters);
-		void			removeFilesInDirectory(const QString& dirName);
+		void removeFilesInDirectory(const QString& dirName, const QStringList& filters);
+		void removeFilesInDirectory(const QString& dirName);
 
 		/**
 		 * @brief Remove all given files (also directories can be specified)
 		 * @param files list of files
 		 */
-		void			deleteFiles(const QStringList& files);
+		void deleteFiles(const QStringList& files);
 
 		/**
 		 * @brief get parent directory of a filepath
 		 * @param path File- or directory path
 		 * @return
 		 */
-		QString			getParentDirectory(const QString& path);
+		QString getParentDirectory(const QString& path);
 
 		/**
 		 * @brief extract pure filename from a complete file path
 		 * @param path complete file path
 		 * @return pure filename
 		 */
-		QString			getFilenameOfPath(const QString& path);
+		QString getFilenameOfPath(const QString& path);
 
 		/**
 		 * @brief split filename into the dir and filename
@@ -81,7 +81,7 @@ namespace Util
 		 * @param path
 		 * @param filename
 		 */
-		void			splitFilename(const QString& src, QString& dir, QString& filename);
+		void splitFilename(const QString& src, QString& dir, QString& filename);
 		std::pair<QString, QString> splitFilename(const QString& src);
 
 		/**
@@ -89,34 +89,34 @@ namespace Util
 		 * @param path
 		 * @return
 		 */
-		QStringList		splitDirectories(const QString& path);
+		QStringList splitDirectories(const QString& path);
 
 		/**
 		 * @brief get file extension
 		 * @param filename filename to get the extension for
 		 * @return extension string
 		 */
-		QString			getFileExtension(const QString& filename);
+		QString getFileExtension(const QString& filename);
 
 		/**
 		 * @brief extract parent folder of a file list (see also get_parentDirectory(const QString& path)
 		 * @param list file list
 		 * @return List of parent folders
 		 */
-		QStringList		getParentDirectories(const QStringList& list);
+		QStringList getParentDirectories(const QStringList& list);
 
 		/**
 		 * @brief get absolute filename of file
 		 * @param filename
 		 * @return
 		 */
-		QString			getAbsoluteFilename(const QString& filename);
+		QString getAbsoluteFilename(const QString& filename);
 
 		/**
 		 * @brief create all directories necessary to access path
 		 * @param path full target path
 		 */
-		bool			createDirectories(const QString& path);
+		bool createDirectories(const QString& path);
 
 		/**
 		 * @brief create_symlink
@@ -124,30 +124,25 @@ namespace Util
 		 * @param target
 		 * @return
 		 */
-		bool			createSymlink(const QString& source, const QString& target);
-
+		bool createSymlink(const QString& source, const QString& target);
 
 		bool checkSymLink(const QString& symlinkPath);
-
 
 		/**
 		 * @brief convert filesize to string
 		 * @param filesize in bytes
 		 * @return converted string
 		 */
-		QString			getFilesizeString(Filesize filesize);
-
+		QString getFilesizeString(Filesize filesize);
 
 		/**
 		 * @brief Tell whether filename is absolute
 		 * @param filename the filename to check
 		 * @return true if filename is absolute, false else
 		 */
-		bool			isAbsolute(const QString& filename);
+		bool isAbsolute(const QString& filename);
 
-
-		QList<QChar>	invalidFilenameChars();
-
+		QList<QChar> invalidFilenameChars();
 
 		/**
 		 * @brief Write raw data to file
@@ -155,7 +150,7 @@ namespace Util
 		 * @param filename target_filename
 		 * @return true if successful, false else
 		 */
-		bool			writeFile(const QByteArray& raw_data, const QString& filename);
+		bool writeFile(const QByteArray& raw_data, const QString& filename);
 
 		/**
 		 * @brief read a complete file into a string

@@ -1,6 +1,6 @@
 /* StreamDataSender.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -96,7 +96,7 @@ struct StreamDataSender::Private
 		QByteArray arr;
 		arr.push_back("HTTP/1.1 200 OK\r\n");
 
-		for(const HttpHeaderPair& p : lst)
+		for(const HttpHeaderPair& p: lst)
 		{
 			arr.push_back(p.first.toLocal8Bit());
 			arr.push_back(": ");

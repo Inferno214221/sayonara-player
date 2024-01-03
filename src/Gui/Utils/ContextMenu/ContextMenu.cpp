@@ -1,6 +1,6 @@
 /* ContextMenu.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,26 +31,26 @@
 
 using namespace Gui;
 
-namespace Algorithm=::Util::Algorithm;
+namespace Algorithm = ::Util::Algorithm;
 
 struct ContextMenu::Private
 {
-	QAction*	actionNew=nullptr;
-	QAction*	actionEdit=nullptr;
-	QAction*	actionOpen=nullptr;
-	QAction*	actionUndo=nullptr;
-	QAction*	actionSave=nullptr;
-	QAction*	actionSaveAs=nullptr;
-	QAction*	actionRename=nullptr;
-	QAction*	actionDelete=nullptr;
-	QAction*	actionDefault=nullptr;
-	QAction*	preferencePseparator=nullptr;
+	QAction* actionNew = nullptr;
+	QAction* actionEdit = nullptr;
+	QAction* actionOpen = nullptr;
+	QAction* actionUndo = nullptr;
+	QAction* actionSave = nullptr;
+	QAction* actionSaveAs = nullptr;
+	QAction* actionRename = nullptr;
+	QAction* actionDelete = nullptr;
+	QAction* actionDefault = nullptr;
+	QAction* preferencePseparator = nullptr;
 
-	QList<QAction*>		actions;
-	QTimer*				timer=nullptr;
+	QList<QAction*> actions;
+	QTimer* timer = nullptr;
 
-	bool				hasSpecialActions;
-	bool				hasPreferenceActions;
+	bool hasSpecialActions;
+	bool hasPreferenceActions;
 
 	Private(QObject* parent) :
 		hasSpecialActions(false),
@@ -76,22 +76,22 @@ ContextMenu::ContextMenu(QWidget* parent) :
 	m->actionDelete = new QAction(this);
 
 	m->actions << addSeparator()
-			<< m->actionNew
-			<< m->actionOpen
-			<< m->actionEdit
-			<< m->actionSave
-			<< m->actionSaveAs
-			<< m->actionRename
-			<< addSeparator()
-			<< m->actionUndo
-			<< m->actionDefault
-			<< addSeparator()
-			<< m->actionDelete
-			<< addSeparator();
+	           << m->actionNew
+	           << m->actionOpen
+	           << m->actionEdit
+	           << m->actionSave
+	           << m->actionSaveAs
+	           << m->actionRename
+	           << addSeparator()
+	           << m->actionUndo
+	           << m->actionDefault
+	           << addSeparator()
+	           << m->actionDelete
+	           << addSeparator();
 
 	this->addActions(m->actions);
 
-	for(QAction* action : Algorithm::AsConst(m->actions))
+	for(QAction* action: Algorithm::AsConst(m->actions))
 	{
 		action->setVisible(false);
 	}
@@ -159,7 +159,8 @@ void ContextMenu::registerAction(QAction* action)
 		this->insertAction(m->preferencePseparator, action);
 	}
 
-	else {
+	else
+	{
 		addAction(action);
 	}
 }
@@ -180,21 +181,22 @@ void ContextMenu::showActions(ContextMenuEntries entries)
 void ContextMenu::showAction(ContextMenu::Entry entry, bool visible)
 {
 	ContextMenuEntries entries = this->entries();
-	if(visible){
+	if(visible)
+	{
 		entries |= entry;
 	}
 
-	else{
+	else
+	{
 		entries &= ~(entry);
 	}
 
 	showActions(entries);
 }
 
-
 bool ContextMenu::hasActions()
 {
-	return Algorithm::contains(m->actions, [](QAction* a){
+	return Algorithm::contains(m->actions, [](QAction* a) {
 		return a->isVisible();
 	});
 }
@@ -203,41 +205,49 @@ ContextMenuEntries ContextMenu::entries() const
 {
 	ContextMenuEntries entries = ContextMenu::EntryNone;
 
-	if(m->actionNew->isVisible()){
+	if(m->actionNew->isVisible())
+	{
 		entries |= ContextMenu::EntryNew;
 	}
-	if(m->actionEdit->isVisible()){
+	if(m->actionEdit->isVisible())
+	{
 		entries |= ContextMenu::EntryEdit;
 	}
-	if(m->actionDelete->isVisible()){
+	if(m->actionDelete->isVisible())
+	{
 		entries |= ContextMenu::EntryDelete;
 	}
-	if(m->actionOpen->isVisible()){
+	if(m->actionOpen->isVisible())
+	{
 		entries |= ContextMenu::EntryOpen;
 	}
-	if(m->actionRename->isVisible()){
+	if(m->actionRename->isVisible())
+	{
 		entries |= ContextMenu::EntryRename;
 	}
-	if(m->actionSave->isVisible()){
+	if(m->actionSave->isVisible())
+	{
 		entries |= ContextMenu::EntrySave;
 	}
-	if(m->actionSaveAs->isVisible()){
+	if(m->actionSaveAs->isVisible())
+	{
 		entries |= ContextMenu::EntrySaveAs;
 	}
-	if(m->actionUndo->isVisible()){
+	if(m->actionUndo->isVisible())
+	{
 		entries |= ContextMenu::EntryUndo;
 	}
-	if(m->actionDefault->isVisible()){
+	if(m->actionDefault->isVisible())
+	{
 		entries |= ContextMenu::EntryDefault;
 	}
 
 	return entries;
 }
 
-
 void ContextMenu::showAll()
 {
-	for(QAction* action : Algorithm::AsConst(m->actions))
+	for(QAction* action: Algorithm::AsConst(m->actions))
 	{
 		action->setVisible(true);
 	}
@@ -261,7 +271,7 @@ void ContextMenu::addPreferenceAction(Gui::PreferenceAction* action)
 
 void ContextMenu::showEvent(QShowEvent* e)
 {
-	for(QAction* action : Algorithm::AsConst(m->actions))
+	for(QAction* action: Algorithm::AsConst(m->actions))
 	{
 		action->setDisabled(true);
 	}
@@ -273,7 +283,7 @@ void ContextMenu::showEvent(QShowEvent* e)
 
 void ContextMenu::timedOut()
 {
-	for(QAction* action : Algorithm::AsConst(m->actions))
+	for(QAction* action: Algorithm::AsConst(m->actions))
 	{
 		action->setDisabled(false);
 	}

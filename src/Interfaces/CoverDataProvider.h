@@ -1,6 +1,6 @@
 /* ${CLASS_NAME}.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -27,10 +27,10 @@ class CoverDataReceiver;
 class CoverDataProvider
 {
 	public:
-		virtual void setCoverData(const QByteArray& imageData, const QString& mimeData)=0;
+		virtual void setCoverData(const QByteArray& imageData, const QString& mimeData) = 0;
 
-		virtual void registerCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
-		virtual void unregisterCoverReceiver(CoverDataReceiver* coverDataReceiver)=0;
+		virtual void registerCoverReceiver(CoverDataReceiver* coverDataReceiver) = 0;
+		virtual void unregisterCoverReceiver(CoverDataReceiver* coverDataReceiver) = 0;
 };
 
 #endif //SAYONARA_PLAYER_COVERDATAPROVIDER_H

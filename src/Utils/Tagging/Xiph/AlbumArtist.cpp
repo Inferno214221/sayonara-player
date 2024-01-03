@@ -1,6 +1,6 @@
 /* AlbumArtist.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,8 +34,8 @@ std::optional<QString> Xiph::AlbumArtistFrame::mapTagToData() const
 	const auto albumArtistData = stringData();
 
 	return (albumArtistData.has_value())
-		? std::optional(Tagging::convertString(albumArtistData.value()))
-		: std::nullopt;
+	       ? std::optional(Tagging::convertString(albumArtistData.value()))
+	       : std::nullopt;
 }
 
 void Xiph::AlbumArtistFrame::mapDataToTag(const QString& albumArtist)

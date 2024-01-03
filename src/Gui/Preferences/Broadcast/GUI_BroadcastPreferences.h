@@ -1,6 +1,6 @@
 /* GUI_BroadcastSetup.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,34 +26,34 @@
 UI_FWD(GUI_BroadcastPreferences)
 
 class GUI_BroadcastPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_BroadcastPreferences)
 
-public:
-	explicit GUI_BroadcastPreferences(const QString& identifier);
-	~GUI_BroadcastPreferences() override;
+	public:
+		explicit GUI_BroadcastPreferences(const QString& identifier);
+		~GUI_BroadcastPreferences() override;
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-	bool hasError() const override;
-	QString errorString() const override;
+		bool hasError() const override;
+		QString errorString() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 
-private slots:
-	void activeToggled(bool b);
-	void portChanged(int new_val);
+	private slots:
+		void activeToggled(bool b);
+		void portChanged(int new_val);
 
-private:
-	QString urlString() const;
-	void refreshUrl();
+	private:
+		QString urlString() const;
+		void refreshUrl();
 };
 
 #endif // GUI_BROADCASTSETUP_H

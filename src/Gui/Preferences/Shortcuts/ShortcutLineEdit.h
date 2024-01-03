@@ -1,6 +1,6 @@
 /* ShortcutLineEdit.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,21 +28,21 @@
  * @ingroup Shortcuts
  */
 class ShortcutLineEdit :
-		public QLineEdit
+	public QLineEdit
 {
 	Q_OBJECT
 
-signals:
-	void sigSequenceEntered();
+	signals:
+		void sigSequenceEntered();
 
-public:
-	explicit ShortcutLineEdit(QWidget* parent=nullptr);
-	~ShortcutLineEdit();
+	public:
+		explicit ShortcutLineEdit(QWidget* parent = nullptr);
+		~ShortcutLineEdit();
 
-	QList<QKeySequence> sequences() const;
+		QList<QKeySequence> sequences() const;
 
-private:
-	void keyPressEvent(QKeyEvent* e);
+	private:
+		void keyPressEvent(QKeyEvent* e);
 };
 
 #endif // SHORTCUTLineEdit_H

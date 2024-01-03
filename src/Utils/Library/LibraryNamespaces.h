@@ -1,6 +1,6 @@
 /* LibraryNamespaces.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,31 +29,34 @@
  */
 namespace Library
 {
-    /**
-     * @brief The TrackDeletionMode enum
-     * @ingroup LibraryHelper
-     */
-    enum class TrackDeletionMode : quint8
-    {
-	    None=0,
-	    OnlyLibrary,
-	    AlsoFiles
-    };
-
-    /**
-     * @brief The ReloadQuality enum
-     * @ingroup LibraryHelper
-     */
-    enum class ReloadQuality : quint8 
-    {
-	    Fast=0,
-	    Accurate,
-	    Unknown
-    };
-
-	enum class ViewType : quint8
+	/**
+	 * @brief The TrackDeletionMode enum
+	 * @ingroup LibraryHelper
+	 */
+	enum class TrackDeletionMode :
+		quint8
 	{
-		Standard=0,
+		None = 0,
+		OnlyLibrary,
+		AlsoFiles
+	};
+
+	/**
+	 * @brief The ReloadQuality enum
+	 * @ingroup LibraryHelper
+	 */
+	enum class ReloadQuality :
+		quint8
+	{
+		Fast = 0,
+		Accurate,
+		Unknown
+	};
+
+	enum class ViewType :
+		quint8
+	{
+		Standard = 0,
 		CoverView,
 		FileView
 	};

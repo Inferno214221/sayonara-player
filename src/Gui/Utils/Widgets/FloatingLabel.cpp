@@ -1,6 +1,6 @@
 /* FloatingLabel.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,24 +27,23 @@
 
 using Gui::FloatingLabel;
 
-const static int timerInterval=20;
+const static int timerInterval = 20;
 
 struct FloatingLabel::Private
 {
-	double		offset;
-	double		offsetDirection;
-	int			charsPerSecond;
-	QTimer*		timer=nullptr;
-	QString		text;
+	double offset;
+	double offsetDirection;
+	int charsPerSecond;
+	QTimer* timer = nullptr;
+	QString text;
 
-	bool		floating;
+	bool floating;
 
 	Private() :
 		offset(0),
 		offsetDirection(-1.0),
 		charsPerSecond(3),
-		floating(false)
-	{}
+		floating(false) {}
 };
 
 FloatingLabel::FloatingLabel(QWidget* parent) :
@@ -66,11 +65,11 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 	if(!m->floating)
 	{
 		painter.drawText
-		(
-			QRectF(0, 0, this->width(), this->height()),
-			int(this->alignment()),
-			m->text
-		);
+			(
+				QRectF(0, 0, this->width(), this->height()),
+				int(this->alignment()),
+				m->text
+			);
 
 		return;
 	}
@@ -78,10 +77,10 @@ void FloatingLabel::paintEvent(QPaintEvent* event)
 	QFontMetrics fm = this->fontMetrics();
 
 	painter.drawText
-	(
-		QRectF(int(m->offset), 0, Gui::Util::textWidth(fm, m->text), fm.height()),
-		m->text
-	);
+		(
+			QRectF(int(m->offset), 0, Gui::Util::textWidth(fm, m->text), fm.height()),
+			m->text
+		);
 }
 
 void FloatingLabel::resizeEvent(QResizeEvent* event)
@@ -102,14 +101,16 @@ void FloatingLabel::resizeEvent(QResizeEvent* event)
 		this->update();
 	}
 
-	else if(!m->timer->isActive()){
+	else if(!m->timer->isActive())
+	{
 		m->timer->start(timerInterval);
 	}
 }
 
 void FloatingLabel::setFloatingText(const QString& text)
 {
-	if(text == m->text){
+	if(text == m->text)
+	{
 		return;
 	}
 
@@ -157,7 +158,7 @@ void FloatingLabel::updateOffset()
 	double pixelsPerMSecond = (charsWidth) / 1000.0;
 	double pixelsPerIntervalStep = pixelsPerMSecond * timerInterval;
 
-	m->offset += ( m->offsetDirection * pixelsPerIntervalStep );
+	m->offset += (m->offsetDirection * pixelsPerIntervalStep);
 	if(m->offset < minOffset || m->offset > maxOffset)
 	{
 		m->offsetDirection = -m->offsetDirection;
@@ -167,7 +168,8 @@ void FloatingLabel::updateOffset()
 			m->offset = minOffset;
 		}
 
-		else {
+		else
+		{
 			m->offset = maxOffset;
 		}
 	}

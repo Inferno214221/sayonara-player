@@ -1,6 +1,6 @@
 /* PopularimeterFrame.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,8 +54,8 @@ std::optional<Models::Popularimeter> Xiph::RatingFrame::mapTagToData() const
 	const auto popData = this->stringData();
 
 	return (popData.has_value())
-		? popularimeterFromQString(Tagging::convertString(popData.value()))
-		: std::optional<Models::Popularimeter>();
+	       ? popularimeterFromQString(Tagging::convertString(popData.value()))
+	       : std::optional<Models::Popularimeter>();
 }
 
 void Xiph::RatingFrame::mapDataToTag(const Models::Popularimeter& pop)

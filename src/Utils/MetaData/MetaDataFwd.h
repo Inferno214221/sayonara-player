@@ -1,6 +1,6 @@
 /* MetaDataFwd.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,15 +28,16 @@ class Album;
 class ArtistList;
 class AlbumList;
 
-namespace MD 
+namespace MD
 {
-    enum class Interpretation : char
-    {
-		None=0,
+	enum class Interpretation :
+		char
+	{
+		None = 0,
 		Artists,
 		Albums,
 		Tracks
-    };
+	};
 }
 
 #endif

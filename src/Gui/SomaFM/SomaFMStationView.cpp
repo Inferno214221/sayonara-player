@@ -1,6 +1,6 @@
 /* SomaFMStationView.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,8 +22,7 @@
 #include <QHeaderView>
 
 SomaFMStationView::SomaFMStationView(QWidget* parent) :
-	SearchableTableView(parent)
-{}
+	SearchableTableView(parent) {}
 
 SomaFMStationView::~SomaFMStationView() = default;
 
@@ -50,7 +49,7 @@ void SomaFMStationView::showEvent(QShowEvent* e)
 	SearchableTableView::showEvent(e);
 
 	int w = this->fontMetrics().height();
-	this->horizontalHeader()->setMinimumSectionSize(w*2);
+	this->horizontalHeader()->setMinimumSectionSize(w * 2);
 	this->resizeColumnToContents(0);
 }
 

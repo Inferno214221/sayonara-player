@@ -1,6 +1,6 @@
 /* Audioscrobbler.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,13 +25,13 @@
 
 namespace Cover::Fetcher
 {
-    /**
-     * @brief The LFMCoverFetcher class. See CoverFetcherInterface
-     * @ingroup Covers
-     */
+	/**
+	 * @brief The LFMCoverFetcher class. See CoverFetcherInterface
+	 * @ingroup Covers
+	 */
 	class Audioscrobbler :
-            public Cover::Fetcher::Base
-    {
+		public Cover::Fetcher::Base
+	{
 		private:
 			QString privateIdentifier() const override;
 
@@ -42,7 +42,7 @@ namespace Cover::Fetcher
 			QString albumAddress(const QString& artist, const QString& album) const override;
 
 			int estimatedSize() const override;
-    };
+	};
 }
 
 #endif // LFMCOVERFETCHER_H

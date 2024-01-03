@@ -1,6 +1,6 @@
 /* GUI_Broadcast.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,42 +30,43 @@ class PlayManager;
 class RawAudioDataProvider;
 
 class GUI_Broadcast :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	PIMPL(GUI_Broadcast)
 	UI_CLASS(GUI_Broadcast)
 
-public:
-	explicit GUI_Broadcast(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QWidget* parent=nullptr);
-	~GUI_Broadcast() override;
+	public:
+		explicit GUI_Broadcast(PlayManager* playManager, RawAudioDataProvider* audioDataProvider,
+		                       QWidget* parent = nullptr);
+		~GUI_Broadcast() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
-private slots:
-	void connectionEstablished(const QString& ip);
-	void connectionClosed(const QString& ip);
-	void canListenChanged(bool b);
+	private slots:
+		void connectionEstablished(const QString& ip);
+		void connectionClosed(const QString& ip);
+		void canListenChanged(bool b);
 
-	void dismissClicked();
-	void dismissAllClicked();
-	void currentIndexChanged(int idx);
-	void retry();
-	void mp3EncoderFound();
+		void dismissClicked();
+		void dismissAllClicked();
+		void currentIndexChanged(int idx);
+		void retry();
+		void mp3EncoderFound();
 
-private:
-	void dismissAt(int idx);
-	void setStatusLabel();
+	private:
+		void dismissAt(int idx);
+		void setStatusLabel();
 
-	void retranslate() override;
-	void initUi() override;
+		void retranslate() override;
+		void initUi() override;
 
-	bool checkDismissVisible() const;
-	bool checkDismissAllVisible() const;
-	void updateDismissButtons();
+		bool checkDismissVisible() const;
+		bool checkDismissAllVisible() const;
+		void updateDismissButtons();
 
-	void startServer();
+		void startServer();
 };
 
 #endif // GUI_BROADCAST_H

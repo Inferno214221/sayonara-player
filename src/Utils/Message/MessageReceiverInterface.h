@@ -1,6 +1,6 @@
 /* GlobalMessageReceiverInterface.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,19 +32,20 @@
  */
 class MessageReceiverInterface
 {
-private:
+	private:
 		QString mName;
 
-public:
+	public:
 		explicit MessageReceiverInterface(const QString& name);
 		virtual ~MessageReceiverInterface();
 
 		QString name() const;
 
-		virtual Message::Answer questionReceived(const QString& info, const QString& sender_name=QString(),Message::QuestionType type=Message::QuestionType::YesNo )=0;
-		virtual Message::Answer infoReceived(const QString& info, const QString& sender_name=QString())=0;
-		virtual Message::Answer warningReceived(const QString& warning, const QString& sender_name=QString())=0;
-		virtual Message::Answer errorReceived(const QString& error, const QString& sender_name=QString())=0;
+		virtual Message::Answer questionReceived(const QString& info, const QString& sender_name = QString(),
+		                                         Message::QuestionType type = Message::QuestionType::YesNo) = 0;
+		virtual Message::Answer infoReceived(const QString& info, const QString& sender_name = QString()) = 0;
+		virtual Message::Answer warningReceived(const QString& warning, const QString& sender_name = QString()) = 0;
+		virtual Message::Answer errorReceived(const QString& error, const QString& sender_name = QString()) = 0;
 };
 
 #endif // GLOBALMESSAGERECEIVERINTERFACE_H

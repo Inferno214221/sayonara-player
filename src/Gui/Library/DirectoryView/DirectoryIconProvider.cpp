@@ -1,6 +1,6 @@
 /* IconProvider.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ namespace
 		QList<QPixmap> result;
 
 		const auto availableSizes = icon.availableSizes();
-		Util::Algorithm::transform(availableSizes, result, [&](const auto& size){
+		Util::Algorithm::transform(availableSizes, result, [&](const auto& size) {
 			return icon.pixmap(size);
 		});
 
@@ -46,7 +46,7 @@ namespace
 
 	void insertPixmaps(QIcon& icon, QIcon::Mode mode, QIcon::State state, const QList<QPixmap>& pixmaps)
 	{
-		for(const auto& pixmap : pixmaps)
+		for(const auto& pixmap: pixmaps)
 		{
 			icon.addPixmap(pixmap, mode, state);
 		}
@@ -61,14 +61,13 @@ namespace
 }
 
 IconProvider::IconProvider() :
-	QFileIconProvider()
-{}
+	QFileIconProvider() {}
 
 IconProvider::~IconProvider() = default;
 
 QIcon IconProvider::icon(IconType type) const
 {
-	if(type==IconType::Folder)
+	if(type == IconType::Folder)
 	{
 		QIcon icon;
 		fillIcon(icon, Gui::Icons::Folder, QIcon::Mode::Normal);

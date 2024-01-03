@@ -1,6 +1,6 @@
 /* GUIClass.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,8 +25,8 @@
 
 #define UI_FWD(x) namespace Ui { class x ; }
 #define UI_CLASS(x) private: \
-	Ui:: x *ui=nullptr;
+    Ui:: x *ui=nullptr;
 #define UI_CLASS_SHARED_PTR(x) private: \
-	std::shared_ptr<Ui:: x> ui{nullptr};
+    std::shared_ptr<Ui:: x> ui{nullptr};
 
 #endif // GUICLASS_H

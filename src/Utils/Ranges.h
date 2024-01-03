@@ -1,6 +1,6 @@
 /* Ranges.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -67,7 +67,7 @@ namespace Util
 	{
 		if(ids.empty())
 		{
-			return RangeList{};
+			return RangeList {};
 		}
 
 		RangeList result;
@@ -82,7 +82,7 @@ namespace Util
 	}
 
 	template<typename Element, template<typename> typename Container>
-	auto prepareContainerForRangeCalculation(Container<Element> container) -> Container<Element>
+	auto prepareContainerForRangeCalculation(Container<Element> container) -> Container <Element>
 	{
 		std::sort(container.begin(), container.end());
 		Util::Algorithm::remove_duplicates(container);

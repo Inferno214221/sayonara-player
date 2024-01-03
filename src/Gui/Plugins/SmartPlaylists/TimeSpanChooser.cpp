@@ -1,6 +1,6 @@
 /* TimeSpanChooser.cpp */
 /*
- * Copyright (C) 2011-2022 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -103,8 +103,8 @@ TimeSpanChooser::~TimeSpanChooser() = default;
 int TimeSpanChooser::days() const
 {
 	return SmartPlaylists::timeSpanToDays({
-		m->sbYears->value(),
-		m->sbMonths->value(),
-		m->sbDays->value()
-	});
+		                                      m->sbYears->value(),
+		                                      m->sbMonths->value(),
+		                                      m->sbDays->value()
+	                                      });
 }

@@ -1,6 +1,6 @@
 /* ShortcutHandler.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,13 +33,13 @@
 #include <functional>
 #include <QStringList>
 
-namespace Algorithm=Util::Algorithm;
+namespace Algorithm = Util::Algorithm;
 
 struct ShortcutEntry
 {
-	ShortcutIdentifier	identifier;
-	QString				databaseKey;
-	QStringList			defaultShortcuts;
+	ShortcutIdentifier identifier;
+	QString databaseKey;
+	QStringList defaultShortcuts;
 
 	ShortcutEntry(ShortcutIdentifier identifier, const QString& databaseKey, const QString& defaultShortcut) :
 		identifier(identifier),
@@ -57,9 +57,9 @@ struct ShortcutEntry
 
 struct ShortcutHandler::Private
 {
-	Shortcut					invalidShortcut;
-	QList<ShortcutEntry>		shortcutEntries;
-	QList<Shortcut>				shortcuts;
+	Shortcut invalidShortcut;
+	QList<ShortcutEntry> shortcutEntries;
+	QList<Shortcut> shortcuts;
 
 	Private()
 	{
@@ -90,7 +90,6 @@ struct ShortcutHandler::Private
 	}
 };
 
-
 ShortcutHandler::ShortcutHandler() :
 	QObject()
 {
@@ -101,12 +100,12 @@ ShortcutHandler::ShortcutHandler() :
 
 	const auto& entries = Algorithm::AsConst(m->shortcutEntries);
 
-	for(const ShortcutEntry& se : entries)
+	for(const ShortcutEntry& se: entries)
 	{
 		const QStringList& shortcuts = rsm[se.databaseKey];
 		if(shortcuts.isEmpty())
 		{
-			 m->shortcuts << Shortcut(se.identifier, se.defaultShortcuts);
+			m->shortcuts << Shortcut(se.identifier, se.defaultShortcuts);
 		}
 
 		else
@@ -120,11 +119,12 @@ ShortcutHandler::~ShortcutHandler() = default;
 
 Shortcut ShortcutHandler::shortcut(ShortcutIdentifier identifier) const
 {
-	auto it = Util::Algorithm::find(m->shortcuts, [identifier](const Shortcut& s){
+	auto it = Util::Algorithm::find(m->shortcuts, [identifier](const Shortcut& s) {
 		return (s.identifier() == identifier);
 	});
 
-	if(it != m->shortcuts.end()){
+	if(it != m->shortcuts.end())
+	{
 		return *it;
 	}
 
@@ -150,10 +150,9 @@ void ShortcutHandler::setShortcut(ShortcutIdentifier identifier, const QStringLi
 	db->setShortcuts(this->databaseKey(identifier), shortcuts);
 }
 
-
 void ShortcutHandler::qtShortcutsAdded(ShortcutIdentifier identifier, const QList<QShortcut*>& qtShortcuts)
 {
-	for(auto it=m->shortcuts.begin(); it != m->shortcuts.end(); it++)
+	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
 		if(it->identifier() == identifier)
 		{
@@ -161,30 +160,28 @@ void ShortcutHandler::qtShortcutsAdded(ShortcutIdentifier identifier, const QLis
 		}
 	}
 
-	for(auto qit=qtShortcuts.begin(); qit != qtShortcuts.end(); qit++)
+	for(auto qit = qtShortcuts.begin(); qit != qtShortcuts.end(); qit++)
 	{
 		QShortcut* qsc = *qit;
 		connect(qsc, &QObject::destroyed, this, &ShortcutHandler::qtShortcutDestroyed);
 	}
 }
 
-
 void ShortcutHandler::qtShortcutDestroyed()
 {
 	auto* sc = static_cast<QShortcut*>(sender());
 
-	for(auto it=m->shortcuts.begin(); it != m->shortcuts.end(); it++)
+	for(auto it = m->shortcuts.begin(); it != m->shortcuts.end(); it++)
 	{
 		it->removeQtShortcut(sc);
 	}
 }
 
-
 QList<ShortcutIdentifier> ShortcutHandler::allIdentifiers() const
 {
 	QList<ShortcutIdentifier> identifiers;
 
-	for(const ShortcutEntry& sme : Algorithm::AsConst(m->shortcutEntries))
+	for(const ShortcutEntry& sme: Algorithm::AsConst(m->shortcutEntries))
 	{
 		identifiers << sme.identifier;
 	}
@@ -192,21 +189,19 @@ QList<ShortcutIdentifier> ShortcutHandler::allIdentifiers() const
 	return identifiers;
 }
 
-
 QString ShortcutHandler::databaseKey(ShortcutIdentifier identifier) const
 {
-	auto it = Algorithm::find(m->shortcutEntries, [identifier](const ShortcutEntry& entry)
-	{
+	auto it = Algorithm::find(m->shortcutEntries, [identifier](const ShortcutEntry& entry) {
 		return (entry.identifier == identifier);
 	});
 
-	if(it == m->shortcutEntries.end()){
+	if(it == m->shortcutEntries.end())
+	{
 		return QString();
 	}
 
 	return it->databaseKey;
 }
-
 
 QString ShortcutHandler::shortcut_text(ShortcutIdentifier identifier) const
 {

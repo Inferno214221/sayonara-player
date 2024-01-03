@@ -1,6 +1,6 @@
 /* GUI_SearchPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,16 +32,16 @@ class GUI_SearchPreferences :
 	Q_OBJECT
 	UI_CLASS(GUI_SearchPreferences)
 
-public:
-	GUI_SearchPreferences(const QString& identifier);
-	~GUI_SearchPreferences();
+	public:
+		GUI_SearchPreferences(const QString& identifier);
+		~GUI_SearchPreferences();
 
-public:
-	QString actionName() const override;
-	bool commit() override;
-	void revert() override;
-	void initUi() override;
-	void retranslate() override;
+	public:
+		QString actionName() const override;
+		bool commit() override;
+		void revert() override;
+		void initUi() override;
+		void retranslate() override;
 };
 
 #endif // GUI_SEARCHPREFERENCES_H

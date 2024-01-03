@@ -1,6 +1,6 @@
 /* id3.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -133,8 +133,8 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 
 	const auto readingProperties = getReadingProperties(quality);
 	auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()),
-	                                     readingProperties.readAudioProperties,
-	                                     readingProperties.readStyle);
+	                               readingProperties.readAudioProperties,
+	                               readingProperties.readStyle);
 
 	if(!isValidFile(fileRef))
 	{

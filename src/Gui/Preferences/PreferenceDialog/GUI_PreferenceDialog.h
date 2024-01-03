@@ -1,6 +1,6 @@
 /* GUI_PreferenceDialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,8 +40,8 @@ UI_FWD(GUI_PreferenceDialog)
  * @ingroup Preferences
  */
 class GUI_PreferenceDialog :
-		public Gui::Dialog,
-		public PreferenceUi
+	public Gui::Dialog,
+	public PreferenceUi
 {
 	Q_OBJECT
 	UI_CLASS(GUI_PreferenceDialog)
@@ -51,7 +51,7 @@ class GUI_PreferenceDialog :
 		void sigError(const QString& error_message);
 
 	public:
-        explicit GUI_PreferenceDialog(QMainWindow* parent);
+		explicit GUI_PreferenceDialog(QMainWindow* parent);
 		~GUI_PreferenceDialog() override;
 
 		QString actionName() const;

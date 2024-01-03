@@ -1,6 +1,6 @@
 /* StreamWriter.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -49,12 +49,13 @@ class StreamWriter :
 		void sigDisconnected(StreamWriter* sw);
 
 	public:
-		enum class Type : uint8_t
+		enum class Type :
+			uint8_t
 		{
-				Undefined,
-				Standard,
-				Invalid,
-				Streaming
+			Undefined,
+			Standard,
+			Invalid,
+			Streaming
 		};
 
 		/**
@@ -63,7 +64,8 @@ class StreamWriter :
 		 * @param ip
 		 * @param md
 		 */
-		StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket, const QString& ip);
+		StreamWriter(PlayManager* playManager, RawAudioDataProvider* audioDataProvider, QTcpSocket* socket,
+		             const QString& ip);
 		~StreamWriter() override;
 
 		/**

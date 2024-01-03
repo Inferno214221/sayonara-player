@@ -1,6 +1,6 @@
 /* Manager.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -110,7 +110,7 @@ namespace
 	                            std::function<QString(const CoverFetcherPtr)> addressExtractor)
 	{
 		QList<Url> urls;
-		for(const auto& fetcher : fetchers)
+		for(const auto& fetcher: fetchers)
 		{
 			if(const auto address = addressExtractor(fetcher); !address.isEmpty())
 			{
@@ -221,7 +221,7 @@ bool Manager::isActive(const QString& identifier) const
 void Manager::serversChanged()
 {
 	const auto servers = GetSetting(Set::Cover_Server);
-	for(const auto& key : m->activeMap.keys())
+	for(const auto& key: m->activeMap.keys())
 	{
 		m->activeMap[key] = servers.contains(key);
 	}
@@ -263,7 +263,6 @@ QList<Url> Manager::radioSearchAddresses(const QString& stationName, const QStri
 		return fetcher->radioSearchAddress(stationName, radioUrl);
 	});
 }
-
 
 QList<Url> Manager::searchAddresses(const QString& searchstring, const QString& coverFetcherIdentifier) const
 {

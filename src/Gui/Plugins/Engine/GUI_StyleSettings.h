@@ -1,6 +1,6 @@
 /* GUI_StyleSettings.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,53 +29,51 @@ UI_FWD(GUI_Style)
 
 class QSpinBox;
 class GUI_StyleSettings :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	PIMPL(GUI_StyleSettings)
 	UI_CLASS(GUI_Style)
 
-public:
-	explicit GUI_StyleSettings(QWidget* parent=nullptr);
-	~GUI_StyleSettings() override;
+	public:
+		explicit GUI_StyleSettings(QWidget* parent = nullptr);
+		~GUI_StyleSettings() override;
 
-signals:
-	void sig_style_update();
+	signals:
+		void sig_style_update();
 
-public slots:
-	void show(int);
+	public slots:
+		void show(int);
 
+	private slots:
+		void combo_styles_changed(int);
+		void combo_text_changed(const QString&);
+		void col1_activated();
+		void col2_activated();
+		void col3_activated();
+		void col4_activated();
+		void save_pressed();
+		void del_pressed();
+		void undo_pressed();
+		void spin_box_changed(int);
+		void col_changed();
 
-private slots:
-	void combo_styles_changed(int);
-	void combo_text_changed(const QString&);
-	void col1_activated();
-	void col2_activated();
-	void col3_activated();
-	void col4_activated();
-	void save_pressed();
-	void del_pressed();
-	void undo_pressed();
-	void spin_box_changed(int);
-	void col_changed();
+	private:
+		void init();
 
+		void connect_spinbox(const QSpinBox* box);
+		void disconnect_spinbox(const QSpinBox* box);
+		void connect_spinboxes();
+		void disconnect_spinboxes();
+		void set_sth_changed(bool b);
 
-private:
-	void init();
+	protected:
+		void closeEvent(QCloseEvent* event) override;
+		void languageChanged() override;
+		void skinChanged() override;
 
-	void connect_spinbox(const QSpinBox* box);
-	void disconnect_spinbox(const QSpinBox* box);
-	void connect_spinboxes();
-	void disconnect_spinboxes();
-	void set_sth_changed(bool b);
-
-protected:
-	void closeEvent(QCloseEvent* event) override;
-	void languageChanged() override;
-	void skinChanged() override;
-
-	void connect_combo_idx_changed();
-	void disconnect_combo_idx_changed();
+		void connect_combo_idx_changed();
+		void disconnect_combo_idx_changed();
 };
 
 #endif // STYLESETTINGS_H

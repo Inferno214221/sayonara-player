@@ -1,6 +1,6 @@
 /* MyColumnHeader.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,7 +40,8 @@ namespace Library
 	 * @brief The ColumnHeader class
 	 * @ingroup GuiLibrary
 	 */
-	class ColumnHeader : public QObject
+	class ColumnHeader :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(ColumnHeader)
@@ -66,7 +67,8 @@ namespace Library
 			ColumnIndex::IntegerType columnIndex() const;
 	};
 
-	class ColumnHeaderTrack : public ColumnHeader
+	class ColumnHeaderTrack :
+		public ColumnHeader
 	{
 		Q_OBJECT
 
@@ -79,7 +81,8 @@ namespace Library
 			QString hashPrefix() const override;
 	};
 
-	class ColumnHeaderAlbum : public ColumnHeader
+	class ColumnHeaderAlbum :
+		public ColumnHeader
 	{
 		Q_OBJECT
 
@@ -92,7 +95,8 @@ namespace Library
 			QString hashPrefix() const override;
 	};
 
-	class ColumnHeaderArtist : public ColumnHeader
+	class ColumnHeaderArtist :
+		public ColumnHeader
 	{
 		Q_OBJECT
 

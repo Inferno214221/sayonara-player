@@ -1,6 +1,6 @@
 /* GUI_Target_Playlist_Dialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,27 +22,28 @@
 #define GUI_TARGET_PLAYLIST_DIALOG_H
 
 #include "Gui/Utils/Widgets/Dialog.h"
+
 UI_FWD(GUI_TargetPlaylistDialog)
 
 class GUI_TargetPlaylistDialog :
-		public Gui::Dialog
+	public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_TargetPlaylistDialog)
 
-public:
-	explicit GUI_TargetPlaylistDialog(QWidget* parent=nullptr);
-	~GUI_TargetPlaylistDialog() override;
+	public:
+		explicit GUI_TargetPlaylistDialog(QWidget* parent = nullptr);
+		~GUI_TargetPlaylistDialog() override;
 
-signals:
-	void sigTargetChosen(const QString& name, bool relative);
+	signals:
+		void sigTargetChosen(const QString& name, bool relative);
 
-private slots:
-	void searchButtonClicked();
-	void okButtonClicked();
+	private slots:
+		void searchButtonClicked();
+		void okButtonClicked();
 
-protected:
-	void languageChanged() override;
+	protected:
+		void languageChanged() override;
 };
 
 #endif // GUI_TARGET_PLAYLIST_DIALOG_H

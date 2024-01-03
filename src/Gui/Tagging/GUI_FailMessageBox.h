@@ -1,6 +1,6 @@
 /* GUI_FailMessageBox.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,23 +35,24 @@ UI_FWD(GUI_FailMessageBox)
  * @brief The GUI_FailMessageBox class
  * @ingroup GuiTagging
  */
-class GUI_FailMessageBox : public Gui::Dialog
+class GUI_FailMessageBox :
+	public Gui::Dialog
 {
 	Q_OBJECT
 	UI_CLASS(GUI_FailMessageBox)
 
-public:
-	GUI_FailMessageBox(QWidget* parent=nullptr);
-	~GUI_FailMessageBox() override;
+	public:
+		GUI_FailMessageBox(QWidget* parent = nullptr);
+		~GUI_FailMessageBox() override;
 
-	void setFailedFiles(const QMap<QString, Tagging::Editor::FailReason>& failed_files);
+		void setFailedFiles(const QMap<QString, Tagging::Editor::FailReason>& failed_files);
 
-private slots:
-	void detailsToggled(bool b);
+	private slots:
+		void detailsToggled(bool b);
 
-protected:
-	void languageChanged() override;
-	void showEvent(QShowEvent* e) override;
+	protected:
+		void languageChanged() override;
+		void showEvent(QShowEvent* e) override;
 };
 
 #endif // FAILMESSAGEBOX_H

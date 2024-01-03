@@ -1,6 +1,6 @@
 /* GlobalMessage.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,11 +22,12 @@
 #include "MessageReceiverInterface.h"
 #include "Utils/Logger/Logger.h"
 
-static MessageReceiverInterface* s_receiver=nullptr;
+static MessageReceiverInterface* s_receiver = nullptr;
 
 bool Message::registerReceiver(MessageReceiverInterface* receiver)
 {
-	if(s_receiver != nullptr){
+	if(s_receiver != nullptr)
+	{
 		spLog(Log::Warning, "GlobalMessage") << "There's also another receiver: " << s_receiver->name();
 		return false;
 	}
@@ -36,11 +37,11 @@ bool Message::registerReceiver(MessageReceiverInterface* receiver)
 	return true;
 }
 
-
 Message::Answer
 Message::info(const QString& info, const QString& sender_name)
 {
-	if(!s_receiver) {
+	if(!s_receiver)
+	{
 		return Message::Answer::Undefined;
 	}
 
@@ -50,7 +51,8 @@ Message::info(const QString& info, const QString& sender_name)
 Message::Answer
 Message::warning(const QString& warning, const QString& sender_name)
 {
-	if(!s_receiver) {
+	if(!s_receiver)
+	{
 		return Message::Answer::Undefined;
 	}
 
@@ -60,7 +62,8 @@ Message::warning(const QString& warning, const QString& sender_name)
 Message::Answer
 Message::error(const QString& error, const QString& sender_name)
 {
-	if(!s_receiver) {
+	if(!s_receiver)
+	{
 		return Message::Answer::Undefined;
 	}
 
@@ -70,7 +73,8 @@ Message::error(const QString& error, const QString& sender_name)
 Message::Answer
 Message::question(const QString& question, const QString& sender_name, Message::QuestionType type)
 {
-	if(!s_receiver) {
+	if(!s_receiver)
+	{
 		return Message::Answer::Undefined;
 	}
 

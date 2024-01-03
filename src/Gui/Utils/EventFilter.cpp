@@ -1,6 +1,6 @@
 /* EventFilter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,11 +27,9 @@
 using namespace Gui;
 
 KeyPressFilter::KeyPressFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
-
-bool KeyPressFilter::eventFilter(QObject *o, QEvent* e)
+bool KeyPressFilter::eventFilter(QObject* o, QEvent* e)
 {
 	if(e->type() == QEvent::KeyPress)
 	{
@@ -43,13 +41,10 @@ bool KeyPressFilter::eventFilter(QObject *o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
-
 ContextMenuFilter::ContextMenuFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
-bool ContextMenuFilter::eventFilter(QObject *o, QEvent* e)
+bool ContextMenuFilter::eventFilter(QObject* o, QEvent* e)
 {
 	if(e->type() == QEvent::ContextMenu)
 	{
@@ -64,12 +59,10 @@ bool ContextMenuFilter::eventFilter(QObject *o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
 MouseMoveFilter::MouseMoveFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
-bool MouseMoveFilter::eventFilter(QObject *o, QEvent* e)
+bool MouseMoveFilter::eventFilter(QObject* o, QEvent* e)
 {
 	if(e->type() == QEvent::MouseMove)
 	{
@@ -82,10 +75,8 @@ bool MouseMoveFilter::eventFilter(QObject *o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
 MousePressedFilter::MousePressedFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
 bool MousePressedFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -98,10 +89,8 @@ bool MousePressedFilter::eventFilter(QObject* o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
 MouseReleasedFilter::MouseReleasedFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
 bool MouseReleasedFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -114,12 +103,10 @@ bool MouseReleasedFilter::eventFilter(QObject* o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
 MouseEnterFilter::MouseEnterFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
-bool MouseEnterFilter::eventFilter(QObject *o, QEvent* e)
+bool MouseEnterFilter::eventFilter(QObject* o, QEvent* e)
 {
 	if(e->type() == QEvent::Enter)
 	{
@@ -131,12 +118,10 @@ bool MouseEnterFilter::eventFilter(QObject *o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
 MouseLeaveFilter::MouseLeaveFilter(QObject* parent) :
-	QObject(parent)
-{}
+	QObject(parent) {}
 
-bool MouseLeaveFilter::eventFilter(QObject *o, QEvent* e)
+bool MouseLeaveFilter::eventFilter(QObject* o, QEvent* e)
 {
 	if(e->type() == QEvent::Leave)
 	{
@@ -147,8 +132,8 @@ bool MouseLeaveFilter::eventFilter(QObject *o, QEvent* e)
 	return QObject::eventFilter(o, e);
 }
 
-
-HideFilter::HideFilter(QObject* parent) : QObject(parent) {}
+HideFilter::HideFilter(QObject* parent) :
+	QObject(parent) {}
 
 bool HideFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -162,7 +147,8 @@ bool HideFilter::eventFilter(QObject* o, QEvent* e)
 	return success;
 }
 
-ShowFilter::ShowFilter(QObject* parent) : QObject(parent) {}
+ShowFilter::ShowFilter(QObject* parent) :
+	QObject(parent) {}
 
 bool ShowFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -176,8 +162,8 @@ bool ShowFilter::eventFilter(QObject* o, QEvent* e)
 	return success;
 }
 
-
-ResizeFilter::ResizeFilter(QObject* parent) : QObject(parent) {}
+ResizeFilter::ResizeFilter(QObject* parent) :
+	QObject(parent) {}
 
 bool ResizeFilter::eventFilter(QObject* o, QEvent* e)
 {
@@ -192,8 +178,8 @@ bool ResizeFilter::eventFilter(QObject* o, QEvent* e)
 	return success;
 }
 
-
-PaintFilter::PaintFilter(QObject* parent) : QObject(parent) {}
+PaintFilter::PaintFilter(QObject* parent) :
+	QObject(parent) {}
 
 bool PaintFilter::eventFilter(QObject* o, QEvent* e)
 {

@@ -1,6 +1,6 @@
 /* GUI_ProxyPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,30 +26,28 @@
 UI_FWD(GUI_ProxyPreferences)
 
 class GUI_ProxyPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_ProxyPreferences)
 
-public:
-	explicit GUI_ProxyPreferences(const QString& identifier);
-	~GUI_ProxyPreferences();
+	public:
+		explicit GUI_ProxyPreferences(const QString& identifier);
+		~GUI_ProxyPreferences();
 
-	// PreferenceInterface interface
-protected:
-	void initUi() override;
-	void retranslate() override;
+		// PreferenceInterface interface
+	protected:
+		void initUi() override;
+		void retranslate() override;
 
-public:
-	QString actionName() const override;
-	bool commit() override;
-	void revert() override;
+	public:
+		QString actionName() const override;
+		bool commit() override;
+		void revert() override;
 
-private slots:
-	void activeToggled(bool active);
-	void autosearchClicked();
+	private slots:
+		void activeToggled(bool active);
+		void autosearchClicked();
 };
-
-
 
 #endif // GUI_ProxyPreferences_H

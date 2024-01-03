@@ -1,6 +1,6 @@
 /* Converter.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara Indexyer
  *
@@ -29,46 +29,46 @@ class MetaDataList;
 class MetaData;
 
 class Converter :
-		public QObject
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(Converter)
 
-signals:
-	void sigFinished();
-	void sigProgress(int percent);
+	signals:
+		void sigFinished();
+		void sigProgress(int percent);
 
-public:
-	Converter(int quality, QObject* parent=nullptr);
-	virtual ~Converter();
+	public:
+		Converter(int quality, QObject* parent = nullptr);
+		virtual ~Converter();
 
-	virtual QStringList supportedInputFormats() const=0;
-	virtual QString binary() const=0;
+		virtual QStringList supportedInputFormats() const = 0;
+		virtual QString binary() const = 0;
 
-	QString		loggingDirectory() const;
-	QString		targetDirectory() const;
-	QString		targetFile(const MetaData& md) const;
-	void 		addMetadata(const MetaDataList& tracks);
-	int 		errorCount() const;
-	int 		quality() const;
-	int         initialCount() const;
-	int			fileCount() const;
-	bool		isAvailable() const;
+		QString loggingDirectory() const;
+		QString targetDirectory() const;
+		QString targetFile(const MetaData& md) const;
+		void addMetadata(const MetaDataList& tracks);
+		int errorCount() const;
+		int quality() const;
+		int initialCount() const;
+		int fileCount() const;
+		bool isAvailable() const;
 
-private:
-	bool startProcess(const QString& processName, const QStringList& arguments);
+	private:
+		bool startProcess(const QString& processName, const QStringList& arguments);
 
-protected:
-	virtual QStringList processEntry(const MetaData& md) const=0;
-	virtual QString extension() const=0;
+	protected:
+		virtual QStringList processEntry(const MetaData& md) const = 0;
+		virtual QString extension() const = 0;
 
-public slots:
-	void start(int numThreads, const QString& targetDir);
-	void stop();
+	public slots:
+		void start(int numThreads, const QString& targetDir);
+		void stop();
 
-private slots:
-	void processFinished(int ret, QProcess::ExitStatus status);
-	void errorOccured(QProcess::ProcessError err);
+	private slots:
+		void processFinished(int ret, QProcess::ExitStatus status);
+		void errorOccured(QProcess::ProcessError err);
 };
 
 #endif // OGGCONVERTER_H

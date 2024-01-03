@@ -1,6 +1,6 @@
 /* RatingLabel.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,8 +43,8 @@ namespace
 	{
 		static IconCache iconCache;
 		return (active)
-			? iconCache.active
-			: iconCache.inactive;
+		       ? iconCache.active
+		       : iconCache.inactive;
 	}
 
 	int iconSize(const QLabel* label, int verticalOffset)

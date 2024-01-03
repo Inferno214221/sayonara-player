@@ -2,7 +2,7 @@
 
 /* Icons.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -114,8 +114,8 @@ QIcon Icons::icon(Icons::IconName spec, Icons::IconMode mode)
 	else
 	{
 		icon = (isDark)
-			? Gui::Util::icon(standardName, Gui::Util::MintY)
-			: Gui::Util::systemThemeIcon(standardName);
+		       ? Gui::Util::icon(standardName, Gui::Util::MintY)
+		       : Gui::Util::systemThemeIcon(standardName);
 	}
 
 	return (!icon.isNull())
@@ -162,8 +162,8 @@ QPixmap Icons::pixmap(Icons::IconName spec, const QSize& size, Icons::IconMode m
 	if((mode == IconMode::ForceSayonaraIcon) || (mode == IconMode::Automatic))
 	{
 		const auto themeSource = (mode == IconMode::ForceSayonaraIcon)
-			? Gui::Util::NoTheme
-			: Gui::Util::MintY;
+		                         ? Gui::Util::NoTheme
+		                         : Gui::Util::MintY;
 
 		pm = Gui::Util::pixmap(darkName, themeSource);
 	}

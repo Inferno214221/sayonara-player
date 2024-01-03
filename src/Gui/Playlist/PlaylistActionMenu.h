@@ -1,6 +1,6 @@
 /* PlaylistActionMenu.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,22 +38,22 @@ namespace Playlist
 		Q_OBJECT
 		PIMPL(ActionMenu)
 
-	public:
-		ActionMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent=nullptr);
-		~ActionMenu() override;
+		public:
+			ActionMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent = nullptr);
+			~ActionMenu() override;
 
-		void checkDynamicPlayButton();
+			void checkDynamicPlayButton();
 
-	private slots:
-		void rep1Checked(bool checked);
-		void repAllChecked(bool checked);
-		void shuffleChecked(bool checked);
-		void changePlaylistMode();
-		void playlistModeSettingChanged();
-		void gaplessClicked();
+		private slots:
+			void rep1Checked(bool checked);
+			void repAllChecked(bool checked);
+			void shuffleChecked(bool checked);
+			void changePlaylistMode();
+			void playlistModeSettingChanged();
+			void gaplessClicked();
 
-	protected:
-		void languageChanged() override;
+		protected:
+			void languageChanged() override;
 	};
 }
 

@@ -1,6 +1,6 @@
 /* GUI_IconPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,33 +30,32 @@ UI_FWD(GUI_IconPreferences)
 
 class QWidget;
 class GUI_IconPreferences :
-		public Gui::Widget
+	public Gui::Widget
 {
 	Q_OBJECT
 	PIMPL(GUI_IconPreferences)
 	UI_CLASS(GUI_IconPreferences)
 
+	public:
+		explicit GUI_IconPreferences(QWidget* parent = nullptr);
+		virtual ~GUI_IconPreferences();
 
-public:
-	explicit GUI_IconPreferences(QWidget* parent=nullptr);
-	virtual ~GUI_IconPreferences();
+	protected:
+		void languageChanged() override;
+		void showEvent(QShowEvent* e) override;
 
-protected:
-	void languageChanged() override;
-	void showEvent(QShowEvent* e) override;
+	public:
+		QString actionName() const;
 
-public:
-	QString actionName() const;
+		bool commit();
+		void revert();
 
-	bool commit();
-	void revert();
+	private:
+		void initUi();
 
-private:
-	void initUi();
-
-private slots:
-	void themeChanged(const QString& theme);
-	void radioButtonToggled(bool b);
+	private slots:
+		void themeChanged(const QString& theme);
+		void radioButtonToggled(bool b);
 };
 
 #endif // GUI_ICONPREFERENCES_H

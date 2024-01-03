@@ -1,6 +1,6 @@
 /* GUI_LastFmPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,15 +39,15 @@
 
 struct GUI_LastFmPreferences::Private
 {
-	LastFM::Base* lfm=nullptr;
+	LastFM::Base* lfm = nullptr;
 
 	Private(LastFM::Base* lfm) :
-		lfm(lfm)
-	{}
+		lfm(lfm) {}
 
 	~Private()
 	{
-		delete lfm; lfm = nullptr;
+		delete lfm;
+		lfm = nullptr;
 	}
 };
 
@@ -61,7 +61,8 @@ GUI_LastFmPreferences::~GUI_LastFmPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -117,7 +118,7 @@ void GUI_LastFmPreferences::revert()
 
 	ui->leUsername->setText(username);
 	ui->lePassword->setText(password);
-	ui->sbScrobbleTime->setValue( GetSetting(Set::LFM_ScrobbleTimeSec) );
+	ui->sbScrobbleTime->setValue(GetSetting(Set::LFM_ScrobbleTimeSec));
 	ui->cbActivate->setChecked(active);
 
 	const QString link = Util::createLink("https://last.fm", Style::isDark(), true);
@@ -126,11 +127,13 @@ void GUI_LastFmPreferences::revert()
 
 void GUI_LastFmPreferences::loginClicked()
 {
-	if(ui->leUsername->text().length() < 3) {
+	if(ui->leUsername->text().length() < 3)
+	{
 		return;
 	}
 
-	if(ui->lePassword->text().length() < 3) {
+	if(ui->lePassword->text().length() < 3)
+	{
 		return;
 	}
 
@@ -144,7 +147,8 @@ void GUI_LastFmPreferences::loginClicked()
 
 void GUI_LastFmPreferences::activeChanged(bool active)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
@@ -154,15 +158,18 @@ void GUI_LastFmPreferences::activeChanged(bool active)
 
 void GUI_LastFmPreferences::loginFinished(bool success)
 {
-	if(!isUiInitialized()){
+	if(!isUiInitialized())
+	{
 		return;
 	}
 
-	if(success){
+	if(success)
+	{
 		ui->labStatus->setText(tr("Logged in"));
 	}
 
-	else{
+	else
+	{
 		ui->labStatus->setText(tr("Not logged in"));
 	}
 

@@ -1,6 +1,6 @@
 /* GUI_AudioConverter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -53,23 +53,23 @@ namespace
 		{
 			case StackedWidgetPage::Ogg:
 				return converterFactory->createConverter<ConverterFactory::ConvertType::OggVorbis>(
-				                                         ui->sb_ogg_quality->value());
+					ui->sb_ogg_quality->value());
 			case StackedWidgetPage::LameCBR:
 				return converterFactory->createConverter<ConverterFactory::ConvertType::Lame>(
-				                                         ConverterFactory::Bitrate::Constant,
-				                                         ui->combo_cbr->currentText().toInt());
+					ConverterFactory::Bitrate::Constant,
+					ui->combo_cbr->currentText().toInt());
 			case StackedWidgetPage::LameVBR:
 				return converterFactory->createConverter<ConverterFactory::ConvertType::Lame>(
-				                                         ConverterFactory::Bitrate::Variable,
-				                                         ui->sb_lame_vbr->value());
+					ConverterFactory::Bitrate::Variable,
+					ui->sb_lame_vbr->value());
 			case StackedWidgetPage::OpusCBR:
 				return converterFactory->createConverter<ConverterFactory::ConvertType::OggOpus>(
-				                                         ConverterFactory::Bitrate::Constant,
-				                                         ui->combo_opus_cbr->currentText().toInt());
+					ConverterFactory::Bitrate::Constant,
+					ui->combo_opus_cbr->currentText().toInt());
 			case StackedWidgetPage::OpusVBR:
 				return converterFactory->createConverter<ConverterFactory::ConvertType::OggOpus>(
-				                                         ConverterFactory::Bitrate::Variable,
-				                                         ui->combo_opus_vbr->currentText().toInt());
+					ConverterFactory::Bitrate::Variable,
+					ui->combo_opus_vbr->currentText().toInt());
 		}
 
 		return nullptr;

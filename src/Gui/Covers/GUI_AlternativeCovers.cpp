@@ -1,6 +1,6 @@
 /* GUI_AlternativeCovers.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,7 +60,7 @@ namespace
 		{
 			const auto icon = item->icon();
 			const auto sizes = icon.availableSizes();
-			const auto itMaxSize = std::max_element(sizes.begin(), sizes.end(), [](const auto& s1, const auto& s2){
+			const auto itMaxSize = std::max_element(sizes.begin(), sizes.end(), [](const auto& s1, const auto& s2) {
 				return (s1.width() * s1.height()) < (s2.width() * s2.height());
 			});
 
@@ -89,8 +89,7 @@ struct GUI_AlternativeCovers::Private
 	ProgressBar* loadingBar = nullptr;
 
 	Private(const Cover::Location& coverLocation, bool silent, QObject* parent) :
-		alternativeLookup{new AlternativeLookup(coverLocation, 20, silent, parent)}
-	{}
+		alternativeLookup {new AlternativeLookup(coverLocation, 20, silent, parent)} {}
 
 	~Private()
 	{
@@ -392,7 +391,7 @@ void GUI_AlternativeCovers::openFileDialog()
 		{
 			reset();
 
-			for(const auto& selectedFile : selectedFiles)
+			for(const auto& selectedFile: selectedFiles)
 			{
 				auto* widgetListItem = new QListWidgetItem(ui->tvImages);
 				QPixmap pm(selectedFile);
@@ -418,7 +417,7 @@ void GUI_AlternativeCovers::reloadCombobox()
 	ui->comboSearchFetchers->addItem(Lang::get(Lang::All));
 
 	const auto coverfetchers = m->alternativeLookup->activeCoverfetchers(searchMode);
-	for(const auto& coverfetcher : coverfetchers)
+	for(const auto& coverfetcher: coverfetchers)
 	{
 		ui->comboSearchFetchers->addItem(coverfetcher);
 	}

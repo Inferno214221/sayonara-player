@@ -1,6 +1,6 @@
 /* ImageSelectionDialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,20 +33,20 @@ namespace Gui
 	 * @ingroup Gui
 	 */
 	class ImageSelectionDialog :
-			public Gui::WidgetTemplate<QFileDialog>
+		public Gui::WidgetTemplate<QFileDialog>
 	{
 		Q_OBJECT
 		PIMPL(ImageSelectionDialog)
 
-	public:
-		ImageSelectionDialog(const QString& dir, QWidget* parent=nullptr);
-		~ImageSelectionDialog() override;
+		public:
+			ImageSelectionDialog(const QString& dir, QWidget* parent = nullptr);
+			~ImageSelectionDialog() override;
 
-	private slots:
-		void fileSelected(const QString& file);
+		private slots:
+			void fileSelected(const QString& file);
 
-	protected:
-		void showEvent(QShowEvent* e) override;
+		protected:
+			void showEvent(QShowEvent* e) override;
 	};
 }
 

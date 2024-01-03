@@ -1,6 +1,6 @@
 /* SearchInformation.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,23 +27,21 @@
 #include <QString>
 #include <QHash>
 
-
 struct SC::SearchInformation::Private
 {
-    ArtistId artistId;
-    AlbumId albumId;
-    TrackID trackId;
+	ArtistId artistId;
+	AlbumId albumId;
+	TrackID trackId;
 
 	QString searchstring;
 };
 
 struct SC::SearchInformationList::Private
 {
-    QHash<QString, IdSet> artistIdMap;
-    QHash<QString, IdSet> albumIdMap;
-    QHash<QString, IdSet> trackIdMap;
+	QHash<QString, IdSet> artistIdMap;
+	QHash<QString, IdSet> albumIdMap;
+	QHash<QString, IdSet> trackIdMap;
 };
-
 
 SC::SearchInformation::SearchInformation(int artistId, int albumId, int trackId, const QString& search_string)
 {
@@ -76,39 +74,40 @@ int SC::SearchInformation::trackId() const
 	return m->trackId;
 }
 
-
-
 SC::SearchInformationList::SearchInformationList()
 {
 	m = Pimpl::make<Private>();
 }
 
-SC::SearchInformationList::~SearchInformationList(){}
-
+SC::SearchInformationList::~SearchInformationList() {}
 
 static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& idMap)
 {
-    IntSet ids;
+	IntSet ids;
 	QHash<int, int> results;
-	int iterations=0;
+	int iterations = 0;
 
-	for(int idx = 0; idx<search_string.size() - 3; idx++)
+	for(int idx = 0; idx < search_string.size() - 3; idx++)
 	{
 		QString part = search_string.mid(idx, 3);
-        const IntSet& part_ids = idMap[part];
+		const IntSet& part_ids = idMap[part];
 
-		if(part_ids.isEmpty()){
+		if(part_ids.isEmpty())
+		{
 			break;
 		}
 
-		for(int part_id : part_ids)
+		for(int part_id: part_ids)
 		{
-			if(results.contains(part_id)){
+			if(results.contains(part_id))
+			{
 				results[part_id] = results[part_id] + 1;
 			}
 
-			else {
-				if(iterations == 0){
+			else
+			{
+				if(iterations == 0)
+				{
 					results[part_id] = 1;
 				}
 			}
@@ -117,11 +116,12 @@ static IntSet ids(const QString& search_string, const QHash<QString, IntSet>& id
 		iterations++;
 	}
 
-	for(auto it=results.cbegin(); it != results.cend(); it++)
+	for(auto it = results.cbegin(); it != results.cend(); it++)
 	{
 		int result = it.key();
 
-		if(it.value() == iterations){
+		if(it.value() == iterations)
+		{
 			ids.insert(result);
 		}
 	}
@@ -147,7 +147,7 @@ IntSet SC::SearchInformationList::trackIds(const QString& search_string) const
 SC::SearchInformationList& SC::SearchInformationList::operator<<(const SearchInformation& search_information)
 {
 	QString search_string = search_information.searchstring();
-	for(int idx=0; idx<search_string.size() - 5; idx++)
+	for(int idx = 0; idx < search_string.size() - 5; idx++)
 	{
 		QString part = search_string.mid(idx, 3).toLower();
 

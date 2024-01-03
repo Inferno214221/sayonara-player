@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011-2022 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ namespace
 
 	MetaData createRadioTrack(const QString& url, const QString& stationName, const QString& title = QString())
 	{
-		auto track = MetaData{};
+		auto track = MetaData {};
 
 		track.setRadioStation(url, stationName);
 		track.setFilepath(url, RadioMode::Station);
@@ -106,7 +106,7 @@ void LyricsLogicTest::testRadio()
 	for(const auto& testCase: testCases)
 	{
 		const auto& title = testCase.first;
-		const auto&[expectedArtist, expectedTitle] = testCase.second;
+		const auto& [expectedArtist, expectedTitle] = testCase.second;
 
 		const auto track = createRadioTrack("https://path-to-url.mp3", stationName, title);
 

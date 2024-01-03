@@ -1,6 +1,6 @@
 /* LocalSimilarArtistFetcher.h */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -25,7 +25,8 @@
 namespace DynamicPlayback
 {
 	class ArtistMatch;
-	class LocalSimilarArtistFetcher : public SimilarArtistFetcher
+	class LocalSimilarArtistFetcher :
+		public SimilarArtistFetcher
 	{
 		PIMPL(LocalSimilarArtistFetcher)
 

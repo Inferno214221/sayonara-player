@@ -1,6 +1,6 @@
 /* DatabaseModule.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,12 +42,12 @@ namespace DB
 
 			QSqlQuery runQuery(const QString& query, const QString& errorText) const;
 			QSqlQuery
-			runQuery(const QString& query, const QPair <QString, QVariant>& bindings, const QString& errorText) const;
+			runQuery(const QString& query, const QPair<QString, QVariant>& bindings, const QString& errorText) const;
 			QSqlQuery
 			runQuery(const QString& query, const QMap<QString, QVariant>& bindings, const QString& errorText) const;
 
 			QSqlQuery update(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
-			                 const QPair <QString, QVariant>& whereBinding, const QString& errorMessage);
+			                 const QPair<QString, QVariant>& whereBinding, const QString& errorMessage);
 			QSqlQuery insert(const QString& tablename, const QMap<QString, QVariant>& fieldBindings,
 			                 const QString& errorMessage);
 

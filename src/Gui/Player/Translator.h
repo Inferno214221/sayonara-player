@@ -1,6 +1,6 @@
 /* Translator.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,7 +32,7 @@
  */
 class Translator
 {
-	SINGLETON(Translator)
+		SINGLETON(Translator)
 	PIMPL(Translator)
 
 	private:

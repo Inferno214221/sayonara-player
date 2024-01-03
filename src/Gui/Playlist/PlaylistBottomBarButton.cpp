@@ -1,6 +1,6 @@
 /* BottomBarButton.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,7 +29,8 @@ struct BottomBarButton::Private
 {
 	QIcon icon;
 
-	Private(const QIcon& icon) : icon(icon) {}
+	Private(const QIcon& icon) :
+		icon(icon) {}
 };
 
 BottomBarButton::BottomBarButton(const QIcon& icon, QWidget* parent) :
@@ -52,8 +53,8 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
 		QPushButton::paintEvent(e);
 	}
 
-    if (!m->icon.isNull())
-    {
+	if(!m->icon.isNull())
+	{
 		const int w = this->width();
 		const int h = this->height();
 
@@ -63,19 +64,21 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
 		const int x = (w - pm_w) / 2;
 		const int y = (h - pm_h) / 2;
 
-		if((w - pm_w) % 2 == 1){
+		if((w - pm_w) % 2 == 1)
+		{
 			pm_w++;
 		}
 
-		if((h - pm_h) % 2 == 1){
+		if((h - pm_h) % 2 == 1)
+		{
 			pm_h++;
 		}
 
 		QPixmap pm = m->icon.pixmap(pm_w, pm_h);;
 
-        QPainter painter(this);
-        if(this->isChecked())
-        {
+		QPainter painter(this);
+		if(this->isChecked())
+		{
 			QRect r = e->rect();
 			painter.setPen(palette().window().color());
 			painter.drawRect(r);
@@ -86,13 +89,13 @@ void BottomBarButton::paintEvent(QPaintEvent* e)
 			painter.setBrush(c);
 			painter.drawRect(r);
 			painter.fillRect(r, c);
-        }
+		}
 
 		painter.setOpacity(1.0);
-        painter.drawPixmap
-        (
-			QRect(x, y, pm_w, pm_h),
-			pm
-        );
-    }
+		painter.drawPixmap
+			(
+				QRect(x, y, pm_w, pm_h),
+				pm
+			);
+	}
 }

@@ -1,6 +1,6 @@
 /* DirChooserDialog.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -25,7 +25,8 @@
 
 namespace Gui
 {
-	class DirectoryChooser : protected QFileDialog
+	class DirectoryChooser :
+		protected QFileDialog
 	{
 		Q_OBJECT
 

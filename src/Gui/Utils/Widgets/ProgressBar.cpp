@@ -1,6 +1,6 @@
 /* ProgressBar.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,15 +26,13 @@ using Gui::ProgressBar;
 
 struct Gui::ProgressBar::Private
 {
-	int			fixedHeight;
-	Position	position;
+	int fixedHeight;
+	Position position;
 
 	Private() :
 		fixedHeight(5),
-		position(ProgressBar::Position::Bottom)
-	{}
+		position(ProgressBar::Position::Bottom) {}
 };
-
 
 ProgressBar::ProgressBar(QWidget* parent) :
 	Gui::WidgetTemplate<QProgressBar>(parent)
@@ -77,7 +75,7 @@ void ProgressBar::refresh()
 	switch(m->position)
 	{
 		case ProgressBar::Position::Top:
-			 y = 2;
+			y = 2;
 			break;
 		case ProgressBar::Position::Middle:
 			y = (woi->height() - m->fixedHeight) / 2;
@@ -89,12 +87,12 @@ void ProgressBar::refresh()
 	}
 
 	this->setGeometry
-	(
-		2,
-		y,
-		woi->width() - 4,
-		m->fixedHeight
-	);
+		(
+			2,
+			y,
+			woi->width() - 4,
+			m->fixedHeight
+		);
 }
 
 void ProgressBar::parentResized(const QSize&)

@@ -1,6 +1,6 @@
 /* ItemModel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -45,12 +45,12 @@ namespace Library
 		PIMPL(ItemModel)
 
 		public:
-            ItemModel(int columnCount, QObject* parent, AbstractLibrary* library);
+			ItemModel(int columnCount, QObject* parent, AbstractLibrary* library);
 			~ItemModel() override;
 
-            QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
-            bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value,
-                               int role = Qt::EditRole) override;
+			QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+			bool setHeaderData(int section, Qt::Orientation orientation, const QVariant& value,
+			                   int role = Qt::EditRole) override;
 
 			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 

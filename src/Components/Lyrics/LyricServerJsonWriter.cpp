@@ -1,6 +1,6 @@
 /* LyricServerJsonWriter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -110,7 +110,7 @@ namespace
 	{
 		QJsonArray result;
 
-		for(const auto& replacement : replacements)
+		for(const auto& replacement: replacements)
 		{
 			QJsonObject replacementObject;
 			replacementObject.insert("replacement_from", QJsonValue(replacement.first));
@@ -126,7 +126,7 @@ namespace
 	{
 		QJsonArray result;
 
-		for(const auto& startEndTag : startEndTags)
+		for(const auto& startEndTag: startEndTags)
 		{
 			QJsonObject startEndTagObject;
 			startEndTagObject.insert("start_tag", QJsonValue(startEndTag.first));

@@ -1,6 +1,6 @@
 /* CoverFetcherInterface.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,7 +30,7 @@ namespace
 	{
 		QString result;
 		QChar previouseChar;
-		for(const auto& c : str)
+		for(const auto& c: str)
 		{
 			if(c.isLetterOrNumber())
 			{
@@ -52,8 +52,8 @@ namespace
 		const auto host = QUrl(url).host();
 		auto ipRegex = QRegExp("[0-9]+\\.[0-9]+\\.[0-9]+\\.[0-9]+");
 		return (ipRegex.indexIn(host) >= 0)
-			? QString()
-			: convertStringToSearchString(host);
+		       ? QString()
+		       : convertStringToSearchString(host);
 	}
 }
 

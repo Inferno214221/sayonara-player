@@ -1,6 +1,6 @@
 /* Set.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,96 +33,99 @@ namespace Util
 	 * @ingroup Helper
 	 */
 	class Set :
-			public std::set<T>
+		public std::set<T>
 	{
-	public:
-		Set() : std::set<T>() {}
-		/**
-		 * @brief Constructs a set with a single element
-		 * @param singleElement the first element
-		 */
-		Set(const T& singleElement) :
-			Set()
-		{
-			this->insert(singleElement);
-		}
+		public:
+			Set() :
+				std::set<T>() {}
 
-		/**
-		 * @brief converts the set to a list. The order is random
-		 * @return list
-		 */
-		QList<T> toList() const
-		{
-			QList<T> ret;
-			for(auto it=this->cbegin(); it!=this->cend(); it++){
-				ret << *it;
+			/**
+			 * @brief Constructs a set with a single element
+			 * @param singleElement the first element
+			 */
+			Set(const T& singleElement) :
+				Set()
+			{
+				this->insert(singleElement);
 			}
-			return ret;
-		}
 
-
-		/**
-		 * @brief
-		 * @return true, if set is empty
-		 */
-		bool isEmpty() const
-		{
-			return (this->size() == 0);
-		}
-
-
-		/**
-		 * @brief get copy of first element
-		 * @return first element
-		 */
-		T first() const
-		{
-			return *(this->begin());
-		}
-
-		/**
-		 * @brief check, if set contains a specific value
-		 * @param value
-		 * @return
-		 */
-		bool contains(const T& value) const
-		{
-			auto it = this->find(value);
-			return (it != this->end());
-		}
-
-		/**
-		 * @brief removes every item that matches value
-		 * @param value
-		 */
-		void remove(const T& value)
-		{
-			auto it = this->find(value);
-			if(it != this->end()){
-				this->erase(it);
+			/**
+			 * @brief converts the set to a list. The order is random
+			 * @return list
+			 */
+			QList<T> toList() const
+			{
+				QList<T> ret;
+				for(auto it = this->cbegin(); it != this->cend(); it++)
+				{
+					ret << *it;
+				}
+				return ret;
 			}
-		}
 
-		Util::Set<T>& operator<<(const T& t){
-			this->insert(t);
-			return *this;
-		}
+			/**
+			 * @brief
+			 * @return true, if set is empty
+			 */
+			bool isEmpty() const
+			{
+				return (this->size() == 0);
+			}
 
-		template<template <typename> class A>
-		Util::Set<T>& operator<<(const A<T>& container)
-		{
-			for(const T& t : container)
+			/**
+			 * @brief get copy of first element
+			 * @return first element
+			 */
+			T first() const
+			{
+				return *(this->begin());
+			}
+
+			/**
+			 * @brief check, if set contains a specific value
+			 * @param value
+			 * @return
+			 */
+			bool contains(const T& value) const
+			{
+				auto it = this->find(value);
+				return (it != this->end());
+			}
+
+			/**
+			 * @brief removes every item that matches value
+			 * @param value
+			 */
+			void remove(const T& value)
+			{
+				auto it = this->find(value);
+				if(it != this->end())
+				{
+					this->erase(it);
+				}
+			}
+
+			Util::Set<T>& operator<<(const T& t)
 			{
 				this->insert(t);
+				return *this;
 			}
 
-			return *this;
-		}
+			template<template<typename> class A>
+			Util::Set<T>& operator<<(const A<T>& container)
+			{
+				for(const T& t: container)
+				{
+					this->insert(t);
+				}
 
-		int count() const
-		{
-			return static_cast<int>(this->size());
-		}
+				return *this;
+			}
+
+			int count() const
+			{
+				return static_cast<int>(this->size());
+			}
 	};
 }
 

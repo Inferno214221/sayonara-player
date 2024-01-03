@@ -1,6 +1,6 @@
 /* Equalizer.cpp */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -72,7 +72,7 @@ struct Equalizer::Private
 			if(mSoundModifier)
 			{
 				int band = 0;
-				for(const auto& value : preset)
+				for(const auto& value: preset)
 				{
 					mSoundModifier->setEqualizer(band++, value);
 				}
@@ -121,7 +121,7 @@ void Equalizer::changeValue(int index, int band, int value)
 	{
 		if(m->db->updateEqualizer(equalizer))
 		{
-			for(const auto& band : affectedBands)
+			for(const auto& band: affectedBands)
 			{
 				emit sigValueChanged(band, equalizer.value(band));
 			}
@@ -142,7 +142,7 @@ void Equalizer::resetPreset(int equalizerIndex)
 	const auto values = equalizer.defaultValues();
 
 	int band = 0;
-	for(const auto& value : values)
+	for(const auto& value: values)
 	{
 		m->changeValue(equalizerIndex, band, value, false);
 		emit sigValueChanged(band++, value);

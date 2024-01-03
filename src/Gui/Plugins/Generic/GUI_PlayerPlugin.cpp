@@ -1,6 +1,6 @@
 /* GUI_PlayerPlugin.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,7 @@
 
 struct GUI_PlayerPlugin::Private
 {
-	PlayerPlugin::Base* currentPlugin=nullptr;
+	PlayerPlugin::Base* currentPlugin = nullptr;
 };
 
 GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget* parent) :
@@ -44,7 +44,8 @@ GUI_PlayerPlugin::GUI_PlayerPlugin(QWidget* parent) :
 
 GUI_PlayerPlugin::~GUI_PlayerPlugin()
 {
-	delete ui; ui=nullptr;
+	delete ui;
+	ui = nullptr;
 }
 
 void GUI_PlayerPlugin::show(PlayerPlugin::Base* plugin)
@@ -52,7 +53,8 @@ void GUI_PlayerPlugin::show(PlayerPlugin::Base* plugin)
 	closeCurrentPlugin();
 	m->currentPlugin = plugin;
 
-	if(!plugin){
+	if(!plugin)
+	{
 		return;
 	}
 
@@ -78,7 +80,8 @@ void GUI_PlayerPlugin::showCurrentPlugin()
 
 void GUI_PlayerPlugin::closeCurrentPlugin()
 {
-	if(m->currentPlugin){
+	if(m->currentPlugin)
+	{
 		m->currentPlugin->close();
 	}
 
@@ -87,7 +90,8 @@ void GUI_PlayerPlugin::closeCurrentPlugin()
 
 void GUI_PlayerPlugin::languageChanged()
 {
-	if(m->currentPlugin){
+	if(m->currentPlugin)
+	{
 		ui->labTitle->setText(m->currentPlugin->displayName());
 	}
 }

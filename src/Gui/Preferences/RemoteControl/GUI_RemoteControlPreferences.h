@@ -1,6 +1,6 @@
 /* GUI_RemoteControlPreferences.h
 
- * Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+ * Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara-player
  *
@@ -30,35 +30,35 @@
 UI_FWD(GUI_RemoteControlPreferences)
 
 class GUI_RemoteControlPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_RemoteControlPreferences)
 
-public:
-	explicit GUI_RemoteControlPreferences(const QString& identifier);
-	~GUI_RemoteControlPreferences();
+	public:
+		explicit GUI_RemoteControlPreferences(const QString& identifier);
+		~GUI_RemoteControlPreferences();
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-	bool hasError() const override;
-	QString errorString() const override;
+		bool hasError() const override;
+		QString errorString() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 
-private slots:
-	void activeToggled(bool b);
-	void portChanged(int port);
-	void discoverPortChanged(int port);
+	private slots:
+		void activeToggled(bool b);
+		void portChanged(int port);
+		void discoverPortChanged(int port);
 
-private:
-	QString getUrlString();
-	void refreshUrl();
+	private:
+		QString getUrlString();
+		void refreshUrl();
 };
 
 #endif /* GUI_REMOTECONTROL_PREFERENCES_H */

@@ -1,6 +1,6 @@
 /* GUI_AudioConverter.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,18 +29,18 @@ UI_FWD(GUI_AudioConverter)
 class ConverterFactory;
 
 class GUI_AudioConverter :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_AudioConverter)
 	PIMPL(GUI_AudioConverter)
 
 	public:
-		explicit GUI_AudioConverter(ConverterFactory* converterFactory, QWidget* parent=nullptr);
+		explicit GUI_AudioConverter(ConverterFactory* converterFactory, QWidget* parent = nullptr);
 		virtual ~GUI_AudioConverter() override;
 
-		QString	name() const override;
-		QString	displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
 	private slots:
 		void btnStartClicked();
@@ -60,6 +60,5 @@ class GUI_AudioConverter :
 		void retranslate() override;
 		void initUi() override;
 };
-
 
 #endif // GUI_AUDIOCONVERTER_H

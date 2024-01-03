@@ -1,6 +1,6 @@
 /* FileListModel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,8 @@ class LocalLibrary;
 
 namespace Directory
 {
-	class IconWorkerThread : public QObject
+	class IconWorkerThread :
+		public QObject
 	{
 		Q_OBJECT
 		PIMPL(IconWorkerThread)
@@ -62,7 +63,7 @@ namespace Directory
 		PIMPL(FileListModel)
 
 		public:
-			explicit FileListModel(LocalLibrary* localLibrary, QObject* parent=nullptr);
+			explicit FileListModel(LocalLibrary* localLibrary, QObject* parent = nullptr);
 			~FileListModel() override;
 
 			QString parentDirectory() const;
@@ -73,13 +74,13 @@ namespace Directory
 
 			QModelIndexList searchResults(const QString& substr) override;
 
-			QVariant data(const QModelIndex& index, int role=Qt::DisplayRole) const override;
+			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 			QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-			int rowCount(const QModelIndex& parent=QModelIndex()) const override;
-			int columnCount(const QModelIndex& parent=QModelIndex()) const override;
+			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-			QMimeData* mimeData(const QModelIndexList &indexes) const override;
+			QMimeData* mimeData(const QModelIndexList& indexes) const override;
 			Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 		private:

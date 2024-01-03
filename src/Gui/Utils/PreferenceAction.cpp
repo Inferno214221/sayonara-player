@@ -1,6 +1,6 @@
 /* PreferenceAction.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,8 +34,7 @@ struct PreferenceAction::Private
 	QString identifier;
 
 	Private(const QString& identifier) :
-		identifier(identifier)
-	{}
+		identifier(identifier) {}
 };
 
 PreferenceAction::PreferenceAction(const QString& text, const QString& identifier, QWidget* parent) :
@@ -44,7 +43,7 @@ PreferenceAction::PreferenceAction(const QString& text, const QString& identifie
 	m = Pimpl::make<Private>(identifier);
 	this->setIcon(Gui::Icons::icon(Gui::Icons::Preferences));
 
-	connect(this, &QAction::triggered, [=](){
+	connect(this, &QAction::triggered, [=]() {
 		PreferenceRegistry::instance()->showPreference(this->identifier());
 	});
 
@@ -80,8 +79,7 @@ void PreferenceAction::language_changed()
 }
 
 LibraryPreferenceAction::LibraryPreferenceAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::Library), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::Library), identifier(), parent) {}
 
 LibraryPreferenceAction::~LibraryPreferenceAction() = default;
 
@@ -96,11 +94,9 @@ QString LibraryPreferenceAction::identifier() const
 }
 
 PlaylistPreferenceAction::PlaylistPreferenceAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::Playlist), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::Playlist), identifier(), parent) {}
 
 PlaylistPreferenceAction::~PlaylistPreferenceAction() = default;
-
 
 QString PlaylistPreferenceAction::displayName() const
 {
@@ -113,8 +109,7 @@ QString PlaylistPreferenceAction::identifier() const
 }
 
 SearchPreferenceAction::SearchPreferenceAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::SearchNoun), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::SearchNoun), identifier(), parent) {}
 
 SearchPreferenceAction::~SearchPreferenceAction() = default;
 
@@ -129,8 +124,7 @@ QString SearchPreferenceAction::identifier() const
 }
 
 CoverPreferenceAction::CoverPreferenceAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::Covers), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::Covers), identifier(), parent) {}
 
 CoverPreferenceAction::~CoverPreferenceAction() = default;
 
@@ -145,8 +139,7 @@ QString CoverPreferenceAction::identifier() const
 }
 
 PlayerPreferencesAction::PlayerPreferencesAction(QWidget* parent) :
-	PreferenceAction(Lang::get(Lang::Application), identifier(), parent)
-{}
+	PreferenceAction(Lang::get(Lang::Application), identifier(), parent) {}
 
 PlayerPreferencesAction::~PlayerPreferencesAction() = default;
 
@@ -161,8 +154,7 @@ QString PlayerPreferencesAction::identifier() const
 }
 
 StreamRecorderPreferenceAction::StreamRecorderPreferenceAction(QWidget* parent) :
-	PreferenceAction(tr("Stream Recorder"), identifier(), parent)
-{}
+	PreferenceAction(tr("Stream Recorder"), identifier(), parent) {}
 
 StreamRecorderPreferenceAction::~StreamRecorderPreferenceAction() = default;
 
@@ -176,10 +168,8 @@ QString StreamRecorderPreferenceAction::identifier() const
 	return "streamrecorder";
 }
 
-
 ShortcutPreferenceAction::ShortcutPreferenceAction(QWidget* parent) :
-	PreferenceAction(tr("Shortcuts"), identifier(), parent)
-{}
+	PreferenceAction(tr("Shortcuts"), identifier(), parent) {}
 
 ShortcutPreferenceAction::~ShortcutPreferenceAction() = default;
 

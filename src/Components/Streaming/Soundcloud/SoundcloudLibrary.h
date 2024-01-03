@@ -1,6 +1,6 @@
 /* SoundcloudLibrary.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,7 +42,7 @@ namespace SC
 		public:
 			explicit Library(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 			~Library() override;
-			
+
 			void insertTracks(const MetaDataList& tracks, const ArtistList& artists, const AlbumList& albums);
 			void getTrackById(TrackID trackId, MetaData& track) const override;
 			void getAlbumById(AlbumId albumId, Album& album) const override;

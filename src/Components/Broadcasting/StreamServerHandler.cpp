@@ -1,6 +1,6 @@
 /* StreamServerHandler.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,15 +26,15 @@
 
 struct StreamServerHandler::Private
 {
-	StreamServer* streamServer=nullptr;
+	StreamServer* streamServer = nullptr;
 
 	Private(PlayManager* playManager, RawAudioDataProvider* audioDataProvider) :
-		streamServer(new StreamServer{playManager, audioDataProvider})
-	{}
+		streamServer(new StreamServer {playManager, audioDataProvider}) {}
 
 	~Private()
 	{
-		if(streamServer){
+		if(streamServer)
+		{
 			delete streamServer;
 		}
 	}

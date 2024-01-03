@@ -1,6 +1,6 @@
 /* ${CLASS_NAME}.h */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ namespace Tagging
 {
 	void readDiscnumber(MetaData& track, const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& discnumber){
+		auto setter = [](auto& track, const auto& discnumber) {
 			track.setDiscnumber(discnumber.disc);
 			track.setDiscCount(discnumber.disccount);
 		};
@@ -79,7 +79,7 @@ namespace Tagging
 
 	void readPopularimeter(MetaData& track, const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& popularimeter){
+		auto setter = [](auto& track, const auto& popularimeter) {
 			track.setRating(popularimeter.rating);
 		};
 
@@ -122,7 +122,7 @@ namespace Tagging
 
 	void readAlbumArtist(MetaData& track, const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& albumArtist){
+		auto setter = [](auto& track, const auto& albumArtist) {
 			track.setAlbumArtist(albumArtist);
 		};
 

@@ -1,6 +1,6 @@
 /* LibraryInfo.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -44,7 +44,7 @@ namespace Library
 			Info(const Info& other);
 			~Info() override;
 
-			Info& operator =(const Info& other);
+			Info& operator=(const Info& other);
 
 			QString name() const;
 			QString path() const;

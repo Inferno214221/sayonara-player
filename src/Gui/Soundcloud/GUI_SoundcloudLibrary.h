@@ -1,6 +1,6 @@
 /* GUI_SoundCloudLibrary.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,18 +34,18 @@ namespace SC
 	class GUI_ArtistSearch;
 
 	class GUI_Library :
-			public ::Library::GUI_AbstractLibrary
+		public ::Library::GUI_AbstractLibrary
 	{
 		Q_OBJECT
 		UI_CLASS(GUI_SoundcloudLibrary)
 		PIMPL(GUI_Library)
 
 		public:
-			explicit GUI_Library(SC::Library* library, QWidget* parent=nullptr);
+			explicit GUI_Library(SC::Library* library, QWidget* parent = nullptr);
 			~GUI_Library() override;
 
-			QMenu*		getMenu() const;
-			QFrame*		headerFrame() const;
+			QMenu* getMenu() const;
+			QFrame* headerFrame() const;
 
 			QList<::Library::Filter::Mode> searchOptions() const override;
 

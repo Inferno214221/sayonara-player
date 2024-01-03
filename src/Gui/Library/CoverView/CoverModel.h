@@ -1,6 +1,6 @@
 /* CoverModel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -69,7 +69,7 @@ namespace Library
 			int zoom() const;
 
 		protected:
-			QModelIndex index(int row, int column, const QModelIndex& parent=QModelIndex()) const override;
+			QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
 			const MetaDataList& selectedMetadata() const override;
 
 			QModelIndexList searchResults(const QString& substr) override;

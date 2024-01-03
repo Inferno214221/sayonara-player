@@ -1,6 +1,6 @@
 /* InstanceChecker.cpp */
 /*
- * Copyright (C) 2011-2021 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -34,18 +34,18 @@
 namespace
 {
 	constexpr const auto MemorySize = 16384;
-	
+
 	bool attachMemory(QSharedMemory& memory)
 	{
 		return memory.isAttached() || (memory.attach() && (memory.data() != nullptr));
 	}
-	
+
 	QByteArray createRequestWithFilelist(const QStringList& fileList)
 	{
 		auto data = QByteArray("ReqD") + fileList.join('\n').toUtf8();
 		const auto newSize = (data.size() >= MemorySize)
-			? MemorySize
-			: data.size() + 1;
+		                     ? MemorySize
+		                     : data.size() + 1;
 
 		data.resize(newSize);
 		data[newSize - 1] = '\0';
@@ -73,8 +73,8 @@ namespace
 		Util::sleepMs(500);
 
 		return (memory.constData())
-			? (memcmp(memory.constData(), "Ack", 3) == 0)
-			: false;
+		       ? (memcmp(memory.constData(), "Ack", 3) == 0)
+		       : false;
 	}
 
 	bool sendRequest(const CommandLineData& commandLineData, QSharedMemory& memory)
@@ -110,7 +110,7 @@ namespace
 
 struct InstanceChecker::Private
 {
-	QSharedMemory sharedMemory{QString("SayonaraMemory%1").arg(QDir::homePath())};
+	QSharedMemory sharedMemory {QString("SayonaraMemory%1").arg(QDir::homePath())};
 };
 
 InstanceChecker::InstanceChecker()

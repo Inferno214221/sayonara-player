@@ -1,6 +1,6 @@
 /* LibraryFileExtensionBar.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -81,7 +81,7 @@ FileExtensionBar::FileExtensionBar(QWidget* parent) :
 
 FileExtensionBar::~FileExtensionBar()
 {
-	for(QPushButton* btn : m->extensionButtonMap)
+	for(QPushButton* btn: m->extensionButtonMap)
 	{
 		m->btnLayout->removeWidget(btn);
 		btn->setParent(nullptr);
@@ -107,7 +107,7 @@ void FileExtensionBar::refresh()
 		return;
 	}
 
-	for(const QString& ext : extensionStrings)
+	for(const QString& ext: extensionStrings)
 	{
 		QPushButton* btn;
 		if(m->extensionButtonMap.contains(ext))
@@ -135,7 +135,7 @@ void FileExtensionBar::refresh()
 
 void FileExtensionBar::clear()
 {
-	for(QPushButton* btn : m->extensionButtonMap)
+	for(QPushButton* btn: m->extensionButtonMap)
 	{
 		btn->setVisible(false);
 	}

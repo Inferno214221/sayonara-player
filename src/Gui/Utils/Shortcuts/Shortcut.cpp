@@ -1,6 +1,6 @@
 /* Shortcut.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,14 +30,13 @@
 
 struct Shortcut::Private
 {
-	QList<QShortcut*>	qtShortcuts;
-	QStringList			defaultShortcuts;
-	QStringList			shortcuts;
-	ShortcutIdentifier	identifier;
+	QList<QShortcut*> qtShortcuts;
+	QStringList defaultShortcuts;
+	QStringList shortcuts;
+	ShortcutIdentifier identifier;
 
 	Private(ShortcutIdentifier id) :
-		identifier(id)
-	{}
+		identifier(id) {}
 };
 
 Shortcut::Shortcut()
@@ -50,7 +49,8 @@ Shortcut::Shortcut(ShortcutIdentifier identifier, const QStringList& shortcutStr
 	m = Pimpl::make<Private>(identifier);
 
 	m->defaultShortcuts = shortcutStrings;
-	for(QString& str : m->defaultShortcuts){
+	for(QString& str: m->defaultShortcuts)
+	{
 		str.replace(" +", "+");
 		str.replace("+ ", "+");
 	}
@@ -64,20 +64,20 @@ Shortcut::Shortcut(ShortcutIdentifier identifier, const QString& defaultShortcut
 Shortcut::Shortcut(const Shortcut& other) :
 	Shortcut()
 {
-	m->identifier =			other.m->identifier;
-	m->defaultShortcuts =	other.m->defaultShortcuts;
-	m->shortcuts =			other.m->shortcuts;
-	m->qtShortcuts =		other.m->qtShortcuts;
+	m->identifier = other.m->identifier;
+	m->defaultShortcuts = other.m->defaultShortcuts;
+	m->shortcuts = other.m->shortcuts;
+	m->qtShortcuts = other.m->qtShortcuts;
 }
 
 Shortcut::~Shortcut() = default;
 
-Shortcut& Shortcut::operator =(const Shortcut& other)
+Shortcut& Shortcut::operator=(const Shortcut& other)
 {
-	m->identifier =			other.m->identifier;
-	m->defaultShortcuts =	other.m->defaultShortcuts;
-	m->shortcuts =			other.m->shortcuts;
-	m->qtShortcuts =		other.m->qtShortcuts;
+	m->identifier = other.m->identifier;
+	m->defaultShortcuts = other.m->defaultShortcuts;
+	m->shortcuts = other.m->shortcuts;
+	m->qtShortcuts = other.m->qtShortcuts;
 
 	return (*this);
 }
@@ -97,12 +97,13 @@ QList<QKeySequence> Shortcut::sequences() const
 	QList<QKeySequence> sequences;
 
 	const auto& shortcuts = this->shortcuts();
-	for(const QString& str : shortcuts)
+	for(const QString& str: shortcuts)
 	{
 		sequences << QKeySequence::fromString(str, QKeySequence::NativeText);
 	}
 
-	if(sequences.isEmpty()){
+	if(sequences.isEmpty())
+	{
 		sequences << QKeySequence();
 	}
 
@@ -112,7 +113,8 @@ QList<QKeySequence> Shortcut::sequences() const
 QKeySequence Shortcut::sequence() const
 {
 	const QList<QKeySequence> sequences = this->sequences();
-	if(sequences.isEmpty()){
+	if(sequences.isEmpty())
+	{
 		return QKeySequence();
 	}
 
@@ -147,12 +149,11 @@ bool Shortcut::isValid() const
 void Shortcut::connect(QWidget* parent, QObject* receiver, const char* slot, Qt::ShortcutContext context)
 {
 	QList<QShortcut*> shortcuts = initQtShortcut(parent, context);
-	for(QShortcut* sc : shortcuts)
+	for(QShortcut* sc: shortcuts)
 	{
 		parent->connect(sc, SIGNAL(activated()), receiver, slot);
 	}
 }
-
 
 QList<QShortcut*> Shortcut::initQtShortcut(QWidget* parent, Qt::ShortcutContext context)
 {
@@ -160,7 +161,7 @@ QList<QShortcut*> Shortcut::initQtShortcut(QWidget* parent, Qt::ShortcutContext 
 
 	const QList<QKeySequence> sequences = this->sequences();//merge_key_sequences(this->sequences());
 
-	for(QKeySequence s : sequences)
+	for(QKeySequence s: sequences)
 	{
 		QShortcut* shortcut = new QShortcut(parent);
 		shortcut->setContext(context);
@@ -181,7 +182,7 @@ void Shortcut::setQtShortcuts(const QList<QShortcut*>& qtShortcuts)
 
 void Shortcut::removeQtShortcut(QShortcut* shortcut)
 {
-	auto it = std::remove_if(m->qtShortcuts.begin(), m->qtShortcuts.end(), [shortcut](QShortcut* sc){
+	auto it = std::remove_if(m->qtShortcuts.begin(), m->qtShortcuts.end(), [shortcut](QShortcut* sc) {
 		return (sc == shortcut);
 	});
 
@@ -193,11 +194,10 @@ QList<QShortcut*> Shortcut::qtShortcuts() const
 	return m->qtShortcuts;
 }
 
-
 void Shortcut::changeShortcut(const QStringList& shortcuts)
 {
 	m->shortcuts.clear();
-	for(QString shortcut : shortcuts)
+	for(QString shortcut: shortcuts)
 	{
 		shortcut.replace(" +", "+");
 		shortcut.replace("+ ", "+");
@@ -227,7 +227,7 @@ void Shortcut::changeShortcut(const QStringList& shortcuts)
 	if(newKeySequences.size() > 0)
 	{
 		const auto& qtShortcuts = m->qtShortcuts;
-		for(QShortcut* sc : qtShortcuts)
+		for(QShortcut* sc: qtShortcuts)
 		{
 			sc->setKey(newKeySequences.first());
 		}

@@ -1,6 +1,6 @@
 /* IconProvider.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,14 +31,15 @@ namespace Directory
 	 * @brief The IconProvider class
 	 * @ingroup GuiDirectories
 	 */
-	class IconProvider : public QFileIconProvider
+	class IconProvider :
+		public QFileIconProvider
 	{
 		public:
 			IconProvider();
 			~IconProvider() override;
 
 			QIcon icon(IconType type) const override;
-			QIcon icon(const QFileInfo &info) const override;
+			QIcon icon(const QFileInfo& info) const override;
 	};
 }
 

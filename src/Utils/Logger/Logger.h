@@ -1,6 +1,6 @@
 /* Logger.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -42,9 +42,10 @@ class QMargins;
 class QSize;
 class QRect;
 
-enum class Log : unsigned char
+enum class Log :
+	unsigned char
 {
-	Warning=0,
+	Warning = 0,
 	Error,
 	Info,
 	Debug,
@@ -53,7 +54,6 @@ enum class Log : unsigned char
 	Always
 };
 
-
 /**
  * @brief The Logger class
  * @ingroup Helper
@@ -61,61 +61,65 @@ enum class Log : unsigned char
 class Logger
 {
 
-private:
-	struct Private;
-	Private* m=nullptr;
+	private:
+		struct Private;
+		Private* m = nullptr;
 
-public:
-	explicit Logger(const Log& type, const QString& class_name);
+	public:
+		explicit Logger(const Log& type, const QString& class_name);
 
-	~Logger();
+		~Logger();
 
-	static void registerLogListener(LogListener* logListener);
+		static void registerLogListener(LogListener* logListener);
 
-	Logger& operator << (const QString& msg);
-	Logger& operator << (const QChar& c);
-	Logger& operator << (const QStringList& lst);
-	Logger& operator << (const QByteArray& arr);
-	Logger& operator << (const QPoint& point);
-	Logger& operator << (const QSize& size);
-	Logger& operator << (const QRect& size);
-	Logger& operator << (const char* str);
-	Logger& operator << (const std::string& str);
-	Logger& operator << (const Log& log_type);
+		Logger& operator<<(const QString& msg);
+		Logger& operator<<(const QChar& c);
+		Logger& operator<<(const QStringList& lst);
+		Logger& operator<<(const QByteArray& arr);
+		Logger& operator<<(const QPoint& point);
+		Logger& operator<<(const QSize& size);
+		Logger& operator<<(const QRect& size);
+		Logger& operator<<(const char* str);
+		Logger& operator<<(const std::string& str);
+		Logger& operator<<(const Log& log_type);
 
-	template<typename T>
-	typename std::enable_if< std::is_floating_point<T>::value, Logger&>::type
-	operator << (const T& val){
+		template<typename T>
+		typename std::enable_if<std::is_floating_point<T>::value, Logger&>::type
+		operator<<(const T& val)
+		{
 
-		(*this) << std::to_string(val);
+			(*this) << std::to_string(val);
 
-		return *this;
-	}
-
-	template<typename T>
-	typename std::enable_if< std::is_integral<T>::value, Logger&>::type
-	operator << (const T& val){
-
-		(*this) << std::to_string(val);
-
-		return *this;
-	}
-
-	template<typename T, template <typename ELEM> class CONT>
-	Logger& operator << (const CONT<T>& list){
-		for(const T& item : list){
-			(*this) << item << ", ";
+			return *this;
 		}
 
-		return *this;
-	}
+		template<typename T>
+		typename std::enable_if<std::is_integral<T>::value, Logger&>::type
+		operator<<(const T& val)
+		{
+
+			(*this) << std::to_string(val);
+
+			return *this;
+		}
+
+		template<typename T, template<typename ELEM> class CONT>
+		Logger& operator<<(const CONT<T>& list)
+		{
+			for(const T& item: list)
+			{
+				(*this) << item << ", ";
+			}
+
+			return *this;
+		}
 };
 
 Logger spLog(const Log& type, const std::string& data);
 Logger spLog(const Log& type, const char* data);
 
 template<typename T>
-typename std::enable_if< std::is_class<T>::value, Logger>::type
+typename std::enable_if<std::is_class<T>::value, Logger>::type
 spLog(const Log& type, const T*)
 {
 	return spLog(type, typeid(T).name());

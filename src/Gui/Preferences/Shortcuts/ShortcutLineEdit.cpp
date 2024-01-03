@@ -1,6 +1,6 @@
 /* ShortcutLineEdit.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -22,17 +22,17 @@
 
 #include <QKeyEvent>
 
-bool is_modifier(int key){
+bool is_modifier(int key)
+{
 	return (key == Qt::Key_Control
-			|| key == Qt::Key_Alt
-			|| key == Qt::Key_AltGr
-			|| key == Qt::Key_Shift
-			|| key == Qt::Key_Meta
-			);
+	        || key == Qt::Key_Alt
+	        || key == Qt::Key_AltGr
+	        || key == Qt::Key_Shift
+	        || key == Qt::Key_Meta
+	);
 }
 
-
-ShortcutLineEdit::ShortcutLineEdit(QWidget*parent) :
+ShortcutLineEdit::ShortcutLineEdit(QWidget* parent) :
 	QLineEdit(parent) {}
 
 ShortcutLineEdit::~ShortcutLineEdit() {}
@@ -41,8 +41,10 @@ QList<QKeySequence> ShortcutLineEdit::sequences() const
 {
 	QStringList lst = this->text().split(",");
 	QList<QKeySequence> sequences;
-	for(const QString& str : lst){
-		if(str.isEmpty()){
+	for(const QString& str: lst)
+	{
+		if(str.isEmpty())
+		{
 			continue;
 		}
 
@@ -56,36 +58,44 @@ void ShortcutLineEdit::keyPressEvent(QKeyEvent* e)
 {
 	int key = e->key();
 
-	if(key == Qt::Key_Escape && e->modifiers() == Qt::NoModifier){
+	if(key == Qt::Key_Escape && e->modifiers() == Qt::NoModifier)
+	{
 		this->clear();
 		return;
 	}
 
-	if(e->modifiers() == Qt::NoModifier){
+	if(e->modifiers() == Qt::NoModifier)
+	{
 		return;
 	}
 
-	if(is_modifier(key)){
+	if(is_modifier(key))
+	{
 		key = 0;
 	}
 
-	if(e->modifiers() & Qt::ControlModifier){
+	if(e->modifiers() & Qt::ControlModifier)
+	{
 		key |= Qt::CTRL;
 	}
 
-	if(e->modifiers() & Qt::ShiftModifier){
+	if(e->modifiers() & Qt::ShiftModifier)
+	{
 		key |= Qt::SHIFT;
 	}
 
-	if(e->modifiers() & Qt::MetaModifier){
+	if(e->modifiers() & Qt::MetaModifier)
+	{
 		key |= Qt::META;
 	}
 
-	if(e->modifiers() & Qt::AltModifier){
+	if(e->modifiers() & Qt::AltModifier)
+	{
 		key |= Qt::ALT;
 	}
 
-	if(e->modifiers() & Qt::KeypadModifier){
+	if(e->modifiers() & Qt::KeypadModifier)
+	{
 		key |= Qt::KeypadModifier;
 	}
 

@@ -1,6 +1,6 @@
 /* PreferenceInterface.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,18 +35,19 @@ namespace Preferences
 	 * Usually you don't get in touch with that class.
 	 * @ingroup Preferences
 	 */
-	class Action : public QAction
+	class Action :
+		public QAction
 	{
 		Q_OBJECT
 
-	public:
-		/**
-		 * @brief PreferenceAction Create QAction object, which is automatically
-		 * connected to the show event of the underlying widget.
-		 * @param text text of the action
-		 * @param preference_interface Widget, that should appear when action is triggered
-		 */
-		Action(const QString& text, QWidget* preference_interface);
+		public:
+			/**
+			 * @brief PreferenceAction Create QAction object, which is automatically
+			 * connected to the show event of the underlying widget.
+			 * @param text text of the action
+			 * @param preference_interface Widget, that should appear when action is triggered
+			 */
+			Action(const QString& text, QWidget* preference_interface);
 	};
 }
 

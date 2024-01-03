@@ -1,6 +1,6 @@
 /* GUI_LastFmPreferences.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -40,29 +40,29 @@ namespace LastFM
 }
 
 class GUI_LastFmPreferences :
-		public Preferences::Base
+	public Preferences::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_LastFmPreferences)
 	PIMPL(GUI_LastFmPreferences)
 
-public:
-	explicit GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm);
-	virtual ~GUI_LastFmPreferences();
+	public:
+		explicit GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm);
+		virtual ~GUI_LastFmPreferences();
 
-	bool commit() override;
-	void revert() override;
+		bool commit() override;
+		void revert() override;
 
-	QString actionName() const override;
+		QString actionName() const override;
 
-protected:
-	void initUi() override;
-	void retranslate() override;
+	protected:
+		void initUi() override;
+		void retranslate() override;
 
-private slots:
-	void loginClicked();
-	void activeChanged(bool active);
-	void loginFinished(bool success);
+	private slots:
+		void loginClicked();
+		void activeChanged(bool active);
+		void loginFinished(bool success);
 };
 
 #endif /* GUI_LastFmPreferences_H_ */

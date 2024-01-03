@@ -1,6 +1,6 @@
 /* DBusMPRIS.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -174,7 +174,7 @@ namespace Dbus::Mpris
 		         "org.mpris.MediaPlayer2.Player",
 		         "org.freedesktop.DBus.Properties",
 		         player),
-		m{Pimpl::make<Private>(player, playManager, playlistAccessor)}
+		m {Pimpl::make<Private>(player, playManager, playlistAccessor)}
 	{
 		connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &MediaPlayer2::playstateChanged);
 		connect(m->playManager, &PlayManager::sigCurrentTrackChanged, this, &MediaPlayer2::trackChanged);

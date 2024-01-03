@@ -1,6 +1,6 @@
 /* Sorting.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -32,8 +32,7 @@ Library::Sortings::Sortings()
 Library::Sortings::Sortings(const Sortings& other) :
 	CASSIGN(so_albums),
 	CASSIGN(so_artists),
-	CASSIGN(so_tracks)
-{}
+	CASSIGN(so_tracks) {}
 
 Library::Sortings::~Sortings() {}
 
@@ -54,7 +53,6 @@ bool Library::Sortings::operator==(Library::Sortings so)
 		(so.so_tracks == so_tracks);
 }
 
-
 QString Library::Sortings::toString() const
 {
 	return
@@ -64,11 +62,11 @@ QString Library::Sortings::toString() const
 			.arg(int(so_tracks));
 }
 
-
 bool Library::Sortings::loadFromString(const QString& str)
 {
 	QStringList lst = str.split(",");
-	if(lst.size() < 3){
+	if(lst.size() < 3)
+	{
 		return false;
 	}
 

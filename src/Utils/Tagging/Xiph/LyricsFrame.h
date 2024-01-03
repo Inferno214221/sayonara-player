@@ -1,6 +1,6 @@
 /* LyricsFrame.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,7 +35,7 @@ namespace Xiph
 			~LyricsFrame() override;
 
 		protected:
-			std::optional<QString> mapTagToData() const  override;
+			std::optional<QString> mapTagToData() const override;
 			void mapDataToTag(const QString& lyrics) override;
 	};
 }

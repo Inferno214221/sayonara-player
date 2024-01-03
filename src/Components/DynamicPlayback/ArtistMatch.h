@@ -1,6 +1,6 @@
 /* ArtistMatch.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ namespace DynamicPlayback
 			{
 				QString artist;
 				QString mbid;
-				double similarity{-1.0};
+				double similarity {-1.0};
 
 				Entry() = default;
 				Entry(const QString& artist, const QString& mbid, double similarity);
@@ -51,12 +51,13 @@ namespace DynamicPlayback
 			/**
 			 * @brief The Quality enum used to access the bin of interest. See ArtistMatch::get(Quality q)
 			 */
-			enum class Quality : uint8_t
+			enum class Quality :
+				uint8_t
 			{
-					Poor = 0,
-					Good,
-					VeryGood,
-					Excellent
+				Poor = 0,
+				Good,
+				VeryGood,
+				Excellent
 			};
 
 			ArtistMatch();

@@ -1,6 +1,6 @@
 /* InfoDialogContainer.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -24,18 +24,20 @@
 #include "Utils/Pimpl.h"
 #include <QObject>
 
-enum class OpenMode : uint8_t
+enum class OpenMode :
+	uint8_t
 {
-		Info,
-		Edit,
-		Lyrics,
-		Cover
+	Info,
+	Edit,
+	Lyrics,
+	Cover
 };
 
 class GUI_InfoDialog;
 
 class InfoDialogContainer;
-class InfoDialogContainerAsyncHandler : public QObject
+class InfoDialogContainerAsyncHandler :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(InfoDialogContainerAsyncHandler)
@@ -69,11 +71,11 @@ class InfoDialogContainer
 		friend class GUI_InfoDialog;
 
 	public:
-        InfoDialogContainer();
+		InfoDialogContainer();
 		virtual ~InfoDialogContainer();
 
 	private:
-        bool initDialog(OpenMode open_mode);
+		bool initDialog(OpenMode open_mode);
 
 		void go(OpenMode open_mode, const MetaDataList& v_md);
 
@@ -100,7 +102,7 @@ class InfoDialogContainer
 		 */
 		virtual MetaDataList infoDialogData() const = 0;
 
-        virtual QWidget* getParentWidget() = 0;
+		virtual QWidget* getParentWidget() = 0;
 
 		/**
 		 * @brief returns, if the widget can provide metadata instantly

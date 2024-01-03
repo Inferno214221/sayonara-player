@@ -1,6 +1,6 @@
 /* PopularimeterFrame.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -69,7 +69,7 @@ namespace
 		// “Alice Abba::1.0;;Bob Beatles::133.0”.
 		const auto entries = data.split(";;");
 		QList<Models::Popularimeter> popularimeters;
-		for(const auto& entry : entries)
+		for(const auto& entry: entries)
 		{
 			const auto splitted = entry.split("::");
 			const auto username = splitted.first();
@@ -90,7 +90,7 @@ namespace
 
 		return (popularimeters.isEmpty())
 		       ? std::nullopt
-		       : std::optional{popularimeters[0]};
+		       : std::optional {popularimeters[0]};
 	}
 }
 

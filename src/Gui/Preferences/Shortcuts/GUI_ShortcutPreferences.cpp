@@ -1,6 +1,6 @@
 /* GUI_ShortcutPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,13 +34,12 @@
 
 struct GUI_ShortcutPreferences::Private
 {
-	ShortcutHandler*			sch = nullptr;
-	QList<GUI_ShortcutEntry*>	entries;
-	QStringList					errorStrings;
+	ShortcutHandler* sch = nullptr;
+	QList<GUI_ShortcutEntry*> entries;
+	QStringList errorStrings;
 
 	Private() :
-		sch(ShortcutHandler::instance())
-	{}
+		sch(ShortcutHandler::instance()) {}
 };
 
 GUI_ShortcutPreferences::GUI_ShortcutPreferences(const QString& identifier) :
@@ -53,14 +52,15 @@ GUI_ShortcutPreferences::~GUI_ShortcutPreferences()
 {
 	if(ui)
 	{
-		delete ui; ui=nullptr;
+		delete ui;
+		ui = nullptr;
 	}
 }
 
-
 void GUI_ShortcutPreferences::initUi()
 {
-	if(isUiInitialized()){
+	if(isUiInitialized())
+	{
 		return;
 	}
 
@@ -71,22 +71,21 @@ void GUI_ShortcutPreferences::initUi()
 	ui->cbTest->setVisible(false);
 
 	const QList<ShortcutIdentifier> shortcuts = m->sch->allIdentifiers();
-	for(ShortcutIdentifier shortcut : shortcuts)
+	for(ShortcutIdentifier shortcut: shortcuts)
 	{
 		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
 
 		connect(entry, &GUI_ShortcutEntry::sigTestPressed,
-				this, &GUI_ShortcutPreferences::testPressed);
+		        this, &GUI_ShortcutPreferences::testPressed);
 		connect(entry, &GUI_ShortcutEntry::sigSequenceEntered,
-				this, &GUI_ShortcutPreferences::sequenceEntered);
+		        this, &GUI_ShortcutPreferences::sequenceEntered);
 
 		ui->layoutEntries->addWidget(entry);
 
 		m->entries << entry;
 	}
 
-	connect(ui->cbTest, &QCheckBox::toggled, ui->cbTest, [=]()
-	{
+	connect(ui->cbTest, &QCheckBox::toggled, ui->cbTest, [=]() {
 		if(ui->cbTest->isChecked())
 		{
 			ui->cbTest->setText(Lang::get(Lang::Success));
@@ -95,12 +94,10 @@ void GUI_ShortcutPreferences::initUi()
 	});
 }
 
-
 QString GUI_ShortcutPreferences::actionName() const
 {
 	return tr("Shortcuts");
 }
-
 
 bool GUI_ShortcutPreferences::commit()
 {
@@ -108,40 +105,39 @@ bool GUI_ShortcutPreferences::commit()
 
 	Util::Set<QKeySequence> sequences;
 
-	foreach(GUI_ShortcutEntry* entry, m->entries)
-	{
-		QList<QKeySequence> lst = entry->sequences();
-		for(const QKeySequence& s : lst)
+		foreach(GUI_ShortcutEntry* entry, m->entries)
 		{
-			QString str = s.toString().trimmed();
-			if( sequences.contains(str) &&
-				str.size() > 0)
+			QList<QKeySequence> lst = entry->sequences();
+			for(const QKeySequence& s: lst)
 			{
-				m->errorStrings << str;
+				QString str = s.toString().trimmed();
+				if(sequences.contains(str) &&
+				   str.size() > 0)
+				{
+					m->errorStrings << str;
+				}
+
+				sequences.insert(str);
 			}
 
-			sequences.insert(str);
+			entry->commit();
 		}
-
-		entry->commit();
-	}
 
 	return m->errorStrings.isEmpty();
 }
 
-
 void GUI_ShortcutPreferences::revert()
 {
-	foreach(GUI_ShortcutEntry* entry, m->entries)
-	{
-		entry->revert();
-	}
+		foreach(GUI_ShortcutEntry* entry, m->entries)
+		{
+			entry->revert();
+		}
 }
-
 
 void GUI_ShortcutPreferences::testPressed(const QList<QKeySequence>& sequences)
 {
-	if(sequences.isEmpty()){
+	if(sequences.isEmpty())
+	{
 		return;
 	}
 
@@ -149,7 +145,8 @@ void GUI_ShortcutPreferences::testPressed(const QList<QKeySequence>& sequences)
 	ui->cbTest->setText(tr("Press shortcut") + ": " + sequences.first().toString(QKeySequence::NativeText));
 	ui->cbTest->setChecked(false);
 
-	for(const QKeySequence& sequence : sequences){
+	for(const QKeySequence& sequence: sequences)
+	{
 		ui->cbTest->setShortcut(sequence);
 	}
 
@@ -161,27 +158,29 @@ void GUI_ShortcutPreferences::sequenceEntered()
 	auto* entry = static_cast<GUI_ShortcutEntry*>(sender());
 	QList<QKeySequence> sequences = entry->sequences();
 
-	foreach(const GUI_ShortcutEntry* lst_entry, m->entries)
-	{
-		if(lst_entry == entry){
-			continue;
-		}
-
-		const QList<QKeySequence> saved_sequences = lst_entry->sequences();
-		for(const QKeySequence& seq1 : sequences)
+		foreach(const GUI_ShortcutEntry* lst_entry, m->entries)
 		{
-			QString seq1_str = seq1.toString(QKeySequence::NativeText);
-
-			for(const QKeySequence& seq2 : saved_sequences)
+			if(lst_entry == entry)
 			{
-				QString seq2_str = seq2.toString(QKeySequence::NativeText);
-				if(seq1_str == seq2_str && !seq1_str.isEmpty()){
-					entry->showSequenceError();
-					break;
+				continue;
+			}
+
+			const QList<QKeySequence> saved_sequences = lst_entry->sequences();
+			for(const QKeySequence& seq1: sequences)
+			{
+				QString seq1_str = seq1.toString(QKeySequence::NativeText);
+
+				for(const QKeySequence& seq2: saved_sequences)
+				{
+					QString seq2_str = seq2.toString(QKeySequence::NativeText);
+					if(seq1_str == seq2_str && !seq1_str.isEmpty())
+					{
+						entry->showSequenceError();
+						break;
+					}
 				}
 			}
 		}
-	}
 }
 
 void GUI_ShortcutPreferences::retranslate()

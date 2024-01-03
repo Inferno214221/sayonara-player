@@ -1,6 +1,6 @@
 /* XiphFrame.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -47,8 +47,8 @@ namespace Xiph
 				const auto& map = tag()->fieldListMap();
 				const auto it = map.find(tagKey());
 				return (it == map.end())
-					? std::optional<TagLib::String>{}
-					: std::optional(it->second.front());
+				       ? std::optional<TagLib::String> {}
+				       : std::optional(it->second.front());
 			}
 
 			void setStringData(const TagLib::String& value)
@@ -73,8 +73,8 @@ namespace Xiph
 			bool read(Model_t& model) const
 			{
 				const auto data = (tag() != nullptr)
-					? mapTagToData()
-					: std::nullopt;
+				                  ? mapTagToData()
+				                  : std::nullopt;
 
 				if(data.has_value())
 				{
@@ -96,9 +96,11 @@ namespace Xiph
 					tag()->removeFields(tagKey());
 				}
 
-				try {
+				try
+				{
 					mapDataToTag(model);
-				} catch (std::exception& /* e */) {
+				} catch(std::exception& /* e */)
+				{
 					return false;
 				}
 

@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,23 +30,22 @@ using Playlist::TabMenu;
 
 struct TabMenu::Private
 {
-	QAction*	action_open_file=nullptr;
-	QAction*	action_open_dir=nullptr;
-	QAction*	action_delete=nullptr;
-	QAction*	action_save=nullptr;
-	QAction*	action_save_as=nullptr;
-	QAction*    action_save_to_file=nullptr;
-	QAction*	action_reset=nullptr;
-	QAction*	action_close=nullptr;
-	QAction*	action_close_others=nullptr;
-	QAction*	action_rename=nullptr;
-	QAction*	action_clear=nullptr;
+	QAction* action_open_file = nullptr;
+	QAction* action_open_dir = nullptr;
+	QAction* action_delete = nullptr;
+	QAction* action_save = nullptr;
+	QAction* action_save_as = nullptr;
+	QAction* action_save_to_file = nullptr;
+	QAction* action_reset = nullptr;
+	QAction* action_close = nullptr;
+	QAction* action_close_others = nullptr;
+	QAction* action_rename = nullptr;
+	QAction* action_clear = nullptr;
 
 	bool has_preference_action;
 
 	Private() :
-		has_preference_action(false)
-	{}
+		has_preference_action(false) {}
 };
 
 TabMenu::TabMenu(QWidget* parent) :
@@ -70,20 +69,20 @@ TabMenu::TabMenu(QWidget* parent) :
 
 	QList<QAction*> actions;
 	actions << m->action_open_file
-			<< m->action_open_dir
-			<< this->addSeparator()
-			<< m->action_reset
-			<< this->addSeparator()
-			<< m->action_rename
-			<< m->action_save
-			<< m->action_save_as
-			<< m->action_save_to_file
-			<< m->action_delete
-			<< this->addSeparator()
-			<< m->action_clear
-			<< this->addSeparator()
-			<< m->action_close_others
-			<< m->action_close;
+	        << m->action_open_dir
+	        << this->addSeparator()
+	        << m->action_reset
+	        << this->addSeparator()
+	        << m->action_rename
+	        << m->action_save
+	        << m->action_save_as
+	        << m->action_save_to_file
+	        << m->action_delete
+	        << this->addSeparator()
+	        << m->action_clear
+	        << this->addSeparator()
+	        << m->action_close_others
+	        << m->action_close;
 
 	this->addActions(actions);
 
@@ -132,8 +131,8 @@ void TabMenu::languageChanged()
 
 void TabMenu::skinChanged()
 {
-	m->action_open_file->setIcon(Icons::icon(Icons::Open) );
-	m->action_open_dir->setIcon(Icons::icon(Icons::Open) );
+	m->action_open_file->setIcon(Icons::icon(Icons::Open));
+	m->action_open_dir->setIcon(Icons::icon(Icons::Open));
 
 	m->action_reset->setIcon(Icons::icon(Icons::Undo));
 	m->action_rename->setIcon(Icons::icon(Icons::Rename));
@@ -161,7 +160,6 @@ void TabMenu::showMenuItems(Playlist::MenuEntries entries)
 	m->action_close_others->setVisible(entries & MenuEntry::CloseOthers);
 }
 
-
 void TabMenu::showClose(bool b)
 {
 	m->action_close->setVisible(b);
@@ -172,7 +170,8 @@ void TabMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->has_preference_action){
+	if(!m->has_preference_action)
+	{
 		actions << this->addSeparator();
 	}
 

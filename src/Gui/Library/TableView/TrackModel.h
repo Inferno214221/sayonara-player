@@ -1,6 +1,6 @@
 /* TrackModel.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,7 +54,7 @@ namespace Library
 			int rowCount(const QModelIndex& parent) const override;
 
 			/** ItemModel.h **/
-			Cover::Location cover(const QModelIndexList & indexes) const override;
+			Cover::Location cover(const QModelIndexList& indexes) const override;
 			int searchableColumn() const override;
 			Id mapIndexToId(int row) const override;
 			QString searchableString(int row) const override;

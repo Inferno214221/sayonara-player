@@ -1,6 +1,6 @@
 /* TagExpression.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -75,7 +75,7 @@ namespace
 	QString escapeSpecialChars(const QString& originalString)
 	{
 		auto stringCopy = originalString;
-		for(const auto& c : EscapeStrings)
+		for(const auto& c: EscapeStrings)
 		{
 			stringCopy.replace(c, QString("\\") + c);
 		}
@@ -100,7 +100,7 @@ namespace
 	{
 		QString regex;
 
-		for(const auto& splitted : splittedString)
+		for(const auto& splitted: splittedString)
 		{
 			regex += createRegexChunk(splitted, tagRegexMap);
 		}
@@ -112,7 +112,7 @@ namespace
 	{
 		QStringList names;
 		const auto map = tagNameMap();
-		for(const auto& value : map)
+		for(const auto& value: map)
 		{
 			names << value;
 		}
@@ -125,7 +125,7 @@ namespace
 		auto indexStringMap = QMap<int, TagString>();
 		const auto tagNames = getTagNames();
 
-		for(const auto& tagName : tagNames)
+		for(const auto& tagName: tagNames)
 		{
 			if(!tagName.isEmpty())
 			{
@@ -181,7 +181,7 @@ namespace
 		                              << " tags found, but requested "
 		                              << tagCount;
 
-		for(const auto& s : capturedTexts)
+		for(const auto& s: capturedTexts)
 		{
 			spLog(Log::Debug, expression) << "Captured texts:  " << s;
 		}

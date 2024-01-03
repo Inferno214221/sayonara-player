@@ -1,6 +1,6 @@
 /* Algorithm.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,12 +54,14 @@ namespace Util
 		}
 
 		template<typename T>
-		constexpr typename std::add_const<T>::type& AsConst(T& t) {
+		constexpr typename std::add_const<T>::type& AsConst(T& t)
+		{
 			return t;
 		}
 
 		template<typename T, typename FN>
-		int indexOf(const T& container, FN fn) {
+		int indexOf(const T& container, FN fn)
+		{
 			auto it = Algorithm::find(container, fn);
 			if(it == container.end())
 			{
@@ -77,13 +79,13 @@ namespace Util
 		template<class Container>
 		void remove_duplicates(Container& container)
 		{
-			for(auto it=container.begin(); it != container.end(); it++)
+			for(auto it = container.begin(); it != container.end(); it++)
 			{
 				container.erase
-				(
-					std::remove(it + 1, container.end(), *it),
-					container.end()
-				);
+					(
+						std::remove(it + 1, container.end(), *it),
+						container.end()
+					);
 			}
 		}
 
@@ -115,7 +117,7 @@ namespace Util
 		template<class ContainerIn, class ContainerOut, typename FN>
 		void moveIf(ContainerIn& in, ContainerOut& out, FN fn)
 		{
-			for(auto& element : in)
+			for(auto& element: in)
 			{
 				if(fn(element))
 				{

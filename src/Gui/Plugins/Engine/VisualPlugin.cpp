@@ -1,6 +1,6 @@
 /* VisualPlugin.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -102,7 +102,7 @@ void VisualPlugin::set_button_sizes()
 	font.setPointSize(font_size);
 
 	//QList<QPushButton*> buttons ;
-	for(QPushButton* button : {m->btnConfig, m->btnPrev, m->btnNext, m->btnClose})
+	for(QPushButton* button: {m->btnConfig, m->btnPrev, m->btnNext, m->btnClose})
 	{
 		button->setFont(font);
 		button->setMaximumHeight(height);

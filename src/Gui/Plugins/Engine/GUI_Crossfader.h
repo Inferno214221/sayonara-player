@@ -1,6 +1,6 @@
 /* GUI_Crossfader.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -26,28 +26,28 @@
 UI_FWD(GUI_Crossfader)
 
 class GUI_Crossfader :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Crossfader)
 
-public:
-	explicit GUI_Crossfader(QWidget* parent=nullptr);
-	~GUI_Crossfader() override;
+	public:
+		explicit GUI_Crossfader(QWidget* parent = nullptr);
+		~GUI_Crossfader() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
-private slots:
-	void sliderChanged(int val);
-	void crossfaderActiveChanged(bool b);
-	void gaplessActiveChanged(bool b);
+	private slots:
+		void sliderChanged(int val);
+		void crossfaderActiveChanged(bool b);
+		void gaplessActiveChanged(bool b);
 
-	void engineChanged();
+		void engineChanged();
 
-protected:
-	void retranslate() override;
-	void initUi() override;
+	protected:
+		void retranslate() override;
+		void initUi() override;
 };
 
 #endif // GUI_CROSSFADER_H

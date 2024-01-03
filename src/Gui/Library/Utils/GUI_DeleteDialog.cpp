@@ -1,6 +1,6 @@
 /* LibraryDeleteDialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -85,7 +85,7 @@ void GUI_DeleteDialog::showEvent(QShowEvent* e)
 	this->setFocus();
 
 	const auto height = this->fontMetrics().height() * 2;
-	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info, QSize{height, height}));
+	ui->labIcon->setPixmap(Gui::Icons::pixmap(Gui::Icons::Info, QSize {height, height}));
 	ui->cbOnlyFromLibrary->setText(tr("Only from library"));
 	ui->labWarning->setText(Lang::get(Lang::Warning) + "!");
 	ui->labInfo->setText

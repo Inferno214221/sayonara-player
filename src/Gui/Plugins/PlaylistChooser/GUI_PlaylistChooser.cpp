@@ -1,6 +1,6 @@
 /* GUI_PlaylistChooser.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -80,7 +80,7 @@ void GUI_PlaylistChooser::retranslate()
 {
 	ui->retranslateUi(this);
 
-	const auto& playlists =	m->playlistChooser->playlists();
+	const auto& playlists = m->playlistChooser->playlists();
 	if(playlists.isEmpty())
 	{
 		ui->comboPlaylists->clear();
@@ -112,7 +112,7 @@ void GUI_PlaylistChooser::playlistsChanged()
 
 	ui->comboPlaylists->clear();
 
-	for(const auto& playlist : playlists)
+	for(const auto& playlist: playlists)
 	{
 		ui->comboPlaylists->addItem(playlist.name(), playlist.id());
 	}

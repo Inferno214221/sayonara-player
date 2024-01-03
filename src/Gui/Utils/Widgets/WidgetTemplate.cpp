@@ -1,6 +1,6 @@
 /* WidgetTemplate.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -39,6 +39,9 @@ void Gui::AbstrWidgetTemplate::languageChanged() { mWtp->languageChanged(); }
 void Gui::AbstrWidgetTemplate::skinChanged() { mWtp->skinChanged(); }
 
 Gui::WidgetTemplateParent::WidgetTemplateParent() {}
+
 Gui::WidgetTemplateParent::~WidgetTemplateParent() {}
+
 void Gui::WidgetTemplateParent::languageChanged() {}
+
 void Gui::WidgetTemplateParent::skinChanged() {}

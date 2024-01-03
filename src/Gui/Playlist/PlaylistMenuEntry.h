@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -31,18 +31,18 @@ namespace Playlist
 	 */
 	enum MenuEntry
 	{
-		None=0,
-		Delete=			(1 << 0),
-		Save=			(1 << 1),
-		SaveAs=			(1 << 2),
-		SaveToFile=		(1 << 3),
-		Close=			(1 << 4),
-		CloseOthers =	(1 << 5),
-		Reset=			(1 << 6),
-		Rename=			(1 << 7),
-		Clear=			(1 << 8),
-		OpenFile=		(1 << 9),
-		OpenDir=		(1 << 10)
+		None = 0,
+		Delete = (1 << 0),
+		Save = (1 << 1),
+		SaveAs = (1 << 2),
+		SaveToFile = (1 << 3),
+		Close = (1 << 4),
+		CloseOthers = (1 << 5),
+		Reset = (1 << 6),
+		Rename = (1 << 7),
+		Clear = (1 << 8),
+		OpenFile = (1 << 9),
+		OpenDir = (1 << 10)
 	};
 
 	typedef quint16 MenuEntries;

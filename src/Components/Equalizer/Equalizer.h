@@ -1,6 +1,6 @@
 /* Equalizer.h */
 /*
- * Copyright (C) 2011-2020 Michael Lugmair
+ * Copyright (C) 2011-2024 Michael Lugmair
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,8 @@
 class SoundModifier;
 class EqualizerSetting;
 class QString;
-class Equalizer : public QObject
+class Equalizer :
+	public QObject
 {
 	Q_OBJECT
 	PIMPL(Equalizer)
@@ -39,14 +40,14 @@ class Equalizer : public QObject
 	public:
 		enum RenameError
 		{
-			NoError=0,
+			NoError = 0,
 			DbError,
 			EmptyName,
 			NameAlreadyKnown,
 			InvalidIndex
 		};
 
-		Equalizer(SoundModifier* soundModifier, QObject* parent=nullptr);
+		Equalizer(SoundModifier* soundModifier, QObject* parent = nullptr);
 		~Equalizer() noexcept;
 
 		const EqualizerSetting& equalizerSetting(int index) const;

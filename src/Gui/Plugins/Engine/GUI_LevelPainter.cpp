@@ -1,6 +1,6 @@
 /* GUI_LevelPainter.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -54,8 +54,7 @@ struct GUI_LevelPainter::Private
 	std::atomic_flag lock = ATOMIC_FLAG_INIT;
 
 	Private(LevelDataProvider* dataProvider) :
-		dataProvider(dataProvider)
-	{}
+		dataProvider(dataProvider) {}
 
 	void resizeSteps(int n_rects)
 	{
@@ -261,7 +260,7 @@ void GUI_LevelPainter::paintEvent(QPaintEvent* e)
 
 void GUI_LevelPainter::doFadeoutStep()
 {
-	for(float& l : m->level)
+	for(float& l: m->level)
 	{
 		l -= 2.0f;
 	}

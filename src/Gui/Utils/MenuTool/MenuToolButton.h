@@ -1,6 +1,6 @@
 /* MenuToolButton.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -38,7 +38,7 @@ namespace Gui
 	 * @ingroup Gui
 	 */
 	class MenuToolButton :
-			public WidgetTemplate<QPushButton>
+		public WidgetTemplate<QPushButton>
 	{
 		Q_OBJECT
 		PIMPL(MenuToolButton)
@@ -79,7 +79,6 @@ namespace Gui
 			Gui::ContextMenuEntries entries() const;
 
 			void setOverrideText(bool b);
-
 
 		public slots:
 			/**

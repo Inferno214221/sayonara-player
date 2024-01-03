@@ -1,6 +1,6 @@
 /* GUI_Bookmarks.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,39 +34,38 @@ UI_FWD(GUI_Bookmarks)
  * @ingroup Bookmarks
  */
 class GUI_Bookmarks :
-		public PlayerPlugin::Base
+	public PlayerPlugin::Base
 {
 	Q_OBJECT
 	UI_CLASS(GUI_Bookmarks)
 	PIMPL(GUI_Bookmarks)
 
-public:
-	explicit GUI_Bookmarks(Bookmarks* bookmarks, QWidget* parent=nullptr);
-	~GUI_Bookmarks() override;
+	public:
+		explicit GUI_Bookmarks(Bookmarks* bookmarks, QWidget* parent = nullptr);
+		~GUI_Bookmarks() override;
 
-	QString name() const override;
-	QString displayName() const override;
+		QString name() const override;
+		QString displayName() const override;
 
-private:
-	void retranslate() override;
-	void initUi() override;
+	private:
+		void retranslate() override;
+		void initUi() override;
 
+	private slots:
+		void currentIndexChanged(int currentIndex);
+		void nextClicked();
+		void previousClicked();
+		void newClicked();
+		void deleteClicked();
+		void loopToggled(bool);
 
-private slots:
-	void currentIndexChanged(int currentIndex);
-	void nextClicked();
-	void previousClicked();
-	void newClicked();
-	void deleteClicked();
-	void loopToggled(bool);
+		void previousChanged(const Bookmark& bookmark);
+		void nextChanged(const Bookmark& bookmark);
 
-	void previousChanged(const Bookmark& bookmark);
-	void nextChanged(const Bookmark& bookmark);
+		void disablePrevious();
+		void disableNext();
 
-	void disablePrevious();
-	void disableNext();
-
-	void bookmarksChanged();
+		void bookmarksChanged();
 };
 
 #endif // GUI_BOOKMARKS_H

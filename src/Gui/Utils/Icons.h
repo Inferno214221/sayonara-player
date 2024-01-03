@@ -1,6 +1,6 @@
 /* Icons.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -27,9 +27,8 @@ class QIcon;
 class QPixmap;
 class QSize;
 
-template <typename T>
+template<typename T>
 class QList;
-
 
 namespace Gui
 {
@@ -57,7 +56,7 @@ namespace Gui
 		 */
 		enum IconName
 		{
-			Append=0,		// Playlist
+			Append = 0,        // Playlist
 			AudioFile,
 			Backward,
 			Clear,

@@ -1,6 +1,6 @@
 /* PluginCloseButton.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -33,7 +33,7 @@ PluginCloseButton::PluginCloseButton(QWidget* parent) :
 	Gui::WidgetTemplate<QPushButton>(parent)
 {
 	this->setFlat(true);
-	this->setIconSize(QSize(14,14));
+	this->setIconSize(QSize(14, 14));
 
 	this->setStyleSheet("margin-left: 2px; margin-right: 2px; padding-left: 0px; padding-right: 0px;");
 	this->setToolTip(Lang::get(Lang::Close));
@@ -63,7 +63,7 @@ void PluginCloseButton::enterEvent(QEvent* e)
 		}
 	}
 
-	if( this->isEnabled() )
+	if(this->isEnabled())
 	{
 		this->setIcon(icon);
 		e->accept();
@@ -76,7 +76,6 @@ void PluginCloseButton::leaveEvent(QEvent* e)
 
 	setStandardIcon();
 }
-
 
 void PluginCloseButton::setStandardIcon()
 {
@@ -109,7 +108,6 @@ void PluginCloseButton::setStandardIcon()
 	this->setIcon(icon);
 	this->update();
 }
-
 
 void PluginCloseButton::skinChanged()
 {

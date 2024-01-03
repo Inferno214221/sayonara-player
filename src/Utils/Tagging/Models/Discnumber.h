@@ -1,6 +1,6 @@
 /* Discnumber.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -29,8 +29,8 @@ namespace Models
 {
 	struct Discnumber
 	{
-		Disc disc{1};
-		Disc disccount{1};
+		Disc disc {1};
+		Disc disccount {1};
 
 		Discnumber() = default;
 		Discnumber(Disc disc, Disc discCount = 1);

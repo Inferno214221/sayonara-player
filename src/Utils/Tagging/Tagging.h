@@ -1,6 +1,6 @@
 /* id3.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -23,7 +23,10 @@
 
 #include "TaggingUtils.h"
 
-namespace TagLib { class FileRef; }
+namespace TagLib
+{
+	class FileRef;
+}
 
 class QString;
 class QPixmap;
@@ -50,7 +53,7 @@ namespace Tagging
 		 * @param quality fast, normal, accurate
 		 * @return true, if metadata could be filled. false else
 		 */
-		bool getMetaDataOfFile(MetaData& track, Tagging::Quality quality=Tagging::Quality::Standard);
+		bool getMetaDataOfFile(MetaData& track, Tagging::Quality quality = Tagging::Quality::Standard);
 
 		/**
 		 * @brief writes metadata into file specivied in MetaData::_filepath

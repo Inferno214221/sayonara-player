@@ -1,6 +1,6 @@
 /* GUI_CoverPreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -60,7 +60,7 @@ namespace
 				'/', '\\', '|', ':', '\"', '?', '$', '<', '>', '*', '#', '%', '&'
 			};
 
-		const auto contains = Util::Algorithm::contains(invalidChars, [&](const auto& c){
+		const auto contains = Util::Algorithm::contains(invalidChars, [&](const auto& c) {
 			return (coverTemplateCopy.contains(c));
 		});
 
@@ -138,14 +138,14 @@ void GUI_CoverPreferences::revert()
 	ui->lvCoverSearchers->clear();
 	ui->lvInactiveCoverSearchers->clear();
 
-	for(const auto& coverFetcher : coverFetchers)
+	for(const auto& coverFetcher: coverFetchers)
 	{
 		const auto identifier = coverFetcher->identifier();
 		if(!identifier.trimmed().isEmpty() && (coverFetcher->isWebserviceFetcher()))
 		{
 			auto* widget = (coverServers.contains(identifier))
-				? ui->lvCoverSearchers
-				: ui->lvInactiveCoverSearchers;
+			               ? ui->lvCoverSearchers
+			               : ui->lvInactiveCoverSearchers;
 
 			widget->addItem(Util::stringToVeryFirstUpper(identifier));
 		}

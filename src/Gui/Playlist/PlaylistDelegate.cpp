@@ -1,6 +1,6 @@
 /* PlaylistItemDelegate.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -57,7 +57,7 @@ namespace
 		QList<PlaylistStyleItem> ret;
 		PlaylistStyleItem currentItem;
 
-		for(const auto c : entryLook)
+		for(const auto c: entryLook)
 		{
 			if((c != QChar(Model::StyleElement::Bold)) &&
 			   (c != QChar(Model::StyleElement::Italic)))
@@ -199,7 +199,7 @@ namespace
 		            : option.rect;
 
 		const auto styleItems = parseEntryLookString(index);
-		for(const auto& styleItem : styleItems)
+		for(const auto& styleItem: styleItems)
 		{
 			drawStyleItem(painter, styleItem, alignTop, rect);
 		}

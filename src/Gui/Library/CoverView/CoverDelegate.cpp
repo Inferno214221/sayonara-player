@@ -1,6 +1,6 @@
 /* AlbumCoverDelegate.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -91,7 +91,7 @@ namespace
 
 		painter->setFont(font);
 		painter->setPen(textColor);
-		painter->drawText(QRect{textOffset, 0, textWidth, fontMetrics.height()},
+		painter->drawText(QRect {textOffset, 0, textWidth, fontMetrics.height()},
 		                  static_cast<int>(option.displayAlignment),
 		                  elidedText);
 

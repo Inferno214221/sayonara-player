@@ -1,6 +1,6 @@
 /* AlbumGUI_CoverView.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -37,7 +37,7 @@ namespace
 		comboBox->clear();
 
 		static const auto actionPairs = Library::CoverView::sortingActions();
-		for(const auto& actionPair : actionPairs)
+		for(const auto& actionPair: actionPairs)
 		{
 			comboBox->addItem(actionPair.name(), static_cast<int>(actionPair.sortorder()));
 		}
@@ -46,7 +46,7 @@ namespace
 	void initZoomActions(QComboBox* comboBox)
 	{
 		static const auto zoomActions = Library::CoverView::zoomFactors();
-		for(const auto& zoom : zoomActions)
+		for(const auto& zoom: zoomActions)
 		{
 			comboBox->addItem(QString::number(zoom) + '%', zoom);
 		}

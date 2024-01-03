@@ -1,6 +1,6 @@
 /* SayonaraCompleter.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -35,11 +35,11 @@ namespace Gui
 	 * @ingroup Widgets
 	 */
 	class Completer :
-			public QCompleter
+		public QCompleter
 	{
 
 		public:
-			Completer(const QStringList& strings, QObject* parent=nullptr);
+			Completer(const QStringList& strings, QObject* parent = nullptr);
 			virtual ~Completer() override;
 
 			void setStringList(QStringList strings);

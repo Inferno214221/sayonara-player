@@ -1,6 +1,6 @@
 /* GUI_EnginePreferences.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,8 +43,10 @@ GUI_EnginePreferences::GUI_EnginePreferences(const QString& identifier) :
 
 GUI_EnginePreferences::~GUI_EnginePreferences()
 {
-	if(ui){
-		delete ui; ui = nullptr;
+	if(ui)
+	{
+		delete ui;
+		ui = nullptr;
 	}
 }
 
@@ -55,7 +57,8 @@ QString GUI_EnginePreferences::actionName() const
 
 bool GUI_EnginePreferences::commit()
 {
-	if(ui->rbPulse->isChecked()){
+	if(ui->rbPulse->isChecked())
+	{
 		SetSetting(Set::Engine_Sink, QString("pulse"));
 	}
 
@@ -83,22 +86,26 @@ bool GUI_EnginePreferences::commit()
 void GUI_EnginePreferences::revert()
 {
 	QString engineName = GetSetting(Set::Engine_Sink);
-	if(engineName == "pulse"){
+	if(engineName == "pulse")
+	{
 		ui->rbPulse->setChecked(true);
 	}
 
-	else if(engineName == "alsa"){
+	else if(engineName == "alsa")
+	{
 		ui->rbAlsa->setChecked(true);
 	}
 
-	else{
+	else
+	{
 		ui->rbAuto->setChecked(true);
 	}
 }
 
 void GUI_EnginePreferences::initUi()
 {
-	if(ui){
+	if(ui)
+	{
 		return;
 	}
 
@@ -145,9 +152,8 @@ void GUI_EnginePreferences::radioButtonChanged(bool b)
 struct SubDevice
 {
 	QString name;
-	int id=0;
+	int id = 0;
 };
-
 
 void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
 {
@@ -156,24 +162,26 @@ void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitSta
 
 	auto* process = static_cast<QProcess*>(sender());
 	m->alsaBuffer.append
-	(
-		QString::fromLocal8Bit(process->readAllStandardOutput())
-	);
+		(
+			QString::fromLocal8Bit(process->readAllStandardOutput())
+		);
 
 	ui->comboAlsaDevices->clear();
 
-	if(exit_code != 0){
+	if(exit_code != 0)
+	{
 		return;
 	}
 
-	QMap <int, QList<SubDevice>> device_map;
+	QMap<int, QList<SubDevice>> device_map;
 
 	const QStringList splitted = m->alsaBuffer.split("\n");
-	for(const QString& line : splitted)
+	for(const QString& line: splitted)
 	{
 		QRegExp re("card ([0-9]+): (.+device ([0-9]+).+)");
 		int idx = re.indexIn(line);
-		if(idx < 0){
+		if(idx < 0)
+		{
 			continue;
 		}
 
@@ -182,12 +190,12 @@ void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitSta
 		QString name = re.cap(2);
 
 		SubDevice sd;
-				sd.id = subdevice_id;
-				sd.name = name;
+		sd.id = subdevice_id;
+		sd.name = name;
 
 		if(!device_map.contains(device_id))
 		{
-			device_map.insert(device_id, QList<SubDevice>{sd});
+			device_map.insert(device_id, QList<SubDevice> {sd});
 		}
 
 		else
@@ -198,12 +206,13 @@ void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitSta
 		}
 	}
 
-	for(auto it=device_map.begin(); it != device_map.end(); it++)
+	for(auto it = device_map.begin(); it != device_map.end(); it++)
 	{
-		for(const SubDevice& subdevice : it.value())
+		for(const SubDevice& subdevice: it.value())
 		{
 			QString device_identifier = QString("hw:%1").arg(it.key());
-			if(it.value().size() > 1){
+			if(it.value().size() > 1)
+			{
 				device_identifier += QString(",%1").arg(subdevice.id);
 			}
 
@@ -222,8 +231,8 @@ void GUI_EnginePreferences::alsaStdoutWritten()
 	auto* process = static_cast<QProcess*>(sender());
 
 	m->alsaBuffer.append
-	(
-		QString::fromLocal8Bit(process->readAllStandardOutput())
-	);
+		(
+			QString::fromLocal8Bit(process->readAllStandardOutput())
+		);
 }
 

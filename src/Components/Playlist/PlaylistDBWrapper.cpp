@@ -1,6 +1,6 @@
 /* PlaylistDBWrapper.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -34,7 +34,7 @@ namespace
 {
 	MetaDataList applyTags(MetaDataList tracks)
 	{
-		for(auto& track : tracks)
+		for(auto& track: tracks)
 		{
 			if(track.isExtern() && Util::File::isFile(track.filepath()))
 			{
@@ -47,7 +47,7 @@ namespace
 
 	QList<CustomPlaylist> applyTagsToPlaylists(QList<CustomPlaylist> playlists)
 	{
-		for(auto& playlist : playlists)
+		for(auto& playlist: playlists)
 		{
 			auto tracks = playlist.tracks();
 			auto changedTracks = applyTags(std::move(tracks));

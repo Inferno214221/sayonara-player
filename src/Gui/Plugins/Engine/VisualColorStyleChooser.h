@@ -1,6 +1,6 @@
 /* VisualColorStyleChooser.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,29 +28,29 @@
 
 #include "VisualStyleTypes.h"
 
-
-class VisualColorStyleChooser : public QObject
+class VisualColorStyleChooser :
+	public QObject
 {
-    Q_OBJECT
+	Q_OBJECT
 
-signals:
-    void sig_use_style(int, const ColorStyle& );
+	signals:
+		void sig_use_style(int, const ColorStyle&);
 
-public:
-    VisualColorStyleChooser(int widget_width, int widget_height);
-    ColorStyle get_color_scheme_spectrum(int i);
-    ColorStyle get_color_scheme_level(int i);
-    int get_num_color_schemes();
+	public:
+		VisualColorStyleChooser(int widget_width, int widget_height);
+		ColorStyle get_color_scheme_spectrum(int i);
+		ColorStyle get_color_scheme_level(int i);
+		int get_num_color_schemes();
 
-    void reload(int widget_width, int widget_height);
+		void reload(int widget_width, int widget_height);
 
-private:
-	void insertColorOfRect(int bin, int n_bins, const ColorList& colors, QHash<int, QColor>& map);
-    void create_colorstyle(ColorStyle &style, const ColorList &colors_active, int n_rects, int n_fading_steps);
-    void init();
+	private:
+		void insertColorOfRect(int bin, int n_bins, const ColorList& colors, QHash<int, QColor>& map);
+		void create_colorstyle(ColorStyle& style, const ColorList& colors_active, int n_rects, int n_fading_steps);
+		void init();
 
-	QList< ColorStyle > _styles_spectrum;
-	QList< ColorStyle > _styles_level;
+		QList<ColorStyle> _styles_spectrum;
+		QList<ColorStyle> _styles_level;
 };
 
 #endif // ENGINECOLORSTYLECHOOSER_H

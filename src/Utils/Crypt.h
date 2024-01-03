@@ -1,6 +1,6 @@
 /* Crypt.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -30,11 +30,11 @@ namespace Util
 {
 	namespace Crypt
 	{
-		QString encrypt(const QString& src, const QByteArray& key=QByteArray());
-		QString encrypt(const QByteArray& src, const QByteArray& key=QByteArray());
+		QString encrypt(const QString& src, const QByteArray& key = QByteArray());
+		QString encrypt(const QByteArray& src, const QByteArray& key = QByteArray());
 
-		QString decrypt(const QString& src, const QByteArray& key=QByteArray());
-		QString decrypt(const QByteArray& src, const QByteArray& key=QByteArray());
+		QString decrypt(const QString& src, const QByteArray& key = QByteArray());
+		QString decrypt(const QByteArray& src, const QByteArray& key = QByteArray());
 	}
 }
 

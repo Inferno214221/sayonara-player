@@ -1,6 +1,6 @@
 /* PreferenceAction.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -36,7 +36,7 @@ namespace Gui
 	 * @ingroup Preferences
 	 */
 	class PreferenceAction :
-			public QAction
+		public QAction
 	{
 		Q_OBJECT
 		PIMPL(PreferenceAction)
@@ -46,12 +46,12 @@ namespace Gui
 			virtual ~PreferenceAction();
 
 			virtual QString label() const;
-			virtual QString identifier() const=0;
+			virtual QString identifier() const = 0;
 
 			virtual QPushButton* createButton(QWidget* parent);
 
 		protected:
-			virtual QString displayName() const=0;
+			virtual QString displayName() const = 0;
 			void language_changed();
 	};
 
@@ -140,7 +140,7 @@ namespace Gui
 	 * @ingroup Preferences
 	 */
 	class StreamRecorderPreferenceAction :
-			public PreferenceAction
+		public PreferenceAction
 	{
 		Q_OBJECT
 		public:
@@ -151,8 +151,8 @@ namespace Gui
 			QString identifier() const override;
 	};
 
-
-	class ShortcutPreferenceAction : public Gui::PreferenceAction
+	class ShortcutPreferenceAction :
+		public Gui::PreferenceAction
 	{
 		Q_OBJECT
 

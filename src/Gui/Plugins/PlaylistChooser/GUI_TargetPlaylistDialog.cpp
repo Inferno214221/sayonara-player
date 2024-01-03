@@ -1,6 +1,6 @@
 /* GUI_TargetPlaylistDialog.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -20,7 +20,6 @@
 
 #include "GUI_TargetPlaylistDialog.h"
 #include "Gui/Plugins/ui_GUI_TargetPlaylistDialog.h"
-
 
 #include "Utils/Language/Language.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -50,10 +49,11 @@ void GUI_TargetPlaylistDialog::languageChanged()
 void GUI_TargetPlaylistDialog::searchButtonClicked()
 {
 	QString filename = QFileDialog::getSaveFileName(this,
-		Lang::get(Lang::SaveAs), QDir::homePath(), "*.m3u"
+	                                                Lang::get(Lang::SaveAs), QDir::homePath(), "*.m3u"
 	);
 
-	if(!filename.endsWith("m3u", Qt::CaseInsensitive)) {
+	if(!filename.endsWith("m3u", Qt::CaseInsensitive))
+	{
 		filename.append(".m3u");
 	}
 
@@ -68,6 +68,6 @@ void GUI_TargetPlaylistDialog::okButtonClicked()
 	if(!targetPath.isEmpty())
 	{
 		emit sigTargetChosen(targetPath, checked);
-        close();
-    }
+		close();
+	}
 }

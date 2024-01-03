@@ -1,6 +1,6 @@
 /* Mergable.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -63,7 +63,7 @@ void MergeMenu::setData(const QMap<Id, QString>& data)
 		return;
 	}
 
-	for(Id key : data.keys())
+	for(Id key: data.keys())
 	{
 		QString val = data[key];
 
@@ -95,7 +95,7 @@ bool MergeMenu::isDataValid() const
 Library::MergeData MergeMenu::mergedata() const
 {
 	Util::Set<Id> sourceIds;
-	for(Id key : m->data.keys())
+	for(Id key: m->data.keys())
 	{
 		sourceIds << key;
 	}

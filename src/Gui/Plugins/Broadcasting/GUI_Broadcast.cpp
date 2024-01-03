@@ -1,6 +1,6 @@
 /* GUI_Broadcast.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -121,7 +121,7 @@ void GUI_Broadcast::initUi()
 	if(m->server)
 	{
 		const QStringList clients = m->server->connectedClients();
-		for(const QString& client : clients)
+		for(const QString& client: clients)
 		{
 			ui->combo_clients->addItem(client);
 		}

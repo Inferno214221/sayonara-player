@@ -1,6 +1,6 @@
 /* SoundcloudViews.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -28,7 +28,8 @@
 
 namespace SC
 {
-	class TrackView : public ::Library::TrackView
+	class TrackView :
+		public ::Library::TrackView
 	{
 		Q_OBJECT
 		public:
@@ -39,7 +40,8 @@ namespace SC
 			bool isMergeable() const override;
 	};
 
-	class AlbumView : public ::Library::AlbumView
+	class AlbumView :
+		public ::Library::AlbumView
 	{
 		Q_OBJECT
 		public:
@@ -50,7 +52,8 @@ namespace SC
 			bool isMergeable() const override;
 	};
 
-	class ArtistView : public ::Library::ArtistView
+	class ArtistView :
+		public ::Library::ArtistView
 	{
 		Q_OBJECT
 		signals:
@@ -60,7 +63,7 @@ namespace SC
 			using ::Library::ArtistView::ArtistView;
 			::Library::ContextMenu::Entries contextMenuEntries() const override;
 
-		// ItemView interface
+			// ItemView interface
 		protected:
 			void initContextMenu() override;
 			bool isMergeable() const override;

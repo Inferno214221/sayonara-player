@@ -1,6 +1,6 @@
 /* LineEdit.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -43,7 +43,7 @@ namespace Gui
 		PIMPL(LineEdit)
 
 		public:
-			LineEdit(QWidget* parent=nullptr);
+			LineEdit(QWidget* parent = nullptr);
 			~LineEdit() override;
 
 		private:

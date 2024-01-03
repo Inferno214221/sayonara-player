@@ -1,6 +1,6 @@
 /* ShortcutHandler.h */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -21,7 +21,6 @@
 #ifndef SHORTCUTHANDLER_H
 #define SHORTCUTHANDLER_H
 
-
 #include "ShortcutIdentifier.h"
 #include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
@@ -41,43 +40,43 @@ class ShortcutHandler :
 	public QObject
 {
 	Q_OBJECT
-	SINGLETON(ShortcutHandler)
+		SINGLETON(ShortcutHandler)
 	PIMPL(ShortcutHandler)
 
-	friend class Shortcut;
+		friend class Shortcut;
 
-ShortcutPrivate:
-	void qtShortcutsAdded(ShortcutIdentifier databaseKey, const QList<QShortcut*>& qtShortcuts);
+	ShortcutPrivate:
+		void qtShortcutsAdded(ShortcutIdentifier databaseKey, const QList<QShortcut*>& qtShortcuts);
 
-signals:
-	void sigShortcutChanged(ShortcutIdentifier databaseKey);
+	signals:
+		void sigShortcutChanged(ShortcutIdentifier databaseKey);
 
-public:
-	/**
-	 * @brief get a shortcut by its unique identifier
-	 * @param identifier the identifier which is used in database
-	 * @return a shortcut instance
-	 */
-	Shortcut shortcut(ShortcutIdentifier databaseKey) const;
+	public:
+		/**
+		 * @brief get a shortcut by its unique identifier
+		 * @param identifier the identifier which is used in database
+		 * @return a shortcut instance
+		 */
+		Shortcut shortcut(ShortcutIdentifier databaseKey) const;
 
-	/**
-	 * @brief set the shortcut by its unique identifier
-	 * @param identifier  the identifier which is used in database
-	 * @param shortcut a shortcut instance
-	 */
-	void setShortcut(ShortcutIdentifier databaseKey, const QStringList& shortcut);
+		/**
+		 * @brief set the shortcut by its unique identifier
+		 * @param identifier  the identifier which is used in database
+		 * @param shortcut a shortcut instance
+		 */
+		void setShortcut(ShortcutIdentifier databaseKey, const QStringList& shortcut);
 
-	/**
-	 * @brief get all shortcuts
-	 * @return
-	 */
-	QList<ShortcutIdentifier> allIdentifiers() const;
+		/**
+		 * @brief get all shortcuts
+		 * @return
+		 */
+		QList<ShortcutIdentifier> allIdentifiers() const;
 
-	QString databaseKey(ShortcutIdentifier id) const;
-	QString shortcut_text(ShortcutIdentifier id) const;
+		QString databaseKey(ShortcutIdentifier id) const;
+		QString shortcut_text(ShortcutIdentifier id) const;
 
-private slots:
-	void qtShortcutDestroyed();
+	private slots:
+		void qtShortcutDestroyed();
 };
 
 #endif // SHORTCUTHANDLER_H

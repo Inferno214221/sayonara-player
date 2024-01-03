@@ -1,5 +1,5 @@
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -46,7 +46,7 @@ namespace Util
 
 			~Tree()
 			{
-				for(auto* child : children)
+				for(auto* child: children)
 				{
 					delete child;
 					child = nullptr;
@@ -84,11 +84,12 @@ namespace Util
 			 */
 			Tree* removeChild(Tree* deletedNode)
 			{
-				auto it = std::find_if(children.begin(), children.end(), [&](const auto* node){
+				auto it = std::find_if(children.begin(), children.end(), [&](const auto* node) {
 					return (node == deletedNode);
 				});
 
-				if(it != children.end()) {
+				if(it != children.end())
+				{
 					auto* node = *it;
 					children.erase(it);
 					node->parent = nullptr;
@@ -104,7 +105,8 @@ namespace Util
 			 */
 			void sort(bool recursive)
 			{
-				if(children.isEmpty()) {
+				if(children.isEmpty())
+				{
 					return;
 				}
 
@@ -116,7 +118,7 @@ namespace Util
 
 				if(recursive)
 				{
-					for(auto* child : children)
+					for(auto* child: children)
 					{
 						child->sort(recursive);
 					}

@@ -1,6 +1,6 @@
 /* GUI_Bookmarks.cpp */
 
-/* Copyright (C) 2011-2020 Michael Lugmair (Lucio Carreras)
+/* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
  * This file is part of sayonara player
  *
@@ -121,7 +121,7 @@ void GUI_Bookmarks::bookmarksChanged()
 	disconnect(ui->cb_bookmarks, combo_current_index_changed_int, this, &GUI_Bookmarks::currentIndexChanged);
 
 	ui->cb_bookmarks->clear();
-	for(const auto& bookmark : bookmarks)
+	for(const auto& bookmark: bookmarks)
 	{
 		ui->cb_bookmarks->addItem(bookmark.name(), static_cast<int>(bookmark.timestamp()));
 	}
