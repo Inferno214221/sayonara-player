@@ -71,7 +71,7 @@ QString ConfigurePodcastDialog::labelText(const int i) const
 	switch(i)
 	{
 		case 0:
-			Lang::get(Lang::Name);
+			return Lang::get(Lang::Name);
 		case 1:
 			return "Url";
 		case 2:
