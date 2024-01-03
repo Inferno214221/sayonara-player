@@ -95,6 +95,7 @@ namespace
 		MetaData track;
 		track.setRadioStation(url, radioStation.name);
 		track.setFilepath(url);
+		track.setCoverDownloadUrls({radioStation.image});
 		return track;
 	}
 
