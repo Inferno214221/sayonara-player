@@ -20,14 +20,12 @@
 
 #include "GUI_Lyrics.h"
 #include "Gui/InfoDialog/ui_GUI_Lyrics.h"
-#include "Gui/Utils/Widgets/ProgressBar.h"
 
 #include "Components/Lyrics/Lyrics.h"
-
 #include "Gui/Utils/Widgets/Completer.h"
-
-#include "Utils/MetaData/MetaData.h"
+#include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Utils/Language/Language.h"
+#include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 
 #include <QWheelEvent>
@@ -41,21 +39,15 @@ struct GUI_Lyrics::Private
 	Lyrics::Lyrics* lyrics;
 	Gui::ProgressBar* loadingBar {nullptr};
 
-	Private(QObject* parent) :
+	explicit Private(QObject* parent) :
 		lyrics(new Lyrics::Lyrics(parent)) {}
 };
 
 GUI_Lyrics::GUI_Lyrics(QWidget* parent) :
-	Widget(parent)
-{
-	m = Pimpl::make<Private>(this);
-}
+	Widget(parent),
+	m {Pimpl::make<Private>(this)} {}
 
-GUI_Lyrics::~GUI_Lyrics()
-{
-	delete ui;
-	ui = nullptr;
-}
+GUI_Lyrics::~GUI_Lyrics() = default;
 
 void GUI_Lyrics::init()
 {
@@ -64,7 +56,7 @@ void GUI_Lyrics::init()
 		return;
 	}
 
-	ui = new Ui::GUI_Lyrics();
+	ui = std::make_shared<Ui::GUI_Lyrics>();
 	ui->setupUi(this);
 
 	ui->teLyrics->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -94,7 +86,7 @@ void GUI_Lyrics::init()
 	connect(ui->btnSwitch, &QPushButton::clicked, this, &GUI_Lyrics::switchPressed);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::sigClosed);
 	connect(ui->buttonBox, &QDialogButtonBox::rejected, this, &GUI_Lyrics::close);
-	connect(ui->sbZoom, spinbox_value_changed_int, this, [=](const auto percent) {
+	connect(ui->sbZoom, spinbox_value_changed_int, this, [this](const auto percent) {
 		zoom(percent);
 	});
 

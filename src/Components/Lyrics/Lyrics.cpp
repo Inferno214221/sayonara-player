@@ -64,7 +64,7 @@ namespace Lyrics
 {
 	struct Lyrics::Private
 	{
-		QStringList servers;
+		QStringList servers {::Lyrics::LookupThread().servers()};
 		MetaData track;
 		QString artist;
 		QString title;
@@ -73,9 +73,6 @@ namespace Lyrics
 		QString lyricTagContent;
 
 		bool isValid {false};
-
-		Private() :
-			servers(::Lyrics::LookupThread().servers()) {}
 	};
 
 	Lyrics::Lyrics(QObject* parent) :
@@ -119,10 +116,7 @@ namespace Lyrics
 		return m->isValid;
 	}
 
-	QStringList Lyrics::servers() const
-	{
-		return m->servers;
-	}
+	QStringList Lyrics::servers() const { return m->servers; }
 
 	void Lyrics::setMetadata(const MetaData& track)
 	{
@@ -139,20 +133,11 @@ namespace Lyrics
 		spLog(Log::Debug, this) << logString;
 	}
 
-	QString Lyrics::artist() const
-	{
-		return m->artist;
-	}
+	QString Lyrics::artist() const { return m->artist; }
 
-	QString Lyrics::title() const
-	{
-		return m->title;
-	}
+	QString Lyrics::title() const { return m->title; }
 
-	QString Lyrics::lyricHeader() const
-	{
-		return m->lyricHeader;
-	}
+	QString Lyrics::lyricHeader() const { return m->lyricHeader; }
 
 	QString Lyrics::localLyricHeader() const
 	{
@@ -161,10 +146,7 @@ namespace Lyrics
 			.arg(title());
 	}
 
-	QString Lyrics::lyrics() const
-	{
-		return m->lyrics.trimmed();
-	}
+	QString Lyrics::lyrics() const { return m->lyrics.trimmed(); }
 
 	QString Lyrics::localLyrics() const
 	{
@@ -173,24 +155,15 @@ namespace Lyrics
 		       : QString();
 	}
 
-	bool Lyrics::isLyricValid() const
-	{
-		return m->isValid;
-	}
+	bool Lyrics::isLyricValid() const { return m->isValid; }
 
-	bool Lyrics::isLyricTagAvailable() const
-	{
-		return (!m->lyricTagContent.isEmpty());
-	}
+	bool Lyrics::isLyricTagAvailable() const { return (!m->lyricTagContent.isEmpty()); }
 
-	bool Lyrics::isLyricTagSupported() const
-	{
-		return Tagging::isLyricsSupported(m->track.filepath());
-	}
+	bool Lyrics::isLyricTagSupported() const { return Tagging::isLyricsSupported(m->track.filepath()); }
 
 	void Lyrics::lyricsFetched()
 	{
-		auto* lyricThread = static_cast<::Lyrics::LookupThread*>(sender());
+		auto* lyricThread = dynamic_cast<::Lyrics::LookupThread*>(sender());
 
 		m->lyrics = lyricThread->lyricData();
 		m->lyricHeader = lyricThread->lyricHeader();

@@ -26,15 +26,11 @@
 
 UI_FWD(GUI_Lyrics)
 
-/**
- * @brief The GUI_Lyrics class
- * @ingroup InfoDialog
- */
 class GUI_Lyrics :
 	public Gui::Widget
 {
 	Q_OBJECT
-	UI_CLASS(GUI_Lyrics)
+	UI_CLASS_SHARED_PTR(GUI_Lyrics)
 	PIMPL(GUI_Lyrics)
 
 	public:

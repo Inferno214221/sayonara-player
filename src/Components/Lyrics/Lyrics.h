@@ -38,23 +38,23 @@ namespace Lyrics
 
 		public:
 			explicit Lyrics(QObject* parent = nullptr);
-			~Lyrics();
+			~Lyrics() override;
 
-			QStringList servers() const;
+			[[nodiscard]] QStringList servers() const;
 			void setMetadata(const MetaData& track);
 			bool fetchLyrics(const QString& artist, const QString& title, int serverIndex);
 			bool saveLyrics(const QString& plainText);
 
-			QString artist() const;
-			QString title() const;
-			QString lyricHeader() const;
-			QString localLyricHeader() const;
-			QString lyrics() const;
-			QString localLyrics() const;
+			[[nodiscard]] QString artist() const;
+			[[nodiscard]] QString title() const;
+			[[nodiscard]] QString lyricHeader() const;
+			[[nodiscard]] QString localLyricHeader() const;
+			[[nodiscard]] QString lyrics() const;
+			[[nodiscard]] QString localLyrics() const;
 
-			bool isLyricValid() const;
-			bool isLyricTagAvailable() const;
-			bool isLyricTagSupported() const;
+			[[nodiscard]]bool isLyricValid() const;
+			[[nodiscard]]bool isLyricTagAvailable() const;
+			[[nodiscard]]bool isLyricTagSupported() const;
 
 		private slots:
 			void lyricsFetched();
