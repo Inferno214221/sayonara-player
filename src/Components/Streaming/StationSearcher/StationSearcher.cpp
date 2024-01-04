@@ -34,8 +34,8 @@ namespace
 
 struct StationSearcher::Private
 {
+	QString searchString;
 	QList<RadioStation> foundStations;
-	QString searchstring;
 	int currentPageIndex {0};
 	int lastPageIndex {1};
 	StationSearcher::Mode mode {StationSearcher::NewSearch};
@@ -58,23 +58,11 @@ struct StationSearcher::Private
 			.arg(searchstring)
 			.arg(currentPageIndex);
 	}
-
-	void increasePage()
-	{
-		currentPageIndex += EntriesPerPage;
-	}
-
-	void decreasePage()
-	{
-		currentPageIndex = std::max(0, currentPageIndex - EntriesPerPage);
-	}
 };
 
 StationSearcher::StationSearcher(QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>();
-}
+	QObject {parent},
+	m {Pimpl::make<Private>()} {}
 
 StationSearcher::~StationSearcher() = default;
 
@@ -88,7 +76,7 @@ void StationSearcher::startCall()
 void StationSearcher::searchStyle(const QString& style)
 {
 	m->mode = StationSearcher::Style;
-	m->searchstring = style;
+	m->searchString = style;
 
 	startCall();
 }
@@ -98,14 +86,14 @@ void StationSearcher::searchStation(const QString& name)
 	m->mode = StationSearcher::NewSearch;
 	m->currentPageIndex = 0;
 	m->lastPageIndex = -1;
-	m->searchstring = name;
+	m->searchString = name;
 
 	startCall();
 }
 
 void StationSearcher::searchPrevious()
 {
-	m->decreasePage();
+	m->currentPageIndex -= EntriesPerPage;
 	m->mode = StationSearcher::Incremental;
 
 	startCall();
@@ -113,7 +101,7 @@ void StationSearcher::searchPrevious()
 
 void StationSearcher::searchNext()
 {
-	m->increasePage();
+	m->currentPageIndex += EntriesPerPage;
 	m->mode = StationSearcher::Incremental;
 
 	startCall();
@@ -125,20 +113,11 @@ bool StationSearcher::canSearchNext() const
 	       (m->currentPageIndex != m->lastPageIndex);
 }
 
-bool StationSearcher::canSearchPrevious() const
-{
-	return (m->currentPageIndex > 0);
-}
+bool StationSearcher::canSearchPrevious() const { return (m->currentPageIndex > 0); }
 
-StationSearcher::Mode StationSearcher::mode() const
-{
-	return m->mode;
-}
+StationSearcher::Mode StationSearcher::mode() const { return m->mode; }
 
-const QList<RadioStation>& StationSearcher::foundStations() const
-{
-	return m->foundStations;
-}
+const QList<RadioStation>& StationSearcher::foundStations() const { return m->foundStations; }
 
 void StationSearcher::searchFinished()
 {
@@ -148,7 +127,7 @@ void StationSearcher::searchFinished()
 	auto stations = parser.stations();
 	if(stations.isEmpty())
 	{
-		m->decreasePage();
+		m->currentPageIndex -= EntriesPerPage;
 		m->lastPageIndex = m->currentPageIndex;
 	}
 

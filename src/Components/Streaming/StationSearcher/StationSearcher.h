@@ -35,9 +35,6 @@ class StationSearcher :
 	signals:
 		void sigStationsFound();
 
-	private:
-		void startCall();
-
 	public:
 		enum Mode
 		{
@@ -46,21 +43,23 @@ class StationSearcher :
 			Style
 		};
 
-		StationSearcher(QObject* parent = nullptr);
-		~StationSearcher();
+		explicit StationSearcher(QObject* parent);
+		~StationSearcher() override;
 
 		void searchStyle(const QString& style);
 		void searchStation(const QString& name);
 		void searchPrevious();
 		void searchNext();
 
-		bool canSearchNext() const;
-		bool canSearchPrevious() const;
-		Mode mode() const;
+		[[nodiscard]] virtual bool canSearchNext() const;
+		[[nodiscard]] virtual bool canSearchPrevious() const;
+		[[nodiscard]] Mode mode() const;
+		[[nodiscard]] const QList<RadioStation>& foundStations() const;
 
 		const QList<RadioStation>& foundStations() const;
 
 	private slots:
+		void startCall();
 		void searchFinished();
 };
 
