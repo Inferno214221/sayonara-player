@@ -19,10 +19,11 @@
  */
 
 #include "GUI_Lyrics.h"
-#include "Gui/InfoDialog/ui_GUI_Lyrics.h"
+#include "Gui/Lyrics/ui_GUI_Lyrics.h"
 
 #include "Components/Lyrics/Lyrics.h"
 #include "Gui/Utils/Widgets/Completer.h"
+#include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"

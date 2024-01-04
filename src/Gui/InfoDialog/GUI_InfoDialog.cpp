@@ -29,7 +29,7 @@
 #include "Components/MetaDataInfo/AlbumInfo.h"
 #include "Components/MetaDataInfo/ArtistInfo.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
-#include "Gui/InfoDialog/GUI_Lyrics.h"
+#include "Gui/Lyrics/GUI_Lyrics.h"
 #include "Gui/Tagging/GUI_TagEdit.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/GuiUtils.h"
