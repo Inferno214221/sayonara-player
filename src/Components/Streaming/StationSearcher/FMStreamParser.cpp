@@ -182,10 +182,6 @@ namespace
 			index = re.indexIn(text, index + 8); // NOLINT(readability-magic-numbers)
 		}
 
-		Util::Algorithm::sort(stations, [](const auto& s1, const auto& s2) {
-			return (s1.name < s2.name);
-		});
-
 		return stations;
 	}
 } // namespace
