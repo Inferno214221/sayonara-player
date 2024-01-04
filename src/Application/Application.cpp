@@ -59,6 +59,7 @@
 #include "Gui/History/HistoryContainer.h"
 #include "Gui/Library/EmptyLibraryContainer.h"
 #include "Gui/Library/LocalLibraryContainer.h"
+#include "Gui/Lyrics/LyricsLibraryContainer.h"
 #include "Gui/Player/GUI_Player.h"
 #include "Gui/Plugins/AudioConverter/GUI_AudioConverter.h"
 #include "Gui/Plugins/Bookmarks/GUI_Bookmarks.h"
@@ -403,9 +404,12 @@ void Application::initLibraries()
 	                                              m->sessionManager,
 	                                              m->libraryPluginHandler);
 
+	auto* lyricsContainer = new LyricsLibraryContainer(m->playManager, m->libraryPluginHandler);
+
 	libraryContainers << static_cast<Library::LibraryContainer*>(somafmContainer);
 	libraryContainers << static_cast<Library::LibraryContainer*>(soundcloudContainer);
 	libraryContainers << static_cast<Library::LibraryContainer*>(historyContainer);
+	libraryContainers << static_cast<Library::LibraryContainer*>(lyricsContainer);
 
 	m->libraryPluginHandler->init(libraryContainers,
 	                              new EmptyLibraryContainer(m->libraryManager, m->libraryPluginHandler));
