@@ -61,6 +61,7 @@ class GUI_StationSearcher :
 		void stationsFetched();
 
 		void currentStationChanged();
+		void currentServiceChanged(const QString& service);
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		void listen(bool save);
@@ -69,7 +70,6 @@ class GUI_StationSearcher :
 		void clearStreams();
 		void changeMode(StationSearcher::Mode mode);
 		void setupCoverButton(const RadioStation& station);
-		void initLineEdit();
 
 };
 

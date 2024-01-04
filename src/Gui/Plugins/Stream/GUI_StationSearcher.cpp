@@ -24,6 +24,7 @@
 
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Streaming/StationSearcher/FMStreamSearcher.h"
+#include "Components/Streaming/StationSearcher/RadioBrowserSearcher.h"
 #include "Components/Streaming/StationSearcher/RadioStation.h"
 
 #include "Utils/Algorithm.h"
@@ -40,6 +41,7 @@
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
 #include "Gui/Utils/Widgets/HeaderView.h"
 
+#include <QComboBox>
 #include <QMenu>
 
 #include <optional>
@@ -59,17 +61,6 @@ namespace
 
 			label->setText(text);
 		}
-	}
-
-	void setPlaceholderText(QLineEdit* lineEdit, StationSearcher::Mode mode)
-	{
-		const auto placeholderSuffix = (mode == StationSearcher::ByStyle)
-		                               ? Lang::get(Lang::Genre)
-		                               : Lang::get(Lang::RadioStation);
-
-		lineEdit->setPlaceholderText(QString("%1: %2")
-			                             .arg(Lang::get(Lang::SearchVerb))
-			                             .arg(placeholderSuffix));
 	}
 
 	QString getUrlFromStation(const RadioStation& radioStation)
@@ -118,7 +109,39 @@ namespace
 		tableWidget->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 		tableWidget->setHorizontalHeader(new Gui::HeaderView(Qt::Orientation::Horizontal, tableWidget));
 		tableWidget->horizontalHeader()->setStretchLastSection(true);
+
 		tableWidget->setEnabled(false);
+	}
+
+	enum class ServiceProvider :
+		uint8_t
+	{
+		RadioBrowserInfo = 0U,
+		FMStreamOrg
+	};
+
+	void initServiceComboBox(QComboBox* comboBox)
+	{
+		comboBox->addItem("radio-browser.info", static_cast<int>(ServiceProvider::RadioBrowserInfo));
+		comboBox->addItem("fmstream.org", static_cast<int>(ServiceProvider::FMStreamOrg));
+
+		const auto index = comboBox->findText(GetSetting(Set::Stream_RadioSearcher));
+		comboBox->setCurrentIndex(std::max(index, 0));
+	}
+
+	StationSearcher::Mode getCurrentMode(QComboBox* comboBox)
+	{
+		return static_cast<StationSearcher::Mode>(comboBox->currentData().toInt());
+	};
+
+	void initTypeComboBox(QComboBox* comboBox)
+	{
+		comboBox->clear();
+		comboBox->addItem(Lang::get(Lang::Name), static_cast<int>(StationSearcher::Mode::ByName));
+		comboBox->addItem(Lang::get(Lang::Genre), static_cast<int>(StationSearcher::Mode::ByStyle));
+
+		const auto index = comboBox->findData(GetSetting(Set::Stream_RadioSearcherType));
+		comboBox->setCurrentIndex(std::max(index, 0));
 	}
 
 	void clearTableWidget(QTableWidget* tableWidget)
@@ -212,22 +235,16 @@ namespace
 		       ? std::optional {stations[row]}
 		       : std::nullopt;
 	}
-
 }
 
 struct GUI_StationSearcher::Private
 {
-	StationSearcher* searcher;
-	StationSearcher::Mode mode {StationSearcher::ByName};
-	QMenu* contextMenu = nullptr;
-
-	explicit Private(GUI_StationSearcher* parent) :
-		searcher(new FMStreamSearcher(parent)) {}
+	StationSearcher* searcher {nullptr};
 };
 
 GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	Gui::Dialog(parent),
-	m {Pimpl::make<Private>(this)},
+	m {Pimpl::make<Private>()},
 	ui {std::make_shared<Ui::GUI_StationSearcher>()}
 {
 	ui->setupUi(this);
@@ -236,15 +253,21 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	ui->btnSaveAndListen->setEnabled(false);
 	ui->pbProgress->setVisible(false);
 	ui->btnCover->setVisible(false);
-	ui->btnSearch->setEnabled(ui->leSearch->text().size() > 0);
-	ui->btnSearchNext->setVisible(m->searcher->canSearchNext());
-	ui->btnSearchPrev->setVisible(m->searcher->canSearchPrevious());
+	ui->btnSearch->setEnabled(false);
+	ui->btnSearchNext->setVisible(false);
+	ui->btnSearchPrev->setVisible(false);
+	ui->labLink->setOpenExternalLinks(true);
+	ui->leSearch->setPlaceholderText(QObject::tr("Search radio station"));
 
 	ui->splitter->setStretchFactor(0, 3);
 	ui->splitter->setStretchFactor(1, 1);
 
 	initTableWidget(ui->twStations);
 	initTableWidget(ui->twStreams);
+	initServiceComboBox(ui->comboService);
+	currentServiceChanged(ui->comboService->currentText());
+	initTypeComboBox(ui->comboType);
+	changeMode(getCurrentMode(ui->comboType));
 
 	connect(ui->btnListen, &QPushButton::clicked, this, &GUI_StationSearcher::listenClicked);
 	connect(ui->btnSaveAndListen, &QPushButton::clicked, this, &GUI_StationSearcher::saveAndListenClicked);
@@ -255,36 +278,13 @@ GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
 	connect(ui->btnSearchNext, &QPushButton::clicked, this, &GUI_StationSearcher::searchNextClicked);
 	connect(ui->btnSearchPrev, &QPushButton::clicked, this, &GUI_StationSearcher::searchPreviousClicked);
 	connect(ui->twStations, &QTableWidget::itemSelectionChanged, this, &GUI_StationSearcher::currentStationChanged);
-	connect(m->searcher, &StationSearcher::sigStationsFound, this, &GUI_StationSearcher::stationsFetched);
-
-	initLineEdit();
+	connect(ui->comboService, &QComboBox::currentTextChanged, this, &GUI_StationSearcher::currentServiceChanged);
+	connect(ui->comboType, combo_current_index_changed_int, this, [this](const auto& /*index*/) {
+		changeMode(static_cast<StationSearcher::Mode>(ui->comboType->currentData().toInt()));
+	});
 }
 
 GUI_StationSearcher::~GUI_StationSearcher() = default;
-
-void GUI_StationSearcher::initLineEdit()
-{
-	auto* cmf = new Gui::ContextMenuFilter(ui->leSearch);
-	m->contextMenu = new QMenu(ui->leSearch);
-
-	auto contextMenuCallback = [=](const auto& point, [[maybe_unused]] auto* action) {
-		m->contextMenu->exec(point);
-	};
-
-	connect(cmf, &Gui::ContextMenuFilter::sigContextMenu, this, contextMenuCallback);
-
-	auto* actionRadioStation = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
-	connect(actionRadioStation, &QAction::triggered, this, [&]() {
-		changeMode(StationSearcher::Mode::ByName);
-	});
-
-	auto* actionGenre = m->contextMenu->addAction(Lang::get(Lang::Genre));
-	connect(actionGenre, &QAction::triggered, this, [&]() {
-		changeMode(StationSearcher::Mode::ByStyle);
-	});
-
-	ui->leSearch->installEventFilter(cmf);
-}
 
 void GUI_StationSearcher::checkListenButtons()
 {
@@ -308,10 +308,9 @@ void GUI_StationSearcher::clearStreams()
 	ui->btnCover->setVisible(false);
 }
 
-void GUI_StationSearcher::changeMode(StationSearcher::Mode mode)
+void GUI_StationSearcher::changeMode(const StationSearcher::Mode mode)
 {
-	m->mode = mode;
-	setPlaceholderText(ui->leSearch, m->mode);
+	SetSetting(Set::Stream_RadioSearcherType, static_cast<int>(mode));
 }
 
 void GUI_StationSearcher::searchClicked()
@@ -321,7 +320,8 @@ void GUI_StationSearcher::searchClicked()
 
 	if(const auto text = ui->leSearch->text(); !text.isEmpty())
 	{
-		if(m->mode == StationSearcher::ByStyle)
+		const auto mode = getCurrentMode(ui->comboType);
+		if(mode == StationSearcher::ByStyle)
 		{
 			m->searcher->searchStyle(text);
 		}
@@ -359,14 +359,12 @@ void GUI_StationSearcher::stationsFetched()
 	ui->btnSearchPrev->setVisible(m->searcher->canSearchPrevious());
 
 	const auto& stations = m->searcher->foundStations();
-	if(stations.isEmpty())
+	if(!stations.isEmpty())
 	{
-		return;
+		setFromToLabel(ui->labFromTo, stations);
+		clearStations();
+		populateStationWidget(ui->twStations, stations);
 	}
-
-	setFromToLabel(ui->labFromTo, stations);
-	clearStations();
-	populateStationWidget(ui->twStations, stations);
 }
 
 void GUI_StationSearcher::listenClicked() { listen(false); }
@@ -389,18 +387,6 @@ void GUI_StationSearcher::searchTextChanged(const QString& text)
 	ui->btnSearch->setEnabled(!text.isEmpty());
 	ui->btnSearchNext->setVisible(false);
 	ui->btnSearchPrev->setVisible(false);
-
-	if(text.startsWith("s:") || text.startsWith("n:"))
-	{
-		changeMode(StationSearcher::ByName);
-		ui->leSearch->clear();
-	}
-
-	else if(text.startsWith("g:"))
-	{
-		changeMode(StationSearcher::ByStyle);
-		ui->leSearch->clear();
-	}
 }
 
 void GUI_StationSearcher::currentStationChanged()
@@ -415,6 +401,20 @@ void GUI_StationSearcher::currentStationChanged()
 	}
 
 	checkListenButtons();
+}
+
+void GUI_StationSearcher::currentServiceChanged(const QString& service)
+{
+	ui->labLink->setText(Util::createLink(QString("https://%1").arg(service)));
+	SetSetting(Set::Stream_RadioSearcher, service);
+
+	const auto serviceProvider = static_cast<ServiceProvider>(ui->comboService->currentData().toInt());
+
+	delete m->searcher;
+	m->searcher = (serviceProvider == ServiceProvider::FMStreamOrg)
+	              ? static_cast<StationSearcher*>(new FMStreamSearcher(nullptr))
+	              : static_cast<StationSearcher*>(new RadioBrowserSearcher(nullptr));
+	connect(m->searcher, &StationSearcher::sigStationsFound, this, &GUI_StationSearcher::stationsFetched);
 }
 
 void GUI_StationSearcher::setupCoverButton(const RadioStation& station)
@@ -444,6 +444,7 @@ void GUI_StationSearcher::showEvent(QShowEvent* e)
 	}
 
 	ui->leSearch->setFocus();
+	ui->labLink->setText(Util::createLink(QString("https://%1").arg(ui->comboService->currentText())));
 }
 
 void GUI_StationSearcher::closeEvent(QCloseEvent* e)
@@ -472,9 +473,13 @@ void GUI_StationSearcher::languageChanged()
 
 	ui->leSearch->setToolTip(tooltip);
 
-	setPlaceholderText(ui->leSearch, m->mode);
+	ui->leSearch->setPlaceholderText(QObject::tr("Search radio station"));
 	setFromToLabel(ui->labFromTo, m->searcher->foundStations());
 	ui->label->setText(Lang::get(Lang::SearchNoun) + ": " + Lang::get(Lang::RadioStation));
+
+	ui->comboType->blockSignals(true);
+	initTypeComboBox(ui->comboType);
+	ui->comboType->blockSignals(false);
 }
 
 void GUI_StationSearcher::skinChanged()
