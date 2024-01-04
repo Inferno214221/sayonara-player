@@ -28,7 +28,7 @@
 
 struct HistoryContainer::Private
 {
-	std::shared_ptr<GUI_History> widget = nullptr;
+	GUI_History* widget = nullptr;
 	LibraryPlaylistInteractor* libraryPlaylistInteractor;
 	Session::Manager* sessionManager;
 
@@ -48,7 +48,7 @@ QString HistoryContainer::name() const { return "history"; }
 
 QString HistoryContainer::displayName() const { return QObject::tr("History"); }
 
-QWidget* HistoryContainer::widget() const { return m->widget.get(); }
+QWidget* HistoryContainer::widget() const { return m->widget; }
 
 QFrame* HistoryContainer::header() const { return m->widget->header(); }
 
@@ -56,8 +56,7 @@ QIcon HistoryContainer::icon() const { return Gui::Icons::icon(Gui::Icons::Edit)
 
 void HistoryContainer::initUi()
 {
-	m->widget = std::make_shared<GUI_History>(m->libraryPlaylistInteractor,
-	                                          m->sessionManager);
+	m->widget = new GUI_History(m->libraryPlaylistInteractor, m->sessionManager);
 }
 
 void HistoryContainer::rename(const QString& /*newName*/) {}
