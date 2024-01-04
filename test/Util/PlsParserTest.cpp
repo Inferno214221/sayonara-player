@@ -59,7 +59,7 @@ namespace
 	}
 
 	class TagReaderMock :
-		public Tagging::TagReader
+		public Test::TagReaderMock
 	{
 		public:
 			~TagReaderMock() override = default;
@@ -68,12 +68,10 @@ namespace
 			{
 				return std::nullopt;
 			}
-
-			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
 	};
 
 	class VerboseTagReaderMock :
-		public Tagging::TagReader
+		public Test::TagReaderMock
 	{
 		public:
 			VerboseTagReaderMock(QString title, const MilliSeconds lengthMs) :
@@ -90,9 +88,7 @@ namespace
 
 				return track;
 			}
-
-			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
-
+			
 		private:
 			QString m_title;
 			MilliSeconds m_lengthMs {0};

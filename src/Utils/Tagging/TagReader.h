@@ -38,6 +38,10 @@ namespace Tagging
 
 			[[nodiscard]] virtual bool isCoverSupported(const QString& filepath) const = 0;
 
+			[[nodiscard]] virtual std::optional<QString> extractLyrics(const MetaData& track) const = 0;
+
+			[[nodiscard]] virtual bool isLyricsSupported(const QString& filepath) const = 0;
+
 			static std::shared_ptr<TagReader> create();
 	};
 

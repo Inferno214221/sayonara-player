@@ -21,6 +21,7 @@
 #include "TagWriter.h"
 #include "Tagging.h"
 #include "TaggingCover.h"
+#include "TaggingLyrics.h"
 
 #include "Utils/MetaData/MetaData.h"
 
@@ -48,6 +49,11 @@ namespace
 			bool writeCover(const QString& filepath, const QPixmap& cover) override
 			{
 				return Tagging::writeCover(filepath, cover);
+			}
+
+			bool writeLyrics(const MetaData& track, const QString& lyricsData) override
+			{
+				return Tagging::writeLyrics(track, lyricsData);
 			}
 
 	};

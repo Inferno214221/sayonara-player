@@ -22,6 +22,7 @@
 
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/FileSystemMock.h"
+#include "test/Common/TaggingMocks.h"
 
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/FileUtils.h"
@@ -72,7 +73,7 @@ class PlaylistFileTest :
 
 	private:
 		class TagReader :
-			public Tagging::TagReader
+			public Test::TagReaderMock
 		{
 			public:
 				explicit TagReader(Util::FileSystemPtr fileSystem) :
@@ -95,8 +96,6 @@ class PlaylistFileTest :
 
 					return {track};
 				}
-
-				[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
 
 			private:
 				Util::FileSystemPtr m_fileSystem;

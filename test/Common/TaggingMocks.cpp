@@ -47,6 +47,10 @@ namespace Test
 	}
 
 	bool TagReaderMock::isCoverSupported(const QString& /*filepath*/) const { return false; }
+	
+	bool TagReaderMock::isLyricsSupported(const QString& /*filepath*/) const { return false; }
+
+	std::optional<QString> TagReaderMock::extractLyrics(const MetaData& /*track*/) const { return std::nullopt; }
 
 	TagWriterMock::~TagWriterMock() = default;
 
@@ -61,6 +65,11 @@ namespace Test
 	}
 
 	bool TagWriterMock::writeCover(const QString& /*filepath*/, const QPixmap& /*cover*/)
+	{
+		return false;
+	}
+
+	bool TagWriterMock::writeLyrics(const MetaData& /*track*/, const QString& /*lyricsData*/)
 	{
 		return false;
 	}

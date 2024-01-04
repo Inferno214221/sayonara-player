@@ -20,6 +20,7 @@
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/TestTracks.h"
 #include "test/Common/FileSystemMock.h"
+#include "test/Common/TaggingMocks.h"
 
 #include "Utils/DirectoryReader.h"
 #include "Utils/FileUtils.h"
@@ -37,7 +38,7 @@
 namespace
 {
 	class TagReaderMock :
-		public Tagging::TagReader
+		public Test::TagReaderMock
 	{
 		public:
 			explicit TagReaderMock(Util::FileSystemPtr fileSystem) :
@@ -56,9 +57,7 @@ namespace
 
 				return std::nullopt;
 			}
-
-			[[nodiscard]] bool isCoverSupported(const QString& /*filepath*/) const override { return false; }
-
+			
 		private:
 			Util::FileSystemPtr m_fileSystem;
 

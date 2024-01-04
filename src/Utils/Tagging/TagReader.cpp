@@ -23,6 +23,7 @@
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingCover.h"
+#include "Utils/Tagging/TaggingLyrics.h"
 
 #include <QString>
 
@@ -44,6 +45,20 @@ namespace
 			[[nodiscard]] bool isCoverSupported(const QString& filepath) const override
 			{
 				return Tagging::isCoverSupported(filepath);
+			}
+
+			[[nodiscard]] std::optional<QString> extractLyrics(const MetaData& track) const override
+			{
+				auto lyricsData = QString {};
+				const auto success = Tagging::extractLyrics(track, lyricsData);
+				return success
+				       ? std::optional {lyricsData}
+				       : std::nullopt;
+			}
+
+			[[nodiscard]] bool isLyricsSupported(const QString& filepath) const override
+			{
+				return Tagging::isLyricsSupported(filepath);
 			}
 	};
 }
