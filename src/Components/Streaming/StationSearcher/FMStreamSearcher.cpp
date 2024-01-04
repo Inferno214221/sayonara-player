@@ -26,7 +26,7 @@
 QString FMStreamSearcher::buildUrl(const QString& searchtext, const StationSearcher::Mode mode, const int page,
                                    const int maxEntries) const
 {
-	if(mode == StationSearcher::Style)
+	if(mode == StationSearcher::ByStyle)
 	{
 		return QString("http://fmstream.org/index.php?style=%1")
 			.arg(searchtext);

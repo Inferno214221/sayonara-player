@@ -37,7 +37,7 @@ struct StationSearcher::Private
 	QList<RadioStation> foundStations;
 	int currentPageIndex {0};
 	int lastPageIndex {1};
-	StationSearcher::Mode mode {StationSearcher::NewSearch};
+	StationSearcher::Mode mode {StationSearcher::ByName};
 };
 
 StationSearcher::StationSearcher(QObject* parent) :
@@ -57,15 +57,15 @@ void StationSearcher::startCall()
 
 void StationSearcher::searchStyle(const QString& style)
 {
-	m->mode = StationSearcher::Style;
 	m->searchString = style;
+	m->mode = StationSearcher::ByStyle;
 
 	startCall();
 }
 
 void StationSearcher::searchStation(const QString& name)
 {
-	m->mode = StationSearcher::NewSearch;
+	m->mode = StationSearcher::ByName;
 	m->currentPageIndex = 0;
 	m->lastPageIndex = -1;
 	m->searchString = name;
@@ -76,14 +76,12 @@ void StationSearcher::searchStation(const QString& name)
 void StationSearcher::searchPrevious()
 {
 	m->currentPageIndex--;
-	m->mode = StationSearcher::Incremental;
 	startCall();
 }
 
 void StationSearcher::searchNext()
 {
 	m->currentPageIndex++;
-	m->mode = StationSearcher::Incremental;
 	startCall();
 }
 

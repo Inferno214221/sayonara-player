@@ -63,7 +63,7 @@ namespace
 
 	void setPlaceholderText(QLineEdit* lineEdit, StationSearcher::Mode mode)
 	{
-		const auto placeholderSuffix = (mode == StationSearcher::Style)
+		const auto placeholderSuffix = (mode == StationSearcher::ByStyle)
 		                               ? Lang::get(Lang::Genre)
 		                               : Lang::get(Lang::RadioStation);
 
@@ -218,7 +218,7 @@ namespace
 struct GUI_StationSearcher::Private
 {
 	StationSearcher* searcher;
-	StationSearcher::Mode mode {StationSearcher::NewSearch};
+	StationSearcher::Mode mode {StationSearcher::ByName};
 	QMenu* contextMenu = nullptr;
 
 	explicit Private(GUI_StationSearcher* parent) :
@@ -275,12 +275,12 @@ void GUI_StationSearcher::initLineEdit()
 
 	auto* actionRadioStation = m->contextMenu->addAction(Lang::get(Lang::RadioStation));
 	connect(actionRadioStation, &QAction::triggered, this, [&]() {
-		changeMode(StationSearcher::Mode::NewSearch);
+		changeMode(StationSearcher::Mode::ByName);
 	});
 
 	auto* actionGenre = m->contextMenu->addAction(Lang::get(Lang::Genre));
 	connect(actionGenre, &QAction::triggered, this, [&]() {
-		changeMode(StationSearcher::Mode::Style);
+		changeMode(StationSearcher::Mode::ByStyle);
 	});
 
 	ui->leSearch->installEventFilter(cmf);
@@ -321,7 +321,7 @@ void GUI_StationSearcher::searchClicked()
 
 	if(const auto text = ui->leSearch->text(); !text.isEmpty())
 	{
-		if(m->mode == StationSearcher::Style)
+		if(m->mode == StationSearcher::ByStyle)
 		{
 			m->searcher->searchStyle(text);
 		}
@@ -392,13 +392,13 @@ void GUI_StationSearcher::searchTextChanged(const QString& text)
 
 	if(text.startsWith("s:") || text.startsWith("n:"))
 	{
-		changeMode(StationSearcher::NewSearch);
+		changeMode(StationSearcher::ByName);
 		ui->leSearch->clear();
 	}
 
 	else if(text.startsWith("g:"))
 	{
-		changeMode(StationSearcher::Style);
+		changeMode(StationSearcher::ByStyle);
 		ui->leSearch->clear();
 	}
 }

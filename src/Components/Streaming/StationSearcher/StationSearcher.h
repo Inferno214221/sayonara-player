@@ -47,9 +47,8 @@ class StationSearcher :
 	public:
 		enum Mode
 		{
-			NewSearch,
-			Incremental,
-			Style
+			ByName,
+			ByStyle
 		};
 
 		explicit StationSearcher(QObject* parent);
