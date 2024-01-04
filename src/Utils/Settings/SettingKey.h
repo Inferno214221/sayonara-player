@@ -203,6 +203,8 @@ enum class SettingKey :
 	Stream_SearchWindowSize,
 	Stream_ShowHistory,
 	Stream_UpdateMetadata,
+	Stream_RadioSearcher,
+	Stream_RadioSearcherType,
 	Num_Setting_Keys
 };
 
@@ -414,6 +416,8 @@ namespace Set
 	CreateSetting(Speed_ShowSteps, bool); // Show speed step buttons in speed plugin
 	CreateSetting(Speed_Step, int); // [0-100]
 	CreateSetting(Stream_NewTab, bool); // Open Streams in new tab
+	CreateSetting(Stream_RadioSearcher, QString); // Last radio searcher service
+	CreateSetting(Stream_RadioSearcherType, int); // 0 = by name, 1 = by genre
 	CreateSetting(Stream_SearchWindowSize, QSize); // Size of the stream search dialog
 	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
 	CreateSetting(Stream_UpdateMetadata, bool); // Update metadata (can be changed for each stream individually)

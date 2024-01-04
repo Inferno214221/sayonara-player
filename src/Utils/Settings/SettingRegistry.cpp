@@ -243,6 +243,8 @@ bool SettingRegistry::init()
 	registerSetting<Set::Stream_ShowHistory>("stream_show_history", true);
 	registerSetting<Set::Stream_SearchWindowSize>("stream_search_window_size", {});
 	registerSetting<Set::Stream_UpdateMetadata>("stream_update_metadata", true);
+	registerSetting<Set::Stream_RadioSearcher>("stream_radio_searcher", {});
+	registerSetting<Set::Stream_RadioSearcherType>("stream_radio_searcher_type", 0); // by name
 
 	registerSetting<Set::Lyrics_Server>("lyrics_server", {});
 	registerSetting<Set::Lyrics_Zoom>("lyrics_zoom", 100); // NOLINT(readability-magic-numbers)
