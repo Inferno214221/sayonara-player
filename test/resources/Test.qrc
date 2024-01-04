@@ -6,6 +6,7 @@
         <file>wavtest.wav</file>
         <file>logo.png</file>
         <file>fmstream.org.html</file>
+        <file>radio-browser.info.json</file>
         <file>star.png</file>
     </qresource>
 </RCC>
