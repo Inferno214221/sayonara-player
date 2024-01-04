@@ -267,7 +267,7 @@ void GUI_InfoDialog::initTagEdit()
 
 void GUI_InfoDialog::initLyrics()
 {
-	m->uiLyrics = new GUI_Lyrics(ui->tabLyrics);
+	m->uiLyrics = new GUI_Lyrics(true, ui->tabLyrics);
 
 	auto* lyricsLayout = ui->tabLyrics->layout();
 	lyricsLayout->addWidget(m->uiLyrics);

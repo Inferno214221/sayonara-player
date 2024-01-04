@@ -34,7 +34,7 @@ class GUI_Lyrics :
 	PIMPL(GUI_Lyrics)
 
 	public:
-		explicit GUI_Lyrics(QWidget* parent = nullptr);
+		GUI_Lyrics(bool isClosable, QWidget* parent);
 		~GUI_Lyrics() override;
 
 		void setTrack(const MetaData& track);

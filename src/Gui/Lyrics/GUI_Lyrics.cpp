@@ -39,14 +39,16 @@ struct GUI_Lyrics::Private
 {
 	Lyrics::Lyrics* lyrics;
 	Gui::ProgressBar* loadingBar {nullptr};
+	bool isCloseable {true};
 
-	explicit Private(QObject* parent) :
-		lyrics(new Lyrics::Lyrics(parent)) {}
+	Private(const bool isCloseable, QObject* parent) :
+		lyrics(new Lyrics::Lyrics(parent)),
+		isCloseable {isCloseable} {}
 };
 
-GUI_Lyrics::GUI_Lyrics(QWidget* parent) :
+GUI_Lyrics::GUI_Lyrics(const bool isCloseable, QWidget* parent) :
 	Widget(parent),
-	m {Pimpl::make<Private>(this)} {}
+	m {Pimpl::make<Private>(isCloseable, this)} {}
 
 GUI_Lyrics::~GUI_Lyrics() = default;
 
@@ -60,6 +62,7 @@ void GUI_Lyrics::init()
 	ui = std::make_shared<Ui::GUI_Lyrics>();
 	ui->setupUi(this);
 
+	ui->buttonBox->setVisible(m->isCloseable);
 	ui->teLyrics->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui->teLyrics->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
