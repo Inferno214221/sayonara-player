@@ -26,6 +26,15 @@
 #include <QObject>
 
 struct RadioStation;
+
+class StationParser
+{
+	public:
+		virtual ~StationParser();
+
+		[[nodiscard]] virtual QList<RadioStation> parse(const QByteArray& data) const = 0;
+};
+
 class StationSearcher :
 	public QObject
 {
@@ -59,6 +68,8 @@ class StationSearcher :
 	protected:
 		[[nodiscard]] virtual QString
 		buildUrl(const QString& searchtext, Mode mode, int page, int maxEntries) const = 0;
+
+		[[nodiscard]] virtual std::unique_ptr<StationParser> createStationParser() = 0;
 
 	private slots:
 		void startCall();

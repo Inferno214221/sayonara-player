@@ -24,6 +24,7 @@
 #define FMSTREAMPARSER_H
 
 #include "RadioStation.h"
+#include "StationSearcher.h"
 #include "Utils/Pimpl.h"
 
 #include <QList>
@@ -31,25 +32,11 @@
 
 class QByteArray;
 
-class FMStreamParser
+class FMStreamParser :
+	public StationParser
 {
-	PIMPL(FMStreamParser)
-
 	public:
-
-		enum Encoding
-		{
-			Utf8 = 1,
-			Latin1 = 2,
-			Local8Bit = 3
-		};
-
-		using EncodingTuple = std::array<Encoding, 4>;
-
-		FMStreamParser(const QByteArray& data);
-		~FMStreamParser();
-
-		QList<RadioStation> stations() const;
+		[[nodiscard]] QList<RadioStation> parse(const QByteArray& data) const override;
 };
 
 #endif // FMSTREAMPARSER_H

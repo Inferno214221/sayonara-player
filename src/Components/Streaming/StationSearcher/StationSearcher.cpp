@@ -106,8 +106,8 @@ void StationSearcher::searchFinished()
 {
 	auto* webClient = dynamic_cast<WebClient*>(sender());
 
-	const auto parser = FMStreamParser(webClient->data());
-	auto stations = parser.stations();
+	const auto parser = createStationParser();
+	auto stations = parser->parse(webClient->data());
 	if(stations.isEmpty())
 	{
 		m->currentPageIndex -= EntriesPerPage;
@@ -123,3 +123,6 @@ void StationSearcher::searchFinished()
 
 	emit sigStationsFound();
 }
+
+StationParser::~StationParser() = default;
+

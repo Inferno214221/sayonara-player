@@ -55,8 +55,8 @@ class RadioStationParserTest :
 void RadioStationParserTest::test()
 {
 	const auto data = readHtmlFile();
-	const auto parser = FMStreamParser(data);
-	const auto stations = parser.stations();
+	const auto parser = FMStreamParser();
+	const auto stations = parser.parse(data);
 
 	QVERIFY(stations.count() == 4);
 

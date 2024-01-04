@@ -190,15 +190,9 @@ namespace
 	}
 } // namespace
 
-struct FMStreamParser::Private
-{
-	QList<RadioStation> stations;
-};
 
-FMStreamParser::FMStreamParser(const QByteArray& data)
+QList<RadioStation> FMStreamParser::parse(const QByteArray& data) const
 {
-	m = Pimpl::make<Private>();
-
 	const auto text = QString::fromUtf8(data);
 	const auto streams = extractStreams(text);
 	auto stations = extractStations(text);
@@ -214,14 +208,9 @@ FMStreamParser::FMStreamParser(const QByteArray& data)
 		}
 	}
 
-	Util::Algorithm::copyIf(stations, m->stations, [](const auto& station) {
-		return (!station.streams.isEmpty());
+	Util::Algorithm::removeIf(stations, [](const auto& station) {
+		return station.streams.isEmpty();
 	});
-}
 
-FMStreamParser::~FMStreamParser() = default;
-
-QList<RadioStation> FMStreamParser::stations() const
-{
-	return m->stations;
+	return stations;
 }
