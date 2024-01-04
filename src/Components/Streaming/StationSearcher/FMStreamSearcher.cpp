@@ -24,7 +24,7 @@
 #include <QString>
 
 QString FMStreamSearcher::buildUrl(const QString& searchtext, const StationSearcher::Mode mode, const int page,
-                                   const int /*maxEntries*/) const
+                                   const int maxEntries) const
 {
 	if(mode == StationSearcher::Style)
 	{
@@ -40,7 +40,7 @@ QString FMStreamSearcher::buildUrl(const QString& searchtext, const StationSearc
 
 	return QString("http://fmstream.org/index.php?s=%1&n=%2")
 		.arg(searchtext)
-		.arg(page);
+		.arg(page * maxEntries);
 }
 
 std::unique_ptr<StationParser> FMStreamSearcher::createStationParser()

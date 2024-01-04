@@ -28,8 +28,7 @@
 
 namespace
 {
-	constexpr const auto EntriesPerPage = 200;
-	constexpr const auto MinimumEntrySize = 50;
+	constexpr const auto EntriesPerPage = 100;
 }
 
 struct StationSearcher::Private
@@ -76,23 +75,21 @@ void StationSearcher::searchStation(const QString& name)
 
 void StationSearcher::searchPrevious()
 {
-	m->currentPageIndex -= EntriesPerPage;
+	m->currentPageIndex--;
 	m->mode = StationSearcher::Incremental;
-
 	startCall();
 }
 
 void StationSearcher::searchNext()
 {
-	m->currentPageIndex += EntriesPerPage;
+	m->currentPageIndex++;
 	m->mode = StationSearcher::Incremental;
-
 	startCall();
 }
 
 bool StationSearcher::canSearchNext() const
 {
-	return (m->foundStations.size() > MinimumEntrySize) &&
+	return (m->foundStations.size() >= EntriesPerPage) &&
 	       (m->currentPageIndex != m->lastPageIndex);
 }
 
@@ -110,7 +107,7 @@ void StationSearcher::searchFinished()
 	auto stations = parser->parse(webClient->data());
 	if(stations.isEmpty())
 	{
-		m->currentPageIndex -= EntriesPerPage;
+		m->currentPageIndex--;
 		m->lastPageIndex = m->currentPageIndex;
 	}
 
