@@ -21,11 +21,13 @@
 #include "Lyrics.h"
 #include "LyricLookup.h"
 #include "Utils/MetaData/MetaData.h"
-#include "Utils/Tagging/TaggingLyrics.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QStringList>
 #include <QUrl>
+#include <utility>
 
 namespace
 {
@@ -64,6 +66,8 @@ namespace Lyrics
 {
 	struct Lyrics::Private
 	{
+		Tagging::TagReaderPtr tagReader;
+		Tagging::TagWriterPtr tagWriter;
 		QStringList servers {::Lyrics::LookupThread().servers()};
 		MetaData track;
 		QString artist;
@@ -73,11 +77,15 @@ namespace Lyrics
 		QString lyricTagContent;
 
 		bool isValid {false};
+
+		Private(Tagging::TagReaderPtr tagReader, Tagging::TagWriterPtr tagWriter) :
+			tagReader {std::move(tagReader)},
+			tagWriter {std::move(tagWriter)} {}
 	};
 
-	Lyrics::Lyrics(QObject* parent) :
+	Lyrics::Lyrics(const Tagging::TagReaderPtr& tagReader, const Tagging::TagWriterPtr& tagWriter, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<Private>()} {}
+		m {Pimpl::make<Private>(tagReader, tagWriter)} {}
 
 	Lyrics::~Lyrics() = default;
 
@@ -107,7 +115,7 @@ namespace Lyrics
 			return false;
 		}
 
-		m->isValid = Tagging::writeLyrics(m->track, plainText);
+		m->isValid = m->tagWriter->writeLyrics(m->track, plainText);
 		if(m->isValid)
 		{
 			m->lyricTagContent = plainText;
@@ -125,12 +133,17 @@ namespace Lyrics
 		m->title = title;
 		m->track = track;
 
-		const auto hasLyrics = Tagging::extractLyrics(track, m->lyricTagContent);
-		const auto logString = (hasLyrics)
-		                       ? QString("Could not find lyrics in %1").arg(track.filepath())
-		                       : QString("Lyrics found in %1").arg(track.filepath());
+		if(const auto maybeLyrics = m->tagReader->extractLyrics(track); maybeLyrics.has_value())
+		{
+			m->lyricTagContent = maybeLyrics.value();
+			spLog(Log::Debug, this) << QString("Lyrics found in %1").arg(track.filepath());
+		}
 
-		spLog(Log::Debug, this) << logString;
+		else
+		{
+			m->lyricTagContent.clear();
+			spLog(Log::Debug, this) << QString("Could not find lyrics in %1").arg(track.filepath());
+		}
 	}
 
 	QString Lyrics::artist() const { return m->artist; }
@@ -159,7 +172,7 @@ namespace Lyrics
 
 	bool Lyrics::isLyricTagAvailable() const { return (!m->lyricTagContent.isEmpty()); }
 
-	bool Lyrics::isLyricTagSupported() const { return Tagging::isLyricsSupported(m->track.filepath()); }
+	bool Lyrics::isLyricTagSupported() const { return m->tagReader->isLyricsSupported(m->track.filepath()); }
 
 	void Lyrics::lyricsFetched()
 	{

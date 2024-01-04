@@ -25,6 +25,12 @@
 
 #include <QObject>
 
+namespace Tagging
+{
+	class TagReader;
+	class TagWriter;
+}
+
 namespace Lyrics
 {
 	class Lyrics :
@@ -37,7 +43,9 @@ namespace Lyrics
 			void sigLyricsFetched();
 
 		public:
-			explicit Lyrics(QObject* parent = nullptr);
+			Lyrics(const std::shared_ptr<Tagging::TagReader>& tagReader,
+			       const std::shared_ptr<Tagging::TagWriter>& tagWriter,
+			       QObject* parent = nullptr);
 			~Lyrics() override;
 
 			[[nodiscard]] QStringList servers() const;

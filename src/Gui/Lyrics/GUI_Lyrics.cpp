@@ -28,6 +28,8 @@
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Tagging/TagReader.h"
+#include "Utils/Tagging/TagWriter.h"
 
 #include <QWheelEvent>
 #include <QShowEvent>
@@ -53,7 +55,7 @@ struct GUI_Lyrics::Private
 	bool isCloseable {true};
 
 	Private(const bool isCloseable, QObject* parent) :
-		lyrics(new Lyrics::Lyrics(parent)),
+		lyrics(new Lyrics::Lyrics(Tagging::TagReader::create(), Tagging::TagWriter::create(), parent)),
 		isCloseable {isCloseable} {}
 };
 

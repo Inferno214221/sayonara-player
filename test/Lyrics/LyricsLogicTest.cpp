@@ -18,6 +18,7 @@
  */
 
 #include "test/Common/SayonaraTest.h"
+#include "test/Common/TaggingMocks.h"
 
 #include "Components/Lyrics/Lyrics.h"
 #include "Utils/MetaData/MetaData.h"
@@ -28,6 +29,38 @@
 
 namespace
 {
+	struct Result
+	{
+		QString artist;
+		QString title;
+	};
+
+	class LyricsTagReaderWriter :
+		public Test::TagReaderMock,
+		public Test::TagWriterMock
+	{
+		public:
+			void setLyrics(const QString& lyrics)
+			{
+				m_lyrics = lyrics;
+			}
+
+			[[nodiscard]] bool isLyricsSupported(const QString& /*filepath*/) const override
+			{
+				return !m_lyrics.isEmpty();
+			}
+
+			[[nodiscard]] std::optional<QString> extractLyrics(const MetaData& /*track*/) const override
+			{
+				return m_lyrics.isEmpty()
+				       ? std::nullopt
+				       : std::optional {m_lyrics};
+			}
+
+		private:
+			QString m_lyrics;
+	};
+
 	MetaData
 	createStandardTrack(const QString& artist, const QString& album, const QString& albumArtist, const QString& title)
 	{
@@ -65,58 +98,110 @@ class LyricsLogicTest :
 			Test::Base("LyricsLogicTest") {}
 
 	private slots:
-		void testStandardTrack();
-		void testRadio();
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testLyricsIsAlwaysInvalidIfNoThreadWasStarted()
+		{
+			struct TestCase
+			{
+				QString lyrics;
+				bool expectedSupport;
+			};
+
+			const auto testCases = std::array {
+				TestCase {{}, false},
+				TestCase {{"lalalala"}, true},
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto tagAccessor = std::make_shared<LyricsTagReaderWriter>();
+				tagAccessor->setLyrics(testCase.lyrics);
+
+				auto lyrics = Lyrics::Lyrics(tagAccessor, tagAccessor);
+				lyrics.setMetadata(MetaData {"/path/to/file.mp3"});
+				QVERIFY(lyrics.isLyricValid() == false);
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testFetchesLyricsCorrectly()
+		{
+			struct TestCase
+			{
+				QString lyrics;
+				bool expectedSupport;
+			};
+
+			const auto testCases = std::array {
+				TestCase {{}, false},
+				TestCase {{"lalalala"}, true},
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto tagAccessor = std::make_shared<LyricsTagReaderWriter>();
+				tagAccessor->setLyrics(testCase.lyrics);
+
+				auto lyrics = Lyrics::Lyrics(tagAccessor, tagAccessor);
+				QVERIFY(lyrics.isLyricTagSupported() == testCase.expectedSupport);
+
+				lyrics.setMetadata(MetaData {"/path/to/file.mp3"});
+				QVERIFY(lyrics.lyrics().isEmpty());
+				QVERIFY(lyrics.localLyrics() == testCase.lyrics);
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testStandardTrack()
+		{
+			const auto artist = "Artist";
+			const auto album = "Album";
+			const auto albumArtist = "AlbumArtist";
+			const auto title = "Title";
+			const auto track = createStandardTrack(artist, album, albumArtist, title);
+
+			const auto tagAccessor = std::make_shared<LyricsTagReaderWriter>();
+			auto lyrics = Lyrics::Lyrics(tagAccessor, tagAccessor);
+			lyrics.setMetadata(track);
+
+			QVERIFY(lyrics.artist() == artist);
+			QVERIFY(lyrics.title() == title);
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testRadio()
+		{
+			const auto stationName = "My Radio";
+			const auto testCases = std::array {
+				std::pair {"", Result {"", stationName}},
+				std::pair {"Some Title", Result {"", "Some Title"}},
+				std::pair {"Metallica - Battery", Result {"Metallica", "Battery"}},
+				std::pair {"Metallica - Master of Puppets - Battery",
+				           Result {"Metallica", "Master of Puppets - Battery"}},
+				std::pair {"Metallica: Battery", Result {"Metallica", "Battery"}},
+				std::pair {"Metallica: Master of Puppets - Battery",
+				           Result {"Metallica", "Master of Puppets - Battery"}},
+				std::pair {"Metallica - Master of Puppets: Battery",
+				           Result {"Metallica - Master of Puppets", "Battery"}},
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto& title = testCase.first;
+				const auto& [expectedArtist, expectedTitle] = testCase.second;
+
+				const auto track = createRadioTrack("https://path-to-url.mp3", stationName, title);
+
+				const auto tagAccessor = std::make_shared<LyricsTagReaderWriter>();
+				auto lyrics = Lyrics::Lyrics(tagAccessor, tagAccessor);
+				lyrics.setMetadata(track);
+
+				QVERIFY(lyrics.artist() == expectedArtist);
+				QVERIFY(lyrics.title() == expectedTitle);
+			}
+		}
 };
-
-void LyricsLogicTest::testStandardTrack()
-{
-	const auto artist = "Artist";
-	const auto album = "Album";
-	const auto albumArtist = "AlbumArtist";
-	const auto title = "Title";
-	const auto track = createStandardTrack(artist, album, albumArtist, title);
-
-	auto lyrics = Lyrics::Lyrics();
-	lyrics.setMetadata(track);
-
-	QVERIFY(lyrics.artist() == artist);
-	QVERIFY(lyrics.title() == title);
-}
-
-struct Result
-{
-	QString artist;
-	QString title;
-};
-
-void LyricsLogicTest::testRadio()
-{
-	const auto stationName = "My Radio";
-	const auto testCases = std::array {
-		std::pair {"", Result {"", stationName}},
-		std::pair {"Some Title", Result {"", "Some Title"}},
-		std::pair {"Metallica - Battery", Result {"Metallica", "Battery"}},
-		std::pair {"Metallica - Master of Puppets - Battery", Result {"Metallica", "Master of Puppets - Battery"}},
-		std::pair {"Metallica: Battery", Result {"Metallica", "Battery"}},
-		std::pair {"Metallica: Master of Puppets - Battery", Result {"Metallica", "Master of Puppets - Battery"}},
-		std::pair {"Metallica - Master of Puppets: Battery", Result {"Metallica - Master of Puppets", "Battery"}},
-	};
-
-	for(const auto& testCase: testCases)
-	{
-		const auto& title = testCase.first;
-		const auto& [expectedArtist, expectedTitle] = testCase.second;
-
-		const auto track = createRadioTrack("https://path-to-url.mp3", stationName, title);
-
-		auto lyrics = Lyrics::Lyrics();
-		lyrics.setMetadata(track);
-
-		QVERIFY(lyrics.artist() == expectedArtist);
-		QVERIFY(lyrics.title() == expectedTitle);
-	}
-}
 
 QTEST_GUILESS_MAIN(LyricsLogicTest)
 
