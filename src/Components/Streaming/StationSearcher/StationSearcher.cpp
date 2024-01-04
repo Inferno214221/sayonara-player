@@ -39,25 +39,6 @@ struct StationSearcher::Private
 	int currentPageIndex {0};
 	int lastPageIndex {1};
 	StationSearcher::Mode mode {StationSearcher::NewSearch};
-
-	[[nodiscard]] QString url() const
-	{
-		if(mode == StationSearcher::Style)
-		{
-			return QString("http://fmstream.org/index.php?style=%1")
-				.arg(searchstring);
-		}
-
-		if(currentPageIndex == 0)
-		{
-			return QString("http://fmstream.org/index.php?s=%1&cm=0")
-				.arg(searchstring);
-		}
-
-		return QString("http://fmstream.org/index.php?s=%1&n=%2")
-			.arg(searchstring)
-			.arg(currentPageIndex);
-	}
 };
 
 StationSearcher::StationSearcher(QObject* parent) :
@@ -68,9 +49,11 @@ StationSearcher::~StationSearcher() = default;
 
 void StationSearcher::startCall()
 {
+	const auto url = buildUrl(m->searchString, m->mode, m->currentPageIndex, EntriesPerPage);
+
 	auto* webClient = new WebClientImpl(this);
 	connect(webClient, &WebClient::sigFinished, this, &StationSearcher::searchFinished);
-	webClient->run(m->url());
+	webClient->run(url);
 }
 
 void StationSearcher::searchStyle(const QString& style)

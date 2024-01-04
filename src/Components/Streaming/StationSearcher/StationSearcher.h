@@ -56,7 +56,9 @@ class StationSearcher :
 		[[nodiscard]] Mode mode() const;
 		[[nodiscard]] const QList<RadioStation>& foundStations() const;
 
-		const QList<RadioStation>& foundStations() const;
+	protected:
+		[[nodiscard]] virtual QString
+		buildUrl(const QString& searchtext, Mode mode, int page, int maxEntries) const = 0;
 
 	private slots:
 		void startCall();

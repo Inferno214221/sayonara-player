@@ -23,7 +23,7 @@
 #include "Gui/Utils/Icons.h"
 
 #include "Components/Covers/CoverLocation.h"
-#include "Components/Streaming/StationSearcher/StationSearcher.h"
+#include "Components/Streaming/StationSearcher/FMStreamSearcher.h"
 #include "Components/Streaming/StationSearcher/RadioStation.h"
 
 #include "Utils/Algorithm.h"
@@ -222,7 +222,7 @@ struct GUI_StationSearcher::Private
 	QMenu* contextMenu = nullptr;
 
 	explicit Private(GUI_StationSearcher* parent) :
-		searcher(new StationSearcher(parent)) {}
+		searcher(new FMStreamSearcher(parent)) {}
 };
 
 GUI_StationSearcher::GUI_StationSearcher(QWidget* parent) :
