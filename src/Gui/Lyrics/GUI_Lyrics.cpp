@@ -35,6 +35,17 @@
 
 #include <cmath>
 
+namespace
+{
+	constexpr const auto SearchIcon = "🔍";
+	constexpr const auto SwitchIcon = "🔄";
+
+	QString fatMarkdown(const QString& str)
+	{
+		return "### " + str;
+	}
+}
+
 struct GUI_Lyrics::Private
 {
 	Lyrics::Lyrics* lyrics;
@@ -62,6 +73,9 @@ void GUI_Lyrics::init()
 	ui = std::make_shared<Ui::GUI_Lyrics>();
 	ui->setupUi(this);
 
+	ui->labHeader->setText(tr("No track loaded"));
+	ui->teLyrics->setEnabled(false);
+
 	ui->buttonBox->setVisible(m->isCloseable);
 	ui->teLyrics->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
 	ui->teLyrics->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
@@ -82,7 +96,6 @@ void GUI_Lyrics::init()
 
 	const auto zoomFactor = GetSetting(Set::Lyrics_Zoom);
 	ui->sbZoom->setValue(zoomFactor);
-
 	zoom(zoomFactor);
 
 	connect(ui->comboServers, combo_activated_int, this, &GUI_Lyrics::lyricServerChanged);
@@ -96,7 +109,11 @@ void GUI_Lyrics::init()
 
 	connect(ui->btnSaveLyrics, &QPushButton::clicked, this, &GUI_Lyrics::saveLyricsClicked);
 	connect(m->lyrics, &Lyrics::Lyrics::sigLyricsFetched, this, &GUI_Lyrics::lyricsFetched);
+	connect(ui->leArtist, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
+	connect(ui->leTitle, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
 
+	textChanged({});
+	languageChanged();
 	setupSources();
 	prepareLyrics();
 
@@ -130,6 +147,8 @@ void GUI_Lyrics::prepareLyrics()
 	}
 
 	ui->teLyrics->clear();
+	const auto message = tr("Looking for lyrics") + "...";
+	ui->teLyrics->setMarkdown(fatMarkdown(message));
 
 	const auto currentServerIndex = ui->comboServers->currentData().toInt();
 	if(currentServerIndex < 0)
@@ -153,13 +172,24 @@ void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool r
 {
 	if(ui)
 	{
-		if(rich)
+		if(m->lyrics->isLyricValid())
 		{
-			ui->teLyrics->setHtml(lyrics);
+			if(rich)
+			{
+				ui->teLyrics->setHtml(lyrics);
+			}
+			else
+			{
+				ui->teLyrics->setPlainText(lyrics);
+			}
 		}
 		else
 		{
-			ui->teLyrics->setPlainText(lyrics);
+			const auto message = tr("Sorry, could not find any lyrics for %1 by %2")
+				.arg(m->lyrics->title())
+				.arg(m->lyrics->artist());
+
+			ui->teLyrics->setMarkdown(fatMarkdown(message));
 		}
 
 		ui->labHeader->setText(header);
@@ -167,6 +197,7 @@ void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool r
 		ui->comboServers->setEnabled(true);
 		ui->btnSaveLyrics->setEnabled(m->lyrics->isLyricTagSupported());
 		m->loadingBar->setVisible(false);
+		ui->teLyrics->setEnabled(m->lyrics->isLyricValid());
 	}
 }
 
@@ -292,15 +323,21 @@ void GUI_Lyrics::setSaveButtonText()
 	}
 }
 
+void GUI_Lyrics::textChanged(const QString& /*text*/)
+{
+	const auto hasText = !ui->leArtist->text().isEmpty() && !ui->leTitle->text().isEmpty();
+	ui->btnSearch->setEnabled(hasText);
+	ui->btnSwitch->setEnabled(hasText);
+}
+
 void GUI_Lyrics::languageChanged()
 {
 	if(ui)
 	{
+		ui->btnSearch->setText(SearchIcon + Lang::get(Lang::SearchVerb));
+		ui->btnSwitch->setText(SwitchIcon + tr("Switch"));
 		ui->labArtist->setText(Lang::get(Lang::Artist));
 		ui->labTitle->setText(Lang::get(Lang::Title));
-		ui->labZoom->setText(Lang::get(Lang::Zoom));
-		ui->labSource->setText(tr("Source"));
-		ui->btnSearch->setText(Lang::get(Lang::SearchVerb));
 
 		setupSources();
 		setSaveButtonText();

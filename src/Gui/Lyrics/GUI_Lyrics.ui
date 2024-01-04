@@ -6,70 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>646</width>
-    <height>419</height>
+    <width>663</width>
+    <height>591</height>
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
    <property name="verticalSpacing">
     <number>10</number>
    </property>
-   <item row="5" column="0" colspan="2">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
+   <item row="1" column="0">
+    <widget class="QTextEdit" name="teLyrics"/>
    </item>
-   <item row="2" column="0" rowspan="2" colspan="2">
-    <layout class="QGridLayout" name="gridLayout_11">
-     <property name="horizontalSpacing">
-      <number>10</number>
-     </property>
-     <property name="verticalSpacing">
-      <number>6</number>
-     </property>
-     <item row="1" column="1">
-      <widget class="QLineEdit" name="leTitle"/>
-     </item>
-     <item row="0" column="2" rowspan="2">
-      <widget class="QPushButton" name="btnSwitch">
-       <property name="text">
-        <string>switch</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="1">
-      <widget class="QLineEdit" name="leArtist"/>
-     </item>
-     <item row="0" column="3" rowspan="2" colspan="3">
-      <widget class="Line" name="line_2">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="6">
-      <widget class="QLabel" name="labSource">
-       <property name="toolTip">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string notr="true">Source</string>
-       </property>
-      </widget>
-     </item>
-     <item row="1" column="0">
-      <widget class="QLabel" name="labTitle">
-       <property name="toolTip">
-        <string notr="true"/>
-       </property>
-       <property name="text">
-        <string notr="true">Title</string>
-       </property>
-      </widget>
-     </item>
-     <item row="0" column="7">
+   <item row="2" column="0">
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <item>
       <widget class="Gui::ComboBox" name="comboServers">
        <property name="sizePolicy">
         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Minimum">
@@ -85,17 +35,20 @@
        </property>
       </widget>
      </item>
-     <item row="1" column="6">
-      <widget class="QLabel" name="labZoom">
-       <property name="toolTip">
-        <string notr="true"/>
+     <item>
+      <spacer name="horizontalSpacer_2">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
        </property>
-       <property name="text">
-        <string>Zoom</string>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
        </property>
-      </widget>
+      </spacer>
      </item>
-     <item row="1" column="7">
+     <item>
       <widget class="QSpinBox" name="sbZoom">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -120,24 +73,63 @@
        </property>
       </widget>
      </item>
-     <item row="0" column="0">
-      <widget class="QLabel" name="labArtist">
-       <property name="toolTip">
-        <string notr="true"/>
+    </layout>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <property name="spacing">
+      <number>3</number>
+     </property>
+     <item row="1" column="3">
+      <widget class="QPushButton" name="btnSearch">
+       <property name="minimumSize">
+        <size>
+         <width>80</width>
+         <height>0</height>
+        </size>
        </property>
        <property name="text">
-        <string notr="true">Artist</string>
+        <string notr="true">🔍 search</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QLineEdit" name="leArtist"/>
+     </item>
+     <item row="1" column="1">
+      <widget class="QLineEdit" name="leTitle"/>
+     </item>
+     <item row="0" column="3">
+      <widget class="QPushButton" name="btnSwitch">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="toolTip">
+        <string>switch</string>
+       </property>
+       <property name="text">
+        <string notr="true">🔄 switch</string>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QLabel" name="labArtist">
+       <property name="text">
+        <string notr="true">artist</string>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QLabel" name="labTitle">
+       <property name="text">
+        <string notr="true">title</string>
        </property>
       </widget>
      </item>
     </layout>
-   </item>
-   <item row="7" column="0" colspan="2">
-    <widget class="QDialogButtonBox" name="buttonBox">
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Close</set>
-     </property>
-    </widget>
    </item>
    <item row="0" column="0" colspan="2">
     <widget class="QLabel" name="labHeader">
@@ -152,14 +144,18 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QTextEdit" name="teLyrics"/>
-   </item>
    <item row="4" column="0" colspan="2">
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="spacing">
       <number>8</number>
      </property>
+     <item>
+      <widget class="QPushButton" name="btnSaveLyrics">
+       <property name="text">
+        <string>Save Lyrics</string>
+       </property>
+      </widget>
+     </item>
      <item>
       <spacer name="horizontalSpacer">
        <property name="orientation">
@@ -174,26 +170,23 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="btnSaveLyrics">
-       <property name="text">
-        <string>Save Lyrics</string>
+      <widget class="QDialogButtonBox" name="buttonBox">
+       <property name="toolTip">
+        <string>Switch</string>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="btnSearch">
-       <property name="minimumSize">
-        <size>
-         <width>80</width>
-         <height>0</height>
-        </size>
-       </property>
-       <property name="text">
-        <string notr="true">Search</string>
+       <property name="standardButtons">
+        <set>QDialogButtonBox::Close</set>
        </property>
       </widget>
      </item>
     </layout>
+   </item>
+   <item row="5" column="0" colspan="2">
+    <widget class="Line" name="line">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

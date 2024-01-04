@@ -59,6 +59,7 @@ class GUI_Lyrics :
 		void switchPressed();
 		void prepareLyrics();
 		void saveLyricsClicked();
+		void textChanged(const QString& text);
 
 	protected:
 		void languageChanged() override;
