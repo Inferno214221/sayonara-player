@@ -1,4 +1,4 @@
-/* PopularimeterFrame.cpp */
+/* RtngFrame.cpp */
 
 /* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
@@ -19,35 +19,131 @@
  */
 
 #include "PopularimeterFrame.h"
+#include <QString>
+#include "Tagging/TaggingUtils.h"
 
 #include <optional>
 
-MP4::PopularimeterFrame::PopularimeterFrame(TagLib::MP4::Tag* tag) :
-	MP4::MP4Frame<Models::Popularimeter>(tag, "rtng") {}
-
-MP4::PopularimeterFrame::~PopularimeterFrame() = default;
-
-std::optional<Models::Popularimeter> MP4::PopularimeterFrame::mapItemToData(const TagLib::MP4::Item& item) const
+namespace
 {
-	auto popularimeter = Models::Popularimeter {};
-	const auto ratingByte = item.toByte();
-	if(ratingByte <= 5)
+
+	std::optional<Models::Popularimeter> parseRatingInt(const int i)
 	{
-		popularimeter.rating = static_cast<Rating>(ratingByte);
+		auto popularimeter = Models::Popularimeter {};
+		if(i == 0)
+		{
+			popularimeter.rating = Rating::Zero;
+		}
+		else if(i <= 5)
+		{
+			popularimeter.rating = static_cast<Rating>(i);
+		}
+		else if(i <= 10) // 6 - 10
+		{
+			popularimeter.rating = static_cast<Rating>(i / 2);
+		}
+		else
+		{
+			popularimeter.setRatingByte(static_cast<uchar>(i));
+		}
+
+		return {popularimeter};
 	}
 
-	else
+	std::optional<Models::Popularimeter> parseRatingString(const TagLib::String& str)
 	{
-		popularimeter.setRatingByte(ratingByte);
+		auto ok = false;
+		const auto i = str.toInt(&ok);
+		if(!ok)
+		{
+			return std::nullopt;
+		}
+
+		return parseRatingInt(i);
 	}
 
-	return std::optional(popularimeter);
+	std::optional<Models::Popularimeter> mapItemToData(const TagLib::MP4::Item& item)
+	{
+		TagLib::StringList strings;
+		const auto stringList = item.toStringList();
+		if(!stringList.isEmpty())
+		{
+			auto popularimeter = parseRatingString(stringList[0]);
+			if(popularimeter.has_value())
+			{
+				return popularimeter;
+			}
+		}
+
+		return {parseRatingInt(item.toInt())};
+	}
+
+	std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& popularimeter)
+	{
+		const auto i = static_cast<uchar>(popularimeter.ratingByte());
+		const auto item = TagLib::MP4::Item(TagLib::StringList {Tagging::convertString(QString::number(i))});
+		//const auto item = TagLib::MP4::Item(i);
+
+		return {item};
+	}
 }
 
-std::optional<TagLib::MP4::Item> MP4::PopularimeterFrame::mapDataToItem(const Models::Popularimeter& popularimeter)
+namespace MP4
 {
-	const auto byte = static_cast<uchar>(popularimeter.ratingByte());
-	const auto item = TagLib::MP4::Item(byte);
+	RtngFrame::RtngFrame(TagLib::MP4::Tag* tag) :
+		MP4::MP4Frame<Models::Popularimeter>(tag, "rtng") {}
 
-	return std::optional(item);
+	RtngFrame::~RtngFrame() = default;
+
+	std::optional<Models::Popularimeter> RtngFrame::mapItemToData(const TagLib::MP4::Item& item) const
+	{
+		auto popularimeter = Models::Popularimeter {};
+		const auto ratingByte = item.toByte();
+		if(ratingByte <= 5)
+		{
+			popularimeter.rating = static_cast<Rating>(ratingByte);
+		}
+
+		else
+		{
+			popularimeter.setRatingByte(ratingByte);
+		}
+
+		return {popularimeter};
+	}
+
+	std::optional<TagLib::MP4::Item> RtngFrame::mapDataToItem(const Models::Popularimeter& /*popularimeter*/)
+	{
+		return std::nullopt;
+	}
+
+	ITunesRatingFrame::ITunesRatingFrame(TagLib::MP4::Tag* tag) :
+		MP4::MP4Frame<Models::Popularimeter>(tag, "----:com.apple.iTunes:RATING") {}
+
+	ITunesRatingFrame::~ITunesRatingFrame() = default;
+
+	std::optional<Models::Popularimeter> ITunesRatingFrame::mapItemToData(const TagLib::MP4::Item& item) const
+	{
+		return ::mapItemToData(item);
+	}
+
+	std::optional<TagLib::MP4::Item> ITunesRatingFrame::mapDataToItem(const Models::Popularimeter& popularimeter)
+	{
+		return ::mapDataToItem(popularimeter);
+	}
+
+	MediaMonkeyRateFrame::MediaMonkeyRateFrame(TagLib::MP4::Tag* tag) :
+		MP4::MP4Frame<Models::Popularimeter>(tag, "rate") {}
+
+	MediaMonkeyRateFrame::~MediaMonkeyRateFrame() = default;
+
+	std::optional<Models::Popularimeter> MediaMonkeyRateFrame::mapItemToData(const TagLib::MP4::Item& item) const
+	{
+		return ::mapItemToData(item);
+	}
+
+	std::optional<TagLib::MP4::Item> MediaMonkeyRateFrame::mapDataToItem(const Models::Popularimeter& popularimeter)
+	{
+		return ::mapDataToItem(popularimeter);
+	}
 }

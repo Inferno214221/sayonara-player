@@ -28,15 +28,43 @@
 
 namespace MP4
 {
-	class PopularimeterFrame :
+	class RtngFrame :
 		public MP4::MP4Frame<Models::Popularimeter>
 	{
 		public:
-			PopularimeterFrame(TagLib::MP4::Tag* tag);
-			~PopularimeterFrame() override;
+			explicit RtngFrame(TagLib::MP4::Tag* tag);
+			~RtngFrame() override;
 
 		protected:
-			std::optional<Models::Popularimeter> mapItemToData(const TagLib::MP4::Item& item) const override;
+			[[nodiscard]] std::optional<Models::Popularimeter>
+			mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& model) override;
+	};
+
+	class ITunesRatingFrame :
+		public MP4::MP4Frame<Models::Popularimeter>
+	{
+		public:
+			explicit ITunesRatingFrame(TagLib::MP4::Tag* tag);
+			~ITunesRatingFrame() override;
+
+		protected:
+			[[nodiscard]] std::optional<Models::Popularimeter>
+			mapItemToData(const TagLib::MP4::Item& item) const override;
+			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& model) override;
+	};
+
+	// http://www.mediamonkey.com/wiki/index.php/WebHelp:About_Track_Properties/4.0
+	class MediaMonkeyRateFrame :
+		public MP4::MP4Frame<Models::Popularimeter>
+	{
+		public:
+			explicit MediaMonkeyRateFrame(TagLib::MP4::Tag* tag);
+			~MediaMonkeyRateFrame() override;
+
+		protected:
+			[[nodiscard]] std::optional<Models::Popularimeter>
+			mapItemToData(const TagLib::MP4::Item& item) const override;
 			std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& model) override;
 	};
 }

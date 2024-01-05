@@ -105,7 +105,17 @@ namespace Tagging
 
 		else if(parsedTag.type == Tagging::TagType::MP4)
 		{
-			tryToRead<MP4::PopularimeterFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter);
+			if(tryToRead<MP4::ITunesRatingFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter))
+			{
+				return;
+			}
+
+			if(tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter))
+			{
+				return;
+			}
+
+			tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter);
 		}
 	}
 
@@ -124,7 +134,8 @@ namespace Tagging
 
 		else if(parsedTag.type == Tagging::TagType::MP4)
 		{
-			tryToWrite<MP4::PopularimeterFrame>(parsedTag.mp4Tag(), popularimeter);
+			tryToWrite<MP4::ITunesRatingFrame>(parsedTag.mp4Tag(), popularimeter);
+			tryToWrite<MP4::MediaMonkeyRateFrame>(parsedTag.mp4Tag(), popularimeter);
 		}
 	}
 
