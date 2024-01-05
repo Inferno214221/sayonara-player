@@ -26,26 +26,80 @@
 
 namespace
 {
+	[[nodiscard]] int fourBytesToInteger(const int32_t fourBytes)
+	{
+		const auto chars = std::array {
+			(fourBytes >> 16) & 0xFF,
+			(fourBytes >> 8) & 0xFF,
+			(fourBytes & 0xFF)
+		};
+
+		auto str = QString {};
+		if(chars[0] != 0)
+		{
+			str.push_back(chars[0]);
+		}
+		str.push_back(chars[1]);
+		str.push_back(chars[2]);
+
+		return str.toInt();
+	}
+
+	[[nodiscard]] Rating byteToRating(const uchar byte)
+	{
+		if(byte == 0)
+		{
+			return Rating::Zero;
+		}
+		if(byte <= 20)
+		{
+			return Rating::One;
+		}
+
+		if(byte <= 40)
+		{
+			return Rating::Two;
+		}
+
+		if(byte <= 60)
+		{
+			return Rating::Three;
+		}
+
+		if(byte <= 80)
+		{
+			return Rating::Four;
+		}
+
+		return Rating::Five;
+	}
+
+	[[nodiscard]] int ratingToInt(const Rating rating)
+	{
+		switch(rating)
+		{
+			case Rating::Zero:
+				return 0;
+			case Rating::One:
+				return 20;
+			case Rating::Two:
+				return 40;
+			case Rating::Three:
+				return 60;
+			case Rating::Four:
+				return 80;
+			case Rating::Five:
+				return 100;
+			case Rating::Last:
+			default:
+				return 0;
+		}
+	}
 
 	std::optional<Models::Popularimeter> parseRatingInt(const int i)
 	{
 		auto popularimeter = Models::Popularimeter {};
-		if(i == 0)
-		{
-			popularimeter.rating = Rating::Zero;
-		}
-		else if(i <= 5)
-		{
-			popularimeter.rating = static_cast<Rating>(i);
-		}
-		else if(i <= 10) // 6 - 10
-		{
-			popularimeter.rating = static_cast<Rating>(i / 2);
-		}
-		else
-		{
-			popularimeter.setRatingByte(static_cast<uchar>(i));
-		}
+		popularimeter.rating = byteToRating(static_cast<uchar>(i));
 
 		return {popularimeter};
 	}
@@ -54,35 +108,33 @@ namespace
 	{
 		auto ok = false;
 		const auto i = str.toInt(&ok);
-		if(!ok)
-		{
-			return std::nullopt;
-		}
-
-		return parseRatingInt(i);
+		return ok
+		       ? parseRatingInt(i)
+		       : std::nullopt;
 	}
 
 	std::optional<Models::Popularimeter> mapItemToData(const TagLib::MP4::Item& item)
 	{
-		TagLib::StringList strings;
-		const auto stringList = item.toStringList();
-		if(!stringList.isEmpty())
+		if(const auto stringList = item.toStringList(); !stringList.isEmpty())
 		{
-			auto popularimeter = parseRatingString(stringList[0]);
+			const auto popularimeter = parseRatingString(stringList[0]);
 			if(popularimeter.has_value())
 			{
 				return popularimeter;
 			}
 		}
 
-		return {parseRatingInt(item.toInt())};
+		const auto value = item.toInt();
+		return (value > 100)
+		       ? parseRatingInt(fourBytesToInteger(value))
+		       : parseRatingInt(value);
 	}
 
 	std::optional<TagLib::MP4::Item> mapDataToItem(const Models::Popularimeter& popularimeter)
 	{
-		const auto i = static_cast<uchar>(popularimeter.ratingByte());
-		const auto item = TagLib::MP4::Item(TagLib::StringList {Tagging::convertString(QString::number(i))});
-		//const auto item = TagLib::MP4::Item(i);
+		const auto value = ratingToInt(popularimeter.rating);
+		const auto str = Tagging::convertString(QString::number(value));
+		const auto item = TagLib::MP4::Item(str);
 
 		return {item};
 	}
