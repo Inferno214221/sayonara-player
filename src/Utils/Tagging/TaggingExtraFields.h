@@ -32,7 +32,7 @@ namespace Models
 namespace Tagging
 {
 	template<typename FrameType, typename Model, typename Tag, typename ConversionFunction>
-	void tryToRead(Tag* tag, MetaData& track, ConversionFunction fn)
+	bool tryToRead(Tag* tag, MetaData& track, ConversionFunction fn)
 	{
 		if(tag)
 		{
@@ -42,8 +42,11 @@ namespace Tagging
 			if(success)
 			{
 				fn(track, model);
+				return true;
 			}
 		}
+		
+		return false;
 	}
 
 	template<typename FrameType, typename Tag, typename Model>

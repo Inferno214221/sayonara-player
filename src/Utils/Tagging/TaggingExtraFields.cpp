@@ -90,9 +90,17 @@ namespace Tagging
 
 		else if(parsedTag.type == Tagging::TagType::Xiph)
 		{
+			if(tryToRead<Xiph::FmpsUserRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter))
+			{
+				return;
+			}
+
+			if(tryToRead<Xiph::FmpsRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter))
+			{
+				return;
+			}
+
 			tryToRead<Xiph::RatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
-			tryToRead<Xiph::FmpsRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
-			tryToRead<Xiph::FmpsUserRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
 		}
 
 		else if(parsedTag.type == Tagging::TagType::MP4)
