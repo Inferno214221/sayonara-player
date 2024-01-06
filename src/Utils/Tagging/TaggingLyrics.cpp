@@ -33,46 +33,25 @@
 
 namespace
 {
-	QString readLyricsFromId3(const Tagging::ParsedTag& parsedTag)
+	template<typename Frame_t, typename Tag_t>
+	bool writeLyrics(Tag_t* tag, const QString& lyrics)
+	{
+		auto frame = Frame_t {tag};
+		return frame.write(lyrics);
+	}
+
+	template<typename Frame_t, typename Tag_t>
+	QString readLyrics(Tag_t* tag)
 	{
 		QString lyrics;
 
-		auto* id3v2 = parsedTag.id3Tag();
-		const auto lyricsFrame = ID3v2::LyricsFrame(id3v2);
-
+		const auto lyricsFrame = Frame_t {tag};
 		if(lyricsFrame.isFrameAvailable())
 		{
 			lyricsFrame.read(lyrics);
 		}
 
 		return lyrics;
-	}
-
-	QString readLyricsFromXiph(const Tagging::ParsedTag& parsedTag)
-	{
-		QString lyrics;
-
-		auto* xiph = parsedTag.xiphTag();
-		const auto lyricsFrame = Xiph::LyricsFrame(xiph);
-		lyricsFrame.read(lyrics);
-
-		return lyrics;
-	}
-
-	bool writeLyricsToId3(const Tagging::ParsedTag& parsedTag, const QString& lyrics)
-	{
-		auto* id3v2 = parsedTag.id3Tag();
-		auto lyricsFrame = ID3v2::LyricsFrame(id3v2);
-
-		return lyricsFrame.write(lyrics);
-	}
-
-	bool writeLyricsToXiph(const Tagging::ParsedTag& parsedTag, const QString& lyrics)
-	{
-		auto* xiph = parsedTag.xiphTag();
-		auto lyricsFrame = Xiph::LyricsFrame(xiph);
-
-		return lyricsFrame.write(lyrics);
 	}
 }
 
@@ -90,12 +69,12 @@ bool Tagging::writeLyrics(const MetaData& track, const QString& lyricsData)
 	const auto parsedTag = Tagging::getParsedTagFromFileRef(fileRef);
 	if((parsedTag.type == Tagging::TagType::ID3v2) && parsedTag.id3Tag())
 	{
-		success = writeLyricsToId3(parsedTag, lyricsData);
+		success = ::writeLyrics < ID3v2::LyricsFrame > (parsedTag.id3Tag(), lyricsData);
 	}
 
 	else if((parsedTag.type == Tagging::TagType::Xiph) && parsedTag.xiphTag())
 	{
-		success = writeLyricsToXiph(parsedTag, lyricsData);
+		success = ::writeLyrics < Xiph::LyricsFrame > (parsedTag.xiphTag(), lyricsData);
 	}
 
 	return (success)
@@ -118,12 +97,12 @@ bool Tagging::extractLyrics(const MetaData& track, QString& lyricsData)
 
 	if((parsedTag.type == Tagging::TagType::ID3v2) && parsedTag.id3Tag())
 	{
-		lyricsData = readLyricsFromId3(parsedTag);
+		lyricsData = ::readLyrics<ID3v2::LyricsFrame>(parsedTag.id3Tag());
 	}
 
 	else if((parsedTag.type == Tagging::TagType::Xiph) && parsedTag.xiphTag())
 	{
-		lyricsData = readLyricsFromXiph(parsedTag);
+		lyricsData = ::readLyrics<Xiph::LyricsFrame>(parsedTag.xiphTag());
 	}
 
 	return (!lyricsData.isEmpty());
