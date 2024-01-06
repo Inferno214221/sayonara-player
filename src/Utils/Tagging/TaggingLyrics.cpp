@@ -23,6 +23,7 @@
 #include "Tagging.h"
 #include "Tagging/ID3v2/Lyrics.h"
 #include "Tagging/Xiph/LyricsFrame.h"
+#include "Tagging/MP4/Lyrics.h"
 
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Logger/Logger.h"
@@ -77,6 +78,11 @@ bool Tagging::writeLyrics(const MetaData& track, const QString& lyricsData)
 		success = ::writeLyrics < Xiph::LyricsFrame > (parsedTag.xiphTag(), lyricsData);
 	}
 
+	else if((parsedTag.type == Tagging::TagType::MP4) && parsedTag.mp4Tag())
+	{
+		success = ::writeLyrics < MP4::Lyrics > (parsedTag.mp4Tag(), lyricsData);
+	}
+
 	return (success)
 	       ? fileRef.save()
 	       : false;
@@ -105,6 +111,11 @@ bool Tagging::extractLyrics(const MetaData& track, QString& lyricsData)
 		lyricsData = ::readLyrics<Xiph::LyricsFrame>(parsedTag.xiphTag());
 	}
 
+	else if((parsedTag.type == Tagging::TagType::MP4) && parsedTag.mp4Tag())
+	{
+		lyricsData = ::readLyrics<MP4::Lyrics>(parsedTag.mp4Tag());
+	}
+
 	return (!lyricsData.isEmpty());
 }
 
@@ -118,6 +129,7 @@ bool Tagging::isLyricsSupported(const QString& filepath)
 
 	const auto parsedTag = Tagging::getParsedTagFromFileRef(fileRef);
 	return ((parsedTag.type == Tagging::TagType::ID3v2) ||
-	        (parsedTag.type == Tagging::TagType::Xiph));
+	        (parsedTag.type == Tagging::TagType::Xiph) ||
+	        (parsedTag.type == Tagging::TagType::MP4));
 }
 

@@ -55,7 +55,8 @@ class LyricsTest :
 		{
 			const auto testCases = QStringList {
 				":/test/mp3test.mp3",
-				":/test/oggtest.ogg"
+				":/test/oggtest.ogg",
+				":/test/mp4test.mp4"
 			};
 
 			for(const auto& testCase: testCases)
