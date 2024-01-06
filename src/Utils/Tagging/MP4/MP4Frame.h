@@ -45,23 +45,6 @@ namespace MP4
 		protected Tagging::AbstractFrame<TagLib::MP4::Tag>
 	{
 		protected:
-			TagLib::MP4::ItemMap::ConstIterator findKey(const TagLib::MP4::ItemMap& itemMap) const
-			{
-				return std::find_if(itemMap.begin(), itemMap.end(), [&](const auto& itemList) {
-					const auto convertedString = Tagging::convertString(itemList.first);
-					return (convertedString.compare(key(), Qt::CaseInsensitive) == 0);
-				});
-			}
-
-			void eraseAllFromTag(TagLib::MP4::Tag* tag, const QString& key)
-			{
-				const auto taglibKey = Tagging::convertString(key);
-				while(tag->contains(taglibKey))
-				{
-					tag->removeItem(taglibKey);
-				}
-			}
-
 			virtual std::optional<Model_t> mapItemToData(const TagLib::MP4::Item& item) const = 0;
 			virtual std::optional<TagLib::MP4::Item> mapDataToItem(const Model_t& model) = 0;
 
@@ -73,19 +56,17 @@ namespace MP4
 
 			bool read(Model_t& data) const
 			{
-				if(!tag())
+				if(tag())
 				{
-					return false;
-				}
-
-				const auto& itemMap = tag()->itemMap();
-				const auto it = findKey(itemMap);
-				if(it != itemMap.end() && it->second.isValid())
-				{
-					const auto optionalData = mapItemToData(it->second);
-					if(optionalData.has_value())
+					if(const auto maybeData = findDataInItemMap(); maybeData.has_value())
 					{
-						data = optionalData.value();
+						data = maybeData.value();
+						return true;
+					}
+
+					if(const auto maybeData = findDataInPropertyMap(); maybeData.has_value())
+					{
+						data = maybeData.value();
 						return true;
 					}
 				}
@@ -115,6 +96,27 @@ namespace MP4
 			{
 				return MP4::isFrameAvailable(tag(), key(), propertyMapKey());
 			}
+
+		private:
+			std::optional<Model_t> findDataInItemMap() const
+			{
+				const auto& itemMap = tag()->itemMap();
+
+				if(const auto it = findKey(key(), itemMap); (it != itemMap.end() && it->second.isValid()))
+				{
+					const auto optionalData = mapItemToData(it->second);
+					if(optionalData.has_value())
+					{
+						return optionalData;
+					}
+				}
+
+				return std::nullopt;
+			}
+
+			virtual std::optional<Model_t> findDataInPropertyMap() const { return std::nullopt; };
+
+			[[nodiscard]] virtual QByteArray propertyMapKey() const { return {}; };
 	};
 }
 
