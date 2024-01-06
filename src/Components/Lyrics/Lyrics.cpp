@@ -75,9 +75,7 @@ namespace Lyrics
 		QString lyrics;
 		QString lyricHeader;
 		QString lyricTagContent;
-
-		bool isValid {false};
-
+		
 		Private(Tagging::TagReaderPtr tagReader, Tagging::TagWriterPtr tagWriter) :
 			tagReader {std::move(tagReader)},
 			tagWriter {std::move(tagWriter)} {}
@@ -115,13 +113,13 @@ namespace Lyrics
 			return false;
 		}
 
-		m->isValid = m->tagWriter->writeLyrics(m->track, plainText);
-		if(m->isValid)
+		const auto success = m->tagWriter->writeLyrics(m->track, plainText);
+		if(success)
 		{
 			m->lyricTagContent = plainText;
 		}
 
-		return m->isValid;
+		return success;
 	}
 
 	QStringList Lyrics::servers() const { return m->servers; }
@@ -168,8 +166,6 @@ namespace Lyrics
 		       : QString();
 	}
 
-	bool Lyrics::isLyricValid() const { return m->isValid; }
-
 	bool Lyrics::isLyricTagAvailable() const { return (!m->lyricTagContent.isEmpty()); }
 
 	bool Lyrics::isLyricTagSupported() const { return m->tagReader->isLyricsSupported(m->track.filepath()); }
@@ -178,9 +174,11 @@ namespace Lyrics
 	{
 		auto* lyricThread = dynamic_cast<::Lyrics::LookupThread*>(sender());
 
-		m->lyrics = lyricThread->lyricData();
+		m->lyrics = !lyricThread->hasError()
+		            ? lyricThread->lyricData().trimmed()
+		            : QString {};
+
 		m->lyricHeader = lyricThread->lyricHeader();
-		m->isValid = (!lyricThread->hasError());
 
 		lyricThread->deleteLater();
 

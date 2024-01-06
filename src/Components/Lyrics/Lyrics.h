@@ -60,7 +60,6 @@ namespace Lyrics
 			[[nodiscard]] QString lyrics() const;
 			[[nodiscard]] QString localLyrics() const;
 
-			[[nodiscard]]bool isLyricValid() const;
 			[[nodiscard]]bool isLyricTagAvailable() const;
 			[[nodiscard]]bool isLyricTagSupported() const;
 

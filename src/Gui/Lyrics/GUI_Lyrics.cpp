@@ -114,10 +114,22 @@ void GUI_Lyrics::init()
 	connect(ui->leArtist, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
 	connect(ui->leTitle, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
 
-	textChanged({});
+	textChanged(m->lyrics->lyrics());
 	languageChanged();
 	setupSources();
-	prepareLyrics();
+
+	if(!m->lyrics->localLyrics().isEmpty())
+	{
+		showLocalLyrics();
+	}
+	else if(!m->lyrics->lyrics().isEmpty())
+	{
+		lyricsFetched();
+	}
+	else
+	{
+		prepareLyrics();
+	}
 
 	new QShortcut(QKeySequence(QKeySequence::ZoomIn), this, SLOT(zoomIn()), nullptr, Qt::WidgetWithChildrenShortcut);
 	new QShortcut(QKeySequence(QKeySequence::ZoomOut), this, SLOT(zoomOut()), nullptr, Qt::WidgetWithChildrenShortcut);
@@ -170,11 +182,12 @@ void GUI_Lyrics::prepareLyrics()
 	}
 }
 
-void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool rich)
+void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, const bool rich)
 {
 	if(ui)
 	{
-		if(m->lyrics->isLyricValid())
+		const auto isValid = !lyrics.isEmpty();
+		if(isValid)
 		{
 			if(rich)
 			{
@@ -199,7 +212,7 @@ void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, bool r
 		ui->comboServers->setEnabled(true);
 		ui->btnSaveLyrics->setEnabled(m->lyrics->isLyricTagSupported());
 		m->loadingBar->setVisible(false);
-		ui->teLyrics->setEnabled(m->lyrics->isLyricValid());
+		ui->teLyrics->setEnabled(isValid);
 	}
 }
 

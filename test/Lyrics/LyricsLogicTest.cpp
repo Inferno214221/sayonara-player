@@ -100,31 +100,6 @@ class LyricsLogicTest :
 	private slots:
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-		[[maybe_unused]] void testLyricsIsAlwaysInvalidIfNoThreadWasStarted()
-		{
-			struct TestCase
-			{
-				QString lyrics;
-				bool expectedSupport;
-			};
-
-			const auto testCases = std::array {
-				TestCase {{}, false},
-				TestCase {{"lalalala"}, true},
-			};
-
-			for(const auto& testCase: testCases)
-			{
-				const auto tagAccessor = std::make_shared<LyricsTagReaderWriter>();
-				tagAccessor->setLyrics(testCase.lyrics);
-
-				auto lyrics = Lyrics::Lyrics(tagAccessor, tagAccessor);
-				lyrics.setMetadata(MetaData {"/path/to/file.mp3"});
-				QVERIFY(lyrics.isLyricValid() == false);
-			}
-		}
-
-		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 		[[maybe_unused]] void testFetchesLyricsCorrectly()
 		{
 			struct TestCase
