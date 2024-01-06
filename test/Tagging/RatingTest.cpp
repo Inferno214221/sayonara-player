@@ -18,62 +18,202 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <QTest>
-#include "AbstractTaggingTest.h"
-#include "Utils/Tagging/Tagging.h"
+#include "Common/SayonaraTest.h"
+
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/Tagging/MP4/PopularimeterFrame.h"
+#include "Utils/Tagging/Tagging.h"
+
+#include <taglib/fileref.h>
+
+namespace
+{
+	QString prepareFile(const QString& sourceFile, const QString& targetDir)
+	{
+		auto filename = QString {};
+		Util::File::copyFile(sourceFile, targetDir, filename);
+		QFile(filename).setPermissions(filename, static_cast<QFileDevice::Permission>(0x7777));
+
+		return filename;
+	}
+
+	template<typename FrameType>
+	void writeFile(const QString& filename, const Rating rating)
+	{
+		auto fileRef = TagLib::FileRef(TagLib::FileName(filename.toUtf8()));
+		QVERIFY(Tagging::isValidFile(fileRef));
+
+		const auto parsedTag = Tagging::getParsedTagFromFileRef(fileRef);
+		auto* tag = parsedTag.mp4Tag();
+
+		auto frame = FrameType(tag);
+		auto popularimeter = Models::Popularimeter({}, rating, 1);
+		frame.write(popularimeter);
+		QVERIFY(frame.isFrameAvailable());
+
+		const auto saved = fileRef.save();
+		QVERIFY(saved);
+	}
+
+	template<typename FrameType>
+	Rating readFile(const QString& filename)
+	{
+		auto fileRef = TagLib::FileRef(TagLib::FileName(filename.toUtf8()));
+		const auto parsedTag = Tagging::getParsedTagFromFileRef(fileRef);
+		auto* tag = parsedTag.mp4Tag();
+
+		auto frame = FrameType(tag);
+		auto popularimeter = Models::Popularimeter {};
+		frame.read(popularimeter);
+
+		return popularimeter.rating;
+	}
+}
 
 class RatingTest :
-	public AbstractTaggingTest
+	public Test::Base
 {
 	Q_OBJECT
 
 	public:
 		RatingTest() :
-			AbstractTaggingTest("RatingTest") {}
+			Test::Base("RatingTest") {}
 
 		~RatingTest() override = default;
 
-	private:
-		void runTest(const QString& filename) override;
-
 	private slots:
-		void id3Test();
-		void xiphTest();
+
+		void testWriteAndReadRatingWithFreshFile()
+		{
+			struct TestCase
+			{
+				QString sourceFile;
+				bool deleteFile {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {":/test/mp3test.mp3"},
+				TestCase {":/test/oggtest.ogg"},
+				TestCase {":/test/mp4test.mp4"}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				for(int i = 0; i <= 5; i++)
+				{
+					const auto filename = prepareFile(testCase.sourceFile, tempPath());
+
+					auto metadata = MetaData(filename);
+					auto metadataReloaded = MetaData(filename);
+
+					Tagging::Utils::getMetaDataOfFile(metadata);
+					QVERIFY(metadata.rating() == Rating::Zero);
+
+					const auto rating = static_cast<Rating>(i);
+					metadata.setRating(rating);
+					QVERIFY(metadata.rating() == rating);
+
+					Tagging::Utils::setMetaDataOfFile(metadata);
+					Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+
+					QVERIFY(metadataReloaded.rating() == rating);
+
+					Util::File::deleteFiles({filename});
+				}
+			}
+		}
+
+		void testWriteAndReadRatingWithUpdate()
+		{
+			struct TestCase
+			{
+				QString sourceFile;
+				bool deleteFile {false};
+			};
+
+			const auto testCases = std::array {
+				TestCase {":/test/mp3test.mp3"},
+				TestCase {":/test/oggtest.ogg"},
+				TestCase {":/test/mp4test.mp4"}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto filename = prepareFile(testCase.sourceFile, tempPath());
+				auto metadata = MetaData(filename);
+
+				for(int i = 0; i <= 5; i++)
+				{
+					auto metadataReloaded = MetaData(filename);
+
+					const auto rating = static_cast<Rating>(i);
+					metadata.setRating(rating);
+
+					Tagging::Utils::setMetaDataOfFile(metadata);
+					Tagging::Utils::getMetaDataOfFile(metadataReloaded);
+
+					QVERIFY(metadataReloaded.rating() == rating);
+				}
+
+				Util::File::deleteFiles({filename});
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testMediaMonkeyFrame()
+		{
+			runFrameTest<MP4::MediaMonkeyRateFrame>();
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testItunesFrame()
+		{
+			runFrameTest<MP4::ITunesRatingFrame>();
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testRead()
+		{
+			struct TestCase
+			{
+				QString sourceFile;
+				Rating expectedRating;
+			};
+
+			const auto testCases = std::array {
+				TestCase {":/test/out-mediamonkey2half.mp4", Rating::Three},
+				TestCase {":/test/out-mediamonkey4.mp4", Rating::Four},
+				TestCase {":/test/out-winamp2.mp4", Rating::Two},
+				TestCase {":/test/out-winamp4.mp4", Rating::Four},
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto filename = prepareFile(testCase.sourceFile, tempPath());
+				const auto rating = readFile<MP4::MediaMonkeyRateFrame>(filename);
+				QVERIFY(rating == testCase.expectedRating);
+			}
+		}
+
+	private:
+		template<typename FrameType>
+		void runFrameTest()
+		{
+			for(int i = 0; i <= 5; i++)
+			{
+				const auto filename = prepareFile(":/test/mp4test.mp4", tempPath());
+				const auto rating = static_cast<Rating>(i);
+
+				writeFile<FrameType>(filename, rating);
+
+				const auto receivedRating = readFile<FrameType>(filename);
+				QVERIFY(receivedRating == rating);
+
+				Util::File::deleteFiles({filename});
+			}
+		}
 };
-
-void RatingTest::runTest(const QString& filename)
-{
-	auto metadata = MetaData(filename);
-	auto metadataReloaded = MetaData(filename);
-
-	Tagging::Utils::getMetaDataOfFile(metadata);
-
-	metadata.setRating(Rating::Three);
-	Tagging::Utils::setMetaDataOfFile(metadata);
-	QVERIFY(metadata.rating() == Rating::Three);
-
-	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
-	QVERIFY(metadataReloaded.rating() == Rating::Three);
-
-	metadata.setRating(Rating::Zero);
-	Tagging::Utils::setMetaDataOfFile(metadata);
-	QVERIFY(metadata.rating() == Rating::Zero);
-
-	Tagging::Utils::getMetaDataOfFile(metadataReloaded);
-	QVERIFY(metadataReloaded.rating() == Rating::Zero);
-}
-
-void RatingTest::id3Test()
-{
-	AbstractTaggingTest::id3Test();
-}
-
-void RatingTest::xiphTest()
-{
-	AbstractTaggingTest::xiphTest();
-}
 
 QTEST_GUILESS_MAIN(RatingTest)
 

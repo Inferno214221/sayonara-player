@@ -4,6 +4,10 @@
         <file>oggtest.ogg</file>
         <file>mp4test.mp4</file>
         <file>emptyTestFile.mp3</file>
+        <file>out-mediamonkey2half.mp4</file>
+        <file>out-mediamonkey4.mp4</file>
+        <file>out-winamp4.mp4</file>
+        <file>out-winamp2.mp4</file>
         <file>wavtest.wav</file>
         <file>logo.png</file>
         <file>fmstream.org.html</file>
