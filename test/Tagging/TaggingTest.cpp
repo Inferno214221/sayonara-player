@@ -81,6 +81,7 @@ class TaggingTest :
 				TestCase {{":/test/oggtest.ogg", tempPath("sayonara-test.ogg")}, true},
 				TestCase {{":/test/wavtest.wav", tempPath("wavRiff.wav")}, false},
 				TestCase {{":/test/emptyTestFile.mp3", tempPath("emptyTestFile.mp3")}, true},
+				TestCase {{":/test/mp4test.mp4", tempPath("sayonara-test.mp4")}, true}
 			};
 
 			for(const auto& testCase: testCases)

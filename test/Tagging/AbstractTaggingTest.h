@@ -46,6 +46,7 @@ class AbstractTaggingTest :
 	protected slots:
 		void id3Test();
 		void xiphTest();
+		void mp4Test();
 };
 
 #endif // ABSTRACTTAGGINGTEST_H

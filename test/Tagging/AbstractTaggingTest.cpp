@@ -28,8 +28,7 @@
 #include <QTest>
 
 AbstractTaggingTest::AbstractTaggingTest(const QString& testname) :
-	Test::Base(testname)
-{}
+	Test::Base(testname) {}
 
 void AbstractTaggingTest::id3Test()
 {
@@ -43,6 +42,14 @@ void AbstractTaggingTest::xiphTest()
 {
 	mFilename = tempPath("sayonara-test.ogg");
 	mResourceFilename = ":/test/oggtest.ogg";
+
+	run();
+}
+
+void AbstractTaggingTest::mp4Test()
+{
+	mFilename = tempPath("sayonara-test.mp4");
+	mResourceFilename = ":/test/mp4test.mp4";
 
 	run();
 }
