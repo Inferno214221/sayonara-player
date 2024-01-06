@@ -36,6 +36,10 @@
 
 namespace MP4
 {
+	bool isFrameAvailable(TagLib::MP4::Tag* tag, const QByteArray& key, const QByteArray& propertyMapKey);
+	TagLib::MP4::ItemMap::ConstIterator findKey(const QByteArray& key, const TagLib::MP4::ItemMap& itemMap);
+	void eraseAllFromTag(TagLib::MP4::Tag* tag, const QString& key);
+
 	template<typename Model_t>
 	class MP4Frame :
 		protected Tagging::AbstractFrame<TagLib::MP4::Tag>
@@ -109,13 +113,7 @@ namespace MP4
 
 			[[nodiscard]] bool isFrameAvailable() const
 			{
-				if(!tag())
-				{
-					return false;
-				}
-
-				const auto& itemMap = tag()->itemMap();
-				return (findKey(itemMap) != itemMap.end());
+				return MP4::isFrameAvailable(tag(), key(), propertyMapKey());
 			}
 	};
 }
