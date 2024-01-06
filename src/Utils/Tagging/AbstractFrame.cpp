@@ -26,23 +26,17 @@
 
 struct Tagging::AbstractFrameHelper::Private
 {
-	QString key;
+	QByteArray key;
+
+	explicit Private(QByteArray key) :
+		key {std::move(key)} {}
 };
 
-Tagging::AbstractFrameHelper::AbstractFrameHelper(const QString& key)
-{
-	m = Pimpl::make<Private>();
-	m->key = key;
-}
+Tagging::AbstractFrameHelper::AbstractFrameHelper(const QByteArray& key) :
+	m {Pimpl::make<Private>(key)} {}
 
 Tagging::AbstractFrameHelper::~AbstractFrameHelper() = default;
 
-QString Tagging::AbstractFrameHelper::key() const
-{
-	return m->key;
-}
+QByteArray Tagging::AbstractFrameHelper::key() const { return m->key; }
 
-TagLib::String Tagging::AbstractFrameHelper::tagKey() const
-{
-	return convertString(m->key);
-}
+TagLib::ByteVector Tagging::AbstractFrameHelper::tagKey() const { return {m->key.constData()}; }

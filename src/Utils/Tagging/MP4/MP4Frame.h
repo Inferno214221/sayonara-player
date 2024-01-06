@@ -62,10 +62,10 @@ namespace MP4
 			virtual std::optional<TagLib::MP4::Item> mapDataToItem(const Model_t& model) = 0;
 
 		public:
-			MP4Frame(TagLib::MP4::Tag* tag, const QString& identifier) :
+			MP4Frame(TagLib::MP4::Tag* tag, const QByteArray& identifier) :
 				Tagging::AbstractFrame<TagLib::MP4::Tag>(tag, identifier) {}
 
-			virtual ~MP4Frame() = default;
+			~MP4Frame() override = default;
 
 			bool read(Model_t& data) const
 			{
@@ -107,7 +107,7 @@ namespace MP4
 				return item.has_value();
 			}
 
-			bool isFrameAvailable() const
+			[[nodiscard]] bool isFrameAvailable() const
 			{
 				if(!tag())
 				{

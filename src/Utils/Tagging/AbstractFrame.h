@@ -37,12 +37,12 @@ namespace Tagging
 	class AbstractFrameHelper
 	{
 		public:
-			explicit AbstractFrameHelper(const QString& key = QString());
+			explicit AbstractFrameHelper(const QByteArray& key = QByteArray());
 			virtual ~AbstractFrameHelper();
 
 		protected:
-			QString key() const;
-			TagLib::String tagKey() const;
+			[[nodiscard]] QByteArray key() const;
+			[[nodiscard]] TagLib::ByteVector tagKey() const;
 
 		private:
 		PIMPL(AbstractFrameHelper)
@@ -56,16 +56,13 @@ namespace Tagging
 			TagImpl* mTag {nullptr};
 
 		protected:
-			AbstractFrame(TagImpl* tag, const QString& key = QString()) :
+			explicit AbstractFrame(TagImpl* tag, const QByteArray& key = QByteArray()) :
 				AbstractFrameHelper(key),
 				mTag(tag) {}
 
-			virtual ~AbstractFrame() = default;
+			~AbstractFrame() override = default;
 
-			TagImpl* tag() const
-			{
-				return mTag;
-			}
+			TagImpl* tag() const { return mTag; }
 	};
 }
 #endif // SAYONARA_TAGGING_ABSTRACTFRAME_H
