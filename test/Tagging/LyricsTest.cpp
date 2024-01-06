@@ -18,61 +18,68 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test/Common/SayonaraTest.h"
+#include "Common/SayonaraTest.h"
 
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Tagging/TaggingLyrics.h"
 #include "Utils/FileUtils.h"
 #include "Utils/MetaData/MetaData.h"
-#include "AbstractTaggingTest.h"
+
+namespace
+{
+	QString prepareFile(const QString& sourceFile, const QString& targetDir)
+	{
+		auto filename = QString {};
+		Util::File::copyFile(sourceFile, targetDir, filename);
+		QFile(filename).setPermissions(filename, static_cast<QFileDevice::Permission>(0x7777));
+
+		return filename;
+	}
+}
 
 class LyricsTest :
-	public AbstractTaggingTest
+	public Test::Base
 {
 	Q_OBJECT
 
 	public:
 		LyricsTest() :
-			AbstractTaggingTest("LyricsTest") {}
+			Test::Base("LyricsTest") {}
 
 		~LyricsTest() override = default;
 
-	private:
-		void runTest(const QString& filename) override;
-
 	private slots:
-		void id3Test();
-		void xiphTest();
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testWriteAndReadLyrics()
+		{
+			const auto testCases = QStringList {
+				":/test/mp3test.mp3",
+				":/test/oggtest.ogg"
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto filename = prepareFile(testCase, tempPath());
+
+				const auto lyrics = QString::fromUtf8("Those are söme lyrics фыва");
+				auto metadata = MetaData(filename);
+				Tagging::Utils::getMetaDataOfFile(metadata);
+
+				const auto wroteLyrics = Tagging::writeLyrics(metadata, lyrics);
+				QVERIFY(wroteLyrics == true);
+
+				QString readLyrics;
+				const auto success = Tagging::extractLyrics(metadata, readLyrics);
+
+				QVERIFY(success == true);
+				QVERIFY(lyrics.compare(readLyrics) == 0);
+
+				Util::File::deleteFiles({filename});
+			}
+		}
 };
-
-void LyricsTest::runTest(const QString& filename)
-{
-	const auto lyrics = QString::fromUtf8("Those are söme lyrics фыва");
-	auto metadata = MetaData(filename);
-	Tagging::Utils::getMetaDataOfFile(metadata);
-
-	const auto wroteLyrics = Tagging::writeLyrics(metadata, lyrics);
-	QVERIFY(wroteLyrics == true);
-
-	QString readLyrics;
-	const auto success = Tagging::extractLyrics(metadata, readLyrics);
-
-	QVERIFY(success == true);
-	QVERIFY(lyrics.compare(readLyrics) == 0);
-}
-
-void LyricsTest::id3Test()
-{
-	AbstractTaggingTest::id3Test();
-}
-
-void LyricsTest::xiphTest()
-{
-	AbstractTaggingTest::xiphTest();
-}
 
 QTEST_GUILESS_MAIN(LyricsTest)
 
 #include "LyricsTest.moc"
-
-
