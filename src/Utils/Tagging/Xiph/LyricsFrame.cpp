@@ -22,8 +22,13 @@
 
 #include <optional>
 
+namespace
+{
+	constexpr const auto* Identifier = "LYRICS";
+}
+
 Xiph::LyricsFrame::LyricsFrame(TagLib::Ogg::XiphComment* tag) :
-	Xiph::XiphFrame<QString>(tag, "LYRICS") {}
+	Xiph::XiphFrame<QString>(tag, Identifier) {}
 
 std::optional<QString> Xiph::LyricsFrame::mapTagToData() const
 {
@@ -37,6 +42,11 @@ std::optional<QString> Xiph::LyricsFrame::mapTagToData() const
 void Xiph::LyricsFrame::mapDataToTag(const QString& lyrics)
 {
 	setStringData(lyrics);
+}
+
+bool Xiph::LyricsFrame::isFrameAvailable() const
+{
+	return (!tagKey().isEmpty() && tag()->contains(Identifier));
 }
 
 Xiph::LyricsFrame::~LyricsFrame() = default;

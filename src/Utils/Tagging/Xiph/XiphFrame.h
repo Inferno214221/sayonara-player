@@ -107,9 +107,10 @@ namespace Xiph
 				return true;
 			}
 
-			virtual bool isFrameAvailable() const
+			[[nodiscard]] virtual bool isFrameAvailable() const
 			{
-				return (!tagKey().isEmpty() && tag()->contains("METADATA_BLOCK_PICTURE"));
+				return !tagKey().isEmpty() &&
+				       tag()->contains(key().constData());
 			}
 	};
 }

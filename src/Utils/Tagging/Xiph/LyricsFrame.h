@@ -33,9 +33,10 @@ namespace Xiph
 		public:
 			explicit LyricsFrame(TagLib::Ogg::XiphComment* tag);
 			~LyricsFrame() override;
+			[[nodiscard]] bool isFrameAvailable() const override;
 
 		protected:
-			std::optional<QString> mapTagToData() const override;
+			[[nodiscard]] std::optional<QString> mapTagToData() const override;
 			void mapDataToTag(const QString& lyrics) override;
 	};
 }
