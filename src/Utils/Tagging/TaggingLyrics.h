@@ -26,8 +26,8 @@ class QString;
 
 namespace Tagging
 {
-	bool writeLyrics(const MetaData& track, const QString& lyricsData);
-	bool extractLyrics(const MetaData& track, QString& lyricsData);
+	bool writeLyrics(const QString& filepath, const QString& lyricsData);
+	bool extractLyrics(const QString& filepath, QString& lyricsData);
 	bool isLyricsSupported(const QString& filepath);
 }
 

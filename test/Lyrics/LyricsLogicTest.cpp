@@ -50,7 +50,7 @@ namespace
 				return !m_lyrics.isEmpty();
 			}
 
-			[[nodiscard]] std::optional<QString> extractLyrics(const MetaData& /*track*/) const override
+			[[nodiscard]] std::optional<QString> extractLyrics(const QString& /*filepath*/) const override
 			{
 				return m_lyrics.isEmpty()
 				       ? std::nullopt

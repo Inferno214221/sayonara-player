@@ -37,7 +37,7 @@ namespace Test
 
 			[[nodiscard]] bool isCoverSupported(const QString& filepath) const override;
 			bool isLyricsSupported(const QString& filepath) const override;
-			std::optional<QString> extractLyrics(const MetaData& track) const override;
+			std::optional<QString> extractLyrics(const QString& filepath) const override;
 
 		private:
 			int m_count {0};
@@ -52,7 +52,7 @@ namespace Test
 			bool writeMetaData(const QString& filepath, const MetaData& track) override;
 			bool updateMetaData(const MetaData& track) override;
 			bool writeCover(const QString& filepath, const QPixmap& cover) override;
-			bool writeLyrics(const MetaData& track, const QString& lyricsData) override;
+			bool writeLyrics(const QString& filepath, const QString& lyricsData) override;
 	};
 }
 

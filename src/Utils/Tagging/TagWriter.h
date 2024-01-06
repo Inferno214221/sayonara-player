@@ -39,7 +39,7 @@ namespace Tagging
 
 			virtual bool writeCover(const QString& filepath, const QPixmap& cover) = 0;
 
-			virtual bool writeLyrics(const MetaData& track, const QString& lyricsData) = 0;
+			virtual bool writeLyrics(const QString& filepath, const QString& lyricsData) = 0;
 
 			static std::shared_ptr<TagWriter> create();
 	};

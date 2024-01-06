@@ -67,11 +67,11 @@ class LyricsTest :
 				auto metadata = MetaData(filename);
 				Tagging::Utils::getMetaDataOfFile(metadata);
 
-				const auto wroteLyrics = Tagging::writeLyrics(metadata, lyrics);
+				const auto wroteLyrics = Tagging::writeLyrics(filename, lyrics);
 				QVERIFY(wroteLyrics == true);
 
 				QString readLyrics;
-				const auto success = Tagging::extractLyrics(metadata, readLyrics);
+				const auto success = Tagging::extractLyrics(filename, readLyrics);
 
 				QVERIFY(success == true);
 				QVERIFY(lyrics.compare(readLyrics) == 0);

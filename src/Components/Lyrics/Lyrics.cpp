@@ -113,7 +113,7 @@ namespace Lyrics
 			return false;
 		}
 
-		const auto success = m->tagWriter->writeLyrics(m->track, plainText);
+		const auto success = m->tagWriter->writeLyrics(m->track.filepath(), plainText);
 		if(success)
 		{
 			m->lyricTagContent = plainText;
@@ -131,7 +131,7 @@ namespace Lyrics
 		m->title = title;
 		m->track = track;
 
-		if(const auto maybeLyrics = m->tagReader->extractLyrics(track); maybeLyrics.has_value())
+		if(const auto maybeLyrics = m->tagReader->extractLyrics(track.filepath()); maybeLyrics.has_value())
 		{
 			m->lyricTagContent = maybeLyrics.value();
 			spLog(Log::Debug, this) << QString("Lyrics found in %1").arg(track.filepath());

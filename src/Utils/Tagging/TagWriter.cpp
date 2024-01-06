@@ -51,9 +51,9 @@ namespace
 				return Tagging::writeCover(filepath, cover);
 			}
 
-			bool writeLyrics(const MetaData& track, const QString& lyricsData) override
+			bool writeLyrics(const QString& filepath, const QString& lyricsData) override
 			{
-				return Tagging::writeLyrics(track, lyricsData);
+				return Tagging::writeLyrics(filepath, lyricsData);
 			}
 
 	};

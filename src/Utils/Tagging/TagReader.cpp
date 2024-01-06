@@ -47,10 +47,10 @@ namespace
 				return Tagging::isCoverSupported(filepath);
 			}
 
-			[[nodiscard]] std::optional<QString> extractLyrics(const MetaData& track) const override
+			[[nodiscard]] std::optional<QString> extractLyrics(const QString& filepath) const override
 			{
 				auto lyricsData = QString {};
-				const auto success = Tagging::extractLyrics(track, lyricsData);
+				const auto success = Tagging::extractLyrics(filepath, lyricsData);
 				return success
 				       ? std::optional {lyricsData}
 				       : std::nullopt;

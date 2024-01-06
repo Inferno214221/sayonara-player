@@ -56,12 +56,12 @@ namespace
 	}
 }
 
-bool Tagging::writeLyrics(const MetaData& track, const QString& lyricsData)
+bool Tagging::writeLyrics(const QString& filepath, const QString& lyricsData)
 {
-	auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()));
+	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::isValidFile(fileRef))
 	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath();
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
@@ -88,14 +88,14 @@ bool Tagging::writeLyrics(const MetaData& track, const QString& lyricsData)
 	       : false;
 }
 
-bool Tagging::extractLyrics(const MetaData& track, QString& lyricsData)
+bool Tagging::extractLyrics(const QString& filepath, QString& lyricsData)
 {
 	lyricsData.clear();
 
-	const auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()));
+	const auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
 	if(!Tagging::isValidFile(fileRef))
 	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath();
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << filepath;
 		return false;
 	}
 
