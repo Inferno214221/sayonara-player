@@ -181,11 +181,12 @@ class RatingTest :
 				Rating expectedRating;
 			};
 
+			constexpr const auto isNewTaglib = ((TAGLIB_MAJOR_VERSION > 1) || (TAGLIB_MINOR_VERSION >= 12));
 			const auto testCases = std::array {
 				TestCase {":/test/out-mediamonkey2half.mp4", Rating::Three},
 				TestCase {":/test/out-mediamonkey4.mp4", Rating::Four},
-				TestCase {":/test/out-winamp2.mp4", Rating::Two},
-				TestCase {":/test/out-winamp4.mp4", Rating::Four},
+				TestCase {":/test/out-winamp2.mp4", isNewTaglib ? Rating::Two : Rating::Zero},
+				TestCase {":/test/out-winamp4.mp4", isNewTaglib ? Rating::Four : Rating::Zero},
 			};
 
 			for(const auto& testCase: testCases)
