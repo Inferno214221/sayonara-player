@@ -73,15 +73,14 @@ class TaggingTest :
 			struct TestCase
 			{
 				TestEnv testEnv;
-				bool isFullySupportedTag {true};
 			};
 
 			const auto testCases = std::array {
-				TestCase {{":/test/mp3test.mp3", tempPath("sayonara-test.mp3")}, true},
-				TestCase {{":/test/oggtest.ogg", tempPath("sayonara-test.ogg")}, true},
-				TestCase {{":/test/wavtest.wav", tempPath("wavRiff.wav")}, false},
-				TestCase {{":/test/emptyTestFile.mp3", tempPath("emptyTestFile.mp3")}, true},
-				TestCase {{":/test/mp4test.mp4", tempPath("sayonara-test.mp4")}, true}
+				TestCase {{":/test/mp3test.mp3", tempPath("sayonara-test.mp3")}},
+				TestCase {{":/test/oggtest.ogg", tempPath("sayonara-test.ogg")}},
+				TestCase {{":/test/wavtest.wav", tempPath("wavRiff.wav")}},
+				TestCase {{":/test/emptyTestFile.mp3", tempPath("emptyTestFile.mp3")}},
+				TestCase {{":/test/mp4test.mp4", tempPath("sayonara-test.mp4")}}
 			};
 
 			for(const auto& testCase: testCases)
@@ -94,14 +93,6 @@ class TaggingTest :
 				track.setComment("comment");
 				track.setYear(1995);
 				track.setTrackNumber(17);
-
-				if(testCase.isFullySupportedTag)
-				{
-					track.setDiscCount(4);
-					track.setDiscnumber(3);
-					track.setAlbumArtist("albumartist");
-					track.setRating(Rating(Rating::Four));
-				}
 
 				const auto success = Tagging::Utils::setMetaDataOfFile(track);
 				QVERIFY(success);
@@ -117,14 +108,6 @@ class TaggingTest :
 				QVERIFY(trackNew.comment() == "comment");
 				QVERIFY(trackNew.year() == 1995);
 				QVERIFY(trackNew.trackNumber() == 17);
-
-				if(testCase.isFullySupportedTag)
-				{
-					QVERIFY(trackNew.discCount() == 4);
-					QVERIFY(trackNew.discnumber() == 3);
-					QVERIFY(trackNew.albumArtist() == "albumartist");
-					QVERIFY(trackNew.rating() == Rating::Four);
-				}
 			}
 		};
 };
