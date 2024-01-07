@@ -316,11 +316,6 @@ void UserOperations::applyGenreToMetadata(const MetaDataList& tracks, const Genr
 	runEditor(editor);
 }
 
-Rating Tagging::UserOperations::oldRating(TrackID trackId) const
-{
-	return m->trackRatingHistory[trackId].oldRating;
-}
-
 Rating Tagging::UserOperations::newRating(TrackID trackId) const
 {
 	return m->trackRatingHistory[trackId].newRating;
