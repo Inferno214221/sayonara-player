@@ -77,6 +77,7 @@ void GUI_Lyrics::init()
 
 	ui->labHeader->setText(tr("No track loaded"));
 	ui->teLyrics->setEnabled(false);
+	ui->btnEdit->setVisible(false);
 
 	ui->buttonBox->setVisible(m->isCloseable);
 	ui->teLyrics->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
@@ -113,6 +114,7 @@ void GUI_Lyrics::init()
 	connect(m->lyrics, &Lyrics::Lyrics::sigLyricsFetched, this, &GUI_Lyrics::lyricsFetched);
 	connect(ui->leArtist, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
 	connect(ui->leTitle, &QLineEdit::textChanged, this, &GUI_Lyrics::textChanged);
+	connect(ui->btnEdit, &QPushButton::clicked, this, &GUI_Lyrics::editClicked);
 
 	textChanged(m->lyrics->lyrics());
 	languageChanged();
@@ -210,9 +212,10 @@ void GUI_Lyrics::showLyrics(const QString& lyrics, const QString& header, const 
 		ui->labHeader->setText(header);
 		ui->btnSearch->setEnabled(true);
 		ui->comboServers->setEnabled(true);
-		ui->btnSaveLyrics->setEnabled(m->lyrics->isLyricTagSupported());
+		ui->btnSaveLyrics->setEnabled(isValid && m->lyrics->isLyricTagSupported());
 		m->loadingBar->setVisible(false);
 		ui->teLyrics->setEnabled(isValid);
+		ui->btnEdit->setVisible(!isValid && m->lyrics->isLyricTagSupported());
 	}
 }
 
@@ -345,6 +348,15 @@ void GUI_Lyrics::textChanged(const QString& /*text*/)
 	ui->btnSwitch->setEnabled(hasText);
 }
 
+void GUI_Lyrics::editClicked()
+{
+	ui->teLyrics->clear();
+	ui->teLyrics->setEnabled(true);
+	ui->teLyrics->setFocus();
+	ui->btnSaveLyrics->setEnabled(m->lyrics->isLyricTagSupported());
+	ui->btnEdit->hide();
+}
+
 void GUI_Lyrics::languageChanged()
 {
 	if(ui)
@@ -353,6 +365,7 @@ void GUI_Lyrics::languageChanged()
 		ui->btnSwitch->setText(SwitchIcon + tr("Switch"));
 		ui->labArtist->setText(Lang::get(Lang::Artist));
 		ui->labTitle->setText(Lang::get(Lang::Title));
+		ui->btnEdit->setText(Lang::get(Lang::Edit));
 
 		setupSources();
 		setSaveButtonText();

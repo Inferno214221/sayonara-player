@@ -60,6 +60,7 @@ class GUI_Lyrics :
 		void prepareLyrics();
 		void saveLyricsClicked();
 		void textChanged(const QString& text);
+		void editClicked();
 
 	protected:
 		void languageChanged() override;
