@@ -175,9 +175,21 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 	track.setGenres(genres);
 	track.setComment(comment);
 
-	Tagging::readAlbumArtist(track, parsedTag);
-	Tagging::readDiscnumber(track, parsedTag);
-	Tagging::readPopularimeter(track, parsedTag);
+	if(const auto albumArtist = Tagging::readAlbumArtist(parsedTag); albumArtist.has_value())
+	{
+		track.setAlbumArtist(albumArtist.value());
+	}
+
+	if(const auto discnumber = Tagging::readDiscnumber(parsedTag); discnumber.has_value())
+	{
+		track.setDiscnumber(discnumber.value().disc);
+		track.setDiscCount(discnumber.value().disccount);
+	}
+
+	if(const auto popularimeter = Tagging::readPopularimeter(parsedTag); popularimeter.has_value())
+	{
+		track.setRating(popularimeter->rating);
+	}
 
 	const auto hasCover = static_cast<int>(Tagging::hasCover(parsedTag));
 	track.addCustomField("has-album-art", "", QString::number(hasCover));

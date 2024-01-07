@@ -23,6 +23,9 @@
 class MetaData;
 class QString;
 
+#include "typedefs.h"
+#include <optional>
+
 namespace Models
 {
 	struct Discnumber;
@@ -31,8 +34,8 @@ namespace Models
 
 namespace Tagging
 {
-	template<typename FrameType, typename Model, typename Tag, typename ConversionFunction>
-	bool tryToRead(Tag* tag, MetaData& track, ConversionFunction fn)
+	template<typename FrameType, typename Model, typename Tag>
+	std::optional<Model> tryToRead(Tag* tag)
 	{
 		if(tag)
 		{
@@ -41,12 +44,11 @@ namespace Tagging
 			const auto success = frame.read(model);
 			if(success)
 			{
-				fn(track, model);
-				return true;
+				return model;
 			}
 		}
-		
-		return false;
+
+		return std::nullopt;
 	}
 
 	template<typename FrameType, typename Tag, typename Model>
@@ -61,13 +63,13 @@ namespace Tagging
 
 	struct ParsedTag;
 
-	void readDiscnumber(MetaData& track, const Tagging::ParsedTag& parsedTag);
+	std::optional<Models::Discnumber> readDiscnumber(const Tagging::ParsedTag& parsedTag);
 	void writeDiscnumber(const Tagging::ParsedTag& parsedTag, const Models::Discnumber& discnumber);
 
-	void readPopularimeter(MetaData& track, const Tagging::ParsedTag& parsedTag);
+	std::optional<Models::Popularimeter> readPopularimeter(const Tagging::ParsedTag& parsedTag);
 	void writePopularimeter(const Tagging::ParsedTag& parsedTag, const Models::Popularimeter& popularimeter);
 
-	void readAlbumArtist(MetaData& track, const Tagging::ParsedTag& parsedTag);
+	std::optional<QString> readAlbumArtist(const Tagging::ParsedTag& parsedTag);
 	void writeAlbumArtist(const Tagging::ParsedTag& parsedTag, const QString& albumArtist);
 }
 

@@ -36,27 +36,24 @@
 
 namespace Tagging
 {
-	void readDiscnumber(MetaData& track, const Tagging::ParsedTag& parsedTag)
+	std::optional<Models::Discnumber> readDiscnumber(const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& discnumber) {
-			track.setDiscnumber(discnumber.disc);
-			track.setDiscCount(discnumber.disccount);
-		};
-
 		if(parsedTag.type == Tagging::TagType::ID3v2)
 		{
-			tryToRead<ID3v2::DiscnumberFrame, Models::Discnumber>(parsedTag.id3Tag(), track, setter);
+			return tryToRead<ID3v2::DiscnumberFrame, Models::Discnumber>(parsedTag.id3Tag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::Xiph)
+		if(parsedTag.type == Tagging::TagType::Xiph)
 		{
-			tryToRead<Xiph::DiscnumberFrame, Models::Discnumber>(parsedTag.xiphTag(), track, setter);
+			return tryToRead<Xiph::DiscnumberFrame, Models::Discnumber>(parsedTag.xiphTag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::MP4)
+		if(parsedTag.type == Tagging::TagType::MP4)
 		{
-			tryToRead<MP4::DiscnumberFrame, Models::Discnumber>(parsedTag.mp4Tag(), track, setter);
+			return tryToRead<MP4::DiscnumberFrame, Models::Discnumber>(parsedTag.mp4Tag());
 		}
+
+		return std::nullopt;
 	}
 
 	void writeDiscnumber(const Tagging::ParsedTag& parsedTag, const Models::Discnumber& discnumber)
@@ -77,46 +74,44 @@ namespace Tagging
 		}
 	}
 
-	void readPopularimeter(MetaData& track, const Tagging::ParsedTag& parsedTag)
+	std::optional<Models::Popularimeter> readPopularimeter(const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& popularimeter) {
-			track.setRating(popularimeter.rating);
-		};
-
 		if(parsedTag.type == Tagging::TagType::ID3v2)
 		{
-			tryToRead<ID3v2::PopularimeterFrame, Models::Popularimeter>(parsedTag.id3Tag(), track, setter);
+			return tryToRead<ID3v2::PopularimeterFrame, Models::Popularimeter>(parsedTag.id3Tag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::Xiph)
+		if(parsedTag.type == Tagging::TagType::Xiph)
 		{
-			if(tryToRead<Xiph::FmpsUserRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter))
+			if(const auto model = tryToRead<Xiph::FmpsUserRatingFrame, Models::Popularimeter>(parsedTag.xiphTag()); model.has_value())
 			{
-				return;
+				return model;
 			}
 
-			if(tryToRead<Xiph::FmpsRatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter))
+			if(const auto model = tryToRead<Xiph::FmpsRatingFrame, Models::Popularimeter>(parsedTag.xiphTag()); model.has_value())
 			{
-				return;
+				return model;
 			}
 
-			tryToRead<Xiph::RatingFrame, Models::Popularimeter>(parsedTag.xiphTag(), track, setter);
+			return tryToRead<Xiph::RatingFrame, Models::Popularimeter>(parsedTag.xiphTag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::MP4)
+		if(parsedTag.type == Tagging::TagType::MP4)
 		{
-			if(tryToRead<MP4::ITunesRatingFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter))
+			if(const auto model = tryToRead<MP4::ITunesRatingFrame, Models::Popularimeter>(parsedTag.mp4Tag()); model.has_value())
 			{
-				return;
+				return model;
 			}
 
-			if(tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter))
+			if(const auto model = tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag()); model.has_value())
 			{
-				return;
+				return model;
 			}
 
-			tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag(), track, setter);
+			return tryToRead<MP4::MediaMonkeyRateFrame, Models::Popularimeter>(parsedTag.mp4Tag());
 		}
+
+		return std::nullopt;
 	}
 
 	void writePopularimeter(const Tagging::ParsedTag& parsedTag, const Models::Popularimeter& popularimeter)
@@ -139,26 +134,24 @@ namespace Tagging
 		}
 	}
 
-	void readAlbumArtist(MetaData& track, const Tagging::ParsedTag& parsedTag)
+	std::optional<QString> readAlbumArtist(const Tagging::ParsedTag& parsedTag)
 	{
-		auto setter = [](auto& track, const auto& albumArtist) {
-			track.setAlbumArtist(albumArtist);
-		};
-
 		if(parsedTag.type == Tagging::TagType::ID3v2)
 		{
-			tryToRead<ID3v2::AlbumArtistFrame, QString>(parsedTag.id3Tag(), track, setter);
+			return tryToRead<ID3v2::AlbumArtistFrame, QString>(parsedTag.id3Tag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::Xiph)
+		if(parsedTag.type == Tagging::TagType::Xiph)
 		{
-			tryToRead<Xiph::AlbumArtistFrame, QString>(parsedTag.xiphTag(), track, setter);
+			return tryToRead<Xiph::AlbumArtistFrame, QString>(parsedTag.xiphTag());
 		}
 
-		else if(parsedTag.type == Tagging::TagType::MP4)
+		if(parsedTag.type == Tagging::TagType::MP4)
 		{
-			tryToRead<MP4::AlbumArtistFrame, QString>(parsedTag.mp4Tag(), track, setter);
+			return tryToRead<MP4::AlbumArtistFrame, QString>(parsedTag.mp4Tag());
 		}
+
+		return std::nullopt;
 	}
 
 	void writeAlbumArtist(const Tagging::ParsedTag& parsedTag, const QString& albumArtist)
