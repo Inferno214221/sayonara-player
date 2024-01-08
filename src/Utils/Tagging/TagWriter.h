@@ -35,6 +35,9 @@ namespace Tagging
 			virtual ~TagWriter() = default;
 
 			virtual bool writeMetaData(const QString& filepath, const MetaData& track) = 0;
+
+			virtual bool writeChangedMetaDataOnly(const MetaData& oldTrack, const MetaData& newTrack) = 0;
+
 			virtual bool updateMetaData(const MetaData& track) = 0;
 
 			virtual bool writeCover(const QString& filepath, const QPixmap& cover) = 0;

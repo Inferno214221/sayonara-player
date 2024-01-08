@@ -59,6 +59,11 @@ namespace Test
 		return !filepath.isEmpty();
 	}
 
+	bool TagWriterMock::writeChangedMetaDataOnly(const MetaData& /*oldTrack*/, const MetaData& newTrack)
+	{
+		return !newTrack.filepath().isEmpty();
+	}
+
 	bool TagWriterMock::updateMetaData(const MetaData& track)
 	{
 		return !track.filepath().isEmpty();

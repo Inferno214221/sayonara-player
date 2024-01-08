@@ -53,6 +53,7 @@ namespace Test
 			bool updateMetaData(const MetaData& track) override;
 			bool writeCover(const QString& filepath, const QPixmap& cover) override;
 			bool writeLyrics(const QString& filepath, const QString& lyricsData) override;
+			bool writeChangedMetaDataOnly(const MetaData& oldTrack, const MetaData& newTrack) override;
 	};
 }
 

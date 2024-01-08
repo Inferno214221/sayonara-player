@@ -62,6 +62,12 @@ namespace
 				return TagWriterMock::writeMetaData(filepath, track);
 			}
 
+			bool writeChangedMetaDataOnly(const MetaData& oldTrack, const MetaData& newTrack) override
+			{
+				m_tracks[newTrack.filepath()] = newTrack;
+				return TagWriterMock::writeChangedMetaDataOnly(oldTrack, newTrack);
+			}
+
 			bool updateMetaData(const MetaData& track) override
 			{
 				m_tracks[track.filepath()] = track;

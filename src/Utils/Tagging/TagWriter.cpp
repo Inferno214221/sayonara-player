@@ -41,6 +41,11 @@ namespace
 				return updateMetaData(trackCopy);
 			}
 
+			bool writeChangedMetaDataOnly(const MetaData& oldTrack, const MetaData& newTrack) override
+			{
+				return Tagging::Utils::setOnlyChangedMetaDataOfFile(oldTrack, newTrack);
+			}
+
 			bool updateMetaData(const MetaData& track) override
 			{
 				return Tagging::Utils::setMetaDataOfFile(track);
@@ -55,7 +60,6 @@ namespace
 			{
 				return Tagging::writeLyrics(filepath, lyricsData);
 			}
-
 	};
 }
 
