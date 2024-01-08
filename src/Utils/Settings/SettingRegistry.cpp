@@ -280,6 +280,8 @@ bool SettingRegistry::init()
 	registerSetting<Set::Logger_Level>("logger_level", 0);
 	registerSetting<Set::InhibitIdle>("inhibit_idle", true);
 
+	registerSetting<Set::Tagging_UseSelectiveTagging>("tagging_use_selective_tagging", false);
+
 	registerSetting<SetNoDB::MP3enc_found>(true);
 	registerSetting<SetNoDB::Pitch_found>(true);
 	registerSetting<SetNoDB::Soundcloud_AuthToken>({});

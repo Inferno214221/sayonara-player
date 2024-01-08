@@ -205,6 +205,7 @@ enum class SettingKey :
 	Stream_UpdateMetadata,
 	Stream_RadioSearcher,
 	Stream_RadioSearcherType,
+	Tagging_UseSelectiveTagging,
 	Num_Setting_Keys
 };
 
@@ -421,6 +422,7 @@ namespace Set
 	CreateSetting(Stream_SearchWindowSize, QSize); // Size of the stream search dialog
 	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
 	CreateSetting(Stream_UpdateMetadata, bool); // Update metadata (can be changed for each stream individually)
+	CreateSetting(Tagging_UseSelectiveTagging, bool); // Only updated changed fields
 }
 
 namespace SetNoDB

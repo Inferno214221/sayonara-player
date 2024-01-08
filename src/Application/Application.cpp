@@ -93,6 +93,7 @@
 #include "Gui/Preferences/StreamRecorder/GUI_StreamRecorderPreferences.h"
 #include "Gui/Preferences/Streams/GUI_StreamPreferences.h"
 #include "Gui/Preferences/UiPreferences/GUI_UiPreferences.h"
+#include "Gui/Preferences/Other/OtherSettings.h"
 #include "Gui/SomaFM/SomaFMLibraryContainer.h"
 #include "Gui/Soundcloud/SoundcloudLibraryContainer.h"
 #include "Gui/Utils/GuiUtils.h"
@@ -376,6 +377,7 @@ void Application::initPreferences()
 	preferences->registerPreferenceDialog(new GUI_StreamRecorderPreferences("streamrecorder", m->fileSystem));
 	preferences->registerPreferenceDialog(new GUI_BroadcastPreferences("broadcast"));
 	preferences->registerPreferenceDialog(new GUI_RemoteControlPreferences("remotecontrol"));
+	preferences->registerPreferenceDialog(new GUI_OtherSettings("other-settings"));
 
 	auto* notificationPreferences = new GUI_NotificationPreferences("notifications", m->notificationHandler);
 	preferences->registerPreferenceDialog(notificationPreferences);
