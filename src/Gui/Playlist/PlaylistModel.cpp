@@ -304,8 +304,12 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 	{
 		if(col == ColumnName::Description)
 		{
+			const auto rating = (m->uto && m->uto->newRating(track.id()) != Rating::Last)
+			                    ? m->uto->newRating(track.id())
+			                    : track.rating();
+
 			return (track.radioMode() == RadioMode::Off)
-			       ? QVariant::fromValue(track.rating())
+			       ? QVariant::fromValue(rating)
 			       : QVariant::fromValue(Rating::Last);
 		}
 	}
