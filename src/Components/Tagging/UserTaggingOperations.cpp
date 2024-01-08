@@ -76,7 +76,8 @@ UserOperations::~UserOperations() = default;
 
 Editor* UserOperations::createEditor()
 {
-	auto* editor = new Tagging::Editor(m->tagReader, m->tagWriter);
+	const bool useSelectiveTagging = GetSetting(Set::Tagging_UseSelectiveTagging);
+	auto* editor = new Tagging::Editor(m->tagReader, m->tagWriter, useSelectiveTagging, nullptr);
 
 	connect(editor, &Tagging::Editor::sigFinished, this, [this]() {
 		m->trackRatingHistory.clear();

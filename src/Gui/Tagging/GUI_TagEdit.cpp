@@ -19,17 +19,16 @@
  */
 
 #include "GUI_TagEdit.h"
-#include "GUI_TagFromPath.h"
-#include "GUI_CoverEdit.h"
-#include "GUI_FailMessageBox.h"
-
 #include "Gui/TagEdit/ui_GUI_TagEdit.h"
 
 #include "Components/Tagging/Editor.h"
-
-#include "Gui/Utils/Widgets/Completer.h"
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
+#include "GUI_CoverEdit.h"
+#include "GUI_FailMessageBox.h"
+#include "GUI_TagFromPath.h"
 #include "Gui/Utils/Style.h"
-
+#include "Gui/Utils/Widgets/Completer.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
 #include "Utils/Language/Language.h"
@@ -38,13 +37,11 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/TagReader.h"
 #include "Utils/Tagging/TagWriter.h"
 #include "Utils/Tagging/Tagging.h"
 #include "Utils/Utils.h"
-
-#include "Database/Connector.h"
-#include "Database/LibraryDatabase.h"
 
 #include <QFileInfo>
 #include <QTabBar>
@@ -171,6 +168,12 @@ namespace
 	{
 		return ui->buttonBox->button(QDialogButtonBox::StandardButton::Save);
 	}
+
+	Tagging::Editor* createTagEditor()
+	{
+		return new Tagging::Editor(TagReader::create(), TagWriter::create(),
+		                           GetSetting(Set::Tagging_UseSelectiveTagging), nullptr);
+	}
 }
 
 struct GUI_TagEdit::Private
@@ -182,7 +185,7 @@ struct GUI_TagEdit::Private
 	int currentIndex {-1};
 
 	Private(GUI_TagEdit* parent, Ui::GUI_TagEdit* ui) :
-		tagEditor {new Tagging::Editor(TagReader::create(), TagWriter::create())},
+		tagEditor {createTagEditor()},
 		uiTagFromPath {new GUI_TagFromPath(tagEditor, ui->tabFromPath)},
 		uiCoverEdit {new GUI_CoverEdit(tagEditor, parent)}
 	{

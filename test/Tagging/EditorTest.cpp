@@ -212,7 +212,7 @@ class EditorTest :
 			for(const auto& testCase: testCases)
 			{
 				const auto tracks = createAlbums(testCase.albumCount, {"artist", "album%", "title%"});
-				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks);
+				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks, false, nullptr);
 				QVERIFY(editor.count() == testCase.expectedCount);
 				QVERIFY(editor.hasChanges() == false);
 				QVERIFY(editor.canLoadEntireAlbum() == false);
@@ -257,7 +257,7 @@ class EditorTest :
 				const auto tracks = createAlbums(testCase.albumCount,
 				                                 {"artist", "album%", "title%"},
 				                                 std::move(modifier));
-				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks);
+				auto editor = Editor(TagReader::create(), TagWriter::create(), tracks, false, nullptr);
 
 				QVERIFY(editor.canLoadEntireAlbum() == testCase.expectedValue);
 			}
@@ -281,7 +281,7 @@ class EditorTest :
 				const auto tracks = createTracks(4, {"artist", "album", "title%"});
 				auto editor = Editor(std::make_shared<LocalTagReader>(testCase.isCoverSupported),
 				                     TagWriter::create(),
-				                     tracks);
+				                     tracks, false, nullptr);
 
 				for(int i = 0; i < editor.count(); i++)
 				{
@@ -294,7 +294,7 @@ class EditorTest :
 		[[maybe_unused]] void testRating()
 		{
 			auto tracks = createTracks(6, {"artist", "album", "title%"});
-			auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(), tracks);
+			auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(), tracks, false, nullptr);
 
 			for(int i = 0; i < editor.count(); i++)
 			{
@@ -323,7 +323,8 @@ class EditorTest :
 			{
 				const auto tracks = createAlbums(1, {"artist", "album%", "title%"});
 				const auto tracksNew = createAlbums(1, {testCase.changedArtist, "album%", "title%"});
-				auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(), tracks);
+				auto editor = Editor(std::make_shared<LocalTagReader>(false), TagWriter::create(),
+				                     tracks, false, nullptr);
 
 				for(int i = 0; i < editor.count(); i++)
 				{
@@ -363,7 +364,7 @@ class EditorTest :
 				const auto tagWriter = std::make_shared<LocalTagWriter>();
 				const auto tracks = createAlbums(1, {"artist", "album%", "title%"});
 
-				auto editor = Editor(tagReader, tagWriter, tracks);
+				auto editor = Editor(tagReader, tagWriter, tracks, false, nullptr);
 
 				const auto pixmap = QPixmap(testCase.pixmapPath);
 				for(int i = 0; i < editor.count(); i++)
@@ -398,9 +399,8 @@ class EditorTest :
 				createLibrary(createLibraryDatabase(), createAlbums(3, {"artist", "album%", "title%"}));
 			QVERIFY(libraryCreated);
 
-			auto editor = Editor(std::make_shared<LocalTagReader>(true),
-			                     std::make_shared<LocalTagWriter>(),
-			                     tracks);
+			auto editor = Editor(std::make_shared<LocalTagReader>(true), std::make_shared<LocalTagWriter>(),
+			                     tracks, false, nullptr);
 
 			tracks = updateTrackNumber(std::move(tracks), editor);
 
@@ -429,9 +429,8 @@ class EditorTest :
 				createLibrary(library, createAlbums(3, {"artist", "album%", "title%"}));
 			QVERIFY(libraryCreated);
 
-			auto editor = Editor(std::make_shared<LocalTagReader>(true),
-			                     std::make_shared<LocalTagWriter>(),
-			                     tracks);
+			auto editor = Editor(std::make_shared<LocalTagReader>(true), std::make_shared<LocalTagWriter>(),
+			                     tracks, false, nullptr);
 
 			tracks = updateTrackNumber(std::move(tracks), editor);
 

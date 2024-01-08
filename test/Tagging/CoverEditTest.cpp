@@ -52,7 +52,7 @@ namespace
 
 	Tagging::Editor createEditor()
 	{
-		return {std::make_shared<LocalTagReaderMock>(), std::make_shared<LocalTagWriterMock>()};
+		return {std::make_shared<LocalTagReaderMock>(), std::make_shared<LocalTagWriterMock>(), false, nullptr};
 	}
 }
 

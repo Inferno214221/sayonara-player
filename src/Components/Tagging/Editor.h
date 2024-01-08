@@ -46,9 +46,9 @@ namespace Tagging
 
 		public:
 			Editor(const std::shared_ptr<TagReader>& tagReader, const std::shared_ptr<TagWriter>& tagWriter,
-			       QObject* parent = nullptr);
+			       bool doSelectiveUpdate, QObject* parent);
 			Editor(const std::shared_ptr<TagReader>& tagReader, const std::shared_ptr<TagWriter>& tagWriter,
-			       const MetaDataList& tracks, QObject* parent = nullptr);
+			       const MetaDataList& tracks, bool doSelectiveUpdate, QObject* parent);
 			~Editor() override;
 
 			enum FailReason

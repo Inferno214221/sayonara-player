@@ -129,12 +129,13 @@ namespace
 		       : true;
 	}
 
-	Editor::FailReason
-	applyTrackChangesToFile(const MetaData& currentMetadata, const TagWriterPtr& tagWriter, Editor* editor)
+	bool
+	applyTrackChangesToFile(const MetaData& oldMetadata, const MetaData& currentMetadata, const bool doSelectiveUpdate,
+	                        const TagWriterPtr& tagWriter)
 	{
-		return tagWriter->writeMetaData(currentMetadata.filepath(), currentMetadata)
-		       ? Editor::FailReason::NoError
-		       : checkFailReason(currentMetadata.filepath(), editor);
+		return doSelectiveUpdate
+		       ? tagWriter->writeChangedMetaDataOnly(oldMetadata, currentMetadata)
+		       : tagWriter->writeMetaData(currentMetadata.filepath(), currentMetadata);
 	}
 
 	int checkForChanges(const QList<Tagging::ChangeInformation>& changeInformation)
@@ -151,21 +152,24 @@ struct Editor::Private
 	QMap<QString, Editor::FailReason> failedFiles;
 	TagReaderPtr tagReader;
 	TagWriterPtr tagWriter;
+	bool doSelectiveUpdate {false};
 
-	Private(TagReaderPtr tagReader, TagWriterPtr tagWriter) :
+	Private(TagReaderPtr tagReader, TagWriterPtr tagWriter, const bool doSelectiveUpdate) :
 		tagReader {std::move(tagReader)},
-		tagWriter {std::move(tagWriter)} {}
+		tagWriter {std::move(tagWriter)},
+		doSelectiveUpdate {doSelectiveUpdate} {}
 };
 
-Editor::Editor(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, QObject* parent) :
+Editor::Editor(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, const bool doSelectiveUpdate,
+               QObject* parent) :
 	QObject(parent)
 {
-	m = Pimpl::make<Editor::Private>(tagReader, tagWriter);
+	m = Pimpl::make<Editor::Private>(tagReader, tagWriter, doSelectiveUpdate);
 }
 
 Editor::Editor(const TagReaderPtr& tagReader, const TagWriterPtr& tagWriter, const MetaDataList& tracks,
-               QObject* parent) :
-	Editor(tagReader, tagWriter, parent)
+               const bool doSelectiveUpdate, QObject* parent) :
+	Editor(tagReader, tagWriter, doSelectiveUpdate, parent)
 {
 	setMetadata(tracks);
 }
@@ -443,7 +447,11 @@ void Editor::commit()
 
 		if(changeInfo.hasChanges())
 		{
-			const auto writeResult = applyTrackChangesToFile(currentMetadata, m->tagWriter, this);
+			const auto success = applyTrackChangesToFile(originalMetadata, currentMetadata,
+			                                             m->doSelectiveUpdate, m->tagWriter);
+			const auto writeResult = success
+			                         ? Editor::FailReason::NoError
+			                         : checkFailReason(currentMetadata.filepath(), this);
 
 			if((writeResult == Editor::FailReason::NoError) &&
 			   applyTrackChangesToDatabase(currentMetadata, libraryDatabase))
