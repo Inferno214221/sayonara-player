@@ -27,6 +27,7 @@
 #include "Utils/Set.h"
 #include "Utils/MetaData/Genre.h"
 #include "Utils/FileUtils.h"
+#include "Utils/Logger/Logger.h"
 
 namespace
 {
@@ -67,6 +68,25 @@ namespace
 		track.setTrackNumber(17);
 
 		return track;
+	}
+
+	// only reason of existence for this function is to provide a common interface
+	// with updateOnlyChanged
+	void updateAll(const MetaData& /*oldtrack*/, const MetaData& newTrack)
+	{
+		Tagging::Utils::setMetaDataOfFile(newTrack);
+	}
+
+	void updateOnlyChanged(const MetaData& oldTrack, const MetaData& newTrack)
+	{
+		Tagging::Utils::setOnlyChangedMetaDataOfFile(oldTrack, newTrack);
+	}
+
+	bool findInFile(const QString& filename, const QByteArray& data)
+	{
+		QByteArray fileData;
+		Util::File::readFileIntoByteArray(filename, fileData);
+		return fileData.contains(data);
 	}
 }
 
@@ -167,6 +187,45 @@ class TaggingTest :
 					QVERIFY(trackReloaded.comment() == "comment2");
 					QVERIFY(trackReloaded.year() == 1996);
 					QVERIFY(trackReloaded.trackNumber() == 18);
+				}
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testSelectiveFlacUpdate()
+		{
+			// https://gitlab.com/luciocarreras/sayonara-player/-/issues/321
+			struct TestCase
+			{
+				QByteArray oldDateTag;
+				std::function<void(MetaData, MetaData)> callUpdate;
+				QByteArray expectedNewDateTag;
+			};
+
+			// exfalso tags are lower case
+			const auto testCases = std::array {
+				TestCase {"date=2024-01-01", updateAll, "DATE=2024"},
+				TestCase {"date=2024-01-01", updateOnlyChanged, "DATE=2024-01-01"}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				const auto env = TestEnv {":/test/flactest.flac", tempPath("sayonara-test.flac")};
+
+				auto track = MetaData {env.filename()};
+				Tagging::Utils::getMetaDataOfFile(track);
+
+				QVERIFY(findInFile(env.filename(), testCase.oldDateTag));
+
+				auto newTrack = track;
+				newTrack.setTitle("Some new title");
+
+				testCase.callUpdate(track, newTrack);
+
+				QVERIFY(findInFile(env.filename(), testCase.expectedNewDateTag));
+				if(testCase.oldDateTag != testCase.expectedNewDateTag)
+				{
+					QVERIFY(!findInFile(env.filename(), testCase.oldDateTag));
 				}
 			}
 		}
