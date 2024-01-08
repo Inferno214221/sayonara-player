@@ -39,29 +39,13 @@ namespace TagLib
 	class FileRef;
 }
 
-/**
- * @brief Tagging namespace
- * @ingroup Tagging
- */
-namespace Tagging
+namespace Tagging::Utils
 {
-	namespace Utils
-	{
-		/**
-		 * @brief get metadata of file. Filepath should be given within the MetaData struct
-		 * @param track MetaData that will be filled
-		 * @param quality fast, normal, accurate
-		 * @return true, if metadata could be filled. false else
-		 */
-		bool getMetaDataOfFile(MetaData& track, Tagging::Quality quality = Tagging::Quality::Standard);
+	bool getMetaDataOfFile(MetaData& track, Tagging::Quality quality = Tagging::Quality::Standard);
 
-		/**
-		 * @brief writes metadata into file specivied in MetaData::_filepath
-		 * @param md MetaData struct to write
-		 * @return true if metadata could be written. false else
-		 */
-		bool setMetaDataOfFile(const MetaData& md);
-	}
+	bool setMetaDataOfFile(const MetaData& track);
+
+	bool setOnlyChangedMetaDataOfFile(const MetaData& oldTrack, const MetaData& newTrack);
 }
 
 #endif // SAYONARA_UTIL_TAGGING_H

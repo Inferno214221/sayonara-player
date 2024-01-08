@@ -116,6 +116,15 @@ namespace
 
 		return genres;
 	}
+
+	template<typename T, typename Setter>
+	void updateIfUnequal(const T& v1, const T& v2, const Tagging::ParsedTag& tag, const Setter& setter)
+	{
+		if(v1 != v2)
+		{
+			setter(tag, v2);
+		}
+	}
 }
 
 bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
@@ -243,6 +252,84 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	if(!success)
 	{
 		spLog(Log::Warning, "Tagging") << "Could not save " << md.filepath();
+	}
+
+	return success;
+}
+
+bool Tagging::Utils::setOnlyChangedMetaDataOfFile(const MetaData& oldTrack, const MetaData& newTrack)
+{
+	Tagging::FileTypeResolver::addFileTypeResolver();
+
+	const auto filepath = newTrack.filepath();
+	const auto fileInfo = QFileInfo(filepath);
+	if(fileInfo.size() <= 0)
+	{
+		return false;
+	}
+
+	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
+	if(!isValidFile(fileRef))
+	{
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << newTrack.filepath() << ": Err 2";
+		return false;
+	}
+
+	const auto parsedTag = getParsedTagFromFileRef(fileRef);
+	if(!parsedTag.tag)
+	{
+		return false;
+	}
+
+	updateIfUnequal(oldTrack.album(), newTrack.album(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setAlbum(convertString(value));
+	});
+
+	updateIfUnequal(oldTrack.artist(), newTrack.artist(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setArtist(convertString(value));
+	});
+
+	updateIfUnequal(oldTrack.title(), newTrack.title(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setTitle(convertString(value));
+	});
+
+	updateIfUnequal(oldTrack.genresToString(), newTrack.genresToString(), parsedTag,
+	                [](const auto& tag, const auto& value) {
+		                tag.tag->setGenre(convertString(value));
+	                });
+
+	updateIfUnequal(oldTrack.year(), newTrack.year(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setYear(value);
+	});
+
+	updateIfUnequal(oldTrack.trackNumber(), newTrack.trackNumber(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setTrack(value);
+	});
+
+	updateIfUnequal(oldTrack.comment(), newTrack.comment(), parsedTag, [](const auto& ptag, const auto& value) {
+		ptag.tag->setComment(convertString(value));
+	});
+
+	updateIfUnequal(oldTrack.rating(), newTrack.rating(), parsedTag, [](const auto& ptag, const auto& value) {
+		Tagging::writePopularimeter(ptag, Models::Popularimeter("sayonara", value, 0));
+	});
+
+	updateIfUnequal(std::pair {oldTrack.discnumber(), oldTrack.discCount()},
+	                std::pair {newTrack.discnumber(), newTrack.discCount()},
+	                parsedTag,
+	                [](const auto& ptag, const auto& value) {
+		                Tagging::writeDiscnumber(ptag, Models::Discnumber(value.first, value.second));
+	                });
+
+	updateIfUnequal(oldTrack.albumArtist(), newTrack.albumArtist(), parsedTag,
+	                [](const auto& ptag, const auto& value) {
+		                Tagging::writeAlbumArtist(ptag, value);
+	                });
+
+	const auto success = fileRef.save();
+	if(!success)
+	{
+		spLog(Log::Warning, "Tagging") << "Could not save " << newTrack.filepath();
 	}
 
 	return success;
