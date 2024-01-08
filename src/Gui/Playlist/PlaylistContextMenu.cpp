@@ -140,7 +140,13 @@ ContextMenu::ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget
 	QList<QAction*> ratingActions;
 	for(auto i = +Rating::Zero; i != +Rating::Last; i++)
 	{
-		ratingActions << initRatingAction(static_cast<Rating>(i), m->ratingMenu);
+		auto* ratingAction = initRatingAction(static_cast<Rating>(i), m->ratingMenu);
+		connect(ratingAction, &QAction::triggered, this, [ratingAction, this]() {
+			const auto rating = ratingAction->property("rating").value<Rating>();
+			emit sigRatingChanged(rating);
+		});
+
+		ratingActions << ratingAction;
 	}
 
 	m->ratingMenu->addActions(ratingActions);

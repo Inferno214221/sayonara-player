@@ -38,6 +38,7 @@ namespace Playlist
 		signals:
 			void sigBookmarkTriggered(Seconds timestamp);
 			void sigSortingTriggered(Library::SortOrder sortOrder);
+			void sigRatingChanged(Rating rating);
 
 		public:
 			enum Entry
@@ -55,11 +56,11 @@ namespace Playlist
 			ContextMenu(DynamicPlaybackChecker* dynamicPlaybackChecker, QWidget* parent);
 			~ContextMenu() override;
 
-			ContextMenu::Entries entries() const override;
+			[[nodiscard]] ContextMenu::Entries entries() const override;
 			void showActions(ContextMenu::Entries entries) override;
 
 			using Library::ContextMenu::action;
-			QAction* action(ContextMenu::Entry entry) const;
+			[[nodiscard]] QAction* action(ContextMenu::Entry entry) const;
 
 			ContextMenu::Entries setTrack(const MetaData& track, bool isCurrentTrack);
 			void clearTrack();

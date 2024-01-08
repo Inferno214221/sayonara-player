@@ -37,6 +37,7 @@
 #include "Utils/MetaData/MetaDataFwd.h"
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/PlaylistFwd.h"
+#include "Utils/typedefs.h"
 
 class QPoint;
 class DynamicPlaybackChecker;
@@ -90,7 +91,7 @@ namespace Playlist
 			void clear();
 			void refresh();
 			void asyncDropFinished();
-			void ratingChanged();
+			void ratingChanged(Rating rating);
 			void columnsChanged();
 			void showRatingChanged();
 			void bookmarkTriggered(Seconds timestamp);

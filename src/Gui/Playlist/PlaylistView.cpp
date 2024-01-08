@@ -257,7 +257,7 @@ namespace Playlist
 		connect(m->contextMenu->action(Library::ContextMenu::EntryClear), &QAction::triggered, this, &View::clear);
 		connect(m->contextMenu, &ContextMenu::sigBookmarkTriggered, this, &View::bookmarkTriggered);
 		connect(m->contextMenu, &ContextMenu::sigSortingTriggered, this, &View::sortingTriggered);
-		connect(m->contextMenu->action(ContextMenu::EntryRating), &QAction::triggered, this, &View::ratingChanged);
+		connect(m->contextMenu, &ContextMenu::sigRatingChanged, this, &View::ratingChanged);
 		connect(m->contextMenu->action(ContextMenu::EntryReverse), &QAction::triggered,
 		        m->model, &Model::reverseTracks);
 		connect(m->contextMenu->action(ContextMenu::EntryRandomize), &QAction::triggered,
@@ -328,12 +328,10 @@ namespace Playlist
 		asyncDropHandler->deleteLater();
 	}
 
-	void View::ratingChanged()
+	void View::ratingChanged(const Rating rating)
 	{
-		auto* action = dynamic_cast<QAction*>(sender());
 		if(const auto selections = selectedItems(); !selections.isEmpty())
 		{
-			const auto rating = action->property("rating").value<Rating>();
 			m->model->changeRating(selections, rating);
 		}
 	}
