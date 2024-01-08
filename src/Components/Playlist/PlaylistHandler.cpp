@@ -356,6 +356,7 @@ namespace Playlist
 		}
 
 		m->playlists.removeAt(playlistIndex);
+		emit sigPlaylistClosed(playlistIndex);
 
 		for(const auto& remaningPlaylist: m->playlists)
 		{
@@ -368,10 +369,11 @@ namespace Playlist
 
 		if(m->playlists.isEmpty())
 		{
-			addNewPlaylist(this->requestNewPlaylistName(), true);
+			const auto newIndex = addNewPlaylist(requestNewPlaylistName(), true);
+			setCurrentIndex(newIndex);
 		}
 
-		if(m->currentPlaylistIndex >= m->playlists.count())
+		else if(m->currentPlaylistIndex >= m->playlists.count())
 		{
 			setCurrentIndex(m->currentPlaylistIndex - 1);
 		}
@@ -382,8 +384,6 @@ namespace Playlist
 
 		SetSetting(Set::PL_LastTrack, lastTrack);
 		SetSetting(Set::PL_LastPlaylist, lastPlaylistId);
-
-		emit sigPlaylistClosed(playlistIndex);
 	}
 
 	PlaylistPtr Handler::playlist(const int playlistIndex)

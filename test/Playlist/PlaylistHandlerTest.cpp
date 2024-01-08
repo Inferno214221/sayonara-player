@@ -116,6 +116,27 @@ class PlaylistHandlerTest :
 		[[maybe_unused]] void createCommandLinePlaylist();
 		[[maybe_unused]] void testEmptyPlaylistDeletion();
 		[[maybe_unused]] void testEmptyPlaylistsDeletedOnShutdown();
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testIfClosedSignalIsSentBeforeNewPlaylistIsAdded()
+		{
+			auto plh = createHandler();
+
+			auto isPlaylistAdded = false;
+			auto isPlaylistClosed = false;
+
+			connect(plh.get(), &Playlist::Handler::sigNewPlaylistAdded, this, [&](const auto& /*i*/) {
+				isPlaylistAdded = true;
+				QVERIFY(isPlaylistClosed);
+			});
+
+			connect(plh.get(), &Playlist::Handler::sigPlaylistClosed, this, [&]() {
+				isPlaylistClosed = true;
+				QVERIFY(!isPlaylistAdded);
+			});
+
+			plh->closePlaylist(0);
+		}
 };
 
 [[maybe_unused]] void PlaylistHandlerTest::createTest() // NOLINT(readability-function-cognitive-complexity)
