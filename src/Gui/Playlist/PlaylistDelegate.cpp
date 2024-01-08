@@ -38,6 +38,9 @@ using Playlist::Model;
 
 namespace
 {
+	constexpr const auto RatingLabelOffsetX = 8;
+	constexpr const auto RatingLabelOffsetY = 2;
+
 	inline bool isCurrentTrack(const QModelIndex& index)
 	{
 		return index.data(Model::CurrentPlayingRole).toBool();
@@ -124,22 +127,19 @@ namespace
 
 	QColor getTextColor(const QStyleOptionViewItem& option, bool isCurrentTrack)
 	{
-		const auto standardColor = option.palette.color(QPalette::Active, QPalette::WindowText);
+		const auto& standardColor = option.palette.color(QPalette::Active, QPalette::WindowText);
 		if(isCurrentTrack)
 		{
 			if(Style::isDark())
 			{
 				return getCurrentTrackColor(GetSetting(Set::PL_CurrentTrackCustomColorDark),
 				                            GetSetting(Set::PL_CurrentTrackColorStringDark),
-				                            standardColor);
+				                            {standardColor});
 			}
 
-			else
-			{
-				return getCurrentTrackColor(GetSetting(Set::PL_CurrentTrackCustomColorStandard),
-				                            GetSetting(Set::PL_CurrentTrackColorStringStandard),
-				                            standardColor);
-			}
+			return getCurrentTrackColor(GetSetting(Set::PL_CurrentTrackCustomColorStandard),
+			                            GetSetting(Set::PL_CurrentTrackColorStringStandard),
+			                            {standardColor});
 		}
 
 		return standardColor;
@@ -177,9 +177,9 @@ namespace
 	{
 		setFontStyle(painter, styleItem.isBold, styleItem.isItalic);
 
-		const auto alignment = (alignTop)
-		                       ? (Qt::AlignLeft | Qt::AlignTop)
-		                       : (Qt::AlignLeft | Qt::AlignVCenter);
+		const auto alignment = alignTop
+		                       ? static_cast<int>(Qt::AlignLeft | Qt::AlignTop)
+		                       : static_cast<int>(Qt::AlignLeft | Qt::AlignVCenter);
 
 		const auto fontMetric = painter->fontMetrics();
 		painter->drawText(rect, alignment, fontMetric.elidedText(styleItem.text, Qt::ElideRight, rect.width()));
@@ -205,16 +205,22 @@ namespace
 		}
 	}
 
+	template<typename Widget>
+	void paintRatingWidget(QPainter* painter, Widget* widget, const QRect& rect)
+	{
+		widget->setVerticalOffset(rect.height() / 2);
+		widget->paint(painter, rect);
+	}
+
 	void paintRatingLabel(QPainter* painter, const Rating rating, const QRect& rect)
 	{
 		if(rating != Rating::Last)
 		{
-			painter->translate(0, 2);
+			painter->translate(0, RatingLabelOffsetY);
 
 			auto ratingLabel = RatingLabel(nullptr, true);
 			ratingLabel.setRating(rating);
-			ratingLabel.setVerticalOffset(rect.height() / 2);
-			ratingLabel.paint(painter, rect);
+			paintRatingWidget(painter, &ratingLabel, rect);
 		}
 	}
 
@@ -259,7 +265,7 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
 	if(index.column() == Model::ColumnName::Description)
 	{
 		painter->save();
-		painter->translate(8, 0);
+		painter->translate(RatingLabelOffsetX, 0);
 
 		const auto showRating = GetSetting(Set::PL_ShowRating);
 		drawTrackMetadata(painter, option, index, showRating);
@@ -274,12 +280,11 @@ void Delegate::paint(QPainter* painter, const QStyleOptionViewItem& option, cons
 	}
 }
 
-QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& option, const QModelIndex& index) const
+QWidget* Delegate::createEditor(QWidget* parent, const QStyleOptionViewItem& /*option*/, const QModelIndex& index) const
 {
 	if(const auto rating = parseRating(index); (rating != Rating::Last))
 	{
 		auto* ratingEditor = new RatingEditor(rating, parent);
-		ratingEditor->setVerticalOffset(option.rect.height() / 2);
 
 		connect(ratingEditor, &RatingEditor::sigFinished, this, &Delegate::deleteEditor);
 
@@ -315,5 +320,18 @@ void Delegate::setModelData(QWidget* editor, QAbstractItemModel* model, const QM
 	{
 		const auto rating = ratingEditor->rating();
 		model->setData(index, QVariant::fromValue(rating));
+	}
+}
+
+void Playlist::Delegate::updateEditorGeometry(QWidget* editor, const QStyleOptionViewItem& option,
+                                              const QModelIndex& /*index*/) const
+{
+	if(auto* ratingEditor = dynamic_cast<RatingEditor*>(editor); ratingEditor)
+	{
+		ratingEditor->setVerticalOffset(option.rect.height() / 2);
+
+		auto rect = option.rect;
+		rect.translate(RatingLabelOffsetX, RatingLabelOffsetY);
+		ratingEditor->setGeometry(rect);
 	}
 }
