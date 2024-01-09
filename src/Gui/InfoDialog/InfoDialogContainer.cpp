@@ -36,10 +36,8 @@ struct InfoDialogContainer::Private
 	InfoDialogContainerAsyncHandler* asyncHelper = nullptr;
 };
 
-InfoDialogContainer::InfoDialogContainer()
-{
-	m = Pimpl::make<Private>();
-}
+InfoDialogContainer::InfoDialogContainer() :
+	m {Pimpl::make<Private>()} {}
 
 InfoDialogContainer::~InfoDialogContainer()
 {
@@ -104,7 +102,7 @@ bool InfoDialogContainer::initDialog(OpenMode mode)
 
 		m->infoDialog->setMetadata(MetaDataList(), metadataInterpretation());
 
-		bool started = m->asyncHelper->start();
+		const auto started = m->asyncHelper->start();
 		if(started)
 		{
 			m->infoDialog->show(GUI_InfoDialog::Tab::Info);
@@ -118,17 +116,17 @@ bool InfoDialogContainer::initDialog(OpenMode mode)
 	return m->infoDialog->hasMetadata();
 }
 
-void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
+void InfoDialogContainer::go(const OpenMode mode, const MetaDataList& tracks)
 {
 	m->infoDialog->setBusy(false);
 
-	if(v_md.isEmpty())
+	if(tracks.isEmpty())
 	{
 		m->infoDialog->close();
 		return;
 	}
 
-	m->infoDialog->setMetadata(v_md, metadataInterpretation());
+	m->infoDialog->setMetadata(tracks, metadataInterpretation());
 
 	switch(mode)
 	{
@@ -138,44 +136,33 @@ void InfoDialogContainer::go(OpenMode mode, const MetaDataList& v_md)
 		case OpenMode::Lyrics:
 			m->infoDialog->show(GUI_InfoDialog::Tab::Lyrics);
 			break;
-
 		case OpenMode::Edit:
 			m->infoDialog->show(GUI_InfoDialog::Tab::Edit);
 			break;
-
 		case OpenMode::Cover:
 			m->infoDialog->showCoverEditTab();
 			break;
 	}
 }
 
-bool InfoDialogContainer::hasMetadata() const
-{
-	return true;
-}
+bool InfoDialogContainer::hasMetadata() const { return true; }
 
-QStringList InfoDialogContainer::pathlist() const
-{
-	return QStringList();
-}
+QStringList InfoDialogContainer::pathlist() const { return {}; }
 
 struct InfoDialogContainerAsyncHandler::Private
 {
 	InfoDialogContainer* container = nullptr;
 	OpenMode mode;
-	bool is_running;
+	bool isRunning {false};
 
 	Private(InfoDialogContainer* container, OpenMode mode) :
 		container(container),
-		mode(mode),
-		is_running(false) {}
+		mode(mode) {}
 };
 
-InfoDialogContainerAsyncHandler::InfoDialogContainerAsyncHandler(InfoDialogContainer* container, OpenMode mode) :
-	QObject()
-{
-	m = Pimpl::make<Private>(container, mode);
-}
+InfoDialogContainerAsyncHandler::InfoDialogContainerAsyncHandler(InfoDialogContainer* container, const OpenMode mode) :
+	QObject(),
+	m {Pimpl::make<Private>(container, mode)} {}
 
 InfoDialogContainerAsyncHandler::~InfoDialogContainerAsyncHandler() = default;
 
@@ -183,13 +170,13 @@ bool InfoDialogContainerAsyncHandler::start()
 {
 	using Directory::MetaDataScanner;
 
-	QStringList files = m->container->pathlist();
+	const auto files = m->container->pathlist();
 	if(files.isEmpty())
 	{
 		return false;
 	}
 
-	m->is_running = true;
+	m->isRunning = true;
 	auto* scanner = new MetaDataScanner(files, true);
 	auto* t = new QThread();
 
@@ -205,16 +192,13 @@ bool InfoDialogContainerAsyncHandler::start()
 	return true;
 }
 
-bool InfoDialogContainerAsyncHandler::isRunning() const
-{
-	return m->is_running;
-}
+bool InfoDialogContainerAsyncHandler::isRunning() const { return m->isRunning; }
 
 void InfoDialogContainerAsyncHandler::scannerFinished()
 {
 	auto* scanner = dynamic_cast<Directory::MetaDataScanner*>(sender());
 
-	m->is_running = false;
+	m->isRunning = false;
 	m->container->go(m->mode, scanner->metadata());
 
 	scanner->deleteLater();
