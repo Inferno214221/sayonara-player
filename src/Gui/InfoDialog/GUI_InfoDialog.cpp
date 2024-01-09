@@ -29,6 +29,7 @@
 #include "Components/MetaDataInfo/AlbumInfo.h"
 #include "Components/MetaDataInfo/ArtistInfo.h"
 #include "Components/MetaDataInfo/MetaDataInfo.h"
+#include "Components/Tagging/ChangeNotifier.h"
 #include "Gui/Lyrics/GUI_Lyrics.h"
 #include "Gui/Tagging/GUI_TagEdit.h"
 #include "Gui/Utils/Delegates/StyledItemDelegate.h"
@@ -170,7 +171,11 @@ struct GUI_InfoDialog::Private
 
 GUI_InfoDialog::GUI_InfoDialog(QWidget* parent) :
 	Dialog(parent),
-	m {Pimpl::make<Private>()} {}
+	m {Pimpl::make<Private>()}
+{
+	auto* tagChangeNotifier = Tagging::ChangeNotifier::instance();
+	connect(tagChangeNotifier, &Tagging::ChangeNotifier::sigMetadataChanged, this, &GUI_InfoDialog::metadataChanged);
+}
 
 GUI_InfoDialog::~GUI_InfoDialog() = default;
 
@@ -229,6 +234,27 @@ void GUI_InfoDialog::setMetadata(const MetaDataList& tracks, const MD::Interpret
 }
 
 bool GUI_InfoDialog::hasMetadata() const { return !m->tracks.isEmpty(); }
+
+void GUI_InfoDialog::metadataChanged()
+{
+	auto cache = std::unordered_map<HashValue, int> {};
+	const auto& changedTracks = Tagging::ChangeNotifier::instance()->changedMetadata();
+	int i = 0;
+	for(const auto& [oldTrack, newTrack]: changedTracks)
+	{
+		cache.insert({oldTrack.filepathHash(), i++});
+	}
+
+	for(auto& track: m->tracks)
+	{
+		const auto it = cache.find(track.filepathHash());
+		if(it != cache.end())
+		{
+			auto index = it->second;
+			track = changedTracks[index].second;
+		}
+	}
+}
 
 GUI_InfoDialog::Tab GUI_InfoDialog::show(const GUI_InfoDialog::Tab tab)
 {

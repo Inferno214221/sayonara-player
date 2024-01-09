@@ -71,6 +71,7 @@ class GUI_InfoDialog :
 		void tabIndexChanged(int idx);
 		void writeCoversToTracksClicked();
 		void coverChanged();
+		void metadataChanged();
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		void init();
