@@ -82,7 +82,12 @@ bool InfoDialogContainer::initDialog(OpenMode mode)
 {
 	if(!m->infoDialog)
 	{
-		m->infoDialog = new GUI_InfoDialog(getParentWidget());
+		auto* parent = getParentWidget();
+		m->infoDialog = new GUI_InfoDialog(parent);
+		QObject::connect(m->infoDialog, &GUI_InfoDialog::sigClosed, parent, [this]() {
+			m->infoDialog->deleteLater();
+			m->infoDialog = nullptr;
+		});
 	}
 
 	if(!hasMetadata())
