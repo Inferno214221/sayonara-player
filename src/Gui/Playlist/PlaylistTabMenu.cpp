@@ -30,153 +30,149 @@ using Playlist::TabMenu;
 
 struct TabMenu::Private
 {
-	QAction* action_open_file = nullptr;
-	QAction* action_open_dir = nullptr;
-	QAction* action_delete = nullptr;
-	QAction* action_save = nullptr;
-	QAction* action_save_as = nullptr;
-	QAction* action_save_to_file = nullptr;
-	QAction* action_reset = nullptr;
-	QAction* action_close = nullptr;
-	QAction* action_close_others = nullptr;
-	QAction* action_rename = nullptr;
-	QAction* action_clear = nullptr;
+	QAction* actionOpenFile;
+	QAction* actionOpenDir;
+	QAction* actionDelete;
+	QAction* actionSave;
+	QAction* actionSaveAs;
+	QAction* actionSaveToFile;
+	QAction* actionReset;
+	QAction* actionClose;
+	QAction* actionCloseOthers;
+	QAction* actionRename;
+	QAction* actionClear;
 
-	bool has_preference_action;
+	bool hasPreferenceAction {false};
 
-	Private() :
-		has_preference_action(false) {}
+	explicit Private(QWidget* parent) :
+		actionOpenFile {new QAction(parent)},
+		actionOpenDir {new QAction(parent)},
+		actionDelete {new QAction(parent)},
+		actionSave {new QAction(parent)},
+		actionSaveAs {new QAction(parent)},
+		actionSaveToFile {new QAction(parent)},
+		actionReset {new QAction(parent)},
+		actionClose {new QAction(parent)},
+		actionCloseOthers {new QAction(parent)},
+		actionRename {new QAction(parent)},
+		actionClear {new QAction(parent)},
 };
 
 TabMenu::TabMenu(QWidget* parent) :
-	WidgetTemplate<QMenu>(parent)
+	WidgetTemplate<QMenu>(parent),
+	m {Pimpl::make<Private>(this)}
 {
-	m = Pimpl::make<Private>();
+	const auto actions = QList<QAction*> {
+		m->actionOpenFile,
+		m->actionOpenDir,
+		this->addSeparator(),
+		m->actionReset,
+		this->addSeparator(),
+		m->actionRename,
+		m->actionSave,
+		m->actionSaveAs,
+		m->actionSaveToFile,
+		m->actionDelete,
+		this->addSeparator(),
+		m->actionClear,
+		this->addSeparator(),
+		m->actionCloseOthers,
+		m->actionClose
+	};
 
-	m->action_open_file = new QAction(this);
+	addActions(actions);
 
-	m->action_open_dir = new QAction(this);
-	m->action_reset = new QAction(this);
-	m->action_rename = new QAction(this);
-	m->action_delete = new QAction(this);
-	m->action_save = new QAction(this);
-	m->action_save_as = new QAction(this);
-	m->action_save_to_file = new QAction(this);
-	m->action_clear = new QAction(this);
-	m->action_close = new QAction(this);
-
-	m->action_close_others = new QAction(this);
-
-	QList<QAction*> actions;
-	actions << m->action_open_file
-	        << m->action_open_dir
-	        << this->addSeparator()
-	        << m->action_reset
-	        << this->addSeparator()
-	        << m->action_rename
-	        << m->action_save
-	        << m->action_save_as
-	        << m->action_save_to_file
-	        << m->action_delete
-	        << this->addSeparator()
-	        << m->action_clear
-	        << this->addSeparator()
-	        << m->action_close_others
-	        << m->action_close;
-
-	this->addActions(actions);
-
-	connect(m->action_open_file, &QAction::triggered, this, &TabMenu::sigOpenFileClicked);
-	connect(m->action_open_dir, &QAction::triggered, this, &TabMenu::sigOpenDirClicked);
-	connect(m->action_reset, &QAction::triggered, this, &TabMenu::sigResetClicked);
-	connect(m->action_rename, &QAction::triggered, this, &TabMenu::sigRenameClicked);
-	connect(m->action_delete, &QAction::triggered, this, &TabMenu::sigDeleteClicked);
-	connect(m->action_save, &QAction::triggered, this, &TabMenu::sigSaveClicked);
-	connect(m->action_save_as, &QAction::triggered, this, &TabMenu::sigSaveAsClicked);
-	connect(m->action_save_to_file, &QAction::triggered, this, &TabMenu::sigSaveToFileClicked);
-	connect(m->action_clear, &QAction::triggered, this, &TabMenu::sigClearClicked);
-	connect(m->action_close, &QAction::triggered, this, &TabMenu::sigCloseClicked);
-	connect(m->action_close_others, &QAction::triggered, this, &TabMenu::sigCloseOthersClicked);
+	connect(m->actionOpenFile, &QAction::triggered, this, &TabMenu::sigOpenFileClicked);
+	connect(m->actionOpenDir, &QAction::triggered, this, &TabMenu::sigOpenDirClicked);
+	connect(m->actionReset, &QAction::triggered, this, &TabMenu::sigResetClicked);
+	connect(m->actionRename, &QAction::triggered, this, &TabMenu::sigRenameClicked);
+	connect(m->actionDelete, &QAction::triggered, this, &TabMenu::sigDeleteClicked);
+	connect(m->actionSave, &QAction::triggered, this, &TabMenu::sigSaveClicked);
+	connect(m->actionSaveAs, &QAction::triggered, this, &TabMenu::sigSaveAsClicked);
+	connect(m->actionSaveToFile, &QAction::triggered, this, &TabMenu::sigSaveToFileClicked);
+	connect(m->actionClear, &QAction::triggered, this, &TabMenu::sigClearClicked);
+	connect(m->actionClose, &QAction::triggered, this, &TabMenu::sigCloseClicked);
+	connect(m->actionCloseOthers, &QAction::triggered, this, &TabMenu::sigCloseOthersClicked);
 
 	addPreferenceAction(new PlaylistPreferenceAction(this));
 }
 
 TabMenu::~TabMenu()
 {
-	this->clear();
+	clear();
 }
 
 void TabMenu::languageChanged()
 {
-	m->action_open_file->setText(Lang::get(Lang::OpenFile).triplePt());
-	m->action_open_dir->setText(Lang::get(Lang::OpenDir).triplePt());
-	m->action_reset->setText(Lang::get(Lang::Reset));
-	m->action_rename->setText(Lang::get(Lang::Rename).triplePt());
-	m->action_delete->setText(Lang::get(Lang::Delete));
-	m->action_save->setText(Lang::get(Lang::Save));
-	m->action_save_as->setText(Lang::get(Lang::SaveAs).triplePt());
-	m->action_save_to_file->setText(Lang::get(Lang::SaveToFile));
-	m->action_clear->setText(Lang::get(Lang::Clear));
-	m->action_close->setText(Lang::get(Lang::Close));
-	m->action_close_others->setText(Lang::get(Lang::CloseOthers));
+	m->actionOpenFile->setText(Lang::get(Lang::OpenFile).triplePt());
+	m->actionOpenDir->setText(Lang::get(Lang::OpenDir).triplePt());
+	m->actionReset->setText(Lang::get(Lang::Reset));
+	m->actionRename->setText(Lang::get(Lang::Rename).triplePt());
+	m->actionDelete->setText(Lang::get(Lang::Delete));
+	m->actionSave->setText(Lang::get(Lang::Save));
+	m->actionSaveAs->setText(Lang::get(Lang::SaveAs).triplePt());
+	m->actionSaveToFile->setText(Lang::get(Lang::SaveToFile));
+	m->actionClear->setText(Lang::get(Lang::Clear));
+	m->actionClose->setText(Lang::get(Lang::Close));
+	m->actionCloseOthers->setText(Lang::get(Lang::CloseOthers));
 
-	m->action_rename->setShortcut(QKeySequence("F2"));
-	m->action_save->setShortcut(QKeySequence::Save);
-	m->action_save_as->setShortcut(QKeySequence::SaveAs);
-	m->action_open_file->setShortcut(QKeySequence::Open);
+	m->actionRename->setShortcut(QKeySequence("F2"));
+	m->actionSave->setShortcut(QKeySequence::Save);
+	m->actionSaveAs->setShortcut(QKeySequence::SaveAs);
+	m->actionOpenFile->setShortcut(QKeySequence::Open);
 
 	QKeySequence ks(QKeySequence::Open);
-	m->action_open_dir->setShortcut(QKeySequence("Shift+" + ks.toString()));
+	m->actionOpenDir->setShortcut(QKeySequence("Shift+" + ks.toString()));
 }
 
 void TabMenu::skinChanged()
 {
-	m->action_open_file->setIcon(Icons::icon(Icons::Open));
-	m->action_open_dir->setIcon(Icons::icon(Icons::Open));
+	m->actionOpenFile->setIcon(Icons::icon(Icons::Open));
+	m->actionOpenDir->setIcon(Icons::icon(Icons::Open));
 
-	m->action_reset->setIcon(Icons::icon(Icons::Undo));
-	m->action_rename->setIcon(Icons::icon(Icons::Rename));
-	m->action_delete->setIcon(Icons::icon(Icons::Delete));
-	m->action_save->setIcon(Icons::icon(Icons::Save));
-	m->action_save_as->setIcon(Icons::icon(Icons::SaveAs));
-	m->action_save_to_file->setIcon(Icons::icon(Icons::SaveAs));
-	m->action_clear->setIcon(Icons::icon(Icons::Clear));
-	m->action_close->setIcon(Icons::icon(Icons::Close));
-	m->action_close_others->setIcon(Icons::icon(Icons::Close));
+	m->actionReset->setIcon(Icons::icon(Icons::Undo));
+	m->actionRename->setIcon(Icons::icon(Icons::Rename));
+	m->actionDelete->setIcon(Icons::icon(Icons::Delete));
+	m->actionSave->setIcon(Icons::icon(Icons::Save));
+	m->actionSaveAs->setIcon(Icons::icon(Icons::SaveAs));
+	m->actionSaveToFile->setIcon(Icons::icon(Icons::SaveAs));
+	m->actionClear->setIcon(Icons::icon(Icons::Clear));
+	m->actionClose->setIcon(Icons::icon(Icons::Close));
+	m->actionCloseOthers->setIcon(Icons::icon(Icons::Close));
 }
 
 void TabMenu::showMenuItems(Playlist::MenuEntries entries)
 {
-	m->action_open_file->setVisible(entries & MenuEntry::OpenFile);
-	m->action_open_dir->setVisible(entries & MenuEntry::OpenDir);
-	m->action_reset->setVisible(entries & MenuEntry::Reset);
-	m->action_rename->setVisible(entries & MenuEntry::Rename);
-	m->action_delete->setVisible(entries & MenuEntry::Delete);
-	m->action_save->setVisible(entries & MenuEntry::Save);
-	m->action_save_as->setVisible(entries & MenuEntry::SaveAs);
-	m->action_save_to_file->setVisible(entries & MenuEntry::SaveToFile);
-	m->action_clear->setVisible(entries & MenuEntry::Clear);
-	m->action_close->setVisible(entries & MenuEntry::Close);
-	m->action_close_others->setVisible(entries & MenuEntry::CloseOthers);
+	m->actionOpenFile->setVisible(entries & MenuEntry::OpenFile);
+	m->actionOpenDir->setVisible(entries & MenuEntry::OpenDir);
+	m->actionReset->setVisible(entries & MenuEntry::Reset);
+	m->actionRename->setVisible(entries & MenuEntry::Rename);
+	m->actionDelete->setVisible(entries & MenuEntry::Delete);
+	m->actionSave->setVisible(entries & MenuEntry::Save);
+	m->actionSaveAs->setVisible(entries & MenuEntry::SaveAs);
+	m->actionSaveToFile->setVisible(entries & MenuEntry::SaveToFile);
+	m->actionClear->setVisible(entries & MenuEntry::Clear);
+	m->actionClose->setVisible(entries & MenuEntry::Close);
+	m->actionCloseOthers->setVisible(entries & MenuEntry::CloseOthers);
 }
 
 void TabMenu::showClose(bool b)
 {
-	m->action_close->setVisible(b);
-	m->action_close_others->setVisible(b);
+	m->actionClose->setVisible(b);
+	m->actionCloseOthers->setVisible(b);
 }
 
 void TabMenu::addPreferenceAction(Gui::PreferenceAction* action)
 {
 	QList<QAction*> actions;
 
-	if(!m->has_preference_action)
+	if(!m->hasPreferenceAction)
 	{
-		actions << this->addSeparator();
+		actions << addSeparator();
 	}
 
 	actions << action;
 
-	this->addActions(actions);
-	m->has_preference_action = true;
+	addActions(actions);
+	m->hasPreferenceAction = true;
 }
