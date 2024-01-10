@@ -248,6 +248,8 @@ LanguageString Lang::get(const Lang::Term term, bool* ok)
 			return QObject::tr("Loading");
 		case LoadingArg:
 			return QObject::tr("Loading %1");
+		case LockPlaylist:
+			return QObject::tr("Lock playlist");
 		case InvalidChars:
 			return QObject::tr("Invalid characters");
 		case KB:
@@ -486,7 +488,8 @@ LanguageString Lang::get(const Lang::Term term, bool* ok)
 			[[maybe_unused]] const auto s = QObject::tr("Unknown year");
 		}
 			return {"-"};
-
+		case UnlockPlaylist:
+			return tr("Unlock playlist");
 		case Various:
 			return QObject::tr("Various");
 		case VariousAlbums:
