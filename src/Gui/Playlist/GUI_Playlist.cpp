@@ -201,7 +201,7 @@ GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPl
 
 	connect(ui->twPlaylists, &TabWidget::sigAddTabClicked,
 	        this, [&]() { m->playlistHandler->createEmptyPlaylist(false); });
-	connect(ui->twPlaylists, &TabWidget::tabCloseRequested, m->playlistHandler, &Handler::closePlaylist);
+	connect(ui->twPlaylists, &TabWidget::tabCloseRequested, this, &GUI_Playlist::playlistCloseRequested);
 	connect(ui->twPlaylists, &TabWidget::currentChanged, m->playlistHandler, &Handler::setCurrentIndex);
 	connect(ui->twPlaylists, &TabWidget::sigTabDelete, this, &GUI_Playlist::tabDeletePlaylistClicked);
 	connect(ui->twPlaylists, &TabWidget::sigTabSave, this, &GUI_Playlist::tabSavePlaylistClicked);
@@ -394,6 +394,23 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 		ui->twPlaylists->setCurrentIndex(tabIndex);
 		ui->twPlaylists->checkTabButtons();
 	}
+}
+
+void GUI_Playlist::playlistCloseRequested(const int playlistIndex)
+{
+	const auto playlist = m->playlistHandler->playlist(playlistIndex);
+	const auto isLocked = playlist->isLocked();
+	const auto isSaved = playlist->isTemporary() || !playlist->wasChanged();
+	if(GetSetting(Set::PL_ShowConfirmationOnClose) || isLocked || !isSaved)
+	{
+		const auto answer = Message::question_yn(QString("Do you really want to close %1").arg(playlist->name()));
+		if(answer != Message::Answer::Yes)
+		{
+			return;
+		}
+	}
+
+	m->playlistHandler->closePlaylist(playlistIndex);
 }
 
 void GUI_Playlist::playlistClosed(int playlistIndex)

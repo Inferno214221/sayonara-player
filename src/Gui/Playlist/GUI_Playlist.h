@@ -77,6 +77,7 @@ class GUI_Playlist :
 		void playlistNameChanged(int playlistIndex);
 		void playlistChanged(int playlistIndex);
 		void playlistIdxChanged(int playlistIndex);
+		void playlistCloseRequested(int playlistIndex);
 		void playlistClosed(int playlistIndex);
 
 		// triggered by GUI
