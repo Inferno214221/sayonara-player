@@ -143,12 +143,16 @@ namespace Playlist
 	int Handler::addNewPlaylist(const QString& name, const bool temporary)
 	{
 		const auto index = exists(name);
-		if(index >= 0)
+		if((index >= 0) && !m->playlists[index]->isLocked())
 		{
 			return index;
 		}
 
-		auto playlist = std::make_shared<Playlist>(m->playlists.count(), name, m->playManager);
+		const auto newName = (name.isEmpty())
+		                     ? requestNewPlaylistName()
+		                     : name;
+
+		auto playlist = std::make_shared<Playlist>(m->playlists.count(), newName, m->playManager);
 		playlist->setTemporary(temporary);
 
 		m->playlists.push_back(playlist);

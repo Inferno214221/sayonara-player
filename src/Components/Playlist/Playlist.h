@@ -54,16 +54,16 @@ namespace Playlist
 
 		public:
 			explicit Playlist(int playlistIndex, const QString& name, PlayManager* playManager);
-			virtual ~Playlist() override;
+			~Playlist() override;
 
 			int createPlaylist(const MetaDataList& tracks);
 
-			int currentTrackIndex() const;
+			[[nodiscard]] int currentTrackIndex() const;
 
-			int index() const;
+			[[nodiscard]] int index() const;
 			void setIndex(int idx);
 
-			Mode mode() const;
+			[[nodiscard]] Mode mode() const;
 			void setMode(const Mode& mode);
 
 			void play();
@@ -73,15 +73,15 @@ namespace Playlist
 			void next();
 			bool wakeUp();
 
+			[[nodiscard]] bool isBusy() const;
 			void setBusy(bool b);
-			bool isBusy() const;
 
-			const MetaDataList& tracks() const override;
+			[[nodiscard]] const MetaDataList& tracks() const override;
 
 			bool changeTrack(int index, MilliSeconds positionMs = 0);
 
+			[[nodiscard]] bool wasChanged() const override;
 			void resetChangedStatus();
-			bool wasChanged() const override;
 
 			using Modificator = std::function<MetaDataList(MetaDataList)>;
 			void modifyTracks(Modificator&& modificator);

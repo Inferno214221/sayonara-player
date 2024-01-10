@@ -48,6 +48,9 @@ namespace Playlist
 			[[nodiscard]] bool isTemporary() const;
 			void setTemporary(bool b);
 
+			[[nodiscard]] bool isLocked() const;
+			virtual void setLocked(bool b);
+
 			Util::SaveAsAnswer save();
 			Util::SaveAsAnswer saveAs(const QString& newName);
 			Util::SaveAsAnswer rename(const QString& newName);

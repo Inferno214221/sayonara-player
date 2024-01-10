@@ -116,6 +116,7 @@ namespace Playlist
 		QString name;
 		int id;
 		bool isTemporary {true};
+		bool isLocked {false};
 
 		explicit Private(const QString& name) :
 			name {name},
@@ -220,6 +221,10 @@ namespace Playlist
 	bool DBInterface::isTemporary() const { return m->isTemporary; }
 
 	void DBInterface::setTemporary(bool b) { m->isTemporary = b; }
+
+	bool DBInterface::isLocked() const { return m->isLocked; }
+
+	void DBInterface::setLocked(const bool b) { m->isLocked = b; }
 
 	QString requestNewDatabaseName(QString prefix)
 	{

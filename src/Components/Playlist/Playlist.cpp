@@ -435,8 +435,11 @@ namespace Playlist
 
 	void Playlist::modifyTracks(Modificator&& modificator)
 	{
-		m->tracks = modificator(std::move(m->tracks));
-		setChanged(true);
+		if(!isLocked())
+		{
+			m->tracks = modificator(std::move(m->tracks));
+			setChanged(true);
+		}
 	}
 }
 
