@@ -160,6 +160,7 @@ enum class SettingKey :
 	PL_SpecifyFileystemPlaylistName,
 	PL_StartPlaying,
 	PL_StartPlayingWorkaround_Issue263,
+	PL_ShowConfirmationOnClose,
 	Pitch_found,
 	Player_514Fix,
 	Player_ControlStyle,
@@ -377,9 +378,9 @@ namespace Set
 	CreateSetting(PL_ShowNumbers, bool); // show numbers in playlist
 	CreateSetting(PL_ShowRating, bool); // Show rating in playlist
 	CreateSetting(PL_StartPlaying, bool); // start playing immediately when opening Sayonara
-	CreateSetting(PL_StartPlayingWorkaround_Issue263,
-	              bool); // https://gitlab.com/luciocarreras/sayonara-player/-/issues/263
-	CreateSetting(Player_514Fix, bool); // https://bugs.archlinux.org/task/59451
+	CreateSetting(PL_StartPlayingWorkaround_Issue263, bool); // issue #263
+	CreateSetting(PL_ShowConfirmationOnClose, bool);CreateSetting(Player_514Fix,
+	                                                              bool); // https://bugs.archlinux.org/task/59451
 	CreateSetting(Player_ControlStyle, int); // Big cover or not
 	CreateSetting(Player_FadingCover, bool); // If cover buttons should fade
 	CreateSetting(Player_ForceNativeDirDialog, bool); // Under some environments, native dir dialog is disabled

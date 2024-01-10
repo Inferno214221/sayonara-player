@@ -53,8 +53,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>826</width>
-            <height>837</height>
+            <width>828</width>
+            <height>836</height>
            </rect>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_5">
@@ -162,6 +162,13 @@
             <widget class="QCheckBox" name="cbJumpToCurrentTrack">
              <property name="text">
               <string>Jump to current track in list when track changes</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QCheckBox" name="cbConfirmOnClose">
+             <property name="text">
+              <string>Show confirmation on close</string>
              </property>
             </widget>
            </item>

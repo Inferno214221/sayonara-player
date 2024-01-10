@@ -161,6 +161,7 @@ bool GUI_PlaylistPreferences::commit()
 	SetSetting(Set::PL_SpecifyFileystemPlaylistName,
 	           ui->cbChooseFilesystemPlaylistName->isVisible() &&
 	           ui->cbChooseFilesystemPlaylistName->isChecked());
+	SetSetting(Set::PL_ShowConfirmationOnClose, ui->cbConfirmOnClose->isChecked());
 
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
@@ -212,6 +213,7 @@ void GUI_PlaylistPreferences::revert()
 	ui->cbChooseFilesystemPlaylistName->setChecked(GetSetting(Set::PL_SpecifyFileystemPlaylistName));
 	ui->leFilesystemPlaylistName->setVisible(ui->cbChooseFilesystemPlaylistName->isChecked());
 	ui->leFilesystemPlaylistName->setText(GetSetting(Set::PL_FilesystemPlaylistName));
+	ui->cbConfirmOnClose->setChecked(GetSetting(Set::PL_ShowConfirmationOnClose));
 }
 
 void GUI_PlaylistPreferences::initUi()

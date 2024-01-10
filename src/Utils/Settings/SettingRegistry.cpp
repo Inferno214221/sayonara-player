@@ -189,6 +189,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_SpecifyFileystemPlaylistName>("playlist_specify_filesystem_playlist_name", false);
 	registerSetting<Set::PL_FilesystemPlaylistName>("playlist_filesystem_playlist_name", {});
 	registerSetting<Set::PL_CreateFilesystemPlaylist>("playlist_create_filesystem_playlist", true);
+	registerSetting<Set::PL_ShowConfirmationOnClose>("playlist_confirm_on_close", false);
 
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000); // NOLINT(readability-magic-numbers)
