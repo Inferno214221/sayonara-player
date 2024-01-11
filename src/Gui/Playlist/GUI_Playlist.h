@@ -94,7 +94,7 @@ class GUI_Playlist :
 		void lockTriggered(int playlistIndex, bool b);
 		void contextMenuRequested(int playlistIndex, const QPoint& position);
 
-		void checkTabIcon();
+		void checkTabTextAndIcons();
 
 		void clearButtonPressed(int playlistIndex);
 

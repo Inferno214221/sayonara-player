@@ -24,6 +24,7 @@
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
+#include "Gui/Utils/GuiUtils.h"
 
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/globals.h"
@@ -117,15 +118,15 @@ namespace Playlist
 		connect(m->tabBar, &TabBar::sigTabSave, this, &TabWidget::sigTabSave);
 		connect(m->tabBar, &TabBar::sigTabSaveAs, this, &TabWidget::sigTabSaveAs);
 		connect(m->tabBar, &TabBar::sigTabSaveToFile, this, &TabWidget::sigTabSaveToFile);
-
 		connect(m->tabBar, &TabBar::sigTabRename, this, &TabWidget::sigTabRename);
 		connect(m->tabBar, &TabBar::sigTabDelete, this, &TabWidget::sigTabDelete);
 		connect(m->tabBar, &TabBar::sigTabClear, this, &TabWidget::sigTabClear);
-		connect(m->tabBar, &TabBar::sigCurrentIndexChanged, this, &TabWidget::currentChanged);
 		connect(m->tabBar, &TabBar::sigAddTabClicked, this, &TabWidget::sigAddTabClicked);
 		connect(m->tabBar, &TabBar::sigMetadataDropped, this, &TabWidget::sigMetadataDropped);
 		connect(m->tabBar, &TabBar::sigFilesDropped, this, &TabWidget::sigFilesDropped);
 		connect(m->tabBar, &TabBar::sigLockTriggered, this, &TabWidget::sigLockTriggered);
+
+		connect(m->tabBar, &TabBar::sigCurrentIndexChanged, this, &TabWidget::currentChanged);
 
 		connect(m->tabBar, &TabBar::sigContextMenuRequested, this, &TabWidget::sigContextMenuRequested);
 	}
@@ -152,33 +153,65 @@ namespace Playlist
 		return m->tabBar->getDragOriginTab();
 	}
 
-	View* TabWidget::viewByIndex(int index)
+	void TabWidget::checkTabText(const int tabIndex, const int activeIndex, const QString& playlistName,
+	                             const bool hasChanges, const bool isLocked)
 	{
-		return Util::between(index, this->count() - 1)
-		       ? dynamic_cast<View*>(this->widget(index))
-		       : nullptr;
-	}
+		static const auto tabWidth = Gui::Util::textWidth(fontMetrics(), QStringLiteral("This is enough [X]"));
 
-	View* TabWidget::currentView()
-	{
-		return viewByIndex(currentIndex());
-	}
-
-	void TabWidget::setActiveTab(int index)
-	{
-		for(auto i = 0; i < count(); i++)
+		auto prefix = QString {};
+		if(isLocked)
 		{
-			const auto height = this->fontMetrics().height();
-
-			setIconSize(QSize(height, height));
-			setTabIcon(i, QIcon());
+			prefix.prepend("🔒 ");
 		}
 
-		auto* view = viewByIndex(index);
-		if(view && (view->rowCount() > 0))
+		if(tabIndex == activeIndex)
 		{
-			const auto icon = Gui::Icons::icon(Gui::Icons::PlayBorder);
-			setTabIcon(index, icon);
+			prefix.append("▶ ");
 		}
+
+		if(hasChanges)
+		{
+			prefix.append("*");
+		}
+
+		const auto name = QString("%1%2")
+			.arg(prefix)
+			.arg(playlistName);
+
+		const auto elidedName = fontMetrics().elidedText(name, Qt::ElideRight, tabWidth);
+		setTabText(tabIndex, elidedName);
+		setTabToolTip(tabIndex, playlistName);
+	}
+
+	void
+	TabWidget::showMenu(const QPoint& position, const bool isTemporary, const bool hasChanges, const bool isLocked,
+	                    const int trackCount)
+	{
+		using ::Playlist::MenuEntry;
+
+		const auto saveEnabled = (!isTemporary);
+		const auto saveAsEnabled = true;
+		const auto saveToFileEnabled = (trackCount > 0);
+		const auto deleteEnabled = (!isTemporary);
+		const auto resetEnabled = (!isTemporary && hasChanges);
+		const auto closeEnabled = (count() > 2);
+		const auto clearEnabled = (trackCount > 0);
+
+		auto entries = ::Playlist::MenuEntries {MenuEntry::None};
+
+		entries |= (saveEnabled) ? MenuEntry::Save : 0;
+		entries |= (saveAsEnabled) ? MenuEntry::SaveAs : 0;
+		entries |= (saveToFileEnabled) ? MenuEntry::SaveToFile : 0;
+		entries |= (deleteEnabled) ? MenuEntry::Delete : 0;
+		entries |= (resetEnabled) ? MenuEntry::Reset : 0;
+		entries |= (closeEnabled) ? MenuEntry::Close : 0;
+		entries |= (closeEnabled) ? MenuEntry::CloseOthers : 0;
+		entries |= (clearEnabled) ? MenuEntry::Clear : 0;
+		entries |= MenuEntry::OpenFile;
+		entries |= MenuEntry::OpenDir;
+		entries |= MenuEntry::Rename;
+		entries |= (isLocked) ? MenuEntry::Unlock : MenuEntry::Lock;
+
+		showMenuItems(entries, position);
 	}
 }

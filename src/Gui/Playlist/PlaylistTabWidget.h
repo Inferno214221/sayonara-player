@@ -56,17 +56,18 @@ namespace Playlist
 			explicit TabWidget(QWidget* parent = nullptr);
 			~TabWidget() override;
 
-			void showMenuItems(MenuEntries actions, const QPoint& position);
 			void checkTabButtons();
 
-			bool wasDragFromPlaylist() const;
-			int getDragOriginTab() const;
+			[[nodiscard]] bool wasDragFromPlaylist() const;
+			[[nodiscard]] int getDragOriginTab() const;
 
-			View* viewByIndex(int index);
-			View* currentView();
+			void
+			checkTabText(int tabIndex, int activeIndex, const QString& playlistName, bool hasChanges, bool isLocked);
+			void showMenu(const QPoint& position, bool isTemporary, bool hasChanges, bool isLocked, int trackCount);
 
-		public slots:
-			void setActiveTab(int index);
+		private:
+			void showMenuItems(MenuEntries actions, const QPoint& position);
+
 	};
 }
 
