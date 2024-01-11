@@ -51,7 +51,7 @@ namespace
 					tracks << pathTrackMap[i].second;
 				}
 
-				Playlist::appendTracks(*m_playlist, tracks);
+				Playlist::appendTracks(*m_playlist, tracks, Playlist::Reason::Undefined);
 			}
 
 			~PlaylistCreatorMock() override = default;

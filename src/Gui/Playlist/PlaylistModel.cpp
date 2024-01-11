@@ -356,17 +356,17 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 
 void Model::clear()
 {
-	::Playlist::clear(*m->playlist);
+	::Playlist::clear(*m->playlist, Reason::UserInterface);
 }
 
 void Model::removeTracks(const IndexSet& indexes)
 {
-	::Playlist::removeTracks(*m->playlist, indexes);
+	::Playlist::removeTracks(*m->playlist, indexes, Reason::UserInterface);
 }
 
 IndexSet Model::moveTracks(const IndexSet& indexes, int targetIndex)
 {
-	return ::Playlist::moveTracks(*m->playlist, indexes, targetIndex);
+	return ::Playlist::moveTracks(*m->playlist, indexes, targetIndex, Reason::UserInterface);
 }
 
 IndexSet Model::moveTracksUp(const IndexSet& indexes)
@@ -389,12 +389,12 @@ IndexSet Model::moveTracksDown(const IndexSet& indexes)
 
 }
 
-IndexSet Model::copyTracks(const IndexSet& indexes, int target_index)
+IndexSet Model::copyTracks(const IndexSet& indexes, const int targetIndex)
 {
-	return ::Playlist::copyTracks(*m->playlist, indexes, target_index);
+	return ::Playlist::copyTracks(*m->playlist, indexes, targetIndex, Reason::UserInterface);
 }
 
-void Model::changeRating(const IndexSet& indexes, Rating rating)
+void Model::changeRating(const IndexSet& indexes, const Rating rating)
 {
 	const auto& playlistTracks = m->playlist->tracks();
 
@@ -422,12 +422,12 @@ void Model::changeRating(const IndexSet& indexes, Rating rating)
 	}
 }
 
-void Model::insertTracks(const MetaDataList& tracks, int row)
+void Model::insertTracks(const MetaDataList& tracks, const int row)
 {
-	::Playlist::insertTracks(*m->playlist, tracks, row);
+	::Playlist::insertTracks(*m->playlist, tracks, row, Reason::UserInterface);
 }
 
-void Model::insertTracks(const QStringList& files, int row)
+void Model::insertTracks(const QStringList& files, const int row)
 {
 	auto* playlistGenerator = new LocalPathProcessor(m->playlist);
 	connect(playlistGenerator, &LocalPathProcessor::sigFinished, playlistGenerator, &QObject::deleteLater);
@@ -436,17 +436,17 @@ void Model::insertTracks(const QStringList& files, int row)
 
 void Model::reverseTracks()
 {
-	::Playlist::reverse(*m->playlist);
+	::Playlist::reverse(*m->playlist, Reason::UserInterface);
 }
 
 void Model::randomizeTracks()
 {
-	::Playlist::randomize(*m->playlist);
+	::Playlist::randomize(*m->playlist, Reason::UserInterface);
 }
 
 void Model::sortTracks(Library::SortOrder sortOrder)
 {
-	::Playlist::sortTracks(*m->playlist, sortOrder);
+	::Playlist::sortTracks(*m->playlist, sortOrder, Reason::UserInterface);
 }
 
 void Playlist::Model::jumpToNextAlbum()
@@ -596,7 +596,7 @@ void Model::setDragIndex(int dragIndex)
 void Model::refreshData()
 {
 	m->coverLookupMap.clear();
-	::Playlist::enableAll(*m->playlist);
+	::Playlist::enableAll(*m->playlist, Reason::UserInterface);
 }
 
 void Model::lookChanged()
@@ -664,7 +664,7 @@ void Playlist::Model::deleteTracks(const IndexSet& rows)
 		}
 	}
 
-	::Playlist::removeTracks(*m->playlist, rows);
+	::Playlist::removeTracks(*m->playlist, rows, Reason::TracksDeleted);
 	m->libraryInteractor->deleteTracks(tracks);
 }
 

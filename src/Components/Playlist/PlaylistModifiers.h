@@ -30,18 +30,43 @@ namespace Playlist
 {
 	class Playlist;
 
-	void reverse(Playlist& playlist);
-	void randomize(Playlist& playlist);
-	void sortTracks(Playlist& playlist, Library::SortOrder sortOrder);
+	enum Reason
+	{
+		DynamicPlayback = 0,
+		ReloadFromDatabase,
+		Library,
+		AsyncPlaylistCreator,
+		StreamHistory,
+		TracksDeleted,
+		UserInterface,
+		Undefined
+	};
 
-	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow);
-	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, int targetRow);
-	void insertTracks(Playlist& playlist, const MetaDataList& tracks, int targetRow);
-	void appendTracks(Playlist& playlist, const MetaDataList& tracks);
-	void removeTracks(Playlist& playlist, const IndexSet& indexes);
-	void clear(Playlist& playlist);
+	enum class Operation :
+		uint8_t
+	{
+		Arrange = 0,
+		Append,
+		Clear,
+		Duplicate,
+		EnableAll,
+		Insert,
+		Rebuild,
+		Remove
+	};
+
+	void reverse(Playlist& playlist, Reason reason);
+	void randomize(Playlist& playlist, Reason reason);
+	void sortTracks(Playlist& playlist, Library::SortOrder sortOrder, Reason reason);
+
+	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow, Reason reason);
+	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, int targetRow, Reason reason);
+	void insertTracks(Playlist& playlist, const MetaDataList& tracks, int targetRow, Reason reason);
+	void appendTracks(Playlist& playlist, const MetaDataList& tracks, Reason reason);
+	void removeTracks(Playlist& playlist, const IndexSet& indexes, Reason reason);
+	void clear(Playlist& playlist, Reason reason);
 	int count(const Playlist& playlist);
-	void enableAll(Playlist& playlist);
+	void enableAll(Playlist& playlist, Reason reason);
 
 	MilliSeconds runningTime(const Playlist& playlist);
 	void jumpToNextAlbum(Playlist& playlist);

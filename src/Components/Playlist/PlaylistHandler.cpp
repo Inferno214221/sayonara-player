@@ -443,7 +443,7 @@ namespace Playlist
 		if(GetSetting(Set::Stream_ShowHistory))
 		{
 			auto playlist = activePlaylist();
-			insertTracks(*playlist, MetaDataList {track}, playlist->currentTrackIndex());
+			insertTracks(*playlist, MetaDataList {track}, playlist->currentTrackIndex(), Reason::StreamHistory);
 		}
 	}
 }

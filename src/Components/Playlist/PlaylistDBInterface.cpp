@@ -269,7 +269,7 @@ namespace Playlist
 				auto* playlistConnector = DB::Connector::instance()->playlistConnector();
 				const auto p = playlistConnector->getPlaylistById(playlist.id(), true);
 				return p.tracks();
-			});
+			}, Reason::ReloadFromDatabase, Operation::Rebuild);
 
 			playlist.resetChangedStatus();
 		}

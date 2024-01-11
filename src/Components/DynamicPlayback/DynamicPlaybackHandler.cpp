@@ -47,7 +47,7 @@ namespace
 	void appendTrack(PlaylistAccessor* playlistAccessor, const MetaData& track)
 	{
 		auto activePlaylist = playlistAccessor->activePlaylist();
-		Playlist::appendTracks(*activePlaylist, MetaDataList {track});
+		Playlist::appendTracks(*activePlaylist, MetaDataList {track}, Playlist::Reason::DynamicPlayback);
 	}
 
 	QMap<ArtistId, MetaDataList>

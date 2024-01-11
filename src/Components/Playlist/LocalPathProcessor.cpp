@@ -63,7 +63,7 @@ namespace Playlist
 		const auto mode = m->playlist->mode();
 		if(!Mode::isActiveAndEnabled(mode.append()))
 		{
-			clear(*m->playlist);
+			clear(*m->playlist, Reason::AsyncPlaylistCreator);
 		}
 
 		insertPaths(paths, count(*m->playlist));
@@ -104,18 +104,18 @@ namespace Playlist
 
 		if(m->targetRowIndex < 0)
 		{
-			clear(*m->playlist);
-			insertTracks(*m->playlist, tracks, 0);
+			clear(*m->playlist, Reason::AsyncPlaylistCreator);
+			insertTracks(*m->playlist, tracks, 0, Reason::AsyncPlaylistCreator);
 		}
 
 		else if(m->targetRowIndex >= count(*m->playlist))
 		{
-			appendTracks(*m->playlist, tracks);
+			appendTracks(*m->playlist, tracks, Reason::AsyncPlaylistCreator);
 		}
 
 		else
 		{
-			insertTracks(*m->playlist, tracks, m->targetRowIndex);
+			insertTracks(*m->playlist, tracks, m->targetRowIndex, Reason::AsyncPlaylistCreator);
 		}
 
 		emit sigFinished(); // NOLINT(readability-misleading-indentation)

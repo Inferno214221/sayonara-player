@@ -100,7 +100,7 @@ namespace Playlist
 			IndexSet moveTracks(const IndexSet& rows, int targetIndex);
 			IndexSet moveTracksUp(const IndexSet& rows);
 			IndexSet moveTracksDown(const IndexSet& rows);
-			IndexSet copyTracks(const IndexSet& rows, int target_index);
+			IndexSet copyTracks(const IndexSet& rows, int targetIndex);
 			void insertTracks(const MetaDataList& tracks, int row);
 			void insertTracks(const QStringList& files, int row);
 

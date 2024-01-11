@@ -35,6 +35,8 @@
 #include "Utils/Utils.h"
 
 #include <QMultiHash>
+#include <tuple>
+#include <optional>
 
 namespace Playlist
 {
@@ -101,6 +103,26 @@ namespace Playlist
 			}
 
 			return ret;
+		}
+
+		bool checkIfOperationIsPossible(const Reason reason, const Operation operation)
+		{
+			using Condition = std::tuple<Reason, Operation, std::optional<bool>>;
+			const auto allowedOperations = QList<Condition> {
+				Condition {DynamicPlayback, Operation::Append, GetSetting(Set::PL_ModificatorAllowDynamicPlayback)},
+				Condition {ReloadFromDatabase, Operation::Rebuild, {}},
+				Condition {StreamHistory, Operation::Insert, {}},
+				Condition {TracksDeleted, Operation::Remove, {}},
+				Condition {UserInterface, Operation::Arrange, GetSetting(Set::PL_ModificatorAllowRearrangeMethods)},
+				Condition {UserInterface, Operation::EnableAll, {}},
+			};
+
+			return Util::Algorithm::contains(allowedOperations, [reason, operation](const auto allowed) {
+				const auto settingCondition = std::get<2>(allowed);
+				return (std::get<Reason>(allowed) == reason) &&
+				       (std::get<Operation>(allowed) == operation) &&
+				       (!settingCondition.has_value() || (settingCondition.value() == true));
+			});
 		}
 	}
 
@@ -433,13 +455,16 @@ namespace Playlist
 
 	const MetaDataList& Playlist::tracks() const { return m->tracks; }
 
-	void Playlist::modifyTracks(Modificator&& modificator)
+	void Playlist::modifyTracks(Modificator&& modificator, const Reason reason, const Operation operation)
 	{
-		if(!isLocked())
+		if(isLocked() && !checkIfOperationIsPossible(reason, operation))
 		{
-			m->tracks = modificator(std::move(m->tracks));
-			setChanged(true);
+			return;
 		}
+
+		m->tracks = modificator(std::move(m->tracks));
+		setChanged(true);
 	}
 }
+
 

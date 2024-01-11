@@ -33,31 +33,31 @@
 
 namespace Playlist
 {
-	void reverse(Playlist& playlist)
+	void reverse(Playlist& playlist, const Reason reason)
 	{
 		playlist.modifyTracks([](auto tracks) {
 			std::reverse(tracks.begin(), tracks.end());
 			return tracks;
-		});
+		}, reason, Operation::Arrange);
 	}
 
-	void randomize(Playlist& playlist)
+	void randomize(Playlist& playlist, const Reason reason)
 	{
 		playlist.modifyTracks([](auto tracks) {
 			Util::Algorithm::shuffle(tracks);
 			return tracks;
-		});
+		}, reason, Operation::Arrange);
 	}
 
-	void sortTracks(Playlist& playlist, const ::Library::SortOrder sortOrder)
+	void sortTracks(Playlist& playlist, const ::Library::SortOrder sortOrder, const Reason reason)
 	{
 		playlist.modifyTracks([&](auto tracks) {
 			MetaDataSorting::sortMetadata(tracks, sortOrder, GetSetting(Set::Lib_SortModeMask));
 			return tracks;
-		});
+		}, reason, Operation::Arrange);
 	}
 
-	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow)
+	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow, const Reason reason)
 	{
 		const auto lineCountBeforeTarget = Util::Algorithm::count(indexes, [&](const auto index) {
 			return (index < targetRow);
@@ -72,12 +72,12 @@ namespace Playlist
 		playlist.modifyTracks([&](auto tracks) {
 			tracks.moveTracks(indexes, targetRow);
 			return tracks;
-		});
+		}, reason, Operation::Arrange);
 
 		return newTrackPositions;
 	}
 
-	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, int targetRow)
+	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, const int targetRow, const Reason reason)
 	{
 		IndexSet newTrackPositions;
 		for(auto i = 0; i < indexes.count(); i++)
@@ -88,28 +88,28 @@ namespace Playlist
 		playlist.modifyTracks([&](auto tracks) {
 			tracks.copyTracks(indexes, targetRow);
 			return tracks;
-		});
+		}, reason, Operation::Duplicate);
 
 		return newTrackPositions;
 	}
 
-	void removeTracks(Playlist& playlist, const IndexSet& indexes)
+	void removeTracks(Playlist& playlist, const IndexSet& indexes, const Reason reason)
 	{
 		playlist.modifyTracks([&](auto tracks) {
 			tracks.removeTracks(indexes);
 			return tracks;
-		});
+		}, reason, Operation::Remove);
 	}
 
-	void insertTracks(Playlist& playlist, const MetaDataList& newTracks, int targetIndex)
+	void insertTracks(Playlist& playlist, const MetaDataList& newTracks, int targetIndex, const Reason reason)
 	{
 		playlist.modifyTracks([&](auto tracks) {
 			tracks.insertTracks(newTracks, targetIndex);
 			return tracks;
-		});
+		}, reason, Operation::Insert);
 	}
 
-	void appendTracks(Playlist& playlist, const MetaDataList& newTracks)
+	void appendTracks(Playlist& playlist, const MetaDataList& newTracks, const Reason reason)
 	{
 		if(playlist.isBusy())
 		{
@@ -125,10 +125,10 @@ namespace Playlist
 				track.setDisabled(isDisabled);
 			});
 			return tracks;
-		});
+		}, reason, Operation::Append);
 	}
 
-	void enableAll(Playlist& playlist)
+	void enableAll(Playlist& playlist, const Reason reason)
 	{
 		playlist.modifyTracks([](auto tracks) {
 			for(auto& track: tracks)
@@ -137,16 +137,16 @@ namespace Playlist
 			}
 
 			return tracks;
-		});
+		}, reason, Operation::EnableAll);
 	}
 
-	void clear(Playlist& playlist)
+	void clear(Playlist& playlist, const Reason reason)
 	{
 		if(!playlist.tracks().isEmpty())
 		{
 			playlist.modifyTracks([&](auto /*tracks*/) {
 				return MetaDataList {};
-			});
+			}, reason, Operation::Clear);
 		}
 	}
 

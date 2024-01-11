@@ -22,6 +22,7 @@
 #define SAYONARA_COMPONENTS_PLAYLIST
 
 #include "PlaylistDBInterface.h"
+#include "PlaylistModifiers.h"
 
 #include "Utils/Playlist/PlaylistFwd.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -84,7 +85,7 @@ namespace Playlist
 			void resetChangedStatus();
 
 			using Modificator = std::function<MetaDataList(MetaDataList)>;
-			void modifyTracks(Modificator&& modificator);
+			void modifyTracks(Modificator&& modificator, Reason reason, Operation operation);
 
 		protected:
 			void setChanged(bool b) override;

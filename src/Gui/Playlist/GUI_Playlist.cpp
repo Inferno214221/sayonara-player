@@ -256,7 +256,7 @@ void GUI_Playlist::clearButtonPressed(int playlistIndex)
 {
 	if(auto playlist = m->playlistHandler->playlist(playlistIndex); playlist)
 	{
-		Playlist::clear(*playlist);
+		Playlist::clear(*playlist, Playlist::Reason::UserInterface);
 	}
 }
 
@@ -280,12 +280,12 @@ void GUI_Playlist::tabMetadataDropped(int playlistIndex, const MetaDataList& tra
 	{
 		if(originTab == playlistIndex)
 		{
-			Playlist::insertTracks(*playlist, tracks, 0);
+			Playlist::insertTracks(*playlist, tracks, 0, Playlist::Reason::UserInterface);
 		}
 
 		else
 		{
-			Playlist::appendTracks(*playlist, tracks);
+			Playlist::appendTracks(*playlist, tracks, Playlist::Reason::UserInterface);
 		}
 	}
 }

@@ -347,7 +347,7 @@ void PlaylistDbInterfaceTest::testWithTracks()
 
 	{
 		const auto track = Test::createTrack(0, "title", "artist", "album");
-		::Playlist::appendTracks(playlist, MetaDataList {track});
+		::Playlist::appendTracks(playlist, MetaDataList {track}, Playlist::Reason::Undefined);
 
 		const auto dbPlaylist = m_playlistConnector->getPlaylistById(playlist.id(), true);
 		QVERIFY(!isEqual(playlist, dbPlaylist));

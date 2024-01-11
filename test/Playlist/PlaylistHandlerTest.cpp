@@ -81,7 +81,7 @@ namespace
 		for(const auto& track: tracks)
 		{
 			auto& playlist = *plh->playlist(i);
-			Playlist::appendTracks(playlist, MetaDataList {track});
+			Playlist::appendTracks(playlist, MetaDataList {track}, Playlist::Reason::Undefined);
 
 			i = (i + 1) % playlistCount;
 		}
@@ -366,9 +366,9 @@ class PlaylistHandlerTest :
 
 	QVERIFY(plh->count() == PlaylistCount);
 
-	Playlist::clear(*plh->playlist(0));
-	Playlist::clear(*plh->playlist(2));
-	Playlist::clear(*plh->playlist(4));
+	Playlist::clear(*plh->playlist(0), Playlist::Reason::Undefined);
+	Playlist::clear(*plh->playlist(2), Playlist::Reason::Undefined);
+	Playlist::clear(*plh->playlist(4), Playlist::Reason::Undefined);
 
 	auto spy = QSignalSpy(plh.get(), &Playlist::Handler::sigPlaylistClosed);
 

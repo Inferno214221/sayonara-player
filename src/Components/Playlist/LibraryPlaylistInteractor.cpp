@@ -93,13 +93,13 @@ namespace
 
 			void append(const MetaDataList& tracks) override
 			{
-				Playlist::appendTracks(*m_playlistHandler->activePlaylist(), tracks);
+				Playlist::appendTracks(*m_playlistHandler->activePlaylist(), tracks, Playlist::Reason::Library);
 			}
 
 			void insertAfterCurrentTrack(const MetaDataList& tracks) override
 			{
 				auto playlist = m_playlistHandler->activePlaylist();
-				Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1);
+				Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1, Playlist::Reason::Library);
 			}
 
 		private:

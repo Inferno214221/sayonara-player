@@ -131,7 +131,7 @@ void PlaylistTest::modifyTest()
 			indexes << 4;
 		}
 
-		Playlist::moveTracks(playlist, indexes, 75);
+		Playlist::moveTracks(playlist, indexes, 75, Playlist::Reason::Undefined);
 		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 46);
 	}
@@ -145,7 +145,7 @@ void PlaylistTest::modifyTest()
 			indexes << 6;        // new 9
 		}
 
-		Playlist::moveTracks(playlist, indexes, 10);
+		Playlist::moveTracks(playlist, indexes, 10, Playlist::Reason::Undefined);
 		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 11);
 	}
@@ -157,7 +157,7 @@ void PlaylistTest::modifyTest()
 			indexes << 12;        // new 19
 		}
 
-		Playlist::moveTracks(playlist, indexes, 20);
+		Playlist::moveTracks(playlist, indexes, 20, Playlist::Reason::Undefined);
 		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 18);
 	}
@@ -180,7 +180,7 @@ void PlaylistTest::modifyTest()
 			indexes << 4;
 		}
 
-		Playlist::removeTracks(playlist, indexes);
+		Playlist::removeTracks(playlist, indexes, Playlist::Reason::Undefined);
 		currentIndex = playlist.currentTrackIndex();
 		QVERIFY(currentIndex == 14);
 	}
@@ -196,7 +196,7 @@ void PlaylistTest::modifyTest()
 		}
 	}
 
-	Playlist::removeTracks(playlist, indexes);
+	Playlist::removeTracks(playlist, indexes, Playlist::Reason::Undefined);
 	currentIndex = playlist.currentTrackIndex();
 	QVERIFY(currentIndex == -1);
 }
@@ -208,7 +208,7 @@ void PlaylistTest::insertTest()
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(0, 3);
-		Playlist::insertTracks(playlist, tracks, 20);
+		Playlist::insertTracks(playlist, tracks, 20, Playlist::Reason::Undefined);
 
 		const auto playlistTracks = playlist.tracks();
 		QVERIFY(Playlist::count(playlist) == 3);
@@ -219,13 +219,13 @@ void PlaylistTest::insertTest()
 			QVERIFY(playlistTracks[i].id() == i);
 		}
 
-		Playlist::clear(playlist);
+		Playlist::clear(playlist, Playlist::Reason::Undefined);
 		QVERIFY(Playlist::count(playlist) == 0);
 	}
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(0, 3);
-		Playlist::insertTracks(playlist, tracks, -1);
+		Playlist::insertTracks(playlist, tracks, -1, Playlist::Reason::Undefined);
 
 		const auto playlistTracks = playlist.tracks();
 		QVERIFY(Playlist::count(playlist) == 3);
@@ -239,7 +239,7 @@ void PlaylistTest::insertTest()
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(3, 4);
-		Playlist::insertTracks(playlist, tracks, -1);
+		Playlist::insertTracks(playlist, tracks, -1, Playlist::Reason::Undefined);
 
 		const auto playlistTracks = playlist.tracks();
 		QVERIFY(Playlist::count(playlist) == 4);
@@ -250,7 +250,7 @@ void PlaylistTest::insertTest()
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(4, 5);
-		Playlist::insertTracks(playlist, tracks, 3);
+		Playlist::insertTracks(playlist, tracks, 3, Playlist::Reason::Undefined);
 
 		const auto playlistTracks = playlist.tracks();
 		QVERIFY(Playlist::count(playlist) == 5);
@@ -261,7 +261,7 @@ void PlaylistTest::insertTest()
 
 	{
 		const auto tracks = Test::Playlist::createTrackList(5, 6);
-		Playlist::insertTracks(playlist, tracks, Playlist::count(playlist));
+		Playlist::insertTracks(playlist, tracks, Playlist::count(playlist), Playlist::Reason::Undefined);
 
 		const auto playlistTracks = playlist.tracks();
 		QVERIFY(Playlist::count(playlist) == 6);
@@ -359,7 +359,7 @@ void PlaylistTest::uniqueIdTest()
 		return track.uniqueId();
 	});
 
-	Playlist::reverse(*playlist);
+	Playlist::reverse(*playlist, Playlist::Reason::Undefined);
 
 	auto newUniqueIds = QList<UniqueId> {};
 	Util::Algorithm::transform(playlist->tracks(), newUniqueIds, [](const auto& track) {
