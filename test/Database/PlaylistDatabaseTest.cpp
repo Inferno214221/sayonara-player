@@ -66,7 +66,7 @@ class PlaylistDatabaseTest :
 
 			for(const auto& testCase: testCases)
 			{
-				auto id = playlistDb->createPlaylist(testCase.playlistName, testCase.temporary);
+				auto id = playlistDb->createPlaylist(testCase.playlistName, testCase.temporary, false);
 				const auto playlist = playlistDb->getPlaylistById(id, false);
 
 				QVERIFY(id >= 0);
@@ -89,7 +89,7 @@ class PlaylistDatabaseTest :
 			constexpr const auto* name = "My Radio Station";
 			const auto track = createRadioTrack(url, name);
 
-			const auto id = playlistDb->createPlaylist("my playlist", false);
+			const auto id = playlistDb->createPlaylist("my playlist", false, false);
 			const auto success = playlistDb->insertTrackIntoPlaylist(track, id, 0);
 			QVERIFY(success);
 

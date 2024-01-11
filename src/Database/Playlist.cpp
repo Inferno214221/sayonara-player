@@ -96,7 +96,8 @@ namespace
 			{
 				QStringLiteral("playlists.playlistID AS playlistID"),
 				QStringLiteral("playlists.playlist   AS playlistName"),
-				QStringLiteral("playlists.temporary  AS temporary")
+				QStringLiteral("playlists.temporary  AS temporary"),
+				QStringLiteral("playlists.isLocked   AS isLocked")
 			};
 
 		static const auto joinedFields = fields.join(", ");
@@ -150,6 +151,7 @@ DB::Playlist::getAllPlaylists(::Playlist::StoreType storeType, const bool getTra
 
 		const auto isTemporary = (query.value(2) != 0);
 		customPlaylist.setTemporary(isTemporary);
+		customPlaylist.setLocked(query.value(3) != 0);
 
 		if(getTracks)
 		{
@@ -194,6 +196,7 @@ CustomPlaylist DB::Playlist::getPlaylistById(const int playlistId, const bool ge
 
 		const auto temporary = (query.value(2) != 0);
 		result.setTemporary(temporary);
+		result.setLocked(query.value(3) != 0);
 
 		if(getTracks)
 		{
@@ -429,12 +432,13 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int play
 	return !hasError(query);
 }
 
-int DB::Playlist::createPlaylist(const QString& playlistName, const bool temporary)
+int DB::Playlist::createPlaylist(const QString& playlistName, const bool temporary, const bool isLocked)
 {
 	const auto query = insert("playlists",
 	                          {
 		                          {"playlist",  Util::convertNotNull(playlistName)},
-		                          {"temporary", temporary ? 1 : 0}
+		                          {"temporary", temporary ? 1 : 0},
+		                          {"isLocked",  isLocked ? 1 : 0}
 	                          }, "Cannot create playlist");
 
 	return hasError(query)
@@ -442,7 +446,7 @@ int DB::Playlist::createPlaylist(const QString& playlistName, const bool tempora
 	       : query.lastInsertId().toInt();
 }
 
-bool DB::Playlist::updatePlaylist(const int playlistId, const QString& name, const bool temporary)
+bool DB::Playlist::updatePlaylist(const int playlistId, const QString& name, const bool temporary, const bool isLocked)
 {
 	const auto playlist = getPlaylistById(playlistId, false);
 	const auto existingId = getPlaylistIdByName(name);
@@ -456,7 +460,8 @@ bool DB::Playlist::updatePlaylist(const int playlistId, const QString& name, con
 	const auto q = update("playlists",
 	                      {
 		                      {"temporary", temporary ? 1 : 0},
-		                      {"playlist",  Util::convertNotNull(name)}
+		                      {"playlist",  Util::convertNotNull(name)},
+		                      {"isLocked",  isLocked ? 1 : 0}
 	                      },
 	                      {"playlistId", playlistId}, "Cannot update playlist");
 

@@ -40,16 +40,19 @@ class CustomPlaylist
 
 		~CustomPlaylist();
 
-		int id() const;
+		[[nodiscard]] int id() const;
 		void setId(int id);
 
-		QString name() const;
+		[[nodiscard]] QString name() const;
 		void setName(const QString& name);
 
-		bool isTemporary() const;
+		[[nodiscard]] bool isTemporary() const;
 		void setTemporary(bool temporary);
 
-		MetaDataList tracks() const;
+		[[nodiscard]] bool isLocked() const;
+		void setLocked(bool locked);
+
+		[[nodiscard]] MetaDataList tracks() const;
 		void setTracks(const MetaDataList& tracks);
 		void setTracks(MetaDataList&& tracks);
 };

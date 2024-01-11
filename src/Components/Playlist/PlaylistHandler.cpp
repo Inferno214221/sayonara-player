@@ -191,6 +191,7 @@ namespace Playlist
 		auto& createdPlaylist = m->playlists[index];
 		createdPlaylist->setId(playlist.id());
 		createdPlaylist->setChanged(false);
+		createdPlaylist->setLocked(playlist.isLocked());
 
 		return m->currentPlaylistIndex;
 	}

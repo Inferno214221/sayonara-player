@@ -59,9 +59,9 @@ namespace DB
 			QList<CustomPlaylist> getAllPlaylists(PlaylistStoreType storeType, bool getTracks,
 			                                      PlaylistSortOrder sortOrder = PlaylistSortOrder::NameAsc);
 
-			int createPlaylist(const QString& playlistName, bool temporary);
+			int createPlaylist(const QString& playlistName, bool temporary, bool isLocked);
 			bool updatePlaylistTracks(int playlistId, const MetaDataList& tracks);
-			bool updatePlaylist(int playlistId, const QString& name, bool temporary);
+			bool updatePlaylist(int playlistId, const QString& name, bool temporary, bool isLocked);
 			bool renamePlaylist(int playlistId, const QString& newName);
 
 			bool deletePlaylist(int playlistId);

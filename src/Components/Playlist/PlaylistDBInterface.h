@@ -51,6 +51,9 @@ namespace Playlist
 			[[nodiscard]] bool isLocked() const;
 			virtual void setLocked(bool b);
 
+			bool lock();
+			bool unlock();
+
 			Util::SaveAsAnswer save();
 			Util::SaveAsAnswer saveAs(const QString& newName);
 			Util::SaveAsAnswer rename(const QString& newName);

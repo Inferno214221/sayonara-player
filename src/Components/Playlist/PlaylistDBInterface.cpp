@@ -72,10 +72,10 @@ namespace Playlist
 			return success;
 		}
 
-		bool updatePlaylist(const QString& name, bool isTemporary, Playlist::DBInterface* playlist,
+		bool updatePlaylist(const QString& name, bool isTemporary, bool isLocked, Playlist::DBInterface* playlist,
 		                    DB::Playlist* playlistConnector)
 		{
-			auto success = playlistConnector->updatePlaylist(playlist->id(), name, isTemporary);
+			auto success = playlistConnector->updatePlaylist(playlist->id(), name, isTemporary, isLocked);
 			if(!success)
 			{
 				spLog(Log::Warning, ClassName) << "Cannot update playlist " << playlist->id() << ": "
@@ -85,14 +85,15 @@ namespace Playlist
 
 			playlist->setName(name);
 			playlist->setTemporary(isTemporary);
+			playlist->setLocked(isLocked);
 
 			return true;
 		}
 
-		bool createPlaylist(const QString& name, bool isTemporary, Playlist::DBInterface* playlist,
+		bool createPlaylist(const QString& name, bool isTemporary, const bool isLocked, Playlist::DBInterface* playlist,
 		                    DB::Playlist* playlistConnector)
 		{
-			const auto playlistId = playlistConnector->createPlaylist(name, isTemporary);
+			const auto playlistId = playlistConnector->createPlaylist(name, isTemporary, isLocked);
 			if(playlistId < 0)
 			{
 				spLog(Log::Warning, ClassName) << "Cannot insert new playlist " << playlist->name();
@@ -102,6 +103,7 @@ namespace Playlist
 			playlist->setId(playlistId);
 			playlist->setName(name);
 			playlist->setTemporary(isTemporary);
+			playlist->setLocked(isLocked);
 			playlist->setChanged(false);
 
 			return updatePlaylistTracks(playlist, playlistConnector);
@@ -139,7 +141,7 @@ namespace Playlist
 		}
 
 		const auto success = (id() < 0)
-		                     ? createPlaylist(name(), isTemporary(), this, m->playlistConnector)
+		                     ? createPlaylist(name(), isTemporary(), isLocked(), this, m->playlistConnector)
 		                     : updatePlaylistTracks(this, m->playlistConnector);
 
 		return (success)
@@ -158,8 +160,8 @@ namespace Playlist
 		const auto renamePermanentPlaylist = !isTemporary() && (name() != newName);
 		const auto newPlaylistNeeded = (id() < 0) || renamePermanentPlaylist;
 		const auto success = (newPlaylistNeeded)
-		                     ? createPlaylist(newName, false, this, m->playlistConnector)
-		                     : updatePlaylist(newName, false, this, m->playlistConnector);
+		                     ? createPlaylist(newName, false, isLocked(), this, m->playlistConnector)
+		                     : updatePlaylist(newName, false, isLocked(), this, m->playlistConnector);
 
 		if(success)
 		{
@@ -181,7 +183,7 @@ namespace Playlist
 		}
 
 		const auto oldName = name();
-		const auto success = updatePlaylist(newName, isTemporary(), this, m->playlistConnector);
+		const auto success = updatePlaylist(newName, isTemporary(), isLocked(), this, m->playlistConnector);
 		if(success)
 		{
 			m->playlistChangeNotifier->renamePlaylist(id(), oldName, name());
@@ -190,6 +192,16 @@ namespace Playlist
 		return success
 		       ? SaveAsAnswer::Success
 		       : SaveAsAnswer::OtherError;
+	}
+
+	bool DBInterface::lock()
+	{
+		return updatePlaylist(name(), isTemporary(), true, this, m->playlistConnector);
+	}
+
+	bool DBInterface::unlock()
+	{
+		return updatePlaylist(name(), isTemporary(), false, this, m->playlistConnector);
 	}
 
 	bool DBInterface::deletePlaylist()

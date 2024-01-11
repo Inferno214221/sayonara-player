@@ -26,6 +26,7 @@ struct CustomPlaylist::Private
 	int id {-1};
 	QString name;
 	bool isTemporary {true};
+	bool isLocked {false};
 	MetaDataList tracks;
 
 	Private() = default;
@@ -78,6 +79,10 @@ void CustomPlaylist::setName(const QString& name) { m->name = name; }
 bool CustomPlaylist::isTemporary() const { return m->isTemporary; }
 
 void CustomPlaylist::setTemporary(bool temporary) { m->isTemporary = temporary; }
+
+bool CustomPlaylist::isLocked() const { return m->isLocked; }
+
+void CustomPlaylist::setLocked(const bool isLocked) { m->isLocked = isLocked; }
 
 MetaDataList CustomPlaylist::tracks() const { return m->tracks; }
 

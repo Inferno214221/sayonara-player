@@ -117,7 +117,7 @@ namespace Playlist
 	bool Chooser::deletePlaylist(int id)
 	{
 		const auto playlist = m->playlistConnector->getPlaylistById(id, false);
-		const auto success = m->playlistConnector->updatePlaylist(id, playlist.name(), true);
+		const auto success = m->playlistConnector->updatePlaylist(id, playlist.name(), true, playlist.isLocked());
 		if(success)
 		{
 			ChangeNotifier::instance()->deletePlaylist(id);
