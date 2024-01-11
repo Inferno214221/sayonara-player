@@ -61,6 +61,7 @@ void AbstractStationHandler::createPlaylist(const StationPtr& station, const Met
 
 		auto playlist = m->playlistCreator->playlist(index);
 		playlist->changeTrack(0);
+		playlist->setLocked(GetSetting(Set::Stream_LockedPlaylistByDefault));
 	}
 }
 

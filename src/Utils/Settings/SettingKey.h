@@ -200,6 +200,7 @@ enum class SettingKey :
 	Speed_MinValue,
 	Speed_ShowSteps,
 	Speed_Step,
+	Stream_LockedPlaylistByDefault,
 	Stream_NewTab,
 	Stream_SearchWindowSize,
 	Stream_ShowHistory,
@@ -417,6 +418,7 @@ namespace Set
 	CreateSetting(Speed_MinValue, int) // Minimum value for speed range slider [1-99]
 	CreateSetting(Speed_ShowSteps, bool); // Show speed step buttons in speed plugin
 	CreateSetting(Speed_Step, int); // [0-100]
+	CreateSetting(Stream_LockedPlaylistByDefault, bool); // should a stream playlist be locked by default?
 	CreateSetting(Stream_NewTab, bool); // Open Streams in new tab
 	CreateSetting(Stream_RadioSearcher, QString); // Last radio searcher service
 	CreateSetting(Stream_RadioSearcherType, int); // 0 = by name, 1 = by genre
