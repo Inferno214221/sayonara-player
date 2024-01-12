@@ -31,6 +31,7 @@
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/StreamParser.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/StandardPaths.h"
 #include "Utils/Utils.h"
 #include "Utils/WebAccess/WebClientFactory.h"
@@ -176,7 +177,8 @@ void SomaFM::Library::stationStreamsFetched(bool success)
 		SomaFM::Utils::mapStationToMetadata(station, tracks);
 		station.setMetadata(tracks);
 
-		m->playlistCreator->createPlaylist(tracks, station.name(), true);
+		m->playlistCreator->createPlaylist(tracks, station.name(), true,
+		                                   GetSetting(Set::Stream_LockedPlaylistByDefault));
 	}
 
 	sender()->deleteLater();

@@ -57,7 +57,11 @@ void AbstractStationHandler::createPlaylist(const StationPtr& station, const Met
 		                          ? station->name()
 		                          : QString {};
 
-		const auto index = m->playlistCreator->createPlaylist(preprocessPlaylist(station, tracks), playlistName);
+		const auto index =
+			m->playlistCreator->createPlaylist(preprocessPlaylist(station, tracks),
+			                                   playlistName,
+			                                   true,
+			                                   GetSetting(Set::Stream_LockedPlaylistByDefault));
 
 		auto playlist = m->playlistCreator->playlist(index);
 		playlist->changeTrack(0);
