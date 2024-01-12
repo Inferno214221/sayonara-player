@@ -568,6 +568,10 @@ namespace Playlist
 		resizeSection(static_cast<int>(Model::ColumnName::Description), viewportWidth, horizontalHeader());
 
 		setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
+
+		connect(selectionModel(), &QItemSelectionModel::selectionChanged, this, [&]() {
+			m->contextMenu->showActions(calcContextMenuEntries(m->contextMenu, m->model, selectedItems()));
+		});
 	}
 
 	void View::searchDone()
