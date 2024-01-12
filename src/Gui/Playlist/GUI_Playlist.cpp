@@ -38,6 +38,8 @@
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/PreferenceAction.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -268,19 +270,13 @@ void GUI_Playlist::openDirClicked(int playlistIndex, const QString& dir)
 	openFileClicked(playlistIndex, QStringList {dir});
 }
 
-void GUI_Playlist::lockTriggered(int playlistIndex, const bool b)
+void GUI_Playlist::lockTriggered(const int playlistIndex, const bool b)
 {
-	const auto playlist = m->playlistHandler->playlist(playlistIndex);
-	if(b)
+	if(auto* view = dynamic_cast<View*>(ui->twPlaylists->widget(playlistIndex)); view)
 	{
-		playlist->lock();
+		view->setLocked(b);
+		checkTabTextAndIcons();
 	}
-	else
-	{
-		playlist->unlock();
-	}
-
-	ui->twPlaylists->checkTabButtons();
 }
 
 void GUI_Playlist::playlistNameChanged(int playlistIndex)
