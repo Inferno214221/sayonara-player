@@ -167,6 +167,14 @@ GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPl
 
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_Playlist::clearButtonPressed);
 
+	auto* shorcutHandler = ShortcutHandler::instance();
+	shorcutHandler->shortcut(ShortcutIdentifier::TogglePlaylistLock).connect(this, [&]() {
+		if(auto* view = dynamic_cast<View*>(ui->twPlaylists->currentWidget()); view)
+		{
+			lockTriggered(ui->twPlaylists->currentIndex(), !view->isLocked());
+		}
+	}, Qt::WidgetWithChildrenShortcut);
+
 	initToolButton();
 
 	ListenSetting(Set::PL_ShowBottomBar, GUI_Playlist::showBottomBarChanged);
