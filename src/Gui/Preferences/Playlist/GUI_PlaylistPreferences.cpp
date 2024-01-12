@@ -162,6 +162,8 @@ bool GUI_PlaylistPreferences::commit()
 	           ui->cbChooseFilesystemPlaylistName->isVisible() &&
 	           ui->cbChooseFilesystemPlaylistName->isChecked());
 	SetSetting(Set::PL_ShowConfirmationOnClose, ui->cbConfirmOnClose->isChecked());
+	SetSetting(Set::PL_ModificatorAllowRearrangeMethods, ui->cbAllowRearrange->isChecked());
+	SetSetting(Set::PL_ModificatorAllowDynamicPlayback, ui->cbAllowDynamicPlayback->isChecked());
 
 	const auto success = evaluateExpression(ui->leExpression->text());
 	if(success)
@@ -214,6 +216,8 @@ void GUI_PlaylistPreferences::revert()
 	ui->leFilesystemPlaylistName->setVisible(ui->cbChooseFilesystemPlaylistName->isChecked());
 	ui->leFilesystemPlaylistName->setText(GetSetting(Set::PL_FilesystemPlaylistName));
 	ui->cbConfirmOnClose->setChecked(GetSetting(Set::PL_ShowConfirmationOnClose));
+	ui->cbAllowDynamicPlayback->setChecked(GetSetting(Set::PL_ModificatorAllowDynamicPlayback));
+	ui->cbAllowRearrange->setChecked(GetSetting(Set::PL_ModificatorAllowRearrangeMethods));
 }
 
 void GUI_PlaylistPreferences::initUi()

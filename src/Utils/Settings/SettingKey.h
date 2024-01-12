@@ -149,6 +149,8 @@ enum class SettingKey :
 	PL_LoadSavedPlaylists,
 	PL_LoadTemporaryPlaylists,
 	PL_Mode,
+	PL_ModificatorAllowDynamicPlayback,
+	PL_ModificatorAllowRearrangeMethods,
 	PL_PlayTrackAfterSearch,
 	PL_RememberTime,
 	PL_RememberTrackAfterStop,
@@ -249,6 +251,7 @@ struct SettingIdentifier
 
 namespace Set
 {   // persistent settings
+	//@formatter:off
 	CreateSetting(AlternativeCovers_Size, QSize); // Size of Alternative Cover Dialog
 	CreateSetting(AudioConvert_NumberThreads, int); // Number of threads
 	CreateSetting(AudioConvert_PreferredConverter, QString); // Preferred Converter: ogg, lame cbr, lame vbr
@@ -370,6 +373,8 @@ namespace Set
 	CreateSetting(PL_SpecifyFileystemPlaylistName, bool); // when creating playlist from files, choose special name
 	CreateSetting(PL_FilesystemPlaylistName, QString); // name of the file system playlist
 	CreateSetting(PL_Mode, Playlist::Mode); // playlist mode: rep1, repAll, shuffle...
+	CreateSetting(PL_ModificatorAllowDynamicPlayback, bool);
+	CreateSetting(PL_ModificatorAllowRearrangeMethods, bool);
 	CreateSetting(PL_PlayTrackAfterSearch, bool); // play track after search is done
 	CreateSetting(PL_RememberTime, bool); // remember time of last track
 	CreateSetting(PL_RememberTrackAfterStop, bool); // when stop button is pressed, remember last track index
@@ -380,8 +385,8 @@ namespace Set
 	CreateSetting(PL_ShowRating, bool); // Show rating in playlist
 	CreateSetting(PL_StartPlaying, bool); // start playing immediately when opening Sayonara
 	CreateSetting(PL_StartPlayingWorkaround_Issue263, bool); // issue #263
-	CreateSetting(PL_ShowConfirmationOnClose, bool);CreateSetting(Player_514Fix,
-	                                                              bool); // https://bugs.archlinux.org/task/59451
+	CreateSetting(PL_ShowConfirmationOnClose, bool);
+	CreateSetting(Player_514Fix, bool); // https://bugs.archlinux.org/task/59451
 	CreateSetting(Player_ControlStyle, int); // Big cover or not
 	CreateSetting(Player_FadingCover, bool); // If cover buttons should fade
 	CreateSetting(Player_ForceNativeDirDialog, bool); // Under some environments, native dir dialog is disabled
@@ -426,6 +431,7 @@ namespace Set
 	CreateSetting(Stream_ShowHistory, bool); // Show history when playing streams
 	CreateSetting(Stream_UpdateMetadata, bool); // Update metadata (can be changed for each stream individually)
 	CreateSetting(Tagging_UseSelectiveTagging, bool); // Only updated changed fields
+	//@formatter:off
 }
 
 namespace SetNoDB
