@@ -26,6 +26,7 @@
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/TagReader.h"
@@ -172,6 +173,8 @@ void GUI_Lyrics::prepareLyrics()
 		showLocalLyrics();
 		return;
 	}
+
+	spLog(Log::Debug, this) << "Fetching new lyrics for " << ui->leTitle->text() << " by " << ui->leArtist->text();
 
 	const auto running = m->lyrics->fetchLyrics(ui->leArtist->text(), ui->leTitle->text(), currentServerIndex);
 	if(running)

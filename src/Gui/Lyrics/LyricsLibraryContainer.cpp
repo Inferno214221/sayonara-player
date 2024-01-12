@@ -37,7 +37,8 @@ namespace
 		Q_OBJECT
 
 		public:
-			explicit LyricsWidget(PlayManager* playManager)
+			explicit LyricsWidget(PlayManager* playManager) :
+				m_playManager {playManager}
 			{
 				auto* mainLayout = new QVBoxLayout();
 				auto* headerLayout = new QHBoxLayout();
@@ -50,12 +51,18 @@ namespace
 				headerLayout->addWidget(m_frame);
 				headerLayout->addItem(new QSpacerItem(100, 1, QSizePolicy::MinimumExpanding));
 
-				connect(playManager, &PlayManager::sigCurrentTrackChanged, m_lyrics, [this](const auto& track) {
-					m_lyrics->setTrack(track);
+				connect(m_playManager, &PlayManager::sigCurrentTrackChanged, m_lyrics, [this](const auto& track) {
+					if(isVisible())
+					{
+						m_lyrics->setTrack(track);
+					}
 				});
 
-				connect(playManager, &PlayManager::sigCurrentMetadataChanged, m_lyrics, [this, playManager]() {
-					m_lyrics->setTrack(playManager->currentTrack());
+				connect(m_playManager, &PlayManager::sigCurrentMetadataChanged, m_lyrics, [this]() {
+					if(isVisible())
+					{
+						m_lyrics->setTrack(m_playManager->currentTrack());
+					}
 				});
 
 				m_lyrics->setTrack(playManager->currentTrack());
@@ -67,9 +74,17 @@ namespace
 
 			GUI_Lyrics* lyrics() { return m_lyrics; }
 
+		protected:
+			void showEvent(QShowEvent* event) override
+			{
+				m_lyrics->setTrack(m_playManager->currentTrack());
+				QWidget::showEvent(event);
+			}
+
 		private:
 			QFrame* m_frame {new QFrame(this)};
 			GUI_Lyrics* m_lyrics {new GUI_Lyrics(false, nullptr)};
+			PlayManager* m_playManager;
 	};
 }
 
