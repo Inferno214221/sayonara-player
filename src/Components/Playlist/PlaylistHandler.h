@@ -74,7 +74,8 @@ namespace Playlist
 			[[nodiscard]] QString requestNewPlaylistName(const QString& prefix = QString()) const override;
 
 			int
-			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) override;
+			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true,
+			               bool isLocked = false) override;
 
 			int createPlaylist(const QStringList& paths, const QString& name = QString(), bool temporary = true,
 			                   LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) override;

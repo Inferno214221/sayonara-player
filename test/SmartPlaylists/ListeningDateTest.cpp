@@ -50,7 +50,8 @@ namespace
 
 			[[nodiscard]] QString requestNewPlaylistName(const QString& /*prefix*/) const override { return {}; }
 
-			int createPlaylist(const MetaDataList& tracks, const QString& /*name*/, bool /*temporary*/) override
+			int createPlaylist(const MetaDataList& tracks, const QString& /*name*/, bool /*temporary*/,
+			                   bool /*isLocked*/) override
 			{
 				m_playlist = tracks;
 				return 0;

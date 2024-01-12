@@ -165,7 +165,8 @@ namespace Playlist
 		return playlist->index();
 	}
 
-	int Handler::createPlaylist(const MetaDataList& tracks, const QString& name, const bool temporary)
+	int
+	Handler::createPlaylist(const MetaDataList& tracks, const QString& name, const bool temporary, const bool isLocked)
 	{
 		const auto index = addNewPlaylist(name, temporary);
 
@@ -174,6 +175,7 @@ namespace Playlist
 		{
 			playlist->createPlaylist(tracks);
 			playlist->setTemporary(playlist->isTemporary() && temporary);
+			playlist->setLocked(isLocked);
 			if(playlist->isTemporary())
 			{
 				playlist->save();

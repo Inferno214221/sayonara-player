@@ -83,7 +83,8 @@ class PlaylistCreatorMock :
 
 		[[nodiscard]] QString requestNewPlaylistName(const QString& /*prefix*/) const override { return {}; }
 
-		int createPlaylist(const MetaDataList& /*tracks*/, const QString& name, bool /*temporary*/) override
+		int createPlaylist(const MetaDataList& /*tracks*/, const QString& name, bool /*temporary*/,
+		                   bool /*isLocked*/) override
 		{
 			auto playlist = std::make_shared<Playlist::Playlist>(mPlaylists.count(), name, new PlayManagerMock());
 			mPlaylists.push_back(playlist);

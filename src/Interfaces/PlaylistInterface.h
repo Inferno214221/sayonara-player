@@ -64,7 +64,8 @@ class PlaylistCreator
 		virtual QString requestNewPlaylistName(const QString& prefix = QString()) const = 0;
 
 		virtual int
-		createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true) = 0;
+		createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true,
+		               bool isLocked = false) = 0;
 		virtual int
 		createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true,
 		               Playlist::LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) = 0;

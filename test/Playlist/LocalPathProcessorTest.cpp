@@ -64,7 +64,7 @@ namespace
 			requestNewPlaylistName(const QString& /*prefix*/) const override { throw std::bad_function_call {}; }
 
 			int createPlaylist(const MetaDataList& /*tracks*/, const QString& /*name*/,
-			                   bool /*temporary*/) override { throw std::bad_function_call {}; }
+			                   bool /*temporary*/, bool /*isLocked*/) override { throw std::bad_function_call {}; }
 
 			int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
 			                   bool /*temporary*/, Playlist::LocalPathPlaylistCreator* /*creator*/) override

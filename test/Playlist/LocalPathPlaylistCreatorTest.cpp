@@ -57,7 +57,7 @@ class PlaylistCreatorMock :
 		}
 
 		int createPlaylist(const MetaDataList& /*tracks*/, const QString& name,
-		                   bool /*temporary*/) override
+		                   bool /*temporary*/, bool /*isLocked*/) override
 		{
 			int index = m_playlists.count();
 			auto playlist =
