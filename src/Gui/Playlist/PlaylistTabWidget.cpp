@@ -21,6 +21,7 @@
 #include "PlaylistTabWidget.h"
 #include "PlaylistTabBar.h"
 #include "PlaylistView.h"
+#include "ContextMenuConfigurator.h"
 
 #include "Gui/Utils/Icons.h"
 #include "Gui/Utils/Style.h"
@@ -187,31 +188,7 @@ namespace Playlist
 	TabWidget::showMenu(const QPoint& position, const bool isTemporary, const bool hasChanges, const bool isLocked,
 	                    const int trackCount)
 	{
-		using ::Playlist::MenuEntry;
-
-		const auto saveEnabled = (!isTemporary);
-		const auto saveAsEnabled = true;
-		const auto saveToFileEnabled = (trackCount > 0);
-		const auto deleteEnabled = (!isTemporary);
-		const auto resetEnabled = (!isTemporary && hasChanges);
-		const auto closeEnabled = (count() > 2);
-		const auto clearEnabled = (trackCount > 0);
-
-		auto entries = ::Playlist::MenuEntries {MenuEntry::None};
-
-		entries |= (saveEnabled) ? MenuEntry::Save : 0;
-		entries |= (saveAsEnabled) ? MenuEntry::SaveAs : 0;
-		entries |= (saveToFileEnabled) ? MenuEntry::SaveToFile : 0;
-		entries |= (deleteEnabled) ? MenuEntry::Delete : 0;
-		entries |= (resetEnabled) ? MenuEntry::Reset : 0;
-		entries |= (closeEnabled) ? MenuEntry::Close : 0;
-		entries |= (closeEnabled) ? MenuEntry::CloseOthers : 0;
-		entries |= (clearEnabled) ? MenuEntry::Clear : 0;
-		entries |= MenuEntry::OpenFile;
-		entries |= MenuEntry::OpenDir;
-		entries |= MenuEntry::Rename;
-		entries |= (isLocked) ? MenuEntry::Unlock : MenuEntry::Lock;
-
+		const auto entries = calcTabBarContextMenuEntries(isTemporary, hasChanges, isLocked, trackCount, count());
 		showMenuItems(entries, position);
 	}
 }

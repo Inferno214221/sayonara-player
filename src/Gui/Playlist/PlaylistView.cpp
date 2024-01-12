@@ -22,6 +22,7 @@
 #include "PlaylistModel.h"
 #include "PlaylistDelegate.h"
 #include "PlaylistContextMenu.h"
+#include "ContextMenuConfigurator.h"
 
 #include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/PreferenceAction.h"
@@ -114,51 +115,6 @@ namespace Playlist
 			return resizeSection(static_cast<int>(Model::ColumnName::Time), widthTime, horizontalHeader);
 		}
 
-		void setupContextMenuItems(ContextMenu* contextMenu, Model* model, const Util::Set<int>& selectedItems)
-		{
-			auto entryMask = ContextMenu::Entries {ContextMenu::EntryNone};
-			const auto isLocked = model->isLocked();
-
-			if(model->rowCount() > 0)
-			{
-				entryMask |= (ContextMenu::EntryRefresh |
-				              (isLocked ? 0 : ContextMenu::EntryClear) |
-				              (isLocked ? 0 : ContextMenu::EntryReverse) |
-				              (isLocked ? 0 : ContextMenu::EntryRandomize) |
-				              (isLocked ? 0 : ContextMenu::EntrySort) |
-				              ContextMenu::EntryJumpToNextAlbum);
-
-				if(!selectedItems.isEmpty())
-				{
-					entryMask |= (ContextMenu::EntryPlay |
-					              ContextMenu::EntryInfo |
-					              (isLocked ? 0 : ContextMenu::EntryRemove));
-
-					const auto firstSelectedRow = *selectedItems.begin();
-					if((selectedItems.size() == 1) && (firstSelectedRow < model->rowCount()))
-					{
-						const auto tracks = model->metadata(selectedItems);
-						const auto& track = tracks[0];
-
-						entryMask |= contextMenu->setTrack(track, (firstSelectedRow == model->currentTrack()));
-					}
-
-					if(model->hasLocalMedia(selectedItems))
-					{
-						entryMask |= (ContextMenu::EntryEdit |
-						              ContextMenu::EntryDelete);
-					}
-				}
-
-				if(model->currentTrack() >= 0)
-				{
-					entryMask |= ContextMenu::EntryCurrentTrack;
-				}
-			}
-
-			contextMenu->showActions(entryMask);
-		}
-
 		void initView(View* view, Model* model, Delegate* delegate, const int playlistIndex)
 		{
 			view->setObjectName(QString("playlist_view%1").arg(playlistIndex));
@@ -232,10 +188,6 @@ namespace Playlist
 		connect(m->model, &Model::sigCurrentTrackChanged, this, &View::currentTrackChanged);
 		connect(m->model, &Model::sigBusyChanged, this, &View::playlistBusyChanged);
 		connect(m->model, &Model::sigCurrentScannedFileChanged, this, &View::currentScannedFileChanged);
-
-		connect(selectionModel(), &QItemSelectionModel::selectionChanged, this, [&]() {
-			setupContextMenuItems(m->contextMenu, m->model, selectedItems());
-		});
 
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Up), this, &View::moveSelectedRowsUp);
 		createShortcut(QKeySequence(Qt::ControlModifier + Qt::Key_Down), this, &View::moveSelectedRowsDown);
@@ -439,7 +391,8 @@ namespace Playlist
 	{
 		m->contextMenu->clearTrack();
 
-		setupContextMenuItems(m->contextMenu, m->model, selectedItems());
+		const auto entries = calcContextMenuEntries(m->contextMenu, m->model, selectedItems());
+		m->contextMenu->showActions(entries);
 
 		m->contextMenu->exec(e->globalPos());
 
@@ -615,7 +568,6 @@ namespace Playlist
 		resizeSection(static_cast<int>(Model::ColumnName::Description), viewportWidth, horizontalHeader());
 
 		setIconSize(QSize(viewRowHeight - 2, viewRowHeight - 2));
-		setupContextMenuItems(m->contextMenu, m->model, selectedItems());
 	}
 
 	void View::searchDone()
