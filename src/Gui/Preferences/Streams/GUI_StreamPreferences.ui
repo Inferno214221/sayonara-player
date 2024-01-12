@@ -11,7 +11,41 @@
    </rect>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="1">
+   <item row="1" column="0" colspan="2">
+    <widget class="QCheckBox" name="cbUpdateMetadata">
+     <property name="text">
+      <string>Update metadata (can be set individually radio stations)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QCheckBox" name="cbShowHistory">
+     <property name="text">
+      <string>Show history (only works if metadata updates are enabled for a radio station)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0">
+    <widget class="QLabel" name="labBufferSize">
+     <property name="text">
+      <string>Buffer size</string>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
     <widget class="QSpinBox" name="sbBufferSize">
      <property name="suffix">
       <string> ms</string>
@@ -27,33 +61,6 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="labBufferSize">
-     <property name="text">
-      <string>Buffer size</string>
-     </property>
-    </widget>
-   </item>
-   <item row="4" column="1">
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="0" colspan="2">
-    <widget class="QCheckBox" name="cbUpdateMetadata">
-     <property name="text">
-      <string>Update metadata (can be set individually radio stations)</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="cbNewTab">
      <property name="text">
@@ -61,10 +68,10 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QCheckBox" name="cbShowHistory">
+   <item row="3" column="0" colspan="2">
+    <widget class="QCheckBox" name="cbOpenInLockedPlaylist">
      <property name="text">
-      <string>Show history (only works if metadata updates are enabled for a radio station)</string>
+      <string>Open streams and podcasts in locked playlist</string>
      </property>
     </widget>
    </item>

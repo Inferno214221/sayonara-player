@@ -35,6 +35,7 @@ bool GUI_StreamPreferences::commit()
 	SetSetting(Set::Stream_ShowHistory, ui->cbShowHistory->isChecked());
 	SetSetting(Set::Engine_BufferSizeMS, ui->sbBufferSize->value());
 	SetSetting(Set::Stream_UpdateMetadata, ui->cbUpdateMetadata->isChecked());
+	SetSetting(Set::Stream_LockedPlaylistByDefault, ui->cbOpenInLockedPlaylist->isChecked());
 
 	return true;
 }
@@ -45,6 +46,7 @@ void GUI_StreamPreferences::revert()
 	ui->cbNewTab->setChecked(GetSetting(Set::Stream_NewTab));
 	ui->sbBufferSize->setValue(GetSetting(Set::Engine_BufferSizeMS));
 	ui->cbUpdateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
+	ui->cbOpenInLockedPlaylist->setChecked(GetSetting(Set::Stream_LockedPlaylistByDefault));
 }
 
 QString GUI_StreamPreferences::actionName() const
