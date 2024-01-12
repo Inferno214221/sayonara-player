@@ -66,6 +66,9 @@ namespace Playlist
 			void dropEventFromOutside(QDropEvent* event);
 			void removeSelectedRows();
 
+			[[nodiscard]] bool isLocked() const;
+			void setLocked(bool b);
+
 		protected:
 			MD::Interpretation metadataInterpretation() const override;
 			MetaDataList infoDialogData() const override;

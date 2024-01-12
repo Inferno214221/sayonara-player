@@ -184,6 +184,14 @@ namespace Playlist
 			view->horizontalHeader()->hide();
 			view->horizontalHeader()->setMinimumSectionSize(10); // NOLINT(readability-magic-numbers)
 		}
+
+		bool isDragDropAllowed(Model* model, const QMimeData* mimeData)
+		{
+			const auto allowRearrange = GetSetting(Set::PL_ModificatorAllowRearrangeMethods);
+			return model->isLocked()
+			       ? (allowRearrange && Gui::MimeData::isInnerDragDrop(mimeData, model->playlistIndex()))
+			       : true;
+		}
 	} // namespace
 
 	struct View::Private
@@ -411,6 +419,10 @@ namespace Playlist
 		}
 	}
 
+	bool View::isLocked() const { return m->model->isLocked(); }
+
+	void View::setLocked(const bool b) { m->model->setLocked(b); }
+
 	void View::clear()
 	{
 		clearSelection();
@@ -455,27 +467,44 @@ namespace Playlist
 
 	void View::dragEnterEvent(QDragEnterEvent* event)
 	{
-		event->setAccepted(acceptDrops() && !m->model->isLocked());
+		event->accept();
 	}
 
 	void View::dragMoveEvent(QDragMoveEvent* event)
 	{
 		QTableView::dragMoveEvent(event);  // needed for autoscroll
-		event->setAccepted(acceptDrops() && !m->model->isLocked());
 
-		const auto row = calcDragDropLine(event->pos(), this);
-		m->model->setDragIndex(row);
+		if(isDragDropAllowed(m->model, event->mimeData()))
+		{
+			const auto row = calcDragDropLine(event->pos(), this);
+			m->model->setDragIndex(row);
+		}
+
+		event->accept();
 	}
 
 	void View::dragLeaveEvent(QDragLeaveEvent* event)
 	{
-		event->accept();
 		m->model->setDragIndex(-1);
+		event->accept();
 	}
 
 	void View::dropEventFromOutside(QDropEvent* event)
 	{
-		dropEvent(event);
+		if(isDragDropAllowed(m->model, event->mimeData()))
+		{
+			dropEvent(event);
+		}
+	}
+
+	void View::dropEvent(QDropEvent* event)
+	{
+		if(isDragDropAllowed(m->model, event->mimeData()))
+		{
+			handleDrop(event);
+		}
+
+		event->accept();
 	}
 
 	void View::playlistBusyChanged(bool isBusy)
@@ -507,21 +536,6 @@ namespace Playlist
 		m->currentFileLabel->setGeometry(geometry);
 		m->currentFileLabel->setText(currentFile);
 		m->currentFileLabel->show();
-	}
-
-	void View::dropEvent(QDropEvent* event)
-	{
-		if(m->model->isLocked())
-		{
-			event->setAccepted(false);
-			return;
-		}
-
-		event->setAccepted(this->acceptDrops());
-		if(acceptDrops())
-		{
-			handleDrop(event);
-		}
 	}
 
 	int View::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
