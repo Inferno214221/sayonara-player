@@ -117,20 +117,22 @@ namespace Playlist
 		void setupContextMenuItems(ContextMenu* contextMenu, Model* model, const Util::Set<int>& selectedItems)
 		{
 			auto entryMask = ContextMenu::Entries {ContextMenu::EntryNone};
+			const auto isLocked = model->isLocked();
+
 			if(model->rowCount() > 0)
 			{
-				entryMask |= (ContextMenu::EntryClear |
-				              ContextMenu::EntryRefresh |
-				              ContextMenu::EntryReverse |
-				              ContextMenu::EntryRandomize |
-				              ContextMenu::EntrySort |
+				entryMask |= (ContextMenu::EntryRefresh |
+				              (isLocked ? 0 : ContextMenu::EntryClear) |
+				              (isLocked ? 0 : ContextMenu::EntryReverse) |
+				              (isLocked ? 0 : ContextMenu::EntryRandomize) |
+				              (isLocked ? 0 : ContextMenu::EntrySort) |
 				              ContextMenu::EntryJumpToNextAlbum);
 
 				if(!selectedItems.isEmpty())
 				{
 					entryMask |= (ContextMenu::EntryPlay |
 					              ContextMenu::EntryInfo |
-					              ContextMenu::EntryRemove);
+					              (isLocked ? 0 : ContextMenu::EntryRemove));
 
 					const auto firstSelectedRow = *selectedItems.begin();
 					if((selectedItems.size() == 1) && (firstSelectedRow < model->rowCount()))
@@ -453,13 +455,13 @@ namespace Playlist
 
 	void View::dragEnterEvent(QDragEnterEvent* event)
 	{
-		event->setAccepted(this->acceptDrops());
+		event->setAccepted(acceptDrops() && !m->model->isLocked());
 	}
 
 	void View::dragMoveEvent(QDragMoveEvent* event)
 	{
 		QTableView::dragMoveEvent(event);  // needed for autoscroll
-		event->setAccepted(this->acceptDrops());
+		event->setAccepted(acceptDrops() && !m->model->isLocked());
 
 		const auto row = calcDragDropLine(event->pos(), this);
 		m->model->setDragIndex(row);
@@ -509,6 +511,12 @@ namespace Playlist
 
 	void View::dropEvent(QDropEvent* event)
 	{
+		if(m->model->isLocked())
+		{
+			event->setAccepted(false);
+			return;
+		}
+
 		event->setAccepted(this->acceptDrops());
 		if(acceptDrops())
 		{

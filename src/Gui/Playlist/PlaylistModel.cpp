@@ -736,3 +736,7 @@ void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
 		sender()->deleteLater();
 	}
 }
+
+bool Playlist::Model::isLocked() const { return m->playlist->isLocked(); }
+
+void Playlist::Model::setLocked(const bool b) { m->playlist->setLocked(b); }

@@ -109,6 +109,8 @@ namespace Playlist
 			[[nodiscard]] MetaDataList metadata(const IndexSet& rows) const;
 
 			[[nodiscard]] bool hasLocalMedia(const IndexSet& rows) const;
+			[[nodiscard]] bool isLocked() const;
+			void setLocked(bool b);
 			void setDragIndex(int dragIndex);
 			void changeRating(const IndexSet& rows, Rating rating);
 			void changeTrack(int trackIndex, Seconds seconds = 0);
