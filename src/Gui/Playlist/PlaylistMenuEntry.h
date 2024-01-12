@@ -42,7 +42,9 @@ namespace Playlist
 		Rename = (1 << 7),
 		Clear = (1 << 8),
 		OpenFile = (1 << 9),
-		OpenDir = (1 << 10)
+		OpenDir = (1 << 10),
+		Lock = (1 << 11),
+		Unlock = (1 << 12)
 	};
 
 	typedef quint16 MenuEntries;

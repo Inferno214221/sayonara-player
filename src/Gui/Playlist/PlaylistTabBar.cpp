@@ -82,6 +82,7 @@ TabBar::TabBar(QWidget* parent) :
 	connect(m->menu, &TabMenu::sigDeleteClicked, this, &TabBar::deletePressed);
 	connect(m->menu, &TabMenu::sigCloseClicked, this, &TabBar::closePressed);
 	connect(m->menu, &TabMenu::sigCloseOthersClicked, this, &TabBar::closeOthersPressed);
+	connect(m->menu, &TabMenu::sigLockTriggered, this, &TabBar::lockTriggered);
 }
 
 TabBar::~TabBar() = default;
@@ -207,6 +208,11 @@ void TabBar::closeOthersPressed()
 
 		i++;
 	}
+}
+
+void TabBar::lockTriggered(const bool b)
+{
+	emit sigLockTriggered(currentIndex(), b);
 }
 
 void TabBar::mousePressEvent(QMouseEvent* e)

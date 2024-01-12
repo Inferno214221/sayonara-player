@@ -125,6 +125,7 @@ namespace Playlist
 		connect(m->tabBar, &TabBar::sigAddTabClicked, this, &TabWidget::sigAddTabClicked);
 		connect(m->tabBar, &TabBar::sigMetadataDropped, this, &TabWidget::sigMetadataDropped);
 		connect(m->tabBar, &TabBar::sigFilesDropped, this, &TabWidget::sigFilesDropped);
+		connect(m->tabBar, &TabBar::sigLockTriggered, this, &TabWidget::sigLockTriggered);
 
 		connect(m->tabBar, &TabBar::sigContextMenuRequested, this, &TabWidget::sigContextMenuRequested);
 	}

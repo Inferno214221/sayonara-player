@@ -41,6 +41,8 @@ struct TabMenu::Private
 	QAction* actionCloseOthers;
 	QAction* actionRename;
 	QAction* actionClear;
+	QAction* actionLock;
+	QAction* actionUnlock;
 
 	bool hasPreferenceAction {false};
 
@@ -56,6 +58,8 @@ struct TabMenu::Private
 		actionCloseOthers {new QAction(parent)},
 		actionRename {new QAction(parent)},
 		actionClear {new QAction(parent)},
+		actionLock {new QAction(parent)},
+		actionUnlock {new QAction(parent)} {}
 };
 
 TabMenu::TabMenu(QWidget* parent) :
@@ -67,6 +71,8 @@ TabMenu::TabMenu(QWidget* parent) :
 		m->actionOpenDir,
 		this->addSeparator(),
 		m->actionReset,
+		m->actionLock,
+		m->actionUnlock,
 		this->addSeparator(),
 		m->actionRename,
 		m->actionSave,
@@ -93,6 +99,8 @@ TabMenu::TabMenu(QWidget* parent) :
 	connect(m->actionClear, &QAction::triggered, this, &TabMenu::sigClearClicked);
 	connect(m->actionClose, &QAction::triggered, this, &TabMenu::sigCloseClicked);
 	connect(m->actionCloseOthers, &QAction::triggered, this, &TabMenu::sigCloseOthersClicked);
+	connect(m->actionLock, &QAction::triggered, this, [this](const auto /*b*/) { emit sigLockTriggered(true); });
+	connect(m->actionUnlock, &QAction::triggered, this, [this](const auto /*b*/) { emit sigLockTriggered(false); });
 
 	addPreferenceAction(new PlaylistPreferenceAction(this));
 }
@@ -115,6 +123,8 @@ void TabMenu::languageChanged()
 	m->actionClear->setText(Lang::get(Lang::Clear));
 	m->actionClose->setText(Lang::get(Lang::Close));
 	m->actionCloseOthers->setText(Lang::get(Lang::CloseOthers));
+	m->actionLock->setText(Lang::get(Lang::LockPlaylist));
+	m->actionUnlock->setText(Lang::get(Lang::UnlockPlaylist));
 
 	m->actionRename->setShortcut(QKeySequence("F2"));
 	m->actionSave->setShortcut(QKeySequence::Save);
@@ -139,6 +149,8 @@ void TabMenu::skinChanged()
 	m->actionClear->setIcon(Icons::icon(Icons::Clear));
 	m->actionClose->setIcon(Icons::icon(Icons::Close));
 	m->actionCloseOthers->setIcon(Icons::icon(Icons::Close));
+	m->actionLock->setIcon(Icons::icon(Icons::Lock));
+	m->actionUnlock->setIcon(Icons::icon(Icons::Unlock));
 }
 
 void TabMenu::showMenuItems(Playlist::MenuEntries entries)
@@ -154,6 +166,8 @@ void TabMenu::showMenuItems(Playlist::MenuEntries entries)
 	m->actionClear->setVisible(entries & MenuEntry::Clear);
 	m->actionClose->setVisible(entries & MenuEntry::Close);
 	m->actionCloseOthers->setVisible(entries & MenuEntry::CloseOthers);
+	m->actionLock->setVisible(entries & MenuEntry::Lock);
+	m->actionUnlock->setVisible(entries & MenuEntry::Unlock);
 }
 
 void TabMenu::showClose(bool b)

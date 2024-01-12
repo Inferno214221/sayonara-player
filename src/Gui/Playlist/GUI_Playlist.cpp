@@ -116,6 +116,7 @@ namespace
 		const auto resetEnabled = (!playlist->isTemporary() && playlist->wasChanged());
 		const auto closeEnabled = (tabWidget->count() > 2);
 		const auto clearEnabled = (count > 0);
+		const auto isLocked = (playlist->isLocked());
 
 		auto entries = Playlist::MenuEntries {MenuEntry::None};
 
@@ -130,6 +131,7 @@ namespace
 		entries |= MenuEntry::OpenFile;
 		entries |= MenuEntry::OpenDir;
 		entries |= MenuEntry::Rename;
+		entries |= (isLocked) ? MenuEntry::Unlock : MenuEntry::Lock;
 
 		tabWidget->showMenuItems(entries, position);
 	}
@@ -213,6 +215,7 @@ GUI_Playlist::init(Handler* playlistHandler, PlayManager* playManager, DynamicPl
 	connect(ui->twPlaylists, &TabWidget::sigOpenFile, this, &GUI_Playlist::openFileClicked);
 	connect(ui->twPlaylists, &TabWidget::sigOpenDir, this, &GUI_Playlist::openDirClicked);
 	connect(ui->twPlaylists, &TabWidget::sigContextMenuRequested, this, &GUI_Playlist::contextMenuRequested);
+	connect(ui->twPlaylists, &TabWidget::sigLockTriggered, this, &GUI_Playlist::lockTriggered);
 
 	connect(ui->btnClear, &QPushButton::clicked, this, &GUI_Playlist::clearButtonPressed);
 
@@ -317,6 +320,21 @@ void GUI_Playlist::openFileClicked(int playlistIndex, const QStringList& files)
 void GUI_Playlist::openDirClicked(int playlistIndex, const QString& dir)
 {
 	openFileClicked(playlistIndex, QStringList {dir});
+}
+
+void GUI_Playlist::lockTriggered(int playlistIndex, const bool b)
+{
+	const auto playlist = m->playlistHandler->playlist(playlistIndex);
+	if(b)
+	{
+		playlist->lock();
+	}
+	else
+	{
+		playlist->unlock();
+	}
+
+	ui->twPlaylists->checkTabButtons();
 }
 
 void GUI_Playlist::playlistNameChanged(int playlistIndex)

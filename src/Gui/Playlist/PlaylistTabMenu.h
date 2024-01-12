@@ -55,6 +55,7 @@ namespace Playlist
 			void sigOpenFileClicked();
 			void sigOpenDirClicked();
 			void sigSaveToFileClicked();
+			void sigLockTriggered(bool b);
 
 		public:
 			explicit TabMenu(QWidget* parent = nullptr);

@@ -50,6 +50,7 @@ namespace Playlist
 			void sigMetadataDropped(int tabIndex, const MetaDataList& tracks);
 			void sigFilesDropped(int tabIndex, const QStringList& files);
 			void sigContextMenuRequested(int tabIndex, const QPoint& point);
+			void sigLockTriggered(int tabIndex, bool lock);
 
 		public:
 			explicit TabWidget(QWidget* parent = nullptr);

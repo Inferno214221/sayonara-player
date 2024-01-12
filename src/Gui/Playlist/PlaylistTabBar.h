@@ -49,6 +49,7 @@ namespace Playlist
 			void sigTabSaveToFile(int tabIndex, const QString& filename, bool relativePaths);
 			void sigTabRename(int tabIndex, const QString& name);
 			void sigTabClear(int tabIndex);
+			void sigLockTriggered(int tabIndex, const bool lock);
 
 			void sigTabDelete(int tabIndex);
 			void sigCurrentIndexChanged(int tabIndex);
@@ -83,6 +84,7 @@ namespace Playlist
 			void closePressed();
 			void closeOthersPressed();
 			void renamePressed();
+			void lockTriggered(const bool b);
 
 		protected:
 			void mousePressEvent(QMouseEvent* e) override;
