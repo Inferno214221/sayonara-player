@@ -26,8 +26,8 @@
  *      Author: Michael Lugmair (Lucio Carreras)
  */
 
-#ifndef PLAYLISTVIEW_H_
-#define PLAYLISTVIEW_H_
+#ifndef SAYONARA_PLAYER_PLAYLIST_VIEW_H
+#define SAYONARA_PLAYER_PLAYLIST_VIEW_H
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
@@ -70,12 +70,12 @@ namespace Playlist
 			void setLocked(bool b);
 
 		protected:
-			MD::Interpretation metadataInterpretation() const override;
-			MetaDataList infoDialogData() const override;
-			QWidget* getParentWidget() override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] MetaDataList infoDialogData() const override;
+			[[nodiscard]] QWidget* getParentWidget() override;
 
-			int mapModelIndexToIndex(const QModelIndex& idx) const override;
-			ModelIndexRange mapIndexToModelIndexes(int index) const override;
+			[[nodiscard]] int mapModelIndexToIndex(const QModelIndex& idx) const override;
+			[[nodiscard]] ModelIndexRange mapIndexToModelIndexes(int index) const override;
 
 			void skinChanged() override;
 
@@ -115,4 +115,4 @@ namespace Playlist
 	};
 }
 
-#endif /* PlaylistView_H_ */
+#endif /* SAYONARA_PLAYER_PLAYLIST_VIEW_H */

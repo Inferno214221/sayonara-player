@@ -66,14 +66,14 @@ namespace Playlist
 			return (it == selected.cend()) ? -1 : *it;
 		}
 
-		int resizeSection(int column, int size, QHeaderView* header)
+		int resizeSection(const int column, const int size, QHeaderView* header)
 		{
 			if(header && (header->sectionSize(column) != size))
 			{
 				header->resizeSection(column, size);
 			}
 
-			return header->sectionSize(column);
+			return header ? header->sectionSize(column) : 0;
 		}
 
 		int calcDragDropLine(const QPoint& pos, View* view)
@@ -332,7 +332,7 @@ namespace Playlist
 		}
 	}
 
-	void View::bookmarkTriggered(Seconds timestamp)
+	void View::bookmarkTriggered(const Seconds timestamp)
 	{
 		m->model->changeTrack(currentIndex().row(), timestamp);
 	}
@@ -460,7 +460,7 @@ namespace Playlist
 		event->accept();
 	}
 
-	void View::playlistBusyChanged(bool isBusy)
+	void View::playlistBusyChanged(const bool isBusy)
 	{
 		m->progressbar->setVisible(isBusy);
 		m->currentFileLabel->setVisible(isBusy);
