@@ -147,7 +147,7 @@ class Shortcut
 			QList<QShortcut*> shortcuts = initQtShortcut(parent, context);
 			for(QShortcut* sc: shortcuts)
 			{
-				parent->connect(sc, &QShortcut::activated, func);
+				QObject::connect(sc, &QShortcut::activated, parent, func);
 			}
 		}
 

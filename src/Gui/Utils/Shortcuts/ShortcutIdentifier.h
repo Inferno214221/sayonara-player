@@ -42,6 +42,7 @@ enum ShortcutIdentifier
 	SeekFwd,
 	SeekFwdFast,
 	Stop,
+	TogglePlaylistLock,
 	ViewLibrary,
 	VolDown,
 	VolUp,

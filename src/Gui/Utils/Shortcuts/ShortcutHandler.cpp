@@ -87,6 +87,8 @@ struct ShortcutHandler::Private
 		shortcutEntries << ShortcutEntry(ShortcutIdentifier::Minimize, "minimize", QString("Ctrl+M"));
 		shortcutEntries << ShortcutEntry(ShortcutIdentifier::Quit, "quit", QString("Ctrl+Q"));
 		shortcutEntries << ShortcutEntry(ShortcutIdentifier::ReloadLibrary, "reload_library", QString("Ctrl+F5"));
+		shortcutEntries
+			<< ShortcutEntry(ShortcutIdentifier::TogglePlaylistLock, "lock_playlist", QString("Ctrl+Shift+L"));
 	}
 };
 
@@ -219,6 +221,8 @@ QString ShortcutHandler::shortcut_text(ShortcutIdentifier identifier) const
 			return Lang::get(Lang::CloseTab);
 		case ShortcutIdentifier::CoverView:
 			return Lang::get(Lang::LibraryView);
+		case ShortcutIdentifier::TogglePlaylistLock:
+			return tr("Toggle playlist lock");
 		case ShortcutIdentifier::Minimize:
 			return Lang::get(Lang::Application) + ": " + Lang::get(Lang::Minimize);
 		case ShortcutIdentifier::Next:
