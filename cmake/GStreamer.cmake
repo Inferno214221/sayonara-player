@@ -85,17 +85,6 @@ endforeach()
 
 message("GStreamer.cmake: Found ${GSTREAMER_PLUGIN_LIBRARIES}")
 
-if(GSTREAMER_PLUGIN_LIBRARIES)
-	message("Will install gstreamer plugins")
-
-	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer-1.0)
-	install(FILES ${GSTREAMER_PLUGIN_SCANNER} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer1.0/gstreamer-1.0)
-	install(DIRECTORY ${GLIB_SCHEMA_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/)
-	install(FILES ${GLIB_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas/)
-	install(DIRECTORY ${GIO_MODULE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gio/)
-	install(FILES ${GIO_QUERYMODULES} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
-endif()
-
 # compile glib schemas
 pkg_get_variable(GLIB_COMPILE_SCHEMAS gio-2.0 glib_compile_schemas)
 set(GLIB_SCHEMA_DIR /usr/share/glib-2.0/schemas)
@@ -109,3 +98,14 @@ pkg_get_variable(GIO_QUERYMODULES gio-2.0 gio_querymodules)
 # in bionic the variable gio_querymodules does not exist
 get_filename_component(GLIB_BINARY_DIR ${GLIB_COMPILE_SCHEMAS} DIRECTORY)
 set(GIO_QUERYMODULES ${GLIB_BINARY_DIR}/gio-querymodules)
+
+if(GSTREAMER_PLUGIN_LIBRARIES)
+	message("Will install gstreamer plugins")
+
+	install(FILES ${GSTREAMER_PLUGIN_LIBRARIES} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer-1.0)
+	install(FILES ${GSTREAMER_PLUGIN_SCANNER} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gstreamer1.0/gstreamer-1.0)
+	install(DIRECTORY ${GLIB_SCHEMA_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/)
+	install(FILES ${GLIB_SCHEMA} DESTINATION ${CMAKE_INSTALL_PREFIX}/share/glib-2.0/schemas/)
+	install(DIRECTORY ${GIO_MODULE_DIR} DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/gio/)
+	install(FILES ${GIO_QUERYMODULES} DESTINATION ${CMAKE_INSTALL_PREFIX}/bin/)
+endif()
