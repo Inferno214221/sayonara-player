@@ -74,7 +74,8 @@ namespace
 				QStringLiteral("COUNT(DISTINCT %1.trackID)               AS trackCount"),         // 6
 				QStringLiteral("MAX(%1.year)                             AS albumYear"),          // 7
 				QStringLiteral("GROUP_CONCAT(DISTINCT %1.discnumber)     AS discnumbers"),        // 8
-				QStringLiteral("GROUP_CONCAT(%1.filename, '#')           AS filenames")           // 9
+				QStringLiteral("GROUP_CONCAT(%1.filename, '#')           AS filenames"),          // 9
+				QStringLiteral("MAX(%1.createDate)                       AS createDate")          // 10
 			};
 
 		const auto fieldStatement = fields.join(", ").arg(trackView);
@@ -104,7 +105,8 @@ namespace
 				QStringLiteral("COUNT(DISTINCT trackID) AS trackCount"),
 				QStringLiteral("MAX(year) AS albumYear"),
 				QStringLiteral("GROUP_CONCAT(DISTINCT discnumber)"),
-				QStringLiteral("GROUP_CONCAT(DISTINCT filename)")
+				QStringLiteral("GROUP_CONCAT(DISTINCT filename)"),
+				QStringLiteral("MAX(createDate) AS createDate"),
 			};
 
 		static const auto joinedFields = fields.join(", ");
@@ -151,7 +153,8 @@ QString Albums::fetchQueryAlbums(bool alsoEmpty) const
 			QStringLiteral("trackCount"),         // 6
 			QStringLiteral("albumYear"),          // 7
 			QStringLiteral("discnumbers"),        // 8
-			QStringLiteral("filenames")           // 9
+			QStringLiteral("filenames"),          // 9
+			QStringLiteral("createDate")          // 10
 		};
 
 	static const auto joinedFields = fields.join(", ");
@@ -191,6 +194,7 @@ bool Albums::dbFetchAlbums(QSqlQuery& q, AlbumList& result) const
 		album.setDiscnumbers(variantToDiscnumbers(q.value(8)));
 		album.setDatabaseId(module()->databaseId());
 		album.setPathHint(q.value(9).toString().split("#"));
+		album.setCreationDate(q.value(10).toULongLong());
 
 		result.push_back(std::move(album));
 	}
