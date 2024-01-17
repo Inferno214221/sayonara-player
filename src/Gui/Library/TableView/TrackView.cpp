@@ -178,13 +178,15 @@ Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 
 VariableSortorder TrackView::sortorder() const
 {
-	Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.tracks;
+	return GetSetting(Set::Lib_Sorting).tracks;
 }
 
 void TrackView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeTrackSortorder(std::get<TrackSortorder>(s));
+	if(std::holds_alternative<TrackSortorder>(s))
+	{
+		m->library->changeTrackSortorder(std::get<TrackSortorder>(s));
+	}
 }
 
 void TrackView::selectedItemsChanged(const IndexSet& lst)

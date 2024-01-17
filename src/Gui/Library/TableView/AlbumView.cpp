@@ -136,13 +136,15 @@ void AlbumView::saveColumnHeaderState(const QByteArray& state)
 
 VariableSortorder AlbumView::sortorder() const
 {
-	Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.album;
+	return GetSetting(Set::Lib_Sorting).album;
 }
 
 void AlbumView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeAlbumSortorder(std::get<AlbumSortorder>(s));
+	if(std::holds_alternative<AlbumSortorder>(s))
+	{
+		m->library->changeAlbumSortorder(std::get<AlbumSortorder>(s));
+	}
 }
 
 void AlbumView::showContextMenu(const QPoint& p)

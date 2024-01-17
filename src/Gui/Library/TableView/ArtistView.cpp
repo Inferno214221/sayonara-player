@@ -134,13 +134,15 @@ void ArtistView::saveColumnHeaderState(const QByteArray& state)
 
 VariableSortorder ArtistView::sortorder() const
 {
-	Library::Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.artist;
+	return GetSetting(Set::Lib_Sorting).artist;
 }
 
 void ArtistView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeArtistSortorder(std::get<ArtistSortorder>(s));
+	if(std::holds_alternative<ArtistSortorder>(s))
+	{
+		m->library->changeArtistSortorder(std::get<ArtistSortorder>(s));
+	}
 }
 
 bool ArtistView::autoResizeState() const
