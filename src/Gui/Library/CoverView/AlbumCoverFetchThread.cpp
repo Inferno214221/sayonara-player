@@ -140,7 +140,6 @@ void AlbumCoverFetchThread::run()
 			}
 
 			emit sigNext();
-			Util::sleepMs(25);
 		}
 	}
 }
