@@ -29,6 +29,7 @@
 #include "Utils/Filepath.h"
 
 #include <QDir>
+#include <QTimer>
 
 namespace
 {
@@ -62,11 +63,13 @@ namespace Dbus
 {
 	struct Notifications::Private
 	{
+		QTimer* timer;
 		OrgFreedesktopNotificationsInterface interface;
-		uint id {100}; // NOLINT(readability-magic-numbers)
+		uint id {0}; // NOLINT(readability-magic-numbers)
 		bool started;
 
 		explicit Private(QObject* parent) :
+			timer {new QTimer(parent)},
 			interface {serviceName, objectPath, QDBusConnection::sessionBus(), parent},
 			started {startNotificationService()} {}
 	};
@@ -74,12 +77,20 @@ namespace Dbus
 	Notifications::Notifications(NotificationHandler* notificationHandler, QObject* parent) :
 		QObject(parent),
 		Notificator("DBus", notificationHandler),
-		m {Pimpl::make<Private>(this)} {}
+		m {Pimpl::make<Private>(this)}
+	{
+		connect(m->timer, &QTimer::timeout, this, &Notifications::closeCurrentNotification);
+	}
 
-	Notifications::~Notifications() = default;
+	Notifications::~Notifications()
+	{
+		closeCurrentNotification();
+	}
 
 	void Notifications::notify(const QString& title, const QString& text, const QString& imagePath)
 	{
+		closeCurrentNotification();
+
 		if(m->started)
 		{
 			const auto desktopFile = Util::Filepath {":/Desktop/com.sayonara-player.Sayonara.desktop"};
@@ -101,6 +112,7 @@ namespace Dbus
 				m->interface.Notify(appName, m->id, cleanImagePath, title, text, {}, map, timeout);
 
 			m->id = reply.value();
+			m->timer->start(timeout);
 		}
 	}
 
@@ -115,6 +127,15 @@ namespace Dbus
 
 				notify(track.title(), track.artist(), coverPath);
 			}
+		}
+	}
+
+	void Notifications::closeCurrentNotification()
+	{
+		if(m->id > 0)
+		{
+			m->interface.CloseNotification(m->id);
+			m->id = 0;
 		}
 	}
 }

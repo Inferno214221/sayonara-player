@@ -40,6 +40,9 @@ namespace Dbus
 
 			void notify(const MetaData& track) override;
 			void notify(const QString& title, const QString& text, const QString& imagePath) override;
+
+		private slots:
+			void closeCurrentNotification();
 	};
 }
 
