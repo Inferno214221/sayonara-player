@@ -27,7 +27,11 @@
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/Album.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Utils.h"
 
+#include <QLocale>
+#include <QDateTime>
+#include <QDate>
 #include <QStringList>
 
 namespace
@@ -35,6 +39,13 @@ namespace
 	using IdSet = Util::Set<Id>;
 	using StringSet = Util::Set<QString>;
 	using AdditionalInfo = LibraryItemInfo::AdditionalInfo;
+
+	QString intToDateTimeString(const uint64_t i)
+	{
+		const auto dateTime = Util::intToDate(i);
+		const auto dateFormat = QLocale().dateFormat(QLocale::FormatType::ShortFormat);
+		return dateTime.date().toString(dateFormat);
+	}
 
 	void insertSamplerInfo(const StringSet& artists, AdditionalInfo& infoFields)
 	{
@@ -57,6 +68,8 @@ namespace
 		auto album = Album {};
 		if((libraryDatabase != nullptr) && libraryDatabase->getAlbumByID(albumId, album))
 		{
+			additionalInfo << QPair {Lang::get(Lang::Created), intToDateTimeString(album.creationDate())};
+
 			const auto& customFields = album.customFields();
 			for(const auto& customField: customFields)
 			{
