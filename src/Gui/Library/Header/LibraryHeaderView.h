@@ -40,11 +40,11 @@ namespace Library
 			HeaderView(Qt::Orientation orientation, QWidget* parent = nullptr);
 			~HeaderView() override;
 
-			void init(const ColumnHeaderList& columnHeaderList, const QByteArray& state, Library::SortOrder sortOrder,
-			          bool autoResizeState);
+			void init(const ColumnHeaderList& columnHeaderList, const QByteArray& state,
+			          Library::VariableSortorder sortOrder, bool autoResizeState);
 			void resizeColumnsAutomatically();
 
-			Library::SortOrder sortorder(int index, Qt::SortOrder sortOrder);
+			Library::VariableSortorder sortorder(int index, Qt::SortOrder sortOrder);
 			[[nodiscard]] QString columnText(int index) const;
 			void reloadColumnTexts();
 

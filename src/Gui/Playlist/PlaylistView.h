@@ -98,7 +98,7 @@ namespace Playlist
 			void columnsChanged();
 			void showRatingChanged();
 			void bookmarkTriggered(Seconds timestamp);
-			void sortingTriggered(Library::SortOrder sortOrder);
+			void sortingTriggered(Library::TrackSortorder sortOrder);
 			void moveSelectedRowsUp();
 			void moveSelectedRowsDown();
 			void playSelectedTrack();

@@ -35,7 +35,7 @@ namespace
 		QString name;
 		Accessor accessor;
 		Modifier modifier;
-		Library::SortOrder sortOrder;
+		Library::TrackSortorder sortOrder;
 	};
 
 	AccessAndModify titleAccessor()
@@ -48,7 +48,7 @@ namespace
 			track.setTitle(str);
 		};
 
-		return {"title", std::move(getter), std::move(setter), Library::SortOrder::TrackTitleAsc};
+		return {"title", std::move(getter), std::move(setter), Library::TrackSortorder::TitleAsc};
 	}
 
 	AccessAndModify albumAccessor()
@@ -61,7 +61,7 @@ namespace
 			track.setAlbum(str);
 		};
 
-		return {"album", std::move(getter), std::move(setter), Library::SortOrder::TrackAlbumAsc};
+		return {"album", std::move(getter), std::move(setter), Library::TrackSortorder::AlbumAsc};
 	}
 
 	AccessAndModify artistAccessor()
@@ -74,7 +74,7 @@ namespace
 			track.setArtist(str);
 		};
 
-		return {"artist", std::move(getter), std::move(setter), Library::SortOrder::TrackArtistAsc};
+		return {"artist", std::move(getter), std::move(setter), Library::TrackSortorder::ArtistAsc};
 	}
 
 	AccessAndModify albumArtistAccessor()
@@ -87,7 +87,7 @@ namespace
 			track.setAlbumArtist(str);
 		};
 
-		return {"albumArtist", std::move(getter), std::move(setter), Library::SortOrder::TrackAlbumArtistAsc};
+		return {"albumArtist", std::move(getter), std::move(setter), Library::TrackSortorder::AlbumArtistAsc};
 	}
 
 	QList<AccessAndModify> createTrackAcessors()
@@ -179,8 +179,8 @@ MetaDataSortingTest::testSingleCombinations() // NOLINT(readability-convert-memb
 		}, trackAccessor.accessor));
 
 		MetaDataSorting::sortMetadata(tracks, trackAccessor.sortOrder, +MetaDataSorting::SortMode::IgnoreArticle);
-		if(trackAccessor.sortOrder == Library::SortOrder::TrackArtistAsc ||
-		   trackAccessor.sortOrder == Library::SortOrder::TrackAlbumArtistAsc)
+		if(trackAccessor.sortOrder == Library::TrackSortorder::ArtistAsc ||
+		   trackAccessor.sortOrder == Library::TrackSortorder::AlbumArtistAsc)
 		{
 			QVERIFY(assertOrder(tracks, {
 				"$$ A Name 4",
@@ -241,8 +241,8 @@ MetaDataSortingTest::testAllCombinations() // NOLINT(readability-convert-member-
 
 		MetaDataSorting::sortMetadata(tracks, trackAccessor.sortOrder, mask);
 
-		if(trackAccessor.sortOrder == Library::SortOrder::TrackArtistAsc ||
-		   trackAccessor.sortOrder == Library::SortOrder::TrackAlbumArtistAsc)
+		if(trackAccessor.sortOrder == Library::TrackSortorder::ArtistAsc ||
+		   trackAccessor.sortOrder == Library::TrackSortorder::AlbumArtistAsc)
 		{
 			QVERIFY(assertOrder(tracks, {
 				"A Name 1",

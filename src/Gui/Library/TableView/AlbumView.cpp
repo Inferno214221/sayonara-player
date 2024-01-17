@@ -91,35 +91,35 @@ ColumnHeaderList AlbumView::columnHeaders() const
 		{
 			std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc,
 			                                    true,
-			                                    SortOrder::NoSorting,
-			                                    SortOrder::NoSorting,
+			                                    AlbumSortorder::NoSorting,
+			                                    AlbumSortorder::NoSorting,
 			                                    Gui::Util::textWidth(fm, "MM")),
 			std::make_shared<ColumnHeaderAlbum>(Album::Name,
 			                                    false,
-			                                    SortOrder::AlbumNameAsc,
-			                                    SortOrder::AlbumNameDesc,
+			                                    AlbumSortorder::NameAsc,
+			                                    AlbumSortorder::NameDesc,
 			                                    160,
 			                                    true),
 			//	std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
 			std::make_shared<ColumnHeaderAlbum>(Album::Duration,
 			                                    true,
-			                                    SortOrder::AlbumDurationAsc,
-			                                    SortOrder::AlbumDurationDesc,
+			                                    AlbumSortorder::DurationAsc,
+			                                    AlbumSortorder::DurationDesc,
 			                                    Gui::Util::textWidth(fm, "888h 888h 888m")),
 			std::make_shared<ColumnHeaderAlbum>(Album::NumSongs,
 			                                    true,
-			                                    SortOrder::AlbumTracksAsc,
-			                                    SortOrder::AlbumTracksDesc,
+			                                    AlbumSortorder::TracksAsc,
+			                                    AlbumSortorder::TracksDesc,
 			                                    Gui::Util::textWidth(fm, "num tracks")),
 			std::make_shared<ColumnHeaderAlbum>(Album::Year,
 			                                    true,
-			                                    SortOrder::AlbumYearAsc,
-			                                    SortOrder::AlbumYearDesc,
+			                                    AlbumSortorder::YearAsc,
+			                                    AlbumSortorder::YearDesc,
 			                                    Gui::Util::textWidth(fm, "M 8888")),
 			std::make_shared<ColumnHeaderAlbum>(Album::Rating,
 			                                    true,
-			                                    SortOrder::AlbumRatingAsc,
-			                                    SortOrder::AlbumRatingDesc,
+			                                    AlbumSortorder::RatingAsc,
+			                                    AlbumSortorder::RatingDesc,
 			                                    85)
 		};
 }
@@ -134,15 +134,15 @@ void AlbumView::saveColumnHeaderState(const QByteArray& state)
 	SetSetting(Set::Lib_ColStateAlbums, state);
 }
 
-SortOrder AlbumView::sortorder() const
+VariableSortorder AlbumView::sortorder() const
 {
 	Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.so_albums;
+	return so.album;
 }
 
-void AlbumView::applySortorder(SortOrder s)
+void AlbumView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeAlbumSortorder(s);
+	m->library->changeAlbumSortorder(std::get<AlbumSortorder>(s));
 }
 
 void AlbumView::showContextMenu(const QPoint& p)

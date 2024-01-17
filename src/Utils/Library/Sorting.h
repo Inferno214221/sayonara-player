@@ -27,29 +27,22 @@
 class QString;
 namespace Library
 {
-	/**
-	 * @brief The Sortings class
-	 * @ingroup Library
-	 * @ingroup Helper
-	 */
-	class Sortings :
+	struct Sortings :
 		public SettingConvertible
 	{
-		public:
-			SortOrder so_albums;
-			SortOrder so_artists;
-			SortOrder so_tracks;
+		Sortings() = default;
+		~Sortings() override = default;
+		Sortings(const Sortings& other);
+		Sortings& operator=(const Sortings& other);
+		bool operator==(const Sortings& other) const;
 
-			Sortings();
-			Sortings(const Sortings& so);
-			~Sortings() override;
+		// SettingConvertible
+		[[nodiscard]] QString toString() const override;
+		bool loadFromString(const QString& str) override;
 
-			Sortings& operator=(const Sortings& other);
-			bool operator==(Sortings so);
-
-			// SettingConvertible
-			QString toString() const override;
-			bool loadFromString(const QString& str) override;
+		AlbumSortorder album {AlbumSortorder::NameAsc};
+		ArtistSortorder artist {ArtistSortorder::NameAsc};
+		TrackSortorder tracks {TrackSortorder::AlbumAsc};
 	};
 }
 

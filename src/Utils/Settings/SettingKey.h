@@ -229,7 +229,7 @@ namespace Playlist
 
 namespace Library
 {
-	class Sortings;
+	struct Sortings;
 	class Info;
 	enum class ViewType :
 		quint8;

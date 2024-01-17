@@ -21,59 +21,80 @@
 #ifndef SORTORDER_H_
 #define SORTORDER_H_
 
+#include <variant>
+
 namespace Library
 {
-	enum class SortOrder :
+	enum class ArtistSortorder :
 		unsigned char
 	{
 		NoSorting = 0,
-		ArtistNameAsc,
-		ArtistNameDesc,
-		ArtistTrackcountAsc,
-		ArtistTrackcountDesc,
-		AlbumNameAsc,
-		AlbumNameDesc,
-		AlbumYearAsc,
-		AlbumYearDesc,
-		AlbumTracksAsc,
-		AlbumTracksDesc,
-		AlbumDurationAsc,
-		AlbumDurationDesc,
-		AlbumRatingAsc,
-		AlbumRatingDesc,
-		AlbumCreationDateAsc,
-		AlbumCreationDateDesc,
-		TrackNumAsc,
-		TrackNumDesc,
-		TrackTitleAsc,
-		TrackTitleDesc,
-		TrackAlbumAsc,
-		TrackAlbumDesc,
-		TrackArtistAsc,
-		TrackArtistDesc,
-		TrackAlbumArtistAsc,
-		TrackAlbumArtistDesc,
-		TrackYearAsc,
-		TrackYearDesc,
-		TrackLenghtAsc,
-		TrackLengthDesc,
-		TrackBitrateAsc,
-		TrackBitrateDesc,
-		TrackSizeAsc,
-		TrackSizeDesc,
-		TrackDiscnumberAsc,
-		TrackDiscnumberDesc,
-		TrackRatingAsc,
-		TrackRatingDesc,
-		TrackFilenameAsc,
-		TrackFilenameDesc,
-		TrackFiletypeAsc,
-		TrackFiletypeDesc,
-		TrackDateModifiedAsc,
-		TrackDateModifiedDesc,
-		TrackDateAddedAsc,
-		TrackDateAddedDesc
+		NameAsc,
+		NameDesc,
+		TrackcountAsc,
+		TrackcountDesc,
+		Last
 	};
+
+	enum class AlbumSortorder :
+		unsigned char
+	{
+		NoSorting = 0,
+		NameAsc,
+		NameDesc,
+		YearAsc,
+		YearDesc,
+		TracksAsc,
+		TracksDesc,
+		DurationAsc,
+		DurationDesc,
+		RatingAsc,
+		RatingDesc,
+		CreationDateAsc,
+		CreationDateDesc,
+		AlbumArtistAsc,
+		AlbumArtistDesc,
+		Last
+	};
+
+	enum class TrackSortorder :
+		unsigned char
+	{
+		NoSorting = 0,
+		TrackNumberAsc,
+		TrackNumberDesc,
+		TitleAsc,
+		TitleDesc,
+		ArtistAsc,
+		ArtistDesc,
+		AlbumAsc,
+		AlbumDesc,
+		AlbumArtistAsc,
+		AlbumArtistDesc,
+		YearAsc,
+		YearDesc,
+		LengthAsc,
+		LengthDesc,
+		BitrateAsc,
+		BitrateDesc,
+		SizeAsc,
+		SizeDesc,
+		DiscnumberAsc,
+		DiscnumberDesc,
+		RatingAsc,
+		RatingDesc,
+		FilenameAsc,
+		FilenameDesc,
+		FiletypeAsc,
+		FiletypeDesc,
+		DateModifiedAsc,
+		DateModifiedDesc,
+		DateAddedAsc,
+		DateAddedDesc,
+		Last
+	};
+
+	using VariableSortorder = std::variant<AlbumSortorder, ArtistSortorder, TrackSortorder>;
 }
 
 #endif

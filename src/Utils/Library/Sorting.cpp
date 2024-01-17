@@ -22,58 +22,61 @@
 #include "Utils/Pimpl.h" // CASSIGN
 #include <QStringList>
 
-Library::Sortings::Sortings()
+namespace Library
 {
-	so_artists = Library::SortOrder::ArtistNameAsc;
-	so_albums = Library::SortOrder::AlbumNameAsc;
-	so_tracks = Library::SortOrder::TrackAlbumAsc;
-}
-
-Library::Sortings::Sortings(const Sortings& other) :
-	CASSIGN(so_albums),
-	CASSIGN(so_artists),
-	CASSIGN(so_tracks) {}
-
-Library::Sortings::~Sortings() {}
-
-Library::Sortings& Library::Sortings::operator=(const Library::Sortings& other)
-{
-	ASSIGN(so_albums);
-	ASSIGN(so_artists);
-	ASSIGN(so_tracks);
-
-	return (*this);
-}
-
-bool Library::Sortings::operator==(Library::Sortings so)
-{
-	return
-		(so.so_albums == so_albums) &&
-		(so.so_artists == so_artists) &&
-		(so.so_tracks == so_tracks);
-}
-
-QString Library::Sortings::toString() const
-{
-	return
-		QString("%1,%2,%3")
-			.arg(int(so_albums))
-			.arg(int(so_artists))
-			.arg(int(so_tracks));
-}
-
-bool Library::Sortings::loadFromString(const QString& str)
-{
-	QStringList lst = str.split(",");
-	if(lst.size() < 3)
+	namespace
 	{
-		return false;
+		template<typename T>
+		T applyValue(const int val, const T defaultValue)
+		{
+			const auto isValid = (val >= static_cast<int>(T::NoSorting)) &&
+			                     (val < static_cast<int>(T::Last));
+
+			return isValid ? static_cast<T>(val) : defaultValue;
+		}
 	}
 
-	this->so_albums = static_cast<Library::SortOrder>(lst[0].toInt());
-	this->so_artists = static_cast<Library::SortOrder>(lst[1].toInt());
-	this->so_tracks = static_cast<Library::SortOrder>(lst[2].toInt());
+	QString Sortings::toString() const
+	{
+		return
+			QString("%1,%2,%3")
+				.arg(static_cast<int>(album))
+				.arg(static_cast<int>(artist))
+				.arg(static_cast<int>(tracks));
+	}
 
-	return true;
+	bool Sortings::loadFromString(const QString& str)
+	{
+		const auto lst = str.split(",");
+		if(lst.size() < 3)
+		{
+			return false;
+		}
 
+		album = applyValue<AlbumSortorder>(lst[0].toInt(), Sortings().album);
+		artist = applyValue<ArtistSortorder>(lst[1].toInt(), Sortings().artist);
+		tracks = applyValue<TrackSortorder>(lst[2].toInt(), Sortings().tracks);
+
+		return true;
+	}
+
+	bool Sortings::operator==(const Sortings& other) const
+	{
+		return (album == other.album) &&
+		       (artist == other.artist) &&
+		       (tracks == other.tracks);
+	}
+
+	Sortings& Sortings::operator=(const Sortings& other)
+	{
+		album = other.album;
+		artist = other.artist;
+		tracks = other.tracks;
+		return *this;
+	}
+
+	Sortings::Sortings(const Sortings& other) :
+		album {other.album},
+		artist {other.artist},
+		tracks {other.tracks} {}
 }

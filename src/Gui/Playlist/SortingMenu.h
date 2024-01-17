@@ -37,7 +37,7 @@ namespace Playlist
 		PIMPL(SortingMenu)
 
 		signals:
-			void sigSortingTriggered(Library::SortOrder sortOrder);
+			void sigSortingTriggered(Library::TrackSortorder sortOrder);
 
 		public:
 			explicit SortingMenu(QWidget* parent);

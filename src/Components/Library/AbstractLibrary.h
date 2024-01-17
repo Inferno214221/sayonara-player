@@ -124,9 +124,9 @@ class AbstractLibrary :
 
 		virtual void importFiles(const QStringList& files);
 
-		virtual void changeTrackSortorder(Library::SortOrder sortOrder);
-		virtual void changeAlbumSortorder(Library::SortOrder sortOrder);
-		virtual void changeArtistSortorder(Library::SortOrder sortOrder);
+		virtual void changeTrackSortorder(Library::TrackSortorder sortOrder);
+		virtual void changeAlbumSortorder(Library::AlbumSortorder sortOrder);
+		virtual void changeArtistSortorder(Library::ArtistSortorder sortOrder);
 
 		/* Check for current selected artist if out of date and
 		 * fetch new data */

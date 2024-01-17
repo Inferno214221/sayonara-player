@@ -29,12 +29,14 @@ namespace Playlist
 {
 	namespace
 	{
+		using Library::TrackSortorder;
+
 		struct ActionPair
 		{
 			Lang::Term langTerm;
 
-			Library::SortOrder sortOrderAsc;
-			Library::SortOrder sortOrderDesc;
+			TrackSortorder sortOrderAsc;
+			TrackSortorder sortOrderDesc;
 
 			QAction* actionAsc {new QAction()};
 			QAction* actionDesc {new QAction()};
@@ -54,12 +56,12 @@ namespace Playlist
 	struct SortingMenu::Private
 	{
 		QList<ActionPair> actions {
-			{Lang::Term::Title,       Library::SortOrder::TrackTitleAsc,       Library::SortOrder::TrackTitleDesc},
-			{Lang::Term::TrackNo,     Library::SortOrder::TrackNumAsc,         Library::SortOrder::TrackNumDesc},
-			{Lang::Term::AlbumArtist, Library::SortOrder::TrackAlbumArtistAsc, Library::SortOrder::TrackAlbumArtistDesc},
-			{Lang::Term::Artist,      Library::SortOrder::TrackArtistAsc,      Library::SortOrder::TrackArtistDesc},
-			{Lang::Term::Album,       Library::SortOrder::TrackAlbumAsc,       Library::SortOrder::TrackAlbumDesc},
-			{Lang::Term::Filename,    Library::SortOrder::TrackFilenameAsc,    Library::SortOrder::TrackFilenameDesc}};
+			{Lang::Term::Title,       TrackSortorder::TitleAsc,       TrackSortorder::TitleDesc},
+			{Lang::Term::TrackNo,     TrackSortorder::TrackNumberAsc, TrackSortorder::TrackNumberDesc},
+			{Lang::Term::AlbumArtist, TrackSortorder::AlbumArtistAsc, TrackSortorder::AlbumArtistDesc},
+			{Lang::Term::Artist,      TrackSortorder::ArtistAsc,      TrackSortorder::ArtistDesc},
+			{Lang::Term::Album,       TrackSortorder::AlbumAsc,       TrackSortorder::AlbumDesc},
+			{Lang::Term::Filename,    TrackSortorder::FilenameAsc,    TrackSortorder::FilenameDesc}};
 	};
 
 	SortingMenu::SortingMenu(QWidget* parent) :

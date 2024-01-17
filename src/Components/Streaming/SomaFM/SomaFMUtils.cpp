@@ -59,5 +59,5 @@ void SomaFM::Utils::mapStationToMetadata(const SomaFM::Station& station, MetaDat
 		}
 	}
 
-	MetaDataSorting::sortMetadata(tracks, ::Library::SortOrder::TrackTitleAsc);
+	MetaDataSorting::sortMetadata(tracks, ::Library::TrackSortorder::TitleAsc);
 }

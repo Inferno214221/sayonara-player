@@ -131,7 +131,7 @@ namespace Playlist
 			void refreshData();
 			void reverseTracks();
 			void randomizeTracks();
-			void sortTracks(Library::SortOrder sortorder);
+			void sortTracks(Library::TrackSortorder sortorder);
 			void jumpToNextAlbum();
 
 		private slots:

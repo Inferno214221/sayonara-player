@@ -44,7 +44,7 @@ namespace Library
 		UI_CLASS_SHARED_PTR(GUI_CoverView)
 
 		signals:
-			void sigSortorderChanged(SortOrder so);
+			void sigSortorderChanged(AlbumSortorder so);
 			void sigDeleteClicked();
 			void sigReloadClicked();
 

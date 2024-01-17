@@ -24,34 +24,37 @@
 #include <QString>
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Language/Language.h"
-#include "Utils/Pimpl.h"
 
 namespace Library
 {
-	/**
-	 * @brief A mapping between a name and a sortorder
-	 * @ingroup GuiLibrary
-	 */
 	class ActionPair
 	{
-		PIMPL(ActionPair)
-
 		public:
+			ActionPair(const Lang::Term term, const bool ascending, const VariableSortorder so) :
+				m_term {term},
+				m_ascending {ascending},
+				m_sortorder {so} {}
 
-			/**
-			 * @brief appends "Ascending" or "Descending" behind the name
-			 * @param t1 a term like e.g. 'Lang::Title'
-			 * @param ascending indicates if the so is ascending or descending
-			 * @param so
-			 */
-			ActionPair(Lang::Term term, bool ascending, Library::SortOrder so);
-			ActionPair(const ActionPair& other);
-			ActionPair& operator=(const ActionPair& other);
+			ActionPair(const ActionPair& other) = default;
+			ActionPair& operator=(const ActionPair& other) = default;
 
-			~ActionPair();
+			~ActionPair() = default;
 
-			QString name() const;
-			Library::SortOrder sortorder() const;
+			[[nodiscard]] QString name() const
+			{
+				const auto text = m_ascending
+				                  ? Lang::get(Lang::Ascending)
+				                  : Lang::get(Lang::Descending);
+
+				return QString("%1 (%2)").arg(Lang::get(m_term), text);
+			}
+
+			[[nodiscard]] VariableSortorder sortorder() const { return m_sortorder; }
+
+		private:
+			Lang::Term m_term;
+			bool m_ascending;
+			VariableSortorder m_sortorder;
 	};
 }
 

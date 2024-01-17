@@ -104,7 +104,8 @@ void CoverViewContextMenu::initSortingActions()
 	{
 		auto* action = m->menuSorting->addAction(actionPair.name());
 		action->setCheckable(true);
-		action->setData(static_cast<int>(actionPair.sortorder()));
+		const auto albumSortorder = std::get<AlbumSortorder>(actionPair.sortorder());
+		action->setData(static_cast<int>(albumSortorder));
 		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionSortingTriggered);
 	}
 }
@@ -135,7 +136,7 @@ void CoverViewContextMenu::actionSortingTriggered([[maybe_unused]] bool b)
 {
 	auto* action = dynamic_cast<QAction*>(sender());
 
-	const auto sortorder = static_cast<Library::SortOrder>(action->data().toInt());
+	const auto sortorder = static_cast<Library::AlbumSortorder>(action->data().toInt());
 	emit sigSortingChanged(sortorder);
 }
 
@@ -173,7 +174,7 @@ void CoverViewContextMenu::setZoom(int zoom)
 	}
 }
 
-void CoverViewContextMenu::setSorting(Library::SortOrder sortOrder)
+void CoverViewContextMenu::setSorting(const Library::AlbumSortorder sortOrder)
 {
 	const auto actions = m->menuSorting->actions();
 	for(auto* action: actions)
@@ -186,7 +187,7 @@ void CoverViewContextMenu::showEvent(QShowEvent* e)
 {
 	Library::ContextMenu::showEvent(e);
 
-	setSorting(GetSetting(Set::Lib_Sorting).so_albums);
+	setSorting(GetSetting(Set::Lib_Sorting).album);
 	setZoom(GetSetting(Set::Lib_CoverZoom));
 	m->actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 	m->actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));

@@ -83,7 +83,7 @@ static MetaDataList createTracks()
 	// track[80-89]: artist4, album8
 	// track[90-99]: artist4, album9
 
-	MetaDataSorting::sortMetadata(tracks, Library::SortOrder::TrackTitleAsc);
+	MetaDataSorting::sortMetadata(tracks, Library::TrackSortorder::TitleAsc);
 	return tracks;
 }
 
@@ -106,7 +106,7 @@ void LibraryDatabaseTest::testStore()
 	QVERIFY(success == true);
 	QVERIFY(tempTracks.count() == tracks.count());
 
-	MetaDataSorting::sortMetadata(tempTracks, Library::SortOrder::TrackTitleAsc);
+	MetaDataSorting::sortMetadata(tempTracks, Library::TrackSortorder::TitleAsc);
 	for(int i = 0; i < tracks.count(); i++)
 	{
 		QVERIFY(tracks[i] == tempTracks[i]);

@@ -47,7 +47,8 @@ namespace Library
 		PIMPL(ColumnHeader)
 
 		protected:
-			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			ColumnHeader(ColumnIndex::IntegerType columnIndex, bool switchable, VariableSortorder sortAsc,
+			             VariableSortorder sortDesc,
 			             int preferredWidth, bool isStretchable = false);
 			virtual QString hashPrefix() const = 0;
 
@@ -62,7 +63,7 @@ namespace Library
 			bool isSwitchable() const;
 			int defaultSize() const;
 
-			SortOrder sortorder(Qt::SortOrder sortOrder) const;
+			[[nodiscard]] VariableSortorder sortorder(Qt::SortOrder sortOrder) const;
 
 			ColumnIndex::IntegerType columnIndex() const;
 	};
@@ -73,7 +74,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			ColumnHeaderTrack(ColumnIndex::Track columnIndex, bool switchable, TrackSortorder sortAsc,
+			                  TrackSortorder sortDesc,
 			                  int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 
@@ -87,7 +89,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			ColumnHeaderAlbum(ColumnIndex::Album columnIndex, bool switchable, AlbumSortorder sortAsc,
+			                  AlbumSortorder sortDesc,
 			                  int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 
@@ -101,7 +104,8 @@ namespace Library
 		Q_OBJECT
 
 		public:
-			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
+			ColumnHeaderArtist(ColumnIndex::Artist columnIndex, bool switchable, ArtistSortorder sortAsc,
+			                   ArtistSortorder sortDesc,
 			                   int preferredWidth, bool isStretchable = false);
 			QString title() const override;
 

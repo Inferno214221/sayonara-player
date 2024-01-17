@@ -31,7 +31,6 @@ class QAction;
 namespace Library
 {
 	class MergeData;
-	class ActionPair;
 
 	/**
 	 * @brief The CoverView class
@@ -60,7 +59,7 @@ namespace Library
 
 			int zoom() const;
 			void changeZoom(int zoom = -1);
-			void changeSortorder(SortOrder so);
+			void changeSortorder(AlbumSortorder so);
 
 			static QList<ActionPair> sortingActions();
 			static QList<int> zoomFactors();

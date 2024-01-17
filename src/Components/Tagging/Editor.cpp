@@ -333,7 +333,7 @@ void Editor::loadEntireAlbum()
 
 		MetaDataList tracks;
 		libraryDatabase->getAllTracksByAlbum(IdList {albumId}, tracks, ::Library::Filter(), -1);
-		MetaDataSorting::sortMetadata(tracks, ::Library::SortOrder::TrackDiscnumberAsc);
+		MetaDataSorting::sortMetadata(tracks, ::Library::TrackSortorder::DiscnumberAsc);
 		setMetadata(tracks);
 	}
 }

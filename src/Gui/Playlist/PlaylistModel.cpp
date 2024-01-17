@@ -444,7 +444,7 @@ void Model::randomizeTracks()
 	::Playlist::randomize(*m->playlist, Reason::UserInterface);
 }
 
-void Model::sortTracks(Library::SortOrder sortOrder)
+void Model::sortTracks(const Library::TrackSortorder sortOrder)
 {
 	::Playlist::sortTracks(*m->playlist, sortOrder, Reason::UserInterface);
 }

@@ -33,9 +33,9 @@ namespace SC
 {
 	namespace Sorting
 	{
-		void sortArtists(ArtistList& artists, ::Library::SortOrder so);
-		void sortAlbums(AlbumList& albums, ::Library::SortOrder so);
-		void sortTracks(MetaDataList& v_md, ::Library::SortOrder so);
+		void sortArtists(ArtistList& artists, ::Library::ArtistSortorder so);
+		void sortAlbums(AlbumList& albums, ::Library::AlbumSortorder so);
+		void sortTracks(MetaDataList& tracks, ::Library::TrackSortorder so);
 	}
 }
 

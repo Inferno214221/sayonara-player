@@ -537,15 +537,15 @@ void AbstractLibrary::fetchTracksByPath(const QStringList& paths)
 	emitAll();
 }
 
-void AbstractLibrary::changeTrackSortorder(Library::SortOrder sortOrder)
+void AbstractLibrary::changeTrackSortorder(const Library::TrackSortorder sortOrder)
 {
-	if(sortOrder == m->sortorder.so_tracks)
+	if(sortOrder == m->sortorder.tracks)
 	{
 		return;
 	}
 
 	auto sorting = GetSetting(Set::Lib_Sorting);
-	sorting.so_tracks = sortOrder;
+	sorting.tracks = sortOrder;
 	SetSetting(Set::Lib_Sorting, sorting);
 	m->sortorder = sorting;
 
@@ -553,15 +553,15 @@ void AbstractLibrary::changeTrackSortorder(Library::SortOrder sortOrder)
 	emit sigAllTracksLoaded();
 }
 
-void AbstractLibrary::changeAlbumSortorder(Library::SortOrder sortOrder)
+void AbstractLibrary::changeAlbumSortorder(const Library::AlbumSortorder sortOrder)
 {
-	if(sortOrder == m->sortorder.so_albums)
+	if(sortOrder == m->sortorder.album)
 	{
 		return;
 	}
 
 	auto sorting = GetSetting(Set::Lib_Sorting);
-	sorting.so_albums = sortOrder;
+	sorting.album = sortOrder;
 	SetSetting(Set::Lib_Sorting, sorting);
 
 	m->sortorder = sorting;
@@ -570,15 +570,15 @@ void AbstractLibrary::changeAlbumSortorder(Library::SortOrder sortOrder)
 	emit sigAllAlbumsLoaded();
 }
 
-void AbstractLibrary::changeArtistSortorder(Library::SortOrder sortOrder)
+void AbstractLibrary::changeArtistSortorder(const Library::ArtistSortorder sortOrder)
 {
-	if(sortOrder == m->sortorder.so_artists)
+	if(sortOrder == m->sortorder.artist)
 	{
 		return;
 	}
 
 	auto sorting = GetSetting(Set::Lib_Sorting);
-	sorting.so_artists = sortOrder;
+	sorting.artist = sortOrder;
 	SetSetting(Set::Lib_Sorting, sorting);
 
 	m->sortorder = sorting;
@@ -673,17 +673,17 @@ void AbstractLibrary::prepareTracks()
 	m->filteredTracks.clear();
 	m->extensions = extractExtensions(tracks());
 
-	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.so_tracks, GetSetting(Set::Lib_SortModeMask));
+	MetaDataSorting::sortMetadata(m->tracks, m->sortorder.tracks, GetSetting(Set::Lib_SortModeMask));
 }
 
 void AbstractLibrary::prepareAlbums()
 {
-	MetaDataSorting::sortAlbums(m->albums, m->sortorder.so_albums, GetSetting(Set::Lib_SortModeMask));
+	MetaDataSorting::sortAlbums(m->albums, m->sortorder.album, GetSetting(Set::Lib_SortModeMask));
 }
 
 void AbstractLibrary::prepareArtists()
 {
-	MetaDataSorting::sortArtists(m->artists, m->sortorder.so_artists, GetSetting(Set::Lib_SortModeMask));
+	MetaDataSorting::sortArtists(m->artists, m->sortorder.artist, GetSetting(Set::Lib_SortModeMask));
 }
 
 Gui::ExtensionSet AbstractLibrary::extensions() const

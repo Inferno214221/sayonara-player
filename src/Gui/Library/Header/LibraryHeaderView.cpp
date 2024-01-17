@@ -84,8 +84,8 @@ HeaderView::HeaderView(Qt::Orientation orientation, QWidget* parent) :
 
 HeaderView::~HeaderView() = default;
 
-void HeaderView::init(const ColumnHeaderList& columnHeaderList, const QByteArray& state, Library::SortOrder sortOrder,
-                      bool autoResizeState)
+void HeaderView::init(const ColumnHeaderList& columnHeaderList, const QByteArray& state,
+                      Library::VariableSortorder sortOrder, bool autoResizeState)
 {
 	m->initialState = state;
 
@@ -155,15 +155,10 @@ void HeaderView::initializeView()
 	m->isInitialized = true;
 }
 
-Library::SortOrder HeaderView::sortorder(int index, Qt::SortOrder sortOrder)
+Library::VariableSortorder HeaderView::sortorder(int index, Qt::SortOrder sortOrder)
 {
-	if(Util::between(index, m->columns))
-	{
-		const auto& columnHeader = m->columns[index].first;
-		return columnHeader->sortorder(sortOrder);
-	}
-
-	return Library::SortOrder::NoSorting;
+	const auto& columnHeader = m->columns[index].first;
+	return columnHeader->sortorder(sortOrder);
 }
 
 QString HeaderView::columnText(int index) const

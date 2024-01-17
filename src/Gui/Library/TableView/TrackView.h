@@ -54,8 +54,8 @@ namespace Library
 			bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
-			SortOrder sortorder() const override;
-			void applySortorder(SortOrder s) override;
+			[[nodiscard]] VariableSortorder sortorder() const override;
+			void applySortorder(VariableSortorder s) override;
 
 			ContextMenu::Entries contextMenuEntries() const override;
 

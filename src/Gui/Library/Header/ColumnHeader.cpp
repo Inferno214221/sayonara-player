@@ -32,15 +32,15 @@ struct ColumnHeader::Private
 	int preferredSize;
 	int defaultSize;
 
-	QMap<Qt::SortOrder, SortOrder> sortorderMap;
+	QMap<Qt::SortOrder, VariableSortorder> sortorderMap;
 
 	ColumnIndex::IntegerType columnIndex;
 
 	bool switchable;
 	bool stretchable;
 
-	Private(ColumnIndex::IntegerType columnIndex, bool switchable, SortOrder sortorderAscending,
-	        SortOrder sortorderDescending, int sz, bool stretchable) :
+	Private(ColumnIndex::IntegerType columnIndex, bool switchable, VariableSortorder sortorderAscending,
+	        VariableSortorder sortorderDescending, int sz, bool stretchable) :
 		preferredSize(sz),
 		defaultSize(sz),
 		columnIndex(columnIndex),
@@ -54,8 +54,8 @@ struct ColumnHeader::Private
 
 ColumnHeader::~ColumnHeader() = default;
 
-ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, SortOrder sortorderAscending,
-                           SortOrder sortorderDescending, int preferredSize, bool stretchable)
+ColumnHeader::ColumnHeader(ColumnIndex::IntegerType type, bool switchable, VariableSortorder sortorderAscending,
+                           VariableSortorder sortorderDescending, int preferredSize, bool stretchable)
 {
 	m = Pimpl::make<Private>(type, switchable, sortorderAscending, sortorderDescending, preferredSize, stretchable);
 }
@@ -80,7 +80,7 @@ int ColumnHeader::defaultSize() const
 	return m->defaultSize;
 }
 
-SortOrder ColumnHeader::sortorder(Qt::SortOrder qtSortorder) const
+VariableSortorder ColumnHeader::sortorder(Qt::SortOrder qtSortorder) const
 {
 	return m->sortorderMap[qtSortorder];
 }
@@ -90,8 +90,8 @@ ColumnIndex::IntegerType ColumnHeader::columnIndex() const
 	return m->columnIndex;
 }
 
-ColumnHeaderTrack::ColumnHeaderTrack(ColumnIndex::Track type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
-                                     int preferredWidth, bool stretchable) :
+ColumnHeaderTrack::ColumnHeaderTrack(ColumnIndex::Track type, bool switchable, TrackSortorder sortAsc,
+                                     TrackSortorder sortDesc, int preferredWidth, bool stretchable) :
 	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderTrack::title() const
@@ -135,8 +135,8 @@ QString ColumnHeaderTrack::hashPrefix() const
 	return "track";
 }
 
-ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
-                                     int preferredWidth, bool stretchable) :
+ColumnHeaderAlbum::ColumnHeaderAlbum(ColumnIndex::Album type, bool switchable, AlbumSortorder sortAsc,
+                                     AlbumSortorder sortDesc, int preferredWidth, bool stretchable) :
 	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderAlbum::title() const
@@ -168,8 +168,8 @@ QString ColumnHeaderAlbum::hashPrefix() const
 	return "album";
 }
 
-ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, SortOrder sortAsc, SortOrder sortDesc,
-                                       int preferredWidth, bool stretchable) :
+ColumnHeaderArtist::ColumnHeaderArtist(ColumnIndex::Artist type, bool switchable, ArtistSortorder sortAsc,
+                                       ArtistSortorder sortDesc, int preferredWidth, bool stretchable) :
 	ColumnHeader(ColumnIndex::IntegerType(type), switchable, sortAsc, sortDesc, preferredWidth, stretchable) {}
 
 QString ColumnHeaderArtist::title() const

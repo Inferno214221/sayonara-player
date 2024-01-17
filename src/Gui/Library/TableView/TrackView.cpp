@@ -80,71 +80,71 @@ ColumnHeaderList TrackView::columnHeaders() const
 		{
 			std::make_shared<ColumnHeaderTrack>(Track::TrackNumber,
 			                                    true,
-			                                    SortOrder::TrackNumAsc,
-			                                    SortOrder::TrackNumDesc,
+			                                    TrackSortorder::TrackNumberAsc,
+			                                    TrackSortorder::TrackNumberDesc,
 			                                    Gui::Util::textWidth(fm, "M888")),
 			std::make_shared<ColumnHeaderTrack>(Track::Title,
 			                                    false,
-			                                    SortOrder::TrackTitleAsc,
-			                                    SortOrder::TrackTitleDesc,
+			                                    TrackSortorder::TitleAsc,
+			                                    TrackSortorder::TitleDesc,
 			                                    Gui::Util::textWidth(fm, "Some long song name"),
 			                                    true),
 			std::make_shared<ColumnHeaderTrack>(Track::Artist,
 			                                    true,
-			                                    SortOrder::TrackArtistAsc,
-			                                    SortOrder::TrackArtistDesc,
+			                                    TrackSortorder::ArtistAsc,
+			                                    TrackSortorder::ArtistDesc,
 			                                    Gui::Util::textWidth(fm, "Some long artist name"),
 			                                    true),
 			std::make_shared<ColumnHeaderTrack>(Track::Album,
 			                                    true,
-			                                    SortOrder::TrackAlbumAsc,
-			                                    SortOrder::TrackAlbumDesc,
+			                                    TrackSortorder::AlbumAsc,
+			                                    TrackSortorder::AlbumDesc,
 			                                    Gui::Util::textWidth(fm, "Some long album name"),
 			                                    true),
 			std::make_shared<ColumnHeaderTrack>(Track::Discnumber,
 			                                    true,
-			                                    SortOrder::TrackDiscnumberAsc,
-			                                    SortOrder::TrackDiscnumberDesc,
+			                                    TrackSortorder::DiscnumberAsc,
+			                                    TrackSortorder::DiscnumberDesc,
 			                                    Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888")),
 			std::make_shared<ColumnHeaderTrack>(Track::Year,
 			                                    true,
-			                                    SortOrder::TrackYearAsc,
-			                                    SortOrder::TrackYearDesc,
+			                                    TrackSortorder::YearAsc,
+			                                    TrackSortorder::YearDesc,
 			                                    Gui::Util::textWidth(fm, "M8888")),
 			std::make_shared<ColumnHeaderTrack>(Track::Length,
 			                                    true,
-			                                    SortOrder::TrackLenghtAsc,
-			                                    SortOrder::TrackLengthDesc,
+			                                    TrackSortorder::LengthAsc,
+			                                    TrackSortorder::LengthDesc,
 			                                    Gui::Util::textWidth(fm, "8d 88h 88s")),
 			std::make_shared<ColumnHeaderTrack>(Track::Bitrate,
 			                                    true,
-			                                    SortOrder::TrackBitrateAsc,
-			                                    SortOrder::TrackBitrateDesc,
+			                                    TrackSortorder::BitrateAsc,
+			                                    TrackSortorder::BitrateDesc,
 			                                    Gui::Util::textWidth(fm, "M8888 kBit/s")),
 			std::make_shared<ColumnHeaderTrack>(Track::Filesize,
 			                                    true,
-			                                    SortOrder::TrackSizeAsc,
-			                                    SortOrder::TrackSizeDesc,
+			                                    TrackSortorder::SizeAsc,
+			                                    TrackSortorder::SizeDesc,
 			                                    Gui::Util::textWidth(fm, "M888.88 MB")),
 			std::make_shared<ColumnHeaderTrack>(Track::Filetype,
 			                                    true,
-			                                    SortOrder::TrackFiletypeAsc,
-			                                    SortOrder::TrackFiletypeDesc,
+			                                    TrackSortorder::FiletypeAsc,
+			                                    TrackSortorder::FiletypeDesc,
 			                                    Gui::Util::textWidth(fm, "MFLAC")),
 			std::make_shared<ColumnHeaderTrack>(Track::AddedDate,
 			                                    true,
-			                                    SortOrder::TrackDateAddedAsc,
-			                                    SortOrder::TrackDateAddedDesc,
+			                                    TrackSortorder::DateAddedAsc,
+			                                    TrackSortorder::DateAddedDesc,
 			                                    Gui::Util::textWidth(fm, "234/323/23423")),
 			std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate,
 			                                    true,
-			                                    SortOrder::TrackDateModifiedAsc,
-			                                    SortOrder::TrackDateModifiedDesc,
+			                                    TrackSortorder::DateModifiedAsc,
+			                                    TrackSortorder::DateModifiedDesc,
 			                                    Gui::Util::textWidth(fm, "234/323/23423")),
 			std::make_shared<ColumnHeaderTrack>(Track::Rating,
 			                                    true,
-			                                    SortOrder::TrackRatingAsc,
-			                                    SortOrder::TrackRatingDesc,
+			                                    TrackSortorder::RatingAsc,
+			                                    TrackSortorder::RatingDesc,
 			                                    85),
 		};
 }
@@ -176,15 +176,15 @@ Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 	        Library::ContextMenu::EntryFilterExtension);
 }
 
-SortOrder TrackView::sortorder() const
+VariableSortorder TrackView::sortorder() const
 {
 	Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.so_tracks;
+	return so.tracks;
 }
 
-void TrackView::applySortorder(SortOrder s)
+void TrackView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeTrackSortorder(s);
+	m->library->changeTrackSortorder(std::get<TrackSortorder>(s));
 }
 
 void TrackView::selectedItemsChanged(const IndexSet& lst)

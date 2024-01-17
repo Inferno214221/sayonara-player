@@ -59,8 +59,8 @@ namespace Library
 			// Library::TableView
 			void initView(AbstractLibrary* library) override;
 
-			SortOrder sortorder() const override;
-			void applySortorder(SortOrder s) override;
+			[[nodiscard]] VariableSortorder sortorder() const override;
+			void applySortorder(VariableSortorder s) override;
 
 			// Library::ItemView
 			void playClicked() override;

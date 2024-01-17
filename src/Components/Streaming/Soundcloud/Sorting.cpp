@@ -185,16 +185,16 @@ namespace Compare
 	}
 }
 
-void SC::Sorting::sortArtists(ArtistList& artists, Library::SortOrder so)
+void SC::Sorting::sortArtists(ArtistList& artists, const Library::ArtistSortorder so)
 {
 	using namespace Library;
 	using SortFn = std::function<bool(const Artist&, const Artist&)>;
-	QMap<Library::SortOrder, SortFn> functions
+	QMap<Library::ArtistSortorder, SortFn> functions
 		{
-			{SortOrder::ArtistNameAsc,        Compare::artistNameAsc},
-			{SortOrder::ArtistNameDesc,       Compare::artistNameDesc},
-			{SortOrder::ArtistTrackcountAsc,  Compare::artistTrackcountAsc},
-			{SortOrder::ArtistTrackcountDesc, Compare::artistTrackcountDesc}
+			{ArtistSortorder::NameAsc,        Compare::artistNameAsc},
+			{ArtistSortorder::NameDesc,       Compare::artistNameDesc},
+			{ArtistSortorder::TrackcountAsc,  Compare::artistTrackcountAsc},
+			{ArtistSortorder::TrackcountDesc, Compare::artistTrackcountDesc}
 		};
 
 	if(functions.contains(so))
@@ -203,18 +203,18 @@ void SC::Sorting::sortArtists(ArtistList& artists, Library::SortOrder so)
 	}
 }
 
-void SC::Sorting::sortAlbums(AlbumList& albums, Library::SortOrder so)
+void SC::Sorting::sortAlbums(AlbumList& albums, const Library::AlbumSortorder so)
 {
 	using namespace Library;
 	using SortFn = std::function<bool(const Album&, const Album&)>;
-	QMap<Library::SortOrder, SortFn> functions
+	QMap<Library::AlbumSortorder, SortFn> functions
 		{
-			{SortOrder::AlbumNameAsc,      &Compare::albumNameAsc},
-			{SortOrder::AlbumNameDesc,     &Compare::albumNameDesc},
-			{SortOrder::AlbumYearAsc,      &Compare::albumYearAsc},
-			{SortOrder::AlbumYearDesc,     &Compare::albumYearDesc},
-			{SortOrder::AlbumDurationAsc,  &Compare::albumDurationAsc},
-			{SortOrder::AlbumDurationDesc, &Compare::albumDurationDesc}
+			{AlbumSortorder::NameAsc,      &Compare::albumNameAsc},
+			{AlbumSortorder::NameDesc,     &Compare::albumNameDesc},
+			{AlbumSortorder::YearAsc,      &Compare::albumYearAsc},
+			{AlbumSortorder::YearDesc,     &Compare::albumYearDesc},
+			{AlbumSortorder::DurationAsc,  &Compare::albumDurationAsc},
+			{AlbumSortorder::DurationDesc, &Compare::albumDurationDesc}
 		};
 
 	if(functions.contains(so))
@@ -223,27 +223,27 @@ void SC::Sorting::sortAlbums(AlbumList& albums, Library::SortOrder so)
 	}
 }
 
-void SC::Sorting::sortTracks(MetaDataList& tracks, Library::SortOrder so)
+void SC::Sorting::sortTracks(MetaDataList& tracks, const Library::TrackSortorder so)
 {
 	using namespace Library;
 	using SortFn = std::function<bool(const MetaData&, const MetaData&)>;
 
-	QMap<Library::SortOrder, SortFn> functions
+	QMap<Library::TrackSortorder, SortFn> functions
 		{
-			{SortOrder::TrackNumAsc,      &Compare::trackNumAsc},
-			{SortOrder::TrackNumDesc,     &Compare::trackNumDesc},
-			{SortOrder::TrackTitleAsc,    &Compare::trackTitleAsc},
-			{SortOrder::TrackTitleDesc,   &Compare::trackTitleDesc},
-			{SortOrder::TrackAlbumAsc,    &Compare::trackAlbumAsc},
-			{SortOrder::TrackAlbumDesc,   &Compare::trackAlbumDesc},
-			{SortOrder::TrackArtistAsc,   &Compare::trackArtistAsc},
-			{SortOrder::TrackArtistDesc,  &Compare::trackArtistDesc},
-			{SortOrder::TrackYearAsc,     &Compare::trackYearAsc},
-			{SortOrder::TrackYearDesc,    &Compare::trackYearDesc},
-			{SortOrder::TrackLenghtAsc,   &Compare::trackLengthAsc},
-			{SortOrder::TrackLengthDesc,  &Compare::trackLengthDesc},
-			{SortOrder::TrackBitrateAsc,  &Compare::trackBitrateAsc},
-			{SortOrder::TrackBitrateDesc, &Compare::trackBitrateDesc}
+			{TrackSortorder::TrackNumberAsc,  &Compare::trackNumAsc},
+			{TrackSortorder::TrackNumberDesc, &Compare::trackNumDesc},
+			{TrackSortorder::TitleAsc,        &Compare::trackTitleAsc},
+			{TrackSortorder::TitleDesc,       &Compare::trackTitleDesc},
+			{TrackSortorder::AlbumAsc,        &Compare::trackAlbumAsc},
+			{TrackSortorder::AlbumDesc,       &Compare::trackAlbumDesc},
+			{TrackSortorder::ArtistAsc,       &Compare::trackArtistAsc},
+			{TrackSortorder::ArtistDesc,      &Compare::trackArtistDesc},
+			{TrackSortorder::YearAsc,         &Compare::trackYearAsc},
+			{TrackSortorder::YearDesc,        &Compare::trackYearDesc},
+			{TrackSortorder::LengthAsc,       &Compare::trackLengthAsc},
+			{TrackSortorder::LengthDesc,      &Compare::trackLengthDesc},
+			{TrackSortorder::BitrateAsc,      &Compare::trackBitrateAsc},
+			{TrackSortorder::BitrateDesc,     &Compare::trackBitrateDesc}
 		};
 
 	if(functions.contains(so))

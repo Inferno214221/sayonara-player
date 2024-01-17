@@ -39,9 +39,6 @@ namespace Library
 		Q_OBJECT
 		PIMPL(TableView)
 
-		signals:
-			void sigSortorderChanged(SortOrder);
-
 		private:
 			TableView(const TableView& other) = delete;
 			TableView& operator=(const TableView& other) = delete;
@@ -92,12 +89,12 @@ namespace Library
 			/**
 			 * @brief returns the current sortorder for the table view
 			 */
-			virtual SortOrder sortorder() const = 0;
+			[[nodiscard]] virtual VariableSortorder sortorder() const = 0;
 
 			/**
 			 * @brief saves the current sortorder
 			 */
-			virtual void applySortorder(SortOrder s) = 0;
+			virtual void applySortorder(VariableSortorder s) = 0;
 
 			virtual bool autoResizeState() const = 0;
 			virtual void saveAutoResizeState(bool b) = 0;

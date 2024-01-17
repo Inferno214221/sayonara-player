@@ -108,14 +108,14 @@ ColumnHeaderList ArtistView::columnHeaders() const
 		{
 			std::make_shared<ColumnHeaderArtist>(Artist::Name,
 			                                     false,
-			                                     SortOrder::ArtistNameAsc,
-			                                     SortOrder::ArtistNameDesc,
+			                                     ArtistSortorder::NameAsc,
+			                                     ArtistSortorder::NameDesc,
 			                                     160,
 			                                     true),
 			std::make_shared<ColumnHeaderArtist>(Artist::Tracks,
 			                                     true,
-			                                     SortOrder::ArtistTrackcountAsc,
-			                                     SortOrder::ArtistTrackcountDesc,
+			                                     ArtistSortorder::TrackcountAsc,
+			                                     ArtistSortorder::TrackcountDesc,
 			                                     Gui::Util::textWidth(fm, "M 8888"))
 		};
 
@@ -132,15 +132,15 @@ void ArtistView::saveColumnHeaderState(const QByteArray& state)
 	SetSetting(Set::Lib_ColStateArtists, state);
 }
 
-SortOrder ArtistView::sortorder() const
+VariableSortorder ArtistView::sortorder() const
 {
 	Library::Sortings so = GetSetting(Set::Lib_Sorting);
-	return so.so_artists;
+	return so.artist;
 }
 
-void ArtistView::applySortorder(SortOrder s)
+void ArtistView::applySortorder(const VariableSortorder s)
 {
-	m->library->changeArtistSortorder(s);
+	m->library->changeArtistSortorder(std::get<ArtistSortorder>(s));
 }
 
 bool ArtistView::autoResizeState() const

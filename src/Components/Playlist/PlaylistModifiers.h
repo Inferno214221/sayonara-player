@@ -57,7 +57,7 @@ namespace Playlist
 
 	void reverse(Playlist& playlist, Reason reason);
 	void randomize(Playlist& playlist, Reason reason);
-	void sortTracks(Playlist& playlist, Library::SortOrder sortOrder, Reason reason);
+	void sortTracks(Playlist& playlist, Library::TrackSortorder sortOrder, Reason reason);
 
 	IndexSet moveTracks(Playlist& playlist, const IndexSet& indexes, int targetRow, Reason reason);
 	IndexSet copyTracks(Playlist& playlist, const IndexSet& indexes, int targetRow, Reason reason);

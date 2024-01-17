@@ -30,7 +30,9 @@
 
 #include <QDateTime>
 
-using Library::SortOrder;
+using Library::ArtistSortorder;
+using Library::AlbumSortorder;
+using Library::TrackSortorder;
 
 namespace MetaDataSorting
 {
@@ -463,98 +465,98 @@ namespace MetaDataSorting
 		}
 	}
 
-	void sortMetadata(MetaDataList& tracks, const Library::SortOrder sortOrder, const SortModeMask sortMode)
+	void sortMetadata(MetaDataList& tracks, const TrackSortorder sortOrder, const SortModeMask sortMode)
 	{
 		switch(sortOrder)
 		{
-			case SortOrder::TrackNumAsc:
+			case TrackSortorder::TrackNumberAsc:
 				sort(tracks, sortMode, TracksByTrackNumAsc);
 				break;
-			case SortOrder::TrackNumDesc:
+			case TrackSortorder::TrackNumberDesc:
 				sort(tracks, sortMode, TracksByTrackNumDesc);
 				break;
-			case SortOrder::TrackTitleAsc:
+			case TrackSortorder::TitleAsc:
 				sort(tracks, sortMode, TracksByTitleAsc);
 				break;
-			case SortOrder::TrackTitleDesc:
+			case TrackSortorder::TitleDesc:
 				sort(tracks, sortMode, TracksByTitleDesc);
 				break;
-			case SortOrder::TrackAlbumAsc:
+			case TrackSortorder::AlbumAsc:
 				sort(tracks, sortMode, TracksByAlbumAsc);
 				break;
-			case SortOrder::TrackAlbumDesc:
+			case TrackSortorder::AlbumDesc:
 				sort(tracks, sortMode, TracksByAlbumDesc);
 				break;
-			case SortOrder::TrackArtistAsc:
+			case TrackSortorder::ArtistAsc:
 				sort(tracks, sortMode, TracksByArtistAsc);
 				break;
-			case SortOrder::TrackArtistDesc:
+			case TrackSortorder::ArtistDesc:
 				sort(tracks, sortMode, TracksByArtistDesc);
 				break;
-			case SortOrder::TrackAlbumArtistAsc:
+			case TrackSortorder::AlbumArtistAsc:
 				sort(tracks, sortMode, TracksByAlbumArtistAsc);
 				break;
-			case SortOrder::TrackAlbumArtistDesc:
+			case TrackSortorder::AlbumArtistDesc:
 				sort(tracks, sortMode, TracksByAlbumArtistDesc);
 				break;
-			case SortOrder::TrackYearAsc:
+			case TrackSortorder::YearAsc:
 				sort(tracks, sortMode, TracksByYearAsc);
 				break;
-			case SortOrder::TrackYearDesc:
+			case TrackSortorder::YearDesc:
 				sort(tracks, sortMode, TracksByYearDesc);
 				break;
-			case SortOrder::TrackLenghtAsc:
+			case TrackSortorder::LengthAsc:
 				sort(tracks, sortMode, TracksByLengthAsc);
 				break;
-			case SortOrder::TrackLengthDesc:
+			case TrackSortorder::LengthDesc:
 				sort(tracks, sortMode, TracksByLengthDesc);
 				break;
-			case SortOrder::TrackBitrateAsc:
+			case TrackSortorder::BitrateAsc:
 				sort(tracks, sortMode, TracksByBitrateAsc);
 				break;
-			case SortOrder::TrackBitrateDesc:
+			case TrackSortorder::BitrateDesc:
 				sort(tracks, sortMode, TracksByBitrateDesc);
 				break;
-			case SortOrder::TrackSizeAsc:
+			case TrackSortorder::SizeAsc:
 				sort(tracks, sortMode, TracksByFilesizeAsc);
 				break;
-			case SortOrder::TrackSizeDesc:
+			case TrackSortorder::SizeDesc:
 				sort(tracks, sortMode, TracksByFilesizeDesc);
 				break;
-			case SortOrder::TrackDiscnumberAsc:
+			case TrackSortorder::DiscnumberAsc:
 				sort(tracks, sortMode, TracksByDiscnumberAsc);
 				break;
-			case SortOrder::TrackDiscnumberDesc:
+			case TrackSortorder::DiscnumberDesc:
 				sort(tracks, sortMode, TracksByDiscnumberDesc);
 				break;
-			case SortOrder::TrackFilenameAsc:
+			case TrackSortorder::FilenameAsc:
 				sort(tracks, sortMode, TracksByFilepathAsc);
 				break;
-			case SortOrder::TrackFilenameDesc:
+			case TrackSortorder::FilenameDesc:
 				sort(tracks, sortMode, TracksByFilepathDesc);
 				break;
-			case SortOrder::TrackFiletypeAsc:
+			case TrackSortorder::FiletypeAsc:
 				sort(tracks, sortMode, TracksByFiletypeAsc);
 				break;
-			case SortOrder::TrackFiletypeDesc:
+			case TrackSortorder::FiletypeDesc:
 				sort(tracks, sortMode, TracksByFiletypeDesc);
 				break;
-			case SortOrder::TrackRatingAsc:
+			case TrackSortorder::RatingAsc:
 				sort(tracks, sortMode, TracksByRatingAsc);
 				break;
-			case SortOrder::TrackRatingDesc:
+			case TrackSortorder::RatingDesc:
 				sort(tracks, sortMode, TracksByRatingDesc);
 				break;
-			case SortOrder::TrackDateAddedAsc:
+			case TrackSortorder::DateAddedAsc:
 				sort(tracks, sortMode, TracksByAddedDateAsc);
 				break;
-			case SortOrder::TrackDateAddedDesc:
+			case TrackSortorder::DateAddedDesc:
 				sort(tracks, sortMode, TracksByAddedDateDesc);
 				break;
-			case SortOrder::TrackDateModifiedAsc:
+			case TrackSortorder::DateModifiedAsc:
 				sort(tracks, sortMode, TracksByModifiedDateAsc);
 				break;
-			case SortOrder::TrackDateModifiedDesc:
+			case TrackSortorder::DateModifiedDesc:
 				sort(tracks, sortMode, TracksByModifiedDateDesc);
 				break;
 			default:
@@ -562,50 +564,50 @@ namespace MetaDataSorting
 		}
 	}
 
-	void sortAlbums(AlbumList& albums, Library::SortOrder so, const SortModeMask sortMode)
+	void sortAlbums(AlbumList& albums, const AlbumSortorder so, const SortModeMask sortMode)
 	{
 		switch(so)
 		{
-			case SortOrder::ArtistNameAsc:
+			case AlbumSortorder::AlbumArtistAsc:
 				sort(albums, sortMode, AlbumByAlbumArtistAsc);
 				break;
-			case SortOrder::ArtistNameDesc:
+			case AlbumSortorder::AlbumArtistDesc:
 				sort(albums, sortMode, AlbumByAlbumArtistDesc);
 				break;
-			case SortOrder::AlbumNameAsc:
+			case AlbumSortorder::NameAsc:
 				sort(albums, sortMode, AlbumByNameAsc);
 				break;
-			case SortOrder::AlbumNameDesc:
+			case AlbumSortorder::NameDesc:
 				sort(albums, sortMode, AlbumByNameDesc);
 				break;
-			case SortOrder::AlbumDurationAsc:
+			case AlbumSortorder::DurationAsc:
 				sort(albums, sortMode, AlbumByDurationAsc);
 				break;
-			case SortOrder::AlbumDurationDesc:
+			case AlbumSortorder::DurationDesc:
 				sort(albums, sortMode, AlbumByDurationDesc);
 				break;
-			case SortOrder::AlbumRatingAsc:
+			case AlbumSortorder::RatingAsc:
 				sort(albums, sortMode, AlbumByRatingAsc);
 				break;
-			case SortOrder::AlbumRatingDesc:
+			case AlbumSortorder::RatingDesc:
 				sort(albums, sortMode, AlbumByRatingDesc);
 				break;
-			case SortOrder::AlbumTracksAsc:
+			case AlbumSortorder::TracksAsc:
 				sort(albums, sortMode, AlbumBySongcountAsc);
 				break;
-			case SortOrder::AlbumTracksDesc:
+			case AlbumSortorder::TracksDesc:
 				sort(albums, sortMode, AlbumBySongcountDesc);
 				break;
-			case SortOrder::AlbumYearAsc:
+			case AlbumSortorder::YearAsc:
 				sort(albums, sortMode, AlbumByYearAsc);
 				break;
-			case SortOrder::AlbumYearDesc:
+			case AlbumSortorder::YearDesc:
 				sort(albums, sortMode, AlbumByYearDesc);
 				break;
-			case SortOrder::AlbumCreationDateAsc:
+			case AlbumSortorder::CreationDateAsc:
 				sort(albums, sortMode, AlbumByCreationDateAsc);
 				break;
-			case SortOrder::AlbumCreationDateDesc:
+			case AlbumSortorder::CreationDateDesc:
 				sort(albums, sortMode, AlbumByCreationDateDesc);
 				break;
 			default:
@@ -613,20 +615,20 @@ namespace MetaDataSorting
 		}
 	}
 
-	void sortArtists(ArtistList& artists, Library::SortOrder so, const SortModeMask sortMode)
+	void sortArtists(ArtistList& artists, const ArtistSortorder so, const SortModeMask sortMode)
 	{
 		switch(so)
 		{
-			case SortOrder::ArtistNameAsc:
+			case ArtistSortorder::NameAsc:
 				sort(artists, sortMode, ArtistByNameAsc);
 				break;
-			case SortOrder::ArtistNameDesc:
+			case ArtistSortorder::NameDesc:
 				sort(artists, sortMode, ArtistByNameDesc);
 				break;
-			case SortOrder::ArtistTrackcountAsc:
+			case ArtistSortorder::TrackcountAsc:
 				sort(artists, sortMode, ArtistByTrackCountAsc);
 				break;
-			case SortOrder::ArtistTrackcountDesc:
+			case ArtistSortorder::TrackcountDesc:
 				sort(artists, sortMode, ArtistByTrackCountDesc);
 				break;
 			default:

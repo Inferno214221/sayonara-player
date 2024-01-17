@@ -37,7 +37,7 @@ namespace Playlist
 
 		signals:
 			void sigBookmarkTriggered(Seconds timestamp);
-			void sigSortingTriggered(Library::SortOrder sortOrder);
+			void sigSortingTriggered(Library::TrackSortorder sortOrder);
 			void sigRatingChanged(Rating rating);
 
 		public:

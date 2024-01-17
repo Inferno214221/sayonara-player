@@ -39,7 +39,8 @@ namespace
 		static const auto actionPairs = Library::CoverView::sortingActions();
 		for(const auto& actionPair: actionPairs)
 		{
-			comboBox->addItem(actionPair.name(), static_cast<int>(actionPair.sortorder()));
+			const auto sortOrder = std::get<Library::AlbumSortorder>(actionPair.sortorder());
+			comboBox->addItem(actionPair.name(), static_cast<int>(sortOrder));
 		}
 	}
 
@@ -117,7 +118,7 @@ namespace Library
 	void GUI_CoverView::comboSortingChanged([[maybe_unused]] int index)
 	{
 		const auto data = ui->comboSorting->currentData().toInt();
-		const auto sortOrder = static_cast<SortOrder>(data);
+		const auto sortOrder = static_cast<AlbumSortorder>(data);
 
 		ui->coverView->changeSortorder(sortOrder);
 	}
@@ -125,7 +126,7 @@ namespace Library
 	void GUI_CoverView::sortorderChanged()
 	{
 		const auto sortings = GetSetting(Set::Lib_Sorting);
-		const auto sortOrder = sortings.so_albums;
+		const auto sortOrder = sortings.album;
 
 		for(auto i = 0; i < ui->comboSorting->count(); i++)
 		{

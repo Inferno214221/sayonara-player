@@ -44,9 +44,9 @@ namespace MetaDataSorting
 
 	using SortModeMask = std::underlying_type_t<SortMode>;
 
-	void sortMetadata(MetaDataList& tracks, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
-	void sortAlbums(AlbumList& albums, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
-	void sortArtists(ArtistList& artists, Library::SortOrder sortOrder, SortModeMask sortMode = +SortMode::None);
+	void sortMetadata(MetaDataList& tracks, Library::TrackSortorder sortOrder, SortModeMask sortMode = +SortMode::None);
+	void sortAlbums(AlbumList& albums, Library::AlbumSortorder sortOrder, SortModeMask sortMode = +SortMode::None);
+	void sortArtists(ArtistList& artists, Library::ArtistSortorder sortOrder, SortModeMask sortMode = +SortMode::None);
 }
 
 #endif // METADATASORTING_H

@@ -167,22 +167,22 @@ namespace Library
 	QList<ActionPair> CoverView::sortingActions()
 	{
 		return {
-			ActionPair(Lang::Name, true, SortOrder::AlbumNameAsc),
-			ActionPair(Lang::Name, false, SortOrder::AlbumNameDesc),
-			ActionPair(Lang::Artist, true, SortOrder::ArtistNameAsc),
-			ActionPair(Lang::Artist, false, SortOrder::ArtistNameDesc),
-			ActionPair(Lang::Created, true, SortOrder::AlbumCreationDateAsc),
-			ActionPair(Lang::Created, false, SortOrder::AlbumCreationDateDesc),
-			ActionPair(Lang::Year, true, SortOrder::AlbumYearAsc),
-			ActionPair(Lang::Year, false, SortOrder::AlbumYearDesc),
-			ActionPair(Lang::Duration, true, SortOrder::AlbumDurationAsc),
-			ActionPair(Lang::Duration, false, SortOrder::AlbumDurationDesc),
-			ActionPair(Lang::NumTracks, true, SortOrder::AlbumTracksAsc),
-			ActionPair(Lang::NumTracks, false, SortOrder::AlbumTracksDesc),
+			{Lang::Name,      true,  AlbumSortorder::NameAsc},
+			{Lang::Name,      false, AlbumSortorder::NameDesc},
+			{Lang::Artist,    true,  AlbumSortorder::AlbumArtistAsc},
+			{Lang::Artist,    false, AlbumSortorder::AlbumArtistDesc},
+			{Lang::Created,   true,  AlbumSortorder::CreationDateAsc},
+			{Lang::Created,   false, AlbumSortorder::CreationDateDesc},
+			{Lang::Year,      true,  AlbumSortorder::YearAsc},
+			{Lang::Year,      false, AlbumSortorder::YearDesc},
+			{Lang::Duration,  true,  AlbumSortorder::DurationAsc},
+			{Lang::Duration,  false, AlbumSortorder::DurationDesc},
+			{Lang::NumTracks, true,  AlbumSortorder::TracksAsc},
+			{Lang::NumTracks, false, AlbumSortorder::TracksDesc},
 		};
 	}
 
-	void CoverView::changeSortorder(Library::SortOrder so)
+	void CoverView::changeSortorder(const Library::AlbumSortorder so)
 	{
 		m->library->changeAlbumSortorder(so);
 	}

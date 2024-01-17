@@ -49,7 +49,7 @@ namespace Playlist
 		}, reason, Operation::Arrange);
 	}
 
-	void sortTracks(Playlist& playlist, const ::Library::SortOrder sortOrder, const Reason reason)
+	void sortTracks(Playlist& playlist, const ::Library::TrackSortorder sortOrder, const Reason reason)
 	{
 		playlist.modifyTracks([&](auto tracks) {
 			MetaDataSorting::sortMetadata(tracks, sortOrder, GetSetting(Set::Lib_SortModeMask));

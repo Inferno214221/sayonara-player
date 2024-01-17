@@ -44,7 +44,7 @@ namespace Library
 
 		signals:
 			void sigZoomChanged(int zoom);
-			void sigSortingChanged(Library::SortOrder sortorder);
+			void sigSortingChanged(Library::AlbumSortorder sortorder);
 
 		public:
 			enum Entry
@@ -67,7 +67,7 @@ namespace Library
 			void initZoomActions();
 
 			void setZoom(int zoom);
-			void setSorting(Library::SortOrder sortOrder);
+			void setSorting(Library::AlbumSortorder sortOrder);
 
 		private slots:
 			void actionZoomTriggered(bool b);

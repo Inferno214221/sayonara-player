@@ -337,7 +337,7 @@ namespace Playlist
 		m->model->changeTrack(currentIndex().row(), timestamp);
 	}
 
-	void View::sortingTriggered(const Library::SortOrder sortOrder)
+	void View::sortingTriggered(const Library::TrackSortorder sortOrder)
 	{
 		m->model->sortTracks(sortOrder);
 	}
