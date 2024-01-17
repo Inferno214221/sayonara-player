@@ -22,11 +22,10 @@
 #include "CoverModel.h"
 #include "CoverDelegate.h"
 #include "CoverViewContextMenu.h"
+#include "CoverViewSortorderInfo.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/Tagging/UserTaggingOperations.h"
-
-#include "Gui/Library/Header/ActionPair.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/GuiUtils.h"
 
@@ -164,7 +163,7 @@ namespace Library
 		}
 	}
 
-	QList<ActionPair> CoverView::sortingActions()
+	QList<CoverViewSortorderInfo> CoverView::sortingActions()
 	{
 		return {
 			{Lang::Name,      true,  AlbumSortorder::NameAsc},

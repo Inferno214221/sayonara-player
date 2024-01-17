@@ -1,4 +1,4 @@
-/* ActionPair.cpp */
+/* CoverViewSortorderInfo.cpp */
 
 /* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
@@ -17,3 +17,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+#include "CoverViewSortorderInfo.h"
+
+namespace Library
+{
+	QString CoverViewSortorderInfo::name() const
+	{
+		const auto text = ascending
+		                  ? Lang::get(Lang::Ascending)
+		                  : Lang::get(Lang::Descending);
+
+		return QString("%1 (%2)").arg(Lang::get(term), text);
+	}
+}

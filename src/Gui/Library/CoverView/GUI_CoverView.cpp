@@ -19,8 +19,8 @@
  */
 
 #include "GUI_CoverView.h"
+#include "CoverViewSortorderInfo.h"
 #include "Gui/Library/ui_GUI_CoverView.h"
-#include "Gui/Library/Header/ActionPair.h"
 
 #include "Utils/Set.h"
 #include "Utils/Utils.h"
@@ -36,11 +36,10 @@ namespace
 	{
 		comboBox->clear();
 
-		static const auto actionPairs = Library::CoverView::sortingActions();
-		for(const auto& actionPair: actionPairs)
+		static const auto sortingActions = Library::CoverView::sortingActions();
+		for(const auto& sortingAction: sortingActions)
 		{
-			const auto sortOrder = std::get<Library::AlbumSortorder>(actionPair.sortorder());
-			comboBox->addItem(actionPair.name(), static_cast<int>(sortOrder));
+			comboBox->addItem(sortingAction.name(), static_cast<int>(sortingAction.sortorder));
 		}
 	}
 

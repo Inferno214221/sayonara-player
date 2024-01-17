@@ -20,7 +20,7 @@
 
 #include "CoverView.h"
 #include "CoverViewContextMenu.h"
-#include "Gui/Library/Header/ActionPair.h"
+#include "CoverViewSortorderInfo.h"
 
 #include "Gui/Utils/PreferenceAction.h"
 
@@ -31,8 +31,6 @@
 #include <QStringList>
 
 using Library::CoverViewContextMenu;
-using Library::ActionPair;
-using ActionPairList = QList<ActionPair>;
 
 struct CoverViewContextMenu::Private
 {
@@ -45,7 +43,7 @@ struct CoverViewContextMenu::Private
 	QMenu* menuZoom;
 	QAction* actionZoom;
 
-	Private(CoverViewContextMenu* menu) :
+	explicit Private(CoverViewContextMenu* menu) :
 		actionShowArtist(new QAction(menu)),
 		actionShowUtils(new QAction(menu)),
 		menuSorting(new QMenu(menu)),
@@ -100,12 +98,11 @@ void CoverViewContextMenu::initSortingActions()
 	m->actionSorting->setText(Lang::get(Lang::SortBy));
 
 	static const auto sortingActions = CoverView::sortingActions();
-	for(const auto& actionPair: sortingActions)
+	for(const auto& sortingAction: sortingActions)
 	{
-		auto* action = m->menuSorting->addAction(actionPair.name());
+		auto* action = m->menuSorting->addAction(sortingAction.name());
 		action->setCheckable(true);
-		const auto albumSortorder = std::get<AlbumSortorder>(actionPair.sortorder());
-		action->setData(static_cast<int>(albumSortorder));
+		action->setData(static_cast<int>(sortingAction.sortorder));
 		connect(action, &QAction::triggered, this, &CoverViewContextMenu::actionSortingTriggered);
 	}
 }

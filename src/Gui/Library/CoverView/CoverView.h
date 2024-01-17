@@ -21,8 +21,8 @@
 #ifndef COVERVIEW_H
 #define COVERVIEW_H
 
+#include "CoverViewSortorderInfo.h"
 #include "Gui/Library/ItemView.h"
-#include "Gui/Library/Header/ActionPair.h"
 #include "Utils/Library/Sortorder.h"
 
 class LocalLibrary;
@@ -61,7 +61,7 @@ namespace Library
 			void changeZoom(int zoom = -1);
 			void changeSortorder(AlbumSortorder so);
 
-			static QList<ActionPair> sortingActions();
+			static QList<CoverViewSortorderInfo> sortingActions();
 			static QList<int> zoomFactors();
 
 		public slots:

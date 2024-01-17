@@ -29,13 +29,6 @@ class MetaData;
 
 namespace Library
 {
-	class ActionPair;
-
-	/**
-	 * @brief Context menu with some additional actions compared to
-	 * Gui::LibraryContextMenu
-	 * @ingroup GuiLibrary
-	 */
 	class CoverViewContextMenu :
 		public Library::ContextMenu
 	{
@@ -58,7 +51,7 @@ namespace Library
 			explicit CoverViewContextMenu(QWidget* parent);
 			~CoverViewContextMenu() override;
 
-			CoverViewContextMenu::Entries entries() const override;
+			[[nodiscard]] CoverViewContextMenu::Entries entries() const override;
 			void showActions(CoverViewContextMenu::Entries entries) override;
 
 		private:

@@ -31,7 +31,7 @@ namespace Playlist
 	{
 		using Library::TrackSortorder;
 
-		struct ActionPair
+		struct SortingAction
 		{
 			Lang::Term langTerm;
 
@@ -55,7 +55,7 @@ namespace Playlist
 
 	struct SortingMenu::Private
 	{
-		QList<ActionPair> actions {
+		QList<SortingAction> sortingActions {
 			{Lang::Term::Title,       TrackSortorder::TitleAsc,       TrackSortorder::TitleDesc},
 			{Lang::Term::TrackNo,     TrackSortorder::TrackNumberAsc, TrackSortorder::TrackNumberDesc},
 			{Lang::Term::AlbumArtist, TrackSortorder::AlbumArtistAsc, TrackSortorder::AlbumArtistDesc},
@@ -68,17 +68,17 @@ namespace Playlist
 		Gui::WidgetTemplate<QMenu> {parent},
 		m {Pimpl::make<Private>()}
 	{
-		for(auto& action: m->actions)
+		for(auto& sortingAction: m->sortingActions)
 		{
-			addAction(action.actionAsc);
-			addAction(action.actionDesc);
+			addAction(sortingAction.actionAsc);
+			addAction(sortingAction.actionDesc);
 
-			connect(action.actionAsc, &QAction::triggered, this, [&]() {
-				emit sigSortingTriggered(action.sortOrderAsc);
+			connect(sortingAction.actionAsc, &QAction::triggered, this, [&]() {
+				emit sigSortingTriggered(sortingAction.sortOrderAsc);
 			});
 
-			connect(action.actionDesc, &QAction::triggered, this, [&]() {
-				emit sigSortingTriggered(action.sortOrderDesc);
+			connect(sortingAction.actionDesc, &QAction::triggered, this, [&]() {
+				emit sigSortingTriggered(sortingAction.sortOrderDesc);
 			});
 		}
 	}
@@ -87,10 +87,10 @@ namespace Playlist
 
 	void SortingMenu::languageChanged()
 	{
-		for(auto& actionPair: m->actions)
+		for(auto& sortingAction: m->sortingActions)
 		{
-			actionPair.actionAsc->setText(actionText(actionPair.langTerm, true));
-			actionPair.actionDesc->setText(actionText(actionPair.langTerm, false));
+			sortingAction.actionAsc->setText(actionText(sortingAction.langTerm, true));
+			sortingAction.actionDesc->setText(actionText(sortingAction.langTerm, false));
 		}
 	}
 }

@@ -1,4 +1,4 @@
-/* ActionPair.h */
+/* CoverViewSortorderInfo.h */
 
 /* Copyright (C) 2011-2024 Michael Lugmair (Lucio Carreras)
  *
@@ -18,44 +18,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ACTIONPAIR_H
-#define ACTIONPAIR_H
+#ifndef COVER_VIEW_SORTORDER_INFO_H
+#define COVER_VIEW_SORTORDER_INFO_H
 
 #include <QString>
 #include "Utils/Library/Sortorder.h"
 #include "Utils/Language/Language.h"
 
+#include "Utils/Pimpl.h"
+
 namespace Library
 {
-	class ActionPair
+	struct CoverViewSortorderInfo
 	{
-		public:
-			ActionPair(const Lang::Term term, const bool ascending, const VariableSortorder so) :
-				m_term {term},
-				m_ascending {ascending},
-				m_sortorder {so} {}
+		Lang::Term term;
+		bool ascending;
+		AlbumSortorder sortorder;
 
-			ActionPair(const ActionPair& other) = default;
-			ActionPair& operator=(const ActionPair& other) = default;
-
-			~ActionPair() = default;
-
-			[[nodiscard]] QString name() const
-			{
-				const auto text = m_ascending
-				                  ? Lang::get(Lang::Ascending)
-				                  : Lang::get(Lang::Descending);
-
-				return QString("%1 (%2)").arg(Lang::get(m_term), text);
-			}
-
-			[[nodiscard]] VariableSortorder sortorder() const { return m_sortorder; }
-
-		private:
-			Lang::Term m_term;
-			bool m_ascending;
-			VariableSortorder m_sortorder;
+		[[nodiscard]] QString name() const;
 	};
 }
 
-#endif // ACTIONPAIR_H
+#endif // COVER_VIEW_SORTORDER_INFO_H
