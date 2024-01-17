@@ -41,6 +41,8 @@ namespace Library
 		AlbumDurationDesc,
 		AlbumRatingAsc,
 		AlbumRatingDesc,
+		AlbumCreationDateAsc,
+		AlbumCreationDateDesc,
 		TrackNumAsc,
 		TrackNumDesc,
 		TrackTitleAsc,

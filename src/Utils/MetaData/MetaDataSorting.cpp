@@ -409,6 +409,20 @@ namespace MetaDataSorting
 			});
 		}
 
+		bool AlbumByCreationDateAsc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compare(album1, album2, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.creationDate();
+			});
+		}
+
+		bool AlbumByCreationDateDesc(const Album& album1, const Album& album2, const SortModeMask sortMode)
+		{
+			return compareRev(album2, album1, sortMode, AlbumByNameAsc, [](const auto& album) {
+				return album.creationDate();
+			});
+		}
+
 		/*** Artists ***/
 		bool ArtistByNameAsc(const Artist& artist1, const Artist& artist2, const SortModeMask sortMode)
 		{
@@ -587,6 +601,12 @@ namespace MetaDataSorting
 				break;
 			case SortOrder::AlbumYearDesc:
 				sort(albums, sortMode, AlbumByYearDesc);
+				break;
+			case SortOrder::AlbumCreationDateAsc:
+				sort(albums, sortMode, AlbumByCreationDateAsc);
+				break;
+			case SortOrder::AlbumCreationDateDesc:
+				sort(albums, sortMode, AlbumByCreationDateDesc);
 				break;
 			default:
 				break;
