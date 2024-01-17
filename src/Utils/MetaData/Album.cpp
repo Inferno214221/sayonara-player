@@ -41,6 +41,7 @@ struct Album::Private
 	HashValue albumArtistIndex {0};
 	QStringList pathHint;
 	HashValue albumIdx {0};
+	uint64_t creationDate {0};
 };
 
 AlbumId Album::id() const { return m->id; }
@@ -170,6 +171,10 @@ void Album::setPathHint(const QStringList& paths)
 	m->pathHint = paths;
 	m->pathHint.removeDuplicates();
 }
+
+uint64_t Album::creationDate() const { return m->creationDate; }
+
+void Album::setCreationDate(const uint64_t date) { m->creationDate = date; }
 
 int AlbumList::count() const { return static_cast<int>(size()); }
 

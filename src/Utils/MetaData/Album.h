@@ -81,6 +81,9 @@ class Album :
 
 		[[nodiscard]] QList<Disc> discnumbers() const;
 		void setDiscnumbers(const QList<Disc>& discnumbers);
+
+		[[nodiscard]] uint64_t creationDate() const;
+		void setCreationDate(uint64_t date);
 };
 
 class AlbumList :
