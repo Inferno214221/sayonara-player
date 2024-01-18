@@ -149,6 +149,8 @@ namespace Playlist
 			void lookChanged();
 			void refreshPlaylist(int rowCount, int columnCount);
 	};
+
+	Util::Set<int> removeDisabledRows(const Util::Set<int>& selectedRows, Model* model);
 }
 
 #endif /* PLAYLISTITEMMODEL_H */
