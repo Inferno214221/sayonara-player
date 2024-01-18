@@ -58,12 +58,11 @@ namespace Playlist
 			view->connect(shortcut, &QShortcut::activated, view, callback);
 		}
 
-		int minimumSelectedItem(View* view)
+		int minimumSelectedItem(const Util::Set<int>& selectedRows)
 		{
-			const auto selected = view->selectedItems();
-			const auto it = std::min_element(selected.cbegin(), selected.cend());
+			const auto it = std::min_element(selectedRows.cbegin(), selectedRows.cend());
 
-			return (it == selected.cend()) ? -1 : *it;
+			return (it == selectedRows.cend()) ? -1 : *it;
 		}
 
 		int resizeSection(const int column, const int size, QHeaderView* header)
@@ -292,7 +291,7 @@ namespace Playlist
 
 	void View::ratingChanged(const Rating rating)
 	{
-		if(const auto selections = selectedItems(); !selections.isEmpty())
+		if(const auto selections = removeDisabledRows(selectedItems(), m->model); !selections.isEmpty())
 		{
 			m->model->changeRating(selections, rating);
 		}
@@ -312,9 +311,10 @@ namespace Playlist
 
 	void View::playSelectedTrack()
 	{
-		if(minimumSelectedItem(this) >= 0)
+		const auto selectedRows = removeDisabledRows(selectedItems(), m->model);
+		if(const auto index = minimumSelectedItem(selectedRows); index >= 0)
 		{
-			m->model->changeTrack(minimumSelectedItem(this));
+			m->model->changeTrack(index);
 		}
 	}
 
@@ -344,7 +344,7 @@ namespace Playlist
 
 	void View::removeSelectedRows()
 	{
-		const auto minRow = minimumSelectedItem(this);
+		const auto minRow = minimumSelectedItem(selectedItems());
 
 		m->model->removeTracks(selectedItems());
 		clearSelection();
@@ -383,7 +383,11 @@ namespace Playlist
 
 	MD::Interpretation View::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-	MetaDataList View::infoDialogData() const { return m->model->metadata(selectedItems()); }
+	MetaDataList View::infoDialogData() const
+	{
+		const auto filteredRows = removeDisabledRows(selectedItems(), m->model);
+		return m->model->metadata(filteredRows);
+	}
 
 	QWidget* View::getParentWidget() { return this; }
 
