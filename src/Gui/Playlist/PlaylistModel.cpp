@@ -346,11 +346,9 @@ Qt::ItemFlags Model::flags(const QModelIndex& index) const
 		return (Qt::ItemIsEnabled | Qt::ItemIsDropEnabled);
 	}
 
-	const auto row = index.row();
-	const auto& tracks = m->playlist->tracks();
-	if(!Util::between(row, tracks) || tracks[row].isDisabled())
+	if(!isEnabled(index.row()))
 	{
-		return Qt::NoItemFlags;
+		return Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 	}
 
 	const auto itemFlags = QAbstractTableModel::flags(index);
