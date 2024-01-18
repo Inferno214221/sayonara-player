@@ -83,7 +83,8 @@ namespace Playlist
 				RatingRole = Qt::UserRole + 1,
 				DragIndexRole = Qt::UserRole + 2,
 				EntryLookRole = Qt::UserRole + 3,
-				CurrentPlayingRole = Qt::UserRole + 4
+				CurrentPlayingRole = Qt::UserRole + 4,
+				EnabledRole = Qt::UserRole + 5
 			};
 
 			Model(const PlaylistPtr& playlist, Library::InfoAccessor* libraryInfoAccessor, QObject* parent);
@@ -107,6 +108,7 @@ namespace Playlist
 			[[nodiscard]] int currentTrack() const;
 
 			[[nodiscard]] MetaDataList metadata(const IndexSet& rows) const;
+			[[nodiscard]] bool isEnabled(const int row) const;
 
 			[[nodiscard]] bool hasLocalMedia(const IndexSet& rows) const;
 			[[nodiscard]] bool isLocked() const;

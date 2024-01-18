@@ -41,6 +41,11 @@ namespace
 	constexpr const auto RatingLabelOffsetX = 8;
 	constexpr const auto RatingLabelOffsetY = 2;
 
+	bool isEnabled(const QModelIndex& index)
+	{
+		return index.data(Model::Roles::EnabledRole).toBool();
+	}
+
 	inline bool isCurrentTrack(const QModelIndex& index)
 	{
 		return index.data(Model::CurrentPlayingRole).toBool();
@@ -148,7 +153,7 @@ namespace
 	void setTextColor(QPainter* painter, const QStyleOptionViewItem& option, const QModelIndex& index)
 	{
 		const auto isSelected = (option.state & QStyle::State_Selected);
-		const auto isEnabled = (option.state & QStyle::State_Enabled);
+		const auto isEnabled = ::isEnabled(index);
 		const auto isCurrentTrack = ::isCurrentTrack(index);
 
 		auto textColor = (isSelected)

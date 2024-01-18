@@ -295,6 +295,11 @@ QVariant Model::data(const QModelIndex& index, int role) const // NOLINT(readabi
 		}
 	}
 
+	if(role == Model::EnabledRole)
+	{
+		return isEnabled(row);
+	}
+
 	if(role == Model::DragIndexRole)
 	{
 		return (row == m->dragIndex);
@@ -478,6 +483,13 @@ MetaDataList Model::metadata(const IndexSet& rows) const
 	}
 
 	return tracks;
+}
+
+bool Model::isEnabled(const int row) const
+{
+	return (row >= 0 && row < rowCount())
+	       ? !m->playlist->tracks()[row].isDisabled()
+	       : false;
 }
 
 QModelIndexList Model::searchResults(const QString& searchString)

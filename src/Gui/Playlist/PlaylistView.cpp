@@ -405,7 +405,7 @@ namespace Playlist
 
 		const auto modelIndex = this->indexAt(event->pos());
 
-		if((modelIndex.flags() & Qt::ItemIsEnabled) &&
+		if(m->model->isEnabled(modelIndex.row()) &&
 		   (modelIndex.flags() & Qt::ItemIsSelectable))
 		{
 			m->model->changeTrack(modelIndex.row());
