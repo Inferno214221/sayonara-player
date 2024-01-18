@@ -28,12 +28,27 @@
 
 namespace Playlist
 {
+	ContextMenu::Entries addTrack(const IndexSet& enabledSelectedRows, const Model* model, ContextMenu* contextMenu)
+	{
+		const auto firstSelectedRow = *enabledSelectedRows.begin();
+		if((enabledSelectedRows.size() == 1) && (firstSelectedRow < model->rowCount()))
+		{
+			const auto tracks = model->metadata(enabledSelectedRows);
+			const auto& track = tracks[0];
+
+			return contextMenu->setTrack(track, (firstSelectedRow == model->currentTrack()));
+		}
+
+		return 0;
+	}
+
 	ContextMenu::Entries
 	calcContextMenuEntries(ContextMenu* contextMenu, Model* model, const Util::Set<int>& selectedItems)
 	{
 		auto entryMask = ContextMenu::Entries {ContextMenu::EntryNone};
 		const auto isLocked = model->isLocked();
 		const auto isRearrangeAllowed = !isLocked || GetSetting(Set::PL_ModificatorAllowRearrangeMethods);
+		const auto enabledSelectedRows = removeDisabledRows(selectedItems, model);
 
 		if(model->rowCount() > 0)
 		{
@@ -44,26 +59,19 @@ namespace Playlist
 			              (!isRearrangeAllowed ? 0 : ContextMenu::EntrySort) |
 			              ContextMenu::EntryJumpToNextAlbum);
 
+			if(!enabledSelectedRows.isEmpty())
+			{
+				const auto hasLocalMedia = model->hasLocalMedia(enabledSelectedRows);
+				entryMask |= ContextMenu::EntryPlay |
+				             ContextMenu::EntryInfo |
+				             (hasLocalMedia ? ContextMenu::EntryEdit : 0) |
+				             (hasLocalMedia ? ContextMenu::EntryDelete : 0) |
+				             addTrack(enabledSelectedRows, model, contextMenu);
+			}
+
 			if(!selectedItems.isEmpty())
 			{
-				entryMask |= (ContextMenu::EntryPlay |
-				              ContextMenu::EntryInfo |
-				              (isLocked ? 0 : ContextMenu::EntryRemove));
-
-				const auto firstSelectedRow = *selectedItems.begin();
-				if((selectedItems.size() == 1) && (firstSelectedRow < model->rowCount()))
-				{
-					const auto tracks = model->metadata(selectedItems);
-					const auto& track = tracks[0];
-
-					entryMask |= contextMenu->setTrack(track, (firstSelectedRow == model->currentTrack()));
-				}
-
-				if(model->hasLocalMedia(selectedItems))
-				{
-					entryMask |= (ContextMenu::EntryEdit |
-					              ContextMenu::EntryDelete);
-				}
+				entryMask |= (isLocked ? 0 : ContextMenu::EntryRemove);
 			}
 
 			if(model->currentTrack() >= 0)
