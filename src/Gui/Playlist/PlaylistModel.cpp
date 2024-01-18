@@ -583,7 +583,7 @@ bool Model::hasLocalMedia(const IndexSet& rows) const
 {
 	const auto& tracks = m->playlist->tracks();
 
-	return Algorithm::contains(rows, [tracks](const auto row) {
+	return Algorithm::contains(rows, [&](const auto row) {
 		return (!Util::File::isWWW(tracks[row].filepath()));
 	});
 }
