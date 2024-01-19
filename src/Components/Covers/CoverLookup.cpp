@@ -71,7 +71,6 @@ struct Lookup::Private
 		if(this->coverFetchThread)
 		{
 			this->coverFetchThread->stop();
-			this->coverFetchThread->deleteLater();
 			this->coverFetchThread = nullptr;
 		}
 	}
