@@ -39,8 +39,8 @@ namespace
 
 	QByteArray extractJson(const QByteArray& website)
 	{
-		const auto delimStart = QString("<script>window.__DZR_APP_STATE__ = ");
-		const auto delimEnd = QString("</script>");
+		const auto delimStart = QByteArray("<script>window.__DZR_APP_STATE__ = ");
+		const auto delimEnd = QByteArray("</script>");
 
 		const auto index = website.indexOf(delimStart);
 		const auto start = index + delimStart.size();
