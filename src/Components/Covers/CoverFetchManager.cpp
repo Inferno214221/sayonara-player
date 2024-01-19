@@ -24,6 +24,7 @@
 
 #include "Fetcher/Google.h"
 #include "Fetcher/Audioscrobbler.h"
+#include "Fetcher/Deezer.h"
 #include "Fetcher/Discogs.h"
 #include "Fetcher/Allmusic.h"
 #include "Fetcher/Amazon.h"
@@ -164,6 +165,7 @@ Manager::Manager() :
 	registerCoverFetcher(std::make_shared<Fetcher::Allmusic>());
 	registerCoverFetcher(std::make_shared<Fetcher::Amazon>());
 	registerCoverFetcher(std::make_shared<Fetcher::Audioscrobbler>());
+	registerCoverFetcher(std::make_shared<Fetcher::Deezer>());
 	registerCoverFetcher(std::make_shared<Fetcher::Discogs>());
 	registerCoverFetcher(std::make_shared<Fetcher::Google>());
 	registerCoverFetcher(std::make_shared<Fetcher::Yandex>());
