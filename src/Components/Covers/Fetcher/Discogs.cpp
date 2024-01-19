@@ -20,6 +20,9 @@
 
 #include "Discogs.h"
 
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonValue>
 #include <QRegExp>
 #include <QStringList>
 #include <QUrl>
@@ -28,36 +31,34 @@ using namespace Cover::Fetcher;
 
 namespace
 {
-	QString basicUrl(const QString& str)
+	QString basicUrl(const std::map<QString, QString>& params)
 	{
-		auto stringCopy = str;
-		stringCopy = stringCopy.replace(" ", "+");
+		const auto baseUrl = "https://api.discogs.com/database/search?";
 
-		return QString("https://%1/search/?q=%2")
-			.arg("www.discogs.com")
-			.arg(QString(QUrl::toPercentEncoding(stringCopy)));
+		auto paramStrings = QStringList {"token=BuBsUyZsFtoaEGmquLQIbfXduYbgooGThIpRivUe"};
+		for(const auto& [key, value]: params)
+		{
+			paramStrings << QString("%1=%2")
+				.arg(key)
+				.arg(QString(QUrl::toPercentEncoding(value)));
+		}
+
+		return baseUrl + paramStrings.join("&");
 	}
 }
 
-bool Discogs::canFetchCoverDirectly() const
-{
-	return false;
-}
+bool Discogs::canFetchCoverDirectly() const { return false; }
 
 QStringList Discogs::parseAddresses(const QByteArray& website) const
 {
-	QStringList ret;
+	auto ret = QStringList {};
 
-	auto regExp = QRegExp("class=\"thumbnail_center\">\\s*<img\\s*data-src\\s*=\\s*\"(.+)\"");
-	regExp.setMinimal(true);
+	const auto doc = QJsonDocument::fromJson(website);
+	const auto results = doc["results"].toArray();
 
-	const auto websiteData = QString::fromLocal8Bit(website);
-	auto idx = regExp.indexIn(websiteData);
-	while(idx > 0)
+	for(const auto& result: results)
 	{
-		const auto caption = regExp.cap(1);
-		ret << caption;
-		idx = regExp.indexIn(websiteData, idx + caption.size());
+		ret << result["cover_image"].toString();
 	}
 
 	return ret;
@@ -65,25 +66,31 @@ QStringList Discogs::parseAddresses(const QByteArray& website) const
 
 QString Discogs::artistAddress(const QString& artist) const
 {
-	return basicUrl(artist) + "&type=artist";
+	return basicUrl(
+		{
+			{"artist", artist},
+			{"type",   "artist"}
+		});
 }
 
 QString Discogs::albumAddress(const QString& artist, const QString& album) const
 {
-	return basicUrl(artist + "+" + album) + "&type=all";
+	return basicUrl(
+		{
+			{"artist", artist},
+			{"type",   "master"}
+		});
 }
 
 QString Discogs::fulltextSearchAddress(const QString& str) const
 {
-	return basicUrl(str) + "&type=all";
+	return basicUrl(
+		{
+			{"artist", str},
+			{"type",   "master"}
+		});
 }
 
-int Discogs::estimatedSize() const
-{
-	return 350;
-}
+int Discogs::estimatedSize() const { return 600; }
 
-QString Discogs::privateIdentifier() const
-{
-	return "discogs";
-}
+QString Discogs::privateIdentifier() const { return "discogs"; }
