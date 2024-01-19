@@ -749,7 +749,17 @@ void Playlist::Model::coverLookupFinished([[maybe_unused]] bool success)
 
 bool Playlist::Model::isLocked() const { return m->playlist->isLocked(); }
 
-void Playlist::Model::setLocked(const bool b) { m->playlist->setLocked(b); }
+void Playlist::Model::setLocked(const bool b)
+{
+	if(b)
+	{
+		m->playlist->lock();
+	}
+	else
+	{
+		m->playlist->unlock();
+	}
+}
 
 Util::Set<int> Playlist::removeDisabledRows(const Util::Set<int>& selectedRows, Model* model)
 {
