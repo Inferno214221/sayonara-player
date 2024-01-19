@@ -72,6 +72,19 @@ namespace
 
 		return (hasMatchingArtist);
 	}
+
+	int calcColumns(const int items, const int maxValue)
+	{
+		return std::min(items, maxValue);
+	}
+
+	int calcRows(const int items, const int columns)
+	{
+		return (columns != 0)
+		       ? (items + (columns - 1)) / columns
+		       : 0;
+	}
+
 }
 
 struct CoverModel::Private
@@ -113,7 +126,7 @@ CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
 	connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
 
 	connect(m->coverThread, &AlbumCoverFetchThread::sigNext, this, &CoverModel::nextHash);
-	connect(m->coverThread, &QObject::destroyed, this, [=]() {
+	connect(m->coverThread, &QObject::destroyed, this, [&]() {
 		m->coverThread = nullptr;
 	});
 
@@ -378,18 +391,9 @@ void CoverModel::clear()
 	m->hashIndexMap.clear();
 }
 
-int CoverModel::rowCount([[maybe_unused]] const QModelIndex& index) const
-{
-	const auto columns = columnCount();
-	return (columns != 0)
-	       ? (albums().count() + (columns - 1)) / columns
-	       : 0;
-}
+int CoverModel::rowCount(const QModelIndex& /*index*/) const { return calcRows(albums().count(), columnCount()); }
 
-int CoverModel::columnCount(const QModelIndex&) const
-{
-	return std::min(m->maxColumns, albums().count());
-}
+int CoverModel::columnCount(const QModelIndex& /*index*/) const { return calcColumns(albums().count(), m->maxColumns); }
 
 void CoverModel::refreshData()
 {
