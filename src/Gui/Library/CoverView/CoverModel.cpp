@@ -96,14 +96,16 @@ struct CoverModel::Private
 		QHash<Hash, QModelIndex> hashIndexMap;
 		HashSet invalidHashes;
 		QSize itemSize;
-
-		int oldRowCount {0};
-		int oldColumnCount {0};
-		int maxColumns {10}; // NOLINT(readability-magic-numbers)
 		int zoom {GetSetting(Set::Lib_CoverZoom)};
 
-		explicit Private(QObject* parent) :
-			coverThread {new AlbumCoverFetchThread(parent)} {}
+		int maxColumns {10}; // NOLINT(readability-magic-numbers)
+		int oldColumnCount;
+		int oldRowCount;
+
+		Private(QObject* parent, const int items) :
+			coverThread {new AlbumCoverFetchThread(parent)},
+			oldColumnCount {calcColumns(items, maxColumns)},
+			oldRowCount {calcRows(items, oldColumnCount)} {}
 
 		~Private()
 		{
@@ -116,10 +118,9 @@ struct CoverModel::Private
 };
 
 CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(0, parent, library)
+	ItemModel(0, parent, library),
+	m {Pimpl::make<Private>(this, library->albums().count())}
 {
-	m = Pimpl::make<Private>(this);
-
 	auto* coverChangeNotifier = Cover::ChangeNotfier::instance();
 	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
 
