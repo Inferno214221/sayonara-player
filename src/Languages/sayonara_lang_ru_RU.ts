@@ -94,22 +94,22 @@
     <message>
         <location line="+1"/>
         <source>Clear history by date</source>
-        <translation type="unfinished"/>
+        <translation>Очистить историю по дате </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Clear all history</source>
-        <translation type="unfinished"/>
+        <translation>Очистить всю историю </translation>
     </message>
     <message>
         <location line="+69"/>
         <source>Delete history</source>
-        <translation type="unfinished"/>
+        <translation>Удалить историю </translation>
     </message>
     <message>
         <location line="+1"/>
         <source>Delete history which is older than the specified date.</source>
-        <translation type="unfinished"/>
+        <translation>Удалить историю, которая старше специфической даты.</translation>
     </message>
 </context>
 <context>
@@ -209,38 +209,38 @@
 <context>
     <name>GUI_Lyrics</name>
     <message>
-        <location filename="../src/Gui/Lyrics/GUI_Lyrics.ui" line="+111"/>
-        <source>switch</source>
-        <translation>Сменить</translation>
-    </message>
-    <message>
-        <location line="+44"/>
+        <location filename="../src/Gui/Lyrics/GUI_Lyrics.ui" line="+25"/>
         <source>Save Lyrics</source>
         <translation>Сохранить текст песни</translation>
     </message>
     <message>
         <location line="+20"/>
-        <location filename="../src/Gui/Lyrics/GUI_Lyrics.cpp" line="+340"/>
+        <location filename="../src/Gui/Lyrics/GUI_Lyrics.cpp" line="+368"/>
         <source>Switch</source>
-        <translation type="unfinished"/>
+        <translation>Сменить </translation>
     </message>
     <message>
-        <location filename="../src/Gui/Lyrics/GUI_Lyrics.cpp" line="-262"/>
+        <location line="+42"/>
+        <source>switch</source>
+        <translation>Сменить</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Lyrics/GUI_Lyrics.cpp" line="-289"/>
         <source>No track loaded</source>
-        <translation type="unfinished"/>
+        <translation>Треки не загружены </translation>
     </message>
     <message>
-        <location line="+74"/>
+        <location line="+88"/>
         <source>Looking for lyrics</source>
-        <translation type="unfinished"/>
+        <translation>Поиск текста</translation>
     </message>
     <message>
-        <location line="+38"/>
+        <location line="+41"/>
         <source>Sorry, could not find any lyrics for %1 by %2</source>
-        <translation type="unfinished"/>
+        <translation>Извините, не могу найти лирику для %1  в %2</translation>
     </message>
     <message>
-        <location line="+124"/>
+        <location line="+125"/>
         <source>Save lyrics not supported</source>
         <translation>Не получается сохранить текст</translation>
     </message>
@@ -445,37 +445,37 @@
     <message>
         <location filename="../src/Gui/Plugins/Engine/GUI_SpeedPreferences.ui" line="+14"/>
         <source>Speed Preferences</source>
-        <translation type="unfinished"/>
+        <translation>Предпочтения скорости</translation>
     </message>
     <message>
         <location line="+59"/>
         <source>Speed range</source>
-        <translation type="unfinished"/>
+        <translation>Диапазон скоростей </translation>
     </message>
     <message>
         <location line="+6"/>
         <source>Maximum value</source>
-        <translation type="unfinished"/>
+        <translation>Максимальное значение </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Minimum value</source>
-        <translation type="unfinished"/>
+        <translation>Минимальное значение </translation>
     </message>
     <message>
         <location line="+39"/>
         <source>Speed steps</source>
-        <translation type="unfinished"/>
+        <translation>Скоростные шаги</translation>
     </message>
     <message>
         <location line="+28"/>
         <source>Speed step value</source>
-        <translation type="unfinished"/>
+        <translation>Значение шага скорости </translation>
     </message>
     <message>
         <location line="+7"/>
         <source>Show speed step buttons</source>
-        <translation type="unfinished"/>
+        <translation>Показать только кнопки шага скорости </translation>
     </message>
 </context>
 <context>
@@ -856,6 +856,19 @@
     </message>
 </context>
 <context>
+    <name>GUI_OtherSettings</name>
+    <message>
+        <location filename="../src/Gui/Preferences/Other/GUI_OtherSettings.ui" line="+20"/>
+        <source>Only update changed tags</source>
+        <translation>Обновлять только изменённые теги</translation>
+    </message>
+    <message>
+        <location filename="../src/Gui/Preferences/Other/OtherSettings.cpp" line="+35"/>
+        <source>Other settings</source>
+        <translation>Другие настройки </translation>
+    </message>
+</context>
+<context>
     <name>GUI_PlayerPreferences</name>
     <message>
         <location filename="../src/Gui/Preferences/Player/GUI_PlayerPreferences.ui" line="+31"/>
@@ -961,7 +974,27 @@
         <translation>При изменении трека перейти к текущему треку в списке</translation>
     </message>
     <message>
+        <location line="+7"/>
+        <source>Show confirmation on close</source>
+        <translation>Показать подтверждение при закрытии </translation>
+    </message>
+    <message>
         <location line="+25"/>
+        <source>Locked Playlists</source>
+        <translation>Заблокированные плейлисты</translation>
+    </message>
+    <message>
+        <location line="+6"/>
+        <source>Allow dynamic playback</source>
+        <translation>Разрешить динамическое воспроизведение</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Allow re-arrange functionality (e.g. sorting)</source>
+        <translation>Разрешить изменять функциональность (например сортировку)</translation>
+    </message>
+    <message>
+        <location line="+21"/>
         <source>Look</source>
         <translation>Посмотреть</translation>
     </message>
@@ -1043,7 +1076,7 @@
         <translation>Обходные пути</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+276"/>
+        <location filename="../src/Gui/Preferences/Playlist/GUI_PlaylistPreferences.cpp" line="+282"/>
         <source>Fix startup playback issue</source>
         <translation>Исправить проблему с воспроизведением при запуске</translation>
     </message>
@@ -1257,31 +1290,36 @@
     <name>GUI_StreamPreferences</name>
     <message>
         <location filename="../src/Gui/Preferences/Streams/GUI_StreamPreferences.ui" line="+17"/>
+        <source>Update metadata (can be set individually radio stations)</source>
+        <translation>Обновление метаданных (могут быть настроены индивидуальные радиостанции)</translation>
+    </message>
+    <message>
+        <location line="+7"/>
+        <source>Show history (only works if metadata updates are enabled for a radio station)</source>
+        <translation>Показать историю (работает только в случае, если метаданные активированы для радиостанций)</translation>
+    </message>
+    <message>
+        <location line="+20"/>
+        <source>Buffer size</source>
+        <translation>Размер буфера</translation>
+    </message>
+    <message>
+        <location line="+7"/>
         <source> ms</source>
         <translation>мс</translation>
     </message>
     <message>
         <location line="+16"/>
-        <source>Buffer size</source>
-        <translation>Размер буфера</translation>
-    </message>
-    <message>
-        <location line="+20"/>
-        <source>Update metadata (can be set individually radio stations)</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location line="+7"/>
         <source>Open Streams in new tab</source>
         <translation>Открыть поток в новой вкладке</translation>
     </message>
     <message>
         <location line="+7"/>
-        <source>Show history (only works if metadata updates are enabled for a radio station)</source>
-        <translation type="unfinished"/>
+        <source>Open streams and podcasts in locked playlist</source>
+        <translation>Открыть стримы и подкасты в заблокированном плейлисте</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Preferences/Streams/GUI_StreamPreferences.cpp" line="+52"/>
+        <location filename="../src/Gui/Preferences/Streams/GUI_StreamPreferences.cpp" line="+54"/>
         <source>%1 and %2</source>
         <translation>%1 и %2</translation>
     </message>
@@ -1495,7 +1533,7 @@
         <translation>ID3 тег извлечь из пути файла</translation>
     </message>
     <message>
-        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+269"/>
+        <location filename="../src/Gui/Tagging/GUI_TagEdit.cpp" line="+272"/>
         <source>Load complete album</source>
         <translation>Загрузить альбом полностью</translation>
     </message>
@@ -1587,7 +1625,7 @@
     <message>
         <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+299"/>
         <source>Analyzing library</source>
-        <translation type="unfinished"/>
+        <translation>Анализ библиотеки </translation>
     </message>
     <message>
         <location filename="../src/Components/Preferences/LanguagePreferences.cpp" line="+219"/>
@@ -1648,7 +1686,7 @@
     <message>
         <location line="+1"/>
         <source>All albums randomized</source>
-        <translation type="unfinished"/>
+        <translation>Все альбомы рандомно</translation>
     </message>
     <message>
         <location line="+9"/>
@@ -1704,7 +1742,7 @@
     <message>
         <location line="+80"/>
         <location line="+110"/>
-        <location filename="../src/Utils/Language/Language.cpp" line="+368"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="+370"/>
         <source>Purchase Url</source>
         <translation>Приобрести на</translation>
     </message>
@@ -1770,7 +1808,7 @@
         <translation>Следующий результат поиска</translation>
     </message>
     <message>
-        <location filename="../src/Utils/Language/Language.cpp" line="-290"/>
+        <location filename="../src/Utils/Language/Language.cpp" line="-292"/>
         <source>About</source>
         <translation>О программе</translation>
     </message>
@@ -1986,12 +2024,12 @@
     </message>
     <message>
         <location line="+2"/>
-        <location line="+92"/>
+        <location line="+94"/>
         <source>Delete</source>
         <translation>Удалить </translation>
     </message>
     <message>
-        <location line="-90"/>
+        <location line="-92"/>
         <source>Descending</source>
         <translation>По убыванию</translation>
     </message>
@@ -2194,6 +2232,11 @@
         <location line="+2"/>
         <source>Loading %1</source>
         <translation>Загрузка %1</translation>
+    </message>
+    <message>
+        <location line="+2"/>
+        <source>Lock playlist</source>
+        <translation>Заблокировать плейлист </translation>
     </message>
     <message>
         <location line="+2"/>
@@ -2759,7 +2802,7 @@
         <translation>Неизвестный год</translation>
     </message>
     <message>
-        <location line="+5"/>
+        <location line="+6"/>
         <source>Various</source>
         <translation>Разное</translation>
     </message>
@@ -2879,7 +2922,7 @@
     <message>
         <location filename="../src/Components/Library/Threads/ReloadThread.cpp" line="+21"/>
         <source>Deleting double tracks</source>
-        <translation type="unfinished"/>
+        <translation>Удаление повторяющихся треков</translation>
     </message>
     <message>
         <location line="+4"/>
@@ -2985,7 +3028,7 @@
 <context>
     <name>GUI_InfoDialog</name>
     <message>
-        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+410"/>
+        <location filename="../src/Gui/InfoDialog/GUI_InfoDialog.cpp" line="+436"/>
         <source>Write cover to tracks</source>
         <translation>Сохранить обложку в файле трека</translation>
     </message>
@@ -2993,7 +3036,7 @@
 <context>
     <name>Library::CoverViewContextMenu</name>
     <message>
-        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+202"/>
+        <location filename="../src/Gui/Library/CoverView/CoverViewContextMenu.cpp" line="+200"/>
         <source>Toolbar</source>
         <translation>Панель инструментов</translation>
     </message>
@@ -3099,7 +3142,7 @@
 <context>
     <name>Library::HeaderView</name>
     <message>
-        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+254"/>
+        <location filename="../src/Gui/Library/Header/LibraryHeaderView.cpp" line="+249"/>
         <source>Resize columns</source>
         <translation>Изменить размер столбцов</translation>
     </message>
@@ -3291,7 +3334,7 @@
 <context>
     <name>GUI_Playlist</name>
     <message>
-        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+441"/>
+        <location filename="../src/Gui/Playlist/GUI_Playlist.cpp" line="+428"/>
         <source>Playlist name already exists</source>
         <translation>Имя плейлиста уже существует</translation>
     </message>
@@ -3320,7 +3363,7 @@
 <context>
     <name>Playlist::ContextMenu</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+205"/>
+        <location filename="../src/Gui/Playlist/PlaylistContextMenu.cpp" line="+211"/>
         <source>Jump to current track</source>
         <translation>Перейти к текущей дорожке</translation>
     </message>
@@ -3343,7 +3386,7 @@
 <context>
     <name>Playlist::Model</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+515"/>
+        <location filename="../src/Gui/Playlist/PlaylistModel.cpp" line="+529"/>
         <source>Goto row</source>
         <translation>Перейти к строке</translation>
     </message>
@@ -3351,7 +3394,7 @@
 <context>
     <name>Playlist::TabBar</name>
     <message>
-        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+118"/>
+        <location filename="../src/Gui/Playlist/PlaylistTabBar.cpp" line="+119"/>
         <source>Do you want relative file paths in your playlist?</source>
         <translation>Хотите использовать относительные пути к файлам в вашем плейлисте?</translation>
     </message>
@@ -3369,7 +3412,7 @@
 <context>
     <name>Playlist::View</name>
     <message numerus="yes">
-        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+403"/>
+        <location filename="../src/Gui/Playlist/PlaylistView.cpp" line="+363"/>
         <source>You are about to delete %n file(s)</source>
         <translation><numerusform>Вы собираетесь удалить %n файл</numerusform><numerusform>Вы собираетесь удалить %n файлов</numerusform><numerusform>Вы собираетесь удалить %n файлов</numerusform><numerusform>Вы собираетесь удалить %n файлов</numerusform></translation>
     </message>
@@ -3522,7 +3565,7 @@
     <message>
         <location filename="../src/Gui/Plugins/Stream/ConfigureStreamDialog.cpp" line="+85"/>
         <source>Update Metadata</source>
-        <translation type="unfinished"/>
+        <translation>Обновление метаданных </translation>
     </message>
 </context>
 <context>
@@ -3668,6 +3711,14 @@
     </message>
 </context>
 <context>
+    <name>ShortcutHandler</name>
+    <message>
+        <location filename="../src/Gui/Utils/Shortcuts/ShortcutHandler.cpp" line="+225"/>
+        <source>Toggle playlist lock</source>
+        <translation>Блокировка плейлиста togg</translation>
+    </message>
+</context>
+<context>
     <name>Gui::DirectoryChooser</name>
     <message>
         <location filename="../src/Gui/Utils/Widgets/DirectoryChooser.cpp" line="+98"/>
@@ -3686,6 +3737,14 @@
         <location line="+1"/>
         <source>Remove special characters (letters)</source>
         <translation>Удалить специальные символы (буквы)</translation>
+    </message>
+</context>
+<context>
+    <name>Lang</name>
+    <message>
+        <location filename="../src/Utils/Language/Language.cpp" line="-70"/>
+        <source>Unlock playlist</source>
+        <translation>Разблокировать плейлист </translation>
     </message>
 </context>
 </TS>
