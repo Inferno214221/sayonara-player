@@ -18,8 +18,6 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
-
 #ifndef GUI_ICONPREFERENCES_H
 #define GUI_ICONPREFERENCES_H
 
@@ -34,21 +32,21 @@ class GUI_IconPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_IconPreferences)
-	UI_CLASS(GUI_IconPreferences)
+	UI_CLASS_SHARED_PTR(GUI_IconPreferences)
 
 	public:
 		explicit GUI_IconPreferences(QWidget* parent = nullptr);
-		virtual ~GUI_IconPreferences();
+		~GUI_IconPreferences() override;
+
+	public:
+		[[nodiscard]] QString actionName() const;
+
+		bool commit();
+		void revert();
 
 	protected:
 		void languageChanged() override;
 		void showEvent(QShowEvent* e) override;
-
-	public:
-		QString actionName() const;
-
-		bool commit();
-		void revert();
 
 	private:
 		void initUi();
