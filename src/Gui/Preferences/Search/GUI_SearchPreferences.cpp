@@ -29,14 +29,7 @@
 GUI_SearchPreferences::GUI_SearchPreferences(const QString& identifier) :
 	Preferences::Base(identifier) {}
 
-GUI_SearchPreferences::~GUI_SearchPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_SearchPreferences::~GUI_SearchPreferences() = default;
 
 QString GUI_SearchPreferences::actionName() const
 {
@@ -80,9 +73,8 @@ void GUI_SearchPreferences::revert()
 
 void GUI_SearchPreferences::initUi()
 {
-	setupParent(this, &ui);
-
-	revert();
+	ui = std::make_shared<Ui::GUI_SearchPreferences>();
+	ui->setupUi(this);
 }
 
 void GUI_SearchPreferences::retranslate()

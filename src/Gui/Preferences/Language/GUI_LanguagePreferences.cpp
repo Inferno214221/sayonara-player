@@ -64,14 +64,7 @@ GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :
 	});
 }
 
-GUI_LanguagePreferences::~GUI_LanguagePreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_LanguagePreferences::~GUI_LanguagePreferences() = default;
 
 QString GUI_LanguagePreferences::actionName() const
 {
@@ -132,7 +125,8 @@ void GUI_LanguagePreferences::refreshCombobox()
 
 void GUI_LanguagePreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_LanguagePreferences>();
+	ui->setupUi(this);
 
 	connect(ui->btnCheckForUpdate, &QPushButton::clicked, this, &GUI_LanguagePreferences::checkForUpdateClicked);
 	connect(ui->btnImport, &QPushButton::clicked, this, &GUI_LanguagePreferences::importLanguageClicked);

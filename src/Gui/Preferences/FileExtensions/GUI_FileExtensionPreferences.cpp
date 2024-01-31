@@ -91,19 +91,15 @@ namespace
 GUI_FileExtensionPreferences::GUI_FileExtensionPreferences(const QString& identifier) :
 	Preferences::Base(identifier) {}
 
-GUI_FileExtensionPreferences::~GUI_FileExtensionPreferences()
-{
-	delete ui;
-}
+GUI_FileExtensionPreferences::~GUI_FileExtensionPreferences() = default;
 
 void GUI_FileExtensionPreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_FileExtensionPreferences>();
+	ui->setupUi(this);
 
 	connect(ui->btnAdd, &QPushButton::clicked, this, &GUI_FileExtensionPreferences::addClicked);
 	connect(ui->btnRemove, &QPushButton::clicked, this, &GUI_FileExtensionPreferences::removeClicked);
-
-	revert();
 }
 
 bool GUI_FileExtensionPreferences::commit()

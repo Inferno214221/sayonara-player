@@ -78,12 +78,8 @@ void GUI_UiPreferences::revert()
 
 void GUI_UiPreferences::initUi()
 {
-	if(isUiInitialized())
-	{
-		return;
-	}
-
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_UiPreferences>();
+	ui->setupUi(this);
 
 #ifdef DISABLE_NATIVE_DIR_DIALOGS
 	ui->cbForceNativeDirDialog->setVisible(true);
@@ -99,9 +95,6 @@ void GUI_UiPreferences::initUi()
 
 	ListenSetting(Set::Player_ControlStyle, GUI_UiPreferences::styleChanged);
 	ListenSetting(Set::Player_Style, GUI_UiPreferences::styleChanged);
-
-	retranslate();
-	revert();
 }
 
 void GUI_UiPreferences::styleChanged()

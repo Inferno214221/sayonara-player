@@ -30,7 +30,7 @@ class GUI_PlayerPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_PlayerPreferences)
-	UI_CLASS(GUI_PlayerPreferences)
+	UI_CLASS_SHARED_PTR(GUI_PlayerPreferences)
 
 	public:
 		GUI_PlayerPreferences(const QString& identifier, bool canInhibitIdle);

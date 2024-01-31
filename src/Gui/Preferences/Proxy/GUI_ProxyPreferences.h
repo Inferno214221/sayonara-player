@@ -29,7 +29,7 @@ class GUI_ProxyPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_ProxyPreferences)
+	UI_CLASS_SHARED_PTR(GUI_ProxyPreferences)
 
 	public:
 		explicit GUI_ProxyPreferences(const QString& identifier);

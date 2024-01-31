@@ -31,7 +31,7 @@ class GUI_EnginePreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_EnginePreferences)
-	UI_CLASS(GUI_EnginePreferences)
+	UI_CLASS_SHARED_PTR(GUI_EnginePreferences)
 
 	public:
 		explicit GUI_EnginePreferences(const QString& identifier);

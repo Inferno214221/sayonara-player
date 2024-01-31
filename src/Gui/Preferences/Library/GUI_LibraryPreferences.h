@@ -36,7 +36,7 @@ class GUI_LibraryPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_LibraryPreferences)
-	UI_CLASS(GUI_LibraryPreferences)
+	UI_CLASS_SHARED_PTR(GUI_LibraryPreferences)
 
 	public:
 		GUI_LibraryPreferences(Library::Manager* libraryManager, const QString& identifier);

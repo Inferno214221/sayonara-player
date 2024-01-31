@@ -71,14 +71,7 @@ namespace
 GUI_CoverPreferences::GUI_CoverPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_CoverPreferences::~GUI_CoverPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_CoverPreferences::~GUI_CoverPreferences() = default;
 
 bool GUI_CoverPreferences::commit()
 {
@@ -170,12 +163,8 @@ QString GUI_CoverPreferences::actionName() const
 
 void GUI_CoverPreferences::initUi()
 {
-	if(ui)
-	{
-		return;
-	}
-
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_CoverPreferences>();
+	ui->setupUi(this);
 
 	ui->lvCoverSearchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lvCoverSearchers));
 	ui->lvInactiveCoverSearchers->setItemDelegate(new Gui::StyledItemDelegate(ui->lvInactiveCoverSearchers));
@@ -193,8 +182,6 @@ void GUI_CoverPreferences::initUi()
 	connect(ui->leCoverTemplate, &QLineEdit::textEdited, this, &GUI_CoverPreferences::coverTemplateEdited);
 
 	ui->cbSaveToSayonaraDir->setToolTip(Util::coverDirectory());
-
-	revert();
 }
 
 void GUI_CoverPreferences::retranslate()

@@ -35,18 +35,12 @@ GUI_PlayerPreferences::GUI_PlayerPreferences(const QString& identifier, const bo
 	Base(identifier),
 	m {Pimpl::make<Private>(canInhibitIdle)} {}
 
-GUI_PlayerPreferences::~GUI_PlayerPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_PlayerPreferences::~GUI_PlayerPreferences() = default;
 
 void GUI_PlayerPreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_PlayerPreferences>();
+	ui->setupUi(this);
 
 	ui->widgetWarning->setVisible(false);
 	ui->cbInhibit->setVisible(m->canInhibitIdle);
@@ -55,8 +49,6 @@ void GUI_PlayerPreferences::initUi()
 	ui->cbLogger->addItem("Debug");
 	ui->cbLogger->addItem("Develop");
 	ui->cbLogger->addItem("Crazy");
-
-	revert();
 
 	connect(ui->cbShowTrayIcon, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
 	connect(ui->cbStartInTray, &QCheckBox::toggled, this, &GUI_PlayerPreferences::showTrayIconToggled);
@@ -109,7 +101,6 @@ void GUI_PlayerPreferences::showTrayIconToggled(bool /* b */)
 void GUI_PlayerPreferences::retranslate()
 {
 	ui->retranslateUi(this);
-
 	ui->labLogger->setText(Lang::get(Lang::LogLevel));
 	ui->cbLogger->setItemText(0, Lang::get(Lang::Default));
 

@@ -63,14 +63,7 @@ GUI_PreferenceDialog::GUI_PreferenceDialog(QMainWindow* parent) :
 	PreferenceRegistry::instance()->setUserInterface(this);
 }
 
-GUI_PreferenceDialog::~GUI_PreferenceDialog()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_PreferenceDialog::~GUI_PreferenceDialog() = default;
 
 void GUI_PreferenceDialog::registerPreferenceDialog(Base* preferenceWidget)
 {
@@ -284,7 +277,7 @@ void GUI_PreferenceDialog::initUi()
 
 	this->setAttribute(Qt::WA_StyledBackground);
 
-	ui = new Ui::GUI_PreferenceDialog();
+	ui = std::make_shared<Ui::GUI_PreferenceDialog>();
 	ui->setupUi(this);
 
 	for(Base* widget: Algorithm::AsConst(m->preferenceWidgets))

@@ -30,7 +30,7 @@ class GUI_SearchPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_SearchPreferences)
+	UI_CLASS_SHARED_PTR(GUI_SearchPreferences)
 
 	public:
 		GUI_SearchPreferences(const QString& identifier);

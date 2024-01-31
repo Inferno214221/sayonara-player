@@ -69,18 +69,12 @@ GUI_StreamRecorderPreferences::GUI_StreamRecorderPreferences(const QString& iden
 	Base(identifier),
 	m {Pimpl::make<Private>(fileSystem)} {}
 
-GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_StreamRecorderPreferences::~GUI_StreamRecorderPreferences() = default;
 
 void GUI_StreamRecorderPreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_StreamRecorderPreferences>();
+	ui->setupUi(this);
 
 	auto* layout = new QGridLayout(ui->buttonWidget);
 
@@ -117,8 +111,6 @@ void GUI_StreamRecorderPreferences::initUi()
 
 		i++;
 	}
-
-	revert();
 
 	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_StreamRecorderPreferences::activeToggled);
 	connect(ui->btnPath, &QPushButton::clicked, this, &GUI_StreamRecorderPreferences::pathButtonClicked);

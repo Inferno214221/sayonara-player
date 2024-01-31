@@ -27,10 +27,7 @@
 GUI_OtherSettings::GUI_OtherSettings(const QString& identifier) :
 	Preferences::Base(identifier) {}
 
-GUI_OtherSettings::~GUI_OtherSettings()
-{
-	delete ui;
-}
+GUI_OtherSettings::~GUI_OtherSettings() = default;
 
 QString GUI_OtherSettings::actionName() const { return tr("Other settings"); }
 
@@ -47,8 +44,8 @@ void GUI_OtherSettings::revert()
 
 void GUI_OtherSettings::initUi()
 {
-	setupParent(this, &ui);
-	revert();
+	ui = std::make_shared<Ui::GUI_OtherSettings>();
+	ui->setupUi(this);
 }
 
 void GUI_OtherSettings::retranslate()

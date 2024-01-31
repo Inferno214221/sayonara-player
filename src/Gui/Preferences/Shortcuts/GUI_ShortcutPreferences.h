@@ -34,7 +34,7 @@ class GUI_ShortcutPreferences final :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_ShortcutPreferences)
+	UI_CLASS_SHARED_PTR(GUI_ShortcutPreferences)
 	PIMPL(GUI_ShortcutPreferences)
 
 	public:

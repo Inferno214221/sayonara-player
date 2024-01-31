@@ -32,7 +32,7 @@ class GUI_PlaylistPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_PlaylistPreferences)
+	UI_CLASS_SHARED_PTR(GUI_PlaylistPreferences)
 
 	public:
 		explicit GUI_PlaylistPreferences(const QString& identifier);

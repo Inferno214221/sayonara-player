@@ -48,7 +48,7 @@ namespace
 	{
 		widget->setStyleSheet(b ? "font-weight: bold;" : "font-weight: normal;");
 	}
-	
+
 	QString systemThemeText()
 	{
 		return QString("%1 (%2)")

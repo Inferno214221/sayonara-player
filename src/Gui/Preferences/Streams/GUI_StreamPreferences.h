@@ -31,7 +31,7 @@ class GUI_StreamPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_StreamPreferences)
+	UI_CLASS_SHARED_PTR(GUI_StreamPreferences)
 
 	public:
 		GUI_StreamPreferences(const QString& identifier);

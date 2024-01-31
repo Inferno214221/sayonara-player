@@ -43,7 +43,7 @@ class GUI_LastFmPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_LastFmPreferences)
+	UI_CLASS_SHARED_PTR(GUI_LastFmPreferences)
 	PIMPL(GUI_LastFmPreferences)
 
 	public:

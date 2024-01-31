@@ -48,23 +48,12 @@ GUI_ShortcutPreferences::GUI_ShortcutPreferences(const QString& identifier) :
 	m = Pimpl::make<Private>();
 }
 
-GUI_ShortcutPreferences::~GUI_ShortcutPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_ShortcutPreferences::~GUI_ShortcutPreferences() = default;
 
 void GUI_ShortcutPreferences::initUi()
 {
-	if(isUiInitialized())
-	{
-		return;
-	}
-
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_ShortcutPreferences>();
+	ui->setupUi(this);
 
 	this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 

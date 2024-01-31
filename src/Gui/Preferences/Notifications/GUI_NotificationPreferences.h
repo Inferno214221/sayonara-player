@@ -32,7 +32,7 @@ class GUI_NotificationPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_NotificationPreferences)
-	UI_CLASS(GUI_NotificationPreferences)
+	UI_CLASS_SHARED_PTR(GUI_NotificationPreferences)
 
 	public:
 		GUI_NotificationPreferences(const QString& identifier, NotificationHandler* notificationHandler);

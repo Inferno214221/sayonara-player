@@ -57,7 +57,7 @@ class GUI_StreamRecorderPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_StreamRecorderPreferences)
-	UI_CLASS(GUI_StreamRecorderPreferences)
+	UI_CLASS_SHARED_PTR(GUI_StreamRecorderPreferences)
 
 	public:
 		GUI_StreamRecorderPreferences(const QString& identifier, const std::shared_ptr<Util::FileSystem>& filesystem);

@@ -29,7 +29,7 @@ class GUI_BroadcastPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_BroadcastPreferences)
+	UI_CLASS_SHARED_PTR(GUI_BroadcastPreferences)
 
 	public:
 		explicit GUI_BroadcastPreferences(const QString& identifier);

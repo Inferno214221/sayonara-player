@@ -65,31 +65,17 @@ GUI_LibraryPreferences::GUI_LibraryPreferences(Library::Manager* libraryManager,
 	m = Pimpl::make<Private>(libraryManager);
 }
 
-GUI_LibraryPreferences::~GUI_LibraryPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_LibraryPreferences::~GUI_LibraryPreferences() = default;
 
 void GUI_LibraryPreferences::initUi()
 {
-	if(isUiInitialized())
-	{
-		return;
-	}
-
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_LibraryPreferences>();
+	ui->setupUi(this);
 
 	m->model = new LibraryListModel(m->libraryManager, ui->lvLibs);
 
 	ui->lvLibs->setModel(m->model);
-	ui->lvLibs->setItemDelegate(
-		new Gui::StyledItemDelegate(ui->lvLibs)
-	);
-
+	ui->lvLibs->setItemDelegate(new Gui::StyledItemDelegate(ui->lvLibs));
 	ui->tab_widget->setCurrentIndex(0);
 
 	auto* selectionModel = ui->lvLibs->selectionModel();
@@ -100,8 +86,6 @@ void GUI_LibraryPreferences::initUi()
 	connect(ui->btnDelete, &QPushButton::clicked, this, &GUI_LibraryPreferences::deleteClicked);
 	connect(ui->btnUp, &QPushButton::clicked, this, &GUI_LibraryPreferences::upClicked);
 	connect(ui->btnDown, &QPushButton::clicked, this, &GUI_LibraryPreferences::downClicked);
-
-	revert();
 
 	selectedIndexChanged(ui->lvLibs->currentIndex());
 }

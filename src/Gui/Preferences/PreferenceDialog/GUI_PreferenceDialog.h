@@ -44,7 +44,7 @@ class GUI_PreferenceDialog :
 	public PreferenceUi
 {
 	Q_OBJECT
-	UI_CLASS(GUI_PreferenceDialog)
+	UI_CLASS_SHARED_PTR(GUI_PreferenceDialog)
 	PIMPL(GUI_PreferenceDialog)
 
 	signals:

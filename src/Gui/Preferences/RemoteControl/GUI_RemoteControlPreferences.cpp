@@ -32,24 +32,16 @@
 GUI_RemoteControlPreferences::GUI_RemoteControlPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_RemoteControlPreferences::~GUI_RemoteControlPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_RemoteControlPreferences::~GUI_RemoteControlPreferences() = default;
 
 void GUI_RemoteControlPreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_RemoteControlPreferences>();
+	ui->setupUi(this);
 
 	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_RemoteControlPreferences::activeToggled);
 	connect(ui->sbPort, spinbox_value_changed_int, this, &GUI_RemoteControlPreferences::portChanged);
 	connect(ui->sbDiscover, spinbox_value_changed_int, this, &GUI_RemoteControlPreferences::discoverPortChanged);
-
-	revert();
 }
 
 void GUI_RemoteControlPreferences::retranslate()

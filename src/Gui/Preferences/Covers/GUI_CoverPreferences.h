@@ -29,7 +29,7 @@ class GUI_CoverPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_CoverPreferences)
+	UI_CLASS_SHARED_PTR(GUI_CoverPreferences)
 
 	public:
 		explicit GUI_CoverPreferences(const QString& identifier);

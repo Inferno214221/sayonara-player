@@ -58,11 +58,8 @@ QString GUI_StreamPreferences::actionName() const
 
 void GUI_StreamPreferences::initUi()
 {
-	if(!isUiInitialized())
-	{
-		setupParent(this, &ui);
-		revert();
-	}
+	ui = std::make_shared<Ui::GUI_StreamPreferences>();
+	ui->setupUi(this);
 }
 
 void GUI_StreamPreferences::retranslate()

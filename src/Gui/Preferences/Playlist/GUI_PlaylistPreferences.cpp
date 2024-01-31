@@ -119,14 +119,7 @@ namespace
 GUI_PlaylistPreferences::GUI_PlaylistPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_PlaylistPreferences::~GUI_PlaylistPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_PlaylistPreferences::~GUI_PlaylistPreferences() = default;
 
 bool GUI_PlaylistPreferences::commit()
 {
@@ -222,17 +215,12 @@ void GUI_PlaylistPreferences::revert()
 
 void GUI_PlaylistPreferences::initUi()
 {
-	if(isUiInitialized())
-	{
-		return;
-	}
+	ui = std::make_shared<Ui::GUI_PlaylistPreferences>();
+	ui->setupUi(this);
 
-	setupParent(this, &ui);
 	ui->tabWidget->setCurrentIndex(0);
 	ui->leExpression->setStyleSheet("font-family: mono;");
 	ui->widgetTemplateHelp->setVisible(false);
-
-	revert();
 
 	checkboxToggled(true);
 

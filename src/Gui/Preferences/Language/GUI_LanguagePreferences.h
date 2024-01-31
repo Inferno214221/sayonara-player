@@ -31,7 +31,7 @@ class GUI_LanguagePreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_LanguagePreferences)
-	UI_CLASS(GUI_LanguagePreferences)
+	UI_CLASS_SHARED_PTR(GUI_LanguagePreferences)
 
 	public:
 		explicit GUI_LanguagePreferences(const QString& identifier);

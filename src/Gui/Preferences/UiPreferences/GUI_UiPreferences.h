@@ -30,7 +30,7 @@ class GUI_UiPreferences :
 {
 	Q_OBJECT
 	PIMPL(GUI_UiPreferences)
-	UI_CLASS(GUI_UiPreferences)
+	UI_CLASS_SHARED_PTR(GUI_UiPreferences)
 
 	public:
 		GUI_UiPreferences(const QString& identifier);

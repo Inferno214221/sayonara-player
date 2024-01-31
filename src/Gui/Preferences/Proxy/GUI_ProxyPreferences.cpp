@@ -28,23 +28,15 @@
 GUI_ProxyPreferences::GUI_ProxyPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_ProxyPreferences::~GUI_ProxyPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_ProxyPreferences::~GUI_ProxyPreferences() = default;
 
 void GUI_ProxyPreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_ProxyPreferences>();
+	ui->setupUi(this);
 
 	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_ProxyPreferences::activeToggled);
 	connect(ui->btnAutosearch, &QPushButton::clicked, this, &GUI_ProxyPreferences::autosearchClicked);
-
-	revert();
 }
 
 void GUI_ProxyPreferences::retranslate()

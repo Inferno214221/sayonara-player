@@ -38,14 +38,7 @@ GUI_NotificationPreferences::GUI_NotificationPreferences(const QString& identifi
 	Preferences::Base(identifier),
 	m {Pimpl::make<Private>(notificationHandler)} {}
 
-GUI_NotificationPreferences::~GUI_NotificationPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_NotificationPreferences::~GUI_NotificationPreferences() = default;
 
 void GUI_NotificationPreferences::retranslate()
 {
@@ -101,9 +94,8 @@ QString GUI_NotificationPreferences::actionName() const { return tr("Notificatio
 
 void GUI_NotificationPreferences::initUi()
 {
-	setupParent(this, &ui);
-
-	revert();
+	ui = std::make_shared<Ui::GUI_NotificationPreferences>();
+	ui->setupUi(this);
 
 	connect(m->notificationHandler, &NotificationHandler::sigNotificationsChanged,
 	        this, &GUI_NotificationPreferences::notificationsChanged);

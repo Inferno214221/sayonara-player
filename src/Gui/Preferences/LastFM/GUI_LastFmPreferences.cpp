@@ -53,11 +53,8 @@ GUI_LastFmPreferences::~GUI_LastFmPreferences() = default;
 
 void GUI_LastFmPreferences::initUi()
 {
-	setupParent(this, &ui);
-
-	revert();
-
-	loginFinished(m->lastFm->isLoggedIn());
+	ui = std::make_shared<Ui::GUI_LastFmPreferences>();
+	ui->setupUi(this);
 
 	connect(ui->btnLogin, &QPushButton::clicked, this, &GUI_LastFmPreferences::loginClicked);
 	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::activeChanged);

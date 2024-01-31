@@ -52,9 +52,8 @@ GUI_BroadcastPreferences::~GUI_BroadcastPreferences() = default;
 
 void GUI_BroadcastPreferences::initUi()
 {
-	setupParent(this, &ui);
-
-	revert();
+	ui = std::make_shared<Ui::GUI_BroadcastPreferences>();
+	ui->setupUi(this);
 
 	connect(ui->cbActive, &QCheckBox::toggled, this, [this](const auto /*b*/) { refreshUrl(); });
 	connect(ui->sbPort, spinbox_value_changed_int, this, [this](const auto /*port*/) { refreshUrl(); });

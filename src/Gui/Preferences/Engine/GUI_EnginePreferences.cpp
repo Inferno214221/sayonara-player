@@ -99,14 +99,7 @@ GUI_EnginePreferences::GUI_EnginePreferences(const QString& identifier) :
 	Preferences::Base(identifier),
 	m {Pimpl::make<Private>()} {}
 
-GUI_EnginePreferences::~GUI_EnginePreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_EnginePreferences::~GUI_EnginePreferences() = default;
 
 QString GUI_EnginePreferences::actionName() const { return tr("Audio"); }
 
@@ -158,12 +151,11 @@ void GUI_EnginePreferences::revert()
 
 void GUI_EnginePreferences::initUi()
 {
-	setupParent(this, &ui);
+	ui = std::make_shared<Ui::GUI_EnginePreferences>();
+	ui->setupUi(this);
 
 	connect(ui->rbAlsa, &QRadioButton::toggled, this, &GUI_EnginePreferences::radioButtonChanged);
 	connect(ui->rbPulse, &QRadioButton::toggled, this, &GUI_EnginePreferences::radioButtonChanged);
-
-	revert();
 
 	radioButtonChanged(ui->rbAlsa->isChecked());
 	ui->comboAlsaDevices->setVisible(false);
@@ -188,7 +180,6 @@ void GUI_EnginePreferences::initUi()
 void GUI_EnginePreferences::retranslate()
 {
 	ui->retranslateUi(this);
-
 	ui->rbAuto->setText(Lang::get(Lang::Automatic));
 }
 

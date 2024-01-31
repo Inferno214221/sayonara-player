@@ -28,7 +28,7 @@ class GUI_FileExtensionPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_FileExtensionPreferences)
+	UI_CLASS_SHARED_PTR(GUI_FileExtensionPreferences)
 
 	public:
 		explicit GUI_FileExtensionPreferences(const QString& identifier);

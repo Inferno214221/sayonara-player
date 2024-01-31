@@ -52,27 +52,13 @@ namespace Preferences
 			[[nodiscard]] virtual QString errorString() const;
 
 		protected:
-			template<typename W, typename UiClass>
-			void setupParent(W* widget, UiClass** ui)
-			{
-				*ui = new UiClass();
-				(*ui)->setupUi(widget);
-
-				setInitialized();
-
-				widget->languageChanged();
-
-				skinChanged();
-			}
-
-			void languageChanged() final;
-			void translationAction();
-
 			void showEvent(QShowEvent* e) override;
 			void closeEvent(QCloseEvent* e) override;
 
 		private:
-			void setInitialized();
+			void init();
+			void translationAction();
+			void languageChanged() final;
 	};
 }
 

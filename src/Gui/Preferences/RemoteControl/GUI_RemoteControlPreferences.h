@@ -33,7 +33,7 @@ class GUI_RemoteControlPreferences :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_RemoteControlPreferences)
+	UI_CLASS_SHARED_PTR(GUI_RemoteControlPreferences)
 
 	public:
 		explicit GUI_RemoteControlPreferences(const QString& identifier);

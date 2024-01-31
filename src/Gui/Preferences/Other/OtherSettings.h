@@ -29,7 +29,7 @@ class GUI_OtherSettings :
 	public Preferences::Base
 {
 	Q_OBJECT
-	UI_CLASS(GUI_OtherSettings)
+	UI_CLASS_SHARED_PTR(GUI_OtherSettings)
 
 	public:
 		explicit GUI_OtherSettings(const QString& identifier);

@@ -46,9 +46,24 @@ namespace Preferences
 
 	QString Base::identifier() const { return m->identifier; }
 
-	void Base::setInitialized() { m->isInitialized = true; }
+	void Base::init()
+	{
+		if(!isUiInitialized())
+		{
+			initUi();
 
-	bool Base::isUiInitialized() const { return m->isInitialized; }
+			m->isInitialized = true;
+
+			languageChanged();
+			skinChanged();
+			revert();
+		}
+	}
+
+	bool Base::isUiInitialized() const
+	{
+		return m->isInitialized;
+	}
 
 	bool Base::hasError() const { return false; }
 
@@ -94,10 +109,7 @@ namespace Preferences
 
 	void Base::showEvent(QShowEvent* e)
 	{
-		if(!isUiInitialized())
-		{
-			initUi();
-		}
+		init();
 
 		Gui::Widget::showEvent(e);
 
