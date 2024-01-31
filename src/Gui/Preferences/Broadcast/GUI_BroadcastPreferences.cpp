@@ -23,21 +23,32 @@
 
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 
-#include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+
+namespace
+{
+	QString urlString(const int port)
+	{
+		const auto ips = Util::ipAddresses();
+
+		QStringList ret;
+		Util::Algorithm::transform(ips, ret, [&](const auto& ip) {
+			return QString("http://%1:%2/playlist.m3u")
+				.arg(ip)
+				.arg(port);
+		});
+
+		return ret.join("; ");
+	}
+};
 
 GUI_BroadcastPreferences::GUI_BroadcastPreferences(const QString& identifier) :
 	Base(identifier) {}
 
-GUI_BroadcastPreferences::~GUI_BroadcastPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_BroadcastPreferences::~GUI_BroadcastPreferences() = default;
 
 void GUI_BroadcastPreferences::initUi()
 {
@@ -45,41 +56,22 @@ void GUI_BroadcastPreferences::initUi()
 
 	revert();
 
-	connect(ui->cbActive, &QCheckBox::toggled, this, &GUI_BroadcastPreferences::activeToggled);
-	connect(ui->sbPort, spinbox_value_changed_int, this, &GUI_BroadcastPreferences::portChanged);
+	connect(ui->cbActive, &QCheckBox::toggled, this, [this](const auto /*b*/) { refreshUrl(); });
+	connect(ui->sbPort, spinbox_value_changed_int, this, [this](const auto /*port*/) { refreshUrl(); });
 }
 
 bool GUI_BroadcastPreferences::commit()
 {
-	bool new_active = ui->cbActive->isChecked();
-	bool new_prompt = ui->cbPrompt->isChecked();
-	int new_port = ui->sbPort->value();
-
-	bool old_active = GetSetting(Set::Broadcast_Active);
-	bool old_prompt = GetSetting(Set::Broadcast_Prompt);
-	int old_port = GetSetting(Set::Broadcast_Port);
-
-	if(old_active != new_active)
-	{
-		SetSetting(Set::Broadcast_Active, new_active);
-	}
-
-	if(old_prompt != new_prompt)
-	{
-		SetSetting(Set::Broadcast_Prompt, new_prompt);
-	}
-
-	if(old_port != new_port)
-	{
-		SetSetting(Set::Broadcast_Port, new_port);
-	}
+	SetSetting(Set::Broadcast_Active, ui->cbActive->isChecked());
+	SetSetting(Set::Broadcast_Prompt, ui->cbPrompt->isChecked());
+	SetSetting(Set::Broadcast_Port, ui->sbPort->value());
 
 	return true;
 }
 
 void GUI_BroadcastPreferences::revert()
 {
-	bool active = GetSetting(Set::Broadcast_Active);
+	const auto active = GetSetting(Set::Broadcast_Active);
 
 	ui->cbActive->setChecked(active);
 	ui->cbPrompt->setChecked(GetSetting(Set::Broadcast_Prompt));
@@ -98,54 +90,22 @@ void GUI_BroadcastPreferences::retranslate()
 	ui->labUrlTitle->setText(Lang::get(Lang::StreamUrl));
 }
 
-QString GUI_BroadcastPreferences::actionName() const
-{
-	return Lang::get(Lang::Broadcast);
-}
-
-void GUI_BroadcastPreferences::activeToggled(bool b)
-{
-	Q_UNUSED(b);
-	refreshUrl();
-}
-
-void GUI_BroadcastPreferences::portChanged(int new_val)
-{
-	Q_UNUSED(new_val);
-	refreshUrl();
-}
-
-QString GUI_BroadcastPreferences::urlString() const
-{
-	int port = ui->sbPort->value();
-	QStringList ips = Util::ipAddresses();
-
-	QStringList ret;
-	for(const QString& ip: ips)
-	{
-		QString str = QString("http://") + ip + ":" + QString::number(port) + "/playlist.m3u";
-		ret << str;
-	}
-
-	return ret.join("; ");
-}
+QString GUI_BroadcastPreferences::actionName() const { return Lang::get(Lang::Broadcast); }
 
 void GUI_BroadcastPreferences::refreshUrl()
 {
-	bool active = ui->cbActive->isChecked();
+	const auto active = ui->cbActive->isChecked();
 
 	ui->leUrl->setVisible(active);
-	ui->leUrl->setText(urlString());
+	ui->leUrl->setText(urlString(ui->sbPort->value()));
 	ui->labUrlTitle->setVisible(active);
 }
 
 bool GUI_BroadcastPreferences::hasError() const
 {
-	int port = ui->sbPort->value();
-
-	return
-		(port == GetSetting(Set::Remote_Port)) ||
-		(port == GetSetting(Set::Remote_DiscoverPort));
+	const auto port = ui->sbPort->value();
+	return (port == GetSetting(Set::Remote_Port)) ||
+	       (port == GetSetting(Set::Remote_DiscoverPort));
 }
 
 QString GUI_BroadcastPreferences::errorString() const

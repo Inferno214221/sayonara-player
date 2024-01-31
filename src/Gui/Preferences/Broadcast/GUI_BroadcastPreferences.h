@@ -38,21 +38,16 @@ class GUI_BroadcastPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
-		bool hasError() const override;
-		QString errorString() const override;
+		[[nodiscard]] bool hasError() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	protected:
 		void initUi() override;
 		void retranslate() override;
 
-	private slots:
-		void activeToggled(bool b);
-		void portChanged(int new_val);
-
 	private:
-		QString urlString() const;
 		void refreshUrl();
 };
 
