@@ -47,13 +47,13 @@ class GUI_LastFmPreferences :
 	PIMPL(GUI_LastFmPreferences)
 
 	public:
-		explicit GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm);
-		virtual ~GUI_LastFmPreferences();
+		explicit GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lastFm);
+		~GUI_LastFmPreferences() override;
 
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;

@@ -39,32 +39,17 @@
 
 struct GUI_LastFmPreferences::Private
 {
-	LastFM::Base* lfm = nullptr;
+	LastFM::Base* lastFm;
 
-	Private(LastFM::Base* lfm) :
-		lfm(lfm) {}
-
-	~Private()
-	{
-		delete lfm;
-		lfm = nullptr;
-	}
+	explicit Private(LastFM::Base* lastFm) :
+		lastFm {lastFm} {}
 };
 
-GUI_LastFmPreferences::GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lfm) :
-	Base(identifier)
-{
-	m = Pimpl::make<Private>(lfm);
-}
+GUI_LastFmPreferences::GUI_LastFmPreferences(const QString& identifier, LastFM::Base* lastFm) :
+	Base(identifier),
+	m {Pimpl::make<Private>(lastFm)} {}
 
-GUI_LastFmPreferences::~GUI_LastFmPreferences()
-{
-	if(ui)
-	{
-		delete ui;
-		ui = nullptr;
-	}
-}
+GUI_LastFmPreferences::~GUI_LastFmPreferences() = default;
 
 void GUI_LastFmPreferences::initUi()
 {
@@ -72,17 +57,14 @@ void GUI_LastFmPreferences::initUi()
 
 	revert();
 
-	loginFinished(m->lfm->isLoggedIn());
+	loginFinished(m->lastFm->isLoggedIn());
 
 	connect(ui->btnLogin, &QPushButton::clicked, this, &GUI_LastFmPreferences::loginClicked);
 	connect(ui->cbActivate, &QCheckBox::toggled, this, &GUI_LastFmPreferences::activeChanged);
-	connect(m->lfm, &LastFM::Base::sigLoggedIn, this, &GUI_LastFmPreferences::loginFinished);
+	connect(m->lastFm, &LastFM::Base::sigLoggedIn, this, &GUI_LastFmPreferences::loginFinished);
 }
 
-QString GUI_LastFmPreferences::actionName() const
-{
-	return "Last.fm";
-}
+QString GUI_LastFmPreferences::actionName() const { return "Last.fm"; }
 
 void GUI_LastFmPreferences::retranslate()
 {
@@ -90,14 +72,14 @@ void GUI_LastFmPreferences::retranslate()
 	ui->labActivate->setText(Lang::get(Lang::Active));
 	ui->labSeconds->setText(Lang::get(Lang::Seconds));
 
-	loginFinished(m->lfm->isLoggedIn());
+	loginFinished(m->lastFm->isLoggedIn());
 }
 
 bool GUI_LastFmPreferences::commit()
 {
-	bool active = ui->cbActivate->isChecked();
-	QString username = ui->leUsername->text();
-	QString password = ui->lePassword->text();
+	const auto active = ui->cbActivate->isChecked();
+	const auto username = ui->leUsername->text();
+	const auto password = ui->lePassword->text();
 
 	SetSetting(Set::LFM_Username, username);
 	SetSetting(Set::LFM_Password, Util::Crypt::encrypt(password));
@@ -109,69 +91,50 @@ bool GUI_LastFmPreferences::commit()
 
 void GUI_LastFmPreferences::revert()
 {
-	bool active = GetSetting(Set::LFM_Active);
-	const QString username = GetSetting(Set::LFM_Username);
-	const QString password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
+	const auto active = GetSetting(Set::LFM_Active);
+	const auto username = GetSetting(Set::LFM_Username);
+	const auto password = Util::Crypt::decrypt(GetSetting(Set::LFM_Password));
 
 	activeChanged(active);
-	loginFinished(m->lfm->isLoggedIn());
+	loginFinished(m->lastFm->isLoggedIn());
 
 	ui->leUsername->setText(username);
 	ui->lePassword->setText(password);
 	ui->sbScrobbleTime->setValue(GetSetting(Set::LFM_ScrobbleTimeSec));
 	ui->cbActivate->setChecked(active);
 
-	const QString link = Util::createLink("https://last.fm", Style::isDark(), true);
+	const auto link = Util::createLink("https://last.fm", Style::isDark(), true);
 	ui->labWebsite->setText(link);
 }
 
 void GUI_LastFmPreferences::loginClicked()
 {
-	if(ui->leUsername->text().length() < 3)
-	{
-		return;
-	}
-
-	if(ui->lePassword->text().length() < 3)
+	if((ui->leUsername->text().length() < 3) ||
+	   (ui->lePassword->text().length() < 3))
 	{
 		return;
 	}
 
 	ui->btnLogin->setEnabled(false);
 
-	const QString username = ui->leUsername->text();
-	const QString password = ui->lePassword->text();
-
-	m->lfm->login(username, password);
+	m->lastFm->login(ui->leUsername->text(), ui->lePassword->text());
 }
 
-void GUI_LastFmPreferences::activeChanged(bool active)
+void GUI_LastFmPreferences::activeChanged(const bool active)
 {
-	if(!isUiInitialized())
+	if(ui)
 	{
-		return;
+		ui->leUsername->setEnabled(active);
+		ui->lePassword->setEnabled(active);
 	}
-
-	ui->leUsername->setEnabled(active);
-	ui->lePassword->setEnabled(active);
 }
 
-void GUI_LastFmPreferences::loginFinished(bool success)
+void GUI_LastFmPreferences::loginFinished(const bool success)
 {
-	if(!isUiInitialized())
+	if(ui)
 	{
-		return;
+		const auto text = success ? tr("Logged in") : tr("Not logged in");
+		ui->labStatus->setText(text);
+		ui->btnLogin->setEnabled(true);
 	}
-
-	if(success)
-	{
-		ui->labStatus->setText(tr("Logged in"));
-	}
-
-	else
-	{
-		ui->labStatus->setText(tr("Not logged in"));
-	}
-
-	ui->btnLogin->setEnabled(true);
 }
