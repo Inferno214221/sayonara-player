@@ -38,7 +38,7 @@ class GUI_CoverPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;

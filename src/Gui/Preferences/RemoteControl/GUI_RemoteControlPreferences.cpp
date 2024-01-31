@@ -25,9 +25,27 @@
 #include "GUI_RemoteControlPreferences.h"
 #include "Gui/Preferences/ui_GUI_RemoteControlPreferences.h"
 
-#include "Utils/Utils.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+
+namespace
+{
+	QString getUrlString(const int port)
+	{
+		const auto ips = Util::ipAddresses();
+
+		QStringList result;
+		Util::Algorithm::transform(ips, result, [&](const auto& ip) {
+			return QString("%1:%2")
+				.arg(ip)
+				.arg(port);
+		});
+
+		return result.join("\n");
+	}
+}
 
 GUI_RemoteControlPreferences::GUI_RemoteControlPreferences(const QString& identifier) :
 	Base(identifier) {}
@@ -49,7 +67,7 @@ void GUI_RemoteControlPreferences::retranslate()
 	ui->retranslateUi(this);
 	ui->labActive->setText(Lang::get(Lang::Active));
 
-	const QString tooltip = tr("If activated, Sayonara will answer an UDP request that it is remote controllable");
+	const auto tooltip = tr("If activated, Sayonara will answer an UDP request that it is remote controllable");
 	ui->cbDiscover->setToolTip(tooltip);
 	ui->labDiscover->setToolTip(tooltip);
 }
@@ -66,7 +84,7 @@ bool GUI_RemoteControlPreferences::commit()
 
 void GUI_RemoteControlPreferences::revert()
 {
-	bool active = GetSetting(Set::Remote_Active);
+	const auto active = GetSetting(Set::Remote_Active);
 	ui->cbActivate->setChecked(active);
 
 	ui->sbPort->setEnabled(active);
@@ -81,32 +99,26 @@ void GUI_RemoteControlPreferences::revert()
 	refreshUrl();
 }
 
-QString GUI_RemoteControlPreferences::actionName() const
-{
-	return tr("Remote control");
-}
+QString GUI_RemoteControlPreferences::actionName() const { return tr("Remote control"); }
 
-void GUI_RemoteControlPreferences::activeToggled(bool b)
+void GUI_RemoteControlPreferences::activeToggled(const bool /*b*/)
 {
-	Q_UNUSED(b)
 	refreshUrl();
 
-	bool active = GetSetting(Set::Remote_Active);
+	const auto active = GetSetting(Set::Remote_Active);
 
 	ui->sbPort->setEnabled(active);
 	ui->cbDiscover->setEnabled(active);
 	ui->sbDiscover->setEnabled(active);
 }
 
-void GUI_RemoteControlPreferences::portChanged(int port)
+void GUI_RemoteControlPreferences::portChanged(const int port)
 {
-	Q_UNUSED(port)
-
 	ui->sbDiscover->setValue(port + 1);
 	refreshUrl();
 }
 
-void GUI_RemoteControlPreferences::discoverPortChanged(int port)
+void GUI_RemoteControlPreferences::discoverPortChanged(const int port)
 {
 	if(port == ui->sbPort->value())
 	{
@@ -114,41 +126,23 @@ void GUI_RemoteControlPreferences::discoverPortChanged(int port)
 	}
 }
 
-QString GUI_RemoteControlPreferences::getUrlString()
-{
-	int port = ui->sbPort->value();
-	const QStringList ips = Util::ipAddresses();
-
-	QStringList ret;
-	for(const QString& ip: ips)
-	{
-		ret << QString("%1:%2")
-			.arg(ip)
-			.arg(port);
-	}
-
-	return ret.join("\n");
-}
-
 void GUI_RemoteControlPreferences::refreshUrl()
 {
 	bool active = ui->cbActivate->isChecked();
 
 	ui->labUrl->setVisible(active);
-	ui->labUrls->setText(getUrlString());
+	ui->labUrls->setText(getUrlString(ui->sbPort->value()));
 }
 
 bool GUI_RemoteControlPreferences::hasError() const
 {
-	int broadcast_port = GetSetting(Set::Broadcast_Port);
-
-	return
-		(ui->sbPort->value() == broadcast_port) ||
-		(ui->sbDiscover->value() == broadcast_port);
+	const auto remotePort = GetSetting(Set::Remote_Port);
+	return (ui->sbPort->value() == remotePort) ||
+	       (ui->sbDiscover->value() == remotePort);
 }
 
 QString GUI_RemoteControlPreferences::errorString() const
 {
-	int broadcast_port = GetSetting(Set::Broadcast_Port);
-	return tr("Port %1 already in use").arg(broadcast_port);
+	const auto remotePort = GetSetting(Set::Remote_Port);
+	return tr("Port %1 already in use").arg(remotePort);
 }

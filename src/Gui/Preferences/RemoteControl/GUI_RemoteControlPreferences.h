@@ -37,15 +37,14 @@ class GUI_RemoteControlPreferences :
 
 	public:
 		explicit GUI_RemoteControlPreferences(const QString& identifier);
-		~GUI_RemoteControlPreferences();
+		~GUI_RemoteControlPreferences() override;
 
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
-
-		bool hasError() const override;
-		QString errorString() const override;
+		[[nodiscard]] QString actionName() const override;
+		[[nodiscard]] bool hasError() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	protected:
 		void initUi() override;
@@ -57,7 +56,6 @@ class GUI_RemoteControlPreferences :
 		void discoverPortChanged(int port);
 
 	private:
-		QString getUrlString();
 		void refreshUrl();
 };
 

@@ -60,10 +60,8 @@ struct GUI_LibraryPreferences::Private
 };
 
 GUI_LibraryPreferences::GUI_LibraryPreferences(Library::Manager* libraryManager, const QString& identifier) :
-	Preferences::Base(identifier)
-{
-	m = Pimpl::make<Private>(libraryManager);
-}
+	Preferences::Base(identifier),
+	m {Pimpl::make<Private>(libraryManager)} {}
 
 GUI_LibraryPreferences::~GUI_LibraryPreferences() = default;
 

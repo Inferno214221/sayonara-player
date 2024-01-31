@@ -34,17 +34,12 @@ struct GUI_UiPreferences::Private
 };
 
 GUI_UiPreferences::GUI_UiPreferences(const QString& identifier) :
-	Preferences::Base(identifier)
-{
-	m = Pimpl::make<Private>();
-}
+	Preferences::Base(identifier),
+	m {Pimpl::make<Private>()} {}
 
 GUI_UiPreferences::~GUI_UiPreferences() = default;
 
-QString GUI_UiPreferences::actionName() const
-{
-	return tr("User Interface");
-}
+QString GUI_UiPreferences::actionName() const { return tr("User Interface"); }
 
 bool GUI_UiPreferences::commit()
 {
@@ -105,7 +100,7 @@ void GUI_UiPreferences::styleChanged()
 
 void GUI_UiPreferences::editCssClicked()
 {
-	GUI_CssEditor* editor = new GUI_CssEditor(this);
+	auto* editor = new GUI_CssEditor(this);
 	editor->show();
 }
 

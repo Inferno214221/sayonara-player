@@ -33,11 +33,11 @@ class GUI_SearchPreferences :
 	UI_CLASS_SHARED_PTR(GUI_SearchPreferences)
 
 	public:
-		GUI_SearchPreferences(const QString& identifier);
-		~GUI_SearchPreferences();
+		explicit GUI_SearchPreferences(const QString& identifier);
+		~GUI_SearchPreferences() override;
 
 	public:
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 		bool commit() override;
 		void revert() override;
 		void initUi() override;

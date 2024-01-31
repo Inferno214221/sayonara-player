@@ -36,18 +36,15 @@ class GUI_OtherSettings :
 		~GUI_OtherSettings() override;
 
 		[[nodiscard]] QString actionName() const override;
-
 		bool commit() override;
-
 		void revert() override;
+		[[nodiscard]] bool hasError() const override;
+		[[nodiscard]] QString errorString() const override;
 
+	protected:
 		void initUi() override;
-
 		void retranslate() override;
 
-		bool hasError() const override;
-
-		QString errorString() const override;
 };
 
 #endif //SAYONARA_PLAYER_OTHERSETTINGS_H

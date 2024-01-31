@@ -39,33 +39,28 @@
 #include <QMenu>
 #include <QPushButton>
 
-using Preferences::Base;
-using Preferences::Action;
-namespace Algorithm = Util::Algorithm;
-
 struct GUI_PreferenceDialog::Private
 {
-	QList<Base*> preferenceWidgets;
+	QList<Preferences::Base*> preferenceWidgets;
 	QMainWindow* mainWindow;
-	Action* action = nullptr;
-	int currentRow;
+	Preferences::Action* action {nullptr};
+	int currentRow {-1};
 
-	Private(QMainWindow* mainWindow) :
-		mainWindow(mainWindow),
-		currentRow(-1) {}
+	explicit Private(QMainWindow* mainWindow) :
+		mainWindow(mainWindow) {}
 };
 
 GUI_PreferenceDialog::GUI_PreferenceDialog(QMainWindow* parent) :
 	Gui::Dialog(parent),
-	PreferenceUi()
+	PreferenceUi(),
+	m {Pimpl::make<Private>(parent)}
 {
-	m = Pimpl::make<Private>(parent);
 	PreferenceRegistry::instance()->setUserInterface(this);
 }
 
 GUI_PreferenceDialog::~GUI_PreferenceDialog() = default;
 
-void GUI_PreferenceDialog::registerPreferenceDialog(Base* preferenceWidget)
+void GUI_PreferenceDialog::registerPreferenceDialog(Preferences::Base* preferenceWidget)
 {
 	m->preferenceWidgets << preferenceWidget;
 	PreferenceRegistry::instance()->registerPreference(preferenceWidget->identifier());
@@ -75,47 +70,43 @@ void GUI_PreferenceDialog::showPreference(const QString& identifier)
 {
 	initUi();
 
-	int i = 0;
-	for(Preferences::Base* pwi: Algorithm::AsConst(m->preferenceWidgets))
+	const auto index = Util::Algorithm::indexOf(m->preferenceWidgets, [&](auto* widget) {
+		return widget->identifier() == identifier;
+	});
+
+	if(index < 0)
 	{
-		const QString dialogId = pwi->identifier();
-		if(identifier.compare(dialogId) == 0)
-		{
-			ui->listPreferences->setCurrentRow(i);
-			rowChanged(i);
-
-			this->setModal(true);
-			this->show();
-
-			return;
-		}
-
-		i++;
+		spLog(Log::Warning, this) << "Cannot find preference widget " << identifier;
+		return;
 	}
 
-	spLog(Log::Warning, this) << "Cannot find preference widget " << identifier;
+	ui->listPreferences->setCurrentRow(index);
+	rowChanged(index);
+
+	setModal(true);
+	show();
 }
 
 void GUI_PreferenceDialog::languageChanged()
 {
 	ui->retranslateUi(this);
 
-	bool isEmpty = (ui->listPreferences->count() == 0);
+	const auto isEmpty = (ui->listPreferences->count() == 0);
 
 	int i = 0;
-	for(Base* dialog: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
-		QListWidgetItem* item;
+		auto* item = isEmpty
+		             ? new QListWidgetItem(widget->actionName())
+		             : ui->listPreferences->item(i);
 		if(isEmpty)
 		{
-			item = new QListWidgetItem(dialog->actionName());
 			ui->listPreferences->addItem(item);
 		}
 
 		else
 		{
-			item = ui->listPreferences->item(i);
-			item->setText(dialog->actionName());
+			item->setText(widget->actionName());
 		}
 
 		i++;
@@ -128,29 +119,25 @@ void GUI_PreferenceDialog::languageChanged()
 
 	if(Util::between(m->currentRow, m->preferenceWidgets.count()))
 	{
-		Base* dialog = m->preferenceWidgets[m->currentRow];
-		if(dialog)
+		auto* currentWidget = m->preferenceWidgets[m->currentRow];
+		if(currentWidget)
 		{
-			ui->labPreferenceTitle->setText(dialog->actionName());
+			ui->labPreferenceTitle->setText(currentWidget->actionName());
 		}
 	}
 
-	this->setWindowTitle(this->actionName());
+	setWindowTitle(actionName());
 }
 
-QString GUI_PreferenceDialog::actionName() const
-{
-	return Lang::get(Lang::Preferences);
-}
+QString GUI_PreferenceDialog::actionName() const { return Lang::get(Lang::Preferences); }
 
 QAction* GUI_PreferenceDialog::action()
 {
 	// action has to be initialized here, because pure
 	// virtual get_action_name should not be called from ctor
-	const QString name = actionName();
 	if(!m->action)
 	{
-		m->action = new Action(name, this);
+		m->action = new Preferences::Action(actionName(), this);
 	}
 
 	m->action->setText(actionName() + "...");
@@ -162,16 +149,16 @@ QAction* GUI_PreferenceDialog::action()
 QList<QAction*> GUI_PreferenceDialog::actions(QWidget* parent)
 {
 	QList<QAction*> ret;
-	for(Preferences::Base* dialog: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
-		const QString actionName = dialog->actionName();
-		const QString identifier = dialog->identifier();
+		const auto actionName = widget->actionName();
+		const auto identifier = widget->identifier();
 
-		QAction* action = new QAction(parent);
+		auto* action = new QAction(parent);
 		action->setText(actionName);
 		ret << action;
 
-		connect(action, &QAction::triggered, this, [=]() {
+		connect(action, &QAction::triggered, this, [identifier, this]() {
 			showPreference(identifier);
 		});
 	}
@@ -190,16 +177,16 @@ void GUI_PreferenceDialog::commitAndClose()
 bool GUI_PreferenceDialog::commit()
 {
 	bool success = true;
-	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
-		if(iface->isUiInitialized())
+		if(widget->isUiInitialized())
 		{
-			if(!iface->commit())
+			if(!widget->commit())
 			{
-				const QString errorString = iface->errorString();
+				const auto errorString = widget->errorString();
 				if(!errorString.isEmpty())
 				{
-					Message::warning(iface->actionName() + "\n\n" + errorString, iface->actionName());
+					Message::warning(widget->actionName() + "\n\n" + errorString, widget->actionName());
 					success = false;
 				}
 			}
@@ -211,18 +198,18 @@ bool GUI_PreferenceDialog::commit()
 
 void GUI_PreferenceDialog::revert()
 {
-	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
-		if(iface->isUiInitialized())
+		if(widget->isUiInitialized())
 		{
-			iface->revert();
+			widget->revert();
 		}
 	}
 
 	close();
 }
 
-void GUI_PreferenceDialog::rowChanged(int row)
+void GUI_PreferenceDialog::rowChanged(const int row)
 {
 	if(!Util::between(row, m->preferenceWidgets))
 	{
@@ -233,9 +220,9 @@ void GUI_PreferenceDialog::rowChanged(int row)
 
 	hideAll();
 
-	Base* widget = m->preferenceWidgets[row];
+	auto* widget = m->preferenceWidgets[row];
 
-	QLayout* layout = ui->widgetPreferences->layout();
+	auto* layout = ui->widgetPreferences->layout();
 	layout->setContentsMargins(0, 0, 0, 0);
 
 	if(layout)
@@ -252,10 +239,10 @@ void GUI_PreferenceDialog::rowChanged(int row)
 
 void GUI_PreferenceDialog::hideAll()
 {
-	for(Base* iface: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
-		iface->setParent(nullptr);
-		iface->hide();
+		widget->setParent(nullptr);
+		widget->hide();
 	}
 }
 
@@ -264,7 +251,7 @@ void GUI_PreferenceDialog::showEvent(QShowEvent* e)
 	initUi();
 	Gui::Dialog::showEvent(e);
 
-	this->setWindowTitle(Lang::get(Lang::Preferences));
+	setWindowTitle(Lang::get(Lang::Preferences));
 	ui->listPreferences->setFocus();
 }
 
@@ -275,12 +262,12 @@ void GUI_PreferenceDialog::initUi()
 		return;
 	}
 
-	this->setAttribute(Qt::WA_StyledBackground);
+	setAttribute(Qt::WA_StyledBackground);
 
 	ui = std::make_shared<Ui::GUI_PreferenceDialog>();
 	ui->setupUi(this);
 
-	for(Base* widget: Algorithm::AsConst(m->preferenceWidgets))
+	for(auto* widget: m->preferenceWidgets)
 	{
 		ui->listPreferences->addItem(widget->actionName());
 	}
@@ -290,17 +277,15 @@ void GUI_PreferenceDialog::initUi()
 		new Gui::StyledItemDelegate(ui->listPreferences)
 	);
 
-	QPushButton* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
-	QPushButton* applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
-	QPushButton* closeButton = ui->buttonBox->button(QDialogButtonBox::Cancel);
+	auto* okButton = ui->buttonBox->button(QDialogButtonBox::Ok);
+	auto* applyButton = ui->buttonBox->button(QDialogButtonBox::Apply);
+	auto* closeButton = ui->buttonBox->button(QDialogButtonBox::Cancel);
 
 	connect(okButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::commitAndClose);
 	connect(applyButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::commit);
 	connect(closeButton, &QPushButton::clicked, this, &GUI_PreferenceDialog::revert);
 
 	connect(ui->listPreferences, &QListWidget::currentRowChanged, this, &GUI_PreferenceDialog::rowChanged);
-
-	auto sz = m->mainWindow->size();
-	sz *= 0.66;
-	this->resize(sz);
+	
+	resize(m->mainWindow->size() * 0.66);
 }

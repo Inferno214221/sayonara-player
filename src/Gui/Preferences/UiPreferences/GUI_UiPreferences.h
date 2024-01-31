@@ -33,10 +33,10 @@ class GUI_UiPreferences :
 	UI_CLASS_SHARED_PTR(GUI_UiPreferences)
 
 	public:
-		GUI_UiPreferences(const QString& identifier);
-		virtual ~GUI_UiPreferences();
+		explicit GUI_UiPreferences(const QString& identifier);
+		~GUI_UiPreferences() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void retranslate() override;

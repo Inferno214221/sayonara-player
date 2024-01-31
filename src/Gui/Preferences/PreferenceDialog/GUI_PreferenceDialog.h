@@ -35,10 +35,6 @@ namespace Preferences
 
 UI_FWD(GUI_PreferenceDialog)
 
-/**
- * @brief The Preference Dialog. Register new Preference dialogs with the register_preference_dialog() method.
- * @ingroup Preferences
- */
 class GUI_PreferenceDialog :
 	public Gui::Dialog,
 	public PreferenceUi
@@ -48,16 +44,15 @@ class GUI_PreferenceDialog :
 	PIMPL(GUI_PreferenceDialog)
 
 	signals:
-		void sigError(const QString& error_message);
+		void sigError(const QString& errorMessage);
 
 	public:
 		explicit GUI_PreferenceDialog(QMainWindow* parent);
 		~GUI_PreferenceDialog() override;
 
-		QString actionName() const;
-		QAction* action();
-
-		QList<QAction*> actions(QWidget* parent);
+		[[nodiscard]] QString actionName() const;
+		[[nodiscard]] QAction* action();
+		[[nodiscard]] QList<QAction*> actions(QWidget* parent);
 
 		void registerPreferenceDialog(Preferences::Base* dialog);
 		void showPreference(const QString& identifier) override;

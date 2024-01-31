@@ -51,10 +51,9 @@ struct GUI_LanguagePreferences::Private
 };
 
 GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :
-	Preferences::Base(identifier)
+	Preferences::Base(identifier),
+	m {Pimpl::make<Private>(this)}
 {
-	m = Pimpl::make<Private>(this);
-
 	connect(m->languagePreferences, &LanguagePreferences::sigInfo, this, [](const QString& info) {
 		Message::info(info);
 	});
@@ -66,10 +65,7 @@ GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :
 
 GUI_LanguagePreferences::~GUI_LanguagePreferences() = default;
 
-QString GUI_LanguagePreferences::actionName() const
-{
-	return tr("Language") + QString(" (Language)");
-}
+QString GUI_LanguagePreferences::actionName() const { return tr("Language") + QString(" (Language)"); }
 
 void GUI_LanguagePreferences::retranslate()
 {

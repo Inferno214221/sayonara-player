@@ -41,14 +41,14 @@ class GUI_PlaylistPreferences :
 		bool commit() override;
 		void revert() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;
 		void retranslate() override;
 		void skinChanged() override;
 
-		QString errorString() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	private slots:
 		void checkboxToggled(bool b);

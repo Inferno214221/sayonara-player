@@ -33,17 +33,16 @@ class GUI_ProxyPreferences :
 
 	public:
 		explicit GUI_ProxyPreferences(const QString& identifier);
-		~GUI_ProxyPreferences();
+		~GUI_ProxyPreferences() override;
+		
+	public:
+		[[nodiscard]] QString actionName() const override;
+		bool commit() override;
+		void revert() override;
 
-		// PreferenceInterface interface
 	protected:
 		void initUi() override;
 		void retranslate() override;
-
-	public:
-		QString actionName() const override;
-		bool commit() override;
-		void revert() override;
 
 	private slots:
 		void activeToggled(bool active);

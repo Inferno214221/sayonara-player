@@ -39,17 +39,17 @@ class GUI_ShortcutPreferences final :
 
 	public:
 		explicit GUI_ShortcutPreferences(const QString& identifier);
-		~GUI_ShortcutPreferences();
+		~GUI_ShortcutPreferences() override;
 
 		void revert() override;
 		bool commit() override;
 
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 
 	protected:
 		void initUi() override;
 		void retranslate() override;
-		QString errorString() const override;
+		[[nodiscard]] QString errorString() const override;
 
 	private slots:
 		void testPressed(const QList<QKeySequence>& sequences);

@@ -21,16 +21,38 @@
 #include "GUI_ShortcutPreferences.h"
 #include "GUI_ShortcutEntry.h"
 #include "Gui/Preferences/ui_GUI_ShortcutPreferences.h"
+
 #include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Set.h"
 
 #include <QLineEdit>
 #include <QPushButton>
-#include <QTimer>
 #include <QStringList>
+#include <QTimer>
 
-#define ADD_TO_MAP(x) _btn_le_map[btn_##x] = le_##x
+namespace
+{
+	QString toString(const QKeySequence& ks) { return ks.toString(QKeySequence::NativeText); }
+
+	bool hasOverlapping(const QList<QKeySequence>& sequences1, const QList<QKeySequence>& sequences2)
+	{
+		return Util::Algorithm::contains(sequences1, [&](const auto& sequence) {
+			const auto str = toString(sequence);
+			return !str.isEmpty() && Util::Algorithm::contains(sequences2, [&](const auto& otherSequence) {
+				return toString(otherSequence) == str;
+			});
+		});
+	}
+
+	bool isSequenceAlreadyUsed(GUI_ShortcutEntry* newEntry, const QList<GUI_ShortcutEntry*>& entries)
+	{
+		return Util::Algorithm::contains(entries, [&](const auto* entry) {
+			return (entry != newEntry) && hasOverlapping(newEntry->sequences(), entry->sequences());
+		});
+	}
+}
 
 struct GUI_ShortcutPreferences::Private
 {
@@ -43,10 +65,8 @@ struct GUI_ShortcutPreferences::Private
 };
 
 GUI_ShortcutPreferences::GUI_ShortcutPreferences(const QString& identifier) :
-	Base(identifier)
-{
-	m = Pimpl::make<Private>();
-}
+	Base(identifier),
+	m {Pimpl::make<Private>()} {}
 
 GUI_ShortcutPreferences::~GUI_ShortcutPreferences() = default;
 
@@ -55,14 +75,14 @@ void GUI_ShortcutPreferences::initUi()
 	ui = std::make_shared<Ui::GUI_ShortcutPreferences>();
 	ui->setupUi(this);
 
-	this->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
+	setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
 
 	ui->cbTest->setVisible(false);
 
-	const QList<ShortcutIdentifier> shortcuts = m->sch->allIdentifiers();
-	for(ShortcutIdentifier shortcut: shortcuts)
+	const auto shortcuts = m->sch->allIdentifiers();
+	for(const auto& shortcut: shortcuts)
 	{
-		GUI_ShortcutEntry* entry = new GUI_ShortcutEntry(shortcut);
+		auto* entry = new GUI_ShortcutEntry(shortcut);
 
 		connect(entry, &GUI_ShortcutEntry::sigTestPressed,
 		        this, &GUI_ShortcutPreferences::testPressed);
@@ -74,7 +94,7 @@ void GUI_ShortcutPreferences::initUi()
 		m->entries << entry;
 	}
 
-	connect(ui->cbTest, &QCheckBox::toggled, ui->cbTest, [=]() {
+	connect(ui->cbTest, &QCheckBox::toggled, ui->cbTest, [this]() {
 		if(ui->cbTest->isChecked())
 		{
 			ui->cbTest->setText(Lang::get(Lang::Success));
@@ -83,10 +103,7 @@ void GUI_ShortcutPreferences::initUi()
 	});
 }
 
-QString GUI_ShortcutPreferences::actionName() const
-{
-	return tr("Shortcuts");
-}
+QString GUI_ShortcutPreferences::actionName() const { return tr("Shortcuts"); }
 
 bool GUI_ShortcutPreferences::commit()
 {
@@ -94,33 +111,32 @@ bool GUI_ShortcutPreferences::commit()
 
 	Util::Set<QKeySequence> sequences;
 
-		foreach(GUI_ShortcutEntry* entry, m->entries)
+	for(auto* entry: m->entries)
+	{
+		const auto availableSequences = entry->sequences();
+		for(const auto& sequence: availableSequences)
 		{
-			QList<QKeySequence> lst = entry->sequences();
-			for(const QKeySequence& s: lst)
+			const auto str = sequence.toString().trimmed();
+			if(sequences.contains(str) && !str.isEmpty())
 			{
-				QString str = s.toString().trimmed();
-				if(sequences.contains(str) &&
-				   str.size() > 0)
-				{
-					m->errorStrings << str;
-				}
-
-				sequences.insert(str);
+				m->errorStrings << str;
 			}
 
-			entry->commit();
+			sequences.insert(str);
 		}
+
+		entry->commit();
+	}
 
 	return m->errorStrings.isEmpty();
 }
 
 void GUI_ShortcutPreferences::revert()
 {
-		foreach(GUI_ShortcutEntry* entry, m->entries)
-		{
-			entry->revert();
-		}
+	for(auto* entry: m->entries)
+	{
+		entry->revert();
+	}
 }
 
 void GUI_ShortcutPreferences::testPressed(const QList<QKeySequence>& sequences)
@@ -134,7 +150,7 @@ void GUI_ShortcutPreferences::testPressed(const QList<QKeySequence>& sequences)
 	ui->cbTest->setText(tr("Press shortcut") + ": " + sequences.first().toString(QKeySequence::NativeText));
 	ui->cbTest->setChecked(false);
 
-	for(const QKeySequence& sequence: sequences)
+	for(const auto& sequence: sequences)
 	{
 		ui->cbTest->setShortcut(sequence);
 	}
@@ -144,32 +160,11 @@ void GUI_ShortcutPreferences::testPressed(const QList<QKeySequence>& sequences)
 
 void GUI_ShortcutPreferences::sequenceEntered()
 {
-	auto* entry = static_cast<GUI_ShortcutEntry*>(sender());
-	QList<QKeySequence> sequences = entry->sequences();
-
-		foreach(const GUI_ShortcutEntry* lst_entry, m->entries)
-		{
-			if(lst_entry == entry)
-			{
-				continue;
-			}
-
-			const QList<QKeySequence> saved_sequences = lst_entry->sequences();
-			for(const QKeySequence& seq1: sequences)
-			{
-				QString seq1_str = seq1.toString(QKeySequence::NativeText);
-
-				for(const QKeySequence& seq2: saved_sequences)
-				{
-					QString seq2_str = seq2.toString(QKeySequence::NativeText);
-					if(seq1_str == seq2_str && !seq1_str.isEmpty())
-					{
-						entry->showSequenceError();
-						break;
-					}
-				}
-			}
-		}
+	auto* entry = dynamic_cast<GUI_ShortcutEntry*>(sender());
+	if(isSequenceAlreadyUsed(entry, m->entries))
+	{
+		entry->showSequenceError();
+	}
 }
 
 void GUI_ShortcutPreferences::retranslate()
