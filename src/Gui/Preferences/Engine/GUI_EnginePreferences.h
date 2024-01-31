@@ -35,19 +35,16 @@ class GUI_EnginePreferences :
 
 	public:
 		explicit GUI_EnginePreferences(const QString& identifier);
-		virtual ~GUI_EnginePreferences();
+		~GUI_EnginePreferences() override;
 
-		// Base interface
-		QString actionName() const override;
+		[[nodiscard]] QString actionName() const override;
 		bool commit() override;
 		void revert() override;
 		void initUi() override;
 		void retranslate() override;
 
 	private slots:
-
 		void radioButtonChanged(bool b);
-
 		void alsaProcessFinished(int exitCode, QProcess::ExitStatus exitStatus);
 		void alsaProcessErrorOccured(QProcess::ProcessError error);
 		void alsaStdoutWritten();

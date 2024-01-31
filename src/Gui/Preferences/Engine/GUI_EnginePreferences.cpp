@@ -30,16 +30,74 @@
 #include <QProcess>
 #include <QMap>
 
+namespace
+{
+	struct SubDevice
+	{
+		QString name;
+		int id {0};
+	};
+
+	using Devices = std::map<int, QList<SubDevice>>;
+
+	Devices addSubdevice(const QString& name, const int deviceId, const int subdeviceId, Devices devices)
+	{
+		const auto subDevice = SubDevice {name, subdeviceId};
+
+		if(const auto it = devices.find(deviceId); it != devices.end())
+		{
+			devices.insert({deviceId, {subDevice}});
+		}
+
+		else
+		{
+			devices[deviceId] << subDevice;
+		}
+
+		return devices;
+	}
+
+	Devices createDevicesFromAlsaBuffer(const QString& alsaInfo)
+	{
+		Devices devices;
+
+		const auto splitted = alsaInfo.split("\n");
+		for(const auto& line: splitted)
+		{
+			auto re = QRegExp("card ([0-9]+): (.+device ([0-9]+).+)");
+			if(const auto idx = re.indexIn(line); idx >= 0)
+			{
+				devices = addSubdevice(re.cap(2), re.cap(1).toInt(), re.cap(3).toInt(), std::move(devices));
+			}
+		}
+	}
+
+	void applyDevicesToCombobox(const Devices& devices, QComboBox* comboBox)
+	{
+		for(const auto& [deviceId, subdevices]: devices)
+		{
+			for(const auto& subdevice: subdevices)
+			{
+				auto deviceIdentifier = QString("hw:%1").arg(deviceId);
+				if(subdevices.size() > 1)
+				{
+					deviceIdentifier += QString(",%1").arg(subdevice.id);
+				}
+
+				comboBox->addItem(subdevice.name, deviceIdentifier);
+			}
+		}
+	}
+}
+
 struct GUI_EnginePreferences::Private
 {
 	QString alsaBuffer;
 };
 
 GUI_EnginePreferences::GUI_EnginePreferences(const QString& identifier) :
-	Preferences::Base(identifier)
-{
-	m = Pimpl::make<Private>();
-}
+	Preferences::Base(identifier),
+	m {Pimpl::make<Private>()} {}
 
 GUI_EnginePreferences::~GUI_EnginePreferences()
 {
@@ -50,10 +108,7 @@ GUI_EnginePreferences::~GUI_EnginePreferences()
 	}
 }
 
-QString GUI_EnginePreferences::actionName() const
-{
-	return tr("Audio");
-}
+QString GUI_EnginePreferences::actionName() const { return tr("Audio"); }
 
 bool GUI_EnginePreferences::commit()
 {
@@ -64,15 +119,14 @@ bool GUI_EnginePreferences::commit()
 
 	else if(ui->rbAlsa->isChecked())
 	{
-		QString card = ui->comboAlsaDevices->currentData().toString();
+		const auto card = ui->comboAlsaDevices->currentData().toString();
 		SetSetting(Set::Engine_AlsaDevice, card);
 		SetSetting(Set::Engine_Sink, QString("alsa"));
-
 		SetSetting(Set::Engine_CrossFaderActive, false);
 
-		Playlist::Mode plm = GetSetting(Set::PL_Mode);
-		plm.setGapless(false, false);
-		SetSetting(Set::PL_Mode, plm);
+		Playlist::Mode playlistMode = GetSetting(Set::PL_Mode);
+		playlistMode.setGapless(false, false);
+		SetSetting(Set::PL_Mode, playlistMode);
 	}
 
 	else
@@ -85,7 +139,7 @@ bool GUI_EnginePreferences::commit()
 
 void GUI_EnginePreferences::revert()
 {
-	QString engineName = GetSetting(Set::Engine_Sink);
+	const auto engineName = GetSetting(Set::Engine_Sink);
 	if(engineName == "pulse")
 	{
 		ui->rbPulse->setChecked(true);
@@ -104,11 +158,6 @@ void GUI_EnginePreferences::revert()
 
 void GUI_EnginePreferences::initUi()
 {
-	if(ui)
-	{
-		return;
-	}
-
 	setupParent(this, &ui);
 
 	connect(ui->rbAlsa, &QRadioButton::toggled, this, &GUI_EnginePreferences::radioButtonChanged);
@@ -143,96 +192,33 @@ void GUI_EnginePreferences::retranslate()
 	ui->rbAuto->setText(Lang::get(Lang::Automatic));
 }
 
-void GUI_EnginePreferences::radioButtonChanged(bool b)
+void GUI_EnginePreferences::radioButtonChanged(const bool /*b*/)
 {
-	Q_UNUSED(b)
 	ui->comboAlsaDevices->setVisible(false);
 }
 
-struct SubDevice
+void GUI_EnginePreferences::alsaProcessFinished(const int exitCode, const QProcess::ExitStatus /*exitStatus*/)
 {
-	QString name;
-	int id = 0;
-};
-
-void GUI_EnginePreferences::alsaProcessFinished(int exit_code, QProcess::ExitStatus exit_status)
-{
-	Q_UNUSED(exit_code)
-	Q_UNUSED(exit_status)
-
-	auto* process = static_cast<QProcess*>(sender());
-	m->alsaBuffer.append
-		(
-			QString::fromLocal8Bit(process->readAllStandardOutput())
-		);
+	auto* process = dynamic_cast<QProcess*>(sender());
+	m->alsaBuffer.append(
+		QString::fromLocal8Bit(process->readAllStandardOutput()));
 
 	ui->comboAlsaDevices->clear();
 
-	if(exit_code != 0)
+	if(exitCode == 0)
 	{
-		return;
-	}
-
-	QMap<int, QList<SubDevice>> device_map;
-
-	const QStringList splitted = m->alsaBuffer.split("\n");
-	for(const QString& line: splitted)
-	{
-		QRegExp re("card ([0-9]+): (.+device ([0-9]+).+)");
-		int idx = re.indexIn(line);
-		if(idx < 0)
-		{
-			continue;
-		}
-
-		int device_id = re.cap(1).toInt();
-		int subdevice_id = re.cap(3).toInt();
-		QString name = re.cap(2);
-
-		SubDevice sd;
-		sd.id = subdevice_id;
-		sd.name = name;
-
-		if(!device_map.contains(device_id))
-		{
-			device_map.insert(device_id, QList<SubDevice> {sd});
-		}
-
-		else
-		{
-			QList<SubDevice> subdevices = device_map[device_id];
-			subdevices << sd;
-			device_map[device_id] = subdevices;
-		}
-	}
-
-	for(auto it = device_map.begin(); it != device_map.end(); it++)
-	{
-		for(const SubDevice& subdevice: it.value())
-		{
-			QString device_identifier = QString("hw:%1").arg(it.key());
-			if(it.value().size() > 1)
-			{
-				device_identifier += QString(",%1").arg(subdevice.id);
-			}
-
-			ui->comboAlsaDevices->addItem(subdevice.name, device_identifier);
-		}
+		const auto devices = createDevicesFromAlsaBuffer(m->alsaBuffer);
+		applyDevicesToCombobox(devices, ui->comboAlsaDevices);
 	}
 }
 
-void GUI_EnginePreferences::alsaProcessErrorOccured(QProcess::ProcessError error)
-{
-	Q_UNUSED(error)
-}
+void GUI_EnginePreferences::alsaProcessErrorOccured(QProcess::ProcessError /*error*/) {}
 
 void GUI_EnginePreferences::alsaStdoutWritten()
 {
-	auto* process = static_cast<QProcess*>(sender());
+	auto* process = dynamic_cast<QProcess*>(sender());
 
-	m->alsaBuffer.append
-		(
-			QString::fromLocal8Bit(process->readAllStandardOutput())
-		);
+	m->alsaBuffer.append(
+		QString::fromLocal8Bit(process->readAllStandardOutput()));
 }
 
