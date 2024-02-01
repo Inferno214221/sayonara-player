@@ -64,6 +64,7 @@ class WebClientImpl :
 
 		[[nodiscard]] bool hasData() const override;
 		[[nodiscard]] QByteArray data() const override;
+		[[nodiscard]] QByteArray errorData() const override;
 		[[nodiscard]] QString url() const override;
 		[[nodiscard]] WebClientImpl::Status status() const override;
 		[[nodiscard]] bool hasError() const override;

@@ -33,32 +33,19 @@ class TestWebClient :
 		explicit TestWebClient(QObject* parent) :
 			WebClient(parent) {}
 
+		[[nodiscard]] QByteArray errorData() const override { return {}; }
+
 		~TestWebClient() override = default;
 
-		[[nodiscard]] QByteArray data() const override
-		{
-			return mData;
-		}
+		[[nodiscard]] QByteArray data() const override { return mData; }
 
-		[[nodiscard]] bool hasData() const override
-		{
-			return (!mData.isEmpty());
-		}
+		[[nodiscard]] bool hasData() const override { return (!mData.isEmpty()); }
 
-		[[nodiscard]] QString url() const override
-		{
-			return mUrl;
-		}
+		[[nodiscard]] QString url() const override { return mUrl; }
 
-		[[nodiscard]] Status status() const override
-		{
-			return mStatus;
-		}
+		[[nodiscard]] Status status() const override { return mStatus; }
 
-		[[nodiscard]] bool hasError() const override
-		{
-			return mHasError;
-		}
+		[[nodiscard]] bool hasError() const override { return mHasError; }
 
 		void setMode(const Mode /*mode*/) override {}
 

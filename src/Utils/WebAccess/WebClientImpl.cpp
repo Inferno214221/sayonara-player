@@ -99,7 +99,7 @@ namespace
 		                    ? WebClient::Status::NoHttp
 		                    : convertNetworkError(networkError);
 
-		return std::make_pair(QByteArray(), status);
+		return std::make_pair(reply->readAll(), status);
 	}
 
 	QString getUserAgent(const WebClient::Mode mode)
@@ -130,6 +130,7 @@ struct WebClientImpl::Private
 	QNetworkAccessManager* networkAccessManager;
 	QString url;
 	QByteArray data;
+	QByteArray errorData;
 	QMap<QByteArray, QByteArray> header;
 	WebClientImpl::Mode mode {WebClient::Mode::AsBrowser};
 	WebClientImpl::Status status {WebClientImpl::Status::NoError};
@@ -194,6 +195,8 @@ void WebClientImpl::runPost(const QString& url, const QByteArray& postData, int 
 
 QByteArray WebClientImpl::data() const { return m->data; }
 
+QByteArray WebClientImpl::errorData() const { return m->errorData; }
+
 QString WebClientImpl::url() const { return m->url; }
 
 void WebClientImpl::setMode(WebClientImpl::Mode mode) { m->mode = mode; }
@@ -239,7 +242,7 @@ void WebClientImpl::finished()
 
 	else if(m->status == WebClientImpl::Status::NoError)
 	{
-		std::tie(m->data, m->status) = checkReplyError(reply, this);
+		std::tie(m->errorData, m->status) = checkReplyError(reply, this);
 	}
 
 	emit sigFinished(); // NOLINT(readability-misleading-indentation)
@@ -252,12 +255,14 @@ void WebClientImpl::timeout()
 
 	m->status = WebClientImpl::Status::Timeout;
 	m->data.clear();
+	m->errorData.clear();
 }
 
 void WebClientImpl::reset()
 {
 	m->status = WebClientImpl::Status::NoError;
 	m->data.clear();
+	m->errorData.clear();
 	m->networkAccessManager->clearAccessCache();
 }
 

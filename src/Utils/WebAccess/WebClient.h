@@ -60,10 +60,11 @@ class WebClient :
 		};
 
 		explicit WebClient(QObject* parent);
-		virtual ~WebClient();
+		~WebClient() override;
 
 		[[nodiscard]] virtual QByteArray data() const = 0;
 		[[nodiscard]] virtual bool hasData() const = 0;
+		[[nodiscard]] virtual QByteArray errorData() const = 0;
 
 		[[nodiscard]] virtual QString url() const = 0;
 
