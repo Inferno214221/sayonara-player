@@ -47,20 +47,18 @@ namespace LastFM
 		PIMPL(LoginThread)
 
 		signals:
-			void sigError(const QString& error);
-			void sigLoggedIn(bool success);
+			void sigFinished();
 
 		public:
 			explicit LoginThread(QObject* parent = nullptr);
-			~LoginThread();
+			~LoginThread() override;
 
 			void login(const QString& username, const QString& password);
 
 			[[nodiscard]] LoginInfo loginInfo() const;
 
 		private slots:
-			void webaccessResponseReceived(const QByteArray& data);
-			void webaccessErrorReceived(const QString& response);
+			void webClientFinished();
 	};
 }
 

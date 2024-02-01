@@ -111,7 +111,7 @@ namespace LastFM
 	void LoginThread::webaccessResponseReceived(const QByteArray& data)
 	{
 		m->loginInfo = parse(data);
-		emit sigLoggedIn(m->loginInfo.isLoggedIn());
+		emit sigFinished();
 	}
 
 	void LoginThread::webaccessErrorReceived(const QString& error)

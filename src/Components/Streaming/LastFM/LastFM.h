@@ -56,7 +56,7 @@ namespace LastFM
 
 		private slots:
 			void activeChanged();
-			void loginThreadFinished(bool success);
+			void loginThreadFinished();
 			void currentTrackChanged(const MetaData& track);
 
 			void scrobble();

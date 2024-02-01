@@ -98,11 +98,7 @@ namespace LastFM
 	{
 		auto* loginThread = new LoginThread(this);
 
-		connect(loginThread, &LoginThread::sigLoggedIn, this, &Base::loginThreadFinished);
-		connect(loginThread, &LoginThread::sigError, this, [&](const auto& errorMessage) {
-			spLog(Log::Warning, this) << "Login Error: " << errorMessage;
-			emit sigLoggedIn(false);
-		});
+		connect(loginThread, &LoginThread::sigFinished, this, &Base::loginThreadFinished);
 
 		loginThread->login(username, password);
 	}
@@ -121,7 +117,7 @@ namespace LastFM
 		}
 	}
 
-	void Base::loginThreadFinished(const bool /*success*/)
+	void Base::loginThreadFinished()
 	{
 		auto* loginThread = dynamic_cast<LoginThread*>(sender());
 
