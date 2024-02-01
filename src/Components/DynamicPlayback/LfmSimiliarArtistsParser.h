@@ -22,11 +22,18 @@
 #define LFMSIMARTISTSPARSER_H
 
 #include "Utils/Pimpl.h"
+#include "ArtistMatch.h"
 
 namespace DynamicPlayback
 {
-	class ArtistMatch;
-	ArtistMatch parseLastFMAnswer(const QString& artistName, const QByteArray& data);
+	struct ParsingResult
+	{
+		ArtistMatch artistMatch;
+		QString error;
+		bool hasError {false};
+	};
+
+	ParsingResult parseLastFMAnswer(const QString& artistName, const QByteArray& data);
 }
 
 #endif // LFMSIMARTISTSPARSER_H

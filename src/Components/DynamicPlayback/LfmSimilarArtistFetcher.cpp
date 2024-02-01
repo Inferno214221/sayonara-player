@@ -83,21 +83,25 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 void LfmSimilarArtistFetcher::webClientFinished()
 {
 	auto* webClient = dynamic_cast<WebAccess*>(sender());
-	const auto data = webClient->data();
 
-	m->artistMatch = parseLastFMAnswer(m->artist, data);
-	if(m->artistMatch.isValid())
+	const auto parsingResult = parseLastFMAnswer(m->artist, webClient->data());
+	if(!parsingResult.hasError)
 	{
+		m->artistMatch = parsingResult.artistMatch;
 		m->similarArtistsCache[m->artist] = m->artistMatch;
 
-		// maybe lastfm corrected the artist name
 		const auto artistName = m->artistMatch.artistName();
-		if(m->artist != artistName)
+		const auto hasCorrection = (m->artist != artistName);
+		if(hasCorrection)
 		{
 			m->similarArtistsCache[artistName] = m->artistMatch;
 		}
 	}
-}
 
+	else
+	{
+		m->artistMatch = {};
+		spLog(Log::Warning, this) << "Could not fetch similar artists: " << parsingResult.error;
+	}
 }
 

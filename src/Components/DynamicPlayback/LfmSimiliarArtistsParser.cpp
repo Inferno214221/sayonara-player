@@ -35,7 +35,7 @@ namespace
 {
 	ArtistMatch::Entry parseArtist(const QDomNode& node)
 	{
-		if(node.nodeName().compare("artist", Qt::CaseInsensitive) != 0)
+		if(node.nodeName().toLower() != "artist")
 		{
 			return ArtistMatch::Entry {};
 		}
@@ -47,29 +47,24 @@ namespace
 			const auto childNode = childNodes.at(contentIndex);
 			const auto nodeName = childNode.nodeName().toLower();
 			const auto element = childNode.toElement();
-
-			if(nodeName.compare("name") == 0)
+			if(element.isNull())
 			{
-				if(!element.isNull())
-				{
-					result.artist = element.text();
-				}
+				continue;
 			}
 
-			else if(nodeName.compare("match") == 0)
+			if(nodeName == "name")
 			{
-				if(!element.isNull())
-				{
-					result.similarity = element.text().toDouble();
-				}
+				result.artist = element.text();
 			}
 
-			else if(nodeName.compare("mbid") == 0)
+			else if(nodeName == "match")
 			{
-				if(!element.isNull())
-				{
-					result.mbid = element.text();
-				}
+				result.similarity = element.text().toDouble();
+			}
+
+			else if(nodeName == "mbid")
+			{
+				result.mbid = element.text();
 			}
 
 			if(result.isValid())
@@ -80,21 +75,40 @@ namespace
 
 		return result;
 	}
+
+	QPair<bool, QString> parseError(const QDomElement& rootElement)
+	{
+		if(rootElement.hasAttribute("status"))
+		{
+			if(rootElement.attribute("status", "failed") != "ok")
+			{
+				return {true, rootElement.text()};
+			}
+		}
+
+		return {false, {}};
+	}
 }
 
-ArtistMatch DynamicPlayback::parseLastFMAnswer(const QString& artistName, const QByteArray& data)
+DynamicPlayback::ParsingResult
+DynamicPlayback::parseLastFMAnswer(const QString& artistName, const QByteArray& data)
 {
 	QDomDocument doc("similarArtists");
 
 	if(!doc.setContent(data))
 	{
-		spLog(Log::Warning, "LFMSimArtistParser") << "Cannot parse similar artists document";
-		return ArtistMatch {};
+		return {{}, "Cannot parse document", true};
 	}
 
 	ArtistMatch artistMatch(artistName);
 
 	const auto docElement = doc.documentElement();
+	const auto [hasError, error] = parseError(docElement);
+	if(hasError)
+	{
+		return {{}, QString("Cannot parse document: %1").arg(error), hasError};
+	}
+
 	const auto similarArtists = docElement.firstChild();
 	const auto childNodes = similarArtists.childNodes();
 
@@ -108,5 +122,5 @@ ArtistMatch DynamicPlayback::parseLastFMAnswer(const QString& artistName, const 
 		}
 	}
 
-	return artistMatch;
+	return {artistMatch, {}, hasError};
 }
