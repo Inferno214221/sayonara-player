@@ -29,11 +29,15 @@ namespace LastFM
 {
 	struct LoginInfo
 	{
-		QString token;
-		QString sessionKey;
-		bool loggedIn {false};
-		bool subscriber {false};
+		QString name;
+		QString key;
 		QString error;
+		int errorCode {0};
+		bool hasError {false};
+
+		[[nodiscard]] bool isKeyValid() const { return (key.size() >= 32); }
+
+		[[nodiscard]] bool isLoggedIn() const { return isKeyValid() && !hasError; }
 	};
 
 	class LoginThread :
@@ -52,7 +56,7 @@ namespace LastFM
 
 			void login(const QString& username, const QString& password);
 
-			LoginInfo loginInfo() const;
+			[[nodiscard]] LoginInfo loginInfo() const;
 
 		private slots:
 			void webaccessResponseReceived(const QByteArray& data);

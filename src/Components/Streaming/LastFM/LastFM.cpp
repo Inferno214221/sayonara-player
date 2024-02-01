@@ -62,13 +62,12 @@ namespace LastFM
 	}
 	struct Base::Private
 	{
-		QString sessionKey;
+		LoginInfo loginInfo;
 		PlayManager* playManager;
 		NotificationHandler* notificationHandler;
 		QTimer* scrobbleTimer {new QTimer()};
 		QTimer* trackChangedTimer {new QTimer()};
 		TrackChangedThread* trackChangeThread;
-		bool loggedIn {false};
 
 		Private(PlayManager* playManager, NotificationHandler* notificationHandler, QObject* parent) :
 			playManager(playManager),
@@ -93,7 +92,7 @@ namespace LastFM
 
 	Base::~Base() = default;
 
-	bool Base::isLoggedIn() { return m->loggedIn; }
+	bool Base::isLoggedIn() { return m->loginInfo.isLoggedIn(); }
 
 	void Base::login(const QString& username, const QString& password)
 	{
@@ -110,7 +109,8 @@ namespace LastFM
 
 	void Base::activeChanged()
 	{
-		m->loggedIn = false;
+		m->loginInfo = LoginInfo {};
+		emit sigLoggedIn(false);
 
 		if(GetSetting(Set::LFM_Active))
 		{
@@ -121,33 +121,31 @@ namespace LastFM
 		}
 	}
 
-	void Base::loginThreadFinished(const bool success)
+	void Base::loginThreadFinished(const bool /*success*/)
 	{
 		auto* loginThread = dynamic_cast<LoginThread*>(sender());
 
-		const auto errorMessage = tr("Cannot login to Last.fm");
-		if(!success)
+		m->loginInfo = loginThread->loginInfo();
+
+		if(!isLoggedIn())
 		{
-			m->loggedIn = false;
+			auto errorMessage = tr("Cannot login to Last.fm");
+			if(m->loginInfo.hasError)
+			{
+				errorMessage += QString(": %1").arg(m->loginInfo.error);
+			}
+
+			m->notificationHandler->notify("Sayonara", errorMessage);
+			spLog(Log::Warning, this) << errorMessage;
 		}
 
 		else
 		{
-			const auto loginInfo = loginThread->loginInfo();
-			m->loggedIn = loginInfo.loggedIn;
-			m->sessionKey = loginInfo.sessionKey;
-
-			SetSetting(Set::LFM_SessionKey, m->sessionKey);
+			SetSetting(Set::LFM_SessionKey, m->loginInfo.key);
 			spLog(Log::Debug, this) << "Got session key";
 		}
 
-		if(!m->loggedIn)
-		{
-			m->notificationHandler->notify("Sayonara", errorMessage);
-			spLog(Log::Warning, this) << "Cannot login";
-		}
-
-		emit sigLoggedIn(m->loggedIn);
+		emit sigLoggedIn(isLoggedIn());
 
 		sender()->deleteLater();
 	}
@@ -162,7 +160,7 @@ namespace LastFM
 			m->trackChangedTimer->start(Timeout);
 		}
 
-		if(GetSetting(Set::LFM_Active) && m->loggedIn)
+		if(GetSetting(Set::LFM_Active) && isLoggedIn())
 		{
 			const auto seconds = GetSetting(Set::LFM_ScrobbleTimeSec);
 			if(seconds > 0)
@@ -175,7 +173,7 @@ namespace LastFM
 
 	void Base::scrobble()
 	{
-		if(!GetSetting(Set::LFM_Active) || !m->loggedIn)
+		if(!GetSetting(Set::LFM_Active) || !isLoggedIn())
 		{
 			return;
 		}
@@ -189,7 +187,7 @@ namespace LastFM
 		spLog(Log::Debug, this) << "Scrobble " << track.title() << " by " << track.artist();
 
 		auto* webAccess = new WebAccess();
-		connect(webAccess, &WebAccess::sigError, this, &Base::scrobbleErrorReceived);
+		connect(webAccess, &WebAccess::sigFinished, this, &Base::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 		constexpr const auto* MethodName = "track.scrobble";
@@ -199,7 +197,7 @@ namespace LastFM
 			{"artist",    track.artist()},
 			{"duration",  QString::number(track.durationMs() / 1000)},// NOLINT(readability-magic-numbers)
 			{"method",    MethodName},
-			{"sk",        m->sessionKey},
+			{"sk",        m->loginInfo.key},
 			{"timestamp", currentTimestamp()},
 			{"track",     track.title()}};
 
@@ -219,10 +217,10 @@ namespace LastFM
 
 	void Base::trackChangedTimerTimedOut()
 	{
-		if(GetSetting(Set::LFM_Active) && m->loggedIn)
+		if(GetSetting(Set::LFM_Active) && isLoggedIn())
 		{
 			const auto& track = m->playManager->currentTrack();
-			m->trackChangeThread->updateNowPlaying(m->sessionKey, track);
+			m->trackChangeThread->updateNowPlaying(m->loginInfo.key, track);
 		}
 	}
 }

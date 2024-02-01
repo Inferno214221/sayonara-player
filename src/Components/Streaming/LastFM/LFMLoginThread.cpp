@@ -26,6 +26,54 @@
 #include "Utils/Message/Message.h"
 #include "Utils/Utils.h"
 
+#include <QXmlStreamReader>
+
+namespace
+{
+	LastFM::LoginInfo parse(const QByteArray& data)
+	{
+		const auto s = QString::fromLocal8Bit(data);
+		auto result = LastFM::LoginInfo {};
+		auto reader = QXmlStreamReader(data);
+		while(reader.readNextStartElement())
+		{
+			const auto name = reader.name().toString();
+			if(reader.name() == "lfm")
+			{
+				const auto attributes = reader.attributes();
+				if(attributes.hasAttribute("status"))
+				{
+					const auto status = attributes.value("status").toString();
+					result.hasError = (status != "ok");
+				}
+			}
+
+			if(reader.name() == "name")
+			{
+				result.name = reader.readElementText();
+			}
+
+			else if(reader.name() == "key")
+			{
+				result.key = reader.readElementText();
+			}
+
+			else if(reader.name() == "error")
+			{
+				const auto attributes = reader.attributes();
+				if(attributes.hasAttribute("code"))
+				{
+					result.errorCode = attributes.value("code").toInt();
+				}
+
+				result.error = reader.readElementText();
+			}
+		}
+
+		return result;
+	}
+}
+
 namespace LastFM
 {
 	struct LoginThread::Private
@@ -62,17 +110,8 @@ namespace LastFM
 
 	void LoginThread::webaccessResponseReceived(const QByteArray& data)
 	{
-		const auto str = QString::fromUtf8(data);
-		const auto sessionKey = Util::easyTagFinder("lfm.session.key", str);
-		const auto isSubscriber = (Util::easyTagFinder("lfm.session.subscriber", str).toInt() == 1);
-		const auto success = (sessionKey.size() >= 32); // NOLINT(readability-magic-numbers)
-
-		m->loginInfo.loggedIn = success;
-		m->loginInfo.sessionKey = sessionKey;
-		m->loginInfo.subscriber = isSubscriber;
-		m->loginInfo.error = str;
-
-		emit sigLoggedIn(success);
+		m->loginInfo = parse(data);
+		emit sigLoggedIn(m->loginInfo.isLoggedIn());
 	}
 
 	void LoginThread::webaccessErrorReceived(const QString& error)
