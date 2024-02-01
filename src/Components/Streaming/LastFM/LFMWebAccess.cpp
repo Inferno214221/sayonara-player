@@ -36,27 +36,13 @@
 #include <QByteArray>
 #include <QUrl>
 
+#include <chrono>
+
 namespace LastFM
 {
 	namespace
 	{
-		constexpr const auto Timeout = 10'000;
-
-		QString parseErrorMessage(const QString& response)
-		{
-			if(response.isEmpty())
-			{
-				return {};
-			}
-
-			constexpr const auto BufferSize = 100;
-			if(response.leftRef(BufferSize).contains(QStringLiteral("failed")))
-			{
-				return response;
-			}
-
-			return {};
-		}
+		constexpr const auto Timeout = std::chrono::milliseconds(15'000);
 
 		QString createSignature(const UrlParams& urlParams)
 		{
@@ -75,62 +61,58 @@ namespace LastFM
 			return Util::calcHash(signatureData.toUtf8());
 		}
 
-		QString htmlFormat(const QString& str)
-		{
-			return QUrl::toPercentEncoding(str);
-		}
+		QString htmlFormat(const QString& str) { return QUrl::toPercentEncoding(str); }
+	} // namespace
+
+	struct WebAccess::Private
+	{
+		QByteArray data;
+	};
+
+	WebAccess::WebAccess(QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>()} {}
+
+	WebAccess::~WebAccess() = default;
+
+	WebClient* WebAccess::initWebClient()
+	{
+		m->data.clear();
+
+		auto* webClient = new WebClientImpl(this);
+		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
+
+		return webClient;
 	}
 
 	void WebAccess::callUrl(const QString& url)
 	{
-		auto* webClient = new WebClientImpl(this);
-		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
-		webClient->run(url, Timeout);
+		auto* webClient = initWebClient();
+		webClient->run(url, Timeout.count());
 	}
 
 	void WebAccess::callPostUrl(const QString& url, const QByteArray& postData)
 	{
-		auto* webClient = new WebClientImpl(this);
-		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
-
 		QMap<QByteArray, QByteArray> header;
 		header["Content-Type"] = "application/x-www-form-urlencoded";
 
+		auto* webClient = initWebClient();
 		webClient->setRawHeader(header);
-		webClient->runPost(url, postData, Timeout);
+		webClient->runPost(url, postData, Timeout.count());
 	}
 
 	void WebAccess::webClientFinished()
 	{
 		auto* webClient = dynamic_cast<WebClient*>(sender());
-		if(webClient->status() != WebClient::Status::GotData)
-		{
-			emit sigError("Cannot get data");
-		}
 
-		const auto data = webClient->data();
-		const auto error = checkError(data);
-		if(!error)
-		{
-			emit sigResponse(data);
-		}
+		m->data = webClient->hasData()
+		          ? webClient->data()
+		          : webClient->errorData();
 
 		emit sigFinished();
-
-		webClient->deleteLater();
 	}
 
-	bool WebAccess::checkError(const QByteArray& data)
-	{
-		const auto errorString = parseErrorMessage(data);
-		if(!errorString.isEmpty())
-		{
-			spLog(Log::Error, this) << QString::fromUtf8(data);
-			emit sigError(errorString);
-		}
-
-		return (!errorString.isEmpty());
-	}
+	QByteArray WebAccess::data() const { return m->data; }
 
 	QByteArray createPostData(UrlParams urlParams)
 	{

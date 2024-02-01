@@ -41,8 +41,7 @@ namespace DynamicPlayback
 			void fetchSimilarArtists(const QString& artistName) override;
 
 		private slots:
-			void responseReceived(const QByteArray& data);
-			void errorReceived(const QString& answer);
+			void webClientFinished();
 	};
 }
 #endif //SAYONARA_PLAYER_LFMSIMILARARTISTFETCHER_H

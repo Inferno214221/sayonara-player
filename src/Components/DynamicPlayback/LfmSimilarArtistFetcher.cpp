@@ -67,9 +67,7 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 	}
 
 	auto* webAccess = new WebAccess();
-	connect(webAccess, &WebAccess::sigResponse, this, &LfmSimilarArtistFetcher::responseReceived);
-	connect(webAccess, &WebAccess::sigError, this, &LfmSimilarArtistFetcher::errorReceived);
-	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::sigFinished);
+	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
 	connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 	const auto url =
@@ -82,8 +80,11 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 	webAccess->callUrl(url);
 }
 
-void LfmSimilarArtistFetcher::responseReceived(const QByteArray& data)
+void LfmSimilarArtistFetcher::webClientFinished()
 {
+	auto* webClient = dynamic_cast<WebAccess*>(sender());
+	const auto data = webClient->data();
+
 	m->artistMatch = parseLastFMAnswer(m->artist, data);
 	if(m->artistMatch.isValid())
 	{
@@ -98,8 +99,5 @@ void LfmSimilarArtistFetcher::responseReceived(const QByteArray& data)
 	}
 }
 
-void LfmSimilarArtistFetcher::errorReceived(const QString& answer)
-{
-	spLog(Log::Warning, this) << "Could not fetch similar artists: " << answer;
 }
 

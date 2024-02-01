@@ -30,6 +30,8 @@
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaData.h"
 
+#include <QXmlStreamReader>
+
 namespace LastFM
 {
 	TrackChangedThread::TrackChangedThread(QObject* parent) :
@@ -47,7 +49,7 @@ namespace LastFM
 		spLog(Log::Debug, this) << "Update current_track " << track.title() + " by " << track.artist();
 
 		auto* webAccess = new WebAccess();
-		connect(webAccess, &WebAccess::sigError, this, &TrackChangedThread::updateErrorReceived);
+		connect(webAccess, &WebAccess::sigFinished, this, &TrackChangedThread::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 		auto artist = track.artist();
@@ -66,9 +68,16 @@ namespace LastFM
 		webAccess->callPostUrl(BaseUrl, postData);
 	}
 
-	void TrackChangedThread::updateErrorReceived(const QString& error)
+	void TrackChangedThread::webClientFinished()
 	{
-		spLog(Log::Warning, this) << "Last.fm: Cannot update track";
-		spLog(Log::Warning, this) << "Last.fm: " << error;
+		auto* webClient = dynamic_cast<WebAccess*>(sender());
+
+		for(auto reader = QXmlStreamReader(webClient->data()); !reader.atEnd(); reader.readNextStartElement())
+		{
+			if(reader.name() == "error")
+			{
+				spLog(Log::Warning, this) << "Last.fm: Cannot update track: " << reader.readElementText();
+			}
+		}
 	}
 }

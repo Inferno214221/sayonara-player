@@ -42,7 +42,7 @@ namespace LastFM
 			void updateNowPlaying(const QString& sessionKey, const MetaData& track);
 
 		private slots:
-			void updateErrorReceived(const QString& error);
+			void webClientFinished();
 	};
 }
 #endif /* SAYONARA_LASTFM_CHANGED_THREAD_H */

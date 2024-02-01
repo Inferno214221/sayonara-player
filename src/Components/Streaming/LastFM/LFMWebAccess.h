@@ -29,11 +29,15 @@
 #ifndef SAYONARA_LASTFM_WEBACCESS_H
 #define SAYONARA_LASTFM_WEBACCESS_H
 
+#include "Utils/Pimpl.h"
+
 #include <QObject>
 #include <QMap>
 
 class QByteArray;
+class QString;
 
+class WebClient;
 namespace LastFM
 {
 	using UrlParams = QMap<QString, QString>;
@@ -41,18 +45,22 @@ namespace LastFM
 		public QObject
 	{
 		Q_OBJECT
+		PIMPL(WebAccess)
 
 		signals:
 			void sigFinished();
-			void sigResponse(const QByteArray& response);
-			void sigError(const QString& error);
 
 		public:
+			explicit WebAccess(QObject* parent = nullptr);
+			~WebAccess() override;
+
 			void callUrl(const QString& url);
 			void callPostUrl(const QString& url, const QByteArray& postData);
 
+			[[nodiscard]] QByteArray data() const;
+
 		private:
-			bool checkError(const QByteArray& data);
+			WebClient* initWebClient();
 
 		private slots: // NOLINT(readability-redundant-access-specifiers)
 			void webClientFinished();

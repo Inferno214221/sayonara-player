@@ -45,6 +45,7 @@
 
 #include <QUrl>
 #include <QTimer>
+#include <QXmlStreamReader>
 
 #include <ctime>
 
@@ -206,9 +207,16 @@ namespace LastFM
 		webAccess->callPostUrl(BaseUrl, postData);
 	}
 
-	void Base::scrobbleErrorReceived(const QString& error) // NOLINT(readability-make-member-function-const)
+	void Base::webClientFinished() // NOLINT(readability-make-member-function-const)
 	{
-		spLog(Log::Warning, this) << "Scrobble: " << error;
+		auto* webClient = dynamic_cast<WebAccess*>(sender());
+		for(auto reader = QXmlStreamReader(webClient->data()); !reader.atEnd(); reader.readNextStartElement())
+		{
+			if(reader.name() == "error")
+			{
+				spLog(Log::Warning, this) << "Last.fm: Scrobble: " << reader.readElementText();
+			}
+		}
 	}
 
 	void Base::trackChangedTimerTimedOut()

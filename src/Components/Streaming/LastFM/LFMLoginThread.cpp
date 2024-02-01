@@ -91,10 +91,9 @@ namespace LastFM
 	{
 		constexpr const auto* AuthMethodName = "auth.getMobileSession";
 
-		auto* webAccess = new WebAccess();
-		connect(webAccess, &WebAccess::sigResponse, this, &LoginThread::webaccessResponseReceived);
-		connect(webAccess, &WebAccess::sigError, this, &LoginThread::webaccessErrorReceived);
-		connect(webAccess, &WebAccess::sigFinished, this, &QObject::deleteLater);
+		auto* webAccess = new WebAccess(this);
+		connect(webAccess, &WebAccess::sigFinished, this, &LoginThread::webClientFinished);
+		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
 		m->loginInfo = LoginInfo {};
 
@@ -108,17 +107,12 @@ namespace LastFM
 		webAccess->callPostUrl(BaseUrl, postData);
 	}
 
-	void LoginThread::webaccessResponseReceived(const QByteArray& data)
+	void LoginThread::webClientFinished()
 	{
-		m->loginInfo = parse(data);
+		auto* webClient = dynamic_cast<WebAccess*>(sender());
+		m->loginInfo = parse(webClient->data());
+
 		emit sigFinished();
-	}
-
-	void LoginThread::webaccessErrorReceived(const QString& error)
-	{
-		spLog(Log::Warning, this) << "LastFM: Cannot login: " << error;
-
-		emit sigError(error);
 	}
 
 	LoginInfo LoginThread::loginInfo() const { return m->loginInfo; }

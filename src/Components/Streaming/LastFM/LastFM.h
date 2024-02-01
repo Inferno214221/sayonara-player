@@ -60,7 +60,7 @@ namespace LastFM
 			void currentTrackChanged(const MetaData& track);
 
 			void scrobble();
-			void scrobbleErrorReceived(const QString& str);
+			void webClientFinished();
 
 			void trackChangedTimerTimedOut();
 	};
