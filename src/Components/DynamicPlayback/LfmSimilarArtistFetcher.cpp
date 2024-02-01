@@ -17,12 +17,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#include "LfmSimilarArtistFetcher.h"
-#include "ArtistMatch.h"
-#include "Components/Streaming/LastFM/LFMWebAccess.h"
-#include "Components/Streaming/LastFM/LFMGlobals.h"
-#include "LfmSimiliarArtistsParser.h"
 
+#include "LfmSimilarArtistFetcher.h"
+#include "LfmSimiliarArtistsParser.h"
+#include "ArtistMatch.h"
+
+#include "Components/Streaming/LastFM/LFMGlobals.h"
+#include "Components/Streaming/LastFM/LFMWebAccess.h"
+#include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
 
 #include <QHash>
@@ -34,6 +36,26 @@ using DynamicPlayback::SimilarArtistFetcher;
 
 using LastFM::WebAccess;
 
+namespace
+{
+	QString createUrl(const QString& artist)
+	{
+		const auto baseUrl = QString {LastFM::BaseUrl} + "?";
+		const auto params = std::map<QString, QString> {
+			{"method",  "artist.getsimilar"},
+			{"artist",  QString::fromUtf8(QUrl::toPercentEncoding(artist))},
+			{"api_key", QString::fromUtf8(LastFM::ApiKey)}
+		};
+
+		auto lst = QStringList {};
+		Util::Algorithm::transform(params, lst, [](const auto& p) {
+			return p.first + "=" + p.second;
+		});
+
+		return baseUrl + lst.join("&");
+	}
+}
+
 struct LfmSimilarArtistFetcher::Private
 {
 	QString artist;
@@ -42,23 +64,17 @@ struct LfmSimilarArtistFetcher::Private
 };
 
 LfmSimilarArtistFetcher::LfmSimilarArtistFetcher(const QString& artist, QObject* parent) :
-	SimilarArtistFetcher(artist, parent)
-{
-	m = Pimpl::make<Private>();
-}
+	SimilarArtistFetcher(artist, parent),
+	m {Pimpl::make<Private>()} {}
 
 LfmSimilarArtistFetcher::~LfmSimilarArtistFetcher() = default;
 
-const ArtistMatch& LfmSimilarArtistFetcher::similarArtists() const
-{
-	return m->artistMatch;
-}
+const ArtistMatch& LfmSimilarArtistFetcher::similarArtists() const { return m->artistMatch; }
 
 void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 {
 	m->artist = artistName;
 
-	// check if already in cache
 	if(m->similarArtistsCache.contains(m->artist))
 	{
 		m->artistMatch = m->similarArtistsCache.value(m->artist);
@@ -70,14 +86,7 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
 	connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 
-	const auto url =
-		QString("http://ws.audioscrobbler.com/2.0/?"
-		        "method=artist.getsimilar&"
-		        "artist=%1&api_key=%2")
-			.arg(QString::fromUtf8(QUrl::toPercentEncoding(m->artist)))
-			.arg(QString::fromUtf8(LastFM::ApiKey));
-
-	webAccess->callUrl(url);
+	webAccess->callUrl(createUrl(m->artist));
 }
 
 void LfmSimilarArtistFetcher::webClientFinished()

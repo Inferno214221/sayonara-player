@@ -32,10 +32,9 @@ namespace DynamicPlayback
 		PIMPL(LfmSimilarArtistFetcher)
 
 		public:
-			LfmSimilarArtistFetcher(const QString& artist,
-			                        QObject* parent = nullptr);
+			explicit LfmSimilarArtistFetcher(const QString& artist, QObject* parent = nullptr);
 			~LfmSimilarArtistFetcher() override;
-			const ArtistMatch& similarArtists() const override;
+			[[nodiscard]] const ArtistMatch& similarArtists() const override;
 
 		protected:
 			void fetchSimilarArtists(const QString& artistName) override;
