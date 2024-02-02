@@ -80,6 +80,110 @@
     ]
   },
   {
+    "address": "https://genius.com",
+    "direct_url_template": "<SERVER>/<ARTIST>-<TITLE>-lyrics",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Genius",
+    "replacements": [
+      {
+        "replacement_from": "  ",
+        "replacement_to": " "
+      },
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "(",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ")",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": ",",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "&",
+        "replacement_to": "-and-"
+      },
+      {
+        "replacement_from": "/",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "'",
+        "replacement_to": ""
+      },
+      {
+        "replacement_from": "--",
+        "replacement_to": "-"
+      },
+      {
+        "replacement_from": "ä",
+        "replacement_to": "a"
+      },
+      {
+        "replacement_from": "ö",
+        "replacement_to": "o"
+      },
+      {
+        "replacement_from": "ü",
+        "replacement_to": "u"
+      },
+      {
+        "replacement_from": "ß",
+        "replacement_to": ""
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "</div>",
+        "start_tag": "<div class=\"lyrics\">"
+      },
+      {
+        "end_tag": "<div class=\"RightSidebar",
+        "start_tag": "<div data-lyrics-container"
+      }
+    ]
+  },
+  {
+    "address": "https://sonichits.com/video",
+    "direct_url_template": "<SERVER>/<ARTIST>/<TITLE>",
+    "is_end_tag_included": false,
+    "is_lowercase": true,
+    "is_numeric": false,
+    "is_start_tag_included": false,
+    "name": "Sonichits",
+    "replacements": [
+      {
+        "replacement_from": " ",
+        "replacement_to": "-"
+      }
+    ],
+    "search_url_template": "",
+    "search_result_url_template": "",
+    "search_result_regex": "",
+    "start_end_tags": [
+      {
+        "end_tag": "<span>Overall Meaning",
+        "start_tag": "<div id=\"dLyrics\" class=\"lyrics-text\">"
+      },
+      {
+        "end_tag": "<div class=\"highlighted-lyrics\" style=\"padding: 0\">",
+        "start_tag": "<div id=\"dLyrics\" class=\"lyrics-text\">"
+      }
+    ]
+  },
+  {
     "address": "https://www.songtexte.com",
     "direct_url_template": "",
     "is_end_tag_included": false,
@@ -152,98 +256,6 @@
       {
         "end_tag": "</div> <div",
         "start_tag": "<div id=\"lyrics\">"
-      }
-    ]
-  },
-  {
-    "address": "https://genius.com",
-    "direct_url_template": "<SERVER>/<ARTIST>-<TITLE>-lyrics",
-    "is_end_tag_included": false,
-    "is_lowercase": true,
-    "is_numeric": false,
-    "is_start_tag_included": false,
-    "name": "Genius",
-    "replacements": [
-      {
-        "replacement_from": "  ",
-        "replacement_to": " "
-      },
-      {
-        "replacement_from": " ",
-        "replacement_to": "-"
-      },
-      {
-        "replacement_from": "(",
-        "replacement_to": ""
-      },
-      {
-        "replacement_from": ")",
-        "replacement_to": ""
-      },
-      {
-        "replacement_from": ",",
-        "replacement_to": "-"
-      },
-      {
-        "replacement_from": "&",
-        "replacement_to": "-and-"
-      },
-      {
-        "replacement_from": "/",
-        "replacement_to": "-"
-      },
-      {
-        "replacement_from": "'",
-        "replacement_to": ""
-      },
-      {
-        "replacement_from": "--",
-        "replacement_to": "-"
-      }
-    ],
-    "search_url_template": "",
-    "search_result_url_template": "",
-    "search_result_regex": "",
-    "start_end_tags": [
-      {
-        "end_tag": "</div>",
-        "start_tag": "<div class=\"lyrics\">"
-      },
-      {
-        "end_tag": "<div class=\"RightSidebar",
-        "start_tag": "<div data-lyrics-container"
-      }
-    ]
-  },
-  {
-    "address": "http://www.metrolyrics.com",
-    "direct_url_template": "<SERVER>/<TITLE>-lyrics-<ARTIST>.html",
-    "is_end_tag_included": false,
-    "is_lowercase": true,
-    "is_numeric": false,
-    "is_start_tag_included": false,
-    "name": "MetroLyrics",
-    "replacements": [
-      {
-        "replacement_from": "&",
-        "replacement_to": "and"
-      },
-      {
-        "replacement_from": " ",
-        "replacement_to": "-"
-      }
-    ],
-    "search_url_template": "",
-    "search_result_url_template": "",
-    "search_result_regex": "",
-    "start_end_tags": [
-      {
-        "end_tag": "<div class=\"bottom-mpu\"",
-        "start_tag": "class=\"lyric-message\">"
-      },
-      {
-        "end_tag": "<div class=\"bottom-mpu\"",
-        "start_tag": "<div id=\"lyrics-body-text\" class=\"js-lyric-text\">"
       }
     ]
   },
