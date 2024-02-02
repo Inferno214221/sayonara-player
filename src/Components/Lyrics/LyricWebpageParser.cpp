@@ -21,9 +21,11 @@
 #include "LyricWebpageParser.h"
 #include "LyricServer.h"
 
-#include <QString>
-#include <QRegExp>
 #include <QByteArray>
+#include <QRegExp>
+#include <QString>
+#include <QTextBlock>
+#include <QTextDocument>
 
 using namespace Lyrics;
 
@@ -40,7 +42,7 @@ namespace
 			result.replace(key, regexConversions.value(key));
 		}
 
-		result.replace(" ", "\\s+");
+		result.replace(" ", R"([\s\n\r]+)");
 
 		if(closeBeginningAngledBracket && result.startsWith("<") && !result.endsWith(">"))
 		{
@@ -50,7 +52,7 @@ namespace
 		return result;
 	}
 
-	QString parseNumericContent(const QString& content)
+	QString parseNumericContent(const QString& data)
 	{
 		const auto regExp = QRegExp("&#(\\d+);|<br />|</span>|</p>");
 
@@ -58,7 +60,7 @@ namespace
 		QStringList words;
 
 		auto pos = 0;
-		while((pos = regExp.indexIn(content, pos)) != -1)
+		while((pos = regExp.indexIn(data, pos)) != -1)
 		{
 			const auto caption = regExp.cap(1);
 
@@ -78,52 +80,32 @@ namespace
 		return words.join("<br>");
 	}
 
-	void removePreformatTag(QString& data)
+	QString formatLineFeeds(QString data)
 	{
-		auto regExp = QRegExp("<p\\s.*>");
-		regExp.setMinimal(true);
-		data.remove(regExp);
-		data.remove(QRegExp("</p>"));
-	}
+		const auto newLines = std::array {
+			"\\r\\n", "\\n", "\r\n", "\n", "<br/>", "<br />"
+		};
 
-	void removeComments(QString& data)
-	{
-		auto regExp = QRegExp("<!--.*-->");
-		regExp.setMinimal(true);
-		data.remove(regExp);
-	}
+		for(const auto& c: newLines)
+		{
+			while(data.contains(c))
+			{
+				data.replace(c, "<br>");
+			}
+		}
 
-	void formatLineFeeds(QString& data)
-	{
-		data.replace("<br>\n", "<br>");
-		data.replace(QRegExp("<br\\s*/>\n"), "<br>");
-		data.replace("\r\n", "<br>");
-		data.replace("\\r\\n", "<br>");
-		data.replace("\n", "<br>");
-		data.replace("\\n", "<br>");
-		data.replace(QRegExp("<br\\s*/>"), "<br>");
 		data.replace("\\\"", "\"");
-	}
 
-	void removeLineFeeds(QString& data)
-	{
-		formatLineFeeds(data);
-
-		const auto lineBreaks = QStringLiteral("<br>\\s*<br>\\s*<br>");
-
-		auto regExp = QRegExp(lineBreaks);
-		while(data.contains(regExp))
+		const auto doubleLineFeed = QRegExp("<br>\\s*<br>\\s*<br>");
+		while(data.contains(doubleLineFeed))
 		{
-			data.replace(regExp, "<br><br>");
+			data.replace(doubleLineFeed, "<br><br>");
 		}
 
-		while(data.startsWith("<br>"))
-		{
-			data = data.right(data.count() - 4);
-		}
+		return data;
 	}
 
-	void removeScript(QString& data)
+	QString removeScript(QString data)
 	{
 		QRegExp reScript;
 		reScript.setPattern("<script.+</script>");
@@ -132,51 +114,59 @@ namespace
 		{
 			data.replace(reScript, "");
 		}
+
+		return data;
 	}
 
-	void removeLinks(QString& result)
+	QString removeLinks(QString data)
 	{
 		{
-			auto startIndexOpening = result.indexOf("<a");
+			auto startIndexOpening = data.indexOf("<a");
 			while(startIndexOpening >= 0)
 			{
-				const auto endIndex = result.indexOf(">", startIndexOpening);
+				const auto endIndex = data.indexOf(">", startIndexOpening);
 				const auto length = endIndex - startIndexOpening + 1;
 
-				result.remove(startIndexOpening, length);
-				startIndexOpening = result.indexOf("<a", startIndexOpening);
+				data.remove(startIndexOpening, length);
+				startIndexOpening = data.indexOf("<a", startIndexOpening);
 			}
 		}
 
 		{
-			auto startIndexClosing = result.indexOf("</a>");
+			auto startIndexClosing = data.indexOf("</a>");
 			while(startIndexClosing >= 0)
 			{
-				result.remove(startIndexClosing, 4);
-				startIndexClosing = result.indexOf("</a>", startIndexClosing);
+				data.remove(startIndexClosing, 4);
+				startIndexClosing = data.indexOf("</a>", startIndexClosing);
 			}
 		}
+
+		return data;
 	}
 
-	void preProcessContent(QString& result)
+	QString preProcessContent(QString data)
 	{
-		removeScript(result);
+		return removeScript(std::move(data));
 	}
 
-	void postProcessResult(QString& result)
+	QString postProcessResult(QString data)
 	{
-		removePreformatTag(result);
-		removeComments(result);
-		removeLineFeeds(result);
-		removeLinks(result);
+		auto doc = QTextDocument {};
+		doc.setHtml(data);
+		data = doc.toPlainText();
+
+		data = formatLineFeeds(std::move(data));
+		data = removeLinks(std::move(data));
+
+		return data;
 	}
 
-	QString extractContentFromWebpage(const QString& startTagRegex, const QString& endTagRegex, const QString& website)
+	QString extractContentFromWebpage(const QString& startTagRegex, const QString& endTagRegex, const QString& data)
 	{
 		QRegExp regex(startTagRegex + "(.+)" + endTagRegex);
 		regex.setMinimal(true);
 
-		return (regex.indexIn(website) != -1)
+		return (regex.indexIn(data) != -1)
 		       ? regex.cap(1).trimmed()
 		       : QString();
 	}
@@ -199,13 +189,13 @@ WebpageParser::parseWebpage(const QByteArray& rawData, const QMap<QString, QStri
 			continue;
 		}
 
-		preProcessContent(content);
+		content = preProcessContent(std::move(content));
 
 		auto result = (server->isNumeric())
 		              ? parseNumericContent(content)
 		              : std::move(content);
 
-		postProcessResult(result);
+		result = postProcessResult(std::move(result));
 
 		if(result.size() > 100)
 		{
@@ -213,5 +203,5 @@ WebpageParser::parseWebpage(const QByteArray& rawData, const QMap<QString, QStri
 		}
 	}
 
-	return QString();
+	return {};
 }
