@@ -19,110 +19,103 @@
  */
 
 #include "Audioscrobbler.h"
-#include "Utils/Logger/Logger.h"
+#include "Utils/Algorithm.h"
 #include "Components/Streaming/LastFM/LFMGlobals.h"
 
-#include <QStringList>
-#include <QDomDocument>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QMap>
+#include <QStringList>
 #include <QUrl>
 
 using Cover::Fetcher::Audioscrobbler;
 
 namespace
 {
-	QDomNode findArtistNode(const QDomNode& node, const QString& prefix)
+	QStringList mapToStringList(const QMap<QString, QString>& map)
 	{
-		if((node.nodeName().compare("artist", Qt::CaseInsensitive) == 0) ||
-		   (node.nodeName().compare("album", Qt::CaseInsensitive) == 0))
+		auto result = QStringList {};
+		const auto sizes = std::array {"mega", "extralarge", "large", "medium", "small"};
+		for(const auto size: sizes)
 		{
-			return node;
+			result.push_back(map[size]);
 		}
 
-		if(node.hasChildNodes())
-		{
-			return findArtistNode(node.firstChild(), prefix + "  ");
-		}
+		result.removeAll({});
+		result.removeDuplicates();
 
-		else if(!node.nextSibling().isNull())
-		{
-			return findArtistNode(node.nextSibling(), prefix);
-		}
-
-		return QDomNode();
-	}
-}
-
-bool Audioscrobbler::canFetchCoverDirectly() const
-{
-	return false;
-}
-
-QStringList Audioscrobbler::parseAddresses(const QByteArray& website) const
-{
-	QDomDocument doc("LastFM Cover");
-	doc.setContent(website);
-
-	const auto rootNode = doc.firstChild();
-	const auto artistNode = findArtistNode(rootNode, "");
-
-	if(artistNode.isNull())
-	{
-		return QStringList();
+		return result;
 	}
 
-	const auto nodes = artistNode.childNodes();
-	if(nodes.isEmpty())
+	QStringList parseImageTag(const QJsonObject& artistOrAlbum)
 	{
-		return QStringList();
-	}
+		auto map = QMap<QString, QString> {};
 
-	const auto attributes = QStringList
+		if(const auto imageTag = artistOrAlbum["image"]; imageTag.isArray())
 		{
-			"mega",
-			"extralarge",
-			"large",
-			""
-		};
-
-	QMap<QString, QString> lfmCovers;
-
-	for(int i = 0; i < nodes.size(); i++)
-	{
-		const auto node = nodes.item(i);
-		const auto name = node.toElement().tagName();
-		if(name.compare("image", Qt::CaseInsensitive) == 0)
-		{
-			const auto attrNode = node.attributes().namedItem("size");
-			const auto sizeAttr = attrNode.nodeValue();
-
-			const auto url = node.toElement().text();
-
-			if(!url.isEmpty())
+			const auto images = imageTag.toArray();
+			for(const auto& image: images)
 			{
-				lfmCovers[sizeAttr] = url;
+				const auto url = image["#text"].toString();
+				const auto size = image["size"].toString();
+				map[size] = url;
 			}
 		}
+
+		return mapToStringList(map);
 	}
 
-	return QStringList {lfmCovers.values()};
+	QString constructWebsite(const std::map<QString, QString>& params)
+	{
+		auto lst = QStringList {};
+		for(const auto& [key, value]: params)
+		{
+			lst.push_back(QString("%1=%2").arg(key).arg(value));
+		}
+
+		return QString(LastFM::BaseUrl) + "?" + lst.join("&");
+	}
+}
+
+bool Audioscrobbler::canFetchCoverDirectly() const { return false; }
+
+QStringList Audioscrobbler::parseAddresses(const QByteArray& data) const
+{
+	auto document = QJsonDocument::fromJson(data);
+	if(const auto album = document["album"]; album.isObject())
+	{
+		return parseImageTag(album.toObject());
+	}
+
+	if(const auto artist = document["artist"]; artist.isObject())
+	{
+		return {"https://www.last.fm/music/Metallica/+images"};
+	}
+
+	return {};
 }
 
 QString Audioscrobbler::albumAddress(const QString& artist, const QString& album) const
 {
-	return QString("http://ws.audioscrobbler.com/2.0/?method=album.getinfo&artist=" +
-	               QUrl::toPercentEncoding(artist) +
-	               "&album=" +
-	               QUrl::toPercentEncoding(album) +
-	               "&api_key=") + LastFM::ApiKey;
+	const auto params = std::map<QString, QString> {
+		{"method",  "album.getinfo"},
+		{"album",   QUrl::toPercentEncoding(album)},
+		{"artist",  QUrl::toPercentEncoding(artist)},
+		{"format",  "json"},
+		{"api_key", LastFM::ApiKey}};
+
+	return constructWebsite(params);
 }
 
-int Audioscrobbler::estimatedSize() const
+QString Cover::Fetcher::Audioscrobbler::artistAddress(const QString& /*artist*/) const
 {
-	return 300;
+	// lastfm only sends white star icon for artists because of copyright
+	return {};
 }
 
-QString Audioscrobbler::privateIdentifier() const
-{
-	return "audioscrobbler";
-}
+int Audioscrobbler::estimatedSize() const { return 300; }
+
+QString Audioscrobbler::privateIdentifier() const { return "audioscrobbler"; }
+

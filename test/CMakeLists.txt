@@ -39,6 +39,7 @@ qt5_add_resources(RESOURCES_RCC
 new_test(AudioConverter/AudioConverterTest.cpp)
 new_test(Bookmarks/BookmarkStorageTest.cpp)
 new_test(Common/FileSystemMockTest.cpp)
+new_test(Covers/AudioscrobblerTest.cpp)
 new_test(Covers/CoverFetchManagerTest.cpp)
 new_test(Covers/CoverLocationTest.cpp)
 new_test(Database/AlbumTest.cpp)

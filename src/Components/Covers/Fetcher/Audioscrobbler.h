@@ -25,23 +25,18 @@
 
 namespace Cover::Fetcher
 {
-	/**
-	 * @brief The LFMCoverFetcher class. See CoverFetcherInterface
-	 * @ingroup Covers
-	 */
 	class Audioscrobbler :
 		public Cover::Fetcher::Base
 	{
 		private:
-			QString privateIdentifier() const override;
+			[[nodiscard]] QString privateIdentifier() const override;
 
 		public:
-			bool canFetchCoverDirectly() const override;
-			QStringList parseAddresses(const QByteArray& website) const override;
-
-			QString albumAddress(const QString& artist, const QString& album) const override;
-
-			int estimatedSize() const override;
+			[[nodiscard]] bool canFetchCoverDirectly() const override;
+			[[nodiscard]] QStringList parseAddresses(const QByteArray& website) const override;
+			[[nodiscard]] QString albumAddress(const QString& artist, const QString& album) const override;
+			[[nodiscard]] QString artistAddress(const QString& artist) const override;
+			[[nodiscard]] int estimatedSize() const override;
 	};
 }
 
