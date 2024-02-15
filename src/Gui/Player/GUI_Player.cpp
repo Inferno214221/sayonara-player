@@ -96,6 +96,7 @@ struct GUI_Player::Private
 	CoverDataProvider* coverProvider;
 	PlayManager* playManager;
 	NotificationHandler* notificationHandler;
+	Translator translator;
 
 	Private(PlayManager* playManager, PlaylistCreator* playlistCreator,
 	        Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
@@ -111,8 +112,8 @@ struct GUI_Player::Private
 GUI_Player::GUI_Player(PlayManager* playManager, Playlist::Handler* playlistHandler,
                        Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
                        Shutdown* shutdown, NotificationHandler* notificationHandler,
-                       DynamicPlaybackChecker* dynamicPlaybackChecker,
-                       Library::InfoAccessor* libraryAccessor, QWidget* parent) :
+                       DynamicPlaybackChecker* dynamicPlaybackChecker, Library::InfoAccessor* libraryAccessor,
+                       QWidget* parent) :
 	Gui::MainWindow(parent),
 	MessageReceiverInterface("Player Main Window"),
 	m {Pimpl::make<Private>(playManager, playlistHandler, libraryPluginHandler, coverProvider, shutdown,
@@ -551,7 +552,7 @@ void GUI_Player::checkControlSplitter()
 void GUI_Player::initLanguage()
 {
 	const auto language = GetSetting(Set::Player_Language);
-	Translator::instance()->changeLanguage(this, language);
+	m->translator.changeLanguage(this, language);
 
 	if(ui)
 	{

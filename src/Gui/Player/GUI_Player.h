@@ -32,7 +32,6 @@ class GUI_TrayIcon;
 class GUI_Logger;
 class QAction;
 class QMessageBox;
-class QTranslator;
 
 UI_FWD(GUI_Player)
 

@@ -21,32 +21,19 @@
 #ifndef TRANSLATOR_H
 #define TRANSLATOR_H
 
-#include "Utils/Singleton.h"
 #include "Utils/Pimpl.h"
 
-#include <QObject>
-
-/**
- * @brief Removes or replaces the current QTranslator object by
- * calling the change_language() method
- */
+class QObject;
+class QString;
 class Translator
 {
-		SINGLETON(Translator)
 	PIMPL(Translator)
 
-	private:
-		bool switchTranslator(QObject* parent, const QString& fourLetter);
-
 	public:
-		/**
-		 * @brief Sets a new language. Creates and installs a new QTranslator object
-		 * with parent as QObject parent.
-		 * @param parent
-		 * @param language
-		 */
-		void changeLanguage(QObject* parent, const QString& fourLetter);
+		Translator();
+		~Translator();
 
+		void changeLanguage(QObject* parent, const QString& fourLetter);
 };
 
 #endif // TRANSLATOR_H
