@@ -221,9 +221,10 @@ void ItemView::showClearButton(bool visible)
 		m->buttonClearSelection->setVisible(false);
 	}
 
+	auto geometry = viewportGeometry();
 	m->buttonClearSelection->setGeometry(
-		1, viewportHeight() - m->buttonClearSelection->height() - 2,
-		viewportWidth() - 2, m->buttonClearSelection->height()
+		1, geometry.height() - m->buttonClearSelection->height() - 2,
+		geometry.width() - 2, m->buttonClearSelection->height()
 	);
 
 	m->buttonClearSelection->setVisible(visible);
@@ -415,19 +416,14 @@ void ItemView::resizeEvent(QResizeEvent* event)
 	}
 }
 
-int ItemView::viewportHeight() const
+QRect ItemView::viewportGeometry() const
 {
-	auto viewportHeight = SearchableTableView::viewportHeight();
-
+	auto geo = SearchableTableView::geometry();
 	if(m->buttonClearSelection && m->buttonClearSelection->isVisible())
 	{
-		viewportHeight -= (m->buttonClearSelection->height() + 5);
+		auto height = geo.height();
+		geo.setHeight(height - (m->buttonClearSelection->height() + 5));
 	}
 
-	if(horizontalHeader() && horizontalHeader()->isVisible())
-	{
-		viewportHeight += horizontalHeader()->height();
-	}
-
-	return viewportHeight;
+	return geo;
 }

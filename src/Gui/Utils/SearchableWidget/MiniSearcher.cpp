@@ -52,8 +52,9 @@ namespace
 
 	QRect calcGeometry(SearchView* searchableView, const int maxWidth, const int lineEditHeight)
 	{
-		const auto parentWidth = searchableView->viewportWidth();
-		const auto parentHeight = searchableView->viewportHeight();
+		const auto geometry = searchableView->viewportGeometry();
+		const auto parentWidth = geometry.width();
+		const auto parentHeight = geometry.height();
 
 		const auto targetWidth = maxWidth;
 		const auto targetHeight = std::max(35, 10 + lineEditHeight);

@@ -156,9 +156,7 @@ SearchableTableView::SearchableTableView(QWidget* parent) :
 
 SearchableTableView::~SearchableTableView() = default;
 
-int SearchableTableView::viewportWidth() const { return viewport()->width(); }
-
-int SearchableTableView::viewportHeight() const { return viewport()->height(); }
+QRect SearchableTableView::viewportGeometry() const { return QTableView::geometry(); }
 
 QWidget* SearchableTableView::widget() { return this; }
 

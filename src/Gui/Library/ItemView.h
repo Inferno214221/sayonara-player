@@ -100,7 +100,7 @@ namespace Library
 
 			virtual void runMergeOperation(const Library::MergeData& md);
 
-			[[nodiscard]] int viewportHeight() const override;
+			[[nodiscard]] QRect viewportGeometry() const override;
 
 			void mousePressEvent(QMouseEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* event) override;

@@ -42,15 +42,12 @@ class SearchView
 		SearchView& operator=(const SearchView& other) = delete;
 		SearchView& operator=(SearchView&& other) = delete;
 
+		[[nodiscard]] virtual QRect viewportGeometry() const = 0;
 		int search(const QString& searchstring);
 		void searchNext();
 		void searchPrevious();
 
 		virtual void selectSearchResult(int index) = 0;
-
-		[[nodiscard]] virtual int viewportWidth() const = 0;
-
-		[[nodiscard]] virtual int viewportHeight() const = 0;
 
 		[[nodiscard]] virtual QWidget* widget() = 0;
 
@@ -76,8 +73,7 @@ class SearchableTableView :
 		SearchableTableView& operator=(SearchableTableView&& other) = delete;
 
 	protected:
-		[[nodiscard]] int viewportWidth() const override;
-		[[nodiscard]] int viewportHeight() const override;
+		[[nodiscard]] QRect viewportGeometry() const override;
 		[[nodiscard]] QWidget* widget() override;
 		[[nodiscard]] int currentSelectedItem() const override;
 		void selectSearchResult(int index) override;
