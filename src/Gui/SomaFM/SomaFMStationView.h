@@ -39,7 +39,6 @@ class SomaFMStationView :
 
 	protected:
 		[[nodiscard]] SearchModel* searchModel() const override;
-		void keyPressEvent(QKeyEvent* e) override;
 		void showEvent(QShowEvent* e) override;
 };
 

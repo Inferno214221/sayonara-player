@@ -87,7 +87,6 @@ namespace Playlist
 			void dragMoveEvent(QDragMoveEvent* event) override;
 			void dropEvent(QDropEvent* event) override;
 			void mouseDoubleClickEvent(QMouseEvent* event) override;
-			void keyPressEvent(QKeyEvent* event) override;
 			bool viewportEvent(QEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* e) override;
 

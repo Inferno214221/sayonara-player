@@ -416,12 +416,6 @@ namespace Playlist
 		}
 	}
 
-	void View::keyPressEvent(QKeyEvent* event)
-	{
-		event->setAccepted(false);
-		SearchableTableView::keyPressEvent(event);
-	}
-
 	void View::dragEnterEvent(QDragEnterEvent* event)
 	{
 		event->accept();

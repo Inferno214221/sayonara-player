@@ -48,13 +48,6 @@ ModelIndexRange SomaFMStationView::mapIndexToModelIndexes(int idx) const
 	return {index, index};
 }
 
-void SomaFMStationView::keyPressEvent(QKeyEvent* e)
-{
-	e->setAccepted(false);
-
-	QTableView::keyPressEvent(e);
-}
-
 void SomaFMStationView::showEvent(QShowEvent* e)
 {
 	Gui::WidgetTemplate<QTableView>::showEvent(e);
