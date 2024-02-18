@@ -50,10 +50,8 @@ struct ItemModel::Private
 };
 
 ItemModel::ItemModel(int columnCount, QObject* parent, AbstractLibrary* library) :
-	SearchableTableModel(parent)
-{
-	m = Pimpl::make<ItemModel::Private>(columnCount, library);
-}
+	SearchableTableModel(parent),
+	m {Pimpl::make<ItemModel::Private>(columnCount, library)} {}
 
 ItemModel::~ItemModel() = default;
 
@@ -141,33 +139,6 @@ QMimeData* ItemModel::mimeData(const QModelIndexList& indexes) const
 	return mimeData;
 }
 
-QModelIndexList ItemModel::searchResults(const QString& substr)
-{
-	const auto len = rowCount();
-	if(len == 0)
-	{
-		return {};
-	}
+AbstractLibrary* ItemModel::library() { return m->library; }
 
-	QModelIndexList ret;
-	for(auto i = 0; i < len; i++)
-	{
-		const auto title = Library::convertSearchstring(searchableString(i), searchMode());
-		if(title.contains(substr))
-		{
-			ret << index(i, searchableColumn());
-		}
-	}
-
-	return ret;
-}
-
-AbstractLibrary* ItemModel::library()
-{
-	return m->library;
-}
-
-const AbstractLibrary* ItemModel::library() const
-{
-	return m->library;
-}
+const AbstractLibrary* ItemModel::library() const { return m->library; }

@@ -28,7 +28,7 @@
 #include <QFrame>
 #include <QMap>
 
-class SearchableViewInterface;
+class SearchView;
 class QEvent;
 class QKeyEvent;
 class QFocusEvent;
@@ -64,7 +64,7 @@ namespace Gui
 			void sigFindPrevRow();
 
 		public:
-			MiniSearcher(SearchableViewInterface* searchableView);
+			explicit MiniSearcher(SearchView* searchableView);
 			~MiniSearcher() override;
 
 			bool handleKeyPress(QKeyEvent* e);

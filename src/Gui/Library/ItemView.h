@@ -30,6 +30,7 @@
 
 #include "Gui/Utils/Widgets/Dragable.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SelectionView.h"
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
@@ -44,12 +45,6 @@ namespace Library
 	class MergeData;
 	class ItemModel;
 
-	/**
-	 * @brief The main task of the ItemView is to display a context menu
-	 * for various selections. It also handles drag and drop events with
-	 * a cover. It supports merging and imports
-	 * @ingroup GuiLibrary
-	 */
 	class ItemView :
 		public SearchableTableView,
 		public InfoDialogContainer,
@@ -69,55 +64,35 @@ namespace Library
 			void sigImportFiles(const QStringList& files);
 			void sigSelectionChanged(const IndexSet& indexes);
 
-		private:
-			ItemView(const ItemView& other) = delete;
-			ItemView& operator=(const ItemView& other) = delete;
-
-			void showContextMenuActions(Library::ContextMenu::Entries entries);
-
-			using SearchableTableView::setSearchableModel;
-
 		public:
 			explicit ItemView(QWidget* parent = nullptr);
-			virtual ~ItemView() override;
+			~ItemView() override;
+
+			ItemView(const ItemView& other) = delete;
+			ItemView& operator=(const ItemView& other) = delete;
 
 			void setItemModel(ItemModel* model);
 
 			void showClearButton(bool visible);
 			void useClearButton(bool yesno);
 
-			virtual Library::ContextMenu::Entries contextMenuEntries() const;
+			[[nodiscard]] virtual Library::ContextMenu::Entries contextMenuEntries() const;
 
-			/** Dragable **/
-			bool isValidDragPosition(const QPoint& p) const override;
+			[[nodiscard]] bool isValidDragPosition(const QPoint& p) const override;
 
 		protected:
-			// Events implemented in LibraryViewEvents.cpp
-			virtual void mousePressEvent(QMouseEvent* event) override;
-			virtual void contextMenuEvent(QContextMenuEvent* event) override;
-			virtual void dragEnterEvent(QDragEnterEvent* event) override;
-			virtual void dragMoveEvent(QDragMoveEvent* event) override;
-			virtual void dropEvent(QDropEvent* event) override;
-			virtual void resizeEvent(QResizeEvent* event) override;
+			void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
-			virtual void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
-
-			Library::ContextMenu* contextMenu() const;
+			[[nodiscard]] Library::ContextMenu* contextMenu() const;
 			virtual void initContextMenu();
 			virtual void initCustomContextMenu(Library::ContextMenu* menu);
 
-			ItemModel* itemModel() const;
-			virtual AbstractLibrary* library() const;
+			[[nodiscard]] ItemModel* itemModel() const;
+			[[nodiscard]] virtual AbstractLibrary* library() const;
 
-			/**
-			 * @brief indicates if multiple ids can be merged into one. For example if the same
-			 * artist is written in three different ways, they can be merged to one. On the
-			 * other hand, for tracks that does not make sense
-			 * @return
-			 */
-			virtual bool isMergeable() const = 0;
+			[[nodiscard]] virtual bool isMergeable() const = 0;
 
-			MetaDataList infoDialogData() const override;
+			[[nodiscard]] MetaDataList infoDialogData() const override;
 			QWidget* getParentWidget() override;
 
 			virtual void selectedItemsChanged(const IndexSet& indexes);
@@ -125,7 +100,14 @@ namespace Library
 
 			virtual void runMergeOperation(const Library::MergeData& md);
 
-			int viewportHeight() const override;
+			[[nodiscard]] int viewportHeight() const override;
+
+			void mousePressEvent(QMouseEvent* event) override;
+			void contextMenuEvent(QContextMenuEvent* event) override;
+			void dragEnterEvent(QDragEnterEvent* event) override;
+			void dragMoveEvent(QDragMoveEvent* event) override;
+			void dropEvent(QDropEvent* event) override;
+			void resizeEvent(QResizeEvent* event) override;
 
 		protected slots:
 			virtual void showContextMenu(const QPoint&);
@@ -140,6 +122,9 @@ namespace Library
 			virtual void albumArtistsToggled();
 			virtual void filterExtensionsTriggered(const QString& extension, bool b);
 			virtual void fill();
+
+		private:
+			void showContextMenuActions(Library::ContextMenu::Entries entries);
 	};
 }
 

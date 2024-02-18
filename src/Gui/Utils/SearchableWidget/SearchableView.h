@@ -23,16 +23,67 @@
 
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Gui/Utils/SearchableWidget/SelectionView.h"
-#include "Gui/Utils/SearchableWidget/SearchableModel.h"
 #include "Utils/Pimpl.h"
 
 #include <QKeyEvent>
 #include <QTableView>
 
-class QAbstractItemView;
-class QItemSelectionModel;
-class ExtraTriggerMap;
-class SearchableViewInterface;
+class SearchModel;
+class MiniSearcherViewConnector;
+
+class SearchView
+{
+	public:
+		SearchView();
+		virtual ~SearchView() noexcept;
+
+		SearchView(const SearchView& other) = delete;
+		SearchView(SearchView&& other) = delete;
+		SearchView& operator=(const SearchView& other) = delete;
+		SearchView& operator=(SearchView&& other) = delete;
+
+		int search(const QString& searchstring);
+		void searchNext();
+		void searchPrevious();
+
+		virtual void selectSearchResult(int index) = 0;
+
+		[[nodiscard]] virtual int viewportWidth() const = 0;
+
+		[[nodiscard]] virtual int viewportHeight() const = 0;
+
+		[[nodiscard]] virtual QWidget* widget() = 0;
+
+	protected:
+		[[nodiscard]] virtual SearchModel* searchModel() const = 0;
+};
+
+class SearchableTableView :
+	public Gui::WidgetTemplate<QTableView>,
+	public SearchView,
+	public SelectionViewInterface
+{
+	Q_OBJECT
+	PIMPL(SearchableTableView)
+
+	public:
+		explicit SearchableTableView(QWidget* parent = nullptr);
+		~SearchableTableView() override;
+
+		SearchableTableView(const SearchableTableView& other) = delete;
+		SearchableTableView(SearchableTableView&& other) = delete;
+		SearchableTableView& operator=(const SearchableTableView& other) = delete;
+		SearchableTableView& operator=(SearchableTableView&& other) = delete;
+
+	protected:
+		[[nodiscard]] int viewportWidth() const override;
+		[[nodiscard]] int viewportHeight() const override;
+		[[nodiscard]] QWidget* widget() override;
+		[[nodiscard]] int currentSelectedItem() const override;
+		void selectSearchResult(int index) override;
+
+		void keyPressEvent(QKeyEvent* event) override;
+};
 
 class MiniSearcherViewConnector :
 	public QObject
@@ -41,7 +92,7 @@ class MiniSearcherViewConnector :
 	PIMPL(MiniSearcherViewConnector)
 
 	public:
-		explicit MiniSearcherViewConnector(SearchableViewInterface* searchableView, QObject* parent);
+		MiniSearcherViewConnector(SearchView* searchView, QObject* parent);
 		~MiniSearcherViewConnector() override;
 
 		void init();
@@ -54,82 +105,5 @@ class MiniSearcherViewConnector :
 		void selectNext();
 		void selectPrevious();
 };
-
-class SearchableViewInterface :
-	public SelectionViewInterface
-{
-	PIMPL(SearchableViewInterface)
-
-	protected:
-		enum class SearchDirection :
-			unsigned char
-		{
-			First,
-			Next,
-			Prev
-		};
-
-	public:
-		explicit SearchableViewInterface(QAbstractItemView* view);
-		~SearchableViewInterface() override;
-
-		[[nodiscard]] QAbstractItemView* view() const;
-		[[nodiscard]] virtual int viewportHeight() const;
-		[[nodiscard]] virtual int viewportWidth() const;
-
-		int setSearchstring(const QString& str);
-		void selectNextMatch(const QString& str);
-		void selectPreviousMatch(const QString& str);
-
-		virtual void searchDone();
-
-	protected:
-		virtual void setSearchModel(SearchableModelInterface* model);
-		[[nodiscard]] virtual QModelIndex matchIndex(const QString& str, SearchDirection direction) const;
-		virtual void selectMatch(const QString& str, SearchDirection direction);
-		bool handleKeyPress(QKeyEvent* e) override;
-};
-
-template<typename View, typename Model>
-class SearchableView :
-	public View,
-	public SearchableViewInterface
-{
-	private:
-		using View::setModel;
-		using SearchableViewInterface::setSearchModel;
-
-	public:
-		explicit SearchableView(QWidget* parent = nullptr) :
-			View(parent),
-			SearchableViewInterface(this) {}
-
-		~SearchableView() override = default;
-
-		virtual void setSearchableModel(Model* model)
-		{
-			View::setModel(model);
-			SearchableViewInterface::setSearchModel(model);
-		}
-
-		[[nodiscard]] int rowCount() const
-		{
-			return (View::model() == nullptr)
-			       ? 0
-			       : View::model()->rowCount();
-		}
-
-	protected:
-		void keyPressEvent(QKeyEvent* e) override
-		{
-			const auto processed = handleKeyPress(e);
-			if(!processed)
-			{
-				View::keyPressEvent(e);
-			}
-		}
-};
-
-using SearchableTableView = Gui::WidgetTemplate<SearchableView<QTableView, SearchableTableModel>>;
 
 #endif // SEARCHABLEVIEW_H

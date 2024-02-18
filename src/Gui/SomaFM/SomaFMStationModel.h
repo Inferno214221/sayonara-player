@@ -28,6 +28,7 @@
 #include "Utils/Pimpl.h"
 
 #include <QMimeData>
+#include <QAbstractTableModel>
 
 namespace SomaFM
 {
@@ -52,21 +53,20 @@ namespace SomaFM
 			};
 
 		public:
-			// QAbstractItemModel interface
-			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
-			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-			QMimeData* mimeData(const QModelIndexList& indexes) const override;
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
-
-		public:
-			// AbstractSearchModelInterface interface
-			QModelIndexList searchResults(const QString& substr) override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
 			void setStations(const QList<SomaFM::Station>& stations);
 			void replaceStation(const SomaFM::Station& station);
-			bool hasStations() const;
+			[[nodiscard]] bool hasStations() const;
 			void setWaiting();
+
+		protected:
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 	};
 }
 

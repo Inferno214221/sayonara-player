@@ -33,10 +33,6 @@
 
 namespace Library
 {
-	/**
-	 * @brief The TrackModel class
-	 * @ingroup GuiLibrary
-	 */
 	class TrackModel :
 		public ItemModel
 	{
@@ -47,20 +43,19 @@ namespace Library
 			TrackModel(QObject* parent, AbstractLibrary* library);
 			~TrackModel() override;
 
-			/** AbstractSearchTableModel **/
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
-			QVariant data(const QModelIndex& index, int role) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
 			bool setData(const QModelIndex& index, const QVariant& value, int role) override;
-			int rowCount(const QModelIndex& parent) const override;
 
-			/** ItemModel.h **/
-			Cover::Location cover(const QModelIndexList& indexes) const override;
-			int searchableColumn() const override;
-			Id mapIndexToId(int row) const override;
-			QString searchableString(int row) const override;
+			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
+			[[nodiscard]] Id mapIndexToId(int row) const override;
 
 		protected:
-			const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
+
 			void languageChanged();
 
 		private slots:

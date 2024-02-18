@@ -63,7 +63,7 @@ struct FileListView::Private
 };
 
 FileListView::FileListView(QWidget* parent) :
-	SearchableTableView(parent),
+	SearchableTableView {parent},
 	Gui::Dragable(this) {}
 
 FileListView::~FileListView() = default;
@@ -72,7 +72,7 @@ void FileListView::init(Library::InfoAccessor* libraryInfoAccessor, const Librar
 {
 	m = Pimpl::make<Private>(libraryInfoAccessor, info.id(), this);
 
-	this->setSearchableModel(m->model);
+	this->setModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 	this->setSelectionMode(QAbstractItemView::ExtendedSelection);
 	this->setDragDropMode(QAbstractItemView::DragOnly);
@@ -287,3 +287,5 @@ void FileListView::skinChanged()
 	const auto height = this->fontMetrics().height();
 	setIconSize(QSize(height, height));
 }
+
+SearchModel* Directory::FileListView::searchModel() const { return m->model; }

@@ -57,22 +57,6 @@ namespace
 {
 	std::mutex refreshMtx; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-	bool albumMatchesString(const Album& album, const QString& substr, ::Library::SearchModeMask searchMode)
-	{
-		const auto title = Library::convertSearchstring(album.name(), searchMode);
-		if(title.contains(substr))
-		{
-			return true;
-		}
-
-		const auto hasMatchingArtist = Util::Algorithm::contains(album.artists(), [&](const auto& artist) {
-			const auto convertedArtist = Library::convertSearchstring(artist, searchMode);
-			return (convertedArtist.contains(substr));
-		});
-
-		return (hasMatchingArtist);
-	}
-
 	int calcColumns(const int items, const int maxValue)
 	{
 		return std::min(items, maxValue);
@@ -84,7 +68,6 @@ namespace
 		       ? (items + (columns - 1)) / columns
 		       : 0;
 	}
-
 }
 
 struct CoverModel::Private
@@ -257,34 +240,6 @@ void CoverModel::coverLookupFinished(bool success)
 
 	const auto index = m->hashIndexMap.value(hash);
 	emit dataChanged(index, index, {Qt::DecorationRole});
-}
-
-QModelIndexList CoverModel::searchResults(const QString& substr)
-{
-	QModelIndexList matchingIndexes;
-
-	const auto& albums = this->albums();
-
-	int i = 0;
-	for(auto it = albums.begin(); it != albums.end(); it++, i++)
-	{
-		if(albumMatchesString(*it, substr, searchMode()))
-		{
-			matchingIndexes << this->index(i / columnCount(), i % columnCount());
-		}
-	}
-
-	return matchingIndexes;
-}
-
-int CoverModel::searchableColumn() const { return 0; }
-
-QString CoverModel::searchableString(int index) const
-{
-	const auto& albums = this->albums();
-	return (Util::between(index, albums))
-	       ? albums[index].name()
-	       : QString {};
 }
 
 int CoverModel::mapIndexToId(int index) const
@@ -474,4 +429,14 @@ QModelIndex Library::CoverModel::index(int row, int column, const QModelIndex& p
 	return (Util::between(linearIndex, albums()))
 	       ? ItemModel::index(row, column, parent)
 	       : QModelIndex();
+}
+
+int Library::CoverModel::itemCount() const { return albums().count(); }
+
+QString Library::CoverModel::searchableString(const int index, const QString& prefix) const
+{
+	const auto& album = albums()[index];
+	return (prefix == "/artist")
+	       ? album.artists().join("")
+	       : album.name();
 }

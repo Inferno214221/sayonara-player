@@ -46,61 +46,49 @@
 struct SomaFM::StationModel::Private
 {
 	QList<SomaFM::Station> stations;
-	SomaFM::StationModel::Status status;
+	SomaFM::StationModel::Status status {Status::Waiting};
 };
 
 SomaFM::StationModel::StationModel(QObject* parent) :
-	SearchableTableModel(parent)
-{
-	m = Pimpl::make<SomaFM::StationModel::Private>();
-	m->status = Status::Waiting;
-}
+	SearchableTableModel(parent),
+	m {Pimpl::make<SomaFM::StationModel::Private>()} {}
 
 SomaFM::StationModel::~StationModel() = default;
 
-int SomaFM::StationModel::rowCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
+int SomaFM::StationModel::rowCount(const QModelIndex& /*parent*/) const { return std::max(1, m->stations.size()); }
 
-	return std::max(1, m->stations.size());
-}
-
-int SomaFM::StationModel::columnCount(const QModelIndex& parent) const
-{
-	Q_UNUSED(parent)
-	return 2;
-}
+int SomaFM::StationModel::columnCount(const QModelIndex& /*parent*/) const { return 2; }
 
 QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 {
-	int row = index.row();
-	int col = index.column();
+	const auto row = index.row();
+	const auto col = index.column();
 
 	if(!index.isValid())
 	{
-		return QVariant();
+		return {};
 	}
 
 	if(role == Qt::TextAlignmentRole)
 	{
-		return int(Qt::AlignVCenter | Qt::AlignLeft);
+		return static_cast<int>(Qt::AlignVCenter | Qt::AlignLeft);
 	}
 
-	if(row < 0 || row >= rowCount())
+	if((row < 0) || (row >= rowCount()))
 	{
-		return QVariant();
+		return {};
 	}
 
 	if(role == Qt::DecorationRole)
 	{
 		if(m->status == Status::Waiting)
 		{
-			return QVariant();
+			return {};
 		}
 
 		if(col == 1)
 		{
-			return QVariant();
+			return {};
 		}
 
 		if(m->status == Status::Error)
@@ -122,12 +110,12 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 				return Lang::get(Lang::LoadingArg).arg("SomaFM");
 			}
 
-			else if(m->status == Status::Error)
+			if(m->status == Status::Error)
 			{
 				return tr("Cannot fetch stations");
 			}
 
-			return QVariant();
+			return {};
 		}
 
 		return m->stations[row].name().trimmed();
@@ -137,33 +125,13 @@ QVariant SomaFM::StationModel::data(const QModelIndex& index, int role) const
 	{
 		if(m->stations.isEmpty())
 		{
-			return QVariant();
+			return {};
 		}
 
 		return m->stations[row].name();
 	}
 
-	return QVariant();
-}
-
-QModelIndexList SomaFM::StationModel::searchResults(const QString& substr)
-{
-	QModelIndexList ret;
-
-	int i = 0;
-	for(const SomaFM::Station& station: m->stations)
-	{
-		const QString name = station.name();
-		const QString desc = station.description();
-		const QString str = name + desc;
-
-		if(str.contains(substr, Qt::CaseInsensitive))
-		{
-			ret << this->index(i, 0);
-		}
-	}
-
-	return ret;
+	return {};
 }
 
 void SomaFM::StationModel::setStations(const QList<SomaFM::Station>& stations)
@@ -220,7 +188,7 @@ void SomaFM::StationModel::setWaiting()
 QMimeData* SomaFM::StationModel::mimeData(const QModelIndexList& indexes) const
 {
 	int row = -1;
-	for(const QModelIndex& index: indexes)
+	for(const auto& index: indexes)
 	{
 		if(index.row() > 0 && index.row() < m->stations.count())
 		{
@@ -257,4 +225,11 @@ Qt::ItemFlags SomaFM::StationModel::flags(const QModelIndex& index) const
 		default:
 			return (Qt::ItemIsSelectable | Qt::ItemIsDragEnabled | Qt::ItemIsEnabled);
 	}
+}
+
+int SomaFM::StationModel::itemCount() const { return m->stations.count(); }
+
+QString SomaFM::StationModel::searchableString(const int index, const QString& /*prefix*/) const
+{
+	return m->stations[index].name() + m->stations[index].description();
 }

@@ -23,6 +23,7 @@
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SelectionView.h"
 #include "Gui/Utils/Widgets/Dragable.h"
 
 #include "Utils/Pimpl.h"
@@ -36,10 +37,7 @@ namespace Library
 namespace Directory
 {
 	class FileListModel;
-	/**
-	 * @brief The FileListView class
-	 * @ingroup GuiDirectories
-	 */
+
 	class FileListView :
 		public SearchableTableView,
 		public InfoDialogContainer,
@@ -56,10 +54,8 @@ namespace Directory
 			void sigAppendClicked();
 			void sigEnterPressed();
 			void sigImportRequested(LibraryId lib_id, const QStringList& files, const QString& targetDirectory);
-
 			void sigRenameRequested(const QString& old_name, const QString& newName);
 			void sigRenameByExpressionRequested(const QString& oldName, const QString& expression);
-
 			void sigCopyToLibraryRequested(LibraryId libraryId);
 			void sigMoveToLibraryRequested(LibraryId libraryId);
 
@@ -69,17 +65,11 @@ namespace Directory
 
 			void init(Library::InfoAccessor* libraryInfoAccessor, const Library::Info& info);
 
-			QStringList selectedPaths() const;
+			[[nodiscard]] QStringList selectedPaths() const;
 
 			void setParentDirectory(const QString& dir);
-			QString parentDirectory() const;
-
-		private:
-			void initContextMenu();
-
-		private slots:
-			void renameFileClicked();
-			void renameFileByTagClicked();
+			[[nodiscard]] QString parentDirectory() const;
+			[[nodiscard]] SearchModel* searchModel() const override;
 
 		protected:
 			void contextMenuEvent(QContextMenuEvent* event) override;
@@ -91,15 +81,22 @@ namespace Directory
 			void skinChanged() override;
 
 			// SayonaraSelectionView
-			int mapModelIndexToIndex(const QModelIndex& idx) const override;
-			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+			[[nodiscard]] int mapModelIndexToIndex(const QModelIndex& idx) const override;
 
 			// InfoDialogContainer interface
-			MD::Interpretation metadataInterpretation() const override;
-			MetaDataList infoDialogData() const override;
-			bool hasMetadata() const override;
-			QStringList pathlist() const override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] MetaDataList infoDialogData() const override;
+			[[nodiscard]] bool hasMetadata() const override;
+			[[nodiscard]] QStringList pathlist() const override;
 			QWidget* getParentWidget() override;
+			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+
+		private:
+			void initContextMenu();
+
+		private slots:
+			void renameFileClicked();
+			void renameFileByTagClicked();
 	};
 }
 

@@ -44,18 +44,14 @@ namespace Directory
 
 		public:
 			IconWorkerThread(const QSize& targetSize, const QString& filename);
-			~IconWorkerThread();
+			~IconWorkerThread() override;
 
-			QPixmap pixmap() const;
+			[[nodiscard]] QPixmap pixmap() const;
 
 		public slots:
 			void start();
 	};
 
-	/**
-	 * @brief The FileListModel class
-	 * @ingroup GuiDirectories
-	 */
 	class FileListModel :
 		public SearchableTableModel
 	{
@@ -66,25 +62,23 @@ namespace Directory
 			explicit FileListModel(LocalLibrary* localLibrary, QObject* parent = nullptr);
 			~FileListModel() override;
 
-			QString parentDirectory() const;
+			[[nodiscard]] QString parentDirectory() const;
 			void setParentDirectory(const QString& dir);
 
-			LibraryId libraryId() const;
-			QStringList files() const;
+			[[nodiscard]] LibraryId libraryId() const;
+			[[nodiscard]] QStringList files() const;
 
-			QModelIndexList searchResults(const QString& substr) override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			[[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
 
-			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-			QVariant headerData(int section, Qt::Orientation orientation, int role) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-			int columnCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-			QMimeData* mimeData(const QModelIndexList& indexes) const override;
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
-
-		private:
-			bool checkRowForSearchstring(int row, const QString& substr) const;
+			[[nodiscard]]int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 
 		private slots:
 			void pixmapFetched(const QString& path);

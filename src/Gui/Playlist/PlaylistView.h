@@ -31,6 +31,7 @@
 
 #include "Gui/InfoDialog/InfoDialogContainer.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SelectionView.h"
 #include "Gui/Utils/Widgets/Dragable.h"
 #include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Utils/Library/Sortorder.h"
@@ -70,6 +71,8 @@ namespace Playlist
 			void setLocked(bool b);
 
 		protected:
+			[[nodiscard]] SearchModel* searchModel() const override;
+
 			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 			[[nodiscard]] MetaDataList infoDialogData() const override;
 			[[nodiscard]] QWidget* getParentWidget() override;
@@ -87,8 +90,6 @@ namespace Playlist
 			void keyPressEvent(QKeyEvent* event) override;
 			bool viewportEvent(QEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* e) override;
-
-			void searchDone() override;
 
 		private slots:
 			void clear();

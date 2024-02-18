@@ -46,6 +46,7 @@ using namespace Library;
 struct ArtistView::Private
 {
 	AbstractLibrary* library = nullptr;
+	ArtistModel* model = nullptr;
 	QAction* albumArtistAction = nullptr;
 };
 
@@ -65,10 +66,9 @@ AbstractLibrary* ArtistView::library() const
 void ArtistView::initView(AbstractLibrary* library)
 {
 	m->library = library;
+	m->model = new ArtistModel(this, m->library);
 
-	auto* artistModel = new ArtistModel(this, m->library);
-
-	this->setItemModel(artistModel);
+	this->setItemModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	connect(m->library, &AbstractLibrary::sigAllArtistsLoaded, this, &ArtistView::fill);
@@ -239,3 +239,5 @@ void ArtistView::showAlbumArtistsChanged()
 	m->albumArtistAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
 	setupColumnNames();
 }
+
+SearchModel* Library::ArtistView::searchModel() const { return m->model; }

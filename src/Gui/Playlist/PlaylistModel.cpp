@@ -100,64 +100,32 @@ namespace
 		return ret;
 	}
 
-	std::pair<PlaylistSearchMode, QString> evaluateSearchString(QString searchString)
+	PlaylistSearchMode evaluateSearchString(const QString& prefix)
 	{
-		auto playlistSearchMode = PlaylistSearchMode::Title;
+		static const auto map = QHash<QString, PlaylistSearchMode> {
+			{{ArtistSearchPrefix},   PlaylistSearchMode::Artist},
+			{{AlbumSearchPrefix},    PlaylistSearchMode::Album},
+			{{FilenameSearchPrefix}, PlaylistSearchMode::Filename},
+			{{JumpPrefix},           PlaylistSearchMode::Jump}};
 
-		if(searchString.startsWith(ArtistSearchPrefix))
-		{
-			playlistSearchMode = PlaylistSearchMode::Artist;
-			searchString.remove(ArtistSearchPrefix);
-		}
-		else if(searchString.startsWith(AlbumSearchPrefix))
-		{
-			playlistSearchMode = PlaylistSearchMode::Album;
-			searchString.remove(AlbumSearchPrefix);
-		}
-		else if(searchString.startsWith(FilenameSearchPrefix))
-		{
-			playlistSearchMode = PlaylistSearchMode::Filename;
-			searchString.remove(FilenameSearchPrefix);
-		}
-		else if(searchString.startsWith(JumpPrefix))
-		{
-			playlistSearchMode = PlaylistSearchMode::Jump;
-			searchString.remove(JumpPrefix);
-		}
-
-		return std::make_pair(playlistSearchMode, searchString.trimmed());
+		return map.contains(prefix)
+		       ? map[prefix]
+		       : PlaylistSearchMode::Title;
 	}
 
-	QString
-	calculateSearchKey(const MetaData& track, PlaylistSearchMode playlistSearchMode, Library::SearchModeMask searchMode)
+	QString calculateSearchKey(const MetaData& track, const PlaylistSearchMode playlistSearchMode)
 	{
-		QString str;
 		switch(playlistSearchMode)
 		{
 			case PlaylistSearchMode::Artist:
-				str = track.artist();
-				break;
+				return track.artist();
 			case PlaylistSearchMode::Album:
-				str = track.album();
-				break;
+				return track.album();
 			case PlaylistSearchMode::Filename:
-				str = QFileInfo(track.filepath()).fileName();
-				break;
+				return QFileInfo(track.filepath()).fileName();
 			default:
-				str = track.title();
-				break;
+				return track.title();
 		}
-
-		return Library::convertSearchstring(str, searchMode);
-	}
-
-	int extractRowFromSearchstring(const QString& searchString, int maxRow)
-	{
-		auto ok = false;
-		const auto line = searchString.toInt(&ok);
-
-		return (ok && (line <= maxRow))
-		       ? line : -1;
 	}
 
 	QString getAlbumHashFromTrack(const MetaData& track)
@@ -196,10 +164,9 @@ struct Model::Private
 };
 
 Model::Model(const PlaylistPtr& playlist, Library::InfoAccessor* libraryAccessor, QObject* parent) :
-	SearchableTableModel(parent)
+	SearchableTableModel(parent),
+	m {Pimpl::make<Private>(playlist, libraryAccessor)}
 {
-	m = Pimpl::make<Private>(playlist, libraryAccessor);
-
 	connect(m->playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &Model::playlistChanged);
 	connect(m->playlist.get(), &Playlist::Playlist::sigTrackChanged, this, &Model::currentTrackChanged);
 	connect(m->playlist.get(), &Playlist::sigBusyChanged, this, &Model::sigBusyChanged);
@@ -490,47 +457,6 @@ bool Model::isEnabled(const int row) const
 	       : false;
 }
 
-QModelIndexList Model::searchResults(const QString& searchString)
-{
-	const auto [playlistSearchMode, cleanedSearchString] = evaluateSearchString(searchString);
-
-	if(playlistSearchMode == PlaylistSearchMode::Jump)
-	{
-		const auto row = extractRowFromSearchstring(cleanedSearchString, rowCount() - 1);
-		return (row >= 0)
-		       ? QModelIndexList {index(row, 0)}
-		       : QModelIndexList {QModelIndex {}};
-	}
-
-	const auto& tracks = m->playlist->tracks();
-	for(auto i = 0; i < rowCount(); i++)
-	{
-		const auto& track = tracks[i];
-		const auto searchKey = calculateSearchKey(track, playlistSearchMode, searchMode());
-
-		if(searchKey.contains(cleanedSearchString))
-		{
-			return QModelIndexList {index(i, 0)};
-		}
-	}
-
-	return QModelIndexList {};
-}
-
-using ExtraTriggerMap = SearchableModelInterface::ExtraTriggerMap;
-
-ExtraTriggerMap Model::getExtraTriggers()
-{
-	ExtraTriggerMap map;
-
-	map.insert(ArtistSearchPrefix, Lang::get(Lang::Artist));
-	map.insert(AlbumSearchPrefix, Lang::get(Lang::Album));
-	map.insert(FilenameSearchPrefix, Lang::get(Lang::Filename));
-	map.insert(JumpPrefix, tr("Goto row"));
-
-	return map;
-}
-
 QList<int> toSortedList(const QModelIndexList& indexes, const int maxRow)
 {
 	Util::Set<int> rowSet;
@@ -759,6 +685,16 @@ void Playlist::Model::setLocked(const bool b)
 	{
 		m->playlist->unlock();
 	}
+}
+
+int Playlist::Model::itemCount() const { return rowCount(); }
+
+QString Playlist::Model::searchableString(const int index, const QString& prefix) const
+{
+	const auto playlistSearchMode = evaluateSearchString(prefix);
+	const auto& tracks = m->playlist->tracks();
+
+	return calculateSearchKey(tracks[index], playlistSearchMode);
 }
 
 Util::Set<int> Playlist::removeDisabledRows(const Util::Set<int>& selectedRows, Model* model)

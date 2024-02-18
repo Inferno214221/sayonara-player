@@ -77,7 +77,7 @@ namespace Playlist
 
 		int calcDragDropLine(const QPoint& pos, View* view)
 		{
-			const auto offset = (view->rowCount() > 0)
+			const auto offset = (view->model()->rowCount() > 0)
 			                    ? view->rowHeight(0) / 2
 			                    : view->fontMetrics().height() / 2;
 
@@ -87,7 +87,7 @@ namespace Playlist
 			}
 
 			const auto row = view->indexAt(pos).row();
-			return (row >= 0) ? row : view->rowCount() - 1;
+			return (row >= 0) ? row : view->model()->rowCount() - 1;
 		}
 
 		int resizeCoverSection(const int coverWidth, QHeaderView* horizontalHeader)
@@ -117,7 +117,7 @@ namespace Playlist
 		void initView(View* view, Model* model, Delegate* delegate, const int playlistIndex)
 		{
 			view->setObjectName(QString("playlist_view%1").arg(playlistIndex));
-			view->setSearchableModel(model);
+			view->setModel(model);
 			view->setItemDelegate(delegate);
 			view->setTabKeyNavigation(false);
 			view->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -167,7 +167,7 @@ namespace Playlist
 
 	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
 	           Library::InfoAccessor* libraryAccessor, QWidget* parent) :
-		SearchableTableView(parent),
+		SearchableTableView {parent},
 		Gui::Dragable(this)
 	{
 		m = Pimpl::make<Private>(playlist, dynamicPlaybackChecker, libraryAccessor, this);
@@ -234,7 +234,7 @@ namespace Playlist
 
 	void View::gotoRow(const int row)
 	{
-		if(Util::between(row, rowCount()))
+		if(Util::between(row, m->model->rowCount()))
 		{
 			const auto range = mapIndexToModelIndexes(row);
 			scrollTo(range.first);
@@ -349,9 +349,9 @@ namespace Playlist
 		m->model->removeTracks(selectedItems());
 		clearSelection();
 
-		if(rowCount() > 0)
+		if(m->model->rowCount() > 0)
 		{
-			const auto newRow = std::min(minRow, rowCount() - 1);
+			const auto newRow = std::min(minRow, m->model->rowCount() - 1);
 			selectRow(newRow);
 		}
 	}
@@ -559,13 +559,13 @@ namespace Playlist
 		                           ? baseRowHeight + fm.height()
 		                           : baseRowHeight;
 
-		for(auto row = 0; row < rowCount(); row++)
+		for(auto row = 0; row < m->model->rowCount(); row++)
 		{
 			resizeSection(row, viewRowHeight, verticalHeader());
 		}
 
 		auto viewportWidth = viewport()->width();
-		viewportWidth -= resizeNumberSection(fm, rowCount(), horizontalHeader());
+		viewportWidth -= resizeNumberSection(fm, m->model->rowCount(), horizontalHeader());
 		viewportWidth -= resizeCoverSection(viewRowHeight, horizontalHeader());
 		viewportWidth -= resizeTimeSection(fm, horizontalHeader());
 
@@ -578,11 +578,13 @@ namespace Playlist
 		});
 	}
 
-	void View::searchDone()
-	{
-		if(GetSetting(Set::PL_PlayTrackAfterSearch))
-		{
-			playSelectedTrack();
-		}
-	}
+	SearchModel* View::searchModel() const { return m->model; }
+
+//	void View::searchDone()
+//	{
+//		if(GetSetting(Set::PL_PlayTrackAfterSearch))
+//		{
+//			playSelectedTrack();
+//		}
+//	}
 } // Playlist

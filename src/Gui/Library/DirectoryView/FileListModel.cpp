@@ -176,10 +176,8 @@ struct FileListModel::Private
 };
 
 FileListModel::FileListModel(LocalLibrary* localLibrary, QObject* parent) :
-	SearchableTableModel(parent)
-{
-	m = Pimpl::make<Private>(localLibrary);
-}
+	SearchableTableModel(parent),
+	m {Pimpl::make<Private>(localLibrary)} {}
 
 FileListModel::~FileListModel() = default;
 
@@ -225,21 +223,6 @@ LibraryId FileListModel::libraryId() const { return m->localLibrary->info().id()
 QString FileListModel::parentDirectory() const { return m->parentDirectory; }
 
 QStringList FileListModel::files() const { return m->files; }
-
-QModelIndexList FileListModel::searchResults(const QString& substr)
-{
-	QModelIndexList ret;
-
-	for(int i = 0; i < m->files.size(); i++)
-	{
-		if(checkRowForSearchstring(i, substr))
-		{
-			ret << index(i, 0);
-		}
-	}
-
-	return ret;
-}
 
 int FileListModel::rowCount(const QModelIndex& /*parent*/) const { return m->files.size(); }
 
@@ -356,15 +339,7 @@ QVariant FileListModel::headerData(int column, Qt::Orientation orientation, int 
 	return SearchableTableModel::headerData(column, orientation, role);
 }
 
-bool FileListModel::checkRowForSearchstring(int row, const QString& substr) const
-{
-	const auto convertedString = Library::convertSearchstring(substr, searchMode());
-	const auto filename = Util::File::getFilenameOfPath(m->files[row]);
-
-	const auto convertedFilepath = Library::convertSearchstring(filename, searchMode());
-
-	return convertedFilepath.contains(convertedString);
-}
+int Directory::FileListModel::itemCount() const { return m->files.count(); }
 
 QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 {
@@ -407,9 +382,14 @@ QMimeData* FileListModel::mimeData(const QModelIndexList& indexes) const
 
 Qt::ItemFlags FileListModel::flags(const QModelIndex& index) const
 {
-	return (index.isValid())
+	return index.isValid()
 	       ? Qt::ItemFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsDragEnabled)
 	       : Qt::NoItemFlags;
+}
+
+QString Directory::FileListModel::searchableString(int index, const QString& /*prefix*/) const
+{
+	return Util::File::getFilenameOfPath(m->files[index]);
 }
 
 IconWorkerThread::IconWorkerThread(const QSize& targetSize, const QString& filename)

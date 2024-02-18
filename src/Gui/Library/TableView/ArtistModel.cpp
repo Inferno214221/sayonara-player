@@ -55,7 +55,7 @@ Id ArtistModel::mapIndexToId(int row) const
 	       : -1;
 }
 
-QString ArtistModel::searchableString(int row) const
+QString ArtistModel::searchableString(const int row, const QString& /*prefix*/) const
 {
 	const auto& artists = library()->artists();
 	return Util::between(row, artists)
@@ -142,12 +142,6 @@ Cover::Location ArtistModel::cover(const QModelIndexList& indexes) const
 	       : Cover::Location::invalidLocation();
 }
 
-int ArtistModel::searchableColumn() const
-{
-	return static_cast<int>(ColumnIndex::Artist::Name);
-}
+const MetaDataList& Library::ArtistModel::selectedMetadata() const { return library()->tracks(); }
 
-const MetaDataList& Library::ArtistModel::selectedMetadata() const
-{
-	return library()->tracks();
-}
+int ArtistModel::itemCount() const { return library()->artists().count(); }

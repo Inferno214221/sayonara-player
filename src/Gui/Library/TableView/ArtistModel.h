@@ -32,10 +32,6 @@
 
 namespace Library
 {
-	/**
-	 * @brief The ArtistModel class
-	 * @ingroup GuiLibrary
-	 */
 	class ArtistModel :
 		public ItemModel
 	{
@@ -45,19 +41,17 @@ namespace Library
 			ArtistModel(QObject* parent, AbstractLibrary* library);
 			~ArtistModel() override;
 
-			/** AbstractSearchTableModel **/
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
-			QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-			int rowCount(const QModelIndex& parent) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent) const override;
 
-			/** LibraryItemModel **/
-			Cover::Location cover(const QModelIndexList& indexes) const override;
-			int searchableColumn() const override;
-			Id mapIndexToId(int row) const override;
-			QString searchableString(int row) const override;
+			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
+			[[nodiscard]] Id mapIndexToId(int row) const override;
 
 		protected:
-			const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 	};
 }
 

@@ -39,10 +39,6 @@ namespace Tagging
 
 namespace Library
 {
-	/**
-	 * @brief The AlbumModel class
-	 * @ingroup GuiLibrary
-	 */
 	class AlbumModel :
 		public ItemModel
 	{
@@ -55,18 +51,17 @@ namespace Library
 			           AbstractLibrary* library, QObject* parent);
 			~AlbumModel() override;
 
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
-			QVariant data(const QModelIndex& index, int role) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
 			bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::DisplayRole) override;
-			int rowCount(const QModelIndex& parent) const override;
 
-			Cover::Location cover(const QModelIndexList& indexes) const override;
-			int searchableColumn() const override;
-			Id mapIndexToId(int index) const override;
-			QString searchableString(int row) const override;
-
-		protected:
-			const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
+			[[nodiscard]] Id mapIndexToId(int index) const override;
+			
+			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 
 		private slots:
 			void albumChanged(int index);

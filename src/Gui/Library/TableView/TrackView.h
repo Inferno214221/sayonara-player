@@ -28,10 +28,6 @@
 class AbstractLibrary;
 namespace Library
 {
-	/**
-	 * @brief The TrackView class
-	 * @ingroup GuiLibrary
-	 */
 	class TrackView :
 		public TableView
 	{
@@ -42,24 +38,22 @@ namespace Library
 			explicit TrackView(QWidget* parent = nullptr);
 			~TrackView() override;
 
-		private:
-			AbstractLibrary* library() const override;
-			//from Library::TableView
+		protected:
+			[[nodiscard]] AbstractLibrary* library() const override;
 			void initView(AbstractLibrary* library) override;
 
-			ColumnHeaderList columnHeaders() const override;
-			QByteArray columnHeaderState() const override;
+			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
+			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
 
-			bool autoResizeState() const override;
+			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
 			[[nodiscard]] VariableSortorder sortorder() const override;
 			void applySortorder(VariableSortorder s) override;
 
-			ContextMenu::Entries contextMenuEntries() const override;
+			[[nodiscard]] ContextMenu::Entries contextMenuEntries() const override;
 
-			// from Library::ItemView
 			void playClicked() override;
 			void playNewTabClicked() override;
 			void playNextClicked() override;
@@ -67,8 +61,9 @@ namespace Library
 			void selectedItemsChanged(const IndexSet& lst) override;
 			void refreshClicked() override;
 
-			bool isMergeable() const override;
-			MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] bool isMergeable() const override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] SearchModel* searchModel() const override;
 	};
 }
 

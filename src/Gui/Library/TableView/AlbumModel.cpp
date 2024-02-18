@@ -85,10 +85,10 @@ Id AlbumModel::mapIndexToId(int index) const
 	       : -1;
 }
 
-QString AlbumModel::searchableString(int row) const
+QString Library::AlbumModel::searchableString(const int row, const QString& /*prefix*/) const
 {
 	const auto& albums = library()->albums();
-	return (Util::between(row, albums))
+	return Util::between(row, albums)
 	       ? albums[row].name()
 	       : QString {};
 }
@@ -256,12 +256,6 @@ Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 	       : ItemModel::flags(index);
 }
 
-int AlbumModel::searchableColumn() const
-{
-	return +ColumnIndex::Album::Name;
-}
+const MetaDataList& Library::AlbumModel::selectedMetadata() const { return library()->tracks(); }
 
-const MetaDataList& Library::AlbumModel::selectedMetadata() const
-{
-	return library()->tracks();
-}
+int Library::AlbumModel::itemCount() const { return library()->albums().count(); }

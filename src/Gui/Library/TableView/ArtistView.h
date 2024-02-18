@@ -29,21 +29,18 @@ namespace Library
 {
 	class MergeData;
 
-	/**
-	 * @brief The ArtistView class
-	 * @ingroup GuiLibrary
-	 */
 	class ArtistView :
 		public TableView
 	{
+		Q_OBJECT
 		PIMPL(ArtistView)
+
 		public:
 			explicit ArtistView(QWidget* parent = nullptr);
 			~ArtistView() override;
 
-			// ItemView interface
 		protected:
-			AbstractLibrary* library() const override;
+			[[nodiscard]] AbstractLibrary* library() const override;
 			void selectedItemsChanged(const IndexSet& indexes) override;
 			void playNextClicked() override;
 			void appendClicked() override;
@@ -55,21 +52,22 @@ namespace Library
 			void initView(AbstractLibrary* library) override;
 			void initContextMenu() override;
 
-			ColumnHeaderList columnHeaders() const override;
-			QByteArray columnHeaderState() const override;
+			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
+			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
 
 			[[nodiscard]] VariableSortorder sortorder() const override;
 			void applySortorder(VariableSortorder s) override;
 
-			bool autoResizeState() const override;
+			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
 			// ItemView
-			bool isMergeable() const override;
-			MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] bool isMergeable() const override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 
 			void languageChanged() override;
+			[[nodiscard]] SearchModel* searchModel() const override;
 
 		private slots:
 			void useClearButtonChanged();

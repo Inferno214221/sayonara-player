@@ -21,43 +21,41 @@
 #ifndef GUI_SEARCHABLE_MODEL_H
 #define GUI_SEARCHABLE_MODEL_H
 
+#include "Utils/Pimpl.h"
 #include "Utils/Library/SearchMode.h"
 
-#include <QAbstractListModel>
 #include <QAbstractTableModel>
-#include <QMap>
-#include <QString>
+#include <QList>
 
-class SearchableModelInterface
+class QString;
+class SearchModel
 {
+	PIMPL(SearchModel)
+
 	public:
-		using ExtraTriggerMap = QMap<QChar, QString>;
+		SearchModel();
+		virtual ~SearchModel() noexcept;
 
-		virtual ExtraTriggerMap getExtraTriggers();
-		virtual QModelIndexList searchResults(const QString& substr) = 0;
+		SearchModel(const SearchModel& other) = delete;
+		SearchModel(SearchModel&& other) noexcept = delete;
+		SearchModel& operator=(const SearchModel& other) = delete;
+		SearchModel& operator=(SearchModel&& other) = delete;
 
-		virtual ::Library::SearchModeMask searchMode() const final;
+		int searchPrevious();
+		int searchNext();
 
-	protected:
-		SearchableModelInterface();
-		virtual ~SearchableModelInterface();
+		[[nodiscard]] int initSearch(const QString& searchstring, int offsetIndex);
+		[[nodiscard]] virtual QString searchableString(int index, const QString& prefix) const = 0;
+		[[nodiscard]] virtual int itemCount() const = 0;
 };
 
-template<typename Model>
-class SearchableModel :
-	public SearchableModelInterface,
-	public Model
+class SearchableTableModel :
+	public QAbstractTableModel,
+	public SearchModel
 {
 	public:
-		SearchableModel(QObject* parent = nullptr) :
-			SearchableModelInterface(),
-			Model(parent) {}
-
-		virtual ~SearchableModel() = default;
-
-		using Model::rowCount;
+		explicit SearchableTableModel(QObject* parent = nullptr);
+		~SearchableTableModel() override;
 };
-
-using SearchableTableModel = SearchableModel<QAbstractTableModel>;
 
 #endif // GUI_SEARCHABLE_MODEL_H

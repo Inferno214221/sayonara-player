@@ -64,10 +64,7 @@ GUI_SomaFM::GUI_SomaFM(SomaFM::Library* library, QWidget* parent) :
 	m->progressBar = new Gui::ProgressBar(ui->tvStations);
 	m->progressBar->setPosition(Gui::ProgressBar::Position::Bottom);
 
-	auto* modelStations = new SomaFM::StationModel(this);
-
 	this->setFocusProxy(ui->tvStations);
-	ui->tvStations->setSearchableModel(modelStations);
 	ui->tvStations->setItemDelegate(new Gui::StyledItemDelegate(0, ui->tvStations));
 	ui->tvStations->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	ui->tvStations->setEnabled(false);
@@ -126,7 +123,7 @@ void GUI_SomaFM::stationsLoaded(const QList<SomaFM::Station>& stations)
 	}
 
 	spLog(Log::Debug, this) << "Stations loaded";
-	auto* model = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
+	auto* model = dynamic_cast<SomaFM::StationModel*>(ui->tvStations->model());
 	model->setStations(stations);
 
 	ui->tvStations->setEnabled(true);
@@ -138,7 +135,7 @@ void GUI_SomaFM::stationsLoaded(const QList<SomaFM::Station>& stations)
 
 void GUI_SomaFM::stationChanged(const SomaFM::Station& station)
 {
-	auto* model = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
+	auto* model = dynamic_cast<SomaFM::StationModel*>(ui->tvStations->model());
 	model->replaceStation(station);
 }
 
@@ -157,7 +154,7 @@ void GUI_SomaFM::selectionChanged(const QModelIndexList& indexes)
 
 SomaFM::Station GUI_SomaFM::getStation(int row) const
 {
-	auto* stationModel = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
+	auto* stationModel = dynamic_cast<SomaFM::StationModel*>(ui->tvStations->model());
 
 	const auto index = stationModel->index(row, 1);
 	const auto stationName = stationModel->data(index).toString();
@@ -172,7 +169,7 @@ void GUI_SomaFM::stationClicked(const QModelIndex& idx)
 		return;
 	}
 
-	auto* stationModel = static_cast<SomaFM::StationModel*>(ui->tvStations->model());
+	auto* stationModel = dynamic_cast<SomaFM::StationModel*>(ui->tvStations->model());
 	if(!stationModel->hasStations() && idx.column() == 0)
 	{
 		stationModel->setWaiting();
@@ -245,7 +242,7 @@ void GUI_SomaFM::playlistDoubleClicked(const QModelIndex& idx)
 
 void GUI_SomaFM::coverFound(const QPixmap& cover)
 {
-	auto* coverLookup = static_cast<Cover::Lookup*>(sender());
+	auto* coverLookup = dynamic_cast<Cover::Lookup*>(sender());
 
 	auto pixmap = cover.scaled(QSize(200, 200),
 	                           Qt::KeepAspectRatio,

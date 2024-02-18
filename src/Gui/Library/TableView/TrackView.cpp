@@ -42,6 +42,7 @@ using namespace Library;
 struct TrackView::Private
 {
 	AbstractLibrary* library = nullptr;
+	TrackModel* model = nullptr;
 };
 
 TrackView::TrackView(QWidget* parent) :
@@ -60,11 +61,10 @@ AbstractLibrary* TrackView::library() const
 void TrackView::initView(AbstractLibrary* library)
 {
 	m->library = library;
-
-	auto* trackModel = new TrackModel(this, library);
+	m->model = new TrackModel(this, library);
 	auto* trackDelegate = new RatingDelegate(static_cast<int>(ColumnIndex::Track::Rating), -1, this);
 
-	this->setItemModel(trackModel);
+	this->setItemModel(m->model);
 	this->setItemDelegate(trackDelegate);
 
 	connect(library, &AbstractLibrary::sigAllTracksLoaded, this, &TrackView::fill);
@@ -149,25 +149,13 @@ ColumnHeaderList TrackView::columnHeaders() const
 		};
 }
 
-QByteArray TrackView::columnHeaderState() const
-{
-	return GetSetting(Set::Lib_ColStateTracks);
-}
+QByteArray TrackView::columnHeaderState() const { return GetSetting(Set::Lib_ColStateTracks); }
 
-void TrackView::saveColumnHeaderState(const QByteArray& state)
-{
-	SetSetting(Set::Lib_ColStateTracks, state);
-}
+void TrackView::saveColumnHeaderState(const QByteArray& state) { SetSetting(Set::Lib_ColStateTracks, state); }
 
-bool TrackView::autoResizeState() const
-{
-	return GetSetting(Set::Lib_HeaderAutoResizeTracks);
-}
+bool TrackView::autoResizeState() const { return GetSetting(Set::Lib_HeaderAutoResizeTracks); }
 
-void TrackView::saveAutoResizeState(bool b)
-{
-	SetSetting(Set::Lib_HeaderAutoResizeTracks, b);
-}
+void TrackView::saveAutoResizeState(bool b) { SetSetting(Set::Lib_HeaderAutoResizeTracks, b); }
 
 Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 {
@@ -176,10 +164,7 @@ Library::ContextMenu::Entries TrackView::contextMenuEntries() const
 	        Library::ContextMenu::EntryFilterExtension);
 }
 
-VariableSortorder TrackView::sortorder() const
-{
-	return GetSetting(Set::Lib_Sorting).tracks;
-}
+VariableSortorder TrackView::sortorder() const { return GetSetting(Set::Lib_Sorting).tracks; }
 
 void TrackView::applySortorder(const VariableSortorder s)
 {
@@ -224,12 +209,8 @@ void TrackView::refreshClicked()
 	m->library->refreshTracks();
 }
 
-bool TrackView::isMergeable() const
-{
-	return false;
-}
+bool TrackView::isMergeable() const { return false; }
 
-MD::Interpretation TrackView::metadataInterpretation() const
-{
-	return MD::Interpretation::Tracks;
-}
+MD::Interpretation TrackView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
+
+SearchModel* Library::TrackView::searchModel() const { return m->model; }

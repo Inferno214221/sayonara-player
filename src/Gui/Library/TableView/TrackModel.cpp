@@ -251,7 +251,7 @@ Id TrackModel::mapIndexToId(int row) const
 	return Util::between(row, tracks) ? tracks[row].id() : -1;
 }
 
-QString TrackModel::searchableString(int row) const
+QString Library::TrackModel::searchableString(const int row, const QString& /*prefix*/) const
 {
 	const auto& tracks = library()->tracks();
 	return Util::between(row, tracks) ? tracks[row].title() : QString();
@@ -288,17 +288,11 @@ Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
 	       : Cover::Location::coverLocation(tracks[firstRow]);
 }
 
-int TrackModel::searchableColumn() const
-{
-	return +ColumnIndex::Track::Title;
-}
-
-const MetaDataList& Library::TrackModel::selectedMetadata() const
-{
-	return library()->currentTracks();
-}
+const MetaDataList& Library::TrackModel::selectedMetadata() const { return library()->currentTracks(); }
 
 void TrackModel::languageChanged()
 {
 	m->locale = Util::Language::getCurrentLocale();
 }
+
+int Library::TrackModel::itemCount() const { return library()->tracks().count(); }

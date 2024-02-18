@@ -59,10 +59,8 @@ namespace Library
 	};
 
 	CoverView::CoverView(QWidget* parent) :
-		Library::ItemView(parent)
-	{
-		m = Pimpl::make<Private>();
-	}
+		Library::ItemView(parent),
+		m {Pimpl::make<Private>()} {}
 
 	CoverView::~CoverView() = default;
 
@@ -328,4 +326,6 @@ namespace Library
 
 		ItemView::hideEvent(e);
 	}
+
+	SearchModel* CoverView::searchModel() const { return m->model; }
 }

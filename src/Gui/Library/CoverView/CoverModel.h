@@ -38,10 +38,6 @@ namespace Cover
 
 namespace Library
 {
-	/**
-	 * @brief The CoverModel class
-	 * @ingroup GuiLibrary
-	 */
 	class CoverModel :
 		public ItemModel
 	{
@@ -60,27 +56,26 @@ namespace Library
 			~CoverModel() override;
 
 		public:
-			int rowCount(const QModelIndex& parent = QModelIndex()) const override;
-			int columnCount(const QModelIndex& paren = QModelIndex()) const override;
-			QVariant data(const QModelIndex& index, int role) const override;
-			Qt::ItemFlags flags(const QModelIndex& index) const override;
+			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] int columnCount(const QModelIndex& paren = QModelIndex()) const override;
+			[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
+			[[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
 
-			QSize itemSize() const;
-			int zoom() const;
+			[[nodiscard]] QSize itemSize() const;
+			[[nodiscard]] int zoom() const;
 
 		protected:
-			QModelIndex index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
-			const MetaDataList& selectedMetadata() const override;
+			[[nodiscard]] QModelIndex
+			index(int row, int column, const QModelIndex& parent = QModelIndex()) const override;
+			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
 
-			QModelIndexList searchResults(const QString& substr) override;
-
-			int searchableColumn() const override;
-			QString searchableString(int index) const override;
-			int mapIndexToId(int index) const override;
-			Cover::Location cover(const QModelIndexList& indexes) const override;
+			[[nodiscard]] int mapIndexToId(int index) const override;
+			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(const int index, const QString& prefix) const override;
 
 		private:
-			const AlbumList& albums() const;
+			[[nodiscard]] const AlbumList& albums() const;
 			bool insertRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 			bool removeRows(int row, int count, const QModelIndex& parent = QModelIndex()) override;
 			bool insertColumns(int column, int count, const QModelIndex& parent = QModelIndex()) override;

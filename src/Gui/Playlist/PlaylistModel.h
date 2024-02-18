@@ -35,6 +35,8 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/PlaylistFwd.h"
 
+#include <QTableView>
+
 namespace Library
 {
 	class InfoAccessor;
@@ -44,17 +46,11 @@ class QPixmap;
 
 namespace Playlist
 {
-	/**
-	 * @brief The PlaylistItemModel class
-	 * @ingroup GuiPlaylists
-	 */
 	class Model :
 		public SearchableTableModel
 	{
 		Q_OBJECT
 		PIMPL(Model)
-
-			using SearchableModelInterface::ExtraTriggerMap;
 
 		signals:
 			void sigDataReady();
@@ -125,9 +121,7 @@ namespace Playlist
 			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 			[[nodiscard]] int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
-			SearchableModelInterface::ExtraTriggerMap getExtraTriggers() override;
 			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
-			QModelIndexList searchResults(const QString& searchString) override;
 
 		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void refreshData();
@@ -135,6 +129,10 @@ namespace Playlist
 			void randomizeTracks();
 			void sortTracks(Library::TrackSortorder sortorder);
 			void jumpToNextAlbum();
+
+		protected:
+			[[nodiscard]] int itemCount() const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 
 		private slots:
 			void playlistChanged(int playlistIndex);

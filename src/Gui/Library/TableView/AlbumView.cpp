@@ -46,6 +46,7 @@ using namespace Library;
 struct AlbumView::Private
 {
 	AbstractLibrary* library = nullptr;
+	AlbumModel* model = nullptr;
 	DiscPopupMenu* discmenu = nullptr;
 	QPoint discmenuPoint;
 	Tagging::TagReaderPtr tagReader {Tagging::TagReader::create()};
@@ -65,12 +66,11 @@ AlbumView::~AlbumView() = default;
 void AlbumView::initView(AbstractLibrary* library)
 {
 	m->library = library;
-
-	auto* model = new AlbumModel(m->tagReader, m->tagWriter, m->library, this);
+	m->model = new AlbumModel(m->tagReader, m->tagWriter, m->library, this);
 	auto* delegate = new RatingDelegate(static_cast<int>(ColumnIndex::Album::Rating), 0, this);
 
-	this->setItemModel(model);
-	this->setItemDelegate(delegate);
+	setItemModel(m->model);
+	setItemDelegate(delegate);
 
 	connect(m->library, &AbstractLibrary::sigAllAlbumsLoaded, this, &AlbumView::fill);
 
@@ -307,4 +307,6 @@ void AlbumView::useClearButtonChanged()
 	bool b = GetSetting(Set::Lib_UseViewClearButton);
 	useClearButton(b);
 }
+
+SearchModel* Library::AlbumView::searchModel() const { return m->model; }
 

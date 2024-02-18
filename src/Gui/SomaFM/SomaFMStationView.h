@@ -18,27 +18,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 #ifndef SOMAFMSTATIONVIEW_H
 #define SOMAFMSTATIONVIEW_H
 
+#include "Gui/Utils/Widgets/WidgetTemplate.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
+#include "Gui/Utils/SearchableWidget/SelectionView.h"
 
 class SomaFMStationView :
 	public SearchableTableView
 {
+	PIMPL(SomaFMStationView)
+
 	public:
-		SomaFMStationView(QWidget* parent = nullptr);
+		explicit SomaFMStationView(QWidget* parent = nullptr);
 		~SomaFMStationView() override;
 
-	public:
-		// SayonaraSelectionView interface
-		int mapModelIndexToIndex(const QModelIndex& idx) const override;
-		ModelIndexRange mapIndexToModelIndexes(int idx) const override;
-
-		int viewportHeight() const override;
+		[[nodiscard]] int mapModelIndexToIndex(const QModelIndex& idx) const override;
+		[[nodiscard]] ModelIndexRange mapIndexToModelIndexes(int idx) const override;
 
 	protected:
+		[[nodiscard]] SearchModel* searchModel() const override;
 		void keyPressEvent(QKeyEvent* e) override;
 		void showEvent(QShowEvent* e) override;
 };

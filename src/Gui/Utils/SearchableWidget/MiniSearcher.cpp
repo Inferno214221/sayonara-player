@@ -50,7 +50,7 @@ namespace
 		       triggers.contains(firstChar);
 	}
 
-	QRect calcGeometry(SearchableViewInterface* searchableView, const int maxWidth, const int lineEditHeight)
+	QRect calcGeometry(SearchView* searchableView, const int maxWidth, const int lineEditHeight)
 	{
 		const auto parentWidth = searchableView->viewportWidth();
 		const auto parentHeight = searchableView->viewportHeight();
@@ -95,12 +95,12 @@ namespace Gui
 	{
 		QMap<QChar, QString> triggers;
 
-		SearchableViewInterface* searchableView;
+		SearchView* searchableView;
 		QLineEdit* lineEdit;
 		QLabel* label;
 		int maxWidth;
 
-		Private(MiniSearcher* parent, SearchableViewInterface* searchableView) :
+		Private(MiniSearcher* parent, SearchView* searchableView) :
 			searchableView {searchableView},
 			lineEdit {new QLineEdit(parent)},
 			label {new QLabel(parent)},
@@ -113,8 +113,8 @@ namespace Gui
 		}
 	};
 
-	MiniSearcher::MiniSearcher(SearchableViewInterface* parent) :
-		WidgetTemplate<QFrame>(parent->view())
+	MiniSearcher::MiniSearcher(SearchView* parent) :
+		WidgetTemplate<QFrame>(parent->widget())
 	{
 		m = Pimpl::make<Private>(this, parent);
 
@@ -178,6 +178,7 @@ namespace Gui
 
 	void MiniSearcher::setNumberResults(const int results)
 	{
+		spLog(Log::Info, this) << "Show number of result: " << results;
 		m->label->setVisible(results >= 0);
 		if(results >= 0)
 		{
@@ -186,13 +187,7 @@ namespace Gui
 		}
 	}
 
-	void MiniSearcher::notifyViewSearchDone()
-	{
-		if(parentWidget() && m->searchableView)
-		{
-			m->searchableView->searchDone();
-		}
-	}
+	void MiniSearcher::notifyViewSearchDone() {}
 
 	bool MiniSearcher::handleKeyPress(QKeyEvent* e)
 	{

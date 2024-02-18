@@ -68,7 +68,7 @@ struct ItemView::Private
 };
 
 ItemView::ItemView(QWidget* parent) :
-	SearchableTableView(parent),
+	SearchableTableView {parent},
 	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
@@ -110,8 +110,7 @@ ItemModel* ItemView::itemModel() const { return m->model; }
 void ItemView::setItemModel(ItemModel* model)
 {
 	m->model = model;
-
-	SearchableTableView::setSearchableModel(model);
+	SearchableTableView::setModel(model);
 }
 
 ContextMenu::Entries ItemView::contextMenuEntries() const
@@ -209,8 +208,8 @@ void ItemView::showClearButton(bool visible)
 	{
 		m->buttonClearSelection = new QPushButton(this);
 
-		connect(m->buttonClearSelection, &QPushButton::clicked, this, [=]() {
-			this->clearSelection();
+		connect(m->buttonClearSelection, &QPushButton::clicked, this, [this]() {
+			clearSelection();
 			m->buttonClearSelection->hide();
 		});
 	}
@@ -314,7 +313,7 @@ void ItemView::importRequested(const QStringList& files)
 
 void ItemView::mousePressEvent(QMouseEvent* event)
 {
-	if(rowCount() == 0)
+	if(m->model->rowCount() == 0)
 	{
 		return;
 	}
@@ -350,7 +349,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		for(const auto& selectedIndex: selections)
 		{
 			const auto id = model->mapIndexToId(selectedIndex);
-			auto name = model->searchableString(selectedIndex);
+			auto name = model->searchableString(selectedIndex, {});
 			name.replace("&", "&&");
 
 			data.insert(id, name);
@@ -418,11 +417,16 @@ void ItemView::resizeEvent(QResizeEvent* event)
 
 int ItemView::viewportHeight() const
 {
-	const auto viewportHeight = SearchableTableView::viewportHeight();
+	auto viewportHeight = SearchableTableView::viewportHeight();
 
 	if(m->buttonClearSelection && m->buttonClearSelection->isVisible())
 	{
-		return viewportHeight - (m->buttonClearSelection->height() + 5);
+		viewportHeight -= (m->buttonClearSelection->height() + 5);
+	}
+
+	if(horizontalHeader() && horizontalHeader()->isVisible())
+	{
+		viewportHeight += horizontalHeader()->height();
 	}
 
 	return viewportHeight;

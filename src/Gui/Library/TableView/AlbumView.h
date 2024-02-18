@@ -30,10 +30,6 @@ namespace Library
 {
 	class DiscPopupMenu;
 
-	/**
-	 * @brief The AlbumView class
-	 * @ingroup GuiLibrary
-	 */
 	class AlbumView :
 		public TableView
 	{
@@ -48,21 +44,19 @@ namespace Library
 
 		public:
 			explicit AlbumView(QWidget* parent = nullptr);
-			virtual ~AlbumView() override;
+			~AlbumView() override;
 
 		protected:
-			ColumnHeaderList columnHeaders() const override;
-			QByteArray columnHeaderState() const override;
+			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
+			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
 
 		private:
-			// Library::TableView
 			void initView(AbstractLibrary* library) override;
 
 			[[nodiscard]] VariableSortorder sortorder() const override;
 			void applySortorder(VariableSortorder s) override;
 
-			// Library::ItemView
 			void playClicked() override;
 			void playNewTabClicked() override;
 			void playNextClicked() override;
@@ -70,10 +64,10 @@ namespace Library
 			void selectedItemsChanged(const IndexSet& indexes) override;
 			void refreshClicked() override;
 			void runMergeOperation(const MergeData& mergedata) override;
-			bool isMergeable() const override;
-			MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] bool isMergeable() const override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 
-			bool autoResizeState() const override;
+			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
 			void calcDiscmenuPoint(QModelIndex idx);
@@ -83,7 +77,8 @@ namespace Library
 			void showDiscmenu();
 			void showContextMenu(const QPoint& p) override;
 
-			AbstractLibrary* library() const override;
+			[[nodiscard]] AbstractLibrary* library() const override;
+			[[nodiscard]] SearchModel* searchModel() const override;
 
 		private slots:
 			void useClearButtonChanged();

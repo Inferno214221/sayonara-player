@@ -23,6 +23,7 @@
 
 #include "CoverViewSortorderInfo.h"
 #include "Gui/Library/ItemView.h"
+#include "Gui/Utils/SearchableWidget/SelectionView.h"
 #include "Utils/Library/Sortorder.h"
 
 class LocalLibrary;
@@ -32,10 +33,6 @@ namespace Library
 {
 	class MergeData;
 
-	/**
-	 * @brief The CoverView class
-	 * @ingroup GuiLibrary
-	 */
 	class CoverView :
 		public ItemView
 	{
@@ -47,22 +44,22 @@ namespace Library
 			~CoverView() override;
 
 			void init(LocalLibrary* library);
-			AbstractLibrary* library() const override;
+			[[nodiscard]] AbstractLibrary* library() const override;
 
 			// QAbstractItemView
-			QStyleOptionViewItem viewOptions() const override;
+			[[nodiscard]] QStyleOptionViewItem viewOptions() const override;
 
 			//SayonaraSelectionView
-			int mapModelIndexToIndex(const QModelIndex& idx) const override;
-			ModelIndexRange mapIndexToModelIndexes(int idx) const override;
-			SelectionViewInterface::SelectionType selectionType() const override;
+			[[nodiscard]] int mapModelIndexToIndex(const QModelIndex& idx) const override;
+			[[nodiscard]] ModelIndexRange mapIndexToModelIndexes(int idx) const override;
+			[[nodiscard]] SelectionViewInterface::SelectionType selectionType() const override;
 
-			int zoom() const;
+			[[nodiscard]] int zoom() const;
 			void changeZoom(int zoom = -1);
 			void changeSortorder(AlbumSortorder so);
 
-			static QList<CoverViewSortorderInfo> sortingActions();
-			static QList<int> zoomFactors();
+			[[nodiscard]] static QList<CoverViewSortorderInfo> sortingActions();
+			[[nodiscard]] static QList<int> zoomFactors();
 
 		public slots:
 			void reload();
@@ -75,10 +72,11 @@ namespace Library
 			void languageChanged() override;
 
 			// ItemView
-			bool isMergeable() const override;
-			MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]]bool isMergeable() const override;
+			[[nodiscard]]MD::Interpretation metadataInterpretation() const override;
 
-			int sizeHintForColumn(int) const override;
+			[[nodiscard]] int sizeHintForColumn(int) const override;
+			[[nodiscard]] SearchModel* searchModel() const override;
 
 			void wheelEvent(QWheelEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;

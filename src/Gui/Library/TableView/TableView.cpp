@@ -34,7 +34,7 @@ struct TableView::Private
 {
 	HeaderView* header;
 
-	Private(TableView* tableView) :
+	explicit Private(TableView* tableView) :
 		header {new HeaderView(Qt::Horizontal, tableView)} {}
 };
 

@@ -19,41 +19,49 @@
  */
 
 #include "SomaFMStationView.h"
+#include "SomaFMStationModel.h"
+
 #include <QHeaderView>
 
+struct SomaFMStationView::Private
+{
+	SomaFM::StationModel* model;
+
+	explicit Private(SomaFM::StationModel* model) :
+		model {model} {}
+};
+
 SomaFMStationView::SomaFMStationView(QWidget* parent) :
-	SearchableTableView(parent) {}
+	SearchableTableView(parent),
+	m {Pimpl::make<Private>(new SomaFM::StationModel(this))}
+{
+	setModel(m->model);
+}
 
 SomaFMStationView::~SomaFMStationView() = default;
 
-int SomaFMStationView::mapModelIndexToIndex(const QModelIndex& idx) const
-{
-	return idx.row();
-}
+int SomaFMStationView::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
 ModelIndexRange SomaFMStationView::mapIndexToModelIndexes(int idx) const
 {
-	QModelIndex midx = model()->index(idx, 0);
-	return ModelIndexRange(midx, midx);
+	const auto index = model()->index(idx, 0);
+	return {index, index};
 }
 
 void SomaFMStationView::keyPressEvent(QKeyEvent* e)
 {
 	e->setAccepted(false);
 
-	SearchableTableView::keyPressEvent(e);
+	QTableView::keyPressEvent(e);
 }
 
 void SomaFMStationView::showEvent(QShowEvent* e)
 {
-	SearchableTableView::showEvent(e);
+	Gui::WidgetTemplate<QTableView>::showEvent(e);
 
-	int w = this->fontMetrics().height();
-	this->horizontalHeader()->setMinimumSectionSize(w * 2);
-	this->resizeColumnToContents(0);
+	const auto height = fontMetrics().height();
+	horizontalHeader()->setMinimumSectionSize(height * 2);
+	resizeColumnToContents(0);
 }
 
-int SomaFMStationView::viewportHeight() const
-{
-	return this->height();
-}
+SearchModel* SomaFMStationView::searchModel() const { return m->model; }
