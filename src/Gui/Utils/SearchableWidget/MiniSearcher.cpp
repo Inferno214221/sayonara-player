@@ -94,8 +94,7 @@ namespace Gui
 {
 	struct MiniSearcher::Private
 	{
-		QMap<QChar, QString> triggers;
-
+		QMap<QString, QString> searchOptions;
 		SearchView* searchableView;
 		QLineEdit* lineEdit;
 		QLabel* label;
@@ -163,14 +162,14 @@ namespace Gui
 		hide();
 	}
 
-	void MiniSearcher::setExtraTriggers(const QMap<QChar, QString>& triggers)
+	void MiniSearcher::setSearchOptions(const QMap<QString, QString>& options)
 	{
-		m->triggers = triggers;
-
+		m->searchOptions = options;
 		auto tooltips = QStringList {};
-		for(auto it = triggers.cbegin(); it != triggers.cend(); it++)
+
+		for(auto it = options.cbegin(); it != options.cend(); it++)
 		{
-			tooltips << QString("<b>%1</b> = %2").arg(it.key()).arg(it.value());
+			tooltips << QString("<b>/%1</b> = %2").arg(it.key()).arg(it.value());
 		}
 
 		resetToolTip(m->lineEdit);
@@ -268,7 +267,7 @@ namespace Gui
 	void MiniSearcher::languageChanged()
 	{
 		resetToolTip(m->lineEdit);
-		setExtraTriggers(m->triggers);
+		setSearchOptions(m->searchOptions);
 	}
 
 	bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)

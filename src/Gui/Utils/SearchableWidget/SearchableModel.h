@@ -47,6 +47,8 @@ class SearchModel
 		[[nodiscard]] int initSearch(const QString& searchstring, int offsetIndex);
 		[[nodiscard]] virtual QString searchableString(int index, const QString& prefix) const = 0;
 		[[nodiscard]] virtual int itemCount() const = 0;
+
+		[[nodiscard]] virtual QMap<QString, QString> searchOptions() const;
 };
 
 class SearchableTableModel :

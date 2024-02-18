@@ -25,8 +25,15 @@
 
 namespace
 {
-	std::pair<QString, QString> splitSearchstring(const QString& searchstring, const Library::SearchModeMask searchMode)
+	std::pair<QString, QString> splitSearchstring(QString searchstring, const Library::SearchModeMask searchMode)
 	{
+		if(!searchstring.startsWith('/'))
+		{
+			return {{}, searchstring};
+		}
+
+		searchstring.remove(0, 1);
+
 		const auto splitted = searchstring.split(' ');
 		const auto prefix = splitted.size() == 2
 		                    ? splitted[0]
@@ -71,7 +78,7 @@ int SearchModel::initSearch(const QString& searchstring, int startIndex)
 		const auto row = (startIndex + i) % count;
 		const auto data = Library::convertSearchstring(searchableString(row, prefix), searchMode);
 
-		if(data.contains(searchstring))
+		if(data.contains(pureSearchstring))
 		{
 			m->matches << row;
 		}
@@ -103,6 +110,8 @@ int SearchModel::searchPrevious()
 
 	return m->matches[m->currentIndex];
 }
+
+QMap<QString, QString> SearchModel::searchOptions() const { return {}; }
 
 SearchableTableModel::SearchableTableModel(QObject* parent) :
 	QAbstractTableModel(parent) {}

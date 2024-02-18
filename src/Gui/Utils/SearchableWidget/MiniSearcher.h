@@ -68,7 +68,7 @@ namespace Gui
 			~MiniSearcher() override;
 
 			bool handleKeyPress(QKeyEvent* e);
-			void setExtraTriggers(const QMap<QChar, QString>& triggers);
+			void setSearchOptions(const QMap<QString, QString>& triggers);
 			void setNumberResults(int results);
 
 		public slots:

@@ -65,10 +65,9 @@ using Playlist::Model;
 
 namespace
 {
-	constexpr const auto AlbumSearchPrefix = '%';
-	constexpr const auto ArtistSearchPrefix = '$';
-	constexpr const auto FilenameSearchPrefix = '/';
-	constexpr const auto JumpPrefix = ':';
+	constexpr const auto AlbumSearchPrefix = "album";
+	constexpr const auto ArtistSearchPrefix = "artist";
+	constexpr const auto FilenameSearchPrefix = "file";
 
 	enum class PlaylistSearchMode
 	{
@@ -103,10 +102,9 @@ namespace
 	PlaylistSearchMode evaluateSearchString(const QString& prefix)
 	{
 		static const auto map = QHash<QString, PlaylistSearchMode> {
-			{{ArtistSearchPrefix},   PlaylistSearchMode::Artist},
-			{{AlbumSearchPrefix},    PlaylistSearchMode::Album},
-			{{FilenameSearchPrefix}, PlaylistSearchMode::Filename},
-			{{JumpPrefix},           PlaylistSearchMode::Jump}};
+			{ArtistSearchPrefix,   PlaylistSearchMode::Artist},
+			{AlbumSearchPrefix,    PlaylistSearchMode::Album},
+			{FilenameSearchPrefix, PlaylistSearchMode::Filename}};
 
 		return map.contains(prefix)
 		       ? map[prefix]
@@ -695,6 +693,15 @@ QString Playlist::Model::searchableString(const int index, const QString& prefix
 	const auto& tracks = m->playlist->tracks();
 
 	return calculateSearchKey(tracks[index], playlistSearchMode);
+}
+
+QMap<QString, QString> Playlist::Model::searchOptions() const
+{
+	return {
+		{ArtistSearchPrefix,   Lang::get(Lang::Artist)},
+		{AlbumSearchPrefix,    Lang::get(Lang::Album)},
+		{FilenameSearchPrefix, Lang::get(Lang::Filename)}
+	};
 }
 
 Util::Set<int> Playlist::removeDisabledRows(const Util::Set<int>& selectedRows, Model* model)

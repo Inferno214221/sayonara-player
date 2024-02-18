@@ -122,6 +122,7 @@ namespace Playlist
 			[[nodiscard]] int columnCount(const QModelIndex& parent = QModelIndex()) const override;
 
 			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexes) const override;
+			[[nodiscard]] QMap<QString, QString> searchOptions() const override;
 
 		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void refreshData();

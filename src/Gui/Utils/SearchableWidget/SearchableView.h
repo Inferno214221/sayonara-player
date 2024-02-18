@@ -26,6 +26,7 @@
 #include "Utils/Pimpl.h"
 
 #include <QKeyEvent>
+#include <QMap>
 #include <QTableView>
 
 class SearchModel;
@@ -49,6 +50,7 @@ class SearchView
 		void searchPrevious();
 
 		[[nodiscard]] virtual QWidget* widget() = 0;
+		[[nodiscard]] virtual QMap<QString, QString> searchOptions() const;
 
 	protected:
 		[[nodiscard]] virtual SearchModel* searchModel() const = 0;
