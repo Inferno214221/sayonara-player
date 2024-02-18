@@ -153,6 +153,10 @@ void SelectionViewInterface::selectRows(const IndexSet& indexes, const int minCo
 	}
 
 	select(m->view, selection);
+	if(const auto modelIndexes = selection.indexes(); !modelIndexes.isEmpty())
+	{
+		m->view->scrollTo(modelIndexes.first());
+	}
 }
 
 void SelectionViewInterface::selectItems(const IndexSet& indexes)
@@ -165,6 +169,10 @@ void SelectionViewInterface::selectItems(const IndexSet& indexes)
 	}
 
 	select(m->view, selection);
+	if(const auto modelIndexes = selection.indexes(); !modelIndexes.isEmpty())
+	{
+		m->view->scrollTo(modelIndexes.first());
+	}
 }
 
 IndexSet SelectionViewInterface::selectedItems() const

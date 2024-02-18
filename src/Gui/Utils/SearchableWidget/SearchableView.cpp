@@ -157,7 +157,7 @@ void SearchableTableView::selectSearchResult(const int index)
 {
 	if(selectionBehavior() == QAbstractItemView::SelectionBehavior::SelectRows)
 	{
-		selectRow(index);
+		selectRows({index});
 	}
 
 	else
