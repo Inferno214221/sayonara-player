@@ -29,10 +29,11 @@
 #include <QTableView>
 
 class SearchModel;
-class MiniSearcherViewConnector;
 
 class SearchView
 {
+	PIMPL(SearchView)
+
 	public:
 		SearchView();
 		virtual ~SearchView() noexcept;
@@ -47,12 +48,13 @@ class SearchView
 		void searchNext();
 		void searchPrevious();
 
-		virtual void selectSearchResult(int index) = 0;
-
 		[[nodiscard]] virtual QWidget* widget() = 0;
 
 	protected:
 		[[nodiscard]] virtual SearchModel* searchModel() const = 0;
+		virtual void selectSearchResult(int index) = 0;
+		[[nodiscard]] virtual int currentSelectedItem() const = 0;
+		bool handleKeyPress(QKeyEvent* event);
 };
 
 class SearchableTableView :
@@ -61,7 +63,6 @@ class SearchableTableView :
 	public SelectionViewInterface
 {
 	Q_OBJECT
-	PIMPL(SearchableTableView)
 
 	public:
 		explicit SearchableTableView(QWidget* parent = nullptr);
@@ -79,27 +80,6 @@ class SearchableTableView :
 		void selectSearchResult(int index) override;
 
 		void keyPressEvent(QKeyEvent* event) override;
-};
-
-class MiniSearcherViewConnector :
-	public QObject
-{
-	Q_OBJECT
-	PIMPL(MiniSearcherViewConnector)
-
-	public:
-		MiniSearcherViewConnector(SearchView* searchView, QObject* parent);
-		~MiniSearcherViewConnector() override;
-
-		void init();
-		[[nodiscard]] bool isActive() const;
-		void setExtraTriggers(const QMap<QChar, QString>& map);
-		bool handleKeyPress(QKeyEvent* e);
-
-	private slots:
-		void lineEditChanged(const QString& str);
-		void selectNext();
-		void selectPrevious();
 };
 
 #endif // SEARCHABLEVIEW_H

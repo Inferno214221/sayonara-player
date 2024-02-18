@@ -35,79 +35,64 @@
 #include <QScrollBar>
 #include <QString>
 
-struct MiniSearcherViewConnector::Private
+namespace
 {
-	QMap<QChar, QString> triggerMap;
-	QString currentSearchstring;
+	using Gui::MiniSearcher;
+	class QObjectWrapper :
+		public QObject
+	{
+		Q_OBJECT
 
-	Gui::MiniSearcher* miniSearcher {nullptr};
-	SearchView* searchView;
+		public:
+			explicit QObjectWrapper(SearchView* view) :
+				QObject {nullptr},
+				m_view {view} {}
 
-	explicit Private(SearchView* searchView) :
-		searchView {searchView} {}
+			~QObjectWrapper() override = default;
+
+			void init()
+			{
+				m_miniSearcher = new MiniSearcher(m_view);
+				m_miniSearcher->setSearchOptions(m_view->searchOptions());
+
+				connect(m_miniSearcher, &MiniSearcher::sigTextChanged, this, &QObjectWrapper::searchTextChanged);
+				connect(m_miniSearcher, &MiniSearcher::sigFindNextRow, this, [this]() { m_view->searchNext(); });
+				connect(m_miniSearcher, &MiniSearcher::sigFindPrevRow, this, [this]() { m_view->searchPrevious(); });
+			}
+
+			bool handleKeyPress(QKeyEvent* event)
+			{
+				if(!m_miniSearcher)
+				{
+					init();
+				}
+				return m_miniSearcher->handleKeyPress(event);
+			}
+
+		private slots:
+
+			void searchTextChanged(const QString& text)
+			{
+				const auto resultCount = m_view->search(text);
+				m_miniSearcher->setNumberResults(resultCount);
+			};
+
+		private:
+			SearchView* m_view;
+			Gui::MiniSearcher* m_miniSearcher {nullptr};
+	};
+}
+
+struct SearchView::Private
+{
+	QObjectWrapper qObjectWrapper;
+
+	explicit Private(SearchView* view) :
+		qObjectWrapper {view} {}
 };
 
-MiniSearcherViewConnector::MiniSearcherViewConnector(SearchView* searchView, QObject* parent) :
-	QObject(parent),
-	m {Pimpl::make<Private>(searchView)} {}
-
-MiniSearcherViewConnector::~MiniSearcherViewConnector() = default;
-
-void MiniSearcherViewConnector::init()
-{
-	if(m->miniSearcher)
-	{
-		return;
-	}
-	
-	m->miniSearcher = new Gui::MiniSearcher(m->searchView);
-	m->miniSearcher->setExtraTriggers(m->triggerMap);
-
-	connect(m->miniSearcher, &Gui::MiniSearcher::sigTextChanged, this, &MiniSearcherViewConnector::lineEditChanged);
-	connect(m->miniSearcher, &Gui::MiniSearcher::sigFindNextRow, this, &MiniSearcherViewConnector::selectNext);
-	connect(m->miniSearcher, &Gui::MiniSearcher::sigFindPrevRow, this, &MiniSearcherViewConnector::selectPrevious);
-}
-
-bool MiniSearcherViewConnector::isActive() const
-{
-	return (m->miniSearcher && m->miniSearcher->isVisible());
-}
-
-void MiniSearcherViewConnector::setExtraTriggers(const QMap<QChar, QString>& map)
-{
-	m->triggerMap = map;
-	if(m->miniSearcher)
-	{
-		m->miniSearcher->setExtraTriggers(map);
-	}
-}
-
-bool MiniSearcherViewConnector::handleKeyPress(QKeyEvent* e)
-{
-	return m->miniSearcher->handleKeyPress(e);
-}
-
-void MiniSearcherViewConnector::lineEditChanged(const QString& str)
-{
-	const auto searchMode = GetSetting(Set::Lib_SearchMode);
-	m->currentSearchstring = Library::convertSearchstring(str, searchMode, m->triggerMap.keys());
-
-	const auto resultCount = m->searchView->search(m->currentSearchstring);
-	spLog(Log::Info, this) << "found " << resultCount << " search results";
-	m->miniSearcher->setNumberResults(resultCount);
-}
-
-void MiniSearcherViewConnector::selectNext()
-{
-	m->searchView->searchNext();
-}
-
-void MiniSearcherViewConnector::selectPrevious()
-{
-	m->searchView->searchPrevious();
-}
-
-SearchView::SearchView() = default;
+SearchView::SearchView() :
+	m {Pimpl::make<Private>(this)} {}
 
 SearchView::~SearchView() noexcept = default;
 
@@ -141,18 +126,13 @@ void SearchView::searchPrevious()
 	}
 }
 
-struct SearchableTableView::Private
-{
-	MiniSearcherViewConnector* miniSearcher;
+bool SearchView::handleKeyPress(QKeyEvent* event) { return m->qObjectWrapper.handleKeyPress(event); }
 
-	explicit Private(SearchableTableView* parent) :
-		miniSearcher {new MiniSearcherViewConnector(parent, parent)} {}
-};
+QMap<QString, QString> SearchView::searchOptions() const { return searchModel()->searchOptions(); }
 
 SearchableTableView::SearchableTableView(QWidget* parent) :
 	Gui::WidgetTemplate<QTableView> {parent},
-	SelectionViewInterface(this),
-	m {Pimpl::make<Private>(this)} {}
+	SelectionViewInterface(this) {}
 
 SearchableTableView::~SearchableTableView() = default;
 
@@ -188,18 +168,17 @@ void SearchableTableView::selectSearchResult(const int index)
 
 void SearchableTableView::keyPressEvent(QKeyEvent* event)
 {
-	const auto isSelectionEvent = SelectionViewInterface::handleKeyPress(event);
-	if(isSelectionEvent)
+	if(const auto isSelectionEvent = SelectionViewInterface::handleKeyPress(event); isSelectionEvent)
 	{
 		return;
 	}
 
-	m->miniSearcher->init();
-	const auto isMinisearcherEvent = m->miniSearcher->handleKeyPress(event);
-	if(isMinisearcherEvent)
+	if(const auto isMinisearcherEvent = SearchView::handleKeyPress(event); isMinisearcherEvent)
 	{
 		return;
 	}
 
 	QTableView::keyPressEvent(event);
 }
+
+#include "SearchableView.moc"
