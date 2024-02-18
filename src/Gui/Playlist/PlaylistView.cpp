@@ -574,11 +574,11 @@ namespace Playlist
 
 	SearchModel* View::searchModel() const { return m->model; }
 
-//	void View::searchDone()
-//	{
-//		if(GetSetting(Set::PL_PlayTrackAfterSearch))
-//		{
-//			playSelectedTrack();
-//		}
-//	}
+	void View::triggerResult()
+	{
+		if(GetSetting(Set::PL_PlayTrackAfterSearch))
+		{
+			playSelectedTrack();
+		}
+	}
 } // Playlist

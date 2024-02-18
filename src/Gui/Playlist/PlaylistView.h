@@ -69,6 +69,7 @@ namespace Playlist
 
 			[[nodiscard]] bool isLocked() const;
 			void setLocked(bool b);
+			void triggerResult() override;
 
 		protected:
 			[[nodiscard]] SearchModel* searchModel() const override;

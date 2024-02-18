@@ -42,7 +42,7 @@ namespace Gui
 		Q_OBJECT
 
 		signals:
-			void sigTabPressed();
+			void sigEnterPressed();
 			void sigFocusLost();
 
 		public:
@@ -80,8 +80,10 @@ namespace Gui
 			void showEvent(QShowEvent* e) override;
 			void focusOutEvent(QFocusEvent* e) override;
 
+		private slots:
+			void enterPressed();
+
 		private:
-			void notifyViewSearchDone();
 			void previousResult();
 			void nextResult();
 	};

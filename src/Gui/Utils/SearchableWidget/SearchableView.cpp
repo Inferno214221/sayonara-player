@@ -130,6 +130,8 @@ bool SearchView::handleKeyPress(QKeyEvent* event) { return m->qObjectWrapper.han
 
 QMap<QString, QString> SearchView::searchOptions() const { return searchModel()->searchOptions(); }
 
+void SearchView::triggerResult() {}
+
 SearchableTableView::SearchableTableView(QWidget* parent) :
 	Gui::WidgetTemplate<QTableView> {parent},
 	SelectionViewInterface(this) {}

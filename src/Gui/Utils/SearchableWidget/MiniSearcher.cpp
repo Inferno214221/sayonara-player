@@ -34,7 +34,12 @@
 
 namespace
 {
-	bool isInitiator(const QMap<QChar, QString>& triggers, const QString& text, const Qt::KeyboardModifiers& modifiers)
+	bool isEnterPressed(const int key)
+	{
+		return (key == Qt::Key_Return) || (key == Qt::Key_Enter);
+	}
+
+	bool isInitiator(const QString& text, const Qt::KeyboardModifiers& modifiers)
 	{
 		const auto modifierMask = (modifiers & Qt::ControlModifier) |
 		                          (modifiers & Qt::MetaModifier) |
@@ -47,7 +52,7 @@ namespace
 
 		const auto firstChar = text[0];
 		return firstChar.isLetterOrNumber() ||
-		       triggers.contains(firstChar);
+		       (firstChar == '/');
 	}
 
 	QRect calcGeometry(SearchView* searchableView, const int maxWidth, const int lineEditHeight)
@@ -95,13 +100,13 @@ namespace Gui
 	struct MiniSearcher::Private
 	{
 		QMap<QString, QString> searchOptions;
-		SearchView* searchableView;
+		SearchView* searchView;
 		QLineEdit* lineEdit;
 		QLabel* label;
 		int maxWidth;
 
 		Private(MiniSearcher* parent, SearchView* searchableView) :
-			searchableView {searchableView},
+			searchView {searchableView},
 			lineEdit {new QLineEdit(parent)},
 			label {new QLabel(parent)},
 			maxWidth {Gui::Util::textWidth(parent->fontMetrics(), "18 good characters")}
@@ -125,7 +130,7 @@ namespace Gui
 		setLayout(layout);
 
 		auto* eventFilter = new MiniSearchEventFilter(this);
-		connect(eventFilter, &MiniSearchEventFilter::sigTabPressed, this, &MiniSearcher::nextResult);
+		connect(eventFilter, &MiniSearchEventFilter::sigEnterPressed, this, &MiniSearcher::enterPressed);
 		connect(eventFilter, &MiniSearchEventFilter::sigFocusLost, this, &MiniSearcher::hide);
 		m->lineEdit->installEventFilter(eventFilter);
 
@@ -150,9 +155,21 @@ namespace Gui
 		m->lineEdit->setFocus();
 	}
 
+	void MiniSearcher::enterPressed()
+	{
+		if(parentWidget() && m->searchView)
+		{
+			m->searchView->triggerResult();
+		}
+
+		reset();
+	}
+
 	void MiniSearcher::reset()
 	{
+		m->lineEdit->blockSignals(true);
 		m->lineEdit->clear();
+		m->lineEdit->blockSignals(false);
 
 		if(isVisible() && parentWidget())
 		{
@@ -178,7 +195,6 @@ namespace Gui
 
 	void MiniSearcher::setNumberResults(const int results)
 	{
-		spLog(Log::Info, this) << "Show number of result: " << results;
 		m->label->setVisible(results >= 0);
 		if(results >= 0)
 		{
@@ -187,11 +203,9 @@ namespace Gui
 		}
 	}
 
-	void MiniSearcher::notifyViewSearchDone() {}
-
 	bool MiniSearcher::handleKeyPress(QKeyEvent* e)
 	{
-		if(isInitiator(m->triggers, e->text(), e->modifiers()))
+		if(isInitiator(e->text(), e->modifiers()))
 		{
 			m->lineEdit->setFocus();
 			m->lineEdit->setText(e->text());
@@ -216,16 +230,6 @@ namespace Gui
 				if(isVisible())
 				{
 					reset();
-					e->accept();
-				}
-				break;
-
-			case Qt::Key_Enter:
-			case Qt::Key_Return:
-				if(isVisible())
-				{
-					reset();
-					notifyViewSearchDone();
 					e->accept();
 				}
 				break;
@@ -255,7 +259,7 @@ namespace Gui
 	void MiniSearcher::showEvent(QShowEvent* e)
 	{
 		WidgetTemplate<QFrame>::showEvent(e);
-		setGeometry(calcGeometry(m->searchableView, m->maxWidth, m->lineEdit->height()));
+		setGeometry(calcGeometry(m->searchView, m->maxWidth, m->lineEdit->height()));
 	}
 
 	void MiniSearcher::focusOutEvent(QFocusEvent* e)
@@ -275,9 +279,9 @@ namespace Gui
 		switch(e->type())
 		{
 			case QEvent::KeyPress:
-				if(auto* ke = dynamic_cast<QKeyEvent*>(e); (ke->key() == Qt::Key_Tab))
+				if(auto* ke = dynamic_cast<QKeyEvent*>(e); ke && isEnterPressed(ke->key()))
 				{
-					emit sigTabPressed();
+					emit sigEnterPressed();
 
 					// Accept + true = EAT the event. No one else should see the event
 					e->accept();

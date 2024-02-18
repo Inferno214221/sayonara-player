@@ -52,6 +52,8 @@ class SearchView
 		[[nodiscard]] virtual QWidget* widget() = 0;
 		[[nodiscard]] virtual QMap<QString, QString> searchOptions() const;
 
+		virtual void triggerResult();
+
 	protected:
 		[[nodiscard]] virtual SearchModel* searchModel() const = 0;
 		virtual void selectSearchResult(int index) = 0;
