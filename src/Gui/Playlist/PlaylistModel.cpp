@@ -697,10 +697,13 @@ QString Playlist::Model::searchableString(const int index, const QString& prefix
 
 QMap<QString, QString> Playlist::Model::searchOptions() const
 {
+	const auto artist = Lang::get(Lang::Artist);
+	const auto album = Lang::get(Lang::Album);
+	const auto filename = Lang::get(Lang::Filename);
 	return {
-		{ArtistSearchPrefix,   Lang::get(Lang::Artist)},
-		{AlbumSearchPrefix,    Lang::get(Lang::Album)},
-		{FilenameSearchPrefix, Lang::get(Lang::Filename)}
+		{ArtistSearchPrefix,   artist},
+		{AlbumSearchPrefix,    album},
+		{FilenameSearchPrefix, filename}
 	};
 }
 

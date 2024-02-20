@@ -43,6 +43,7 @@ namespace Gui
 
 		signals:
 			void sigEnterPressed();
+			void sigTabPressed();
 			void sigFocusLost();
 
 		public:
@@ -68,7 +69,7 @@ namespace Gui
 			~MiniSearcher() override;
 
 			bool handleKeyPress(QKeyEvent* e);
-			void setSearchOptions(const QMap<QString, QString>& triggers);
+
 			void setNumberResults(int results);
 
 		public slots:
@@ -82,8 +83,12 @@ namespace Gui
 
 		private slots:
 			void enterPressed();
+			void tabPressed();
+			void textChanged(const QString& text);
 
 		private:
+			void resetCompleter();
+			void initConnections();
 			void previousResult();
 			void nextResult();
 	};

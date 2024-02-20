@@ -23,20 +23,32 @@
 #include "Utils/GuiUtils.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Algorithm.h"
 
 #include <QAbstractItemView>
 #include <QBoxLayout>
+#include <QCompleter>
 #include <QFocusEvent>
 #include <QKeyEvent>
 #include <QLabel>
 #include <QLineEdit>
 #include <QScrollBar>
+#include <QStringListModel>
 
 namespace
 {
-	bool isEnterPressed(const int key)
+	constexpr const auto CommandPrefix = ':';
+	constexpr const auto SearchPrefix = '/';
+
+	bool isEnterPressed(const int key) { return (key == Qt::Key_Return) || (key == Qt::Key_Enter); }
+
+	bool isCommand(const QString& str) { return str.startsWith(CommandPrefix); }
+
+	QString extractCommand(const QString& str)
 	{
-		return (key == Qt::Key_Return) || (key == Qt::Key_Enter);
+		return str.startsWith(CommandPrefix)
+		       ? str.right(str.size() - 1)
+		       : QString {};
 	}
 
 	bool isInitiator(const QString& text, const Qt::KeyboardModifiers& modifiers)
@@ -52,7 +64,8 @@ namespace
 
 		const auto firstChar = text[0];
 		return firstChar.isLetterOrNumber() ||
-		       (firstChar == '/');
+		       (firstChar == CommandPrefix) ||
+		       (firstChar == SearchPrefix);
 	}
 
 	QRect calcGeometry(SearchView* searchableView, const int maxWidth, const int lineEditHeight)
@@ -67,31 +80,77 @@ namespace
 		const auto newX = parentWidth - (targetWidth + 5);
 		const auto newY = parentHeight - (targetHeight + 5);
 
-		const auto r = QRect(newX, newY, targetWidth, targetHeight);
-		spLog(Log::Develop, "MiniSearcher") << "Show Minisearcher at " << r;
-
-		return r;
+		return {newX, newY, targetWidth, targetHeight};
 	}
 
-	void resetToolTip(QLineEdit* lineEdit)
+	void addTooltip(QLineEdit* lineEdit, const QString& title, const QString& indicator,
+	                const QMap<QString, QString>& items)
 	{
-		lineEdit->setToolTip(
-			"<b>" + QObject::tr("Arrow up") + "</b> = " + QObject::tr("Previous search result") + "<br/>" +
-			"<b>" + QObject::tr("Arrow down") + "</b> = " + QObject::tr("Next search result") + "<br/>" +
-			"<b>" + Lang::get(Lang::Key_Escape) + "</b> = " + Lang::get(Lang::Close)
-		);
-	}
-
-	void addToolTipText(QLineEdit* lineEdit, const QString& text)
-	{
-		if(!text.isEmpty())
+		auto entries = QStringList {};
+		for(auto it = items.cbegin(); it != items.cend(); it++)
 		{
-			const auto tooltip = QString("%1<br><br>%2")
-				.arg(lineEdit->toolTip())
+			entries << QString("<b>%1%2</b> = %3")
+				.arg(indicator)
+				.arg(it.key())
+				.arg(it.value());
+		}
+
+		if(const auto text = entries.join("<br>"); !text.isEmpty())
+		{
+			auto oldTooltip = lineEdit->toolTip();
+			if(!oldTooltip.isEmpty())
+			{
+				oldTooltip.append("<br><br>");
+			}
+
+			const auto tooltip = QString("%1%2<br>%3")
+				.arg(oldTooltip)
+				.arg(title)
 				.arg(text);
 
 			lineEdit->setToolTip(tooltip);
 		}
+	}
+
+	void resetToolTip(QLineEdit* lineEdit, const QMap<QString, QString>& searchOptions,
+	                  const QMap<QString, QString>& commands)
+	{
+		lineEdit->setToolTip({});
+
+		addTooltip(lineEdit, QObject::tr("Help"), {}, {
+			{QObject::tr("Arrow up"),     QObject::tr("Previous search result")},
+			{QObject::tr("Arrow down"),   QObject::tr("Next search result")},
+			{Lang::get(Lang::Key_Escape), Lang::get(Lang::Close)}
+		});
+
+		addTooltip(lineEdit, Lang::get(Lang::SearchVerb), {SearchPrefix}, searchOptions);
+		addTooltip(lineEdit, QObject::tr("Commands"), {CommandPrefix}, commands);
+	}
+
+	QStringList createStringList(const QChar& initiator, const QMap<QString, QString>& items)
+	{
+		auto stringList = QStringList {};
+		for(auto it = items.begin(); it != items.end(); it++)
+		{
+			stringList << initiator + it.key();
+		}
+		return stringList;
+	}
+
+	QCompleter* createCompleter(QWidget* parent, SearchView* searchView)
+	{
+		const auto strings = QStringList()
+			<< createStringList(CommandPrefix, searchView->commands())
+			<< createStringList(SearchPrefix, searchView->searchOptions());
+
+		auto* stringListModel = new QStringListModel(strings);
+		auto* completer = new QCompleter(parent);
+
+		completer->setModel(stringListModel);
+		completer->setCaseSensitivity(Qt::CaseInsensitive);
+		completer->setCompletionMode(QCompleter::CompletionMode::InlineCompletion);
+
+		return completer;
 	}
 }
 
@@ -100,21 +159,23 @@ namespace Gui
 	struct MiniSearcher::Private
 	{
 		QMap<QString, QString> searchOptions;
+		QMap<QString, QString> commands;
 		SearchView* searchView;
 		QLineEdit* lineEdit;
+		QCompleter* completer;
 		QLabel* label;
 		int maxWidth;
 
 		Private(MiniSearcher* parent, SearchView* searchableView) :
 			searchView {searchableView},
 			lineEdit {new QLineEdit(parent)},
+			completer {createCompleter(lineEdit, searchableView)},
 			label {new QLabel(parent)},
 			maxWidth {Gui::Util::textWidth(parent->fontMetrics(), "18 good characters")}
 		{
 			lineEdit->setObjectName("MiniSearcherLineEdit");
 			lineEdit->setSizePolicy(QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding);
-
-			resetToolTip(lineEdit);
+			lineEdit->setCompleter(completer);
 		}
 	};
 
@@ -128,20 +189,26 @@ namespace Gui
 		layout->addWidget(m->lineEdit);
 		layout->addWidget(m->label);
 		setLayout(layout);
-
-		auto* eventFilter = new MiniSearchEventFilter(this);
-		connect(eventFilter, &MiniSearchEventFilter::sigEnterPressed, this, &MiniSearcher::enterPressed);
-		connect(eventFilter, &MiniSearchEventFilter::sigFocusLost, this, &MiniSearcher::hide);
-		m->lineEdit->installEventFilter(eventFilter);
-
-		connect(m->lineEdit, &QLineEdit::textChanged, this, &MiniSearcher::sigTextChanged);
-
 		setMaximumWidth(m->maxWidth);
 
+		resetToolTip(m->lineEdit, m->searchView->searchOptions(), m->searchView->commands());
+
+		initConnections();
 		hide();
 	}
 
 	MiniSearcher::~MiniSearcher() = default;
+
+	void MiniSearcher::initConnections()
+	{
+		auto* eventFilter = new MiniSearchEventFilter(this);
+		connect(eventFilter, &MiniSearchEventFilter::sigEnterPressed, this, &MiniSearcher::enterPressed);
+		connect(eventFilter, &MiniSearchEventFilter::sigTabPressed, this, &MiniSearcher::tabPressed);
+		connect(eventFilter, &MiniSearchEventFilter::sigFocusLost, this, &MiniSearcher::hide);
+		m->lineEdit->installEventFilter(eventFilter);
+
+		connect(m->lineEdit, &QLineEdit::textChanged, this, &MiniSearcher::textChanged);
+	}
 
 	void MiniSearcher::previousResult()
 	{
@@ -159,10 +226,49 @@ namespace Gui
 	{
 		if(parentWidget() && m->searchView)
 		{
-			m->searchView->triggerResult();
+			if(const auto text = m->lineEdit->text(); isCommand(text))
+			{
+				m->searchView->runCommand(extractCommand(text));
+			}
+			else
+			{
+				m->searchView->triggerResult();
+			}
 		}
 
 		reset();
+	}
+
+	void MiniSearcher::tabPressed()
+	{
+		const auto currentCompletion = m->completer->currentCompletion();
+		if(currentCompletion.isEmpty())
+		{
+			return;
+		}
+
+		if(m->lineEdit->cursorPosition() != currentCompletion.size())
+		{
+			m->lineEdit->setText(currentCompletion);
+		}
+
+		else if(m->completer->completionCount() > 0)
+		{
+			if(!m->completer->setCurrentRow(m->completer->currentRow() + 1))
+			{
+				m->completer->setCurrentRow(0);
+			}
+
+			m->lineEdit->setText(m->completer->currentCompletion());
+		}
+	}
+
+	void MiniSearcher::textChanged(const QString& text)
+	{
+		if(!isCommand(text))
+		{
+			emit sigTextChanged(text);
+		}
 	}
 
 	void MiniSearcher::reset()
@@ -179,18 +285,10 @@ namespace Gui
 		hide();
 	}
 
-	void MiniSearcher::setSearchOptions(const QMap<QString, QString>& options)
+	void MiniSearcher::resetCompleter()
 	{
-		m->searchOptions = options;
-		auto tooltips = QStringList {};
-
-		for(auto it = options.cbegin(); it != options.cend(); it++)
-		{
-			tooltips << QString("<b>/%1</b> = %2").arg(it.key()).arg(it.value());
-		}
-
-		resetToolTip(m->lineEdit);
-		addToolTipText(m->lineEdit, tooltips.join("<br>"));
+		m->completer = createCompleter(m->lineEdit, m->searchView);
+		m->lineEdit->setCompleter(m->completer);
 	}
 
 	void MiniSearcher::setNumberResults(const int results)
@@ -260,6 +358,8 @@ namespace Gui
 	{
 		WidgetTemplate<QFrame>::showEvent(e);
 		setGeometry(calcGeometry(m->searchView, m->maxWidth, m->lineEdit->height()));
+		resetToolTip(m->lineEdit, m->searchView->searchOptions(), m->searchView->commands());
+		resetCompleter();
 	}
 
 	void MiniSearcher::focusOutEvent(QFocusEvent* e)
@@ -270,8 +370,7 @@ namespace Gui
 
 	void MiniSearcher::languageChanged()
 	{
-		resetToolTip(m->lineEdit);
-		setSearchOptions(m->searchOptions);
+		resetToolTip(m->lineEdit, m->searchView->searchOptions(), m->searchView->commands());
 	}
 
 	bool MiniSearchEventFilter::eventFilter(QObject* o, QEvent* e)
@@ -279,14 +378,22 @@ namespace Gui
 		switch(e->type())
 		{
 			case QEvent::KeyPress:
+				// Accept + true = EAT the event. No one else should see the event
+
 				if(auto* ke = dynamic_cast<QKeyEvent*>(e); ke && isEnterPressed(ke->key()))
 				{
 					emit sigEnterPressed();
-
-					// Accept + true = EAT the event. No one else should see the event
 					e->accept();
 					return true;
 				}
+
+				else if(ke && (ke->key() == Qt::Key_Tab))
+				{
+					emit sigTabPressed();
+					e->accept();
+					return true;
+				}
+
 				break;
 
 			case QEvent::FocusOut:
