@@ -162,6 +162,7 @@ enum class SettingKey :
 	PL_SpecifyFileystemPlaylistName,
 	PL_StartPlaying,
 	PL_StartPlayingWorkaround_Issue263,
+	PL_StartAtRandomTrackOnShuffle,
 	PL_ShowConfirmationOnClose,
 	Pitch_found,
 	Player_514Fix,
@@ -383,6 +384,7 @@ namespace Set
 	CreateSetting(PL_ShowCovers, bool); // Show covers in Playlist
 	CreateSetting(PL_ShowNumbers, bool); // show numbers in playlist
 	CreateSetting(PL_ShowRating, bool); // Show rating in playlist
+	CreateSetting(PL_StartAtRandomTrackOnShuffle, bool); // start randomly when playlist in shuffle mode
 	CreateSetting(PL_StartPlaying, bool); // start playing immediately when opening Sayonara
 	CreateSetting(PL_StartPlayingWorkaround_Issue263, bool); // issue #263
 	CreateSetting(PL_ShowConfirmationOnClose, bool);

@@ -20,7 +20,7 @@
       <enum>Qt::NoFocus</enum>
      </property>
      <property name="currentIndex">
-      <number>2</number>
+      <number>1</number>
      </property>
      <widget class="QWidget" name="tab_libraries">
       <attribute name="title">
@@ -186,6 +186,13 @@
            <widget class="QLabel" name="label">
             <property name="text">
              <string>(this is ignored when playlist is in 'append mode')</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cbStartRandomIfShuffle">
+            <property name="text">
+             <string>Start playing a random track if shuffle is enabled</string>
             </property>
            </widget>
           </item>

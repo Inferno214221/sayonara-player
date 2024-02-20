@@ -102,6 +102,7 @@ bool GUI_LibraryPreferences::commit()
 	SetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty, ui->rbDdStartIfStopped->isChecked());
 	SetSetting(Set::Lib_UseViewClearButton, ui->cbShowClearSelectionButton->isChecked());
 	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cbIgnoreArticle->isChecked());
+	SetSetting(Set::PL_StartAtRandomTrackOnShuffle, ui->cbStartRandomIfShuffle->isChecked());
 
 	using MetaDataSortMode = MetaDataSorting::SortMode;
 	auto sortModeMask = +MetaDataSorting::SortMode::None;
@@ -123,6 +124,7 @@ void GUI_LibraryPreferences::revert()
 	ui->rbDdDoNothing->setChecked(GetSetting(Set::Lib_DD_DoNothing));
 	ui->rbDdStartIfStopped->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
 	ui->cbShowClearSelectionButton->setChecked(GetSetting(Set::Lib_UseViewClearButton));
+	ui->cbStartRandomIfShuffle->setChecked(GetSetting(Set::PL_StartAtRandomTrackOnShuffle));
 
 	using MetaDataSortMode = MetaDataSorting::SortMode;
 

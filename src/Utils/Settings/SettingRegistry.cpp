@@ -192,6 +192,7 @@ bool SettingRegistry::init()
 	registerSetting<Set::PL_ShowConfirmationOnClose>("playlist_confirm_on_close", false);
 	registerSetting<Set::PL_ModificatorAllowDynamicPlayback>("playlist_allow_dyn_playback_on_lock", false);
 	registerSetting<Set::PL_ModificatorAllowRearrangeMethods>("playlist_allow_rearrange_on_lock", false);
+	registerSetting<Set::PL_StartAtRandomTrackOnShuffle>("playlist_start_at_random_track", false);
 	registerSetting<Set::Notification_Show>("show_notifications", true);
 	registerSetting<Set::Notification_Timeout>("notification_timeout", 5000); // NOLINT(readability-magic-numbers)
 	registerSetting<Set::Notification_Name>("notification_name", {"DBus"});
