@@ -70,6 +70,9 @@ namespace Playlist
 			[[nodiscard]] bool isLocked() const;
 			void setLocked(bool b);
 			void triggerResult() override;
+			[[nodiscard]] QMap<QString, QString> commands() const override;
+			void runCommand(const QString& command) override;
+			void gotoRow(int row);
 
 		protected:
 			[[nodiscard]] SearchModel* searchModel() const override;
@@ -110,7 +113,6 @@ namespace Playlist
 			void deleteSelectedTracks();
 
 		private:
-			void gotoRow(int row);
 			void initContextMenu();
 			void handleDrop(QDropEvent* event);
 	};

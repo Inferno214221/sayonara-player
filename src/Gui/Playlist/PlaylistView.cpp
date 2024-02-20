@@ -22,6 +22,7 @@
 #include "PlaylistModel.h"
 #include "PlaylistDelegate.h"
 #include "PlaylistContextMenu.h"
+#include "PlaylistCommandProcessor.h"
 #include "ContextMenuConfigurator.h"
 
 #include "Gui/Utils/GuiUtils.h"
@@ -156,13 +157,15 @@ namespace Playlist
 		Model* model;
 		Gui::ProgressBar* progressbar;
 		QLabel* currentFileLabel;
+		CommandProcessor commandProcessor;
 
 		Private(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
 		        Library::InfoAccessor* libraryAccessor, View* view) :
 			dynamicPlaybackChecker(dynamicPlaybackChecker),
 			model(new Model(playlist, libraryAccessor, view)),
 			progressbar(new Gui::ProgressBar(view)),
-			currentFileLabel(new QLabel(view)) {}
+			currentFileLabel(new QLabel(view)),
+			commandProcessor {view, model} {}
 	};
 
 	View::View(const PlaylistPtr& playlist, DynamicPlaybackChecker* dynamicPlaybackChecker,
@@ -581,4 +584,8 @@ namespace Playlist
 			playSelectedTrack();
 		}
 	}
+
+	QMap<QString, QString> View::commands() const { return m->commandProcessor.commands(); }
+
+	void View::runCommand(const QString& command) { m->commandProcessor.runCommand(command); }
 } // Playlist

@@ -53,7 +53,6 @@ namespace
 			void init()
 			{
 				m_miniSearcher = new MiniSearcher(m_view);
-				m_miniSearcher->setSearchOptions(m_view->searchOptions());
 
 				connect(m_miniSearcher, &MiniSearcher::sigTextChanged, this, &QObjectWrapper::searchTextChanged);
 				connect(m_miniSearcher, &MiniSearcher::sigFindNextRow, this, [this]() { m_view->searchNext(); });
@@ -130,7 +129,11 @@ bool SearchView::handleKeyPress(QKeyEvent* event) { return m->qObjectWrapper.han
 
 QMap<QString, QString> SearchView::searchOptions() const { return searchModel()->searchOptions(); }
 
+QMap<QString, QString> SearchView::commands() const { return {}; }
+
 void SearchView::triggerResult() {}
+
+void SearchView::runCommand(const QString& /*command*/) {}
 
 SearchableTableView::SearchableTableView(QWidget* parent) :
 	Gui::WidgetTemplate<QTableView> {parent},
