@@ -48,6 +48,7 @@ namespace Playlist
 			friend class Handler;
 
 		signals:
+			void sigLockChanged();
 			void sigItemsChanged(int index);
 			void sigTrackChanged(int oldIndex, int newIndex);
 			void sigBusyChanged(bool b);
@@ -89,6 +90,7 @@ namespace Playlist
 
 		protected:
 			void setChanged(bool b) override;
+			void emitLockChanged() override;
 
 		private slots:
 			void metadataChanged();

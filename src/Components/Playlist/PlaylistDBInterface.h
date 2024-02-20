@@ -53,6 +53,7 @@ namespace Playlist
 
 			bool lock();
 			bool unlock();
+			virtual void emitLockChanged() = 0;
 
 			Util::SaveAsAnswer save();
 			Util::SaveAsAnswer saveAs(const QString& newName);

@@ -443,6 +443,8 @@ namespace Playlist
 		emit sigItemsChanged(m->playlistIndex);
 	}
 
+	void Playlist::emitLockChanged() { emit sigLockChanged(); }
+
 	void Playlist::resetChangedStatus()
 	{
 		setChanged(false);

@@ -196,12 +196,16 @@ namespace Playlist
 
 	bool DBInterface::lock()
 	{
-		return updatePlaylist(name(), isTemporary(), true, this, m->playlistConnector);
+		const auto success = updatePlaylist(name(), isTemporary(), true, this, m->playlistConnector);
+		emitLockChanged();
+		return success;
 	}
 
 	bool DBInterface::unlock()
 	{
-		return updatePlaylist(name(), isTemporary(), false, this, m->playlistConnector);
+		const auto success = updatePlaylist(name(), isTemporary(), false, this, m->playlistConnector);
+		emitLockChanged();
+		return success;
 	}
 
 	bool DBInterface::deletePlaylist()

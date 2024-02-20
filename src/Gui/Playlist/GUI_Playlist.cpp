@@ -341,6 +341,7 @@ void GUI_Playlist::playlistAdded(int playlistIndex)
 		checkTabTextAndIcons();
 
 		connect(playlist.get(), &Playlist::Playlist::sigItemsChanged, this, &GUI_Playlist::playlistChanged);
+		connect(playlist.get(), &Playlist::Playlist::sigLockChanged, this, &GUI_Playlist::checkTabTextAndIcons);
 
 		ui->twPlaylists->setCurrentIndex(tabIndex);
 		ui->twPlaylists->checkTabButtons();
