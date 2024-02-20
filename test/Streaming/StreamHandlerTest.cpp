@@ -335,7 +335,7 @@ class StreamHandlerTest :
 				const auto playlist = playlistCreator->playlist(playlistIndex);
 				if(testCase.parsedTracks > 0)
 				{
-					QVERIFY(playlist->tracks().count() == testCase.parsedTracks);
+					QVERIFY(playlist->count() == testCase.parsedTracks);
 					QVERIFY(playlist->name() == testCase.name);
 				}
 				else

@@ -75,6 +75,8 @@ namespace Playlist
 			void next();
 			bool wakeUp();
 
+			[[nodiscard]] int count() const;
+
 			[[nodiscard]] bool isBusy() const;
 			void setBusy(bool b);
 

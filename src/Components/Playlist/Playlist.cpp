@@ -396,6 +396,8 @@ namespace Playlist
 		m->playlistMode = mode;
 	}
 
+	int Playlist::count() const { return m->tracks.count(); }
+
 	bool Playlist::isBusy() const { return m->busy; }
 
 	void Playlist::setBusy(bool busy)

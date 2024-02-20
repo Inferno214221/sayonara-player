@@ -353,7 +353,7 @@ class PlaylistHandlerTest :
 	QVERIFY(index == 0);
 	QVERIFY(newPlaylist->name() != playlistName);
 	QVERIFY(newPlaylist->id() != playlistId);
-	QVERIFY(newPlaylist->tracks().count() == tracks.count());
+	QVERIFY(newPlaylist->count() == tracks.count());
 }
 
 [[maybe_unused]] void PlaylistHandlerTest::testEmptyPlaylistsDeletedOnShutdown()
