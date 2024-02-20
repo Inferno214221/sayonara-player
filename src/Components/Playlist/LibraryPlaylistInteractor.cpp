@@ -26,6 +26,7 @@
 #include "PlaylistModifiers.h"
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 namespace
 {
@@ -39,6 +40,13 @@ namespace
 		playlistCreator->createPlaylist(tracks, name);
 	}
 
+	int zeroOrRandomValue(const bool shuffle, const int count)
+	{
+		return (shuffle && GetSetting(Set::PL_StartAtRandomTrackOnShuffle))
+		       ? Util::randomNumber(0, count - 1)
+		       : 0;
+	}
+
 	void applyPlaylistActionAfterDoubleClick(PlayManager* playManager, PlaylistAccessor* playlistAccessor)
 	{
 		if(GetSetting(Set::Lib_DC_DoNothing))
@@ -46,14 +54,19 @@ namespace
 			return;
 		}
 
+		auto newTrack = -1;
+
 		const auto currentIndex = playlistAccessor->currentIndex();
 		const auto currentPlaylist = playlistAccessor->playlist(currentIndex);
+		const auto playlistMode = GetSetting(Set::PL_Mode);
+		const auto shuffle = PlaylistMode::isActiveAndEnabled(playlistMode.shuffle());
+		const auto count = currentPlaylist->count();
 
 		if(GetSetting(Set::Lib_DC_PlayIfStopped))
 		{
 			if(currentPlaylist && (playManager->playstate() != PlayState::Playing))
 			{
-				currentPlaylist->changeTrack(0);
+				newTrack = zeroOrRandomValue(shuffle, count);
 			}
 		}
 
@@ -62,8 +75,13 @@ namespace
 			const auto plm = GetSetting(Set::PL_Mode);
 			if(currentPlaylist && (plm.append() == ::Playlist::Mode::State::Off))
 			{
-				currentPlaylist->changeTrack(0);
+				newTrack = zeroOrRandomValue(shuffle, count);
 			}
+		}
+
+		if(newTrack >= 0)
+		{
+			currentPlaylist->changeTrack(newTrack);
 		}
 	}
 
