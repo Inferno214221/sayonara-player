@@ -22,10 +22,9 @@
 
 class MetaDataList;
 class QStringList;
-namespace Playlist
-{
-	class Handler;
-}
+
+class PlaylistAccessor;
+class PlaylistCreator;
 class PlayManager;
 
 class LibraryPlaylistInteractor
@@ -38,7 +37,8 @@ class LibraryPlaylistInteractor
 		virtual void append(const MetaDataList& tracks) = 0;
 		virtual void insertAfterCurrentTrack(const MetaDataList& tracks) = 0;
 
-		static LibraryPlaylistInteractor* create(Playlist::Handler* playlistHandler, PlayManager* playManager);
+		static LibraryPlaylistInteractor*
+		create(PlaylistAccessor* playlistAccessor, PlaylistCreator* playlistCreator, PlayManager* playManager);
 };
 
 #endif //SAYONARA_PLAYER_LIBRARYPLAYLISTINTERACTOR_H

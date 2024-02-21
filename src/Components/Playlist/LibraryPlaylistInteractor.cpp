@@ -90,44 +90,47 @@ namespace
 	{
 		public:
 
-			LibraryPlaylistInteractorImpl(Playlist::Handler* playlistHandler,
+			LibraryPlaylistInteractorImpl(PlaylistAccessor* playlistAccessor, PlaylistCreator* playlistCreator,
 			                              PlayManager* playManager) :
-				m_playlistHandler {playlistHandler},
+				m_playlistAccessor {playlistAccessor},
+				m_playlistCreator {playlistCreator},
 				m_playManager {playManager} {}
 
 			~LibraryPlaylistInteractorImpl() noexcept override = default;
 
 			void createPlaylist(const QStringList& tracks, bool createNewPlaylist) override
 			{
-				createPlaylistFromList(tracks, createNewPlaylist, m_playlistHandler);
-				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistHandler);
+				createPlaylistFromList(tracks, createNewPlaylist, m_playlistCreator);
+				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistAccessor);
 			}
 
 			void createPlaylist(const MetaDataList& tracks, bool createNewPlaylist) override
 			{
-				createPlaylistFromList(tracks, createNewPlaylist, m_playlistHandler);
-				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistHandler);
+				createPlaylistFromList(tracks, createNewPlaylist, m_playlistCreator);
+				applyPlaylistActionAfterDoubleClick(m_playManager, m_playlistAccessor);
 			}
 
 			void append(const MetaDataList& tracks) override
 			{
-				Playlist::appendTracks(*m_playlistHandler->activePlaylist(), tracks, Playlist::Reason::Library);
+				Playlist::appendTracks(*m_playlistAccessor->activePlaylist(), tracks, Playlist::Reason::Library);
 			}
 
 			void insertAfterCurrentTrack(const MetaDataList& tracks) override
 			{
-				auto playlist = m_playlistHandler->activePlaylist();
+				auto playlist = m_playlistAccessor->activePlaylist();
 				Playlist::insertTracks(*playlist, tracks, playlist->currentTrackIndex() + 1, Playlist::Reason::Library);
 			}
 
 		private:
-			Playlist::Handler* m_playlistHandler;
+			PlaylistAccessor* m_playlistAccessor;
+			PlaylistCreator* m_playlistCreator;
 			PlayManager* m_playManager;
 	};
 }
 
-LibraryPlaylistInteractor*
-LibraryPlaylistInteractor::create(Playlist::Handler* playlistHandler, PlayManager* playManager)
+LibraryPlaylistInteractor* LibraryPlaylistInteractor::create(PlaylistAccessor* playlistAccessor,
+                                                             PlaylistCreator* playlistCreator,
+                                                             PlayManager* playManager)
 {
-	return new LibraryPlaylistInteractorImpl(playlistHandler, playManager);
+	return new LibraryPlaylistInteractorImpl(playlistAccessor, playlistCreator, playManager);
 }

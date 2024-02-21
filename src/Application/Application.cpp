@@ -178,7 +178,7 @@ struct Application::Private
 		engine {new Engine::Handler(fileSystem, tagWriter, playManager)},
 		sessionManager {new Session::Manager(playManager)},
 		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
-		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playManager)},
+		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playlistHandler, playManager)},
 		libraryManager {Library::Manager::create(libraryPlaylistInteractor)},
 		libraryPluginHandler {Library::PluginHandler::create()},
 		playlistLibraryInteractor {new Playlist::LibraryInteractor(libraryManager)},
