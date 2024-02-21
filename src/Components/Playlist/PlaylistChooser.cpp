@@ -21,15 +21,14 @@
 #include "PlaylistChooser.h"
 #include "PlaylistChangeNotifier.h"
 #include "PlaylistDBWrapper.h"
+#include "PlaylistInterface.h"
 
-#include "Interfaces/PlaylistInterface.h"
 #include "Database/Connector.h"
 #include "Database/Playlist.h"
-
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
-#include "Utils/Playlist/Sorting.h"
 #include "Utils/Playlist/CustomPlaylist.h"
+#include "Utils/Playlist/Sorting.h"
 
 #include <QStringList>
 

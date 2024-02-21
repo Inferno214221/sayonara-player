@@ -23,10 +23,10 @@
 
 #include "Components/Playlist/LocalPathPlaylistCreator.h"
 #include "Components/Playlist/Playlist.h"
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Components/Playlist/PlaylistModifiers.h"
-#include "Interfaces/PlaylistInterface.h"
-#include "Utils/Parser/M3UParser.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Parser/M3UParser.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"

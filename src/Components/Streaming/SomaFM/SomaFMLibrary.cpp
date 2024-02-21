@@ -27,7 +27,7 @@
 #include "Components/Covers/CoverFetchManager.h"
 #include "Components/Covers/CoverLocation.h"
 #include "Components/Covers/Fetcher/CoverFetcherUrl.h"
-#include "Interfaces/PlaylistInterface.h"
+#include "Playlist/PlaylistInterface.h"
 #include "Utils/Algorithm.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/StreamParser.h"

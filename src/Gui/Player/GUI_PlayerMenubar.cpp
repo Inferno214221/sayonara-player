@@ -25,26 +25,22 @@
 
 #include "GUI_PlayerMenubar.h"
 
-#include "Gui/Shutdown/GUI_Shutdown.h"
-#include "Components/LibraryManagement/LibraryPluginHandler.h"
 #include "Components/LibraryManagement/LibraryContainer.h"
-
-#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
-#include "Gui/Utils/Shortcuts/Shortcut.h"
-#include "Gui/Utils/Widgets/DirectoryChooser.h"
-#include "Gui/Utils/Icons.h"
-#include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/Style.h"
-
+#include "Components/LibraryManagement/LibraryPluginHandler.h"
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Gui/Plugins/PlayerPluginBase.h"
 #include "Gui/Plugins/PlayerPluginHandler.h"
-
-#include "Utils/Settings/Settings.h"
-#include "Utils/Utils.h"
+#include "Gui/Shutdown/GUI_Shutdown.h"
+#include "Gui/Utils/GuiUtils.h"
+#include "Gui/Utils/Icons.h"
+#include "Gui/Utils/Shortcuts/Shortcut.h"
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Style.h"
+#include "Gui/Utils/Widgets/DirectoryChooser.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
-
-#include "Interfaces/PlaylistInterface.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

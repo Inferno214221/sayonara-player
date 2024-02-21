@@ -30,8 +30,7 @@
 #define SAYONARA_PLAYLISTHANDLER_H
 
 #include "PlaylistDBInterface.h"
-
-#include "Interfaces/PlaylistInterface.h"
+#include "PlaylistInterface.h"
 
 #include "Utils/Pimpl.h"
 #include "Utils/Playlist/PlaylistFwd.h"

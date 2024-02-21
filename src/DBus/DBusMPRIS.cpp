@@ -26,7 +26,7 @@
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
-#include "Interfaces/PlaylistInterface.h"
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Utils/Filepath.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"

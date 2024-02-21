@@ -19,15 +19,14 @@
  */
 
 #include "PodcastHandler.h"
+
 #include "Database/Connector.h"
 #include "Database/Podcasts.h"
-
-#include "Interfaces/PlaylistInterface.h"
-
+#include "Playlist/PlaylistInterface.h"
 #include "Utils/Algorithm.h"
-#include "Utils/Streams/Station.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/StreamParser.h"
+#include "Utils/Streams/Station.h"
 
 PodcastHandler::PodcastHandler(PlaylistCreator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
                                QObject* parent) :

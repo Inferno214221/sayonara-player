@@ -22,11 +22,11 @@
 #include "SmartPlaylistByRating.h"
 #include "SmartPlaylistCreator.h"
 
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Database/Connector.h"
 #include "Database/Library.h"
 #include "Database/LibraryDatabase.h"
 #include "Database/SmartPlaylists.h"
-#include "Interfaces/PlaylistInterface.h"
 #include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/RandomGenerator.h"

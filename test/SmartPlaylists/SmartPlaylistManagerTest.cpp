@@ -21,15 +21,12 @@
 #include "Common/PlayManagerMock.h"
 #include "Common/FileSystemMock.h"
 
-#include "Components/SmartPlaylists/SmartPlaylistManager.h"
-#include "Components/SmartPlaylists/SmartPlaylistCreator.h"
-#include "Components/SmartPlaylists/SmartPlaylistByYear.h"
-#include "Components/SmartPlaylists/SmartPlaylistByRating.h"
-
 #include "Components/Playlist/Playlist.h"
-
-#include "Interfaces/PlaylistInterface.h"
-
+#include "Components/Playlist/PlaylistInterface.h"
+#include "Components/SmartPlaylists/SmartPlaylistByRating.h"
+#include "Components/SmartPlaylists/SmartPlaylistByYear.h"
+#include "Components/SmartPlaylists/SmartPlaylistCreator.h"
+#include "Components/SmartPlaylists/SmartPlaylistManager.h"
 #include "Utils/Algorithm.h"
 
 // access working directory with Test::Base::tempPath("somefile.txt");

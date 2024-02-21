@@ -23,11 +23,10 @@
 #include "GUI_StationSearcher.h"
 #include "Gui/Plugins/ui_GUI_Stream.h"
 
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Components/Streaming/Streams/StreamHandler.h"
-#include "Interfaces/PlaylistInterface.h"
-
-#include "Utils/Language/Language.h"
 #include "Gui/Utils/Icons.h"
+#include "Utils/Language/Language.h"
 
 #include <QAction>
 

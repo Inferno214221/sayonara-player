@@ -20,17 +20,15 @@
 
 #include "AbstractStationPlugin.h"
 
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Components/Streaming/Streams/AbstractStationHandler.h"
-#include "Interfaces/PlaylistInterface.h"
-
 #include "Gui/Utils/Icons.h"
+#include "Gui/Utils/MenuTool/MenuToolButton.h"
 #include "Gui/Utils/Style.h"
 #include "Gui/Utils/Widgets/ProgressBar.h"
-#include "Gui/Utils/MenuTool/MenuToolButton.h"
-
 #include "Utils/Algorithm.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/Language/Language.h"
+#include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Streams/Station.h"

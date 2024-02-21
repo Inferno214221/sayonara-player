@@ -21,7 +21,7 @@
 #ifndef SAYONARA_PLAYER_LOCALPATHPLAYLISTCREATOR_H
 #define SAYONARA_PLAYER_LOCALPATHPLAYLISTCREATOR_H
 
-#include "Interfaces/PlaylistInterface.h"
+#include "PlaylistInterface.h"
 #include "Utils/Pimpl.h"
 
 #include <QObject>

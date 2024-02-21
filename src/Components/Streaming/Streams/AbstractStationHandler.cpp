@@ -21,7 +21,7 @@
 #include "AbstractStationHandler.h"
 
 #include "Components/Playlist/Playlist.h"
-#include "Interfaces/PlaylistInterface.h"
+#include "Playlist/PlaylistInterface.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/StreamParser.h"

@@ -19,14 +19,13 @@
  */
 
 #include "ConverterFactory.h"
+
 #include "Components/Converter/Converter.h"
-#include "Components/Converter/OggConverter.h"
 #include "Components/Converter/LameConverter.h"
+#include "Components/Converter/OggConverter.h"
 #include "Components/Converter/OpusConverter.h"
 #include "Components/Playlist/Playlist.h"
-
-#include "Interfaces/PlaylistInterface.h"
-
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Utils/MetaData/MetaDataList.h"
 
 namespace

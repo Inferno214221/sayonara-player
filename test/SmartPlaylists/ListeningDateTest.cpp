@@ -21,15 +21,15 @@
 #include "Common/DatabaseUtils.h"
 #include "Common/FileSystemMock.h"
 
-#include "Database/Connector.h"
-#include "Database/Session.h"
-#include "Database/LibraryDatabase.h"
-#include "Interfaces/PlaylistInterface.h"
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Algorithm.h"
-#include "Components/SmartPlaylists/SmartPlaylistManager.h"
-#include "Components/SmartPlaylists/SmartPlaylistByListeningDate.h"
+#include "Components/Playlist/PlaylistInterface.h"
 #include "Components/SmartPlaylists/DateConverter.h"
+#include "Components/SmartPlaylists/SmartPlaylistByListeningDate.h"
+#include "Components/SmartPlaylists/SmartPlaylistManager.h"
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
+#include "Database/Session.h"
+#include "Utils/Algorithm.h"
+#include "Utils/MetaData/MetaDataList.h"
 
 #include <QMap>
 #include <QStringList>
