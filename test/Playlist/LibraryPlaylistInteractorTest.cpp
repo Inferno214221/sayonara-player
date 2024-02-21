@@ -17,8 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "Common/SayonaraTest.h"
+#include "Common/FileSystemMock.h"
 #include "Common/PlaylistMocks.h"
+#include "Common/SayonaraTest.h"
 #include "Components/Playlist/LibraryPlaylistInteractor.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Set.h"
@@ -62,15 +63,17 @@ class LibraryPlaylistInteractorTest :
 				TestCase {PlayOnDoubleClickImmediately, PlayState::Paused, PlayState::Playing},
 			};
 
-			// needs to be https otherwise the file check will fail
-			const auto tracks = QStringList {"https://a.mp3", "https://b.mp3"};
+			const auto fileSystem = std::make_shared<Test::FileSystemMock>(
+				QMap<QString, QStringList> {
+					{tempPath(), {"a.mp3", "b.mp3"}}
+				});
 
 			for(const auto& testCase: testCases)
 			{
 				auto playManager = std::make_shared<PlayManagerMock>();
 				playManager->setPlaystate(testCase.initialState);
 
-				auto playlistHandler = PlaylistHandlerMock(playManager);
+				auto playlistHandler = PlaylistHandlerMock(playManager, fileSystem);
 				auto* libPlaylistInteractor =
 					LibraryPlaylistInteractor::create(&playlistHandler, &playlistHandler, playManager.get());
 
@@ -79,7 +82,8 @@ class LibraryPlaylistInteractorTest :
 				SetSetting(Set::Lib_DC_DoNothing, testCase.playBehavior == DontPlayOnDoubleClick);
 
 				// double click
-				libPlaylistInteractor->createPlaylist(tracks, true);
+				const auto allFiles = Test::flattenFileSystemStructure(fileSystem->allFiles());
+				libPlaylistInteractor->createPlaylist(allFiles, true);
 
 				QVERIFY(playManager->playstate() == testCase.expectedState);
 
@@ -90,8 +94,13 @@ class LibraryPlaylistInteractorTest :
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 		[[maybe_unused]] void testCurrentTrackIsCorrect()
 		{
-			const auto playlistTrack = MetaData {"https://a.mp3"};
-			const auto initialTrack = MetaData {"https://sound.mp3"};
+			const auto fileSystem = std::make_shared<Test::FileSystemMock>(
+				QMap<QString, QStringList> {
+					{tempPath(), {"sound.mp3, a.mp3", "b.mp3"}}
+				});
+
+			const auto initialTrack = MetaData {tempPath("sound.mp3")};
+			const auto playlistTrack = MetaData {tempPath("a.mp3")};
 
 			struct TestCase
 			{
@@ -117,7 +126,7 @@ class LibraryPlaylistInteractorTest :
 				playManager->changeCurrentTrack(initialTrack, 0);
 				playManager->setPlaystate(testCase.initialState);
 
-				auto playlistHandler = PlaylistHandlerMock(playManager);
+				auto playlistHandler = PlaylistHandlerMock(playManager, fileSystem);
 				auto* libPlaylistInteractor =
 					LibraryPlaylistInteractor::create(&playlistHandler, &playlistHandler, playManager.get());
 
@@ -140,13 +149,18 @@ class LibraryPlaylistInteractorTest :
 			constexpr const auto trackCount = 1000;
 			constexpr const auto numTries = 100;
 
-			auto playlistTracks = MetaDataList {};
-			for(int i = 0; i < trackCount; i++)
+			auto playlistTracks = QStringList {};
+			auto fileSystem = std::make_shared<Test::FileSystemMock>(QMap<QString, QStringList> {
+				{tempPath(), {"sound.mp3"}}
+			});
+			for(int i = 1; i < trackCount; i++)
 			{
-				playlistTracks << MetaData {QString("https://%1.mp3").arg(i)};
+				const auto filename = tempPath(QString("%1.mp3").arg(i));
+				playlistTracks << filename;
+				fileSystem->writeFile({}, filename);
 			}
 
-			const auto initialTrack = MetaData {"https://sound.mp3"};
+			const auto initialTrack = MetaData {tempPath("sound.mp3")};
 
 			struct TestCase
 			{
@@ -173,7 +187,7 @@ class LibraryPlaylistInteractorTest :
 					playManager->changeCurrentTrack(initialTrack, 0);
 					playManager->setPlaystate(PlayState::Stopped);
 
-					auto playlistHandler = PlaylistHandlerMock(playManager);
+					auto playlistHandler = PlaylistHandlerMock(playManager, fileSystem);
 					auto* libPlaylistInteractor =
 						LibraryPlaylistInteractor::create(&playlistHandler, &playlistHandler, playManager.get());
 

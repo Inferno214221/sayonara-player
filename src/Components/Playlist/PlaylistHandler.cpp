@@ -22,15 +22,16 @@
  */
 
 #include "PlaylistHandler.h"
-
+#include "LocalPathPlaylistCreator.h"
 #include "Playlist.h"
 #include "PlaylistChangeNotifier.h"
-#include "LocalPathPlaylistCreator.h"
 #include "PlaylistLoader.h"
 #include "PlaylistModifiers.h"
 #include "PlaylistSaver.h"
+
 #include "PlayManager/PlayManager.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/CustomPlaylist.h"
@@ -66,10 +67,12 @@ namespace Playlist
 	{
 		QList<PlaylistPtr> playlists;
 		PlayManager* playManager;
+		Util::FileSystemPtr fileSystem;
 		int currentPlaylistIndex {-1};
 
-		explicit Private(PlayManager* playManager) :
-			playManager {playManager} {}
+		explicit Private(PlayManager* playManager, Util::FileSystemPtr fileSystem) :
+			playManager {playManager},
+			fileSystem {std::move(fileSystem)} {}
 
 		void initPlaylists(Handler* handler, const std::shared_ptr<Loader>& playlistLoader) const
 		{
@@ -105,9 +108,10 @@ namespace Playlist
 		}
 	};
 
-	Handler::Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader)
+	Handler::Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader,
+	                 const Util::FileSystemPtr& fileSystem) :
+		m {Pimpl::make<Private>(playManager, fileSystem)}
 	{
-		m = Pimpl::make<Private>(playManager);
 		m->initPlaylists(this, playlistLoader);
 
 		connect(m->playManager, &PlayManager::sigPlaystateChanged, this, &Handler::playstateChanged);
@@ -151,7 +155,7 @@ namespace Playlist
 		                     ? requestNewPlaylistName()
 		                     : name;
 
-		auto playlist = std::make_shared<Playlist>(m->playlists.count(), newName, m->playManager);
+		auto playlist = std::make_shared<Playlist>(m->playlists.count(), newName, m->playManager, m->fileSystem);
 		playlist->setTemporary(temporary);
 
 		m->playlists.push_back(playlist);

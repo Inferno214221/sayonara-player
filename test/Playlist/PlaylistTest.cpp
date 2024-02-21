@@ -22,6 +22,7 @@
 
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/PlayManagerMock.h"
+#include "test/Common/FileSystemMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
@@ -34,11 +35,15 @@ using PL = Playlist::Playlist;
 
 namespace
 {
+	using PlaylistPtr = std::shared_ptr<Playlist::Playlist>;
+
 	inline std::shared_ptr<Playlist::Playlist>
 	createPlaylist(int index, int min, int max, const QString& name, PlayManager* playManager)
 	{
+		auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
 		const auto tracks = Test::Playlist::createTrackList(min, max);
-		auto playlist = std::make_shared<PL>(index, name, playManager);
+
+		auto playlist = std::make_shared<PL>(index, name, playManager, fileSystem);
 		playlist->createPlaylist(tracks);
 
 		return playlist;
@@ -62,6 +67,7 @@ class PlaylistTest :
 
 	private:
 		PlayManager* m_playManager;
+		Util::FileSystemPtr m_fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
 
 	private slots:
 		void jumpTest();
@@ -75,7 +81,7 @@ void PlaylistTest::jumpTest()
 {
 	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
 
-	auto playlist = Playlist::Playlist(1, "Hallo", m_playManager);
+	auto playlist = Playlist::Playlist(1, "Hallo", m_playManager, m_fileSystem);
 	QVERIFY(playlist.changeTrack(0) == false);
 	QVERIFY(playlist.index() == 1);
 	QVERIFY(runningTime(playlist) == 0);
@@ -111,10 +117,9 @@ void PlaylistTest::jumpTest()
 void PlaylistTest::modifyTest()
 {
 	auto tracks = Test::Playlist::createTrackList(0, 100);
-	int currentIndex;
-
-	auto playlist = PL(1, "Hallo", m_playManager);
+	auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 	playlist.createPlaylist(tracks);
+	auto currentIndex = playlist.currentTrackIndex();
 	const auto& plTracks = playlist.tracks();
 
 	auto uniqueIds = Util::uniqueIds(plTracks);
@@ -203,7 +208,7 @@ void PlaylistTest::modifyTest()
 
 void PlaylistTest::insertTest()
 {
-	auto playlist = PL(1, "Hallo", m_playManager);
+	auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 	playlist.createPlaylist(MetaDataList());
 
 	{
@@ -275,7 +280,7 @@ void PlaylistTest::insertTest()
 void PlaylistTest::trackIndexWithoutDisabledTest()
 {
 	{ // empty playlist
-		auto playlist = PL(1, "Hallo", m_playManager);
+		auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == -1);
 	}
 
@@ -312,7 +317,7 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 
 		tracks[currentIndex].setDisabled(false);
 
-		auto playlist = PL(1, "Hallo", m_playManager);
+		auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 		playlist.createPlaylist(tracks);
 		playlist.changeTrack(currentIndex);
 		QVERIFY(Playlist::currentTrackWithoutDisabled(playlist) == 0);
@@ -324,7 +329,7 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 
 		tracks[currentIndex].setDisabled(true);
 
-		auto playlist = PL(1, "Hallo", m_playManager);
+		auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 		playlist.createPlaylist(tracks);
 
 		playlist.changeTrack(currentIndex);
@@ -339,7 +344,7 @@ void PlaylistTest::trackIndexWithoutDisabledTest()
 		tracks[6].setDisabled(true);
 		// enabled: 1, 3, 5, 7, 9
 
-		auto playlist = PL(1, "Hallo", m_playManager);
+		auto playlist = PL(1, "Hallo", m_playManager, m_fileSystem);
 		playlist.createPlaylist(tracks);
 
 		playlist.changeTrack(4);

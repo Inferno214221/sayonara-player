@@ -21,6 +21,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/PlayManagerMock.h"
+#include "Common/FileSystemMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
@@ -32,18 +33,17 @@
 
 namespace
 {
-	::Playlist::Playlist* createPlaylist(Playlist::Mode mode)
+	::Playlist::Playlist* createPlaylist(const Playlist::Mode& mode)
 	{
 		SetSetting(Set::PL_Mode, mode);
 
-		const auto tracks = Test::Playlist::createTrackList(0, 10);
-		QList<int> indexes;
 		auto playManager = new PlayManagerMock();
-		auto* pl = new Playlist::Playlist(1, "Hallo", playManager);
+		const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
 
-		pl->createPlaylist(tracks);
+		auto* playlist = new Playlist::Playlist(1, "a", playManager, fileSystem);
+		playlist->createPlaylist(Test::Playlist::createTrackList(0, 10));
 
-		return pl;
+		return playlist;
 	}
 }
 

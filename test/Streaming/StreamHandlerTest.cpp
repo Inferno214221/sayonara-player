@@ -20,6 +20,7 @@
 #include "Common/SayonaraTest.h"
 #include "Common/PlaylistMocks.h"
 #include "Common/PlayManagerMock.h"
+#include "Common/FileSystemMock.h"
 #include "Components/Streaming/Streams/StreamHandler.h"
 #include "Components/Playlist/Playlist.h"
 #include "Utils/Parser/StreamParser.h"
@@ -48,7 +49,8 @@ namespace
 			int createPlaylist(const MetaDataList& tracks, const QString& name, bool /*temporary*/,
 			                   bool /*isLocked*/) override
 			{
-				m_playlist = std::make_shared<Playlist::Playlist>(0, name, new PlayManagerMock());
+				auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+				m_playlist = std::make_shared<Playlist::Playlist>(0, name, m_playManager.get(), fileSystem);
 				m_playlist->createPlaylist(tracks);
 				return 0;
 			}
@@ -70,6 +72,7 @@ namespace
 		private:
 
 			PlaylistPtr m_playlist;
+			std::shared_ptr<PlayManagerMock> m_playManager {std::make_shared<PlayManagerMock>()};
 	};
 
 	class TestStationParser :
@@ -121,10 +124,10 @@ class TestStationParserFactory :
 	public:
 		~TestStationParserFactory() override = default;
 
-		[[nodiscard]] StreamParser* createParser() const override { return m_parser; }
+		[[nodiscard]] StreamParser* createParser() const override { return m_parser.get(); }
 
 	private:
-		StreamParser* m_parser {new TestStationParser()};
+		std::shared_ptr<StreamParser> m_parser {std::make_shared<TestStationParser>()};
 };
 
 class StreamHandlerTest :

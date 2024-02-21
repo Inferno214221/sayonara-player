@@ -20,6 +20,7 @@
 #include "Common/SayonaraTest.h"
 #include "Common/PlayManagerMock.h"
 #include "Common/FileSystemMock.h"
+#include "Common/PlaylistMocks.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistInterface.h"
@@ -68,45 +69,6 @@ namespace
 	}
 }
 
-class PlaylistCreatorMock :
-	public Playlist::Creator
-{
-	public:
-		~PlaylistCreatorMock() override = default;
-
-		PlaylistPtr playlist(int playlistIndex) override { return mPlaylists[playlistIndex]; }
-
-		PlaylistPtr playlistById(int /*playlistId*/) override { return {}; }
-
-		[[nodiscard]] QString requestNewPlaylistName(const QString& /*prefix*/) const override { return {}; }
-
-		int createPlaylist(const MetaDataList& /*tracks*/, const QString& name, bool /*temporary*/,
-		                   bool /*isLocked*/) override
-		{
-			auto playlist = std::make_shared<Playlist::Playlist>(mPlaylists.count(), name, new PlayManagerMock());
-			mPlaylists.push_back(playlist);
-			return mPlaylists.count() - 1;
-		}
-
-		int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-		                   bool /*temporary*/, Playlist::LocalPathPlaylistCreator* /*creator*/) override { return 0; }
-
-		int createPlaylist(const CustomPlaylist& /*customPlaylist*/) override { return 0; }
-
-		int createEmptyPlaylist(bool /*override*/) override { return 0; }
-
-		int createCommandLinePlaylist(const QStringList& /*pathList*/,
-		                              Playlist::LocalPathPlaylistCreator* /*creator*/) override
-		{
-			return 0;
-		}
-
-		[[nodiscard]] QList<PlaylistPtr> playlists() const { return mPlaylists; }
-
-	private:
-		QList<PlaylistPtr> mPlaylists;
-};
-
 class SmartPlaylistManagerTest :
 	public Test::Base
 {
@@ -126,8 +88,8 @@ class SmartPlaylistManagerTest :
 [[maybe_unused]] void
 SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
-	auto fileSystem = std::make_shared<Test::FileSystemMock>();
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+	const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+	auto manager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 
 	const auto smartPlaylists = std::array {
 		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, false, 1},
@@ -156,7 +118,7 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 			QVERIFY(manager.smartPlaylist(spid)->value(i) == values[i]);
 		}
 
-		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+		auto newManager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == manager.smartPlaylist(spid)->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == manager.smartPlaylist(spid)->name());
@@ -169,8 +131,8 @@ SmartPlaylistManagerTest::testInsert() // NOLINT(readability-function-cognitive-
 [[maybe_unused]] void
 SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-complexity,readability-convert-member-functions-to-static)
 {
-	auto fileSystem = std::make_shared<Test::FileSystemMock>();
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+	const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+	auto manager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 
 	const auto smartPlaylists = std::array {
 		std::tuple {SmartPlaylists::Type::Year, QList<int> {2000, 2011}, true, 1},
@@ -212,7 +174,7 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 		QVERIFY(manager.smartPlaylists().count() == expectedCount);
 
-		auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+		auto newManager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 		QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 		QVERIFY(newManager.smartPlaylist(spid)->id() == smartPlaylist->id());
 		QVERIFY(newManager.smartPlaylist(spid)->name() == smartPlaylist->name());
@@ -224,8 +186,8 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 [[maybe_unused]] void SmartPlaylistManagerTest::testDelete() // NOLINT(readability-convert-member-functions-to-static)
 {
-	auto fileSystem = std::make_shared<Test::FileSystemMock>();
-	auto manager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+	const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+	auto manager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 	auto smartPlaylist =
 		std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId); // NOLINT(readability-magic-numbers)
 
@@ -239,15 +201,15 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 
 	QVERIFY(manager.smartPlaylists().isEmpty());
 
-	auto newManager = SmartPlaylistManager(new PlaylistCreatorMock(), fileSystem);
+	auto newManager = SmartPlaylistManager(new PlaylistHandlerMock(fileSystem), fileSystem);
 	QVERIFY(newManager.smartPlaylists().count() == manager.smartPlaylists().count());
 }
 
 [[maybe_unused]] void SmartPlaylistManagerTest::testSelect() // NOLINT(readability-convert-member-functions-to-static)
 {
-	auto fileSystem = std::make_shared<Test::FileSystemMock>();
-	auto* playlistCreator = new PlaylistCreatorMock();
-	auto manager = SmartPlaylistManager(playlistCreator, fileSystem);
+	const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+	auto* playlistHandler = new PlaylistHandlerMock(fileSystem);
+	auto manager = SmartPlaylistManager(playlistHandler, fileSystem);
 
 	// NOLINTNEXTLINE(readability-magic-numbers)
 	auto smartPlaylist = std::make_shared<SmartPlaylistByYear>(-1, 2003, 2011, true, libraryId);
@@ -258,9 +220,8 @@ SmartPlaylistManagerTest::testEdit() // NOLINT(readability-function-cognitive-co
 	const auto spid = Spid(allSmartPlaylists[0]->id());
 	manager.selectPlaylist(spid);
 
-	const auto playlists = playlistCreator->playlists();
-	QVERIFY(playlists.count() == 1);
-	QVERIFY(playlists[0]->name() == smartPlaylist->name());
+	QVERIFY(playlistHandler->count() == 1);
+	QVERIFY(playlistHandler->playlist(0)->name() == smartPlaylist->name());
 }
 
 QTEST_GUILESS_MAIN(SmartPlaylistManagerTest)

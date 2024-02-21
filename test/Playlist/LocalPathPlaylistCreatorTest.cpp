@@ -27,6 +27,7 @@
 #include "Components/Playlist/PlaylistModifiers.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/M3UParser.h"
+#include "Utils/FileSystem.h"
 
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
@@ -61,7 +62,7 @@ class PlaylistCreatorMock :
 		{
 			int index = m_playlists.count();
 			auto playlist =
-				std::make_shared<::Playlist::Playlist>(index, name, &m_playManager);
+				std::make_shared<::Playlist::Playlist>(index, name, &m_playManager, Util::FileSystem::create());
 
 			playlist->setId(index);
 			m_playlists << playlist;

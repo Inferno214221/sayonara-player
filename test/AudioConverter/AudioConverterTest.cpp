@@ -21,6 +21,7 @@
 #include "test/Common/SayonaraTest.h"
 #include "test/Common/PlayManagerMock.h"
 #include "test/Common/PlaylistMocks.h"
+#include "test/Common/FileSystemMock.h"
 
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/Converter/OggConverter.h"
@@ -46,7 +47,10 @@ class AudioConverterTest :
 
 void AudioConverterTest::testFactory()
 {
-	auto playlistHandler = new Playlist::Handler(new PlayManagerMock(), std::make_shared<PlaylistLoaderMock>());
+	// no files involved
+	const auto fileSystem = std::make_shared<Test::FileSystemMock>();
+	auto playlistHandler = new PlaylistHandlerMock(std::make_shared<PlayManagerMock>(), fileSystem);
+	playlistHandler->createEmptyPlaylist(true);
 	auto factory = ConverterFactory(playlistHandler);
 
 	{
@@ -56,15 +60,13 @@ void AudioConverterTest::testFactory()
 
 	{
 		auto* converter = factory.createConverter<ConverterFactory::ConvertType::Lame>(
-		                                          ConverterFactory::Bitrate::Constant,
-		                                          320);
+			ConverterFactory::Bitrate::Constant, 320);
 		QVERIFY(dynamic_cast<LameConverter*>(converter) != nullptr);
 	}
 
 	{
 		auto* converter = factory.createConverter<ConverterFactory::ConvertType::OggOpus>(
-		                                          ConverterFactory::Bitrate::Constant,
-		                                          320);
+			ConverterFactory::Bitrate::Constant, 320);
 		QVERIFY(dynamic_cast<OpusConverter*>(converter) != nullptr);
 	}
 }

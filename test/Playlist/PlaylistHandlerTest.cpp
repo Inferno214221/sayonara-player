@@ -18,10 +18,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
-#include "test/Common/PlaylistMocks.h"
-#include "test/Common/TestTracks.h"
+#include "Common/SayonaraTest.h"
+#include "Common/PlayManagerMock.h"
+#include "Common/PlaylistMocks.h"
+#include "Common/TestTracks.h"
+#include "Common/FileSystemMock.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/LocalPathPlaylistCreator.h"
@@ -103,7 +104,8 @@ class PlaylistHandlerTest :
 
 		std::shared_ptr<Playlist::Handler> createHandler()
 		{
-			return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>());
+			return std::make_shared<Playlist::Handler>(m_playManager, std::make_shared<PlaylistLoaderMock>(),
+			                                           Util::FileSystem::create());
 		}
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)

@@ -17,9 +17,9 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
-#include "test/Playlist/PlaylistTestUtils.h"
+#include "Common/SayonaraTest.h"
+#include "Common/PlayManagerMock.h"
+#include "Playlist/PlaylistTestUtils.h"
 
 #include "Components/Playlist/LocalPathProcessor.h"
 #include "Components/Playlist/Playlist.h"
@@ -29,6 +29,7 @@
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Parser/M3UParser.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/FileSystem.h"
 
 #include <QStringList>
 #include <QSignalSpy>
@@ -41,9 +42,11 @@ namespace
 		public Playlist::Creator
 	{
 		public:
-			PlaylistCreatorMock(const Test::Playlist::PathTrackMap& pathTrackMap, int trackCount) :
+			PlaylistCreatorMock(const Test::Playlist::PathTrackMap& pathTrackMap, const int trackCount) :
 				m_playManager {PlayManagerMock {}},
-				m_playlist {std::make_shared<Playlist::Playlist>(0, "Playlist", &m_playManager)}
+				m_playlist {
+					std::make_shared<Playlist::Playlist>(0, "Playlist", &m_playManager, Util::FileSystem::create())
+				}
 			{
 				auto tracks = MetaDataList {};
 				for(auto i = 0; i < trackCount; i++)

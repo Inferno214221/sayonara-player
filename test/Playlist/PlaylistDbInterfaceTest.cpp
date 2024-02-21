@@ -17,9 +17,10 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
-#include "test/Common/TestTracks.h"
+#include "Common/SayonaraTest.h"
+#include "Common/PlayManagerMock.h"
+#include "Common/TestTracks.h"
+#include "Common/FileSystemMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistChangeNotifier.h"
@@ -35,12 +36,11 @@
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
-
 namespace
 {
 	::Playlist::Playlist createTestPlaylist(int index, const QString& name)
 	{
-		return ::Playlist::Playlist(index, name, new PlayManagerMock());
+		return {index, name, new PlayManagerMock(), std::make_shared<Test::AllFilesAvailableFileSystem>()};
 	}
 
 	template<typename A, typename B, typename Comparator>

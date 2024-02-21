@@ -177,7 +177,7 @@ struct Application::Private
 		playManager {PlayManager::create(notificationHandler, app)},
 		engine {new Engine::Handler(fileSystem, tagWriter, playManager)},
 		sessionManager {new Session::Manager(playManager)},
-		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>())},
+		playlistHandler {new Playlist::Handler(playManager, std::make_shared<Playlist::LoaderImpl>(), fileSystem)},
 		libraryPlaylistInteractor {LibraryPlaylistInteractor::create(playlistHandler, playlistHandler, playManager)},
 		libraryManager {Library::Manager::create(libraryPlaylistInteractor)},
 		libraryPluginHandler {Library::PluginHandler::create()},

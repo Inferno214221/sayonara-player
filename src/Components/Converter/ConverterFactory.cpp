@@ -32,10 +32,10 @@ namespace
 {
 	void addTracks(Playlist::Accessor* playlistAccessor, Converter* converter)
 	{
-		auto pl = playlistAccessor->playlist(playlistAccessor->currentIndex());
-		if(pl && converter)
+		const auto playlist = playlistAccessor->playlist(playlistAccessor->currentIndex());
+		if(playlist && converter)
 		{
-			converter->addMetadata(pl->tracks());
+			converter->addMetadata(playlist->tracks());
 		}
 	}
 

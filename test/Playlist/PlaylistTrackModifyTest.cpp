@@ -20,43 +20,33 @@
 
 #include "PlaylistTestUtils.h"
 
-#include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
+#include "Common/SayonaraTest.h"
+#include "Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Utils/Algorithm.h"
+#include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaDataList.h"
 
 #include <QSignalSpy>
 
 #include <iterator>
 
-using PL=Playlist::Playlist;
+using PL = Playlist::Playlist;
 
 class PlaylistTrackModifyTest :
 	public Test::Base
 {
 	Q_OBJECT
 
-public:
-	PlaylistTrackModifyTest() :
-		Test::Base("PlaylistTrackModifyTest"),
-		m_playManager{new PlayManagerMock()}
-	{}
+	public:
+		PlaylistTrackModifyTest() :
+			Test::Base("PlaylistTrackModifyTest") {}
 
-	~PlaylistTrackModifyTest()
-	{
-		delete m_playManager;
-	}
-
-private:
-	PlayManager* m_playManager;
-
-
-private slots:
-	void trackModifiedTest();
-	void trackDeletedTest();
+	private slots:
+		void trackModifiedTest();
+		void trackDeletedTest();
 };
 
 void PlaylistTrackModifyTest::trackModifiedTest()
@@ -67,15 +57,16 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 	// and see if the have been modified correctly
 
 	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
+	const auto playManager = std::make_shared<PlayManagerMock>();
 
 	// give all tracks the same artist
-	for(auto it=tracks.begin(); it != tracks.end(); it++)
+	for(auto it = tracks.begin(); it != tracks.end(); it++)
 	{
 		it->setArtist("artist0");
 	}
 
 	// create a playlist
-	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
+	auto pl = std::make_shared<PL>(1, "Hallo", playManager.get(), Util::FileSystem::create());
 	pl->createPlaylist(tracks);
 
 	MetaDataList oldTracks, newTracks;
@@ -87,9 +78,9 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 
 		{
 			int i = 0;
-			for(auto it=newTracks.begin(); it != newTracks.end(); it++, i++)
+			for(auto it = newTracks.begin(); it != newTracks.end(); it++, i++)
 			{
-				it->setArtist( QString("artist%1").arg(i) );
+				it->setArtist(QString("artist%1").arg(i));
 			}
 		}
 	}
@@ -99,7 +90,7 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 		QSignalSpy spy(mdcn, &Tagging::ChangeNotifier::sigMetadataChanged);
 
 		QList<MetaDataPair> changedTracks;
-		for(int i=0; i<newTracks.count(); i++)
+		for(int i = 0; i < newTracks.count(); i++)
 		{
 			changedTracks << QPair<MetaData, MetaData>(oldTracks[i], newTracks[i]);
 		}
@@ -114,14 +105,16 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 	{ // fetch the tracks from the playlist and see if they have been modified
 		tracks = pl->tracks();
 		int i = 0;
-		for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
+		for(auto it = tracks.begin(); it != tracks.end(); it++, i++)
 		{
-			if(i < 10) {
+			if(i < 10)
+			{
 				QString artist = it->artist();
 				QVERIFY(artist == QString("artist%1").arg(i));
 			}
 
-			else {
+			else
+			{
 				QVERIFY(it->artist() == QString("artist0"));
 			}
 		}
@@ -131,18 +124,19 @@ void PlaylistTrackModifyTest::trackModifiedTest()
 void PlaylistTrackModifyTest::trackDeletedTest()
 {
 	MetaDataList tracks = Test::Playlist::createTrackList(0, 100);
+	const auto playManager = std::make_shared<PlayManagerMock>();
 
-	int i=0;
-	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
+	int i = 0;
+	for(auto it = tracks.begin(); it != tracks.end(); it++, i++)
 	{
 		it->setArtist("artist0");
 	}
 
-	auto pl = std::make_shared<PL>(1, "Hallo", m_playManager);
+	auto pl = std::make_shared<PL>(1, "Hallo", playManager.get(), Util::FileSystem::create());
 	pl->createPlaylist(tracks);
 
 	MetaDataList tracksToDelete;
-	std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(tracksToDelete), [](const MetaData& md){
+	std::copy_if(tracks.begin(), tracks.end(), std::back_inserter(tracksToDelete), [](const MetaData& md) {
 		return (md.id() % 5 == 0);
 	});
 
@@ -155,7 +149,7 @@ void PlaylistTrackModifyTest::trackDeletedTest()
 
 	tracks = pl->tracks();
 	i = 0;
-	for(auto it=tracks.begin(); it != tracks.end(); it++, i++)
+	for(auto it = tracks.begin(); it != tracks.end(); it++, i++)
 	{
 		QVERIFY((it->id() % 5) != 0);
 	}

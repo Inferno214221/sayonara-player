@@ -36,6 +36,11 @@
 class PlayManager;
 class MetaDataList;
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace Playlist
 {
 	class Playlist :
@@ -55,7 +60,8 @@ namespace Playlist
 			void sigCurrentScannedFileChanged(const QString& currentFile);
 
 		public:
-			explicit Playlist(int playlistIndex, const QString& name, PlayManager* playManager);
+			Playlist(int playlistIndex, const QString& name, PlayManager* playManager,
+			         const std::shared_ptr<Util::FileSystem>& fileSystem);
 			~Playlist() override;
 
 			int createPlaylist(const MetaDataList& tracks);

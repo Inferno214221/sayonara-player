@@ -21,6 +21,7 @@
 #define SAYONARA_PLAYER_PLAYLISTMOCKS_H
 
 #include "Common/PlayManagerMock.h"
+#include "Common/FileSystemMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistHandler.h"
@@ -49,8 +50,17 @@ class PlaylistHandlerMock :
 	public Playlist::Creator
 {
 	public:
-		explicit PlaylistHandlerMock(std::shared_ptr<PlayManagerMock> playManager) :
-			m_playManager {std::move(playManager)} {}
+		PlaylistHandlerMock(std::shared_ptr<PlayManagerMock> playManager,
+		                    std::shared_ptr<Util::FileSystem> fileSystem) :
+			m_playManager {std::move(playManager)},
+			m_fileSystem {std::move(fileSystem)} {}
+
+		PlaylistHandlerMock() :
+			PlaylistHandlerMock(std::make_shared<PlayManagerMock>(),
+			                    std::make_shared<Test::AllFilesAvailableFileSystem>()) {}
+
+		explicit PlaylistHandlerMock(std::shared_ptr<Util::FileSystem> fileSystem) :
+			PlaylistHandlerMock(std::make_shared<PlayManagerMock>(), std::move(fileSystem)) {}
 
 		~PlaylistHandlerMock() override = default;
 
@@ -58,13 +68,23 @@ class PlaylistHandlerMock :
 
 		void setActiveIndex(const int index) { m_activeIndex = index; }
 
-		PlaylistPtr activePlaylist() override { return m_playlists[m_activeIndex]; }
+		PlaylistPtr activePlaylist() override
+		{
+			return Util::between(m_activeIndex, m_playlists)
+			       ? m_playlists[m_activeIndex]
+			       : nullptr;;
+		}
 
 		[[nodiscard]] int currentIndex() const override { return m_currentIndex; };
 
 		void setCurrentIndex(const int index) override { m_currentIndex = index; }
 
-		PlaylistPtr playlist(const int index) override { return m_playlists[index]; };
+		PlaylistPtr playlist(const int index) override
+		{
+			return Util::between(index, m_playlists)
+			       ? m_playlists[index]
+			       : nullptr;
+		};
 
 		PlaylistPtr playlistById(const int id) override
 		{
@@ -85,7 +105,8 @@ class PlaylistHandlerMock :
 
 		int createPlaylist(const MetaDataList& tracks, const QString& name, bool temporary, bool isLocked) override
 		{
-			auto playlist = std::make_shared<Playlist::Playlist>(m_playlists.count(), name, m_playManager.get());
+			auto playlist =
+				std::make_shared<Playlist::Playlist>(m_playlists.count(), name, m_playManager.get(), m_fileSystem);
 			playlist->createPlaylist(tracks);
 			playlist->setTemporary(temporary);
 			playlist->setLocked(isLocked);
@@ -137,6 +158,7 @@ class PlaylistHandlerMock :
 		int m_currentIndex {-1};
 		int m_activeIndex {-1};
 		std::shared_ptr<PlayManager> m_playManager;
+		std::shared_ptr<Util::FileSystem> m_fileSystem;
 };
 
 #endif //SAYONARA_PLAYER_PLAYLISTMOCKS_H

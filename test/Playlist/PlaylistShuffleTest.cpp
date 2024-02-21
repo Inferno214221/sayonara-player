@@ -19,11 +19,12 @@
 
 #include "PlaylistTestUtils.h"
 
-#include "test/Common/SayonaraTest.h"
-#include "test/Common/PlayManagerMock.h"
+#include "Common/SayonaraTest.h"
+#include "Common/PlayManagerMock.h"
 
 #include "Components/Playlist/Playlist.h"
 #include "Components/Playlist/PlaylistModifiers.h"
+#include "Utils/FileSystem.h"
 #include "Utils/MetaData/MetaData.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Playlist/PlaylistMode.h"
@@ -37,18 +38,18 @@ namespace
 	{
 		auto tracks = Test::Playlist::createTrackList(0, numTracks);
 
-		QList<int> indexes;
+		auto indexes = QList<int> {};
 		auto playManager = new PlayManagerMock();
-		auto* pl = new Playlist::Playlist(1, "Hallo", playManager);
+		auto* playlist = new Playlist::Playlist(1, "Hallo", playManager, Util::FileSystem::create());
 
 		SetSetting(Set::PL_StartPlaying, false);
 
 		Playlist::Mode mode;
 		mode.setShuffle(Playlist::Mode::State::On);
-		pl->setMode(mode);
-		pl->createPlaylist(tracks);
+		playlist->setMode(mode);
+		playlist->createPlaylist(tracks);
 
-		return pl;
+		return playlist;
 	}
 }
 
@@ -116,7 +117,7 @@ void PlaylistShuffleTest::testUntilEndOfTracks()
 std::pair<Playlist::Playlist*, QList<int>> PlaylistShuffleTest::prepareRepeatTest(bool withRepeateAll)
 {
 	auto tracks = Test::Playlist::createTrackList(0, 10);
-	auto* playlist = new Playlist::Playlist(1, "Hallo", new PlayManagerMock());
+	auto* playlist = new Playlist::Playlist(1, "Hallo", new PlayManagerMock(), Util::FileSystem::create());
 
 	Playlist::Mode mode;
 	mode.setShuffle(Playlist::Mode::State::On);

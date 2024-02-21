@@ -41,6 +41,11 @@
 class CustomPlaylist;
 class PlayManager;
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace Playlist
 {
 	class LocalPathPlaylistCreator;
@@ -54,7 +59,8 @@ namespace Playlist
 		PIMPL(Handler)
 
 		public:
-			Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader);
+			Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader,
+			        const std::shared_ptr<Util::FileSystem>& fileSystem);
 			~Handler() override;
 
 			void shutdown();

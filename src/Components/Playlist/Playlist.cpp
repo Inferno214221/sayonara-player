@@ -27,6 +27,7 @@
 #include "Components/Tagging/ChangeNotifier.h"
 #include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
+#include "Utils/FileSystem.h"
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
 #include "Utils/RandomGenerator.h"
@@ -124,13 +125,18 @@ namespace Playlist
 				       (!settingCondition.has_value() || (settingCondition.value() == true));
 			});
 		}
+
+		bool trackExists(const QString& filepath, const Util::FileSystemPtr& fileSystem)
+		{
+			return fileSystem->exists(filepath) || Util::File::isWWW(filepath);
+		}
 	}
 
 	struct Playlist::Private
 	{
 		Tagging::ChangeNotifier* metadataChangeNotifier {Tagging::ChangeNotifier::instance()};
-
 		PlayManager* playManager;
+		Util::FileSystemPtr fileSystem;
 		MetaDataList tracks;
 		ShuffleHistory shuffleHistory;
 		StopBehavior stopBehavior;
@@ -140,19 +146,23 @@ namespace Playlist
 		bool playlistChanged {false};
 		bool busy {false};
 
-		Private(int playlistIndex, const PlaylistMode& playlistMode, PlayManager* playManager, Playlist* playlist) :
+		Private(int playlistIndex, const PlaylistMode& playlistMode, PlayManager* playManager,
+		        Util::FileSystemPtr fileSystem, Playlist* playlist) :
 			playManager(playManager),
+			fileSystem {std::move(fileSystem)},
 			shuffleHistory(playlist),
 			stopBehavior(playlist),
 			playlistMode(playlistMode),
 			playlistIndex(playlistIndex) {}
 	};
 
-	Playlist::Playlist(int playlistIndex, const QString& name, PlayManager* playManager) :
-		Playlist::DBInterface(name)
+	Playlist::Playlist(int playlistIndex, const QString& name, PlayManager* playManager,
+	                   const Util::FileSystemPtr& fileSystem) :
+		Playlist::DBInterface(name),
+		m {Pimpl::make<::Playlist::Playlist::Private>(playlistIndex, GetSetting(Set::PL_Mode), playManager,
+		                                              fileSystem, this)
+		}
 	{
-		m = Pimpl::make<::Playlist::Playlist::Private>(playlistIndex, GetSetting(Set::PL_Mode), playManager, this);
-
 		connect(m->metadataChangeNotifier,
 		        &Tagging::ChangeNotifier::sigMetadataChanged,
 		        this,
@@ -185,7 +195,7 @@ namespace Playlist
 
 		m->shuffleHistory.addTrack(m->tracks[index]);
 
-		if(!Util::File::checkFile(m->tracks[index].filepath()))
+		if(!trackExists(m->tracks[index].filepath(), m->fileSystem))
 		{
 			spLog(Log::Warning, this)
 				<< QString("Track %1 not available on file system: ").arg(m->tracks[index].filepath());
@@ -268,7 +278,7 @@ namespace Playlist
 
 		const auto oldUniqueId = m->tracks[index].uniqueId();
 		const auto isCurrent = (oldUniqueId == m->playingUniqueId);
-		const auto isEnabled = Util::File::checkFile(track.filepath()) && !track.isDisabled();
+		const auto isEnabled = trackExists(track.filepath(), m->fileSystem) && !track.isDisabled();
 
 		m->shuffleHistory.replaceTrack(m->tracks[index], track);
 		m->tracks[index] = track;

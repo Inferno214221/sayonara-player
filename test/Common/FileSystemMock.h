@@ -64,6 +64,13 @@ namespace Test
 			QMap<QString, QString> m_content;
 	};
 
+	class AllFilesAvailableFileSystem :
+		public Test::FileSystemMock
+	{
+		public:
+			bool exists(const QString& /*filename*/) override { return true; }
+	};
+
 	QStringList flattenFileSystemStructure(const QMap<QString, QStringList>& dirFilesMap);
 } // Test
 
