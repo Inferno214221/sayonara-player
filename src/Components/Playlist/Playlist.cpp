@@ -353,14 +353,14 @@ namespace Playlist
 		}
 
 		const auto nextIndex =
-			getNextTrackIndex(currentTrackIndex(), m->tracks.count(), m->playlistMode, m->shuffleHistory);
+			getNextTrackIndex(currentTrackIndex(), count(), m->playlistMode, m->shuffleHistory);
 		changeTrack(nextIndex);
 	}
 
 	bool Playlist::wakeUp()
 	{
 		const auto index = m->stopBehavior.trackIndexBeforeStop();
-		return (Util::between(index, count(*this)))
+		return (Util::between(index, count()))
 		       ? changeTrack(index)
 		       : false; // NOLINT
 	}
@@ -377,7 +377,7 @@ namespace Playlist
 		m->tracks << tracks;
 		setChanged(true);
 
-		return m->tracks.count();
+		return count();
 	}
 
 	int Playlist::index() const { return m->playlistIndex; }
