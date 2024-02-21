@@ -45,8 +45,8 @@ class PlaylistLoaderMock :
 };
 
 class PlaylistHandlerMock :
-	public PlaylistAccessor,
-	public PlaylistCreator
+	public Playlist::Accessor,
+	public Playlist::Creator
 {
 	public:
 		explicit PlaylistHandlerMock(std::shared_ptr<PlayManagerMock> playManager) :

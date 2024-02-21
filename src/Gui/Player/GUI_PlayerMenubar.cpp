@@ -56,7 +56,7 @@
 struct Menubar::Private
 {
 	Shutdown* shutdown;
-	PlaylistCreator* playlistCreator;
+	Playlist::Creator* playlistCreator;
 	QMenu* menuFile = nullptr;
 	QMenu* menuView = nullptr;
 	QMenu* menuPlugins = nullptr;
@@ -91,7 +91,7 @@ struct Menubar::Private
 	QLabel* heartLabel = nullptr;
 	QLabel* donateLabel = nullptr;
 
-	Private(Shutdown* shutdown, PlaylistCreator* playlistCreator, Library::PluginHandler* pluginHandler,
+	Private(Shutdown* shutdown, Playlist::Creator* playlistCreator, Library::PluginHandler* pluginHandler,
 	        Menubar* menubar) :
 		shutdown {shutdown},
 		playlistCreator(playlistCreator),
@@ -148,7 +148,7 @@ struct Menubar::Private
 	}
 };
 
-Menubar::Menubar(Shutdown* shutdown, PlaylistCreator* playlistCreator, Library::PluginHandler* pluginHandler,
+Menubar::Menubar(Shutdown* shutdown, Playlist::Creator* playlistCreator, Library::PluginHandler* pluginHandler,
                  QWidget* parent) :
 	Gui::WidgetTemplate<QMenuBar>(parent)
 {

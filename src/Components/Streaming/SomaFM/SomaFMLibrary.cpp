@@ -67,9 +67,9 @@ struct SomaFM::Library::Private
 	QMap<QString, SomaFM::Station> stationMap;
 	QString requestedStation;
 	QSettings* qsettings = nullptr;
-	PlaylistCreator* playlistCreator;
+	Playlist::Creator* playlistCreator;
 
-	Private(PlaylistCreator* playlistCreator, QObject* parent) :
+	Private(Playlist::Creator* playlistCreator, QObject* parent) :
 		qsettings {new QSettings(Util::xdgConfigPath("somafm.ini"), QSettings::IniFormat, parent)},
 		playlistCreator {playlistCreator} {}
 
@@ -82,7 +82,7 @@ struct SomaFM::Library::Private
 	}
 };
 
-SomaFM::Library::Library(PlaylistCreator* playlistCreator, QObject* parent) :
+SomaFM::Library::Library(Playlist::Creator* playlistCreator, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(playlistCreator, this);

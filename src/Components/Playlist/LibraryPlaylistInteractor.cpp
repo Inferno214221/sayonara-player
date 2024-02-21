@@ -31,7 +31,7 @@
 namespace
 {
 	template<typename T>
-	void createPlaylistFromList(const T& tracks, bool createNewPlaylist, PlaylistCreator* playlistCreator)
+	void createPlaylistFromList(const T& tracks, bool createNewPlaylist, Playlist::Creator* playlistCreator)
 	{
 		const auto name = (createNewPlaylist)
 		                  ? playlistCreator->requestNewPlaylistName()
@@ -47,7 +47,7 @@ namespace
 		       : 0;
 	}
 
-	void applyPlaylistActionAfterDoubleClick(PlayManager* playManager, PlaylistAccessor* playlistAccessor)
+	void applyPlaylistActionAfterDoubleClick(PlayManager* playManager, Playlist::Accessor* playlistAccessor)
 	{
 		if(GetSetting(Set::Lib_DC_DoNothing))
 		{
@@ -90,7 +90,7 @@ namespace
 	{
 		public:
 
-			LibraryPlaylistInteractorImpl(PlaylistAccessor* playlistAccessor, PlaylistCreator* playlistCreator,
+			LibraryPlaylistInteractorImpl(Playlist::Accessor* playlistAccessor, Playlist::Creator* playlistCreator,
 			                              PlayManager* playManager) :
 				m_playlistAccessor {playlistAccessor},
 				m_playlistCreator {playlistCreator},
@@ -122,14 +122,14 @@ namespace
 			}
 
 		private:
-			PlaylistAccessor* m_playlistAccessor;
-			PlaylistCreator* m_playlistCreator;
+			Playlist::Accessor* m_playlistAccessor;
+			Playlist::Creator* m_playlistCreator;
 			PlayManager* m_playManager;
 	};
 }
 
-LibraryPlaylistInteractor* LibraryPlaylistInteractor::create(PlaylistAccessor* playlistAccessor,
-                                                             PlaylistCreator* playlistCreator,
+LibraryPlaylistInteractor* LibraryPlaylistInteractor::create(Playlist::Accessor* playlistAccessor,
+                                                             Playlist::Creator* playlistCreator,
                                                              PlayManager* playManager)
 {
 	return new LibraryPlaylistInteractorImpl(playlistAccessor, playlistCreator, playManager);

@@ -31,18 +31,18 @@
 
 struct AbstractStationHandler::Private
 {
-	PlaylistCreator* playlistCreator;
+	Playlist::Creator* playlistCreator;
 	StationParserFactoryPtr stationParserFactory;
 	StreamParser* streamParser = nullptr;
 	StationPtr parsedStation;
 	QMap<QString, StationPtr> temporaryStations;
 
-	Private(PlaylistCreator* playlistCreator, StationParserFactoryPtr stationParserFactory) :
+	Private(Playlist::Creator* playlistCreator, StationParserFactoryPtr stationParserFactory) :
 		playlistCreator(playlistCreator),
 		stationParserFactory(std::move(stationParserFactory)) {}
 };
 
-AbstractStationHandler::AbstractStationHandler(PlaylistCreator* playlistCreator,
+AbstractStationHandler::AbstractStationHandler(Playlist::Creator* playlistCreator,
                                                const StationParserFactoryPtr& stationParserFactory, QObject* parent) :
 	QObject(parent),
 	m {Pimpl::make<Private>(playlistCreator, stationParserFactory)} {}

@@ -69,7 +69,7 @@ namespace
 }
 
 class PlaylistCreatorMock :
-	public PlaylistCreator
+	public Playlist::Creator
 {
 	public:
 		~PlaylistCreatorMock() override = default;

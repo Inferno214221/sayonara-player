@@ -32,17 +32,15 @@
 
 #include <QStringList>
 
-namespace Algorithm = Util::Algorithm;
-
 namespace Playlist
 {
 	struct Chooser::Private
 	{
 		QList<CustomPlaylist> playlists;
-		PlaylistCreator* playlistCreator;
+		Creator* playlistCreator;
 		DB::Playlist* playlistConnector;
 
-		explicit Private(PlaylistCreator* playlistCreator) :
+		explicit Private(Creator* playlistCreator) :
 			playlistCreator {playlistCreator},
 			playlistConnector {DB::Connector::instance()->playlistConnector()}
 		{
@@ -50,11 +48,10 @@ namespace Playlist
 		}
 	};
 
-	Chooser::Chooser(PlaylistCreator* playlistCreator, QObject* parent) :
-		QObject(parent)
+	Chooser::Chooser(Creator* playlistCreator, QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(playlistCreator)}
 	{
-		m = Pimpl::make<Private>(playlistCreator);
-
 		auto* pcn = ChangeNotifier::instance();
 		connect(pcn, &ChangeNotifier::sigPlaylistAdded, this, &Chooser::playlistAdded);
 		connect(pcn, &ChangeNotifier::sigPlaylistRenamed, this, &Chooser::playlistRenamed);

@@ -30,7 +30,7 @@
 
 namespace
 {
-	void addTracks(PlaylistAccessor* playlistAccessor, Converter* converter)
+	void addTracks(Playlist::Accessor* playlistAccessor, Converter* converter)
 	{
 		auto pl = playlistAccessor->playlist(playlistAccessor->currentIndex());
 		if(pl && converter)
@@ -47,16 +47,14 @@ namespace
 
 struct ConverterFactory::Private
 {
-	PlaylistAccessor* playlistAccessor;
+	Playlist::Accessor* playlistAccessor;
 
-	Private(PlaylistAccessor* playlistAccessor) :
+	explicit Private(Playlist::Accessor* playlistAccessor) :
 		playlistAccessor(playlistAccessor) {}
 };
 
-ConverterFactory::ConverterFactory(PlaylistAccessor* playlistAccessor)
-{
-	m = Pimpl::make<Private>(playlistAccessor);
-}
+ConverterFactory::ConverterFactory(Playlist::Accessor* playlistAccessor) :
+	m {Pimpl::make<Private>(playlistAccessor)} {}
 
 ConverterFactory::~ConverterFactory() = default;
 

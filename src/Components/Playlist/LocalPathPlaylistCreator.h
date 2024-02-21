@@ -30,6 +30,7 @@ class QStringList;
 
 namespace Playlist
 {
+	class Creator;
 	class LocalPathPlaylistCreator :
 		public QObject
 	{
@@ -39,7 +40,7 @@ namespace Playlist
 			void sigAllPlaylistsCreated(int firstIndex);
 
 		public:
-			static LocalPathPlaylistCreator* create(PlaylistCreator* playlistCreator);
+			static LocalPathPlaylistCreator* create(Creator* playlistCreator);
 
 			virtual int createPlaylists(const QStringList& paths, const QString& name, bool temporary) = 0;
 	};

@@ -28,9 +28,13 @@
 #include "Utils/Streams/Station.h"
 
 class AbstractStationHandler;
-class PlaylistCreator;
 class QComboBox;
 class QPushButton;
+
+namespace Playlist
+{
+	class Creator;
+}
 
 namespace Gui
 {
@@ -58,7 +62,7 @@ namespace Gui
 		PIMPL(AbstractStationPlugin)
 
 		public:
-			AbstractStationPlugin(PlaylistCreator* playlistCreator, AbstractStationHandler* stationHandler,
+			AbstractStationPlugin(Playlist::Creator* playlistCreator, AbstractStationHandler* stationHandler,
 			                      QWidget* parent = nullptr);
 			~AbstractStationPlugin() override;
 

@@ -33,11 +33,11 @@
 
 struct SmartPlaylistManager::Private
 {
-	PlaylistCreator* playlistCreator;
+	Playlist::Creator* playlistCreator;
 	Util::FileSystemPtr fileSystem;
 	std::map<Spid, SmartPlaylistPtr> smartPlaylists;
 
-	Private(PlaylistCreator* playlistCreator, Util::FileSystemPtr fileSystem_) :
+	Private(Playlist::Creator* playlistCreator, Util::FileSystemPtr fileSystem_) :
 		playlistCreator {playlistCreator},
 		fileSystem {std::move(fileSystem_)}
 	{
@@ -54,7 +54,7 @@ struct SmartPlaylistManager::Private
 	}
 };
 
-SmartPlaylistManager::SmartPlaylistManager(PlaylistCreator* playlistCreator, const Util::FileSystemPtr& fileSystem) :
+SmartPlaylistManager::SmartPlaylistManager(Playlist::Creator* playlistCreator, const Util::FileSystemPtr& fileSystem) :
 	m {Pimpl::make<Private>(playlistCreator, fileSystem)} {}
 
 SmartPlaylistManager::~SmartPlaylistManager() = default;

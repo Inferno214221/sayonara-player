@@ -74,7 +74,7 @@ namespace Playlist
 		Q_OBJECT
 
 		public:
-			explicit LocalPathPlaylistCreatorImpl(PlaylistCreator* playlistCreator) :
+			explicit LocalPathPlaylistCreatorImpl(Creator* playlistCreator) :
 				m_playlistCreator {playlistCreator} {}
 
 			~LocalPathPlaylistCreatorImpl() override = default;
@@ -129,13 +129,13 @@ namespace Playlist
 				return index;
 			}
 
-			PlaylistCreator* m_playlistCreator;
+			Creator* m_playlistCreator;
 			std::atomic<int> m_playlistCount {0};
 			int m_firstIndex {-1};
 
 	};
 
-	LocalPathPlaylistCreator* LocalPathPlaylistCreator::create(PlaylistCreator* playlistCreator)
+	LocalPathPlaylistCreator* LocalPathPlaylistCreator::create(Creator* playlistCreator)
 	{
 		return new LocalPathPlaylistCreatorImpl(playlistCreator);
 	}

@@ -43,7 +43,11 @@ struct Spid
 
 inline bool operator<(const Spid& spid1, const Spid& spid2) { return spid1.id < spid2.id; }
 
-class PlaylistCreator;
+namespace Playlist
+{
+	class Creator;
+}
+
 class SmartPlaylist;
 using SmartPlaylistPtr = std::shared_ptr<SmartPlaylist>;
 class SmartPlaylistManager :
@@ -56,7 +60,7 @@ class SmartPlaylistManager :
 		void sigPlaylistsChanged();
 
 	public:
-		SmartPlaylistManager(PlaylistCreator* playlistCreator, const std::shared_ptr<Util::FileSystem>& fileSystem);
+		SmartPlaylistManager(Playlist::Creator* playlistCreator, const std::shared_ptr<Util::FileSystem>& fileSystem);
 		~SmartPlaylistManager() override;
 
 		[[nodiscard]] SmartPlaylistPtr smartPlaylist(const Spid& id) const;

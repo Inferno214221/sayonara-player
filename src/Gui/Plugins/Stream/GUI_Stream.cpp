@@ -40,7 +40,7 @@ struct GUI_Stream::Private
 		streamHandler {streamHandler} {}
 };
 
-GUI_Stream::GUI_Stream(PlaylistCreator* playlistCreator, StreamHandler* streamHandler, QWidget* parent) :
+GUI_Stream::GUI_Stream(Playlist::Creator* playlistCreator, StreamHandler* streamHandler, QWidget* parent) :
 	Gui::AbstractStationPlugin(playlistCreator, streamHandler, parent),
 	m {Pimpl::make<Private>(streamHandler)} {}
 

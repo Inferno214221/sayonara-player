@@ -40,7 +40,7 @@
 using Playlist::LocalPathPlaylistCreator;
 
 class PlaylistCreatorMock :
-	public PlaylistCreator
+	public Playlist::Creator
 {
 	public:
 		PlaylistCreatorMock() :

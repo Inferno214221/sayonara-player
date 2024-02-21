@@ -33,7 +33,7 @@ class GUI_Stream :
 	PIMPL(GUI_Stream)
 
 	public:
-		GUI_Stream(PlaylistCreator* playlistCreator, StreamHandler* streamHandler, QWidget* parent = nullptr);
+		GUI_Stream(Playlist::Creator* playlistCreator, StreamHandler* streamHandler, QWidget* parent = nullptr);
 		~GUI_Stream() override;
 
 		[[nodiscard]] QString name() const override;

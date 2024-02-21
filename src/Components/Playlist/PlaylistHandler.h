@@ -47,14 +47,14 @@ namespace Playlist
 	class Loader;
 	class Handler :
 		public QObject,
-		public PlaylistCreator,
-		public PlaylistAccessor
+		public Creator,
+		public Accessor
 	{
 		Q_OBJECT
 		PIMPL(Handler)
 
 		public:
-			Handler(PlayManager* playManager, const std::shared_ptr<::Playlist::Loader>& playlistLoader);
+			Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader);
 			~Handler() override;
 
 			void shutdown();

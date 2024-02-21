@@ -28,7 +28,7 @@
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/Streams/Station.h"
 
-PodcastHandler::PodcastHandler(PlaylistCreator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
+PodcastHandler::PodcastHandler(Playlist::Creator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
                                QObject* parent) :
 	AbstractStationHandler(playlistCreator, stationParserFactory, parent) {}
 

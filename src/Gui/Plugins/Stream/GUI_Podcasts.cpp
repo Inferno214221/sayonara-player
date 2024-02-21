@@ -26,7 +26,7 @@
 
 #include "Utils/Language/Language.h"
 
-GUI_Podcasts::GUI_Podcasts(PlaylistCreator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent) :
+GUI_Podcasts::GUI_Podcasts(Playlist::Creator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent) :
 	Gui::AbstractStationPlugin(playlistCreator, podcastHandler, parent) {}
 
 GUI_Podcasts::~GUI_Podcasts()

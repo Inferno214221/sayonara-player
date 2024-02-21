@@ -28,10 +28,10 @@
 #include <QObject>
 
 class CustomPlaylist;
-class PlaylistCreator;
 
 namespace Playlist
 {
+	class Creator;
 	class Chooser :
 		public QObject
 	{
@@ -42,7 +42,7 @@ namespace Playlist
 			void sigPlaylistsChanged();
 
 		public:
-			Chooser(PlaylistCreator* playlistCreator, QObject* parent);
+			Chooser(Creator* playlistCreator, QObject* parent);
 			~Chooser() override;
 
 			void loadSinglePlaylist(int id);

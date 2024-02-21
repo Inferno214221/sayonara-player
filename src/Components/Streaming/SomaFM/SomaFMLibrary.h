@@ -27,7 +27,10 @@
 
 #include "Utils/Pimpl.h"
 
-class PlaylistCreator;
+namespace Playlist
+{
+	class Creator;
+}
 
 namespace SomaFM
 {
@@ -45,7 +48,7 @@ namespace SomaFM
 			void sigLoadingStarted();
 
 		public:
-			explicit Library(PlaylistCreator* playlistCreator, QObject* parent = nullptr);
+			explicit Library(Playlist::Creator* playlistCreator, QObject* parent = nullptr);
 			~Library();
 
 			Station station(const QString& name);

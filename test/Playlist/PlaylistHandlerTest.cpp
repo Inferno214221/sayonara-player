@@ -46,7 +46,7 @@ namespace
 		public Playlist::LocalPathPlaylistCreator
 	{
 		public:
-			PlaylistFromPathCreatorMock(PlaylistCreator* creator, MetaDataList tracks) :
+			PlaylistFromPathCreatorMock(Playlist::Creator* creator, MetaDataList tracks) :
 				m_creator {creator},
 				m_tracks {std::move(tracks)} {}
 
@@ -59,12 +59,12 @@ namespace
 			}
 
 		private:
-			PlaylistCreator* m_creator;
+			Playlist::Creator* m_creator;
 			MetaDataList m_tracks;
 	};
 
 	Playlist::LocalPathPlaylistCreator*
-	makePlaylistFromPathCreator(PlaylistCreator* creator, const MetaDataList& tracks)
+	makePlaylistFromPathCreator(Playlist::Creator* creator, const MetaDataList& tracks)
 	{
 		return new PlaylistFromPathCreatorMock(creator, tracks);
 	}

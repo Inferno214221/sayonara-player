@@ -24,55 +24,58 @@
 
 #include <memory>
 
-namespace Playlist
-{
-	class Playlist;
-	class LocalPathPlaylistCreator;
-}
-
 class CustomPlaylist;
 class MetaDataList;
 class QStringList;
 
+namespace Playlist
+{
+	class Playlist;
+}
+
 using PlaylistPtr = std::shared_ptr<::Playlist::Playlist>;
 
-class PlaylistAccessor
+namespace Playlist
 {
-	public:
-		virtual ~PlaylistAccessor() = default;
+	class LocalPathPlaylistCreator;
 
-		virtual int activeIndex() const = 0;
-		virtual PlaylistPtr activePlaylist() = 0;
+	class Accessor
+	{
+		public:
+			virtual ~Accessor() = default;
 
-		virtual int currentIndex() const = 0;
-		virtual void setCurrentIndex(int playlistIndex) = 0;
+			[[nodiscard]] virtual int activeIndex() const = 0;
+			[[nodiscard]] virtual PlaylistPtr activePlaylist() = 0;
 
-		virtual PlaylistPtr playlist(int playlistIndex) = 0;
-		virtual PlaylistPtr playlistById(int playlistId) = 0;
+			[[nodiscard]] virtual int currentIndex() const = 0;
+			virtual void setCurrentIndex(int playlistIndex) = 0;
 
-		virtual int count() const = 0;
-};
+			[[nodiscard]] virtual PlaylistPtr playlist(int playlistIndex) = 0;
+			[[nodiscard]] virtual PlaylistPtr playlistById(int playlistId) = 0;
 
-class PlaylistCreator
-{
-	public:
-		virtual ~PlaylistCreator() = default;
+			[[nodiscard]] virtual int count() const = 0;
+	};
 
-		virtual PlaylistPtr playlist(int playlistIndex) = 0;
-		virtual PlaylistPtr playlistById(int playlistId) = 0;
+	class Creator
+	{
+		public:
+			virtual ~Creator() = default;
 
-		virtual QString requestNewPlaylistName(const QString& prefix = QString()) const = 0;
+			[[nodiscard]] virtual PlaylistPtr playlist(int playlistIndex) = 0;
+			[[nodiscard]] virtual PlaylistPtr playlistById(int playlistId) = 0;
 
-		virtual int
-		createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true,
-		               bool isLocked = false) = 0;
-		virtual int
-		createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true,
-		               Playlist::LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) = 0;
-		virtual int createPlaylist(const CustomPlaylist& customPlaylist) = 0;
-		virtual int createEmptyPlaylist(bool override = false) = 0;
-		virtual int createCommandLinePlaylist(const QStringList& pathList,
-		                                      Playlist::LocalPathPlaylistCreator* playlistFromPathCreator) = 0;
-};
+			[[nodiscard]] virtual QString requestNewPlaylistName(const QString& prefix = QString()) const = 0;
 
+			virtual int
+			createPlaylist(const MetaDataList& tracks, const QString& name = QString(), bool temporary = true,
+			               bool isLocked = false) = 0;
+			virtual int
+			createPlaylist(const QStringList& pathList, const QString& name = QString(), bool temporary = true,
+			               LocalPathPlaylistCreator* playlistFromPathCreator = nullptr) = 0;
+			virtual int createPlaylist(const CustomPlaylist& customPlaylist) = 0;
+			virtual int createEmptyPlaylist(bool override = false) = 0;
+			virtual int createCommandLinePlaylist(const QStringList& pathList,
+			                                      LocalPathPlaylistCreator* playlistFromPathCreator) = 0;
+	};
+}
 #endif //SAYONARA_PLAYER_PLAYLISTINTERFACE_H

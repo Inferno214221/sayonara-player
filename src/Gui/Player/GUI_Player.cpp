@@ -98,7 +98,7 @@ struct GUI_Player::Private
 	NotificationHandler* notificationHandler;
 	Translator translator;
 
-	Private(PlayManager* playManager, PlaylistCreator* playlistCreator,
+	Private(PlayManager* playManager, Playlist::Creator* playlistCreator,
 	        Library::PluginHandler* libraryPluginHandler, CoverDataProvider* coverProvider,
 	        Shutdown* shutdown, NotificationHandler* notificationHandler, GUI_Player* parent) :
 		menubar {new Menubar(shutdown, playlistCreator, libraryPluginHandler, parent)},

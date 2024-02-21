@@ -23,11 +23,15 @@
 
 #include "AbstractStationHandler.h"
 
+namespace Playlist
+{
+	class Creator;
+}
 class StreamHandler :
 	public AbstractStationHandler
 {
 	public:
-		StreamHandler(PlaylistCreator* playlistCreator,
+		StreamHandler(Playlist::Creator* playlistCreator,
 		              const std::shared_ptr<StationParserFactory>& stationParserFactory,
 		              QObject* parent = nullptr);
 		~StreamHandler() override;

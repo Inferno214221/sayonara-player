@@ -23,12 +23,17 @@
 
 #include "AbstractStationHandler.h"
 
+namespace Playlist
+{
+	class Creator;
+}
+
 class PodcastHandler :
 	public AbstractStationHandler
 {
 	Q_OBJECT
 	public:
-		PodcastHandler(PlaylistCreator* playlistCreator,
+		PodcastHandler(Playlist::Creator* playlistCreator,
 		               const std::shared_ptr<StationParserFactory>& stationParserFactory,
 		               QObject* parent = nullptr);
 		~PodcastHandler() override;

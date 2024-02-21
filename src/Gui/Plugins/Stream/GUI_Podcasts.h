@@ -33,7 +33,7 @@ class GUI_Podcasts :
 	UI_CLASS(GUI_Podcasts)
 
 	public:
-		GUI_Podcasts(PlaylistCreator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent = nullptr);
+		GUI_Podcasts(Playlist::Creator* playlistCreator, PodcastHandler* podcastHandler, QWidget* parent = nullptr);
 		~GUI_Podcasts() override;
 
 		QString name() const override;

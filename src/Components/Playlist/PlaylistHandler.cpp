@@ -53,7 +53,7 @@ namespace Playlist
 			playManager->setCurrentPositionMs(0);
 		}
 
-		bool isPlaylistOnlyValidPlaylist(PlaylistAccessor* playlistAccessor, const int index)
+		bool isPlaylistOnlyValidPlaylist(Accessor* playlistAccessor, const int index)
 		{
 			return (index == 1) &&
 			       (playlistAccessor->count() == 2) &&
@@ -105,8 +105,7 @@ namespace Playlist
 		}
 	};
 
-	Handler::Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader) :
-		PlaylistCreator()
+	Handler::Handler(PlayManager* playManager, const std::shared_ptr<Loader>& playlistLoader)
 	{
 		m = Pimpl::make<Private>(playManager);
 		m->initPlaylists(this, playlistLoader);

@@ -34,7 +34,10 @@ using QStrRef = const QString&;
 
 class QMainWindow;
 class PlayManager;
-class PlaylistAccessor;
+namespace Playlist
+{
+	class Accessor;
+}
 
 namespace Dbus::Mpris
 {
@@ -48,7 +51,7 @@ namespace Dbus::Mpris
 			void Seeked(qlonglong position);
 
 		public:
-			MediaPlayer2(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor);
+			MediaPlayer2(QMainWindow* player, PlayManager* playManager, Playlist::Accessor* playlistAccessor);
 			~MediaPlayer2() override;
 
 			Q_PROPERTY(bool CanQuit READ CanQuit CONSTANT)

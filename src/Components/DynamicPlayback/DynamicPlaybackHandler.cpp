@@ -44,7 +44,7 @@ using namespace DynamicPlayback;
 
 namespace
 {
-	void appendTrack(PlaylistAccessor* playlistAccessor, const MetaData& track)
+	void appendTrack(Playlist::Accessor* playlistAccessor, const MetaData& track)
 	{
 		auto activePlaylist = playlistAccessor->activePlaylist();
 		Playlist::appendTracks(*activePlaylist, MetaDataList {track}, Playlist::Reason::DynamicPlayback);
@@ -84,7 +84,7 @@ namespace
 		return result;
 	}
 
-	Util::Set<QString> getPlaylistFilepaths(PlaylistAccessor* playlistAccessor, const QList<ArtistId>& artistIds)
+	Util::Set<QString> getPlaylistFilepaths(Playlist::Accessor* playlistAccessor, const QList<ArtistId>& artistIds)
 	{
 		Util::Set<QString> playlistFilepaths;
 
@@ -126,10 +126,10 @@ struct Handler::Private
 {
 	QString currentArtistName;
 	LibraryId currentLibraryId;
-	PlaylistAccessor* playlistAccessor;
+	Playlist::Accessor* playlistAccessor;
 	QTimer* timer;
 
-	Private(PlaylistAccessor* playlistAccessor) :
+	Private(Playlist::Accessor* playlistAccessor) :
 		currentLibraryId {-1},
 		playlistAccessor(playlistAccessor),
 		timer(new QTimer())
@@ -138,7 +138,7 @@ struct Handler::Private
 	}
 };
 
-Handler::Handler(PlayManager* playManager, PlaylistAccessor* playlistAccessor, QObject* parent) :
+Handler::Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor, QObject* parent) :
 	QObject(parent)
 {
 	m = Pimpl::make<Private>(playlistAccessor);

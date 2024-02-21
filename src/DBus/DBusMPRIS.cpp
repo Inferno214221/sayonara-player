@@ -152,7 +152,7 @@ namespace Dbus::Mpris
 	{
 		PlayManager* playManager;
 		QMainWindow* player;
-		PlaylistAccessor* playlistAccessor;
+		Playlist::Accessor* playlistAccessor;
 
 		QString coverPath {Util::Filepath(Cover::Location::invalidPath()).fileystemPath()};
 
@@ -160,7 +160,7 @@ namespace Dbus::Mpris
 		MicroSeconds pos;
 		double volume {GetSetting(Set::Engine_Vol) / 100.0};
 
-		Private(QMainWindow* player, PlayManager* playManager, PlaylistAccessor* playlistAccessor) :
+		Private(QMainWindow* player, PlayManager* playManager, Playlist::Accessor* playlistAccessor) :
 			playManager(playManager),
 			player(player),
 			playlistAccessor(playlistAccessor),
@@ -168,7 +168,7 @@ namespace Dbus::Mpris
 	};
 
 	MediaPlayer2::MediaPlayer2(QMainWindow* player, PlayManager* playManager,
-	                           PlaylistAccessor* playlistAccessor) :
+	                           Playlist::Accessor* playlistAccessor) :
 		Adapator("/org/mpris/MediaPlayer2",
 		         "org.mpris.MediaPlayer2.sayonara",
 		         "org.mpris.MediaPlayer2.Player",

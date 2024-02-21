@@ -29,7 +29,7 @@
 #include "Utils/Parser/StreamParser.h"
 #include "Utils/Settings/Settings.h"
 
-StreamHandler::StreamHandler(PlaylistCreator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
+StreamHandler::StreamHandler(Playlist::Creator* playlistCreator, const StationParserFactoryPtr& stationParserFactory,
                              QObject* parent) :
 	AbstractStationHandler(playlistCreator, stationParserFactory, parent) {}
 

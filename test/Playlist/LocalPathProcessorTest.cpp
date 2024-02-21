@@ -38,7 +38,7 @@
 namespace
 {
 	class PlaylistCreatorMock :
-		public PlaylistCreator
+		public Playlist::Creator
 	{
 		public:
 			PlaylistCreatorMock(const Test::Playlist::PathTrackMap& pathTrackMap, int trackCount) :

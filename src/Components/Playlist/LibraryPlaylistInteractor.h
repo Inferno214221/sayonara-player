@@ -21,11 +21,14 @@
 #define SAYONARA_PLAYER_LIBRARYPLAYLISTINTERACTOR_H
 
 class MetaDataList;
+class PlayManager;
 class QStringList;
 
-class PlaylistAccessor;
-class PlaylistCreator;
-class PlayManager;
+namespace Playlist
+{
+	class Accessor;
+	class Creator;
+}
 
 class LibraryPlaylistInteractor
 {
@@ -38,7 +41,7 @@ class LibraryPlaylistInteractor
 		virtual void insertAfterCurrentTrack(const MetaDataList& tracks) = 0;
 
 		static LibraryPlaylistInteractor*
-		create(PlaylistAccessor* playlistAccessor, PlaylistCreator* playlistCreator, PlayManager* playManager);
+		create(Playlist::Accessor* playlistAccessor, Playlist::Creator* playlistCreator, PlayManager* playManager);
 };
 
 #endif //SAYONARA_PLAYER_LIBRARYPLAYLISTINTERACTOR_H

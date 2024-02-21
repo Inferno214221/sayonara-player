@@ -57,7 +57,7 @@ namespace Gui
 {
 	struct AbstractStationPlugin::Private
 	{
-		PlaylistCreator* playlistCreator;
+		Playlist::Creator* playlistCreator;
 		AbstractStationHandler* stationHandler {nullptr};
 		ProgressBar* loadingBar {nullptr};
 		QComboBox* comboStream {nullptr};
@@ -65,12 +65,12 @@ namespace Gui
 		MenuToolButton* btnTool {nullptr};
 		bool searching {false};
 
-		explicit Private(PlaylistCreator* playlistCreator, AbstractStationHandler* stationHandler) :
+		explicit Private(Playlist::Creator* playlistCreator, AbstractStationHandler* stationHandler) :
 			playlistCreator(playlistCreator),
 			stationHandler(stationHandler) {}
 	};
 
-	AbstractStationPlugin::AbstractStationPlugin(PlaylistCreator* playlistCreator,
+	AbstractStationPlugin::AbstractStationPlugin(Playlist::Creator* playlistCreator,
 	                                             AbstractStationHandler* stationHandler, QWidget* parent) :
 		PlayerPlugin::Base(parent),
 		m {Pimpl::make<Private>(playlistCreator, stationHandler)} {}
