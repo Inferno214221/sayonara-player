@@ -26,25 +26,28 @@
 class PlayManagerMock :
 	public PlayManager
 {
-		MetaData m_metadata;
-
 	public:
 		PlayManagerMock() :
 			PlayManager(nullptr) {}
 
-		void play() override {}
+		void play() override { m_playstate = PlayState::Playing; }
 
 		void wakeUp() override {}
 
-		void playPause() override {}
+		void playPause() override
+		{
+			m_playstate = (m_playstate == PlayState::Playing)
+			              ? PlayState::Paused
+			              : PlayState::Playing;
+		}
 
-		void pause() override {}
+		void pause() override { m_playstate = PlayState::Paused; }
 
 		void previous() override {}
 
 		void next() override {}
 
-		void stop() override {}
+		void stop() override { m_playstate = PlayState::Stopped; }
 
 		void record(bool) override {}
 
@@ -56,7 +59,7 @@ class PlayManagerMock :
 
 		void setCurrentPositionMs(MilliSeconds) override {}
 
-		void changeCurrentTrack(const MetaData&, int) override {}
+		void changeCurrentTrack(const MetaData& track, int) override { m_metadata = track; }
 
 		void changeCurrentMetadata(const MetaData& md) override { m_metadata = md; }
 
@@ -82,52 +85,31 @@ class PlayManagerMock :
 
 		void error(const QString&) override {}
 
-		PlayState playstate() const override
-		{
-			return PlayState::Playing;
-		}
+		[[nodiscard]] PlayState playstate() const override { return m_playstate; }
 
-		MilliSeconds currentPositionMs() const override
-		{
-			return 0;
-		}
+		void setPlaystate(const PlayState playState) { m_playstate = playState; }
 
-		MilliSeconds currentTrackPlaytimeMs() const override
-		{
-			return 0;
-		}
+		[[nodiscard]] MilliSeconds currentPositionMs() const override { return 0; }
 
-		MilliSeconds initialPositionMs() const override
-		{
-			return 0;
-		}
+		[[nodiscard]] MilliSeconds currentTrackPlaytimeMs() const override { return 0; }
 
-		MilliSeconds durationMs() const override
-		{
-			return 0;
-		}
+		[[nodiscard]] MilliSeconds initialPositionMs() const override { return 0; }
 
-		Bitrate bitrate() const override
-		{
-			return 0;
-		}
+		[[nodiscard]] MilliSeconds durationMs() const override { return 0; }
 
-		const MetaData& currentTrack() const override
-		{
-			return m_metadata;
-		}
+		[[nodiscard]] Bitrate bitrate() const override { return 0; }
 
-		int volume() const override
-		{
-			return 0;
-		}
+		[[nodiscard]] const MetaData& currentTrack() const override { return m_metadata; }
 
-		bool isMuted() const override
-		{
-			return false;
-		}
+		[[nodiscard]] int volume() const override { return 0; }
+
+		[[nodiscard]] bool isMuted() const override { return false; }
 
 		void shutdown() override {}
+
+	private:
+		MetaData m_metadata;
+		PlayState m_playstate {PlayState::FirstStartup};
 };
 
 #endif //SAYONARA_PLAYER_PLAYMANAGERMOCK_H
