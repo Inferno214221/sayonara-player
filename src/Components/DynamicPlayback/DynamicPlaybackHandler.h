@@ -31,6 +31,11 @@ namespace Playlist
 	class Accessor;
 }
 
+namespace Util
+{
+	class FileSystem;
+}
+
 namespace DynamicPlayback
 {
 	class Handler :
@@ -40,8 +45,9 @@ namespace DynamicPlayback
 		PIMPL(Handler)
 
 		public:
-			Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor, QObject* parent = nullptr);
-			~Handler();
+			Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor,
+			        const std::shared_ptr<Util::FileSystem>& fileSystem, QObject* parent = nullptr);
+			~Handler() override;
 
 		private slots:
 			void currentTrackChanged(const MetaData& track);

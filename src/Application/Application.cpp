@@ -183,7 +183,7 @@ struct Application::Private
 		libraryPluginHandler {Library::PluginHandler::create()},
 		playlistLibraryInteractor {new Playlist::LibraryInteractor(libraryManager)},
 		dynamicPlaybackChecker {DynamicPlaybackChecker::create(libraryManager)},
-		dynamicPlaybackHandler {new DynamicPlayback::Handler(playManager, playlistHandler, playManager)},
+		dynamicPlaybackHandler {new DynamicPlayback::Handler(playManager, playlistHandler, fileSystem, playManager)},
 		smartPlaylistManager {new SmartPlaylistManager(playlistHandler, fileSystem)},
 		shutdown {Shutdown::create(playManager, notificationHandler)},
 		timer {Util::startMeasure()}
