@@ -20,12 +20,11 @@
 
 #include "test/Common/SayonaraTest.h"
 
+#include "Utils/Algorithm.h"
 #include "Utils/FileUtils.h"
-#include "Utils/RandomGenerator.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include "Utils/RandomGenerator.h"
 #include "Utils/Set.h"
-
-#include <algorithm>
 
 namespace
 {
@@ -84,6 +83,8 @@ class MetaDataListTest :
 		[[maybe_unused]] void testRemoveByIndexRange();
 		[[maybe_unused]] void testAppendUnique();
 		[[maybe_unused]] void testPushBack();
+		[[maybe_unused]] void testUniqueIdsNotAffectedByMove();
+		[[maybe_unused]] void testUniqueIdsAffectedByCopy();
 };
 
 // NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -192,16 +193,16 @@ class MetaDataListTest :
 		QList<int> expctedIds;
 	};
 
-	const auto testCases = {
-		TestCase {createTracks(0, 8), {0, 7}, {}},
-		TestCase {createTracks(0, 8), {0, 4}, {5, 6, 7}},
-		TestCase {createTracks(0, 8), {-5, 4}, {5, 6, 7}},
-		TestCase {createTracks(0, 8), {5, 8}, {0, 1, 2, 3, 4}},
-		TestCase {createTracks(0, 8), {5, 20}, {0, 1, 2, 3, 4}},
-		TestCase {{},
-		          {0, 4},
-		          {}}
-	};
+	const auto testCases =
+		{
+			TestCase {createTracks(0, 8), {0, 7}, {}},
+			TestCase {createTracks(0, 8), {0, 4}, {5, 6, 7}},
+			TestCase {createTracks(0, 8), {-5, 4}, {5, 6, 7}},
+			TestCase {createTracks(0, 8), {5, 8}, {0, 1, 2, 3, 4}},
+			TestCase {createTracks(0, 8), {5, 20}, {0, 1, 2, 3, 4}},
+			TestCase {MetaDataList {},
+			          {0, 4},
+			          {}}};
 
 	for(const auto& testCase: testCases)
 	{
@@ -238,6 +239,7 @@ class MetaDataListTest :
 
 [[maybe_unused]] void MetaDataListTest::testMoveTracks() // NOLINT(readability-convert-member-functions-to-static)
 {
+	constexpr const auto TrackCount = 8;
 	struct TestCase
 	{
 		MetaDataList tracks;
@@ -245,16 +247,29 @@ class MetaDataListTest :
 		int targetIndex;
 		QList<int> expectedIds;
 	};
-
 	const auto testCases = {
-		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 0, {0, 1, 2, 3, 4, 5, 6, 7}},
-		TestCase {createTracks(0, 8), listToSet({0, 1, 2}), 5, {3, 4, 0, 1, 2, 5, 6, 7}},
-		TestCase {createTracks(0, 8), listToSet({2, 4, 6}), 3, {0, 1, 2, 4, 6, 3, 5, 7}},
-		TestCase {createTracks(0, 8), listToSet({5, 6, 7}), 1, {0, 5, 6, 7, 1, 2, 3, 4}},
-		TestCase {createTracks(0, 8), listToSet({1, 3, 7}), 4, {0, 2, 1, 3, 7, 4, 5, 6}},
-		TestCase {createTracks(0, 8), listToSet({-1, 4, 10}), 2, {0, 1, 4, 2, 3, 5, 6, 7}},
-		TestCase {createTracks(0, 8), listToSet({}), 2, {0, 1, 2, 3, 4, 5, 6, 7}},
-		TestCase {{}, listToSet({0, 1, 2}), 2, {}}
+		// edge cases
+		TestCase {{}, listToSet({0, 1, 2}), 2, {}},
+		TestCase {createTracks(0, TrackCount), listToSet({}), 2, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({-1}), 2, {0, 1, 2, 3, 4, 5, 6, 7}},
+		// single number
+		TestCase {createTracks(0, TrackCount), listToSet({3}), 0, {3, 0, 1, 2, 4, 5, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({3}), 5, {0, 1, 2, 4, 3, 5, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({3}), TrackCount, {0, 1, 2, 4, 5, 6, 7, 3}},
+		TestCase {createTracks(0, TrackCount), listToSet({3}), TrackCount + 2, {0, 1, 2, 4, 5, 6, 7, 3}},
+		// multi numbers
+		TestCase {createTracks(0, TrackCount), listToSet({0, 1, 2}), 0, {0, 1, 2, 3, 4, 5, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({0, 1, 2}), 5, {3, 4, 0, 1, 2, 5, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), -5, {2, 4, 6, 0, 1, 3, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 0, {2, 4, 6, 0, 1, 3, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 1, {0, 2, 4, 6, 1, 3, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 2, {0, 1, 2, 4, 6, 3, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 3, {0, 1, 2, 4, 6, 3, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 4, {0, 1, 3, 2, 4, 6, 5, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), 6, {0, 1, 3, 5, 2, 4, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), TrackCount - 1, {0, 1, 3, 5, 2, 4, 6, 7}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), TrackCount, {0, 1, 3, 5, 7, 2, 4, 6}},
+		TestCase {createTracks(0, TrackCount), listToSet({2, 4, 6}), TrackCount + 5, {0, 1, 3, 5, 7, 2, 4, 6}},
 	};
 
 	for(const auto& testCase: testCases)
@@ -334,6 +349,48 @@ class MetaDataListTest :
 		auto tracks = MetaDataList() << tracks1 << tracks2;
 		QVERIFY(tracks.count() == testCase.tracks1.count() + testCase.tracks2.count());
 	}
+}
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void MetaDataListTest::testUniqueIdsNotAffectedByMove()
+{
+	auto tracks = createTracks(0, 8);
+	auto uniqueIds = QList<UniqueId> {};
+	Util::Algorithm::transform(tracks, uniqueIds, [](const auto& track) {
+		return track.uniqueId();
+	});
+
+	std::reverse(tracks.begin(), tracks.end());
+
+	const auto isEqual =
+		std::equal(tracks.begin(), tracks.end(), uniqueIds.rbegin(), [](const auto& track, const auto id) {
+			return track.uniqueId() == id;
+		});
+
+	QVERIFY(isEqual);
+
+	std::reverse(tracks.begin(), tracks.end());
+
+	const auto isOriginalOrder =
+		std::equal(tracks.begin(), tracks.end(), uniqueIds.begin(), [](const auto& track, const auto id) {
+			return track.uniqueId() == id;
+		});
+
+	QVERIFY(isOriginalOrder);
+}
+
+// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+[[maybe_unused]] void MetaDataListTest::testUniqueIdsAffectedByCopy()
+{
+	auto tracks = createTracks(0, 8);
+	auto copiedTracks = tracks;
+
+	const auto allUnequal =
+		std::equal(tracks.begin(), tracks.end(), copiedTracks.begin(), [](const auto& track1, const auto& track2) {
+			return track1.uniqueId() != track2.uniqueId();
+		});
+
+	QVERIFY(allUnequal);
 }
 
 QTEST_GUILESS_MAIN(MetaDataListTest)

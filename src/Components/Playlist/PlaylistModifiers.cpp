@@ -31,6 +31,8 @@
 #include "Utils/RandomGenerator.h"
 #include "Utils/Set.h"
 
+#include <cmath>
+
 namespace Playlist
 {
 	void reverse(Playlist& playlist, const Reason reason)
@@ -120,10 +122,6 @@ namespace Playlist
 
 		playlist.modifyTracks([&](auto tracks) {
 			tracks << newTracks;
-			std::for_each(tracks.begin() + oldTrackCount, tracks.end(), [](auto& track) {
-				const auto isDisabled = track.isDisabled() || !Util::File::checkFile(track.filepath());
-				track.setDisabled(isDisabled);
-			});
 			return tracks;
 		}, reason, Operation::Append);
 	}
@@ -183,7 +181,7 @@ namespace Playlist
 		const auto& tracks = playlist.tracks();
 		const auto durationMs =
 			std::accumulate(tracks.begin(), tracks.end(), 0, [](const auto timeMs, const auto& track) {
-				return timeMs + track.durationMs();
+				return timeMs + std::max(0L, track.durationMs());
 			});
 
 		return durationMs;
@@ -193,7 +191,6 @@ namespace Playlist
 	{
 		const auto currentTrackIndex = playlist.currentTrackIndex();
 		const auto& tracks = playlist.tracks();
-
 		if(!Util::between(currentTrackIndex, count(playlist)) || tracks[currentTrackIndex].isDisabled())
 		{
 			return -1;

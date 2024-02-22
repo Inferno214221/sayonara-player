@@ -105,7 +105,7 @@ void MetaDataList::moveTracks(const IndexSet& indexes, int targetIndex) noexcept
 		return;
 	}
 
-	targetIndex = ensureBetween(targetIndex, 0, count() - 1);
+	targetIndex = ensureBetween(targetIndex, 0, count());
 
 	MetaDataList tracksToMove;
 	MetaDataList tracksBeforeTgt;
