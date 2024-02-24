@@ -294,10 +294,10 @@ namespace
 
 	int getBufferState(GstMessage* message)
 	{
-		auto percent = 0;
-		auto averageIn = 0;
-		auto averageOut = 0;
-		auto bufferingLeft = 0L;
+		gint percent = 0;
+		gint averageIn = 0;
+		gint averageOut = 0;
+		gint64 bufferingLeft = 0L;
 		auto bufferingMode = GstBufferingMode::GST_BUFFERING_STREAM;
 
 		gst_message_parse_buffering(message, &percent);
