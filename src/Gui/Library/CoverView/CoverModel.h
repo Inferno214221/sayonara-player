@@ -55,7 +55,6 @@ namespace Library
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);
 			~CoverModel() override;
 
-		public:
 			[[nodiscard]] int rowCount(const QModelIndex& parent = QModelIndex()) const override;
 			[[nodiscard]] int columnCount(const QModelIndex& paren = QModelIndex()) const override;
 			[[nodiscard]] QVariant data(const QModelIndex& index, int role) const override;
@@ -72,7 +71,7 @@ namespace Library
 			[[nodiscard]] int mapIndexToId(int index) const override;
 			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
 			[[nodiscard]] int itemCount() const override;
-			[[nodiscard]] QString searchableString(const int index, const QString& prefix) const override;
+			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
 
 		private:
 			[[nodiscard]] const AlbumList& albums() const;
@@ -83,7 +82,7 @@ namespace Library
 			void refreshData();
 
 		public slots:
-			void setZoom(int zoom, const QSize& view_size);
+			void setZoom(int zoom, QSize view_size);
 			void reload();
 			void clear();
 

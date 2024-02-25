@@ -75,12 +75,12 @@ int SearchModel::initSearch(const QString& searchstring, int startIndex)
 	startIndex = std::max(startIndex, 0);
 	for(auto i = 0; i < count; i++)
 	{
-		const auto row = (startIndex + i) % count;
-		const auto data = Library::convertSearchstring(searchableString(row, prefix), searchMode);
+		const auto itemIndex = (startIndex + i) % count;
+		const auto data = Library::convertSearchstring(searchableString(itemIndex, prefix), searchMode);
 
 		if(data.contains(pureSearchstring))
 		{
-			m->matches << row;
+			m->matches << itemIndex;
 		}
 	}
 

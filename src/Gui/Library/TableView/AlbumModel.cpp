@@ -77,20 +77,16 @@ AlbumModel::AlbumModel(const Tagging::TagReaderPtr& tagReader, const Tagging::Ta
 
 AlbumModel::~AlbumModel() = default;
 
-Id AlbumModel::mapIndexToId(int index) const
+Id AlbumModel::mapIndexToId(const int index) const
 {
 	const auto& albums = library()->albums();
-	return (Util::between(index, albums))
-	       ? albums[index].id()
-	       : -1;
+	return albums[index].id();
 }
 
-QString Library::AlbumModel::searchableString(const int row, const QString& /*prefix*/) const
+QString Library::AlbumModel::searchableString(const int index, const QString& /*prefix*/) const
 {
 	const auto& albums = library()->albums();
-	return Util::between(row, albums)
-	       ? albums[row].name()
-	       : QString {};
+	return albums[index].name();
 }
 
 Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
@@ -106,7 +102,7 @@ Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 		return Cover::Location::invalidLocation();
 	}
 
-	const auto row = static_cast<AlbumList::size_type>(rows.first());
+	const auto row = rows.first();
 	const auto& albums = library()->albums();
 
 	return (Util::between(row, albums))
@@ -114,7 +110,7 @@ Cover::Location AlbumModel::cover(const QModelIndexList& indexes) const
 	       : Cover::Location::invalidLocation();
 }
 
-QVariant AlbumModel::data(const QModelIndex& index, int role) const
+QVariant AlbumModel::data(const QModelIndex& index, int role) const // NOLINT(*-function-cognitive-complexity)
 {
 	if(!index.isValid())
 	{
@@ -176,7 +172,7 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const
 				       : album.name();
 
 			case ColumnIndex::Album::Duration:
-				return ::Util::msToString(album.durationSec() * 1000, "$He $M:$S");
+				return ::Util::msToString(album.durationSec() * 1000, "$He $M:$S"); // NOLINT(*-magic-numbers)
 
 			case ColumnIndex::Album::Rating:
 			{
@@ -221,7 +217,7 @@ bool AlbumModel::setData(const QModelIndex& index, const QVariant& value, int ro
 			m->tempRating.first = row;
 			m->tempRating.second = rating;
 
-			if(!m->uto)
+			if(m->uto == nullptr)
 			{
 				m->uto = new Tagging::UserOperations(m->tagReader, m->tagWriter, -1, this);
 			}
@@ -239,7 +235,7 @@ void AlbumModel::albumChanged(int row)
 	emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
 }
 
-int AlbumModel::rowCount(const QModelIndex&) const
+int AlbumModel::rowCount(const QModelIndex& /*parent*/) const
 {
 	return library()->albums().count();
 }

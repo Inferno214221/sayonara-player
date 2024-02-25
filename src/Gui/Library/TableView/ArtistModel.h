@@ -46,7 +46,7 @@ namespace Library
 			[[nodiscard]] int rowCount(const QModelIndex& parent) const override;
 
 			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
-			[[nodiscard]] Id mapIndexToId(int row) const override;
+			[[nodiscard]] Id mapIndexToId(int index) const override;
 
 		protected:
 			[[nodiscard]] const MetaDataList& selectedMetadata() const override;

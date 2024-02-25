@@ -168,7 +168,8 @@ QVariant TrackModel::data(const QModelIndex& index, int role) const
 					return {};
 				}
 
-				if(m->uto && m->uto->newRating(track.id()) != Rating::Last)
+				if((m->uto != nullptr) &&
+				   m->uto->newRating(track.id()) != Rating::Last)
 				{
 					return QVariant::fromValue(m->uto->newRating(track.id()));
 				}
@@ -215,7 +216,7 @@ TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 
 		if(track.rating() != rating)
 		{
-			if(!m->uto)
+			if(m->uto == nullptr)
 			{
 				m->uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(),
 				                                     -1, this);
@@ -240,21 +241,21 @@ void TrackModel::trackMetaDataChanged(int row)
 	emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
 }
 
-int TrackModel::rowCount(const QModelIndex&) const
+int TrackModel::rowCount(const QModelIndex& /*parent*/) const
 {
 	return library()->tracks().count();
 }
 
-Id TrackModel::mapIndexToId(int row) const
+Id TrackModel::mapIndexToId(const int index) const
 {
 	const auto& tracks = library()->tracks();
-	return Util::between(row, tracks) ? tracks[row].id() : -1;
+	return tracks[index].id();
 }
 
-QString Library::TrackModel::searchableString(const int row, const QString& /*prefix*/) const
+QString Library::TrackModel::searchableString(const int index, const QString& /*prefix*/) const
 {
 	const auto& tracks = library()->tracks();
-	return Util::between(row, tracks) ? tracks[row].title() : QString();
+	return tracks[index].title();
 }
 
 Cover::Location TrackModel::cover(const QModelIndexList& indexes) const

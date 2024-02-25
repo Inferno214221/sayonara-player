@@ -47,20 +47,16 @@ ArtistModel::ArtistModel(QObject* parent, AbstractLibrary* library) :
 
 ArtistModel::~ArtistModel() = default;
 
-Id ArtistModel::mapIndexToId(int row) const
+Id ArtistModel::mapIndexToId(const int index) const
 {
 	const auto& artists = library()->artists();
-	return Util::between(row, artists)
-	       ? artists[static_cast<ArtistList::size_type>(row)].id()
-	       : -1;
+	return artists[index].id();
 }
 
-QString ArtistModel::searchableString(const int row, const QString& /*prefix*/) const
+QString ArtistModel::searchableString(const int index, const QString& /*prefix*/) const
 {
 	const auto& artists = library()->artists();
-	return Util::between(row, artists)
-	       ? artists[static_cast<ArtistList::size_type>(row)].name()
-	       : QString();
+	return artists[index].name();
 }
 
 QVariant ArtistModel::data(const QModelIndex& index, int role) const
@@ -109,7 +105,7 @@ QVariant ArtistModel::data(const QModelIndex& index, int role) const
 	return {};
 }
 
-int ArtistModel::rowCount(const QModelIndex&) const
+int ArtistModel::rowCount(const QModelIndex& /*parent*/) const
 {
 	return library()->artists().count();
 }

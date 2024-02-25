@@ -57,7 +57,7 @@ namespace
 {
 	std::mutex refreshMtx; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
-	int calcColumns(const int items, const int maxValue)
+	int calcColumns(const int items, int maxValue)
 	{
 		return std::min(items, maxValue);
 	}
@@ -67,6 +67,24 @@ namespace
 		return (columns != 0)
 		       ? (items + (columns - 1)) / columns
 		       : 0;
+	}
+
+	QSize calcItemSize(int zoom, const QFont& font)
+	{
+		const auto showArtist = GetSetting(Set::Lib_CoverShowArtist);
+
+		const auto lines = (showArtist) ? 2 : 1;
+		const auto lineHeight = QFontMetrics(font).height();
+
+		const auto textHeight = (lines * lineHeight * 1.2);
+		const auto itemWidth = std::max<double>(zoom * 1.15, zoom + 20.0);
+
+		const auto height = itemWidth + textHeight;
+
+		return {
+			static_cast<int>(itemWidth),
+			static_cast<int>(height)
+		};
 	}
 }
 
@@ -92,7 +110,7 @@ struct CoverModel::Private
 
 		~Private()
 		{
-			if(coverThread)
+			if(coverThread != nullptr)
 			{
 				coverThread->stop();
 				coverThread->wait();
@@ -187,8 +205,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 			                       : album.name();
 
 			return QString("<b>%1</b><br>%2")
-				.arg(artistName)
-				.arg(albumName);
+				.arg(artistName, albumName);
 		}
 
 		default:
@@ -198,7 +215,7 @@ QVariant CoverModel::data(const QModelIndex& index, int role) const
 
 void CoverModel::nextHash()
 {
-	if(!m->coverThread)
+	if(m->coverThread == nullptr)
 	{
 		return;
 	}
@@ -242,12 +259,10 @@ void CoverModel::coverLookupFinished(bool success)
 	emit dataChanged(index, index, {Qt::DecorationRole});
 }
 
-int CoverModel::mapIndexToId(int index) const
+int CoverModel::mapIndexToId(const int index) const
 {
 	const auto& albums = this->albums();
-	return (Util::between(index, albums))
-	       ? albums[index].id()
-	       : -1;
+	return albums[index].id();
 }
 
 Location CoverModel::cover(const QModelIndexList& indexes) const
@@ -289,25 +304,7 @@ QSize CoverModel::itemSize() const { return m->itemSize; }
 
 int CoverModel::zoom() const { return m->zoom; }
 
-static QSize calcItemSize(int zoom, const QFont& font)
-{
-	const auto showArtist = GetSetting(Set::Lib_CoverShowArtist);
-
-	const auto lines = (showArtist) ? 2 : 1;
-	const auto lineHeight = QFontMetrics(font).height();
-
-	const auto textHeight = (lines * lineHeight * 1.2);
-	const auto itemWidth = std::max<double>(zoom * 1.15, zoom + 20.0);
-
-	const auto height = itemWidth + textHeight;
-
-	return {
-		static_cast<int>(itemWidth),
-		static_cast<int>(height)
-	};
-}
-
-void CoverModel::setZoom(int zoom, const QSize& viewSize)
+void CoverModel::setZoom(int zoom, QSize viewSize)
 {
 	SetSetting(Set::Lib_CoverZoom, zoom);
 
@@ -353,7 +350,7 @@ int CoverModel::columnCount(const QModelIndex& /*index*/) const { return calcCol
 
 void CoverModel::refreshData()
 {
-	[[maybe_unused]] std::lock_guard<std::mutex> lockGuard(refreshMtx);
+	[[maybe_unused]] const std::lock_guard<std::mutex> lockGuard(refreshMtx);
 
 	const auto oldColumns = m->oldColumnCount;
 	const auto oldRows = m->oldRowCount;

@@ -49,7 +49,7 @@ namespace Library
 			bool setData(const QModelIndex& index, const QVariant& value, int role) override;
 
 			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
-			[[nodiscard]] Id mapIndexToId(int row) const override;
+			[[nodiscard]] Id mapIndexToId(int index) const override;
 
 		protected:
 			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
