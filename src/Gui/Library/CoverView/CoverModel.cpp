@@ -45,16 +45,10 @@
 
 #include <mutex>
 
-using Cover::Location;
-using Cover::Lookup;
-using Library::CoverModel;
-using Library::AlbumCoverFetchThread;
-
-using Hash = AlbumCoverFetchThread::Hash;
-using HashSet = Util::Set<Hash>;
-
 namespace
 {
+	using Hash = Library::AlbumCoverFetchThread::Hash;
+
 	std::mutex refreshMtx; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
 
 	int calcColumns(const int items, int maxValue)
@@ -88,352 +82,359 @@ namespace
 	}
 }
 
-struct CoverModel::Private
+namespace Library
 {
-	public:
-		CoverViewPixmapCache coverCache;
-		AlbumCoverFetchThread* coverThread;
-
-		QHash<Hash, QModelIndex> hashIndexMap;
-		HashSet invalidHashes;
-		QSize itemSize;
-		int zoom {GetSetting(Set::Lib_CoverZoom)};
-
-		int maxColumns {10}; // NOLINT(readability-magic-numbers)
-		int oldColumnCount;
-		int oldRowCount;
-
-		Private(QObject* parent, const int items) :
-			coverThread {new AlbumCoverFetchThread(parent)},
-			oldColumnCount {calcColumns(items, maxColumns)},
-			oldRowCount {calcRows(items, oldColumnCount)} {}
-
-		~Private()
-		{
-			if(coverThread != nullptr)
-			{
-				coverThread->stop();
-				coverThread->wait();
-			}
-		}
-};
-
-CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(0, parent, library),
-	m {Pimpl::make<Private>(this, library->albums().count())}
-{
-	auto* coverChangeNotifier = Cover::ChangeNotfier::instance();
-	connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
-
-	connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
-
-	connect(m->coverThread, &AlbumCoverFetchThread::sigNext, this, &CoverModel::nextHash);
-	connect(m->coverThread, &QObject::destroyed, this, [&]() {
-		m->coverThread = nullptr;
-	});
-
-	ListenSetting(Set::Lib_CoverShowArtist, CoverModel::showArtistsChanged);
-
-	m->coverThread->start();
-}
-
-CoverModel::~CoverModel() = default;
-
-QVariant CoverModel::data(const QModelIndex& index, int role) const
-{
-	const auto& albums = this->albums();
-
-	const auto linearIndex = (index.row() * columnCount()) + index.column();
-	if(!index.isValid() || !Util::between(linearIndex, albums))
+	struct CoverModel::Private
 	{
-		return {};
+		public:
+			CoverViewPixmapCache coverCache;
+			AlbumCoverFetchThread* coverThread;
+
+			QHash<Hash, QModelIndex> hashIndexMap;
+			Util::Set<Hash> invalidHashes;
+			QSize itemSize;
+			int zoom {GetSetting(Set::Lib_CoverZoom)};
+
+			int maxColumns {10}; // NOLINT(readability-magic-numbers)
+			int oldColumnCount;
+			int oldRowCount;
+
+			Private(QObject* parent, const int items) :
+				coverThread {new AlbumCoverFetchThread(parent)},
+				oldColumnCount {calcColumns(items, maxColumns)},
+				oldRowCount {calcRows(items, oldColumnCount)} {}
+
+			~Private()
+			{
+				if(coverThread != nullptr)
+				{
+					coverThread->stop();
+					coverThread->wait();
+				}
+			}
+	};
+
+	CoverModel::CoverModel(QObject* parent, AbstractLibrary* library) :
+		ItemModel(0, parent, library),
+		m {Pimpl::make<Private>(this, library->albums().count())}
+	{
+		auto* coverChangeNotifier = Cover::ChangeNotfier::instance();
+		connect(coverChangeNotifier, &Cover::ChangeNotfier::sigCoversChanged, this, &CoverModel::reload);
+
+		connect(library, &AbstractLibrary::sigAllAlbumsLoaded, this, &CoverModel::refreshData);
+
+		connect(m->coverThread, &AlbumCoverFetchThread::sigNext, this, &CoverModel::nextHash);
+		connect(m->coverThread, &QObject::destroyed, this, [&]() {
+			m->coverThread = nullptr;
+		});
+
+		ListenSetting(Set::Lib_CoverShowArtist, CoverModel::showArtistsChanged);
+
+		m->coverThread->start();
 	}
 
-	const auto& album = albums[linearIndex];
+	CoverModel::~CoverModel() = default;
 
-	switch(role)
+	QVariant CoverModel::data(const QModelIndex& index, int role) const
 	{
-		case CoverModel::AlbumRole:
-			return (album.name().trimmed().isEmpty())
-			       ? Lang::get(Lang::UnknownAlbum)
-			       : album.name();
+		const auto& albums = this->albums();
 
-		case CoverModel::ArtistRole:
-			return (GetSetting(Set::Lib_CoverShowArtist))
-			       ? album.albumArtist()
-			       : QString {};
-
-		case CoverModel::CoverRole:
+		const auto linearIndex = (index.row() * columnCount()) + index.column();
+		if(!index.isValid() || !Util::between(linearIndex, albums))
 		{
-			const auto hash = AlbumCoverFetchThread::getHash(album);
-			m->hashIndexMap[hash] = index;
+			return {};
+		}
 
-			if(m->coverCache.hasPixmap(hash))
+		const auto& album = albums[linearIndex];
+
+		switch(role)
+		{
+			case CoverModel::AlbumRole:
+				return (album.name().trimmed().isEmpty())
+				       ? Lang::get(Lang::UnknownAlbum)
+				       : album.name();
+
+			case CoverModel::ArtistRole:
+				return (GetSetting(Set::Lib_CoverShowArtist))
+				       ? album.albumArtist()
+				       : QString {};
+
+			case CoverModel::CoverRole:
 			{
-				const auto pixmap = m->coverCache.pixmap(hash);
-				if(m->coverCache.isOutdated(hash))
+				const auto hash = AlbumCoverFetchThread::getHash(album);
+				m->hashIndexMap[hash] = index;
+
+				if(m->coverCache.hasPixmap(hash))
 				{
+					const auto pixmap = m->coverCache.pixmap(hash);
+					if(m->coverCache.isOutdated(hash))
+					{
+						m->coverThread->addAlbum(album);
+					}
+
+					return pixmap;
+				}
+
+				if(!m->invalidHashes.contains(hash))
+				{
+					spLog(Log::Develop, this) << "Need to fetch cover for " << hash;
 					m->coverThread->addAlbum(album);
 				}
 
-				return pixmap;
+				return m->coverCache.invalidPixmap();
 			}
 
-			if(!m->invalidHashes.contains(hash))
+			case Qt::TextAlignmentRole:
+				return static_cast<int>(Qt::AlignHCenter | Qt::AlignTop);
+
+			case Qt::SizeHintRole:
+				return m->itemSize;
+
+			case Qt::ToolTipRole:
 			{
-				spLog(Log::Develop, this) << "Need to fetch cover for " << hash;
-				m->coverThread->addAlbum(album);
+				const auto artistName = (album.albumArtist().trimmed().isEmpty())
+				                        ? Lang::get(Lang::UnknownArtist)
+				                        : album.albumArtist();
+
+				const auto albumName = (album.name().trimmed().isEmpty())
+				                       ? Lang::get(Lang::UnknownAlbum)
+				                       : album.name();
+
+				return QString("<b>%1</b><br>%2")
+					.arg(artistName, albumName);
 			}
 
-			return m->coverCache.invalidPixmap();
+			default:
+				return QVariant {};
 		}
+	}
 
-		case Qt::TextAlignmentRole:
-			return static_cast<int>(Qt::AlignHCenter | Qt::AlignTop);
-
-		case Qt::SizeHintRole:
-			return m->itemSize;
-
-		case Qt::ToolTipRole:
+	void CoverModel::nextHash()
+	{
+		if(m->coverThread == nullptr)
 		{
-			const auto artistName = (album.albumArtist().trimmed().isEmpty())
-			                        ? Lang::get(Lang::UnknownArtist)
-			                        : album.albumArtist();
-
-			const auto albumName = (album.name().trimmed().isEmpty())
-			                       ? Lang::get(Lang::UnknownAlbum)
-			                       : album.name();
-
-			return QString("<b>%1</b><br>%2")
-				.arg(artistName, albumName);
+			return;
 		}
 
-		default:
-			return QVariant {};
-	}
-}
+		const auto [hash, location] = m->coverThread->takeCurrentLookup();
+		if(!hash.isEmpty() && location.isValid())
+		{
+			auto* coverLookup = new Cover::Lookup(location, 1, nullptr);
 
-void CoverModel::nextHash()
-{
-	if(m->coverThread == nullptr)
+			coverLookup->setUserData(hash);
+			connect(coverLookup, &Cover::Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
+
+			coverLookup->start();
+		}
+	}
+
+	void CoverModel::coverLookupFinished(bool success)
 	{
-		return;
+		auto* coverLookup = dynamic_cast<Cover::Lookup*>(sender());
+
+		const auto hash = coverLookup->userData<Hash>();
+		const auto pixmaps = (success)
+		                     ? coverLookup->pixmaps()
+		                     : QList<QPixmap> {};
+
+		coverLookup->deleteLater();
+
+		if(!pixmaps.isEmpty())
+		{
+			m->coverCache.addPixmap(hash, pixmaps.first());
+		}
+
+		else
+		{
+			m->invalidHashes.insert(hash);
+		}
+
+		m->coverThread->removeHash(hash);
+
+		const auto index = m->hashIndexMap.value(hash);
+		emit dataChanged(index, index, {Qt::DecorationRole});
 	}
 
-	const auto [hash, location] = m->coverThread->takeCurrentLookup();
-	if(!hash.isEmpty() && location.isValid())
+	int CoverModel::mapIndexToId(const int index) const
 	{
-		auto* coverLookup = new Lookup(location, 1, nullptr);
-
-		coverLookup->setUserData(hash);
-		connect(coverLookup, &Lookup::sigFinished, this, &CoverModel::coverLookupFinished);
-
-		coverLookup->start();
+		const auto& albums = this->albums();
+		return albums[index].id();
 	}
-}
 
-void CoverModel::coverLookupFinished(bool success)
-{
-	auto* coverLookup = dynamic_cast<Lookup*>(sender());
-
-	const auto hash = coverLookup->userData<Hash>();
-	const auto pixmaps = (success)
-	                     ? coverLookup->pixmaps()
-	                     : QList<QPixmap> {};
-
-	coverLookup->deleteLater();
-
-	if(!pixmaps.isEmpty())
+	Cover::Location CoverModel::cover(const QModelIndexList& indexes) const
 	{
-		m->coverCache.addPixmap(hash, pixmaps.first());
+		if(indexes.size() != 1)
+		{
+			return Cover::Location::invalidLocation();
+		}
+
+		const auto& albums = this->albums();
+		const auto& firstIndex = indexes.first();
+		const auto linearIndex = (firstIndex.row() * columnCount() + firstIndex.column());
+
+		return (Util::between(linearIndex, albums))
+		       ? Cover::Location::coverLocation(albums[linearIndex])
+		       : Cover::Location::invalidLocation();
 	}
 
-	else
+	Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
 	{
-		m->invalidHashes.insert(hash);
+		auto itemFlags = ItemModel::flags(index);
+
+		const auto linearIndex = (index.row() * columnCount() + index.column());
+		if(!Util::between(linearIndex, albums()))
+		{
+			itemFlags &= ~Qt::ItemIsSelectable;
+			itemFlags &= ~Qt::ItemIsEnabled;
+			itemFlags &= ~Qt::ItemIsDragEnabled;
+		}
+
+		return itemFlags;
 	}
 
-	m->coverThread->removeHash(hash);
+	const MetaDataList& CoverModel::selectedMetadata() const { return library()->tracks(); }
 
-	const auto index = m->hashIndexMap.value(hash);
-	emit dataChanged(index, index, {Qt::DecorationRole});
-}
+	const AlbumList& CoverModel::albums() const { return library()->albums(); }
 
-int CoverModel::mapIndexToId(const int index) const
-{
-	const auto& albums = this->albums();
-	return albums[index].id();
-}
+	QSize CoverModel::itemSize() const { return m->itemSize; }
 
-Location CoverModel::cover(const QModelIndexList& indexes) const
-{
-	if(indexes.size() != 1)
+	int CoverModel::zoom() const { return m->zoom; }
+
+	void CoverModel::setZoom(int zoom, QSize viewSize)
 	{
-		return Location::invalidLocation();
+		SetSetting(Set::Lib_CoverZoom, zoom);
+
+		m->zoom = zoom;
+		m->itemSize = calcItemSize(zoom, QApplication::font());
+
+		const auto columns = (viewSize.width() / m->itemSize.width());
+		if(columns > 0)
+		{
+			const auto visibleRows = (viewSize.height() / m->itemSize.height()) + 1;
+			const auto visibleItems = visibleRows * columns;
+
+			m->maxColumns = columns;
+			m->coverCache.setCacheSize(visibleItems * 3);
+
+			refreshData();
+		}
 	}
 
-	const auto& albums = this->albums();
-	const auto& firstIndex = indexes.first();
-	const auto linearIndex = (firstIndex.row() * columnCount() + firstIndex.column());
-
-	return (Util::between(linearIndex, albums))
-	       ? Cover::Location::coverLocation(albums[linearIndex])
-	       : Location::invalidLocation();
-}
-
-Qt::ItemFlags CoverModel::flags(const QModelIndex& index) const
-{
-	auto itemFlags = ItemModel::flags(index);
-
-	const auto linearIndex = (index.row() * columnCount() + index.column());
-	if(!Util::between(linearIndex, albums()))
+	void CoverModel::showArtistsChanged()
 	{
-		itemFlags &= ~Qt::ItemIsSelectable;
-		itemFlags &= ~Qt::ItemIsEnabled;
-		itemFlags &= ~Qt::ItemIsDragEnabled;
+		m->itemSize = calcItemSize(m->zoom, QApplication::font());
 	}
 
-	return itemFlags;
-}
-
-const MetaDataList& Library::CoverModel::selectedMetadata() const { return library()->tracks(); }
-
-const AlbumList& CoverModel::albums() const { return library()->albums(); }
-
-QSize CoverModel::itemSize() const { return m->itemSize; }
-
-int CoverModel::zoom() const { return m->zoom; }
-
-void CoverModel::setZoom(int zoom, QSize viewSize)
-{
-	SetSetting(Set::Lib_CoverZoom, zoom);
-
-	m->zoom = zoom;
-	m->itemSize = calcItemSize(zoom, QApplication::font());
-
-	const auto columns = (viewSize.width() / m->itemSize.width());
-	if(columns > 0)
+	void CoverModel::reload()
 	{
-		const auto visibleRows = (viewSize.height() / m->itemSize.height()) + 1;
-		const auto visibleItems = visibleRows * columns;
+		m->coverCache.setAllOutdated();
+		clear();
 
-		m->maxColumns = columns;
-		m->coverCache.setCacheSize(visibleItems * 3);
-
-		refreshData();
+		emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
 	}
-}
 
-void CoverModel::showArtistsChanged()
-{
-	m->itemSize = calcItemSize(m->zoom, QApplication::font());
-}
-
-void CoverModel::reload()
-{
-	m->coverCache.setAllOutdated();
-	clear();
-
-	emit dataChanged(index(0, 0), index(rowCount() - 1, columnCount() - 1));
-}
-
-void CoverModel::clear()
-{
-	m->invalidHashes.clear();
-	m->coverThread->clear();
-	m->hashIndexMap.clear();
-}
-
-int CoverModel::rowCount(const QModelIndex& /*index*/) const { return calcRows(albums().count(), columnCount()); }
-
-int CoverModel::columnCount(const QModelIndex& /*index*/) const { return calcColumns(albums().count(), m->maxColumns); }
-
-void CoverModel::refreshData()
-{
-	[[maybe_unused]] const std::lock_guard<std::mutex> lockGuard(refreshMtx);
-
-	const auto oldColumns = m->oldColumnCount;
-	const auto oldRows = m->oldRowCount;
-
-	const auto newRows = rowCount();
-	const auto newColumns = columnCount();
-
-	if((newRows == oldRows) && (newColumns == oldColumns))
+	void CoverModel::clear()
 	{
-		return;
+		m->invalidHashes.clear();
+		m->coverThread->clear();
+		m->hashIndexMap.clear();
 	}
 
-	if(newRows > oldRows)
+	int CoverModel::rowCount(const QModelIndex& /*index*/) const { return calcRows(albums().count(), columnCount()); }
+
+	int CoverModel::columnCount(const QModelIndex& /*index*/) const
 	{
-		insertRows(oldRows, newRows - oldRows);
+		return calcColumns(albums().count(),
+		                   m->maxColumns);
 	}
 
-	if(newColumns > oldColumns)
+	void CoverModel::refreshData()
 	{
-		insertColumns(oldColumns, newColumns - oldColumns);
+		[[maybe_unused]] const std::lock_guard<std::mutex> lockGuard(refreshMtx);
+
+		const auto oldColumns = m->oldColumnCount;
+		const auto oldRows = m->oldRowCount;
+
+		const auto newRows = rowCount();
+		const auto newColumns = columnCount();
+
+		if((newRows == oldRows) && (newColumns == oldColumns))
+		{
+			return;
+		}
+
+		if(newRows > oldRows)
+		{
+			insertRows(oldRows, newRows - oldRows);
+		}
+
+		if(newColumns > oldColumns)
+		{
+			insertColumns(oldColumns, newColumns - oldColumns);
+		}
+
+		if(newColumns < oldColumns)
+		{
+			removeColumns(newColumns, oldColumns - newColumns);
+		}
+
+		if(newRows < oldRows)
+		{
+			removeRows(newRows, oldRows - newRows);
+		}
 	}
 
-	if(newColumns < oldColumns)
+	bool CoverModel::insertRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
 	{
-		removeColumns(newColumns, oldColumns - newColumns);
+		beginInsertRows(QModelIndex(), row, row + count - 1);
+		m->oldRowCount += count;
+		endInsertRows();
+
+		return true;
 	}
 
-	if(newRows < oldRows)
+	bool CoverModel::removeRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
 	{
-		removeRows(newRows, oldRows - newRows);
+		beginRemoveRows(QModelIndex(), row, row + count - 1);
+		m->oldRowCount -= count;
+		endRemoveRows();
+
+		return true;
 	}
-}
 
-bool CoverModel::insertRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
-{
-	beginInsertRows(QModelIndex(), row, row + count - 1);
-	m->oldRowCount += count;
-	endInsertRows();
+	bool CoverModel::insertColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
+	{
+		beginInsertColumns(QModelIndex(), column, column + count - 1);
+		m->oldColumnCount += count;
+		endInsertColumns();
 
-	return true;
-}
+		return true;
+	}
 
-bool CoverModel::removeRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
-{
-	beginRemoveRows(QModelIndex(), row, row + count - 1);
-	m->oldRowCount -= count;
-	endRemoveRows();
+	bool CoverModel::removeColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
+	{
+		beginRemoveColumns(QModelIndex(), column, column + count - 1);
+		m->oldColumnCount -= count;
+		endRemoveColumns();
 
-	return true;
-}
+		return true;
+	}
 
-bool CoverModel::insertColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
-{
-	beginInsertColumns(QModelIndex(), column, column + count - 1);
-	m->oldColumnCount += count;
-	endInsertColumns();
+	QModelIndex CoverModel::index(int row, int column, const QModelIndex& parent) const
+	{
+		const auto linearIndex = (row * columnCount()) + column;
+		return (Util::between(linearIndex, albums()))
+		       ? ItemModel::index(row, column, parent)
+		       : QModelIndex();
+	}
 
-	return true;
-}
+	int CoverModel::itemCount() const { return albums().count(); }
 
-bool CoverModel::removeColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
-{
-	beginRemoveColumns(QModelIndex(), column, column + count - 1);
-	m->oldColumnCount -= count;
-	endRemoveColumns();
-
-	return true;
-}
-
-QModelIndex Library::CoverModel::index(int row, int column, const QModelIndex& parent) const
-{
-	const auto linearIndex = (row * columnCount()) + column;
-	return (Util::between(linearIndex, albums()))
-	       ? ItemModel::index(row, column, parent)
-	       : QModelIndex();
-}
-
-int Library::CoverModel::itemCount() const { return albums().count(); }
-
-QString Library::CoverModel::searchableString(const int index, const QString& prefix) const
-{
-	const auto& album = albums()[index];
-	return (prefix == "/artist")
-	       ? album.artists().join("")
-	       : album.name();
+	QString CoverModel::searchableString(const int index, const QString& prefix) const
+	{
+		const auto& album = albums()[index];
+		return (prefix == "/artist")
+		       ? album.artists().join("")
+		       : album.name();
+	}
 }

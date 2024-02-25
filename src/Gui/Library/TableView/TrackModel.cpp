@@ -52,248 +52,248 @@
 #include <QDateTime>
 #include <QLocale>
 
-using namespace Library;
-
-struct TrackModel::Private
+namespace Library
 {
-	Tagging::UserOperations* uto {nullptr};
-	QLocale locale {};
-};
-
-TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
-	ItemModel(+ColumnIndex::Track::Count, parent, library)
-{
-	m = Pimpl::make<Private>();
-
-	connect(library,
-	        &AbstractLibrary::sigCurrentTrackChanged,
-	        this,
-	        &TrackModel::trackMetaDataChanged);
-	ListenSetting(Set::Player_Language, TrackModel::languageChanged);
-}
-
-TrackModel::~TrackModel() = default;
-
-QVariant TrackModel::data(const QModelIndex& index, int role) const
-{
-	if(!index.isValid() || (index.row() >= library()->tracks().count()))
+	struct TrackModel::Private
 	{
+		Tagging::UserOperations* uto {nullptr};
+		QLocale locale {};
+	};
+
+	TrackModel::TrackModel(QObject* parent, AbstractLibrary* library) :
+		ItemModel(+ColumnIndex::Track::Count, parent, library)
+	{
+		m = Pimpl::make<Private>();
+
+		connect(library,
+		        &AbstractLibrary::sigCurrentTrackChanged,
+		        this,
+		        &TrackModel::trackMetaDataChanged);
+		ListenSetting(Set::Player_Language, TrackModel::languageChanged);
+	}
+
+	TrackModel::~TrackModel() = default;
+
+	QVariant TrackModel::data(const QModelIndex& index, int role) const
+	{
+		if(!index.isValid() || (index.row() >= library()->tracks().count()))
+		{
+			return {};
+		}
+
+		const auto indexColumn = ColumnIndex::Track(index.column());
+
+		if(role == Qt::TextAlignmentRole)
+		{
+			const auto alignMap = QMap<ColumnIndex::Track, Qt::AlignmentFlag> {
+				{ColumnIndex::Track::TrackNumber,  Qt::AlignRight},
+				{ColumnIndex::Track::Bitrate,      Qt::AlignRight},
+				{ColumnIndex::Track::Length,       Qt::AlignRight},
+				{ColumnIndex::Track::Filesize,     Qt::AlignRight},
+				{ColumnIndex::Track::Discnumber,   Qt::AlignRight},
+				{ColumnIndex::Track::Filetype,     Qt::AlignCenter},
+				{ColumnIndex::Track::Year,         Qt::AlignCenter},
+				{ColumnIndex::Track::ModifiedDate, Qt::AlignCenter},
+				{ColumnIndex::Track::AddedDate,    Qt::AlignCenter}
+			};
+
+			const auto alignment = alignMap.contains(indexColumn) ? alignMap[indexColumn]
+			                                                      : Qt::AlignLeft;
+
+			return QVariant::fromValue(static_cast<int>(Qt::AlignVCenter | alignment));
+		}
+
+		if(role == Qt::DisplayRole || role == Qt::EditRole)
+		{
+			const auto& track = library()->tracks().at(index.row());
+
+			switch(indexColumn)
+			{
+				case ColumnIndex::Track::TrackNumber:
+					return track.trackNumber();
+
+				case ColumnIndex::Track::Title:
+					return track.title();
+
+				case ColumnIndex::Track::Artist:
+					return track.artist();
+
+				case ColumnIndex::Track::Length:
+					return ::Util::msToString(track.durationMs(), "$He $M:$S");
+
+				case ColumnIndex::Track::Album:
+					return track.album();
+
+				case ColumnIndex::Track::Discnumber:
+					return QString::number(track.discnumber());
+
+				case ColumnIndex::Track::Year:
+					return (track.year() == 0) ?
+					       QVariant(Lang::get(Lang::UnknownYear)) :
+					       QVariant(track.year());
+
+				case ColumnIndex::Track::Bitrate:
+				{
+					const auto bitrate = (track.bitrate() / 1000);
+					return (bitrate == 0) ?
+					       "-" :
+					       QString("%1 %2").arg(bitrate).arg(tr("kBit/s"));
+				}
+
+				case ColumnIndex::Track::Filesize:
+					return ::Util::File::getFilesizeString(track.filesize());
+
+				case ColumnIndex::Track::Filetype:
+				{
+					const auto extension = ::Util::File::getFileExtension(track.filepath());
+					return (extension.isEmpty()) ? "-" : extension;
+				}
+
+				case ColumnIndex::Track::AddedDate:
+				{
+					const auto format = m->locale.dateFormat(QLocale::ShortFormat);
+					return track.createdDateTime().date().toString(format);
+				}
+
+				case ColumnIndex::Track::ModifiedDate:
+				{
+					const auto format = m->locale.dateFormat(QLocale::ShortFormat);
+					return track.modifiedDateTime().date().toString(format);
+				}
+
+				case ColumnIndex::Track::Rating:
+				{
+					if(role == Qt::DisplayRole)
+					{
+						return {};
+					}
+
+					if((m->uto != nullptr) &&
+					   m->uto->newRating(track.id()) != Rating::Last)
+					{
+						return QVariant::fromValue(m->uto->newRating(track.id()));
+					}
+
+					return QVariant::fromValue(track.rating());
+				}
+
+				default:
+					return {};
+			}
+		}
+
 		return {};
 	}
 
-	const auto indexColumn = ColumnIndex::Track(index.column());
-
-	if(role == Qt::TextAlignmentRole)
+	Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const
 	{
-		const auto alignMap = QMap<ColumnIndex::Track, Qt::AlignmentFlag> {
-			{ColumnIndex::Track::TrackNumber,  Qt::AlignRight},
-			{ColumnIndex::Track::Bitrate,      Qt::AlignRight},
-			{ColumnIndex::Track::Length,       Qt::AlignRight},
-			{ColumnIndex::Track::Filesize,     Qt::AlignRight},
-			{ColumnIndex::Track::Discnumber,   Qt::AlignRight},
-			{ColumnIndex::Track::Filetype,     Qt::AlignCenter},
-			{ColumnIndex::Track::Year,         Qt::AlignCenter},
-			{ColumnIndex::Track::ModifiedDate, Qt::AlignCenter},
-			{ColumnIndex::Track::AddedDate,    Qt::AlignCenter}
-		};
-
-		const auto alignment = alignMap.contains(indexColumn) ? alignMap[indexColumn]
-		                                                      : Qt::AlignLeft;
-
-		return QVariant::fromValue(static_cast<int>(Qt::AlignVCenter | alignment));
-	}
-
-	if(role == Qt::DisplayRole || role == Qt::EditRole)
-	{
-		const auto& track = library()->tracks().at(index.row());
-
-		switch(indexColumn)
+		if(!index.isValid())
 		{
-			case ColumnIndex::Track::TrackNumber:
-				return track.trackNumber();
-
-			case ColumnIndex::Track::Title:
-				return track.title();
-
-			case ColumnIndex::Track::Artist:
-				return track.artist();
-
-			case ColumnIndex::Track::Length:
-				return ::Util::msToString(track.durationMs(), "$He $M:$S");
-
-			case ColumnIndex::Track::Album:
-				return track.album();
-
-			case ColumnIndex::Track::Discnumber:
-				return QString::number(track.discnumber());
-
-			case ColumnIndex::Track::Year:
-				return (track.year() == 0) ?
-				       QVariant(Lang::get(Lang::UnknownYear)) :
-				       QVariant(track.year());
-
-			case ColumnIndex::Track::Bitrate:
-			{
-				const auto bitrate = (track.bitrate() / 1000);
-				return (bitrate == 0) ?
-				       "-" :
-				       QString("%1 %2").arg(bitrate).arg(tr("kBit/s"));
-			}
-
-			case ColumnIndex::Track::Filesize:
-				return ::Util::File::getFilesizeString(track.filesize());
-
-			case ColumnIndex::Track::Filetype:
-			{
-				const auto extension = ::Util::File::getFileExtension(track.filepath());
-				return (extension.isEmpty()) ? "-" : extension;
-			}
-
-			case ColumnIndex::Track::AddedDate:
-			{
-				const auto format = m->locale.dateFormat(QLocale::ShortFormat);
-				return track.createdDateTime().date().toString(format);
-			}
-
-			case ColumnIndex::Track::ModifiedDate:
-			{
-				const auto format = m->locale.dateFormat(QLocale::ShortFormat);
-				return track.modifiedDateTime().date().toString(format);
-			}
-
-			case ColumnIndex::Track::Rating:
-			{
-				if(role == Qt::DisplayRole)
-				{
-					return {};
-				}
-
-				if((m->uto != nullptr) &&
-				   m->uto->newRating(track.id()) != Rating::Last)
-				{
-					return QVariant::fromValue(m->uto->newRating(track.id()));
-				}
-
-				return QVariant::fromValue(track.rating());
-			}
-
-			default:
-				return {};
+			return Qt::ItemIsEnabled;
 		}
+
+		return (index.column() == +ColumnIndex::Track::Rating)
+		       ? (QAbstractTableModel::flags(index) | Qt::ItemIsEditable)
+		       : QAbstractTableModel::flags(index);
 	}
 
-	return {};
-}
-
-Qt::ItemFlags TrackModel::flags(const QModelIndex& index) const
-{
-	if(!index.isValid())
+	bool TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
 	{
-		return Qt::ItemIsEnabled;
-	}
+		if((index.column() != +ColumnIndex::Track::Rating) ||
+		   (role != Qt::EditRole))
+		{
+			return false;
+		}
 
-	return (index.column() == +ColumnIndex::Track::Rating)
-	       ? (QAbstractTableModel::flags(index) | Qt::ItemIsEditable)
-	       : QAbstractTableModel::flags(index);
-}
+		const auto row = index.row();
+		const auto& tracks = library()->tracks();
 
-bool
-TrackModel::setData(const QModelIndex& index, const QVariant& value, int role)
-{
-	if((index.column() != +ColumnIndex::Track::Rating) ||
-	   (role != Qt::EditRole))
-	{
+		if(Util::between(row, tracks))
+		{
+			const auto& track = tracks[row];
+			const auto rating = value.value<Rating>();
+
+			if(track.rating() != rating)
+			{
+				if(m->uto == nullptr)
+				{
+					m->uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(),
+					                                     -1, this);
+				}
+
+				m->uto->setTrackRating(track, rating);
+
+				emit dataChanged(
+					this->index(row, +ColumnIndex::Track::Rating),
+					this->index(row, +ColumnIndex::Track::Rating)
+				);
+
+				return true;
+			}
+		}
+
 		return false;
 	}
 
-	const auto row = index.row();
-	const auto& tracks = library()->tracks();
-
-	if(Util::between(row, tracks))
+	void TrackModel::trackMetaDataChanged(int row)
 	{
-		const auto& track = tracks[row];
-		const auto rating = value.value<Rating>();
+		emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
+	}
 
-		if(track.rating() != rating)
+	int TrackModel::rowCount(const QModelIndex& /*parent*/) const
+	{
+		return library()->tracks().count();
+	}
+
+	Id TrackModel::mapIndexToId(const int index) const
+	{
+		const auto& tracks = library()->tracks();
+		return tracks[index].id();
+	}
+
+	QString TrackModel::searchableString(const int index, const QString& /*prefix*/) const
+	{
+		const auto& tracks = library()->tracks();
+		return tracks[index].title();
+	}
+
+	Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
+	{
+		const auto& tracks = library()->tracks();
+
+		Util::Set<int> rows;
+		for(const auto& index: indexes)
 		{
-			if(m->uto == nullptr)
+			const auto row = index.row();
+			if(Util::between(row, tracks))
 			{
-				m->uto = new Tagging::UserOperations(Tagging::TagReader::create(), Tagging::TagWriter::create(),
-				                                     -1, this);
+				rows.insert(row);
 			}
-
-			m->uto->setTrackRating(track, rating);
-
-			emit dataChanged(
-				this->index(row, +ColumnIndex::Track::Rating),
-				this->index(row, +ColumnIndex::Track::Rating)
-			);
-
-			return true;
 		}
-	}
 
-	return false;
-}
-
-void TrackModel::trackMetaDataChanged(int row)
-{
-	emit dataChanged(this->index(row, 0), this->index(row, columnCount()));
-}
-
-int TrackModel::rowCount(const QModelIndex& /*parent*/) const
-{
-	return library()->tracks().count();
-}
-
-Id TrackModel::mapIndexToId(const int index) const
-{
-	const auto& tracks = library()->tracks();
-	return tracks[index].id();
-}
-
-QString Library::TrackModel::searchableString(const int index, const QString& /*prefix*/) const
-{
-	const auto& tracks = library()->tracks();
-	return tracks[index].title();
-}
-
-Cover::Location TrackModel::cover(const QModelIndexList& indexes) const
-{
-	const auto& tracks = library()->tracks();
-
-	Util::Set<int> rows;
-	for(const auto& index: indexes)
-	{
-		const auto row = index.row();
-		if(Util::between(row, tracks))
+		if(rows.isEmpty())
 		{
-			rows.insert(row);
+			return Cover::Location::invalidLocation();
 		}
+
+		const auto firstRow = rows.first();
+		const auto albumId = tracks[firstRow].albumId();
+
+		const auto containsMultipleAlbums = Util::Algorithm::contains(rows, [&](const auto row) {
+			return (tracks[row].albumId() != albumId);
+		});
+
+		return containsMultipleAlbums
+		       ? Cover::Location::invalidLocation()
+		       : Cover::Location::coverLocation(tracks[firstRow]);
 	}
 
-	if(rows.isEmpty())
+	const MetaDataList& TrackModel::selectedMetadata() const { return library()->currentTracks(); }
+
+	void TrackModel::languageChanged()
 	{
-		return Cover::Location::invalidLocation();
+		m->locale = Util::Language::getCurrentLocale();
 	}
 
-	const auto firstRow = rows.first();
-	const auto albumId = tracks[firstRow].albumId();
-
-	const auto containsMultipleAlbums = Util::Algorithm::contains(rows, [&](const auto row) {
-		return (tracks[row].albumId() != albumId);
-	});
-
-	return containsMultipleAlbums
-	       ? Cover::Location::invalidLocation()
-	       : Cover::Location::coverLocation(tracks[firstRow]);
+	int TrackModel::itemCount() const { return library()->tracks().count(); }
 }
-
-const MetaDataList& Library::TrackModel::selectedMetadata() const { return library()->currentTracks(); }
-
-void TrackModel::languageChanged()
-{
-	m->locale = Util::Language::getCurrentLocale();
-}
-
-int Library::TrackModel::itemCount() const { return library()->tracks().count(); }
