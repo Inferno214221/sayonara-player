@@ -118,11 +118,11 @@ namespace
 	}
 
 	template<typename T, typename Setter>
-	void updateIfUnequal(const T& v1, const T& v2, const Tagging::ParsedTag& tag, const Setter& setter)
+	void updateIfUnequal(const T& value1, const T& value2, const Tagging::ParsedTag& tag, const Setter& setter)
 	{
-		if(v1 != v2)
+		if(value1 != value2)
 		{
-			setter(tag, v2);
+			setter(tag, value2);
 		}
 	}
 }
@@ -206,11 +206,11 @@ bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 	return true;
 }
 
-bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
+bool Tagging::Utils::setMetaDataOfFile(const MetaData& track)
 {
 	Tagging::FileTypeResolver::addFileTypeResolver();
 
-	const auto filepath = md.filepath();
+	const auto filepath = track.filepath();
 	const auto fileInfo = QFileInfo(filepath);
 	if(fileInfo.size() <= 0)
 	{
@@ -220,15 +220,15 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
 	if(!isValidFile(fileRef))
 	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << md.filepath() << ": Err 2";
+		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 2";
 		return false;
 	}
 
-	const auto album = convertString(md.album());
-	const auto artist = convertString(md.artist());
-	const auto title = convertString(md.title());
-	const auto genre = convertString(md.genresToString());
-	const auto comment = convertString(md.comment());
+	const auto album = convertString(track.album());
+	const auto artist = convertString(track.artist());
+	const auto title = convertString(track.title());
+	const auto genre = convertString(track.genresToString());
+	const auto comment = convertString(track.comment());
 
 	const auto parsedTag = getParsedTagFromFileRef(fileRef);
 	if(!parsedTag.tag)
@@ -240,18 +240,18 @@ bool Tagging::Utils::setMetaDataOfFile(const MetaData& md)
 	parsedTag.tag->setArtist(artist);
 	parsedTag.tag->setTitle(title);
 	parsedTag.tag->setGenre(genre);
-	parsedTag.tag->setYear(md.year());
-	parsedTag.tag->setTrack(md.trackNumber());
+	parsedTag.tag->setYear(track.year());
+	parsedTag.tag->setTrack(track.trackNumber());
 	parsedTag.tag->setComment(comment);
 
-	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara", md.rating(), 0));
-	Tagging::writeDiscnumber(parsedTag, Models::Discnumber(md.discnumber(), md.discCount()));
-	Tagging::writeAlbumArtist(parsedTag, md.albumArtist());
+	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara", track.rating(), 0));
+	Tagging::writeDiscnumber(parsedTag, Models::Discnumber(track.discnumber(), track.discCount()));
+	Tagging::writeAlbumArtist(parsedTag, track.albumArtist());
 
 	const auto success = fileRef.save();
 	if(!success)
 	{
-		spLog(Log::Warning, "Tagging") << "Could not save " << md.filepath();
+		spLog(Log::Warning, "Tagging") << "Could not save " << track.filepath();
 	}
 
 	return success;
