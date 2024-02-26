@@ -104,9 +104,4 @@ namespace Util
 	{
 		return std::make_shared<FileSystemImpl>();
 	}
-
-	QStringList FileSystem::entryList(const QDir& dir, QDir::Filters filters) const
-	{
-		return entryList(dir, {}, filters);
-	}
 }

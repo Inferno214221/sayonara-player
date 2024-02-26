@@ -51,7 +51,6 @@ namespace Util
 			virtual void deleteFiles(const QStringList& files) = 0;
 			[[nodiscard]] virtual QStringList
 			entryList(const QDir& dir, const QStringList& nameFilters, QDir::Filters filters) const = 0;
-			[[nodiscard]] virtual QStringList entryList(const QDir& dir, QDir::Filters filters) const final;
 
 			[[nodiscard]] virtual std::optional<QDir> cd(const QDir& dir, const QString& subDir) const = 0;
 

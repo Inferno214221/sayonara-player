@@ -134,7 +134,7 @@ namespace
 			return {};
 		}
 
-		const auto dirNames = fileSystem->entryList(dir, QDir::Dirs | QDir::NoDotAndDotDot);
+		const auto dirNames = fileSystem->entryList(dir, {}, QDir::Dirs | QDir::NoDotAndDotDot);
 
 		QStringList result;
 		for(const auto& dirName: dirNames)
