@@ -40,34 +40,30 @@ namespace Library
 			~ArtistView() override;
 
 		protected:
-			[[nodiscard]] AbstractLibrary* library() const override;
-			void selectedItemsChanged(const IndexSet& indexes) override;
-			void playNextClicked() override;
-			void appendClicked() override;
-			void refreshClicked() override;
-			void playClicked() override;
-			void playNewTabClicked() override;
-			void runMergeOperation(const Library::MergeData& mergedata) override;
-
 			void initView(AbstractLibrary* library) override;
 			void initContextMenu() override;
+			[[nodiscard]] ItemModel* itemModel() const override;
 
 			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
 			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
-
 			[[nodiscard]] VariableSortorder sortorder() const override;
 			void applySortorder(VariableSortorder s) override;
 
 			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
-			// ItemView
+			[[nodiscard]] AbstractLibrary* library() const override;
+			[[nodiscard]] PlayActionEventHandler::TrackSet trackSet() const override;
+			void triggerSelectionChange(const IndexSet& indexes) override;
+			void refreshView() override;
+
 			[[nodiscard]] bool isMergeable() const override;
+			void runMergeOperation(const Library::MergeData& mergedata) override;
+
 			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 
 			void languageChanged() override;
-			[[nodiscard]] SearchModel* searchModel() const override;
 
 		private slots:
 			void useClearButtonChanged();

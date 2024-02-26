@@ -69,7 +69,7 @@ void ArtistView::initView(AbstractLibrary* library)
 	m->model = new ArtistModel(this, m->library);
 
 	setModel(m->model);
-	this->setItemDelegate(new Gui::StyledItemDelegate(this));
+	setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	connect(m->library, &AbstractLibrary::sigAllArtistsLoaded, this, &ArtistView::fill);
 
@@ -82,8 +82,7 @@ void ArtistView::initContextMenu()
 
 	ItemView::initContextMenu();
 
-	Library::ContextMenu* menu = contextMenu();
-
+	auto* menu = contextMenu();
 	m->albumArtistAction = new QAction(menu);
 	m->albumArtistAction->setCheckable(true);
 	m->albumArtistAction->setChecked(GetSetting(Set::Lib_ShowAlbumArtists));
@@ -101,41 +100,31 @@ void ArtistView::initContextMenu()
 
 ColumnHeaderList ArtistView::columnHeaders() const
 {
-	const QFontMetrics fm(this->font());
 	using ColumnIndex::Artist;
 
-	ColumnHeaderList columns
-		{
-			std::make_shared<ColumnHeaderArtist>(Artist::Name,
-			                                     false,
-			                                     ArtistSortorder::NameAsc,
-			                                     ArtistSortorder::NameDesc,
-			                                     160,
-			                                     true),
-			std::make_shared<ColumnHeaderArtist>(Artist::Tracks,
-			                                     true,
-			                                     ArtistSortorder::TrackcountAsc,
-			                                     ArtistSortorder::TrackcountDesc,
-			                                     Gui::Util::textWidth(fm, "M 8888"))
-		};
-
-	return columns;
+	return {
+		std::make_shared<ColumnHeaderArtist>(Artist::Name,
+		                                     false,
+		                                     ArtistSortorder::NameAsc,
+		                                     ArtistSortorder::NameDesc,
+		                                     160, // NOLINT(*-magic-numbers)
+		                                     true),
+		std::make_shared<ColumnHeaderArtist>(Artist::Tracks,
+		                                     true,
+		                                     ArtistSortorder::TrackcountAsc,
+		                                     ArtistSortorder::TrackcountDesc,
+		                                     Gui::Util::textWidth(fontMetrics(), "M 8888"))
+	};
 }
 
-QByteArray ArtistView::columnHeaderState() const
-{
-	return GetSetting(Set::Lib_ColStateArtists);
-}
+QByteArray ArtistView::columnHeaderState() const { return GetSetting(Set::Lib_ColStateArtists); }
 
 void ArtistView::saveColumnHeaderState(const QByteArray& state)
 {
 	SetSetting(Set::Lib_ColStateArtists, state);
 }
 
-VariableSortorder ArtistView::sortorder() const
-{
-	return GetSetting(Set::Lib_Sorting).artist;
-}
+VariableSortorder ArtistView::sortorder() const { return GetSetting(Set::Lib_Sorting).artist; }
 
 void ArtistView::applySortorder(const VariableSortorder s)
 {
@@ -145,10 +134,7 @@ void ArtistView::applySortorder(const VariableSortorder s)
 	}
 }
 
-bool ArtistView::autoResizeState() const
-{
-	return GetSetting(Set::Lib_HeaderAutoResizeArtists);
-}
+bool ArtistView::autoResizeState() const { return GetSetting(Set::Lib_HeaderAutoResizeArtists); }
 
 void ArtistView::saveAutoResizeState(bool b)
 {
@@ -167,61 +153,23 @@ void ArtistView::languageChanged()
 	}
 }
 
-bool ArtistView::isMergeable() const
-{
-	return true;
-}
+bool ArtistView::isMergeable() const { return true; }
 
-MD::Interpretation ArtistView::metadataInterpretation() const
-{
-	return MD::Interpretation::Artists;
-}
+MD::Interpretation ArtistView::metadataInterpretation() const { return MD::Interpretation::Artists; }
 
-void ArtistView::selectedItemsChanged(const IndexSet& indexes)
+void ArtistView::triggerSelectionChange(const IndexSet& indexes)
 {
-	TableView::selectedItemsChanged(indexes);
 	m->library->selectedArtistsChanged(indexes);
-}
-
-void ArtistView::playClicked()
-{
-	TableView::playClicked();
-	m->library->prepareFetchedTracksForPlaylist(false);
-}
-
-void ArtistView::playNewTabClicked()
-{
-	TableView::playNewTabClicked();
-	m->library->prepareFetchedTracksForPlaylist(true);
-}
-
-void ArtistView::playNextClicked()
-{
-	TableView::playNextClicked();
-	m->library->playNextFetchedTracks();
-}
-
-void ArtistView::appendClicked()
-{
-	TableView::appendClicked();
-	m->library->appendFetchedTracks();
-}
-
-void ArtistView::refreshClicked()
-{
-	TableView::refreshClicked();
-	m->library->refreshArtists();
 }
 
 void ArtistView::useClearButtonChanged()
 {
-	bool b = GetSetting(Set::Lib_UseViewClearButton);
+	const auto b = GetSetting(Set::Lib_UseViewClearButton);
 	useClearButton(b);
 }
 
-void ArtistView::albumArtistsTriggered(bool b)
+void ArtistView::albumArtistsTriggered(const bool /*b*/)
 {
-	Q_UNUSED(b)
 	SetSetting(Set::Lib_ShowAlbumArtists, m->albumArtistAction->isChecked());
 }
 
