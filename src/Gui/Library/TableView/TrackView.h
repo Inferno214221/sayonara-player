@@ -39,31 +39,27 @@ namespace Library
 			~TrackView() override;
 
 		protected:
-			[[nodiscard]] AbstractLibrary* library() const override;
 			void initView(AbstractLibrary* library) override;
+			[[nodiscard]] ItemModel* itemModel() const override;
 
 			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
 			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
+			[[nodiscard]] VariableSortorder sortorder() const override;
+			void applySortorder(VariableSortorder s) override;
 
 			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
-			[[nodiscard]] VariableSortorder sortorder() const override;
-			void applySortorder(VariableSortorder s) override;
-
 			[[nodiscard]] ContextMenu::Entries contextMenuEntries() const override;
 
-			void playClicked() override;
-			void playNewTabClicked() override;
-			void playNextClicked() override;
-			void appendClicked() override;
-			void selectedItemsChanged(const IndexSet& lst) override;
-			void refreshClicked() override;
+			[[nodiscard]] AbstractLibrary* library() const override;
+			[[nodiscard]] PlayActionEventHandler::TrackSet trackSet() const override;
+			void triggerSelectionChange(const IndexSet& lst) override;
+			void refreshView() override;
 
 			[[nodiscard]] bool isMergeable() const override;
 			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
-			[[nodiscard]] SearchModel* searchModel() const override;
 	};
 }
 

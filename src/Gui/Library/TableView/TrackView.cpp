@@ -53,100 +53,97 @@ TrackView::TrackView(QWidget* parent) :
 
 TrackView::~TrackView() = default;
 
-AbstractLibrary* TrackView::library() const
-{
-	return m->library;
-}
+AbstractLibrary* TrackView::library() const { return m->library; }
 
 void TrackView::initView(AbstractLibrary* library)
 {
 	m->library = library;
-	m->model = new TrackModel(this, library);
-	auto* trackDelegate = new RatingDelegate(static_cast<int>(ColumnIndex::Track::Rating), -1, this);
 
+	m->model = new TrackModel(this, library);
 	setModel(m->model);
-	this->setItemDelegate(trackDelegate);
+
+	auto* trackDelegate = new RatingDelegate(static_cast<int>(ColumnIndex::Track::Rating), -1, this);
+	setItemDelegate(trackDelegate);
 
 	connect(library, &AbstractLibrary::sigAllTracksLoaded, this, &TrackView::fill);
 }
 
 ColumnHeaderList TrackView::columnHeaders() const
 {
-	const QFontMetrics fm(this->font());
+	const auto fm = fontMetrics();
 
 	using ColumnIndex::Track;
 
-	return ColumnHeaderList
-		{
-			std::make_shared<ColumnHeaderTrack>(Track::TrackNumber,
-			                                    true,
-			                                    TrackSortorder::TrackNumberAsc,
-			                                    TrackSortorder::TrackNumberDesc,
-			                                    Gui::Util::textWidth(fm, "M888")),
-			std::make_shared<ColumnHeaderTrack>(Track::Title,
-			                                    false,
-			                                    TrackSortorder::TitleAsc,
-			                                    TrackSortorder::TitleDesc,
-			                                    Gui::Util::textWidth(fm, "Some long song name"),
-			                                    true),
-			std::make_shared<ColumnHeaderTrack>(Track::Artist,
-			                                    true,
-			                                    TrackSortorder::ArtistAsc,
-			                                    TrackSortorder::ArtistDesc,
-			                                    Gui::Util::textWidth(fm, "Some long artist name"),
-			                                    true),
-			std::make_shared<ColumnHeaderTrack>(Track::Album,
-			                                    true,
-			                                    TrackSortorder::AlbumAsc,
-			                                    TrackSortorder::AlbumDesc,
-			                                    Gui::Util::textWidth(fm, "Some long album name"),
-			                                    true),
-			std::make_shared<ColumnHeaderTrack>(Track::Discnumber,
-			                                    true,
-			                                    TrackSortorder::DiscnumberAsc,
-			                                    TrackSortorder::DiscnumberDesc,
-			                                    Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888")),
-			std::make_shared<ColumnHeaderTrack>(Track::Year,
-			                                    true,
-			                                    TrackSortorder::YearAsc,
-			                                    TrackSortorder::YearDesc,
-			                                    Gui::Util::textWidth(fm, "M8888")),
-			std::make_shared<ColumnHeaderTrack>(Track::Length,
-			                                    true,
-			                                    TrackSortorder::LengthAsc,
-			                                    TrackSortorder::LengthDesc,
-			                                    Gui::Util::textWidth(fm, "8d 88h 88s")),
-			std::make_shared<ColumnHeaderTrack>(Track::Bitrate,
-			                                    true,
-			                                    TrackSortorder::BitrateAsc,
-			                                    TrackSortorder::BitrateDesc,
-			                                    Gui::Util::textWidth(fm, "M8888 kBit/s")),
-			std::make_shared<ColumnHeaderTrack>(Track::Filesize,
-			                                    true,
-			                                    TrackSortorder::SizeAsc,
-			                                    TrackSortorder::SizeDesc,
-			                                    Gui::Util::textWidth(fm, "M888.88 MB")),
-			std::make_shared<ColumnHeaderTrack>(Track::Filetype,
-			                                    true,
-			                                    TrackSortorder::FiletypeAsc,
-			                                    TrackSortorder::FiletypeDesc,
-			                                    Gui::Util::textWidth(fm, "MFLAC")),
-			std::make_shared<ColumnHeaderTrack>(Track::AddedDate,
-			                                    true,
-			                                    TrackSortorder::DateAddedAsc,
-			                                    TrackSortorder::DateAddedDesc,
-			                                    Gui::Util::textWidth(fm, "234/323/23423")),
-			std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate,
-			                                    true,
-			                                    TrackSortorder::DateModifiedAsc,
-			                                    TrackSortorder::DateModifiedDesc,
-			                                    Gui::Util::textWidth(fm, "234/323/23423")),
-			std::make_shared<ColumnHeaderTrack>(Track::Rating,
-			                                    true,
-			                                    TrackSortorder::RatingAsc,
-			                                    TrackSortorder::RatingDesc,
-			                                    85),
-		};
+	return {
+		std::make_shared<ColumnHeaderTrack>(Track::TrackNumber,
+		                                    true,
+		                                    TrackSortorder::TrackNumberAsc,
+		                                    TrackSortorder::TrackNumberDesc,
+		                                    Gui::Util::textWidth(fm, "M888")),
+		std::make_shared<ColumnHeaderTrack>(Track::Title,
+		                                    false,
+		                                    TrackSortorder::TitleAsc,
+		                                    TrackSortorder::TitleDesc,
+		                                    Gui::Util::textWidth(fm, "Some long song name"),
+		                                    true),
+		std::make_shared<ColumnHeaderTrack>(Track::Artist,
+		                                    true,
+		                                    TrackSortorder::ArtistAsc,
+		                                    TrackSortorder::ArtistDesc,
+		                                    Gui::Util::textWidth(fm, "Some long artist name"),
+		                                    true),
+		std::make_shared<ColumnHeaderTrack>(Track::Album,
+		                                    true,
+		                                    TrackSortorder::AlbumAsc,
+		                                    TrackSortorder::AlbumDesc,
+		                                    Gui::Util::textWidth(fm, "Some long album name"),
+		                                    true),
+		std::make_shared<ColumnHeaderTrack>(Track::Discnumber,
+		                                    true,
+		                                    TrackSortorder::DiscnumberAsc,
+		                                    TrackSortorder::DiscnumberDesc,
+		                                    Gui::Util::textWidth(fm, Lang::get(Lang::Disc) + " M888")),
+		std::make_shared<ColumnHeaderTrack>(Track::Year,
+		                                    true,
+		                                    TrackSortorder::YearAsc,
+		                                    TrackSortorder::YearDesc,
+		                                    Gui::Util::textWidth(fm, "M8888")),
+		std::make_shared<ColumnHeaderTrack>(Track::Length,
+		                                    true,
+		                                    TrackSortorder::LengthAsc,
+		                                    TrackSortorder::LengthDesc,
+		                                    Gui::Util::textWidth(fm, "8d 88h 88s")),
+		std::make_shared<ColumnHeaderTrack>(Track::Bitrate,
+		                                    true,
+		                                    TrackSortorder::BitrateAsc,
+		                                    TrackSortorder::BitrateDesc,
+		                                    Gui::Util::textWidth(fm, "M8888 kBit/s")),
+		std::make_shared<ColumnHeaderTrack>(Track::Filesize,
+		                                    true,
+		                                    TrackSortorder::SizeAsc,
+		                                    TrackSortorder::SizeDesc,
+		                                    Gui::Util::textWidth(fm, "M888.88 MB")),
+		std::make_shared<ColumnHeaderTrack>(Track::Filetype,
+		                                    true,
+		                                    TrackSortorder::FiletypeAsc,
+		                                    TrackSortorder::FiletypeDesc,
+		                                    Gui::Util::textWidth(fm, "MFLAC")),
+		std::make_shared<ColumnHeaderTrack>(Track::AddedDate,
+		                                    true,
+		                                    TrackSortorder::DateAddedAsc,
+		                                    TrackSortorder::DateAddedDesc,
+		                                    Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeaderTrack>(Track::ModifiedDate,
+		                                    true,
+		                                    TrackSortorder::DateModifiedAsc,
+		                                    TrackSortorder::DateModifiedDesc,
+		                                    Gui::Util::textWidth(fm, "234/323/23423")),
+		std::make_shared<ColumnHeaderTrack>(Track::Rating,
+		                                    true,
+		                                    TrackSortorder::RatingAsc,
+		                                    TrackSortorder::RatingDesc,
+		                                    85), // NOLINT(*-magic-numbers)
+	};
 }
 
 QByteArray TrackView::columnHeaderState() const { return GetSetting(Set::Lib_ColStateTracks); }
@@ -174,39 +171,9 @@ void TrackView::applySortorder(const VariableSortorder s)
 	}
 }
 
-void TrackView::selectedItemsChanged(const IndexSet& lst)
+void TrackView::triggerSelectionChange(const IndexSet& lst)
 {
-	TableView::selectedItemsChanged(lst);
 	m->library->selectedTracksChanged(lst);
-}
-
-void TrackView::playClicked()
-{
-	m->library->prepareCurrentTracksForPlaylist(false);
-}
-
-void TrackView::playNewTabClicked()
-{
-	TableView::playNewTabClicked();
-	m->library->prepareCurrentTracksForPlaylist(true);
-}
-
-void TrackView::playNextClicked()
-{
-	TableView::playNextClicked();
-	m->library->playNextCurrentTracks();
-}
-
-void TrackView::appendClicked()
-{
-	TableView::appendClicked();
-	m->library->appendCurrentTracks();
-}
-
-void TrackView::refreshClicked()
-{
-	TableView::refreshClicked();
-	m->library->refreshTracks();
 }
 
 bool TrackView::isMergeable() const { return false; }
