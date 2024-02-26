@@ -54,10 +54,9 @@ struct AlbumView::Private
 };
 
 AlbumView::AlbumView(QWidget* parent) :
-	TableView(parent)
+	TableView(parent),
+	m {Pimpl::make<Private>()}
 {
-	m = Pimpl::make<Private>();
-
 	connect(this, &QTableView::clicked, this, &AlbumView::indexClicked);
 }
 
@@ -77,67 +76,54 @@ void AlbumView::initView(AbstractLibrary* library)
 	ListenSetting(Set::Lib_UseViewClearButton, AlbumView::useClearButtonChanged);
 }
 
-AbstractLibrary* AlbumView::library() const
-{
-	return m->library;
-}
+AbstractLibrary* AlbumView::library() const { return m->library; }
 
 ColumnHeaderList AlbumView::columnHeaders() const
 {
-	const QFontMetrics fm(this->font());
+	const auto fm = fontMetrics();
 	using ColumnIndex::Album;
 
-	return ColumnHeaderList
-		{
-			std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc,
-			                                    true,
-			                                    AlbumSortorder::NoSorting,
-			                                    AlbumSortorder::NoSorting,
-			                                    Gui::Util::textWidth(fm, "MM")),
-			std::make_shared<ColumnHeaderAlbum>(Album::Name,
-			                                    false,
-			                                    AlbumSortorder::NameAsc,
-			                                    AlbumSortorder::NameDesc,
-			                                    160,
-			                                    true),
-			//	std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
-			std::make_shared<ColumnHeaderAlbum>(Album::Duration,
-			                                    true,
-			                                    AlbumSortorder::DurationAsc,
-			                                    AlbumSortorder::DurationDesc,
-			                                    Gui::Util::textWidth(fm, "888h 888h 888m")),
-			std::make_shared<ColumnHeaderAlbum>(Album::NumSongs,
-			                                    true,
-			                                    AlbumSortorder::TracksAsc,
-			                                    AlbumSortorder::TracksDesc,
-			                                    Gui::Util::textWidth(fm, "num tracks")),
-			std::make_shared<ColumnHeaderAlbum>(Album::Year,
-			                                    true,
-			                                    AlbumSortorder::YearAsc,
-			                                    AlbumSortorder::YearDesc,
-			                                    Gui::Util::textWidth(fm, "M 8888")),
-			std::make_shared<ColumnHeaderAlbum>(Album::Rating,
-			                                    true,
-			                                    AlbumSortorder::RatingAsc,
-			                                    AlbumSortorder::RatingDesc,
-			                                    85)
-		};
+	return {
+		std::make_shared<ColumnHeaderAlbum>(Album::MultiDisc,
+		                                    true,
+		                                    AlbumSortorder::NoSorting,
+		                                    AlbumSortorder::NoSorting,
+		                                    Gui::Util::textWidth(fm, "MM")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Name,
+		                                    false,
+		                                    AlbumSortorder::NameAsc,
+		                                    AlbumSortorder::NameDesc,
+		                                    160, // NOLINT(*-magic-numbers)
+		                                    true),
+		//	std::make_shared<ColumnHeaderAlbum>(Album::AlbumArtist, true, SortOrder::NoSorting, SortOrder::NoSorting, 160, true),
+		std::make_shared<ColumnHeaderAlbum>(Album::Duration,
+		                                    true,
+		                                    AlbumSortorder::DurationAsc,
+		                                    AlbumSortorder::DurationDesc,
+		                                    Gui::Util::textWidth(fm, "888h 888h 888m")),
+		std::make_shared<ColumnHeaderAlbum>(Album::NumSongs,
+		                                    true,
+		                                    AlbumSortorder::TracksAsc,
+		                                    AlbumSortorder::TracksDesc,
+		                                    Gui::Util::textWidth(fm, "num tracks")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Year,
+		                                    true,
+		                                    AlbumSortorder::YearAsc,
+		                                    AlbumSortorder::YearDesc,
+		                                    Gui::Util::textWidth(fm, "M 8888")),
+		std::make_shared<ColumnHeaderAlbum>(Album::Rating,
+		                                    true,
+		                                    AlbumSortorder::RatingAsc,
+		                                    AlbumSortorder::RatingDesc,
+		                                    85) // NOLINT(*-magic-numbers)
+	};
 }
 
-QByteArray AlbumView::columnHeaderState() const
-{
-	return GetSetting(Set::Lib_ColStateAlbums);
-}
+QByteArray AlbumView::columnHeaderState() const { return GetSetting(Set::Lib_ColStateAlbums); }
 
-void AlbumView::saveColumnHeaderState(const QByteArray& state)
-{
-	SetSetting(Set::Lib_ColStateAlbums, state);
-}
+void AlbumView::saveColumnHeaderState(const QByteArray& state) { SetSetting(Set::Lib_ColStateAlbums, state); }
 
-VariableSortorder AlbumView::sortorder() const
-{
-	return GetSetting(Set::Lib_Sorting).album;
-}
+VariableSortorder AlbumView::sortorder() const { return GetSetting(Set::Lib_Sorting).album; }
 
 void AlbumView::applySortorder(const VariableSortorder s)
 {
@@ -157,7 +143,7 @@ void AlbumView::indexClicked(const QModelIndex& idx)
 {
 	if(idx.column() == int(ColumnIndex::Album::MultiDisc))
 	{
-		QModelIndexList selections = this->selectionModel()->selectedRows();
+		const auto selections = selectionModel()->selectedRows();
 		if(selections.size() == 1)
 		{
 			initDiscmenu(idx);
@@ -166,43 +152,41 @@ void AlbumView::indexClicked(const QModelIndex& idx)
 	}
 }
 
-/* where to show the popup */
-void AlbumView::calcDiscmenuPoint(QModelIndex idx)
+void AlbumView::calcDiscmenuPoint(const QModelIndex& idx)
 {
-	QHeaderView* verticalHeader = this->verticalHeader();
+	constexpr const auto Delta = 10;
+	auto* header = verticalHeader();
 
 	m->discmenuPoint = QCursor::pos();
 
-	QRect box = this->geometry();
-	box.moveTopLeft(this->parentWidget()->mapToGlobal(box.topLeft()));
+	auto box = geometry();
+	box.moveTopLeft(parentWidget()->mapToGlobal(box.topLeft()));
 
 	if(!box.contains(m->discmenuPoint))
 	{
 		m->discmenuPoint.setX(box.x() + (box.width() * 2) / 3);
 		m->discmenuPoint.setY(box.y());
 
-		QPoint discMenuPoint = parentWidget()->pos() - QPoint(0, verticalHeader->sizeHint().height());
+		auto discMenuPoint = parentWidget()->pos() - QPoint(0, header->sizeHint().height());
 		while(idx.row() != indexAt(discMenuPoint).row())
 		{
-			discMenuPoint.setY(discMenuPoint.y() + 10);
-			m->discmenuPoint.setY(m->discmenuPoint.y() + 10);
+			discMenuPoint.setY(discMenuPoint.y() + Delta);
+			m->discmenuPoint.setY(m->discmenuPoint.y() + Delta);
 		}
 	}
 }
 
-void AlbumView::initDiscmenu(QModelIndex idx)
+void AlbumView::initDiscmenu(const QModelIndex& idx)
 {
-	int row = idx.row();
+	const auto row = idx.row();
 	deleteDiscmenu();
 
-	if(!idx.isValid() ||
-	   (row >= model()->rowCount()) ||
-	   (row < 0))
+	if(!idx.isValid() || (row >= model()->rowCount()) || (row < 0))
 	{
 		return;
 	}
 
-	const Album& album = m->library->albums().at(size_t(row));
+	const auto& album = m->library->albums().at(size_t(row));
 	if(album.discnumbers().size() < 2)
 	{
 		return;
@@ -233,45 +217,15 @@ void AlbumView::deleteDiscmenu()
 
 void AlbumView::showDiscmenu()
 {
-	if(!m->discmenu) { return; }
-
-	m->discmenu->popup(m->discmenuPoint);
+	if(m->discmenu)
+	{
+		m->discmenu->popup(m->discmenuPoint);
+	}
 }
 
-void AlbumView::playClicked()
+void AlbumView::triggerSelectionChange(const IndexSet& indexes)
 {
-	TableView::playClicked();
-	m->library->prepareFetchedTracksForPlaylist(false);
-}
-
-void AlbumView::playNewTabClicked()
-{
-	TableView::playNewTabClicked();
-	m->library->prepareFetchedTracksForPlaylist(true);
-}
-
-void AlbumView::playNextClicked()
-{
-	TableView::playNextClicked();
-	m->library->playNextFetchedTracks();
-}
-
-void AlbumView::appendClicked()
-{
-	TableView::appendClicked();
-	m->library->appendFetchedTracks();
-}
-
-void AlbumView::selectedItemsChanged(const IndexSet& indexes)
-{
-	TableView::selectedItemsChanged(indexes);
 	m->library->selectedAlbumsChanged(indexes);
-}
-
-void AlbumView::refreshClicked()
-{
-	TableView::refreshClicked();
-	m->library->refreshAlbums();
 }
 
 void AlbumView::runMergeOperation(const MergeData& mergedata)
@@ -282,31 +236,25 @@ void AlbumView::runMergeOperation(const MergeData& mergedata)
 	uto->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
 }
 
-bool AlbumView::isMergeable() const
-{
-	return true;
-}
+bool AlbumView::isMergeable() const { return true; }
 
-MD::Interpretation AlbumView::metadataInterpretation() const
-{
-	return MD::Interpretation::Albums;
-}
+MD::Interpretation AlbumView::metadataInterpretation() const { return MD::Interpretation::Albums; }
 
-bool AlbumView::autoResizeState() const
-{
-	return GetSetting(Set::Lib_HeaderAutoResizeAlbums);
-}
+bool AlbumView::autoResizeState() const { return GetSetting(Set::Lib_HeaderAutoResizeAlbums); }
 
-void AlbumView::saveAutoResizeState(bool b)
+void AlbumView::saveAutoResizeState(const bool b)
 {
 	SetSetting(Set::Lib_HeaderAutoResizeAlbums, b);
 }
 
 void AlbumView::useClearButtonChanged()
 {
-	bool b = GetSetting(Set::Lib_UseViewClearButton);
+	const auto b = GetSetting(Set::Lib_UseViewClearButton);
 	useClearButton(b);
 }
 
 ItemModel* AlbumView::itemModel() const { return m->model; }
 
+PlayActionEventHandler::TrackSet AlbumView::trackSet() const { return PlayActionEventHandler::TrackSet::All; }
+
+void AlbumView::refreshView() { m->library->refreshAlbums(); }

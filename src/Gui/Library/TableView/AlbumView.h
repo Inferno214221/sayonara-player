@@ -29,6 +29,7 @@
 namespace Library
 {
 	class DiscPopupMenu;
+	class MergeData;
 
 	class AlbumView :
 		public TableView
@@ -39,49 +40,44 @@ namespace Library
 		signals:
 			void sigDiscPressed(Disc d);
 
-		protected slots:
-			void indexClicked(const QModelIndex& idx);
-
 		public:
 			explicit AlbumView(QWidget* parent = nullptr);
 			~AlbumView() override;
 
 		protected:
+			void initView(AbstractLibrary* library) override;
+			[[nodiscard]] ItemModel* itemModel() const override;
+
 			[[nodiscard]] ColumnHeaderList columnHeaders() const override;
 			[[nodiscard]] QByteArray columnHeaderState() const override;
 			void saveColumnHeaderState(const QByteArray& state) override;
-
-		private:
-			void initView(AbstractLibrary* library) override;
-
 			[[nodiscard]] VariableSortorder sortorder() const override;
 			void applySortorder(VariableSortorder s) override;
-
-			void playClicked() override;
-			void playNewTabClicked() override;
-			void playNextClicked() override;
-			void appendClicked() override;
-			void selectedItemsChanged(const IndexSet& indexes) override;
-			void refreshClicked() override;
-			void runMergeOperation(const MergeData& mergedata) override;
-			[[nodiscard]] bool isMergeable() const override;
-			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 
 			[[nodiscard]] bool autoResizeState() const override;
 			void saveAutoResizeState(bool b) override;
 
-			void calcDiscmenuPoint(QModelIndex idx);
-			void deleteDiscmenu();
-			void initDiscmenu(QModelIndex idx);
+			[[nodiscard]] AbstractLibrary* library() const override;
+			[[nodiscard]] PlayActionEventHandler::TrackSet trackSet() const override;
+			void triggerSelectionChange(const IndexSet& indexes) override;
+			void refreshView() override;
 
-			void showDiscmenu();
+			[[nodiscard]] bool isMergeable() const override;
+			void runMergeOperation(const MergeData& mergedata) override;
+
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+
 			void showContextMenu(const QPoint& p) override;
 
-			[[nodiscard]] AbstractLibrary* library() const override;
-			[[nodiscard]] SearchModel* searchModel() const override;
-
 		private slots:
+			void indexClicked(const QModelIndex& idx);
 			void useClearButtonChanged();
+
+		private: // NOLINT(*-redundant-access-specifiers)
+			void calcDiscmenuPoint(const QModelIndex& idx);
+			void deleteDiscmenu();
+			void initDiscmenu(const QModelIndex& idx);
+			void showDiscmenu();
 	};
 }
 
