@@ -25,25 +25,20 @@
 
 namespace Cover::Fetcher
 {
-	/**
-	 * @brief The DiscogsCoverFetcher class. See CoverFetcherInterface
-	 * @ingroup Covers
-	 */
 	class Discogs :
 		public Cover::Fetcher::Base
 	{
-		private:
-			QString privateIdentifier() const override;
-
 		public:
-			bool canFetchCoverDirectly() const override;
-			QStringList parseAddresses(const QByteArray& website) const override;
+			[[nodiscard]] bool canFetchCoverDirectly() const override;
+			[[nodiscard]] QStringList parseAddresses(const QByteArray& website) const override;
 
-			QString artistAddress(const QString& artist) const override;
-			QString albumAddress(const QString& artist, const QString& album) const override;
-			QString fulltextSearchAddress(const QString& str) const override;
+			[[nodiscard]] QString artistAddress(const QString& artist) const override;
+			[[nodiscard]] QString fulltextSearchAddress(const QString& str) const override;
 
-			int estimatedSize() const override;
+			[[nodiscard]] int estimatedSize() const override;
+
+		private:
+			[[nodiscard]] QString privateIdentifier() const override;
 	};
 }
 #endif // DISCOGSCOVERFETCHER_H

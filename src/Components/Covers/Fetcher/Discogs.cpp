@@ -33,7 +33,7 @@ namespace
 {
 	QString basicUrl(const std::map<QString, QString>& params)
 	{
-		const auto baseUrl = "https://api.discogs.com/database/search?";
+		constexpr const auto* baseUrl = "https://api.discogs.com/database/search?";
 
 		auto paramStrings = QStringList {"token=BuBsUyZsFtoaEGmquLQIbfXduYbgooGThIpRivUe"};
 		for(const auto& [key, value]: params)
@@ -73,15 +73,6 @@ QString Discogs::artistAddress(const QString& artist) const
 		});
 }
 
-QString Discogs::albumAddress(const QString& artist, const QString& album) const
-{
-	return basicUrl(
-		{
-			{"artist", artist},
-			{"type",   "master"}
-		});
-}
-
 QString Discogs::fulltextSearchAddress(const QString& str) const
 {
 	return basicUrl(
@@ -91,6 +82,6 @@ QString Discogs::fulltextSearchAddress(const QString& str) const
 		});
 }
 
-int Discogs::estimatedSize() const { return 600; }
+int Discogs::estimatedSize() const { return 600; } // NOLINT(*-magic-numbers)
 
 QString Discogs::privateIdentifier() const { return "discogs"; }
