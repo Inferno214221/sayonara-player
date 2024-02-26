@@ -32,7 +32,7 @@ namespace
 	using ChronoNs = std::chrono::nanoseconds;
 	using ChronoMs = std::chrono::milliseconds;
 
-	constexpr const auto SeekAccurate = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
+	// constexpr const auto SeekAccurate = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_ACCURATE);
 	constexpr const auto SeekNearest = static_cast<GstSeekFlags>(GST_SEEK_FLAG_FLUSH | GST_SEEK_FLAG_KEY_UNIT |
 	                                                             GST_SEEK_FLAG_SNAP_NEAREST);
 
@@ -76,6 +76,7 @@ namespace
 		public PipelineExtensions::PositionAccessor
 	{
 		public:
+			// NOLINTNEXTLINE(*-easily-swappable-parameters)
 			explicit PositionAccessorImpl(GstElement* readElement, GstElement* seekElement) :
 				m_readElement {readElement},
 				m_seekElement {seekElement} {}
