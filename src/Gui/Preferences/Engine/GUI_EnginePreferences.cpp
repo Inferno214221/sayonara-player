@@ -70,6 +70,8 @@ namespace
 				devices = addSubdevice(re.cap(2), re.cap(1).toInt(), re.cap(3).toInt(), std::move(devices));
 			}
 		}
+
+		return devices;
 	}
 
 	void applyDevicesToCombobox(const Devices& devices, QComboBox* comboBox)
