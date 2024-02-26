@@ -71,6 +71,7 @@ namespace Library
 			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
 			[[nodiscard]] int itemCount() const override;
 			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
+			[[nodiscard]] QMap<QString, QString> searchOptions() const override;
 
 		private:
 			[[nodiscard]] const AlbumList& albums() const;

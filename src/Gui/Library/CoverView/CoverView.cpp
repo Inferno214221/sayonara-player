@@ -48,13 +48,28 @@
 
 #include <mutex>
 
+namespace
+{
+	int ensureZoomInValidRange(int zoom, const QList<int>& zoomFactors)
+	{
+		return std::min(std::max(zoom, zoomFactors.first()), zoomFactors.last());
+	}
+
+	void hideHeader(QHeaderView* header)
+	{
+		if(header)
+		{
+			header->hide();
+		}
+	}
+}
+
 namespace Library
 {
 	struct CoverView::Private
 	{
-		LocalLibrary* library = nullptr;
-		CoverModel* model = nullptr;
-
+		LocalLibrary* library {nullptr};
+		CoverModel* model {nullptr};
 		std::atomic_flag zoomLocked {false};
 	};
 
@@ -66,38 +81,26 @@ namespace Library
 
 	void CoverView::init(LocalLibrary* library)
 	{
+		ItemView::init(PlayActionEventHandler::create(library->playlistInteractor(), library));
+
 		m->library = library;
 		m->model = new Library::CoverModel(this, library);
 
-		ItemView::setItemModel(m->model);
-
-		this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-		this->setVerticalScrollMode(QAbstractItemView::ScrollPerPixel);
-		this->setSelectionBehavior(QAbstractItemView::SelectItems);
-		this->setItemDelegate(new Library::CoverDelegate(this));
-		this->setShowGrid(false);
-		this->setAlternatingRowColors(false);
+		setModel(m->model);
+		setItemDelegate(new Library::CoverDelegate(this));
+		setShowGrid(false);
+		setAlternatingRowColors(false);
+		setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectItems);
+		hideHeader(horizontalHeader());
+		hideHeader(verticalHeader());
 
 		connect(m->library, &LocalLibrary::sigAllAlbumsLoaded, this, &CoverView::reload);
-
-		if(this->horizontalHeader())
-		{
-			this->horizontalHeader()->hide();
-		}
-
-		if(this->verticalHeader())
-		{
-			this->verticalHeader()->hide();
-		}
 
 		new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
 		new QShortcut(QKeySequence("F7"), this, SLOT(clearCache()));
 	}
 
-	AbstractLibrary* CoverView::library() const
-	{
-		return m->library;
-	}
+	AbstractLibrary* CoverView::library() const { return m->library; }
 
 	QList<int> CoverView::zoomFactors()
 	{
@@ -105,10 +108,7 @@ namespace Library
 		return list;
 	}
 
-	int CoverView::zoom() const
-	{
-		return m->model->zoom();
-	}
+	int CoverView::zoom() const { return m->model->zoom(); }
 
 	void CoverView::changeZoom(int zoom)
 	{
@@ -117,32 +117,22 @@ namespace Library
 			return;
 		}
 
+		const auto currentZoom = this->zoom();
 		const auto forceReload = (zoom < 0);
 		if(forceReload)
 		{
-			zoom = this->zoom();
+			zoom = currentZoom;
 		}
 
-		else
+		zoom = ensureZoomInValidRange(zoom, CoverView::zoomFactors());
+
+		const auto isZoomEqual = (zoom == currentZoom) || (zoom == m->model->zoom());
+		if(!forceReload && isZoomEqual)
 		{
-			if(zoom == this->zoom())
-			{
-				return;
-			}
+			return;
 		}
 
-		zoom = std::max(zoom, CoverView::zoomFactors().first());
-		zoom = std::min(zoom, CoverView::zoomFactors().last());
-
-		if(!forceReload)
-		{
-			if(zoom == m->model->zoom())
-			{
-				return;
-			}
-		}
-
-		if(m->zoomLocked.test_and_set())
+		if(const auto isZoomForbidden = m->zoomLocked.test_and_set(); isZoomForbidden)
 		{
 			return;
 		}
@@ -209,10 +199,8 @@ namespace Library
 
 	void CoverView::fill()
 	{
-		this->clearSelection();
+		clearSelection();
 	}
-
-	void CoverView::languageChanged() {}
 
 	QStyleOptionViewItem CoverView::viewOptions() const
 	{
@@ -226,10 +214,7 @@ namespace Library
 		return option;
 	}
 
-	int CoverView::sizeHintForColumn(int /*column*/) const
-	{
-		return m->model->itemSize().width();
-	}
+	int CoverView::sizeHintForColumn(const int /*column*/) const { return m->model->itemSize().width(); }
 
 	bool CoverView::isMergeable() const { return true; }
 
@@ -240,7 +225,7 @@ namespace Library
 		return idx.row() * m->model->columnCount() + idx.column();
 	}
 
-	ModelIndexRange CoverView::mapIndexToModelIndexes(int idx) const
+	ModelIndexRange CoverView::mapIndexToModelIndexes(const int idx) const
 	{
 		const auto row = idx / m->model->columnCount();
 		const auto col = idx % m->model->columnCount();
@@ -256,39 +241,15 @@ namespace Library
 		return SelectionViewInterface::SelectionType::Items;
 	}
 
-	void CoverView::playClicked()
-	{
-		m->library->prepareFetchedTracksForPlaylist(false);
-	}
-
-	void CoverView::playNewTabClicked()
-	{
-		m->library->prepareFetchedTracksForPlaylist(true);
-	}
-
-	void CoverView::playNextClicked()
-	{
-		m->library->playNextFetchedTracks();
-	}
-
-	void CoverView::appendClicked()
-	{
-		m->library->appendFetchedTracks();
-	}
-
-	void CoverView::selectedItemsChanged(const IndexSet& indexes)
-	{
-		m->library->selectedAlbumsChanged(indexes);
-	}
-
-	void CoverView::refreshClicked() {}
+	void CoverView::refreshView() { m->library->refreshAlbums(); }
 
 	void CoverView::runMergeOperation(const MergeData& mergedata)
 	{
-		auto* taggingOperation = new Tagging::UserOperations(Tagging::TagReader::create(),
-		                                                     Tagging::TagWriter::create(),
-		                                                     mergedata.libraryId(),
-		                                                     this);
+		auto* taggingOperation =
+			new Tagging::UserOperations(Tagging::TagReader::create(),
+			                            Tagging::TagWriter::create(),
+			                            mergedata.libraryId(),
+			                            this);
 
 		connect(taggingOperation, &Tagging::UserOperations::sigFinished,
 		        taggingOperation, &Tagging::UserOperations::deleteLater);
@@ -327,5 +288,12 @@ namespace Library
 		ItemView::hideEvent(e);
 	}
 
-	SearchModel* CoverView::searchModel() const { return m->model; }
+	ItemModel* CoverView::itemModel() const { return m->model; }
+
+	PlayActionEventHandler::TrackSet CoverView::trackSet() const { return PlayActionEventHandler::TrackSet::All; }
+
+	void CoverView::triggerSelectionChange(const IndexSet& indexes)
+	{
+		m->library->selectedAlbumsChanged(indexes);
+	}
 }

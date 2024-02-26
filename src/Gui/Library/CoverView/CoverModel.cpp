@@ -47,6 +47,7 @@
 
 namespace
 {
+	constexpr const auto* ArtistSearchOption = "artist";
 	using Hash = Library::AlbumCoverFetchThread::Hash;
 
 	std::mutex refreshMtx; // NOLINT(cppcoreguidelines-avoid-non-const-global-variables)
@@ -433,8 +434,15 @@ namespace Library
 	QString CoverModel::searchableString(const int index, const QString& prefix) const
 	{
 		const auto& album = albums()[index];
-		return (prefix == "/artist")
-		       ? album.artists().join("")
+		return (prefix == ArtistSearchOption)
+		       ? album.artists().join("") + album.albumArtist()
 		       : album.name();
+	}
+
+	QMap<QString, QString> CoverModel::searchOptions() const
+	{
+		return {
+			{ArtistSearchOption, Lang::get(Lang::SearchNoun) + ": " + Lang::get(Lang::Artist)}
+		};
 	}
 }

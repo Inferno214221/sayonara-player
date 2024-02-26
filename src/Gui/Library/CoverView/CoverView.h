@@ -69,13 +69,15 @@ namespace Library
 			void fill() override;
 			void initContextMenu() override;
 
-			void languageChanged() override;
-
 			// ItemView
 			[[nodiscard]] bool isMergeable() const override;
 			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
 			[[nodiscard]] ItemModel* itemModel() const override;
 			[[nodiscard]] int sizeHintForColumn(int size) const override;
+
+			void triggerSelectionChange(const IndexSet& indexes) override;
+
+			[[nodiscard]] PlayActionEventHandler::TrackSet trackSet() const override;
 
 			void wheelEvent(QWheelEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;
@@ -83,14 +85,7 @@ namespace Library
 
 		private:
 			void resizeSections();
-
-			// Library::ItemView
-			void playClicked() override;
-			void playNewTabClicked() override;
-			void playNextClicked() override;
-			void appendClicked() override;
-			void selectedItemsChanged(const IndexSet& indexes) override;
-			void refreshClicked() override;
+			void refreshView() override;
 			void runMergeOperation(const Library::MergeData& mergedata) override;
 	};
 }
