@@ -37,9 +37,6 @@
 #include <QStringList>
 #include <QDateTime>
 
-using namespace Tagging::Utils;
-namespace FileUtils = ::Util::File;
-
 namespace
 {
 	struct ReadingProperties
@@ -74,7 +71,7 @@ namespace
 
 	QString getTitleFromFilename(const QString& filepath)
 	{
-		const auto filename = FileUtils::getFilenameOfPath(filepath);
+		const auto filename = Util::File::getFilenameOfPath(filepath);
 		return (filename.size() > 4)
 		       ? filename.left(filename.length() - 4)
 		       : filename;
@@ -83,16 +80,14 @@ namespace
 	void setDate(MetaData& track)
 	{
 		const auto fileInfo = QFileInfo(track.filepath());
-		QDateTime createDate;
 
 #if (QT_VERSION >= QT_VERSION_CHECK(5, 10, 0))
-		createDate = fileInfo.birthTime();
-		if(!createDate.isValid())
-		{
-			createDate = fileInfo.metadataChangeTime();
-		}
+		const auto birthTime = fileInfo.birthTime();
+		auto createDate = birthTime.isValid()
+		                  ? birthTime
+		                  : fileInfo.metadataChangeTime();
 #else
-		createDate = fileInfo.created();
+		auto createDate = fileInfo.created();
 #endif
 
 		if(!createDate.isValid())
@@ -127,210 +122,216 @@ namespace
 	}
 }
 
-bool Tagging::Utils::getMetaDataOfFile(MetaData& track, Quality quality)
+namespace Tagging
 {
-	Tagging::FileTypeResolver::addFileTypeResolver();
-
-	const auto fileInfo = QFileInfo(track.filepath());
-	track.setFilesize(static_cast<Filesize>(fileInfo.size()));
-	setDate(track);
-
-	if(fileInfo.size() <= 0)
+	bool Utils::getMetaDataOfFile(MetaData& track, Quality quality)
 	{
-		return false;
+		Tagging::FileTypeResolver::addFileTypeResolver();
+
+		const auto fileInfo = QFileInfo(track.filepath());
+		track.setFilesize(static_cast<Filesize>(fileInfo.size()));
+		setDate(track);
+
+		if(fileInfo.size() <= 0)
+		{
+			return false;
+		}
+
+		const auto readingProperties = getReadingProperties(quality);
+		auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()),
+		                               readingProperties.readAudioProperties,
+		                               readingProperties.readStyle);
+
+		if(!isValidFile(fileRef))
+		{
+			spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 1";
+			return false;
+		}
+
+		const auto parsedTag = getParsedTagFromFileRef(fileRef);
+		if(!parsedTag.tag)
+		{
+			return false;
+		}
+
+		const auto artist = convertString(parsedTag.tag->artist());
+		const auto album = convertString(parsedTag.tag->album());
+		const auto title = convertString(parsedTag.tag->title());
+		const auto genre = convertString(parsedTag.tag->genre());
+		const auto comment = convertString(parsedTag.tag->comment());
+		const auto year = parsedTag.tag->year();
+		const auto trackNumber = parsedTag.tag->track();
+		const auto bitrate = (quality != Quality::Dirty)
+		                     ? fileRef.audioProperties()->bitrate() * 1000
+		                     : 0;
+
+		const auto length = (quality != Quality::Dirty)
+		                    ? fileRef.audioProperties()->lengthInMilliseconds()
+		                    : 0;
+
+		const auto genres = extractGenres(genre);
+
+		track.setAlbum(album);
+		track.setArtist(artist);
+		track.setTitle(title.isEmpty() ? getTitleFromFilename(track.filepath()) : title);
+		track.setDurationMs(length);
+		track.setYear(Year(year));
+		track.setTrackNumber(static_cast<TrackNum>(trackNumber));
+		track.setBitrate(Bitrate(bitrate));
+		track.setGenres(genres);
+		track.setComment(comment);
+
+		if(const auto albumArtist = Tagging::readAlbumArtist(parsedTag); albumArtist.has_value())
+		{
+			track.setAlbumArtist(albumArtist.value());
+		}
+
+		if(const auto discnumber = Tagging::readDiscnumber(parsedTag); discnumber.has_value())
+		{
+			track.setDiscnumber(discnumber.value().disc);
+			track.setDiscCount(discnumber.value().disccount);
+		}
+
+		if(const auto popularimeter = Tagging::readPopularimeter(parsedTag); popularimeter.has_value())
+		{
+			track.setRating(popularimeter->rating);
+		}
+
+		const auto hasCover = static_cast<int>(Tagging::hasCover(parsedTag));
+		track.addCustomField("has-album-art", "", QString::number(hasCover));
+
+		return true;
 	}
 
-	const auto readingProperties = getReadingProperties(quality);
-	auto fileRef = TagLib::FileRef(TagLib::FileName(track.filepath().toUtf8()),
-	                               readingProperties.readAudioProperties,
-	                               readingProperties.readStyle);
-
-	if(!isValidFile(fileRef))
+	bool Utils::setMetaDataOfFile(const MetaData& track)
 	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 1";
-		return false;
+		Tagging::FileTypeResolver::addFileTypeResolver();
+
+		const auto filepath = track.filepath();
+		const auto fileInfo = QFileInfo(filepath);
+		if(fileInfo.size() <= 0)
+		{
+			return false;
+		}
+
+		auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
+		if(!isValidFile(fileRef))
+		{
+			spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 2";
+			return false;
+		}
+
+		const auto album = convertString(track.album());
+		const auto artist = convertString(track.artist());
+		const auto title = convertString(track.title());
+		const auto genre = convertString(track.genresToString());
+		const auto comment = convertString(track.comment());
+
+		const auto parsedTag = getParsedTagFromFileRef(fileRef);
+		if(!parsedTag.tag)
+		{
+			return false;
+		}
+
+		parsedTag.tag->setAlbum(album);
+		parsedTag.tag->setArtist(artist);
+		parsedTag.tag->setTitle(title);
+		parsedTag.tag->setGenre(genre);
+		parsedTag.tag->setYear(track.year());
+		parsedTag.tag->setTrack(track.trackNumber());
+		parsedTag.tag->setComment(comment);
+
+		Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara", track.rating(), 0));
+		Tagging::writeDiscnumber(parsedTag, Models::Discnumber(track.discnumber(), track.discCount()));
+		Tagging::writeAlbumArtist(parsedTag, track.albumArtist());
+
+		const auto success = fileRef.save();
+		if(!success)
+		{
+			spLog(Log::Warning, "Tagging") << "Could not save " << track.filepath();
+		}
+
+		return success;
 	}
 
-	const auto parsedTag = getParsedTagFromFileRef(fileRef);
-	if(!parsedTag.tag)
+	bool Utils::setOnlyChangedMetaDataOfFile(const MetaData& oldTrack, const MetaData& newTrack)
 	{
-		return false;
+		Tagging::FileTypeResolver::addFileTypeResolver();
+
+		const auto filepath = newTrack.filepath();
+		const auto fileInfo = QFileInfo(filepath);
+		if(fileInfo.size() <= 0)
+		{
+			return false;
+		}
+
+		auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
+		if(!isValidFile(fileRef))
+		{
+			spLog(Log::Warning, "Tagging") << "Cannot open tags for " << newTrack.filepath() << ": Err 2";
+			return false;
+		}
+
+		const auto parsedTag = getParsedTagFromFileRef(fileRef);
+		if(!parsedTag.tag)
+		{
+			return false;
+		}
+
+		updateIfUnequal(oldTrack.album(), newTrack.album(), parsedTag, [](const auto& ptag, const auto& value) {
+			ptag.tag->setAlbum(convertString(value));
+		});
+
+		updateIfUnequal(oldTrack.artist(), newTrack.artist(), parsedTag, [](const auto& ptag, const auto& value) {
+			ptag.tag->setArtist(convertString(value));
+		});
+
+		updateIfUnequal(oldTrack.title(), newTrack.title(), parsedTag, [](const auto& ptag, const auto& value) {
+			ptag.tag->setTitle(convertString(value));
+		});
+
+		updateIfUnequal(oldTrack.genresToString(), newTrack.genresToString(), parsedTag,
+		                [](const auto& tag, const auto& value) {
+			                tag.tag->setGenre(convertString(value));
+		                });
+
+		updateIfUnequal(oldTrack.year(), newTrack.year(), parsedTag, [](const auto& ptag, const auto& value) {
+			ptag.tag->setYear(value);
+		});
+
+		updateIfUnequal(oldTrack.trackNumber(),
+		                newTrack.trackNumber(),
+		                parsedTag,
+		                [](const auto& ptag, const auto& value) {
+			                ptag.tag->setTrack(value);
+		                });
+
+		updateIfUnequal(oldTrack.comment(), newTrack.comment(), parsedTag, [](const auto& ptag, const auto& value) {
+			ptag.tag->setComment(convertString(value));
+		});
+
+		updateIfUnequal(oldTrack.rating(), newTrack.rating(), parsedTag, [](const auto& ptag, const auto& value) {
+			Tagging::writePopularimeter(ptag, Models::Popularimeter("sayonara", value, 0));
+		});
+
+		updateIfUnequal(std::pair {oldTrack.discnumber(), oldTrack.discCount()},
+		                std::pair {newTrack.discnumber(), newTrack.discCount()},
+		                parsedTag,
+		                [](const auto& ptag, const auto& value) {
+			                Tagging::writeDiscnumber(ptag, Models::Discnumber(value.first, value.second));
+		                });
+
+		updateIfUnequal(oldTrack.albumArtist(), newTrack.albumArtist(), parsedTag,
+		                [](const auto& ptag, const auto& value) {
+			                Tagging::writeAlbumArtist(ptag, value);
+		                });
+
+		const auto success = fileRef.save();
+		if(!success)
+		{
+			spLog(Log::Warning, "Tagging") << "Could not save " << newTrack.filepath();
+		}
+
+		return success;
 	}
-
-	const auto artist = convertString(parsedTag.tag->artist());
-	const auto album = convertString(parsedTag.tag->album());
-	const auto title = convertString(parsedTag.tag->title());
-	const auto genre = convertString(parsedTag.tag->genre());
-	const auto comment = convertString(parsedTag.tag->comment());
-	const auto year = parsedTag.tag->year();
-	const auto trackNumber = parsedTag.tag->track();
-	const auto bitrate = (quality != Quality::Dirty)
-	                     ? fileRef.audioProperties()->bitrate() * 1000
-	                     : 0;
-
-	const auto length = (quality != Quality::Dirty)
-	                    ? fileRef.audioProperties()->length() * 1000
-	                    : 0;
-
-	const auto genres = extractGenres(genre);
-
-	track.setAlbum(album);
-	track.setArtist(artist);
-	track.setTitle(title.isEmpty() ? getTitleFromFilename(track.filepath()) : title);
-	track.setDurationMs(length);
-	track.setYear(Year(year));
-	track.setTrackNumber(static_cast<TrackNum>(trackNumber));
-	track.setBitrate(Bitrate(bitrate));
-	track.setGenres(genres);
-	track.setComment(comment);
-
-	if(const auto albumArtist = Tagging::readAlbumArtist(parsedTag); albumArtist.has_value())
-	{
-		track.setAlbumArtist(albumArtist.value());
-	}
-
-	if(const auto discnumber = Tagging::readDiscnumber(parsedTag); discnumber.has_value())
-	{
-		track.setDiscnumber(discnumber.value().disc);
-		track.setDiscCount(discnumber.value().disccount);
-	}
-
-	if(const auto popularimeter = Tagging::readPopularimeter(parsedTag); popularimeter.has_value())
-	{
-		track.setRating(popularimeter->rating);
-	}
-
-	const auto hasCover = static_cast<int>(Tagging::hasCover(parsedTag));
-	track.addCustomField("has-album-art", "", QString::number(hasCover));
-
-	return true;
-}
-
-bool Tagging::Utils::setMetaDataOfFile(const MetaData& track)
-{
-	Tagging::FileTypeResolver::addFileTypeResolver();
-
-	const auto filepath = track.filepath();
-	const auto fileInfo = QFileInfo(filepath);
-	if(fileInfo.size() <= 0)
-	{
-		return false;
-	}
-
-	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
-	if(!isValidFile(fileRef))
-	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << track.filepath() << ": Err 2";
-		return false;
-	}
-
-	const auto album = convertString(track.album());
-	const auto artist = convertString(track.artist());
-	const auto title = convertString(track.title());
-	const auto genre = convertString(track.genresToString());
-	const auto comment = convertString(track.comment());
-
-	const auto parsedTag = getParsedTagFromFileRef(fileRef);
-	if(!parsedTag.tag)
-	{
-		return false;
-	}
-
-	parsedTag.tag->setAlbum(album);
-	parsedTag.tag->setArtist(artist);
-	parsedTag.tag->setTitle(title);
-	parsedTag.tag->setGenre(genre);
-	parsedTag.tag->setYear(track.year());
-	parsedTag.tag->setTrack(track.trackNumber());
-	parsedTag.tag->setComment(comment);
-
-	Tagging::writePopularimeter(parsedTag, Models::Popularimeter("sayonara", track.rating(), 0));
-	Tagging::writeDiscnumber(parsedTag, Models::Discnumber(track.discnumber(), track.discCount()));
-	Tagging::writeAlbumArtist(parsedTag, track.albumArtist());
-
-	const auto success = fileRef.save();
-	if(!success)
-	{
-		spLog(Log::Warning, "Tagging") << "Could not save " << track.filepath();
-	}
-
-	return success;
-}
-
-bool Tagging::Utils::setOnlyChangedMetaDataOfFile(const MetaData& oldTrack, const MetaData& newTrack)
-{
-	Tagging::FileTypeResolver::addFileTypeResolver();
-
-	const auto filepath = newTrack.filepath();
-	const auto fileInfo = QFileInfo(filepath);
-	if(fileInfo.size() <= 0)
-	{
-		return false;
-	}
-
-	auto fileRef = TagLib::FileRef(TagLib::FileName(filepath.toUtf8()));
-	if(!isValidFile(fileRef))
-	{
-		spLog(Log::Warning, "Tagging") << "Cannot open tags for " << newTrack.filepath() << ": Err 2";
-		return false;
-	}
-
-	const auto parsedTag = getParsedTagFromFileRef(fileRef);
-	if(!parsedTag.tag)
-	{
-		return false;
-	}
-
-	updateIfUnequal(oldTrack.album(), newTrack.album(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setAlbum(convertString(value));
-	});
-
-	updateIfUnequal(oldTrack.artist(), newTrack.artist(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setArtist(convertString(value));
-	});
-
-	updateIfUnequal(oldTrack.title(), newTrack.title(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setTitle(convertString(value));
-	});
-
-	updateIfUnequal(oldTrack.genresToString(), newTrack.genresToString(), parsedTag,
-	                [](const auto& tag, const auto& value) {
-		                tag.tag->setGenre(convertString(value));
-	                });
-
-	updateIfUnequal(oldTrack.year(), newTrack.year(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setYear(value);
-	});
-
-	updateIfUnequal(oldTrack.trackNumber(), newTrack.trackNumber(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setTrack(value);
-	});
-
-	updateIfUnequal(oldTrack.comment(), newTrack.comment(), parsedTag, [](const auto& ptag, const auto& value) {
-		ptag.tag->setComment(convertString(value));
-	});
-
-	updateIfUnequal(oldTrack.rating(), newTrack.rating(), parsedTag, [](const auto& ptag, const auto& value) {
-		Tagging::writePopularimeter(ptag, Models::Popularimeter("sayonara", value, 0));
-	});
-
-	updateIfUnequal(std::pair {oldTrack.discnumber(), oldTrack.discCount()},
-	                std::pair {newTrack.discnumber(), newTrack.discCount()},
-	                parsedTag,
-	                [](const auto& ptag, const auto& value) {
-		                Tagging::writeDiscnumber(ptag, Models::Discnumber(value.first, value.second));
-	                });
-
-	updateIfUnequal(oldTrack.albumArtist(), newTrack.albumArtist(), parsedTag,
-	                [](const auto& ptag, const auto& value) {
-		                Tagging::writeAlbumArtist(ptag, value);
-	                });
-
-	const auto success = fileRef.save();
-	if(!success)
-	{
-		spLog(Log::Warning, "Tagging") << "Could not save " << newTrack.filepath();
-	}
-
-	return success;
 }
