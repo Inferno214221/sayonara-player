@@ -67,9 +67,9 @@ void AlbumView::initView(AbstractLibrary* library)
 {
 	m->library = library;
 	m->model = new AlbumModel(m->tagReader, m->tagWriter, m->library, this);
-	auto* delegate = new RatingDelegate(static_cast<int>(ColumnIndex::Album::Rating), 0, this);
+	setModel(m->model);
 
-	setItemModel(m->model);
+	auto* delegate = new RatingDelegate(static_cast<int>(ColumnIndex::Album::Rating), 0, this);
 	setItemDelegate(delegate);
 
 	connect(m->library, &AbstractLibrary::sigAllAlbumsLoaded, this, &AlbumView::fill);
@@ -308,5 +308,5 @@ void AlbumView::useClearButtonChanged()
 	useClearButton(b);
 }
 
-SearchModel* Library::AlbumView::searchModel() const { return m->model; }
+ItemModel* AlbumView::itemModel() const { return m->model; }
 

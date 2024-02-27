@@ -61,7 +61,7 @@ namespace Library
 
 			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexList) const override;
 
-			void refreshData(int* rowCountBefore = nullptr, int* rowCountAfter = nullptr); //returns the size difference
+			virtual void refreshData();
 
 		protected:
 			[[nodiscard]] AbstractLibrary* library();

@@ -52,13 +52,11 @@
 #include <QItemSelectionModel>
 
 using Library::ItemView;
-using Library::ItemModel;
 using Library::ContextMenu;
 
 struct ItemView::Private
 {
 	Gui::MergeMenu* mergeMenu = nullptr;
-	ItemModel* model = nullptr;
 	QPushButton* buttonClearSelection = nullptr;
 	ContextMenu* contextMenu = nullptr;
 
@@ -69,14 +67,13 @@ struct ItemView::Private
 
 ItemView::ItemView(QWidget* parent) :
 	SearchableTableView {parent},
-	InfoDialogContainer(),
 	Gui::Dragable(this)
 {
 	m = Pimpl::make<Private>();
 
-	this->setAcceptDrops(true);
-	this->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->setAlternatingRowColors(true);
+	setAcceptDrops(true);
+	setSelectionBehavior(QAbstractItemView::SelectRows);
+	setAlternatingRowColors(true);
 
 	clearSelection();
 
@@ -105,13 +102,7 @@ ItemView::~ItemView() = default;
 
 AbstractLibrary* ItemView::library() const { return nullptr; }
 
-ItemModel* ItemView::itemModel() const { return m->model; }
-
-void ItemView::setItemModel(ItemModel* model)
-{
-	m->model = model;
-	SearchableTableView::setModel(model);
-}
+SearchModel* ItemView::searchModel() const { return itemModel(); }
 
 ContextMenu::Entries ItemView::contextMenuEntries() const
 {
@@ -293,10 +284,8 @@ void ItemView::filterExtensionsTriggered(const QString& extension, const bool b)
 
 void ItemView::fill()
 {
-	this->clearSelection();
-
-	int oldSize, newSize;
-	m->model->refreshData(&oldSize, &newSize);
+	clearSelection();
+	itemModel()->refreshData();
 }
 
 void ItemView::selectedItemsChanged(const IndexSet& indexes)
@@ -314,7 +303,7 @@ void ItemView::importRequested(const QStringList& files)
 
 void ItemView::mousePressEvent(QMouseEvent* event)
 {
-	if(m->model->rowCount() == 0)
+	if(model()->rowCount() == 0)
 	{
 		return;
 	}

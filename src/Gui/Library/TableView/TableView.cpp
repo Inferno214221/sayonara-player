@@ -69,7 +69,7 @@ void TableView::init(AbstractLibrary* library)
 	languageChanged();
 }
 
-void TableView::headerColumnsChanged(int /*oldCount*/, int /*newCount*/)
+void TableView::headerColumnsChanged(const int /*oldCount*/, const int /*newCount*/)
 {
 	const auto selectedIndexes = selectedItems();
 	for(const auto index: selectedIndexes)
@@ -94,7 +94,7 @@ void TableView::sortorderChanged(const int index, const Qt::SortOrder qtSortorde
 	}
 }
 
-void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newSize*/)
+void TableView::sectionResized(const int /*logicalIndex*/, const int /*oldSize*/, const int /*newSize*/)
 {
 	if(isVisible())
 	{
@@ -102,7 +102,7 @@ void TableView::sectionResized(int /*logicalIndex*/, int /*oldSize*/, int /*newS
 	}
 }
 
-void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /*newVisualIndex*/)
+void TableView::sectionMoved(const int /*logicalIndex*/, const int /*oldVisualIndex*/, const int /*newVisualIndex*/)
 {
 	setupColumnNames();
 
@@ -112,7 +112,7 @@ void TableView::sectionMoved(int /*logicalIndex*/, int /*oldVisualIndex*/, int /
 	}
 }
 
-void TableView::autoResizeTriggered(bool b)
+void TableView::autoResizeTriggered(const bool b)
 {
 	saveAutoResizeState(b);
 	if(b)
@@ -140,10 +140,10 @@ void TableView::languageChanged()
 
 int TableView::mapModelIndexToIndex(const QModelIndex& idx) const { return idx.row(); }
 
-ModelIndexRange TableView::mapIndexToModelIndexes(int idx) const
+ModelIndexRange TableView::mapIndexToModelIndexes(const int idx) const
 {
 	return {
-		itemModel()->index(idx, 0),
-		itemModel()->index(idx, itemModel()->columnCount() - 1)
+		model()->index(idx, 0),
+		model()->index(idx, model()->columnCount() - 1)
 	};
 }

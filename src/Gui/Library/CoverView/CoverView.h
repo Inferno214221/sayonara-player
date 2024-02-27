@@ -72,11 +72,10 @@ namespace Library
 			void languageChanged() override;
 
 			// ItemView
-			[[nodiscard]]bool isMergeable() const override;
-			[[nodiscard]]MD::Interpretation metadataInterpretation() const override;
-
-			[[nodiscard]] int sizeHintForColumn(int) const override;
-			[[nodiscard]] SearchModel* searchModel() const override;
+			[[nodiscard]] bool isMergeable() const override;
+			[[nodiscard]] MD::Interpretation metadataInterpretation() const override;
+			[[nodiscard]] ItemModel* itemModel() const override;
+			[[nodiscard]] int sizeHintForColumn(int size) const override;
 
 			void wheelEvent(QWheelEvent* e) override;
 			void resizeEvent(QResizeEvent* e) override;

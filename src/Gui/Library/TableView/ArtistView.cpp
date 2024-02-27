@@ -68,7 +68,7 @@ void ArtistView::initView(AbstractLibrary* library)
 	m->library = library;
 	m->model = new ArtistModel(this, m->library);
 
-	this->setItemModel(m->model);
+	setModel(m->model);
 	this->setItemDelegate(new Gui::StyledItemDelegate(this));
 
 	connect(m->library, &AbstractLibrary::sigAllArtistsLoaded, this, &ArtistView::fill);
@@ -240,4 +240,9 @@ void ArtistView::showAlbumArtistsChanged()
 	setupColumnNames();
 }
 
-SearchModel* Library::ArtistView::searchModel() const { return m->model; }
+ItemModel* ArtistView::itemModel() const { return m->model; }
+
+PlayActionEventHandler::TrackSet ArtistView::trackSet() const { return PlayActionEventHandler::TrackSet::All; }
+
+void ArtistView::refreshView() { m->library->refreshArtists(); }
+

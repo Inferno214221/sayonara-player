@@ -44,7 +44,7 @@ namespace Library
 			TableView(const TableView& other) = delete;
 			TableView& operator=(const TableView& other) = delete;
 
-			virtual void init(AbstractLibrary* library);
+			void init(AbstractLibrary* library);
 
 		protected:
 			void setupColumnNames();

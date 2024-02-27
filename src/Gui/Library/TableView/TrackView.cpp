@@ -64,7 +64,7 @@ void TrackView::initView(AbstractLibrary* library)
 	m->model = new TrackModel(this, library);
 	auto* trackDelegate = new RatingDelegate(static_cast<int>(ColumnIndex::Track::Rating), -1, this);
 
-	this->setItemModel(m->model);
+	setModel(m->model);
 	this->setItemDelegate(trackDelegate);
 
 	connect(library, &AbstractLibrary::sigAllTracksLoaded, this, &TrackView::fill);
@@ -213,4 +213,8 @@ bool TrackView::isMergeable() const { return false; }
 
 MD::Interpretation TrackView::metadataInterpretation() const { return MD::Interpretation::Tracks; }
 
-SearchModel* Library::TrackView::searchModel() const { return m->model; }
+ItemModel* TrackView::itemModel() const { return m->model; }
+
+PlayActionEventHandler::TrackSet TrackView::trackSet() const { return PlayActionEventHandler::TrackSet::Selected; }
+
+void TrackView::refreshView() { return m->library->refreshTracks(); }

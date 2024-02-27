@@ -33,36 +33,42 @@
 
 using namespace Library;
 
+namespace
+{
+	QStringList createEmptyHeader(const int size)
+	{
+		auto result = QStringList {};
+		result.reserve(size);
+		std::generate_n(std::back_inserter(result), size, []() -> QString { return {}; });
+		return result;
+	}
+}
+
 struct ItemModel::Private
 {
-	AbstractLibrary* library = nullptr;
+	AbstractLibrary* library;
 	QStringList headerNames;
 	int oldRowCount {0};
 
-	Private(int columnCount, AbstractLibrary* library) :
-		library(library)
-	{
-		for(auto i = 0; i < columnCount; i++)
-		{
-			headerNames << QString();
-		}
-	}
+	Private(const int columnCount, AbstractLibrary* library) :
+		library {library},
+		headerNames {createEmptyHeader(columnCount)} {}
 };
 
-ItemModel::ItemModel(int columnCount, QObject* parent, AbstractLibrary* library) :
+ItemModel::ItemModel(const int columnCount, QObject* parent, AbstractLibrary* library) :
 	SearchableTableModel(parent),
 	m {Pimpl::make<ItemModel::Private>(columnCount, library)} {}
 
 ItemModel::~ItemModel() = default;
 
-QVariant ItemModel::headerData(int section, Qt::Orientation orientation, int role) const
+QVariant ItemModel::headerData(const int section, const Qt::Orientation orientation, const int role) const
 {
 	return ((role == Qt::DisplayRole) && Util::between(section, m->headerNames))
 	       ? m->headerNames[section]
 	       : SearchableTableModel::headerData(section, orientation, role);
 }
 
-bool ItemModel::setHeaderData(int section, Qt::Orientation orientation, const QVariant& value, int role)
+bool ItemModel::setHeaderData(const int section, Qt::Orientation orientation, const QVariant& value, const int role)
 {
 	if(role == Qt::DisplayRole && Util::between(section, m->headerNames))
 	{
@@ -74,12 +80,9 @@ bool ItemModel::setHeaderData(int section, Qt::Orientation orientation, const QV
 	return QAbstractItemModel::setHeaderData(section, orientation, value, role);
 }
 
-int ItemModel::columnCount(const QModelIndex&) const
-{
-	return m->headerNames.size();
-}
+int ItemModel::columnCount(const QModelIndex& /*parent*/) const { return m->headerNames.size(); }
 
-bool ItemModel::removeRows(int row, int count, [[maybe_unused]] const QModelIndex& index)
+bool ItemModel::removeRows(const int row, const int count, const QModelIndex& /*index*/)
 {
 	beginRemoveRows(QModelIndex(), row, row + count - 1);
 	m->oldRowCount -= count;
@@ -88,7 +91,7 @@ bool ItemModel::removeRows(int row, int count, [[maybe_unused]] const QModelInde
 	return true;
 }
 
-bool ItemModel::insertRows(int row, int count, [[maybe_unused]]  const QModelIndex& index)
+bool ItemModel::insertRows(const int row, const int count, const QModelIndex& /*index*/)
 {
 	beginInsertRows(QModelIndex(), row, row + count - 1);
 	m->oldRowCount += count;
@@ -97,20 +100,10 @@ bool ItemModel::insertRows(int row, int count, [[maybe_unused]]  const QModelInd
 	return true;
 }
 
-void ItemModel::refreshData(int* rowCountBefore, int* rowCountNew)
+void ItemModel::refreshData()
 {
 	const auto oldSize = m->oldRowCount;
 	const auto newSize = rowCount();
-
-	if(rowCountBefore != nullptr)
-	{
-		*rowCountBefore = oldSize;
-	}
-
-	if(rowCountNew != nullptr)
-	{
-		*rowCountNew = newSize;
-	}
 
 	if(oldSize > newSize)
 	{

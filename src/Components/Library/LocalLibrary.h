@@ -64,6 +64,10 @@ class LocalLibrary :
 		void importFiles(const QStringList& files) override;
 		void importFilesTo(const QStringList& files, const QString& targetDirectory);
 
+		void refreshArtists() override;
+		void refreshAlbums() override;
+		void refreshTracks() override;
+
 	protected:
 		void initLibraryImpl() override;
 
@@ -89,11 +93,6 @@ class LocalLibrary :
 		void getTrackById(TrackID trackId, MetaData& track) const override;
 		void getAlbumById(AlbumId albumId, Album& album) const override;
 		void getArtistById(ArtistId artistId, Artist& artist) const override;
-
-		// not needed
-		void refreshArtists() override;
-		void refreshAlbums() override;
-		void refreshTracks() override;
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void reloadThreadFinished();

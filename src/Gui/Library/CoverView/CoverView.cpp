@@ -112,7 +112,7 @@ namespace Library
 
 	void CoverView::changeZoom(int zoom)
 	{
-		if(itemModel()->rowCount() == 0)
+		if(m->model->rowCount() == 0)
 		{
 			return;
 		}
@@ -154,7 +154,7 @@ namespace Library
 
 	void CoverView::resizeSections()
 	{
-		if(itemModel()->rowCount() > 0)
+		if(m->model->rowCount() > 0)
 		{
 			verticalHeader()->setDefaultSectionSize(m->model->itemSize().height());
 			horizontalHeader()->setDefaultSectionSize(m->model->itemSize().width());
@@ -237,17 +237,17 @@ namespace Library
 
 	int CoverView::mapModelIndexToIndex(const QModelIndex& idx) const
 	{
-		return idx.row() * model()->columnCount() + idx.column();
+		return idx.row() * m->model->columnCount() + idx.column();
 	}
 
 	ModelIndexRange CoverView::mapIndexToModelIndexes(int idx) const
 	{
-		const auto row = idx / model()->columnCount();
-		const auto col = idx % model()->columnCount();
+		const auto row = idx / m->model->columnCount();
+		const auto col = idx % m->model->columnCount();
 
 		return {
-			model()->index(row, col),
-			model()->index(row, col)
+			m->model->index(row, col),
+			m->model->index(row, col)
 		};
 	}
 

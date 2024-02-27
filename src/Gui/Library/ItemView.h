@@ -71,8 +71,6 @@ namespace Library
 			ItemView(const ItemView& other) = delete;
 			ItemView& operator=(const ItemView& other) = delete;
 
-			void setItemModel(ItemModel* model);
-
 			void showClearButton(bool visible);
 			void useClearButton(bool yesno);
 
@@ -87,7 +85,8 @@ namespace Library
 			virtual void initContextMenu();
 			virtual void initCustomContextMenu(Library::ContextMenu* menu);
 
-			[[nodiscard]] ItemModel* itemModel() const;
+			[[nodiscard]] SearchModel* searchModel() const override;
+			[[nodiscard]] virtual ItemModel* itemModel() const = 0;
 			[[nodiscard]] virtual AbstractLibrary* library() const;
 
 			[[nodiscard]] virtual bool isMergeable() const = 0;
