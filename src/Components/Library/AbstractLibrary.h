@@ -42,6 +42,19 @@ class AbstractLibrary :
 	Q_OBJECT
 	PIMPL(AbstractLibrary)
 
+	signals:
+		void sigAllTracksLoaded();
+		void sigAllAlbumsLoaded();
+		void sigAllArtistsLoaded();
+
+		void sigReloadingLibrary(const QString& message, int progress);
+		void sigReloadingLibraryFinished();
+
+		void sigDeleteAnswer(QString);
+
+		void sigCurrentAlbumChanged(int row);
+		void sigCurrentTrackChanged(int row);
+
 	public:
 		explicit AbstractLibrary(LibraryPlaylistInteractor* playlistInteractor, QObject* parent = nullptr);
 		~AbstractLibrary() override;
@@ -72,20 +85,8 @@ class AbstractLibrary :
 		[[nodiscard]] virtual bool isReloading() const;
 		[[nodiscard]] virtual bool isEmpty() const;
 
-	signals:
-		void sigAllTracksLoaded();
-		void sigAllAlbumsLoaded();
-		void sigAllArtistsLoaded();
 
-		void sigReloadingLibrary(const QString& message, int progress);
-		void sigReloadingLibraryFinished();
-
-		void sigDeleteAnswer(QString);
-
-		void sigCurrentAlbumChanged(int row);
-		void sigCurrentTrackChanged(int row);
-
-	public slots:
+	public slots: // NOLINT(*-redundant-access-specifiers)
 		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;
 
 		virtual void refetch();
@@ -94,7 +95,6 @@ class AbstractLibrary :
 
 		virtual void findTrack(TrackID id);
 
-		/* selection changed */
 		virtual void selectedArtistsChanged(const IndexSet& indexes);
 		virtual void selectedAlbumsChanged(const IndexSet& indexes, bool ignore_artists = false);
 		virtual void selectedTracksChanged(const IndexSet& indexes);
@@ -128,8 +128,6 @@ class AbstractLibrary :
 		virtual void changeAlbumSortorder(Library::AlbumSortorder sortOrder);
 		virtual void changeArtistSortorder(Library::ArtistSortorder sortOrder);
 
-		/* Check for current selected artist if out of date and
-		 * fetch new data */
 		virtual void refreshArtists() = 0;
 		virtual void refreshAlbums() = 0;
 		virtual void refreshTracks() = 0;
