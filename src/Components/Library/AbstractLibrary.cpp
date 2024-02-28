@@ -716,3 +716,5 @@ void AbstractLibrary::setExtensions(const Gui::ExtensionSet& extensions)
 
 	emit sigAllTracksLoaded();
 }
+
+LibraryPlaylistInteractor* AbstractLibrary::playlistInteractor() const { return m->playlistInteractor; }

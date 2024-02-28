@@ -85,6 +85,7 @@ class AbstractLibrary :
 		[[nodiscard]] virtual bool isReloading() const;
 		[[nodiscard]] virtual bool isEmpty() const;
 
+		[[nodiscard]] LibraryPlaylistInteractor* playlistInteractor() const;
 
 	public slots: // NOLINT(*-redundant-access-specifiers)
 		virtual void reloadLibrary(bool clear_first, Library::ReloadQuality quality) = 0;
