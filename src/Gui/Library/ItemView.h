@@ -62,7 +62,6 @@ namespace Library
 			void sigPlayNextClicked();
 			void sigPlayNewTabClicked();
 			void sigAppendClicked();
-			void sigRefreshClicked();
 			void sigReloadClicked();
 			void sigImportFiles(const QStringList& files);
 			void sigSelectionChanged(const IndexSet& indexes);
@@ -98,12 +97,14 @@ namespace Library
 			[[nodiscard]] MetaDataList infoDialogData() const override;
 			QWidget* getParentWidget() override;
 
-			virtual void selectedItemsChanged(const IndexSet& indexes);
 			virtual void importRequested(const QStringList& files);
 
-			virtual void runMergeOperation(const Library::MergeData& md);
+			virtual void runMergeOperation(const Library::MergeData& mergeData);
+			virtual void triggerSelectionChange(const IndexSet& indexes) = 0;
+			[[nodiscard]] virtual PlayActionEventHandler::TrackSet trackSet() const = 0;
 
 			[[nodiscard]] QRect viewportGeometry() const override;
+			virtual void refreshView() = 0;
 
 			void mousePressEvent(QMouseEvent* event) override;
 			void contextMenuEvent(QContextMenuEvent* event) override;
@@ -112,7 +113,7 @@ namespace Library
 			void dropEvent(QDropEvent* event) override;
 			void resizeEvent(QResizeEvent* event) override;
 
-		protected slots:
+		protected slots: // NOLINT(*-redundant-access-specifiers)
 			virtual void showContextMenu(const QPoint&);
 			virtual void mergeActionTriggered();
 			virtual void playClicked();
@@ -126,7 +127,10 @@ namespace Library
 			virtual void filterExtensionsTriggered(const QString& extension, bool b);
 			virtual void fill();
 
-		private:
+		private slots:
+			void selectedItemsChanged(const IndexSet& indexes);
+
+		private: // NOLINT(*-redundant-access-specifiers)
 			void showContextMenuActions(Library::ContextMenu::Entries entries);
 	};
 }

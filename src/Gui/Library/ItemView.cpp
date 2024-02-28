@@ -258,17 +258,36 @@ void ItemView::mergeActionTriggered()
 
 void ItemView::runMergeOperation(const Library::MergeData& /*md*/) {}
 
-void ItemView::playClicked() { emit sigPlayClicked(); }
+void ItemView::playClicked()
+{
+	emit sigPlayClicked();
+	m->playActionEventHandler->play(trackSet());
+}
 
-void ItemView::playNewTabClicked() { emit sigPlayNewTabClicked(); }
+void ItemView::playNewTabClicked()
+{
+	emit sigPlayNewTabClicked();
+	m->playActionEventHandler->playInNewTab(trackSet());
+}
 
-void ItemView::playNextClicked() { emit sigPlayNextClicked(); }
+void ItemView::playNextClicked()
+{
+	emit sigPlayNextClicked();
+	m->playActionEventHandler->playNext(trackSet());
+}
 
 void ItemView::deleteClicked() { emit sigDeleteClicked(); }
 
-void ItemView::appendClicked() { emit sigAppendClicked(); }
+void ItemView::appendClicked()
+{
+	emit sigAppendClicked();
+	m->playActionEventHandler->append(trackSet());
+}
 
-void ItemView::refreshClicked() { emit sigRefreshClicked(); }
+void ItemView::refreshClicked()
+{
+	refreshView();
+}
 
 void ItemView::reloadClicked() { emit sigReloadClicked(); }
 
@@ -298,6 +317,7 @@ void ItemView::fill()
 void ItemView::selectedItemsChanged(const IndexSet& indexes)
 {
 	emit sigSelectionChanged(indexes);
+	triggerSelectionChange(indexes);
 }
 
 void ItemView::importRequested(const QStringList& files)

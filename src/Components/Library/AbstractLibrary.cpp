@@ -223,41 +223,6 @@ void AbstractLibrary::findTrack(TrackID id)
 	emitAll();
 }
 
-void AbstractLibrary::prepareFetchedTracksForPlaylist(bool createNewPlaylist)
-{
-	m->playlistInteractor->createPlaylist(tracks(), createNewPlaylist);
-}
-
-void AbstractLibrary::prepareCurrentTracksForPlaylist(bool createNewPlaylist)
-{
-	m->playlistInteractor->createPlaylist(currentTracks(), createNewPlaylist);
-}
-
-void AbstractLibrary::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)
-{
-	m->playlistInteractor->createPlaylist(paths, createNewPlaylist);
-}
-
-void AbstractLibrary::playNextFetchedTracks()
-{
-	m->playlistInteractor->insertAfterCurrentTrack(tracks());
-}
-
-void AbstractLibrary::playNextCurrentTracks()
-{
-	m->playlistInteractor->insertAfterCurrentTrack(currentTracks());
-}
-
-void AbstractLibrary::appendFetchedTracks()
-{
-	m->playlistInteractor->append(tracks());
-}
-
-void AbstractLibrary::appendCurrentTracks()
-{
-	m->playlistInteractor->append(currentTracks());
-}
-
 void AbstractLibrary::changeArtistSelection(const IndexSet& indexes)
 {
 	Util::Set<ArtistId> selectedArtists;

@@ -100,20 +100,6 @@ class AbstractLibrary :
 		virtual void selectedAlbumsChanged(const IndexSet& indexes, bool ignore_artists = false);
 		virtual void selectedTracksChanged(const IndexSet& indexes);
 
-		// Those two functions are identical (1) calls (2)
-		virtual void prepareCurrentTracksForPlaylist(bool new_playlist);
-		virtual void prepareFetchedTracksForPlaylist(bool new_playlist);
-		void prepareTracksForPlaylist(const QStringList& file_paths, bool new_playlist);
-
-		/* append tracks after current played track in playlist */
-		virtual void playNextFetchedTracks();
-		virtual void playNextCurrentTracks();
-
-		/* append tracks after last track in playlist */
-		virtual void appendFetchedTracks();
-		virtual void appendCurrentTracks();
-
-		/* a searchfilter has been entered, nothing is emitted */
 		virtual void fetchByFilter(const Library::Filter& filter, bool force);
 		virtual void fetchTracksByPath(const QStringList& paths);
 
