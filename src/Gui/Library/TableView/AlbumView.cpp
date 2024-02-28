@@ -22,16 +22,15 @@
 #include "AlbumModel.h"
 #include "RatingDelegate.h"
 
-#include "Gui/Library/Utils/DiscPopupMenu.h"
-#include "Gui/Library/Header/ColumnIndex.h"
-#include "Gui/Library/Header/ColumnHeader.h"
-#include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-
-#include "Components/Tagging/UserTaggingOperations.h"
 #include "Components/Library/AbstractLibrary.h"
-
+#include "Components/Tagging/UserTaggingOperations.h"
+#include "Gui/Library/Header/ColumnHeader.h"
+#include "Gui/Library/Header/ColumnIndex.h"
+#include "Gui/Library/Utils/DiscPopupMenu.h"
+#include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
+#include "Gui/Utils/GuiUtils.h"
 #include "Utils/Library/MergeData.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/TagReader.h"

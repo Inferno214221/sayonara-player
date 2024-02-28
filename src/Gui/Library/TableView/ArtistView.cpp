@@ -23,19 +23,17 @@
 
 #include "Components/Library/AbstractLibrary.h"
 #include "Components/Tagging/UserTaggingOperations.h"
-
-#include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Library/Header/ColumnHeader.h"
-
-#include "Gui/Utils/GuiUtils.h"
-#include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Library/Header/ColumnIndex.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
-#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
+#include "Gui/Utils/Delegates/StyledItemDelegate.h"
+#include "Gui/Utils/GuiUtils.h"
 #include "Gui/Utils/Shortcuts/Shortcut.h"
-
+#include "Gui/Utils/Shortcuts/ShortcutHandler.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Library/MergeData.h"
 #include "Utils/Library/Sorting.h"
+#include "Utils/MetaData/MetaDataList.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/TagReader.h"

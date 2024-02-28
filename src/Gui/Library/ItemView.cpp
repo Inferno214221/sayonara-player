@@ -59,6 +59,9 @@ struct ItemView::Private
 	Gui::MergeMenu* mergeMenu = nullptr;
 	QPushButton* buttonClearSelection = nullptr;
 	ContextMenu* contextMenu = nullptr;
+	Gui::MergeMenu* mergeMenu {nullptr};
+	QPushButton* buttonClearSelection {nullptr};
+	ContextMenu* contextMenu {nullptr};
 
 	MD::Interpretation type {MD::Interpretation::None};
 	bool currentlyFilling {false};

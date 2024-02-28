@@ -28,17 +28,17 @@
 #include "Components/Tagging/UserTaggingOperations.h"
 #include "Gui/Utils/ContextMenu/LibraryContextMenu.h"
 #include "Gui/Utils/GuiUtils.h"
-
+#include "Utils/Language/Language.h"
+#include "Utils/Library/MergeData.h"
 #include "Utils/Library/Sorting.h"
 #include "Utils/Library/Sortorder.h"
-#include "Utils/Library/MergeData.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
-#include "Utils/Utils.h"
-#include "Utils/Set.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 #include "Utils/Tagging/TagReader.h"
 #include "Utils/Tagging/TagWriter.h"
+#include "Utils/Utils.h"
 
 #include <QHeaderView>
 #include <QTimer>

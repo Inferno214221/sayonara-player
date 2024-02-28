@@ -19,19 +19,17 @@
  */
 
 #include "GUI_AbstractLibrary.h"
-#include "Gui/Library/TableView/TableView.h"
-#include "Gui/Library/Utils/Searchbar.h"
 
 #include "Components/Library/AbstractLibrary.h"
-
-#include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Message/Message.h"
-#include "Utils/Library/Filter.h"
-#include "Utils/Settings/Settings.h"
-#include "Utils/Language/Language.h"
-#include "Utils/Set.h"
-
+#include "Gui/Library/TableView/TableView.h"
+#include "Gui/Library/Utils/Searchbar.h"
 #include "Gui/Utils/EventFilter.h"
+#include "Utils/Language/Language.h"
+#include "Utils/Library/Filter.h"
+#include "Utils/Message/Message.h"
+#include "Utils/MetaData/MetaDataList.h"
+#include "Utils/Set.h"
+#include "Utils/Settings/Settings.h"
 
 #include <QLineEdit>
 #include <QShortcut>
@@ -71,15 +69,13 @@ struct GUI_AbstractLibrary::Private
 	AbstractLibrary* library = nullptr;
 	SearchBar* leSearch = nullptr;
 
-	Private(AbstractLibrary* library) :
+	explicit Private(AbstractLibrary* library) :
 		library(library) {}
 };
 
 GUI_AbstractLibrary::GUI_AbstractLibrary(AbstractLibrary* library, QWidget* parent) :
-	Widget(parent)
-{
-	m = Pimpl::make<Private>(library);
-}
+	Widget(parent),
+	m {Pimpl::make<Private>(library)} {}
 
 GUI_AbstractLibrary::~GUI_AbstractLibrary() = default;
 
