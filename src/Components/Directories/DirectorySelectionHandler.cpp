@@ -27,26 +27,35 @@
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Library/LibraryInfo.h"
-#include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/MetaDataList.h"
-#include "Utils/Settings/Settings.h"
 #include "Utils/Library/Filter.h"
 
-#include <QThread>
 #include <QList>
+
+namespace
+{
+	Library::Info getInfo(Library::Manager* libraryManager, const int currentId)
+	{
+		const auto libraries = libraryManager->allLibraries();
+		const auto index = Util::Algorithm::indexOf(libraries, [&](const auto& info) {
+			return (info.id() == currentId);
+		});
+
+		return (index > 0)
+		       ? libraries[index]
+		       : Library::Info {};
+	}
+}
 
 struct DirectorySelectionHandler::Private
 {
 	LocalLibrary* genericLibrary;
 	Library::Manager* libraryManager;
-	QList<Library::Info> libraries;
-	int currentLibraryIndex;
+	Library::Info libraryInfo;
+	AbstractLibrary* library {nullptr};
 
-	Private(Library::Manager* libraryManager) :
-		genericLibrary {nullptr},
-		libraryManager {libraryManager},
-		libraries {libraryManager->allLibraries()},
-		currentLibraryIndex {(libraries.count() > 0) ? 0 : -1} {}
+	explicit Private(Library::Manager* libraryManager) :
+		libraryManager {libraryManager} {}
 };
 
 DirectorySelectionHandler::DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent) :
@@ -92,25 +101,26 @@ void DirectorySelectionHandler::appendTracks([[maybe_unused]] const QStringList&
 	this->libraryInstance()->appendFetchedTracks();
 }
 
-void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist)
+void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist) const
 {
-	this->libraryInstance()->prepareTracksForPlaylist(paths, createNewPlaylist);
+	createPlaylist(paths, createNewPlaylist);
 }
 
-void
-DirectorySelectionHandler::requestImport(LibraryId libraryId, const QStringList& paths, const QString& targetDirectory)
+void DirectorySelectionHandler::requestImport(const LibraryId libraryId, const QStringList& paths,
+                                              const QString& targetDirectory) const
 {
-	if(libraryId != this->libraryId() || libraryId < 0)
+	if((libraryId != m->libraryInfo.id()) || (libraryId < 0))
 	{
 		return;
 	}
 
-	auto* library = this->libraryInstance();
-	connect(library, &LocalLibrary::sigImportDialogRequested,
-	        this, &DirectorySelectionHandler::sigImportDialogRequested);
+	if(auto* library = libraryInstance(); library)
+	{
+		connect(library, &LocalLibrary::sigImportDialogRequested,
+		        this, &DirectorySelectionHandler::sigImportDialogRequested);
 
-	// prepare import
-	library->importFilesTo(paths, targetDirectory);
+		library->importFilesTo(paths, targetDirectory);
+	}
 }
 
 FileOperations* DirectorySelectionHandler::createFileOperation()
@@ -151,65 +161,21 @@ void DirectorySelectionHandler::deletePaths(const QStringList& paths)
 
 void DirectorySelectionHandler::librariesChanged()
 {
-	const auto id = libraryId();
-
-	m->libraries = m->libraryManager->allLibraries();
-	m->currentLibraryIndex = Util::Algorithm::indexOf(m->libraries, [&id](const Library::Info& info) {
-		return (info.id() == id);
-	});
+	m->libraryInfo = getInfo(m->libraryManager, libraryId());
 
 	emit sigLibrariesChanged();
 }
 
-void DirectorySelectionHandler::setLibraryId(LibraryId libId)
+void DirectorySelectionHandler::setLibraryId(const LibraryId libraryId)
 {
-	m->currentLibraryIndex = Util::Algorithm::indexOf(m->libraries, [&libId](const Library::Info& info) {
-		return (info.id() == libId);
-	});
+	m->libraryInfo = getInfo(m->libraryManager, libraryId);
 }
 
-LibraryId DirectorySelectionHandler::libraryId() const
-{
-	return libraryInfo().id();
-}
+LibraryId DirectorySelectionHandler::libraryId() const { return m->libraryInfo.id(); }
 
-void DirectorySelectionHandler::createNewLibrary(const QString& name, const QString& path)
-{
-	m->libraryManager->addLibrary(name, path);
-}
-
-Library::Info DirectorySelectionHandler::libraryInfo() const
-{
-	return (Util::between(m->currentLibraryIndex, m->libraries))
-	       ? m->libraries[m->currentLibraryIndex]
-	       : Library::Info();
-}
+Library::Info DirectorySelectionHandler::libraryInfo() const { return m->libraryInfo; }
 
 LocalLibrary* DirectorySelectionHandler::libraryInstance() const
 {
-	const auto libraryId = libraryInfo().id();
-	auto* library = m->libraryManager->libraryInstance(libraryId);
-
-	if(library == nullptr)
-	{
-		if(!m->genericLibrary)
-		{
-			m->genericLibrary = m->libraryManager->libraryInstance(-1);
-		}
-
-		spLog(Log::Warning, this) << "Invalid library index";
-		return m->genericLibrary;
-	}
-
-	return library;
+	return m->libraryManager->libraryInstance(libraryId());
 }
-
-void DirectorySelectionHandler::setSearchText(const QString& text)
-{
-	Library::Filter filter;
-	filter.setFiltertext(text);
-	filter.setMode(Library::Filter::Mode::Filename);
-
-	libraryInstance()->changeFilter(filter);
-}
-

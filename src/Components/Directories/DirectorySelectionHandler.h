@@ -50,25 +50,21 @@ class DirectorySelectionHandler :
 		FileOperations* createFileOperation();
 
 	public:
-		DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent = nullptr);
-		~DirectorySelectionHandler();
+		explicit DirectorySelectionHandler(Library::Manager* libraryManager, QObject* parent = nullptr);
+		~DirectorySelectionHandler() override;
 
-		void playNext(const QStringList& paths);
-		void createPlaylist(const QStringList& paths, bool createNewPlaylist);
-		void appendTracks(const QStringList& paths);
-		void prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist);
+		void playNext(const QStringList& paths) const;
+		void createPlaylist(const QStringList& paths, bool createNewPlaylist) const;
+		void appendTracks(const QStringList& paths) const;
+		void prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist) const;
 
-		void requestImport(LibraryId libId, const QStringList& paths, const QString& targetDirectory);
+		void requestImport(LibraryId libId, const QStringList& paths, const QString& targetDirectory) const;
 
 		void setLibraryId(LibraryId libId);
-		LibraryId libraryId() const;
+		[[nodiscard]] LibraryId libraryId() const;
 
-		void createNewLibrary(const QString& name, const QString& path);
-
-		Library::Info libraryInfo() const;
-		LocalLibrary* libraryInstance() const;
-
-		void setSearchText(const QString& text);
+		[[nodiscard]] Library::Info libraryInfo() const;
+		[[nodiscard]] LocalLibrary* libraryInstance() const;
 
 		void copyPaths(const QStringList& paths, const QString& target);
 		void movePaths(const QStringList& paths, const QString& target);
