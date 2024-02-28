@@ -21,6 +21,7 @@
 #include "GUI_AbstractLibrary.h"
 
 #include "Components/Library/AbstractLibrary.h"
+#include "Components/Library/PlayActionEventHandler.h"
 #include "Gui/Library/TableView/TableView.h"
 #include "Gui/Library/Utils/Searchbar.h"
 #include "Gui/Utils/EventFilter.h"
@@ -83,9 +84,11 @@ void GUI_AbstractLibrary::init()
 {
 	m->leSearch = leSearch();
 
-	lvTracks()->init(m->library);
-	lvAlbum()->init(m->library);
-	lvArtist()->init(m->library);
+	auto playActionEventHandler = Library::PlayActionEventHandler::create(m->library->playlistInteractor(), m->library);
+
+	lvTracks()->init(playActionEventHandler, m->library);
+	lvAlbum()->init(playActionEventHandler, m->library);
+	lvArtist()->init(playActionEventHandler, m->library);
 
 	initSearchBar(m->leSearch, this->searchOptions());
 	initShortcuts();

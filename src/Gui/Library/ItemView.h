@@ -28,6 +28,8 @@
 #ifndef ITEM_VIEW_H_
 #define ITEM_VIEW_H_
 
+#include "Components/Library/PlayActionEventHandler.h"
+
 #include "Gui/Utils/Widgets/Dragable.h"
 #include "Gui/Utils/SearchableWidget/SearchableView.h"
 #include "Gui/Utils/SearchableWidget/SelectionView.h"
@@ -44,6 +46,7 @@ namespace Library
 {
 	class MergeData;
 	class ItemModel;
+	class PlayActionEventHandler;
 
 	class ItemView :
 		public SearchableTableView,
@@ -79,6 +82,7 @@ namespace Library
 			[[nodiscard]] bool isValidDragPosition(const QPoint& p) const override;
 
 		protected:
+			void init(const std::shared_ptr<PlayActionEventHandler>& playActionEventHandler);
 			void selectionChanged(const QItemSelection& selected, const QItemSelection& deselected) override;
 
 			[[nodiscard]] Library::ContextMenu* contextMenu() const;

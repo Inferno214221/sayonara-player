@@ -28,6 +28,7 @@
 #include "Gui/Library/Utils/MergeMenu.h"
 
 #include "Components/Library/AbstractLibrary.h"
+#include "Components/Library/PlayActionEventHandler.h"
 #include "Components/Covers/CoverLocation.h"
 
 #include "Utils/Library/MergeData.h"
@@ -56,9 +57,7 @@ using Library::ContextMenu;
 
 struct ItemView::Private
 {
-	Gui::MergeMenu* mergeMenu = nullptr;
-	QPushButton* buttonClearSelection = nullptr;
-	ContextMenu* contextMenu = nullptr;
+	Library::PlayActionEventHandlerPtr playActionEventHandler {nullptr};
 	Gui::MergeMenu* mergeMenu {nullptr};
 	QPushButton* buttonClearSelection {nullptr};
 	ContextMenu* contextMenu {nullptr};
@@ -102,6 +101,11 @@ ItemView::ItemView(QWidget* parent) :
 }
 
 ItemView::~ItemView() = default;
+
+void ItemView::init(const Library::PlayActionEventHandlerPtr& playActionEventHandler)
+{
+	m->playActionEventHandler = playActionEventHandler;
+}
 
 AbstractLibrary* ItemView::library() const { return nullptr; }
 

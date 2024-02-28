@@ -28,6 +28,7 @@
 #include "Utils/Pimpl.h"
 #include "Utils/Library/Sortorder.h"
 
+class LibraryPlaylistInteractor;
 namespace Library
 {
 	class TableView :
@@ -44,7 +45,7 @@ namespace Library
 			TableView(const TableView& other) = delete;
 			TableView& operator=(const TableView& other) = delete;
 
-			void init(AbstractLibrary* library);
+			void init(const std::shared_ptr<PlayActionEventHandler>& playActionEventHandler, AbstractLibrary* library);
 
 		protected:
 			void setupColumnNames();

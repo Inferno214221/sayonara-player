@@ -23,6 +23,7 @@
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
+#include "Components/Library/PlayActionEventHandler.h"
 
 #include "Utils/Utils.h"
 #include "Utils/Algorithm.h"
@@ -49,7 +50,7 @@ namespace
 
 struct DirectorySelectionHandler::Private
 {
-	LocalLibrary* genericLibrary;
+	Library::PlayActionEventHandlerPtr playActionEventHandler;
 	Library::Manager* libraryManager;
 	Library::Info libraryInfo;
 	AbstractLibrary* library {nullptr};
@@ -86,19 +87,38 @@ DirectorySelectionHandler::DirectorySelectionHandler(Library::Manager* libraryMa
 
 DirectorySelectionHandler::~DirectorySelectionHandler() = default;
 
-void DirectorySelectionHandler::createPlaylist(const QStringList& paths, bool createNewPlaylist)
+void DirectorySelectionHandler::createPlaylist(const QStringList& /*paths*/, bool createNewPlaylist) const
 {
-	this->libraryInstance()->prepareTracksForPlaylist(paths, createNewPlaylist);
+	if(auto* library = libraryInstance(); library)
+	{
+		auto playEventHandler = Library::PlayActionEventHandler::create(library->playlistInteractor(), library);
+		if(createNewPlaylist)
+		{
+			playEventHandler->playInNewTab(Library::PlayActionEventHandler::TrackSet::All);
+		}
+		else
+		{
+			playEventHandler->play(Library::PlayActionEventHandler::TrackSet::All);
+		}
+	}
 }
 
-void DirectorySelectionHandler::playNext([[maybe_unused]] const QStringList& paths)
+void DirectorySelectionHandler::playNext(const QStringList& /*paths*/) const
 {
-	this->libraryInstance()->playNextFetchedTracks();
+	if(auto* library = libraryInstance(); library)
+	{
+		auto playEventHandler = Library::PlayActionEventHandler::create(library->playlistInteractor(), library);
+		playEventHandler->playNext(Library::PlayActionEventHandler::TrackSet::All);
+	}
 }
 
-void DirectorySelectionHandler::appendTracks([[maybe_unused]] const QStringList& paths)
+void DirectorySelectionHandler::appendTracks(const QStringList& /*paths*/) const
 {
-	this->libraryInstance()->appendFetchedTracks();
+	if(auto* library = libraryInstance(); library)
+	{
+		auto playEventHandler = Library::PlayActionEventHandler::create(library->playlistInteractor(), library);
+		playEventHandler->append(Library::PlayActionEventHandler::TrackSet::All);
+	}
 }
 
 void DirectorySelectionHandler::prepareTracksForPlaylist(const QStringList& paths, bool createNewPlaylist) const

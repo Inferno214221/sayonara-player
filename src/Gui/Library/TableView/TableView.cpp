@@ -20,6 +20,7 @@
 
 #include "TableView.h"
 
+#include "Components/Library/PlayActionEventHandler.h"
 #include "Gui/Library/Header/ColumnHeader.h"
 #include "Gui/Library/Header/LibraryHeaderView.h"
 #include "Gui/Library/ItemModel.h"
@@ -47,8 +48,10 @@ TableView::TableView(QWidget* parent) :
 
 TableView::~TableView() = default;
 
-void TableView::init(AbstractLibrary* library)
+void TableView::init(const PlayActionEventHandlerPtr& playActionEventHandler, AbstractLibrary* library)
 {
+	ItemView::init(playActionEventHandler);
+
 	verticalHeader()->setDefaultSectionSize(Gui::Util::viewRowHeight(fontMetrics()));
 
 	initView(library);
