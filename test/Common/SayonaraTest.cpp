@@ -43,9 +43,11 @@ static void initResources()
 
 namespace
 {
+	constexpr const auto HomeVar = "HOME";
+
 	void initFileSystem(const QString& localPath)
 	{
-		Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+		Util::File::deleteFiles({localPath});
 		Util::File::createDirectories(localPath);
 		QStandardPaths::setTestModeEnabled(true);
 	}
@@ -66,8 +68,13 @@ namespace
 namespace Test
 {
 	Base::Base(const QString& testName) :
-		m_localPath {Util::tempPath(testName)}
+		m_localPath {Util::tempPath(testName)},
+		m_oldHome {Util::getEnvironment(HomeVar)}
 	{
+		Util::setEnvironment(HomeVar, tempPath());
+
+		QVERIFY(QDir::homePath() == tempPath());
+
 		QApplication::setApplicationName("sayonara");
 
 		initResources();
@@ -81,7 +88,7 @@ namespace Test
 	Base::~Base()
 	{
 		Util::File::deleteFiles({m_localPath});
-		Util::File::removeFilesInDirectory(QDir::home().absoluteFilePath(".qttest"));
+		Util::setEnvironment(HomeVar, m_oldHome);
 	}
 
 	QString Base::tempPath() const { return m_localPath; }

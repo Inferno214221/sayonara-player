@@ -41,6 +41,7 @@ namespace Test
 
 		private:
 			QString m_localPath;
+			QString m_oldHome;
 	};
 }
 

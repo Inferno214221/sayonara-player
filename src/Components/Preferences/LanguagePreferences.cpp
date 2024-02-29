@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 #include "LanguagePreferences.h"
 #include "Utils/Logger/Logger.h"
 
@@ -26,7 +27,8 @@
 #include "Utils/Language/LanguageUtils.h"
 #include "Utils/Settings/Settings.h"
 #include "Utils/Utils.h"
-#include "Utils/WebAccess/WebClientImpl.h"
+#include "Utils/WebAccess/WebClient.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QRegExp>
 #include <algorithm>
@@ -102,8 +104,17 @@ namespace
 	}
 } // namespace
 
-LanguagePreferences::LanguagePreferences(QObject* parent) :
-	QObject {parent} {}
+struct LanguagePreferences::Private
+{
+	WebClientFactory* webClientFactory;
+
+	Private(WebClientFactory* webClientFactory) :
+		webClientFactory {webClientFactory} {}
+};
+
+LanguagePreferences::LanguagePreferences(WebClientFactory* webClientFactory, QObject* parent) :
+	QObject {parent},
+	m {Pimpl::make<Private>(webClientFactory)} {}
 
 LanguagePreferences::~LanguagePreferences() = default;
 
@@ -149,7 +160,7 @@ auto LanguagePreferences::getAllLanguages() -> std::pair<QList<LanguagePreferenc
 
 void LanguagePreferences::checkForUpdate(const QString& languageCode)
 {
-	auto* webClient = new WebClientImpl(this);
+	auto* webClient = m->webClientFactory->createClient(this);
 	const auto url = Util::Language::getChecksumHttpPath();
 
 	connect(webClient, &WebClient::sigFinished, this, [this, webClient, languageCode]() {
@@ -158,17 +169,17 @@ void LanguagePreferences::checkForUpdate(const QString& languageCode)
 	webClient->run(url);
 }
 
-void LanguagePreferences::updateCheckFinished(WebClient* awa, const QString& languageCode)
+void LanguagePreferences::updateCheckFinished(WebClient* webClient, const QString& languageCode)
 {
-	const auto data = QString::fromUtf8(awa->data());
-	const auto hasError = awa->hasError();
+	const auto data = QString::fromUtf8(webClient->data());
+	const auto hasError = webClient->hasError();
 
-	awa->deleteLater();
+	webClient->deleteLater();
 
 	if(hasError || data.isEmpty())
 	{
 		emit sigWarning(tr("Cannot check for language update"));
-		spLog(Log::Warning, this) << "Cannot download checksums " << awa->url();
+		spLog(Log::Warning, this) << "Cannot download checksums " << webClient->url();
 		return;
 	}
 
@@ -188,23 +199,23 @@ void LanguagePreferences::downloadUpdate(const QString& languageCode)
 {
 	const auto url = Util::Language::getHttpPath(languageCode);
 
-	auto* webClient = new WebClientImpl(this);
+	auto* webClient = m->webClientFactory->createClient(this);
 	connect(webClient, &WebClient::sigFinished, this, [this, webClient, languageCode]() {
 		downloadFinished(webClient, languageCode);
 	});
 	webClient->run(url);
 }
 
-void LanguagePreferences::downloadFinished(WebClient* awa, const QString& languageCode)
+void LanguagePreferences::downloadFinished(WebClient* webClient, const QString& languageCode)
 {
-	const auto data = awa->data();
-	const auto hasError = awa->hasError();
+	const auto data = webClient->data();
+	const auto hasError = webClient->hasError();
 
-	awa->deleteLater();
+	webClient->deleteLater();
 
 	if(hasError || data.isEmpty())
 	{
-		spLog(Log::Warning, this) << "Cannot download file from " << awa->url();
+		spLog(Log::Warning, this) << "Cannot download file from " << webClient->url();
 		emit sigWarning(tr("Cannot fetch language update"));
 		return;
 	}

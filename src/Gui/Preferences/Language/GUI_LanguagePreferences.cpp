@@ -20,16 +20,14 @@
 
 #include "GUI_LanguagePreferences.h"
 
-#include "Gui/Preferences/ui_GUI_LanguagePreferences.h"
-
 #include "Components/Preferences/LanguagePreferences.h"
-
-#include "Utils/Utils.h"
-#include "Utils/Settings/Settings.h"
+#include "Gui/Preferences/ui_GUI_LanguagePreferences.h"
+#include "Gui/Utils/Style.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Message/Message.h"
-
-#include "Gui/Utils/Style.h"
+#include "Utils/Settings/Settings.h"
+#include "Utils/Utils.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QDir>
 #include <QFileDialog>
@@ -47,7 +45,7 @@ struct GUI_LanguagePreferences::Private
 	LanguagePreferences* languagePreferences;
 
 	explicit Private(QObject* parent) :
-		languagePreferences {new LanguagePreferences(parent)} {}
+		languagePreferences {new LanguagePreferences(new WebClientFactory(), parent)} {}
 };
 
 GUI_LanguagePreferences::GUI_LanguagePreferences(const QString& identifier) :

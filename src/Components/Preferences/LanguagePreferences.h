@@ -21,17 +21,20 @@
 #define SAYONARA_PLAYER_LANGUAGEPREFERENCES_H
 
 #include "Utils/Pimpl.h"
+
 #include <QObject>
 #include <QLocale>
 #include <QList>
 #include <utility>
 
 class WebClient;
+class WebClientFactory;
 
 class LanguagePreferences :
 	public QObject
 {
 	Q_OBJECT
+	PIMPL(LanguagePreferences)
 
 	signals:
 		void sigInfo(const QString& info);
@@ -45,7 +48,7 @@ class LanguagePreferences :
 			QString iconPath;
 		};
 
-		explicit LanguagePreferences(QObject* parent);
+		LanguagePreferences(WebClientFactory* webClientFactory, QObject* parent);
 		~LanguagePreferences() override;
 
 		void checkForUpdate(const QString& languageCode);
@@ -54,8 +57,8 @@ class LanguagePreferences :
 		static std::pair<QList<LanguageData>, int> getAllLanguages();
 
 	private slots:
-		void downloadFinished(WebClient* awa, const QString& languageCode);
-		void updateCheckFinished(WebClient* awa, const QString& languageCode);
+		void downloadFinished(WebClient* webClient, const QString& languageCode);
+		void updateCheckFinished(WebClient* webClient, const QString& languageCode);
 
 	private: // NOLINT(readability-redundant-access-specifiers)
 		void downloadUpdate(const QString& languageCode);
