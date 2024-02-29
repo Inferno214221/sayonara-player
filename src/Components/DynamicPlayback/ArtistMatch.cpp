@@ -26,180 +26,169 @@
 #include <QTextStream>
 
 #include <cmath>
+#include <utility>
 
-using namespace DynamicPlayback;
-
-ArtistMatch::Entry::Entry(const QString& artist, const QString& mbid, double similarity) :
-	artist(artist),
-	mbid(mbid),
-	similarity(similarity) {}
-
-bool ArtistMatch::Entry::isValid() const
+namespace DynamicPlayback
 {
-	return !artist.isEmpty() &&
-	       !mbid.isEmpty() &&
-	       !(similarity < 0) &&
-	       !(similarity > 1.0);
-}
+	ArtistMatch::Entry::Entry(QString artist, QString mbid, const double similarity) :
+		artist(std::move(artist)),
+		mbid(std::move(mbid)),
+		similarity(similarity) {}
 
-bool ArtistMatch::Entry::operator==(const ArtistMatch::Entry& other) const
-{
-	return (artist == other.artist) &&
-	       (mbid == other.mbid) &&
-	       (std::abs(similarity - other.similarity) < 0.01);
-}
-
-struct ArtistMatch::Private
-{
-	QList<ArtistMatch::Entry> entries;
-	QString artist;
-
-	Private() = default;
-
-	Private(const QString& artistName) :
-		artist(artistName) {}
-
-	Private(const Private& other) = default;
-	Private& operator=(const Private& other) = default;
-
-	bool operator==(const Private& other) const
+	bool ArtistMatch::Entry::isValid() const
 	{
-		return (entries == other.entries);
+		return !artist.isEmpty() &&
+		       !mbid.isEmpty() &&
+		       !(similarity < 0) &&
+		       !(similarity > 1.0);
 	}
-};
 
-ArtistMatch::ArtistMatch()
-{
-	m = Pimpl::make<Private>();
-}
+	bool ArtistMatch::Entry::operator==(const ArtistMatch::Entry& other) const
+	{
+		return (artist == other.artist) &&
+		       (mbid == other.mbid) &&
+		       (std::abs(similarity - other.similarity) < 0.01); // NOLINT(*-magic-numbers)
+	}
 
-ArtistMatch::ArtistMatch(const QString& artistName)
-{
-	m = Pimpl::make<Private>(artistName);
-}
+	struct ArtistMatch::Private
+	{
+		QList<ArtistMatch::Entry> entries;
+		QString artist;
 
-ArtistMatch::ArtistMatch(const ArtistMatch& other)
-{
-	m = Pimpl::make<Private>(*(other.m));
-}
+		Private() = default;
 
-ArtistMatch::~ArtistMatch() = default;
+		explicit Private(QString artistName) :
+			artist(std::move(artistName)) {}
 
-bool ArtistMatch::isValid() const
-{
-	return (!m->entries.isEmpty());
-}
+		Private(const Private& other) = default;
+		Private& operator=(const Private& other) = default;
 
-bool ArtistMatch::operator==(const ArtistMatch& other) const
-{
-	return (*m == *(other.m));
-}
+		bool operator==(const Private& other) const
+		{
+			return (entries == other.entries);
+		}
+	};
 
-ArtistMatch& ArtistMatch::operator=(const ArtistMatch& other)
-{
-	*m = *(other.m);
+	ArtistMatch::ArtistMatch() :
+		m {Pimpl::make<Private>()} {}
 
-	return *this;
-}
+	ArtistMatch::ArtistMatch(const QString& artistName) :
+		m {Pimpl::make<Private>(artistName)} {}
 
-void ArtistMatch::add(const Entry& entry)
-{
-	m->entries.push_back(std::move(entry));
+	ArtistMatch::ArtistMatch(const ArtistMatch& other) :
+		m {Pimpl::make<Private>(*(other.m))} {}
 
-	Util::Algorithm::sort(m->entries, [](const auto& entry1, const auto& entry2) {
-		return (entry1.similarity > entry2.similarity);
-	});
-}
+	ArtistMatch::~ArtistMatch() = default;
+
+	bool ArtistMatch::isValid() const
+	{
+		return !m->entries.isEmpty();
+	}
+
+	bool ArtistMatch::operator==(const ArtistMatch& artistMatch) const
+	{
+		return (*m == *(artistMatch.m));
+	}
+
+	ArtistMatch& ArtistMatch::operator=(const ArtistMatch& other)
+	{
+		*m = *(other.m);
+
+		return *this;
+	}
+
+	void ArtistMatch::add(const Entry& entry)
+	{
+		m->entries.push_back(entry);
+
+		Util::Algorithm::sort(m->entries, [](const auto& entry1, const auto& entry2) {
+			return (entry1.similarity > entry2.similarity);
+		});
+	}
 
 // ------------------------------------------------------------------------------------------------------
 // EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
 //                         VVVVVVVVVVVVVVVVVVVVVVVVVVVVVV
 //                                        GGGGGGGGGGGGGGGGGGGGGGGGGGGGG
 //                                                       PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP
-QList<ArtistMatch::Entry> ArtistMatch::get(Quality quality) const
-{
-	auto result = QList<ArtistMatch::Entry>();
-
-	for(const auto& entry: m->entries)
+	QList<ArtistMatch::Entry> ArtistMatch::get(Quality quality) const
 	{
-		switch(quality)
-		{
-			case Quality::Poor:
-				if(entry.similarity < 0.40)
-				{
-					result.push_back(entry);
-				}
-				break;
-			case Quality::Good:
-				if(entry.similarity > 0.20 && entry.similarity < 0.60)
-				{
-					result.push_back(entry);
-				}
-				break;
-			case Quality::VeryGood:
-				if(entry.similarity > 0.40 && entry.similarity < 0.75)
-				{
-					result.push_back(entry);
-				}
-				break;
-			case Quality::Excellent:
-				if(entry.similarity > 0.60)
-				{
-					result.push_back(entry);
-				}
-				break;
-		}
-	}
+		auto result = QList<ArtistMatch::Entry>();
 
-	return result;
-}
-
-QString ArtistMatch::artistName() const
-{
-	return m->artist;
-}
-
-QString ArtistMatch::toString() const
-{
-	auto lines = QStringList {};
-
-	{
 		for(const auto& entry: m->entries)
 		{
-			QString line;
+			switch(quality)
+			{
+				case Quality::Poor:
+					if(entry.similarity < 0.40) // NOLINT(*-magic-numbers)
+					{
+						result.push_back(entry);
+					}
+					break;
+				case Quality::Good:
+					if((entry.similarity > 0.20) && (entry.similarity < 0.60)) // NOLINT(*-magic-numbers)
+					{
+						result.push_back(entry);
+					}
+					break;
+				case Quality::VeryGood:
+					if((entry.similarity > 0.40) && (entry.similarity < 0.75)) // NOLINT(*-magic-numbers)
+					{
+						result.push_back(entry);
+					}
+					break;
+				case Quality::Excellent:
+					if(entry.similarity > 0.60) // NOLINT(*-magic-numbers)
+					{
+						result.push_back(entry);
+					}
+					break;
+			}
+		}
+
+		return result;
+	}
+
+	QString ArtistMatch::artistName() const { return m->artist; }
+
+	QString ArtistMatch::toString() const
+	{
+		auto lines = QStringList {};
+		for(const auto& entry: m->entries)
+		{
+			auto line = QString {};
 			auto textStream = QTextStream(&line);
 			textStream.setRealNumberNotation(QTextStream::FixedNotation);
 			textStream << entry.similarity << '\t' << entry.artist << '\t' << entry.mbid;
 
 			lines << line;
 		}
+
+		return lines.join('\n');
 	}
 
-	return lines.join('\n');
-}
-
-ArtistMatch ArtistMatch::fromString(const QString& data)
-{
-	auto artistMatch = ArtistMatch {};
-
-	const auto lines = data.split('\n');
-	for(const auto& line: lines)
+	ArtistMatch ArtistMatch::fromString(const QString& data)
 	{
-		auto splitted = line.split('\t');
-		if(splitted.size() != 3)
+		auto artistMatch = ArtistMatch {};
+
+		const auto lines = data.split('\n');
+		for(const auto& line: lines)
 		{
-			continue;
+			auto splitted = line.split('\t');
+			if(splitted.size() != 3)
+			{
+				continue;
+			}
+
+			// QTextStream cannot split by tab :(
+			const auto similarity = splitted[0].toDouble();
+			const auto artist = splitted[1];
+			const auto mbid = splitted[2];
+
+			const auto entry = ArtistMatch::Entry(artist, mbid, similarity);
+			artistMatch.add(entry);
 		}
 
-		// QTextStream cannot split by tab :(
-		const auto similarity = splitted[0].toDouble();
-		const auto artist = splitted[1];
-		const auto mbid = splitted[2];
-
-		const auto entry = ArtistMatch::Entry(artist, mbid, similarity);
-		artistMatch.add(entry);
+		return artistMatch;
 	}
-
-	return artistMatch;
 }
-

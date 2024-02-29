@@ -41,8 +41,6 @@
 #include <QThread>
 #include <Utils/FileUtils.h>
 
-using namespace DynamicPlayback;
-
 namespace
 {
 	void appendTrack(Playlist::Accessor* playlistAccessor, const MetaData& track)
@@ -124,102 +122,106 @@ namespace
 	}
 }
 
-struct Handler::Private
+namespace DynamicPlayback
 {
-	QString currentArtistName;
-	LibraryId currentLibraryId {-1};
-	Playlist::Accessor* playlistAccessor;
-	Util::FileSystemPtr fileSystem;
-	std::shared_ptr<QTimer> timer {std::make_shared<QTimer>()};
-
-	Private(Playlist::Accessor* playlistAccessor, Util::FileSystemPtr fileSystem) :
-		playlistAccessor(playlistAccessor),
-		fileSystem {std::move(fileSystem)}
+	struct Handler::Private
 	{
-		timer->setSingleShot(true);
-	}
-};
+		QString currentArtistName;
+		LibraryId currentLibraryId {-1};
+		Playlist::Accessor* playlistAccessor;
+		Util::FileSystemPtr fileSystem;
+		std::shared_ptr<QTimer> timer {std::make_shared<QTimer>()};
 
-Handler::Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor, const Util::FileSystemPtr& fileSystem,
-                 QObject* parent) :
-	QObject(parent),
-	m {Pimpl::make<Private>(playlistAccessor, fileSystem)}
-{
-	connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
-	connect(playManager, &PlayManager::sigPlaystateChanged, this, [timer = m->timer](const auto playState) {
-		if(playState == PlayState::Stopped)
+		Private(Playlist::Accessor* playlistAccessor, Util::FileSystemPtr fileSystem) :
+			playlistAccessor(playlistAccessor),
+			fileSystem {std::move(fileSystem)}
 		{
-			timer->stop();
+			timer->setSingleShot(true);
 		}
-	});
+	};
 
-	connect(m->timer.get(), &QTimer::timeout, this, &Handler::timeout);
-}
-
-Handler::~Handler() = default;
-
-void Handler::currentTrackChanged(const MetaData& track)
-{
-	const auto mode = GetSetting(Set::PL_Mode);
-	if(!Playlist::Mode::isActiveAndEnabled(mode.dynamic()))
+	Handler::Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor,
+	                 const Util::FileSystemPtr& fileSystem,
+	                 QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(playlistAccessor, fileSystem)}
 	{
-		return;
+		connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
+		connect(playManager, &PlayManager::sigPlaystateChanged, this, [timer = m->timer](const auto playState) {
+			if(playState == PlayState::Stopped)
+			{
+				timer->stop();
+			}
+		});
+
+		connect(m->timer.get(), &QTimer::timeout, this, &Handler::timeout);
 	}
 
-	m->timer->stop();
+	Handler::~Handler() = default;
 
-	if(track.databaseId() != 0 || track.albumArtist().isEmpty())
+	void Handler::currentTrackChanged(const MetaData& track)
 	{
-		return;
+		const auto mode = GetSetting(Set::PL_Mode);
+		if(!Playlist::Mode::isActiveAndEnabled(mode.dynamic()))
+		{
+			return;
+		}
+
+		m->timer->stop();
+
+		if(track.databaseId() != 0 || track.albumArtist().isEmpty())
+		{
+			return;
+		}
+
+		m->currentLibraryId = track.libraryId();
+		m->currentArtistName = track.albumArtist();
+
+		m->timer->start(500);
 	}
 
-	m->currentLibraryId = track.libraryId();
-	m->currentArtistName = track.albumArtist();
-
-	m->timer->start(500);
-}
-
-void Handler::similarArtistsAvailable()
-{
-	auto* fetcher = dynamic_cast<SimilarArtistFetcher*>(sender());
-
-	const auto& artistMatch = fetcher->similarArtists();
-	if(!artistMatch.isValid())
+	void Handler::similarArtistsAvailable()
 	{
+		auto* fetcher = dynamic_cast<SimilarArtistFetcher*>(sender());
+
+		const auto& artistMatch = fetcher->similarArtists();
+		if(!artistMatch.isValid())
+		{
+			fetcher->deleteLater();
+			return;
+		}
+
+		const auto artistIds = evaluateArtistMatch(artistMatch, m->currentLibraryId);
+
+		const auto artistTrackMap = getCandidateTracks(m->currentLibraryId, artistIds);
+		const auto playlistFilepaths = getPlaylistFilepaths(m->playlistAccessor, artistIds);
+
+		for(const auto& artistId: artistIds)
+		{
+			const auto track = findTrackNotInPlaylist(artistTrackMap[artistId], playlistFilepaths, m->fileSystem);
+			if(track.isValid())
+			{
+				appendTrack(m->playlistAccessor, track);
+				break;
+			}
+		}
+
 		fetcher->deleteLater();
-		return;
 	}
 
-	const auto artistIds = evaluateArtistMatch(artistMatch, m->currentLibraryId);
-
-	const auto artistTrackMap = getCandidateTracks(m->currentLibraryId, artistIds);
-	const auto playlistFilepaths = getPlaylistFilepaths(m->playlistAccessor, artistIds);
-
-	for(const auto& artistId: artistIds)
+	void Handler::timeout()
 	{
-		const auto track = findTrackNotInPlaylist(artistTrackMap[artistId], playlistFilepaths, m->fileSystem);
-		if(track.isValid())
-		{
-			appendTrack(m->playlistAccessor, track);
-			break;
-		}
+		auto* thread = new QThread();
+		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName);
+
+		connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
+		        this, &Handler::similarArtistsAvailable);
+		connect(lfmFetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
+		connect(thread, &QThread::started, lfmFetcher, &SimilarArtistFetcher::start);
+		connect(thread, &QThread::finished, lfmFetcher, &SimilarArtistFetcher::deleteLater);
+		connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+		lfmFetcher->moveToThread(thread);
+		thread->start();
 	}
-
-	fetcher->deleteLater();
-}
-
-void DynamicPlayback::Handler::timeout()
-{
-	auto* thread = new QThread();
-	auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName);
-
-	connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
-	        this, &Handler::similarArtistsAvailable);
-	connect(lfmFetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
-	connect(thread, &QThread::started, lfmFetcher, &SimilarArtistFetcher::start);
-	connect(thread, &QThread::finished, lfmFetcher, &SimilarArtistFetcher::deleteLater);
-	connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-
-	lfmFetcher->moveToThread(thread);
-	thread->start();
 }

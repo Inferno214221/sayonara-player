@@ -19,24 +19,24 @@
  */
 #include "SimilarArtistFetcher.h"
 
-using DynamicPlayback::SimilarArtistFetcher;
-struct SimilarArtistFetcher::Private
+namespace DynamicPlayback
 {
-	QString artist;
+	struct SimilarArtistFetcher::Private
+	{
+		QString artist;
 
-	Private(const QString& artist) :
-		artist(artist) {}
-};
+		Private(const QString& artist) :
+			artist(artist) {}
+	};
 
-SimilarArtistFetcher::SimilarArtistFetcher(const QString& artist, QObject* parent) :
-	QObject(parent)
-{
-	m = Pimpl::make<Private>(artist);
-}
+	SimilarArtistFetcher::SimilarArtistFetcher(const QString& artist, QObject* parent) :
+		QObject(parent),
+		m {Pimpl::make<Private>(artist)} {}
 
-SimilarArtistFetcher::~SimilarArtistFetcher() = default;
+	SimilarArtistFetcher::~SimilarArtistFetcher() = default;
 
-void SimilarArtistFetcher::start()
-{
-	fetchSimilarArtists(m->artist);
+	void SimilarArtistFetcher::start()
+	{
+		fetchSimilarArtists(m->artist);
+	}
 }

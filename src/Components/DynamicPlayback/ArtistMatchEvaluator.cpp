@@ -32,10 +32,9 @@
 #include <QByteArray>
 #include <QMap>
 
-using DynamicPlayback::ArtistMatch;
-
 namespace
 {
+	using DynamicPlayback::ArtistMatch;
 	using ArtistLookupMap = QMap<QString, QList<ArtistId>>;
 
 	class NameUnificator

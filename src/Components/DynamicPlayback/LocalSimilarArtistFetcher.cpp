@@ -27,46 +27,41 @@
 
 #include <QStringList>
 
-using DynamicPlayback::LocalSimilarArtistFetcher;
-using DynamicPlayback::ArtistMatch;
-
-struct LocalSimilarArtistFetcher::Private
+namespace DynamicPlayback
 {
-	ArtistMatch artistMatch;
-};
-
-LocalSimilarArtistFetcher::LocalSimilarArtistFetcher(const QString& artistName, QObject* parent) :
-	SimilarArtistFetcher(artistName, parent)
-{
-	m = Pimpl::make<Private>();
-}
-
-LocalSimilarArtistFetcher::~LocalSimilarArtistFetcher() = default;
-
-const ArtistMatch& LocalSimilarArtistFetcher::similarArtists() const
-{
-	return m->artistMatch;
-}
-
-void LocalSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
-{
-	const auto similarArtistDir = Util::similarArtistsPath();
-	const auto filename = QString("%1/%2.comp")
-		.arg(similarArtistDir)
-		.arg(artistName);
-
-	if(Util::File::exists(filename))
+	struct LocalSimilarArtistFetcher::Private
 	{
-		QByteArray compressedData;
-		const auto success = Util::File::readFileIntoByteArray(filename, compressedData);
-		if(success)
+		ArtistMatch artistMatch;
+	};
+
+	LocalSimilarArtistFetcher::LocalSimilarArtistFetcher(const QString& artistName, QObject* parent) :
+		SimilarArtistFetcher(artistName, parent),
+		m {Pimpl::make<Private>()} {}
+
+	LocalSimilarArtistFetcher::~LocalSimilarArtistFetcher() = default;
+
+	const ArtistMatch& LocalSimilarArtistFetcher::similarArtists() const { return m->artistMatch; }
+
+	void LocalSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
+	{
+		const auto similarArtistDir = Util::similarArtistsPath();
+		const auto filename = QString("%1/%2.comp")
+			.arg(similarArtistDir)
+			.arg(artistName);
+
+		if(Util::File::exists(filename))
 		{
-			const auto decompressedData = Compressor::decompress(compressedData);
-			const auto decompressedString = QString::fromLocal8Bit(decompressedData);
+			QByteArray compressedData;
+			const auto success = Util::File::readFileIntoByteArray(filename, compressedData);
+			if(success)
+			{
+				const auto decompressedData = Compressor::decompress(compressedData);
+				const auto decompressedString = QString::fromLocal8Bit(decompressedData);
 
-			m->artistMatch = ArtistMatch::fromString(decompressedString);
+				m->artistMatch = ArtistMatch::fromString(decompressedString);
+			}
 		}
-	}
 
-	emit sigFinished();
+		emit sigFinished();
+	}
 }

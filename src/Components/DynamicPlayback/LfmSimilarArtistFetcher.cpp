@@ -30,11 +30,6 @@
 #include <QHash>
 #include <QUrl>
 
-using DynamicPlayback::ArtistMatch;
-using DynamicPlayback::LfmSimilarArtistFetcher;
-
-using LastFM::WebAccess;
-
 namespace
 {
 	QString createUrl(const QString& artist)
@@ -55,62 +50,66 @@ namespace
 	}
 }
 
-struct LfmSimilarArtistFetcher::Private
+namespace DynamicPlayback
 {
-	QString artist;
-	ArtistMatch artistMatch;
-	QHash<QString, ArtistMatch> similarArtistsCache;
-};
-
-LfmSimilarArtistFetcher::LfmSimilarArtistFetcher(const QString& artist, QObject* parent) :
-	SimilarArtistFetcher(artist, parent),
-	m {Pimpl::make<Private>()} {}
-
-LfmSimilarArtistFetcher::~LfmSimilarArtistFetcher() = default;
-
-const ArtistMatch& LfmSimilarArtistFetcher::similarArtists() const { return m->artistMatch; }
-
-void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
-{
-	m->artist = artistName;
-
-	if(m->similarArtistsCache.contains(m->artist))
+	struct LfmSimilarArtistFetcher::Private
 	{
-		m->artistMatch = m->similarArtistsCache.value(m->artist);
-		emit sigFinished();
-		return;
+		QString artist;
+		ArtistMatch artistMatch;
+		QHash<QString, ArtistMatch> similarArtistsCache;
+	};
+
+	LfmSimilarArtistFetcher::LfmSimilarArtistFetcher(const QString& artist, QObject* parent) :
+		SimilarArtistFetcher(artist, parent),
+		m {Pimpl::make<Private>()} {}
+
+	LfmSimilarArtistFetcher::~LfmSimilarArtistFetcher() = default;
+
+	const ArtistMatch& LfmSimilarArtistFetcher::similarArtists() const { return m->artistMatch; }
+
+	void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
+	{
+		m->artist = artistName;
+
+		if(m->similarArtistsCache.contains(m->artist))
+		{
+			m->artistMatch = m->similarArtistsCache.value(m->artist);
+			emit sigFinished();
+			return;
+		}
+
+		using LastFM::WebAccess;
+		
+		auto* webAccess = new WebAccess();
+		connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
+		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
+		connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::sigFinished);
+
+		webAccess->callUrl(createUrl(m->artist));
 	}
 
-	auto* webAccess = new WebAccess();
-	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
-	connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
-	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::sigFinished);
-
-	webAccess->callUrl(createUrl(m->artist));
-}
-
-void LfmSimilarArtistFetcher::webClientFinished()
-{
-	auto* webClient = dynamic_cast<WebAccess*>(sender());
-
-	const auto parsingResult = parseLastFMAnswer(m->artist, webClient->data());
-	if(!parsingResult.hasError)
+	void LfmSimilarArtistFetcher::webClientFinished()
 	{
-		m->artistMatch = parsingResult.artistMatch;
-		m->similarArtistsCache[m->artist] = m->artistMatch;
+		auto* webClient = dynamic_cast<LastFM::WebAccess*>(sender());
 
-		const auto artistName = m->artistMatch.artistName();
-		const auto hasCorrection = (m->artist != artistName);
-		if(hasCorrection)
+		const auto parsingResult = parseLastFMAnswer(m->artist, webClient->data());
+		if(!parsingResult.hasError)
 		{
-			m->similarArtistsCache[artistName] = m->artistMatch;
+			m->artistMatch = parsingResult.artistMatch;
+			m->similarArtistsCache[m->artist] = m->artistMatch;
+
+			const auto artistName = m->artistMatch.artistName();
+			const auto hasCorrection = (m->artist != artistName);
+			if(hasCorrection)
+			{
+				m->similarArtistsCache[artistName] = m->artistMatch;
+			}
+		}
+
+		else
+		{
+			m->artistMatch = {};
+			spLog(Log::Warning, this) << "Could not fetch similar artists: " << parsingResult.error;
 		}
 	}
-
-	else
-	{
-		m->artistMatch = {};
-		spLog(Log::Warning, this) << "Could not fetch similar artists: " << parsingResult.error;
-	}
 }
-

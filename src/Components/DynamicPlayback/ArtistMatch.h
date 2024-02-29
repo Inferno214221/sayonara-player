@@ -33,7 +33,6 @@ namespace DynamicPlayback
 		PIMPL(ArtistMatch)
 
 		public:
-
 			struct Entry
 			{
 				QString artist;
@@ -41,16 +40,13 @@ namespace DynamicPlayback
 				double similarity {-1.0};
 
 				Entry() = default;
-				Entry(const QString& artist, const QString& mbid, double similarity);
+				Entry(QString artist, QString mbid, double similarity);
 
-				bool isValid() const;
+				[[nodiscard]] bool isValid() const;
 
-				bool operator==(const Entry& other) const;
+				[[nodiscard]] bool operator==(const Entry& other) const;
 			};
 
-			/**
-			 * @brief The Quality enum used to access the bin of interest. See ArtistMatch::get(Quality q)
-			 */
 			enum class Quality :
 				uint8_t
 			{
@@ -61,50 +57,23 @@ namespace DynamicPlayback
 			};
 
 			ArtistMatch();
-			explicit ArtistMatch(const QString& artist_name);
+			explicit ArtistMatch(const QString& artistName);
 			ArtistMatch(const ArtistMatch& other);
 
 			virtual ~ArtistMatch();
 
-			/**
-			 * @brief checks, if structure is valid.
-			 * @return false, if all bins are empty. True else
-			 */
-			bool isValid() const;
+			[[nodiscard]] bool isValid() const;
 
-			/**
-			 * @brief Compares two ArtistMatch structures
-			 * @param am the other ArtistMatch
-			 * @return true, if the artist string is the same. False else
-			 */
-			bool operator==(const ArtistMatch& am) const;
+			[[nodiscard]] bool operator==(const ArtistMatch& artistMatch) const;
 			ArtistMatch& operator=(const ArtistMatch& other);
 
-			/**
-			 * @brief adds an artist string to the corresponding bin
-			 * @param artist artist string
-			 * @param match the match value
-			 */
 			void add(const Entry& entry);
 
-			/**
-			 * @brief get bin by quality
-			 * @param q quality. See ArtistMatch::Quality
-			 * @return the desired bin
-			 */
-			QList<Entry> get(Quality q) const;
+			[[nodiscard]] QList<Entry> get(Quality q) const;
 
-			/**
-			 * @brief get the corresponding artist name of the ArtistMatch structure
-			 * @return artist name
-			 */
-			QString artistName() const;
+			[[nodiscard]] QString artistName() const;
 
-			/**
-			 * @brief converts the artist match to string
-			 * @return string representation
-			 */
-			QString toString() const;
+			[[nodiscard]] QString toString() const;
 
 			static ArtistMatch fromString(const QString& data);
 	};

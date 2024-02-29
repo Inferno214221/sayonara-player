@@ -29,18 +29,16 @@
 #include <QDomNode>
 #include <QDomElement>
 
-using DynamicPlayback::ArtistMatch;
-
 namespace
 {
-	ArtistMatch::Entry parseArtist(const QDomNode& node)
+	DynamicPlayback::ArtistMatch::Entry parseArtist(const QDomNode& node)
 	{
 		if(node.nodeName().toLower() != "artist")
 		{
-			return ArtistMatch::Entry {};
+			return {};
 		}
 
-		ArtistMatch::Entry result;
+		auto result = DynamicPlayback::ArtistMatch::Entry {};
 		const auto childNodes = node.childNodes();
 		for(int contentIndex = 0; contentIndex < childNodes.size(); contentIndex++)
 		{
@@ -90,37 +88,39 @@ namespace
 	}
 }
 
-DynamicPlayback::ParsingResult
-DynamicPlayback::parseLastFMAnswer(const QString& artistName, const QByteArray& data)
+namespace DynamicPlayback
 {
-	QDomDocument doc("similarArtists");
-
-	if(!doc.setContent(data))
+	ParsingResult parseLastFMAnswer(const QString& artistName, const QByteArray& data)
 	{
-		return {{}, "Cannot parse document", true};
-	}
+		QDomDocument doc("similarArtists");
 
-	ArtistMatch artistMatch(artistName);
-
-	const auto docElement = doc.documentElement();
-	const auto [hasError, error] = parseError(docElement);
-	if(hasError)
-	{
-		return {{}, QString("Cannot parse document: %1").arg(error), hasError};
-	}
-
-	const auto similarArtists = docElement.firstChild();
-	const auto childNodes = similarArtists.childNodes();
-
-	for(int artistIndex = 0; artistIndex < childNodes.size(); artistIndex++)
-	{
-		const auto artistNode = childNodes.item(artistIndex);
-		const auto artistEntry = parseArtist(artistNode);
-		if(artistEntry.isValid())
+		if(!doc.setContent(data))
 		{
-			artistMatch.add(artistEntry);
+			return {{}, "Cannot parse document", true};
 		}
-	}
 
-	return {artistMatch, {}, hasError};
+		ArtistMatch artistMatch(artistName);
+
+		const auto docElement = doc.documentElement();
+		const auto [hasError, error] = parseError(docElement);
+		if(hasError)
+		{
+			return {{}, QString("Cannot parse document: %1").arg(error), hasError};
+		}
+
+		const auto similarArtists = docElement.firstChild();
+		const auto childNodes = similarArtists.childNodes();
+
+		for(int artistIndex = 0; artistIndex < childNodes.size(); artistIndex++)
+		{
+			const auto artistNode = childNodes.item(artistIndex);
+			const auto artistEntry = parseArtist(artistNode);
+			if(artistEntry.isValid())
+			{
+				artistMatch.add(artistEntry);
+			}
+		}
+
+		return {artistMatch, {}, hasError};
+	}
 }
