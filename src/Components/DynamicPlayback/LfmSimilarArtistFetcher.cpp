@@ -32,7 +32,6 @@
 
 using DynamicPlayback::ArtistMatch;
 using DynamicPlayback::LfmSimilarArtistFetcher;
-using DynamicPlayback::SimilarArtistFetcher;
 
 using LastFM::WebAccess;
 
@@ -85,6 +84,7 @@ void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 	auto* webAccess = new WebAccess();
 	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
 	connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
+	connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::sigFinished);
 
 	webAccess->callUrl(createUrl(m->artist));
 }
