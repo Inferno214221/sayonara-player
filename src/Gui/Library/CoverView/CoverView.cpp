@@ -45,6 +45,7 @@
 #include <QWheelEvent>
 #include <QShortcut>
 #include <QKeySequence>
+#include <QScrollBar>
 
 #include <mutex>
 
@@ -60,6 +61,14 @@ namespace
 		if(header)
 		{
 			header->hide();
+		}
+	}
+
+	void setScrollspeed(QScrollBar* scrollbar, const int step)
+	{
+		if(scrollbar)
+		{
+			scrollbar->setSingleStep(step);
 		}
 	}
 }
@@ -93,11 +102,14 @@ namespace Library
 		setSelectionBehavior(QAbstractItemView::SelectionBehavior::SelectItems);
 		hideHeader(horizontalHeader());
 		hideHeader(verticalHeader());
+		setScrollspeed(verticalScrollBar(), GetSetting(Set::Lib_CoverScrollspeed));
 
 		connect(m->library, &LocalLibrary::sigAllAlbumsLoaded, this, &CoverView::reload);
 
 		new QShortcut(QKeySequence(QKeySequence::Refresh), this, SLOT(reload()), nullptr, Qt::WidgetShortcut);
 		new QShortcut(QKeySequence("F7"), this, SLOT(clearCache()));
+
+		ListenSetting(Set::Lib_CoverScrollspeed, CoverView::scrollspeedChanged);
 	}
 
 	AbstractLibrary* CoverView::library() const { return m->library; }
@@ -255,6 +267,11 @@ namespace Library
 		        taggingOperation, &Tagging::UserOperations::deleteLater);
 
 		taggingOperation->mergeAlbums(mergedata.sourceIds(), mergedata.targetId());
+	}
+
+	void CoverView::scrollspeedChanged()
+	{
+		setScrollspeed(verticalScrollBar(), GetSetting(Set::Lib_CoverScrollspeed));
 	}
 
 	void CoverView::wheelEvent(QWheelEvent* e)

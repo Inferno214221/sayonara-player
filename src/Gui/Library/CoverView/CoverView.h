@@ -87,6 +87,7 @@ namespace Library
 			void resizeSections();
 			void refreshView() override;
 			void runMergeOperation(const Library::MergeData& mergedata) override;
+			void scrollspeedChanged();
 	};
 }
 

@@ -84,6 +84,9 @@ void GUI_LibraryPreferences::initUi()
 	connect(ui->btnDelete, &QPushButton::clicked, this, &GUI_LibraryPreferences::deleteClicked);
 	connect(ui->btnUp, &QPushButton::clicked, this, &GUI_LibraryPreferences::upClicked);
 	connect(ui->btnDown, &QPushButton::clicked, this, &GUI_LibraryPreferences::downClicked);
+	connect(ui->btnScrollspeedDefault, &QPushButton::clicked, this, [this]() {
+		ui->sbScrollSpeed->setValue(-1);
+	});
 
 	selectedIndexChanged(ui->lvLibs->currentIndex());
 }
@@ -103,6 +106,7 @@ bool GUI_LibraryPreferences::commit()
 	SetSetting(Set::Lib_UseViewClearButton, ui->cbShowClearSelectionButton->isChecked());
 	SetSetting(Set::Lib_SortIgnoreArtistArticle, ui->cbIgnoreArticle->isChecked());
 	SetSetting(Set::PL_StartAtRandomTrackOnShuffle, ui->cbStartRandomIfShuffle->isChecked());
+	SetSetting(Set::Lib_CoverScrollspeed, ui->sbScrollSpeed->value());
 
 	using MetaDataSortMode = MetaDataSorting::SortMode;
 	auto sortModeMask = +MetaDataSorting::SortMode::None;
@@ -125,6 +129,7 @@ void GUI_LibraryPreferences::revert()
 	ui->rbDdStartIfStopped->setChecked(GetSetting(Set::Lib_DD_PlayIfStoppedAndEmpty));
 	ui->cbShowClearSelectionButton->setChecked(GetSetting(Set::Lib_UseViewClearButton));
 	ui->cbStartRandomIfShuffle->setChecked(GetSetting(Set::PL_StartAtRandomTrackOnShuffle));
+	ui->sbScrollSpeed->setValue(GetSetting(Set::Lib_CoverScrollspeed));
 
 	using MetaDataSortMode = MetaDataSorting::SortMode;
 
@@ -156,6 +161,7 @@ void GUI_LibraryPreferences::retranslate()
 	ui->cbIgnoreAccents->setText(Lang::get(Lang::IgnoreAccents));
 	ui->cbIgnoreSpecialChars->setText(Lang::get(Lang::IgnoreSpecialChars));
 	ui->gbCoverView->setTitle(Lang::get(Lang::CoverView));
+	ui->btnScrollspeedDefault->setText(Lang::get(Lang::Default));
 }
 
 void GUI_LibraryPreferences::skinChanged()
