@@ -98,7 +98,7 @@ namespace DynamicPlayback
 	{
 		auto* webClient = dynamic_cast<LastFM::WebAccess*>(sender());
 
-		const auto parsingResult = parseLastFMAnswer(m->artist, webClient->data());
+		const auto parsingResult = parseLastFMAnswer(webClient->data());
 		if(!parsingResult.hasError)
 		{
 			m->artistMatch = parsingResult.artistMatch;

@@ -86,11 +86,19 @@ namespace
 
 		return {false, {}};
 	}
+
+	QString getArtistName(const QDomElement& element)
+	{
+		const auto attributes = element.attributes();
+		return attributes.contains("artist")
+		       ? attributes.namedItem("artist").nodeValue()
+		       : QString {};
+	}
 }
 
 namespace DynamicPlayback
 {
-	ParsingResult parseLastFMAnswer(const QString& artistName, const QByteArray& data)
+	ParsingResult parseLastFMAnswer(const QByteArray& data)
 	{
 		QDomDocument doc("similarArtists");
 
@@ -99,9 +107,8 @@ namespace DynamicPlayback
 			return {{}, "Cannot parse document", true};
 		}
 
-		ArtistMatch artistMatch(artistName);
-
 		const auto docElement = doc.documentElement();
+
 		const auto [hasError, error] = parseError(docElement);
 		if(hasError)
 		{
@@ -109,8 +116,11 @@ namespace DynamicPlayback
 		}
 
 		const auto similarArtists = docElement.firstChild();
+		const auto artistName = getArtistName(similarArtists.toElement());
+
 		const auto childNodes = similarArtists.childNodes();
 
+		auto artistMatch = ArtistMatch {artistName};
 		for(int artistIndex = 0; artistIndex < childNodes.size(); artistIndex++)
 		{
 			const auto artistNode = childNodes.item(artistIndex);

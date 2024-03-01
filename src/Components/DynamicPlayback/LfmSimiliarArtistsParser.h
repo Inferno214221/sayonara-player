@@ -33,7 +33,7 @@ namespace DynamicPlayback
 		bool hasError {false};
 	};
 
-	ParsingResult parseLastFMAnswer(const QString& artistName, const QByteArray& data);
+	ParsingResult parseLastFMAnswer(const QByteArray& data);
 }
 
 #endif // LFMSIMARTISTSPARSER_H
