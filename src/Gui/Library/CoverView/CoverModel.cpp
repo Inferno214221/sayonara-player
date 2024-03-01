@@ -160,6 +160,9 @@ namespace Library
 				       ? album.albumArtist()
 				       : QString {};
 
+			case CoverModel::YearRole:
+				return album.year();
+
 			case CoverModel::CoverRole:
 			{
 				const auto hash = AlbumCoverFetchThread::getHash(album);

@@ -49,7 +49,8 @@ namespace Library
 			{
 				AlbumRole = Qt::UserRole,
 				ArtistRole = Qt::UserRole + 1,
-				CoverRole = Qt::UserRole + 2
+				CoverRole = Qt::UserRole + 2,
+				YearRole = Qt::UserRole + 3
 			};
 
 			explicit CoverModel(QObject* parent, AbstractLibrary* library);

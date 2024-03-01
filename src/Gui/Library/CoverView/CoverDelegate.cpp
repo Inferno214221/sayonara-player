@@ -97,6 +97,48 @@ namespace
 
 		painter->setPen(oldPen);
 	}
+
+	void paintTopOverlay(QPainter* painter, const QPalette& palette, const QString& text, const QRect& boundingRect)
+	{
+		if(text.isEmpty()) // NOLINT(*-magic-numbers)
+		{
+			return;
+		}
+
+		constexpr const auto RectAlpha = 192;
+
+		auto color = palette.brush(QPalette::ColorGroup::Normal, QPalette::ColorRole::Window).color();
+		color.setAlpha(RectAlpha);
+
+		painter->fillRect(boundingRect, color);
+		painter->drawText(boundingRect, text, QTextOption(Qt::AlignCenter | Qt::AlignHCenter));
+	}
+
+	constexpr const auto TopOverlayTextMargin = 4;
+	constexpr const auto TopOverlayDistance = 3;
+
+	QRect calcOverlayBoundingRect(const QPoint& offset, const QFontMetrics& fontMetrics, const QString& text)
+	{
+		return {offset, QPoint {fontMetrics.horizontalAdvance(text) + (4 * TopOverlayTextMargin),
+		                        fontMetrics.height()
+		}};
+	}
+
+	void paintRightTopOverlay(QPainter* painter, const QStyleOptionViewItem& option, const QString& text,
+	                          const int verticalOffset)
+	{
+		auto boundingRect = calcOverlayBoundingRect({0, verticalOffset},
+		                                            option.fontMetrics, text);
+		boundingRect.translate(option.rect.width() - boundingRect.width() - TopOverlayDistance, 0);
+		paintTopOverlay(painter, option.palette, text, boundingRect);
+	}
+
+	void paintLeftTopOverlay(QPainter* painter, const QStyleOptionViewItem& option, const QString& text,
+	                         const int verticalOffset)
+	{
+		auto boundingRect = calcOverlayBoundingRect({TopOverlayDistance, verticalOffset}, option.fontMetrics, text);
+		paintTopOverlay(painter, option.palette, text, boundingRect);
+	}
 }
 
 void
@@ -111,15 +153,27 @@ Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 	constexpr const auto AlbumColor = 255;
 	constexpr const auto ArtistColor = 172;
 
+	const auto pixmapHeight = GetSetting(Set::Lib_CoverZoom);
+	const auto verticalOffset = pixmapHeight / 20;
+
 	painter->save();
 	painter->translate(option.rect.left(), option.rect.top());
 
-	const auto pixmapHeight = GetSetting(Set::Lib_CoverZoom);
 	drawItemRectangle(painter, option, pixmapHeight);
 
 	const auto pixmap = index.data(CoverModel::CoverRole).value<QPixmap>();
-	painter->translate(0, pixmapHeight / 20);
+	painter->translate(0, verticalOffset);
 	paintPixmap(painter, option, pixmap, pixmapHeight);
+
+	if(GetSetting(Set::Lib_CoverShowYear))
+	{
+		const auto year = index.data(CoverModel::YearRole).toInt();
+		if(year > 1000)
+		{
+			paintLeftTopOverlay(painter, option, QString::number(year), -verticalOffset);
+		}
+	}
+
 	painter->translate(0, pixmapHeight + 4);
 
 	const auto album = index.data(CoverModel::AlbumRole).toString();
