@@ -26,106 +26,109 @@
 #include <QByteArray>
 #include <QList>
 
-class TestWebClient :
-	public WebClient
+namespace Test
 {
-	public:
-		explicit TestWebClient(QObject* parent) :
-			WebClient(parent) {}
+	class WebClient :
+		public ::WebClient
+	{
+		Q_OBJECT
+		public:
+			explicit WebClient(QObject* parent) :
+				::WebClient(parent) {}
 
-		[[nodiscard]] QByteArray errorData() const override { return {}; }
+			[[nodiscard]] QByteArray errorData() const override { return {}; }
 
-		~TestWebClient() override = default;
+			~WebClient() override = default;
 
-		[[nodiscard]] QByteArray data() const override { return mData; }
+			[[nodiscard]] QByteArray data() const override { return mData; }
 
-		[[nodiscard]] bool hasData() const override { return (!mData.isEmpty()); }
+			[[nodiscard]] bool hasData() const override { return (!mData.isEmpty()); }
 
-		[[nodiscard]] QString url() const override { return mUrl; }
+			[[nodiscard]] QString url() const override { return mUrl; }
 
-		[[nodiscard]] Status status() const override { return mStatus; }
+			[[nodiscard]] Status status() const override { return mStatus; }
 
-		[[nodiscard]] bool hasError() const override { return mHasError; }
+			[[nodiscard]] bool hasError() const override { return mHasError; }
 
-		void setMode(const Mode /*mode*/) override {}
+			void setMode(const Mode /*mode*/) override {}
 
-		void setRawHeader(const QMap<QByteArray, QByteArray>& /*header*/) override {}
+			void setRawHeader(const QMap<QByteArray, QByteArray>& /*header*/) override {}
 
-		void run(const QString& url, int /*timeout*/) override
-		{
-			mHasError = false;
-			mUrl = url;
-		}
+			void run(const QString& url, int /*timeout*/) override
+			{
+				mHasError = false;
+				mUrl = url;
+			}
 
-		void runPost(const QString& url, const QByteArray& /*postData*/, int /*timeout*/) override
-		{
-			mHasError = false;
-			mUrl = url;
-		}
+			void runPost(const QString& url, const QByteArray& /*postData*/, int /*timeout*/) override
+			{
+				mHasError = false;
+				mUrl = url;
+			}
 
-		void stop() override {}
+			void stop() override {}
 
-		void fireData(const QByteArray& data, const WebClient::Status status = WebClient::Status::NoError)
-		{
-			mData = data;
-			mHasError = false;
-			mStatus = status;
-			emit sigFinished();
-		}
+			void fireData(const QByteArray& data, const WebClient::Status status = WebClient::Status::NoError)
+			{
+				mData = data;
+				mHasError = false;
+				mStatus = status;
+				emit sigFinished();
+			}
 
-		[[maybe_unused]] void fireError()
-		{
-			mData.clear();
-			mHasError = true;
-			mStatus = WebClient::Status::Error;
-			emit sigFinished();
-		}
+			[[maybe_unused]] void fireError()
+			{
+				mData.clear();
+				mHasError = true;
+				mStatus = WebClient::Status::Error;
+				emit sigFinished();
+			}
 
-		[[maybe_unused]] void fireTimeout()
-		{
-			mData.clear();
-			mHasError = false;
-			mStatus = WebClient::Status::Timeout;
-			emit sigFinished();
-		}
+			[[maybe_unused]] void fireTimeout()
+			{
+				mData.clear();
+				mHasError = false;
+				mStatus = WebClient::Status::Timeout;
+				emit sigFinished();
+			}
 
-	private:
-		QByteArray mData;
-		QString mUrl;
-		WebClient::Status mStatus {WebClient::Status::NoData};
-		bool mHasError {false};
-};
+		private:
+			QByteArray mData;
+			QString mUrl;
+			WebClient::Status mStatus {WebClient::Status::NoData};
+			bool mHasError {false};
+	};
 
-class TestWebClientFactory :
-	public WebClientFactory
-{
-	public:
-		TestWebClientFactory() = default;
-		~TestWebClientFactory() override = default;
+	class WebClientFactory :
+		public ::WebClientFactory
+	{
+		public:
+			WebClientFactory() = default;
+			~WebClientFactory() override = default;
 
-		WebClient* createClient(QObject* parent) override
-		{
-			auto* client = new TestWebClient(parent);
-			mClients << client;
-			return client;
-		}
+			WebClient* createClient(QObject* parent) override
+			{
+				auto* client = new WebClient(parent);
+				mClients << client;
+				return client;
+			}
 
-		[[nodiscard]] QList<TestWebClient*> clients() const
-		{
-			return mClients;
-		}
+			[[nodiscard]] QList<WebClient*> clients() const
+			{
+				return mClients;
+			}
 
-		[[nodiscard]] TestWebClient* clientByUrl(const QString& url)
-		{
-			const auto it = std::find_if(mClients.begin(), mClients.end(), [&](const auto* client) {
-				return (client->url() == url);
-			});
+			[[nodiscard]] WebClient* clientByUrl(const QString& url)
+			{
+				const auto it = std::find_if(mClients.begin(), mClients.end(), [&](const auto* client) {
+					return (client->url() == url);
+				});
 
-			return (it != mClients.end()) ? *it : nullptr;
-		}
+				return (it != mClients.end()) ? *it : nullptr;
+			}
 
-	private:
-		QList<TestWebClient*> mClients;
-};
-
+		private:
+			QList<WebClient*> mClients;
+	};
+}
 #endif //SAYONARA_PLAYER_TESTWEBCLIENTFACTORY_H

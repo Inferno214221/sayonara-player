@@ -34,7 +34,7 @@ namespace
 
 	struct ParserEnvironment
 	{
-		std::shared_ptr<TestWebClientFactory> webClientFactory;
+		std::shared_ptr<Test::WebClientFactory> webClientFactory;
 		std::shared_ptr<StationParserFactory> stationParserFactory;
 		StreamParser* parser;
 	};
@@ -43,7 +43,7 @@ namespace
 	{
 		auto env = ParserEnvironment {};
 
-		env.webClientFactory = std::make_shared<TestWebClientFactory>();
+		env.webClientFactory = std::make_shared<Test::WebClientFactory>();
 		env.stationParserFactory = StationParserFactory::createStationParserFactory(env.webClientFactory, test);
 		env.parser = env.stationParserFactory->createParser();
 
