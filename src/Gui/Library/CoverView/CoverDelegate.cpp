@@ -35,24 +35,24 @@ namespace
 		const auto left = (optionRect.width() - width) / 2;
 		const auto top = (pixmapHeight / 20) - 1;
 
-		auto rect = QRect(left, top, width, height);
-		rect.translate(optionRect.topLeft());
-
-		return rect;
+		return {left, top, width, height};
 	}
 
 	void drawItemRectangle(QPainter* painter, const QStyleOptionViewItem& option, const int pixmapHeight)
 	{
+		constexpr const auto RectangleAlpha = 128;
+
 		if(option.state & QStyle::State_Selected)
 		{
-			painter->fillRect(option.rect, option.palette.highlight());
+			const auto rect = option.rect.translated(-option.rect.topLeft());
+			painter->fillRect(rect, option.palette.highlight());
 		}
 
 		const auto rect = calcBoundingRect(option.rect, pixmapHeight);
 
 		const auto oldColor = painter->pen().color();
 		auto color = option.palette.highlightedText().color();
-		color.setAlpha(128);
+		color.setAlpha(RectangleAlpha); // NOLINT(*-magic-numbers)
 
 		painter->setPen(color);
 		painter->drawRect(rect);
@@ -108,11 +108,14 @@ Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 		return;
 	}
 
+	constexpr const auto AlbumColor = 255;
+	constexpr const auto ArtistColor = 172;
+
 	painter->save();
+	painter->translate(option.rect.left(), option.rect.top());
 
 	const auto pixmapHeight = GetSetting(Set::Lib_CoverZoom);
 	drawItemRectangle(painter, option, pixmapHeight);
-	painter->translate(option.rect.x(), option.rect.y());
 
 	const auto pixmap = index.data(CoverModel::CoverRole).value<QPixmap>();
 	painter->translate(0, pixmapHeight / 20);
@@ -120,11 +123,11 @@ Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 	painter->translate(0, pixmapHeight + 4);
 
 	const auto album = index.data(CoverModel::AlbumRole).toString();
-	drawText(painter, option, album, 255, GetSetting(Set::Lib_FontBold));
+	drawText(painter, option, album, AlbumColor, GetSetting(Set::Lib_FontBold));
 	painter->translate(0, option.fontMetrics.height());
 
 	const auto artist = index.data(CoverModel::ArtistRole).toString();
-	drawText(painter, option, artist, 172, false);
+	drawText(painter, option, artist, ArtistColor, false);
 
 	painter->restore();
 }
