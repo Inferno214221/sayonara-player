@@ -9,6 +9,7 @@ function(NEW_TEST ...)
 			Common/DirectoryReaderMock.cpp
             Common/TaggingMocks.cpp
 			Common/DatabaseUtils.cpp
+			Common/TestWebClientFactory.h
 			${ARGV} ${RESOURCES_RCC})
 
 	target_link_libraries(${TEST_NAME}

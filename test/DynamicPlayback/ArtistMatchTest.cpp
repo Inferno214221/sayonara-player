@@ -28,9 +28,9 @@ using DynamicPlayback::ArtistMatch;
 
 namespace
 {
-	ArtistMatch createMatch()
+	ArtistMatch createMatch(const QString& name = "MyArtist")
 	{
-		ArtistMatch match;
+		ArtistMatch match(name);
 		match.add(ArtistMatch::Entry("Artist1", "MBID1", 0));
 		match.add(ArtistMatch::Entry("Artist2", "MBID2", 0.9342445));
 		match.add(ArtistMatch::Entry("Artist3", "MBID3", 0.27234523));
@@ -42,40 +42,68 @@ namespace
 }
 
 class ArtistMatchTest :
-    public Test::Base
+	public Test::Base
 {
-    Q_OBJECT
+	Q_OBJECT
 
-    public:
+	public:
 		ArtistMatchTest() :
-            Test::Base("ArtistMatch")
-        {}
+			Test::Base("ArtistMatch") {}
 
-    private slots:
-        void testCopy();
-        void testConvert();
+	private slots:
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testEmptyMatchIsInvalid()
+		{
+			struct TestCase
+			{
+				ArtistMatch match;
+				bool expectedValid;
+			};
+
+			const auto testCases = std::array {
+				TestCase {createMatch(), true},
+				TestCase {ArtistMatch {}, false}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				QCOMPARE(testCase.match.isValid(), testCase.expectedValid);
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testArtistMatchName()
+		{
+			auto match = createMatch("Metallica");
+			QCOMPARE(match.artistName(), "Metallica");
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testCopy()
+		{
+			const auto match = createMatch();
+
+			QVERIFY(match.isValid());
+			QVERIFY(match.get(ArtistMatch::Quality::Poor).size() == 3);
+			QVERIFY(match.get(ArtistMatch::Quality::Good).size() == 1);
+			QVERIFY(match.get(ArtistMatch::Quality::VeryGood).size() == 1);
+			QVERIFY(match.get(ArtistMatch::Quality::Excellent).size() == 2);
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testConvert()
+		{
+			const auto match = createMatch();
+
+			const auto string = match.toString();
+			const auto match2 = ArtistMatch::fromString(string);
+
+			QVERIFY(match == match2);
+		}
+
 };
 
-void ArtistMatchTest::testCopy()
-{
-	const auto match = createMatch();
-
-	QVERIFY(match.isValid());
-	QVERIFY(match.get(ArtistMatch::Quality::Poor).size() == 3);
-	QVERIFY(match.get(ArtistMatch::Quality::Good).size() == 1);
-	QVERIFY(match.get(ArtistMatch::Quality::VeryGood).size() == 1);
-	QVERIFY(match.get(ArtistMatch::Quality::Excellent).size() == 2);
-}
-
-void ArtistMatchTest::testConvert()
-{
-	const auto match = createMatch();
-
-	const auto string = match.toString();
-	const auto match2 = ArtistMatch::fromString(string);
-
-	QVERIFY(match == match2);
-}
-
 QTEST_GUILESS_MAIN(ArtistMatchTest)
+
 #include "ArtistMatchTest.moc"

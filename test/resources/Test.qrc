@@ -14,5 +14,6 @@
         <file>fmstream.org.html</file>
         <file>radio-browser.info.json</file>
         <file>star.png</file>
+		<file>metallica.similar_artists</file>
     </qresource>
 </RCC>
