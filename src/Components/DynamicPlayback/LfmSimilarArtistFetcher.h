@@ -23,6 +23,7 @@
 #include "SimilarArtistFetcher.h"
 #include "Utils/Pimpl.h"
 
+class WebClientFactory;
 namespace DynamicPlayback
 {
 	class LfmSimilarArtistFetcher :
@@ -32,7 +33,8 @@ namespace DynamicPlayback
 		PIMPL(LfmSimilarArtistFetcher)
 
 		public:
-			explicit LfmSimilarArtistFetcher(const QString& artist, QObject* parent = nullptr);
+			LfmSimilarArtistFetcher(const QString& artist, const std::shared_ptr<WebClientFactory>& webClientFactory,
+			                        QObject* parent = nullptr);
 			~LfmSimilarArtistFetcher() override;
 			[[nodiscard]] const ArtistMatch& similarArtists() const override;
 

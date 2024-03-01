@@ -31,12 +31,14 @@
 #include "Utils/WebAccess/WebClientImpl.h"
 #include "Utils/Utils.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QCryptographicHash>
 #include <QByteArray>
 #include <QUrl>
 
 #include <chrono>
+#include <utility>
 
 namespace LastFM
 {
@@ -67,11 +69,15 @@ namespace LastFM
 	struct WebAccess::Private
 	{
 		QByteArray data;
+		WebClientFactoryPtr webClientFactory;
+
+		explicit Private(WebClientFactoryPtr webClientFactory) :
+			webClientFactory {std::move(webClientFactory)} {}
 	};
 
-	WebAccess::WebAccess(QObject* parent) :
+	WebAccess::WebAccess(const WebClientFactoryPtr& webClientFactory, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<Private>()} {}
+		m {Pimpl::make<Private>(webClientFactory)} {}
 
 	WebAccess::~WebAccess() = default;
 
@@ -79,7 +85,7 @@ namespace LastFM
 	{
 		m->data.clear();
 
-		auto* webClient = new WebClientImpl(this);
+		auto* webClient = m->webClientFactory->createClient(this);
 		connect(webClient, &WebClient::sigFinished, this, &WebAccess::webClientFinished);
 
 		return webClient;

@@ -37,6 +37,7 @@
 class QByteArray;
 class QString;
 
+class WebClientFactory;
 class WebClient;
 namespace LastFM
 {
@@ -51,7 +52,7 @@ namespace LastFM
 			void sigFinished();
 
 		public:
-			explicit WebAccess(QObject* parent = nullptr);
+			explicit WebAccess(const std::shared_ptr <WebClientFactory>& webClientFactory, QObject* parent = nullptr);
 			~WebAccess() override;
 
 			void callUrl(const QString& url);

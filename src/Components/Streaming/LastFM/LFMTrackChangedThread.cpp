@@ -29,6 +29,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/MetaData/Artist.h"
 #include "Utils/MetaData/MetaData.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QXmlStreamReader>
 
@@ -48,7 +49,7 @@ namespace LastFM
 
 		spLog(Log::Debug, this) << "Update current_track " << track.title() + " by " << track.artist();
 
-		auto* webAccess = new WebAccess();
+		auto* webAccess = new WebAccess(std::make_shared<WebClientFactory>());
 		connect(webAccess, &WebAccess::sigFinished, this, &TrackChangedThread::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 

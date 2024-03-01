@@ -26,6 +26,7 @@
 #include "Components/Streaming/LastFM/LFMWebAccess.h"
 #include "Utils/Algorithm.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QHash>
 #include <QUrl>
@@ -54,14 +55,19 @@ namespace DynamicPlayback
 {
 	struct LfmSimilarArtistFetcher::Private
 	{
+		WebClientFactoryPtr webClientFactory;
 		QString artist;
 		ArtistMatch artistMatch;
 		QHash<QString, ArtistMatch> similarArtistsCache;
+
+		explicit Private(WebClientFactoryPtr webClientFactory) :
+			webClientFactory {std::move(webClientFactory)} {}
 	};
 
-	LfmSimilarArtistFetcher::LfmSimilarArtistFetcher(const QString& artist, QObject* parent) :
+	LfmSimilarArtistFetcher::LfmSimilarArtistFetcher(const QString& artist, const WebClientFactoryPtr& webClientFactory,
+	                                                 QObject* parent) :
 		SimilarArtistFetcher(artist, parent),
-		m {Pimpl::make<Private>()} {}
+		m {Pimpl::make<Private>(webClientFactory)} {}
 
 	LfmSimilarArtistFetcher::~LfmSimilarArtistFetcher() = default;
 
@@ -79,8 +85,8 @@ namespace DynamicPlayback
 		}
 
 		using LastFM::WebAccess;
-		
-		auto* webAccess = new WebAccess();
+
+		auto* webAccess = new WebAccess(m->webClientFactory);
 		connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 		connect(webAccess, &WebAccess::sigFinished, this, &LfmSimilarArtistFetcher::sigFinished);

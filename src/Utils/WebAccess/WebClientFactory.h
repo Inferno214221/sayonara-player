@@ -21,8 +21,9 @@
 #ifndef SAYONARA_PLAYER_WEB_FACTORY_H
 #define SAYONARA_PLAYER_WEB_FACTORY_H
 
-#include "Utils/Pimpl.h"
+#include <memory>
 
+class QObject;
 class WebClient;
 class WebClientFactory
 {
@@ -31,5 +32,7 @@ class WebClientFactory
 		virtual ~WebClientFactory() = default;
 		virtual WebClient* createClient(QObject* parent);
 };
+
+using WebClientFactoryPtr = std::shared_ptr<WebClientFactory>;
 
 #endif // SAYONARA_PLAYER_WEB_FACTORY_H

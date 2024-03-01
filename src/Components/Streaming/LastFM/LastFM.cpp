@@ -42,6 +42,7 @@
 #include "Utils/Playlist/PlaylistMode.h"
 #include "Utils/RandomGenerator.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QUrl>
 #include <QTimer>
@@ -183,7 +184,7 @@ namespace LastFM
 
 		spLog(Log::Debug, this) << "Scrobble " << track.title() << " by " << track.artist();
 
-		auto* webAccess = new WebAccess();
+		auto* webAccess = new WebAccess(std::make_shared<WebClientFactory>());
 		connect(webAccess, &WebAccess::sigFinished, this, &Base::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 

@@ -25,6 +25,7 @@
 #include "Utils/Logger/Logger.h"
 #include "Utils/Message/Message.h"
 #include "Utils/Utils.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QXmlStreamReader>
 
@@ -91,7 +92,7 @@ namespace LastFM
 	{
 		constexpr const auto* AuthMethodName = "auth.getMobileSession";
 
-		auto* webAccess = new WebAccess(this);
+		auto* webAccess = new WebAccess(std::make_shared<WebClientFactory>(), this);
 		connect(webAccess, &WebAccess::sigFinished, this, &LoginThread::webClientFinished);
 		connect(webAccess, &WebAccess::sigFinished, webAccess, &QObject::deleteLater);
 

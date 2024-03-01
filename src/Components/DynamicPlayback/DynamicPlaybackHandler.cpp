@@ -36,6 +36,7 @@
 #include "Utils/RandomGenerator.h"
 #include "Utils/Set.h"
 #include "Utils/Settings/Settings.h"
+#include "Utils/WebAccess/WebClientFactory.h"
 
 #include <QTimer>
 #include <QThread>
@@ -212,7 +213,7 @@ namespace DynamicPlayback
 	void Handler::timeout()
 	{
 		auto* thread = new QThread();
-		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName);
+		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName, std::make_shared<WebClientFactory>());
 
 		connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
 		        this, &Handler::similarArtistsAvailable);
