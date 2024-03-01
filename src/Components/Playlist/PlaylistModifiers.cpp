@@ -118,8 +118,6 @@ namespace Playlist
 			return;
 		}
 
-		const auto oldTrackCount = count(playlist);
-
 		playlist.modifyTracks([&](auto tracks) {
 			tracks << newTracks;
 			return tracks;
