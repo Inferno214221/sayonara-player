@@ -145,6 +145,8 @@ LanguageString Lang::get(const Lang::Term term, bool* ok)
 			return QObject::tr("Continue");
 		case Covers:
 			return QObject::tr("Covers");
+		case CoverView:
+			return QObject::tr("Cover view");
 		case Created:
 			return QObject::tr("Created");
 		case CreateDirectory:

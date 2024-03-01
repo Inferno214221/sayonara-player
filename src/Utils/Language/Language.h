@@ -92,6 +92,7 @@ class Lang :
 			Close,
 			CloseOthers,
 			CloseTab,
+			CoverView,
 			CreateDirectory,
 			Created,
 			CreateNewLibrary,

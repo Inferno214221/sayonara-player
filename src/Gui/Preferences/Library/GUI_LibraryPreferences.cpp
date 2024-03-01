@@ -155,6 +155,7 @@ void GUI_LibraryPreferences::retranslate()
 	ui->cbCaseInsensitive->setText(Lang::get(Lang::CaseInsensitive));
 	ui->cbIgnoreAccents->setText(Lang::get(Lang::IgnoreAccents));
 	ui->cbIgnoreSpecialChars->setText(Lang::get(Lang::IgnoreSpecialChars));
+	ui->gbCoverView->setTitle(Lang::get(Lang::CoverView));
 }
 
 void GUI_LibraryPreferences::skinChanged()

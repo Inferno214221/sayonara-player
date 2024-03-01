@@ -184,7 +184,7 @@ void ContextMenu::languageChanged()
 	}
 
 	m->standardViewAction->setText(tr("Standard view"));
-	m->coverViewAction->setText(tr("Cover view"));
+	m->coverViewAction->setText(Lang::get(Lang::CoverView));
 	m->directoryViewAction->setText(tr("Directory view"));
 	m->showFiletypeBarAction->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 
