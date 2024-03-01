@@ -110,8 +110,11 @@ bool SettingRegistry::init()
 	registerSetting<Set::Lib_CoverZoom>("lib_cover_zoom", 100); // NOLINT(readability-magic-numbers)
 	registerSetting<Set::Lib_CoverShowUtils>("lib_cover_show_utils", false);
 	registerSetting<Set::Lib_CoverShowArtist>("lib_cover_show_artist", true);
+	registerSetting<Set::Lib_CoverShowYear>("lib_cover_show_year", false);
+	registerSetting<Set::Lib_CoverShowDuration>("lib_cover_show_duration", false);
 	registerSetting<Set::Lib_CoverOrigPMCache>("lib_cover_orig_pm_cache", 1);
 	registerSetting<Set::Lib_CoverScaledPMCache>("lib_cover_scaled_pm_cache", 3);
+	registerSetting<Set::Lib_CoverScrollspeed>("lib_cover_scrollspeed", -1);
 	registerSetting<Set::Lib_GenreTree>("lib_show_genre_tree", true);
 	registerSetting<Set::Lib_LastIndex>("lib_last_idx", -1);
 	registerSetting<Set::Lib_AllLibraries>("lib_all_libraries", {}); // deprecated

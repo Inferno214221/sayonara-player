@@ -94,8 +94,11 @@ enum class SettingKey :
 	Lib_ColStateTracks,
 	Lib_CoverOrigPMCache,
 	Lib_CoverScaledPMCache,
+	Lib_CoverScrollspeed,
 	Lib_CoverShowArtist,
 	Lib_CoverShowUtils,
+	Lib_CoverShowYear,
+	Lib_CoverShowDuration,
 	Lib_CoverZoom,
 	Lib_CurPlugin,
 	Lib_DC_DoNothing,
@@ -319,7 +322,10 @@ namespace Set
 	CreateSetting(Lib_ColStateTracks, QByteArray); // Header state of tracks
 	CreateSetting(Lib_CoverOrigPMCache, int); // Original sized pixmap cache
 	CreateSetting(Lib_CoverScaledPMCache, int); // Scaled sized pixmap cache
+	CreateSetting(Lib_CoverScrollspeed, int); // Scrollspeed of cover view
 	CreateSetting(Lib_CoverShowArtist, bool); // Show artist name in cover view
+	CreateSetting(Lib_CoverShowYear, bool); // Show year in cover view
+	CreateSetting(Lib_CoverShowDuration, bool); // Show duration in cover view
 	CreateSetting(Lib_CoverShowUtils, bool); // Show utils bar in cover view
 	CreateSetting(Lib_CoverZoom, int); // Zoom of album cover view
 	CreateSetting(Lib_CurPlugin, QString); // Current shown library plugin
