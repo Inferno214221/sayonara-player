@@ -37,6 +37,7 @@ struct CoverViewContextMenu::Private
 	QAction* actionShowArtist;
 	QAction* actionShowUtils;
 	QAction* actionShowYear;
+	QAction* actionShowDuration;
 
 	QMenu* menuSorting;
 	QAction* actionSorting;
@@ -48,6 +49,7 @@ struct CoverViewContextMenu::Private
 		actionShowArtist(new QAction(menu)),
 		actionShowUtils(new QAction(menu)),
 		actionShowYear(new QAction(menu)),
+		actionShowDuration(new QAction(menu)),
 		menuSorting(new QMenu(menu)),
 		menuZoom(new QMenu(menu))
 	{
@@ -55,6 +57,8 @@ struct CoverViewContextMenu::Private
 		actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 		actionShowYear->setCheckable(true);
 		actionShowYear->setChecked(GetSetting(Set::Lib_CoverShowYear));
+		actionShowDuration->setCheckable(true);
+		actionShowDuration->setChecked(GetSetting(Set::Lib_CoverShowDuration));
 		actionShowUtils->setCheckable(true);
 		actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 
@@ -66,6 +70,7 @@ struct CoverViewContextMenu::Private
 		menu->insertSeparator(sepBeforePrefs);
 		menu->insertAction(sepBeforePrefs, actionShowArtist);
 		menu->insertAction(sepBeforePrefs, actionShowYear);
+		menu->insertAction(sepBeforePrefs, actionShowDuration);
 		menu->insertAction(sepBeforePrefs, actionShowUtils);
 
 		this->actionSorting = menu->insertMenu(sepBeforePrefs, menuSorting);
@@ -94,6 +99,10 @@ void CoverViewContextMenu::init()
 
 	connect(m->actionShowYear, &QAction::triggered, this, [this]() {
 		SetSetting(Set::Lib_CoverShowYear, m->actionShowYear->isChecked());
+	});
+
+	connect(m->actionShowDuration, &QAction::triggered, this, [this]() {
+		SetSetting(Set::Lib_CoverShowDuration, m->actionShowDuration->isChecked());
 	});
 
 	connect(m->actionShowUtils, &QAction::triggered, this, [this]() {
@@ -155,6 +164,7 @@ CoverViewContextMenu::Entries CoverViewContextMenu::entries() const
 	entries |= CoverViewContextMenu::EntryZoom;
 	entries |= CoverViewContextMenu::EntryShowArtist;
 	entries |= CoverViewContextMenu::EntryShowYear;
+	entries |= CoverViewContextMenu::EntryShowDuration;
 
 	return entries;
 }
@@ -168,6 +178,7 @@ void CoverViewContextMenu::showActions(CoverViewContextMenu::Entries entries)
 	m->actionZoom->setVisible(entries & CoverViewContextMenu::EntryZoom);
 	m->actionShowArtist->setVisible(entries & CoverViewContextMenu::EntryShowArtist);
 	m->actionShowYear->setVisible(entries & CoverViewContextMenu::EntryShowYear);
+	m->actionShowDuration->setVisible(entries & CoverViewContextMenu::EntryShowDuration);
 }
 
 void CoverViewContextMenu::setZoom(int zoom)
@@ -200,6 +211,7 @@ void CoverViewContextMenu::showEvent(QShowEvent* e)
 	m->actionShowUtils->setChecked(GetSetting(Set::Lib_CoverShowUtils));
 	m->actionShowArtist->setChecked(GetSetting(Set::Lib_CoverShowArtist));
 	m->actionShowYear->setChecked(GetSetting(Set::Lib_CoverShowYear));
+	m->actionShowDuration->setChecked(GetSetting(Set::Lib_CoverShowDuration));
 }
 
 void CoverViewContextMenu::languageChanged()
@@ -212,6 +224,7 @@ void CoverViewContextMenu::languageChanged()
 	m->actionShowUtils->setText(Lang::get(Lang::Show) + ": " + tr("Toolbar"));
 	m->actionShowArtist->setText(Lang::get(Lang::Show) + ": " + Lang::get(Lang::AlbumArtist));
 	m->actionShowYear->setText(Lang::get(Lang::Show) + ": " + Lang::get(Lang::Year));
+	m->actionShowDuration->setText(Lang::get(Lang::Show) + ": " + Lang::get(Lang::Duration));
 
 	m->menuSorting->clear();
 	initSortingActions();

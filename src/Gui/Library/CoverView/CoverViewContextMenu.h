@@ -46,7 +46,9 @@ namespace Library
 				EntrySorting = EntryShowUtils << 1,
 				EntryZoom = EntrySorting << 1,
 				EntryShowArtist = EntryZoom << 1,
-				EntryShowYear = EntryShowArtist << 1
+				EntryShowYear = EntryShowArtist << 1,
+				EntryShowDuration = EntryShowYear << 1
+
 			};
 
 			explicit CoverViewContextMenu(QWidget* parent);

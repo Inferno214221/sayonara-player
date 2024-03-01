@@ -174,6 +174,12 @@ Library::CoverDelegate::paint(QPainter* painter, const QStyleOptionViewItem& opt
 		}
 	}
 
+	if(GetSetting(Set::Lib_CoverShowDuration))
+	{
+		const auto duration = index.data(CoverModel::DurationRole).toString();
+		paintRightTopOverlay(painter, option, duration, -verticalOffset);
+	}
+
 	painter->translate(0, pixmapHeight + 4);
 
 	const auto album = index.data(CoverModel::AlbumRole).toString();

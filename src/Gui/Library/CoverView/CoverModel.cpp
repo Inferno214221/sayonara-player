@@ -34,6 +34,7 @@
 #include "Utils/Settings/Settings.h"
 #include "Utils/Language/Language.h"
 #include "Utils/Logger/Logger.h"
+#include "Utils/Utils.h"
 
 #include "Gui/Utils/GuiUtils.h"
 
@@ -162,6 +163,9 @@ namespace Library
 
 			case CoverModel::YearRole:
 				return album.year();
+
+			case CoverModel::DurationRole:
+				return Util::msToString(album.durationSec() * 1000, "$He $M:$S"); // NOLINT(*-magic-numbers)
 
 			case CoverModel::CoverRole:
 			{
