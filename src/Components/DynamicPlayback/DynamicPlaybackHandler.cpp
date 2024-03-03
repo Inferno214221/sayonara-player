@@ -76,9 +76,9 @@ namespace
 			result[track.albumArtistId()].push_back(std::move(track));
 		}
 
-		for(auto key: result.keys())
+		for(auto& albumArtistTracks: result)
 		{
-			Util::Algorithm::shuffle(result[key]);
+			Util::Algorithm::shuffle(albumArtistTracks);
 		}
 
 		return result;
@@ -92,13 +92,11 @@ namespace
 
 		for(const auto& track: playlist->tracks())
 		{
-			if((track.artistId() < 0) && (track.albumArtistId() < 0))
-			{
-				playlistFilepaths.insert(track.filepath());
-			}
+			const auto hasInvalidArtist = (track.artistId() < 0) && (track.albumArtistId() < 0);
 
-			else if(artistIds.contains(track.artistId()) ||
-			        artistIds.contains(track.albumArtistId()))
+			if(hasInvalidArtist ||
+			   artistIds.contains(track.artistId()) ||
+			   artistIds.contains(track.albumArtistId()))
 			{
 				playlistFilepaths.insert(track.filepath());
 			}
@@ -132,6 +130,7 @@ namespace DynamicPlayback
 		Playlist::Accessor* playlistAccessor;
 		Util::FileSystemPtr fileSystem;
 		std::shared_ptr<QTimer> timer {std::make_shared<QTimer>()};
+		QMap<QString, ArtistMatch> similarArtistCache;
 
 		Private(Playlist::Accessor* playlistAccessor, Util::FileSystemPtr fileSystem) :
 			playlistAccessor(playlistAccessor),
@@ -142,8 +141,7 @@ namespace DynamicPlayback
 	};
 
 	Handler::Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor,
-	                 const Util::FileSystemPtr& fileSystem,
-	                 QObject* parent) :
+	                 const Util::FileSystemPtr& fileSystem, QObject* parent) :
 		QObject(parent),
 		m {Pimpl::make<Private>(playlistAccessor, fileSystem)}
 	{
@@ -178,7 +176,7 @@ namespace DynamicPlayback
 		m->currentLibraryId = track.libraryId();
 		m->currentArtistName = track.albumArtist();
 
-		m->timer->start(500);
+		m->timer->start(500); // NOLINT(*-magic-numbers)
 	}
 
 	void Handler::similarArtistsAvailable()
@@ -186,10 +184,42 @@ namespace DynamicPlayback
 		auto* fetcher = dynamic_cast<SimilarArtistFetcher*>(sender());
 
 		const auto& artistMatch = fetcher->similarArtists();
-		if(!artistMatch.isValid())
+		if(artistMatch.isValid())
 		{
-			fetcher->deleteLater();
+			processArtistMatch(artistMatch);
+		}
+
+		fetcher->deleteLater();
+	}
+
+	void Handler::timeout()
+	{
+		if(const auto it = m->similarArtistCache.find(m->currentArtistName); it != m->similarArtistCache.end())
+		{
+			processArtistMatch(it.value());
 			return;
+		}
+
+		auto* thread = new QThread();
+		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName, std::make_shared<WebClientFactory>());
+
+		connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
+		        this, &Handler::similarArtistsAvailable);
+		connect(lfmFetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
+		connect(thread, &QThread::started, lfmFetcher, &SimilarArtistFetcher::start);
+		connect(thread, &QThread::finished, lfmFetcher, &SimilarArtistFetcher::deleteLater);
+		connect(thread, &QThread::finished, thread, &QThread::deleteLater);
+
+		lfmFetcher->moveToThread(thread);
+		thread->start();
+	}
+
+	void Handler::processArtistMatch(const DynamicPlayback::ArtistMatch& artistMatch)
+	{
+		const auto correctedArtist = artistMatch.artistName();
+		if(!m->similarArtistCache.contains(correctedArtist))
+		{
+			m->similarArtistCache[correctedArtist] = artistMatch;
 		}
 
 		const auto artistIds = evaluateArtistMatch(artistMatch, m->currentLibraryId);
@@ -206,23 +236,5 @@ namespace DynamicPlayback
 				break;
 			}
 		}
-
-		fetcher->deleteLater();
-	}
-
-	void Handler::timeout()
-	{
-		auto* thread = new QThread();
-		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName, std::make_shared<WebClientFactory>());
-
-		connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
-		        this, &Handler::similarArtistsAvailable);
-		connect(lfmFetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
-		connect(thread, &QThread::started, lfmFetcher, &SimilarArtistFetcher::start);
-		connect(thread, &QThread::finished, lfmFetcher, &SimilarArtistFetcher::deleteLater);
-		connect(thread, &QThread::finished, thread, &QThread::deleteLater);
-
-		lfmFetcher->moveToThread(thread);
-		thread->start();
 	}
 }

@@ -36,8 +36,10 @@ namespace Util
 	class FileSystem;
 }
 
+class WebClientFactory;
 namespace DynamicPlayback
 {
+	class ArtistMatch;
 	class Handler :
 		public QObject
 	{
@@ -53,6 +55,9 @@ namespace DynamicPlayback
 			void currentTrackChanged(const MetaData& track);
 			void similarArtistsAvailable();
 			void timeout();
+
+		private: // NOLINT(*-redundant-access-specifiers)
+			void processArtistMatch(const ArtistMatch& artistMatch);
 	};
 }
 #endif //SAYONARA_PLAYER_DYNAMICPLAYBACKHANDLER_H

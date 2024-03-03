@@ -58,7 +58,6 @@ namespace DynamicPlayback
 		WebClientFactoryPtr webClientFactory;
 		QString artist;
 		ArtistMatch artistMatch;
-		QHash<QString, ArtistMatch> similarArtistsCache;
 
 		explicit Private(WebClientFactoryPtr webClientFactory) :
 			webClientFactory {std::move(webClientFactory)} {}
@@ -76,13 +75,6 @@ namespace DynamicPlayback
 	void LfmSimilarArtistFetcher::fetchSimilarArtists(const QString& artistName)
 	{
 		m->artist = artistName;
-
-		if(m->similarArtistsCache.contains(m->artist))
-		{
-			m->artistMatch = m->similarArtistsCache.value(m->artist);
-			emit sigFinished();
-			return;
-		}
 
 		using LastFM::WebAccess;
 
@@ -102,14 +94,6 @@ namespace DynamicPlayback
 		if(!parsingResult.hasError)
 		{
 			m->artistMatch = parsingResult.artistMatch;
-			m->similarArtistsCache[m->artist] = m->artistMatch;
-
-			const auto artistName = m->artistMatch.artistName();
-			const auto hasCorrection = (m->artist != artistName);
-			if(hasCorrection)
-			{
-				m->similarArtistsCache[artistName] = m->artistMatch;
-			}
 		}
 
 		else

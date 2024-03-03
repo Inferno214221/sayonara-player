@@ -99,42 +99,6 @@ class LfmSimilarArtistFetcherTest :
 				QCOMPARE(artistMatch.isValid(), testCase.expectedValid);
 			}
 		}
-
-		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
-		[[maybe_unused]] void testSecondCallIsFetchedFromCache()
-		{
-			auto webClientFactory = std::make_shared<Test::WebClientFactory>();
-
-			{
-				auto fetcher = DynamicPlayback::LfmSimilarArtistFetcher("Metallica", webClientFactory);
-				auto spy = QSignalSpy(&fetcher, &DynamicPlayback::SimilarArtistFetcher::sigFinished);
-
-				fetcher.start();
-
-				auto* webClient = webClientFactory->clients()[0];
-				webClient->fireData(getSimilarArtistData());
-			}
-
-			{
-				auto fetcher = DynamicPlayback::LfmSimilarArtistFetcher("Invalid", webClientFactory);
-				auto spy = QSignalSpy(&fetcher, &DynamicPlayback::SimilarArtistFetcher::sigFinished);
-
-				fetcher.start();
-
-				auto* webClient = webClientFactory->clients()[0];
-				webClient->fireData("asdf;kjasdf;lkjasdf");
-			}
-
-			{
-				auto fetcher = DynamicPlayback::LfmSimilarArtistFetcher("Some artist", webClientFactory);
-				auto spy = QSignalSpy(&fetcher, &DynamicPlayback::SimilarArtistFetcher::sigFinished);
-
-				fetcher.start();
-
-				const auto artistMatch = fetcher.similarArtists();
-				QVERIFY(artistMatch.isValid());
-			}
-		}
 };
 
 QTEST_GUILESS_MAIN(LfmSimilarArtistFetcherTest)
