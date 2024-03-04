@@ -102,4 +102,11 @@ namespace DynamicPlayback
 			spLog(Log::Warning, this) << "Could not fetch similar artists: " << parsingResult.error;
 		}
 	}
+
+	LfmSimilarArtistFetcherFactory::~LfmSimilarArtistFetcherFactory() = default;
+
+	SimilarArtistFetcher* LfmSimilarArtistFetcherFactory::create(const QString& artist)
+	{
+		return new LfmSimilarArtistFetcher(artist, std::make_shared<WebClientFactory>());
+	}
 }

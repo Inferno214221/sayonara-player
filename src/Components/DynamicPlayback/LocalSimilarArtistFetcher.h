@@ -34,7 +34,7 @@ namespace DynamicPlayback
 			explicit LocalSimilarArtistFetcher(const QString& artistName,
 			                                   QObject* parent = nullptr);
 			~LocalSimilarArtistFetcher() override;
-			const ArtistMatch& similarArtists() const override;
+			[[nodiscard]] const ArtistMatch& similarArtists() const override;
 
 		protected:
 			void fetchSimilarArtists(const QString& artistName) override;

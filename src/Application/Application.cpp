@@ -29,6 +29,7 @@
 #include "Components/Converter/ConverterFactory.h"
 #include "Components/DynamicPlayback/DynamicPlaybackChecker.h"
 #include "Components/DynamicPlayback/DynamicPlaybackHandler.h"
+#include "Components/DynamicPlayback/LfmSimilarArtistFetcher.h"
 #include "Components/Engine/EngineHandler.h"
 #include "Components/Equalizer/Equalizer.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -183,7 +184,11 @@ struct Application::Private
 		libraryPluginHandler {Library::PluginHandler::create()},
 		playlistLibraryInteractor {new Playlist::LibraryInteractor(libraryManager)},
 		dynamicPlaybackChecker {DynamicPlaybackChecker::create(libraryManager)},
-		dynamicPlaybackHandler {new DynamicPlayback::Handler(playManager, playlistHandler, fileSystem, playManager)},
+		dynamicPlaybackHandler {
+			new DynamicPlayback::Handler(playManager, playlistHandler,
+			                             std::make_shared<DynamicPlayback::LfmSimilarArtistFetcherFactory>(),
+			                             fileSystem, playManager)
+		},
 		smartPlaylistManager {new SmartPlaylistManager(playlistHandler, fileSystem)},
 		shutdown {Shutdown::create(playManager, notificationHandler)},
 		timer {Util::startMeasure()}

@@ -48,5 +48,14 @@ namespace DynamicPlayback
 		public slots:
 			void start();
 	};
+
+	class SimilarArtistFetcherFactory
+	{
+		public:
+			virtual ~SimilarArtistFetcherFactory() = default;
+			virtual SimilarArtistFetcher* create(const QString& artist) = 0;
+	};
+
+	using SimilarArtistFetcherFactoryPtr = std::shared_ptr<SimilarArtistFetcherFactory>;
 }
 #endif //SAYONARA_PLAYER_SIMILARARTISTFETCHER_H

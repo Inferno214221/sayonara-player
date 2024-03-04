@@ -44,5 +44,14 @@ namespace DynamicPlayback
 		private slots:
 			void webClientFinished();
 	};
+
+	class LfmSimilarArtistFetcherFactory :
+		public SimilarArtistFetcherFactory
+	{
+		public:
+			~LfmSimilarArtistFetcherFactory() override;
+			SimilarArtistFetcher* create(const QString& artist) override;
+
+	};
 }
 #endif //SAYONARA_PLAYER_LFMSIMILARARTISTFETCHER_H

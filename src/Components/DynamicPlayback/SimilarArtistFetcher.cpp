@@ -19,14 +19,16 @@
  */
 #include "SimilarArtistFetcher.h"
 
+#include <utility>
+
 namespace DynamicPlayback
 {
 	struct SimilarArtistFetcher::Private
 	{
 		QString artist;
 
-		Private(const QString& artist) :
-			artist(artist) {}
+		explicit Private(QString artist) :
+			artist(std::move(artist)) {}
 	};
 
 	SimilarArtistFetcher::SimilarArtistFetcher(const QString& artist, QObject* parent) :

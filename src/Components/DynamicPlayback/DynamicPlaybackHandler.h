@@ -36,9 +36,9 @@ namespace Util
 	class FileSystem;
 }
 
-class WebClientFactory;
 namespace DynamicPlayback
 {
+	class SimilarArtistFetcherFactory;
 	class ArtistMatch;
 	class Handler :
 		public QObject
@@ -48,6 +48,7 @@ namespace DynamicPlayback
 
 		public:
 			Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor,
+			        const std::shared_ptr<SimilarArtistFetcherFactory>& similarArtistFetcherFactory,
 			        const std::shared_ptr<Util::FileSystem>& fileSystem, QObject* parent = nullptr);
 			~Handler() override;
 

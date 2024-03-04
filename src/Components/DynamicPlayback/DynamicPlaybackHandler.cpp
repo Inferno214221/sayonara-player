@@ -19,9 +19,9 @@
  */
 
 #include "DynamicPlaybackHandler.h"
-#include "LfmSimilarArtistFetcher.h"
 #include "ArtistMatch.h"
 #include "ArtistMatchEvaluator.h"
+#include "SimilarArtistFetcher.h"
 
 #include "Components/PlayManager/PlayManager.h"
 #include "Components/Playlist/Playlist.h"
@@ -128,12 +128,15 @@ namespace DynamicPlayback
 		QString currentArtistName;
 		LibraryId currentLibraryId {-1};
 		Playlist::Accessor* playlistAccessor;
+		SimilarArtistFetcherFactoryPtr similarArtistFetcherFactory;
 		Util::FileSystemPtr fileSystem;
 		std::shared_ptr<QTimer> timer {std::make_shared<QTimer>()};
 		QMap<QString, ArtistMatch> similarArtistCache;
 
-		Private(Playlist::Accessor* playlistAccessor, Util::FileSystemPtr fileSystem) :
-			playlistAccessor(playlistAccessor),
+		Private(Playlist::Accessor* playlistAccessor, SimilarArtistFetcherFactoryPtr similarArtistFetcherFactory,
+		        Util::FileSystemPtr fileSystem) :
+			playlistAccessor {playlistAccessor},
+			similarArtistFetcherFactory {std::move(similarArtistFetcherFactory)},
 			fileSystem {std::move(fileSystem)}
 		{
 			timer->setSingleShot(true);
@@ -141,9 +144,10 @@ namespace DynamicPlayback
 	};
 
 	Handler::Handler(PlayManager* playManager, Playlist::Accessor* playlistAccessor,
+	                 const SimilarArtistFetcherFactoryPtr& similarArtistFetcherFactory,
 	                 const Util::FileSystemPtr& fileSystem, QObject* parent) :
 		QObject(parent),
-		m {Pimpl::make<Private>(playlistAccessor, fileSystem)}
+		m {Pimpl::make<Private>(playlistAccessor, similarArtistFetcherFactory, fileSystem)}
 	{
 		connect(playManager, &PlayManager::sigCurrentTrackChanged, this, &Handler::currentTrackChanged);
 		connect(playManager, &PlayManager::sigPlaystateChanged, this, [timer = m->timer](const auto playState) {
@@ -177,6 +181,7 @@ namespace DynamicPlayback
 		m->currentArtistName = track.albumArtist();
 
 		m->timer->start(500); // NOLINT(*-magic-numbers)
+		//timeout();
 	}
 
 	void Handler::similarArtistsAvailable()
@@ -201,16 +206,15 @@ namespace DynamicPlayback
 		}
 
 		auto* thread = new QThread();
-		auto* lfmFetcher = new LfmSimilarArtistFetcher(m->currentArtistName, std::make_shared<WebClientFactory>());
+		auto* fetcher = m->similarArtistFetcherFactory->create(m->currentArtistName);
 
-		connect(lfmFetcher, &LfmSimilarArtistFetcher::sigFinished,
-		        this, &Handler::similarArtistsAvailable);
-		connect(lfmFetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
-		connect(thread, &QThread::started, lfmFetcher, &SimilarArtistFetcher::start);
-		connect(thread, &QThread::finished, lfmFetcher, &SimilarArtistFetcher::deleteLater);
+		connect(fetcher, &SimilarArtistFetcher::sigFinished, this, &Handler::similarArtistsAvailable);
+		connect(fetcher, &SimilarArtistFetcher::sigFinished, thread, &QThread::quit);
+		connect(thread, &QThread::started, fetcher, &SimilarArtistFetcher::start);
+		connect(thread, &QThread::finished, fetcher, &SimilarArtistFetcher::deleteLater);
 		connect(thread, &QThread::finished, thread, &QThread::deleteLater);
 
-		lfmFetcher->moveToThread(thread);
+		fetcher->moveToThread(thread);
 		thread->start();
 	}
 
