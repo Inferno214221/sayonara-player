@@ -19,6 +19,7 @@
 
 #include "Common/SayonaraTest.h"
 #include "Common/DatabaseUtils.h"
+#include "Common/LibraryDatabaseProvider.h"
 
 #include "Components/Library/LocalLibrary.h"
 #include "Components/LibraryManagement/LibraryManager.h"
@@ -39,70 +40,7 @@
 
 namespace
 {
-	constexpr const LibraryId testLibraryId = 0;
-
-	struct MetaDataBlock
-	{
-		QString album;
-		QString artist;
-		QString title;
-	};
-
-	[[maybe_unused]] MetaData createTestTrack(const MetaDataBlock& data)
-	{
-		auto track = MetaData {};
-		track.setTitle(data.title);
-		track.setAlbum(data.album);
-		track.setArtist(data.artist);
-
-		const auto path = QString("/path/to/%1/%2/%3.mp3")
-			.arg(data.artist)
-			.arg(data.album)
-			.arg(data.title);
-		track.setFilepath(path);
-
-		return track;
-	}
-
-	void cleanLibraryDatabase(DB::LibraryDatabase* db)
-	{
-		auto tracks = MetaDataList {};
-		db->getAllTracks(tracks);
-		auto ids = IdList {};
-		Util::Algorithm::transform(tracks, ids, [](const auto& track) {
-			return track.id();
-		});
-
-		Test::DB::deleteAllAlbums(db);
-		Test::DB::deleteAllArtists(db);
-		//Test::DB::deleteAllTracks(db);
-	}
-
-	void createLibraryDatabase()
-	{
-		auto* dbConnector = DB::Connector::instance();
-		dbConnector->deleteLibraryDatabase(testLibraryId);
-		dbConnector->registerLibraryDatabase(testLibraryId);
-
-		auto* db = dbConnector->libraryDatabase(testLibraryId, 0);
-		cleanLibraryDatabase(db);
-	}
-
-	void createTestLibrary(const QList<MetaDataBlock>& data, const DB::ArtistIdInfo::ArtistIdField artistIdField)
-	{
-		createLibraryDatabase();
-		auto* db = DB::Connector::instance()->libraryDatabase(testLibraryId, 0);
-		db->changeArtistIdField(artistIdField);
-
-		auto tracks = MetaDataList {};
-		Util::Algorithm::transform(data, tracks, [&](const auto& dataItem) {
-			return createTestTrack(dataItem);
-		});
-
-		db->storeMetadata(tracks);
-
-		QVERIFY(db->getNumTracks() == data.count());
-	}
+	constexpr const auto testLibraryId = 0;
 
 	class LibraryPlaylistInteractorMock :
 		public LibraryPlaylistInteractor
@@ -173,12 +111,11 @@ class LocalLibraryTest :
 [[maybe_unused]] void LocalLibraryTest::testTracksAreOnlyVisibleAfterInit()
 {
 	auto libraryManager = createLibraryManager(Test::Base::tempPath("Library"));
-
-	createTestLibrary({
-		                  {"album", "artist", "title"},
-		                  {"album", "artist", "title2"},
-		                  {"album", "artist", "title3"}
-	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
+	auto libraryProvider = Test::LibraryDatabaseProvider(testLibraryId, tempPath(), {
+		{"album", "artist", "title"},
+		{"album", "artist", "title2"},
+		{"album", "artist", "title3"}
+	}, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 	auto spyAlbums = QSignalSpy(localLibrary, &LocalLibrary::sigAllAlbumsLoaded);
@@ -208,11 +145,11 @@ class LocalLibraryTest :
 {
 	auto libraryManager = createLibraryManager(Test::Base::tempPath("Library"));
 
-	createTestLibrary({
-		                  {"album1", "artist", "title"},
-		                  {"album2", "artist", "title2"},
-		                  {"album3", "artist", "title3"}
-	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
+	auto libraryProvider = Test::LibraryDatabaseProvider(testLibraryId, tempPath(), {
+		{"album1", "artist", "title"},
+		{"album2", "artist", "title2"},
+		{"album3", "artist", "title3"}
+	}, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 	localLibrary->init();
@@ -241,11 +178,11 @@ class LocalLibraryTest :
 {
 	auto libraryManager = createLibraryManager(Test::Base::tempPath("Library"));
 
-	createTestLibrary({
-		                  {"album1", "artist1", "title"},
-		                  {"album2", "artist2", "title2"},
-		                  {"album3", "artist3", "title3"}
-	                  }, DB::ArtistIdInfo::ArtistIdField::ArtistId);
+	auto libraryProvider = Test::LibraryDatabaseProvider(testLibraryId, tempPath(), {
+		{"album1", "artist1", "title"},
+		{"album2", "artist2", "title2"},
+		{"album3", "artist3", "title3"}
+	}, DB::ArtistIdInfo::ArtistIdField::ArtistId);
 
 	auto* localLibrary = libraryManager->libraryInstance(testLibraryId);
 

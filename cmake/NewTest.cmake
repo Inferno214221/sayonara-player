@@ -10,6 +10,7 @@ function(NEW_TEST ...)
             Common/TaggingMocks.cpp
 			Common/DatabaseUtils.cpp
 			Common/TestWebClientFactory.h
+			Common/LibraryDatabaseProvider.cpp
 			${ARGV} ${RESOURCES_RCC})
 
 	target_link_libraries(${TEST_NAME}
