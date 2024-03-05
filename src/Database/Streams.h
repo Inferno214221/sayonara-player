@@ -33,7 +33,7 @@ namespace DB
 	{
 		public:
 			Streams(const QString& connectionName, DbId databaseId);
-			~Streams();
+			~Streams() override;
 
 			bool getAllStreams(QList<Stream>& result);
 			bool deleteStream(const QString& name);

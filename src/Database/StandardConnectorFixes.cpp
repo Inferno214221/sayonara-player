@@ -35,7 +35,7 @@
 
 namespace
 {
-	constexpr const auto LatestDatabaseVersion = 35;
+	constexpr const auto LatestDatabaseVersion = 36;
 
 	bool updateAlbumCissearchFix(DB::Module& module, DB::LibraryDatabase& libraryDatabase)
 	{
@@ -230,7 +230,7 @@ namespace DB
 
 		if(currentVersion < 6) // NOLINT(readability-magic-numbers)
 		{
-			const auto success = checkAndCreateTable("savedbookmarks", R"(CREATE TABLE savedbookmarks
+			const auto success = checkAndCreateTable("savedbookmarks", R"(CREATE TABLE savedbookmarks35
 			(
 				trackid INTEGER,
 				name VARCHAR(255),
@@ -718,6 +718,18 @@ namespace DB
 			if(success)
 			{
 				settingsConnector.storeSetting("version", 35); // NOLINT(readability-magic-numbers)
+			}
+		}
+
+		if(currentVersion < 36) // NOLINT(readability-magic-numbers)
+		{
+			const auto success =
+				checkAndInsertColumn("savedstreams", "userAgent", "VARCHAR(256)", "") &&
+				checkAndInsertColumn("savedpodcasts", "userAgent", "VARCHAR(256)", "");
+
+			if(success)
+			{
+				settingsConnector.storeSetting("version", 36); // NOLINT(readability-magic-numbers)
 			}
 		}
 	}

@@ -35,7 +35,7 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 {
 	streams.clear();
 
-	auto q = runQuery("SELECT name, url, isUpdatable FROM savedstreams;", "Cannot fetch streams");
+	auto q = runQuery("SELECT name, url, isUpdatable, userAgent FROM savedstreams;", "Cannot fetch streams");
 	if(hasError(q))
 	{
 		return false;
@@ -46,7 +46,8 @@ bool Streams::getAllStreams(QList<Stream>& streams)
 		streams << Stream {
 			q.value(0).toString(),
 			q.value(1).toString(),
-			q.value(2).toBool()
+			q.value(2).toBool(),
+			q.value(3).toString()
 		};
 	}
 
@@ -71,7 +72,8 @@ bool Streams::addStream(const Stream& stream)
 	                      {
 		                      {"name",        Util::convertNotNull(stream.name())},
 		                      {"url",         Util::convertNotNull(stream.url())},
-		                      {"isUpdatable", stream.isUpdatable()}
+		                      {"isUpdatable", stream.isUpdatable()},
+		                      {"userAgent",   Util::convertNotNull(stream.userAgent())}
 	                      }, QString("Could not add stream: %1, %2").arg(stream.name(), stream.url()));
 
 	return !hasError(q);
@@ -83,7 +85,8 @@ bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 	                      {
 		                      {"name",        Util::convertNotNull(stream.name())},
 		                      {"url",         Util::convertNotNull(stream.url())},
-		                      {"isUpdatable", stream.isUpdatable()}
+		                      {"isUpdatable", stream.isUpdatable()},
+		                      {"userAgent",   Util::convertNotNull(stream.userAgent())}
 	                      },
 	                      {"name", Util::convertNotNull(old_name)},
 	                      QString("Could not update stream name %1").arg(old_name));
@@ -103,7 +106,8 @@ Stream Streams::getStream(const QString& name)
 		return {
 			q.value(0).toString(),
 			q.value(1).toString(),
-			q.value(2).toBool()
+			q.value(2).toBool(),
+			q.value(3).toString()
 		};
 	}
 

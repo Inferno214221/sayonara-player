@@ -31,7 +31,7 @@ namespace DB
 	{
 		public:
 			Podcasts(const QString& connectionName, DbId databaseId);
-			~Podcasts();
+			~Podcasts() override;
 
 			bool getAllPodcasts(QList<Podcast>& result);
 			bool deletePodcast(const QString& name);
