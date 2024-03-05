@@ -89,6 +89,9 @@ void GUI_ConfigureStation::initUi()
 
 		row++;
 	}
+
+	layout->setVerticalSpacing(10);
+	layout->setHorizontalSpacing(20);
 }
 
 void GUI_ConfigureStation::setError(const QString& message)

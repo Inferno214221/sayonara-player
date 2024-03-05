@@ -216,10 +216,10 @@ namespace Gui
 			}
 		});
 
+		configDialog->open();
 		configDialog->initUi();
 		configDialog->setMode(name, mode);
 		configDialog->configureWidgets(station);
-		configDialog->open();
 	}
 
 	void AbstractStationPlugin::addStream(const StationPtr& station, const bool temporary)

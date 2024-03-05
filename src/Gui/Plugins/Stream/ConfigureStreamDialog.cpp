@@ -31,6 +31,8 @@ struct ConfigureStreamDialog::Private
 {
 	QLineEdit* name {new QLineEdit()};
 	QLineEdit* url {new QLineEdit()};
+	QCheckBox* useSpecialUserAgent {new QCheckBox()};
+	QLineEdit* userAgent {new QLineEdit()};
 	QCheckBox* updateMetadata {new QCheckBox()};
 
 	Private()
@@ -41,13 +43,20 @@ struct ConfigureStreamDialog::Private
 
 ConfigureStreamDialog::ConfigureStreamDialog(QWidget* parent) :
 	GUI_ConfigureStation(parent),
-	m {Pimpl::make<Private>()} {}
+	m {Pimpl::make<Private>()}
+{
+	connect(m->useSpecialUserAgent, &QCheckBox::toggled, m->userAgent, &QWidget::setVisible);
+}
 
 ConfigureStreamDialog::~ConfigureStreamDialog() = default;
 
 StationPtr ConfigureStreamDialog::configuredStation()
 {
-	return std::make_shared<Stream>(m->name->text(), m->url->text(), m->updateMetadata->isChecked());
+	return std::make_shared<Stream>(
+		m->name->text(),
+		m->url->text(),
+		m->updateMetadata->isChecked(),
+		m->useSpecialUserAgent->isChecked() ? m->userAgent->text() : QString());
 }
 
 void ConfigureStreamDialog::configureWidgets(StationPtr station)
@@ -57,6 +66,7 @@ void ConfigureStreamDialog::configureWidgets(StationPtr station)
 	{
 		m->name->setText(stream->name());
 		m->url->setText(stream->url());
+		m->userAgent->setText(stream->userAgent());
 		m->updateMetadata->setChecked(stream->isUpdatable());
 	}
 
@@ -64,13 +74,18 @@ void ConfigureStreamDialog::configureWidgets(StationPtr station)
 	{
 		m->name->setText({});
 		m->url->setText({});
+		m->userAgent->setText({});
 		m->updateMetadata->setChecked(GetSetting(Set::Stream_UpdateMetadata));
 	}
+
+	const auto hasCustomUserAgent = !m->userAgent->text().isEmpty();
+	m->useSpecialUserAgent->setChecked(hasCustomUserAgent);
+	m->userAgent->setVisible(hasCustomUserAgent);
 }
 
 QList<QWidget*> ConfigureStreamDialog::configurationWidgets()
 {
-	return {m->name, m->url, m->updateMetadata};
+	return {m->name, m->url, m->updateMetadata, m->useSpecialUserAgent, m->userAgent};
 }
 
 QString ConfigureStreamDialog::labelText(const int index) const
@@ -83,7 +98,10 @@ QString ConfigureStreamDialog::labelText(const int index) const
 			return "Url";
 		case 2:
 			return tr("Update Metadata");
+		case 3:
+			return "User-Agent";
+		case 4:
 		default:
-			return QString {};
+			return {};
 	}
 }
