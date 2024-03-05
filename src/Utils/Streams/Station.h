@@ -41,6 +41,7 @@ class Station
 
 		[[nodiscard]] virtual QString url() const = 0;
 		[[nodiscard]] virtual QString name() const = 0;
+		[[nodiscard]] virtual QString userAgent() const = 0;
 };
 
 class Stream :
@@ -50,7 +51,7 @@ class Stream :
 
 	public:
 		Stream();
-		Stream(const QString& name, const QString& url, bool isUpdatable = true);
+		Stream(const QString& name, const QString& url, bool isUpdatable = true, const QString& userAgent = QString());
 		Stream(const Stream& other);
 		~Stream() override;
 
@@ -63,6 +64,8 @@ class Stream :
 		void setUrl(const QString& url);
 
 		[[nodiscard]] bool isUpdatable() const;
+
+		[[nodiscard]] QString userAgent() const override;
 };
 
 class Podcast :
@@ -72,7 +75,7 @@ class Podcast :
 
 	public:
 		Podcast();
-		Podcast(const QString& name, const QString& url, bool reversed = false);
+		Podcast(const QString& name, const QString& url, bool reversed = false, const QString& userAgent = QString());
 		Podcast(const Podcast& other);
 
 		~Podcast() override;
@@ -85,6 +88,8 @@ class Podcast :
 
 		[[nodiscard]] bool reversed() const;
 		void setReversed(bool b);
+
+		[[nodiscard]] QString userAgent() const override;
 
 		Podcast& operator=(const Podcast& podcast);
 };

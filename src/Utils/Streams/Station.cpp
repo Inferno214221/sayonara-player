@@ -26,7 +26,7 @@ Station::Station() = default;
 Station::Station(const Station&) = default;
 Station::~Station() = default;
 
-Station& Station::station(const Station&)
+Station& Station::station(const Station& /*unused*/)
 {
 	return *this;
 }
@@ -35,20 +35,21 @@ struct Stream::Private
 {
 	QString name;
 	QString url;
+	QString userAgent;
 	bool isUpdatable;
 
-	Private(QString name, QString url, bool isUpdatable) :
+	Private(QString name, QString url, const bool isUpdatable, QString userAgent) :
 		name(std::move(name)),
 		url(std::move(url)),
+		userAgent(std::move(userAgent)),
 		isUpdatable(isUpdatable) {}
 };
 
 Stream::Stream() :
 	Stream(QString(), QString(), true) {}
 
-Stream::Stream(const QString& name, const QString& url, bool isUpdatable) :
-	Station(),
-	m {Pimpl::make<Private>(name, url, isUpdatable)} {}
+Stream::Stream(const QString& name, const QString& url, const bool isUpdatable, const QString& userAgent) :
+	m {Pimpl::make<Private>(name, url, isUpdatable, userAgent)} {}
 
 Stream::~Stream() = default;
 
@@ -74,23 +75,27 @@ void Stream::setUrl(const QString& url) { m->url = url; }
 
 bool Stream::isUpdatable() const { return m->isUpdatable; }
 
+QString Stream::userAgent() const { return m->userAgent; }
+
 struct Podcast::Private
 {
 	QString name;
 	QString url;
+	QString userAgent;
 	bool reversed;
 
-	Private(QString name, QString url, const bool reversed) :
+	Private(QString name, QString url, const bool reversed, QString userAgent) :
 		name(std::move(name)),
 		url(std::move(url)),
+		userAgent(std::move(userAgent)),
 		reversed(reversed) {}
 };
 
 Podcast::Podcast() :
 	Podcast(QString(), QString(), false) {}
 
-Podcast::Podcast(const QString& name, const QString& url, bool reversed) :
-	m {Pimpl::make<Private>(name, url, reversed)} {}
+Podcast::Podcast(const QString& name, const QString& url, const bool reversed, const QString& userAgent) :
+	m {Pimpl::make<Private>(name, url, reversed, userAgent)} {}
 
 Podcast::Podcast(const Podcast& other) :
 	Podcast()
@@ -111,6 +116,8 @@ void Podcast::setUrl(const QString& url) { m->url = url; }
 bool Podcast::reversed() const { return m->reversed; }
 
 void Podcast::setReversed(bool b) { m->reversed = b; }
+
+QString Podcast::userAgent() const { return m->userAgent; }
 
 Podcast& Podcast::operator=(const Podcast& other)
 {
