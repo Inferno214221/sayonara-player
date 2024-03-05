@@ -97,7 +97,7 @@ bool DB::Streams::updateStream(const QString& old_name, const Stream& stream)
 Stream Streams::getStream(const QString& name)
 {
 	auto q = runQuery(
-		"SELECT name, url, isUpdatable FROM savedstreams WHERE name = :name;",
+		"SELECT name, url, isUpdatable, userAgent FROM savedstreams WHERE name = :name;",
 		{":name", name},
 		QString("Cannot fetch stream %1").arg(name));
 
