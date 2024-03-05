@@ -20,6 +20,9 @@
 
 #include "WebClient.h"
 
+#include <QMap>
+#include <QByteArray>
+
 WebClient::WebClient(QObject* parent) :
 	QObject(parent) {}
 

@@ -36,13 +36,13 @@ namespace Test
 			explicit WebClient(QObject* parent) :
 				::WebClient(parent) {}
 
-			[[nodiscard]] QByteArray errorData() const override { return {}; }
-
 			~WebClient() override = default;
 
 			[[nodiscard]] QByteArray data() const override { return mData; }
 
 			[[nodiscard]] bool hasData() const override { return (!mData.isEmpty()); }
+
+			[[nodiscard]] QByteArray errorData() const override { return {}; }
 
 			[[nodiscard]] QString url() const override { return mUrl; }
 
@@ -53,6 +53,8 @@ namespace Test
 			void setMode(const Mode /*mode*/) override {}
 
 			void setRawHeader(const QMap<QByteArray, QByteArray>& /*header*/) override {}
+
+			void setUserAgent(const QString& /*userAgent*/) override {}
 
 			void run(const QString& url, int /*timeout*/) override
 			{

@@ -32,6 +32,7 @@
 
 namespace
 {
+	constexpr const auto UserAgentHeader = "User-Agent";
 
 	bool isStream(QNetworkReply* reply)
 	{
@@ -157,7 +158,11 @@ void WebClientImpl::run(const QString& url, int timeout)
 	auto request = QNetworkRequest(m->url);
 	request.setMaximumRedirectsAllowed(2);
 	setRequestHeader(request, m->header);
-	request.setHeader(QNetworkRequest::UserAgentHeader, getUserAgent(m->mode));
+	if(!m->header.contains(UserAgentHeader))
+	{
+		request.setHeader(QNetworkRequest::UserAgentHeader, getUserAgent(m->mode));
+	}
+
 	request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
 	                     QNetworkRequest::NoLessSafeRedirectPolicy);
 
@@ -264,6 +269,11 @@ void WebClientImpl::reset()
 	m->data.clear();
 	m->errorData.clear();
 	m->networkAccessManager->clearAccessCache();
+}
+
+void WebClientImpl::setUserAgent(const QString& userAgent)
+{
+	m->header[UserAgentHeader] = userAgent.toLocal8Bit();
 }
 
 struct AbstractWebClientStopper::Private

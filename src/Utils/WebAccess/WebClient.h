@@ -73,6 +73,7 @@ class WebClient :
 
 		virtual void setMode(Mode mode) = 0;
 		virtual void setRawHeader(const QMap<QByteArray, QByteArray>& header) = 0;
+		virtual void setUserAgent(const QString& userAgent) = 0;
 
 		virtual void run(const QString& url, int timeout = Timeout) = 0; // NOLINT(google-default-arguments)
 		virtual void runPost(const QString& url, const QByteArray& postData,

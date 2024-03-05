@@ -71,6 +71,7 @@ class WebClientImpl :
 
 	public slots: // NOLINT(readability-redundant-access-specifiers)
 		void stop() override;
+		void setUserAgent(const QString& userAgent) override;
 
 	private slots:
 		void dataAvailable();
