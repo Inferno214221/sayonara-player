@@ -30,54 +30,50 @@
 
 #include <QUrl>
 
-using SomaFM::AsyncDropHandler;
-using SomaFM::Station;
-
-struct AsyncDropHandler::Private
+namespace SomaFM
 {
-	Station station;
-
-	Private(const Station& station) :
-		station(station) {}
-};
-
-AsyncDropHandler::AsyncDropHandler(const SomaFM::Station& station, QObject* parent) :
-	Gui::AsyncDropHandler(parent)
-{
-	m = Pimpl::make<Private>(station);
-}
-
-AsyncDropHandler::~AsyncDropHandler() = default;
-
-void AsyncDropHandler::start()
-{
-	QStringList files = m->station.playlists();
-
-	auto stationParserFactory =
-		StationParserFactory::createStationParserFactory(std::make_shared<WebClientFactory>(), this);
-	auto* streamParser = stationParserFactory->createParser();
-
-	const Cover::Location cl = m->station.coverLocation();
-	auto searchUrls = cl.searchUrls();
-	if(!searchUrls.isEmpty())
+	struct AsyncDropHandler::Private
 	{
-		const QString coverUrl = searchUrls.first().url();
-		streamParser->setCoverUrl(coverUrl);
+		Station station;
+
+		explicit Private(const Station& station) :
+			station(station) {}
+	};
+
+	AsyncDropHandler::AsyncDropHandler(const Station& station, QObject* parent) :
+		Gui::AsyncDropHandler(parent),
+		m {Pimpl::make<Private>(station)} {}
+
+	AsyncDropHandler::~AsyncDropHandler() = default;
+
+	void AsyncDropHandler::start()
+	{
+		const auto files = m->station.playlists();
+
+		auto stationParserFactory =
+			StationParserFactory::createStationParserFactory(std::make_shared<WebClientFactory>(), this);
+		auto* streamParser = stationParserFactory->createParser();
+
+		const auto cl = m->station.coverLocation();
+		auto searchUrls = cl.searchUrls();
+		if(!searchUrls.isEmpty())
+		{
+			const auto coverUrl = searchUrls.first().url();
+			streamParser->setCoverUrl(coverUrl);
+		}
+
+		connect(streamParser, &StreamParser::sigFinished, this, &AsyncDropHandler::streamParserFinished);
+		streamParser->parse(m->station.name(), files, {}, 5000); // NOLINT(*-magic-numbers)
 	}
 
-	connect(streamParser, &StreamParser::sigFinished, this, &AsyncDropHandler::streamParserFinished);
-	streamParser->parse(m->station.name(), files, {}, 5000); // NOLINT(*-magic-numbers)
-}
+	void AsyncDropHandler::streamParserFinished(const bool /*success*/)
+	{
+		auto* streamParser = dynamic_cast<StreamParser*>(sender());
+		auto tracks = streamParser->tracks();
+		Utils::mapStationToMetadata(m->station, tracks);
 
-void AsyncDropHandler::streamParserFinished(bool success)
-{
-	Q_UNUSED(success)
+		streamParser->deleteLater();
 
-	auto* streamParser = static_cast<StreamParser*>(sender());
-	MetaDataList tracks = streamParser->tracks();
-	SomaFM::Utils::mapStationToMetadata(m->station, tracks);
-
-	streamParser->deleteLater();
-
-	Gui::AsyncDropHandler::setTracks(tracks);
+		Gui::AsyncDropHandler::setTracks(tracks);
+	}
 }
