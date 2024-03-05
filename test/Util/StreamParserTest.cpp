@@ -74,7 +74,7 @@ class StreamParserTest :
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 	auto* client = env.webClientFactory->clients().first();
 	client->fireData("Nothing", WebClient::Status::GotData);
 
@@ -89,7 +89,7 @@ class StreamParserTest :
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
@@ -115,7 +115,7 @@ class StreamParserTest :
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
 <http>
@@ -141,7 +141,7 @@ class StreamParserTest :
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 
 	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
@@ -167,7 +167,7 @@ class StreamParserTest :
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 
 	auto* client = env.webClientFactory->clients().first();
 	const auto* data = R"(
@@ -194,7 +194,7 @@ https://path/to/file2.mp3)";
 	auto env = createParser(this);
 	auto spy = QSignalSpy(env.parser, &StreamParser::sigFinished);
 
-	env.parser->parse(stationName, stationUrl);
+	env.parser->parse(stationName, {stationUrl});
 	auto* client = env.webClientFactory->clients().first();
 
 	client->fireData("Audio DATA", WebClient::Status::AudioStream);

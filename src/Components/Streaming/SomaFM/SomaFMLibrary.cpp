@@ -163,7 +163,7 @@ void SomaFM::Library::createPlaylistFromStation(int row)
 	connect(parser, &StreamParser::sigFinished, this, &SomaFM::Library::stationStreamsFetched);
 
 	const auto& station = m->stationMap[m->requestedStation];
-	parser->parse(station.playlists(), m->timeout());
+	parser->parse(station.name(), station.playlists(), {}, m->timeout());
 }
 
 void SomaFM::Library::stationStreamsFetched(bool success)
@@ -201,7 +201,7 @@ bool SomaFM::Library::createPlaylistFromStreamlist(int idx)
 		StationParserFactory::createStationParserFactory(std::make_shared<WebClientFactory>(), this);
 	auto* streamParser = stationParserFactory->createParser();
 	connect(streamParser, &StreamParser::sigFinished, this, &SomaFM::Library::playlistContentFetched);
-	streamParser->parse(station.name(), urls[idx], m->timeout());
+	streamParser->parse(station.name(), {urls[idx]}, {}, m->timeout());
 
 	return true;
 }

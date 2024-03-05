@@ -83,7 +83,7 @@ bool AbstractStationHandler::parseStation(const StationPtr& station)
 	connect(m->streamParser, &StreamParser::sigUrlCountExceeded, this, &AbstractStationHandler::sigUrlCountExceeded);
 	connect(m->streamParser, &StreamParser::sigStopped, this, &AbstractStationHandler::parserStopped);
 
-	m->streamParser->parse(m->parsedStation->name(), m->parsedStation->url());
+	m->streamParser->parse(m->parsedStation->name(), {m->parsedStation->url()}, m->parsedStation->userAgent());
 
 	return true;
 }

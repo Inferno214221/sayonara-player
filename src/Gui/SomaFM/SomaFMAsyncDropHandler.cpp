@@ -66,7 +66,7 @@ void AsyncDropHandler::start()
 	}
 
 	connect(streamParser, &StreamParser::sigFinished, this, &AsyncDropHandler::streamParserFinished);
-	streamParser->parse(files, 5000);
+	streamParser->parse(m->station.name(), files, {}, 5000); // NOLINT(*-magic-numbers)
 }
 
 void AsyncDropHandler::streamParserFinished(bool success)

@@ -82,11 +82,9 @@ namespace
 			TestStationParser() :
 				StreamParser(nullptr) {}
 
+			void parse(const QString& name, const QStringList& urls, const QString& userAgent, int timeout) override {}
+
 			~TestStationParser() override = default;
-
-			void parse(const QString& /*stationName*/, const QString& /*stationUrl*/, int /*timeout*/) override {}
-
-			void parse(const QStringList& /*urls*/, int /*timeout*/) override {}
 
 			void stopParsing() override {}
 

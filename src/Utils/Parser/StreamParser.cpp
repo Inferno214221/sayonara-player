@@ -280,25 +280,16 @@ class StreamParserImpl :
 
 		~StreamParserImpl() override = default;
 
-		void parse(const QString& stationName, const QString& stationUrl, const int timeout) override
-		{
-			m_stationName.clear();
-
-			if(!stationUrl.isEmpty())
-			{
-				m_stationName = stationName;
-				parse(Urls {stationUrl}, timeout);
-			}
-		}
-
-		void parse(const Urls& urls, const int timeout) override
+		void parse(const QString& name, const QStringList& urls, const QString& userAgent, const int timeout) override
 		{
 			m_timeout = timeout;
 			m_stopped = false;
 			m_tracks.clear();
 
+			m_stationName = name;
 			m_urls = urls;
 			m_urls.removeDuplicates();
+			m_userAgent = userAgent;
 
 			if(m_urls.size() > MaxSizeUrls)
 			{
@@ -334,7 +325,16 @@ class StreamParserImpl :
 			}
 
 			auto* webClient = m_webClientFactory->createClient(this);
-			webClient->setMode(WebClient::Mode::AsSayonara);
+
+			if(m_userAgent.isEmpty())
+			{
+				webClient->setMode(WebClient::Mode::AsSayonara);
+			}
+			else
+			{
+				webClient->setUserAgent(m_userAgent);
+			}
+
 			QObject::connect(webClient, &WebClient::sigFinished, this, &StreamParserImpl::webClientFinished);
 			QObject::connect(this, &StreamParser::sigStopped, webClient, &WebClient::stop);
 			QObject::connect(this, &StreamParser::sigStopped, webClient, &WebClient::deleteLater);
@@ -450,6 +450,7 @@ class StreamParserImpl :
 		QString m_coverUrl;
 		MetaDataList m_tracks;
 		Urls m_urls;
+		QString m_userAgent;
 		std::shared_ptr<WebClientFactory> m_webClientFactory;
 		Util::FileSystemPtr m_fileSystem;
 		int m_timeout {0};
@@ -461,10 +462,15 @@ StreamParser::StreamParser(QObject* parent) :
 
 StreamParser::~StreamParser() = default;
 
-void StreamParser::parse(const QString& stationName, const QString& stationUrl)
+void StreamParser::parse(const QString& name, const QStringList& urls)
+{
+	return parse(name, urls, {});
+}
+
+void StreamParser::parse(const QString& name, const QStringList& urls, const QString& userAgent)
 {
 	constexpr const auto Timeout = 5000;
-	return parse(stationName, stationUrl, Timeout);
+	return parse(name, urls, userAgent, Timeout);
 }
 
 class StationParserFactoryImpl :

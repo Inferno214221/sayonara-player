@@ -40,9 +40,9 @@ class StreamParser :
 		explicit StreamParser(QObject* parent);
 		~StreamParser() override;
 
-		void parse(const QString& stationName, const QString& stationUrl);
-		virtual void parse(const QString& stationName, const QString& stationUrl, int timeout) = 0;
-		virtual void parse(const QStringList& urls, int timeout) = 0;
+		void parse(const QString& name, const QStringList& urls);
+		void parse(const QString& name, const QStringList& urls, const QString& userAgent);
+		virtual void parse(const QString& name, const QStringList& urls, const QString& userAgent, int timeout) = 0;
 		virtual void stopParsing() = 0;
 		[[nodiscard]] virtual MetaDataList tracks() const = 0;
 		[[nodiscard]] virtual bool isStopped() const = 0;
