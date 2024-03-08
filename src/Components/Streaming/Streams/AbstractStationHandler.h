@@ -73,7 +73,7 @@ class AbstractStationHandler :
 		[[nodiscard]] virtual StationPtr fetchStation(const QString& name) = 0;
 
 	private:
-		void createPlaylist(const StationPtr& station, const MetaDataList& tracks);
+		void createPlaylist(const StationPtr& station, MetaDataList tracks);
 
 	private slots: // NOLINT(readability-redundant-access-specifiers)
 		void parserFinished(bool success);

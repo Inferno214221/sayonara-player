@@ -29,6 +29,19 @@
 
 #include <QMap>
 
+namespace
+{
+	MetaDataList applyUserAgent(MetaDataList tracks, const QString& userAgent)
+	{
+		for(auto& track: tracks)
+		{
+			track.addCustomField("user-agent", "user-agent", userAgent);
+		}
+
+		return tracks;
+	}
+}
+
 struct AbstractStationHandler::Private
 {
 	Playlist::Creator* playlistCreator;
@@ -49,7 +62,7 @@ AbstractStationHandler::AbstractStationHandler(Playlist::Creator* playlistCreato
 
 AbstractStationHandler::~AbstractStationHandler() = default;
 
-void AbstractStationHandler::createPlaylist(const StationPtr& station, const MetaDataList& tracks)
+void AbstractStationHandler::createPlaylist(const StationPtr& station, MetaDataList tracks)
 {
 	if(!tracks.isEmpty())
 	{
@@ -57,11 +70,11 @@ void AbstractStationHandler::createPlaylist(const StationPtr& station, const Met
 		                          ? station->name()
 		                          : QString {};
 
-		const auto index =
-			m->playlistCreator->createPlaylist(preprocessPlaylist(station, tracks),
-			                                   playlistName,
-			                                   true,
-			                                   GetSetting(Set::Stream_LockedPlaylistByDefault));
+		tracks = applyUserAgent(std::move(tracks), station->userAgent());
+		tracks = preprocessPlaylist(station, std::move(tracks));
+
+		const auto index = m->playlistCreator->createPlaylist(
+			tracks, playlistName, true, GetSetting(Set::Stream_LockedPlaylistByDefault));
 
 		auto playlist = m->playlistCreator->playlist(index);
 		playlist->changeTrack(0);
