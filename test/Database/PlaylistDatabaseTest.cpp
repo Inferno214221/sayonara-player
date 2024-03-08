@@ -29,11 +29,36 @@ namespace
 {
 	MetaData createRadioTrack(const QString& url, const QString& name)
 	{
-		auto track = MetaData {};
+		auto track = MetaData {url};
 		track.setRadioStation(url, name);
 		track.changeRadioMode(RadioMode::Station);
 		return track;
 	}
+
+	MetaData createPodcastTrack(const QString& title, const QString& artist)
+	{
+		auto track = MetaData {QString("https://podcast%1%2.com").arg(artist).arg(title)};
+		track.setTitle(title);
+		track.setArtist(artist);
+		track.changeRadioMode(RadioMode::Podcast);
+		return track;
+	}
+
+	MetaData createNonLibraryTrack(const QString& artist, const QString& album, const QString& title)
+	{
+		const auto filepath = QString("/%1/%2/%3.mp3")
+			.arg(artist)
+			.arg(album)
+			.arg(title);
+
+		auto track = MetaData {filepath};
+		track.setArtist(artist);
+		track.setAlbum(album);
+		track.setTitle(title);
+
+		return track;
+	}
+
 }
 
 class PlaylistDatabaseTest :
@@ -43,11 +68,12 @@ class PlaylistDatabaseTest :
 
 	public:
 		PlaylistDatabaseTest() :
-			Test::Base("PlaylistTest") {}
+			Test::Base("PlaylistDatabaseTest") {}
 
 	private slots:
 
-		[[maybe_unused]] void testCreateAndDeletePlaylist() // NOLINT(readability-convert-member-functions-to-static)
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static, *-function-cognitive-complexity)
+		[[maybe_unused]] void testCreateAndDeletePlaylist()
 		{
 			auto* db = DB::Connector::instance();
 			auto* playlistDb = db->playlistConnector();
@@ -96,12 +122,67 @@ class PlaylistDatabaseTest :
 			const auto playlist = playlistDb->getPlaylistById(id, true);
 			QVERIFY(playlist.tracks().count() == 1);
 
-			const auto fetchedTrack = playlist.tracks()[0];
-			QVERIFY(fetchedTrack.radioMode() == RadioMode::Station);
-			QVERIFY(fetchedTrack.radioStation() == url);
-			QVERIFY(fetchedTrack.radioStationName() == name);
-
 			playlistDb->deletePlaylist(id);
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testRadioModeIsLoadedCorrectly()
+		{
+			struct TestCase
+			{
+				QString playlistName;
+				MetaData track;
+				RadioMode expectedRadioMode;
+			};
+
+			const auto testCases = std::array {
+				TestCase {"StreamPlaylist", createRadioTrack("https://stream.com", "stream"), RadioMode::Station},
+				TestCase {"PodcastPlaylist", createPodcastTrack("https://podcast.com", "stream"), RadioMode::Podcast},
+				TestCase {"StandardPlaylist", createNonLibraryTrack("ar", "al", "t"), RadioMode::Off}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				auto* db = DB::Connector::instance();
+				auto* playlistDb = db->playlistConnector();
+
+				const auto id = playlistDb->createPlaylist(testCase.playlistName, true, false);
+				playlistDb->insertTrackIntoPlaylist(testCase.track, id, 0);
+
+				auto fetchedPlaylist = playlistDb->getPlaylistById(id, true);
+				const auto fetchedTrack = fetchedPlaylist.tracks()[0];
+				QVERIFY(fetchedTrack.radioMode() == testCase.expectedRadioMode);
+
+				playlistDb->deletePlaylist(id);
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testMixedPlaylistHasCorrectTracks()
+		{
+			const auto tracks = std::array {
+				createRadioTrack("https://stream.com", "some name"),
+				createPodcastTrack("podcast", "some artist"),
+				createNonLibraryTrack("ar", "album", "ttle")
+			};
+
+			auto* db = DB::Connector::instance();
+			auto* playlistDb = db->playlistConnector();
+
+			const auto id = playlistDb->createPlaylist("Some palylist", true, false);
+			int i = 0;
+			for(const auto& track: tracks)
+			{
+				playlistDb->insertTrackIntoPlaylist(track, id, i);
+				i++;
+			}
+
+			const auto playlist = playlistDb->getPlaylistById(id, true);
+			const auto fetchedTracks = playlist.tracks();
+
+			QVERIFY(fetchedTracks[0] == tracks[0]);
+			QVERIFY(fetchedTracks[1] == tracks[1]);
+			QVERIFY(fetchedTracks[2] == tracks[2]);
 		}
 };
 

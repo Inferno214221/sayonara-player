@@ -104,6 +104,35 @@ namespace
 
 		return joinedFields;
 	}
+
+	int insertOnlineTrack(DB::Module* module, const MetaData& track)
+	{
+		auto fieldBindings = QMap<QString, QVariant> {
+			{"isUpdatable", track.isUpdatable()},
+			{"description", Util::convertNotNull(track.customField("description"))},
+			{"userAgent",   Util::convertNotNull(track.customField("user-agent"))},
+			{"radioMode",   static_cast<int>(track.radioMode())}
+		};
+
+		if(track.radioMode() == RadioMode::Station)
+		{
+			fieldBindings.insert("stationName", Util::convertNotNull(track.radioStationName()));
+			fieldBindings.insert("stationUrl", Util::convertNotNull(track.radioStation()));
+		}
+
+		if(track.radioMode() == RadioMode::Podcast)
+		{
+			fieldBindings.insert("stationName", Util::convertNotNull(track.title()));
+			fieldBindings.insert("stationUrl", Util::convertNotNull(track.artist()));
+		}
+
+		const auto q = module->insert("OnlineTracks",
+		                              fieldBindings,
+		                              QString("Cannot insert %1 into OnlineTracks")
+			                              .arg(track.filepath()));
+
+		return DB::hasError(q) ? -1 : q.lastInsertId().toInt();
+	}
 }
 
 DB::Playlist::Playlist(const QString& connection_name, const DbId databaseId) :
@@ -298,28 +327,30 @@ MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(const int playlistId)
 	return result;
 }
 
-MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId)
+MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 {
 	MetaDataList result;
 
 	const auto static fields = QStringList {
-		"ptt.filepath          AS filepath",
-		"ptt.position          AS position",
-		"ptt.stationName       AS radioStationName",
-		"ptt.station           AS radioStation",
-		"ptt.isRadio           AS isRadio",
-		"ptt.isUpdatable       AS isUpdatable",
-		"ptt.coverDownloadUrl  AS coverDownloadUrl",
-		"ptt.position          AS position"
+		"ptt.filepath",                   // 0
+		"ptt.position",                   // 1
+		"ptt.coverDownloadUrl",           // 2
+		"onlineTracks.radioMode",         // 3
+		"onlineTracks.stationName",       // 4
+		"onlineTracks.stationUrl",        // 5
+		"onlineTracks.isUpdatable",       // 6
+		"onlineTracks.userAgent",         // 7
+		"onlineTracks.description"        // 8
 	};
 
 	const auto static joinedFields = fields.join(", ");
 
 	const auto queryText = QString("SELECT %1 "
-	                               "FROM playlists pl, playlistToTracks ptt "
-	                               "WHERE pl.playlistID = :playlistID "
-	                               "AND pl.playlistID = ptt.playlistID "
-	                               "AND ptt.trackID < 0 "
+	                               "FROM playlists pl "
+	                               "JOIN playlistToTracks ptt ON pl.playlistId = ptt.playlistId "
+	                               "LEFT JOIN onlineTracks ON ptt.onlineTrackId = onlineTracks.onlineTrackId "
+	                               "WHERE ptt.trackID < 0 "
+	                               "AND pl.playlistId = :playlistID "
 	                               "ORDER BY ptt.position ASC;").arg(joinedFields);
 
 	// non database playlists
@@ -339,11 +370,13 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 	{
 		const auto filepath = query.value(0).toString();
 		const auto position = query.value(1).toInt();
-		const auto radioStationName = query.value(2).toString();
-		const auto radioStation = query.value(3).toString();
-		const auto radioMode = query.value(4).value<RadioMode>();
-		const auto isUpdatable = query.value(5).toBool();
-		const auto coverUrls = variantToStringList(query.value(6), ';');
+		const auto coverUrls = variantToStringList(query.value(2), ';');
+		const auto radioMode = query.value(3).value<RadioMode>();
+		const auto stationName = query.value(4).toString();
+		const auto stationUrl = query.value(5).toString();
+		const auto isUpdatable = query.value(6).toBool();
+		const auto userAgent = query.value(7).toString();
+		const auto description = query.value(8).toString();
 
 		auto track = MetaData(filepath);
 		track.setId(-1);
@@ -351,17 +384,20 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 		track.setDatabaseId(databaseId());
 		track.setCoverDownloadUrls(coverUrls);
 		track.setUpdateable(isUpdatable);
+		track.addCustomField("user-agent", "", userAgent);
+		track.addCustomField("description", "", description);
 
 		if(radioMode == RadioMode::Station)
 		{
-			track.setRadioStation(radioStation, radioStationName);
+			track.setRadioStation(stationUrl, stationName);
+
 		}
 
 		else if(radioMode == RadioMode::Podcast)
 		{
-			track.setTitle(radioStationName);
-			track.setArtist(radioStation);
-			track.setAlbum(radioStationName);
+			track.setTitle(stationName);
+			track.setArtist(stationUrl);
+			track.setAlbum(stationName);
 		}
 
 		else
@@ -405,25 +441,24 @@ bool DB::Playlist::insertTrackIntoPlaylist(const MetaData& track, const int play
 	}
 
 	auto fieldBindings = QMap<QString, QVariant> {
+		{"coverDownloadUrl", Util::convertNotNull(track.coverDownloadUrls().join(";"))},
 		{"playlistid",       playlistId},
 		{"filepath",         Util::convertNotNull(track.filepath())},
 		{"position",         pos},
 		{"trackid",          track.id()},
-		{"db_id",            track.databaseId()},
-		{"coverDownloadUrl", track.coverDownloadUrls().join(";")},
-		{"isRadio",          static_cast<int>(track.radioMode())}, // for some reason QVariant::fromValue does not work here
-		{"isUpdatable",      track.isUpdatable()}};
+		{"db_id",            track.databaseId()}
+	};
 
-	if(track.radioMode() == RadioMode::Station)
+	if((track.radioMode() == RadioMode::Station) ||
+	   (track.radioMode() == RadioMode::Podcast))
 	{
-		fieldBindings.insert("stationName", Util::convertNotNull(track.radioStationName()));
-		fieldBindings.insert("station", Util::convertNotNull(track.radioStation()));
-	}
+		const auto onlineTrackId = insertOnlineTrack(this, track);
+		if(onlineTrackId < 0)
+		{
+			return false;
+		}
 
-	if(track.radioMode() == RadioMode::Podcast)
-	{
-		fieldBindings.insert("stationName", Util::convertNotNull(track.title()));
-		fieldBindings.insert("station", Util::convertNotNull(track.artist()));
+		fieldBindings.insert("onlineTrackId", onlineTrackId);
 	}
 
 	auto query = insert("playlistToTracks", fieldBindings, "Cannot insert track into playlist");

@@ -723,13 +723,59 @@ namespace DB
 
 		if(currentVersion < 36) // NOLINT(readability-magic-numbers)
 		{
-			const auto success =
-				checkAndInsertColumn("savedstreams", "userAgent", "VARCHAR(256)", "") &&
-				checkAndInsertColumn("savedpodcasts", "userAgent", "VARCHAR(256)", "");
+			db.transaction();
+			checkAndInsertColumn("savedStreams", "userAgent", "VARCHAR(256)");
+			checkAndInsertColumn("savedPodcasts", "userAgent", "VARCHAR(256)");
+
+			auto success = checkAndInsertColumn("playlistToTracks", "tempTrackId", "INTEGER");
+
+			auto fillTempTrackColumn = QSqlQuery(db);
+			fillTempTrackColumn.prepare("UPDATE playlistToTracks SET tempTrackId=rowID WHERE isRadio > 0;");
+			success &= fillTempTrackColumn.exec();
+
+			success &= checkAndCreateTable("OnlineTracks", R"(CREATE TABLE OnlineTracks
+			(
+				onlineTrackId INTEGER PRIMARY KEY,
+				stationName VARCHAR(512),
+				stationUrl VARCHAR(512),
+				radioMode INTEGER,
+				isUpdatable INTEGER DEFAULT 1,
+				userAgent VARCHAR(256),
+				description TEXT
+			);)");
+
+			auto createForeignKey = QSqlQuery(db);
+			createForeignKey.prepare(
+				R"(ALTER TABLE playlistToTracks
+					ADD COLUMN onlineTrackId INTEGER DEFAULT NULL
+					REFERENCES OnlineTracks(onlineTrackId) ON DELETE CASCADE;)");
+			success &= createForeignKey.exec();
+
+			auto migrationQuery = QSqlQuery(db);
+			migrationQuery.prepare(
+				R"(INSERT INTO OnlineTracks (onlineTrackId, stationName, stationUrl, radioMode, isUpdatable)
+				SELECT tempTrackId, stationName, station, isRadio, isUpdatable
+				FROM playlistToTracks WHERE station NOT NULL;)");
+			success &= migrationQuery.exec();
+
+			auto fillOnlineTrackIdColumn = QSqlQuery(db);
+			fillOnlineTrackIdColumn.prepare("UPDATE playlistToTracks SET onlineTrackId=tempTrackId WHERE isRadio > 0;");
+			success &= fillOnlineTrackIdColumn.exec();
+
+			for(const auto& column: {"tempTrackId", "isRadio", "stationName", "station", "isUpdatable"})
+			{
+				success &= removeColumn("playlistToTracks", column);
+			}
 
 			if(success)
 			{
+				db.commit();
+
 				settingsConnector.storeSetting("version", 36); // NOLINT(readability-magic-numbers)
+			}
+			else
+			{
+				db.rollback();
 			}
 		}
 	}
