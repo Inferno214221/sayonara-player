@@ -549,7 +549,7 @@ namespace Engine
 					return false;
 				}
 
-				const auto success = m_pipeline->prepare(uri);
+				const auto success = m_pipeline->prepare(uri, track.customField("user-agent"));
 				if(!success)
 				{
 					changeGaplessState(GaplessState::Stopped);

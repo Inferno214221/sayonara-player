@@ -21,12 +21,17 @@
 #ifndef ENGINECALLBACKS_H
 #define ENGINECALLBACKS_H
 
+#include <QString>
 #include <gst/gst.h>
 
 struct GstURIDecodeBin;
-
 namespace Engine::Callbacks
 {
+	struct TrackContext
+	{
+		QString userAgent;
+	};
+
 	gboolean busStateChanged(GstBus* bus, GstMessage* msg, gpointer data);
 
 	gboolean levelHandler(GstBus* bus, GstMessage* message, gpointer data);

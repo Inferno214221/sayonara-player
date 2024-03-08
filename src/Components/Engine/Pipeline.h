@@ -55,7 +55,7 @@ namespace Engine
 			~Pipeline() override;
 
 			bool init(Engine* engine);
-			bool prepare(const QString& uri);
+			bool prepare(const QString& uri, const QString& userAgent = QString());
 
 			bool hasElement(GstElement* e) const;
 			[[nodiscard]] GstState state() const;
@@ -86,7 +86,7 @@ namespace Engine
 			[[nodiscard]] MilliSeconds timeToGo() const;
 
 			void setEqualizerBand(int band, int value);
-
+			
 		public slots: // NOLINT(readability-redundant-access-specifiers)
 			void play() override;
 			void stop() override;

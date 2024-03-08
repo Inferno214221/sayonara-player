@@ -640,8 +640,9 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer d
 	gst_object_unref(sinkPad);
 }
 
-void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpointer /* data */)
+void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpointer data)
 {
+	auto* context = static_cast<TrackContext*>(data);
 	spLog(Log::Develop, "Engine Callback") << "Source ready: is soup? " << isSoupSource(source);
 	gst_base_src_set_dynamic_size(GST_BASE_SRC(source), false); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 
@@ -667,6 +668,13 @@ void Callbacks::sourceReady(GstURIDecodeBin* /* bin */, GstElement* source, gpoi
 			EngineUtils::setValues(
 				source,
 				"extra-headers", getSoundcloudOAuthStructure());
+		}
+
+		if(const auto userAgent = context->userAgent; !userAgent.isEmpty())
+		{
+			EngineUtils::setValues(
+				source,
+				"user-agent", userAgent.toLocal8Bit().constData());
 		}
 	}
 }

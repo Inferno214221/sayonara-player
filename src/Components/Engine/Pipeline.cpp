@@ -75,6 +75,7 @@ namespace Engine
 		std::shared_ptr<PipelineExtensions::Equalizer> equalizer = nullptr;
 
 		QTimer* progressTimer = nullptr;
+		Callbacks::TrackContext trackContext;
 
 		explicit Private(QString name) :
 			name(std::move(name)) {}
@@ -262,14 +263,18 @@ namespace Engine
 		Utils::configureQueue(m->playbackQueue);
 
 		g_signal_connect (m->source, "pad-added", G_CALLBACK(Callbacks::decodebinReady), m->audioConvert);
-		g_signal_connect (m->source, "source-setup", G_CALLBACK(Callbacks::sourceReady), nullptr);
+		g_signal_connect (m->source, "source-setup", G_CALLBACK(Callbacks::sourceReady), &m->trackContext);
 	}
 
-	bool Pipeline::prepare(const QString& uri)
+	bool Pipeline::prepare(const QString& uri, const QString& userAgent)
 	{
 		stop();
 
-		Utils::setValues(G_OBJECT(m->source), "use-buffering", Util::File::isWWW(uri), "uri", uri.toUtf8().data());
+		m->trackContext.userAgent = userAgent;
+
+		Utils::setValues(G_OBJECT(m->source),
+		                 "use-buffering", Util::File::isWWW(uri),
+		                 "uri", uri.toUtf8().data());
 		Utils::setInt64Value(G_OBJECT(m->source), "buffer-duration", GetSetting(Set::Engine_BufferSizeMS));
 		Utils::setState(m->pipeline, GST_STATE_PAUSED);
 
