@@ -107,4 +107,16 @@ namespace DB
 
 		return true;
 	}
+
+	bool Fixes::removeColumn(const QString& tablename, const QString& column)
+	{
+		auto module = Module {m->connectionName, m->databaseId};
+
+		const auto str = QString("ALTER TABLE %1 DROP COLUMN %2;")
+			.arg(tablename)
+			.arg(column);
+
+		const auto q = module.runQuery(str, QString("Cannot remove column %1 from %2").arg(column).arg(tablename));
+		return !hasError(q);
+	}
 } // DB

@@ -46,6 +46,7 @@ namespace DB
 			bool checkAndInsertColumn(const QString& tablename, const QString& column, const QString& sqltype);
 			bool checkAndCreateTable(const QString& tablename, const QString& sql);
 			bool checkAndDropTable(const QString& tablename);
+			bool removeColumn(const QString& tablename, const QString& column);
 
 			virtual void applyFixes() = 0;
 	};
