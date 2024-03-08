@@ -30,9 +30,44 @@
 
 #include <iostream>
 
+namespace
+{
+	void initSettings(DB::Settings* settingsConnector)
+	{
+		auto* settings = Settings::instance();
+		settings->checkSettings();
+
+		const auto invalidKeys = SettingRegistry::undeployableKeys();
+		const auto settingsArray = settings->settings();
+
+		QList<AbstrSetting*> invalidSettings;
+		for(auto* abstractSetting: settingsArray)
+		{
+			if(!abstractSetting->isDatabaseSetting())
+			{
+				continue;
+			}
+
+			if(invalidKeys.contains(abstractSetting->getKey()))
+			{
+				invalidSettings << abstractSetting;
+			}
+
+			abstractSetting->assignDefaultValue();
+		}
+
+		settingsConnector->storeSettings();
+
+		for(auto* abstractSetting: invalidSettings)
+		{
+			settingsConnector->dropSetting(abstractSetting->dbKey());
+		}
+	}
+}
+
 int main(int argc, char** argv)
 {
-	QApplication app(argc, argv);
+	auto app = QApplication(argc, argv);
 
 	if(argc < 2)
 	{
@@ -42,41 +77,14 @@ int main(int argc, char** argv)
 
 	Q_INIT_RESOURCE(Database);
 
-	QString sourceDirectory(":/Database");
-	QString targetDirectory(argv[1]);
-	QString databseFilename("player.db");
+	const auto sourceDirectory = QString(":/Database");
+	const auto targetDirectory = QString(argv[1]);
+	const auto databseFilename = QString("player.db");
 
 	Util::File::deleteFiles({databseFilename});
-	DB::Connector* db = DB::Connector::customInstance(sourceDirectory, targetDirectory, databseFilename);
-	DB::Settings* setting_connector = db->settingsConnector();
+	auto* connector = DB::Connector::customInstance(sourceDirectory, targetDirectory, databseFilename);
 
-	Settings* settings = Settings::instance();
-	settings->checkSettings();
-	QList<SettingKey> invalid_keys = SettingRegistry::undeployableKeys();
-	SettingArray arr = settings->settings();
-
-	QList<AbstrSetting*> invalid_settings;
-	for(AbstrSetting* s: arr)
-	{
-		if(!s->isDatabaseSetting())
-		{
-			continue;
-		}
-
-		if(invalid_keys.contains(s->getKey()))
-		{
-			invalid_settings << s;
-		}
-
-		s->assignDefaultValue();
-	}
-
-	setting_connector->storeSettings();
-
-	for(AbstrSetting* s: invalid_settings)
-	{
-		setting_connector->dropSetting(s->dbKey());
-	}
+	initSettings(connector->settingsConnector());
 
 	std::cout << "Written to " << QDir(targetDirectory).absoluteFilePath(databseFilename).toStdString() << std::endl;
 
