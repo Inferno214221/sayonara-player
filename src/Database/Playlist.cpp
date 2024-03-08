@@ -219,39 +219,37 @@ MetaDataList DB::Playlist::getPlaylistWithDatabaseTracks(const int playlistId)
 
 	static const auto fields = QStringList
 		{
-			QStringLiteral("tracks.trackID          AS trackID"),        // 0
-			QStringLiteral("tracks.title            AS title"),          // 1
-			QStringLiteral("tracks.length           AS length"),         // 2
-			QStringLiteral("tracks.year             AS year"),           // 3
-			QStringLiteral("tracks.bitrate          AS bitrate"),        // 4
-			QStringLiteral("tracks.filename         AS filename"),       // 5
-			QStringLiteral("tracks.track            AS trackNum"),       // 6
-			QStringLiteral("albums.albumID          AS albumID"),        // 7
-			QStringLiteral("artists.artistID        AS artistID"),       // 8
-			QStringLiteral("albums.name             AS albumName"),      // 9
-			QStringLiteral("artists.name            AS artistName"),     // 10
-			QStringLiteral("tracks.genre            AS genrename"),      // 11
-			QStringLiteral("tracks.filesize         AS filesize"),       // 12
-			QStringLiteral("tracks.discnumber       AS discnumber"),     // 13
-			QStringLiteral("tracks.rating           AS rating"),         // 14
-			QStringLiteral("ptt.filepath            AS filepath"),       // 15
-			QStringLiteral("ptt.db_id               AS databaseId"),     // 16
-			QStringLiteral("tracks.libraryID        AS libraryId"),      // 17
-			QStringLiteral("tracks.createdate       AS createdate"),     // 18
-			QStringLiteral("tracks.modifydate       AS modifydate"),     // 19
-			QStringLiteral("ptt.coverDownloadUrl    AS coverDownloadUrl"), // 20
-			QStringLiteral("ptt.position            AS position") // 21
+			"tsv.trackID          AS trackID",        // 0
+			"tsv.title            AS title",          // 1
+			"tsv.length           AS length",         // 2
+			"tsv.year             AS year",           // 3
+			"tsv.bitrate          AS bitrate",        // 4
+			"tsv.filename         AS filename",       // 5
+			"tsv.trackNum         AS trackNum",       // 6
+			"tsv.albumID          AS albumID",        // 7
+			"tsv.artistID         AS artistID",       // 8
+			"tsv.albumName        AS albumName",      // 9
+			"tsv.artistName       AS artistName",     // 10
+			"tsv.genre            AS genrename",      // 11
+			"tsv.filesize         AS filesize",       // 12
+			"tsv.discnumber       AS discnumber",     // 13
+			"tsv.rating           AS rating",         // 14
+			"ptt.filepath         AS filepath",       // 15
+			"ptt.db_id            AS databaseId",     // 16
+			"tsv.trackLibraryId   AS libraryId",      // 17
+			"tsv.createdate       AS createdate",     // 18
+			"tsv.modifydate       AS modifydate",     // 19
+			"ptt.coverDownloadUrl AS coverDownloadUrl", // 20
+			"ptt.position         AS position" // 21
 		};
 
 	static const auto joinedFields = fields.join(", ");
 
 	const auto queryText = QString("SELECT %1 "
-	                               "FROM tracks, albums, artists, playlists, playlistToTracks ptt "
+	                               "FROM track_search_view tsv, playlists, playlistToTracks ptt "
 	                               "WHERE playlists.playlistID = :playlist_id "
 	                               "AND playlists.playlistID = ptt.playlistID "
-	                               "AND ptt.trackID = tracks.trackID "
-	                               "AND tracks.albumID = albums.albumID "
-	                               "AND tracks.artistID = artists.artistID "
+	                               "AND ptt.trackID = tsv.trackID "
 	                               "ORDER BY ptt.position ASC; ").arg(joinedFields);
 
 	auto query = runQuery(queryText,
@@ -305,14 +303,14 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 	MetaDataList result;
 
 	const auto static fields = QStringList {
-		QStringLiteral("ptt.filepath          AS filepath"),
-		QStringLiteral("ptt.position          AS position"),
-		QStringLiteral("ptt.stationName       AS radioStationName"),
-		QStringLiteral("ptt.station           AS radioStation"),
-		QStringLiteral("ptt.isRadio           AS isRadio"),
-		QStringLiteral("ptt.isUpdatable       AS isUpdatable"),
-		QStringLiteral("ptt.coverDownloadUrl  AS coverDownloadUrl"),
-		QStringLiteral("ptt.position          AS position")
+		"ptt.filepath          AS filepath",
+		"ptt.position          AS position",
+		"ptt.stationName       AS radioStationName",
+		"ptt.station           AS radioStation",
+		"ptt.isRadio           AS isRadio",
+		"ptt.isUpdatable       AS isUpdatable",
+		"ptt.coverDownloadUrl  AS coverDownloadUrl",
+		"ptt.position          AS position"
 	};
 
 	const auto static joinedFields = fields.join(", ");
@@ -385,7 +383,7 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(const int playlistId
 // nonnegative else
 int DB::Playlist::getPlaylistIdByName(const QString& name)
 {
-	const auto queryText = QStringLiteral("SELECT playlistid FROM playlists WHERE playlist = :playlistName;");
+	const auto queryText = "SELECT playlistid FROM playlists WHERE playlist = :playlistName;";
 	auto query = runQuery(
 		queryText,
 		{
@@ -518,7 +516,7 @@ bool DB::Playlist::updatePlaylistTracks(int playlistId, const MetaDataList& trac
 
 bool DB::Playlist::clearPlaylist(int playlistId)
 {
-	const auto querytext = QStringLiteral("DELETE FROM playlistToTracks WHERE playlistID = :playlistID;");
+	const auto querytext = "DELETE FROM playlistToTracks WHERE playlistID = :playlistID;";
 	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be cleared");
 
 	return !hasError(query);
