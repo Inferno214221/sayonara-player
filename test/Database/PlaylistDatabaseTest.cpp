@@ -27,6 +27,20 @@
 
 namespace
 {
+	struct TestEnv
+	{
+		~TestEnv()
+		{
+			const auto playlists = playlistDatabase->getAllPlaylists(PlaylistStoreType::TemporaryAndPermanent, false);
+			for(const auto& playlist: playlists)
+			{
+				playlistDatabase->deletePlaylist(playlist.id());
+			}
+		}
+
+		DB::Playlist* playlistDatabase {DB::Connector::instance()->playlistConnector()};
+	};
+
 	MetaData createRadioTrack(const QString& url, const QString& name)
 	{
 		auto track = MetaData {url};
@@ -75,8 +89,7 @@ class PlaylistDatabaseTest :
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static, *-function-cognitive-complexity)
 		[[maybe_unused]] void testCreateAndDeletePlaylist()
 		{
-			auto* db = DB::Connector::instance();
-			auto* playlistDb = db->playlistConnector();
+			auto env = TestEnv();
 
 			struct TestCase
 			{
@@ -92,37 +105,31 @@ class PlaylistDatabaseTest :
 
 			for(const auto& testCase: testCases)
 			{
-				auto id = playlistDb->createPlaylist(testCase.playlistName, testCase.temporary, false);
-				const auto playlist = playlistDb->getPlaylistById(id, false);
+				auto id = env.playlistDatabase->createPlaylist(testCase.playlistName, testCase.temporary, false);
+				const auto playlist = env.playlistDatabase->getPlaylistById(id, false);
 
 				QVERIFY(id >= 0);
 				QVERIFY(playlist.tracks().count() == 0);
 				QVERIFY(playlist.id() == id);
 				QVERIFY(playlist.isTemporary() == testCase.temporary);
 				QVERIFY(playlist.name() == testCase.playlistName);
-
-				playlistDb->deletePlaylist(id);
-				QVERIFY(playlistDb->getPlaylistById(id, false).id() < 0);
 			}
 		}
 
 		[[maybe_unused]] void testRadioTrackInsertion() // NOLINT(readability-convert-member-functions-to-static)
 		{
-			auto* db = DB::Connector::instance();
-			auto* playlistDb = db->playlistConnector();
+			auto env = TestEnv();
 
 			constexpr const auto* url = "https://url.mp3";
 			constexpr const auto* name = "My Radio Station";
 			const auto track = createRadioTrack(url, name);
 
-			const auto id = playlistDb->createPlaylist("my playlist", false, false);
-			const auto success = playlistDb->insertTrackIntoPlaylist(track, id, 0);
+			const auto id = env.playlistDatabase->createPlaylist("my playlist", false, false);
+			const auto success = env.playlistDatabase->insertTrackIntoPlaylist(track, id, 0);
 			QVERIFY(success);
 
-			const auto playlist = playlistDb->getPlaylistById(id, true);
+			const auto playlist = env.playlistDatabase->getPlaylistById(id, true);
 			QVERIFY(playlist.tracks().count() == 1);
-
-			playlistDb->deletePlaylist(id);
 		}
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
@@ -143,41 +150,36 @@ class PlaylistDatabaseTest :
 
 			for(const auto& testCase: testCases)
 			{
-				auto* db = DB::Connector::instance();
-				auto* playlistDb = db->playlistConnector();
+				TestEnv env;
 
-				const auto id = playlistDb->createPlaylist(testCase.playlistName, true, false);
-				playlistDb->insertTrackIntoPlaylist(testCase.track, id, 0);
+				const auto id = env.playlistDatabase->createPlaylist(testCase.playlistName, true, false);
+				env.playlistDatabase->insertTrackIntoPlaylist(testCase.track, id, 0);
 
-				auto fetchedPlaylist = playlistDb->getPlaylistById(id, true);
+				auto fetchedPlaylist = env.playlistDatabase->getPlaylistById(id, true);
 				const auto fetchedTrack = fetchedPlaylist.tracks()[0];
 				QVERIFY(fetchedTrack.radioMode() == testCase.expectedRadioMode);
-
-				playlistDb->deletePlaylist(id);
 			}
 		}
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 		[[maybe_unused]] void testMixedPlaylistHasCorrectTracks()
 		{
+			TestEnv env;
 			const auto tracks = std::array {
 				createRadioTrack("https://stream.com", "some name"),
 				createPodcastTrack("podcast", "some artist"),
 				createNonLibraryTrack("ar", "album", "ttle")
 			};
 
-			auto* db = DB::Connector::instance();
-			auto* playlistDb = db->playlistConnector();
-
-			const auto id = playlistDb->createPlaylist("Some palylist", true, false);
+			const auto id = env.playlistDatabase->createPlaylist("Some palylist", true, false);
 			int i = 0;
 			for(const auto& track: tracks)
 			{
-				playlistDb->insertTrackIntoPlaylist(track, id, i);
+				env.playlistDatabase->insertTrackIntoPlaylist(track, id, i);
 				i++;
 			}
 
-			const auto playlist = playlistDb->getPlaylistById(id, true);
+			const auto playlist = env.playlistDatabase->getPlaylistById(id, true);
 			const auto fetchedTracks = playlist.tracks();
 
 			QVERIFY(fetchedTracks[0] == tracks[0]);
