@@ -166,9 +166,11 @@ bool SettingRegistry::init()
 	registerSetting<Set::Player_PublicId>("player_pub_id", {});
 	registerSetting<Set::Player_ForceNativeDirDialog>("player_native_dir_dialog", false);
 
+	registerSetting<Set::PL_LoadRecentPlaylists>("load_recent_playlists", true);
 	registerSetting<Set::PL_LoadSavedPlaylists>("load_saved_playlists", false);
-	registerSetting<Set::PL_LoadTemporaryPlaylists>("load_temporary_playlists", true);
+	registerSetting<Set::PL_LoadTemporaryPlaylists>("load_temporary_playlists", false);
 	registerSetting<Set::PL_LoadLastTrack>("load_last_track", true);
+	registerSetting<Set::PL_RecentPlaylists>("playlist_recent_session", {});
 	registerSetting<Set::PL_RememberTime>("remember_time", true);
 	registerSetting<Set::PL_StartPlaying>("start_playing", false);
 	registerSetting<Set::PL_StartPlayingWorkaround_Issue263>("start_playing_wa_263", false);

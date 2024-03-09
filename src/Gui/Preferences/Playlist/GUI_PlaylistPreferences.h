@@ -51,6 +51,7 @@ class GUI_PlaylistPreferences :
 		[[nodiscard]] QString errorString() const override;
 
 	private slots:
+		void loadRecentPlaylistsToggled(bool b);
 		void checkboxToggled(bool b);
 		void chooseColorClicked();
 };

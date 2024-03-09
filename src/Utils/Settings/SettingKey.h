@@ -149,12 +149,14 @@ enum class SettingKey :
 	PL_LastTrack,
 	PL_LastTrackBeforeStop,
 	PL_LoadLastTrack,
+	PL_LoadRecentPlaylists,
 	PL_LoadSavedPlaylists,
 	PL_LoadTemporaryPlaylists,
 	PL_Mode,
 	PL_ModificatorAllowDynamicPlayback,
 	PL_ModificatorAllowRearrangeMethods,
 	PL_PlayTrackAfterSearch,
+	PL_RecentPlaylists,
 	PL_RememberTime,
 	PL_RememberTrackAfterStop,
 	PL_ShowBottomBar,
@@ -379,10 +381,12 @@ namespace Set
 	CreateSetting(PL_CreateFilesystemPlaylist, bool); // create an extra playlist when loading files from file system
 	CreateSetting(PL_SpecifyFileystemPlaylistName, bool); // when creating playlist from files, choose special name
 	CreateSetting(PL_FilesystemPlaylistName, QString); // name of the file system playlist
+	CreateSetting(PL_LoadRecentPlaylists, bool); // load recent playlists
 	CreateSetting(PL_Mode, Playlist::Mode); // playlist mode: rep1, repAll, shuffle...
 	CreateSetting(PL_ModificatorAllowDynamicPlayback, bool);
 	CreateSetting(PL_ModificatorAllowRearrangeMethods, bool);
 	CreateSetting(PL_PlayTrackAfterSearch, bool); // play track after search is done
+	CreateSetting(PL_RecentPlaylists, QList<int>);
 	CreateSetting(PL_RememberTime, bool); // remember time of last track
 	CreateSetting(PL_RememberTrackAfterStop, bool); // when stop button is pressed, remember last track index
 	CreateSetting(PL_ShowBottomBar, bool); // Show bottom bar in playlist

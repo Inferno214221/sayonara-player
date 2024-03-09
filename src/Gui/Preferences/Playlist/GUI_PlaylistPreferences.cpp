@@ -36,6 +36,11 @@
 
 namespace
 {
+	bool isCheckedAndEnabled(QCheckBox* checkbox)
+	{
+		return checkbox->isChecked() && checkbox->isEnabled();
+	}
+
 	QStringList extractExpressionsBetweenPercents(const QString& expr)
 	{
 		QStringList result;
@@ -123,11 +128,12 @@ GUI_PlaylistPreferences::~GUI_PlaylistPreferences() = default;
 
 bool GUI_PlaylistPreferences::commit()
 {
-	SetSetting(Set::PL_LoadSavedPlaylists, ui->cbLoadSavedPlaylists->isChecked());
-	SetSetting(Set::PL_LoadTemporaryPlaylists, ui->cbLoadTemporaryPlaylists->isChecked());
-	SetSetting(Set::PL_LoadLastTrack, (ui->cbLoadLastTrack->isChecked() && ui->cbLoadLastTrack->isEnabled()));
-	SetSetting(Set::PL_RememberTime, (ui->cbRememberTime->isChecked() && ui->cbRememberTime->isEnabled()));
-	SetSetting(Set::PL_StartPlaying, (ui->cbStartPlaying->isChecked() && ui->cbStartPlaying->isEnabled()));
+	SetSetting(Set::PL_LoadRecentPlaylists, ui->cbLoadRecentPlaylists->isChecked());
+	SetSetting(Set::PL_LoadSavedPlaylists, isCheckedAndEnabled(ui->cbLoadSavedPlaylists));
+	SetSetting(Set::PL_LoadTemporaryPlaylists, isCheckedAndEnabled(ui->cbLoadTemporaryPlaylists));
+	SetSetting(Set::PL_LoadLastTrack, isCheckedAndEnabled(ui->cbLoadLastTrack));
+	SetSetting(Set::PL_RememberTime, isCheckedAndEnabled(ui->cbRememberTime));
+	SetSetting(Set::PL_StartPlaying, isCheckedAndEnabled(ui->cbStartPlaying));
 
 	SetSetting(Set::PL_ShowNumbers, ui->cbShowNumbers->isChecked());
 	SetSetting(Set::PL_ShowCovers, ui->cbShowCovers->isChecked());
@@ -169,17 +175,20 @@ bool GUI_PlaylistPreferences::commit()
 
 void GUI_PlaylistPreferences::revert()
 {
+	const auto loadRecentPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
 	const auto loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
 	const auto loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
 	const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
 	const auto rememberTime = GetSetting(Set::PL_RememberTime);
 	const auto startPlaying = GetSetting(Set::PL_StartPlaying);
 
+	ui->cbLoadRecentPlaylists->setChecked(loadRecentPlaylists);
 	ui->cbLoadSavedPlaylists->setChecked(loadSavedPlaylists);
 	ui->cbLoadTemporaryPlaylists->setChecked(loadTemporaryPlaylists);
 	ui->cbLoadLastTrack->setChecked(loadLastTrack);
 	ui->cbRememberTime->setChecked(rememberTime);
 	ui->cbStartPlaying->setChecked(startPlaying);
+	loadRecentPlaylistsToggled(loadRecentPlaylists);
 
 	ui->leExpression->setText(GetSetting(Set::PL_EntryLook));
 	ui->cbShowNumbers->setChecked(GetSetting(Set::PL_ShowNumbers));
@@ -224,6 +233,7 @@ void GUI_PlaylistPreferences::initUi()
 
 	checkboxToggled(true);
 
+	connect(ui->cbLoadRecentPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::loadRecentPlaylistsToggled);
 	connect(ui->cbLoadLastTrack, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
 	connect(ui->cbLoadSavedPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
 	connect(ui->cbLoadTemporaryPlaylists, &QCheckBox::toggled, this, &GUI_PlaylistPreferences::checkboxToggled);
@@ -284,9 +294,19 @@ QString GUI_PlaylistPreferences::errorString() const
 	return tr("Playlist look: Invalid expression");
 }
 
+void GUI_PlaylistPreferences::loadRecentPlaylistsToggled(const bool b)
+{
+	ui->cbLoadTemporaryPlaylists->setEnabled(!b);
+	ui->cbLoadSavedPlaylists->setEnabled(!b);
+
+	checkboxToggled(b);
+}
+
 void GUI_PlaylistPreferences::checkboxToggled([[maybe_unused]] bool b)
 {
-	const auto load = (ui->cbLoadSavedPlaylists->isChecked() || ui->cbLoadTemporaryPlaylists->isChecked());
+	const auto load = ui->cbLoadRecentPlaylists ||
+	                  ui->cbLoadSavedPlaylists->isChecked() ||
+	                  ui->cbLoadTemporaryPlaylists->isChecked();
 
 	ui->cbLoadLastTrack->setEnabled(load);
 	ui->cbRememberTime->setEnabled(load);

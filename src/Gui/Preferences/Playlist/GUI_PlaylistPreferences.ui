@@ -74,6 +74,13 @@
                <number>6</number>
               </property>
               <item>
+               <widget class="QCheckBox" name="cbLoadRecentPlaylists">
+                <property name="text">
+                 <string>Load all recent playlists</string>
+                </property>
+               </widget>
+              </item>
+              <item>
                <widget class="QCheckBox" name="cbLoadTemporaryPlaylists">
                 <property name="text">
                  <string>Load temporary playlists</string>
