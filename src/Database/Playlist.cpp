@@ -59,7 +59,7 @@ namespace
 			case ::Playlist::SortOrder::NameDesc:
 				return QStringLiteral("playlists.playlist DESC");
 			default:
-				return QString();
+				return {};
 		}
 	}
 
@@ -332,26 +332,27 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 	MetaDataList result;
 
 	const auto static fields = QStringList {
-		"ptt.filepath",                   // 0
-		"ptt.position",                   // 1
-		"ptt.coverDownloadUrl",           // 2
-		"onlineTracks.radioMode",         // 3
-		"onlineTracks.stationName",       // 4
-		"onlineTracks.stationUrl",        // 5
-		"onlineTracks.isUpdatable",       // 6
-		"onlineTracks.userAgent",         // 7
-		"onlineTracks.description"        // 8
+		"ptt.filepath",           // 0
+		"ptt.position",           // 1
+		"ptt.coverDownloadUrl",   // 2
+		"ot.radioMode",           // 3
+		"ot.stationName",         // 4
+		"ot.stationUrl",          // 5
+		"ot.isUpdatable",         // 6
+		"ot.userAgent",           // 7
+		"ot.description"          // 8
 	};
 
 	const auto static joinedFields = fields.join(", ");
 
-	const auto queryText = QString("SELECT %1 "
-	                               "FROM playlists pl "
-	                               "JOIN playlistToTracks ptt ON pl.playlistId = ptt.playlistId "
-	                               "LEFT JOIN onlineTracks ON ptt.onlineTrackId = onlineTracks.onlineTrackId "
-	                               "WHERE ptt.trackID < 0 "
-	                               "AND pl.playlistId = :playlistID "
-	                               "ORDER BY ptt.position ASC;").arg(joinedFields);
+	const auto queryText =
+		QString("SELECT %1 "
+		        "FROM playlists pl "
+		        "JOIN playlistToTracks ptt ON pl.playlistId = ptt.playlistId " // ignore line if there are no tracks in ptt
+		        "LEFT OUTER JOIN onlineTracks ot ON ptt.onlineTrackId = ot.onlineTrackId " // do not ignore line if it's no track in ot
+		        "WHERE ptt.trackID < 0 "
+		        "AND pl.playlistId = :playlistID "
+		        "ORDER BY ptt.position ASC;").arg(joinedFields);
 
 	// non database playlists
 	auto query = runQuery(
@@ -415,11 +416,9 @@ MetaDataList DB::Playlist::getPlaylistWithNonDatabaseTracks(int playlistId)
 	return result;
 }
 
-// negative, if error
-// nonnegative else
 int DB::Playlist::getPlaylistIdByName(const QString& name)
 {
-	const auto queryText = "SELECT playlistid FROM playlists WHERE playlist = :playlistName;";
+	const auto queryText = QStringLiteral("SELECT playlistid FROM playlists WHERE playlist = :playlistName;");
 	auto query = runQuery(
 		queryText,
 		{
@@ -549,20 +548,47 @@ bool DB::Playlist::updatePlaylistTracks(int playlistId, const MetaDataList& trac
 	return (enabledTracks.isEmpty() || (position > 0));
 }
 
-bool DB::Playlist::clearPlaylist(int playlistId)
+bool DB::Playlist::clearPlaylist(const int playlistId)
 {
-	const auto querytext = "DELETE FROM playlistToTracks WHERE playlistID = :playlistID;";
-	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be cleared");
+	static const auto clearOnlineTracks = QStringLiteral(
+		R"(DELETE FROM OnlineTracks WHERE onlineTrackId IN (
+		       SELECT onlineTrackId from playlistToTracks WHERE playlistToTracks.playlistId = :playlistId);)");
 
-	return !hasError(query);
+	const auto clearOnlineTracksQuery =
+		runQuery(clearOnlineTracks, {":playlistId", playlistId}, "Cannot clear online tracks");
+
+	if(hasError(clearOnlineTracksQuery))
+	{
+		return false;
+	}
+
+	static const auto clearPlaylistToTracks = QStringLiteral(
+		"DELETE FROM playlistToTracks WHERE playlistID = :playlistID;");
+	const auto clearPlaylistToTracksQuery =
+		runQuery(clearPlaylistToTracks, {":playlistID", playlistId}, "Playlist cannot be cleared");
+
+	return !hasError(clearPlaylistToTracksQuery);
 }
 
 bool DB::Playlist::deletePlaylist(int playlistId)
 {
-	clearPlaylist(playlistId);
+	db().transaction();
 
-	const auto querytext = QString("DELETE FROM playlists WHERE playlistID = :playlistID;");
+	auto success = clearPlaylist(playlistId);
+
+	static const auto querytext = QStringLiteral("DELETE FROM playlists WHERE playlistID = :playlistID;");
 	const auto query = runQuery(querytext, {":playlistID", playlistId}, "Playlist cannot be deleted");
 
-	return !hasError(query);
+	success &= !hasError(query);
+
+	if(!success)
+	{
+		db().rollback();
+	}
+	else
+	{
+		db().commit();
+	}
+
+	return success;
 }

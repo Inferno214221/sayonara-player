@@ -22,6 +22,7 @@
 #include "Database/Connector.h"
 #include "Utils/Playlist/CustomPlaylist.h"
 #include "Utils/MetaData/MetaDataList.h"
+#include <QSqlQuery>
 
 // access working directory with Test::Base::tempPath("somefile.txt");
 
@@ -73,6 +74,26 @@ namespace
 		return track;
 	}
 
+	int getEntriesOfOnlineTracks()
+	{
+		auto* db = DB::Connector::instance();
+		auto q = db->runQuery("SELECT COUNT(rowId) FROM OnlineTracks;", "Cannot get online track count");
+
+		return q.next()
+		       ? q.value(0).toInt()
+		       : -1;
+	}
+
+	int getEntriesOfPlaylistToTracks()
+	{
+		auto* db = DB::Connector::instance();
+		auto q = db->runQuery("SELECT COUNT(rowId) FROM playlistToTracks;",
+		                      "Cannot get playlistToTracks track count");
+
+		return q.next()
+		       ? q.value(0).toInt()
+		       : -1;
+	}
 }
 
 class PlaylistDatabaseTest :
@@ -85,6 +106,33 @@ class PlaylistDatabaseTest :
 			Test::Base("PlaylistDatabaseTest") {}
 
 	private slots:
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testDependentDatabasesAreDeleted()
+		{
+			auto env = TestEnv();
+			const auto tracks = std::array {
+				createRadioTrack("https://stream.com", "some name"),
+				createPodcastTrack("podcast", "some artist"),
+				createNonLibraryTrack("ar", "album", "ttle")
+			};
+
+			const auto id = env.playlistDatabase->createPlaylist("playlist", true, false);
+			int i = 0;
+			for(const auto& track: tracks)
+			{
+				env.playlistDatabase->insertTrackIntoPlaylist(track, id, i);
+				i++;
+			}
+
+			QCOMPARE(getEntriesOfOnlineTracks(), 2);
+			QCOMPARE(getEntriesOfPlaylistToTracks(), 3);
+
+			env.playlistDatabase->deletePlaylist(id);
+
+			QCOMPARE(getEntriesOfOnlineTracks(), 0);
+			QCOMPARE(getEntriesOfPlaylistToTracks(), 0);
+		}
 
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static, *-function-cognitive-complexity)
 		[[maybe_unused]] void testCreateAndDeletePlaylist()
