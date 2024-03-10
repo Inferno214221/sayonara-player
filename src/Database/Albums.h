@@ -58,6 +58,7 @@ namespace DB
 			virtual bool getAllAlbumsBySearchString(const ::Library::Filter& filter, AlbumList& result) const;
 
 			virtual AlbumId updateAlbumRating(AlbumId id, Rating rating);
+			virtual void deleteOrphanedAlbums();
 
 		protected:
 			// too dangerous to call it directly because multiple insertions

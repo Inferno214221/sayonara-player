@@ -79,9 +79,10 @@ namespace
 			};
 
 		const auto fieldStatement = fields.join(", ").arg(trackView);
-		const auto joinStatement = QString("LEFT OUTER JOIN %1 ON %1.albumID = albums.albumID " // leave out empty albums
-		                                   "LEFT OUTER JOIN artists ON %1.artistID = artists.artistID "
-		                                   "LEFT OUTER JOIN artists albumArtists ON %1.albumArtistID = albumArtists.artistID")
+		const auto joinStatement = QString(
+			"LEFT OUTER JOIN %1 ON %1.albumID = albums.albumID " // leave out empty albums
+			"LEFT OUTER JOIN artists ON %1.artistID = artists.artistID "
+			"LEFT OUTER JOIN artists albumArtists ON %1.albumArtistID = albumArtists.artistID")
 			.arg(trackView);
 
 		const auto query = QString("CREATE VIEW %1 AS SELECT %2 FROM albums %3 GROUP BY albums.albumID;")
@@ -374,4 +375,10 @@ AlbumId Albums::insertAlbumIntoDatabase(const Album& album)
 void Albums::deleteAllAlbums()
 {
 	module()->runQuery("DELETE FROM albums;", "Could not delete all albums");
+}
+
+void Albums::deleteOrphanedAlbums()
+{
+	module()->runQuery("DELETE FROM albums WHERE albumID in (SELECT albumId FROM album_view WHERE trackCount = 0);",
+	                   "Cannot delete orphaned albums");
 }

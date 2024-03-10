@@ -470,6 +470,8 @@ void Editor::commit()
 		emit sigProgress((++progress * 100) / numChanges);
 	}
 
+	libraryDatabase->deleteOrphanedAlbums();
+
 	db->commit();
 	db->libraryConnector()->createIndexes();
 	db->closeDatabase();

@@ -315,5 +315,6 @@ bool DB::LibraryDatabase::storeMetadata(const MetaDataList& tracks)
 
 	spLog(Log::Develop, this) << "Commit " << tracks.size() << " tracks to database";
 
+	DB::Albums::deleteOrphanedAlbums();
 	return db().commit();
 }
