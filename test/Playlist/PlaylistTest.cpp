@@ -58,21 +58,7 @@ namespace
 		std::shared_ptr<Util::FileSystem> fileSystem {std::make_shared<FileSystem_t>()};
 		Playlist::Playlist playlist;
 	};
-
-	using PlaylistPtr = std::shared_ptr<Playlist::Playlist>;
-
-	inline std::shared_ptr<Playlist::Playlist>
-	createPlaylist(int index, int min, int max, const QString& name, PlayManager* playManager)
-	{
-		auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
-		const auto tracks = Test::Playlist::createTrackList(min, max);
-
-		auto playlist = std::make_shared<::Playlist::Playlist>(index, name, playManager, fileSystem);
-		playlist->createPlaylist(tracks);
-
-		return playlist;
-	}
-
+	
 	IndexSet toSet(const QList<int>& lst)
 	{
 		auto result = IndexSet {};

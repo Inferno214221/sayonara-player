@@ -46,8 +46,9 @@ namespace
 
 			[[nodiscard]] QString requestNewPlaylistName(const QString& /*prefix*/) const override { return {}; }
 
-			int createPlaylist(const MetaDataList& tracks, const QString& name, bool /*temporary*/,
-			                   bool /*isLocked*/) override
+			int createPlaylist(
+				const MetaDataList& tracks, const QString& name, bool /*temporary*/,
+				bool /*isLocked*/) override
 			{
 				auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
 				m_playlist = std::make_shared<Playlist::Playlist>(0, name, m_playManager.get(), fileSystem);
@@ -55,16 +56,18 @@ namespace
 				return 0;
 			}
 
-			int createPlaylist(const QStringList& /*pathList*/, const QString& /*name*/,
-			                   bool /*temporary*/,
-			                   Playlist::LocalPathPlaylistCreator* /*creator*/) override { return 0; }
+			int createPlaylist(
+				const QStringList& /*pathList*/, const QString& /*name*/,
+				bool /*temporary*/,
+				Playlist::LocalPathPlaylistCreator* /*creator*/) override { return 0; }
 
 			int createPlaylist(const CustomPlaylist& /*customPlaylist*/) override { return 0; }
 
 			int createEmptyPlaylist(bool /*override*/) override { return 0; }
 
-			int createCommandLinePlaylist(const QStringList& /*pathList*/,
-			                              Playlist::LocalPathPlaylistCreator* /*creator*/) override
+			int createCommandLinePlaylist(
+				const QStringList& /*pathList*/,
+				Playlist::LocalPathPlaylistCreator* /*creator*/) override
 			{
 				return 0;
 			}
@@ -82,7 +85,9 @@ namespace
 			TestStationParser() :
 				StreamParser(nullptr) {}
 
-			void parse(const QString& name, const QStringList& urls, const QString& userAgent, int timeout) override {}
+			void parse(
+				const QString& /*name*/, const QStringList& /*urls*/, const QString& /*userAgent*/,
+				int /*timeout*/) override {}
 
 			~TestStationParser() override = default;
 
