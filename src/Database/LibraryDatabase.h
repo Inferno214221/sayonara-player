@@ -28,6 +28,10 @@
 #include "Database/Library.h"
 #include "Utils/Pimpl.h"
 
+#include <QHash>
+
+class Album;
+class Artist;
 namespace DB
 {
 	class LibraryDatabase :
@@ -50,13 +54,16 @@ namespace DB
 			void updateSearchMode();
 			void changeArtistIdField(ArtistIdInfo::ArtistIdField field);
 			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
-
+			
 		private:
 			Module* module() override;
 			[[nodiscard]] const Module* module() const override;
 			[[nodiscard]] ArtistIdInfo artistIdInfo() const override;
 			[[nodiscard]] QString trackView() const override;
 			[[nodiscard]] QString trackSearchView() const override;
+
+			int checkArtist(const QString& artist, QHash<QString, Artist>& artistMap);
+			int checkAlbum(const QString& album, const QString& albumArtist, QHash<QString, Album>& albumMap);
 	};
 }
 
