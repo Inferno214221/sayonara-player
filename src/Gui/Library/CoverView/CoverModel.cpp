@@ -137,7 +137,7 @@ namespace Library
 
 	CoverModel::~CoverModel() = default;
 
-	QVariant CoverModel::data(const QModelIndex& index, int role) const
+	QVariant CoverModel::data(const QModelIndex& index, const int role) const
 	{
 		const auto& albums = this->albums();
 
@@ -238,7 +238,7 @@ namespace Library
 		}
 	}
 
-	void CoverModel::coverLookupFinished(bool success)
+	void CoverModel::coverLookupFinished(const bool success)
 	{
 		auto* coverLookup = dynamic_cast<Cover::Lookup*>(sender());
 
@@ -310,7 +310,7 @@ namespace Library
 
 	int CoverModel::zoom() const { return m->zoom; }
 
-	void CoverModel::setZoom(int zoom, QSize viewSize)
+	void CoverModel::setZoom(const int zoom, const QSize viewSize)
 	{
 		SetSetting(Set::Lib_CoverZoom, zoom);
 
@@ -394,7 +394,7 @@ namespace Library
 		}
 	}
 
-	bool CoverModel::insertRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
+	bool CoverModel::insertRows(const int row, const int count, const QModelIndex& /*parent*/)
 	{
 		beginInsertRows(QModelIndex(), row, row + count - 1);
 		m->oldRowCount += count;
@@ -403,7 +403,7 @@ namespace Library
 		return true;
 	}
 
-	bool CoverModel::removeRows(int row, int count, [[maybe_unused]] const QModelIndex& parent)
+	bool CoverModel::removeRows(const int row, const int count, const QModelIndex& /*parent*/)
 	{
 		beginRemoveRows(QModelIndex(), row, row + count - 1);
 		m->oldRowCount -= count;
@@ -412,7 +412,7 @@ namespace Library
 		return true;
 	}
 
-	bool CoverModel::insertColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
+	bool CoverModel::insertColumns(const int column, const int count, const QModelIndex& /*parent*/)
 	{
 		beginInsertColumns(QModelIndex(), column, column + count - 1);
 		m->oldColumnCount += count;
@@ -421,7 +421,7 @@ namespace Library
 		return true;
 	}
 
-	bool CoverModel::removeColumns(int column, int count, [[maybe_unused]] const QModelIndex& parent)
+	bool CoverModel::removeColumns(const int column, const int count, const QModelIndex& /*parent*/)
 	{
 		beginRemoveColumns(QModelIndex(), column, column + count - 1);
 		m->oldColumnCount -= count;
@@ -430,7 +430,7 @@ namespace Library
 		return true;
 	}
 
-	QModelIndex CoverModel::index(int row, int column, const QModelIndex& parent) const
+	QModelIndex CoverModel::index(const int row, const int column, const QModelIndex& parent) const
 	{
 		const auto linearIndex = (row * columnCount()) + column;
 		return (Util::between(linearIndex, albums()))
