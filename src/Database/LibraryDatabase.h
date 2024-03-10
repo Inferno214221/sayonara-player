@@ -54,7 +54,7 @@ namespace DB
 			void updateSearchMode();
 			void changeArtistIdField(ArtistIdInfo::ArtistIdField field);
 			MetaDataList insertMissingArtistsAndAlbums(const MetaDataList& tracks);
-			
+
 		private:
 			Module* module() override;
 			[[nodiscard]] const Module* module() const override;
@@ -63,7 +63,8 @@ namespace DB
 			[[nodiscard]] QString trackSearchView() const override;
 
 			int checkArtist(const QString& artist, QHash<QString, Artist>& artistMap);
-			int checkAlbum(const QString& album, const QString& albumArtist, QHash<QString, Album>& albumMap);
+			int
+			checkAlbum(const QString& album, const QString& albumArtist, Year year, QHash<QString, Album>& albumMap);
 	};
 }
 

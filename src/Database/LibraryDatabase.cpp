@@ -35,14 +35,14 @@ namespace
 {
 	using AlbumHash = QString;
 
-	AlbumHash calcAlbumHash(const QString& albumName, const QString& albumArtist)
+	AlbumHash calcAlbumHash(const QString& albumName, const QString& albumArtist, const Year year)
 	{
-		return albumName.toLower() + albumArtist.toLower();
+		return albumName.toLower() + albumArtist.toLower() + QString::number(year);
 	}
 
 	AlbumHash calcAlbumHash(const Album& album)
 	{
-		return calcAlbumHash(album.name(), album.albumArtist());
+		return calcAlbumHash(album.name(), album.albumArtist(), album.year());
 	}
 
 	QHash<QString, Artist> createArtistMap(LibraryDatabase* libraryDatabase)
@@ -199,9 +199,10 @@ int LibraryDatabase::checkArtist(const QString& name, QHash<QString, Artist>& ar
 	return artist.id();
 }
 
-int LibraryDatabase::checkAlbum(const QString& name, const QString& albumArtist, QHash<QString, Album>& albumMap)
+int LibraryDatabase::checkAlbum(const QString& name, const QString& albumArtist, const Year year,
+                                QHash<QString, Album>& albumMap)
 {
-	const auto hash = calcAlbumHash(name, {albumArtist});
+	const auto hash = calcAlbumHash(name, albumArtist, year);
 	auto album = albumMap[hash];
 	if(album.id() < 0)
 	{
@@ -239,7 +240,7 @@ MetaDataList LibraryDatabase::insertMissingArtistsAndAlbums(const MetaDataList& 
 			track.setLibraryid(m->libraryId);
 		}
 
-		const auto albumId = checkAlbum(track.album(), track.albumArtist(), albumMap);
+		const auto albumId = checkAlbum(track.album(), track.albumArtist(), track.year(), albumMap);
 		track.setAlbumId(albumId);
 
 		const auto artistId = checkArtist(track.artist(), artistMap);

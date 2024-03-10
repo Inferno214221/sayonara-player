@@ -32,9 +32,13 @@
 #include "Utils/Utils.h"
 
 #include <QMap>
+#include <tuple>
 
 namespace
 {
+	using ExpectedAlbum = std::tuple<QString, QString, Year>;
+	using ExpectedAlbums = QList<ExpectedAlbum>;
+
 	constexpr const auto libraryId = 0;
 	constexpr const auto databaseId = 0;
 	struct TestEnv
@@ -73,7 +77,8 @@ namespace
 		DB::LibraryDatabase* libraryDatabase {nullptr};
 	};
 
-	MetaData createTrack(const QString& artist, const QString& album, const QString& albumArtist, const QString& title)
+	MetaData createTrack(const QString& artist, const QString& album, const QString& albumArtist, const QString& title,
+	                     const Year year = 2000)
 	{
 		const auto filepath = QString("/%1/%2/%3/%4%5.mp3")
 			.arg(albumArtist)
@@ -86,8 +91,14 @@ namespace
 		track.setAlbumArtist(albumArtist);
 		track.setAlbum(album);
 		track.setTitle(title);
+		track.setYear(year);
 
 		return track;
+	}
+
+	MetaData createTrack(const QString& artist, const QString& title, const ExpectedAlbum& album)
+	{
+		return createTrack(artist, std::get<0>(album), std::get<1>(album), title, std::get<2>(album));
 	}
 }
 
@@ -151,16 +162,20 @@ class LibraryDatabaseTest :
 			struct TestCase
 			{
 				MetaData track;
-				QList<QPair<QString, QString>> expectedAlbums;
+				ExpectedAlbums expectedAlbums;
 			};
 
+			const auto album1 = ExpectedAlbum {"album1", "a", 2001};
+			const auto album2 = ExpectedAlbum {"album2", "a", 2002};
+			const auto album3 = ExpectedAlbum {"album3", "a", 2003};
+			const auto album4 = ExpectedAlbum {"album1", "a", 2008};
+
 			const auto testCases = std::array {
-				TestCase {createTrack("a", "album1", "a", "t1"), {{"album1", "a"}}},
-				TestCase {createTrack("a", "album1", "a", "t2"), {{"album1", "a"}}},
-				TestCase {createTrack("a", "album2", "a", "t3"), {{"album1", "a"}, {"album2", "a"}}},
-				TestCase {createTrack("a", "album3", "a", "t4"), {{"album1", "a"}, {"album2", "a"}, {"album3", "a"}}},
-				TestCase {createTrack("a", "album1", "other", "t5"),
-				          {{"album1", "a"}, {"album1", "other"}, {"album2", "a"}, {"album3", "a"}}},
+				TestCase {createTrack("a", "t1", album1), {album1}},
+				TestCase {createTrack("a", "t2", album1), {album1}},
+				TestCase {createTrack("a", "t3", album2), {album1, album2}},
+				TestCase {createTrack("a", "t4", album3), {album1, album2, album3}},
+				TestCase {createTrack("a", "t4", album4), {album1, album2, album3, album4}},
 			};
 
 			for(const auto& testCase: testCases)
@@ -172,11 +187,11 @@ class LibraryDatabaseTest :
 				env.libraryDatabase->getAllAlbums(albums, true);
 
 				QCOMPARE(albums.count(), testCase.expectedAlbums.count());
-				for(const auto& [name, albumArtist]: testCase.expectedAlbums)
+				for(const auto& [name, albumArtist, year]: testCase.expectedAlbums)
 				{
 					const auto contains =
-						Util::Algorithm::contains(albums, [n = name, a = albumArtist](const auto& album) {
-							return (album.name() == n) && (album.albumArtist() == a);
+						Util::Algorithm::contains(albums, [n = name, a = albumArtist, y = year](const auto& album) {
+							return (album.name() == n) && (album.albumArtist() == a) && (album.year() == y);
 						});
 
 					QVERIFY(contains);
@@ -189,16 +204,19 @@ class LibraryDatabaseTest :
 		{
 			[[maybe_unused]] auto env = TestEnv {};
 
-			const auto tracks = MetaDataList()
-				<< createTrack("a", "album1", "a", "t1")
-				<< createTrack("a", "album1", "a", "t2")
-				<< createTrack("a", "album2", "a", "t3")
-				<< createTrack("a", "album3", "a", "t4")
-				<< createTrack("a", "album1", "other", "t5");
+			const auto album1 = ExpectedAlbum {"album1", "a", 2001};
+			const auto album2 = ExpectedAlbum {"album2", "a", 2002};
+			const auto album3 = ExpectedAlbum {"album3", "a", 2003};
+			const auto album4 = ExpectedAlbum {"album1", "a", 2008};
 
-			const auto expectedAlbums = QList<QPair<QString, QString>> {
-				{{"album1", "a"}, {"album1", "other"}, {"album2", "a"}, {"album3", "a"}}
-			};
+			const auto tracks = MetaDataList()
+				<< createTrack("a", "t1", album1)
+				<< createTrack("a", "t2", album1)
+				<< createTrack("a", "t3", album2)
+				<< createTrack("a", "t4", album3)
+				<< createTrack("a", "t5", album4);
+
+			const auto expectedAlbums = ExpectedAlbums {album1, album2, album3, album4};
 
 			env.libraryDatabase->storeMetadata(tracks);
 
@@ -206,11 +224,11 @@ class LibraryDatabaseTest :
 			env.libraryDatabase->getAllAlbums(albums, true);
 
 			QCOMPARE(albums.count(), expectedAlbums.count());
-			for(const auto& [name, albumArtist]: expectedAlbums)
+			for(const auto& [name, albumArtist, year]: expectedAlbums)
 			{
 				const auto contains =
-					Util::Algorithm::contains(albums, [n = name, a = albumArtist](const auto& album) {
-						return (album.name() == n) && (album.albumArtist() == a);
+					Util::Algorithm::contains(albums, [n = name, a = albumArtist, y = year](const auto& album) {
+						return (album.name() == n) && (album.albumArtist() == a) && (album.year() == y);
 					});
 
 				QVERIFY(contains);
