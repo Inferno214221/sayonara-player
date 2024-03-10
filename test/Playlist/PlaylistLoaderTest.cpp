@@ -22,6 +22,7 @@
 #include "Common/FileSystemMock.h"
 
 #include "Components/Playlist/PlaylistLoader.h"
+#include "Components/Playlist/PlaylistSaver.h"
 #include "Components/Playlist/Playlist.h"
 #include "Database/Connector.h"
 #include "Database/Playlist.h"
@@ -215,7 +216,6 @@ class PlaylistLoaderTest :
 		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
 		[[maybe_unused]] void testEvaluateSessionParameter()
 		{
-
 			struct TestCase
 			{
 				QList<bool> inSession;
@@ -262,6 +262,65 @@ class PlaylistLoaderTest :
 				{
 					QCOMPARE(fetchedPlaylists[sessionIndex].id(), session[sessionIndex]);
 				}
+			}
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testInvalidIndexesAreNotFetched()
+		{
+			[[maybe_unused]] auto env = TestEnv {};
+
+			const auto recentPlaylist = QList<int> {-1, 5, 6, 8};
+			SetSetting(Set::PL_LoadRecentPlaylists, true);
+			SetSetting(Set::PL_RecentPlaylists, recentPlaylist);
+
+			auto loader = Playlist::LoaderImpl();
+			const auto& fetchedPlaylists = loader.playlists();
+			QVERIFY(fetchedPlaylists.isEmpty());
+		}
+
+		// NOLINTNEXTLINE(readability-convert-member-functions-to-static)
+		[[maybe_unused]] void testPlaylistSaverOnlySavesCorrectPlaylists()
+		{
+			const auto fileSystem = std::make_shared<Test::AllFilesAvailableFileSystem>();
+
+			struct TestCase
+			{
+				bool loadRecent;
+				bool loadTemporary;
+				bool loadPermanent;
+
+				QList<int> expectedSession;
+			};
+
+			const auto testCases = std::array {
+				TestCase {false, false, false, {}},
+				TestCase {true, false, false, {0, 1}},
+				TestCase {false, true, false, {0}},
+				TestCase {false, false, true, {1}},
+				TestCase {false, true, true, {0, 1}}
+			};
+
+			for(const auto& testCase: testCases)
+			{
+				[[maybe_unused]] auto env = TestEnv {};
+
+				SetSetting(Set::PL_LoadRecentPlaylists, testCase.loadRecent);
+				SetSetting(Set::PL_LoadTemporaryPlaylists, testCase.loadTemporary);
+				SetSetting(Set::PL_LoadSavedPlaylists, testCase.loadPermanent);
+
+				auto temporary = std::make_shared<Playlist::Playlist>(0, "new1", m_playManager.get(), fileSystem);
+				temporary->setTemporary(true);
+				temporary->setId(0);
+
+				auto permanent = std::make_shared<Playlist::Playlist>(1, "new2", m_playManager.get(), fileSystem);
+				permanent->setTemporary(false);
+				permanent->setId(1);
+
+				Playlist::saveCurrentPlaylists({temporary, permanent});
+
+				const auto session = GetSetting(Set::PL_RecentPlaylists);
+				QCOMPARE(session, testCase.expectedSession);
 			}
 		}
 };

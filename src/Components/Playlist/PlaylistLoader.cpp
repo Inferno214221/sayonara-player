@@ -74,7 +74,11 @@ namespace
 		auto result = QList<CustomPlaylist> {};
 		for(const auto& id: recentPlaylists)
 		{
-			result << playlistConnector->getPlaylistById(id, true);
+			auto playlist = playlistConnector->getPlaylistById(id, true);
+			if(playlist.id() >= 0)
+			{
+				result << playlist;
+			}
 		}
 
 		return result;

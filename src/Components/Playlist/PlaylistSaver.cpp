@@ -23,6 +23,9 @@
 #include "PlaylistModifiers.h"
 
 #include "Utils/Settings/Settings.h"
+#include "Utils/Logger/Logger.h"
+
+#include <cassert>
 
 namespace Playlist
 {
@@ -31,14 +34,21 @@ namespace Playlist
 		SetSetting(Set::PL_LastPlaylist, -1);
 		SetSetting(Set::PL_LastTrack, -1);
 
+		const auto saveEntireSession = GetSetting(Set::PL_LoadRecentPlaylists);
+
 		auto ids = QList<int> {};
 
 		for(const auto& playlist: playlists)
 		{
-			ids << playlist->id();
+			if(playlist->id() < 0)
+			{
+				spLog(Log::Warning, "PlaylistSaver") << "trying to save invalid playlist: " << playlist->name();
+				continue;
+			}
 
 			const auto isTemporary = playlist->isTemporary();
 			const auto isActive = (playlist->currentTrackIndex() >= 0);
+			const auto isCurrentlyPlaying = (GetSetting(Set::PL_LoadLastTrack) && isActive);
 
 			if(isActive)
 			{
@@ -48,18 +58,29 @@ namespace Playlist
 
 			if(isTemporary)
 			{
-				const auto saveEntireSession = GetSetting(Set::PL_LoadRecentPlaylists);
-				const auto saveUnsavedPlaylist = (GetSetting(Set::PL_LoadTemporaryPlaylists) && playlist->wasChanged());
-				const auto isCurrentlyPlaying = (GetSetting(Set::PL_LoadLastTrack) && isActive);
-
-				if(saveEntireSession || saveUnsavedPlaylist || isCurrentlyPlaying)
+				const auto saveTemporary = GetSetting(Set::PL_LoadTemporaryPlaylists);
+				if(saveEntireSession || saveTemporary || isCurrentlyPlaying)
 				{
+					ids << playlist->id();
 					playlist->save();
 				}
 
 				else
 				{
 					playlist->deletePlaylist();
+				}
+			}
+
+			else
+			{
+				if(playlist->wasChanged())
+				{
+					playlist->save();
+				}
+
+				if(saveEntireSession || GetSetting(Set::PL_LoadSavedPlaylists) || isCurrentlyPlaying)
+				{
+					ids << playlist->id();
 				}
 			}
 		}
