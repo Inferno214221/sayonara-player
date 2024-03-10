@@ -46,8 +46,6 @@ namespace DB
 
 			virtual bool dbFetchAlbums(QSqlQuery& q, AlbumList& result) const;
 
-			[[nodiscard]] virtual AlbumId getAlbumID(const QString& album) const;
-
 			virtual bool getAlbumByID(AlbumId id, Album& album) const;
 			virtual bool getAlbumByID(AlbumId id, Album& album, bool alsoEmpty) const;
 

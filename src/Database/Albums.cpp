@@ -203,17 +203,6 @@ bool Albums::dbFetchAlbums(QSqlQuery& q, AlbumList& result) const
 	return true;
 }
 
-AlbumId Albums::getAlbumID(const QString& album) const
-{
-	auto q = module()->runQuery("SELECT albumID FROM albums WHERE name = :name;",
-	                            {":name", Util::convertNotNull(album)},
-	                            QString("Cannot fetch albumID of album '%1'").arg(album));
-
-	return !DB::hasError(q) && q.next()
-	       ? q.value(0).toInt()
-	       : -1;
-}
-
 bool Albums::getAlbumByID(AlbumId id, Album& album) const
 {
 	return getAlbumByID(id, album, false);

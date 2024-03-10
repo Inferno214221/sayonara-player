@@ -359,9 +359,7 @@ AlbumId SC::LibraryDatabase::updateAlbum(const Album& album)
 		{QStringLiteral("sc_id"), album.id()},
 		QString("Soundcloud: Cannot update album %1").arg(album.name()));
 
-	return DB::hasError(query)
-	       ? -1
-	       : getAlbumID(album.name());
+	return DB::hasError(query) ? -1 : album.id();
 }
 
 AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase([[maybe_unused]] const QString& album)
@@ -383,9 +381,7 @@ AlbumId SC::LibraryDatabase::insertAlbumIntoDatabase(const Album& album)
 		},
 		QString("Soundcloud: Cannot insert album %1").arg(album.name()));
 
-	return DB::hasError(query)
-	       ? -1
-	       : getAlbumID(album.name());
+	return DB::hasError(query) ? -1 : query.lastInsertId().toInt();
 }
 
 bool SC::LibraryDatabase::updateTrack(const MetaData& track)

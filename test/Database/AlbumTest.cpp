@@ -69,7 +69,6 @@ class AlbumTest :
 		void testInsert();
 		void testInsertWithAlbumArtists();
 		void testInsertKnown();
-		void testRename();
 };
 
 DB::LibraryDatabase* AlbumTest::init(int count)
@@ -235,35 +234,6 @@ void AlbumTest::testInsertKnown()
 	QVERIFY(success == true);
 	QVERIFY(albums.count() == mAlbumNames.size());
 	QVERIFY(albums.count() == Count);
-}
-
-void AlbumTest::testRename()
-{
-	std::lock_guard<std::mutex> lock(mtx);
-
-	const int Count = 100;
-	DB::LibraryDatabase* db = init(Count);
-
-	Album album;
-
-	{ // fetch random album from db
-		AlbumId id = db->getAlbumID(mAlbumNames[1]);
-		QVERIFY(id >= 0);
-
-		bool success = db->getAlbumByID(id, album, true);
-		QVERIFY(success == true);
-		QVERIFY(album.id() == id);
-		QVERIFY(album.name() == mAlbumNames[1]);
-	}
-
-	{ // check albums
-		AlbumList albums;
-		bool success = db->getAllAlbums(albums, true);
-
-		QVERIFY(success == true);
-		QVERIFY(albums.count() == mAlbumNames.size());
-		QVERIFY(albums.count() == 100);
-	}
 }
 
 QTEST_GUILESS_MAIN(AlbumTest)

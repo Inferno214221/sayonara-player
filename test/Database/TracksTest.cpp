@@ -59,6 +59,17 @@ namespace
 
 		return filter;
 	}
+
+	Album getFirstAlbumByName(DB::LibraryDatabase* db, const QString& name)
+	{
+		auto albums = AlbumList {};
+		db->getAllAlbums(albums, true);
+		const auto index = Util::Algorithm::indexOf(albums, [&](const auto& album) {
+			return (album.name() == name);
+		});
+
+		return albums[index];
+	}
 }
 
 class TracksTest :
@@ -182,7 +193,8 @@ class TracksTest :
 	auto* db = initDatabase();
 
 	MetaDataList tracks;
-	const auto albumId = db->getAlbumID("Europe Mountains");
+	const auto album = getFirstAlbumByName(db, "Europe Mountains");
+	const auto albumId = album.id();
 	db->getAllTracksByAlbum({albumId}, tracks);
 
 	QVERIFY(tracks.size() == 4);
@@ -194,7 +206,8 @@ class TracksTest :
 	auto* db = initDatabase();
 
 	MetaDataList tracks;
-	const auto albumId = db->getAlbumID("Europe Mountains");
+	const auto album = getFirstAlbumByName(db, "Europe Mountains");
+	const auto albumId = album.id();
 	const auto filter = createFulltextFilter("earth");
 
 	db->getAllTracksByAlbum({albumId}, tracks, filter, -1);
