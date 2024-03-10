@@ -205,6 +205,7 @@ namespace Engine
 			emit sigDataAvailable(data);
 		});
 
+		// Remember: Fake gstreamer plugins
 		m->broadcaster = PipelineExtensions::createBroadcaster(m->rawDataReceiver, m->pipeline, m->tee);
 		m->pitcher = PipelineExtensions::createPitcher();
 		m->crossfader = PipelineExtensions::createCrossfader(this, this);

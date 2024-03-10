@@ -416,10 +416,10 @@ gboolean Callbacks::busStateChanged([[maybe_unused]] GstBus* bus, GstMessage* me
 			   !messageSourceName.contains("spectrum_sink") &&
 			   !messageSourceName.contains("pipeline"))
 			{
-				spLog(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << messageSourceName;
 				break;
 			}
 
+			spLog(Log::Debug, ClassEngineCallbacks) << "EOF reached: " << messageSourceName;
 			engine->setTrackFinished(GST_ELEMENT(message->src));
 			break;
 
@@ -612,7 +612,8 @@ gboolean Callbacks::positionChanged(gpointer data)
 // dynamic linking, important for decodebin
 void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer data)
 {
-	const auto sourceName = EngineUtils::GStringAutoFree(gst_element_get_name(source)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+	const auto sourceName = EngineUtils::GStringAutoFree(
+		gst_element_get_name(source)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 	spLog(Log::Develop, "Callback") << "Source: " << sourceName.data();
 
 	auto* element = static_cast<GstElement*>(data);
@@ -627,7 +628,8 @@ void Callbacks::decodebinReady(GstElement* source, GstPad* newSrcPad, gpointer d
 		const auto padLinkReturn = gst_pad_link(newSrcPad, sinkPad);
 		if(padLinkReturn == GST_PAD_LINK_OK)
 		{
-			const auto elementName = EngineUtils::GStringAutoFree(gst_element_get_name(element)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
+			const auto elementName = EngineUtils::GStringAutoFree(
+				gst_element_get_name(element)); // NOLINT(cppcoreguidelines-pro-type-cstyle-cast)
 			spLog(Log::Develop, "Callbacks") << "Successfully linked " << sourceName.data()
 			                                 << " with " << elementName.data();
 		}
