@@ -31,8 +31,12 @@ namespace Playlist
 		SetSetting(Set::PL_LastPlaylist, -1);
 		SetSetting(Set::PL_LastTrack, -1);
 
-		for(auto playlist: playlists)
+		auto ids = QList<int> {};
+
+		for(const auto& playlist: playlists)
 		{
+			ids << playlist->id();
+
 			const auto isTemporary = playlist->isTemporary();
 			const auto isActive = (playlist->currentTrackIndex() >= 0);
 
@@ -42,30 +46,24 @@ namespace Playlist
 				SetSetting(Set::PL_LastTrack, currentTrackWithoutDisabled(*playlist));
 			}
 
-			if(GetSetting(Set::PL_LoadTemporaryPlaylists))
+			if(isTemporary)
 			{
-				const auto wasChanged = playlist->wasChanged();
-				if(isTemporary && wasChanged)
+				const auto saveEntireSession = GetSetting(Set::PL_LoadRecentPlaylists);
+				const auto saveUnsavedPlaylist = (GetSetting(Set::PL_LoadTemporaryPlaylists) && playlist->wasChanged());
+				const auto isCurrentlyPlaying = (GetSetting(Set::PL_LoadLastTrack) && isActive);
+
+				if(saveEntireSession || saveUnsavedPlaylist || isCurrentlyPlaying)
 				{
 					playlist->save();
 				}
-			}
 
-			else // delete temporary playlists
-			{
-				if(isTemporary)
+				else
 				{
-					if(GetSetting(Set::PL_LoadLastTrack) && isActive)
-					{
-						playlist->save();
-					}
-
-					else
-					{
-						playlist->deletePlaylist();
-					}
+					playlist->deletePlaylist();
 				}
 			}
 		}
+
+		SetSetting(Set::PL_RecentPlaylists, ids);
 	}
 }

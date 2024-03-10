@@ -58,13 +58,26 @@ namespace
 		return playlists;
 	}
 
-	QList<CustomPlaylist> getPlaylists(Playlist::StoreType type, Playlist::SortOrder sortOrder, bool getTracks)
+	QList<CustomPlaylist>
+	getPlaylists(Playlist::StoreType type, const Playlist::SortOrder sortOrder, const bool getTracks)
 	{
 		auto* playlistConnector = DB::Connector::instance()->playlistConnector();
 		auto playlists = playlistConnector->getAllPlaylists(type, getTracks, sortOrder);
 		return getTracks
 		       ? applyTagsToPlaylists(std::move(playlists))
 		       : playlists;
+	}
+
+	QList<CustomPlaylist> loadRecentPlaylists(const QList<Id>& recentPlaylists)
+	{
+		auto* playlistConnector = DB::Connector::instance()->playlistConnector();
+		auto result = QList<CustomPlaylist> {};
+		for(const auto& id: recentPlaylists)
+		{
+			result << playlistConnector->getPlaylistById(id, true);
+		}
+
+		return result;
 	}
 }
 
@@ -73,12 +86,8 @@ namespace Playlist
 	struct LoaderImpl::Private
 	{
 		QList<CustomPlaylist> playlists;
-		int lastPlaylistId;
-		int lastTrackIndex;
-
-		Private() :
-			lastPlaylistId(GetSetting(Set::PL_LastPlaylist)),
-			lastTrackIndex {-1} {}
+		int lastPlaylistId {GetSetting(Set::PL_LastPlaylist)};
+		int lastTrackIndex {-1};
 	};
 
 	LoaderImpl::LoaderImpl() :
@@ -89,6 +98,8 @@ namespace Playlist
 		const auto loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
 		const auto loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
 		const auto loadLastTrackBeforeStop = GetSetting(Set::PL_RememberTrackAfterStop);
+		const auto recentPlaylists = GetSetting(Set::PL_RecentPlaylists);
+		const auto loadRecentSession = GetSetting(Set::PL_LoadRecentPlaylists);
 
 		m->lastTrackIndex = GetSetting(Set::PL_LastTrack);
 		if(m->lastTrackIndex == -1 && loadLastTrackBeforeStop)
@@ -96,24 +107,32 @@ namespace Playlist
 			m->lastTrackIndex = GetSetting(Set::PL_LastTrackBeforeStop);
 		}
 
-		if(loadSavedPlaylists && loadTemporaryPlaylists)
+		if(loadRecentSession)
 		{
-			m->playlists = getPlaylists(StoreType::TemporaryAndPermanent, Playlist::SortOrder::IDAsc, true);
-		}
-
-		else if(loadSavedPlaylists && !loadTemporaryPlaylists)
-		{
-			m->playlists = getPlaylists(StoreType::OnlyPermanent, Playlist::SortOrder::IDAsc, true);
-		}
-
-		else if(!loadSavedPlaylists && loadTemporaryPlaylists)
-		{
-			m->playlists = getPlaylists(StoreType::OnlyTemporary, Playlist::SortOrder::IDAsc, true);
+			m->playlists << loadRecentPlaylists(recentPlaylists);
 		}
 
 		else
 		{
-			m->playlists.clear();
+			if(loadSavedPlaylists && loadTemporaryPlaylists)
+			{
+				m->playlists = getPlaylists(StoreType::TemporaryAndPermanent, Playlist::SortOrder::IDAsc, true);
+			}
+
+			else if(loadSavedPlaylists)
+			{
+				m->playlists = getPlaylists(StoreType::OnlyPermanent, Playlist::SortOrder::IDAsc, true);
+			}
+
+			else if(loadTemporaryPlaylists)
+			{
+				m->playlists = getPlaylists(StoreType::OnlyTemporary, Playlist::SortOrder::IDAsc, true);
+			}
+
+			else
+			{
+				m->playlists.clear();
+			}
 		}
 
 		if(m->playlists.isEmpty())
