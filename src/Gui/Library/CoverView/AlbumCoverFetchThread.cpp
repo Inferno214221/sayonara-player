@@ -167,15 +167,15 @@ void AlbumCoverFetchThread::addAlbum(const Album& album)
 
 bool AlbumCoverFetchThread::checkAlbum(const QString& hash)
 {
-	bool hasHash;
+	bool coverLocationAlreadyFound; // NOLINT(*-init-variables)
 	{
 		[[maybe_unused]] const auto lockGuard = LockGuard(mutexHashLocationPairs);
-		hasHash = Util::Algorithm::contains(m->hashLocationPairs, [&](const auto& hashLocationPair) {
+		coverLocationAlreadyFound = Util::Algorithm::contains(m->hashLocationPairs, [&](const auto& hashLocationPair) {
 			return (hashLocationPair.first == hash);
 		});
 	}
 
-	if(hasHash)
+	if(coverLocationAlreadyFound)
 	{
 		spLog(Log::Crazy, this) << "Cover " << hash << " already in lookups";
 		emit sigNext();
@@ -184,26 +184,27 @@ bool AlbumCoverFetchThread::checkAlbum(const QString& hash)
 
 	{
 		[[maybe_unused]] const auto lockGuard = LockGuard(mutexQueuedHashes);
-		if(m->queuedHashes.contains(hash))
+		if(const auto alreadyInProgress = m->queuedHashes.contains(hash); alreadyInProgress)
 		{
 			spLog(Log::Crazy, this) << "Cover " << hash << " already in ready hashes";
 			return true;
 		}
 	}
 
+	bool alreadyWaitingForCoverLocation; // NOLINT(*-init-variables)
 	{
 		[[maybe_unused]] const auto lockGuard = LockGuard(mutexAlbumList);
-		hasHash = Util::Algorithm::contains(m->hashAlbumList, [&](const auto& hashLocationPair) {
+		alreadyWaitingForCoverLocation = Util::Algorithm::contains(m->hashAlbumList, [&](const auto& hashLocationPair) {
 			return (hashLocationPair.first == hash);
 		});
 	}
 
-	if(hasHash)
+	if(alreadyWaitingForCoverLocation)
 	{
 		spLog(Log::Crazy, this) << "Cover " << hash << " already in hash_album_list";
 	}
 
-	return hasHash;
+	return alreadyWaitingForCoverLocation;
 }
 
 AlbumCoverFetchThread::HashLocationPair AlbumCoverFetchThread::takeCurrentLookup()

@@ -236,6 +236,12 @@ namespace Library
 
 			coverLookup->start();
 		}
+
+		else
+		{
+			m->invalidHashes << hash;
+			m->coverThread->removeHash(hash);
+		}
 	}
 
 	void CoverModel::coverLookupFinished(const bool success)
