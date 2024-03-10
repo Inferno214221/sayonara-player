@@ -67,6 +67,8 @@ namespace Library
 			[[nodiscard]] QSize itemSize() const;
 			[[nodiscard]] int zoom() const;
 
+			[[nodiscard]] QString mergeSuggestion(int index) const override;
+
 		protected:
 			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
 			[[nodiscard]] int mapIndexToId(int index) const override;

@@ -61,6 +61,8 @@ namespace Library
 
 			[[nodiscard]] QMimeData* mimeData(const QModelIndexList& indexList) const override;
 
+			[[nodiscard]] virtual QString mergeSuggestion(int row) const;
+
 			virtual void refreshData();
 
 		protected:

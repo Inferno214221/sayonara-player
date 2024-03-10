@@ -132,6 +132,11 @@ QMimeData* ItemModel::mimeData(const QModelIndexList& indexes) const
 	return mimeData;
 }
 
+QString ItemModel::mergeSuggestion(const int itemIndex) const
+{
+	return searchableString(itemIndex, {});
+}
+
 AbstractLibrary* ItemModel::library() { return m->library; }
 
 const AbstractLibrary* ItemModel::library() const { return m->library; }

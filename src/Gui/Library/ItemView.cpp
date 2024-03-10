@@ -366,7 +366,7 @@ void ItemView::contextMenuEvent(QContextMenuEvent* event)
 		for(const auto& selectedIndex: selections)
 		{
 			const auto id = model->mapIndexToId(selectedIndex);
-			auto name = model->searchableString(selectedIndex, {});
+			auto name = model->mergeSuggestion(selectedIndex);
 			name.replace("&", "&&");
 
 			data.insert(id, name);

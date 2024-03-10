@@ -58,10 +58,11 @@ namespace Library
 
 			[[nodiscard]] Cover::Location cover(const QModelIndexList& indexes) const override;
 			[[nodiscard]] Id mapIndexToId(int index) const override;
-			
+
 			[[nodiscard]] const MetaDataList& selectedMetadata() const override;
 			[[nodiscard]] int itemCount() const override;
 			[[nodiscard]] QString searchableString(int index, const QString& prefix) const override;
+			[[nodiscard]] QString mergeSuggestion(int index) const override;
 
 		private slots:
 			void albumChanged(int index);

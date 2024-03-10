@@ -208,8 +208,10 @@ namespace Library
 				                       ? Lang::get(Lang::UnknownAlbum)
 				                       : album.name();
 
-				return QString("<b>%1</b><br>%2")
-					.arg(artistName, albumName);
+				return QString("<b>%1</b><br>%2 (%3)")
+					.arg(artistName)
+					.arg(albumName)
+					.arg(album.year());
 			}
 
 			default:
@@ -451,5 +453,16 @@ namespace Library
 		return {
 			{ArtistSearchOption, Lang::get(Lang::SearchNoun) + ": " + Lang::get(Lang::Artist)}
 		};
+	}
+
+	QString CoverModel::mergeSuggestion(const int index) const
+	{
+		const auto& albums = library()->albums();
+		const auto& album = albums[index];
+
+		return QString("%1 (%2, %3)")
+			.arg(album.name())
+			.arg(album.albumArtist())
+			.arg(album.year());
 	}
 }

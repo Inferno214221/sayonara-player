@@ -154,6 +154,11 @@ QVariant AlbumModel::data(const QModelIndex& index, int role) const // NOLINT(*-
 		}
 	}
 
+	else if(role == Qt::ToolTipRole)
+	{
+		return album.albumArtist() + " (" + QString::number(album.year()) + ")";
+	}
+
 	else if(role == Qt::DisplayRole || role == Qt::EditRole)
 	{
 		switch(col)
@@ -255,3 +260,14 @@ Qt::ItemFlags AlbumModel::flags(const QModelIndex& index) const
 const MetaDataList& Library::AlbumModel::selectedMetadata() const { return library()->tracks(); }
 
 int Library::AlbumModel::itemCount() const { return library()->albums().count(); }
+
+QString Library::AlbumModel::mergeSuggestion(const int index) const
+{
+	const auto& albums = library()->albums();
+	const auto& album = albums[index];
+
+	return QString("%1 (%2, %3)")
+		.arg(album.name())
+		.arg(album.albumArtist())
+		.arg(album.year());
+}

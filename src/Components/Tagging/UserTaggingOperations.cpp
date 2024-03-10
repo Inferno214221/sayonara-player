@@ -198,28 +198,28 @@ void UserOperations::mergeArtists(const Util::Set<Id>& artistIds, ArtistId targe
 	}
 }
 
-void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAlbum)
+void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, const AlbumId targetAlbumId)
 {
 	if(albumIds.isEmpty())
 	{
 		return;
 	}
 
-	if(targetAlbum < 0)
+	if(targetAlbumId < 0)
 	{
 		spLog(Log::Warning, this) << "Cannot merge albums: Target album id < 0";
 		return;
 	}
 
-	Album album;
-	bool success = m->libraryDatabase->getAlbumByID(targetAlbum, album, true);
+	auto targetAlbum = Album {};
+	const auto success = m->libraryDatabase->getAlbumByID(targetAlbumId, targetAlbum, true);
 	if(!success)
 	{
 		return;
 	}
 
 	auto wrongIds = albumIds;
-	wrongIds.remove(targetAlbum);
+	wrongIds.remove(targetAlbumId);
 
 	MetaDataList tracks;
 	m->libraryDatabase->getAllTracksByAlbum(wrongIds.toList(), tracks);
@@ -230,8 +230,10 @@ void UserOperations::mergeAlbums(const Util::Set<Id>& albumIds, AlbumId targetAl
 	for(auto idx = 0; idx < tracks.count(); idx++)
 	{
 		auto& track = tracks[idx];
-		track.setAlbumId(album.id());
-		track.setAlbum(album.name());
+		track.setAlbumId(targetAlbum.id());
+		track.setAlbum(targetAlbum.name());
+		track.setAlbumArtist(targetAlbum.albumArtist());
+		track.setYear(targetAlbum.year());
 
 		editor->updateTrack(idx, track);
 	}
