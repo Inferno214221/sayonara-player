@@ -35,7 +35,7 @@
 
 namespace
 {
-	constexpr const auto LatestDatabaseVersion = 36;
+	constexpr const auto LatestDatabaseVersion = 37;
 
 	bool updateAlbumCissearchFix(DB::Module& module, DB::LibraryDatabase& libraryDatabase)
 	{
@@ -776,6 +776,21 @@ namespace DB
 			else
 			{
 				db.rollback();
+			}
+		}
+
+		if(currentVersion < 37)
+		{
+			// restore backward compatibility again
+			const auto table = QStringLiteral("PlaylistToTracks");
+			auto success = checkAndInsertColumn(table, "isRadio", "INTEGER", "0");
+			success &= checkAndInsertColumn(table, "stationName", "VARCHAR(256)");
+			success &= checkAndInsertColumn(table, "station", "VARCHAR(256)");
+			success &= checkAndInsertColumn(table, "isUpdatable", "INTEGER", "1");
+
+			if(success)
+			{
+				settingsConnector.storeSetting("version", 37); // NOLINT(readability-magic-numbers)
 			}
 		}
 	}
