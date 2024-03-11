@@ -139,7 +139,8 @@ class PlayManagerImpl :
 			m_notificationHandler {notificationHandler}
 		{
 			const auto loadPlaylist = (GetSetting(Set::PL_LoadSavedPlaylists) ||
-			                           GetSetting(Set::PL_LoadTemporaryPlaylists));
+			                           GetSetting(Set::PL_LoadTemporaryPlaylists) ||
+			                           GetSetting(Set::PL_LoadRecentPlaylists));
 			const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
 			const auto rememberLastTime = GetSetting(Set::PL_RememberTime);
 
@@ -406,6 +407,10 @@ class PlayManagerImpl :
 				else
 				{
 					play();
+					QTimer::singleShot(1000, [this]() {
+						play();
+					});
+
 				}
 			}
 		}
