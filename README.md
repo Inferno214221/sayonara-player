@@ -18,12 +18,12 @@
         alt="Bitcoin">
 </a>
 
-![Maintenance](https://img.shields.io/maintenance/yes/2023)
+![Maintenance](https://img.shields.io/maintenance/yes/2024)
 ![License](https://img.shields.io/badge/License-GPLv3-green)
 
 ![Debian package](https://img.shields.io/debian/v/sayonara/sid)
 ![Fedora package](https://img.shields.io/fedora/v/sayonara)
-![AUR version](https://img.shields.io/aur/version/sayonara-player-git)
+![AUR version](https://img.shields.io/aur/version/sayonara-player)
 
 Sayonara is a small, clear and fast audio player for Linux written in C++, supported by the Qt framework. It uses GStreamer as audio backend. Sayonara is open source and uses the GPLv3 license. One of Sayonara's goals is intuitive and easy usablility. Currently, it is only available for Linux and BSD. 
 
