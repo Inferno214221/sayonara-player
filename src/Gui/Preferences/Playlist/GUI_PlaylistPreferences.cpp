@@ -175,7 +175,7 @@ bool GUI_PlaylistPreferences::commit()
 
 void GUI_PlaylistPreferences::revert()
 {
-	const auto loadRecentPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
+	const auto loadRecentPlaylists = GetSetting(Set::PL_LoadRecentPlaylists);
 	const auto loadSavedPlaylists = GetSetting(Set::PL_LoadSavedPlaylists);
 	const auto loadTemporaryPlaylists = GetSetting(Set::PL_LoadTemporaryPlaylists);
 	const auto loadLastTrack = GetSetting(Set::PL_LoadLastTrack);
