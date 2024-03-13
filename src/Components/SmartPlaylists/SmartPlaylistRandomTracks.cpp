@@ -20,6 +20,8 @@
  */
 
 #include "SmartPlaylistRandomTracks.h"
+#include "Database/Connector.h"
+#include "Database/LibraryDatabase.h"
 
 #include "Utils/Language/Language.h"
 #include "Utils/MetaData/MetaDataList.h"
@@ -27,28 +29,45 @@
 
 #include <QObject>
 
-SmartPlaylistRandomTracks::SmartPlaylistRandomTracks(const int id, const int count, const LibraryId libraryId) :
-	SmartPlaylist(id, {count}, false, libraryId) {}
+SmartPlaylistRandomTracks::SmartPlaylistRandomTracks(const int id, const int count, const bool isRandomized,
+                                            		 const LibraryId libraryId) :
+	SmartPlaylist(id, {count}, isRandomized, libraryId) {}
 
 SmartPlaylistRandomTracks::~SmartPlaylistRandomTracks() = default;
 
-int SmartPlaylistRandomTracks::minimumValue() const { return 1; }
+int SmartPlaylistRandomTracks::minimumValue() const { return 0; }
 
-int SmartPlaylistRandomTracks::maximumValue() const { return 1000; } // NOLINT(readability-magic-numbers)
+int SmartPlaylistRandomTracks::maximumValue() const {
+	// return 1000;
+	auto* dbConnector = DB::Connector::instance();
+	auto* libraryDatabase = dbConnector->libraryDatabase(-1, 0);
+	auto tracks = MetaDataList {};
+	libraryDatabase->getAllTracks(tracks);
+
+	return std::max(1, tracks.count());
+} // NOLINT(readability-magic-numbers)
 
 QString SmartPlaylistRandomTracks::classType() const { return SmartPlaylistRandomTracks::ClassType; }
 
-QString SmartPlaylistRandomTracks::displayClassType() const { return QObject::tr("Random tracks"); }
+QString SmartPlaylistRandomTracks::displayClassType() const { return QObject::tr("Tracks"); }
 
-QString SmartPlaylistRandomTracks::name() const { return QObject::tr("%n random track(s)", "", value(0)); }
+QString SmartPlaylistRandomTracks::name() const
+{
+	return (value(0) > 0)
+	       ? QObject::tr("%n track(s)", "", value(0))
+	       : QObject::tr("All tracks");
+}
 
 SmartPlaylists::Type SmartPlaylistRandomTracks::type() const { return SmartPlaylists::Type::RandomTracks; }
 
 MetaDataList SmartPlaylistRandomTracks::filterTracks(MetaDataList tracks)
 {
-	Util::Algorithm::shuffle(tracks);
+	if (isRandomized()) { Util::Algorithm::shuffle(tracks); }
 
-	if(value(0) < tracks.count())
+	if(value(0) == 0) {
+		return tracks;
+	}
+	else if(value(0) < tracks.count())
 	{
 		tracks.erase(tracks.begin() + value(0), tracks.end());
 	}
@@ -56,6 +75,11 @@ MetaDataList SmartPlaylistRandomTracks::filterTracks(MetaDataList tracks)
 	return tracks;
 }
 
-QString SmartPlaylistRandomTracks::text(const int /*index*/) const { return QObject::tr("Number of tracks"); }
+QString SmartPlaylistRandomTracks::text(int /*index*/) const
+{
+	return QObject::tr("Number of tracks") + " " +
+				"(0=All)";
+	    //    QString("(0=%1)").arg(Lang::get(Lang::All));
+}
 
-bool SmartPlaylistRandomTracks::isRandomizable() const { return false; }
+// bool SmartPlaylistRandomTracks::isRandomizable() const { return false; }

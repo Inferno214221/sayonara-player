@@ -28,7 +28,7 @@ class SmartPlaylistRandomTracks :
 	public:
 		static constexpr const auto ClassType = "random-tracks";
 
-		SmartPlaylistRandomTracks(int id, int count, LibraryId libraryId);
+		SmartPlaylistRandomTracks(int id, int count, bool isRandomized, LibraryId libraryId);
 		~SmartPlaylistRandomTracks() override;
 
 		[[nodiscard]] int minimumValue() const override;
@@ -39,7 +39,7 @@ class SmartPlaylistRandomTracks :
 		[[nodiscard]] QString name() const override;
 		[[nodiscard]] QString text(int index) const override;
 		[[nodiscard]] SmartPlaylists::Type type() const override;
-		[[nodiscard]] bool isRandomizable() const override;
+		// [[nodiscard]] bool isRandomizable() const override;
 
 		MetaDataList filterTracks(MetaDataList tracks) override;
 };

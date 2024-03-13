@@ -142,7 +142,7 @@ SmartPlaylists::createFromType(const SmartPlaylists::Type field, const int id, c
 			return std::make_shared<SmartPlaylistByListeningDate>(id, values[0], values[1], isRandomized, libraryId,
 			                                                      fileSystem);
 		case Type::RandomTracks:
-			return std::make_shared<SmartPlaylistRandomTracks>(id, values[0], libraryId);
+			return std::make_shared<SmartPlaylistRandomTracks>(id, values[0], isRandomized, libraryId);
 		case Type::RandomAlbums:
 			return std::make_shared<SmartPlaylistRandomAlbum>(id, values[0], isRandomized, libraryId);
 		default:
