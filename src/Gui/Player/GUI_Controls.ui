@@ -174,6 +174,36 @@
                             </property>
                         </widget>
                     </item>
+                    <item>
+                        <widget class="QPushButton" name="btnStop">
+                            <property name="sizePolicy">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                                    <horstretch>0</horstretch>
+                                    <verstretch>0</verstretch>
+                                </sizepolicy>
+                            </property>
+                            <property name="focusPolicy">
+                                <enum>Qt::ClickFocus</enum>
+                            </property>
+                            <property name="text">
+                                <string/>
+                            </property>
+                            <property name="icon">
+                                <iconset>
+                                    <normaloff>:/Icons/stop.svg.png</normaloff>:/Icons/stop.svg.png
+                                </iconset>
+                            </property>
+                            <property name="iconSize">
+                                <size>
+                                    <width>21</width>
+                                    <height>21</height>
+                                </size>
+                            </property>
+                            <property name="flat">
+                                <bool>true</bool>
+                            </property>
+                        </widget>
+                    </item>
                 </layout>
             </item>
             <item row="0" column="2" rowspan="4" colspan="2">
@@ -514,13 +544,13 @@
                             </property>
                             <property name="minimumSize">
                                 <size>
-                                    <width>20</width>
+                                    <width>70</width>
                                     <height>10</height>
                                 </size>
                             </property>
                             <property name="maximumSize">
                                 <size>
-                                    <width>73</width>
+                                    <width>123</width>
                                     <height>1000</height>
                                 </size>
                             </property>
@@ -557,21 +587,21 @@
                     <item row="0" column="0">
                         <widget class="Gui::CoverButton" name="btnCover">
                             <property name="sizePolicy">
-                                <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                                <sizepolicy hsizetype="Fixed" vsizetype="Maximum">
                                     <horstretch>0</horstretch>
                                     <verstretch>0</verstretch>
                                 </sizepolicy>
                             </property>
                             <property name="minimumSize">
                                 <size>
-                                    <width>95</width>
-                                    <height>95</height>
+                                    <width>150</width>
+                                    <height>150</height>
                                 </size>
                             </property>
                             <property name="maximumSize">
                                 <size>
-                                    <width>100</width>
-                                    <height>100</height>
+                                    <width>150</width>
+                                    <height>150</height>
                                 </size>
                             </property>
                             <property name="focusPolicy">
@@ -582,8 +612,8 @@
                             </property>
                             <property name="iconSize">
                                 <size>
-                                    <width>95</width>
-                                    <height>95</height>
+                                    <width>150</width>
+                                    <height>150</height>
                                 </size>
                             </property>
                             <property name="flat">
@@ -608,36 +638,6 @@
                         </spacer>
                     </item>
                 </layout>
-            </item>
-            <item row="4" column="3">
-                <widget class="QPushButton" name="btnStop">
-                    <property name="sizePolicy">
-                        <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                            <horstretch>0</horstretch>
-                            <verstretch>0</verstretch>
-                        </sizepolicy>
-                    </property>
-                    <property name="focusPolicy">
-                        <enum>Qt::ClickFocus</enum>
-                    </property>
-                    <property name="text">
-                        <string/>
-                    </property>
-                    <property name="icon">
-                        <iconset>
-                            <normaloff>:/Icons/stop.svg.png</normaloff>:/Icons/stop.svg.png
-                        </iconset>
-                    </property>
-                    <property name="iconSize">
-                        <size>
-                            <width>21</width>
-                            <height>21</height>
-                        </size>
-                    </property>
-                    <property name="flat">
-                        <bool>true</bool>
-                    </property>
-                </widget>
             </item>
             <item row="4" column="2">
                 <layout class="QGridLayout" name="gridLayout_2">
