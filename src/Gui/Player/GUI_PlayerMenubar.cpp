@@ -88,8 +88,8 @@ struct Menubar::Private
 	Library::LibraryContainer* currentLibrary = nullptr;
 	Library::PluginHandler* pluginHandler;
 
-	QLabel* heartLabel = nullptr;
-	QLabel* donateLabel = nullptr;
+	// QLabel* heartLabel = nullptr;
+	// QLabel* donateLabel = nullptr;
 
 	Private(Shutdown* shutdown, Playlist::Creator* playlistCreator, Library::PluginHandler* pluginHandler,
 	        Menubar* menubar) :
@@ -265,21 +265,21 @@ void Menubar::showLibraryMenu(bool b)
 void Menubar::initDonateLink()
 {
 	auto* cornerWidget = new QWidget(this);
-	m->heartLabel = new QLabel(this);
-	m->heartLabel->setCursor(Qt::PointingHandCursor);
+	// m->heartLabel = new QLabel(this);
+	// m->heartLabel->setCursor(Qt::PointingHandCursor);
 
-	m->donateLabel = new QLabel(this);
-	m->donateLabel->setOpenExternalLinks(true);
-	m->donateLabel->setStyleSheet(QString());
-	m->donateLabel->setCursor(Qt::PointingHandCursor);
+	// m->donateLabel = new QLabel(this);
+	// m->donateLabel->setOpenExternalLinks(true);
+	// m->donateLabel->setStyleSheet(QString());
+	// m->donateLabel->setCursor(Qt::PointingHandCursor);
 
 	auto* layout = new QHBoxLayout();
 	layout->setSpacing(0);
 
 	constexpr const auto LayoutMargin = 10;
 	layout->addSpacerItem(new QSpacerItem(LayoutMargin, LayoutMargin, QSizePolicy::MinimumExpanding));
-	layout->addWidget(m->heartLabel);
-	layout->addWidget(m->donateLabel);
+	// layout->addWidget(m->heartLabel);
+	// layout->addWidget(m->donateLabel);
 
 	cornerWidget->setLayout(layout);
 	this->setCornerWidget(cornerWidget);
@@ -386,22 +386,22 @@ void Menubar::initSkin()
 	m->actionShutdown->setIcon(Icons::icon(Icons::Shutdown));
 	m->actionAbout->setIcon(Icons::icon(Icons::Info));
 
-	const auto heartColor = QColor(243, 132, 26);
-	const auto textColor = (Style::isDark()) ? heartColor : QColor();
+	// const auto heartColor = QColor(243, 132, 26);
+	// const auto textColor = (Style::isDark()) ? heartColor : QColor();
 
-	const auto heartLink = Util::createLink(
-		"❤ ",
-		heartColor,
-		false,
-		"https://sayonara-player.com/donations.php");
-	const auto sayonaraLink = Util::createLink(
-		"Sayonara",
-		textColor,
-		true,
-		"https://sayonara-player.com/donations.php");
+	// const auto heartLink = Util::createLink(
+	// 	"❤ ",
+	// 	heartColor,
+	// 	false,
+	// 	"https://sayonara-player.com/donations.php");
+	// const auto sayonaraLink = Util::createLink(
+	// 	"Sayonara",
+	// 	textColor,
+	// 	true,
+	// 	"https://sayonara-player.com/donations.php");
 
-	m->heartLabel->setText(heartLink);
-	m->donateLabel->setText(sayonaraLink);
+	// m->heartLabel->setText(heartLink);
+	// m->donateLabel->setText(sayonaraLink);
 }
 
 void Menubar::skinChanged()
